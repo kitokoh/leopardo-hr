@@ -118,4 +118,83 @@ final class RestaurantPermissions
 
         return $manageable === null || $manageable !== [];
     }
+
+    /**
+     * REST-OS-6 (#8608) — règle EFFECTIVE de `restaurant.manage` (configuration
+     * du tenant : établissements, catalogue, tarifs, clôtures).
+     *
+     * Réservée à la direction (`principal`/`rh`) : c'est de la configuration
+     * d'entreprise, pas un geste de salle. Fail-closed : tout autre rôle est
+     * refusé.
+     */
+    public function canManage(Employee $actor): bool
+    {
+        return $actor->hasManagerRole('principal', 'rh');
+    }
+
+    /**
+     * REST-OS-6 (#8608) — règle EFFECTIVE de `restaurant.manager` (pilotage
+     * opérationnel de la salle : zones, tables, menus, horaires).
+     *
+     * Direction + gérant de salle. Fail-closed pour les rôles opérationnels
+     * (serveur, cuisine, livreur, caisse, stock).
+     */
+    public function canManageFloor(Employee $actor): bool
+    {
+        return $actor->hasManagerRole('principal', 'rh', 'manager');
+    }
+
+    /**
+     * REST-OS-6 (#8608) — règle EFFECTIVE de `restaurant.server` (prise de
+     * commande, service, encaissement).
+     *
+     * Direction + gérant + serveur + caissier. La cuisine et le livreur ne
+     * prennent pas de commande (fail-closed).
+     */
+    public function canServe(Employee $actor): bool
+    {
+        return $actor->hasManagerRole('principal', 'rh', 'manager', 'server', 'cashier');
+    }
+
+    /**
+     * REST-OS-6 (#8608) — règle EFFECTIVE de `restaurant.kitchen` (file de
+     * commandes en cuisine).
+     *
+     * Direction + gérant + cuisine. Le serveur, le caissier et le livreur
+     * n'accèdent pas à l'écran cuisine (fail-closed).
+     */
+    public function canWorkKitchen(Employee $actor): bool
+    {
+        return $actor->hasManagerRole('principal', 'rh', 'manager', 'kitchen');
+    }
+
+    /**
+     * REST-OS-6 (#8608) — règle EFFECTIVE de `restaurant.rider` (tournées de
+     * livraison).
+     *
+     * Direction + gérant + livreur. Fail-closed pour les autres rôles.
+     */
+    public function canDeliver(Employee $actor): bool
+    {
+        return $actor->hasManagerRole('principal', 'rh', 'manager', 'rider');
+    }
+
+    /**
+     * REST-OS-6 (#8608) — point d'entrée unique des Gates `restaurant.*`
+     * (hors `restaurant.reports` et `restaurant.print_jobs.*`, qui ont leurs
+     * propres règles). Toute permission inconnue est refusée (fail-closed) :
+     * aucune capacité implicite n'est accordée par simple présence d'un rôle.
+     */
+    public function can(Employee $actor, string $permission): bool
+    {
+        return match ($permission) {
+            self::MANAGE => $this->canManage($actor),
+            self::MANAGER => $this->canManageFloor($actor),
+            self::SERVER => $this->canServe($actor),
+            self::KITCHEN => $this->canWorkKitchen($actor),
+            self::RIDER => $this->canDeliver($actor),
+            self::REPORTS => $this->canViewReports($actor),
+            default => false,
+        };
+    }
 }
