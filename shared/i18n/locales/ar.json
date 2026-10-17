@@ -6657,7 +6657,13 @@
       "reassurance": "مجاني، بدون بطاقة بنكية، بياناتك تبقى لك",
       "backHome": "العودة إلى الصفحة الرئيسية",
       "metaTitle": "Trade، أعدّ شركتك في دقائق",
-      "metaDescription": "Trade، نقطة الدخول إلى Leopardo Business OS: اختر الاستيراد والتصدير أو السوق المحلي، وأعدّ شركتك، وفعّل وحداتك، وابدأ أول عملية تجارية."
+      "metaDescription": "Trade، نقطة الدخول إلى Leopardo Business OS: اختر الاستيراد والتصدير أو السوق المحلي، وأعدّ شركتك، وفعّل وحداتك، وابدأ أول عملية تجارية.",
+      "profileLabel": "ملفك المهني",
+      "profile_importer": "مستورد",
+      "profile_exporter": "مُصدّر",
+      "profile_both": "مستورد ومُصدّر",
+      "profile_wholesaler": "بائع بالجملة",
+      "profile_retailer": "بائع بالتجزئة"
     }
   },
   "commerce": {

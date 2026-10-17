@@ -7581,7 +7581,13 @@
       "reassurance": "Gratuit, sans carte bancaire, vos donnees restent les votres",
       "backHome": "Retour a l'accueil",
       "metaTitle": "Trade, configurez votre entreprise en quelques minutes",
-      "metaDescription": "Trade, le point d'entree du Leopardo Business OS : choisissez import/export ou marche local, configurez votre entreprise, activez vos modules et lancez votre premiere operation."
+      "metaDescription": "Trade, le point d'entree du Leopardo Business OS : choisissez import/export ou marche local, configurez votre entreprise, activez vos modules et lancez votre premiere operation.",
+      "profileLabel": "Votre profil",
+      "profile_importer": "Importateur",
+      "profile_exporter": "Exportateur",
+      "profile_both": "Importateur & exportateur",
+      "profile_wholesaler": "Grossiste",
+      "profile_retailer": "Détaillant"
     }
   },
   "commerce": {

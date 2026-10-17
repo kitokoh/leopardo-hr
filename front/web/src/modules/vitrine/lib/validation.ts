@@ -89,6 +89,13 @@ export function signupFormSchema(locale: AppLocale) {
     modules: z.array(z.string().max(40)).max(20).optional(),
     // #7235 — Métier vertical (code du catalogue de solutions).
     solutions: z.array(z.string().max(40)).max(20).optional(),
+    // BOS-O-01 / #8625 — intention de marché du point d'entrée « Trade ».
+    // Optionnelle : un visiteur venu par un autre parcours n'en a pas, et
+    // l'API accepte l'absence (NULL) plutôt que d'inventer un marché.
+    market_type: z.enum(['international', 'domestic']).optional(),
+    trade_profile: z
+      .enum(['importer', 'exporter', 'both', 'wholesaler', 'retailer'])
+      .optional(),
   });
 }
 
