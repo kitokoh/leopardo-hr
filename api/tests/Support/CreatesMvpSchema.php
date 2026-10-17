@@ -1392,6 +1392,37 @@ trait CreatesMvpSchema
 
     private function createPostSprintModuleTables(): void
     {
+        // REST-OS-1/2 (#8603/#8604) — travaux d'impression thermique du Restaurant
+        // OS : miroir de la migration tenant 2026_10_16_140001 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('restaurant_print_jobs'))) {
+            Schema::create($this->moduleTable('restaurant_print_jobs'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+
+                $table->unsignedBigInteger('branch_id');
+                $table->unsignedBigInteger('order_id');
+                $table->string('ticket_kind', 20)->default('kitchen');
+                $table->unsignedInteger('revision')->default(1);
+                $table->string('status', 20)->default('pending');
+                $table->unsignedInteger('attempts')->default(0);
+                $table->string('printer_ref', 120)->nullable();
+                $table->text('last_error')->nullable();
+                $table->string('payload_hash', 64)->nullable();
+                $table->timestamp('claimed_at')->nullable();
+                $table->timestamp('printed_at')->nullable();
+                $table->timestamp('failed_at')->nullable();
+
+                $table->timestamps();
+
+                $table->unique(
+                    ['company_id', 'order_id', 'ticket_kind', 'revision'],
+                    'restaurant_print_jobs_company_order_kind_revision_unique'
+                );
+                $table->index(['company_id', 'branch_id'], 'restaurant_print_jobs_company_branch_idx');
+                $table->index(['company_id', 'status'], 'restaurant_print_jobs_company_status_idx');
+            });
+        }
+
         // Issue #7641 (ménage garde #5443, régression amont mergee sur main) —
         // clés API distributeur travel : miroir migration 7641.
         if (! Schema::hasTable($this->moduleTable('travel_distributor_keys'))) {
