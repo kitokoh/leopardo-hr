@@ -312,6 +312,7 @@ return [
     // #7268 — Onboarding : messages d'étape localisés (fin des littéraux en dur)
     'ONBOARDING_STEP_REQUIRED' => 'Cette étape est obligatoire et ne peut pas être ignorée.',
     'ONBOARDING_STEP_NOT_DONE' => 'Cette étape ne peut pas être marquée terminée : aucune action correspondante constatée.',
+    'ONBOARDING_STEP_NOT_FOUND' => "Cette étape n'existe pas pour votre espace.",
     'COMPANY_CONTEXT_REQUIRED' => 'Un contexte d\'entreprise est requis.',
     // #7322 — Auto-activation d'un module horizontal par le client.
     'SOLO_TEAM_TOOL_NOT_AVAILABLE' => 'Outil d\'équipe hors du socle d\'un profil indépendant : :module.',
