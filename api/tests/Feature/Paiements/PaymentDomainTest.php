@@ -64,8 +64,9 @@ class PaymentDomainTest extends TestCase
 
         // Aucune colonne de solde ne doit exister : le solde est une vue du
         // journal, pas un etat a maintenir.
+        /** @var list<object{column_name: string}> $columns */
         $columns = DB::select("SELECT column_name FROM information_schema.columns WHERE table_name = 'payment_wallets'");
-        $names = array_map(static fn ($c): string => (string) $c->column_name, $columns);
+        $names = array_map(static fn (object $c): string => $c->column_name, $columns);
 
         $this->assertNotContains('balance', $names);
         $this->assertNotContains('cached_balance', $names);
@@ -158,7 +159,7 @@ class PaymentDomainTest extends TestCase
         $this->assertSame($before, PaymentLedgerEntry::query()->count());
     }
 
-    public function test_ledger_entries_are_immutable_on_update_and_delete(): void
+    public function test_ledger_entry_cannot_be_updated(): void
     {
         $a = $this->payments->walletFor((string) $this->company->id, WalletOwnerType::Platform, 'platform', 'DZD');
         $b = $this->payments->walletFor((string) $this->company->id, WalletOwnerType::Tenant, 'tenant-z', 'DZD');
@@ -167,22 +168,28 @@ class PaymentDomainTest extends TestCase
 
         $entry = PaymentLedgerEntry::query()->forGroup($groupId)->firstOrFail();
 
-        try {
-            $entry->amount = 999_999;
-            $entry->save();
-            $this->fail('Une ecriture de ledger ne doit jamais pouvoir etre modifiee.');
-        } catch (ImmutableLedgerEntryException) {
-            // attendu
-        }
+        // Le garde `saving` du modele refuse toute modification d'une ligne
+        // persistee : une correction passe par une contre-passation.
+        $this->expectException(ImmutableLedgerEntryException::class);
 
-        try {
-            $entry->delete();
-            $this->fail('Une ecriture de ledger ne doit jamais pouvoir etre supprimee.');
-        } catch (ImmutableLedgerEntryException) {
-            // attendu
-        }
+        $entry->amount = 999_999;
+        $entry->save();
+    }
 
-        $this->assertSame(1_000, (int) $entry->fresh()->amount);
+    public function test_ledger_entry_cannot_be_deleted(): void
+    {
+        $a = $this->payments->walletFor((string) $this->company->id, WalletOwnerType::Platform, 'platform', 'DZD');
+        $b = $this->payments->walletFor((string) $this->company->id, WalletOwnerType::Tenant, 'tenant-z', 'DZD');
+
+        $groupId = $this->ledger->post((string) $this->company->id, (int) $a->id, (int) $b->id, 1_000, 'DZD');
+
+        $entry = PaymentLedgerEntry::query()->forGroup($groupId)->firstOrFail();
+
+        // Le garde `deleting` refuse toute suppression : le journal est
+        // append-only, une erreur se compense, elle ne disparait pas.
+        $this->expectException(ImmutableLedgerEntryException::class);
+
+        $entry->delete();
     }
 
     public function test_reversal_restores_previous_balance_and_keeps_both_groups(): void

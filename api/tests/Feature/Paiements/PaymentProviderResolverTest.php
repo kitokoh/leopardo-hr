@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Paiements;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Paiements\Domain\Enums\ProviderInstanceStatus;
 use App\Modules\Paiements\Domain\Exceptions\ProviderNotResolvableException;
 use App\Modules\Paiements\Domain\Models\PaymentFeeRule;
 use App\Modules\Paiements\Domain\Models\PaymentProviderInstance;
@@ -45,6 +46,9 @@ class PaymentProviderResolverTest extends TestCase
         $this->fees = app(FeeRuleResolver::class);
     }
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     private function makeInstance(array $attributes = []): PaymentProviderInstance
     {
         /** @var PaymentProviderInstance $instance */
@@ -137,10 +141,10 @@ class PaymentProviderResolverTest extends TestCase
 
         // Bascule : A desactivee, B activee — meme type, aucune modification
         // de code, aucun deploiement.
-        $instanceA->status = 'inactive';
+        $instanceA->status = ProviderInstanceStatus::Inactive;
         $instanceA->save();
 
-        $instanceB->status = 'active';
+        $instanceB->status = ProviderInstanceStatus::Active;
         $instanceB->save();
 
         $resolved = $this->resolver->resolve('DZ', 'DZD', (string) $this->company->id);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Paiements\Infrastructure\Services;
 
+use App\Modules\Paiements\Domain\Contracts\PaymentOperationsInterface;
 use App\Modules\Paiements\Domain\DTOs\CashInRequest;
 use App\Modules\Paiements\Domain\DTOs\CashOutRequest;
 use App\Modules\Paiements\Domain\Enums\PaymentTransactionStatus;
@@ -35,7 +36,7 @@ use Illuminate\Support\Facades\DB;
  *    `ProviderResolver` + `ProviderTypeRegistry`. Le simulateur et un futur
  *    fournisseur reel empruntent le meme code.
  */
-class PaymentService
+class PaymentService implements PaymentOperationsInterface
 {
     public function __construct(
         private readonly LedgerService $ledger,

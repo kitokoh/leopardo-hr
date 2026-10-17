@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Paiements\Providers;
 
+use App\Modules\Paiements\Domain\Contracts\PaymentOperationsInterface;
 use App\Modules\Paiements\Infrastructure\Services\FeeRuleResolver;
 use App\Modules\Paiements\Infrastructure\Services\LedgerService;
 use App\Modules\Paiements\Infrastructure\Services\PaymentService;
@@ -33,6 +34,10 @@ class PaiementsServiceProvider extends ServiceProvider
         $this->app->singleton(FeeRuleResolver::class);
         $this->app->singleton(ReconciliationService::class);
         $this->app->singleton(PaymentService::class);
+
+        // Inversion de dependance : la couche Application depend de l'interface
+        // du Domain, jamais de l'implementation Infrastructure.
+        $this->app->alias(PaymentService::class, PaymentOperationsInterface::class);
     }
 
     public function boot(): void

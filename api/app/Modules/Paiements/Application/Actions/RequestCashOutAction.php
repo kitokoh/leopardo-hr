@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Paiements\Application\Actions;
 
+use App\Modules\Paiements\Domain\Contracts\PaymentOperationsInterface;
 use App\Modules\Paiements\Domain\Enums\WalletOwnerType;
 use App\Modules\Paiements\Domain\Models\PaymentTransaction;
-use App\Modules\Paiements\Infrastructure\Services\PaymentService;
 
 /**
  * BC-38 PAIEMENTS (#8691) — cas d'usage : demande de retrait d'un tenant.
@@ -18,7 +18,7 @@ use App\Modules\Paiements\Infrastructure\Services\PaymentService;
  */
 final class RequestCashOutAction
 {
-    public function __construct(private readonly PaymentService $payments) {}
+    public function __construct(private readonly PaymentOperationsInterface $payments) {}
 
     public function execute(
         string $companyId,

@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 /**
  * BC-38 PAIEMENTS (#8680) — wallet d'un proprietaire (plateforme, tenant, client).
@@ -65,8 +64,10 @@ class Wallet extends Model
      */
     public function balance(): int
     {
+        // Agregation via le modele du Domain (pas de facade Laravel ici : le
+        // Domain ne depend que de lui-meme, regle de purete des couches #6568).
         /** @var object{credits: int|string, debits: int|string}|null $row */
-        $row = DB::table('payment_ledger_entries')
+        $row = PaymentLedgerEntry::query()
             ->where('wallet_id', $this->id)
             ->selectRaw(
                 'COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) AS credits,'
