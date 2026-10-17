@@ -25,6 +25,8 @@ use App\Modules\Marketing\Providers\MarketingServiceProvider;
 use App\Modules\Notification\Providers\NotificationServiceProvider;
 use App\Modules\Onboarding\Providers\OnboardingServiceProvider;
 use App\Modules\Payroll\Providers\PayrollServiceProvider;
+// BC-38 PAIEMENTS (#8680) — socle de paiement interne + registre de fournisseurs.
+use App\Modules\Paiements\Providers\PaiementsServiceProvider;
 use App\Modules\Pharmacy\Providers\PharmacyServiceProvider;
 use App\Modules\Planning\Providers\PlanningServiceProvider;
 use App\Modules\Platform\Providers\PlatformServiceProvider;
@@ -91,4 +93,7 @@ return [
     // BC-34 VTC (VTC-01/#8357) — verticale VTC/taxi : enregistre le manifest
     // `vtc` au catalogue des solutions (module requis : geo).
     VtcServiceProvider::class,
+    // BC-38 PAIEMENTS (#8680) — socle de paiement interne : registre des types
+    // de fournisseur (code) + services ledger / resolver / reconciliation.
+    PaiementsServiceProvider::class,
 ];
