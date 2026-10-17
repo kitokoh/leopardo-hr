@@ -19,6 +19,7 @@ const sampleBranding: TenantBranding = {
   logo_url: 'https://cdn.example/logo.png',
   primary_color: '#155e75',
   accent_color: '#67e8f9',
+  primary_color_foreground: '#FFFFFF',
   brand_mode: 'default',
 };
 
@@ -102,5 +103,51 @@ describe('clearTenantBrandingCache', () => {
     } finally {
       window.removeEventListener(TENANT_BRANDING_EVENT, listener);
     }
+  });
+});
+
+/**
+ * BOS-B-01 — `primary_color_foreground` (couleur de texte lisible calculée
+ * côté serveur, WCAG 2.1) doit survivre au cache : sans elle, le shell ne
+ * peut pas poser `--tenant-on-primary` et un `primary_color` clair rend le
+ * libellé des boutons illisible.
+ */
+describe('primary_color_foreground (BOS-B-01)', () => {
+  it('persiste la couleur de texte fournie par le serveur', () => {
+    storeTenantBranding(sampleBranding);
+    expect(readCachedTenantBranding()?.primary_color_foreground).toBe('#FFFFFF');
+  });
+
+  it('accepte un cache antérieur sans le champ (rétro-compatibilité)', () => {
+    const legacy = {
+      display_name: 'TechCorp',
+      logo_url: null,
+      primary_color: '#155e75',
+      accent_color: '#67e8f9',
+      brand_mode: 'default',
+    };
+    window.localStorage.setItem(TENANT_BRANDING_STORAGE_KEY, JSON.stringify(legacy));
+    const read = readCachedTenantBranding();
+    expect(read).not.toBeNull();
+    expect(read?.primary_color_foreground).toBeUndefined();
+  });
+
+  it('normalise un champ absent en null à l\'écriture', () => {
+    storeTenantBranding({
+      display_name: 'TechCorp',
+      logo_url: null,
+      primary_color: '#155e75',
+      accent_color: '#67e8f9',
+      brand_mode: 'default',
+    });
+    expect(readCachedTenantBranding()?.primary_color_foreground).toBeNull();
+  });
+
+  it('rejette un champ de type invalide (cache jamais pollué)', () => {
+    window.localStorage.setItem(
+      TENANT_BRANDING_STORAGE_KEY,
+      JSON.stringify({ ...sampleBranding, primary_color_foreground: 42 }),
+    );
+    expect(readCachedTenantBranding()).toBeNull();
   });
 });
