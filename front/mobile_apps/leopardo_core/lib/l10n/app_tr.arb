@@ -6137,6 +6137,8 @@
   "softwarePilot": "Pilot erişim iste",
   "softwareSoon": "Çok yakında",
   "softwareOfflinebadge": "Çevrimdışı çalışır",
+  "softwareOfflinebadgeverified": "Çevrimdışı doğrulandı",
+  "softwareOfflineimplementedhint": "Çevrimdışı kuyruk bağlı — ağ kesintisi senaryosu henüz CI'da yeniden oynatılmadı",
   "softwareQraria": "Kurulum QR kodunu göster",
   "softwareQrtitle": "Bu cihaza kur",
   "softwareQrhint": "Donatılacak cihazla taratın: kurulum bağlantısı doğrudan açılır.",
