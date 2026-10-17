@@ -1,0 +1,145 @@
+{
+  "$schema": "./dev-stacks.schema.md",
+  "version": 1,
+  "tier": "dev",
+  "description": "Registre des stacks du tier DEV (épic #8659). Une stack = un ensemble complet {API Render + DB Neon + KV + front Vercel + admin Pages} hébergé sur UN jeu de comptes distinct. La PROD est hors de ce registre (render.prod.yaml, deploy-prod.yml — inchangée). Source de vérité humaine ; les pointeurs runtime vivent dans les variables du dépôt (DEV_ACTIVE_STACK, DEV_API_BASE_URL...) synchronisées par scripts/dev-stack-switch.sh.",
+  "active_stack": "a",
+  "updated_at": "2026-10-17",
+  "stacks": {
+    "a": {
+      "status": "suspended",
+      "status_note": "Render suspenders=[billing] constaté 2026-10-17 (quota 750 h/mois épuisé, service down depuis 2026-09-20). Repasse à ready au reset mensuel ou après upgrade — vérifier avec scripts/dev-stack-health.sh.",
+      "accounts": {
+        "render": "africanovatech",
+        "neon": "compte principal (projet leopardorh)",
+        "vercel": "africanovatech",
+        "cloudflare": "compte principal"
+      },
+      "api": {
+        "provider": "render",
+        "service_id": "srv-d7dro8u7r5hc73a395pg",
+        "service_name": "gestionemployerBackend",
+        "region": "frankfurt",
+        "plan": "free",
+        "base_url": "https://gestionemployerbackend.onrender.com/api/v1",
+        "health_url": "https://gestionemployerbackend.onrender.com/api/v1/health",
+        "deploy_hook_secret": "RENDER_DEPLOY_HOOK_URL"
+      },
+      "db": {
+        "provider": "neon",
+        "project": "leopardorh",
+        "host": "ep-odd-morning-abt600ow.eu-west-2.aws.neon.tech",
+        "region": "eu-west-2",
+        "plan": "free"
+      },
+      "kv": {
+        "provider": "render-kv",
+        "name": "leopardoai",
+        "region": "frankfurt",
+        "plan": "free",
+        "note": "CACHE_STORE/SESSION_DRIVER déclarés file ; le probe d'entrypoint bascule sur redis si joignable (voir render.yaml)."
+      },
+      "web": {
+        "provider": "vercel",
+        "url": "https://gestionemployer-backend.vercel.app",
+        "project": "gestionemployer-backend"
+      },
+      "admin": {
+        "provider": "cloudflare-pages",
+        "url": "https://leo-admin.pages.dev",
+        "project": "leo-admin"
+      }
+    },
+    "b": {
+      "status": "planned",
+      "status_note": "Comptes à créer par le propriétaire, puis suivre docs/ops/DEV_STACK_ROTATION.md § Onboarding stack B/C (blueprint render.dev-b.yaml prêt à importer).",
+      "accounts": {
+        "render": "À CRÉER (compte dédié stack B)",
+        "neon": "À CRÉER",
+        "vercel": "À CRÉER",
+        "cloudflare": "À CRÉER (optionnel)"
+      },
+      "api": {
+        "provider": "render",
+        "service_id": null,
+        "service_name": "leopardo-dev-b",
+        "region": "frankfurt",
+        "plan": "free",
+        "base_url": null,
+        "health_url": null,
+        "deploy_hook_secret": "RENDER_DEPLOY_HOOK_URL_STACK_B"
+      },
+      "db": {
+        "provider": "neon",
+        "project": null,
+        "host": null,
+        "region": "eu-west-2",
+        "plan": "free"
+      },
+      "kv": {
+        "provider": "render-kv",
+        "name": null,
+        "plan": "free"
+      },
+      "web": {
+        "provider": "vercel",
+        "url": null,
+        "project": null
+      },
+      "admin": {
+        "provider": "cloudflare-pages",
+        "url": null,
+        "project": null
+      }
+    },
+    "c": {
+      "status": "planned",
+      "status_note": "Troisième rotation (optionnelle) — même procédure que B.",
+      "accounts": {
+        "render": "À CRÉER (compte dédié stack C)",
+        "neon": "À CRÉER",
+        "vercel": "À CRÉER",
+        "cloudflare": "À CRÉER (optionnel)"
+      },
+      "api": {
+        "provider": "render",
+        "service_id": null,
+        "service_name": "leopardo-dev-c",
+        "region": "frankfurt",
+        "plan": "free",
+        "base_url": null,
+        "health_url": null,
+        "deploy_hook_secret": "RENDER_DEPLOY_HOOK_URL_STACK_C"
+      },
+      "db": {
+        "provider": "neon",
+        "project": null,
+        "host": null,
+        "region": "eu-west-2",
+        "plan": "free"
+      },
+      "kv": {
+        "provider": "render-kv",
+        "name": null,
+        "plan": "free"
+      },
+      "web": {
+        "provider": "vercel",
+        "url": null,
+        "project": null
+      },
+      "admin": {
+        "provider": "cloudflare-pages",
+        "url": null,
+        "project": null
+      }
+    }
+  },
+  "status_enum": {
+    "active": "Stack pointée par DEV_API_BASE_URL — reçoit le trafic dev et le keepalive.",
+    "ready": "Stack provisionnée, saine, déployée sur main — bascule possible immédiate.",
+    "degraded": "Provisionnée mais malade (healthcheck KO) — pas de bascule vers elle.",
+    "suspended": "Suspendue par le fournisseur (quota/billing) — documentée dans status_note.",
+    "planned": "Comptes non créés — placeholder de rotation."
+  }
+}
