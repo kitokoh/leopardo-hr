@@ -198,7 +198,7 @@ class TravelTripController extends Controller
 
             if ($assessment['compatible'] !== true) {
                 return response()->json([
-                    'message' => 'Changement de véhicule refusé : des réservations occupent des sièges au-delà de la capacité du véhicule cible.',
+                    'message' => 'Changement de vehicule refuse : des reservations occupent des sieges au-dela de la capacite du vehicule cible.',
                     'data' => $assessment,
                 ], 409);
             }

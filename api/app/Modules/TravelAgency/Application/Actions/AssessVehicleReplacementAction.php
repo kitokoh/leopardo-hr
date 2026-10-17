@@ -52,7 +52,35 @@ final class AssessVehicleReplacementAction
      *         seat_number: int,
      *         severity: string,
      *         booking_reference: string|null
-     *     }>
+     *     }>,
+     *     error?: string
+     * }
+     *
+     * Bloquant = siège réservé/vendu au-delà de la capacité ; avertissement =
+     * siège libre/bloqué au-delà. Véhicule inconnu → refus fail-closed
+     * (`error: vehicle_not_found`).
+     */
+    public function execute(TravelTrip $trip, ?int $targetVehicleId): array
+    {
+        return $this->assess($trip, $targetVehicleId);
+    }
+
+    /**
+     * Évalue un changement de véhicule sans rien écrire (cœur du calcul).
+     *
+     * @return array{
+     *     compatible: bool,
+     *     current_vehicle_id: int|null,
+     *     target_vehicle_id: int|null,
+     *     target_capacity: int,
+     *     trip_total_seats: int,
+     *     conflicts: list<array{
+     *         type: string,
+     *         seat_number: int,
+     *         severity: string,
+     *         booking_reference: string|null
+     *     }>,
+     *     error?: string
      * }
      */
     public function assess(TravelTrip $trip, ?int $targetVehicleId): array
