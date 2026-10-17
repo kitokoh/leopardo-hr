@@ -4615,6 +4615,147 @@ paths:
             text/plain:
               schema:
                 type: string
+  /public/discover:
+    get:
+      tags:
+      - Discovery
+      summary: Decouverte publique cross-verticale Leopardo.com (SUPERAPP-P0, #8611)
+      description: >-
+        Point d'entree NEUTRE de la plateforme grand public : agrege les
+        entites PUBLIEES de plusieurs verticales (restaurants, hebergements,
+        vitrines) via les providers du contrat `PublicDiscoverableProvider`.
+        Route isolee sans authentification (throttle `shop-public`), patron
+        BC-27/BC-28. Invariants : fail-closed par provider (`is_public` /
+        `status=published`, societe ni suspendue ni expiree, feature verticale
+        active) ; DTO public strict (jamais d'id interne, de company_id ni de
+        donnee RH/commerciale) ; deduplication `(type, slug)` ; `?near=lat,lng`
+        ne retient que les entites geolocalisees dans `radius_km`, triees par
+        distance croissante via le core geo. Un `?type=` inconnu renvoie 422
+        (jamais de filtre silencieux). `per_page` borne a 50.
+      security: []
+      parameters:
+      - name: q
+        in: query
+        required: false
+        description: Recherche texte sur le nom et la description publique.
+        schema:
+          type: string
+          maxLength: 120
+      - name: city
+        in: query
+        required: false
+        description: Filtre ville (insensible a la casse en PostgreSQL).
+        schema:
+          type: string
+          maxLength: 120
+      - name: type
+        in: query
+        required: false
+        description: Type canonique de provider (`restaurant`, `hospitality_property`, `showcase`). Valeur inconnue -> 422.
+        schema:
+          type: string
+      - name: near
+        in: query
+        required: false
+        description: Point de recherche `lat,lng`. Seules les entites geolocalisees dans le rayon sont retenues.
+        schema:
+          type: string
+          example: '36.7538,3.0588'
+      - name: radius_km
+        in: query
+        required: false
+        description: Rayon de proximite en kilometres (0.1 a 50, defaut 10).
+        schema:
+          type: number
+          format: float
+          minimum: 0.1
+          maximum: 50
+      - name: per_page
+        in: query
+        required: false
+        description: Taille de page (1 a 50, defaut 20).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+      - name: page
+        in: query
+        required: false
+        description: Numero de page (a partir de 1).
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Entites publiques agregees (data[]) et metadonnees de pagination (meta)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        slug:
+                          type: string
+                        name:
+                          type: string
+                        category:
+                          type: string
+                          nullable: true
+                        city:
+                          type: string
+                          nullable: true
+                        country:
+                          type: string
+                          nullable: true
+                        description:
+                          type: string
+                          nullable: true
+                        image_url:
+                          type: string
+                          nullable: true
+                        latitude:
+                          type: number
+                          format: float
+                          nullable: true
+                        longitude:
+                          type: number
+                          format: float
+                          nullable: true
+                        distance_km:
+                          type: number
+                          format: float
+                          nullable: true
+                        url:
+                          type: string
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      per_page:
+                        type: integer
+                      page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      types:
+                        type: array
+                        items:
+                          type: string
+                      radius_km:
+                        type: number
+                        format: float
+                        nullable: true
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
   /showcase:
     get:
       tags:

@@ -59,7 +59,6 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureCon
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyRequestController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsController;
-use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicDiscoveryController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformEmailTemplateController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformFeatureKillSwitchController;
@@ -74,6 +73,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformTeamController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUsersController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicDiscoveryController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportedCountryController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;

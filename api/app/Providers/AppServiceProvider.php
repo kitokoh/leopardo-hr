@@ -18,12 +18,14 @@ use App\Core\Notifications\Contracts\InAppNotifier;
 use App\Core\Privacy\Infrastructure\Services\PiiRegistry;
 use App\Core\Tenant\TenantManager;
 use App\Modules\Billing\Domain\Enums\PlanCode;
-use App\Shared\Contracts\Geo\GeoServiceContract;
-use App\Shared\Discovery\PublicDiscoveryService;
 use App\Modules\HR\Infrastructure\Services\PiiLifecycleService;
 use App\Modules\Notification\Infrastructure\Services\InAppNotifierAdapter;
 use App\Modules\Payroll\Infrastructure\Services\IslamicCalendarService;
 use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
+use App\Shared\Contracts\Discovery\PublicDiscoverableProvider;
+use App\Shared\Contracts\Geo\GeoServiceContract;
+use App\Shared\Discovery\PublicDiscoveryService;
+use Illuminate\Contracts\Foundation\Application;
 use App\Policies\CrmDashboardPolicy;
 use App\Policies\CrmSearchPolicy;
 use App\Policies\CrmTaskPolicy;
@@ -52,9 +54,12 @@ class AppServiceProvider extends ServiceProvider
         // lecture seule (aucune table, aucune migration). Chaque verticale
         // fournit son provider tague `public.discoverable` depuis son propre
         // ServiceProvider (inversion de dependance, garde d'isolation #5584).
-        $this->app->singleton(PublicDiscoveryService::class, function ($app): PublicDiscoveryService {
+        $this->app->singleton(PublicDiscoveryService::class, function (Application $app): PublicDiscoveryService {
+            /** @var iterable<PublicDiscoverableProvider> $providers */
+            $providers = $app->tagged('public.discoverable');
+
             return new PublicDiscoveryService(
-                $app->tagged('public.discoverable'),
+                $providers,
                 $app->make(GeoServiceContract::class),
             );
         });

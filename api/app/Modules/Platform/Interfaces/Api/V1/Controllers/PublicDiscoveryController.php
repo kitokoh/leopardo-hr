@@ -28,7 +28,7 @@ class PublicDiscoveryController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        /** @var array<string, mixed> $filters */
+        /** @var array{q?: string, city?: string, type?: string, near?: string, radius_km?: float|int|string, per_page?: int|string, page?: int|string} $filters */
         $filters = $request->validate([
             'q' => ['sometimes', 'string', 'max:120'],
             'city' => ['sometimes', 'string', 'max:120'],

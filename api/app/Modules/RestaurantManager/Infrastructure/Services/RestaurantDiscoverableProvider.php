@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\RestaurantManager\Infrastructure\Services;
 
 use App\Shared\Contracts\Discovery\PublicDiscoverableProvider;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -41,49 +42,90 @@ final class RestaurantDiscoverableProvider implements PublicDiscoverableProvider
 
         $like = $this->isPostgres() ? 'ilike' : 'like';
 
-        if (isset($filters['q']) && is_string($filters['q']) && $filters['q'] !== '') {
-            $term = '%'.addcslashes($filters['q'], '%_\\').'%';
-            $query->where(function ($q) use ($like, $term): void {
-                $q->where('b.name', $like, $term)
-                    ->orWhere('b.public_description', $like, $term);
+        $term = $this->textFilter($filters['q'] ?? null);
+
+        if ($term !== null) {
+            $pattern = '%'.addcslashes($term, '%_\\').'%';
+            $query->where(function (Builder $q) use ($like, $pattern): void {
+                $q->where('b.name', $like, $pattern)
+                    ->orWhere('b.public_description', $like, $pattern);
             });
         }
 
-        if (isset($filters['city']) && is_string($filters['city']) && $filters['city'] !== '') {
-            $query->where('b.city', $like, addcslashes($filters['city'], '%_\\'));
+        $city = $this->textFilter($filters['city'] ?? null);
+
+        if ($city !== null) {
+            $query->where('b.city', $like, addcslashes($city, '%_\\'));
         }
 
         $limit = isset($filters['limit']) && is_numeric($filters['limit'])
             ? max(1, min(500, (int) $filters['limit']))
             : 200;
 
-        return $query->orderBy('b.name')->limit($limit)->get()->map(
-            fn (object $row): array => $this->toPublicItem($row)
-        )->all();
+        $items = [];
+
+        foreach ($query->orderBy('b.name')->limit($limit)->get() as $row) {
+            /** @var array<string, mixed> $rowArray */
+            $rowArray = (array) $row;
+            $items[] = $this->toPublicItem($rowArray);
+        }
+
+        return $items;
     }
 
     /**
+     * @param  array<string, mixed>  $row
      * @return array<string, mixed>
      */
-    private function toPublicItem(object $row): array
+    private function toPublicItem(array $row): array
     {
+        $slug = self::asString($row['slug'] ?? null) ?? '';
+
         return [
             'type' => $this->type(),
-            'slug' => (string) $row->slug,
-            'name' => (string) $row->name,
-            'category' => $row->category !== null ? (string) $row->category : null,
-            'city' => $row->city !== null ? (string) $row->city : null,
+            'slug' => $slug,
+            'name' => self::asString($row['name'] ?? null) ?? '',
+            'category' => self::asString($row['category'] ?? null),
+            'city' => self::asString($row['city'] ?? null),
             'country' => null,
-            'description' => $row->description !== null ? (string) $row->description : null,
-            'image_url' => $row->image_url !== null ? (string) $row->image_url : null,
-            'latitude' => $row->latitude !== null ? (float) $row->latitude : null,
-            'longitude' => $row->longitude !== null ? (float) $row->longitude : null,
+            'description' => self::asString($row['description'] ?? null),
+            'image_url' => self::asString($row['image_url'] ?? null),
+            'latitude' => self::asFloat($row['latitude'] ?? null),
+            'longitude' => self::asFloat($row['longitude'] ?? null),
             // Le client résout la fiche publique via SON annuaire vertical (slug).
-            'url' => '/public/restaurants/'.$row->slug,
+            'url' => '/public/restaurants/'.$slug,
         ];
     }
 
-    private function baseQuery()
+    /**
+     * Valeur texte non vide, sinon null (les filtres HTTP ne sont pas fiables).
+     */
+    private function textFilter(mixed $value): ?string
+    {
+        $text = self::asString($value);
+
+        return $text === null || $text === '' ? null : $text;
+    }
+
+    private static function asString(mixed $value): ?string
+    {
+        if (is_string($value)) {
+            return $value;
+        }
+
+        if (is_int($value) || is_float($value)) {
+            return (string) $value;
+        }
+
+        return null;
+    }
+
+    private static function asFloat(mixed $value): ?float
+    {
+        return is_numeric($value) ? (float) $value : null;
+    }
+
+    private function baseQuery(): Builder
     {
         $table = $this->isPostgres() ? 'shared_tenants.restaurant_branches' : 'restaurant_branches';
 

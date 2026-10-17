@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Showcase\Infrastructure\Services;
 
 use App\Shared\Contracts\Discovery\PublicDiscoverableProvider;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -37,45 +38,81 @@ final class ShowcaseDiscoverableProvider implements PublicDiscoverableProvider
 
         $like = $this->isPostgres() ? 'ilike' : 'like';
 
-        if (isset($filters['q']) && is_string($filters['q']) && $filters['q'] !== '') {
-            $query->where('c.name', $like, '%'.addcslashes($filters['q'], '%_\\').'%');
+        $term = $this->textFilter($filters['q'] ?? null);
+
+        if ($term !== null) {
+            $query->where('c.name', $like, '%'.addcslashes($term, '%_\\').'%');
         }
 
-        if (isset($filters['city']) && is_string($filters['city']) && $filters['city'] !== '') {
-            $query->where('c.city', $like, addcslashes($filters['city'], '%_\\'));
+        $city = $this->textFilter($filters['city'] ?? null);
+
+        if ($city !== null) {
+            $query->where('c.city', $like, addcslashes($city, '%_\\'));
         }
 
         $limit = isset($filters['limit']) && is_numeric($filters['limit'])
             ? max(1, min(500, (int) $filters['limit']))
             : 200;
 
-        return $query->orderBy('c.name')->limit($limit)->get()->map(
-            fn (object $row): array => $this->toPublicItem($row)
-        )->all();
+        $items = [];
+
+        foreach ($query->orderBy('c.name')->limit($limit)->get() as $row) {
+            /** @var array<string, mixed> $rowArray */
+            $rowArray = (array) $row;
+            $items[] = $this->toPublicItem($rowArray);
+        }
+
+        return $items;
     }
 
     /**
+     * @param  array<string, mixed>  $row
      * @return array<string, mixed>
      */
-    private function toPublicItem(object $row): array
+    private function toPublicItem(array $row): array
     {
+        $slug = self::asString($row['slug'] ?? null) ?? '';
+
         return [
             'type' => $this->type(),
-            'slug' => (string) $row->slug,
-            'name' => (string) $row->name,
-            'category' => $row->category !== null ? (string) $row->category : null,
-            'city' => $row->city !== null ? (string) $row->city : null,
-            'country' => $row->country !== null ? (string) $row->country : null,
+            'slug' => $slug,
+            'name' => self::asString($row['name'] ?? null) ?? '',
+            'category' => self::asString($row['category'] ?? null),
+            'city' => self::asString($row['city'] ?? null),
+            'country' => self::asString($row['country'] ?? null),
             'description' => null,
             'image_url' => null,
             // Vitrine sans géolocalisation : non retenue par une recherche `near`.
             'latitude' => null,
             'longitude' => null,
-            'url' => '/vitrine/'.$row->slug,
+            'url' => '/vitrine/'.$slug,
         ];
     }
 
-    private function baseQuery()
+    /**
+     * Valeur texte non vide, sinon null (les filtres HTTP ne sont pas fiables).
+     */
+    private function textFilter(mixed $value): ?string
+    {
+        $text = self::asString($value);
+
+        return $text === null || $text === '' ? null : $text;
+    }
+
+    private static function asString(mixed $value): ?string
+    {
+        if (is_string($value)) {
+            return $value;
+        }
+
+        if (is_int($value) || is_float($value)) {
+            return (string) $value;
+        }
+
+        return null;
+    }
+
+    private function baseQuery(): Builder
     {
         $table = $this->isPostgres() ? 'shared_tenants.company_showcases' : 'company_showcases';
 

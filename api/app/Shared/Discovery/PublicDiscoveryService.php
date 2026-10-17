@@ -71,9 +71,7 @@ final class PublicDiscoveryService
      */
     public function discover(array $filters): array
     {
-        $requestedType = isset($filters['type']) && is_string($filters['type']) && $filters['type'] !== ''
-            ? $filters['type']
-            : null;
+        $requestedType = $this->stringOrNull($filters['type'] ?? null);
 
         $types = $this->types();
 
@@ -84,9 +82,7 @@ final class PublicDiscoveryService
         $perPage = $this->boundedInt($filters['per_page'] ?? null, self::DEFAULT_PER_PAGE, self::MAX_PER_PAGE);
         $page = max(1, $this->boundedInt($filters['page'] ?? null, 1, PHP_INT_MAX));
 
-        $near = isset($filters['near']) && is_string($filters['near']) && $filters['near'] !== ''
-            ? $filters['near']
-            : null;
+        $near = $this->stringOrNull($filters['near'] ?? null);
 
         $center = $near !== null ? $this->parseNear($near) : null;
         $radiusKm = $this->resolveRadius($filters['radius_km'] ?? null);
@@ -105,7 +101,9 @@ final class PublicDiscoveryService
                 // Borne large par provider : la pagination finale est appliquée ici.
                 'limit' => self::MAX_PER_PAGE * 10,
             ]) as $item) {
-                $key = ($item['type'] ?? $provider->type()).'|'.($item['slug'] ?? '');
+                $itemType = is_string($item['type'] ?? null) ? $item['type'] : $provider->type();
+                $itemSlug = is_string($item['slug'] ?? null) ? $item['slug'] : '';
+                $key = $itemType.'|'.$itemSlug;
 
                 if ($key === '|' || isset($items[$key])) {
                     continue;
@@ -123,15 +121,18 @@ final class PublicDiscoveryService
         if ($center !== null) {
             $list = array_values(array_filter(
                 $list,
-                static fn (array $item): bool => isset($item['distance_km']) && $item['distance_km'] <= $radiusKm
+                static fn (array $item): bool => isset($item['distance_km']) && is_numeric($item['distance_km']) && (float) $item['distance_km'] <= $radiusKm
             ));
 
             usort($list, static function (array $a, array $b): int {
-                return ($a['distance_km'] ?? PHP_FLOAT_MAX) <=> ($b['distance_km'] ?? PHP_FLOAT_MAX);
+                return (float) $a['distance_km'] <=> (float) $b['distance_km'];
             });
         } else {
             usort($list, static function (array $a, array $b): int {
-                return strcasecmp((string) ($a['name'] ?? ''), (string) ($b['name'] ?? ''));
+                $na = is_string($a['name'] ?? null) ? $a['name'] : '';
+                $nb = is_string($b['name'] ?? null) ? $b['name'] : '';
+
+                return strcasecmp($na, $nb);
             });
         }
 
@@ -146,7 +147,7 @@ final class PublicDiscoveryService
         $paged = array_slice($list, $offset, $perPage);
 
         return [
-            'data' => array_values($paged),
+            'data' => $paged,
             'meta' => [
                 'total' => $total,
                 'per_page' => $perPage,
@@ -186,6 +187,14 @@ final class PublicDiscoveryService
         $item['distance_km'] = round($distance->meters / 1000.0, 2);
 
         return $item;
+    }
+
+    /**
+     * Valeur texte non vide, sinon null (les filtres HTTP ne sont pas fiables).
+     */
+    private function stringOrNull(mixed $value): ?string
+    {
+        return is_string($value) && $value !== '' ? $value : null;
     }
 
     /**
