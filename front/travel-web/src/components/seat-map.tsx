@@ -2,13 +2,13 @@
 
 import { useMemo } from "react";
 
+import { seatStatusLabel } from "@/lib/i18n";
+import { useLocale } from "@/lib/locale-provider";
 import {
   buildSeatMapLayout,
   countSeatsByStatus,
   isSeatSelectable,
   LEGEND_ORDER,
-  seatAriaLabel,
-  seatStatusLabel,
   type SeatInput,
   type SeatStatusValue,
 } from "@/lib/seat-layout";
@@ -23,6 +23,8 @@ import {
  *   doubles (`seatsPerRow`), dernière rangée partielle.
  * - États distinguables AUTREMENT que par la couleur : chaque siège porte un
  *   symbole + un `aria-label` texte, et la légende est en icône + libellé.
+ * - Tous les libellés passent par le catalogue i18n fr/en du front
+ *   (`dict.seats.*` via `seatStatusLabel`) — aucun texte utilisateur codé en dur.
  * - Le plan n'est JAMAIS la source de vérité : la disponibilité est revalidée
  *   côté serveur avant toute confirmation. Un siège occupé pendant la
  *   sélection est refusé (409) et le plan est rafraîchi.
@@ -53,6 +55,7 @@ export function SeatMap({
   showSummary = true,
   className,
 }: SeatMapProps) {
+  const { dict } = useLocale();
   const selectedSet = useMemo(() => new Set(selected), [selected]);
 
   // Projette l'état persisté + la sélection locale en un état de vue.
@@ -75,20 +78,14 @@ export function SeatMap({
   const freeSeats = counts.free ?? 0;
 
   return (
-    <section
-      className={className}
-      aria-label="Plan des sièges du véhicule"
-      data-testid="seat-map"
-    >
+    <section className={className} aria-label={dict.seats.mapLabel} data-testid="seat-map">
       {showSummary ? (
         <p className="mb-3 text-sm text-slate-600">
-          <strong>{freeSeats}</strong> place{freeSeats > 1 ? "s" : ""} libre
-          {freeSeats > 1 ? "s" : ""} sur <strong>{totalSeats}</strong>
+          <strong>{freeSeats}</strong> {dict.seats.freeOnTotal} <strong>{totalSeats}</strong>
           {selected.length > 0 ? (
             <>
               {" "}
-              — <strong>{selected.length}</strong> sélectionnée
-              {selected.length > 1 ? "s" : ""}
+              — <strong>{selected.length}</strong> {dict.seats.selectedCountLabel}
             </>
           ) : null}
         </p>
@@ -118,6 +115,7 @@ export function SeatMap({
               const status = cell.status as SeatStatusValue;
               const selectable = isSeatSelectable(status) && Boolean(onToggle);
               const isSelected = status === "selected";
+              const stateLabel = seatStatusLabel(dict, status);
 
               return (
                 <button
@@ -125,12 +123,12 @@ export function SeatMap({
                   type="button"
                   disabled={!selectable}
                   onClick={selectable ? () => onToggle?.(cell.seatNumber as number) : undefined}
-                  aria-label={seatAriaLabel(cell.seatNumber, status)}
+                  aria-label={`${dict.seats.seatLabel} ${cell.seatNumber}, ${stateLabel}`}
                   aria-pressed={isSelected}
                   title={
                     cell.bookingReference
-                      ? `${seatStatusLabel(status)} — ${cell.bookingReference}`
-                      : seatStatusLabel(status)
+                      ? `${stateLabel} — ${cell.bookingReference}`
+                      : stateLabel
                   }
                   className={[
                     "relative flex h-10 w-10 flex-col items-center justify-center rounded-md border text-[10px] font-semibold transition",
@@ -183,10 +181,12 @@ function seatStateClasses(status: SeatStatusValue): string {
 
 /** Légende accessible : symbole + libellé texte pour chaque état. */
 export function SeatMapLegend() {
+  const { dict } = useLocale();
+
   return (
     <ul
       className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-600"
-      aria-label="Légende des états de siège"
+      aria-label={dict.seats.legendTitle}
     >
       {LEGEND_ORDER.map((status) => (
         <li key={status} className="flex items-center gap-1.5">
@@ -199,7 +199,7 @@ export function SeatMapLegend() {
           >
             {status === "free" ? "1" : "•"}
           </span>
-          <span>{seatStatusLabel(status)}</span>
+          <span>{seatStatusLabel(dict, status)}</span>
         </li>
       ))}
     </ul>

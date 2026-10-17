@@ -5780,7 +5780,21 @@
       "active": "Aktif",
       "revoked": "İptal edildi",
       "expired": "Süresi doldu"
-    }
+    },
+    "travel.seats.summary.free": "boş koltuk / toplam",
+    "travel.seats.summary.selected": "seçili",
+    "travel.seats.legend.title": "Koltuk durumları",
+    "travel.seats.map.label": "Araç koltuk planı",
+    "travel.seats.state.free": "Boş",
+    "travel.seats.state.selected": "Seçili",
+    "travel.seats.state.held": "Rezervasyon sürüyor",
+    "travel.seats.state.reserved": "Rezerve",
+    "travel.seats.state.pendingPayment": "Ödeme bekliyor",
+    "travel.seats.state.sold": "Satıldı",
+    "travel.seats.state.blocked": "Bloke",
+    "travel.seats.state.unavailable": "Kullanılamaz",
+    "travel.seats.state.aisle": "Koridor",
+    "travel.seats.state.seat": "Koltuk"
   },
   "travelPortal": {
     "title": "Yolcu portalı",

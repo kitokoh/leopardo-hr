@@ -5780,7 +5780,21 @@
       "active": "Active",
       "revoked": "Revoked",
       "expired": "Expired"
-    }
+    },
+    "travel.seats.summary.free": "seat(s) free out of",
+    "travel.seats.summary.selected": "selected",
+    "travel.seats.legend.title": "Seat states",
+    "travel.seats.map.label": "Vehicle seat map",
+    "travel.seats.state.free": "Free",
+    "travel.seats.state.selected": "Selected",
+    "travel.seats.state.held": "Booking in progress",
+    "travel.seats.state.reserved": "Reserved",
+    "travel.seats.state.pendingPayment": "Payment pending",
+    "travel.seats.state.sold": "Sold",
+    "travel.seats.state.blocked": "Blocked",
+    "travel.seats.state.unavailable": "Unavailable",
+    "travel.seats.state.aisle": "Aisle",
+    "travel.seats.state.seat": "Seat"
   },
   "travelPortal": {
     "title": "Traveler portal",

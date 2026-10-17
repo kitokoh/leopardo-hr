@@ -5780,7 +5780,21 @@
       "active": "Active",
       "revoked": "Révoquée",
       "expired": "Expirée"
-    }
+    },
+    "travel.seats.summary.free": "place(s) libre(s) sur",
+    "travel.seats.summary.selected": "sélectionnée(s)",
+    "travel.seats.legend.title": "États des sièges",
+    "travel.seats.map.label": "Plan des sièges du véhicule",
+    "travel.seats.state.free": "Libre",
+    "travel.seats.state.selected": "Sélectionné",
+    "travel.seats.state.held": "Réservation en cours",
+    "travel.seats.state.reserved": "Réservé",
+    "travel.seats.state.pendingPayment": "Paiement en attente",
+    "travel.seats.state.sold": "Vendu",
+    "travel.seats.state.blocked": "Bloqué",
+    "travel.seats.state.unavailable": "Indisponible",
+    "travel.seats.state.aisle": "Couloir",
+    "travel.seats.state.seat": "Siège"
   },
   "travelPortal": {
     "title": "Portail voyageur",

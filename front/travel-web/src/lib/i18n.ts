@@ -105,6 +105,18 @@ const fr = {
     free: "Libre",
     selected: "Sélectionné",
     taken: "Indisponible",
+    held: "Réservation en cours",
+    reserved: "Réservé",
+    pendingPayment: "Paiement en attente",
+    sold: "Vendu",
+    blocked: "Bloqué",
+    unavailable: "Indisponible",
+    aisle: "Couloir",
+    legendTitle: "États des sièges",
+    mapLabel: "Plan des sièges du véhicule",
+    freeOnTotal: "place(s) libre(s) sur",
+    selectedCountLabel: "sélectionnée(s)",
+    seatLabel: "Siège",
     autoAssign: "Attribution automatique par l'agence",
     selectedCount: "sièges sélectionnés",
     seatWord: "Siège",
@@ -412,6 +424,18 @@ const en: Dict = {
     autoAssign: "Automatic assignment by the agency",
     selectedCount: "seats selected",
     seatWord: "Seat",
+    held: "Booking in progress",
+    reserved: "Reserved",
+    pendingPayment: "Payment pending",
+    sold: "Sold",
+    blocked: "Blocked",
+    unavailable: "Unavailable",
+    aisle: "Aisle",
+    legendTitle: "Seat states",
+    mapLabel: "Vehicle seat map",
+    freeOnTotal: "seat(s) free out of",
+    selectedCountLabel: "selected",
+    seatLabel: "Seat",
   },
   checkout: {
     title: "Your details",
@@ -667,4 +691,20 @@ export function statusLabel(dict: Dict, value: string | null | undefined): strin
     refunded: dict.status.refunded,
   };
   return map[value] ?? value;
+}
+
+/** Libellé humain d'un état de siège (plan de sièges, #8602). */
+export function seatStatusLabel(dict: Dict, status: string): string {
+  const map: Record<string, string> = {
+    free: dict.seats.free,
+    selected: dict.seats.selected,
+    held: dict.seats.held,
+    reserved: dict.seats.reserved,
+    pending_payment: dict.seats.pendingPayment,
+    sold: dict.seats.sold,
+    blocked: dict.seats.blocked,
+    unavailable: dict.seats.unavailable,
+    aisle: dict.seats.aisle,
+  };
+  return map[status] ?? status;
 }

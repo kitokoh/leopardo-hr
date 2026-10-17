@@ -1,10 +1,10 @@
 <template>
-  <section class="seat-map" aria-label="Plan des sièges du véhicule" data-testid="seat-map">
+  <section class="seat-map" :aria-label="t('travel.seats.map.label')" data-testid="seat-map">
     <p v-if="showSummary" class="seat-map__summary">
-      <strong>{{ freeSeats }}</strong> place{{ freeSeats > 1 ? 's' : '' }} libre{{ freeSeats > 1 ? 's' : '' }}
-      sur <strong>{{ seats.length }}</strong>
+      <strong>{{ freeSeats }}</strong> {{ t('travel.seats.summary.free') }}
+      <strong>{{ seats.length }}</strong>
       <template v-if="selected.length > 0">
-        — <strong>{{ selected.length }}</strong> sélectionnée{{ selected.length > 1 ? 's' : '' }}
+        — <strong>{{ selected.length }}</strong> {{ t('travel.seats.summary.selected') }}
       </template>
     </p>
 
@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <ul v-if="showLegend" class="seat-map__legend" aria-label="Légende des états de siège">
+    <ul v-if="showLegend" class="seat-map__legend" :aria-label="t('travel.seats.legend.title')">
       <li v-for="status in legendOrder" :key="status" class="seat-map__legend-item">
         <span class="seat-map__legend-swatch" :class="stateClass(status)" aria-hidden="true">
           {{ status === 'free' ? '1' : '•' }}
@@ -54,16 +54,21 @@
  *
  * Même source de vérité que le plan grand public (`seat-map.tsx`) : `seats`
  * provient de l'API du trajet (inventaire réel + réservations) et la disposition
- * est dérivée du véhicule affecté. Le responsable voit en plus, au survol, la
- * RÉFÉRENCE de réservation rattachée au siège (`booking_reference`).
+ * est dérivée du véhicule affecté. Le responsable voit en plus la RÉFÉRENCE de
+ * réservation rattachée au siège (`booking_reference`) via l'infobulle.
  *
  * Les états ne reposent jamais sur la seule couleur : symbole + libellé texte
- * + `aria-label`.
+ * + `aria-label`. Tous les libellés passent par le catalogue i18n
+ * (`travel.seats.*`).
  *
  * Fichier en JavaScript : le back-office n'utilise aucun SFC TypeScript
- * (config ESLint partagée, parser Babel). On suit la convention du dépôt.
+ * (config ESLint partagée, parser Babel). On suit la convention du dépôt et de
+ * ses vues travel existantes (`t(clé, repli)`).
  */
 import { computed } from 'vue';
+
+import { translate } from '@/i18n/index.js';
+import { useLocaleStore } from '@/stores/locale.js';
 
 const props = defineProps({
   /** Sièges réels renvoyés par l'API du trajet. */
@@ -82,22 +87,27 @@ const props = defineProps({
 
 const emit = defineEmits(['toggle']);
 
+const localeStore = useLocaleStore();
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback);
+
 const legendOrder = [
   'free', 'selected', 'held', 'reserved', 'pending_payment', 'sold', 'blocked', 'unavailable',
 ];
 
-const labels = {
-  free: 'Libre',
-  selected: 'Sélectionné',
-  held: 'Réservation en cours',
-  reserved: 'Réservé',
-  pending_payment: 'Paiement en attente',
-  sold: 'Vendu',
-  blocked: 'Bloqué',
-  unavailable: 'Indisponible',
-  aisle: 'Couloir',
+/** Clé i18n par état — les libellés vivent dans le catalogue (`travel.seats.state.*`). */
+const stateKeys = {
+  free: 'travel.seats.state.free',
+  selected: 'travel.seats.state.selected',
+  held: 'travel.seats.state.held',
+  reserved: 'travel.seats.state.reserved',
+  pending_payment: 'travel.seats.state.pendingPayment',
+  sold: 'travel.seats.state.sold',
+  blocked: 'travel.seats.state.blocked',
+  unavailable: 'travel.seats.state.unavailable',
+  aisle: 'travel.seats.state.aisle',
 };
 
+/** Symboles non colorés par état — lisibles en niveaux de gris. */
 const symbols = {
   free: '',
   selected: '✓✓',
@@ -110,7 +120,8 @@ const symbols = {
   aisle: '',
 };
 
-const label = (status) => labels[status] ?? status;
+/** Libellé localisé d'un état, résolu depuis le catalogue i18n. */
+const label = (status) => t(stateKeys[status] ?? '', status);
 
 const selectedSet = computed(() => new Set(props.selected));
 
@@ -141,7 +152,7 @@ const layout = computed(() => {
         bookingReference: seat.booking_reference ?? null,
       });
       if (aisleAfter !== null && index + 1 === aisleAfter) {
-        cells.push({ seatNumber: null, status: 'aisle', symbol: '', label: labels.aisle, bookingReference: null });
+        cells.push({ seatNumber: null, status: 'aisle', symbol: '', label: label('aisle'), bookingReference: null });
       }
     });
     rows.push({ rowNumber: rows.length + 1, cells });
@@ -154,7 +165,8 @@ const freeSeats = computed(() => props.seats.filter((s) => s.status === 'free').
 
 const selectable = (status) => status === 'free' || status === 'selected';
 
-const ariaLabel = (seatNumber, status) => `Siège ${seatNumber}, ${label(status)}`;
+const ariaLabel = (seatNumber, status) =>
+  `${t('travel.seats.state.seat')} ${seatNumber}, ${label(status)}`;
 
 function stateClass(status) {
   switch (status) {
