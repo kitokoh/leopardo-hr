@@ -68,6 +68,13 @@ final class FuelIncidentService
 
         $incident->forceFill([
             'assigned_to' => $assigneeId,
+            // CONTRADICTION DE TEST (non tranchee, issue #8578) : deux tests
+            // exigent des valeurs mutuellement exclusives pour CETTE operation.
+            //   - FuelIncidentApiTest:149 attend `in_progress` ;
+            //   - FuelIncidentApiTest:257 attend `assigned`.
+            // Aucune implementation ne peut satisfaire les deux. Le code
+            // conserve `in_progress` (etat metier expose dans STATUSES) ; le
+            // choix de `assigned` releve d'une decision produit.
             'status' => FuelIncident::STATUS_IN_PROGRESS,
         ])->save();
 

@@ -149,8 +149,16 @@ class FuelOutboxApiTest extends TestCase
             'external_id' => 'sale-003',
         ])->assertStatus(200);
 
-        // Aucun consommateur enregistré (le module Accounting branchera le
-        // sien) → dead-letter honnête, l'événement reste rejouable.
+        // Le module Accounting EST branche en production
+        // (FuelStationServiceProvider::boot enregistre
+        // FuelAccountingOutboxConsumer) : le registre reel repond donc `sent`.
+        // Ce test couvre le chemin dead-letter, qui reste un comportement de
+        // production legitime (aucun consommateur ne supporte le type
+        // d'evenement). On substitue donc un registre VIDE pour ce test
+        // uniquement, au lieu de supposer a tort qu'aucun consommateur n'est
+        // enregistre.
+        $this->app->instance(FuelOutboxConsumerRegistry::class, new FuelOutboxConsumerRegistry);
+
         $this->artisan('fuel:outbox-dispatch', ['--limit' => 10])
             ->expectsOutputToContain('1 événement(s) traité(s)')
             ->assertExitCode(0);
@@ -165,7 +173,8 @@ class FuelOutboxApiTest extends TestCase
     public function test_dispatch_with_registered_consumer_marks_sent(): void
     {
         $registry = new FuelOutboxConsumerRegistry;
-        $registry->register(new class implements FuelOutboxConsumer {
+        $registry->register(new class implements FuelOutboxConsumer
+        {
             public function supports(string $eventType): bool
             {
                 return true;
