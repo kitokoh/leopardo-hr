@@ -13,7 +13,9 @@ use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelPublicShopToken;
 use App\Modules\TravelAgency\Domain\Models\TravelRoute;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
+use App\Modules\TravelAgency\Domain\Enums\SeatStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
+use App\Modules\TravelAgency\Domain\Models\TravelTripSeat;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -172,6 +174,61 @@ class TravelMarketplaceApiTest extends TestCase
         // Trajet d'une agence non opt-in → 404 (aucune résolution de tenant).
         $this->getJson('/api/v1/public/travel/marketplace/trips/'.$hidden['trip']->id)
             ->assertStatus(404);
+    }
+
+    /**
+     * #8619 — Le détail public expose l'INVENTAIRE COMPLET : un plan de sièges
+     * n'est pas une liste de places libres. Les sièges occupés apparaissent
+     * avec leur état persisté, et aucune donnée personnelle / référence de
+     * réservation / identifiant de tenant ne fuit.
+     */
+    public function test_trip_detail_exposes_full_seat_inventory_without_pii_or_tenant_leak(): void
+    {
+        $agency = $this->agency('Agence Inventaire');
+        $fx = $this->publishedTrip($agency, 'Bafoussam', 'Douala');
+
+        app(TenantManager::class)->withinTenant($agency, function () use ($fx): void {
+            TravelTripSeat::query()->where('trip_id', $fx['trip']->id)->where('seat_number', 2)->update(['status' => SeatStatus::RESERVED->value]);
+            TravelTripSeat::query()->where('trip_id', $fx['trip']->id)->where('seat_number', 3)->update(['status' => SeatStatus::SOLD->value]);
+            TravelTripSeat::query()->where('trip_id', $fx['trip']->id)->where('seat_number', 4)->update(['status' => SeatStatus::BLOCKED->value]);
+            TravelTripSeat::query()->where('trip_id', $fx['trip']->id)->where('seat_number', 5)->update(['status' => SeatStatus::UNAVAILABLE->value]);
+        });
+
+        $response = $this->getJson('/api/v1/public/travel/marketplace/trips/'.$fx['trip']->id)
+            ->assertOk();
+
+        // L'inventaire complet est renvoyé : 12 lignes, pas 8.
+        $response->assertJsonCount(12, 'data.seats');
+
+        /** @var list<array{seat_number: int, status: string}> $seats */
+        $seats = $response->json('data.seats');
+        $byNumber = [];
+        foreach ($seats as $seat) {
+            $byNumber[$seat['seat_number']] = $seat['status'];
+        }
+
+        ksort($byNumber);
+
+        $this->assertSame([
+            1 => 'free',
+            2 => 'reserved',
+            3 => 'sold',
+            4 => 'blocked',
+            5 => 'unavailable',
+        ], array_intersect_key($byNumber, array_flip([1, 2, 3, 4, 5])));
+
+        // `available_seats` ne compte QUE les places libres (12 - 4 occupées).
+        $response->assertJsonPath('data.available_seats', 8);
+
+        // Aucune fuite : ni PII, ni référence de réservation, ni tenant.
+        foreach ($seats as $seat) {
+            $this->assertSame(['seat_number', 'status'], array_keys($seat));
+        }
+
+        $encoded = (string) $response->getContent();
+        $this->assertStringNotContainsString('booking_reference', $encoded);
+        $this->assertStringNotContainsString('company_id', $encoded);
+        $this->assertStringNotContainsString('vehicle_id', $encoded);
     }
 
     public function test_marketplace_booking_is_created_in_the_right_tenant_and_invisible_elsewhere(): void
