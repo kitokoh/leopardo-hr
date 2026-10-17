@@ -121,9 +121,11 @@ class TradeSurveyTest extends TestCase
         foreach ([['scope' => 'international'], ['scope' => 'domestic']] as $answers) {
             $result = $this->engine->suggest($this->survey, $answers);
 
-            self::assertSame('trade_workspace', $result['packages'][0]['key']);
-            self::assertArrayHasKey('required', $result['packages'][0]);
-            self::assertTrue($result['packages'][0]['required']);
+            $base = $result['packages'][0];
+            self::assertSame('trade_workspace', $base['key']);
+            // `required` doit valoir exactement `true` (et non etre absent) :
+            // l'espace de travail de base est toujours livre.
+            self::assertSame(true, $base['required'] ?? null);
         }
     }
 
