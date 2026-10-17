@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Platform\Application\Actions;
 
 use App\Core\Auth\Domain\Models\AuditLog;
+use App\Modules\Platform\Infrastructure\Services\GitHubDispatchClient;
 use App\Modules\Platform\Infrastructure\Services\StackRegistryService;
-use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
 /**
@@ -34,6 +34,7 @@ class PlatformStackSwitchAction
 
     public function __construct(
         private readonly StackRegistryService $registry,
+        private readonly GitHubDispatchClient $github,
     ) {}
 
     /**
@@ -65,30 +66,17 @@ class PlatformStackSwitchAction
             ];
         }
 
-        $token = (string) config('services.github_stack_switch.token', '');
-        $repository = (string) config('services.github_stack_switch.repository', 'kitokoh/leopardo-hr');
+        // Fail-closed : sans jeton, le client lève une RuntimeException que le
+        // contrôleur traduit en 503 — jamais de bascule silencieuse.
+        $dispatch = $this->github->dispatch(self::DISPATCH_EVENT, [
+            'tier' => $tier,
+            'stack' => $stack,
+            'source' => 'superadmin',
+            'requested_by' => $actorId,
+            'requested_at' => now()->toIso8601String(),
+        ]);
 
-        if ($token === '') {
-            // Fail-closed : sans jeton, on n'appelle rien. Cette exception est
-            // traduite en 503 par le contrôleur — jamais en bascule silencieuse.
-            throw new RuntimeException('GITHUB_STACK_SWITCH_TOKEN absent : bascule indisponible.');
-        }
-
-        $response = Http::withToken($token)
-            ->accept('application/json')
-            ->timeout(15)
-            ->post("https://api.github.com/repos/{$repository}/dispatches", [
-                'event_type' => self::DISPATCH_EVENT,
-                'client_payload' => [
-                    'tier' => $tier,
-                    'stack' => $stack,
-                    'source' => 'superadmin',
-                    'requested_by' => $actorId,
-                    'requested_at' => now()->toIso8601String(),
-                ],
-            ]);
-
-        if (! $response->successful()) {
+        if (! $dispatch['ok']) {
             return [
                 'ok' => false,
                 'reason' => 'dispatch_rejete',
@@ -98,7 +86,7 @@ class PlatformStackSwitchAction
                 // Le corps d'erreur GitHub est volontairement réduit : il peut
                 // contenir des indices sur le compte et n'apporte rien à l'opérateur.
                 'dispatch_id' => null,
-                'message' => __('platform.infra_dispatch_rejected', ['status' => $response->status()]),
+                'message' => __('platform.infra_dispatch_rejected', ['status' => $dispatch['status']]),
             ];
         }
 
@@ -124,7 +112,7 @@ class PlatformStackSwitchAction
             'tier' => $tier,
             'stack' => $stack,
             'previous' => $validation['active'],
-            'dispatch_id' => $response->status() === 204 ? null : $response->json('id'),
+            'dispatch_id' => $dispatch['id'],
             'message' => __('platform.infra_switch_dispatched'),
         ];
     }
