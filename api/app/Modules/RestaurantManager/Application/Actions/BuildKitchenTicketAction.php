@@ -38,7 +38,7 @@ final class BuildKitchenTicketAction
             }
 
             $lines[] = new KitchenTicketLine(
-                name: (string) ($item->product?->name ?? 'Article #'.$item->product_id),
+                name: (string) ($item->product->name ?? 'Article #'.$item->product_id),
                 quantity: $this->formatQuantity((float) $item->quantity),
             );
         }
@@ -48,7 +48,7 @@ final class BuildKitchenTicketAction
             orderId: (int) $order->id,
             reference: (string) $order->reference,
             branchId: (int) $order->branch_id,
-            branchName: (string) ($order->branch?->name ?? 'Restaurant'),
+            branchName: (string) ($order->branch->name ?? 'Restaurant'),
             orderType: $order->order_type,
             tableLabel: $order->table?->label,
             covers: $order->covers !== null ? (int) $order->covers : null,

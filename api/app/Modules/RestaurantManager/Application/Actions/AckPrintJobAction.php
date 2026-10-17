@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Application\Actions;
 
-use App\Modules\RestaurantManager\Domain\Enums\PrintJobStatus;
+use App\Modules\RestaurantManager\Domain\Contracts\RestaurantPrintJobRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPrintJob;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
-use Illuminate\Support\Facades\DB;
 
 /**
  * REST-OS-5 (Mission Leopardo Restaurant OS) — Accusé / échec d'un travail
@@ -20,6 +19,9 @@ use Illuminate\Support\Facades\DB;
  * Idempotence : acquitter un travail déjà terminal (`printed`/`cancelled`) ne
  * produit aucun effet (retour du travail inchangé) — un bridge qui rejoue son
  * accusé après une coupure réseau ne casse rien et ne double pas l'événement.
+ *
+ * Garde de pureté #6568 : aucune facade Laravel ici — les transitions d'état
+ * atomiques vivent dans le port de persistance.
  */
 final class AckPrintJobAction
 {
@@ -29,6 +31,7 @@ final class AckPrintJobAction
 
     public function __construct(
         private readonly RestaurantOutboxPublisher $outbox,
+        private readonly RestaurantPrintJobRepositoryInterface $jobs,
     ) {}
 
     /**
@@ -57,17 +60,11 @@ final class AckPrintJobAction
             return $job;
         }
 
-        $affected = DB::table('restaurant_print_jobs')
-            ->where('id', $job->id)
-            ->where('company_id', $job->company_id)
-            ->whereNotIn('status', [PrintJobStatus::PRINTED->value, PrintJobStatus::CANCELLED->value])
-            ->update([
-                'status' => PrintJobStatus::PRINTED->value,
-                'printed_at' => now(),
-                'last_error' => null,
-                'printer_ref' => $printerRef ?? $job->printer_ref,
-                'updated_at' => now(),
-            ]);
+        $affected = $this->jobs->markPrinted(
+            (int) $job->id,
+            (string) $job->company_id,
+            $printerRef ?? $job->printer_ref,
+        );
 
         $job->refresh();
 
@@ -99,16 +96,11 @@ final class AckPrintJobAction
             return $job;
         }
 
-        $affected = DB::table('restaurant_print_jobs')
-            ->where('id', $job->id)
-            ->where('company_id', $job->company_id)
-            ->whereNotIn('status', [PrintJobStatus::PRINTED->value, PrintJobStatus::CANCELLED->value])
-            ->update([
-                'status' => PrintJobStatus::FAILED->value,
-                'failed_at' => now(),
-                'last_error' => mb_substr($error, 0, 500),
-                'updated_at' => now(),
-            ]);
+        $affected = $this->jobs->markFailed(
+            (int) $job->id,
+            (string) $job->company_id,
+            $error,
+        );
 
         $job->refresh();
 
@@ -122,8 +114,9 @@ final class AckPrintJobAction
                     'ticket_kind' => $job->ticket_kind->value,
                     'revision' => $job->revision,
                     'attempts' => $job->attempts,
+                    'error' => $error,
                 ],
-                'print_job:failed:'.$job->id.':'.$job->attempts,
+                'print_job:failed:'.$job->id,
             );
         }
 

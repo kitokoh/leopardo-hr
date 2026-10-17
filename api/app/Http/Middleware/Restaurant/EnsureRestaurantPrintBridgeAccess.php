@@ -41,7 +41,8 @@ final class EnsureRestaurantPrintBridgeAccess
             abort(403, 'print_bridge_disabled');
         }
 
-        $configuredHash = (string) config('restaurantmanager.printing.bridge_token_hash', '');
+        $configured = config('restaurantmanager.printing.bridge_token_hash', '');
+        $configuredHash = is_string($configured) ? $configured : '';
 
         if ($configuredHash === '') {
             abort(403, 'print_bridge_not_configured');
@@ -69,7 +70,12 @@ final class EnsureRestaurantPrintBridgeAccess
         // Statut société + feature verticale (fail-closed, échec uniforme).
         $this->publicTenants->assertAccessible($company, 'restaurantmanager', null, 401);
 
-        return $this->publicTenants->withinTenant($company, fn (): Response => $next($request));
+        return $this->publicTenants->withinTenant($company, function () use ($next, $request): Response {
+            /** @var Response $response */
+            $response = $next($request);
+
+            return $response;
+        });
     }
 
     private function presentedToken(Request $request): string

@@ -7,7 +7,7 @@ namespace App\Modules\RestaurantManager\Application\Consumers;
 use App\Modules\RestaurantManager\Application\Actions\AckPrintJobAction;
 use App\Modules\RestaurantManager\Application\Actions\EnqueueKitchenTicketPrintAction;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantOutboxConsumer;
-use Illuminate\Support\Facades\Log;
+use Psr\Log\LoggerInterface;
 
 /**
  * REST-OS-5 (Mission Leopardo Restaurant OS) — Consommateur d'observabilité
@@ -23,6 +23,10 @@ use Illuminate\Support\Facades\Log;
  */
 final class PrintJobOutboxConsumer implements RestaurantOutboxConsumer
 {
+    public function __construct(
+        private readonly LoggerInterface $log,
+    ) {}
+
     public function supports(string $eventType): bool
     {
         return in_array($eventType, [
@@ -37,7 +41,7 @@ final class PrintJobOutboxConsumer implements RestaurantOutboxConsumer
      */
     public function handle(array $payload): void
     {
-        Log::info('restaurant.print.job', [
+        $this->log->info('restaurant.print.job', [
             'print_job_id' => $payload['print_job_id'] ?? null,
             'order_id' => $payload['order_id'] ?? null,
             'ticket_kind' => $payload['ticket_kind'] ?? null,

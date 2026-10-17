@@ -60,6 +60,7 @@ use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsum
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
 use App\Modules\RestaurantManager\Policies\RestaurantPrintJobPolicy;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -184,16 +185,6 @@ class RestaurantManagerServiceProvider extends ServiceProvider
                 new UberEatsDeliveryAppAdapter,
                 new GlovoDeliveryAppAdapter,
             ]);
-
-            // Flux marketplace (webhooks secret-tenant + statut sortant) — génération
-            // distincte (MarketplaceAdapter) : adapters Uber Eats / Glovo complets.
-            $this->app->singleton(\App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry::class, function (): \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry {
-                $registry = new \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry;
-                $registry->register(new \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\UberEatsAdapter);
-                $registry->register(new \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\GlovoAdapter);
-
-                return $registry;
-            });
         });
 
         // RESTO-105 (#6162) — activation tenant (flag + référentiel) ;
@@ -227,7 +218,7 @@ class RestaurantManagerServiceProvider extends ServiceProvider
             $registry->register(new ServiceOrderNotificationConsumer(app(CommunicationServiceInterface::class)));
             // REST-OS-5 — observabilité du cycle de vie d'impression (évite la
             // dead-letter « no_consumer » sur les événements restaurant.print.job.*).
-            $registry->register(new \App\Modules\RestaurantManager\Application\Consumers\PrintJobOutboxConsumer);
+            $registry->register($this->app->make(\App\Modules\RestaurantManager\Application\Consumers\PrintJobOutboxConsumer::class));
 
             return $registry;
         });
@@ -239,7 +230,7 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         $this->app->singleton(StockAlertService::class);
         $this->app->singleton(StockMovementService::class);
         $this->app->singleton(ReceivingService::class);
-        $this->app->bind(StockDecrementer::class, function ($app): StockDecrementer {
+        $this->app->bind(StockDecrementer::class, function (Application $app): StockDecrementer {
             return new StockDecrementer(
                 $app->make(StockMovementService::class),
                 (bool) config('restaurantmanager.stock.block_on_insufficient', true),
