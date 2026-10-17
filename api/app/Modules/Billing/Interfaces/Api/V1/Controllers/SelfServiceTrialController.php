@@ -6,6 +6,7 @@ namespace App\Modules\Billing\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\AuthService;
+use App\Core\Http\Idempotency\IdempotencyStore;
 use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
@@ -24,6 +25,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Self-service trial provisioning endpoint.
@@ -41,6 +43,7 @@ class SelfServiceTrialController extends Controller
         private readonly VerifyTrialSignup $verifyTrialSignup,
         private readonly SolutionCatalogue $solutionCatalogue,
         private readonly AuthService $authService,
+        private readonly IdempotencyStore $idempotencyStore,
     ) {}
 
     /**
@@ -50,6 +53,84 @@ class SelfServiceTrialController extends Controller
      * Returns the credentials so the prospect can log in right away.
      */
     public function signup(Request $request): JsonResponse
+    {
+        // BOS-O-05 / #8626 — idempotence de l'inscription PUBLIQUE.
+        //
+        // `/trial/signup` est une écriture SANS session : le middleware
+        // `IdempotencyMiddleware` (#5277) ne la couvre pas (sa clé de cache est
+        // scopée par le token `Authorization`). Un double clic ou un retry
+        // réseau créait donc deux demandes et deux OTP pour la même intention.
+        //
+        // Quand le client envoie `Idempotency-Key`, la première réponse 2xx est
+        // mémorisée puis rejouée à l'identique (header `Idempotent-Replayed`).
+        // Sans clé, le comportement historique est strictement préservé.
+        $idempotencyKey = $request->headers->get('Idempotency-Key');
+
+        if (! is_string($idempotencyKey) || $idempotencyKey === '') {
+            return $this->handleSignup($request);
+        }
+
+        if (preg_match('/^[A-Za-z0-9._:-]{8,255}$/', $idempotencyKey) !== 1) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'INVALID_IDEMPOTENCY_KEY',
+                'message' => __('errors.INVALID_IDEMPOTENCY_KEY'),
+            ], 422);
+        }
+
+        $scope = 'trial.signup';
+        $requestHash = hash('sha256', (string) $request->getContent());
+        $begin = $this->idempotencyStore->begin($scope, $idempotencyKey, $requestHash);
+
+        if ($begin['state'] === 'conflict') {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'IDEMPOTENCY_KEY_REUSED',
+                'message' => __('errors.IDEMPOTENCY_KEY_REUSED'),
+            ], 422);
+        }
+
+        if ($begin['state'] === 'in_progress') {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'IDEMPOTENCY_IN_PROGRESS',
+                'message' => __('errors.IDEMPOTENCY_IN_PROGRESS'),
+            ], 409);
+        }
+
+        if ($begin['state'] === 'replay') {
+            $replayed = new JsonResponse($begin['body'], $begin['status']);
+            $replayed->headers->set('Idempotent-Replayed', 'true');
+
+            return $replayed;
+        }
+
+        try {
+            $response = $this->handleSignup($request);
+
+            if ($response->isSuccessful()) {
+                /** @var array<string, mixed> $body */
+                $body = json_decode((string) $response->getContent(), true) ?? [];
+                $this->idempotencyStore->complete($begin['id'], $response->getStatusCode(), $body);
+            } else {
+                // Un échec n'est pas une intention aboutie : la clé est libérée
+                // pour qu'un retry légitime puisse réessayer.
+                $this->idempotencyStore->release($begin['id']);
+            }
+
+            return $response;
+        } catch (\Throwable $e) {
+            $this->idempotencyStore->release($begin['id']);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Corps historique de l'inscription (inchangé) — appelé directement sans
+     * clé d'idempotence, ou via le wrapper idempotent ci-dessus.
+     */
+    private function handleSignup(Request $request): JsonResponse
     {
         // Audit 2026-09-13 — un navigateur DÉJÀ connecté ne doit pas pouvoir
         // créer un second espace : `/signup` restait accessible et cet endpoint
@@ -125,9 +206,18 @@ class SelfServiceTrialController extends Controller
             // (inscription rapide depuis le hero de la vitrine).
             'modules' => ['nullable', 'array', 'max:20'],
             'modules.*' => ['string', 'max:40', 'distinct', Rule::in(Company::HORIZONTAL_TOOLS)],
+            // BOS-O-01 / #8625 — intention de marché du point d'entrée
+            // « Trade ». Deux dimensions distinctes, validées ENSEMBLE : un
+            // `importer` sur un marché domestique est refusé (422) plutôt que
+            // stocké comme une intention incohérente. Absence des deux =
+            // inscription hors parcours Trade, comportement historique.
+            'market_type' => ['nullable', 'string', Rule::in(Company::MARKET_TYPES)],
+            'trade_profile' => ['nullable', 'string', Rule::in(Company::TRADE_PROFILES)],
         ]);
 
-        /** @var array{email: string, company?: string|null, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solutions?: list<string>|null, solution?: string|null, company_type?: string|null, modules?: list<string>|null, locale?: string|null} $validated */
+        $this->assertMarketIntentIsCoherent($request);
+
+        /** @var array{email: string, company?: string|null, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solutions?: list<string>|null, solution?: string|null, company_type?: string|null, modules?: list<string>|null, locale?: string|null, market_type?: string|null, trade_profile?: string|null} $validated */
         $email = strtolower(trim($validated['email']));
 
         // #7853 — nom d'entreprise résolu UNE fois pour les deux parcours
@@ -259,6 +349,10 @@ class SelfServiceTrialController extends Controller
                 // était validé puis jeté ici — le tenant naissait dans la langue
                 // du pays, pas la sienne.
                 $validated['locale'] ?? null,
+                // BOS-O-01 / #8625 — l'intention Trade ne doit plus mourir
+                // dans le sessionStorage du navigateur.
+                $validated['market_type'] ?? null,
+                $validated['trade_profile'] ?? null,
             );
 
             return new JsonResponse([
@@ -689,6 +783,32 @@ class SelfServiceTrialController extends Controller
     private function emailLogId(string $email): string
     {
         return substr(hash('sha256', mb_strtolower(trim($email))), 0, 16);
+    }
+
+    /**
+     * BOS-O-01 / #8625 — cohérence marché ↔ profil.
+     *
+     * `market_type` et `trade_profile` sont deux listes validées séparément :
+     * séparément valides, elles peuvent composer une intention absurde
+     * (« grossiste » sur un marché international). La règle de cohérence vit
+     * dans le modèle (`Company::isValidMarketIntent`) pour être partagée avec
+     * le provisioning et les tests — pas dupliquée ici.
+     */
+    private function assertMarketIntentIsCoherent(Request $request): void
+    {
+        $market = $request->input('market_type');
+        $profile = $request->input('trade_profile');
+
+        if (Company::isValidMarketIntent(
+            is_string($market) ? $market : null,
+            is_string($profile) ? $profile : null,
+        )) {
+            return;
+        }
+
+        throw ValidationException::withMessages([
+            'trade_profile' => [__('errors.INVALID_TRADE_PROFILE')],
+        ]);
     }
 
     /**

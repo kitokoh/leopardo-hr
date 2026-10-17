@@ -109,6 +109,7 @@ return [
     'EMAIL_ALREADY_REGISTERED' => 'Bu e-postayla zaten bir hesap var. Doğrudan giriş yapın.',
     'SESSION_ALREADY_ACTIVE' => 'Zaten bir Leopardo çalışma alanında oturum açmışsınız. Yeni bir tane oluşturmadan önce çıkış yapın.',
     'INVALID_SOLUTION' => 'Bilinmeyen veya kullanılamayan sektörel çözüm: :solution.',
+    'INVALID_TRADE_PROFILE' => 'Bu profesyonel profil seçilen pazarla uyumlu değil (uluslararası: ithalatçı, ihracatçı veya her ikisi; yerel: toptancı veya perakendeci).',
     'INVALID_COUNTRY' => 'Kayıt ülkesi geçersiz veya desteklenmiyor. Lütfen kaydı yeniden başlatın.',
     'NO_PLAN_AVAILABLE' => 'Deneme hizmeti geçici olarak kullanılamıyor.',
     'PROVISIONING_FAILED' => 'Çalışma alanınız oluşturulurken hata oluştu. Lütfen tekrar deneyin.',
@@ -245,6 +246,7 @@ return [
     // Platform — RTMX (#5277): mobil yazma işlemlerinin idempotent tekrarı
     'INVALID_IDEMPOTENCY_KEY' => 'Geçersiz idempotency anahtarı.',
     'IDEMPOTENCY_IN_PROGRESS' => 'Aynı istek zaten işleniyor. Birazdan tekrar deneyin.',
+    'IDEMPOTENCY_KEY_REUSED' => 'Bu idempotency anahtarı farklı bir istek için kullanıldı.',
     'ATTENDANCE_PERIOD_CLOSED' => 'Devam süresi kapatıldı: düzeltmeler kilitli.',
     'DEPARTMENT_DELETED' => 'Departman silindi.',
     'POSITION_DELETED' => 'Pozisyon silindi.',

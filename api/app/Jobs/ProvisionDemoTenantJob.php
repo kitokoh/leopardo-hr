@@ -50,6 +50,14 @@ class ProvisionDemoTenantJob implements ShouldQueue
          * provisioning, le tenant prenait la langue du pays.
          */
         public readonly ?string $locale = null,
+        /**
+         * BOS-O-01 / #8625 — marché déclaré au point d'entrée « Trade »
+         * (`international` | `domestic`) et profil dans ce marché. Les deux
+         * sont NULL quand l'inscription vient d'un autre parcours : aucune
+         * intention n'est inventée.
+         */
+        public readonly ?string $marketType = null,
+        public readonly ?string $tradeProfile = null,
     ) {}
 
     // Issue #3600 : provisioning trial = opération lourde et critique — retries
@@ -69,7 +77,7 @@ class ProvisionDemoTenantJob implements ShouldQueue
 
         try {
             /** @var array{company: Company, manager: Employee} $result */
-            $result = $provisioner->execute($this->email, $this->companyName, $this->country, $this->solutions, $this->companyType, $this->modules, $this->locale);
+            $result = $provisioner->execute($this->email, $this->companyName, $this->country, $this->solutions, $this->companyType, $this->modules, $this->locale, $this->marketType, $this->tradeProfile);
 
             // #2437 : le statut du provisioning est persisté pour que le
             // prospect puisse poller GET /trial/status (login_url = le portail
