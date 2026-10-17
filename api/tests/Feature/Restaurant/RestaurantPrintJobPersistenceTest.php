@@ -30,6 +30,9 @@ class RestaurantPrintJobPersistenceTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    /**
+     * @return array{0: Company, 1: RestaurantBranch, 2: RestaurantOrder}
+     */
     private function context(): array
     {
         $company = Company::factory()->create();

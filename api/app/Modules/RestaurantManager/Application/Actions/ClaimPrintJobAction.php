@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Application\Actions;
 
 use App\Modules\RestaurantManager\Domain\Enums\PrintJobStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPrintJob;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -26,16 +27,18 @@ final class ClaimPrintJobAction
 {
     public function execute(RestaurantPrintJob $job, ?string $printerRef = null): ?RestaurantPrintJob
     {
-        $leaseMinutes = (int) config('restaurantmanager.printing.claim_lease_minutes', 15);
+        $leaseMinutes = is_numeric(config('restaurantmanager.printing.claim_lease_minutes', 15))
+            ? (int) config('restaurantmanager.printing.claim_lease_minutes', 15)
+            : 15;
 
         $claimed = DB::table('restaurant_print_jobs')
             ->where('id', $job->id)
             ->where('company_id', $job->company_id)
-            ->where(function ($query) use ($leaseMinutes): void {
+            ->where(function (Builder $query) use ($leaseMinutes): void {
                 $query->whereIn('status', [
                     PrintJobStatus::PENDING->value,
                     PrintJobStatus::FAILED->value,
-                ])->orWhere(function ($query) use ($leaseMinutes): void {
+                ])->orWhere(function (Builder $query) use ($leaseMinutes): void {
                     $query->where('status', PrintJobStatus::CLAIMED->value)
                         ->where('claimed_at', '<', now()->subMinutes($leaseMinutes));
                 });

@@ -36,9 +36,11 @@ final class RenderPrintJobPayloadAction
 
         $ticket = $this->buildTicket->execute($order, (int) $job->revision);
 
+        $configuredWidth = config('restaurantmanager.printing.paper_width', 80);
+
         $width = $paperWidth !== null && is_numeric($paperWidth)
             ? (int) $paperWidth
-            : (int) config('restaurantmanager.printing.paper_width', 80);
+            : (is_numeric($configuredWidth) ? (int) $configuredWidth : 80);
 
         $payload = $this->renderer->render($ticket, $width);
 

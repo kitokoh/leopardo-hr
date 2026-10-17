@@ -108,6 +108,8 @@ final class EnqueueKitchenTicketPrintAction
             return (int) $override;
         }
 
-        return (int) config('restaurantmanager.printing.paper_width', 80);
+        $configured = config('restaurantmanager.printing.paper_width', 80);
+
+        return is_numeric($configured) ? (int) $configured : 80;
     }
 }

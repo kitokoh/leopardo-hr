@@ -152,10 +152,13 @@ class RestaurantPrintBridgeController extends Controller
      */
     public function health(Request $request): JsonResponse
     {
+        $lease = config('restaurantmanager.printing.claim_lease_minutes', 15);
+        $paper = config('restaurantmanager.printing.paper_width', 80);
+
         return new JsonResponse([
             'status' => 'ok',
-            'claim_lease_minutes' => (int) config('restaurantmanager.printing.claim_lease_minutes', 15),
-            'paper_width' => (int) config('restaurantmanager.printing.paper_width', 80),
+            'claim_lease_minutes' => is_numeric($lease) ? (int) $lease : 15,
+            'paper_width' => is_numeric($paper) ? (int) $paper : 80,
         ]);
     }
 
@@ -207,7 +210,8 @@ class RestaurantPrintBridgeController extends Controller
      */
     private function claimableQuery(int $branchId)
     {
-        $leaseMinutes = (int) config('restaurantmanager.printing.claim_lease_minutes', 15);
+        $configuredLease = config('restaurantmanager.printing.claim_lease_minutes', 15);
+        $leaseMinutes = is_numeric($configuredLease) ? (int) $configuredLease : 15;
 
         return RestaurantPrintJob::query()
             ->where('branch_id', $branchId)

@@ -52,6 +52,9 @@ class RestaurantPrintBridgeTest extends TestCase
         return $company;
     }
 
+    /**
+     * @return array<string, string>
+     */
     private function headers(Company $company, ?string $token = self::TOKEN): array
     {
         return [

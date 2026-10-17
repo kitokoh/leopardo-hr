@@ -32,6 +32,23 @@ final class AckPrintJobAction
     ) {}
 
     /**
+     * Point d'entrée canonique de l'action (convention #6570 : 1 action = 1
+     * `execute()`). Le résultat d'impression est explicite côté appelant :
+     * `$printed = true` → accusé d'impression RÉELLE, `false` → échec signalé
+     * par le bridge. Aucun autre chemin ne fait passer un travail à `printed`.
+     */
+    public function execute(
+        RestaurantPrintJob $job,
+        bool $printed,
+        ?string $printerRef = null,
+        string $error = '',
+    ): RestaurantPrintJob {
+        return $printed
+            ? $this->printed($job, $printerRef)
+            : $this->failed($job, $error);
+    }
+
+    /**
      * Le bridge confirme l'impression réelle.
      */
     public function printed(RestaurantPrintJob $job, ?string $printerRef = null): RestaurantPrintJob

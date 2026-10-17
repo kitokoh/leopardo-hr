@@ -49,7 +49,7 @@ class RestaurantPrintJobController extends Controller
         // Portée : la Policy n'a pas de modèle à charger ici → on vérifie
         // l'accès succursale via Gate sur un job « virtuel » porté par la branche.
         $probe = new RestaurantPrintJob(['branch_id' => $branchId]);
-        $probe->company_id = $actor->company_id;
+        $probe->company_id = (string) $actor->company_id;
 
         if ($actor->cannot('view', $probe)) {
             abort(403, __('errors.RESOURCE_ACCESS_DENIED'));

@@ -142,6 +142,8 @@ class RestaurantPrintJobTest extends TestCase
             ->assertStatus(201)
             ->json('data.id');
 
+        $this->assertIsInt($jobId);
+
         $requeued = $this->postJson("/api/v1/restaurant/print-jobs/{$jobId}/requeue")
             ->assertStatus(201)
             ->assertJsonPath('data.revision', 2);
