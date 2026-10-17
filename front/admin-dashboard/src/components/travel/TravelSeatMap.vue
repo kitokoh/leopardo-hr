@@ -77,6 +77,12 @@ const props = defineProps({
   selected: { type: Array, default: () => [] },
   /** Sièges par rangée (2+2 → 4, 2+1 → 3). */
   seatsPerRow: { type: Number, default: 4 },
+  /**
+   * #8646 — disposition renvoyée par l'API du trajet. Quand elle est fournie,
+   * elle fait foi ([seatsPerRow] et [aisle] sont alors ignorés) : le plan
+   * reflète le véhicule réel et non une déduction de capacité.
+   */
+  layout: { type: Object, default: null },
   /** Afficher la légende. */
   showLegend: { type: Boolean, default: true },
   /** Afficher le résumé des comptes par état. */
@@ -132,11 +138,38 @@ const viewSeats = computed(() =>
   })),
 );
 
-const useAisle = computed(() => props.aisle ?? props.seatsPerRow >= 3);
+const useAisle = computed(() => {
+  const serverAisle = props.layout?.aisle_after;
+  if (serverAisle !== undefined && serverAisle !== null) return true;
+  if (props.layout && serverAisle === null) return false;
+
+  return props.aisle ?? serversSeatsPerRow() >= 3;
+});
+
+/**
+ * #8646 — nombre de colonnes effectif : la géométrie serveur prime, sinon
+ * [seatsPerRow] puis l'ancien comportement.
+ */
+function serversSeatsPerRow() {
+  const server = Number(props.layout?.seats_per_row);
+  return Number.isInteger(server) && server >= 1 && server <= 6 ? server : props.seatsPerRow;
+}
 
 const layout = computed(() => {
-  const perRow = Math.max(1, Math.trunc(props.seatsPerRow));
-  const aisleAfter = useAisle.value ? Math.ceil(perRow / 2) : null;
+  const perRow = Math.max(1, Math.trunc(serversSeatsPerRow()));
+
+  // #8646 — position du couloir : celle du serveur si elle est fournie, sinon
+  // au milieu de la rangée (comportement historique).
+  const serverAisle = props.layout ? props.layout.aisle_after : undefined;
+  const aisleAfter =
+    serverAisle !== undefined && serverAisle !== null
+      ? Math.min(Math.max(1, Math.trunc(Number(serverAisle))), perRow - 1)
+      : serverAisle === null
+        ? null
+        : useAisle.value
+          ? Math.ceil(perRow / 2)
+          : null;
+
   const sorted = [...viewSeats.value].sort((a, b) => a.seat_number - b.seat_number);
 
   const rows = [];
@@ -158,7 +191,7 @@ const layout = computed(() => {
     rows.push({ rowNumber: rows.length + 1, cells });
   }
 
-  return { rows, columns: perRow + (useAisle.value ? 1 : 0), aisleColumn: aisleAfter };
+  return { rows, columns: perRow + (aisleAfter !== null ? 1 : 0), aisleColumn: aisleAfter };
 });
 
 const freeSeats = computed(() => props.seats.filter((s) => s.status === 'free').length);

@@ -10,6 +10,7 @@ import {
   isSeatSelectable,
   LEGEND_ORDER,
   type SeatInput,
+  type SeatLayoutConfig,
   type SeatStatusValue,
 } from "@/lib/seat-layout";
 
@@ -39,6 +40,18 @@ export interface SeatMapProps {
   onToggle?: (seatNumber: number) => void;
   /** Sièges par rangée (2+2 → 4, 2+1 → 3). Défaut : 4. */
   seatsPerRow?: number;
+  /**
+   * #8646 — position (1-based) de la colonne APRÈS laquelle se trouve le
+   * couloir. `null` = aucun couloir. Quand fourni, prime sur l'ancien
+   * placement automatique au milieu.
+   */
+  aisleAfter?: number | null;
+  /**
+   * #8646 — disposition renvoyée par l'API. Quand elle est fournie, elle fait
+   * foi (`seats_per_row` / `aisle_after` ci-dessus sont alors ignorés) : le
+   * plan reflète le véhicule réel et non une déduction de capacité.
+   */
+  layout?: SeatLayoutConfig | null;
   /** Afficher la légende. Défaut : true. */
   showLegend?: boolean;
   /** Afficher le résumé des comptes par état. Défaut : true. */
@@ -51,6 +64,8 @@ export function SeatMap({
   selected = [],
   onToggle,
   seatsPerRow = 4,
+  aisleAfter,
+  layout,
   showLegend = true,
   showSummary = true,
   className,
@@ -68,9 +83,20 @@ export function SeatMap({
     [seats, selectedSet],
   );
 
-  const layout = useMemo(
-    () => buildSeatMapLayout(viewSeats, { seatsPerRow }),
-    [viewSeats, seatsPerRow],
+  // #8646 — la disposition vient du SERVEUR quand elle est disponible ; sinon
+  // on retombe sur les props explicites, puis sur l'ancien comportement.
+  const effectiveSeatsPerRow =
+    layout && Number.isInteger(layout.seats_per_row) ? layout.seats_per_row : seatsPerRow;
+  const effectiveAisleAfter =
+    layout !== undefined && layout !== null ? layout.aisle_after : aisleAfter;
+
+  const layoutRows = useMemo(
+    () =>
+      buildSeatMapLayout(viewSeats, {
+        seatsPerRow: effectiveSeatsPerRow,
+        ...(effectiveAisleAfter !== undefined ? { aisleAfter: effectiveAisleAfter } : {}),
+      }),
+    [viewSeats, effectiveSeatsPerRow, effectiveAisleAfter],
   );
 
   const counts = useMemo(() => countSeatsByStatus(seats), [seats]);
@@ -94,9 +120,9 @@ export function SeatMap({
       <div className="overflow-x-auto">
         <div
           className="mx-auto inline-grid gap-1.5"
-          style={{ gridTemplateColumns: `repeat(${layout.columns}, minmax(0, 1fr))` }}
+          style={{ gridTemplateColumns: `repeat(${layoutRows.columns}, minmax(0, 1fr))` }}
         >
-          {layout.rows.flatMap((row) =>
+          {layoutRows.rows.flatMap((row) =>
             row.cells.map((cell, index) => {
               const key = `${row.rowNumber}-${index}`;
 
