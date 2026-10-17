@@ -1,10 +1,12 @@
 @import "tailwindcss";
 
-/* Mode sombre piloté par la CLASSE `.dark` (posée sur <html> par
-   `useDarkMode`), et non par `prefers-color-scheme`. En Tailwind v4 le
-   `darkMode: "class"` de tailwind.config.ts est ignoré : sans cette ligne,
-   tous les utilitaires `dark:` suivent la préférence SYSTÈME et la bascule
-   de thème de la vitrine n'a aucun effet visible. */
+/* Thème UNIQUE (clair) — refonte vitrine #8461.
+   La bascule jour/nuit a été RETIRÉE : plus aucun code ne pose la classe
+   `.dark` sur <html>. Cette déclaration reste NÉCESSAIRE et n'est pas du code
+   mort : en Tailwind v4, sans `@custom-variant`, les utilitaires `dark:`
+   suivraient `prefers-color-scheme` et la vitrine basculerait toute seule en
+   sombre sur un système configuré ainsi. Ancrés sur `.dark` (jamais posée),
+   ils ne s'appliquent jamais → rendu clair garanti quel que soit l'OS. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
