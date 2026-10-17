@@ -69,3 +69,21 @@
 #eab308 — yellow-500, nœud app « fuel-console » (mon-logiciel/page.tsx)
 #d946ef — fuchsia-500, nœud app « marketing-mobile » (mon-logiciel/page.tsx)
 #6b7280 — gray-500, nœud app « cameras-mobile » (mon-logiciel/page.tsx)
+
+#FFFFFF
+#BFDBFE
+#FEF3C7
+#FBBF24
+#FFEDD5
+#FB923C
+#EDE9FE
+#A78BFA
+#64748B
+#FEE2E2
+#F87171
+#F1F5F9
+#991B1B
+#9A3412
+#92400E
+#334155
+#E2E8F0

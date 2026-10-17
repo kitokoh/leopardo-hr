@@ -5780,7 +5780,21 @@
       "active": "نشط",
       "revoked": "ملغى",
       "expired": "منتهي الصلاحية"
-    }
+    },
+    "travel.seats.summary.free": "مقعد/مقاعد متاحة من",
+    "travel.seats.summary.selected": "محدد",
+    "travel.seats.legend.title": "حالات المقاعد",
+    "travel.seats.map.label": "مخطط مقاعد المركبة",
+    "travel.seats.state.free": "متاح",
+    "travel.seats.state.selected": "محدد",
+    "travel.seats.state.held": "حجز قيد المعالجة",
+    "travel.seats.state.reserved": "محجوز",
+    "travel.seats.state.pendingPayment": "في انتظار الدفع",
+    "travel.seats.state.sold": "مباع",
+    "travel.seats.state.blocked": "محظور",
+    "travel.seats.state.unavailable": "غير متاح",
+    "travel.seats.state.aisle": "الممر",
+    "travel.seats.state.seat": "مقعد"
   },
   "travelPortal": {
     "title": "بوابة المسافر",
