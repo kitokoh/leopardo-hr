@@ -68,8 +68,8 @@ class Wallet extends Model
         $row = DB::table('payment_ledger_entries')
             ->where('wallet_id', $this->id)
             ->selectRaw(
-                "COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) AS credits,"
-                ." COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) AS debits",
+                'COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) AS credits,'
+                .' COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) AS debits',
                 [LedgerDirection::Credit->value, LedgerDirection::Debit->value],
             )
             ->first();

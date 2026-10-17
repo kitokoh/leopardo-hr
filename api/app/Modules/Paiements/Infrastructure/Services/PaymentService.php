@@ -6,12 +6,10 @@ namespace App\Modules\Paiements\Infrastructure\Services;
 
 use App\Modules\Paiements\Domain\DTOs\CashInRequest;
 use App\Modules\Paiements\Domain\DTOs\CashOutRequest;
-use App\Modules\Paiements\Domain\DTOs\RailResult;
 use App\Modules\Paiements\Domain\Enums\PaymentTransactionStatus;
 use App\Modules\Paiements\Domain\Enums\PaymentTransactionType;
 use App\Modules\Paiements\Domain\Enums\WalletOwnerType;
 use App\Modules\Paiements\Domain\Exceptions\IdempotencyKeyRequiredException;
-use App\Modules\Paiements\Domain\Models\PaymentProviderInstance;
 use App\Modules\Paiements\Domain\Models\PaymentTransaction;
 use App\Modules\Paiements\Domain\Models\Wallet;
 use Illuminate\Database\QueryException;

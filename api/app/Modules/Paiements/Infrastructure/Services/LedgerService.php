@@ -133,8 +133,8 @@ class LedgerService
             ->where('company_id', $companyId)
             ->where('wallet_id', $walletId)
             ->selectRaw(
-                "COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) AS credits,"
-                ." COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) AS debits",
+                'COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) AS credits,'
+                .' COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) AS debits',
                 [LedgerDirection::Credit->value, LedgerDirection::Debit->value],
             )
             ->first();
@@ -157,8 +157,8 @@ class LedgerService
             ->where('company_id', $companyId)
             ->where('transfer_group_id', $transferGroupId)
             ->selectRaw(
-                "COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) AS debits,"
-                ." COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) AS credits,"
+                'COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) AS debits,'
+                .' COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) AS credits,'
                 .' COUNT(*) AS entry_count',
                 [LedgerDirection::Debit->value, LedgerDirection::Credit->value],
             )

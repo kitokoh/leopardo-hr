@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Paiements\Interfaces\Api\V1\Controllers;
 
-use App\Modules\Paiements\Domain\Enums\WalletOwnerType;
+use App\Modules\Paiements\Application\Actions\RequestCashOutAction;
+use App\Modules\Paiements\Application\Queries\WalletBalanceQuery;
 use App\Modules\Paiements\Domain\Exceptions\ProviderNotResolvableException;
-use App\Modules\Paiements\Domain\Models\PaymentLedgerEntry;
 use App\Modules\Paiements\Domain\Models\PaymentTransaction;
-use App\Modules\Paiements\Infrastructure\Services\PaymentService;
 use App\Modules\Paiements\Infrastructure\Services\ProviderResolver;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,8 +27,9 @@ use Illuminate\Http\Request;
 class TenantPaymentController
 {
     public function __construct(
-        private readonly PaymentService $payments,
         private readonly ProviderResolver $resolver,
+        private readonly RequestCashOutAction $requestCashOut,
+        private readonly WalletBalanceQuery $walletQuery,
     ) {}
 
     public function balance(Request $request): JsonResponse
@@ -37,21 +37,12 @@ class TenantPaymentController
         $company = currentCompany();
         $currency = (string) $request->query('currency', $company->currency ?? 'DZD');
 
-        $wallet = $this->payments->walletFor(
-            (string) $company->id,
-            WalletOwnerType::Tenant,
-            (string) $company->id,
-            $currency,
-        );
+        $wallet = $this->requestCashOut->tenantWallet((string) $company->id, $currency);
 
         return response()->json([
             'code' => 'ok',
             'message' => 'Solde du wallet.',
-            'data' => [
-                'wallet_id' => $wallet->id,
-                'currency' => $wallet->currency,
-                'balance' => $wallet->balance(),
-            ],
+            'data' => $this->walletQuery->forWallet($wallet),
         ]);
     }
 
@@ -59,22 +50,10 @@ class TenantPaymentController
     {
         $company = currentCompany();
 
-        $entries = PaymentLedgerEntry::query()
-            ->where('company_id', $company->id)
-            ->orderByDesc('id')
-            ->limit(100)
-            ->get();
-
-        $rows = [];
-
-        foreach ($entries as $entry) {
-            $rows[] = $this->ledgerRow($entry);
-        }
-
         return response()->json([
             'code' => 'ok',
             'message' => 'Historique du wallet.',
-            'data' => $rows,
+            'data' => $this->walletQuery->history((string) $company->id),
         ]);
     }
 
@@ -94,7 +73,7 @@ class TenantPaymentController
         $currency = (string) ($validated['currency'] ?? $company->currency ?? 'DZD');
 
         try {
-            $transaction = $this->payments->cashOut(
+            $transaction = $this->requestCashOut->execute(
                 companyId: (string) $company->id,
                 amount: (int) $validated['amount'],
                 currency: $currency,
@@ -154,23 +133,6 @@ class TenantPaymentController
             'message' => 'Commissions prelevees.',
             'data' => $rows,
         ]);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function ledgerRow(PaymentLedgerEntry $entry): array
-    {
-        return [
-            'id' => $entry->id,
-            'wallet_id' => $entry->wallet_id,
-            'direction' => $entry->direction->value,
-            'amount' => $entry->amount,
-            'currency' => $entry->currency,
-            'transfer_group_id' => $entry->transfer_group_id,
-            'reference' => $entry->reference,
-            'created_at' => $entry->created_at?->toIso8601String(),
-        ];
     }
 
     /**

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\Paiements\Interfaces\Api\V1\Controllers;
 
 use App\Modules\Paiements\Domain\DTOs\WebhookPayload;
-use App\Modules\Paiements\Domain\Exceptions\InvalidWebhookSignatureException;
 use App\Modules\Paiements\Domain\Models\PaymentWebhookEndpoint;
 use App\Modules\Paiements\Infrastructure\Services\ProviderTypeRegistry;
 use Illuminate\Http\JsonResponse;

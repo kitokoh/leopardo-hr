@@ -30,6 +30,10 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
+ * EXCEPTION TENANT-SCOPE (#7999) : `company_id` est NULLABLE par conception —
+ * NULL = regle GLOBALE de la plateforme, non-NULL = regle propre au tenant. La
+ * cascade de specificite du FeeRuleResolver a besoin des deux niveaux dans la
+ * meme requete ; un scope fail-closed masquerait les regles globales.
  */
 class PaymentFeeRule extends Model
 {

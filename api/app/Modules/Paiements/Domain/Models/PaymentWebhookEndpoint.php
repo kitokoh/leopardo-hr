@@ -31,6 +31,10 @@ l'emetteur, un token est un secret partage.
  * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
+ * EXCEPTION TENANT-SCOPE (#7999) : `company_id` est NULLABLE par conception —
+ * NULL = endpoint d'une instance GLOBALE. Le routage d'un webhook entrant se fait
+ * par le TOKEN, hors contexte tenant (l'appelant est un fournisseur, pas un
+ * utilisateur) : un scope fail-closed rendrait tout webhook global introuvable.
  */
 class PaymentWebhookEndpoint extends Model
 {

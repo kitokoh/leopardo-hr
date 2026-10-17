@@ -45,6 +45,21 @@
       "model": "App\\Modules\\Vtc\\Domain\\Models\\VtcMarketplaceOperator",
       "reason": "Annuaire plateforme (schema public) des operateurs VTC opt-in de la marketplace (#8423) : company_id est un pointeur de routage vers le tenant, pas une cle d'isolation. Trait inapplicable.",
       "added": "2026-10-11"
+    },
+    {
+      "model": "App\\Modules\\Paiements\\Domain\\Models\\PaymentProviderInstance",
+      "reason": "company_id NULLABLE : NULL = instance de fournisseur GLOBALE (tous tenants), non-NULL = instance dediee qui surcharge la globale. Le scope fail-closed exclurait les instances globales et casserait la resolution de marche (ProviderResolver filtre explicitement whereNull OR = company).",
+      "added": "2026-10-18"
+    },
+    {
+      "model": "App\\Modules\\Paiements\\Domain\\Models\\PaymentFeeRule",
+      "reason": "company_id NULLABLE : NULL = regle de commission GLOBALE, non-NULL = regle propre au tenant. La cascade de specificite (tenant+instance > tenant > instance > globale) exige les deux niveaux dans la meme requete.",
+      "added": "2026-10-18"
+    },
+    {
+      "model": "App\\Modules\\Paiements\\Domain\\Models\\PaymentWebhookEndpoint",
+      "reason": "company_id NULLABLE : NULL = endpoint d'une instance GLOBALE. Le routage d'un webhook entrant se fait par TOKEN, hors contexte tenant (l'appelant est un fournisseur, pas un utilisateur) ; un scope fail-closed rendrait tout webhook global introuvable.",
+      "added": "2026-10-18"
     }
   ],
   "legacy_pending_review": [

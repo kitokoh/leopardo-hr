@@ -39,6 +39,11 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
+ * EXCEPTION TENANT-SCOPE (#7999) : `company_id` est NULLABLE par conception —
+ * NULL = instance GLOBALE visible de tous les tenants, non-NULL = instance dediee
+ * qui surcharge la globale. Le scope global fail-closed du trait BelongsToCompany
+ * exclurait les instances globales et casserait la resolution de marche. Le
+ * filtrage tenant est explicite dans ProviderResolver (whereNull OR = company).
  */
 class PaymentProviderInstance extends Model
 {

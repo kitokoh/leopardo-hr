@@ -27,7 +27,7 @@ class EnsurePaymentServiceToken
         if (! is_string($expected) || $expected === '') {
             return response()->json([
                 'code' => 'service_auth_not_configured',
-                'message' => "Authentification service non configuree.",
+                'message' => 'Authentification service non configuree.',
                 'data' => null,
             ], 503);
         }

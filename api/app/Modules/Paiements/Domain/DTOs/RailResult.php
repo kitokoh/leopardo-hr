@@ -48,6 +48,7 @@ final readonly class RailResult
     {
         return new self(PaymentTransactionStatus::Processing, $externalReference, $metadata);
     }
+
     public function isSucceeded(): bool
     {
         return $this->status === PaymentTransactionStatus::Succeeded;
