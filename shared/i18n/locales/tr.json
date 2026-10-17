@@ -8267,5 +8267,7 @@
     "created": "Cihaz kaydedildi.",
     "revoked": "Cihaz iptal edildi.",
     "secretWarning": "Bu jetonu asla paylaşmayın: yalnızca bir kez gösterilir."
-  }
+  },
+  "travel.seats.state.absent": "Koltuk yok",
+  "travel.seats.layoutNotice": "Koltuk düzeni değiştirildiğinde rezervasyonu olan yolcular taşınmaz: koltukları değişmez. Bir çakışmayı çözmek için araç değiştirme prosedürünü kullanın."
 }

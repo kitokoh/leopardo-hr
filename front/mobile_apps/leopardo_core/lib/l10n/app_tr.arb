@@ -5205,6 +5205,12 @@
   "vitrineNotfoundCtapricing": "Fiyatları görün",
   "vitrineNotfoundCtacontact": "Destek ile iletişime geçin",
   "vitrineNotfoundMascotalt": "Gorsel: baglantisi kesilmis bir leopar, sayfa bulunamadi",
+  "vitrineForbiddenKicker": "Hata 403",
+  "vitrineForbiddenTitle": "Erisim reddedildi",
+  "vitrineForbiddenBody": "Rolunuz bu isleme izin vermiyor. Bunun bir hata oldugunu dusunuyorsaniz bir yoneticiden erisim isteyin.",
+  "vitrineForbiddenCtahome": "Ana sayfaya don",
+  "vitrineForbiddenCtasupport": "Erisim isteyin",
+  "vitrineForbiddenMascotalt": "Gorsel: kapali bir kapi onunde bir leopar, erisim reddedildi",
   "vitrineErrorKicker": "Beklenmeyen hata",
   "vitrineErrorTitle": "Bir şeyler ters gitti",
   "vitrineErrorBody": "İşlem tamamlanamadı. Yeniden deneyebilirsiniz; sorun devam ederse destek ile iletişime geçin.",
@@ -6546,5 +6552,7 @@
   "devicesError": "Cihazlar yüklenemedi.",
   "devicesCreated": "Cihaz kaydedildi.",
   "devicesRevoked": "Cihaz iptal edildi.",
-  "devicesSecretwarning": "Bu jetonu asla paylaşmayın: yalnızca bir kez gösterilir."
+  "devicesSecretwarning": "Bu jetonu asla paylaşmayın: yalnızca bir kez gösterilir.",
+  "travelSeatsStateAbsent": "Koltuk yok",
+  "travelSeatsLayoutnotice": "Koltuk düzeni değiştirildiğinde rezervasyonu olan yolcular taşınmaz: koltukları değişmez. Bir çakışmayı çözmek için araç değiştirme prosedürünü kullanın."
 }

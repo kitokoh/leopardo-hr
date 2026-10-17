@@ -11,6 +11,21 @@
 > Scope: repository-level secrets (Settings → Secrets and variables → Actions)
 > unless a "Scope" column entry says otherwise (e.g. GitHub Environments).
 
+## Complément 2026-10-17 — rotation multi-stacks du tier dev (#8659)
+
+| Secret / Variable | Used by | Purpose | Required? |
+|---|---|---|---|
+| `RENDER_DEPLOY_HOOK_URL_STACK_B` | `deploy-main.yml` (fan-out) | Deploy hook Render de la stack dev « b » (compte B) — la standby reçoit chaque déploiement de `main` pour une bascule sans rattrapage | Optional (étape sautée si absent) |
+| `RENDER_DEPLOY_HOOK_URL_STACK_C` | `deploy-main.yml` (fan-out) | Idem pour la stack « c » | Optional |
+| `DEV_STACK_A_RENDER_API_KEY` | `dev-stack-switch.yml` | Clé API Render du compte de la stack « a » — utilisée UNIQUEMENT pour le reseed one-shot (`RESET_TEST_DB_ONCE`) lors d'une bascule avec `seed=true` | Optional (bascule sans reseed sinon) |
+| `DEV_STACK_B_RENDER_API_KEY` | `dev-stack-switch.yml` | Idem stack « b » | Optional |
+| `DEV_STACK_C_RENDER_API_KEY` | `dev-stack-switch.yml` | Idem stack « c » | Optional |
+| `DEV_ACTIVE_STACK` (variable) | `dev-keepalive.yml`, `dev-stack-switch.yml`, `deploy-main.yml` | Id de la stack dev active (`a`/`b`/`c`) — pointeur runtime mis à jour par `scripts/dev-stack-switch.sh` ; le registre `deploy/dev-stacks.json` reste la source documentaire | Required for rotation (défaut `a`) |
+
+> Le Worker `infra/cloudflare/dev-keepalive-worker/` consomme `KEEPALIVE_URL`
+> (non secrète, `wrangler.toml`) et se déploie avec le token Cloudflare du
+> compte dev, conservé hors GitHub — aucun secret GitHub requis.
+
 ## Complément — secrets manquants au premier inventaire (re-audit #4345)
 
 | Secret | Used by | Purpose | Required? |

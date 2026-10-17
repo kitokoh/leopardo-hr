@@ -5205,6 +5205,12 @@
   "vitrineNotfoundCtapricing": "عرض الأسعار",
   "vitrineNotfoundCtacontact": "التواصل مع الدعم",
   "vitrineNotfoundMascotalt": "رسم توضيحي: فهد غير متصل، الصفحة غير موجودة",
+  "vitrineForbiddenKicker": "خطأ 403",
+  "vitrineForbiddenTitle": "تم رفض الوصول",
+  "vitrineForbiddenBody": "دورك لا يسمح بهذا الإجراء. إذا كنت تعتقد أن هذا خطأ، اطلب الوصول من أحد المسؤولين.",
+  "vitrineForbiddenCtahome": "العودة إلى الصفحة الرئيسية",
+  "vitrineForbiddenCtasupport": "طلب الوصول",
+  "vitrineForbiddenMascotalt": "رسم توضيحي: فهد أمام باب مغلق، تم رفض الوصول",
   "vitrineErrorKicker": "خطأ غير متوقع",
   "vitrineErrorTitle": "حدث خطأ ما",
   "vitrineErrorBody": "لم يتم تنفيذ الإجراء. يمكنك المحاولة مرة أخرى؛ إذا استمرت المشكلة، تواصل مع الدعم.",
@@ -6546,5 +6552,7 @@
   "devicesError": "تعذر تحميل الأجهزة.",
   "devicesCreated": "تم تسجيل الجهاز.",
   "devicesRevoked": "تم إلغاء الجهاز.",
-  "devicesSecretwarning": "لا تشارك هذا الرمز أبدًا: يظهر مرة واحدة فقط."
+  "devicesSecretwarning": "لا تشارك هذا الرمز أبدًا: يظهر مرة واحدة فقط.",
+  "travelSeatsStateAbsent": "مقعد غير موجود",
+  "travelSeatsLayoutnotice": "تغيير تخطيط المقاعد لا ينقل الركاب الذين لديهم حجوزات: تبقى مقاعدهم كما هي. استخدم إجراء استبدال المركبة لحل أي تعارض."
 }

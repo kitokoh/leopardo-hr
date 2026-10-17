@@ -5205,6 +5205,12 @@
   "vitrineNotfoundCtapricing": "See pricing",
   "vitrineNotfoundCtacontact": "Contact support",
   "vitrineNotfoundMascotalt": "Illustration: an unplugged leopard, page not found",
+  "vitrineForbiddenKicker": "Error 403",
+  "vitrineForbiddenTitle": "Access denied",
+  "vitrineForbiddenBody": "Your role does not allow this action. If you believe this is a mistake, ask an administrator for access.",
+  "vitrineForbiddenCtahome": "Back to home",
+  "vitrineForbiddenCtasupport": "Request access",
+  "vitrineForbiddenMascotalt": "Illustration: a leopard in front of a closed door, access denied",
   "vitrineErrorKicker": "Unexpected error",
   "vitrineErrorTitle": "Something went wrong",
   "vitrineErrorBody": "The action could not be completed. You can try again; if the problem persists, contact support.",
@@ -6546,5 +6552,7 @@
   "devicesError": "Could not load devices.",
   "devicesCreated": "Device enrolled.",
   "devicesRevoked": "Device revoked.",
-  "devicesSecretwarning": "Never share this token: it is shown only once."
+  "devicesSecretwarning": "Never share this token: it is shown only once.",
+  "travelSeatsStateAbsent": "Seat absent",
+  "travelSeatsLayoutnotice": "Changing the seat layout does not move already-booked passengers: their seats stay unchanged. Use the vehicle replacement procedure to resolve a conflict."
 }

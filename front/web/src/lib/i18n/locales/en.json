@@ -8267,5 +8267,7 @@
     "created": "Device enrolled.",
     "revoked": "Device revoked.",
     "secretWarning": "Never share this token: it is shown only once."
-  }
+  },
+  "travel.seats.state.absent": "Seat absent",
+  "travel.seats.layoutNotice": "Changing the seat layout does not move already-booked passengers: their seats stay unchanged. Use the vehicle replacement procedure to resolve a conflict."
 }

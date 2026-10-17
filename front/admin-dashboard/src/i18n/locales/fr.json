@@ -9701,5 +9701,7 @@
     "created": "Appareil enrole.",
     "revoked": "Appareil revoque.",
     "secretWarning": "Ne partagez jamais ce jeton : il n'est affiche qu'une fois."
-  }
+  },
+  "travel.seats.state.absent": "Siège absent",
+  "travel.seats.layoutNotice": "Modifier la disposition des sièges ne déplace pas les passagers déjà réservés : leurs sièges restent inchangés. Utilisez la procédure de remplacement de véhicule pour résoudre un conflit."
 }

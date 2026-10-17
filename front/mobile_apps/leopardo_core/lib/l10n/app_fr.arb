@@ -5205,6 +5205,12 @@
   "vitrineNotfoundCtapricing": "Voir les tarifs",
   "vitrineNotfoundCtacontact": "Contacter le support",
   "vitrineNotfoundMascotalt": "Illustration : un leopard debranche, page introuvable",
+  "vitrineForbiddenKicker": "Erreur 403",
+  "vitrineForbiddenTitle": "Acces refuse",
+  "vitrineForbiddenBody": "Votre role ne permet pas cette action. Si vous pensez qu'il s'agit d'une erreur, demandez l'acces a un administrateur.",
+  "vitrineForbiddenCtahome": "Retour a l'accueil",
+  "vitrineForbiddenCtasupport": "Demander l'acces",
+  "vitrineForbiddenMascotalt": "Illustration : un leopard devant une porte fermee, acces refuse",
   "vitrineErrorKicker": "Erreur inattendue",
   "vitrineErrorTitle": "Quelque chose s'est mal passé",
   "vitrineErrorBody": "L'action n'a pas pu aboutir. Vous pouvez réessayer ; si le problème persiste, contactez le support.",
@@ -6546,5 +6552,7 @@
   "devicesError": "Impossible de charger les appareils.",
   "devicesCreated": "Appareil enrole.",
   "devicesRevoked": "Appareil revoque.",
-  "devicesSecretwarning": "Ne partagez jamais ce jeton : il n'est affiche qu'une fois."
+  "devicesSecretwarning": "Ne partagez jamais ce jeton : il n'est affiche qu'une fois.",
+  "travelSeatsStateAbsent": "Siège absent",
+  "travelSeatsLayoutnotice": "Modifier la disposition des sièges ne déplace pas les passagers déjà réservés : leurs sièges restent inchangés. Utilisez la procédure de remplacement de véhicule pour résoudre un conflit."
 }
