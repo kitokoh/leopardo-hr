@@ -49,7 +49,7 @@ class MarketingOsAudit
      * Transition de statut d'une publication.
      *
      * @param  string  $action  Action d'audit (`marketing.publication.*`).
-     * @param  string|null  $previousStatus  Statut avant (null = création).
+     * @param  string  $previousStatus  Statut avant la transition.
      * @param  array<string, mixed>  $metadata  Contexte additionnel.
      */
     public function publicationTransition(
