@@ -128,6 +128,47 @@
 > (diff des listes numérotées) : **0 régression**. Colonnes vérifiées en base
 > (`information_schema`).
 >
+> **MAJ 2026-10-17 — BC-24 TRAVEL OS, clôture #8546 / #8547 / #8548 (contrôle billets, impression QR, historique télémétrie).**
+> Surface **API** : trois surfaces TravelAgency complétées, **sans reconstruire
+> l'existant** (`VerifyTicketAction` #8538, `CheckInTicketAction` #8539,
+> `TravelTicketQrCode`, `TravelTicketPdfGenerator`, `RecordVehiclePositionAction`
+> #8540, `VehiclePositionFreshness`, `BuildTravelFleetTrackingAction`, PostGIS +
+> module core `Geo` réutilisés tels quels).
+> **(1) #8546** — `POST /api/v1/travel/tickets/lookup` : recherche **manuelle par
+> référence**, secours quand la caméra est indisponible. **LECTURE SEULE** — ne
+> consomme jamais le billet, ne divulgue aucun code de contrôle, identité du
+> passager réservée à `travel.checkin`, cross-tenant → 404.
+> **(2) #8547** — preuve que le QR du billet est **réellement scannable depuis le
+> PDF livré** : `TravelTicketQrDecoder` (décodeur QR en PHP pur, vérifie les
+> syndromes de Reed-Solomon et **refuse** une image dégradée plutôt que de
+> deviner) + `PdfEmbeddedImageExtractor` (lit l'image telle qu'embarquée par
+> dompdf : FlateDecode + inversion du prédicteur PNG).
+> **(3) #8548** — `GET /api/v1/travel/vehicles/{id}/positions` : **historique des
+> positions réellement transmises** (table `travel_vehicle_position_logs`,
+> append-only, isolation `company_id`), instantané **et** historique dans la
+> **même transaction**, `recorded_at` borné (`before_or_equal:now`,
+> `after:-30 days`), **liste VIDE** si aucun dispositif — jamais de points
+> fabriqués.
+> Scénarios PHPUnit : `api/tests/Feature/Travel/TravelTicketLookupTest.php`
+> (9 cas : lecture seule, aucun code divulgué, 403 non habilité, 404
+> cross-tenant, statut `void` remonté), `TravelTicketPrintingTest.php` (10 cas :
+> QR décodé **depuis le PDF**, charge utile sans PII, payloads distincts,
+> refus d'une image illisible/blanche, PDF valide, une seule image couleur),
+> `TravelVehiclePositionHistoryTest.php` (17 cas : instantané + historique
+> atomiques, horodatage de mesure conservé, date future/trop ancienne refusée,
+> source inconnue refusée, coordonnées hors bornes refusées, historique vide
+> sans dispositif, ordre antéchronologique, fenêtre temporelle, `limit` plafonné,
+> estimation jamais `is_measured`, 404 cross-tenant, 403 non habilité, périmètre
+> par véhicule). **36 tests / 88 assertions, 0 échec** (PHP 8.4.26 + PostgreSQL +
+> PostGIS + Redis) ; PHPStan strict niveau 8 → 0 erreur ; non-régression
+> `tests/Feature/Travel` : `main` 561 succès / 100 échecs → branche **611 succès /
+> 100 échecs**, noms des échecs **byte-identiques** (aucune régression).
+> **Limites assumées** : scan caméra et impression thermique ESC/POS nécessitent
+> un **appareil réel** (aucune compatibilité affirmée) ; le **suivi GPS temps
+> réel n'est pas déclaré opérationnel** (aucun fournisseur de télémétrie
+> n'alimente le système, aucune position simulée) ; détection de retard non
+> livrée. Documentation : `docs/ops/TRAVEL_IMPRESSION_BILLETS.md`,
+> `docs/ops/TRAVEL_SUIVI_FLOTTE.md`.
 > **MAJ 2026-10-17 — #8579 + #8580, Fuel Station OS : moyens de paiement et annulation compensatoire des ventes.**
 > Surface **API (api/routes/modules/fuel_station.php)** : nouvelle route
 > `POST /fuel-station/sales/{sale}/cancel` (bloc manager, `throttle:fuel-sensitive`),

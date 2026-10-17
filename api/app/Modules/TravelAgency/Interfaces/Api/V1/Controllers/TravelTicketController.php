@@ -89,6 +89,71 @@ class TravelTicketController extends Controller
         ];
     }
 
+    /**
+     * #8546 — RECHERCHE MANUELLE par référence (secours si la caméra ne
+     * fonctionne pas, ou appareil sans capteur).
+     *
+     * LECTURE SEULE, comme `verify` : ne consomme jamais le billet. Ne
+     * retourne AUCUN code de contrôle (il n'est délivré qu'à l'émission) —
+     * seulement de quoi identifier la réservation et ses billets, pour que
+     * l'agent puisse ensuite saisir le code ou demander une pièce d'identité.
+     *
+     * Cross-tenant → 404 (jamais 403 : ne rien divulguer sur l'existence
+     * d'une réservation dans un autre tenant).
+     */
+    public function lookup(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('verifyAny', TravelTicket::class)) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'reference' => ['required', 'string', 'max:64'],
+        ]);
+
+        $booking = TravelBooking::query()
+            ->where('reference', (string) $validated['reference'])
+            ->where('company_id', $actor->company_id)
+            ->with([
+                'trip.route.originCity',
+                'trip.route.destinationCity',
+                'tickets.passenger',
+            ])
+            ->first();
+
+        if (! $booking instanceof TravelBooking) {
+            abort(404);
+        }
+
+        $verifier = app(VerifyTicketAction::class);
+
+        return response()->json([
+            'data' => [
+                'booking_reference' => $booking->reference,
+                'trip' => [
+                    'code' => $booking->trip?->code,
+                    'departure_date' => $booking->trip?->departure_date?->toDateString(),
+                    'departure_time' => $booking->trip?->departure_time,
+                    'origin' => $booking->trip?->route?->originCity?->name,
+                    'destination' => $booking->trip?->route?->destinationCity?->name,
+                ],
+                'tickets' => $booking->tickets->map(fn (TravelTicket $ticket): array => [
+                    'ticket_number' => $ticket->ticket_number,
+                    'seat_number' => $ticket->passenger?->seat_number,
+                    'status' => $verifier->resolveStatus($ticket),
+                    // Identité du passager : uniquement pour un opérateur
+                    // habilité au contrôle (permission travel.checkin).
+                    'passenger' => $actor->can('checkIn', $ticket) && $ticket->passenger !== null
+                        ? ['full_name' => $ticket->passenger->full_name]
+                        : null,
+                ])->all(),
+            ],
+        ]);
+    }
+
     public function checkIn(Request $request, TravelTicket $travelTicket): JsonResponse
     {
         /** @var Employee $actor */

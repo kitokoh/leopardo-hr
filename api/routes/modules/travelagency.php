@@ -116,6 +116,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // Dernière position connue d'un véhicule (#8540) — ingestion par un
         // dispositif autorisé (boîtier GPS ou application).
         Route::post('/vehicles/{travelVehicle}/position', [TravelVehicleController::class, 'recordPosition']);
+        // #8548 — historique des positions RÉELLEMENT transmises (borné par
+        // tenant, véhicule et fenêtre temporelle). Liste vide si le véhicule
+        // n'a aucun dispositif : jamais de points fabriqués.
+        Route::get('/vehicles/{travelVehicle}/positions', [TravelVehicleController::class, 'positionHistory']);
 
         // Tableau de bord de suivi de la flotte (#8548) — lecture seule :
         // dernière position connue, fraîcheur (récente/ancienne/indisponible),
@@ -182,6 +186,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // Vérification d'authenticité d'un billet (#8538) — LECTURE SEULE,
         // distincte de la consommation (check-in ci-dessous).
         Route::post('/tickets/verify', [TravelTicketController::class, 'verify']);
+
+        // #8546 — recherche manuelle par référence (secours caméra
+        // indisponible). LECTURE SEULE également : ne consomme jamais.
+        Route::post('/tickets/lookup', [TravelTicketController::class, 'lookup']);
 
         // Check-in / embarquement (TRAVEL-317/#6047).
         Route::post('/tickets/{travelTicket}/check-in', [TravelTicketController::class, 'checkIn']);
