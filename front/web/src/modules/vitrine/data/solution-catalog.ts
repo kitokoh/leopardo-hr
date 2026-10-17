@@ -87,7 +87,7 @@ export const SOLUTIONS: readonly SolutionEntry[] = [
         name: 'Restaurant OS',
         tagline: 'Salle, cuisine et paie dans un seul espace.',
         description:
-          'L’environnement des restaurants : les équipes pointent en salle comme en cuisine, le planning suit les rotations du service et les heures remontent directement dans la paie. Le pack de démarrage est offert.',
+          'L’environnement des restaurants : les équipes pointent en salle comme en cuisine, le planning suit les rotations du service et les heures remontent directement dans la paie.',
         users: ['Gérant', 'Responsable de salle', 'Cuisine', 'Équipe terrain'],
         features: [
           'Pointage en salle et en cuisine (badge, QR, GPS mobile)',
@@ -102,7 +102,7 @@ export const SOLUTIONS: readonly SolutionEntry[] = [
         name: 'Restaurant OS',
         tagline: 'Floor, kitchen and payroll in one place.',
         description:
-          'The restaurant environment: crews clock in on the floor and in the kitchen, scheduling follows service rotations and hours flow straight into payroll. The starter pack is free.',
+          'The restaurant environment: crews clock in on the floor and in the kitchen, scheduling follows service rotations and hours flow straight into payroll.',
         users: ['Owner', 'Floor manager', 'Kitchen', 'Field crew'],
         features: [
           'Clock-in on the floor and in the kitchen (badge, QR, mobile GPS)',
@@ -132,7 +132,7 @@ export const SOLUTIONS: readonly SolutionEntry[] = [
         name: 'نظام المطاعم',
         tagline: 'الصالة والمطبخ والرواتب في مكان واحد.',
         description:
-          'بيئة المطاعم: تسجّل الفرق حضورها في الصالة كما في المطبخ، وتتبع الجدولة دورات الخدمة، وتنتقل الساعات مباشرة إلى الرواتب. حزمة البداية مجانية.',
+          'بيئة المطاعم: تسجّل الفرق حضورها في الصالة كما في المطبخ، وتتبع الجدولة دورات الخدمة، وتنتقل الساعات مباشرة إلى الرواتب.',
         users: ['المدير', 'مسؤول الصالة', 'المطبخ', 'الفريق الميداني'],
         features: [
           'تسجيل الحضور في الصالة والمطبخ (بطاقة، QR، GPS الجوال)',

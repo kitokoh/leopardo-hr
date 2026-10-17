@@ -745,7 +745,14 @@ export function HeroBusinessOS3D({
           labelVec.project(camera);
           const x = (labelVec.x * 0.5 + 0.5) * viewW;
           const y = (-labelVec.y * 0.5 + 0.5) * viewH;
-          el.style.transform = `translate(-50%, -135%) translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
+          // Garde-fou de bord (#8438, retour vague 5) : sur mobile la sphère
+          // déborde du cadre et les étiquettes sortaient tronquées (« OS »
+          // seul visible à gauche). On borne le centre projeté à une marge de
+          // 15 % de chaque côté — le libellé reste entier et lisible, même si
+          // son ancre optique glisse légèrement vers l'intérieur.
+          const margin = viewW * 0.15;
+          const clampedX = Math.min(viewW - margin, Math.max(margin, x));
+          el.style.transform = `translate(-50%, -135%) translate(${clampedX.toFixed(1)}px, ${y.toFixed(1)}px)`;
           const depthFade = Math.min(1, Math.max(0.45, 1.5 - distance / 12));
           el.style.opacity = hovered === node ? '1' : depthFade.toFixed(2);
         });

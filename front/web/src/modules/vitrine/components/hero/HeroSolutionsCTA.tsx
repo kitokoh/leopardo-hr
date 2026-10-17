@@ -9,8 +9,9 @@
  * parcours, aucune concurrence avec la constellation. Les textes retirés
  * restent portés par la page /packs.
  *
- * Placement : le parent (HeroSection, layout `stage`) ancre ce bloc en bas du
- * héros ; la marge basse le décolle du globe sans le perdre en bas de page.
+ * Placement : le parent (HeroScene3DPanel) place ce bloc SOUS la scène ; la
+ * marge haute le décolle franchement de la constellation (« un peu plus bas »,
+ * sans le perdre en bas de page) et la marge basse le détache du bord.
  *
  * Libellé : `SOLUTION_CARD_COPY.ctaPrimary` (copie sous `data/`, chemin
  * exempté par la garde PA2-I18N-014). Destination : le hub /packs, parcours de
@@ -32,7 +33,7 @@ export function HeroSolutionsCTA() {
   return (
     <div
       data-testid="hero-solutions-cta"
-      className="pointer-events-auto mb-10 flex justify-center sm:mb-14"
+      className="pointer-events-auto mt-6 flex justify-center pb-10 sm:mt-10 sm:pb-14"
     >
       <Link
         href={withLocaleHref('/packs', search)}

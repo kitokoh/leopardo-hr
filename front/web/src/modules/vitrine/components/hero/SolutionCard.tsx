@@ -125,7 +125,7 @@ export function SolutionCard({ solutionId, locale, onClose, returnFocusRef }: So
   if (!detail || !mounted) return null;
 
   const overlay = (
-    <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center sm:p-6">
+    <div className="fixed inset-0 z-[100] flex items-end justify-center p-3 sm:items-center sm:p-6">
       {/* Fond assombri : un clic ferme la fiche (cible large, accessible). */}
       <button
         type="button"
@@ -140,11 +140,12 @@ export function SolutionCard({ solutionId, locale, onClose, returnFocusRef }: So
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        data-testid="solution-card"
         tabIndex={-1}
         initial={{ opacity: 0, y: 32, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-        className="relative z-10 flex max-h-[92dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl border border-emerald-500/20 bg-slate-950/95 shadow-2xl shadow-emerald-500/10 outline-none backdrop-blur-xl sm:rounded-3xl"
+        className="relative z-10 flex max-h-[88dvh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-emerald-500/20 bg-slate-950/95 shadow-2xl shadow-emerald-500/10 outline-none backdrop-blur-xl"
       >
         {/* En-tête */}
         <div className="relative border-b border-white/10 px-6 pb-5 pt-6 sm:px-8">
