@@ -25,6 +25,9 @@ use Illuminate\Support\Carbon;
  * @property string|null $phone
  * @property string $timezone
  * @property string|null $currency
+ * @property string|null $logo_path
+ * @property string|null $logo_disk
+ * @property string|null $logo_url
  * @property array<string, mixed>|null $metadata
  * @property string $status active|inactive|archived
  * @property Carbon|null $created_at
@@ -58,6 +61,9 @@ class FuelStation extends Model
         'phone',
         'timezone',
         'currency',
+        'logo_path',
+        'logo_disk',
+        'logo_url',
         'metadata',
         'status',
     ];
