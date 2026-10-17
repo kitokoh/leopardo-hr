@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { SeatMap } from "@/components/seat-map";
 import { ApiError, createBooking } from "@/lib/api";
 import { useAccount } from "@/lib/account-provider";
-import { resolveSeatsPerRow, selectableSeatNumbers } from "@/lib/seat-layout";
+import { resolveSeatLayout, selectableSeatNumbers } from "@/lib/seat-layout";
 import {
   cityLabel,
   formatDate,
@@ -201,11 +201,12 @@ export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
   };
 
   /**
-   * #8620 — Sièges par rangée du véhicule affecté (2+2 au-delà de 15 places,
-   * 2+1 en deçà). Le regroupement est visuel ; l'état de chaque siège reste
-   * celui de l'inventaire serveur.
+   * #8646 — disposition EFFECTIVE du véhicule affecté : configuration réelle
+   * renvoyée par l'API, ou repli par capacité quand elle est absente. Le plan
+   * ne déduit donc plus la géométrie à partir de `total_seats` dès que le
+   * serveur en connaît une.
    */
-  const seatsPerRow = resolveSeatsPerRow(trip.total_seats);
+  const seatLayout = resolveSeatLayout(trip.total_seats, trip.seat_layout ?? null);
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-8">
@@ -281,7 +282,9 @@ export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
                 seats={trip.seats}
                 selected={selectedSeats}
                 onToggle={toggleSeat}
-                seatsPerRow={seatsPerRow}
+                layout={trip.seat_layout ?? null}
+                seatsPerRow={seatLayout.seatsPerRow}
+                aisleAfter={seatLayout.aisleAfter}
               />
             </div>
 

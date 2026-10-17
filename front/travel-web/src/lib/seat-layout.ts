@@ -63,6 +63,11 @@ export interface LayoutOptions {
   seatsPerRow?: number;
   /** Insérer une colonne couloir au milieu de la rangée. Défaut : true. */
   aisle?: boolean;
+  /**
+   * Position (1-based) de la colonne APRÈS laquelle se trouve le couloir.
+   * `null` = pas de couloir. Quand fourni, prime sur `aisle`.
+   */
+  aisleAfter?: number | null;
 }
 
 /** Symboles non colorés par état — lisibles en niveaux de gris. */
@@ -137,10 +142,19 @@ export function buildSeatMapLayout(
   options: LayoutOptions = {},
 ): SeatMapLayout {
   const seatsPerRow = Math.max(1, Math.trunc(options.seatsPerRow ?? 4));
-  const aisle = options.aisle ?? seatsPerRow >= 3;
 
   const sorted = [...seats].sort((a, b) => a.seat_number - b.seat_number);
-  const aisleAfter = aisle ? Math.ceil(seatsPerRow / 2) : null;
+  // #8646 — quand le serveur précise la position du couloir, elle fait foi ;
+  // `null` signifie explicitement « aucun couloir ». Sinon on garde l'ancien
+  // comportement (couloir dès 3 sièges par rangée).
+  const aisleAfter =
+    options.aisleAfter !== undefined && options.aisleAfter !== null
+      ? Math.min(Math.max(1, Math.trunc(options.aisleAfter)), seatsPerRow - 1)
+      : options.aisleAfter === null
+        ? null
+        : (options.aisle ?? seatsPerRow >= 3)
+          ? Math.ceil(seatsPerRow / 2)
+          : null;
 
   const rows: SeatRowLayout[] = [];
   for (let i = 0; i < sorted.length; i += seatsPerRow) {
@@ -168,7 +182,7 @@ export function buildSeatMapLayout(
 
   return {
     rows,
-    columns: seatsPerRow + (aisle ? 1 : 0),
+    columns: seatsPerRow + (aisleAfter !== null ? 1 : 0),
     aisleColumn: aisleAfter,
     seatsPerRow,
   };
@@ -211,4 +225,76 @@ export function selectableSeatNumbers(seats: readonly SeatInput[]): number[] {
 export function resolveSeatsPerRow(totalSeats: number): number {
   if (!Number.isFinite(totalSeats) || totalSeats <= 0) return 4;
   return totalSeats > 15 ? 4 : 3;
+}
+
+/**
+ * #8646 — disposition de sièges telle qu'exposée par l'API.
+ *
+ * `seats_per_row` / `aisle_after` sont des ENTIERS de géométrie ;
+ * `is_configured` dit si la géométrie a été LUE sur le véhicule ou DÉDUITE de
+ * sa capacité. Une disposition déduite ne doit jamais être présentée comme
+ * une donnée du véhicule.
+ */
+export interface SeatLayoutConfig {
+  seats_per_row: number;
+  aisle_after: number | null;
+  is_configured?: boolean;
+}
+
+/** Disposition effective prête à être passée au plan de sièges. */
+export interface ResolvedSeatLayout {
+  seatsPerRow: number;
+  aisleAfter: number | null;
+  /** `true` quand la géométrie vient du véhicule, `false` quand elle est déduite. */
+  isConfigured: boolean;
+}
+
+/**
+ * #8646 — résout la disposition EFFECTIVE d'un plan de sièges.
+ *
+ * Priorité : configuration serveur → repli historique sur la capacité. Le
+ * repli existe uniquement pour les véhicules non configurés (antérieurs à
+ * #8644) et pour les trajets sans véhicule affecté ; il est signalé par
+ * `isConfigured: false` afin que l'UI ne fasse pas passer une déduction pour
+ * une donnée lue.
+ */
+export function resolveSeatLayout(
+  totalSeats: number,
+  layout?: SeatLayoutConfig | null,
+): ResolvedSeatLayout {
+  if (
+    layout &&
+    Number.isInteger(layout.seats_per_row) &&
+    layout.seats_per_row >= 1 &&
+    layout.seats_per_row <= 6
+  ) {
+    const aisleAfter =
+      layout.aisle_after === null || layout.aisle_after === undefined
+        ? null
+        : Math.trunc(layout.aisle_after);
+
+    if (aisleAfter !== null && (aisleAfter < 1 || aisleAfter >= layout.seats_per_row)) {
+      // Géométrie serveur incohérente : on ne rend pas un plan impossible.
+      return fallbackSeatLayout(totalSeats);
+    }
+
+    return {
+      seatsPerRow: layout.seats_per_row,
+      aisleAfter,
+      isConfigured: layout.is_configured !== false,
+    };
+  }
+
+  return fallbackSeatLayout(totalSeats);
+}
+
+/** Repli historique — utilisé UNIQUEMENT quand aucune géométrie n'est connue. */
+function fallbackSeatLayout(totalSeats: number): ResolvedSeatLayout {
+  const seatsPerRow = resolveSeatsPerRow(totalSeats);
+
+  return {
+    seatsPerRow,
+    aisleAfter: seatsPerRow >= 3 ? Math.ceil(seatsPerRow / 2) : null,
+    isConfigured: false,
+  };
 }
