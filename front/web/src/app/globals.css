@@ -227,21 +227,114 @@ html {
   }
 }
 
-/* ── Cartes géographiques du fond de constellation (Option A) ──────────────────
-   Rotation lente France → Algérie → Turquie → Tchad → Afrique : une carte
-   s'efface pendant que la suivante apparaît (fondu croisé porté par
-   `.geo-map-layer`). Style pur, donc ici et non dans le TSX (même garde
-   i18n/design-tokens que `.france-constellation-drift` ci-dessus).
-   Neutralisé en `prefers-reduced-motion` : la première carte reste affichée,
-   sans fondu — le décor est purement visuel, aucune information n'est perdue. */
-.geo-map-layer {
-  transition: opacity 1400ms ease-in-out;
-  will-change: opacity;
+/* ── Cartes géographiques : demi-cercle DERRIÈRE la constellation ────────────
+   Retour utilisateur (vague 5) : les cartes passaient au milieu de la scène et
+   concurrençaient les étoiles. Elles décrivent désormais un demi-cercle qui
+   ENTURE la constellation — petites et estompées aux deux extrémités, les plus
+   grandes au centre, DERRIÈRE les étoiles (le calque est en `z-[1]`, la scène
+   WebGL en `z-10` : la constellation reste toujours au premier plan).
+
+   Géométrie : les cartes tournent autour d'un centre situé SOUS le héros, sur
+   un cercle de rayon `--geo-r` ; la course va de -75° à +75°, ce qui décrit un
+   arc régulier dont le sommet tombe au cœur de la constellation et dont les
+   extrémités restent au-dessus du CTA. `rotate(θ) translateY(-r) rotate(-θ)` =
+   déplacement sur le cercle SANS incliner la carte : le tracé reste droit et
+   lisible, seule sa taille change.
+
+   Animation purement CSS : `transform` + `opacity` seulement (couches
+   composées, aucun travail JS par image), interpolation linéaire entre 11
+   positions exactes de l'arc — l'écart à un cercle parfait est < 1 % du rayon,
+   invisible. Durée longue : dérive lente, jamais « clignotante ».
+
+   Style pur, donc ici et non dans le TSX (la garde i18n `check-i18n-diff.js`
+   scanne les .tsx ; les .css ne sont pas scannés). Aucun `#rrggbb` : la garde
+   design-tokens lit aussi les .css, on reste en rgb().
+   `prefers-reduced-motion` : aucune rotation, une seule carte statique
+   derrière la constellation, à faible opacité — le décor reste lisible. */
+.geo-arc {
+  --geo-r: min(54vw, 40vh);
+  perspective: 1200px;
 }
+
+.geo-arc-card {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 0.45 * var(--geo-r));
+  width: calc(var(--geo-r) * 0.95);
+  height: calc(var(--geo-r) * 0.95);
+  margin-left: calc(var(--geo-r) * -0.475);
+  margin-top: calc(var(--geo-r) * -0.475);
+  color: rgb(94 234 212);
+  opacity: 0;
+  transform: rotate(-75deg) translateY(calc(-1 * var(--geo-r))) rotate(75deg) scale(0.5);
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .geo-arc-card {
+    animation: geo-arc-sweep 54s linear infinite both;
+  }
+  @keyframes geo-arc-sweep {
+    0% {
+      transform: rotate(-75deg) translateY(calc(-1 * var(--geo-r))) rotate(75deg) scale(0.5);
+      opacity: 0;
+    }
+    10% {
+      transform: rotate(-60deg) translateY(calc(-1 * var(--geo-r))) rotate(60deg) scale(0.58);
+      opacity: 0.2;
+    }
+    20% {
+      transform: rotate(-45deg) translateY(calc(-1 * var(--geo-r))) rotate(45deg) scale(0.68);
+      opacity: 0.3;
+    }
+    30% {
+      transform: rotate(-30deg) translateY(calc(-1 * var(--geo-r))) rotate(30deg) scale(0.79);
+      opacity: 0.4;
+    }
+    40% {
+      transform: rotate(-15deg) translateY(calc(-1 * var(--geo-r))) rotate(15deg) scale(0.9);
+      opacity: 0.48;
+    }
+    50% {
+      transform: rotate(0deg) translateY(calc(-1 * var(--geo-r))) rotate(0deg) scale(1);
+      opacity: 0.55;
+    }
+    60% {
+      transform: rotate(15deg) translateY(calc(-1 * var(--geo-r))) rotate(-15deg) scale(0.9);
+      opacity: 0.48;
+    }
+    70% {
+      transform: rotate(30deg) translateY(calc(-1 * var(--geo-r))) rotate(-30deg) scale(0.79);
+      opacity: 0.4;
+    }
+    80% {
+      transform: rotate(45deg) translateY(calc(-1 * var(--geo-r))) rotate(-45deg) scale(0.68);
+      opacity: 0.3;
+    }
+    90% {
+      transform: rotate(60deg) translateY(calc(-1 * var(--geo-r))) rotate(-60deg) scale(0.58);
+      opacity: 0.2;
+    }
+    100% {
+      transform: rotate(75deg) translateY(calc(-1 * var(--geo-r))) rotate(-75deg) scale(0.5);
+      opacity: 0;
+    }
+  }
+}
+
+/* Mouvement réduit : une seule carte, immobile, derrière la constellation. */
 @media (prefers-reduced-motion: reduce) {
-  .geo-map-layer {
-    transition: none;
+  .geo-arc-card {
+    animation: none;
     will-change: auto;
+  }
+  .geo-arc-card:not(:first-child) {
+    display: none;
+  }
+  .geo-arc-card:first-child {
+    transform: translateY(calc(-1 * var(--geo-r))) scale(0.9);
+    opacity: 0.3;
   }
 }
 

@@ -6584,7 +6584,7 @@
     },
     "nav": {
       "pricing": "Tarifs",
-      "packs": "Packs offerts",
+      "packs": "Pack",
       "packsHub": "Tous les packs",
       "packsHubDesc": "Un pack offert par métier — découvrez l'offre",
       "packsRestaurant": "Restaurants",
@@ -6621,7 +6621,6 @@
       "trade": "Trade"
     },
     "hero3d": {
-      "hint": "Cliquez sur un module pour explorer",
       "demo": "Démo",
       "cagnottes": "Cagnottes",
       "freeTrial": "Essai gratuit"

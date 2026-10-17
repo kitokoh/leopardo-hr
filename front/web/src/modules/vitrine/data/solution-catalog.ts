@@ -87,7 +87,7 @@ export const SOLUTIONS: readonly SolutionEntry[] = [
         name: 'Restaurant OS',
         tagline: 'Salle, cuisine et paie dans un seul espace.',
         description:
-          'L’environnement des restaurants : les équipes pointent en salle comme en cuisine, le planning suit les rotations du service et les heures remontent directement dans la paie. Le pack de démarrage est offert.',
+          'L’environnement des restaurants : les équipes pointent en salle comme en cuisine, le planning suit les rotations du service et les heures remontent directement dans la paie.',
         users: ['Gérant', 'Responsable de salle', 'Cuisine', 'Équipe terrain'],
         features: [
           'Pointage en salle et en cuisine (badge, QR, GPS mobile)',
@@ -102,7 +102,7 @@ export const SOLUTIONS: readonly SolutionEntry[] = [
         name: 'Restaurant OS',
         tagline: 'Floor, kitchen and payroll in one place.',
         description:
-          'The restaurant environment: crews clock in on the floor and in the kitchen, scheduling follows service rotations and hours flow straight into payroll. The starter pack is free.',
+          'The restaurant environment: crews clock in on the floor and in the kitchen, scheduling follows service rotations and hours flow straight into payroll.',
         users: ['Owner', 'Floor manager', 'Kitchen', 'Field crew'],
         features: [
           'Clock-in on the floor and in the kitchen (badge, QR, mobile GPS)',
@@ -132,7 +132,7 @@ export const SOLUTIONS: readonly SolutionEntry[] = [
         name: 'نظام المطاعم',
         tagline: 'الصالة والمطبخ والرواتب في مكان واحد.',
         description:
-          'بيئة المطاعم: تسجّل الفرق حضورها في الصالة كما في المطبخ، وتتبع الجدولة دورات الخدمة، وتنتقل الساعات مباشرة إلى الرواتب. حزمة البداية مجانية.',
+          'بيئة المطاعم: تسجّل الفرق حضورها في الصالة كما في المطبخ، وتتبع الجدولة دورات الخدمة، وتنتقل الساعات مباشرة إلى الرواتب.',
         users: ['المدير', 'مسؤول الصالة', 'المطبخ', 'الفريق الميداني'],
         features: [
           'تسجيل الحضور في الصالة والمطبخ (بطاقة، QR، GPS الجوال)',
@@ -581,6 +581,11 @@ export function getSolutionDetail(id: SolutionId, locale: AppLocale): SolutionDe
 /**
  * Libellés de l'interface de la fiche et du CTA sous la constellation.
  * Copie nouvelle, donc sous `data/` (chemin exempté PA2-I18N-014).
+ *
+ * Le CTA ne porte plus de titre/sous-titre ni de ligne de réassurance
+ * ("Free pack · No credit card · No commitment") : retour utilisateur —
+ * l'explication au-dessus du bouton détournait l'attention de la
+ * constellation ; la promesse commerciale vit sur /packs et /pricing.
  */
 export const SOLUTION_CARD_COPY: Record<
   AppLocale,
@@ -591,11 +596,7 @@ export const SOLUTION_CARD_COPY: Record<
     close: string;
     explore: string;
     start: string;
-    ctaTitle: string;
-    ctaSubtitle: string;
     ctaPrimary: string;
-    ctaSecondary: string;
-    ctaReassurance: string;
   }
 > = {
   fr: {
@@ -605,12 +606,7 @@ export const SOLUTION_CARD_COPY: Record<
     close: 'Fermer',
     explore: 'En savoir plus',
     start: 'Commencer maintenant',
-    ctaTitle: 'Trouver la solution adaptée à mon activité',
-    ctaSubtitle:
-      'Une plateforme, plusieurs environnements métier : choisissez le vôtre, le pack correspondant s’active gratuitement.',
     ctaPrimary: 'Découvrir nos solutions',
-    ctaSecondary: 'Commencer maintenant',
-    ctaReassurance: 'Pack offert · Sans carte bancaire · Sans engagement',
   },
   en: {
     badge: 'Leopardo solution',
@@ -619,12 +615,7 @@ export const SOLUTION_CARD_COPY: Record<
     close: 'Close',
     explore: 'Learn more',
     start: 'Start now',
-    ctaTitle: 'Find the right solution for my business',
-    ctaSubtitle:
-      'One platform, several business environments: pick yours and the matching pack activates for free.',
     ctaPrimary: 'Explore our solutions',
-    ctaSecondary: 'Start now',
-    ctaReassurance: 'Free pack · No credit card · No commitment',
   },
   tr: {
     badge: 'Leopardo çözümü',
@@ -633,12 +624,7 @@ export const SOLUTION_CARD_COPY: Record<
     close: 'Kapat',
     explore: 'Daha fazla bilgi',
     start: 'Hemen başla',
-    ctaTitle: 'İşletmeme uygun çözümü bulmak istiyorum',
-    ctaSubtitle:
-      'Tek platform, birkaç sektör ortamı: sizinkini seçin, uygun paket ücretsiz etkinleşsin.',
     ctaPrimary: 'Çözümlerimizi keşfedin',
-    ctaSecondary: 'Hemen başla',
-    ctaReassurance: 'Ücretsiz paket · Kredi kartı yok · Taahhüt yok',
   },
   ar: {
     badge: 'حل Leopardo',
@@ -647,11 +633,6 @@ export const SOLUTION_CARD_COPY: Record<
     close: 'إغلاق',
     explore: 'معرفة المزيد',
     start: 'ابدأ الآن',
-    ctaTitle: 'أريد الحل المناسب لنشاطي',
-    ctaSubtitle:
-      'منصة واحدة وعدة بيئات مهنية: اختر بيئتك، وستُفعَّل الحزمة المناسبة مجانًا.',
     ctaPrimary: 'اكتشف حلولنا',
-    ctaSecondary: 'ابدأ الآن',
-    ctaReassurance: 'حزمة مجانية · بدون بطاقة بنكية · بدون التزام',
   },
 };

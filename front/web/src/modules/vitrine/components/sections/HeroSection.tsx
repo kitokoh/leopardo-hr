@@ -8,7 +8,6 @@ import { useSearchParams } from 'next/navigation';
 import { withLocaleHref } from '../../lib/locale-href';
 import { GeoBackdrop } from '../hero/GeoBackdrop';
 import { HeroScene3D } from '../hero/HeroScene3D';
-import { HeroSolutionsCTA } from '../hero/HeroSolutionsCTA';
 
 export interface HeroSectionProps {
   headline: string;
@@ -109,14 +108,14 @@ export function HeroSection({
   // opacité > 0.9) — « toile de fond » = ordre de plan, pas estompage.
   if (isStage) {
     return (
-      <section ref={ref} className="relative min-h-[100dvh] overflow-hidden bg-slate-950">
+      <section ref={ref} className="relative isolate min-h-[100dvh] overflow-hidden bg-slate-950">
         {/* Ciel nuit permanent : lueurs émeraude/cyan sur ardoise profonde */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_-10%,rgba(16,185,129,0.18),transparent)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_55%_at_85%_110%,rgba(6,182,212,0.14),transparent)]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-950/95 to-slate-900/95" />
+        <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_-10%,rgba(16,185,129,0.18),transparent)]" />
+        <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_70%_55%_at_85%_110%,rgba(6,182,212,0.14),transparent)]" />
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-slate-950 via-slate-950/95 to-slate-900/95" />
         {/* Trame discrète (style en globals.css — la garde i18n ne scanne
             pas les .css, cf. note PA2-I18N-014 en tête de globals.css) */}
-        <div className="hero-stage-grid absolute inset-0 opacity-[0.05]" />
+        <div className="hero-stage-grid absolute inset-0 z-0 opacity-[0.05]" />
 
         {/* Mission Leopardo — les cartes géographiques du fond (France →
             Algérie → Turquie → Tchad → Afrique) remplacent la France figée :
@@ -134,7 +133,7 @@ export function HeroSection({
             (chevauchement constaté en capture 390×844). Le padding bas la
             hisse dans le tiers supérieur : la constellation (abaissée côté
             scène) ne la croise qu'en petits modules orbitaux. */}
-        <div className="pointer-events-none absolute inset-0 z-0 flex items-start justify-center px-4 pt-32 sm:items-center sm:px-6 sm:pb-[32vh] sm:pt-0">
+        <div className="pointer-events-none absolute inset-0 z-[5] flex items-start justify-center px-4 pt-28 sm:items-center sm:px-6 sm:pb-[30vh] sm:pt-0">
           <motion.h1
             initial={animated ? { y: 30 } : {}}
             animate={animated ? { y: 0 } : {}}
@@ -147,8 +146,10 @@ export function HeroSection({
           </motion.h1>
         </div>
 
-        {/* Constellation pleine scène (z-10) — modules cliquables (#8390) */}
-        <div className="absolute inset-0 z-10">{visual}</div>
+        {/* Constellation pleine scène (z-10) — modules cliquables (#8390).
+            `isolate` referme le contexte d'empilement : la scène et sa fiche
+            ne peuvent pas être recouvertes par un plan inférieur. */}
+        <div className="absolute inset-0 z-10 isolate">{visual}</div>
 
         {/* Actions (z-20) ancrées en bas. La classe `dark` LOCALE force les
             styles sombres des enfants (formulaire d'essai, boutons) : la
@@ -156,14 +157,19 @@ export function HeroSection({
         {/* #8417 — le bloc d'actions n'est rendu QUE si l'appelant en fournit
             (la page d'accueil n'en fournit plus : héro = phrase + 3D seuls) ;
             le wrapper vide n'occupe plus l'écran dans ce cas. */}
+        {(ctaPrimary || ctaSecondary || quickTrialForm) && (
         <motion.div
           style={animated ? { y, opacity, scale } : {}}
-          className="dark hero-stage-cta-tall relative z-20 flex min-h-[100dvh] flex-col items-center justify-end px-4 pb-24 sm:px-6"
+          className="dark hero-stage-cta-tall pointer-events-none relative z-20 flex min-h-[100dvh] flex-col items-center justify-end px-4 pb-24 sm:px-6"
         >
-          <div className="flex w-full max-w-3xl flex-col items-center gap-3 sm:gap-4">
-            {/* Mission Leopardo — CTA principal sous la constellation, visible
-                sans détourner l'attention (voir HeroSolutionsCTA). */}
-            <HeroSolutionsCTA />
+          {/* `pointer-events-none` sur le plan plein écran, `auto` sur le contenu :
+              ce calque ne capte plus les clics destinés à la constellation et
+              ne peut plus masquer la fiche solution (rendue en portail). */}
+          <div className="pointer-events-auto flex w-full max-w-3xl flex-col items-center gap-3 sm:gap-4">
+            {/* Mission Leopardo — retour utilisateur vague 5 : UN SEUL bouton,
+                porté par la scène elle-même (`HeroScene3DPanel`) pour rester
+                collé sous la constellation. Le CTA du héros « stage » ne doit
+                donc plus être dupliqué ici. */}
             {(ctaPrimary || ctaSecondary) && (
               <motion.div
                 initial={animated ? { y: 20 } : {}}
@@ -204,18 +210,16 @@ export function HeroSection({
                 )}
               </motion.div>
             )}
-            {ctaReassurance && (
-              <p className="text-center text-sm font-medium text-slate-400">
-                {ctaReassurance}
-              </p>
-            )}
             {quickTrialForm}
           </div>
         </motion.div>
+        )}
 
         {/* Transition douce vers la section suivante : la nuit s'ouvre sur
-            le thème courant de la page (blanc en jour, ardoise en nuit). */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[15] h-28 bg-gradient-to-b from-transparent to-white dark:to-slate-950" />
+            le thème courant de la page (blanc en jour, ardoise en nuit).
+            Plan SOUS la scène (z-[12]) : le dégradé ne mange plus le bas de
+            la constellation. */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[12] h-24 bg-gradient-to-b from-transparent to-white dark:to-slate-950" />
 
         {/* Indicateur de scroll */}
         {animated && (
