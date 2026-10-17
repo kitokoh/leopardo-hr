@@ -7,8 +7,8 @@ namespace App\Modules\TravelAgency\Application\Actions;
 use App\Modules\TravelAgency\Domain\Enums\TravelVehiclePositionSource;
 use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
 use App\Modules\TravelAgency\Domain\Models\TravelVehiclePositionLog;
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 /**
  * #8540 (TRAVEL-OS) — enregistrement de la DERNIÈRE POSITION CONNUE d'un
@@ -31,6 +31,13 @@ use Illuminate\Support\Facades\DB;
  */
 final class RecordVehiclePositionAction
 {
+    /**
+     * La connexion est INJECTÉE (et non résolue via la façade `DB`) : la
+     * façade Laravel est réservée aux couches Interfaces/Infrastructure
+     * (garde de pureté de couches, issue #6568).
+     */
+    public function __construct(private readonly ConnectionInterface $connection) {}
+
     public function execute(
         TravelVehicle $vehicle,
         float $latitude,
@@ -40,7 +47,7 @@ final class RecordVehiclePositionAction
     ): TravelVehicle {
         $measuredAt = $recordedAt ?? Carbon::now();
 
-        return DB::transaction(function () use ($vehicle, $latitude, $longitude, $source, $measuredAt): TravelVehicle {
+        return $this->connection->transaction(function () use ($vehicle, $latitude, $longitude, $source, $measuredAt): TravelVehicle {
             $vehicle->forceFill([
                 'latitude' => $latitude,
                 'longitude' => $longitude,
