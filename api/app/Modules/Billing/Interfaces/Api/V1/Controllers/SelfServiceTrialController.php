@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Self-service trial provisioning endpoint.
@@ -125,9 +126,18 @@ class SelfServiceTrialController extends Controller
             // (inscription rapide depuis le hero de la vitrine).
             'modules' => ['nullable', 'array', 'max:20'],
             'modules.*' => ['string', 'max:40', 'distinct', Rule::in(Company::HORIZONTAL_TOOLS)],
+            // BOS-O-01 / #8625 — intention de marché du point d'entrée
+            // « Trade ». Deux dimensions distinctes, validées ENSEMBLE : un
+            // `importer` sur un marché domestique est refusé (422) plutôt que
+            // stocké comme une intention incohérente. Absence des deux =
+            // inscription hors parcours Trade, comportement historique.
+            'market_type' => ['nullable', 'string', Rule::in(Company::MARKET_TYPES)],
+            'trade_profile' => ['nullable', 'string', Rule::in(Company::TRADE_PROFILES)],
         ]);
 
-        /** @var array{email: string, company?: string|null, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solutions?: list<string>|null, solution?: string|null, company_type?: string|null, modules?: list<string>|null, locale?: string|null} $validated */
+        $this->assertMarketIntentIsCoherent($request);
+
+        /** @var array{email: string, company?: string|null, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solutions?: list<string>|null, solution?: string|null, company_type?: string|null, modules?: list<string>|null, locale?: string|null, market_type?: string|null, trade_profile?: string|null} $validated */
         $email = strtolower(trim($validated['email']));
 
         // #7853 — nom d'entreprise résolu UNE fois pour les deux parcours
@@ -259,6 +269,10 @@ class SelfServiceTrialController extends Controller
                 // était validé puis jeté ici — le tenant naissait dans la langue
                 // du pays, pas la sienne.
                 $validated['locale'] ?? null,
+                // BOS-O-01 / #8625 — l'intention Trade ne doit plus mourir
+                // dans le sessionStorage du navigateur.
+                $validated['market_type'] ?? null,
+                $validated['trade_profile'] ?? null,
             );
 
             return new JsonResponse([
@@ -689,6 +703,32 @@ class SelfServiceTrialController extends Controller
     private function emailLogId(string $email): string
     {
         return substr(hash('sha256', mb_strtolower(trim($email))), 0, 16);
+    }
+
+    /**
+     * BOS-O-01 / #8625 — cohérence marché ↔ profil.
+     *
+     * `market_type` et `trade_profile` sont deux listes validées séparément :
+     * séparément valides, elles peuvent composer une intention absurde
+     * (« grossiste » sur un marché international). La règle de cohérence vit
+     * dans le modèle (`Company::isValidMarketIntent`) pour être partagée avec
+     * le provisioning et les tests — pas dupliquée ici.
+     */
+    private function assertMarketIntentIsCoherent(Request $request): void
+    {
+        $market = $request->input('market_type');
+        $profile = $request->input('trade_profile');
+
+        if (Company::isValidMarketIntent(
+            is_string($market) ? $market : null,
+            is_string($profile) ? $profile : null,
+        )) {
+            return;
+        }
+
+        throw ValidationException::withMessages([
+            'trade_profile' => [__('errors.INVALID_TRADE_PROFILE')],
+        ]);
     }
 
     /**

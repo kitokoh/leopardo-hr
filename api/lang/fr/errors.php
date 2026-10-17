@@ -110,6 +110,9 @@ return [
     'EMAIL_ALREADY_REGISTERED' => 'Un compte avec cet email existe déjà. Connectez-vous directement.',
     'SESSION_ALREADY_ACTIVE' => 'Vous êtes déjà connecté à un espace Leopardo. Déconnectez-vous avant de créer un nouvel espace.',
     'INVALID_SOLUTION' => "Solution sectorielle inconnue ou non disponible : ':solution'.",
+    // BOS-O-01 / #8625 — intention Trade incohérente (profil incompatible
+    // avec le marché). Fail-closed : refusée plutôt que stockée telle quelle.
+    'INVALID_TRADE_PROFILE' => 'Ce profil professionnel ne correspond pas au marché sélectionné (international : importateur, exportateur ou les deux ; domestique : grossiste ou détaillant).',
     'INVALID_COUNTRY' => "Le pays du signup est invalide ou non supporté. Veuillez recommencer l'inscription.",
     'NO_PLAN_AVAILABLE' => "Le service d'essai est temporairement indisponible.",
     'PROVISIONING_FAILED' => 'Erreur lors de la création de votre espace. Veuillez réessayer.',
