@@ -9,6 +9,10 @@ use App\Http\Controllers\Controller;
 use App\Modules\Marketing\Application\Actions\PromoteContentIdeaToProduction;
 use App\Modules\Marketing\Domain\Enums\ContentIdeaStatus;
 use App\Modules\Marketing\Domain\Enums\MarketingAssetKind;
+use App\Modules\Marketing\Domain\Enums\MarketingAssetValidationStatus;
+use App\Modules\Marketing\Domain\Enums\MarketingCampaignStatus;
+use App\Modules\Marketing\Domain\Enums\MarketingContentFormat;
+use App\Modules\Marketing\Domain\Enums\MarketingObjective;
 use App\Modules\Marketing\Domain\Enums\MarketingPublicationMode;
 use App\Modules\Marketing\Domain\Enums\MarketingPublicationStatus;
 use App\Modules\Marketing\Domain\Enums\MarketingVisibilityChannel;
@@ -34,6 +38,7 @@ use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -112,10 +117,14 @@ final class PlatformMarketingOsController extends Controller
     /** GET /platform/companies/{company}/marketing-os/campaigns */
     public function indexCampaigns(Request $request, string $company): JsonResponse
     {
+        // Les filtres de statut et d'objectif sont contraints par les
+        // enumerations du domaine : une valeur hors vocabulaire est refusee
+        // (422) au lieu de produire silencieusement une liste vide, que
+        // l'interface afficherait comme « aucun resultat ».
         $validated = $request->validate([
-            'status' => ['nullable', 'string'],
+            'status' => ['nullable', 'string', Rule::in(MarketingCampaignStatus::values())],
             'sector' => ['nullable', 'string', 'max:60'],
-            'objective' => ['nullable', 'string'],
+            'objective' => ['nullable', 'string', Rule::in(MarketingObjective::values())],
             'search' => ['nullable', 'string', 'max:120'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:'.self::MAX_PER_PAGE],
         ]);
@@ -136,10 +145,11 @@ final class PlatformMarketingOsController extends Controller
             }
             if (filled($validated['search'] ?? null)) {
                 $search = trim((string) $validated['search']);
-                $query->where(function ($inner) use ($search): void {
-                    $inner->where('name', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%")
-                        ->orWhere('product', 'like', "%{$search}%");
+                $pattern = $this->likePattern($search);
+                $query->where(function ($inner) use ($pattern): void {
+                    $inner->where('name', 'like', $pattern)
+                        ->orWhere('description', 'like', $pattern)
+                        ->orWhere('product', 'like', $pattern);
                 });
             }
 
@@ -177,9 +187,9 @@ final class PlatformMarketingOsController extends Controller
     public function indexIdeas(Request $request, string $company): JsonResponse
     {
         $validated = $request->validate([
-            'status' => ['nullable', 'string'],
+            'status' => ['nullable', 'string', Rule::in(ContentIdeaStatus::values())],
             'campaign_id' => ['nullable', 'integer', 'min:1'],
-            'format' => ['nullable', 'string', 'max:30'],
+            'format' => ['nullable', 'string', Rule::in(MarketingContentFormat::values())],
             'locale' => ['nullable', 'string', 'max:10'],
             'sector' => ['nullable', 'string', 'max:60'],
             'product' => ['nullable', 'string', 'max:120'],
@@ -203,10 +213,11 @@ final class PlatformMarketingOsController extends Controller
 
             if (filled($validated['search'] ?? null)) {
                 $search = trim((string) $validated['search']);
-                $query->where(function ($inner) use ($search): void {
-                    $inner->where('title', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%")
-                        ->orWhere('key_message', 'like', "%{$search}%");
+                $pattern = $this->likePattern($search);
+                $query->where(function ($inner) use ($pattern): void {
+                    $inner->where('title', 'like', $pattern)
+                        ->orWhere('description', 'like', $pattern)
+                        ->orWhere('key_message', 'like', $pattern);
                 });
             }
 
@@ -310,14 +321,14 @@ final class PlatformMarketingOsController extends Controller
     public function indexAssets(Request $request, string $company): JsonResponse
     {
         $validated = $request->validate([
-            'kind' => ['nullable', 'string', 'max:24'],
+            'kind' => ['nullable', 'string', Rule::in(MarketingAssetKind::values())],
             'campaign_id' => ['nullable', 'integer', 'min:1'],
             'content_idea_id' => ['nullable', 'integer', 'min:1'],
             'locale' => ['nullable', 'string', 'max:10'],
             'product' => ['nullable', 'string', 'max:120'],
             'sector' => ['nullable', 'string', 'max:60'],
-            'objective' => ['nullable', 'string', 'max:30'],
-            'validation_status' => ['nullable', 'string', 'max:20'],
+            'objective' => ['nullable', 'string', Rule::in(MarketingObjective::values())],
+            'validation_status' => ['nullable', 'string', Rule::in(MarketingAssetValidationStatus::values())],
             'platform' => ['nullable', 'string', 'max:40'],
             'tag' => ['nullable', 'string', 'max:60'],
             'search' => ['nullable', 'string', 'max:120'],
@@ -341,21 +352,22 @@ final class PlatformMarketingOsController extends Controller
             // le nom, la description et les tags (jsonb) sont interrogeables.
             if (filled($validated['search'] ?? null)) {
                 $search = trim((string) $validated['search']);
-                $query->where(function ($inner) use ($search): void {
-                    $inner->where('name', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%")
-                        ->orWhereRaw('tags::text ILIKE ?', ["%{$search}%"]);
+                $pattern = $this->likePattern($search);
+                $query->where(function ($inner) use ($pattern): void {
+                    $inner->where('name', 'like', $pattern)
+                        ->orWhere('description', 'like', $pattern)
+                        ->orWhereRaw('tags::text ILIKE ?', [$pattern]);
                 });
             }
 
             if (filled($validated['platform'] ?? null)) {
                 $platform = (string) $validated['platform'];
-                $query->whereRaw('platforms::text ILIKE ?', ["%{$platform}%"]);
+                $query->whereRaw('platforms::text ILIKE ?', [$this->likePattern($platform)]);
             }
 
             if (filled($validated['tag'] ?? null)) {
                 $tag = (string) $validated['tag'];
-                $query->whereRaw('tags::text ILIKE ?', ["%{$tag}%"]);
+                $query->whereRaw('tags::text ILIKE ?', [$this->likePattern($tag)]);
             }
 
             if (filled($validated['from'] ?? null)) {
@@ -498,8 +510,8 @@ final class PlatformMarketingOsController extends Controller
     {
         $validated = $request->validate([
             'platform' => ['nullable', 'string', 'max:40'],
-            'status' => ['nullable', 'string', 'max:20'],
-            'mode' => ['nullable', 'string', 'max:16'],
+            'status' => ['nullable', 'string', Rule::in(MarketingPublicationStatus::values())],
+            'mode' => ['nullable', 'string', Rule::in(MarketingPublicationMode::values())],
             'content_idea_id' => ['nullable', 'integer', 'min:1'],
             'marketing_asset_id' => ['nullable', 'integer', 'min:1'],
             'from' => ['nullable', 'date'],
@@ -766,11 +778,18 @@ final class PlatformMarketingOsController extends Controller
                 $query->where('campaign_id', (int) $campaignId);
             }
 
-            $objectives = $query->limit(self::MAX_PER_PAGE)->get();
+            // Pagination reelle : un `limit` silencieux tronquait la liste a
+            // 100 lignes sans le dire, et l'interface ne pouvait ni compter ni
+            // atteindre les objectifs suivants.
+            $page = $query->paginate((int) ($request->query('per_page') ?? self::DEFAULT_PER_PAGE));
 
             return new JsonResponse([
-                'data' => $objectives->map(fn (MarketingVisibilityObjective $o): array => $this->presentVisibilityObjective($o))->all(),
+                'data' => $page->getCollection()->map(fn (MarketingVisibilityObjective $o): array => $this->presentVisibilityObjective($o))->all(),
                 'meta' => [
+                    'current_page' => $page->currentPage(),
+                    'last_page' => $page->lastPage(),
+                    'per_page' => $page->perPage(),
+                    'total' => $page->total(),
                     'channels' => MarketingVisibilityChannel::values(),
                     'metrics_sources' => MarketingVisibilityMetricsSource::values(),
                     // Rappel explicite : aucune visibilite n'est garantie.
@@ -857,6 +876,20 @@ final class PlatformMarketingOsController extends Controller
             ->all();
 
         return $counts;
+    }
+
+    /**
+     * Motif `LIKE`/`ILIKE` sur, pour une recherche utilisateur.
+     *
+     * Sans echappement, un `%` ou un `_` saisi dans le champ de recherche est
+     * interprete comme un JOKER : chercher « 100% » ramenait tout le catalogue,
+     * et « a_b » ramenait « axb ». Le depot applique deja cette regle partout
+     * ailleurs (`addcslashes($v, '%_\\')`) : la mediatheque ne peut pas etre la
+     * seule surface ou la recherche se comporte differemment.
+     */
+    private function likePattern(string $value): string
+    {
+        return '%'.addcslashes(trim($value), '%_\\').'%';
     }
 
     private function nextVersionFor(string $companyId, string $name): int
