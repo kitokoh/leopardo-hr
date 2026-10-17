@@ -47,6 +47,9 @@ class SitesFirstClassTest extends TestCase
         $this->companyB = $companyB;
     }
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     private function site(Company $company, ?string $code, array $attributes = []): Site
     {
         /** @var Site $site */
@@ -131,7 +134,9 @@ class SitesFirstClassTest extends TestCase
         $sites = DB::table('shared_tenants.sites')->where('company_id', $company->id)->get();
 
         $this->assertCount(1, $sites, 'Un tenant doit naître avec un lieu d’exploitation.');
-        $this->assertSame('PRINCIPAL', $sites->first()->code);
+        $first = $sites->first();
+        $this->assertNotNull($first);
+        $this->assertSame('PRINCIPAL', (string) $first->code);
     }
 
     public function test_replayed_provisioning_does_not_create_a_second_site(): void

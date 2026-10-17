@@ -112,23 +112,25 @@ class IdempotencyStore
     }
 
     /**
+     * @param  array<string, mixed>  $row
      * @return array{state: 'replay', status: int, body: array<string, mixed>}|array{state: 'in_progress'}|array{state: 'conflict'}
      */
-    private function classify(object $row, string $requestHash): array
+    private function classify(array $row, string $requestHash): array
     {
-        if ((string) $row->request_hash !== $requestHash) {
+        if ((string) ($row['request_hash'] ?? '') !== $requestHash) {
             return ['state' => 'conflict'];
         }
 
-        if ((string) $row->status === 'completed') {
+        if ((string) ($row['status'] ?? '') === 'completed') {
+            $rawBody = $row['response_body'] ?? null;
             /** @var array<string, mixed> $body */
-            $body = is_string($row->response_body)
-                ? (json_decode($row->response_body, true) ?? [])
-                : (array) $row->response_body;
+            $body = is_string($rawBody)
+                ? (json_decode($rawBody, true) ?? [])
+                : (array) $rawBody;
 
             return [
                 'state' => 'replay',
-                'status' => (int) $row->response_status,
+                'status' => (int) ($row['response_status'] ?? 0),
                 'body' => $body,
             ];
         }
@@ -136,13 +138,18 @@ class IdempotencyStore
         return ['state' => 'in_progress'];
     }
 
-    private function find(string $scope, string $key): ?object
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function find(string $scope, string $key): ?array
     {
-        return DB::table('public.idempotency_keys')
+        $row = DB::table('public.idempotency_keys')
             ->where('scope', $scope)
             ->where('idempotency_key', $key)
             ->where('expires_at', '>', now())
             ->first();
+
+        return $row === null ? null : (array) $row;
     }
 
     private function purgeExpired(): void

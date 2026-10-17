@@ -87,6 +87,9 @@ class SiteApiContractTest extends TestCase
         return $employee;
     }
 
+    /**
+     * @return array<string, string>
+     */
     private function payload(string $code = 'SUD-01'): array
     {
         return [
