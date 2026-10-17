@@ -1,3 +1,16 @@
+> **MAJ 2026-10-17 — vague 6, vitrine : direction artistique premium du héros `stage`.**
+> Surface **web (`front/web/src/modules/vitrine` + `front/web/src/app/globals.css`)** : couche de profondeur
+> (`.hero-stage-base` bleu nuit/graphite, `.hero-stage-halo` derrière la scène, `.hero-stage-vignette`, voile
+> `.hero-stage-title-scrim`) ; pile inchangée et explicite — cartes `z-[1]` < titre `z-[5]` < constellation `z-10`
+> < vignettage `z-[11]` < CTA `z-20` ; arc géographique recalé (`--geo-r: min(30vw, 21vh)`, `--geo-apex: 54%`)
+> pour que son sommet tombe sur le cœur de la scène et non sur la phrase ; `HeroScene3DPanel` porte la scène à
+> 86 % de la hauteur pour rapprocher le CTA unique ; indicateur de défilement retiré du layout `stage` (il occupait
+> exactement la place du CTA). Scénarios couverts par le nouveau `HeroStageDepth.test.tsx` (9 cas) : présence et
+> `aria-hidden` des trois plans, ordre des couches titre/scène/vignettage, absence de l'indicateur, règles CSS du
+> fond (dégradés + bleu nuit `rgb(8 14 26)`), du halo et du vignettage, neutralisation de `hero-halo-breathe` hors
+> `no-preference`, calage de l'arc (`--geo-apex`, `--geo-r`) et courbe d'échelle `0.68 → 1 → 0.68`. Suite vitrine
+> complète : **56 suites / 658 tests** verts. Aucune clé i18n ajoutée, aucun catalogue généré modifié.
+
 > **MAJ 2026-10-17 — #8638, vitrine : retours vague 5 (fiche accessible, CTA unique, cartes derrière la constellation) — PR #8637.**
 > Surface **web (`front/web/src/modules/vitrine`)** : `HeroSolutionsCTA` ne rend plus qu'**un seul** lien
 > (« Découvrir nos solutions » → `/packs`, `?lang=` préservé), rendu par `HeroScene3DPanel` donc **sous** la

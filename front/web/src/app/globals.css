@@ -176,6 +176,85 @@ html {
   background-image: linear-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.4) 1px, transparent 1px);
   background-size: 60px 60px;
+  /* Vague 6 — la trame recule : elle structurait autant que la carte et
+     ajoutait du bruit sous le titre. Un dégradé radial l'éteint vers les
+     bords, elle ne subsiste qu'au centre, très en dessous du seuil de gêne. */
+  mask-image: radial-gradient(ellipse 65% 55% at 50% 45%, rgb(0 0 0 / 0.9), transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 45%, rgb(0 0 0 / 0.9), transparent 78%);
+}
+
+/* ── Héros « stage » — couche de PROFONDEUR premium (vague 6) ───────────────
+   Direction artistique : un fond BLEU NUIT / GRAPHITE, jamais un aplat noir.
+   Trois plans seulement, du plus lointain au plus proche :
+     1. `.hero-stage-base`     — le ciel (dégradés discrets, bleu nuit → graphite) ;
+     2. `.hero-stage-halo`     — une lumière diffuse DERRIÈRE la constellation,
+                                 qui la détache du fond (le « wow » vient de là) ;
+     3. `.hero-stage-vignette` — un vignettage léger qui referme les bords et
+                                 concentre le regard au centre.
+   Aucune de ces couches ne porte de texte : elles restent sous le titre (z-[5])
+   et sous la scène WebGL (z-10).
+
+   Style pur, donc ici et non dans le TSX (la garde i18n ne scanne pas les .css ;
+   la garde design-tokens lit les .css, d'où rgb() sans #rrggbb). */
+.hero-stage-base {
+  background:
+    radial-gradient(ellipse 120% 75% at 50% -15%, rgba(30, 58, 95, 0.55), transparent 68%),
+    radial-gradient(ellipse 95% 70% at 12% 108%, rgba(13, 148, 136, 0.16), transparent 70%),
+    radial-gradient(ellipse 85% 65% at 92% 104%, rgba(8, 145, 178, 0.13), transparent 72%),
+    linear-gradient(180deg, rgb(8 14 26) 0%, rgb(11 19 34) 46%, rgb(9 14 24) 100%);
+}
+
+/* Lumière diffuse derrière le cœur de la scène : deux halos concentriques,
+   additifs par construction (rgba sur fond nuit), jamais un aplat laiteux. */
+.hero-stage-halo {
+  background:
+    radial-gradient(ellipse 42% 34% at 50% 54%, rgba(16, 185, 129, 0.2), transparent 72%),
+    radial-gradient(ellipse 66% 50% at 50% 54%, rgba(45, 212, 191, 0.09), transparent 78%),
+    radial-gradient(ellipse 90% 62% at 50% 46%, rgba(56, 130, 246, 0.07), transparent 80%);
+}
+
+.hero-stage-vignette {
+  background:
+    radial-gradient(ellipse 78% 68% at 50% 48%, transparent 52%, rgba(3, 7, 14, 0.55) 100%);
+}
+
+/* Voile de lisibilité sous la phrase : sans lui, le titre passe derrière les
+   anneaux (demandé) mais perd son contraste aux endroits où une étiquette ou
+   un module le traverse. Un dégradé radial très large, jamais une boîte. */
+.hero-stage-title-scrim {
+  background: radial-gradient(
+    ellipse 62% 78% at 50% 50%,
+    rgba(8, 14, 26, 0.82) 0%,
+    rgba(8, 14, 26, 0.55) 46%,
+    rgba(8, 14, 26, 0) 78%
+  );
+  filter: blur(14px);
+}
+
+/* Le titre lui-même : un liseré sombre très doux détache les lettres du ciel
+   étoilé, sans effet « ombre portée » visible. `text-shadow` ne crée pas de
+   contexte d'empilement — la phrase reste bien SOUS la constellation. */
+.hero-stage-title-text {
+  text-shadow: 0 2px 24px rgba(4, 10, 20, 0.85), 0 1px 3px rgba(4, 10, 20, 0.7);
+}
+
+/* Respiration du halo : très lente (~14 s), amplitude faible. Neutralisée en
+   `prefers-reduced-motion` — le halo reste alors parfaitement statique. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-stage-halo {
+    animation: hero-halo-breathe 14s ease-in-out infinite;
+  }
+  @keyframes hero-halo-breathe {
+    0%,
+    100% {
+      opacity: 0.85;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.045);
+    }
+  }
 }
 
 /* ── Héro « stage » — pile d'actions sur petit MOBILE portrait (#8461) ────
@@ -252,72 +331,84 @@ html {
    `prefers-reduced-motion` : aucune rotation, une seule carte statique
    derrière la constellation, à faible opacité — le décor reste lisible. */
 .geo-arc {
-  --geo-r: min(54vw, 40vh);
+  /* Rayon de l'arc. Vague 6 : il était si large que le SOMMET de l'arc tombait
+     sur la phrase (« petite à gauche, grande au milieu » se jouait 20 vh trop
+     haut). Le rayon est resserré pour que le sommet tombe exactement sur le
+     cœur de la constellation (≈ 54 % du héros). */
+  --geo-r: min(30vw, 21vh);
+  /* Ordonnée du sommet de l'arc : le centre de la constellation. */
+  --geo-apex: 54%;
   perspective: 1200px;
 }
 
 .geo-arc-card {
   position: absolute;
   left: 50%;
-  top: calc(50% + 0.45 * var(--geo-r));
-  width: calc(var(--geo-r) * 0.95);
-  height: calc(var(--geo-r) * 0.95);
-  margin-left: calc(var(--geo-r) * -0.475);
-  margin-top: calc(var(--geo-r) * -0.475);
+  /* Centre du cercle = sommet + rayon : la carte à θ = 0 tombe sur `--geo-apex`. */
+  top: calc(var(--geo-apex) + var(--geo-r));
+  width: calc(var(--geo-r) * 0.62);
+  height: calc(var(--geo-r) * 0.62);
+  margin-left: calc(var(--geo-r) * -0.31);
+  margin-top: calc(var(--geo-r) * -0.31);
   color: rgb(94 234 212);
   opacity: 0;
-  transform: rotate(-75deg) translateY(calc(-1 * var(--geo-r))) rotate(75deg) scale(0.5);
+  /* Départ à gauche, petite : la carte « entre » dans le demi-cercle. */
+  transform: rotate(-76deg) translateY(calc(-1 * var(--geo-r))) rotate(76deg) scale(0.68);
   transform-origin: 50% 50%;
   will-change: transform, opacity;
 }
 
+/* Demi-cercle gauche → sommet → droite. Échelle demandée : 0.68 → 1 → 0.68,
+   l'opacité suivant la même courbe (une carte au centre se lit derrière le
+   cœur, aux extrémités elle n'est qu'une présence). Interpolation linéaire
+   entre 11 positions : l'écart à un cercle parfait reste < 1 % du rayon. */
 @media (prefers-reduced-motion: no-preference) {
   .geo-arc-card {
     animation: geo-arc-sweep 54s linear infinite both;
   }
   @keyframes geo-arc-sweep {
     0% {
-      transform: rotate(-75deg) translateY(calc(-1 * var(--geo-r))) rotate(75deg) scale(0.5);
+      transform: rotate(-76deg) translateY(calc(-1 * var(--geo-r))) rotate(76deg) scale(0.68);
       opacity: 0;
     }
-    10% {
-      transform: rotate(-60deg) translateY(calc(-1 * var(--geo-r))) rotate(60deg) scale(0.58);
-      opacity: 0.2;
+    8% {
+      transform: rotate(-61deg) translateY(calc(-1 * var(--geo-r))) rotate(61deg) scale(0.69);
+      opacity: 0.26;
     }
-    20% {
-      transform: rotate(-45deg) translateY(calc(-1 * var(--geo-r))) rotate(45deg) scale(0.68);
-      opacity: 0.3;
+    18% {
+      transform: rotate(-46deg) translateY(calc(-1 * var(--geo-r))) rotate(46deg) scale(0.73);
+      opacity: 0.34;
     }
-    30% {
-      transform: rotate(-30deg) translateY(calc(-1 * var(--geo-r))) rotate(30deg) scale(0.79);
-      opacity: 0.4;
+    28% {
+      transform: rotate(-31deg) translateY(calc(-1 * var(--geo-r))) rotate(31deg) scale(0.79);
+      opacity: 0.42;
     }
-    40% {
-      transform: rotate(-15deg) translateY(calc(-1 * var(--geo-r))) rotate(15deg) scale(0.9);
-      opacity: 0.48;
+    38% {
+      transform: rotate(-16deg) translateY(calc(-1 * var(--geo-r))) rotate(16deg) scale(0.9);
+      opacity: 0.5;
     }
     50% {
       transform: rotate(0deg) translateY(calc(-1 * var(--geo-r))) rotate(0deg) scale(1);
-      opacity: 0.55;
+      opacity: 0.58;
     }
-    60% {
-      transform: rotate(15deg) translateY(calc(-1 * var(--geo-r))) rotate(-15deg) scale(0.9);
-      opacity: 0.48;
+    62% {
+      transform: rotate(16deg) translateY(calc(-1 * var(--geo-r))) rotate(-16deg) scale(0.9);
+      opacity: 0.5;
     }
-    70% {
-      transform: rotate(30deg) translateY(calc(-1 * var(--geo-r))) rotate(-30deg) scale(0.79);
-      opacity: 0.4;
+    72% {
+      transform: rotate(31deg) translateY(calc(-1 * var(--geo-r))) rotate(-31deg) scale(0.79);
+      opacity: 0.42;
     }
-    80% {
-      transform: rotate(45deg) translateY(calc(-1 * var(--geo-r))) rotate(-45deg) scale(0.68);
-      opacity: 0.3;
+    82% {
+      transform: rotate(46deg) translateY(calc(-1 * var(--geo-r))) rotate(-46deg) scale(0.73);
+      opacity: 0.34;
     }
-    90% {
-      transform: rotate(60deg) translateY(calc(-1 * var(--geo-r))) rotate(-60deg) scale(0.58);
-      opacity: 0.2;
+    92% {
+      transform: rotate(61deg) translateY(calc(-1 * var(--geo-r))) rotate(-61deg) scale(0.69);
+      opacity: 0.26;
     }
     100% {
-      transform: rotate(75deg) translateY(calc(-1 * var(--geo-r))) rotate(-75deg) scale(0.5);
+      transform: rotate(76deg) translateY(calc(-1 * var(--geo-r))) rotate(-76deg) scale(0.68);
       opacity: 0;
     }
   }
@@ -333,8 +424,24 @@ html {
     display: none;
   }
   .geo-arc-card:first-child {
-    transform: translateY(calc(-1 * var(--geo-r))) scale(0.9);
-    opacity: 0.3;
+    transform: translateY(calc(-1 * var(--geo-r))) scale(0.92);
+    opacity: 0.26;
+  }
+}
+
+/* Tablette puis téléphone : l'arc se resserre avec la scène, sinon il déborde
+   du cadre et vient frotter le CTA. */
+@media (max-width: 1023.98px) {
+  .geo-arc {
+    --geo-r: min(32vw, 17vh);
+    --geo-apex: 53%;
+  }
+}
+
+@media (max-width: 639.98px) {
+  .geo-arc {
+    --geo-r: min(30vw, 12vh);
+    --geo-apex: 50%;
   }
 }
 
