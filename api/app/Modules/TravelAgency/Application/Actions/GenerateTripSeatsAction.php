@@ -7,7 +7,6 @@ namespace App\Modules\TravelAgency\Application\Actions;
 use App\Modules\TravelAgency\Domain\Enums\SeatStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripSeat;
-use App\Modules\TravelAgency\Domain\ValueObjects\SeatLayout;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -35,8 +34,10 @@ final class GenerateTripSeatsAction
         // nombre de places déclaré. Un trajet sans véhicule (ou dont le
         // véhicule n'est pas configuré) n'a aucun siège absent → comportement
         // strictement inchangé.
-        $layout = $trip->vehicle?->seatLayout();
-        $absentSeats = $layout instanceof SeatLayout ? $layout->absentSeats : [];
+        //
+        // `?->` court-circuite toute la chaîne : un trajet sans véhicule, ou un
+        // véhicule non configuré, donne `null` puis `[]` — jamais d'erreur.
+        $absentSeats = $trip->vehicle?->seatLayout()->absentSeats ?? [];
 
         DB::transaction(function () use ($trip, $absentSeats): void {
             for ($seatNumber = 1; $seatNumber <= $trip->total_seats; $seatNumber++) {
