@@ -214,11 +214,11 @@ class TravelTicketPrintingTest extends TestCase
 
         $pdf = app(TravelTicketPdfGenerator::class)->generate($ticket);
 
-        // dompdf émet DEUX objets image pour un PNG transparent : l'image
-        // DeviceRGB elle-même et son masque de transparence (SMask, en
-        // niveaux de gris). Le QR est donc la SEULE image couleur — c'est ce
-        // qu'on vérifie, pour garantir qu'il n'y a pas de doublon.
+        // Le QR est aplati sur fond blanc opaque (#8547) : dompdf n'émet donc
+        // qu'UN objet image, en DeviceRGB, sans masque de transparence. C'est
+        // exactement ce qu'on vérifie — un seul QR, aucun doublon, et aucune
+        // dépendance au ré-encodage RGBA/SMask qui variait selon la build GD.
         $this->assertSame(1, substr_count($pdf, '/ColorSpace /DeviceRGB'));
-        $this->assertSame(1, substr_count($pdf, '/SMask'));
+        $this->assertSame(0, substr_count($pdf, '/SMask'));
     }
 }

@@ -86,11 +86,48 @@ final class TravelTicketQrCode
 
     /**
      * PNG binaire du QR code.
+     *
+     * Régression CI (#8547) : `GDLibRenderer` produit un PNG **transparent**
+     * (canal alpha à 0 hors des modules). dompdf doit alors ré-encoder un
+     * RGBA + masque `SMask`, et cela dépend de la build GD/dompdf : sur le
+     * runner CI l'image couleur n'était plus émise du tout (`firstRgbImage()`
+     * renvoyait `null`, PDF sans `/ColorSpace /DeviceRGB`).
+     *
+     * Le billet est imprimé sur papier blanc : le QR est donc aplati sur un
+     * fond **blanc opaque**. dompdf n'a plus qu'une image `DeviceRGB` — un
+     * seul objet image, déterministe, sans dépendance au masque de
+     * transparence. Le code scanné est identique, seule l'enveloppe l'est
+     * aussi.
      */
     public function png(TravelTicket $ticket): string
     {
         $writer = new Writer(new GDLibRenderer(self::SIZE, self::MARGIN));
 
-        return $writer->writeString($this->payload($ticket));
+        $source = imagecreatefromstring($writer->writeString($this->payload($ticket)));
+
+        if ($source === false) {
+            // GD indisponible ou PNG illisible : on ne fabrique pas un QR
+            // « au hasard », on rend le PNG d'origine (le billet reste
+            // imprimable, le QR porte toujours la bonne charge utile).
+            return $writer->writeString($this->payload($ticket));
+        }
+
+        $width = imagesx($source);
+        $height = imagesy($source);
+
+        $opaque = imagecreatetruecolor($width, $height);
+
+        imagealphablending($opaque, true);
+        imagefilledrectangle($opaque, 0, 0, $width, $height, (int) imagecolorallocate($opaque, 255, 255, 255));
+        imagecopy($opaque, $source, 0, 0, 0, 0, $width, $height);
+
+        ob_start();
+        imagepng($opaque);
+        $png = (string) ob_get_clean();
+
+        imagedestroy($source);
+        imagedestroy($opaque);
+
+        return $png === '' ? $writer->writeString($this->payload($ticket)) : $png;
     }
 }
