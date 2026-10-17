@@ -5,6 +5,18 @@
 
 ## Journal des mises à jour de surface (`front/mobile_apps/`)
 
+- **2026-10-17 (#8601, mission Travel OS / BC-24)** — `leopardo_core/lib/core/theme/app_colors.dart` :
+  échelle de couleurs « plan de sièges Travel OS » (`seatFree`/`seatSelected`/`seatHeld`/`seatReserved`/
+  `seatPendingPayment`/`seatSold`/`seatBlocked`/`seatUnavailable` + bordures et encres associées)
+  déclarée pour la parité L.07 avec `docs/REFERENTIEL_PRODUIT/COULEURS.md` (garde
+  check-design-token-sync). Les fichiers `lib/l10n/app_{fr,en,ar,tr}.arb` sont, eux,
+  **régénérés mécaniquement** par `shared/i18n/sync/sync-mobile.js` (clés `travel.seats.*` ajoutées
+  côté web/admin puis propagées à tous les targets du catalogue). **Aucune surface fonctionnelle
+  mobile modifiée** : constantes purement additives, aucun écran Flutter ne consomme encore ces
+  tokens ni ces clés ; le plan de sièges est livré côté web (`front/travel-web`) et admin
+  (`front/admin-dashboard`). Aucun nouveau scénario de test mobile requis — les scénarios
+  existants restent valides tels quels. Vérifié : `I18N_SYNC_MOBILE_OK`, `I18N_VALIDATION_OK (4 locales)`,
+  parité ×4 (`check-i18n-catalog-parity.sh`) et `check-design-token-sync.py` → **verts**.
 - **2026-10-11 (#8394)** — `leopardo_core/lib/core/theme/app_colors.dart` : échelle
   emerald complète (`emerald50…emerald950`) déclarée pour la parité L.07 avec
   `docs/REFERENTIEL_PRODUIT/COULEURS.md` (garde check-design-token-sync) — le step
