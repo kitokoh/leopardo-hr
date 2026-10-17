@@ -121,5 +121,5 @@ Détail et protocole de non-régression : `14_audit_baseline.md`.
 Le socle est **solide et réutilisable** ; les manques sont **précis et localisés** :
 un parcours d'onboarding qui porte réellement l'intention du client jusqu'au tenant, un
 établissement qui soit un axe de données, et des preuves d'idempotence là où l'argent
-circule. Les 48 écarts de la matrice se répartissent en 14 réutilisables, 15 à compléter,
-8 à corriger, 9 à créer, 2 à vérifier — voir `08_gap_matrix.md`.
+circule. Les **57** écarts de la matrice se répartissent en 13 réutilisables, 16 à compléter,
+7 à corriger, 16 à créer, 5 à vérifier — décompte recalculé par script, voir `08_gap_matrix.md`.

@@ -129,14 +129,29 @@ Légende : `✓` disponible · `~` partiel · `—` non applicable/absent · `?`
 
 ## Synthèse quantitative
 
+Décompte **recalculé mécaniquement** sur les lignes du tableau (script de contrôle),
+pas saisi à la main :
+
 | Classe | Nombre | Part |
 |---|---|---|
-| Réutilisable (`R`) | 14 | 29 % |
-| À compléter (`C`) | 15 | 31 % |
-| À corriger (`X`) | 8 | 17 % |
-| À créer (`N`) | 9 | 19 % |
-| À vérifier (`V`) | 2 | 4 % |
-| **Total** | **48** | |
+| Réutilisable (`R`) | 13 | 23 % |
+| À compléter (`C`) | 16 | 28 % |
+| À corriger (`X`) | 7 | 12 % |
+| À créer (`N`) | 16 | 28 % |
+| À vérifier (`V`) | 5 | 9 % |
+| **Total** | **57** | |
+
+Contrôle de cohérence :
+
+```bash
+python3 - <<'PY'
+import re, collections
+t = open('docs/mission-business-os/08_gap_matrix.md', encoding='utf-8').read()
+rows = [l for l in t.split('\n') if re.match(r'^\| \*\*[A-Z]-\d+\*\*', l)]
+print(len(rows), collections.Counter(r.split('|')[3].strip().strip('`') for r in rows))
+# → 57 Counter({'C': 16, 'N': 16, 'R': 13, 'X': 7, 'V': 5})
+PY
+```
 
 **Trois écarts bloquants pour un pilote réel :**
 
