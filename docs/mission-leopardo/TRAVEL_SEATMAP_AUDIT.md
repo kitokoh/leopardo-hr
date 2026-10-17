@@ -213,11 +213,38 @@ existantes (les valeurs legacy restent valides).
 
 ## 5. Tests
 
+### 5.1 Résultats d'exécution réels (verbatim)
+
+| Vérification | Commande | Résultat |
+|---|---|---|
+| Tests du plan de sièges (front) | `npx vitest run src/lib/seat-layout.test.ts` | ✅ **10/10 verts** |
+| Typage TypeScript (front grand public) | `npx tsc --noEmit` | ✅ **0 erreur** |
+| Lint front grand public | `npx eslint src/components/seat-map.tsx src/lib/seat-layout.ts src/lib/seat-layout.test.ts` | ✅ **0 erreur** |
+| Lint back-office | `npx eslint src/components/travel/TravelSeatMap.vue` | ✅ **0 erreur** |
+| Style PHP (Pint) | `php8.4 vendor/bin/pint --test <fichiers modifiés>` | ✅ **PASS** (2 fichiers) |
+| Syntaxe PHP | `php8.4 -l <enum>` + `php8.4 -l <migration>` | ✅ aucune erreur |
+| **Semantics de l'enum (exécuté)** | `php8.4 /tmp/seatstatus_check.php` (script autonome, sans base) | ✅ **8 états**, `persistableValues=free,reserved,sold,blocked,unavailable`, rétrocompat `free`/`reserved`/`sold` = `ok`, `tryFrom('bogus')` = `ok(null)` |
+
+### 5.2 Test backend ciblé — **bloqué par le harnais, documenté (non contourné)**
+
+`php8.4 artisan test --filter="TravelTripSeatGenerationTest"` ne peut pas démarrer hors
+infrastructure Docker : le harnais `RefreshTenantDatabase` se connecte à l'hôte **`pgsql`**
+(service du `docker-compose`), résolu depuis `.env` et **écrasant** `phpunit.xml` en local
+(phpunit n'utilise `<env … />` que si la variable n'est pas déjà définie). Tentatives
+successives — `DB_HOST=127.0.0.1` en ligne de commande, `.env.testing` dédié, `config:clear`,
+`APP_KEY` généré — **la résolution reste `pgsql`**.
+
+Décision (conforme à la gouvernance du dépôt `AGENTS.md` — « **no docker in the sandbox** ») :
+**je ne contourne pas le harnais** (pas de binding `/etc/hosts`, pas de modification du code de
+test). La preuve de non-régression est apportée par : (a) les tests du plan de sièges
+exécutés, (b) l'exécution réelle des semantics de l'enum, (c) les vérifications statiques
+(tsc/eslint/pint/php -l), et (d) la suite CI backend (job `API · PHPUnit`) qui s'exécute avec
+l'infrastructure Docker adéquate au moment de la PR.
+
 | Niveau | Contenu |
 |---|---|
-| Existant (réutilisé) | 120+ tests `api/tests/Feature/Travel/*` — sièges, expiration, concurrence check-in, isolation tenant, RBAC |
-| Ajouté | test ciblé du **plan de sièges** : disposition dérivée des données réelles, états, légende non exclusivement colorée |
-| Exécution | suite Travel backend lancée en local (PHP 8.4 + PostgreSQL 16 + Redis) — voir rapport de commit |
+| Existant (réutilisé, **non modifié**) | 120+ tests `api/tests/Feature/Travel/*` — sièges, expiration, concurrence check-in, isolation tenant, RBAC. En particulier `TravelOsQrGpsConcurrencyTest` (concurrence) et `TravelBookingExpirationTest` / `TravelExpirePendingBookingsTest` (expiration des réservations temporaires) couvrent déjà les scénarios de double attribution exigés par la mission. |
+| Ajouté | `front/travel-web/src/lib/seat-layout.test.ts` (10 tests) : disposition 2+2 avec couloir, ordre de numérotation, rangée partielle, symbole + libellé par état, non-sélectionnabilité des sièges occupés |
 
 ---
 
@@ -230,5 +257,10 @@ existantes (les valeurs legacy restent valides).
 3. La **configuration de disposition** (sièges par rangée, position du couloir) est pilotée par
    paramètres avec une valeur par défaut raisonnable ; sa persistance par véhicule est une
    évolution naturelle mais distincte.
-4. La suite de tests backend complète n'est pas rejouée de bout en bout (coût CI) — un test
-   ciblé fait office de preuve de non-régression.
+4. La suite de tests backend complète n'est pas rejouée de bout en bout en local : le harnais
+   PHPUnit résout l'hôte `pgsql` (service Docker) et **ne se laisse pas reconfigurer** depuis le
+   sandbox. Conformément à `AGENTS.md` (« no docker in the sandbox »), le harnais n'a pas été
+   contourné ; la suite backend s'exécute dans le job CI `API · PHPUnit` au moment de la PR.
+5. La fusion dans `main` est soumise aux **protections de branche** du dépôt (4 checks requis en
+   contexte `AGENT_AUTHORED` : `guards`, `API · PHPUnit`, `Web builds`, `Repo hygiene`). La PR
+   est ouverte et prête ; la fusion se fait une fois la CI verte.
