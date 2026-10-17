@@ -67,14 +67,22 @@ final class TradeCostEstimateController
 
         $estimate->load('lines');
 
-        return new JsonResponse(['data' => TradeCostEstimateResource::make($estimate)->resolve()], 201);
+        return new JsonResponse([
+            'data' => TradeCostEstimateResource::make($estimate)->resolve(),
+            // Exigence de conformite : le disclaimer accompagne CHAQUE reponse
+            // qui presente une estimation (cf. docblock de la classe).
+            'disclaimer' => $this->customsChecklist->disclaimer(),
+        ], 201);
     }
 
     public function show(TradeCostEstimate $costEstimate): JsonResponse
     {
         $costEstimate->load('lines');
 
-        return new JsonResponse(['data' => TradeCostEstimateResource::make($costEstimate)->resolve()]);
+        return new JsonResponse([
+            'data' => TradeCostEstimateResource::make($costEstimate)->resolve(),
+            'disclaimer' => $this->customsChecklist->disclaimer(),
+        ]);
     }
 
     /**

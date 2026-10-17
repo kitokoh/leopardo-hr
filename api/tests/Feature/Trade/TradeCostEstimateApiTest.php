@@ -196,6 +196,11 @@ class TradeCostEstimateApiTest extends TestCase
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
+            // `role` doit valoir `manager` : `TradeRoleResolver` s'appuie sur
+            // `Employee::isManager()` (role === 'manager') AVANT de lire
+            // `manager_role`. Sans ce champ, l'employe etait traite comme un
+            // non-manager sans grant `trade.*` -> 403 TRADE_ROLE_REQUIRED.
+            'role' => 'manager',
             'manager_role' => 'principal',
         ]);
 

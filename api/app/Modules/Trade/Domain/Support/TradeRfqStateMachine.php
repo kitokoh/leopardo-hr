@@ -28,7 +28,11 @@ final class TradeRfqStateMachine
      */
     private const ALLOWED_TRANSITIONS = [
         'draft' => ['open', 'cancelled'],
-        'open' => ['closed', 'awarded', 'cancelled'],
+        // `open -> open` : re-diffusion idempotente (SendRfqAction documente
+        // explicitement « draft (ou open) -> open »). Sans cette auto-transition,
+        // une seconde diffusion a une contrepartie deja invitee etait refusee
+        // en 422 au lieu d'etre un no-op silencieux.
+        'open' => ['open', 'closed', 'awarded', 'cancelled'],
         // Etats terminaux : aucune transition sortante.
         'awarded' => [],
         'closed' => [],
