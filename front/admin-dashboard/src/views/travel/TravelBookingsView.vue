@@ -112,6 +112,36 @@
         </template>
       </DataTable>
 
+      <!-- #8621 — Plan de sièges du trajet sélectionné (lecture seule).
+           Le responsable voit l'inventaire réel et la référence de réservation
+           rattachée à chaque siège ; aucun clic ne modifie l'inventaire. -->
+      <section
+        v-if="tripFilter && seatMapSeats.length > 0"
+        class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+      >
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">
+              {{ t('travel.seats.map.title', 'Plan des sièges') }}
+            </h3>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              {{ t('travel.seats.map.subtitle', 'Inventaire réel du véhicule affecté au trajet. Consultation seule.') }}
+            </p>
+          </div>
+          <button class="btn-secondary" :disabled="seatMapLoading" @click="loadSeatMap">
+            {{ t('travel.common.refresh', 'Actualiser') }}
+          </button>
+        </div>
+
+        <p v-if="seatMapError" role="alert" class="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-300">
+          {{ seatMapError }}
+        </p>
+
+        <div class="mt-4">
+          <TravelSeatMap :seats="seatMapSeats" :selected="[]" :seats-per-row="seatMapSeatsPerRow" />
+        </div>
+      </section>
+
       <!-- Détail réservation -->
       <div v-if="detail" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4" role="dialog" aria-modal="true">
         <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl glass-card p-6 shadow-premium">
@@ -228,6 +258,7 @@ import { useLocaleStore } from '@/stores/locale.js'
 import { useTravelStore } from '@/stores/travel'
 import TravelGate from '@/components/travel/TravelGate.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
+import TravelSeatMap from '@/components/travel/TravelSeatMap.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import RowActionButton from '@/components/common/RowActionButton.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
@@ -239,7 +270,7 @@ import {
   EyeIcon,
   TicketIcon,
 } from '@heroicons/vue/24/outline'
-import { listTravel, getTravel, travelAction, travelList, travelItem, formatMinor } from '@/services/travel'
+import { listTravel, getTravel, travelAction, travelList, travelItem, travelGetAction, formatMinor } from '@/services/travel'
 
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
@@ -256,6 +287,9 @@ const tripFilter = ref('')
 const referenceQuery = ref('')
 
 const detail = ref(null)
+const seatMapSeats = ref([])
+const seatMapLoading = ref(false)
+const seatMapError = ref('')
 const reasonModalOpen = ref(false)
 const reasonMode = ref('cancel') // 'cancel' | 'refund'
 const reasonTarget = ref(null)
@@ -377,6 +411,9 @@ async function reload() {
   } finally {
     loading.value = false
   }
+  // #8621 — le plan reflète l'inventaire du trajet filtré (rechargement serveur,
+  // pas de temps réel simulé).
+  await loadSeatMap()
 }
 
 async function init() {
@@ -390,6 +427,42 @@ async function init() {
     loadError.value = e?.response?.data?.message || e?.message || ''
   }
   await reload()
+}
+
+/** #8621 — Gabarit de rangée déduit de la capacité réelle du véhicule. */
+const seatMapSeatsPerRow = computed(() => {
+  const total = Number(
+    trips.value.find((trip) => String(trip.id) === String(tripFilter.value))?.total_seats || 0
+  )
+  if (!total) return 4
+  return total > 15 ? 4 : 3
+})
+
+/**
+ * #8621 — Charge l'inventaire réel des sièges du trajet sélectionné.
+ *
+ * Source serveur unique (endpoint tenant-scopé `/travel/trips/{id}/seats`) :
+ * le même stock que celui vu par le client. Mode LECTURE SEULE — aucun
+ * `toggle` n'est écouté, donc aucun clic ne peut modifier l'inventaire.
+ */
+async function loadSeatMap() {
+  if (!tripFilter.value) {
+    seatMapSeats.value = []
+    return
+  }
+  seatMapLoading.value = true
+  seatMapError.value = ''
+  try {
+    const response = await travelGetAction('trips', tripFilter.value, 'seats')
+    const payload = travelItem(response) || {}
+    seatMapSeats.value = Array.isArray(payload.seats) ? payload.seats : []
+  } catch (e) {
+    seatMapSeats.value = []
+    seatMapError.value =
+      e?.response?.data?.message || e?.message || t('travel.common.loadErrorBody', 'Une erreur est survenue.')
+  } finally {
+    seatMapLoading.value = false
+  }
 }
 
 async function openDetail(row) {

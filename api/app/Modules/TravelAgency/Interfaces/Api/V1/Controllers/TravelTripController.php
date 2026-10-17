@@ -10,11 +10,14 @@ use App\Modules\TravelAgency\Application\Actions\CancelTripAction;
 use App\Modules\TravelAgency\Application\Actions\ConnectionSearchAction;
 use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
 use App\Modules\TravelAgency\Application\Actions\PublishTripAction;
+use App\Modules\TravelAgency\Domain\Enums\SeatStatus;
 use App\Modules\TravelAgency\Domain\Enums\TripStatus;
+use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelPassenger;
 use App\Modules\TravelAgency\Domain\Models\TravelStaffAssignment;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
+use App\Modules\TravelAgency\Domain\Models\TravelTripSeat;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelTripRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelTripRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelTripRequest;
@@ -107,6 +110,59 @@ class TravelTripController extends Controller
         $travelTrip->load(['prices', 'route.stops']);
 
         return (new TravelTripResource($travelTrip))->response();
+    }
+
+    /**
+     * #8621 — Inventaire des sièges d'un trajet, pour le plan de sièges du
+     * back-office (responsable / agence / compagnie).
+     *
+     * Contrairement à la surface publique (#8619), le personnel voit EN PLUS la
+     * référence de réservation rattachée au siège : c'est l'information
+     * opérationnelle dont il a besoin pour retrouver une vente dans le bus.
+     * Aucune donnée passager n'est exposée (le manifeste reste la seule voie
+     * autorisée pour les identités, #7638).
+     *
+     * Bornage : l'accès est déjà restreint au tenant courant par le scope
+     * `BelongsToCompany` ET par la comparaison explicite `company_id` (404
+     * fail-closed) — un tenant ne peut jamais lire les sièges d'un autre.
+     */
+    public function seats(Request $request, TravelTrip $travelTrip): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $travelTrip->company_id) {
+            abort(404);
+        }
+
+        $seats = $travelTrip->seats()
+            ->orderBy('seat_number')
+            ->get(['seat_number', 'status', 'booking_id']);
+
+        $references = TravelBooking::query()
+            ->whereIn('id', $seats->pluck('booking_id')->filter()->unique()->values())
+            ->pluck('reference', 'id');
+
+        $payload = $seats
+            ->map(fn (TravelTripSeat $seat): array => [
+                'seat_number' => $seat->seat_number,
+                'status' => $seat->status instanceof SeatStatus ? $seat->status->value : (string) $seat->status,
+                // Référence lisible par le personnel uniquement (jamais publique).
+                'booking_reference' => $seat->booking_id !== null
+                    ? $references->get($seat->booking_id)
+                    : null,
+            ])
+            ->values()
+            ->all();
+
+        return response()->json([
+            'data' => [
+                'trip_id' => $travelTrip->id,
+                'code' => $travelTrip->code,
+                'total_seats' => $travelTrip->total_seats,
+                'seats' => $payload,
+            ],
+        ]);
     }
 
     public function update(UpdateTravelTripRequest $request, TravelTrip $travelTrip): JsonResponse

@@ -153,6 +153,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // Manifeste des passagers (TRAVEL-318/#6048) + équipage (#7638).
         Route::get('/trips/{travelTrip}/manifest', [TravelTripController::class, 'manifest']);
 
+        // #8621 — Inventaire des sièges pour le plan de sièges du back-office
+        // (tenant-scopé : le responsable ne voit que ses propres trajets).
+        Route::get('/trips/{travelTrip}/seats', [TravelTripController::class, 'seats']);
+
         // Affectations d'équipage — pont RH employee_id (TRAVEL-STAFF/#7638).
         Route::get('/staff-assignments', [TravelStaffAssignmentController::class, 'index']);
         Route::post('/staff-assignments', [TravelStaffAssignmentController::class, 'store']);
