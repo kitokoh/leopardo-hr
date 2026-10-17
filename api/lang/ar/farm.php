@@ -17,4 +17,10 @@ return [
         'first_operation' => 'تم تخطيط أول عملية',
         'workers_ready' => 'أداة العمال مفعّلة',
     ],
+
+    // T1.3 — إشعار إسناد عملية (BC-13 COMMS).
+    'notifications' => [
+        'operation_assigned_title' => 'تم إسناد عملية جديدة',
+        'operation_assigned_body' => 'تم إسناد العملية «:title» إليك.',
+    ],
 ];

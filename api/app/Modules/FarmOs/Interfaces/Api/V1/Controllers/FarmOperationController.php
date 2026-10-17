@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Modules\FarmOs\Interfaces\Api\V1\Controllers;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\FarmOs\Application\Actions\AssignFarmOperation;
 use App\Modules\FarmOs\Application\Actions\ScheduleFarmOperation;
 use App\Modules\FarmOs\Application\Actions\TransitionFarmOperation;
 use App\Modules\FarmOs\Domain\Enums\FarmCapability;
 use App\Modules\FarmOs\Domain\Enums\FarmOperationStatus;
 use App\Modules\FarmOs\Domain\Enums\FarmOperationType;
+use App\Modules\FarmOs\Domain\Exceptions\FarmAssignmentException;
 use App\Modules\FarmOs\Domain\Exceptions\FarmOperationTransitionException;
 use App\Modules\FarmOs\Domain\Models\FarmOperation;
 use App\Modules\FarmOs\Domain\Models\FarmSite;
@@ -33,6 +35,7 @@ final class FarmOperationController
     public function __construct(
         private readonly ScheduleFarmOperation $schedule,
         private readonly TransitionFarmOperation $transition,
+        private readonly AssignFarmOperation $assignOperation,
         private readonly FarmCapabilityGate $gate,
     ) {}
 
@@ -156,6 +159,12 @@ final class FarmOperationController
 
     /**
      * Affectation d'un ouvrier ou d'une équipe par le responsable.
+     *
+     * Le contrôle d'appartenance à l'entreprise est fait CÔTÉ SERVEUR par
+     * {@see AssignFarmOperation} : un identifiant d'employé ou d'équipe d'un
+     * autre tenant est refusé (422), jamais persisté. Les destinataires
+     * réellement notifiés sont renvoyés pour que le front n'affiche pas un
+     * succès trompeur.
      */
     public function assign(FarmOperation $operation, Request $request): JsonResponse
     {
@@ -165,10 +174,27 @@ final class FarmOperationController
             'responsible_id' => ['nullable', 'integer'],
         ]);
 
-        $operation->fill($validated);
-        $operation->save();
+        try {
+            $result = $this->assignOperation->execute(
+                $this->company(),
+                $operation,
+                $validated,
+                $request->user()?->id,
+            );
+        } catch (FarmAssignmentException $exception) {
+            return response()->json([
+                'error' => $exception->errorCode(),
+                'message' => $exception->errorCode(),
+            ], 422);
+        }
 
-        return response()->json(['data' => $this->payload($operation->refresh())]);
+        return response()->json([
+            'data' => $this->payload($result['operation']),
+            'meta' => [
+                'changed' => $result['changed'],
+                'notified' => $result['notified'],
+            ],
+        ]);
     }
 
     /**

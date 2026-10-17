@@ -17,4 +17,10 @@ return [
         'first_operation' => 'First operation planned',
         'workers_ready' => 'Workers tool enabled',
     ],
+
+    // T1.3 — farm operation assignment notification (BC-13 COMMS).
+    'notifications' => [
+        'operation_assigned_title' => 'New operation assigned',
+        'operation_assigned_body' => 'The operation ":title" has been assigned to you.',
+    ],
 ];

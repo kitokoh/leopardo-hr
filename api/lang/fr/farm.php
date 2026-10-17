@@ -17,4 +17,10 @@ return [
         'first_operation' => 'Première opération planifiée',
         'workers_ready' => 'Outil travailleurs activé',
     ],
+
+    // T1.3 — notification d'affectation d'une intervention (BC-13 COMMS).
+    'notifications' => [
+        'operation_assigned_title' => 'Nouvelle intervention affectée',
+        'operation_assigned_body' => 'L\'intervention « :title » vous a été affectée.',
+    ],
 ];

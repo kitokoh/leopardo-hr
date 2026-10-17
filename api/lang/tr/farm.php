@@ -17,4 +17,10 @@ return [
         'first_operation' => 'İlk operasyon planlandı',
         'workers_ready' => 'Çalışanlar aracı etkinleştirildi',
     ],
+
+    // T1.3 — operasyon atama bildirimi (BC-13 COMMS).
+    'notifications' => [
+        'operation_assigned_title' => 'Yeni operasyon atandı',
+        'operation_assigned_body' => '":title" operasyonu size atandı.',
+    ],
 ];
