@@ -6573,6 +6573,14 @@
       "ctaContact": "Contact support",
       "mascotAlt": "Illustration: an unplugged leopard, page not found"
     },
+    "forbidden": {
+      "kicker": "Error 403",
+      "title": "Access denied",
+      "body": "Your role does not allow this action. If you believe this is a mistake, ask an administrator for access.",
+      "ctaHome": "Back to home",
+      "ctaSupport": "Request access",
+      "mascotAlt": "Illustration: a leopard in front of a closed door, access denied"
+    },
     "error": {
       "kicker": "Unexpected error",
       "title": "Something went wrong",
