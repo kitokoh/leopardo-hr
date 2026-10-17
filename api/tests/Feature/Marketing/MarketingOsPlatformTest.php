@@ -691,4 +691,146 @@ class MarketingOsPlatformTest extends TestCase
             ->assertJsonPath('data.publication_performance.measured_from_platform', 0)
             ->assertJsonPath('data.publication_performance.measured_manually', 1);
     }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // 9. Robustesse des listes : recherche, filtres, pagination
+    // ──────────────────────────────────────────────────────────────────────
+
+    /**
+     * Un `%` ou un `_` saisi dans la recherche est un CARACTERE, pas un joker.
+     *
+     * Sans echappement, chercher « 100% » ramenait tout le catalogue (le `%`
+     * etant interprete comme « n'importe quoi ») : l'utilisateur croyait avoir
+     * trouve une correspondance exacte alors qu'il voyait la liste complete.
+     */
+    public function test_search_wildcards_are_escaped_and_do_not_match_everything(): void
+    {
+        $company = $this->company();
+        $this->actingAsPlatform();
+
+        $this->postJson($this->url($company, '/assets'), [
+            'name' => 'Remise 100% restaurant',
+            'kind' => 'image',
+        ])->assertCreated();
+
+        $this->postJson($this->url($company, '/assets'), [
+            'name' => 'Visuel sans rapport',
+            'kind' => 'image',
+        ])->assertCreated();
+
+        // « 100% » ne doit ramener QUE la ressource qui contient litteralement
+        // cette chaine — pas les deux.
+        $this->getJson($this->url($company, '/assets?search=100%25'))
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.name', 'Remise 100% restaurant');
+
+        // Un motif qui ne correspond a rien reste vide : le `%` seul ne doit
+        // pas se comporter comme « tout ».
+        $this->getJson($this->url($company, '/assets?search=%25'))
+            ->assertOk()
+            ->assertJsonCount(0, 'data');
+    }
+
+    /**
+     * Un filtre hors vocabulaire est REFUSE, pas silencieusement vide.
+     *
+     * `status=publié` (accent, ou faute de frappe) renvoyait 200 avec une liste
+     * vide : l'interface affichait « aucun resultat » alors que la requete
+     * etait simplement malformee. Le contrat est desormais explicite (422).
+     */
+    public function test_unknown_enum_filters_are_rejected_instead_of_returning_an_empty_list(): void
+    {
+        $company = $this->company();
+        $this->actingAsPlatform();
+
+        $this->getJson($this->url($company, '/publications?status=publié'))
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('status');
+
+        $this->getJson($this->url($company, '/publications?mode=automatique'))
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('mode');
+
+        $this->getJson($this->url($company, '/assets?kind=film'))
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('kind');
+
+        $this->getJson($this->url($company, '/ideas?format=reel'))
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('format');
+
+        $this->getJson($this->url($company, '/campaigns?objective=vente'))
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('objective');
+
+        // Un filtre VALIDE continue de fonctionner : on n'a pas casse la liste.
+        $this->getJson($this->url($company, '/publications?status=idea'))
+            ->assertOk();
+    }
+
+    /**
+     * Les objectifs de visibilite sont PAGINES, pas tronques en silence.
+     *
+     * L'ancien `limit(100)` coupait la liste sans le dire : l'interface ne
+     * pouvait ni afficher le total ni atteindre les objectifs suivants.
+     */
+    public function test_visibility_objectives_are_paginated_with_a_real_total(): void
+    {
+        $company = $this->company();
+        $this->actingAsPlatform();
+
+        foreach (range(1, 3) as $index) {
+            $this->postJson($this->url($company, '/visibility-objectives'), [
+                'channel' => 'seo',
+                'keyword' => "mot-cle-{$index}",
+            ])->assertCreated();
+        }
+
+        $this->getJson($this->url($company, '/visibility-objectives?per_page=2'))
+            ->assertOk()
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('meta.total', 3)
+            ->assertJsonPath('meta.last_page', 2)
+            ->assertJsonPath('meta.per_page', 2);
+
+        $this->getJson($this->url($company, '/visibility-objectives?per_page=2&page=2'))
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
+    }
+
+    /**
+     * `attempts` et `attempt_history` racontent le MEME fait.
+     *
+     * Une publication reussie du premier coup affichait `attempts = 0` alors
+     * que son historique contenait deja une entree : deux compteurs du meme
+     * evenement qui se contredisaient a l'ecran.
+     */
+    public function test_a_successful_publication_counts_its_attempt(): void
+    {
+        $company = $this->company();
+        $this->actingAsPlatform();
+
+        $publicationId = $this->postJson($this->url($company, '/publications'), [
+            'platform' => 'linkedin',
+        ])->assertCreated()->json('data.id');
+
+        $this->patchJson($this->url($company, "/publications/{$publicationId}/status"), [
+            'action' => 'confirm_published',
+            'published_url' => 'https://www.linkedin.com/posts/leopardo-attempts',
+        ])->assertOk();
+
+        $this->inTenant($company, function () use ($publicationId): void {
+            /** @var MarketingPublication $publication */
+            $publication = MarketingPublication::query()->findOrFail($publicationId);
+
+            $this->assertSame(1, $publication->attempts);
+            $this->assertCount(1, (array) $publication->attempt_history);
+            $this->assertSame(
+                $publication->attempts,
+                count((array) $publication->attempt_history),
+                'Le compteur de tentatives doit correspondre a l historique.',
+            );
+        });
+    }
 }
