@@ -110,10 +110,13 @@ jobs:
             exit 1
           fi
 
-          echo "tier=$tier" >> "$GITHUB_OUTPUT"
-          echo "stack=$stack" >> "$GITHUB_OUTPUT"
-          echo "force=$force" >> "$GITHUB_OUTPUT"
-          echo "source=$source" >> "$GITHUB_OUTPUT"
+          # Redirections groupées : shellcheck SC2129 (une seule ouverture).
+          {
+            echo "tier=$tier"
+            echo "stack=$stack"
+            echo "force=$force"
+            echo "source=$source"
+          } >> "$GITHUB_OUTPUT"
           echo "Bascule demandée : tier=${tier} stack=${stack} force=${force} (${source})"
 
       - name: Checkout (scripts + registres)
