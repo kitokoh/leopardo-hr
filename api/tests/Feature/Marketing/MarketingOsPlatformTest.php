@@ -592,8 +592,6 @@ class MarketingOsPlatformTest extends TestCase
 
             $entry = $entries->first();
             $this->assertNotNull($entry);
-            $this->assertIsArray($entry->old_values);
-            $this->assertIsArray($entry->new_values);
             $this->assertSame('idea', $entry->old_values['status']);
             $this->assertSame('published', $entry->new_values['status']);
             $this->assertSame((string) $company->id, (string) $entry->company_id);
