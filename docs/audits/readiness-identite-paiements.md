@@ -330,6 +330,36 @@ Ces points ne peuvent pas être tranchés par l'ingénierie seule — ils engage
 7. **Le webhook doit-il faire progresser une transaction ?** Aujourd'hui il ne mute rien. Avant la première intégration réelle, il faut trancher le contrat : quels événements sont acceptés, dans quel ordre, et comment un événement **hors séquence** est traité (ignoré, mis en quarantaine, ou rejoué).
 8. **Politique multi-devise :** les montants sont en plus petite unité, mais aucune liste de devises supportées n'est figée (`TenantPaymentController` retombe sur `$company->currency ?? 'DZD'`). Faut-il une allowlist par instance, et que faire d'une devise non supportée (rejet 422 ou conversion) ?
 
+### 8.1 Traçabilité — chaque décision est adossée à une issue
+
+Aucune de ces questions n'est rhétorique : chacune a un porteur technique identifié et un critère d'acceptation vérifiable. Le propriétaire produit peut répondre en commentant l'issue correspondante.
+
+| # | Question | Issue | BC | Ce qui est bloqué tant que ce n'est pas tranché |
+|---|---|---|---|---|
+| 1 | Téléphone identifiant de 1er rang ? | **#8736** | Identité | OTP/SMS, dédoublonnage des comptes grand public |
+| 2 | Canal OTP (SMS / e-mail / les deux) ? | **#8738** | Identité | Inscription d'un client final sans e-mail |
+| 3 | SSO requis pour le lancement ? | **#8737** | Identité | Connexion des tenants configurés en SAML (aujourd'hui refusée) |
+| 4 | Cumul de rôles intra-tenant ? | **#8740** | Identité | Salarié-client sur la boutique de son employeur |
+| 5 | Autorité sur les écrans Paiements ? | **#8711** + **#8741** | Paiements | Accès d'un rôle `support` aux transactions de tous les tenants |
+| 6 | Payroll alimente le ledger BC-38 ? | **#8713** | Paiements | Unicité du solde employé (deux journaux coexistent) |
+| 7 | Le webhook fait progresser une transaction ? | **#8742** | Paiements | Toute intégration réelle de fournisseur |
+| 8 | Allowlist de devises ? | **#8743** | Paiements | Rejet d'une devise non supportée (repli silencieux sur `DZD`) |
+
+**Écarts identifiés par l'audit et tracés en issues** (au-delà des 8 décisions) :
+
+| Issue | BC | Écart |
+|---|---|---|
+| **#8712** | Paiements | Aucun événement de domaine émis — les BC consommateurs ne peuvent pas réagir |
+| **#8714** | Paiements | Types monétaires hétérogènes (`bigint` BC-38 vs `decimal` ailleurs) |
+| **#8715** | Paiements | Absence de tests d'accès croisé inter-tenant |
+| **#8739** | Paiements | Aucun écran Superadmin/Tenant dédié au BC dans l'UI existante |
+| **#8716** | Identité | Exception de scope tenant sur `UserEmployeeLink` |
+| **#8717** | Identité | Absence de tests d'architecture sur les frontières |
+| **#8718** | Transversal | `Backend Coverage Gate` annulé sans job — cause racine identifiée (concurrence globale) |
+| **#8719** | Transversal | Échecs d'exploitation préexistants sur `main` |
+
+**Total : 17 issues ouvertes** (9 initiales #8711–#8719 + 8 compléments #8736–#8743), toutes labellisées par BC (`BC-03 IDENTITY`, `BC-38 PAIEMENTS`, `TRANSVERSAL`) et portant un critère d'acceptation vérifiable.
+
 ---
 
 *Rapport d'audit — aucune modification de code applicatif. Preuves vérifiables par chemin de fichier, identifiant de run CI et numéro d'issue.*
