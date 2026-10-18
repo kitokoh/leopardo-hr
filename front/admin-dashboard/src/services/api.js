@@ -103,35 +103,17 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-// QA 2026-08-15 (#2659) : tout build sans VITE_API_URL embarquait localhost
-// (déploiement GitHub Actions cassé, dev silencieusement pointé ailleurs).
-// Durcissement #7842 : le repli silencieux vers l'API dev Render est retiré
-// en production — un build prod (`import.meta.env.PROD`) sans VITE_API_URL
-// lève désormais une erreur explicite au chargement. #7963 : plus AUCUNE
-// URL distante en dur — en dev/test, le seul repli est le backend LOCAL
-// (signalé par un console.warn) ; toute autre cible passe par VITE_API_URL.
-const DEV_FALLBACK_API_BASE_URL = 'http://localhost:8000/api/v1'
+// #8707 — la résolution a été extraite dans `./api-base-url.js` : elle
+// privilégie désormais `VITE_API_PROXY_BASE_URL` (proxy same-origin du front
+// web) au lieu de figer une URL Render dans le bundle. La cible réelle de
+// l'API est lue au RUNTIME par le proxy Next du front web, donc une bascule de
+// stack ne demande plus AUCUN rebuild de ce dashboard.
+import { assertProductionInvariant, resolveApiBaseUrl } from './api-base-url.js'
 
-function resolveApiBaseUrl() {
-  const configured = import.meta.env.VITE_API_URL
-  if (configured) {
-    return configured
-  }
-  if (import.meta.env.PROD) {
-    // Developer-facing technical diagnostic (not UI copy — kept out of the
-    // i18n catalogs on purpose; the '[admin-dashboard]' tag prefix is the
-    // repo convention recognised by the PA2-I18N-014 guard, see #7842).
-    throw new Error(
-      '[admin-dashboard] VITE_API_URL is not set in a production build. Define VITE_API_URL (e.g. https://api.example.com/api/v1) in the build environment. The silent fallback to the onrender.com dev API was removed (#7842).',
-    )
-  }
-  console.warn(
-    `[admin-dashboard] VITE_API_URL is not set — falling back to the local backend ${DEV_FALLBACK_API_BASE_URL} (dev/test only, forbidden in production, #7842/#7963).`,
-  )
-  return DEV_FALLBACK_API_BASE_URL
-}
+const resolvedApiBaseUrl = resolveApiBaseUrl()
+assertProductionInvariant(resolvedApiBaseUrl)
 
-const apiBaseURL = resolveApiBaseUrl()
+const apiBaseURL = resolvedApiBaseUrl.baseURL
 
 function baseEndsWithV1(baseURL) {
   return /\/api\/v1\/?$/.test(baseURL || '')
