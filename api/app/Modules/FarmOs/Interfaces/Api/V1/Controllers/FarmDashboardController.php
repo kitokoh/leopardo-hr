@@ -8,9 +8,17 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\FarmOs\Domain\Enums\FarmCapability;
 use App\Modules\FarmOs\Domain\Enums\FarmOperationStatus;
 use App\Modules\FarmOs\Domain\Models\CropCycle;
+use App\Modules\FarmOs\Domain\Models\FarmAnimalHealthEvent;
+use App\Modules\FarmOs\Domain\Models\FarmEquipment;
+use App\Modules\FarmOs\Domain\Models\FarmEquipmentMaintenance;
+use App\Modules\FarmOs\Domain\Models\FarmHarvestLot;
+use App\Modules\FarmOs\Domain\Models\FarmInput;
+use App\Modules\FarmOs\Domain\Models\FarmLivestockBatch;
 use App\Modules\FarmOs\Domain\Models\FarmOperation;
 use App\Modules\FarmOs\Domain\Models\Parcel;
 use App\Modules\FarmOs\Domain\Services\FarmCapabilityGate;
+use App\Modules\FarmOs\Domain\Services\FarmProfitabilityService;
+use App\Modules\FarmOs\Domain\Services\FarmSyncService;
 use App\Modules\FarmOs\Infrastructure\Context\FarmCompanyContext;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -29,6 +37,8 @@ final class FarmDashboardController
 {
     public function __construct(
         private readonly FarmCapabilityGate $gate,
+        private readonly FarmSyncService $sync,
+        private readonly FarmProfitabilityService $profitability,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -57,17 +67,32 @@ final class FarmDashboardController
             ];
         }
 
-        // Sections des modules non encore livrés (stocks, matériel, élevage,
-        // ventes, coûts) : déclarées EXPLICITEMENT non disponibles plutôt que
-        // simulées — exigence d'honnêteté fonctionnelle.
-        $sections['pending_capabilities'] = array_values(array_filter([
-            in_array(FarmCapability::StocksInputs->value, $enabled, true) ? 'stocks_inputs' : null,
-            in_array(FarmCapability::Equipment->value, $enabled, true) ? 'equipment' : null,
-            in_array(FarmCapability::Livestock->value, $enabled, true) ? 'livestock' : null,
-            in_array(FarmCapability::HarvestStorage->value, $enabled, true) ? 'harvest_storage' : null,
-            in_array(FarmCapability::SalesCustomers->value, $enabled, true) ? 'sales_customers' : null,
-            in_array(FarmCapability::FinanceExpenses->value, $enabled, true) ? 'finance_expenses' : null,
-        ]));
+        // Sections des modules LIVRES : chacune n'apparait que si la capacite
+        // correspondante est activee, et chacune porte un etat honnete (donnee
+        // disponible, vide utile, ou non calculable faute de donnees).
+        if (in_array(FarmCapability::StocksInputs->value, $enabled, true)) {
+            $sections['inputs_to_reorder'] = $this->inputsToReorder($company);
+        }
+
+        if (in_array(FarmCapability::Equipment->value, $enabled, true)) {
+            $sections['equipment_maintenance_due'] = $this->equipmentMaintenanceDue($company, $now);
+        }
+
+        if (in_array(FarmCapability::Livestock->value, $enabled, true)) {
+            $sections['livestock'] = $this->livestock($company, $now);
+        }
+
+        if (in_array(FarmCapability::HarvestStorage->value, $enabled, true)) {
+            $sections['harvest_stock'] = $this->harvestStock($company);
+        }
+
+        if (in_array(FarmCapability::FinanceExpenses->value, $enabled, true)) {
+            $sections['finance'] = $this->finance($company);
+        }
+
+        // Operations en attente de synchronisation : visible uniquement si le
+        // mode hors ligne a reellement quelque chose a remonter.
+        $sections['pending_sync'] = $this->pendingSync($company);
 
         return response()->json([
             'data' => [
@@ -77,6 +102,215 @@ final class FarmDashboardController
                 'empty_state' => $this->emptyState(),
             ],
         ]);
+    }
+
+    /**
+     * Intrants sous leur seuil d'alerte. Un intrant SANS seuil declare n'y
+     * apparait jamais : Farm OS n'invente pas de seuil.
+     *
+     * @return array<string, mixed>
+     */
+    private function inputsToReorder(Company $company): array
+    {
+        $rows = [];
+
+        $inputs = FarmInput::query()
+            ->where('company_id', $company->id)
+            ->whereNotNull('alert_threshold')
+            ->get();
+
+        foreach ($inputs as $input) {
+            $quantity = $this->inputQuantity($company, (int) $input->id);
+
+            if ((float) $quantity < (float) $input->alert_threshold) {
+                $rows[] = [
+                    'input_id' => (int) $input->id,
+                    'name' => (string) $input->name,
+                    'quantity' => $quantity,
+                    'threshold' => (string) $input->alert_threshold,
+                    'unit' => (string) $input->unit,
+                ];
+            }
+        }
+
+        return [
+            'count' => count($rows),
+            'items' => $rows,
+            'state' => $rows === [] ? 'nothing_below_threshold' : 'data_available',
+        ];
+    }
+
+    private function inputQuantity(Company $company, int $inputId): string
+    {
+        $connection = (new FarmInput)->getConnection();
+        $table = (new FarmInput)->getTable();
+
+        $value = $connection->table($table)
+            ->where('company_id', $company->id)
+            ->where('id', $inputId)
+            ->value('quantity_on_hand');
+
+        return is_numeric($value) ? number_format((float) $value, 3, '.', '') : '0.000';
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function equipmentMaintenanceDue(Company $company, Carbon $now): array
+    {
+        $rows = [];
+
+        $maintenances = FarmEquipmentMaintenance::query()
+            ->where('company_id', $company->id)
+            ->where('status', 'planned')
+            ->whereNotNull('planned_at')
+            ->where('planned_at', '<=', $now)
+            ->orderBy('planned_at')
+            ->limit(10)
+            ->get();
+
+        foreach ($maintenances as $maintenance) {
+            $equipment = FarmEquipment::query()
+                ->where('company_id', $company->id)
+                ->where('id', $maintenance->farm_equipment_id)
+                ->first();
+
+            $rows[] = [
+                'maintenance_id' => (int) $maintenance->id,
+                'equipment_id' => (int) $maintenance->farm_equipment_id,
+                'equipment_name' => $equipment?->name,
+                'title' => (string) $maintenance->title,
+                'planned_at' => $maintenance->planned_at?->toIso8601String(),
+            ];
+        }
+
+        return [
+            'count' => count($rows),
+            'items' => $rows,
+            'state' => $rows === [] ? 'nothing_due' : 'data_available',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function livestock(Company $company, Carbon $now): array
+    {
+        $batches = FarmLivestockBatch::query()->where('company_id', $company->id)->get();
+        $present = 0;
+
+        foreach ($batches as $batch) {
+            $present += (int) $batch->head_count;
+        }
+
+        $reminders = FarmAnimalHealthEvent::query()
+            ->where('company_id', $company->id)
+            ->whereNotNull('next_due_at')
+            ->where('next_due_at', '<=', $now)
+            ->orderBy('next_due_at')
+            ->limit(10)
+            ->get();
+
+        $items = [];
+
+        foreach ($reminders as $reminder) {
+            $items[] = [
+                'title' => (string) $reminder->title,
+                'event_type' => (string) $reminder->event_type,
+                'next_due_at' => $reminder->next_due_at?->toIso8601String(),
+            ];
+        }
+
+        return [
+            'batches' => $batches->count(),
+            'present_head' => $present,
+            'health_reminders_due' => count($items),
+            'items' => $items,
+            'state' => $batches->count() === 0 ? 'no_herd_recorded' : 'data_available',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function harvestStock(Company $company): array
+    {
+        $lots = FarmHarvestLot::query()
+            ->where('company_id', $company->id)
+            ->where('status', 'open')
+            ->get();
+
+        $byCrop = [];
+
+        foreach ($lots as $lot) {
+            $crop = (string) ($lot->crop_name ?? 'unknown');
+            $unit = (string) $lot->unit;
+            $key = $crop.'|'.$unit;
+
+            if (! isset($byCrop[$key])) {
+                $byCrop[$key] = ['crop' => $crop, 'remaining' => 0.0, 'unit' => $unit];
+            }
+
+            $byCrop[$key]['remaining'] += (float) $lot->quantity_remaining;
+        }
+
+        $rows = [];
+
+        foreach ($byCrop as $row) {
+            $rows[] = [
+                'crop' => $row['crop'],
+                'remaining' => number_format($row['remaining'], 3, '.', ''),
+                'unit' => $row['unit'],
+            ];
+        }
+
+        return [
+            'open_lots' => $lots->count(),
+            'remaining_by_crop' => $rows,
+            'state' => $lots->count() === 0 ? 'no_harvest_recorded' : 'data_available',
+        ];
+    }
+
+    /**
+     * Ventes et depenses ENREGISTREES, avec la fiabilite explicite : une marge
+     * calculee sur des donnees incompletes n'est jamais presentee comme certaine.
+     *
+     * @return array<string, mixed>
+     */
+    private function finance(Company $company): array
+    {
+        $result = $this->profitability->profitability($company, \App\Modules\FarmOs\Domain\Enums\FarmCostAxis::Farm);
+
+        return [
+            'costs_total' => $result['costs_total'],
+            'costs_real' => $result['costs_real'],
+            'costs_estimated' => $result['costs_estimated'],
+            'revenue_recorded' => $result['revenue_recorded'],
+            'margin_estimated' => $result['margin_estimated'],
+            'is_reliable' => $result['is_reliable'],
+            'missing_inputs' => $result['missing_inputs'],
+            'data_quality' => $result['data_quality'],
+            'state' => $result['is_reliable'] ? 'data_available' : 'insufficient_data',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function pendingSync(Company $company): array
+    {
+        $summary = $this->sync->statusSummary($company);
+
+        return [
+            'pending' => $summary['pending'],
+            'conflict' => $summary['conflict'],
+            'failed' => $summary['failed'],
+            'rejected' => $summary['rejected'],
+            'unresolved_conflicts' => $summary['unresolved_conflicts'],
+            'state' => $summary['pending'] === 0 && $summary['unresolved_conflicts'] === 0
+                ? 'nothing_pending'
+                : 'data_available',
+        ];
     }
 
     /**
