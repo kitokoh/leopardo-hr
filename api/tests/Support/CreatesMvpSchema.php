@@ -6305,6 +6305,183 @@ trait CreatesMvpSchema
             });
         }
 
+        // Mission Farm OS (BC-37@@FARM@@) -- T3.1 elevage. Miroir de la migration
+        // tenant 2026_10_18_000400_8702_create_farm_os_livestock_tables.php
+        // (issue #5443).
+        if (! Schema::hasTable($this->moduleTable('farm_livestock_batches'))) {
+            Schema::create($this->moduleTable('farm_livestock_batches'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_site_id')->nullable();
+                $table->string('name', 160);
+                $table->string('reference', 60)->nullable();
+                $table->string('species', 24);
+                $table->string('breed', 80)->nullable();
+                $table->string('sex', 16)->default('unknown');
+                $table->unsignedInteger('head_count')->default(0);
+                $table->string('location', 160)->nullable();
+                $table->date('started_on')->nullable();
+                $table->string('status', 16)->default('active');
+                $table->text('notes')->nullable();
+                $table->string('client_batch_id', 80)->nullable();
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'client_batch_id'], 'farm_livestock_batches_client_unique');
+                $table->index(['company_id', 'species'], 'farm_livestock_batches_species_index');
+                $table->index(['company_id', 'status'], 'farm_livestock_batches_status_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('farm_animals'))) {
+            Schema::create($this->moduleTable('farm_animals'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_livestock_batch_id')->nullable();
+                $table->unsignedBigInteger('farm_site_id')->nullable();
+                $table->string('tag_number', 80);
+                $table->string('name', 120)->nullable();
+                $table->string('species', 24);
+                $table->string('breed', 80)->nullable();
+                $table->string('sex', 16)->default('unknown');
+                $table->date('birth_date')->nullable();
+                $table->string('origin', 24)->default('unknown');
+                $table->string('location', 160)->nullable();
+                $table->string('status', 16)->default('active');
+                $table->text('notes')->nullable();
+                $table->string('client_animal_id', 80)->nullable();
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'tag_number'], 'farm_animals_tag_unique');
+                $table->unique(['company_id', 'client_animal_id'], 'farm_animals_client_unique');
+                $table->index(['company_id', 'status'], 'farm_animals_status_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('farm_livestock_events'))) {
+            Schema::create($this->moduleTable('farm_livestock_events'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_livestock_batch_id')->nullable();
+                $table->unsignedBigInteger('farm_animal_id')->nullable();
+                $table->string('event_type', 24);
+                $table->unsignedInteger('quantity')->default(1);
+                $table->unsignedInteger('head_count_after')->nullable();
+                $table->timestampTz('occurred_at');
+                $table->unsignedBigInteger('counterparty_id')->nullable();
+                $table->decimal('unit_price', 14, 2)->nullable();
+                $table->char('currency', 3)->nullable();
+                $table->string('reason', 200)->nullable();
+                $table->unsignedBigInteger('recorded_by')->nullable();
+                $table->string('client_event_id', 80)->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'client_event_id'], 'farm_livestock_events_client_unique');
+                $table->index(['company_id', 'farm_livestock_batch_id', 'occurred_at'], 'farm_livestock_events_batch_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('farm_animal_health_events'))) {
+            Schema::create($this->moduleTable('farm_animal_health_events'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_livestock_batch_id')->nullable();
+                $table->unsignedBigInteger('farm_animal_id')->nullable();
+                $table->string('event_type', 24);
+                $table->string('title', 160);
+                $table->string('product_name', 160)->nullable();
+                $table->string('dosage', 80)->nullable();
+                $table->timestampTz('administered_at');
+                $table->timestampTz('next_due_at')->nullable();
+                $table->date('withdrawal_until')->nullable();
+                $table->unsignedBigInteger('veterinarian_id')->nullable();
+                $table->decimal('cost_amount', 14, 2)->nullable();
+                $table->char('currency', 3)->nullable();
+                $table->text('notes')->nullable();
+                $table->unsignedBigInteger('recorded_by')->nullable();
+                $table->string('client_health_id', 80)->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'client_health_id'], 'farm_animal_health_client_unique');
+                $table->index(['company_id', 'next_due_at'], 'farm_animal_health_due_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('farm_reproduction_events'))) {
+            Schema::create($this->moduleTable('farm_reproduction_events'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_livestock_batch_id')->nullable();
+                $table->unsignedBigInteger('farm_animal_id')->nullable();
+                $table->string('event_type', 24);
+                $table->timestampTz('occurred_at');
+                $table->timestampTz('expected_due_at')->nullable();
+                $table->unsignedInteger('gestation_days')->nullable();
+                $table->unsignedInteger('offspring_count')->nullable();
+                $table->unsignedBigInteger('sire_animal_id')->nullable();
+                $table->string('method', 40)->nullable();
+                $table->text('notes')->nullable();
+                $table->unsignedBigInteger('recorded_by')->nullable();
+                $table->string('client_reproduction_id', 80)->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'client_reproduction_id'], 'farm_reproduction_client_unique');
+                $table->index(['company_id', 'expected_due_at'], 'farm_reproduction_due_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('farm_production_records'))) {
+            Schema::create($this->moduleTable('farm_production_records'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_livestock_batch_id')->nullable();
+                $table->unsignedBigInteger('farm_animal_id')->nullable();
+                $table->string('production_type', 24);
+                $table->decimal('quantity', 14, 3);
+                $table->string('unit', 24);
+                $table->string('quality_grade', 40)->nullable();
+                $table->timestampTz('produced_at');
+                $table->text('notes')->nullable();
+                $table->unsignedBigInteger('recorded_by')->nullable();
+                $table->string('client_production_id', 80)->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'client_production_id'], 'farm_production_client_unique');
+                $table->index(['company_id', 'production_type', 'produced_at'], 'farm_production_type_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('farm_feed_records'))) {
+            Schema::create($this->moduleTable('farm_feed_records'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_livestock_batch_id')->nullable();
+                $table->unsignedBigInteger('farm_animal_id')->nullable();
+                $table->string('feed_name', 160);
+                $table->unsignedBigInteger('farm_input_id')->nullable();
+                $table->decimal('quantity', 14, 3);
+                $table->string('unit', 24);
+                $table->decimal('cost_amount', 14, 2)->nullable();
+                $table->char('currency', 3)->nullable();
+                $table->timestampTz('fed_at');
+                $table->text('notes')->nullable();
+                $table->unsignedBigInteger('recorded_by')->nullable();
+                $table->string('client_feed_id', 80)->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'client_feed_id'], 'farm_feed_client_unique');
+                $table->index(['company_id', 'fed_at'], 'farm_feed_date_index');
+            });
+        }
+
         // P0-1 (audit FuelStation) -- catalogue de prix serveur. Parite avec la
         // migration tenant 2026_10_16_120000_9001_create_fuel_product_prices_table
         // (issue #5443 : une table tenant recente doit exister dans la fixture,

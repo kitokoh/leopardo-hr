@@ -19,6 +19,7 @@ declare(strict_types=1);
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\CropCycleController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmDashboardController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmEquipmentController;
+use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmLivestockController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmInputStockController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmOperationController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmSettingsController;
@@ -99,4 +100,21 @@ Route::middleware(['module.farm_os'])
         Route::post('/equipment/{equipment}/documents', [FarmEquipmentController::class, 'storeDocument']);
         Route::post('/equipment/maintenances/{maintenance}/complete', [FarmEquipmentController::class, 'completeMaintenance']);
         Route::post('/equipment/breakdowns/{breakdown}/resolve', [FarmEquipmentController::class, 'resolveBreakdown']);
+
+        // ── T3.1 Elevage ──
+        // L'effectif present n'est JAMAIS modifie directement : il decoule du
+        // journal d'evenements (POST /livestock/batches/{batch}/events). Aucune
+        // duree de gestation, aucun dosage et aucun delai d'attente ne sont
+        // calcules par Farm OS.
+        Route::get('/livestock/batches', [FarmLivestockController::class, 'indexBatches']);
+        Route::post('/livestock/batches', [FarmLivestockController::class, 'storeBatch']);
+        Route::get('/livestock/batches/{batch}', [FarmLivestockController::class, 'showBatch']);
+        Route::post('/livestock/batches/{batch}/events', [FarmLivestockController::class, 'recordEvent']);
+        Route::post('/livestock/batches/{batch}/health-events', [FarmLivestockController::class, 'storeHealthEvent']);
+        Route::post('/livestock/batches/{batch}/reproduction-events', [FarmLivestockController::class, 'storeReproductionEvent']);
+        Route::post('/livestock/batches/{batch}/production', [FarmLivestockController::class, 'storeProduction']);
+        Route::post('/livestock/batches/{batch}/feed', [FarmLivestockController::class, 'storeFeed']);
+        Route::get('/livestock/animals', [FarmLivestockController::class, 'indexAnimals']);
+        Route::post('/livestock/animals', [FarmLivestockController::class, 'storeAnimal']);
+        Route::get('/livestock/summary', [FarmLivestockController::class, 'summary']);
     });
