@@ -870,6 +870,12 @@
       "to": "BC-02",
       "baseline": false,
       "note": "GROWTH → TENANT : Marketing OS (#8528) — PlatformMarketingOsController/PlatformMarketingOsService exécutent la logique marketing du tenant CIBLÉ depuis la console Super Admin via App\\Core\\Tenant\\TenantManager (withinTenant) + PlatformCompanyLookup, même patron que BC-27 Showcase (#6866/#6867) et BC-33 cagnottes (#8379)."
+    },
+    {
+      "from": "BC-38",
+      "to": "BC-02",
+      "baseline": false,
+      "note": "PAIEMENTS -> TENANT : la surface Tenant (solde, historique, demande de cash-out) lit le tenant courant via currentCompany() et le scope global `company` du trait BelongsToCompany, meme patron que les autres BC verticaux."
     }
   ]
 }

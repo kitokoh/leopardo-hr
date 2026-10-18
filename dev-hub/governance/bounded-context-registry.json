@@ -1121,6 +1121,33 @@
       "dependencies": [
         "BC-02"
       ]
+    },
+    {
+      "code": "BC-38",
+      "name": "PAIEMENTS",
+      "context": "Paiements",
+      "responsibility": "Socle de paiement interne du Business OS : wallets multi-proprietaire (plateforme/tenant/client) a solde derive du ledger, ledger en partie double immuable, transactions idempotentes (cash-in / cash-out / transfert interne / remboursement), registre de fournisseurs administrable a deux niveaux (PaymentProviderType = code, PaymentProviderInstance = configuration), resolution de marche par pays/devise/tenant (ProviderResolver), regles de commission, webhooks entrants routes par token, reconciliation solde externe vs ledger. API interne service-a-service pour les BC consommateurs (Paie, Cagnottes, VTC, Boutique), surface Superadmin (types en lecture seule, CRUD instances, journal, reconciliation) et surface Tenant.",
+      "owner": "Agent 38 - BC-PAIEMENTS",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Paiements",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/paiements.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\Paiements\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02"
+      ]
     }
   ]
 }

@@ -101,3 +101,9 @@
 
 # BC-34@@FUND@@ — verticale cagnottes solidaires (spec docs/specifications/SOLUTION_FUNDRAISING.md)
 /api/app/Modules/Fundraising/ @kitokoh
+
+# BC-38 PAIEMENTS (#8680) — socle de paiement interne + registre de fournisseurs
+# administrable (spec : docs/adr/BC-38-001 a BC-38-004).
+/api/app/Modules/Paiements/ @kitokoh
+/api/routes/modules/paiements.php @kitokoh
+/api/config/paiements.php @kitokoh

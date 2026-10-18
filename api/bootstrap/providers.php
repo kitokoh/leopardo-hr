@@ -24,6 +24,8 @@ use App\Modules\HR\Providers\HRServiceProvider;
 use App\Modules\Marketing\Providers\MarketingServiceProvider;
 use App\Modules\Notification\Providers\NotificationServiceProvider;
 use App\Modules\Onboarding\Providers\OnboardingServiceProvider;
+use App\Modules\Paiements\Providers\PaiementsServiceProvider;
+// BC-38 PAIEMENTS (#8680) — socle de paiement interne + registre de fournisseurs.
 use App\Modules\Payroll\Providers\PayrollServiceProvider;
 use App\Modules\Pharmacy\Providers\PharmacyServiceProvider;
 use App\Modules\Planning\Providers\PlanningServiceProvider;
@@ -96,4 +98,7 @@ return [
     // enregistre le manifest `trade` au catalogue des solutions (aucun module
     // requis — activation possible sur tenant frais).
     TradeServiceProvider::class,
+    // BC-38 PAIEMENTS (#8680) — socle de paiement interne : registre des types
+    // de fournisseur (code) + services ledger / resolver / reconciliation.
+    PaiementsServiceProvider::class,
 ];

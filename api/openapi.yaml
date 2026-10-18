@@ -46792,12 +46792,518 @@ paths:
         '403':
           $ref: '#/components/responses/Error403'
 
+  /v1/paiements/internal/credit:
+    post:
+      tags: [Paiements]
+      summary: Crediter un wallet (API interne service-a-service)
+      description: |
+        Consomme par les autres BC (Paie, Cagnottes, VTC, Boutique).
+        Authentification par jeton de service (`Authorization: Bearer <token>` ou
+        `X-Service-Token`). **Idempotence obligatoire** : la cle est unique par
+        tenant en base ; un rejeu retourne la transaction existante sans effet
+        de bord. Aucun secret ni identifiant interne de fournisseur n'est renvoye.
+      security:
+        - ServiceToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaiementsInternalOperationRequest'
+      responses:
+        '201':
+          description: Operation enregistree
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaiementsOperationResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/paiements/internal/debit:
+    post:
+      tags: [Paiements]
+      summary: Debiter un wallet (API interne service-a-service)
+      description: |
+        Decaissement vers le rail resolu pour le marche du tenant. Meme contrat
+        d'idempotence que le credit.
+      security:
+        - ServiceToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaiementsInternalOperationRequest'
+      responses:
+        '201':
+          description: Operation enregistree
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaiementsOperationResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/paiements/internal/transfer:
+    post:
+      tags: [Paiements]
+      summary: Transfert strictement interne entre deux wallets
+      description: |
+        Aucun rail externe : `provider_instance_id` reste nul. Le mouvement
+        produit une paire d'ecritures en partie double.
+      security:
+        - ServiceToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaiementsInternalTransferRequest'
+      responses:
+        '201':
+          description: Operation enregistree
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaiementsOperationResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/paiements/internal/refund:
+    post:
+      tags: [Paiements]
+      summary: Rembourser un mouvement (contre-passation)
+      description: |
+        Cree le groupe d'ecritures inverse du groupe d'origine. Le ledger etant
+        immuable, la correction passe toujours par une contre-passation.
+      security:
+        - ServiceToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaiementsInternalRefundRequest'
+      responses:
+        '201':
+          description: Operation enregistree
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaiementsOperationResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/paiements/webhooks/{token}:
+    post:
+      tags: [Paiements]
+      summary: Webhook entrant d'un fournisseur
+      description: |
+        Le routage se fait **par le token de l'endpoint**, jamais par parsing du
+        payload ni par le nom du fournisseur. La signature HMAC est verifiee en
+        fail-closed : sans secret configure, tout payload est rejete. Un rejeu
+        est un no-op.
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                external_reference:
+                  type: string
+                event:
+                  type: string
+      responses:
+        '200':
+          description: Webhook traite
+        '400':
+          description: Signature invalide ou secret absent
+        '404':
+          description: Endpoint inconnu
+  /v1/paiements/wallet:
+    get:
+      tags: [Paiements]
+      summary: Solde du wallet du tenant
+      description: |
+        Le solde est **derive du ledger** (`SUM(credits) - SUM(debits)`), jamais
+        stocke. Scope au tenant courant.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: currency
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+      responses:
+        '200':
+          description: Solde du wallet
+        '401':
+          $ref: '#/components/responses/Error401'
+  /v1/paiements/wallet/history:
+    get:
+      tags: [Paiements]
+      summary: Historique des ecritures du wallet du tenant
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Historique du wallet
+        '401':
+          $ref: '#/components/responses/Error401'
+  /v1/paiements/market:
+    get:
+      tags: [Paiements]
+      summary: Marche du tenant et instance resolue
+      description: |
+        Information, pas choix : le tenant ne selectionne jamais son fournisseur,
+        c'est le `ProviderResolver` qui tranche selon pays + devise + priorite.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Marche du tenant
+        '401':
+          $ref: '#/components/responses/Error401'
+  /v1/paiements/fees:
+    get:
+      tags: [Paiements]
+      summary: Commissions prelevees sur les transactions du tenant
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Commissions prelevees
+        '401':
+          $ref: '#/components/responses/Error401'
+  /v1/paiements/cash-out:
+    post:
+      tags: [Paiements]
+      summary: Demander un retrait (cash-out)
+      description: |
+        L'instance est resolue cote serveur pour le marche du tenant. Aucun
+        `provider_instance_id` n'est accepte en entree.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount, idempotency_key]
+              properties:
+                amount:
+                  type: integer
+                  minimum: 1
+                currency:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                idempotency_key:
+                  type: string
+                  maxLength: 120
+      responses:
+        '201':
+          description: Demande de retrait enregistree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/platform/payments/provider-types:
+    get:
+      tags: [Paiements]
+      summary: Liste des types de fournisseur (LECTURE SEULE)
+      description: |
+        Les types viennent du **code** (`ProviderTypeRegistry`) : aucun endpoint
+        ne permet de les creer, modifier ou supprimer. Les types sont generiques,
+        sans nom commercial.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Types disponibles
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /v1/platform/payments/provider-instances:
+    get:
+      tags: [Paiements]
+      summary: Lister les instances de fournisseur
+      description: |
+        Les secrets sont masques (`••••`) : la configuration n'est jamais
+        renvoyee en clair.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, inactive, sandbox]
+        - name: type_code
+          in: query
+          schema:
+            type: string
+        - name: company_id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Instances de fournisseur
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags: [Paiements]
+      summary: Creer une instance de fournisseur
+      description: |
+        Ajouter un moyen de paiement d'un type deja implemente ne demande
+        **aucune ligne de code** : c'est une operation de configuration.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaiementsProviderInstanceRequest'
+      responses:
+        '201':
+          description: Instance creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/platform/payments/provider-instances/{instance}:
+    patch:
+      tags: [Paiements]
+      summary: Mettre a jour une instance de fournisseur
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: instance
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaiementsProviderInstanceRequest'
+      responses:
+        '200':
+          description: Instance mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /v1/platform/payments/provider-instances/{instance}/status:
+    patch:
+      tags: [Paiements]
+      summary: Activer / desactiver une instance
+      description: |
+        C'est l'operation qui rend le critere d'acceptation du BC verifiable :
+        basculer un marche d'une instance a une autre du meme type, sans
+        deploiement ni modification de code.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: instance
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [active, inactive, sandbox]
+      responses:
+        '200':
+          description: Statut mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /v1/platform/payments/webhook-endpoints:
+    post:
+      tags: [Paiements]
+      summary: Creer un endpoint de webhook pour une instance
+      description: |
+        Le token est genere cote serveur et identifie l'instance sans ambiguite.
+        Le secret de signature est chiffre at-rest et n'est renvoye qu'a la
+        creation.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider_instance_id, secret_signature]
+              properties:
+                provider_instance_id:
+                  type: integer
+                company_id:
+                  type: string
+                secret_signature:
+                  type: string
+                  minLength: 16
+                  maxLength: 190
+      responses:
+        '201':
+          description: Endpoint cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /v1/platform/payments/transactions:
+    get:
+      tags: [Paiements]
+      summary: Journal des transactions (filtrable)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: company_id
+          in: query
+          schema:
+            type: string
+        - name: provider_instance_id
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, processing, succeeded, failed, cancelled]
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Journal des transactions
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /v1/platform/payments/reconciliations:
+    get:
+      tags: [Paiements]
+      summary: Historique des rapprochements
+      description: |
+        Chaque ligne compare le solde externe declare au solde interne recalcule
+        depuis le ledger, avec l'ecart `declared - computed`.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: company_id
+          in: query
+          schema:
+            type: string
+        - name: provider_instance_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Historique des rapprochements
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags: [Paiements]
+      summary: Lancer un rapprochement
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [company_id, provider_instance_id, currency, declared_balance]
+              properties:
+                company_id:
+                  type: string
+                provider_instance_id:
+                  type: integer
+                currency:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                declared_balance:
+                  type: integer
+      responses:
+        '201':
+          description: Rapprochement enregistre
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+
 components:
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: Sanctum
+    # BC-38 PAIEMENTS (#8689) — authentification service-a-service de l'API
+    # interne. Un BC consommateur n'est pas un utilisateur : jamais de session.
+    ServiceToken:
+      type: http
+      scheme: bearer
+      description: |
+        Jeton de service partage par les BC consommateurs (Paie, Cagnottes, VTC,
+        Boutique). Fail-closed : sans jeton configure cote serveur, l'API interne
+        rejette toute requete (503).
     SuperAdminBearerAuth:
       type: http
       scheme: bearer
@@ -46975,6 +47481,115 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    # ── BC-38 PAIEMENTS ────────────────────────────────────────────────────
+    PaiementsInternalOperationRequest:
+      type: object
+      required: [company_id, amount, currency, idempotency_key]
+      properties:
+        company_id:
+          type: string
+          maxLength: 64
+        amount:
+          type: integer
+          minimum: 1
+          description: Plus petite unite de la devise (entier, jamais de flottant).
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        idempotency_key:
+          type: string
+          maxLength: 120
+          description: |
+            Unique par tenant, en base. Un rejeu retourne la transaction
+            existante sans effet de bord.
+        country:
+          type: string
+          minLength: 2
+          maxLength: 2
+        metadata:
+          type: object
+          additionalProperties: true
+    PaiementsInternalTransferRequest:
+      allOf:
+        - $ref: '#/components/schemas/PaiementsInternalOperationRequest'
+        - type: object
+          required: [from_wallet_id, to_wallet_id]
+          properties:
+            from_wallet_id:
+              type: integer
+            to_wallet_id:
+              type: integer
+    PaiementsInternalRefundRequest:
+      allOf:
+        - $ref: '#/components/schemas/PaiementsInternalOperationRequest'
+        - type: object
+          required: [transfer_group_id]
+          properties:
+            transfer_group_id:
+              type: string
+              description: Groupe d'ecritures a contre-passer.
+    PaiementsOperationResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            transaction_id:
+              type: integer
+            type:
+              type: string
+              enum: [cash_in, cash_out, internal_transfer, refund]
+            status:
+              type: string
+              enum: [pending, processing, succeeded, failed, cancelled]
+            amount:
+              type: integer
+            fee_amount:
+              type: integer
+            currency:
+              type: string
+            external_reference:
+              type: string
+              nullable: true
+    PaiementsProviderInstanceRequest:
+      type: object
+      required: [type_code, display_name]
+      properties:
+        type_code:
+          type: string
+          maxLength: 60
+          description: Reference un type du CODE (ProviderTypeRegistry).
+        display_name:
+          type: string
+          maxLength: 120
+        company_id:
+          type: string
+          nullable: true
+          description: Nul = instance globale ; sinon instance dediee au tenant.
+        countries:
+          type: array
+          items:
+            type: string
+        currencies:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [active, inactive, sandbox]
+        config:
+          type: object
+          additionalProperties: true
+          description: |
+            Chiffre at-rest. Jamais renvoye en clair : masque `••••` en lecture.
+        priority:
+          type: integer
+          minimum: 0
     VtcGeoPointInput:
       type: object
       required: [lat, lng]

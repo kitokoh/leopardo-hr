@@ -123,6 +123,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'tenant' => TenantMiddleware::class,
+            // BC-38 PAIEMENTS (#8689) — authentification service-a-service de
+            // l'API interne (jamais de session utilisateur pour un BC
+            // consommateur). Fail-closed : sans jeton configure, 503.
+            'paiements.service' => \App\Modules\Paiements\Interfaces\Http\Middleware\EnsurePaymentServiceToken::class,
             'manager' => EnsureManagerMiddleware::class,
             'manager_role' => EnsureManagerRoleMiddleware::class,
             'employee' => EnsureEmployeeMiddleware::class,
