@@ -259,6 +259,100 @@ html {
   }
 }
 
+/* ── Héro « stage » — CARTES EN ORBITE autour du noyau (point 4, prop. B) ──
+   Le positionnement « Business OS » devient la mise en page : les solutions
+   métier gravitent autour d'un socle commun. Mouvement en CSS PUR
+   (`transform: rotate`) — le compositeur du navigateur s'en charge, aucun
+   recalcul JavaScript par image (exigence du point 3).
+
+   Deux animations synchronisées par carte :
+     · `.hero-orbit-arm`  tourne autour du centre du conteneur ;
+     · `.hero-orbit-card` contre-tourne du même angle pour rester DROITE.
+   Elles partagent `--orbit-dur`, `--orbit-dir` et `--orbit-delay`, donc le
+   texte ne penche jamais, quelle que soit la phase.
+
+   Style pur, donc ici et non dans le TSX (la garde i18n ne scanne pas les
+   .css ; la garde design-tokens lit les .css, d'où rgb() sans #rrggbb). */
+.hero-orbit-core {
+  background: radial-gradient(circle at 50% 45%, rgba(16, 185, 129, 0.9), rgba(13, 148, 136, 0.35) 62%, transparent 78%);
+  box-shadow: 0 0 60px 18px rgba(16, 185, 129, 0.22);
+}
+
+.hero-orbit-card {
+  /* Position STATIQUE sur le cercle : `left`/`top` sont posés en pourcentage
+     par le composant, et `translate(-50%, -50%)` recentre la carte sur son
+     point de trajectoire. Ce transform n'est JAMAIS animé — c'est ce qui
+     garantit que le centre de la carte reste exactement sur le cercle. */
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+/* La contre-rotation vit sur un élément INTERNE, pas sur la carte.
+
+   Pourquoi : les transformations CSS se composent de gauche à droite, donc
+   animer `transform` sur la carte obligeait à ré-écrire le recentrage dans le
+   repère DÉJÀ tourné de l'anneau — le centre de la carte dérivait alors sur un
+   petit cercle (mesuré : jusqu'à 39 px de recouvrement entre cartes voisines).
+   En séparant les deux responsabilités — la carte porte le recentrage, l'élément
+   interne porte la rotation — chacune reste exacte. */
+.hero-orbit-card-inner {
+  display: block;
+}
+
+/* L'anneau est un carré plein qui tourne : les cartes qu'il contient décrivent
+   donc un cercle exact autour du centre de la scène.
+
+   Pourquoi pas un « bras » par carte avec `translateY(-r)` : un pourcentage
+   dans `translateY` se résout contre la hauteur de l'ÉLÉMENT, pas du
+   conteneur — le rayon valait la hauteur d'une carte (≈ 18 px) au lieu de 46 %
+   de la scène, et les 5 cartes de l'anneau extérieur s'empilaient au même
+   angle (jusqu'à 33 px de recouvrement, mesuré en navigateur). */
+.hero-orbit-ring {
+  position: absolute;
+  inset: 0;
+}
+
+/* Sur écran étroit, l'orbite est physiquement plus petite : à taille de carte
+   constante, les pastilles se recouvraient. On resserre donc leur emprise — le
+   texte reste entier, seule la boîte se réduit. */
+@media (max-width: 640px) {
+  .hero-orbit-card {
+    max-width: 4.25rem;
+    font-size: 9px;
+  }
+  .hero-orbit-card-inner {
+    padding: 0.25rem 0.375rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-orbit-ring {
+    animation: hero-orbit-spin var(--orbit-dur) linear infinite;
+    animation-direction: var(--orbit-dir);
+  }
+  .hero-orbit-card-inner {
+    animation: hero-orbit-counter-spin var(--orbit-dur) linear infinite;
+    animation-direction: var(--orbit-dir);
+    animation-delay: var(--orbit-delay);
+  }
+  @keyframes hero-orbit-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes hero-orbit-counter-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(-360deg);
+    }
+  }
+}
+
 /* ── Héro « stage » — pile d'actions sur petit MOBILE portrait (#8461) ────
    Titre + boutons + formulaire rapide ne tiennent pas dans un viewport court
    ET étroit (ex. 375×667) : le héro grandit au-delà de l'écran pour que
