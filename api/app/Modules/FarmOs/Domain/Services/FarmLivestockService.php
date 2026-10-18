@@ -97,6 +97,28 @@ final class FarmLivestockService
 
             $headCountAfter = null;
 
+            // ── Controle PREALABLE de l'animal individuel ──────────────────
+            // Une tete ne peut pas sortir deux fois. Ce controle doit passer
+            // AVANT toute mutation d'effectif : sinon la premiere sortie
+            // decrementerait le lot, puis la seconde echouerait sur
+            // « effectif insuffisant » — un message faux, qui masque la vraie
+            // cause (l'animal est deja sorti). La ligne est verrouillee une
+            // seule fois et reutilisee plus bas.
+            $lockedAnimal = null;
+
+            if ($animal !== null && $type->resultingStatus() !== null) {
+                /** @var FarmAnimal $lockedAnimal */
+                $lockedAnimal = FarmAnimal::query()
+                    ->where('company_id', $company->id)
+                    ->whereKey($animal->id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                if (! $lockedAnimal->statusEnum()->isPresent()) {
+                    throw FarmLivestockException::animalAlreadyLeft($lockedAnimal->id);
+                }
+            }
+
             if ($batch !== null) {
                 /** @var FarmLivestockBatch $locked */
                 $locked = FarmLivestockBatch::query()
@@ -106,41 +128,38 @@ final class FarmLivestockService
                     ->firstOrFail();
 
                 $current = (int) $locked->head_count;
+                $headCountAfter = $current;
 
-                if ($type->increasesHerd()) {
-                    $headCountAfter = $current + $quantity;
-                } else {
-                    if ($quantity > $current) {
-                        throw FarmLivestockException::insufficientHeadCount($locked->id, $current, $quantity);
+                // SEMANTIQUE DE L'EFFECTIF (cf. presentHeadCountBySpecies) :
+                // `head_count` compte les tetes NON identifiees du lot ; un
+                // animal suivi individuellement s'y AJOUTE. Un mouvement portant
+                // sur un animal identifie ne doit donc jamais toucher
+                // `head_count` — sinon on compterait deux fois la meme tete, et
+                // la sortie d'un animal seul serait refusee faute d'effectif
+                // alors que le lot n'en contient aucun.
+                if ($animal === null) {
+                    if ($type->increasesHerd()) {
+                        $headCountAfter = $current + $quantity;
+                    } else {
+                        if ($quantity > $current) {
+                            throw FarmLivestockException::insufficientHeadCount($locked->id, $current, $quantity);
+                        }
+
+                        $headCountAfter = $current - $quantity;
                     }
 
-                    $headCountAfter = $current - $quantity;
+                    $locked->head_count = $headCountAfter;
+                    $locked->save();
                 }
-
-                $locked->head_count = $headCountAfter;
-                $locked->save();
             }
 
             // Un animal qui sort du cheptel change de statut : il reste dans le
             // registre (tracabilite) mais ne compte plus dans l'effectif present.
-            if ($animal !== null) {
+            if ($lockedAnimal !== null) {
                 $resulting = $type->resultingStatus();
 
-                if ($resulting !== null) {
-                    /** @var FarmAnimal $lockedAnimal */
-                    $lockedAnimal = FarmAnimal::query()
-                        ->where('company_id', $company->id)
-                        ->whereKey($animal->id)
-                        ->lockForUpdate()
-                        ->firstOrFail();
-
-                    if (! $lockedAnimal->statusEnum()->isPresent()) {
-                        throw FarmLivestockException::animalAlreadyLeft($lockedAnimal->id);
-                    }
-
-                    $lockedAnimal->status = $resulting->value;
-                    $lockedAnimal->save();
-                }
+                $lockedAnimal->status = $resulting->value;
+                $lockedAnimal->save();
             }
 
             $event = new FarmLivestockEvent([
@@ -192,6 +211,11 @@ final class FarmLivestockService
         foreach ($animals as $animal) {
             $totals[$animal->species] = ($totals[$animal->species] ?? 0) + 1;
         }
+
+        // Un effectif PRESENT nul n'est pas une espece presente : sans ce
+        // filtre, un lot vide (head_count = 0) ferait apparaitre « cattle: 0 »
+        // et un eleveur lirait une espece active alors qu'il n'a plus d'animal.
+        $totals = array_filter($totals, static fn (int $count): bool => $count > 0);
 
         ksort($totals);
 

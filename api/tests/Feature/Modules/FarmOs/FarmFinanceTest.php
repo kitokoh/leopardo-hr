@@ -125,13 +125,24 @@ final class FarmFinanceTest extends TestCase
     {
         $other = Company::factory()->create();
 
-        $foreign = new FarmCampaign([
+        // BelongsToCompany ECASE `company_id` avec le tenant actif (#7646) :
+        // une campagne ne peut pas naitre chez un autre tenant via Eloquent.
+        // Insertion SQL brute + relecture cross-tenant pour eprouver le vrai
+        // controle d'appartenance du service de rentabilite.
+        DB::table('farm_campaigns')->insert([
+            'id' => 900003,
+            'company_id' => $other->id,
             'name' => 'foreign campaign',
             'start_year' => 2026,
             'status' => 'open',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ]);
-        $foreign->company_id = $other->id;
-        $foreign->save();
+
+        /** @var FarmCampaign $foreign */
+        $foreign = FarmCampaign::crossTenantForPlatformAdmin()->findOrFail(900003);
+
+        $this->assertSame($other->id, $foreign->company_id);
 
         $this->expectException(FarmFinanceException::class);
 

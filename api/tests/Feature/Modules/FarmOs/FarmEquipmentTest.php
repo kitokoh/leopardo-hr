@@ -315,14 +315,27 @@ final class FarmEquipmentTest extends TestCase
     {
         $other = Company::factory()->create();
 
-        $foreign = new FarmEquipment([
+        // BelongsToCompany ECASE `company_id` avec le tenant actif (#7646) : un
+        // materiel ne peut pas naitre chez un autre tenant via Eloquent.
+        // Insertion SQL brute + relecture cross-tenant pour eprouver le vrai
+        // controle d'appartenance du service.
+        DB::table('farm_equipment')->insert([
+            'id' => 900004,
+            'company_id' => $other->id,
             'name' => 'foreign tractor',
             'kind' => FarmEquipmentKind::Tractor->value,
             'meter_type' => FarmEquipmentMeterType::Hours->value,
             'meter_value' => '10.00',
+            'meter_source' => FarmMeterSource::Manual->value,
+            'status' => FarmEquipmentStatus::Active->value,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
-        $foreign->company_id = $other->id;
-        $foreign->save();
+
+        /** @var FarmEquipment $foreign */
+        $foreign = FarmEquipment::crossTenantForPlatformAdmin()->findOrFail(900004);
+
+        $this->assertSame($other->id, $foreign->company_id);
 
         $this->expectException(FarmEquipmentException::class);
 

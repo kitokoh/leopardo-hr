@@ -259,15 +259,28 @@ final class FarmHarvestTest extends TestCase
     {
         $other = Company::factory()->create();
 
-        $foreign = new FarmHarvestLot([
+        // Le trait BelongsToCompany ECASE `company_id` avec le tenant actif sur
+        // tout `creating` Eloquent (#7646) : construire le modele en PHP ne
+        // produit donc jamais une ligne appartenant a un autre tenant. Pour
+        // eprouver VRAIMENT le controle d'appartenance du service, la ligne
+        // etrangere est inseree en SQL brut puis relue cross-tenant.
+        DB::table('farm_harvest_lots')->insert([
+            'id' => 900001,
+            'company_id' => $other->id,
             'lot_code' => 'FOREIGN-1',
             'quantity_harvested' => '10.000',
-            'unit' => 't',
-            'harvested_at' => Carbon::now(),
             'quantity_remaining' => '10.000',
+            'unit' => 't',
+            'status' => 'open',
+            'harvested_at' => Carbon::now(),
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ]);
-        $foreign->company_id = $other->id;
-        $foreign->save();
+
+        /** @var FarmHarvestLot $foreign */
+        $foreign = FarmHarvestLot::crossTenantForPlatformAdmin()->findOrFail(900001);
+
+        $this->assertSame($other->id, $foreign->company_id);
 
         $this->expectException(FarmHarvestException::class);
 

@@ -58,6 +58,39 @@ class FarmEquipment extends Model
 
     protected $table = 'farm_equipment';
 
+    /**
+     * Invariant « saisie manuelle uniquement » applique au niveau du MODELE,
+     * pas seulement du controleur : tout chemin d'ecriture (API, seeder,
+     * provisioning, test) qui pose un `meter_value` sans `meter_source` obtient
+     * `manual`. Aucune valeur de compteur ne peut donc entrer sans provenance
+     * declaree — c'est exactement ce que la mission exige (aucune telemetrie
+     * presentee comme automatique). `status` recoit aussi son defaut ici pour
+     * que le modele reste exploitable avant hydratation complete.
+     */
+    protected static function booted(): void
+    {
+        static::saving(static function (FarmEquipment $equipment): void {
+            // Cast explicite : le PHPDoc type `status` en string, mais un
+            // modele instancie en memoire n'a pas encore de valeur. `=== ''`
+            // couvre donc null et la chaine vide sans `is_string` (rejete par
+            // PHPStan sur un type declare string).
+            if ((string) $equipment->status === '') {
+                $equipment->status = FarmEquipmentStatus::Active->value;
+            }
+
+            if ($equipment->meter_value !== null && $equipment->meter_source === null) {
+                $equipment->meter_source = FarmMeterSource::Manual->value;
+            }
+
+            // Un materiel sans compteur ne porte AUCUN releve : pas de zero
+            // trompeur qui ferait croire a une mesure.
+            if (! $equipment->tracksMeter()) {
+                $equipment->meter_value = null;
+                $equipment->meter_source = null;
+            }
+        });
+    }
+
     protected $fillable = [
         'company_id',
         'farm_site_id',
@@ -95,14 +128,20 @@ class FarmEquipment extends Model
         return FarmEquipmentKind::tryFrom($this->kind);
     }
 
+    /**
+     * Null-safe : un modele instancie en memoire (avant hydratation depuis la
+     * base) peut ne pas encore porter `status`. Sans ce garde-fou,
+     * `FarmEquipmentStatus::tryFrom(null)` leve un TypeError qui masque
+     * l'exception de domaine reellement attendue par l'appelant.
+     */
     public function statusEnum(): FarmEquipmentStatus
     {
-        return FarmEquipmentStatus::tryFrom($this->status) ?? FarmEquipmentStatus::Active;
+        return FarmEquipmentStatus::tryFrom((string) $this->status) ?? FarmEquipmentStatus::Active;
     }
 
     public function meterTypeEnum(): FarmEquipmentMeterType
     {
-        return FarmEquipmentMeterType::tryFrom($this->meter_type) ?? FarmEquipmentMeterType::None;
+        return FarmEquipmentMeterType::tryFrom((string) $this->meter_type) ?? FarmEquipmentMeterType::None;
     }
 
     public function meterSourceEnum(): ?FarmMeterSource

@@ -293,13 +293,26 @@ final class FarmLivestockTest extends TestCase
     {
         $other = Company::factory()->create();
 
-        $foreign = new FarmLivestockBatch([
+        // Le trait BelongsToCompany ECASE `company_id` avec le tenant actif sur
+        // tout `creating` Eloquent (#7646) : un modele construit en PHP ne peut
+        // pas appartenir a un autre tenant. La ligne etrangere est donc inseree
+        // en SQL brut puis relue cross-tenant, afin d'eprouver REELLEMENT le
+        // controle d'appartenance du service.
+        DB::table('farm_livestock_batches')->insert([
+            'id' => 900002,
+            'company_id' => $other->id,
             'name' => 'foreign herd',
             'species' => FarmSpecies::Cattle->value,
+            'head_count' => 0,
+            'status' => 'active',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ]);
-        $foreign->head_count = 0;
-        $foreign->company_id = $other->id;
-        $foreign->save();
+
+        /** @var FarmLivestockBatch $foreign */
+        $foreign = FarmLivestockBatch::crossTenantForPlatformAdmin()->findOrFail(900002);
+
+        $this->assertSame($other->id, $foreign->company_id);
 
         $this->expectException(FarmLivestockException::class);
 
