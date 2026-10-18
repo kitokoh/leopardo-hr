@@ -578,6 +578,29 @@ export type CopyTree = {
     edgeModeBody: string;
     retry: string;
   };
+  // #8700 — page de statut publique (bêta-testeurs).
+  statusPage: {
+    title: string;
+    subtitle: string;
+    overallOperational: string;
+    overallDegraded: string;
+    overallDown: string;
+    overallUnknown: string;
+    checkedAt: string;
+    componentColumn: string;
+    stateColumn: string;
+    latencyColumn: string;
+    stateOperational: string;
+    stateDegraded: string;
+    stateDown: string;
+    stateUnknown: string;
+    apiProd: string;
+    apiDev: string;
+    web: string;
+    admin: string;
+    note: string;
+    refresh: string;
+  };
   // #4574 Lot 2 — portail client : sections restantes localisées ×4.
   billing: {
     title: string;
@@ -1292,6 +1315,29 @@ const copy: Record<AppLocale, CopyTree> = {
       retry: 'Reessayer',
     },
 
+    statusPage: {
+      title: 'État de la plateforme',
+      subtitle: 'Mesures en direct des services Leopardo — rafraîchies à chaque ouverture de la page.',
+      overallOperational: 'Tous les services répondent',
+      overallDegraded: 'Service dégradé',
+      overallDown: 'Service indisponible',
+      overallUnknown: 'État indisponible',
+      checkedAt: 'Mesuré à',
+      componentColumn: 'Service',
+      stateColumn: 'État',
+      latencyColumn: 'Latence',
+      stateOperational: 'Opérationnel',
+      stateDegraded: 'Dégradé',
+      stateDown: 'Indisponible',
+      stateUnknown: 'Inconnu',
+      apiProd: 'API production',
+      apiDev: 'API développement',
+      web: 'Portail web',
+      admin: 'Console d’administration',
+      note: 'Cette page interroge chaque service en direct : un état n’est jamais déclaré sans avoir été mesuré. Pendant un incident, l’information publiée ici est la même que celle de l’équipe.',
+      refresh: 'Revérifier',
+    },
+
   billing: {
     title: 'Facturation',
     subtitle: 'Gérez votre abonnement, vos factures et vos informations de paiement.',
@@ -1993,6 +2039,29 @@ const copy: Record<AppLocale, CopyTree> = {
       edgeModeTitle: 'وضع Edge نشط؟',
       edgeModeBody: 'ادخل إلى الواجهة المحلية عبر:',
       retry: 'إعادة المحاولة',
+    },
+
+    statusPage: {
+      title: 'حالة المنصة',
+      subtitle: 'قياسات مباشرة لخدمات Leopardo — تُحدَّث عند كل فتح للصفحة.',
+      overallOperational: 'جميع الخدمات تستجيب',
+      overallDegraded: 'خدمة متدهورة',
+      overallDown: 'خدمة غير متاحة',
+      overallUnknown: 'الحالة غير متوفرة',
+      checkedAt: 'قيس في',
+      componentColumn: 'الخدمة',
+      stateColumn: 'الحالة',
+      latencyColumn: 'زمن الاستجابة',
+      stateOperational: 'تعمل',
+      stateDegraded: 'متدهورة',
+      stateDown: 'غير متاحة',
+      stateUnknown: 'غير معروفة',
+      apiProd: 'واجهة API الإنتاج',
+      apiDev: 'واجهة API التطوير',
+      web: 'البوابة الإلكترونية',
+      admin: 'لوحة الإدارة',
+      note: 'تستجوب هذه الصفحة كل خدمة مباشرةً: لا تُعلن أي حالة دون قياسها. أثناء أي عطل، المعلومة المنشورة هنا هي نفسها المعلومة لدى الفريق.',
+      refresh: 'إعادة الفحص',
     },
 
   billing: {
@@ -2698,6 +2767,29 @@ const copy: Record<AppLocale, CopyTree> = {
       retry: 'Yeniden dene',
     },
 
+    statusPage: {
+      title: 'Platform durumu',
+      subtitle: 'Leopardo servislerinin canlı ölçümleri — sayfa her açıldığında yenilenir.',
+      overallOperational: 'Tüm servisler yanıt veriyor',
+      overallDegraded: 'Servis kısıtlı çalışıyor',
+      overallDown: 'Servis kullanılamıyor',
+      overallUnknown: 'Durum alınamadı',
+      checkedAt: 'Ölçüm zamanı',
+      componentColumn: 'Servis',
+      stateColumn: 'Durum',
+      latencyColumn: 'Gecikme',
+      stateOperational: 'Çalışıyor',
+      stateDegraded: 'Kısıtlı',
+      stateDown: 'Kullanılamıyor',
+      stateUnknown: 'Bilinmiyor',
+      apiProd: 'Üretim API',
+      apiDev: 'Geliştirme API',
+      web: 'Web portalı',
+      admin: 'Yönetim konsolu',
+      note: 'Bu sayfa her servisi doğrudan sorgular: hiçbir durum ölçülmeden bildirilmez. Bir olay sırasında burada yayınlanan bilgi ekibin sahip olduğu bilgiyle aynıdır.',
+      refresh: 'Yeniden kontrol et',
+    },
+
   billing: {
     title: 'Faturalama',
     subtitle: 'Aboneliğinizi, faturalarınızı ve ödeme bilgilerinizi yönetin.',
@@ -3399,6 +3491,29 @@ const copy: Record<AppLocale, CopyTree> = {
       edgeModeTitle: 'Edge mode active?',
       edgeModeBody: 'Access the local interface via:',
       retry: 'Retry',
+    },
+
+    statusPage: {
+      title: 'Platform status',
+      subtitle: 'Live measurements of the Leopardo services — refreshed every time the page is opened.',
+      overallOperational: 'All services responding',
+      overallDegraded: 'Degraded service',
+      overallDown: 'Service unavailable',
+      overallUnknown: 'Status unavailable',
+      checkedAt: 'Measured at',
+      componentColumn: 'Service',
+      stateColumn: 'State',
+      latencyColumn: 'Latency',
+      stateOperational: 'Operational',
+      stateDegraded: 'Degraded',
+      stateDown: 'Unavailable',
+      stateUnknown: 'Unknown',
+      apiProd: 'Production API',
+      apiDev: 'Development API',
+      web: 'Web portal',
+      admin: 'Admin console',
+      note: 'This page probes every service directly: no state is reported without being measured. During an incident, the information published here is the same one the team has.',
+      refresh: 'Check again',
     },
 
   billing: {

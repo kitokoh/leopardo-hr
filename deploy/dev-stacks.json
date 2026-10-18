@@ -3,12 +3,12 @@
   "version": 1,
   "tier": "dev",
   "description": "Registre des stacks du tier DEV (épic #8659). Une stack = un ensemble complet {API Render + DB Neon + KV + front Vercel + admin Pages} hébergé sur UN jeu de comptes distinct. La PROD est hors de ce registre (render.prod.yaml, deploy-prod.yml — inchangée). Source de vérité humaine ; les pointeurs runtime vivent dans les variables du dépôt (DEV_ACTIVE_STACK, DEV_API_BASE_URL...) synchronisées par scripts/dev-stack-switch.sh.",
-  "active_stack": "a",
-  "updated_at": "2026-10-17",
+  "active_stack": "b",
+  "updated_at": "2026-10-18",
   "stacks": {
     "a": {
       "status": "suspended",
-      "status_note": "Render suspenders=[billing] constaté 2026-10-17 (quota 750 h/mois épuisé, service down depuis 2026-09-20). Repasse à ready au reset mensuel ou après upgrade — vérifier avec scripts/dev-stack-health.sh.",
+      "status_note": "Render suspenders=[billing], service down depuis 2026-09-20 (constaté à nouveau le 2026-10-18 : GET /api/v1/health → HTTP 503). Ne repasse pas tout seul : le quota 750 h/mois du workspace est épuisé et le service reste suspendu jusqu'à upgrade/paiment. NE PAS basculer dessus.",
       "accounts": {
         "render": "africanovatech",
         "neon": "compte principal (projet leopardorh)",
@@ -51,29 +51,29 @@
       }
     },
     "b": {
-      "status": "planned",
-      "status_note": "Comptes à créer par le propriétaire, puis suivre docs/ops/DEV_STACK_ROTATION.md § Onboarding stack B/C (blueprint render.dev-b.yaml prêt à importer).",
+      "status": "active",
+      "status_note": "PROVISIONNÉE ET EN LIGNE le 2026-10-18 : service Render créé via API sur le workspace ibrahim.ali (tea-db9tcsbncjis73ajl2p0), deploy dep-dba688uq1p3s73afu5cg status=live, base Neon créée dans l'org nour (org-spring-pond-49296155). Health 200 mesuré. Stack pointée par DEV_ACTIVE_STACK.",
       "accounts": {
-        "render": "À CRÉER (compte dédié stack B)",
-        "neon": "À CRÉER",
-        "vercel": "À CRÉER",
-        "cloudflare": "À CRÉER (optionnel)"
+        "render": "ibrahim.ali (tea-db9tcsbncjis73ajl2p0)",
+        "neon": "nour (org-spring-pond-49296155 → projet leopardo-dev-b)",
+        "vercel": "nour (team_OODVOTi98eo34Pvmgo5Kw0mX) — web non encore provisionné",
+        "cloudflare": "à créer (optionnel)"
       },
       "api": {
         "provider": "render",
-        "service_id": null,
+        "service_id": "srv-dba64d0m7kps73fkhmug",
         "service_name": "leopardo-dev-b",
         "region": "frankfurt",
         "plan": "free",
-        "base_url": null,
-        "health_url": null,
+        "base_url": "https://leopardo-dev-b.onrender.com/api/v1",
+        "health_url": "https://leopardo-dev-b.onrender.com/api/v1/health",
         "deploy_hook_secret": "RENDER_DEPLOY_HOOK_URL_STACK_B"
       },
       "db": {
         "provider": "neon",
-        "project": null,
-        "host": null,
-        "region": "eu-west-2",
+        "project": "leopardo-dev-b",
+        "host": "ep-little-snow-b98tt8j4.c-7.eu-central-1.aws.neon.tech",
+        "region": "eu-central-1",
         "plan": "free"
       },
       "kv": {
@@ -90,6 +90,12 @@
         "provider": "cloudflare-pages",
         "url": null,
         "project": null
+      },
+      "provisioned_at": "2026-10-18",
+      "last_verified": {
+        "health_http": 200,
+        "version": "407cef0",
+        "checked_at": "2026-10-18"
       }
     },
     "c": {
