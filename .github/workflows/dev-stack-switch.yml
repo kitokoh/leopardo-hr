@@ -103,6 +103,38 @@ jobs:
 
           scripts/dev-stack-switch.sh "${args[@]}" | tee /tmp/switch.log
 
+      - name: Propager API_PROXY_TARGET sur Vercel (proxy runtime #8710)
+        if: steps.run.outcome == 'success'
+        shell: bash
+        env:
+          VERCEL_DEV_TOKEN: ${{ secrets.VERCEL_DEV_TOKEN }}
+          VERCEL_DEV_PROJECT_ID: ${{ vars.VERCEL_DEV_PROJECT_ID }}
+          VERCEL_DEV_TEAM_ID: ${{ vars.VERCEL_DEV_TEAM_ID }}
+        run: |
+          set -euo pipefail
+          # Le proxy Next résout sa cible au RUNTIME via API_PROXY_TARGET (#8710) :
+          # sans cette propagation, une bascule auto laisserait le proxy appeler
+          # l'ancienne stack. Secret absent → étape sautée avec warning (pas de
+          # casse de la bascule Render, mais le proxy ne suivrait pas).
+          if [[ -z "${VERCEL_DEV_TOKEN:-}" ]]; then
+            echo "::warning::VERCEL_DEV_TOKEN absent — propagation Vercel sautée. Poser API_PROXY_TARGET à la main puis redeployer le proxy."
+            exit 0
+          fi
+          target="${{ vars.DEV_API_BASE_URL }}"
+          project_id="${VERCEL_DEV_PROJECT_ID:-prj_RcRVAujaFul8WNZXxgnNKTb9lXdr}"
+          team_id="${VERCEL_DEV_TEAM_ID:-team_pjMBnfirN9999uUp6Fg9u6F9}"
+          for key in API_PROXY_TARGET NEXT_PUBLIC_API_URL; do
+            curl -sS -X POST "https://api.vercel.com/v10/projects/${project_id}/env?teamId=${team_id}" \
+              -H "Authorization: Bearer ${VERCEL_DEV_TOKEN}" -H "Content-Type: application/json" \
+              -d "{\"key\":\"${key}\",\"value\":\"${target}\",\"target\":[\"production\",\"preview\"],\"type\":\"plain\"}" \
+              >/dev/null
+          done
+          curl -sS -X POST "https://api.vercel.com/v13/deployments?teamId=${team_id}&forceNew=1" \
+            -H "Authorization: Bearer ${VERCEL_DEV_TOKEN}" -H "Content-Type: application/json" \
+            -d "{\"name\":\"leopardo\",\"project\":\"${project_id}\",\"target\":\"production\",\"gitSource\":{\"type\":\"github\",\"repoId\":1061111898,\"ref\":\"main\"}}" \
+            >/dev/null
+          echo "Proxy Vercel propagé vers ${target} + redeploy déclenché."
+
       - name: Rapport de bascule (issue [dev-switch])
         if: always()
         shell: bash
