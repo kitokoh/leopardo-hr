@@ -94,8 +94,10 @@
       "provisioned_at": "2026-10-18",
       "last_verified": {
         "health_http": 200,
-        "version": "407cef0",
-        "checked_at": "2026-10-18"
+        "version": "02b9bf5",
+        "checked_at": "2026-10-18T06:50Z",
+        "platform_login_http": 200,
+        "note": "main@02b9bf5 déployé manuellement (le secret RENDER_DEPLOY_HOOK_URL pointe encore la stack A suspendue) ; base seedée, login superadmin 200."
       }
     },
     "c": {
