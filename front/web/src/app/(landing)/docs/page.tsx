@@ -1,7 +1,6 @@
 ﻿'use client';
 
 import { useMemo, useState } from 'react';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
 import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
@@ -96,7 +95,6 @@ const quickLinkIcons: Record<string, React.ComponentType<{ className?: string }>
 };
 
 export default function DocsPage() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const { locale } = useVitrineLocale();
   const [search, setSearch] = useState('');
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
@@ -128,8 +126,8 @@ export default function DocsPage() {
   }
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+    <div className={`min-h-screen bg-white `}>
+      <Navbar />
 
       {/* Hero — id="intro" cible du lien /docs#intro (4 locales) */}
       <section id="intro" className="pt-32 pb-16 px-4">

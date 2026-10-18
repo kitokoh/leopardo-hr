@@ -29787,6 +29787,63 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /onboarding-setup/state:
+    get:
+      tags:
+      - Onboarding
+      summary: État d'onboarding de l'entreprise (reprise du parcours)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: État courant permettant de reprendre un parcours interrompu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      current_step:
+                        type: string
+                        nullable: true
+                      completed_steps:
+                        type: array
+                        items:
+                          type: string
+                      updated_at:
+                        type: string
+                        nullable: true
+        '401':
+          $ref: '#/components/responses/Error401'
+    patch:
+      tags:
+      - Onboarding
+      summary: Mettre à jour l'état d'onboarding de l'entreprise (manager)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                current_step:
+                  type: string
+                  nullable: true
+                completed_steps:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: État mis à jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Réservé aux managers (api.manager)
   /onboarding-setup/checklist:
     get:
       tags:

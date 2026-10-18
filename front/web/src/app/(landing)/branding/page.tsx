@@ -2,7 +2,6 @@
 
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
 import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
@@ -195,7 +194,6 @@ const copy: Record<Lang, BrandingPageCopy> = {
 };
 
 export default function BrandingPage() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   // #4174 : locale globale de la vitrine (?lang= / localStorage / Navbar) —
   // plus d'état local déconnecté du mécanisme unifié.
   const { locale } = useVitrineLocale();
@@ -207,9 +205,9 @@ export default function BrandingPage() {
 
   return (
     <div
-      className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}
+      className={`min-h-screen bg-white `}
     >
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+      <Navbar />
 
       {/* Hero */}
       <section className="pt-32 pb-20 px-4">

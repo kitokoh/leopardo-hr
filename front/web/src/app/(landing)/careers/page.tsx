@@ -1,6 +1,5 @@
 'use client';
 
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer, HeroSection, CTASection, useScrollReveal } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { getCareersContent } from '@/modules/vitrine/data/careers';
@@ -12,15 +11,14 @@ import { Briefcase, MapPin, Clock, ArrowRight, Heart, Zap, Globe, Users } from '
 const valueIcons = [Heart, Zap, Globe, Users];
 
 export default function CareersPage() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const { locale } = useVitrineLocale();
   useScrollReveal();
   const content = getCareersContent(locale);
   const searchParams = useSearchParams();
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+    <div className={`min-h-screen bg-white `}>
+      <Navbar />
       <HeroSection
         headline={content.hero.headline}
         subheadline={content.hero.subheadline}

@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer, HeroSection, CTASection, useScrollReveal } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { getFaqPageContent } from '@/modules/vitrine/data/faq-page';
@@ -9,7 +8,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HelpCircle, ChevronDown, Search } from 'lucide-react';
 
 export default function FaqPage() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const { locale, direction } = useVitrineLocale();
   useScrollReveal();
   const content = getFaqPageContent(locale);
@@ -36,8 +34,8 @@ export default function FaqPage() {
   });
 
   return (
-    <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+    <div dir={direction} className={`min-h-screen bg-white `}>
+      <Navbar />
       <HeroSection
         headline={content.hero.headline}
         subheadline={content.hero.subheadline}
