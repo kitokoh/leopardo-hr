@@ -308,115 +308,130 @@ html {
   }
 }
 
-/* ── Cartes géographiques : demi-cercle DERRIÈRE la constellation ────────────
-   Retour utilisateur (vague 5) : les cartes passaient au milieu de la scène et
-   concurrençaient les étoiles. Elles décrivent désormais un demi-cercle qui
-   ENTURE la constellation — petites et estompées aux deux extrémités, les plus
-   grandes au centre, DERRIÈRE les étoiles (le calque est en `z-[1]`, la scène
-   WebGL en `z-10` : la constellation reste toujours au premier plan).
+/* ── Cartes géographiques : DEMI-CERCLE 3D concave (passe Fondateur, #8702) ──
+   Premier niveau du 3D demandé par le propriétaire : « un demi-cercle tourné
+   vers le visiteur — sa concavité », parcouru par des cartes de pays qui
+   circulent subtilement de la GAUCHE du demi-cercle vers sa DROITE.
 
-   Géométrie : les cartes tournent autour d'un centre situé SOUS le héros, sur
-   un cercle de rayon `--geo-r` ; la course va de -75° à +75°, ce qui décrit un
-   arc régulier dont le sommet tombe au cœur de la constellation et dont les
-   extrémités restent au-dessus du CTA. `rotate(θ) translateY(-r) rotate(-θ)` =
-   déplacement sur le cercle SANS incliner la carte : le tracé reste droit et
-   lisible, seule sa taille change.
+   Géométrie — la paroi INTÉRIEURE d'une cuvette face au visiteur :
+     · à l'écran, l'arc garde le dôme validé en vague 6 (sommet sur le cœur
+       de la constellation, `--geo-apex`, puis descente vers les bords) ;
+     · en PROFONDEUR, la carte au sommet plonge DERRIÈRE le plan de la
+       constellation (z = −--geo-depth) tandis que les deux bouts reviennent
+       vers le visiteur — la concavité se lit à l'œil :
+       gauche (proche) → centre (lointain) → droite (proche) ;
+     · chaque carte pivote légèrement (rotateY ±32°), comme plaquée sur la
+       paroi de la cuvette — l'indice de profondeur le plus lisible.
+
+   Pourquoi translate3d + perspective, et non scale() : la profondeur est
+   RÉELLE (le navigateur calcule le rapetissement), pas simulée — c'est ce qui
+   distingue un demi-cercle 3D d'un arc plat. Unités vh/vw UNIQUEMENT dans les
+   translations : un pourcentage dans translateY se résout contre la hauteur
+   de l'ÉLÉMENT (leçon mesurée #8697), jamais contre le héros.
 
    Animation purement CSS : `transform` + `opacity` seulement (couches
    composées, aucun travail JS par image), interpolation linéaire entre 11
-   positions exactes de l'arc — l'écart à un cercle parfait est < 1 % du rayon,
-   invisible. Durée longue : dérive lente, jamais « clignotante ».
+   positions exactes de l'arc. Durée longue : dérive lente, jamais
+   « clignotante ». L'opacité suit la profondeur (lointaine = estompée) et
+   reste plafonnée : SUBTILE, jamais devant le titre ni le CTA.
 
    Style pur, donc ici et non dans le TSX (la garde i18n `check-i18n-diff.js`
    scanne les .tsx ; les .css ne sont pas scannés). Aucun `#rrggbb` : la garde
    design-tokens lit aussi les .css, on reste en rgb().
-   `prefers-reduced-motion` : aucune rotation, une seule carte statique
-   derrière la constellation, à faible opacité — le décor reste lisible. */
+   `prefers-reduced-motion` : aucune circulation, une seule carte statique au
+   sommet de l'arc — le décor reste lisible. */
 .geo-arc {
-  /* Rayon de l'arc. Vague 6 : il était si large que le SOMMET de l'arc tombait
-     sur la phrase (« petite à gauche, grande au milieu » se jouait 20 vh trop
-     haut). Le rayon est resserré pour que le sommet tombe exactement sur le
-     cœur de la constellation (≈ 54 % du héros). */
-  --geo-r: min(30vw, 21vh);
-  /* Ordonnée du sommet de l'arc : le centre de la constellation. */
-  --geo-apex: 54%;
-  perspective: 1200px;
+  /* Ouverture horizontale du demi-cercle (x = sin θ · --geo-rx). */
+  --geo-rx: 38vw;
+  /* Hauteur du sommet de l'arc : le cœur de la constellation. */
+  --geo-apex: 54vh;
+  /* Descente verticale aux extrémités (y = apex + (1 − cos θ) · --geo-dip). */
+  --geo-dip: 20vh;
+  /* Recul maximal : le sommet plonge derrière le plan de la constellation
+     (z = −cos θ · --geo-depth). */
+  --geo-depth: 50vh;
+  /* Emprise d'une carte-silhouette. */
+  --geo-card: min(26vw, 16vh);
+  /* Perspective COURTE : le rapport de taille proche/lointain (~0.63) rend
+     la concavité sensible sans jamais déformer la silhouette. */
+  perspective: 52vh;
 }
 
 .geo-arc-card {
   position: absolute;
   left: 50%;
-  /* Centre du cercle = sommet + rayon : la carte à θ = 0 tombe sur `--geo-apex`. */
-  top: calc(var(--geo-apex) + var(--geo-r));
-  width: calc(var(--geo-r) * 0.62);
-  height: calc(var(--geo-r) * 0.62);
-  margin-left: calc(var(--geo-r) * -0.31);
-  margin-top: calc(var(--geo-r) * -0.31);
+  top: 0;
+  width: var(--geo-card);
+  height: var(--geo-card);
+  margin-left: calc(var(--geo-card) * -0.5);
+  margin-top: calc(var(--geo-card) * -0.5);
   color: rgb(94 234 212);
   opacity: 0;
-  /* Départ à gauche, petite : la carte « entre » dans le demi-cercle. */
-  transform: rotate(-76deg) translateY(calc(-1 * var(--geo-r))) rotate(76deg) scale(0.68);
-  transform-origin: 50% 50%;
+  /* Départ à gauche, au plus PRÈS du visiteur : la carte « entre » dans le
+     demi-cercle par le bord proche, puis plongera vers le fond (sommet). */
+  transform: translate3d(calc(-0.97 * var(--geo-rx)), calc(var(--geo-apex) + 0.758 * var(--geo-dip)), calc(-0.242 * var(--geo-depth))) rotateY(32deg);
   will-change: transform, opacity;
 }
 
-/* Demi-cercle gauche → sommet → droite. Échelle demandée : 0.68 → 1 → 0.68,
-   l'opacité suivant la même courbe (une carte au centre se lit derrière le
-   cœur, aux extrémités elle n'est qu'une présence). Interpolation linéaire
-   entre 11 positions : l'écart à un cercle parfait reste < 1 % du rayon. */
+/* Demi-cercle gauche → sommet (fond de la cuvette) → droite.
+   x suit sin θ, y suit 1 − cos θ (descente aux bords), z suit −cos θ (profond
+   au centre, proche aux bords), rotateY plaque la carte sur la paroi, et
+   l'opacité décroît avec la profondeur. Interpolation linéaire entre 11
+   positions : l'écart à la cuvette parfaite reste invisible. */
 @media (prefers-reduced-motion: no-preference) {
   .geo-arc-card {
     animation: geo-arc-sweep 54s linear infinite both;
   }
   @keyframes geo-arc-sweep {
     0% {
-      transform: rotate(-76deg) translateY(calc(-1 * var(--geo-r))) rotate(76deg) scale(0.68);
+      transform: translate3d(calc(-0.97 * var(--geo-rx)), calc(var(--geo-apex) + 0.758 * var(--geo-dip)), calc(-0.242 * var(--geo-depth))) rotateY(32deg);
       opacity: 0;
     }
     8% {
-      transform: rotate(-61deg) translateY(calc(-1 * var(--geo-r))) rotate(61deg) scale(0.69);
-      opacity: 0.26;
+      transform: translate3d(calc(-0.875 * var(--geo-rx)), calc(var(--geo-apex) + 0.515 * var(--geo-dip)), calc(-0.485 * var(--geo-depth))) rotateY(25.6deg);
+      opacity: 0.42;
     }
     18% {
-      transform: rotate(-46deg) translateY(calc(-1 * var(--geo-r))) rotate(46deg) scale(0.73);
-      opacity: 0.34;
+      transform: translate3d(calc(-0.719 * var(--geo-rx)), calc(var(--geo-apex) + 0.305 * var(--geo-dip)), calc(-0.695 * var(--geo-depth))) rotateY(19.3deg);
+      opacity: 0.36;
     }
     28% {
-      transform: rotate(-31deg) translateY(calc(-1 * var(--geo-r))) rotate(31deg) scale(0.79);
-      opacity: 0.42;
+      transform: translate3d(calc(-0.515 * var(--geo-rx)), calc(var(--geo-apex) + 0.143 * var(--geo-dip)), calc(-0.857 * var(--geo-depth))) rotateY(13deg);
+      opacity: 0.3;
     }
     38% {
-      transform: rotate(-16deg) translateY(calc(-1 * var(--geo-r))) rotate(16deg) scale(0.9);
-      opacity: 0.5;
+      transform: translate3d(calc(-0.276 * var(--geo-rx)), calc(var(--geo-apex) + 0.039 * var(--geo-dip)), calc(-0.961 * var(--geo-depth))) rotateY(6.7deg);
+      opacity: 0.24;
     }
     50% {
-      transform: rotate(0deg) translateY(calc(-1 * var(--geo-r))) rotate(0deg) scale(1);
-      opacity: 0.58;
+      transform: translate3d(0, var(--geo-apex), calc(-1 * var(--geo-depth))) rotateY(0deg);
+      opacity: 0.18;
     }
     62% {
-      transform: rotate(16deg) translateY(calc(-1 * var(--geo-r))) rotate(-16deg) scale(0.9);
-      opacity: 0.5;
+      transform: translate3d(calc(0.276 * var(--geo-rx)), calc(var(--geo-apex) + 0.039 * var(--geo-dip)), calc(-0.961 * var(--geo-depth))) rotateY(-6.7deg);
+      opacity: 0.24;
     }
     72% {
-      transform: rotate(31deg) translateY(calc(-1 * var(--geo-r))) rotate(-31deg) scale(0.79);
-      opacity: 0.42;
+      transform: translate3d(calc(0.515 * var(--geo-rx)), calc(var(--geo-apex) + 0.143 * var(--geo-dip)), calc(-0.857 * var(--geo-depth))) rotateY(-13deg);
+      opacity: 0.3;
     }
     82% {
-      transform: rotate(46deg) translateY(calc(-1 * var(--geo-r))) rotate(-46deg) scale(0.73);
-      opacity: 0.34;
+      transform: translate3d(calc(0.719 * var(--geo-rx)), calc(var(--geo-apex) + 0.305 * var(--geo-dip)), calc(-0.695 * var(--geo-depth))) rotateY(-19.3deg);
+      opacity: 0.36;
     }
     92% {
-      transform: rotate(61deg) translateY(calc(-1 * var(--geo-r))) rotate(-61deg) scale(0.69);
-      opacity: 0.26;
+      transform: translate3d(calc(0.875 * var(--geo-rx)), calc(var(--geo-apex) + 0.515 * var(--geo-dip)), calc(-0.485 * var(--geo-depth))) rotateY(-25.6deg);
+      opacity: 0.42;
     }
     100% {
-      transform: rotate(76deg) translateY(calc(-1 * var(--geo-r))) rotate(-76deg) scale(0.68);
+      transform: translate3d(calc(0.97 * var(--geo-rx)), calc(var(--geo-apex) + 0.758 * var(--geo-dip)), calc(-0.242 * var(--geo-depth))) rotateY(-32deg);
       opacity: 0;
     }
   }
 }
 
-/* Mouvement réduit : une seule carte, immobile, derrière la constellation. */
+/* Mouvement réduit : une seule carte, immobile, au sommet de l'arc (plan de
+   fond de la cuvette) — le décor reste lisible, la constellation domine. */
 @media (prefers-reduced-motion: reduce) {
   .geo-arc-card {
     animation: none;
@@ -426,24 +441,32 @@ html {
     display: none;
   }
   .geo-arc-card:first-child {
-    transform: translateY(calc(-1 * var(--geo-r))) scale(0.92);
-    opacity: 0.26;
+    transform: translate3d(0, var(--geo-apex), calc(-1 * var(--geo-depth)));
+    opacity: 0.2;
   }
 }
 
-/* Tablette puis téléphone : l'arc se resserre avec la scène, sinon il déborde
-   du cadre et vient frotter le CTA. */
+/* Tablette puis téléphone : la cuvette se resserre avec la scène, sinon ses
+   bords proches débordent du cadre et viennent frotter le CTA. */
 @media (max-width: 1023.98px) {
   .geo-arc {
-    --geo-r: min(32vw, 17vh);
-    --geo-apex: 53%;
+    --geo-rx: 40vw;
+    --geo-apex: 53vh;
+    --geo-dip: 15vh;
+    --geo-depth: 40vh;
+    --geo-card: min(30vw, 14vh);
+    perspective: 46vh;
   }
 }
 
 @media (max-width: 639.98px) {
   .geo-arc {
-    --geo-r: min(30vw, 12vh);
-    --geo-apex: 50%;
+    --geo-rx: 46vw;
+    --geo-apex: 50vh;
+    --geo-dip: 10vh;
+    --geo-depth: 30vh;
+    --geo-card: min(34vw, 13vh);
+    perspective: 40vh;
   }
 }
 

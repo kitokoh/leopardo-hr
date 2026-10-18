@@ -1,21 +1,25 @@
 'use client';
 
 /**
- * GeoBackdrop — cartes géographiques qui défilent sur un DEMI-CERCLE derrière
- * la constellation.
+ * GeoBackdrop — cartes géographiques qui défilent sur un DEMI-CERCLE 3D
+ * CONCAVE autour de la constellation (passe Fondateur, #8702).
  *
- * Retour utilisateur (vague 5) : les cartes passaient au milieu de la scène et
- * concurrençaient les étoiles. Elles décrivent désormais un demi-cercle qui
- * ENTURE la constellation :
+ * Le demi-cercle est « tourné vers le visiteur, par sa concavité » : la paroi
+ * intérieure d'une cuvette. La géométrie réelle (translate3d + perspective,
+ * voir le bloc `.geo-arc` de `globals.css`) donne :
  *
- *   gauche (petite, estompée) → centre (la plus grande, DERRIÈRE les étoiles)
- *   → droite (petite, estompée) → sortie du demi-cercle, puis la suivante.
+ *   gauche (PROCHE, présente) → sommet (LOINTAIN, plonge derrière le plan de
+ *   la constellation) → droite (PROCHE) → sortie du demi-cercle, puis la
+ *   suivante.
  *
- * La taille suit la position : une carte grossit à mesure qu'elle s'approche du
- * centre (elle « passe derrière » la constellation, donc au plus près) et
- * rapetisse en sortant. Aucune carte n'est jamais devant : le calque est en
- * `z-[1]`, la scène WebGL en `z-10` — la constellation reste TOUJOURS au
- * premier plan.
+ * La taille suit la profondeur RÉELLE (le navigateur la calcule, ce n'est pas
+ * un scale() simulé) et chaque carte pivote légèrement (rotateY), plaquée sur
+ * la paroi : la concavité se lit à l'œil. La carte au sommet est la plus
+ * éloignée — elle ne concurrence plus jamais les étoiles (défaut relevé en
+ * vague 5), et les deux bouts qui reviennent vers le visiteur encadrent la
+ * constellation comme deux ailes. Le calque reste en `z-[1]` (la scène WebGL
+ * est en `z-10`) : aucune carte ne passe devant les étoiles à l'écran, la
+ * profondeur étant portée par la taille et l'opacité.
  *
  * Ordre de défilement : d'abord les CONTINENTS (Afrique, Europe, Asie), puis
  * les PAYS (France, Algérie, Turquie, Tchad, Maroc, Tunisie, Sénégal, Arabic
