@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, HeroSection, CTASection, Footer, useScrollReveal } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { caseStudiesByLocale } from '@/modules/vitrine/data/case-studies';
@@ -18,7 +17,6 @@ const colorMap: Record<string, { bg: string; text: string; border: string; badge
 };
 
 export default function CaseStudiesPage() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const { copy, locale } = useVitrineLocale();
   const caseStudies = caseStudiesByLocale[locale] ?? caseStudiesByLocale.fr;
   // #AI-SEO : les 12 études de cas détaillées du sitemap. Le hub n'en exposait
@@ -29,8 +27,8 @@ export default function CaseStudiesPage() {
   useScrollReveal();
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+    <div className={`min-h-screen bg-white `}>
+      <Navbar />
 
       <HeroSection
         headline={cs.heroTitle}

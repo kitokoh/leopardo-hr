@@ -1,6 +1,5 @@
 'use client';
 
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import {
   Navbar,
   Footer,
@@ -30,8 +29,7 @@ import { StickyMobileCTA } from '@/components/StickyMobileCTA';
 import { HeroScene3DPanel } from '@/modules/vitrine/components/hero/HeroScene3DPanel';
 
 export default function LandingPage() {
-  // Dark mode state — synced with DarkModeProvider via CSS class on root
-  const { isDark, toggleDarkMode } = useDarkMode();
+  // Thème unique (clair) — plus de bascule jour/nuit (#8461).
   
   useScrollReveal();
   const { locale, copy, direction } = useVitrineLocale();
@@ -43,11 +41,9 @@ export default function LandingPage() {
   return (
     <div
       dir={direction}
-      className={`min-h-screen transition-colors duration-500 ${
-        isDark ? 'dark bg-slate-950' : 'bg-white'
-      }`}
+      className={`min-h-screen bg-white `}
     >
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} overDarkStage />
+      <Navbar overDarkStage />
 
       <main>
         {/* ─── HERO ─── #8437 (vague 3) : layout `stage` — la constellation

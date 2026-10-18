@@ -89,16 +89,26 @@ describe('Héros « stage » — profondeur premium (vague 6)', () => {
     expect(vignette.className).toContain('z-[11]');
   });
 
-  it('garde le titre SOUS la constellation (z-[5] < z-10) mais sur un voile lisible', () => {
+  it('ramène le titre dans le MÊME FLUX que les cartes (point 4, proposition B)', () => {
     const { container } = render(<HeroSection {...stageProps} />);
-    // `motion.h1` est mocké en `div` : on repère la couche par sa classe de pile.
-    const titleLayer = Array.from(container.querySelectorAll('div')).find((el) =>
+    // Le titre n'est plus un calque `absolute z-[5]` indépendant : c'était
+    // cette indépendance de flux — pas le z-index — qui créait la « rupture de
+    // profondeur » relevée par le propriétaire produit. Il vit désormais dans
+    // le conteneur de flux, au-dessus des cartes, et partage donc leur plan.
+    const legacyTitleLayer = Array.from(container.querySelectorAll('div')).find((el) =>
       el.className.includes('z-[5]'),
-    )!;
-    expect(titleLayer).toBeDefined();
-    expect(titleLayer.className).toContain('pointer-events-none');
-    expect(titleLayer.textContent).toContain(stageProps.headline);
-    // Voile radial propre au titre + ombre portée : lisibilité sans sortir du plan.
+    );
+    expect(legacyTitleLayer).toBeUndefined();
+
+    const flow = Array.from(container.querySelectorAll('div')).find(
+      (el) => el.className.includes('z-10') && el.className.includes('flex-col'),
+    );
+    expect(flow).toBeDefined();
+    expect(flow!.textContent).toContain(stageProps.headline);
+    // Les cartes sont DANS ce même flux, après le titre — un seul axe vertical.
+    expect(flow!.querySelector('[data-testid="stage-visual"]')).not.toBeNull();
+
+    // Lisibilité conservée : voile radial + liseré sombre.
     expect(container.querySelector('.hero-stage-title-scrim')).not.toBeNull();
     expect(container.querySelector('.hero-stage-title-text')).not.toBeNull();
   });

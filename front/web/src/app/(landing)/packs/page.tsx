@@ -12,7 +12,6 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowRight, Check, Fuel, Gift, Globe, GraduationCap, Plane, UtensilsCrossed } from 'lucide-react';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer } from '@/modules/vitrine';
 import { HeroScene3D } from '@/modules/vitrine/components/hero/HeroScene3D';
 import { PACKS_HUB_COPY, packsHubCardHref } from '@/modules/vitrine/data/pack-pages';
@@ -23,7 +22,6 @@ import { withLocaleHref } from '@/modules/vitrine/lib/locale-href';
 const CARD_ICONS = [UtensilsCrossed, Fuel, GraduationCap, Plane];
 
 export default function PacksHubPage() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const { direction, locale } = useVitrineLocale();
   const searchParams = useSearchParams();
   const search = searchParams.toString();
@@ -34,8 +32,8 @@ export default function PacksHubPage() {
   const tradeEntry = getSolutionDetail('trade', locale);
 
   return (
-    <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+    <div dir={direction} className={`min-h-screen bg-white `}>
+      <Navbar />
 
       <section className="relative overflow-hidden pt-32 pb-20">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-emerald-50/30 to-cyan-50/20 dark:from-slate-950 dark:via-emerald-950/20 dark:to-cyan-950/10" />

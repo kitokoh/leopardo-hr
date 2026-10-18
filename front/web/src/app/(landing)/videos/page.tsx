@@ -1,6 +1,5 @@
 'use client';
 
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, HeroSection, CTASection, Footer, useScrollReveal } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { videosPageCopy } from '@/modules/vitrine/data/videos';
@@ -16,14 +15,13 @@ import { Clock, MonitorPlay, PlayCircle, Video } from 'lucide-react';
  */
 
 export default function VideosPage() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const { locale } = useVitrineLocale();
   const copy = videosPageCopy[locale] ?? videosPageCopy.fr;
   useScrollReveal();
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+    <div className={`min-h-screen bg-white `}>
+      <Navbar />
 
       <HeroSection
         headline={copy.hero.headline}

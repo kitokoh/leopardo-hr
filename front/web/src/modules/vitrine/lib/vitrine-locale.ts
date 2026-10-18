@@ -41,7 +41,6 @@ type LandingCopy = {
     trial: string
     /** #7492 — CTA unique quand une session est active (remplace login+trial). */
     mySpace: string
-    themeLabel: string
     menuLabel: string
     localeLabel: string
     brandTagline: string
@@ -179,7 +178,6 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       login: 'Connexion',
       trial: 'Créer un compte',
       mySpace: 'Mon espace',
-      themeLabel: 'Changer le thème',
       menuLabel: 'Menu',
       localeLabel: 'Langue',
       // Positionnement unique : « Leopardo » seul, baseline « Business OS ».
@@ -330,7 +328,6 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       login: 'Sign in',
       trial: 'Sign up',
       mySpace: 'My space',
-      themeLabel: 'Toggle theme',
       menuLabel: 'Menu',
       localeLabel: 'Language',
       // Single naming: "Leopardo" alone, baseline "Business OS".
@@ -479,7 +476,6 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       login: 'Giris yap',
       trial: 'Ucretsiz dene',
       mySpace: 'Hesabim',
-      themeLabel: 'Temayi degistir',
       menuLabel: 'Menu',
       localeLabel: 'Dil',
       // Tek adlandırma: yalnız "Leopardo", alt başlık "Business OS".
@@ -628,7 +624,6 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       login: 'تسجيل الدخول',
       trial: 'تجربة مجانية',
       mySpace: 'مساحتي',
-      themeLabel: 'تبديل السمة',
       menuLabel: 'القائمة',
       localeLabel: 'اللغة',
       // تسمية موحّدة: «Leopardo» فقط، مع الوصف «نظام تشغيل الأعمال».

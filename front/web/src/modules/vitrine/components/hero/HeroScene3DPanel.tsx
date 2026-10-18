@@ -4,39 +4,37 @@
  * HeroScene3DPanel — la constellation « Business OS » en PLEINE SCÈNE du héros
  * (page d'accueil, layout `stage`).
  *
- * Mission Leopardo — la constellation présente les SOLUTIONS MÉTIER RÉELLES
- * (et non les liens du menu) : les 10 étoiles viennent du catalogue unique
- * `data/solution-catalog.ts` (qui réutilise `PACK_PAGES` pour les verticales
- * déjà documentées).
+ * Point 4 (proposition B, revue visuelle du propriétaire produit) — la
+ * structure du produit devient la mise en page : les solutions métier sont des
+ * CARTES EN ORBITE autour du noyau central (`HeroOrbitCards`), et non plus des
+ * losanges anonymes projetés par le canvas.
  *
- * Le clic sur une étoile n'ouvre plus une page : il affiche la fiche
+ * Répartition des rôles, volontairement nette :
+ *   • la constellation WebGL reste le DÉCOR (`dimmed`, sans `onSelectModule`
+ *     donc `pointer-events-none`) — elle porte l'ambiance, pas l'interaction ;
+ *   • les cartes DOM portent l'INTERACTION : texte réel, traduit, focusable,
+ *     activable au clavier, et un mouvement orbital en CSS pur.
+ *
+ * Ce partage supprime la cause racine des défauts a11y historiques : les
+ * étiquettes n'ont plus à être reconstruites à la main depuis des positions
+ * projetées (`getWorldPosition().project()`), elles sont de vrais boutons.
+ *
+ * Le clic sur une carte n'ouvre pas une page : il affiche la fiche
  * interactive (`SolutionCard`, rendue dans un portail — voir son en-tête).
  *
- * Retour utilisateur : l'indice « Cliquez sur un module pour explorer » est
- * retiré (la constellation et ses fiches se découvrent au survol, le pointeur
- * change ; aucun texte ne vient concurrencer les étoiles).
- *
- * Le conteneur est une COLONNE PLEINE HAUTEUR en trois zones : la scène
- * (flex-1, elle domine) puis le CTA unique, ancre bas. La scène reçoit une
- * taille explicite (`flex-1` + `min-h-0`) : le canvas WebGL a besoin d'une
- * hauteur réelle, un `absolute inset-0` dans un parent non dimensionné
- * donnait un rendu étiré.
+ * Le conteneur est une COLONNE PLEINE HAUTEUR : la scène (flex-1, elle domine)
+ * puis le CTA unique, ancré bas. La scène reçoit une taille explicite
+ * (`flex-1` + `min-h-0`) : le canvas WebGL a besoin d'une hauteur réelle, un
+ * `absolute inset-0` dans un parent non dimensionné donnait un rendu étiré.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { HeroScene3D } from './HeroScene3D';
+import { HeroOrbitCards } from './HeroOrbitCards';
 import { SolutionCard } from './SolutionCard';
 import { HeroSolutionsCTA } from './HeroSolutionsCTA';
 import { useVitrineLocale } from '../../lib/vitrine-locale';
-import { SOLUTIONS, solutionLabel, type SolutionId } from '../../data/solution-catalog';
-
-/**
- * Identifiants des modules, dans l'ordre de création de la scène 3D :
- * anneau INTÉRIEUR (5 premières entrées du catalogue — solutions offertes en
- * pack) puis anneau EXTÉRIEUR (5 suivantes — autres environnements + socle).
- * Voir `HeroBusinessOS3D` (`MODULES_PER_RING = [5, 5]`).
- */
-const MODULE_IDS: readonly SolutionId[] = SOLUTIONS.map((solution) => solution.id);
+import { SOLUTIONS, type SolutionId } from '../../data/solution-catalog';
 
 /** Destination de repli d'un module (accessible depuis la fiche). */
 export const MODULE_HREFS: readonly string[] = SOLUTIONS.map((solution) => solution.href);
@@ -45,11 +43,9 @@ export function HeroScene3DPanel() {
   const { locale } = useVitrineLocale();
   const [selected, setSelected] = useState<SolutionId | null>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
-  const moduleLabels = MODULE_IDS.map((id) => solutionLabel(id, locale));
 
-  const onSelectModule = useCallback((index: number) => {
-    const id = MODULE_IDS[index];
-    if (id) setSelected(id);
+  const onSelectModule = useCallback((id: SolutionId) => {
+    setSelected(id);
   }, []);
 
   const close = useCallback(() => setSelected(null), []);
@@ -67,18 +63,18 @@ export function HeroScene3DPanel() {
 
   return (
     <div className="relative flex h-full w-full flex-col">
-      {/* Vague 6 — proportion revue : la scène occupait 100 % de la hauteur et
-          poussait le CTA tout en bas (un « no man's land » entre la
-          constellation et le bouton, relevé en audit). Elle prend 86 % et le
-          CTA vient juste sous elle ; la marge basse garde de l'air sans vider
-          l'écran. */}
       {/* `tabIndex={-1}` : cible de restitution du focus quand la fiche a été
-          ouverte à la souris (l'étoile est un pixel de canvas, sans nœud
-          focusable). Sans cela, le focus retombait sur <body> — défaut mesuré
-          en navigateur. Ouverte au clavier, la fiche rend le focus à
-          l'étiquette-bouton d'origine, qui est un vrai contrôle. */}
-      <div ref={sceneRef} tabIndex={-1} className="relative min-h-0 flex-[0_0_86%] outline-none">
-        <HeroScene3D onSelectModule={onSelectModule} moduleLabels={moduleLabels} />
+          ouverte à la souris. Ouverte au clavier, la fiche rend le focus à la
+          carte d'origine, qui est un vrai contrôle. */}
+      <div ref={sceneRef} tabIndex={-1} className="relative min-h-0 flex-1 outline-none">
+        {/* Décor : la constellation, estompée et non interactive. */}
+        <div aria-hidden="true" className="absolute inset-0">
+          <HeroScene3D dimmed />
+        </div>
+        {/* Interaction : les cartes en orbite. */}
+        <div className="relative flex h-full items-center justify-center px-4">
+          <HeroOrbitCards onSelect={onSelectModule} selectedId={selected} />
+        </div>
       </div>
       <div className="relative z-20 flex shrink-0 justify-center px-4 pb-10 sm:pb-12">
         <HeroSolutionsCTA />

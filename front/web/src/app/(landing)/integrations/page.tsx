@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { motion } from 'framer-motion';
 import {
   Navbar,
@@ -16,7 +15,6 @@ import { resolveBackendBaseUrl } from '@/lib/backend-url';
 
 
 export default function IntegrationsPage() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const [activeCategory, setActiveCategory] = useState(0);
   useScrollReveal();
   const { locale, direction } = useVitrineLocale();
@@ -28,8 +26,8 @@ export default function IntegrationsPage() {
     : data.integrations.filter((i) => i.category === data.categories[activeCategory]);
 
   return (
-    <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+    <div dir={direction} className={`min-h-screen bg-white `}>
+      <Navbar />
 
       {/* id="api": PA2-MKT-013 — Footer's "API" link points to /integrations#api */}
       <section id="api" className="relative pt-32 pb-20 overflow-hidden">

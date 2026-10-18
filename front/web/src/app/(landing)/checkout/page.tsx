@@ -21,7 +21,6 @@ import {
   Users,
   Zap,
 } from 'lucide-react';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer } from '@/modules/vitrine';
 import { getCurrentLocale, useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { FREE_GUIDED_TRIAL_HREF, getCheckoutCopy, type CheckoutPlanKey } from '@/modules/vitrine/data/checkout';
@@ -941,7 +940,6 @@ function CheckoutInner() {
   const copy = getCheckoutCopy(locale);
   const stepLabels = [copy.steps.recap, copy.steps.account, copy.steps.payment];
 
-  const { isDark, toggleDarkMode } = useDarkMode();
   const [step, setStep] = useState(0);
   const [billing, setBilling] = useState<'monthly' | 'annual'>(rawBilling ?? 'annual');
   const [account, setAccount] = useState<AccountData>({
@@ -963,8 +961,8 @@ function CheckoutInner() {
   // Pilot silencieux. État « essai guidé » explicite vers /signup.
   if (rawPlan === 'free') {
     return (
-      <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-transparent'}`}>
-        <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+      <div dir={direction} className={`min-h-screen bg-white `}>
+        <Navbar />
         <main className="py-24 px-4 sm:px-6 lg:px-8">
           <div className="max-w-xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/[0.08] border border-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-sm font-semibold mb-6">
@@ -997,9 +995,9 @@ function CheckoutInner() {
   return (
     <div
       dir={direction}
-      className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-transparent'}`}
+      className={`min-h-screen bg-white `}
     >
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+      <Navbar />
 
       <main className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">

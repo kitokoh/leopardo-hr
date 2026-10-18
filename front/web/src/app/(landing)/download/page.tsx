@@ -2,7 +2,6 @@
 
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
@@ -444,7 +443,6 @@ const PLATFORM_SLUG_ALIASES: Record<string, string> = {
 const HIGHLIGHT_CLASS = 'ring-2 ring-emerald-400 ring-offset-2 dark:ring-offset-slate-950';
 
 function DownloadPageInner() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   useScrollReveal();
   const { locale, direction } = useVitrineLocale();
   const c = copy[locale as AppLocale] ?? copy.fr;
@@ -486,8 +484,8 @@ function DownloadPageInner() {
   }, [platformParam]);
 
   return (
-    <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+    <div dir={direction} className={`min-h-screen bg-white `}>
+      <Navbar />
 
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-emerald-50/30 to-cyan-50/20 dark:from-slate-950 dark:via-emerald-950/20 dark:to-cyan-950/10" />
