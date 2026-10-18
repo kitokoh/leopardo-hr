@@ -2362,3 +2362,23 @@ Deux routes ajoutées à `api/routes/modules/travelagency.php` (groupe authentif
 | véhicule d'un autre tenant | 404 |
 
 Couverture : `api/tests/Feature/Travel/TravelOsQrGpsConcurrencyTest.php` (20 cas, 55 assertions) — inclut la concurrence du check-in (#8539 : statut relu sous `lockForUpdate`, un seul contrôle gagne, opérateur et horodatage du premier conservés, événement outbox `travel.ticket.checked_in.v1` émis une seule fois) et le décodage du QR par un décodeur indépendant (OpenCV `QRCodeDetector`).
+
+## 2026-10-18 — workflows de bascule de stack (PR #8699, #8672/#8673)
+
+`stack-switch.yml` (dispatch `workflow_dispatch` / `repository_dispatch` /
+`workflow_call`) et `prod-keepalive.yml` (watchdog fenêtré) ont été validés par
+`actionlint 1.7.7` et `shellcheck 0.9.0` sans avertissement, et les scripts
+associés exécutés sur les registres réels du dépôt.
+
+| Cas | Attendu |
+|---|---|
+| payload `repository_dispatch` avec `tier` hors `{prod,dev}` | job en échec explicite, aucune variable écrite |
+| payload avec `stack` non `[a-z0-9]+` | job en échec explicite |
+| tier prod, cible `planned` | script refuse (statut non `ready`), **aucune** variable `PROD_*` modifiée |
+| tier prod, cible saine | `PROD_ACTIVE_STACK` / `PROD_API_BASE_URL` / `PROD_WEB_URL` / `PROD_ADMIN_URL` / `PROD_RENDER_SERVICE_URL` écrits, issue `[stack-switch]` créée |
+| bascule échouée | issue `[stack-switch]` « ÉCHEC » créée, variables inchangées (écriture après sonde) |
+| watchdog prod, service suspendu Render | issue `[prod-watchdog]` créée avec le diagnostic « suspension (quota/facturation) » |
+| watchdog prod, retour à la normale | l'issue `[prod-watchdog]` ouverte est commentée puis **fermée** |
+| watchdog prod + `auto_switch=false` (défaut) | alerte seule, **aucune** bascule |
+| watchdog prod + `auto_switch=true`, cible malsaine | bascule refusée (`::error`), alerte conservée |
+| watchdog prod + `auto_switch=true`, bascule dans les 6 h | cooldown : `::warning`, pas de nouvelle bascule |

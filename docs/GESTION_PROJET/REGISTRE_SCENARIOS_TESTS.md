@@ -1658,3 +1658,35 @@ restent les gates applicables.
   (3) `?type=` inconnu → `422` ; (4) `?near=lat,lng` → seules les entités géolocalisées
   dans `radius_km`, triées par distance croissante ; (5) DTO public strict (aucun `id`,
   `company_id`, `status`) ; (6) `per_page` borné à 50. Aucune migration, aucun nouveau rôle.
+
+## Mise à jour 2026-10-18 — pilotage des stacks de déploiement (PR #8699, issues #8671-#8674)
+
+- **Surface API (superadmin)** : deux routes plateforme sous
+  `platform.permission:infra.manage` —
+  `GET /api/v1/platform/infra/stacks` (état des stacks dev/prod lues dans
+  `deploy/*-stacks.json` + `dispatch_configured`) et
+  `POST /api/v1/platform/infra/stack-switch` (bascule d'un tier).
+  Contrats documentés dans `api/openapi.yaml` (schémas `PlatformInfraStack`,
+  `PlatformInfraTier`).
+- **Scénarios attendus côté API** :
+  | Cas | Attendu |
+  |---|---|
+  | appel sans `infra.manage` (support, finance, marketing) | **403** |
+  | `GET /stacks` avec jeton configuré | 200, `dispatch_configured: true`, une entrée par tier |
+  | `GET /stacks` sans `GITHUB_STACK_SWITCH_TOKEN` | 200, `dispatch_configured: false` (écran informatif) |
+  | `POST` sur la stack déjà active | **409**, `reason: deja_active` |
+  | `POST` sur une stack `planned` (sans `health_url`) | **409**, `reason: non_basculable` |
+  | `POST` sur une stack absente du registre | **422**, `reason: stack_inconnue` |
+  | `POST` avec `confirm` absent/faux | **422** (garde d'interface) |
+  | `POST` valide, jeton absent | **503** (fail-closed, rien n'est déclenché) |
+  | `POST` valide, jeton présent | **202**, `data.previous` = stack active avant bascule |
+  | rejeu du même `POST` après succès du workflow | la stack cible est devenue active → **409** (aucun ping-pong) |
+- **Surface infrastructure (non testable en PHPUnit)** : `scripts/stack-switch.sh`
+  refuse en prod `--seed`, `--force` seul, une cible sans `health_url`, une cible
+  malade, et une cible dont `db.host` diffère de la stack active. Scénarios
+  couverts par exécution réelle du script sur le registre du dépôt
+  (`--dry-run`) et par `scripts/stack-health.sh --tier prod`.
+- **Surface admin (Vue)** : carte `InfraStacksCard.vue` sur Supervision Système —
+  bouton désactivé si `dispatch_configured=false`, refus de l'API remonté en
+  toast. Scénario manuel : couper `GITHUB_STACK_SWITCH_TOKEN` sur le service API
+  et vérifier que l'écran reste lisible et n'offre pas de bascule.
