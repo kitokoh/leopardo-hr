@@ -359,6 +359,7 @@ final class FarmEquipmentController
      * 500, jamais un succes trompeur).
      *
      * @template T of \Illuminate\Database\Eloquent\Model
+     *
      * @param  callable(): T  $action
      * @param  callable(T): array<string, mixed>  $payload
      */

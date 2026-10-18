@@ -6,7 +6,6 @@ namespace App\Modules\FarmOs\Domain\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\FarmOs\Domain\Enums\FarmCapability;
-use App\Modules\FarmOs\Domain\Models\FarmCapabilitySetting;
 
 /**
  * Farm OS — T5.1 Centre « Mes logiciels » : catalogue applicatif.

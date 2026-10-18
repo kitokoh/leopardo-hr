@@ -231,6 +231,7 @@ final class FarmHarvestController
 
     /**
      * @template T of \Illuminate\Database\Eloquent\Model
+     *
      * @param  callable(): T  $action
      * @param  callable(T): array<string, mixed>  $payload
      */

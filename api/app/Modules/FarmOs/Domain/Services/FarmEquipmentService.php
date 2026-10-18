@@ -6,7 +6,6 @@ namespace App\Modules\FarmOs\Domain\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\FarmOs\Domain\Enums\FarmEquipmentMeterType;
-use App\Modules\FarmOs\Domain\Enums\FarmEquipmentStatus;
 use App\Modules\FarmOs\Domain\Enums\FarmMaintenanceStatus;
 use App\Modules\FarmOs\Domain\Enums\FarmMeterSource;
 use App\Modules\FarmOs\Domain\Exceptions\FarmEquipmentException;
