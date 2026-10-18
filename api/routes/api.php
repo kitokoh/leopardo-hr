@@ -543,6 +543,9 @@ Route::prefix('v1')->group(function (): void {
     // BC-35 VTC — verticale VTC/taxi (VTC-01/#8357), feature flag `vtc` posé par SolutionActivator.
     require __DIR__.'/modules/vtc.php';
 
+    // BC-36 TRADE — verticale International Trade OS (TRADE-001/#8476), feature flag `trade` posé par SolutionActivator.
+    require __DIR__.'/modules/trade.php';
+
     // IA Module — fichier requis DANS le groupe v1 (prefix /api/v1) :
     // chemins réels /api/v1/ai/* (drift doc #4936)
     require __DIR__.'/ai.php';
@@ -591,6 +594,13 @@ Route::prefix('v1')->group(function (): void {
         // #7576 — la piste d'audit survit à la purge : lecture plateforme, non
         // scopée à une entreprise vivante (sinon la preuve est inexploitable).
         Route::get('/tenant-deletion-audits', [PlatformCompanyDeletionController::class, 'auditTrail'])->middleware('platform.permission:companies.view');
+
+        // BC-36 TRADE (TRADE-010/#8485) — suivi de la verticale depuis la
+        // console plateforme EXISTANTE (aucune seconde console). Compteurs
+        // agreges et etat des adaptateurs UNIQUEMENT : jamais le contenu
+        // commercial prive d'un tenant (prix, offres, messages, documents).
+        Route::get('/trade/overview', [\App\Modules\Trade\Interfaces\Api\V1\Controllers\PlatformTradeController::class, 'overview'])->middleware('platform.permission:companies.view');
+        Route::get('/trade/integrations', [\App\Modules\Trade\Interfaces\Api\V1\Controllers\PlatformTradeController::class, 'integrations'])->middleware('platform.permission:companies.view');
         Route::delete('/companies/{company}', [PlatformCompanyDeletionController::class, 'destroy'])->middleware('platform.permission:companies.manage');
 
         // #8441 — paramétrage de la verticale cagnottes DANS le contexte de
@@ -702,6 +712,19 @@ Route::prefix('v1')->group(function (): void {
             Route::get('/', [EdgeNodeController::class, 'listAllNodes'])->middleware('platform.permission:edge.manage');
             Route::post('/{nodeId}/sync', [EdgeNodeController::class, 'forceSync'])->middleware('platform.permission:edge.manage');
             Route::delete('/{nodeId}', [EdgeNodeController::class, 'revokeNode'])->middleware('platform.permission:edge.manage');
+        });
+
+        // #8673 (épic #8670) — pilotage de l'infrastructure de déploiement.
+        // Lecture de l'état des stacks (registres deploy/*-stacks.json) et
+        // bascule d'un tier vers une autre stack. La bascule n'exécute rien
+        // ici : elle émet un `repository_dispatch` que
+        // .github/workflows/stack-switch-dispatch.yml route vers
+        // stack-switch.yml (qui détient les secrets et applique les garde-fous
+        // de données prod). Permission dédiée `infra.manage` : ce bouton peut
+        // couper la plateforme, il n'est pas délégué au support.
+        Route::prefix('infra')->middleware('platform.permission:infra.manage')->group(function (): void {
+            Route::get('/stacks', [\App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformInfraController::class, 'stacks']);
+            Route::post('/stack-switch', [\App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformInfraController::class, 'switch']);
         });
     });
     // Admin cockpit (super-admin) — contrat SPA front/admin-dashboard.

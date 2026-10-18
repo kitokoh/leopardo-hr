@@ -24,4 +24,13 @@ return [
     'ai_test_quota' => 'Provider quota reached (429). Try again later or change plan.',
     'ai_test_timeout' => 'Timeout while reaching the provider. Check the server outbound connectivity.',
     'ai_test_failed' => 'Test failed: :error',
+    'infra_denied' => 'You are not allowed to operate the infrastructure.',
+    'infra_stack_already_active' => 'This stack is already the active stack of this tier.',
+    'infra_stack_not_switchable' => 'This stack cannot be switched to (planned/suspended status or missing URL).',
+    'infra_stack_unknown' => 'Unknown stack in this tier registry.',
+    'infra_tier_unknown' => 'Unknown tier (expected: prod or dev).',
+    'infra_switch_refused' => 'Switch refused.',
+    'infra_dispatch_rejected' => 'GitHub rejected the trigger (HTTP :status). Check the token scope.',
+    'infra_switch_dispatched' => 'Switch triggered: the GitHub workflow is handling it (follow the Actions tab).',
+    'infra_token_missing' => 'Switching unavailable: the button\'s GitHub token is not configured (GITHUB_STACK_SWITCH_TOKEN).',
 ];

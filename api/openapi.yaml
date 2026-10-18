@@ -121,6 +121,8 @@ tags:
   description: 'BC-34 GEO — core géospatial transverse (GEO-05 #8354) : distance géodésique, recherche « les plus proches » (registry opt-in geo.searchables), diagnostic PostGIS. Réutilisable par toute verticale (VTC en premier, BC-35).'
 - name: Vtc
   description: 'BC-35 VTC — verticale VTC/taxi (spec MODULE_GEOCORE_ET_VERTICAL_VTC, VTC-01 #8357 → VTC-07 #8363) : estimation de tarif, réservation idempotente, dispatch au chauffeur le plus proche via le core geo (BC-34), cycle de course complet, console de répartition, administration (chauffeurs, véhicules, profils tarifaires). RBAC deny-by-default (docs/architecture/VTC_RBAC.md).'
+- name: Trade
+  description: 'BC-36 TRADE — verticale International Trade OS (TRADE-001 #8476 → TRADE-011 #8486, spec docs/specifications/VERTICAL_TRADE_OS.md) : noyau commercial partagé (profils professionnels, catalogue, demandes de prix, offres, commandes, transport, coûts rendus, documents) avec vues acheteur et vendeur sur les MÊMES objets. RBAC par opération, deny-by-default (TradeRoleResolver : purchase / sales / logistics / admin).'
 
 paths:
   /public/fundraisers/{slug}:
@@ -8116,6 +8118,123 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /platform/infra/stacks:
+    get:
+      tags:
+      - Platform
+      summary: Etat des stacks de deploiement (dev et prod) — issue #8673
+      description: |
+        Retourne, pour chaque tier (prod, dev), les stacks decrites dans les
+        registres versionnes `deploy/prod-stacks.json` et `deploy/dev-stacks.json`
+        : identifiant, statut, service API, URLs des fronts et indicateur
+        `switchable` (statut ready/active ET endpoint de sante connu).
+        Le drapeau `dispatch_configured` indique si la bascule est disponible :
+        il vaut false quand GITHUB_STACK_SWITCH_TOKEN n'est pas configure sur le
+        service API. L'ecran super-admin desactive alors le bouton.
+        Permission requise : `infra.manage` (super_admin, ops).
+      operationId: listPlatformInfraStacks
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Etat des stacks par tier
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformInfraTier'
+                  dispatch_configured:
+                    type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /platform/infra/stack-switch:
+    post:
+      tags:
+      - Platform
+      summary: Basculer un tier vers une autre stack — issue #8673
+      description: |
+        Declenche la bascule d'un tier (prod ou dev) vers une stack cible.
+
+        L'API n'execute pas la bascule : elle emet un `repository_dispatch`
+        GitHub (`stack-switch`) analyse par `.github/workflows/stack-switch-dispatch.yml`
+        puis execute par `.github/workflows/stack-switch.yml` et
+        `scripts/stack-switch.sh`. L'API ne detient donc aucune cle Render ou
+        Vercel.
+
+        Garde-fous :
+        - 503 si `GITHUB_STACK_SWITCH_TOKEN` n'est pas configure (fail-closed) ;
+        - 409 si la stack est deja active ou n'est pas basculable (statut
+          `planned`/`suspended`, ou URL de sante absente) ;
+        - 422 si le tier ou la stack sont inconnus du registre.
+        En prod, le script refuse toute bascule qui changerait de base de
+        donnees et refuse tout reseed : les donnees beta sont reelles.
+        Permission requise : `infra.manage`.
+      operationId: switchPlatformInfraStack
+      security:
+      - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tier, stack, confirm]
+              properties:
+                tier:
+                  type: string
+                  enum: [prod, dev]
+                stack:
+                  type: string
+                  maxLength: 8
+                  pattern: '^[a-z0-9]+$'
+                confirm:
+                  type: boolean
+                  description: Garde d'interface (evite le clic accidentel).
+      responses:
+        '202':
+          description: Bascule acceptee (workflow GitHub declenche)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+                      tier:
+                        type: string
+                      stack:
+                        type: string
+                      previous:
+                        type: string
+                        description: Stack active avant la bascule.
+                      message:
+                        type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Validation422'
+        '503':
+          description: Bascule indisponible (jeton GitHub non configure)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
   /admin/tax-slabs:
     get:
       tags:
@@ -45949,6 +46068,729 @@ paths:
           $ref: '#/components/responses/Error404'
         '409':
           $ref: '#/components/responses/Error409'
+  /trade/ping:
+    get:
+      tags:
+      - Trade
+      summary: Sonde de la verticale International Trade OS
+      description: >-
+        BC-36 TRADE (#8476) — lecture pure derrière la gate `module.trade` :
+        prouve que le feature flag est actif et que le stack tenant canonique
+        est traversé. 403 `TRADE_SOLUTION_INACTIVE` si la verticale n'est pas
+        activée pour l'entreprise.
+      responses:
+        '200':
+          description: Module actif (`data.module` = `trade`, `data.status` = `ok`)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /trade/rfqs:
+    get:
+      tags:
+      - Trade
+      summary: Lister les demandes de prix (RFQ) du tenant
+      description: >-
+        TRADE-003 (#8478) — opération d'ACHAT (`trade.role:purchase,admin`).
+        Filtres optionnels `status` et `deal_id` ; pagination standard
+        (`per_page` borné 1..100, défaut 20). Le périmètre tenant est appliqué
+        par `BelongsToCompany` : une ressource d'une autre entreprise est
+        introuvable (404), jamais 403.
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: deal_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Liste paginée des RFQ (lignes incluses)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Trade
+      summary: Créer une demande de prix (RFQ)
+      description: >-
+        TRADE-003 (#8478) — opération d'ACHAT. Au moins une ligne est exigée
+        (`lines` min:1) : une RFQ sans ligne serait un objet vide qui ne peut
+        rien produire. Les montants sont en unités mineures (entiers) — aucun
+        flottant ne représente de l'argent.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              - lines
+              properties:
+                title:
+                  type: string
+                  maxLength: 200
+                destination_country:
+                  type: string
+                  description: Code pays ISO 3166-1 alpha-2
+                  minLength: 2
+                  maxLength: 2
+                destination_port:
+                  type: string
+                  maxLength: 120
+                incoterm:
+                  type: string
+                  description: Incoterm 2020 (3 lettres, ex. FOB, CIF)
+                  minLength: 3
+                  maxLength: 3
+                budget_minor:
+                  type: integer
+                  minimum: 0
+                budget_currency:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                deadline_at:
+                  type: string
+                  format: date-time
+                notes:
+                  type: string
+                  maxLength: 2000
+                trade_deal_id:
+                  type: integer
+                  minimum: 1
+                lines:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required:
+                    - description
+                    - quantity
+                    properties:
+                      description:
+                        type: string
+                        maxLength: 300
+                      quantity:
+                        type: number
+                        minimum: 0
+                        exclusiveMinimum: true
+                      unit:
+                        type: string
+                        maxLength: 20
+                      trade_product_id:
+                        type: integer
+                        minimum: 1
+                      target_unit_price_minor:
+                        type: integer
+                        minimum: 0
+                      specs:
+                        type: object
+                        additionalProperties: true
+      responses:
+        '201':
+          description: RFQ créée (lignes et invitations incluses)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /trade/rfqs/{rfq}:
+    get:
+      tags:
+      - Trade
+      summary: Consulter une RFQ (vue acheteur ou vendeur)
+      description: >-
+        TRADE-003 (#8478) — lecture PARTAGÉE (`trade.role:purchase,sales,admin`) :
+        le vendeur invité consulte le même objet depuis son espace. Lignes,
+        invitations et offres reçues sont incluses.
+      parameters:
+      - name: rfq
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: RFQ détaillée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /trade/rfqs/{rfq}/send:
+    post:
+      tags:
+      - Trade
+      summary: Diffuser une RFQ à des contreparties
+      description: >-
+        TRADE-003 (#8478) — opération d'ACHAT. Génère les liens de réponse et
+        les retourne EN CLAIR **une seule fois** : ils ne sont jamais
+        relisibles ensuite. `counterparty_ids` min:1 — diffuser à personne
+        masquerait une erreur de saisie derrière un succès apparent. Une
+        transition d'état refusée est un 422 métier
+        (`INVALID_STATUS_TRANSITION`), pas une erreur serveur.
+      parameters:
+      - name: rfq
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - counterparty_ids
+              properties:
+                counterparty_ids:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: integer
+                    minimum: 1
+                message:
+                  type: string
+                  maxLength: 2000
+                token_lifetime_days:
+                  type: integer
+                  minimum: 1
+                  maximum: 180
+                  default: 30
+      responses:
+        '200':
+          description: >-
+            RFQ diffusée + `response_links` (jetons en clair, affichés une
+            seule fois) + `notice` d'avertissement
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /trade/quotes:
+    get:
+      tags:
+      - Trade
+      summary: Lister les offres commerciales (vue acheteur ou vendeur)
+      description: >-
+        TRADE-004 (#8479) — MÊME CONTRÔLEUR POUR LES DEUX ESPACES : le filtre
+        `direction` (`incoming` = offres reçues côté acheteur, `outgoing` =
+        offres émises côté vendeur) sélectionne la vue. Il n'existe pas deux
+        implémentations à maintenir. Filtres `status`, `rfq_id`, `deal_id`.
+      parameters:
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [incoming, outgoing]
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: rfq_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: deal_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Liste paginée des offres (lignes incluses)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Trade
+      summary: Émettre une offre commerciale
+      description: >-
+        TRADE-004 (#8479) — opération de VENTE (`trade.role:sales,admin`).
+        AUCUN TOTAL N'EST ACCEPTÉ DU CLIENT : seuls les prix unitaires et les
+        quantités le sont, le serveur calcule `subtotal_minor` et
+        `total_minor`. Un champ `total_minor` envoyé serait ignoré.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - currency
+              - lines
+              properties:
+                currency:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                incoterm:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                validity_until:
+                  type: string
+                  format: date
+                lead_time_days:
+                  type: integer
+                  minimum: 0
+                  maximum: 3650
+                payment_terms:
+                  type: string
+                  maxLength: 200
+                notes:
+                  type: string
+                  maxLength: 2000
+                trade_rfq_id:
+                  type: integer
+                  minimum: 1
+                trade_rfq_invitation_id:
+                  type: integer
+                  minimum: 1
+                trade_deal_id:
+                  type: integer
+                  minimum: 1
+                trade_counterparty_id:
+                  type: integer
+                  minimum: 1
+                submit:
+                  type: boolean
+                  default: true
+                  description: false = conserver en brouillon
+                lines:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required:
+                    - description
+                    - quantity
+                    - unit_price_minor
+                    properties:
+                      description:
+                        type: string
+                        maxLength: 300
+                      quantity:
+                        type: number
+                        minimum: 0
+                        exclusiveMinimum: true
+                      unit:
+                        type: string
+                        maxLength: 20
+                      unit_price_minor:
+                        type: integer
+                        minimum: 0
+                      trade_product_id:
+                        type: integer
+                        minimum: 1
+                      moq_quantity:
+                        type: number
+                        minimum: 0
+                        exclusiveMinimum: true
+                      lead_time_days:
+                        type: integer
+                        minimum: 0
+                        maximum: 3650
+      responses:
+        '201':
+          description: Offre créée (totaux calculés par le serveur)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /trade/quotes/{quote}:
+    get:
+      tags:
+      - Trade
+      summary: Consulter une offre commerciale
+      description: >-
+        TRADE-004 (#8479) — lecture partagée acheteur/vendeur. Les totaux
+        exposés sont ceux FIGÉS par le serveur.
+      parameters:
+      - name: quote
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Offre détaillée (lignes incluses)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /trade/quotes/{quote}/accept:
+    post:
+      tags:
+      - Trade
+      summary: Accepter une offre et créer la commande
+      description: >-
+        TRADE-004 (#8479) — opération d'ACHAT (`trade.role:purchase,admin`) :
+        l'engagement est pris par l'acheteur. Crée la commande correspondante
+        (`total_minor` repris de l'offre acceptée, jamais d'une entrée client).
+        Une transition refusée (offre déjà acceptée, brouillon jamais émis) est
+        un 422 métier (`INVALID_STATUS_TRANSITION`).
+      parameters:
+      - name: quote
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expected_delivery_at:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: Commande créée (expéditions incluses)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /trade/cost-estimates:
+    get:
+      tags:
+      - Trade
+      summary: Lister les estimations de coût total rendu
+      description: >-
+        TRADE-007 (#8482) — `trade.role:purchase,logistics,admin`. Filtres
+        `deal_id` et `order_id`. Chaque réponse porte le `disclaimer` de
+        non-responsabilité douanière.
+      parameters:
+      - name: deal_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: order_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Liste paginée des estimations + `disclaimer`
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Trade
+      summary: Calculer un coût total rendu
+      description: >-
+        TRADE-007 (#8482) — règles DÉTERMINISTES et testées. Chaque poste porte
+        sa `source` (`confirmed|estimated|user_input|unavailable`) : un poste
+        indisponible n'est jamais chiffré. Le taux de change est TRACÉ
+        (`fx.rate`, `fx.date`, `fx.source`) ; sans lui, les postes en devise
+        étrangère sont signalés comme non convertis plutôt que convertis avec
+        un taux inventé. La réponse expose `is_complete` et ses motifs
+        (`unavailable_lines`, `unconverted_lines`, `missing_expected_types`) —
+        un total partiel n'est jamais présenté comme un prix final.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - goods_value_minor
+              - goods_currency
+              - display_currency
+              properties:
+                goods_value_minor:
+                  type: integer
+                  minimum: 0
+                goods_currency:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                display_currency:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                origin_country:
+                  type: string
+                  minLength: 2
+                  maxLength: 2
+                destination_country:
+                  type: string
+                  minLength: 2
+                  maxLength: 2
+                incoterm:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                trade_deal_id:
+                  type: integer
+                  minimum: 1
+                trade_quote_id:
+                  type: integer
+                  minimum: 1
+                trade_order_id:
+                  type: integer
+                  minimum: 1
+                notes:
+                  type: string
+                  maxLength: 2000
+                fx:
+                  type: object
+                  description: Taux de change tracé (facultatif)
+                  required:
+                  - rate
+                  - date
+                  - source
+                  properties:
+                    rate:
+                      type: number
+                      minimum: 0
+                      exclusiveMinimum: true
+                    date:
+                      type: string
+                      format: date
+                    source:
+                      type: string
+                      maxLength: 40
+                lines:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - type
+                    - amount_minor
+                    - currency
+                    properties:
+                      type:
+                        type: string
+                        maxLength: 40
+                      amount_minor:
+                        type: integer
+                      currency:
+                        type: string
+                        minLength: 3
+                        maxLength: 3
+                      source:
+                        type: string
+                        maxLength: 20
+                      label:
+                        type: string
+                        maxLength: 200
+                      note:
+                        type: string
+                        maxLength: 300
+      responses:
+        '201':
+          description: Estimation créée (postes + état de complétude + `disclaimer`)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /trade/cost-estimates/{costEstimate}:
+    get:
+      tags:
+      - Trade
+      summary: Consulter une estimation de coût total rendu
+      parameters:
+      - name: costEstimate
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Estimation détaillée (postes + `disclaimer`)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /trade/customs/checklist:
+    get:
+      tags:
+      - Trade
+      summary: Checklist documentaire et aide à la préparation douanière
+      description: >-
+        TRADE-007 (#8482) — Leopardo facilite l'estimation, la préparation
+        documentaire et la mise en relation avec un prestataire compétent ; il
+        ne rend AUCUNE décision douanière officielle. `duty_rate_percent` est
+        explicitement `null` et `duty_rate_available` vaut `false` : aucune
+        source de tarifs douaniers n'étant configurée, la capacité est
+        INDISPONIBLE — jamais « estimée à 0 ». La réponse porte toujours le
+        `disclaimer` et la liste des informations manquantes.
+      parameters:
+      - name: hs_code
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: incoterm
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: transport_mode
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: origin_country
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: destination_country
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: goods_value_minor
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: >-
+            Documents potentiellement requis, informations manquantes,
+            `is_quotable`, `duty_rate_available: false`, `notices` + `disclaimer`
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /trade/meta/integrations:
+    get:
+      tags:
+      - Trade
+      summary: État réel des adaptateurs externes de la verticale Trade
+      description: >-
+        TRADE-007 (#8482, spec §8) — expose `{key, configured, available, mode,
+        reason}` pour les 4 adaptateurs (taux de change, tarifs douaniers,
+        vérification d'entreprises, cotations transport). AUCUN secret ne
+        transite. Une intégration non configurée est déclarée `available:
+        false` avec sa raison : elle n'est JAMAIS présentée comme
+        opérationnelle, et aucune donnée n'est simulée pour la masquer.
+      responses:
+        '200':
+          description: >-
+            `data.integrations` (4 entrées), `data.degraded` (vrai si au moins
+            une intégration n'est pas configurée) et `data.notice`
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /platform/trade/overview:
+    get:
+      tags:
+      - Trade
+      summary: Suivi plateforme de la verticale Trade — compteurs agrégés
+      description: >-
+        TRADE-010 (#8485) — console superadmin EXISTANTE (aucune seconde
+        console). Agrège des COMPTEURS par tenant : entreprises portant le flag
+        `trade`, puis répartition par statut des deals / RFQ / offres /
+        commandes. Aucun contenu commercial privé (prix, offres, messages,
+        documents) n'est exposé à l'administration plateforme ; l'accès à un
+        dossier précis relève d'une impersonation auditée.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        description: Nombre de tenants agrégés (défaut 200, plafonné à 500).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 500
+      responses:
+        '200':
+          description: >-
+            `data.companies` (scanned / with_trade / with_activity),
+            `data.counts` (deals, rfqs, quotes, orders par statut),
+            `data.roles`, `data.window` et `data.notice`
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /platform/trade/integrations:
+    get:
+      tags:
+      - Trade
+      summary: Suivi plateforme des intégrations externes de la verticale Trade
+      description: >-
+        TRADE-010 (#8485) — état réel des 4 adaptateurs, plus l'identité du
+        manifest (`code`, `name`, `maturity`, `industry`) et un résumé
+        configurées / non configurées. Jamais de secret : uniquement
+        `configured` / `available` / `mode` / `reason`.
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: >-
+            `data.solution`, `data.integrations`, `data.summary` et
+            `data.notice`
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
 
 components:
   securitySchemes:
@@ -49168,6 +50010,65 @@ components:
           type: string
           format: date-time
           nullable: true
+    PlatformInfraStack:
+      type: object
+      description: Une stack de deploiement telle que decrite au registre du tier (issue #8673).
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          description: ready, active, planned, suspended ou unknown.
+        status_note:
+          type: string
+          nullable: true
+        active:
+          type: boolean
+        api:
+          type: object
+          properties:
+            service:
+              type: string
+              nullable: true
+            base_url:
+              type: string
+              nullable: true
+            health_url:
+              type: string
+              nullable: true
+            region:
+              type: string
+              nullable: true
+            plan:
+              type: string
+              nullable: true
+            switchable:
+              type: boolean
+              description: Statut ready/active ET endpoint de sante connu.
+        web_url:
+          type: string
+          nullable: true
+        admin_url:
+          type: string
+          nullable: true
+        db_host:
+          type: string
+          nullable: true
+    PlatformInfraTier:
+      type: object
+      properties:
+        tier:
+          type: string
+          enum: [prod, dev]
+        active_stack:
+          type: string
+        updated_at:
+          type: string
+          nullable: true
+        stacks:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformInfraStack'
     PlatformMetricsOverviewResponse:
       type: object
       properties:

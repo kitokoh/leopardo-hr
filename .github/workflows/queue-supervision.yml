@@ -21,8 +21,17 @@ name: Queue Supervision — prod
 
 on:
   schedule:
-    # Toutes les 5 min (plus d'offset : le drain CI n'existe plus).
-    - cron: '*/5 * * * *'
+    # #8674 (épic #8670) — fenêtre 05:00–23:00 UTC (18 h/jour) au lieu de 24/7.
+    # La sonde n'utilise aucun secret, mais elle réveille le service Render
+    # GRATUIT à chaque appel : 288 requêtes/jour maintiennent le conteneur
+    # allumé en permanence. Or 750 h/mois ≈ 31 j × 24 h, et deux consommateurs
+    # permanents (ce workflow + prod-keepalive) dépassent le quota PAR
+    # CONSTRUCTION — c'est la cause mesurée de la suspension prod du
+    # 2026-09-28 au 2026-10-01.
+    # Hors fenêtre, l'alerte perd sa valeur (personne ne traite à 03:00) et
+    # coûte la moitié du quota. Détection inchangée pendant les heures utiles
+    # (5 min d'intervalle + seuil stale 10 min = 15 min, DoD #5282).
+    - cron: '*/5 5-22 * * *'
   workflow_dispatch:
 
 # Moindre privilège (audit #7969) : sonde HTTP pure, aucun accès repo requis.
