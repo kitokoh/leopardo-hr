@@ -58,6 +58,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Accounting` | Comptabilité : plan comptable, grand livre, écritures, facturation, export FEC |
 | `TravelAgency` | Verticale agences de voyages : référentiel pays/villes/gare/bureaux, manifest de solution activable par tenant (TRAVEL-101..108, 201..203) |
 | `Vtc` | Verticale VTC/taxi (BC-35) : réservation de courses, dispatch au chauffeur disponible le plus proche via le core `geo`, tarification, suivi temps réel (VTC-01..07) |
+| `Trade` | Verticale International Trade OS (BC-36) : noyau commercial partagé import/export et B2B domestique — profils professionnels, catalogue et spécifications produits, demandes d'achat, RFQ multi-fournisseurs, offres commerciales, commandes, cotations transport, calcul de coût rendu, aide à la préparation documentaire, suivi des transactions (TRADE-001..011) |
 | `Pharmacy` | Verticale officines de pharmacie (BC-30) : référentiel produits (DCI, formes, dosages), stock par lots/péremptions FEFO, achats fournisseurs, ventes comptoir, ordonnances et ordonnancier des produits contrôlés (PHARMA-001..007) |
 | `Accounting` | Comptabilité : plan comptable, grand livre, écritures, facturation, export FEC |
 | `Delivery` | Livraisons dernier-kilomètre : colis, tournées, livreurs, POD, tracking, COD, rapports (BC-26 DELIVERY) |

@@ -132,6 +132,8 @@ export type CopyTree = {
       assistant: string;
       /** BC-35 VTC (#8349, VTC-07/#8363) — verticale VTC/taxi (console dispatch) */
       vtc: string;
+      /** BC-36 TRADE (TRADE-009/#8484) — verticale International Trade OS */
+      trade: string;
     };
     /** #7225 — « Entreprise » (bandeau horizontal transverse) */
     sectionEnterprise: string;
@@ -813,6 +815,7 @@ const copy: Record<AppLocale, CopyTree> = {
         communication: 'Communication',
         assistant: 'Assistant IA',
         vtc: 'VTC & taxi',
+        trade: 'Commerce international',
       },
       sectionEnterprise: 'Entreprise',
       sectionModules: 'Modules & plan',
@@ -1519,6 +1522,7 @@ const copy: Record<AppLocale, CopyTree> = {
         communication: 'التواصل',
         assistant: 'المساعد الذكي',
         vtc: 'النقل الخاص والتاكسي',
+        trade: 'التجارة الدولية',
       },
       sectionEnterprise: 'الشركة',
       sectionModules: 'الوحدات والخطة',
@@ -2221,6 +2225,7 @@ const copy: Record<AppLocale, CopyTree> = {
         communication: 'İletişim',
         assistant: 'YZ Asistanı',
         vtc: 'VTC ve taksi',
+        trade: 'Uluslararası ticaret',
       },
       sectionEnterprise: 'Şirket',
       sectionModules: 'Modüller ve plan',
@@ -2923,6 +2928,7 @@ const copy: Record<AppLocale, CopyTree> = {
         communication: 'Communication',
         assistant: 'AI Assistant',
         vtc: 'Ride-hailing & taxi',
+        trade: 'International trade',
       },
       sectionEnterprise: 'Company',
       sectionModules: 'Modules & plan',

@@ -84,6 +84,22 @@ This matrix maps the current API route surfaces to the roles allowed by the rout
 | Cameras `/cameras*` | RW | R as policy allows | R scoped | - | R/RW team as policy allows | token/self none | Requires `module.cameras`; internal permissions are principal-only per route comments/controller policy. |
 | User account linking `/user/*`, `/employees/link-user` | P/RH for linking | P/RH for linking | - | - | - | self account | `auth:user_api` and tenant linking must not cross company boundaries. |
 
+## Trade Module Matrix (BC-36 TRADE)
+
+The Trade vertical does **not** reuse the `P/RH/DEPT/FIN/SUP/EMP` manager-role columns: its authorisation is **per operation**, carried by the `trade.role` middleware and the deny-by-default `TradeRoleResolver` (pattern VTC). A tenant manager with `manager_role=principal` is granted `trade.admin`; the other three roles are functional, not security roles — they never replace the tenant/platform security roles above.
+
+| Route family | trade.purchase | trade.sales | trade.logistics | trade.admin | Enforcement notes |
+|---|:---:|:---:|:---:|:---:|---|
+| `GET /trade/ping` | - | - | - | - | Gate `module.trade` only (smoke test); 403 `TRADE_SOLUTION_INACTIVE` when the vertical is not activated for the company. |
+| `GET /trade/rfqs`, `POST /trade/rfqs`, `POST /trade/rfqs/{rfq}/send` | RW | - | - | RW | Issuing and broadcasting an RFQ is a **purchase** operation. `send` returns response tokens in clear **once** — never re-readable. |
+| `GET /trade/rfqs/{rfq}` | R | R | - | R | **Shared read**: the invited seller consults the same object from their own space. |
+| `GET /trade/quotes`, `GET /trade/quotes/{quote}` | R | R | - | R | **Shared read**: `?direction=incoming\|outgoing` selects the buyer/seller view on the same controller. |
+| `POST /trade/quotes` | - | RW | - | RW | Issuing an offer is a **sale** operation. No client-supplied total is accepted — the server computes `subtotal_minor`/`total_minor`. |
+| `POST /trade/quotes/{quote}/accept` | RW | - | - | RW | Accepting is a **purchase** operation (the buyer takes the commitment); creates the order. |
+| `GET/POST /trade/cost-estimates`, `GET /trade/cost-estimates/{costEstimate}`, `GET /trade/customs/checklist` | RW | - | RW | RW | Landed-cost and customs preparation. `duty_rate_available` is `false` and `duty_rate_percent` is `null` while no tariff source is configured — the capability is reported **unavailable**, never estimated at 0. |
+
+Cross-tenant access is answered with **404, never 403**: the `BelongsToCompany` scope makes another company's resource simply not found, so the API never reveals its existence. Evidence: `api/tests/Feature/Trade/*` (RBAC matrix per domain) and `api/tests/Feature/Security/TradeTenantIsolationTest.php`.
+
 ## Required Test Evidence
 
 | Security concern | Existing evidence | Gap to close next |

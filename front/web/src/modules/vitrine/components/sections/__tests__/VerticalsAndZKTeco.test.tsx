@@ -36,7 +36,7 @@ describe('ZKTecoHookSection (#8072)', () => {
 });
 
 describe('VerticalsSection (#8072)', () => {
-  it('affiche les 6 verticales en cartes (dont Cagnottes solidaires — FUND-095, VTC & Taxi — #8465)', () => {
+  it('affiche les 7 verticales en cartes (dont Cagnottes solidaires — FUND-095, VTC & Taxi — #8465, Trade international — BC-36)', () => {
     render(<VerticalsSection locale="fr" />);
     expect(screen.getByText('Restaurants')).toBeInTheDocument();
     expect(screen.getByText('Agences de voyage')).toBeInTheDocument();
@@ -44,6 +44,14 @@ describe('VerticalsSection (#8072)', () => {
     expect(screen.getByText('Stations-service')).toBeInTheDocument();
     expect(screen.getByText('Cagnottes solidaires')).toBeInTheDocument();
     expect(screen.getByText('VTC & Taxi')).toBeInTheDocument();
+    expect(screen.getByText('Trade international')).toBeInTheDocument();
+  });
+
+  it("la carte Trade international pointe vers /packs/trade (périmètre International / Domestique — BC-36 TRADE)", () => {
+    render(<VerticalsSection locale="fr" />);
+    expect(
+      screen.getByRole('link', { name: /Trade international — Voir le pack offert/i }),
+    ).toHaveAttribute('href', '/packs/trade');
   });
 
   it('la carte Cagnottes solidaires pointe vers /packs/cagnottes', () => {

@@ -123,11 +123,20 @@ class ModuleRegistryDualReadTest extends TestCase
             'healthmanager' => false,
             'travelagency' => false,
             'pharmacy' => false,
+            // Dérive préexistante résorbée (TRADE-001/#8476) : `fundraising`
+            // (FUND-080/#8400), `geo` (GEO-02/#8351) et `vtc` (VTC-01/#8357)
+            // figuraient dans la carte servie sans être dans ce snapshot —
+            // échec latent masqué par le fast-path CI #6928. `trade`
+            // (BC-36/#8476) est ajouté dans la foulée.
+            'fundraising' => false,
             'company_showcase' => false,
             'retail' => false,
             'communication' => false,
             'hospitality' => false,
             'fleet' => false,
+            'geo' => false,
+            'vtc' => false,
+            'trade' => false,
         ];
 
         /** @var Company $company */
