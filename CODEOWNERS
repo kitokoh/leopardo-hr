@@ -49,6 +49,7 @@
 /api/app/Modules/Delivery/  @kitokoh
 /api/app/Modules/Geo/       @kitokoh
 /api/app/Modules/Vtc/       @kitokoh
+/api/app/Modules/Trade/     @kitokoh
 /api/app/AI/                @kitokoh
 /api/app/Core/AI/           @kitokoh
 

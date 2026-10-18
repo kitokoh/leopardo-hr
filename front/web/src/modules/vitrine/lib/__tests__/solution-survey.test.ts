@@ -73,6 +73,15 @@ describe('solution-survey lib', () => {
 
     expect(keys.length).toBeGreaterThanOrEqual(50);
 
+    /**
+     * Exceptions assumes : noms propres dont la forme turque est LEGITIMEMENT
+     * identique a l'anglaise (aucun repli silencieux). Justifier chaque entree.
+     * - hq_country.sn : le turc ecrit « Senegal » sans diacritique (forme
+     *   officielle courante) ; la locale fr porte bien « Senegal » accentue et
+     *   ar est translitere, donc la traduction existe reellement.
+     */
+    const properNounsIdenticalInTr = new Set(['solutions.trade.question.hq_country.sn']);
+
     for (const key of keys) {
       for (const locale of locales) {
         const value = SOLUTION_LABELS[key][locale];
@@ -82,7 +91,9 @@ describe('solution-survey lib', () => {
       // pas de repli silencieux tr/ar → en (sauf valeurs numériques type « 1–5 »)
       const en = SOLUTION_LABELS[key].en;
       if (/[\p{L}]/u.test(en)) {
-        expect(SOLUTION_LABELS[key].tr).not.toBe(en);
+        if (!properNounsIdenticalInTr.has(key)) {
+          expect(SOLUTION_LABELS[key].tr).not.toBe(en);
+        }
         expect(SOLUTION_LABELS[key].ar).not.toBe(en);
       }
     }

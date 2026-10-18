@@ -33,6 +33,7 @@ use App\Modules\Restaurant\Providers\RestaurantServiceProvider;
 use App\Modules\RestaurantManager\Providers\RestaurantManagerServiceProvider;
 use App\Modules\Retail\Providers\RetailServiceProvider;
 use App\Modules\Showcase\Providers\ShowcaseServiceProvider;
+use App\Modules\Trade\Providers\TradeServiceProvider;
 use App\Modules\TravelAgency\Providers\TravelAgencyServiceProvider;
 use App\Modules\Vtc\Providers\VtcServiceProvider;
 use App\Providers\AppServiceProvider;
@@ -91,4 +92,8 @@ return [
     // BC-34 VTC (VTC-01/#8357) — verticale VTC/taxi : enregistre le manifest
     // `vtc` au catalogue des solutions (module requis : geo).
     VtcServiceProvider::class,
+    // BC-36 TRADE (TRADE-001/#8476) — verticale International Trade OS :
+    // enregistre le manifest `trade` au catalogue des solutions (aucun module
+    // requis — activation possible sur tenant frais).
+    TradeServiceProvider::class,
 ];

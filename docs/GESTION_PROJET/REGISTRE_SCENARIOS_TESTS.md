@@ -284,6 +284,43 @@
 > programme partenaire) ; remplacée par « paiements / règlements des ventes suivis ».
 > Source corrigée dans `shared/i18n/locales/*.json` puis propagée par `sync-web.js`
 > (catalogues web + admin + `versions.json`), conformément à #4805.
+> **MAJ 2026-10-15 — #8476→#8486 (PR #8487), verticale « International Trade OS » (BC-36 TRADE).**
+> Surface **API HTTP** (`api/routes/modules/trade.php`, gate `module.trade` fail-closed + `trade.role:*`) :
+> noyau commercial **partagé** entre les deux espaces — `GET/POST /v1/trade/rfqs`,
+> `POST /v1/trade/rfqs/{rfq}/send` (liens de réponse retournés en clair **une seule fois**),
+> `GET /v1/trade/quotes`, `POST /v1/trade/quotes/{quote}/accept` (l'acceptation
+> crée la commande), `GET/POST /v1/trade/cost-estimates`, `GET /v1/trade/customs/checklist`,
+> et `GET /v1/trade/meta/integrations` (état RÉEL des 4 adaptateurs externes).
+> **?direction=incoming|outgoing** sélectionne la vue acheteur/vendeur sur les
+> MÊMES objets : pas deux implémentations, et une même entreprise peut importer
+> ET exporter sans rôle irréversible. Isolation tenant par `BelongsToCompany` :
+> une ressource d'une autre entreprise est **introuvable (404), jamais 403**.
+> Honnêteté du calcul : chaque poste porte sa `source`
+> (`confirmed|estimated|user_input|unavailable`) et `duty_rate_available` reste
+> `false` tant qu'aucune source de tarifs n'est configurée — la capacité est
+> INDISPONIBLE, jamais « estimée à 0 ».
+> Surface **API superadmin** (`api/routes/api.php`, groupe `/platform`) :
+> `GET /platform/trade/overview` (compteurs agrégés par tenant — entreprises
+> portant le flag `trade`, répartition par statut des deals/RFQ/offres/commandes)
+> et `GET /platform/trade/integrations` (état des adaptateurs + identité du
+> manifest). **Compteurs uniquement** : aucun contenu commercial privé (prix,
+> offres, messages, documents) n'est exposé à l'administration plateforme.
+> Surface **web tenant** (`front/web`) : route protégée `/trade` — onglets
+> « Vue d'ensemble », « Sourcing & demandes de prix » (acheteur),
+> « Ventes & offres » (vendeur), « Coûts & douane » (avec disclaimer de
+> non-responsabilité douanière) ; 403 `MODULE_DISABLED` → état dédié.
+> Surface **web admin** (`front/admin-dashboard`) : `views/trade/TradeOverviewView.vue`
+> (route `/trade`, nav groupe « Clients & croissance », perm `companies.view`),
+> tableau des intégrations avec badge « Opérationnelle » / « Non configurée ».
+> Couverture : `api/tests/Unit/Trade/TradeSurveyTest.php` (11 tests — les 3
+> critères d'acceptation du périmètre, parité i18n, garde anti-sur-promesse
+> `mobile_field`), `TradeVerticalConsistencyTest.php` (conformité manifest,
+> données sensibles déclarées, les 3 points d'enregistrement obligatoires dont
+> `Company::KNOWN_MODULES`, bijection rôles ↔ permissions),
+> `api/tests/Feature/Security/TradeTenantIsolationTest.php` (6 tests d'isolation
+> inter-entreprise). **Aucun service payant souscrit, aucune clé inventée** :
+> les 4 adaptateurs sont en mode dégradé explicite (`manual`/`null`) et déclarés
+> non configurés — voir `docs/architecture/TradeIntegrationAdapters.md`.
 > **MAJ 2026-10-13 — #8447 + #8451, « Mon Logiciel » et checklists par profil métier.**
 > Surface **web (front/web)** : nouvelle route protégée `/mon-logiciel` (hub
 > d'installation des apps du tenant, filtrée par solutions activées via
