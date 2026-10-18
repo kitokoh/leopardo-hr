@@ -248,6 +248,17 @@ const ALLOWED_CORS_ORIGINS = [
   'https://leopardo-rh.com',
   'https://www.leopardo-rh.com',
   'http://localhost:3000',
+  // #8707 — le dashboard admin (Cloudflare Pages) appelle désormais ce proxy
+  // au lieu d'une URL Render brute, pour que la cible d'API reste lue au
+  // runtime et qu'une bascule de stack ne demande plus de rebuild.
+  //
+  // Sans ces origines, le préflight OPTIONS de CE handler répondait 204 sans
+  // `Access-Control-Allow-Origin` : le navigateur bloquait l'appel, donc le
+  // correctif aurait été inopérant. On garde la liste fermée (pas de wildcard,
+  // audit #1701) : projets Pages connus + origine admin configurée.
+  'https://leo-admin.pages.dev',
+  'https://leo-admin-prod.pages.dev',
+  ...(process.env.ADMIN_DASHBOARD_URL ? [process.env.ADMIN_DASHBOARD_URL.replace(/\/+$/, '')] : []),
 ];
 
 export async function OPTIONS(request: NextRequest) {

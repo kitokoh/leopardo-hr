@@ -678,8 +678,17 @@ jobs:
         working-directory: front/admin-dashboard
         env:
           # QA 2026-08-15 (#2659) : sans VITE_API_URL explicite, le fallback
-          # du code pointe l'API dev — on cible ici l'API de production.
+          # du code pointe l'API dev — on cible ici le proxy STABLE du web prod.
+          #
+          # #8707 — AVANT : `secrets.PROD_RENDER_API_BASE_URL` (URL Render brute)
+          # inlinée dans le bundle, donc toute bascule de stack prod imposait un
+          # rebuild de l'admin et un bundle périmé pouvait appeler une stack morte.
+          # DÉSORMAIS : le proxy du web prod, dont la cible est lue au RUNTIME.
+          VITE_API_PROXY_BASE_URL: ${{ vars.PROD_WEB_PROD_URL }}/api/v1
+          # Appel direct conservé pour les outils qui le lisent encore ; il est
+          # refusé par le garde-fou de production (assertProductionInvariant).
           VITE_API_URL: ${{ secrets.PROD_RENDER_API_BASE_URL }}/api/v1
+          VITE_ALLOW_DIRECT_API_IN_PROD: 'false'
         run: |
           npm ci
           npm run build
