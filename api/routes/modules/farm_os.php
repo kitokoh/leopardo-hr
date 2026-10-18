@@ -19,6 +19,7 @@ declare(strict_types=1);
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\CropCycleController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmDashboardController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmEquipmentController;
+use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmFinanceController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmHarvestController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmLivestockController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmInputStockController;
@@ -131,4 +132,18 @@ Route::middleware(['module.farm_os'])
         Route::get('/harvests/lots/{lot}', [FarmHarvestController::class, 'showLot']);
         Route::post('/harvests/lots/{lot}/movements', [FarmHarvestController::class, 'recordMovement']);
         Route::get('/harvests/summary', [FarmHarvestController::class, 'summary']);
+
+        // ── T4.1 Achats, ventes, depenses et rentabilite ──
+        // AUCUN document commercial n'est cree ici : les ventes et les achats
+        // sont REFERENCÉS par identifiant vers les services existants
+        // (sale_document_id, purchase_document_id, supplier_id). La rentabilite
+        // expose separement reel / estime / manquant.
+        Route::get('/finance/campaigns', [FarmFinanceController::class, 'indexCampaigns']);
+        Route::post('/finance/campaigns', [FarmFinanceController::class, 'storeCampaign']);
+        Route::get('/finance/expenses', [FarmFinanceController::class, 'indexExpenses']);
+        Route::post('/finance/expenses', [FarmFinanceController::class, 'storeExpense']);
+        Route::get('/finance/sale-links', [FarmFinanceController::class, 'indexSaleLinks']);
+        Route::post('/finance/sale-links', [FarmFinanceController::class, 'storeSaleLink']);
+        Route::get('/finance/profitability', [FarmFinanceController::class, 'profitability']);
+        Route::get('/finance/profitability-by-campaign', [FarmFinanceController::class, 'profitabilityByCampaign']);
     });

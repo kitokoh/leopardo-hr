@@ -6564,6 +6564,97 @@ trait CreatesMvpSchema
             });
         }
 
+        // Mission Farm OS (BC-37@@FARM@@) -- T4.1 achats / ventes / depenses /
+        // rentabilite. Miroir de la migration tenant
+        // 2026_10_18_000600_8704_create_farm_os_finance_tables.php (issue #5443).
+        // AUCUN document commercial ici : Farm OS ne fait que REFERENCER les
+        // documents des services de ventes / achats existants.
+        if (! Schema::hasTable($this->moduleTable('farm_campaigns'))) {
+            Schema::create($this->moduleTable('farm_campaigns'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('name', 160);
+                $table->unsignedSmallInteger('start_year');
+                $table->date('starts_on')->nullable();
+                $table->date('ends_on')->nullable();
+                $table->string('status', 16)->default('open');
+                $table->text('notes')->nullable();
+                $table->string('client_campaign_id', 80)->nullable();
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'name'], 'farm_campaigns_name_unique');
+                $table->unique(['company_id', 'client_campaign_id'], 'farm_campaigns_client_unique');
+                $table->index(['company_id', 'start_year'], 'farm_campaigns_year_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('farm_expenses'))) {
+            Schema::create($this->moduleTable('farm_expenses'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_site_id')->nullable();
+                $table->unsignedBigInteger('parcel_id')->nullable();
+                $table->unsignedBigInteger('crop_cycle_id')->nullable();
+                $table->unsignedBigInteger('farm_livestock_batch_id')->nullable();
+                $table->unsignedBigInteger('farm_equipment_id')->nullable();
+                $table->unsignedBigInteger('farm_campaign_id')->nullable();
+                $table->string('category', 40);
+                $table->string('label', 200);
+                $table->decimal('amount', 14, 2);
+                $table->char('currency', 3);
+                $table->boolean('is_estimated')->default(false);
+                $table->date('spent_on');
+                $table->unsignedBigInteger('supplier_id')->nullable();
+                $table->unsignedBigInteger('purchase_document_id')->nullable();
+                $table->unsignedBigInteger('farm_input_id')->nullable();
+                $table->decimal('quantity', 14, 3)->nullable();
+                $table->string('unit', 24)->nullable();
+                $table->unsignedBigInteger('file_id')->nullable();
+                $table->text('notes')->nullable();
+                $table->unsignedBigInteger('recorded_by')->nullable();
+                $table->string('client_expense_id', 80)->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'client_expense_id'], 'farm_expenses_client_unique');
+                $table->index(['company_id', 'spent_on'], 'farm_expenses_date_index');
+                $table->index(['company_id', 'category'], 'farm_expenses_category_index');
+                $table->index(['company_id', 'parcel_id'], 'farm_expenses_parcel_index');
+                $table->index(['company_id', 'farm_livestock_batch_id'], 'farm_expenses_batch_index');
+                $table->index(['company_id', 'farm_campaign_id'], 'farm_expenses_campaign_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('farm_sales_links'))) {
+            Schema::create($this->moduleTable('farm_sales_links'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('sale_document_id');
+                $table->unsignedBigInteger('sale_line_id')->nullable();
+                $table->unsignedBigInteger('farm_harvest_lot_id')->nullable();
+                $table->unsignedBigInteger('farm_livestock_batch_id')->nullable();
+                $table->decimal('quantity', 14, 3)->nullable();
+                $table->string('unit', 24)->nullable();
+                $table->decimal('amount', 14, 2);
+                $table->char('currency', 3);
+                $table->unsignedBigInteger('customer_id')->nullable();
+                $table->date('sold_on');
+                $table->text('notes')->nullable();
+                $table->unsignedBigInteger('recorded_by')->nullable();
+                $table->string('client_sale_link_id', 80)->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'client_sale_link_id'], 'farm_sales_links_client_unique');
+                $table->unique(['company_id', 'sale_document_id', 'farm_harvest_lot_id'], 'farm_sales_links_doc_lot_unique');
+                $table->index(['company_id', 'sold_on'], 'farm_sales_links_date_index');
+                $table->index(['company_id', 'farm_harvest_lot_id'], 'farm_sales_links_lot_index');
+                $table->index(['company_id', 'farm_livestock_batch_id'], 'farm_sales_links_batch_index');
+            });
+        }
+
         // P0-1 (audit FuelStation) -- catalogue de prix serveur. Parite avec la
         // migration tenant 2026_10_16_120000_9001_create_fuel_product_prices_table
         // (issue #5443 : une table tenant recente doit exister dans la fixture,
