@@ -35,6 +35,7 @@ import {
   Video,
   Wallet,
   Gift,
+  Globe2,
 } from 'lucide-react';
 import type { StoredAuthUser } from '@/lib/i18n';
 export type ClientModuleKey =
@@ -73,7 +74,9 @@ export type ClientModuleKey =
   | 'communication'
   | 'assistant'
   | 'commerce'
-  | 'vtc';
+  | 'vtc'
+  // BC-36 TRADE (TRADE-009/#8484) — verticale International Trade OS.
+  | 'trade';
 export type FeatureState = 'available' | 'trial' | 'locked';
 
 /**
@@ -82,7 +85,7 @@ export type FeatureState = 'available' | 'trial' | 'locked';
  * (#7225 — audit 2026-09-10 : le menu listait « Restaurant » à une agence de
  * voyage car les modules métier étaient rangés dans les groupes transverses.)
  */
-export type BusinessVertical = 'restaurant' | 'travel' | 'education' | 'fuel' | 'health' | 'commerce' | 'mobility';
+export type BusinessVertical = 'restaurant' | 'travel' | 'education' | 'fuel' | 'health' | 'commerce' | 'mobility' | 'trade';
 
 /**
  * Portée d'un module :
@@ -585,6 +588,26 @@ export const CLIENT_MODULES: ClientModule[] = [
     upgradeLabel: 'VTC & taxi (courses, dispatch, chauffeurs)',
     scope: 'business',
     vertical: 'mobility',
+  },
+  // BC-36 TRADE (TRADE-009/#8484) — verticale International Trade OS :
+  // dashboard `/trade` adossé au noyau commercial PARTAGÉ (profils, catalogue,
+  // RFQ, offres, commandes, transport, coûts, documents). Les vues acheteur et
+  // vendeur sont des LECTURES du même noyau — une entreprise peut importer ET
+  // exporter, le rôle métier n'est donc pas irréversible. Flag `trade` posé par
+  // SolutionActivator ; gate serveur `module.trade` fail-closed sur
+  // /api/v1/trade/*.
+  {
+    key: 'trade',
+    href: '/trade-os',
+    label: 'Commerce international',
+    group: 'general',
+    icon: Globe2,
+    capabilityKeys: ['trade', 'can_view_trade'],
+    featureKeys: ['trade'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Commerce international (sourcing, offres, commandes, coût rendu)',
+    scope: 'business',
+    vertical: 'trade',
   },
   // BC-16 EDU — EduManager (EDU-011/012/013, #5827/#5828/#5829). Navigation
   // rôle-aware, portée par la feature flag `edumanager` (activation tenant

@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Application\Actions\RecordVehiclePositionAction;
+use App\Modules\TravelAgency\Application\Actions\ValidateSeatLayoutCoherenceAction;
 use App\Modules\TravelAgency\Domain\Enums\TravelVehiclePositionSource;
 use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
 use App\Modules\TravelAgency\Domain\Models\TravelVehiclePositionLog;
@@ -26,6 +27,10 @@ use Illuminate\Support\Carbon;
  */
 class TravelVehicleController extends Controller
 {
+    public function __construct(
+        private readonly ValidateSeatLayoutCoherenceAction $validateSeatLayout,
+    ) {}
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -53,7 +58,20 @@ class TravelVehicleController extends Controller
             abort(403);
         }
 
-        $vehicle = TravelVehicle::query()->create($request->validated());
+        $validated = $request->validated();
+
+        // #8653 — cohérence disposition ↔ capacité : refus EXPLICITE (422),
+        // jamais de correction silencieuse. Aucune écriture n'a encore eu lieu.
+        $incoherence = $this->validateSeatLayout->execute(
+            $this->layoutFrom($validated),
+            (int) $validated['seat_capacity'],
+        );
+
+        if ($incoherence !== null) {
+            return response()->json($incoherence, 422);
+        }
+
+        $vehicle = TravelVehicle::query()->create($validated);
 
         return (new TravelVehicleResource($vehicle->refresh()))->response()->setStatusCode(201);
     }
@@ -83,9 +101,49 @@ class TravelVehicleController extends Controller
             abort(403);
         }
 
-        $travelVehicle->update($request->validated());
+        $validated = $request->validated();
+
+        // #8653 — la capacité de référence est celle qui RÉSULTERA de la mise à
+        // jour (le champ est optionnel en PUT partiel), et le contrôle
+        // d'inventaire s'appuie sur le véhicule existant : rendre absent un
+        // siège déjà réservé est refusé, avec la liste des sièges en conflit.
+        $capacity = isset($validated['seat_capacity'])
+            ? (int) $validated['seat_capacity']
+            : (int) $travelVehicle->seat_capacity;
+
+        $incoherence = $this->validateSeatLayout->execute(
+            $this->layoutFrom($validated, $travelVehicle),
+            $capacity,
+            $travelVehicle,
+        );
+
+        if ($incoherence !== null) {
+            return response()->json($incoherence, 422);
+        }
+
+        $travelVehicle->update($validated);
 
         return (new TravelVehicleResource($travelVehicle))->response();
+    }
+
+    /**
+     * #8653 — disposition soumise, ou disposition EXISTANTE quand le PUT partiel
+     * ne la mentionne pas (on valide alors l'état qui résultera de l'écriture).
+     *
+     * @param  array<string, mixed>  $validated
+     * @return array<string, mixed>|null
+     */
+    private function layoutFrom(array $validated, ?TravelVehicle $vehicle = null): ?array
+    {
+        if (array_key_exists('seat_layout', $validated)) {
+            $layout = $validated['seat_layout'];
+
+            return is_array($layout) ? $layout : null;
+        }
+
+        $existing = $vehicle?->seat_layout;
+
+        return is_array($existing) ? $existing : null;
     }
 
     public function destroy(Request $request, TravelVehicle $travelVehicle): JsonResponse

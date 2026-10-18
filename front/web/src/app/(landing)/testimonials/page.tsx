@@ -1,6 +1,5 @@
 'use client';
 
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, HeroSection, CTASection, Footer, useScrollReveal } from '@/modules/vitrine';
 import { TestimonialCard } from '@/modules/vitrine/components/sections/TestimonialCard';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
@@ -10,15 +9,14 @@ import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
 
 export default function TestimonialsPage() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const { locale } = useVitrineLocale();
   useScrollReveal();
   const content = getTestimonialsPageContent(locale);
   const testimonials = getTestimonials(locale);
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+    <div className={`min-h-screen bg-white `}>
+      <Navbar />
 
       <HeroSection
         headline={content.hero.headline}

@@ -833,4 +833,100 @@ class MarketingOsPlatformTest extends TestCase
             );
         });
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // 10. #8675 — la médiathèque est LISIBLE (détail + téléchargement)
+    // ─────────────────────────────────────────────────────────────────────
+
+    /**
+     * Le chaînon manquant : un fichier téléversé doit pouvoir être RÉCUPÉRÉ.
+     *
+     * Sans cette route, la médiathèque était en écriture seule — on pouvait
+     * téléverser une vidéo et ne plus jamais la revoir. Le test vérifie le
+     * contenu réellement servi (et pas seulement un code 200), parce qu'un
+     * téléchargement qui renvoie un fichier vide est un faux positif.
+     */
+    public function test_a_media_file_can_be_downloaded_with_its_original_name(): void
+    {
+        $company = $this->company();
+        $this->actingAsPlatform();
+
+        $assetId = $this->call('POST', $this->url($company, '/assets'), [
+            'name' => 'Affiche lancement',
+            'kind' => 'image',
+        ], [], ['file' => UploadedFile::fake()->image('affiche lancement.jpg', 400, 400)], ['Accept' => 'application/json'])
+            ->assertCreated()
+            ->assertJsonPath('data.has_file', true)
+            // Le nom d'origine était calculé puis JETÉ : il est désormais persisté.
+            ->assertJsonPath('data.original_name', 'affiche-lancement.jpg')
+            ->assertJsonPath('data.download_name', 'affiche-lancement.jpg')
+            ->json('data.id');
+
+        $download = $this->get($this->url($company, "/assets/{$assetId}/download"));
+
+        $download->assertOk();
+        // Le nom proposé est le nom d'origine sanitisé, pas le nom de stockage
+        // aléatoire de 32 caractères hexadécimaux.
+        $this->assertStringContainsString(
+            'affiche-lancement.jpg',
+            (string) $download->headers->get('content-disposition'),
+        );
+    }
+
+    /**
+     * Une ressource d'une AUTRE entreprise n'est jamais servie.
+     *
+     * C'est le scénario de fuite inter-tenant le plus direct : le chemin
+     * `/companies/{A}/…/assets/{idDeB}` ne doit pas exfiltrer le binaire de B.
+     */
+    public function test_a_media_file_from_another_tenant_is_not_downloadable(): void
+    {
+        $companyA = $this->company('Entreprise A');
+        $companyB = $this->company('Entreprise B');
+        $this->actingAsPlatform();
+
+        $foreignId = $this->call('POST', $this->url($companyB, '/assets'), [
+            'name' => 'Ressource de B',
+            'kind' => 'image',
+        ], [], ['file' => UploadedFile::fake()->image('secret-b.jpg', 100, 100)], ['Accept' => 'application/json'])
+            ->assertCreated()
+            ->json('data.id');
+
+        // Depuis la surface de A, l'identifiant de B est introuvable.
+        $this->getJson($this->url($companyA, "/assets/{$foreignId}"))->assertNotFound();
+        $this->get($this->url($companyA, "/assets/{$foreignId}/download"))->assertNotFound();
+
+        // Et la surface de B continue de fonctionner (on n'a pas cassé l'accès légitime).
+        $this->get($this->url($companyB, "/assets/{$foreignId}/download"))->assertOk();
+    }
+
+    /**
+     * Le détail d'une ressource est accessible hors de la fenêtre de pagination.
+     */
+    public function test_a_single_asset_detail_is_reachable_outside_the_listing_page(): void
+    {
+        $company = $this->company();
+        $this->actingAsPlatform();
+
+        $assetId = $this->postJson($this->url($company, '/assets'), [
+            'name' => 'Script lancement Leopardo',
+            'kind' => 'script',
+            'description' => 'Texte du spot',
+            'tags' => ['lancement Leopardo'],
+        ])->assertCreated()->json('data.id');
+
+        $this->getJson($this->url($company, "/assets/{$assetId}"))
+            ->assertOk()
+            ->assertJsonPath('data.id', $assetId)
+            ->assertJsonPath('data.name', 'Script lancement Leopardo')
+            ->assertJsonPath('data.tags', ['lancement Leopardo'])
+            // Une ressource texte n'a pas de binaire : l'API le dit, et le
+            // téléchargement renvoie un 404 explicite plutôt qu'un fichier vide.
+            ->assertJsonPath('meta.downloadable', false)
+            ->assertJsonPath('meta.text_only', true);
+
+        $this->getJson($this->url($company, "/assets/{$assetId}/download"))
+            ->assertNotFound()
+            ->assertJsonPath('message', __('marketing.os.asset_has_no_file', [], 'fr'));
+    }
 }

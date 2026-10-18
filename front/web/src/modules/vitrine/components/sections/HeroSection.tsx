@@ -7,6 +7,7 @@ import { useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { withLocaleHref } from '../../lib/locale-href';
 import { GeoBackdrop } from '../hero/GeoBackdrop';
+import { HeroRotatingTagline } from '../hero/HeroRotatingTagline';
 import { HeroScene3D } from '../hero/HeroScene3D';
 
 export interface HeroSectionProps {
@@ -48,6 +49,12 @@ export interface HeroSectionProps {
    *    la page d'accueil : premier écran = la phrase + la 3D + les CTA.
    */
   layout?: 'centered' | 'split' | 'stage';
+  /**
+   * #8703 — petites phrases secondaires qui se succèdent SOUS le titre
+   * principal, au même endroit (layout `stage` uniquement) : l'une s'efface,
+   * la suivante prend sa place. Absent = rien ne change pour les autres pages.
+   */
+  taglines?: string[];
   /** Optional inline quick-trial form rendered below CTAs (e.g. QuickTrialEmailForm) */
   quickTrialForm?: React.ReactNode;
   /** #8068 — ligne de réassurance sous les CTA (« Gratuit · Sans CB · … »). */
@@ -79,6 +86,7 @@ export function HeroSection({
   stats,
   animated = true,
   layout = 'centered',
+  taglines,
   quickTrialForm,
   ctaReassurance,
   backgroundScene = true,
@@ -98,24 +106,33 @@ export function HeroSection({
   const isStage = layout === 'stage' && Boolean(visual);
   const align = isSplit ? 'text-center lg:text-left' : 'text-center';
 
-  // ── Layout `stage` (#8437 — retour propriétaire vague 3) ────────────────
-  // La constellation 3D prend TOUTE la première page ; la phrase passe en
-  // toile de fond (z-0) derrière la scène (z-10), les CTA flottent au-dessus
-  // (z-20). Le héro est une NUIT PERMANENTE (#8438 : « en mode nuit la
-  // constellation semble plus belle ») — beau en mode jour comme en mode
-  // nuit ; une transition douce ramène vers le thème de la page en bas.
+  // ── Layout `stage` (#8437, restructuré point 4) ─────────────────────────
+  // La constellation 3D prend TOUTE la première page ; le héro est une NUIT
+  // PERMANENTE (#8438 : « en mode nuit la constellation semble plus belle »)
+  // — beau en mode jour comme en mode nuit ; une transition douce ramène vers
+  // le thème de la page en bas.
+  //
+  // Point 4 (proposition B, revue visuelle du propriétaire produit) — le titre
+  // n'est PLUS un calque `absolute z-[5]` indépendant : il vit dans le MÊME
+  // FLUX que les cartes, au-dessus d'elles. C'était cette indépendance de flux
+  // — pas le z-index — qui créait la « rupture de profondeur » ressentie : le
+  // texte flottait au-dessus d'une scène qui ne le portait pas. Désormais
+  // titre → cartes → CTA forment un seul axe vertical, et la constellation
+  // reste le décor derrière l'ensemble.
   // La phrase garde sa pleine opacité (garde #8063 : lisible sans JS,
-  // opacité > 0.9) — « toile de fond » = ordre de plan, pas estompage.
+  // opacité > 0.9).
   if (isStage) {
     return (
       <section
         ref={ref}
-        className="relative isolate min-h-[100dvh] overflow-hidden bg-slate-950"
+        className="relative isolate flex min-h-[100dvh] flex-col overflow-hidden bg-slate-950"
       >
-        {/* ── PROFONDEUR (vague 6) ── trois plans seulement, du plus lointain
-            au plus proche : ciel bleu nuit → halo derrière la constellation →
-            vignettage. Les classes vivent dans globals.css (style pur, hors
-            garde i18n) ; la pile est documentée là-bas. */}
+        {/* ── PROFONDEUR (vague 6, pile complète documentée en #8704) ──
+            Du fond vers le visiteur : ciel bleu nuit → halo derrière la
+            constellation → trame → DEMI-CERCLE PAYS 3D (niveau 1, concave
+            vers le visiteur) → CONSTELLATION WebGL (niveau 2, interactive)
+            → titre + texte rotatif → CTA → vignettage. Les classes vivent
+            dans globals.css (style pur, hors garde i18n). */}
         <div aria-hidden="true" className="hero-stage-base absolute inset-0 z-0" />
         <div aria-hidden="true" className="hero-stage-halo absolute inset-0 z-0" />
         {/* Trame discrète (style en globals.css — la garde i18n ne scanne
@@ -130,21 +147,13 @@ export function HeroSection({
             quand l'utilisateur demande à réduire les animations. */}
         <GeoBackdrop />
 
-        {/* Phrase en toile de fond (z-0) — jamais cliquable, jamais estompée.
-            Sur GRAND écran : centrée avec padding bas qui la hisse dans le
-            tiers supérieur (la constellation ne la croise qu'en petits
-            modules). Sur MOBILE (#8461) : ancrée en HAUT — la pile CTA +
-            formulaire est haute sur petit écran, un centrage la percutait
-            (chevauchement constaté en capture 390×844). Le padding bas la
-            hisse dans le tiers supérieur : la constellation (abaissée côté
-            scène) ne la croise qu'en petits modules orbitaux. */}
-        {/* Phrase en toile de fond (z-[5]) : SOUS la constellation (z-10), comme
-            demandé, mais désormais LISIBLE — elle vit dans le tiers haut, à
-            l'écart du cœur de la scène, posée sur un voile radial. Le halo et le
-            canvas la traversent : c'est l'effet voulu, à condition qu'aucun
-            module ne vienne couper un mot. */}
-        <div className="pointer-events-none absolute inset-0 z-[5] flex items-start justify-center px-4 pt-[19vh] sm:px-6 sm:pt-[16vh]">
-          <div className="relative w-full max-w-5xl">
+        {/* ── FLUX PRINCIPAL : titre PUIS cartes, même plan (point 4) ──
+            Un seul conteneur de flux, donc un seul contexte d'empilement : le
+            titre ne peut plus « flotter » au-dessus des cartes. Le titre reste
+            lisible sur le ciel étoilé grâce au voile radial et au liseré
+            (`.hero-stage-title-scrim` / `.hero-stage-title-text`). */}
+        <div className="relative z-10 flex min-h-0 flex-1 flex-col px-4 pt-[11vh] sm:px-6 sm:pt-[9vh]">
+          <div className="relative mx-auto w-full max-w-5xl shrink-0">
             <div aria-hidden="true" className="hero-stage-title-scrim absolute -inset-x-8 -inset-y-10 sm:-inset-x-16" />
             <motion.h1
               initial={animated ? { y: 30 } : {}}
@@ -152,17 +161,35 @@ export function HeroSection({
               transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
               className="relative text-balance text-center font-black leading-[0.98] tracking-tight text-4xl sm:text-6xl lg:text-7xl"
             >
-              <span className="hero-stage-title-text block bg-gradient-to-b from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">
+              <span className="hero-stage-title-text block bg-gradient-to-b from-white via-white to-slate-200 bg-clip-text text-transparent">
                 {headline}
               </span>
             </motion.h1>
+            {/* #8703 — le petit texte secondaire ROTATIF vit dans le même
+                flux que le titre (jamais de calque absolu indépendant — leçon
+                « rupture de profondeur » #8697) : plusieurs phrases se
+                succèdent au même endroit, sous la phrase principale. */}
+            {taglines && taglines.length > 0 && (
+              <motion.div
+                initial={animated ? { y: 16 } : {}}
+                animate={animated ? { y: 0 } : {}}
+                transition={{ duration: 0.9, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="relative"
+              >
+                <HeroRotatingTagline phrases={taglines} />
+              </motion.div>
+            )}
           </div>
-        </div>
 
-        {/* Constellation pleine scène (z-10) — modules cliquables (#8390).
-            `isolate` referme le contexte d'empilement : la scène et sa fiche
-            ne peuvent pas être recouvertes par un plan inférieur. */}
-        <div className="absolute inset-0 z-10 isolate">{visual}</div>
+          {/* La scène 3D — dans le flux, sous le titre. Le conteneur est un
+              FLEX COLUMN : une hauteur issue de `flex-1` ne « descend » pas
+              aux enfants en pourcentage (`h-full` s'y résout en hauteur de
+              contenu — mesuré en navigateur : canvas WebGL effondré à 1 px,
+              #8704). Le visuel est donc un ITEM FLEX qui grandit (`flex-1`),
+              jamais un bloc à `h-full`. La marge haute garantit que le haut
+              de la constellation ne croise jamais la dernière ligne du titre. */}
+          <div className="relative mt-6 flex min-h-0 flex-1 flex-col sm:mt-10">{visual}</div>
+        </div>
 
         {/* Actions (z-20) ancrées en bas. La classe `dark` LOCALE force les
             styles sombres des enfants (formulaire d'essai, boutons) : la
@@ -173,7 +200,7 @@ export function HeroSection({
         {(ctaPrimary || ctaSecondary || quickTrialForm) && (
         <motion.div
           style={animated ? { y, opacity, scale } : {}}
-          className="dark hero-stage-cta-tall pointer-events-none relative z-20 flex min-h-[100dvh] flex-col items-center justify-end px-4 pb-24 sm:px-6"
+          className="dark hero-stage-cta-tall pointer-events-none relative z-20 flex flex-col items-center justify-end px-4 pb-24 sm:px-6"
         >
           {/* `pointer-events-none` sur le plan plein écran, `auto` sur le contenu :
               ce calque ne capte plus les clics destinés à la constellation et

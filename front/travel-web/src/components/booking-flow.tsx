@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { SeatMap } from "@/components/seat-map";
-import { ApiError, createBooking } from "@/lib/api";
+import { ApiError, createBooking, fetchTripDetail } from "@/lib/api";
 import { useAccount } from "@/lib/account-provider";
 import { resolveSeatLayout, selectableSeatNumbers } from "@/lib/seat-layout";
 import {
@@ -29,6 +29,16 @@ type PassengerDraft = {
 
 export const CONFIRMATION_STORAGE_PREFIX = "travel-booking:";
 
+/**
+ * #8655 — intervalle de rafraîchissement du plan de sièges (ms).
+ *
+ * Valeur volontairement modérée : le plan doit rester à jour sans marteler
+ * l'API publique (throttling `shop-public`). Ce n'est PAS du temps réel —
+ * c'est un rafraîchissement périodique, et la disponibilité définitive reste
+ * tranchée par le serveur à la confirmation.
+ */
+export const SEAT_REFRESH_INTERVAL_MS = 30_000;
+
 function priceFor(price: TripPrice | undefined, age: AgeCategory): number {
   if (!price) return 0;
   if (age === "adult") return price.adult_price_minor;
@@ -45,9 +55,14 @@ export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
   // #8620 — Le plan de sièges est rendu à partir de l'INVENTAIRE RÉEL renvoyé
   // par l'API (#8619) : chaque siège porte son état persisté. On ne fabrique
   // plus `1..total_seats` côté navigateur pour décider de la disponibilité.
+  // #8655 — inventaire vivant : le plan ne reste pas figé sur le premier rendu.
+  const [liveSeats, setLiveSeats] = useState(trip.seats);
+  const [refreshing, setRefreshing] = useState(false);
+  const [seatNotice, setSeatNotice] = useState<string | null>(null);
+
   const freeSeatNumbers = useMemo(
-    () => selectableSeatNumbers(trip.seats),
-    [trip.seats],
+    () => selectableSeatNumbers(liveSeats),
+    [liveSeats],
   );
 
   const [passengers, setPassengers] = useState<PassengerDraft[]>([
@@ -58,6 +73,11 @@ export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
   const [notifyConsent, setNotifyConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Le trajet peut changer (navigation) : on resynchronise l'inventaire local.
+  useEffect(() => {
+    setLiveSeats(trip.seats);
+  }, [trip.seats]);
 
   // #7739 — pré-remplissage checkout : client connecté → coordonnées du
   // compte, sans jamais écraser une saisie manuelle.
@@ -115,6 +135,7 @@ export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
   };
 
   const toggleSeat = (seat: number) => {
+    setSeatNotice(null);
     setPassengers((current) => {
       const holder = current.findIndex((p) => p.seat_number === seat);
       if (holder >= 0) {
@@ -140,6 +161,62 @@ export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
       ];
     });
   };
+
+  /**
+   * #8655 — rafraîchissement périodique du plan de sièges.
+   *
+   * - l'intervalle est annulé au démontage (aucune requête après navigation) ;
+   * - un siège SÉLECTIONNÉ devenu indisponible est retiré de la sélection, avec
+   *   un message explicite : le client ne découvre pas le conflit seulement à
+   *   la confirmation ;
+   * - le rafraîchissement ne remplace jamais la revalidation serveur : le plan
+   *   n'est pas la source de vérité.
+   */
+  useEffect(() => {
+    let cancelled = false;
+
+    const refresh = async () => {
+      setRefreshing(true);
+      try {
+        const fresh = await fetchTripDetail(trip.id);
+        if (cancelled) return;
+
+        setLiveSeats(fresh.seats);
+
+        const unavailable = new Set(
+          fresh.seats.filter((seat) => seat.status !== "free").map((seat) => seat.seat_number),
+        );
+
+        setPassengers((current) => {
+          const lost = current.filter(
+            (p) => p.seat_number !== null && unavailable.has(p.seat_number),
+          );
+
+          if (lost.length === 0) return current;
+
+          setSeatNotice(dict.seats.seatTakenDuringSelection);
+
+          return current.map((p) =>
+            p.seat_number !== null && unavailable.has(p.seat_number)
+              ? { ...p, seat_number: null }
+              : p,
+          );
+        });
+      } catch {
+        // Rafraîchissement best-effort : un échec réseau ne doit jamais casser
+        // la saisie en cours. La garde serveur reste la protection réelle.
+      } finally {
+        if (!cancelled) setRefreshing(false);
+      }
+    };
+
+    const timer = setInterval(refresh, SEAT_REFRESH_INTERVAL_MS);
+
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, [trip.id, dict.seats.seatTakenDuringSelection]);
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -279,7 +356,7 @@ export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
                 l'inventaire réel du véhicule affecté au trajet. */}
             <div className="mt-4">
               <SeatMap
-                seats={trip.seats}
+                seats={liveSeats}
                 selected={selectedSeats}
                 onToggle={toggleSeat}
                 layout={trip.seat_layout ?? null}
@@ -287,6 +364,21 @@ export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
                 aisleAfter={seatLayout.aisleAfter}
               />
             </div>
+
+            {/* #8655 — état de chargement discret + note de comportement :
+                aucun temps réel simulé, le rafraîchissement est annoncé. */}
+            <p className="mt-2 text-xs text-slate-400" aria-live="polite">
+              {refreshing ? dict.seats.refreshing : dict.seats.refreshNote}
+            </p>
+
+            {seatNotice ? (
+              <p
+                role="status"
+                className="mt-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800"
+              >
+                {seatNotice}
+              </p>
+            ) : null}
 
             <p className="mt-3 text-sm text-slate-500">
               {selectedSeats.length} {dict.seats.selectedCount}

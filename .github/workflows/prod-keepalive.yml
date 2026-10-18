@@ -1,0 +1,211 @@
+name: Prod Keepalive & Watchdog
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Épic #8670 / issue #8672 — veille de la PROD (et, si activé, bascule auto).
+#
+# Deux rôles, volontairement séparés :
+#   1. KEEPALIVE — garder l'API prod réveillée PENDANT LES HEURES UTILES pour
+#      éviter le cold start Render (~50 s) que les bêta-testeurs prendraient
+#      pour une panne ;
+#   2. WATCHDOG — détecter une prod réellement morte et ALERTER.
+#
+# ⚠️ La bascule automatique est DÉSACTIVÉE par défaut (`auto_switch: false`).
+# Raison mesurée : sur Render free, un service endormi répond lentement au
+# premier appel. Un watchdog qui bascule sur « lent » couperait la prod deux
+# fois au lieu d'une. Elle s'active en connaissance de cause, avec un cooldown
+# de 6 h, uniquement quand une stack B saine existe.
+#
+# ⚠️ FENÊTRE 05:00–23:00 UTC (≈ 18 h/jour, pas 24 h). L'offre Render free
+# donne 750 h/mois PAR COMPTE. Un ping 24/7 consomme ~730 h à lui seul : c'est
+# exactement ce qui a suspendu la prod du 2026-09-28 au 2026-10-01. Un ping
+# nocturne n'apporte aucune valeur (personne ne regarde) et coûte la moitié du
+# quota.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  schedule:
+    # Toutes les 15 min dans la fenêtre utile, décalé de 2 min des autres crons
+    # (04/14/24… du dev-keepalive, */5 de la supervision de queue).
+    - cron: '2,17,32,47 5-22 * * *'
+  workflow_dispatch:
+    inputs:
+      auto_switch:
+        description: "Autoriser une bascule automatique si la prod est morte"
+        type: boolean
+        default: false
+      target_stack:
+        description: "Stack cible si auto_switch (id du registre prod)"
+        type: string
+        default: b
+
+permissions:
+  contents: read
+  issues: write
+  actions: write   # déclencher stack-switch.yml
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: prod-keepalive
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    name: Sonde prod + watchdog
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout (registre + scripts)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: |
+            scripts/stack-health.sh
+            scripts/stack-switch.sh
+            deploy/prod-stacks.json
+          sparse-checkout-cone-mode: false
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Résoudre la stack active
+        id: active
+        shell: bash
+        run: |
+          set -euo pipefail
+          stack="$(jq -r '.active_stack' deploy/prod-stacks.json)"
+          url="$(jq -r --arg s "$stack" '.stacks[$s].api.health_url // empty' deploy/prod-stacks.json)"
+          if [[ -z "$url" ]]; then
+            echo "::error::Stack prod active '${stack}' sans health_url au registre."
+            exit 1
+          fi
+          echo "stack=$stack" >> "$GITHUB_OUTPUT"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Stack prod active : ${stack} (${url})"
+
+      - name: Ping keepalive (réveil, pas de jugement)
+        id: ping
+        shell: bash
+        env:
+          URL: ${{ steps.active.outputs.url }}
+        run: |
+          set -euo pipefail
+          # 3 tentatives espacées : le premier appel d'un service endormi Render
+          # peut dépasser 60 s. On ne conclut RIEN ici, on réveille.
+          for attempt in 1 2 3; do
+            code="$(curl --silent --output /dev/null --write-out '%{http_code}' --max-time 75 "$URL" || echo 000)"
+            echo "Tentative ${attempt}/3 : HTTP ${code}"
+            if [[ "$code" == "200" ]]; then
+              echo "awake=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "awake=false" >> "$GITHUB_OUTPUT"
+
+      - name: Évaluer l'état réel (watchdog)
+        id: eval
+        shell: bash
+        env:
+          URL: ${{ steps.active.outputs.url }}
+          AWAKE: ${{ steps.ping.outputs.awake }}
+        run: |
+          set -euo pipefail
+          # Deuxième salve après réveil : c'est ici qu'on décide si la prod est
+          # morte ou simplement froide.
+          body="$(curl --silent --show-error --max-time 75 "$URL" || true)"
+          suspended="no"
+          grep -qiE "has been suspended|service suspended" <<<"$body" && suspended="yes"
+
+          if [[ "$AWAKE" == "true" ]]; then
+            state="ok"
+          elif [[ "$suspended" == "yes" ]]; then
+            state="suspended"
+          else
+            state="down"
+          fi
+
+          echo "state=${state}" >> "$GITHUB_OUTPUT"
+          echo "suspended=${suspended}" >> "$GITHUB_OUTPUT"
+
+      - name: Alerter (issue [prod-watchdog], une seule ouverte)
+        if: steps.eval.outputs.state != 'ok'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATE: ${{ steps.eval.outputs.state }}
+          STACK: ${{ steps.active.outputs.stack }}
+          URL: ${{ steps.active.outputs.url }}
+        run: |
+          set -euo pipefail
+          # Une seule issue ouverte : on commente au lieu d'en créer une par run
+          # (288 runs/jour × une issue = tracker inutilisable).
+          existing="$(gh issue list --repo "${{ github.repository }}" \
+            --label "ops:prod-watchdog" --state open --json number --jq '.[0].number // ""' || echo "")"
+
+          if [[ "$STATE" == "suspended" ]]; then
+            cause="Suspension côté Render (quota / facturation) — c'est l'incident du 2026-09-28 qui se reproduit."
+            action="Vérifier la facturation Render, puis \`scripts/stack-switch.sh <stack-b> --tier prod\` si une stack B saine existe."
+          else
+            cause="Aucune réponse HTTP 200 après réveil (3 × 75 s + salve)."
+            action="Vérifier \`scripts/stack-health.sh --tier prod --pretty\`, les logs Render et le dernier déploiement."
+          fi
+
+          body="$(printf '%s\n\n%s\n%s\n%s\n\n%s' \
+            "Prod injoignable le $(date -u '+%Y-%m-%d %H:%M UTC')." \
+            "- stack active : \`${STACK}\`" \
+            "- endpoint : ${URL}" \
+            "- diagnostic : ${cause}" \
+            "**Action** : ${action}")"
+
+          if [[ -n "$existing" ]]; then
+            gh issue comment "$existing" --repo "${{ github.repository }}" --body "$body"
+          else
+            gh issue create --repo "${{ github.repository }}" \
+              --title "[prod-watchdog] Prod injoignable ($(date -u '+%Y-%m-%d'))" \
+              --label "ops:prod-watchdog" --body "$body"
+          fi
+
+      - name: Clore l'alerte quand la prod est revenue
+        if: steps.eval.outputs.state == 'ok'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          existing="$(gh issue list --repo "${{ github.repository }}" \
+            --label "ops:prod-watchdog" --state open --json number --jq '.[0].number // ""' || echo "")"
+          if [[ -n "$existing" ]]; then
+            gh issue comment "$existing" --repo "${{ github.repository }}" \
+              --body "Prod revenue à $(date -u '+%Y-%m-%d %H:%M UTC') (HTTP 200 sur la stack active)."
+            gh issue close "$existing" --repo "${{ github.repository }}"
+          fi
+
+      - name: Bascule automatique (si autorisée ET prod morte)
+        if: steps.eval.outputs.state == 'down' && (inputs.auto_switch == true || inputs.auto_switch == 'true')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ACTIVE: ${{ steps.active.outputs.stack }}
+          TARGET: ${{ inputs.target_stack || 'b' }}
+        run: |
+          set -euo pipefail
+          # Cooldown 6 h : on refuse de rejouer une bascule automatique si une
+          # bascule a déjà eu lieu récemment (évite le ping-pong A↔B).
+          recent="$(gh run list --repo "${{ github.repository }}" --workflow stack-switch.yml \
+            --limit 5 --json createdAt,conclusion \
+            --jq '[.[] | select(.createdAt > (now - 21600 | todate))] | length' || echo 0)"
+          if [[ "${recent:-0}" -gt 0 ]]; then
+            echo "::warning::Bascule automatique NON déclenchée : une bascule a eu lieu dans les 6 h (cooldown)."
+            exit 0
+          fi
+
+          # La cible doit être saine AVANT de basculer : jamais de bascule vers
+          # une stack morte (le script le vérifierait aussi, ceinture+bretelles).
+          if ! scripts/stack-health.sh --tier prod --stack "$TARGET" >/dev/null 2>&1; then
+            echo "::error::Cible ${TARGET} malsaine — bascule automatique refusée."
+            exit 1
+          fi
+
+          echo "Prod ${ACTIVE} morte, bascule automatique vers ${TARGET}."
+          gh workflow run stack-switch.yml --repo "${{ github.repository }}" \
+            -f tier=prod -f stack="$TARGET"

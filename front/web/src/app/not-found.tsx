@@ -54,6 +54,8 @@ export default async function NotFound() {
           alt={t(locale, 'vitrine.notFound.mascotAlt')}
           width={200}
           height={200}
+          loading="lazy"
+          decoding="async"
           className="mx-auto mb-6 h-auto w-40 sm:w-48"
         />
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-400">

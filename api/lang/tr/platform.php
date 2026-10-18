@@ -24,4 +24,13 @@ return [
     'ai_test_quota' => 'Sağlayıcı kotası doldu (429). Daha sonra tekrar deneyin veya planı değiştirin.',
     'ai_test_timeout' => 'Sağlayıcıya ulaşılırken zaman aşımı. Sunucunun giden bağlantısını kontrol edin.',
     'ai_test_failed' => 'Test başarısız: :error',
+    'infra_denied' => 'Altyapıyı yönetme yetkiniz yok.',
+    'infra_stack_already_active' => 'Bu stack zaten bu tier\'ın aktif stack\'i.',
+    'infra_stack_not_switchable' => 'Bu stack\'e geçilemez (planlanan/askıya alınmış durum veya URL yok).',
+    'infra_stack_unknown' => 'Bu tier kaydında bilinmeyen stack.',
+    'infra_tier_unknown' => 'Bilinmeyen tier (beklenen: prod veya dev).',
+    'infra_switch_refused' => 'Geçiş reddedildi.',
+    'infra_dispatch_rejected' => 'GitHub tetiklemeyi reddetti (HTTP :status). Jeton kapsamını kontrol edin.',
+    'infra_switch_dispatched' => 'Geçiş başlatıldı: GitHub iş akışı devraldı (Actions sekmesini izleyin).',
+    'infra_token_missing' => 'Geçiş kullanılamıyor: butonun GitHub jetonu tanımlı değil (GITHUB_STACK_SWITCH_TOKEN).',
 ];

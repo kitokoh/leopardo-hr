@@ -116,6 +116,47 @@ return [
         'alert_url' => env('MARKETING_ALERT_WEBHOOK_URL'),
     ],
 
+    // BC-36 TRADE (TRADE-007/#8482, spec §8) — adaptateurs de la verticale
+    // International Trade OS. AUCUN service payant n'est souscrit et aucune
+    // clé n'est inventée : par défaut, chaque driver est en mode dégradé
+    // explicite et l'intégration est déclarée NON configurée
+    // (`GET /trade/meta/integrations`). Renseigner les variables
+    // d'environnement ci-dessous branche l'adaptateur sans changement de code.
+    // Secrets côté serveur uniquement — jamais exposés au frontend.
+    'trade_fx' => [
+        // `manual` : l'utilisateur saisit le taux (rate/date/source tracés).
+        // `http`   : adaptateur HTTP externe (base_url + key requis).
+        'driver' => env('TRADE_FX_DRIVER', 'manual'),
+        'base_url' => env('TRADE_FX_BASE_URL'),
+        'key' => env('TRADE_FX_KEY'),
+        'timeout' => (int) env('TRADE_FX_TIMEOUT', 5),
+    ],
+
+    'trade_tariff' => [
+        // `null` : aucune source de tarifs douaniers — la plateforme ne
+        // chiffre AUCUN droit ni taxe et le signale explicitement.
+        'driver' => env('TRADE_TARIFF_DRIVER', 'null'),
+        'base_url' => env('TRADE_TARIFF_BASE_URL'),
+        'key' => env('TRADE_TARIFF_KEY'),
+        'timeout' => (int) env('TRADE_TARIFF_TIMEOUT', 5),
+    ],
+
+    'trade_company_verification' => [
+        'driver' => env('TRADE_COMPANY_VERIFICATION_DRIVER', 'null'),
+        'base_url' => env('TRADE_COMPANY_VERIFICATION_BASE_URL'),
+        'key' => env('TRADE_COMPANY_VERIFICATION_KEY'),
+        'timeout' => (int) env('TRADE_COMPANY_VERIFICATION_TIMEOUT', 5),
+    ],
+
+    'trade_carrier_quote' => [
+        // `null` : les demandes de cotation sont diffusées à des prestataires
+        // qui répondent dans la plateforme (aucun tarif simulé).
+        'driver' => env('TRADE_CARRIER_QUOTE_DRIVER', 'null'),
+        'base_url' => env('TRADE_CARRIER_QUOTE_BASE_URL'),
+        'key' => env('TRADE_CARRIER_QUOTE_KEY'),
+        'timeout' => (int) env('TRADE_CARRIER_QUOTE_TIMEOUT', 5),
+    ],
+
     'mail_bounce_webhook' => [
         // PA2-COMM-007 - Secret partagé du webhook entrant de rebonds email
         // (Postmark/SES/Mailgun). Le contrôleur est fail-closed (#2616) :
@@ -153,6 +194,19 @@ return [
         // #5725 — Token système WhatsApp Business Cloud API (Meta Graph API).
         // Secret manager uniquement : jamais en frontend, DB ou logs.
         'token' => env('WHATSAPP_CLOUD_API_TOKEN', ''),
+    ],
+
+    'github_stack_switch' => [
+        // #8673 (épic #8670) — jeton GitHub utilisé par le bouton superadmin de
+        // bascule de stack : il déclenche un `repository_dispatch` (événement
+        // `stack-switch`) que `.github/workflows/stack-switch-dispatch.yml`
+        // route vers `stack-switch.yml`. Portée minimale attendue : un
+        // fine-grained token limité à ce dépôt avec « Contents: read » +
+        // « Actions: write » — jamais un PAT classique `repo`.
+        // Absent = l'écran affiche l'état des stacks mais refuse de basculer
+        // (fail-closed explicite, cf. PlatformStackSwitchAction).
+        'token' => env('GITHUB_STACK_SWITCH_TOKEN', ''),
+        'repository' => env('GITHUB_STACK_SWITCH_REPOSITORY', 'kitokoh/leopardo-hr'),
     ],
 
 ];

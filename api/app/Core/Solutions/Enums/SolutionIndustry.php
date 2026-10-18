@@ -38,4 +38,8 @@ enum SolutionIndustry: string
     // BC-37 FARM OS — verticale agricole (mission Farm OS) : agriculture
     // végétale, élevage, exploitations mixtes.
     case Agriculture = 'agriculture';
+    // BC-36 TRADE (TRADE-001/#8476) — extension par nouvelle case uniquement
+    // (registre fermé, jamais de renommage) : verticale International Trade
+    // OS — commerce international (import/export) et B2B domestique.
+    case InternationalTrade = 'international_trade';
 }

@@ -2,7 +2,6 @@
 import { getPricingFaq } from '@/modules/vitrine/data/pricing-faq';
 
 import { Fragment, useEffect, useState } from 'react';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -393,7 +392,6 @@ function getFeatureValue(feature: ComparisonFeature, planName: string): boolean 
 // `useSearchParams`, qui imposerait une frontière <Suspense> sur cette page
 // prérendue — même approche que `SignupForm`.
 export default function PricingPage() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const [isAnnual, setIsAnnual] = useState(true);
   const [openFaqId, setOpenFaqId] = useState<string | null>('starter-plan');
   const [faqCategory, setFaqCategory] = useState<string | null>(null);
@@ -441,9 +439,9 @@ export default function PricingPage() {
   return (
     <div
       dir={direction}
-      className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}
+      className={`min-h-screen bg-white `}
     >
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+      <Navbar />
 
       {/* ── HERO (masqué quand on arrive depuis « Créer un compte ») ── */}
       {!signupFocus && (

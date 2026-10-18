@@ -299,5 +299,19 @@ return [
             // app/Core/Feature/Domain/ModuleRegistry.php et re-projeter.
             'description' => 'Solution agricole Farm OS (BC-37, mission Farm OS ; gate `module.farm_os`) : exploitations et parcelles, cycles culturaux et calendrier des travaux, intrants et stock, materiel, cheptel, recoltes et tracabilite, achats et ventes, couts et rentabilite. Modularite interne par CAPACITES (table farm_capabilities), pas par 13 flags.',
         ],
+        // BC-36 TRADE (TRADE-001/#8476) — verticale International Trade OS :
+        // commerce international (import/export) et B2B domestique (grossiste)
+        // — sourcing, RFQ multi-fournisseurs, offres, commandes, cotations
+        // transport, coût rendu, aide documentaire. Code du TradeManifest.
+        // Enregistré ici ET dans `Company::KNOWN_MODULES` + `ModuleRegistry`
+        // dès la création (leçon #7220/#7235). Fail-closed : défaut false,
+        // gate serveur `module.trade` sur les routes /api/v1/trade/*.
+        'trade' => [
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.36.0',
+            'killable' => true,
+            'description' => 'Solution International Trade OS (BC-36, TRADE-001/#8476 ; gate `module.trade`) : commerce international & B2B domestique — sourcing, RFQ, offres, commandes, transport, coûts rendus, documents.',
+        ],
     ],
 ];

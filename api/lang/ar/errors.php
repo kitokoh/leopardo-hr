@@ -309,6 +309,7 @@ return [
     // #7268 — Onboarding: رسائل خطوات مُترجمة (لا نصوص ثابتة)
     'ONBOARDING_STEP_REQUIRED' => 'هذه الخطوة إلزامية ولا يمكن تخطيها.',
     'ONBOARDING_STEP_NOT_DONE' => 'لا يمكن تعليم هذه الخطوة كمكتملة: لم يتم تسجيل أي إجراء مطابق.',
+    'ONBOARDING_STEP_NOT_FOUND' => 'هذه الخطوة غير موجودة في مساحتك.',
     'COMPANY_CONTEXT_REQUIRED' => 'سياق الشركة مطلوب.',
     // #7322 — التفعيل الذاتي لوحدة أفقية من قبل العميل.
     'SOLO_TEAM_TOOL_NOT_AVAILABLE' => 'أداة فريق خارج نطاق حساب المستقل: :module.',

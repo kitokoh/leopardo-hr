@@ -808,3 +808,39 @@ disposition du véhicule affecté. Même source de vérité que le plan grand pu
 - Gardes du dépôt : `check-i18n-diff`, `check-web-design-tokens.sh`, `check-i18n-catalog-parity.sh`.
 - E2E Playwright du back-office : le composant n'est pas encore monté dans une vue route (intégration ultérieure) —
   la recette ci-dessus se joue au niveau composant/unité tant que le branchement de vue n'est pas livré.
+
+## Addendum 2026-10-18 — URL d'API stable du dashboard (#8707, issue #8709)
+
+### Ce qui change
+
+Le dashboard admin ne grave plus l'URL d'un fournisseur dans son bundle. Il résout
+sa base d'API dans `src/services/api-base-url.js` : `VITE_API_PROXY_BASE_URL`
+(proxy du front web) prioritaire, `VITE_API_URL` (appel direct) en second, échec
+explicite en production si aucune n'est posée.
+
+### Scénarios de recette
+
+1. **Build sans proxy** : un build de production sans `VITE_API_PROXY_BASE_URL` ni
+   `VITE_API_URL` échoue avec un message portant `[admin-dashboard]` ; aucune
+   sortie `dist/` n'est produite (garde `vite.config.js`).
+2. **Build nominal** : les workflows dev et prod injectent
+   `VITE_API_PROXY_BASE_URL` ; `dist/assets/*.js` ne contient **aucune** occurrence
+   de `.onrender.com` et contient l'URL du proxy.
+3. **CSP** : `connect-src` du `dist/_headers` porte l'origine du **proxy**
+   (et non celle d'un fournisseur) ; `node scripts/check-csp-guard.mjs` répond OK.
+4. **Préflight navigateur** : `OPTIONS` depuis `https://leo-admin.pages.dev` vers le
+   proxy renvoie `204` avec `Access-Control-Allow-Origin` égal à cette origine ;
+   l'appel `POST /platform/auth/login` qui suit renvoie `200` + token.
+5. **Garde-fou de production** : un build de prod avec `VITE_API_URL` absolue et
+   sans `VITE_ALLOW_DIRECT_API_IN_PROD=true` échoue au chargement du module.
+6. **Aucune régression de fallback** : en dev/test sans variable, le module
+   retombe sur `http://localhost:8000/api/v1` avec un `console.warn` préfixé.
+
+### Vérification automatique
+
+- `npx vite build` (avec `VITE_API_PROXY_BASE_URL`) → OK, puis
+  `grep -c onrender.com dist/assets/*.js` → 0.
+- `npx eslint src/services/api-base-url.js src/services/api.js` → 0 erreur.
+- `node scripts/check-csp-guard.mjs` → OK.
+- Gardes du dépôt : `check-i18n-diff` (messages préfixés `[admin-dashboard]`),
+  `check-ci-secrets-doc.sh` (`DEV_API_PROXY_BASE_URL` documenté), `actionlint`.

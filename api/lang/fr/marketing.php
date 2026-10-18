@@ -30,6 +30,9 @@ return [
         'campaign_not_found' => 'Campagne introuvable pour cette entreprise.',
         'asset_not_found' => 'Ressource introuvable pour cette entreprise.',
         'file_required' => 'Un fichier est obligatoire pour une ressource de type « :kind ».',
+        // #8675 — telechargement d'une ressource de la mediatheque.
+        'asset_has_no_file' => 'Cette ressource est un contenu texte (script, prompt, legende) : elle n a pas de fichier a telecharger.',
+        'asset_file_missing' => 'Le fichier de cette ressource est introuvable sur le stockage. La fiche existe toujours ; le binaire a peut-etre ete purge ou la restauration est incomplete.',
         // #8531 — visibilite SEO/SEA/AEO/GEO : aucune visibilite n'est promise.
         'visibility_no_guarantee' => 'Aucune visibilite n est garantie dans les moteurs de recherche ou les assistants IA : les indicateurs sont mesures ou explicitement identifies comme estimations.',
     ],

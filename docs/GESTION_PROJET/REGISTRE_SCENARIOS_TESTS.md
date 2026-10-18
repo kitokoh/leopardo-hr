@@ -1,3 +1,35 @@
+> **MAJ 2026-10-17 — #8652, #8653, #8654, #8655, Travel OS : sièges physiquement absents, cohérence disposition ↔ inventaire, rafraîchissement du plan — PR #8656.**
+> Surface **API (`api/app/Modules/TravelAgency`)** : `SeatLayout` accepte `absent_seats` (entiers positifs, uniques,
+> bornés par la capacité) et expose `sellableCapacity()` ; `GenerateTripSeatsAction` ne crée **aucune** ligne
+> `travel_trip_seats` pour un siège physiquement absent — l'inventaire correspond au bus réel, pas au nombre de
+> places déclaré. Nouvelle `ValidateSeatLayoutCoherenceAction` (lecture seule) : refus **422** motivé d'une
+> disposition incohérente, jamais de correction silencieuse ; refuse aussi de rendre absent un siège **déjà
+> réservé**, en listant les sièges en conflit. `StoreTravelVehicleRequest` / `UpdateTravelVehicleRequest` valident
+> `seat_layout.absent_seats` (entiers, distincts). Migration **idempotente** `2026_10_17_140000_8652` :
+> `absent_seats` vit dans le JSONB `seat_layout` existant, aucune colonne nouvelle, aucune ligne réécrite.
+> Surface **web grand public (`front/travel-web`)** : `buildSeatMapLayout` reconstruit la séquence **physique**
+> complète quand le véhicule déclare des sièges absents — chaque siège absent occupe sa place réelle en case non
+> cliquable, au lieu d'être omis (ce qui **décalerait** tous les sièges suivants) ; état `absent` avec symbole
+> dédié, libellé texte et style barré (jamais la couleur seule) ; `resolveSeatLayout` normalise `absent_seats`.
+> `booking-flow.tsx` rafraîchit périodiquement le plan (30 s), annule au démontage, et **désélectionne + signale**
+> un siège devenu indisponible — aucun temps réel simulé, la disponibilité définitive reste tranchée par le
+> serveur à la confirmation.
+> Surface **web admin (`front/admin-dashboard`)** : `TravelSeatMap.vue` rend les sièges absents (case non
+> cliquable, légende conditionnelle) ; `TravelBookingsView.vue` affiche un bandeau `role="note"` signalant qu'un
+> changement de disposition **ne déplace pas** les passagers déjà réservés.
+> Surface **i18n** : sources `shared/i18n/locales/{fr,en,tr,ar}.json` éditées puis propagées par
+> `sync-web`/`sync-backend`/`sync-mobile` — **aucun catalogue généré modifié à la main**. Les ARB mobile reçoivent
+> `travelSeatsStateAbsent` / `travelSeatsLayoutnotice` (propagation automatique du catalogue partagé).
+> Scénarios automatisés : `api/tests/Feature/Travel/TravelAbsentSeatsTest.php` (**12 tests / 24 assertions** :
+> `sellableCapacity`, siège absent hors capacité → disposition inexploitable, inventaire sans siège absent,
+> véhicule non configuré inchangé, refus 422 hors capacité / doublon, refus de rendre absent un siège réservé avec
+> liste des conflits, acceptation d'un siège absent libre, véhicule non configuré accepté sans géométrie) ;
+> `front/travel-web/src/lib/seat-layout.test.ts` (**+4 cas** : siège absent à sa place réelle sans décalage,
+> aucune case absente sans déclaration, normalisation, forme inexploitable ignorée). Suites Travel : **40/40
+> verts** ; `travel-web` vitest **37/37** ; PHPStan niveau 8 → **No errors** ; idempotence de la migration vérifiée
+> sur la base réelle. **Non-régression mesurée** : `tests/Feature/Travel` complet comparé à un worktree propre de
+> `origin/main` → **16 erreurs / 83 échecs des deux côtés**, +12 tests (les nouveaux) : **0 régression**.
+
 > **MAJ 2026-10-17 — vague 6 (correctif a11y), vitrine : constellation atteignable au clavier, focus restitué à l'étoile.**
 > Surface **web (`front/web/src/modules/vitrine/components/hero`)** : les étiquettes d'étoiles de `HeroBusinessOS3D`
 > passent de `<div>` décoratifs (`pointer-events-none`, aucun `tabindex`) à de **vrais `<button>` focusables**
@@ -252,6 +284,43 @@
 > programme partenaire) ; remplacée par « paiements / règlements des ventes suivis ».
 > Source corrigée dans `shared/i18n/locales/*.json` puis propagée par `sync-web.js`
 > (catalogues web + admin + `versions.json`), conformément à #4805.
+> **MAJ 2026-10-15 — #8476→#8486 (PR #8487), verticale « International Trade OS » (BC-36 TRADE).**
+> Surface **API HTTP** (`api/routes/modules/trade.php`, gate `module.trade` fail-closed + `trade.role:*`) :
+> noyau commercial **partagé** entre les deux espaces — `GET/POST /v1/trade/rfqs`,
+> `POST /v1/trade/rfqs/{rfq}/send` (liens de réponse retournés en clair **une seule fois**),
+> `GET /v1/trade/quotes`, `POST /v1/trade/quotes/{quote}/accept` (l'acceptation
+> crée la commande), `GET/POST /v1/trade/cost-estimates`, `GET /v1/trade/customs/checklist`,
+> et `GET /v1/trade/meta/integrations` (état RÉEL des 4 adaptateurs externes).
+> **?direction=incoming|outgoing** sélectionne la vue acheteur/vendeur sur les
+> MÊMES objets : pas deux implémentations, et une même entreprise peut importer
+> ET exporter sans rôle irréversible. Isolation tenant par `BelongsToCompany` :
+> une ressource d'une autre entreprise est **introuvable (404), jamais 403**.
+> Honnêteté du calcul : chaque poste porte sa `source`
+> (`confirmed|estimated|user_input|unavailable`) et `duty_rate_available` reste
+> `false` tant qu'aucune source de tarifs n'est configurée — la capacité est
+> INDISPONIBLE, jamais « estimée à 0 ».
+> Surface **API superadmin** (`api/routes/api.php`, groupe `/platform`) :
+> `GET /platform/trade/overview` (compteurs agrégés par tenant — entreprises
+> portant le flag `trade`, répartition par statut des deals/RFQ/offres/commandes)
+> et `GET /platform/trade/integrations` (état des adaptateurs + identité du
+> manifest). **Compteurs uniquement** : aucun contenu commercial privé (prix,
+> offres, messages, documents) n'est exposé à l'administration plateforme.
+> Surface **web tenant** (`front/web`) : route protégée `/trade` — onglets
+> « Vue d'ensemble », « Sourcing & demandes de prix » (acheteur),
+> « Ventes & offres » (vendeur), « Coûts & douane » (avec disclaimer de
+> non-responsabilité douanière) ; 403 `MODULE_DISABLED` → état dédié.
+> Surface **web admin** (`front/admin-dashboard`) : `views/trade/TradeOverviewView.vue`
+> (route `/trade`, nav groupe « Clients & croissance », perm `companies.view`),
+> tableau des intégrations avec badge « Opérationnelle » / « Non configurée ».
+> Couverture : `api/tests/Unit/Trade/TradeSurveyTest.php` (11 tests — les 3
+> critères d'acceptation du périmètre, parité i18n, garde anti-sur-promesse
+> `mobile_field`), `TradeVerticalConsistencyTest.php` (conformité manifest,
+> données sensibles déclarées, les 3 points d'enregistrement obligatoires dont
+> `Company::KNOWN_MODULES`, bijection rôles ↔ permissions),
+> `api/tests/Feature/Security/TradeTenantIsolationTest.php` (6 tests d'isolation
+> inter-entreprise). **Aucun service payant souscrit, aucune clé inventée** :
+> les 4 adaptateurs sont en mode dégradé explicite (`manual`/`null`) et déclarés
+> non configurés — voir `docs/architecture/TradeIntegrationAdapters.md`.
 > **MAJ 2026-10-13 — #8447 + #8451, « Mon Logiciel » et checklists par profil métier.**
 > Surface **web (front/web)** : nouvelle route protégée `/mon-logiciel` (hub
 > d'installation des apps du tenant, filtrée par solutions activées via
@@ -1715,3 +1784,35 @@ restent les gates applicables.
   (3) `?type=` inconnu → `422` ; (4) `?near=lat,lng` → seules les entités géolocalisées
   dans `radius_km`, triées par distance croissante ; (5) DTO public strict (aucun `id`,
   `company_id`, `status`) ; (6) `per_page` borné à 50. Aucune migration, aucun nouveau rôle.
+
+## Mise à jour 2026-10-18 — pilotage des stacks de déploiement (PR #8699, issues #8671-#8674)
+
+- **Surface API (superadmin)** : deux routes plateforme sous
+  `platform.permission:infra.manage` —
+  `GET /api/v1/platform/infra/stacks` (état des stacks dev/prod lues dans
+  `deploy/*-stacks.json` + `dispatch_configured`) et
+  `POST /api/v1/platform/infra/stack-switch` (bascule d'un tier).
+  Contrats documentés dans `api/openapi.yaml` (schémas `PlatformInfraStack`,
+  `PlatformInfraTier`).
+- **Scénarios attendus côté API** :
+  | Cas | Attendu |
+  |---|---|
+  | appel sans `infra.manage` (support, finance, marketing) | **403** |
+  | `GET /stacks` avec jeton configuré | 200, `dispatch_configured: true`, une entrée par tier |
+  | `GET /stacks` sans `GITHUB_STACK_SWITCH_TOKEN` | 200, `dispatch_configured: false` (écran informatif) |
+  | `POST` sur la stack déjà active | **409**, `reason: deja_active` |
+  | `POST` sur une stack `planned` (sans `health_url`) | **409**, `reason: non_basculable` |
+  | `POST` sur une stack absente du registre | **422**, `reason: stack_inconnue` |
+  | `POST` avec `confirm` absent/faux | **422** (garde d'interface) |
+  | `POST` valide, jeton absent | **503** (fail-closed, rien n'est déclenché) |
+  | `POST` valide, jeton présent | **202**, `data.previous` = stack active avant bascule |
+  | rejeu du même `POST` après succès du workflow | la stack cible est devenue active → **409** (aucun ping-pong) |
+- **Surface infrastructure (non testable en PHPUnit)** : `scripts/stack-switch.sh`
+  refuse en prod `--seed`, `--force` seul, une cible sans `health_url`, une cible
+  malade, et une cible dont `db.host` diffère de la stack active. Scénarios
+  couverts par exécution réelle du script sur le registre du dépôt
+  (`--dry-run`) et par `scripts/stack-health.sh --tier prod`.
+- **Surface admin (Vue)** : carte `InfraStacksCard.vue` sur Supervision Système —
+  bouton désactivé si `dispatch_configured=false`, refus de l'API remonté en
+  toast. Scénario manuel : couper `GITHUB_STACK_SWITCH_TOKEN` sur le service API
+  et vérifier que l'écran reste lisible et n'offre pas de bascule.

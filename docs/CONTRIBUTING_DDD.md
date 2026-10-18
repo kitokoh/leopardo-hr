@@ -15,10 +15,11 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | ~~`api/app/Services/`~~ — répertoire **supprimé** (2026-08-11, #1728), ne rien y ajouter | `Modules/<Name>/Infrastructure/Services/` |
 | `api/app/Exceptions/` (base `DomainException` partagée, encore étendue par des modules) | `Modules/<Name>/Domain/Exceptions/` |
 
-## Modules existants (36 modules)
+## Modules existants (38 modules)
 
 | Module | Domaine couvert |
 |---|---|
+| `Paiements` | Socle de paiement interne (BC-38) : wallets a solde derive du ledger, ledger en partie double immuable, transactions idempotentes, registre de fournisseurs administrable (type = code / instance = configuration), `ProviderResolver` par pays/devise/tenant, commissions, reconciliation, rail simulateur (#8680..#8694) |
 | `Showcase` | Site vitrine public 1-clic du tenant (BC-27) : moteur de sections + thèmes, publication draft/published, consultation publique isolée 0 donnée interne (#6864/#6865) |
 | `Catalog` | Catalogue produits B2B des tenants producteurs/fournisseurs (BC-28) : catégories, produits (prix indicatifs minor units + devise), publication, demandes de devis (#6879/#6880) |
 | `Communication` | Boîte mail connectée + IA (BC-29) : OAuth Gmail serveur, sync des fils, classification IA, relances et réponses assistées — squelette R0 (#7684/#7685), spec `MODULE_COMMUNICATION_EMAIL_IA.md` |
@@ -58,6 +59,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `TravelAgency` | Verticale agences de voyages : référentiel pays/villes/gare/bureaux, manifest de solution activable par tenant (TRAVEL-101..108, 201..203) |
 | `Vtc` | Verticale VTC/taxi (BC-35) : réservation de courses, dispatch au chauffeur disponible le plus proche via le core `geo`, tarification, suivi temps réel (VTC-01..07) |
 | `FarmOs` | Verticale agricole Farm OS (BC-37) : exploitations et parcelles, cycles culturaux et calendrier des travaux, travailleurs et équipes, intrants et stock, matériel, cheptel, récoltes et traçabilité, achats et ventes, coûts et rentabilité, tableau de bord d'exploitation — 13 outils activables par CAPACITÉS (`farm_capabilities`), module requis `rh` |
+| `Trade` | Verticale International Trade OS (BC-36) : noyau commercial partagé import/export et B2B domestique — profils professionnels, catalogue et spécifications produits, demandes d'achat, RFQ multi-fournisseurs, offres commerciales, commandes, cotations transport, calcul de coût rendu, aide à la préparation documentaire, suivi des transactions (TRADE-001..011) |
 | `Pharmacy` | Verticale officines de pharmacie (BC-30) : référentiel produits (DCI, formes, dosages), stock par lots/péremptions FEFO, achats fournisseurs, ventes comptoir, ordonnances et ordonnancier des produits contrôlés (PHARMA-001..007) |
 | `Accounting` | Comptabilité : plan comptable, grand livre, écritures, facturation, export FEC |
 | `Delivery` | Livraisons dernier-kilomètre : colis, tournées, livreurs, POD, tracking, COD, rapports (BC-26 DELIVERY) |

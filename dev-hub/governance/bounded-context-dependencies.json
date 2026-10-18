@@ -5,9 +5,15 @@
     "policy": "deny-by-default",
     "registry": "dev-hub/governance/bounded-context-registry.json",
     "guard": "dev-hub/tools/check-bounded-context-dependencies.sh",
-    "updated": "2026-10-16"
+    "updated": "2026-10-18"
   },
   "edges": [
+    {
+      "from": "BC-36",
+      "to": "BC-02",
+      "baseline": false,
+      "note": "TRADE → TENANT — la console de suivi superadmin de la verticale (PlatformTradeController, TRADE-010 #8485) agrège des COMPTEURS par tenant : elle liste les Company portant le flag `trade` puis lit les tables `trade_*` dans le schéma de chaque tenant via TenantManager::withinTenant(), sans jamais exposer de contenu commercial privé (pattern BC-27 vitrine / BC-33 cagnottes / BC-35 VTC, #8476)"
+    },
     {
       "from": "BC-01",
       "to": "BC-02",
@@ -882,6 +888,12 @@
       "to": "BC-02",
       "baseline": false,
       "note": "GROWTH → TENANT : Marketing OS (#8528) — PlatformMarketingOsController/PlatformMarketingOsService exécutent la logique marketing du tenant CIBLÉ depuis la console Super Admin via App\\Core\\Tenant\\TenantManager (withinTenant) + PlatformCompanyLookup, même patron que BC-27 Showcase (#6866/#6867) et BC-33 cagnottes (#8379)."
+    },
+    {
+      "from": "BC-38",
+      "to": "BC-02",
+      "baseline": false,
+      "note": "PAIEMENTS -> TENANT : la surface Tenant (solde, historique, demande de cash-out) lit le tenant courant via currentCompany() et le scope global `company` du trait BelongsToCompany, meme patron que les autres BC verticaux."
     }
   ]
 }

@@ -24,4 +24,13 @@ return [
     'ai_test_quota' => 'Quota atteint chez le fournisseur (429). Réessayez plus tard ou changez d\'offre.',
     'ai_test_timeout' => 'Délai dépassé en joignant le fournisseur. Vérifiez la connectivité sortante du serveur.',
     'ai_test_failed' => 'Échec du test : :error',
+    'infra_denied' => 'Vous n\'avez pas la permission de piloter l\'infrastructure.',
+    'infra_stack_already_active' => 'Cette stack est déjà la stack active de ce tier.',
+    'infra_stack_not_switchable' => 'Cette stack n\'est pas basculable (statut prévu/suspendu ou URL absente).',
+    'infra_stack_unknown' => 'Stack inconnue dans le registre de ce tier.',
+    'infra_tier_unknown' => 'Tier inconnu (attendu : prod ou dev).',
+    'infra_switch_refused' => 'Bascule refusée.',
+    'infra_dispatch_rejected' => 'GitHub a refusé le déclenchement (HTTP :status). Vérifiez la portée du jeton.',
+    'infra_switch_dispatched' => 'Bascule déclenchée : le workflow GitHub la prend en charge (suivez l’onglet Actions).',
+    'infra_token_missing' => 'Bascule indisponible : le jeton GitHub du bouton n’est pas configuré (GITHUB_STACK_SWITCH_TOKEN).',
 ];

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer, HeroSection, useScrollReveal } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { getChangelogReleases } from '@/modules/vitrine/data/changelog-public';
@@ -9,7 +8,6 @@ import { Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function ChangelogPage() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   useScrollReveal();
   const { locale, copy, direction } = useVitrineLocale();
   const publicChangelogReleases = getChangelogReleases(locale);
@@ -18,8 +16,8 @@ export default function ChangelogPage() {
   const headline = `${ch.title} ${ch.titleHighlight}`;
 
   return (
-    <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+    <div dir={direction} className={`min-h-screen bg-white `}>
+      <Navbar />
 
       <HeroSection
         headline={headline}

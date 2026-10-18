@@ -35,4 +35,6 @@ return [
     'interview_invalid_answer' => 'Réponse invalide : :question',
     'demo_data_vertical_inactive' => "La solution :code n'est pas active sur votre espace.",
     'demo_data_kit_unavailable' => "Aucun jeu de démonstration n'est disponible pour la solution :code.",
+    'resume_unknown_step' => "Cette étape ne fait pas partie de votre parcours d'onboarding.",
+    'resume_invalid_step' => "Identifiant d'étape invalide.",
 ];

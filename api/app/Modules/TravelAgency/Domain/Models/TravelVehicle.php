@@ -84,7 +84,10 @@ class TravelVehicle extends Model
     {
         $raw = $this->seat_layout;
 
-        return SeatLayout::tryFromArray(is_array($raw) ? $raw : null);
+        // #8652 — la capacité est transmise pour que les sièges absents soient
+        // bornés par le véhicule réel : un siège absent hors capacité rend la
+        // disposition inexploitable (repli), il n'est jamais accepté tel quel.
+        return SeatLayout::tryFromArray(is_array($raw) ? $raw : null, (int) $this->seat_capacity);
     }
 
     /**
@@ -94,7 +97,7 @@ class TravelVehicle extends Model
      * capacité. Le booléen `is_configured` permet aux surfaces d'annoncer
      * honnêtement qu'une disposition a été déduite et non lue.
      *
-     * @return array{seats_per_row: int, aisle_after: int|null, is_configured: bool}
+     * @return array{seats_per_row: int, aisle_after: int|null, absent_seats?: list<int>, is_configured: bool}
      */
     public function effectiveSeatLayout(?int $capacity = null): array
     {
@@ -116,7 +119,7 @@ class TravelVehicle extends Model
      * le repli, mais `is_configured` reste `false` pour que l'appelant ne
      * prétende jamais lire une configuration inexistante.
      *
-     * @return array{seats_per_row: int, aisle_after: int|null, is_configured: bool}
+     * @return array{seats_per_row: int, aisle_after: int|null, absent_seats?: list<int>, is_configured: bool}
      */
     public static function fallbackSeatLayout(int $capacity): array
     {

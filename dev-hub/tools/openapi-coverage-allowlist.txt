@@ -1062,6 +1062,14 @@ POST /v1/admin/companies/{param}/marketing-os/ideas/{param}/promote
 GET /v1/admin/companies/{param}/marketing-os/assets
 POST /v1/admin/companies/{param}/marketing-os/assets
 GET /v1/admin/companies/{param}/marketing-os/assets/{param}/publications
+# #8675 — la mediatheque etait en ecriture seule : le binaire vivait sur le
+# disk prive mais aucune route ne le relisait. Ajout du detail d'une ressource
+# et du telechargement. Les deux routes resolvent la ressource DANS le contexte
+# du tenant cible (`TenantManager::withinTenant`), donc une ressource d'une
+# autre entreprise est introuvable (404) ; le nom propose au telechargement est
+# derive du nom d'origine sanitise, jamais du chemin de stockage interne.
+GET /v1/admin/companies/{param}/marketing-os/assets/{param}
+GET /v1/admin/companies/{param}/marketing-os/assets/{param}/download
 GET /v1/admin/companies/{param}/marketing-os/publications
 POST /v1/admin/companies/{param}/marketing-os/publications
 PATCH /v1/admin/companies/{param}/marketing-os/publications/{param}/status

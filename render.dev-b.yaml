@@ -1,0 +1,130 @@
+# render.dev-b.yaml — Blueprint Render de la stack DEV « B » (épic #8659, issue #8664).
+#
+# Miroir de render.yaml (stack « a », workspace africanovatech) destiné au
+# COMPTE RENDER B (à créer par le propriétaire — rotation multi-stacks dev,
+# docs/ops/DEV_STACK_ROTATION.md). La PROD vit dans render.prod.yaml et n'a
+# rien à voir ici.
+#
+# Différences volontaires avec render.yaml :
+#   - nom de service « leopardo-dev-b » (Render mappe les services par `name:`) ;
+#   - ce blueprint est un ÉTAT CIBLE légitime : il sera importé sur un compte
+#     neuf (dashboard Render → New + → Blueprint, repo kitokoh/leopardo-hr,
+#     branche main, fichier render.dev-b.yaml) ;
+#   - autoDeploy:false — les déploiements passent par deploy-main.yml
+#     (fan-out via le secret RENDER_DEPLOY_HOOK_URL_STACK_B, #8659) ;
+#   - les secrets (sync:false) se saisissent dans le dashboard du compte B :
+#     DB_URL (Neon B), REDIS_URL/PASSWORD (Key Value B, optionnel), APP_KEY
+#     (régénérer : php artisan key:generate --show), SUPER_ADMIN_PASSWORD…
+#   - queue + scheduler : même topologie que la stack « a » — dans le
+#     conteneur web (WEB_QUEUE_DRAIN/WEB_SCHEDULER_LOOP, défaut on), faute
+#     de Background Worker gratuit (cf. #7649/#7845 dans render.yaml).
+#
+# Gardes identiques à la stack « a » (NE PAS retirer) :
+#   - APP_ENV=staging + DEPLOY_TIER=dev : identité de tier, fail-closed du
+#     RESET_TEST_DB_ONCE (docker-entrypoint.sh, #6537/#7647) ;
+#   - DISABLE_DEMO_SEEDING=true + DEMO_MODE_ENABLED=false : verrous démo #7696 ;
+#   - healthCheckPath /api/v1/health : consommé par scripts/dev-stack-health.sh
+#     et le watchdog de dev-keepalive.yml.
+
+services:
+  - type: web
+    name: leopardo-dev-b
+    runtime: docker
+    dockerfilePath: api/Dockerfile.prod
+    dockerContext: .
+    region: frankfurt
+    plan: free
+    healthCheckPath: /api/v1/health
+    autoDeploy: false
+    envVars:
+      - key: APP_ENV
+        value: staging
+      - key: APP_DEBUG
+        value: false
+      - key: DEPLOY_TIER
+        value: dev
+      - key: API_DOCS_PUBLIC
+        value: "true"
+      - key: DISABLE_DEMO_SEEDING
+        value: "true"
+      - key: APP_URL
+        fromService:
+          name: leopardo-dev-b
+          type: web
+          property: host
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: info
+      # Base Neon du COMPTE B (sync:false, dashboard) — jamais la base de la
+      # stack « a » : chaque stack est autonome, les données sont seedées.
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        sync: false
+      - key: DB_SEARCH_PATH
+        value: shared_tenants,public
+      - key: DB_SSLMODE
+        value: require
+      - key: WEB_QUEUE_SLEEP
+        value: "10"
+      # Key Value du compte B (optionnel — le probe d'entrypoint retombe sur
+      # file si absent, cf. render.yaml).
+      - key: REDIS_CLIENT
+        value: predis
+      - key: REDIS_URL
+        sync: false
+      - key: REDIS_PASSWORD
+        sync: false
+      # Régénérer sur le compte B (php artisan key:generate --show) — ne pas
+      # copier la clé de la stack « a ».
+      - key: APP_KEY
+        sync: false
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: CACHE_STORE
+        value: file
+      - key: SESSION_DRIVER
+        value: file
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
+      - key: SENTRY_TRACES_SAMPLE_RATE
+        value: "0.1"
+      # Paiements / OAuth / mail / firebase : laisser vides au provisioning ;
+      # renseigner au besoin (mêmes clés que render.yaml).
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URL
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: MAIL_MAILER
+        value: resend
+      - key: RESEND_KEY
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        value: noreply@hurkonsan.com
+      - key: MAIL_FROM_NAME
+        value: "Leopardo RH"
+      - key: SUPER_ADMIN_PASSWORD
+        sync: false
+      - key: FORCE_SUPER_ADMIN_PASSWORD_RESET
+        value: "true"
+      - key: ADMIN_DASHBOARD_URL
+        sync: false
+      - key: DEMO_MODE_ENABLED
+        value: "false"
+      # Web client de la stack B (projet Vercel du compte B) — posé ici à la
+      # création, mis à jour à l'onboarding (§ Fronts de DEV_STACK_ROTATION.md).
+      - key: FRONTEND_URL
+        sync: false

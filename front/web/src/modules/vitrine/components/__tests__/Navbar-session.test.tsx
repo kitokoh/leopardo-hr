@@ -31,7 +31,7 @@ describe('Navbar — CTA selon la session (#7492)', () => {
     // Stub minimal : jsdom ne fournit pas `Response` (fetch natif absent).
     mockFetch.mockResolvedValue({ ok: true, status: 200 });
 
-    render(<Navbar isDark={false} onToggleDark={() => undefined} />);
+    render(<Navbar />);
 
     await waitFor(() => {
       expect(ctaHrefs()).toContain('/dashboard');
@@ -49,7 +49,7 @@ describe('Navbar — CTA selon la session (#7492)', () => {
   it('conserve Connexion / Créer un compte pour un visiteur anonyme (401)', async () => {
     mockFetch.mockResolvedValue({ ok: false, status: 401 });
 
-    render(<Navbar isDark={false} onToggleDark={() => undefined} />);
+    render(<Navbar />);
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalled();
@@ -63,7 +63,7 @@ describe('Navbar — CTA selon la session (#7492)', () => {
   it('reste en mode anonyme si la vérification échoue (réseau)', async () => {
     mockFetch.mockRejectedValue(new Error('network down'));
 
-    render(<Navbar isDark={false} onToggleDark={() => undefined} />);
+    render(<Navbar />);
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalled();
