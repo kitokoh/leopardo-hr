@@ -30,7 +30,6 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-REPO="${GITHUB_REPOSITORY:-kitokoh/leopardo-hr}"
 
 TIER=""
 TARGET=""
