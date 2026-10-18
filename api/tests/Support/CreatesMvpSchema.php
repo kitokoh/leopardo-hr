@@ -6655,6 +6655,58 @@ trait CreatesMvpSchema
             });
         }
 
+        // T5.2 (mission Farm OS) -- file d'operations hors ligne + conflits.
+        // Parite avec la migration tenant
+        // 2026_10_18_000700_8705_create_farm_os_offline_sync_tables
+        // (issue #5443 : une table tenant recente doit exister dans la fixture).
+        if (! Schema::hasTable($this->moduleTable('farm_sync_operations'))) {
+            Schema::create($this->moduleTable('farm_sync_operations'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('client_operation_id', 100);
+                $table->string('operation_type', 60);
+                $table->string('payload_hash', 64);
+                $table->json('payload');
+                $table->string('status', 16)->default('pending');
+                $table->unsignedSmallInteger('attempt_count')->default(0);
+                $table->text('last_error')->nullable();
+                $table->string('applied_entity_type', 60)->nullable();
+                $table->unsignedBigInteger('applied_entity_id')->nullable();
+                $table->unsignedBigInteger('device_id')->nullable();
+                $table->unsignedBigInteger('submitted_by')->nullable();
+                $table->timestampTz('occurred_at');
+                $table->timestampTz('applied_at')->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'client_operation_id'], 'farm_sync_operations_client_unique');
+                $table->index(['company_id', 'status'], 'farm_sync_operations_status_index');
+                $table->index(['company_id', 'operation_type'], 'farm_sync_operations_type_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('farm_sync_conflicts'))) {
+            Schema::create($this->moduleTable('farm_sync_conflicts'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_sync_operation_id');
+                $table->string('entity_type', 60);
+                $table->unsignedBigInteger('entity_id')->nullable();
+                $table->string('strategy', 40);
+                $table->json('local_value')->nullable();
+                $table->json('server_value')->nullable();
+                $table->string('resolution', 40)->nullable();
+                $table->unsignedBigInteger('resolved_by')->nullable();
+                $table->timestampTz('resolved_at')->nullable();
+                $table->text('note')->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->index(['company_id', 'farm_sync_operation_id'], 'farm_sync_conflicts_operation_index');
+                $table->index(['company_id', 'resolution'], 'farm_sync_conflicts_resolution_index');
+            });
+        }
+
         // P0-1 (audit FuelStation) -- catalogue de prix serveur. Parite avec la
         // migration tenant 2026_10_16_120000_9001_create_fuel_product_prices_table
         // (issue #5443 : une table tenant recente doit exister dans la fixture,

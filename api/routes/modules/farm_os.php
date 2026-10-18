@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\CropCycleController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmDashboardController;
+use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmAppsController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmEquipmentController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmFinanceController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmHarvestController;
@@ -146,4 +147,25 @@ Route::middleware(['module.farm_os'])
         Route::post('/finance/sale-links', [FarmFinanceController::class, 'storeSaleLink']);
         Route::get('/finance/profitability', [FarmFinanceController::class, 'profitability']);
         Route::get('/finance/profitability-by-campaign', [FarmFinanceController::class, 'profitabilityByCampaign']);
+
+        // ── T5.1 Applications et centre « Mes logiciels » ──
+        // Aucun lien de telechargement n'est fabrique : le catalogue decrit les
+        // outils actives et le moyen d'acces REEL.
+        Route::get('/apps/catalogue', [FarmAppsController::class, 'catalogue']);
+        Route::get('/apps/roles/{role}/tools', [FarmAppsController::class, 'toolsForRole']);
+
+        // ── T5.2 Mode hors ligne ──
+        // Registre FERME d'operations : tout le reste est refuse et conserve.
+        Route::post('/sync/operations', [FarmAppsController::class, 'submitOperations']);
+        Route::get('/sync/status', [FarmAppsController::class, 'syncStatus']);
+        Route::get('/sync/errors', [FarmAppsController::class, 'syncErrors']);
+        Route::get('/sync/conflicts', [FarmAppsController::class, 'syncConflicts']);
+        Route::post('/sync/conflicts/{conflict}/resolve', [FarmAppsController::class, 'resolveConflict']);
+
+        // ── T6.1 Assistant agricole (orchestrateur IA EXISTANT) ──
+        Route::get('/assistant/context', [FarmAppsController::class, 'assistantContext']);
+        Route::get('/assistant/advisor-questions', [FarmAppsController::class, 'advisorQuestions']);
+
+        // ── T6.2 Integrations externes (aucune API payante activee) ──
+        Route::get('/integrations', [FarmAppsController::class, 'integrations']);
     });
