@@ -19,6 +19,98 @@ Le socle est **livré et mergé sur `main`**. Les réserves portent sur le **dur
 
 ---
 
+## 0 bis. Tableau de verdict par critère
+
+Légende : ✅ prêt · ⚠️ à ajuster · ❌ bloquant · ❔ non déterminé.
+
+### BC Identité & Compte unifié
+
+| Critère | Verdict | Preuve |
+|---|---|---|
+| Modèle utilisateur unifié (`users` indépendant du tenant) | ✅ | `api/database/migrations/public/2026_05_02_100001_create_users_and_company_requests_tables.php:20-38` — `users` **sans** `company_id` ; `User.php` n'a aucune colonne tenant |
+| Un humain peut appartenir à **plusieurs** tenants | ✅ | `...create_users_and_company_requests_tables.php:97-110` — `user_employee_links` avec `unique(['user_id','company_id'])` : la clé inclut `company_id`, donc N lignes par user |
+| Un humain peut cumuler **plusieurs rôles** | ⚠️ | `users.personal_statuses` (statuts cumulables : student/employee/entrepreneur) mais les rôles applicatifs sont **par employé** (`employees.role` ∈ manager/employee/ordinary + `manager_role`) : cumul inter-tenant oui, cumul intra-tenant non modélisé |
+| Authentification | ✅ | `api/config/sanctum.php:23` — `expiration` 43200 min, `:29` préfixe `leo_` ; `User` utilise `HasApiTokens` |
+| Multi-appareils / révocation | ✅ | Sanctum (N tokens par user) + `LogoutAction` / `RefreshTokenAction` |
+| Autorisation scopée tenant | ✅ | `Employee` utilise `BelongsToCompany` (`Employee.php:143`) ; fail-closed `BelongsToCompany.php:44-56` |
+| Isolation multi-tenant par colonne | ✅ | `BelongsToCompany` + garde CI `check-tenant-scope-models.sh` + registre canonique `dev-hub/governance/tenant-scope-exceptions.json` |
+| Tests d'isolation inter-tenant | ✅ | 9 suites listées §1.3 (`TenantScopeFailClosedTest`, `CrossTenantValidationTest`, `MultiTenantSharedIsolationTest`…) |
+| Utilisateurs **sans tenant** (client final grand public) | ✅ | `users` n'a pas de `company_id` : un compte grand public existe sans entreprise |
+| Téléphone comme identifiant de 1er rang | ❌ | `users.phone` est `nullable` **sans contrainte unique ni index** (`...:24`) ; l'unicité ne porte que sur `email` (`...:23`) |
+| OTP / SMS | ⚠️ | OTP existe (`LoginCodeController`, code 6 chiffres, 10 min, hashé) mais **canal e-mail uniquement** : `LoginCodeController.php:78` → `Mail::to($email)`. Aucun provider SMS dans `api/config/` |
+| SSO inter-apps | ❌ | `SSO/SSOValidationNotImplementedException` : la validation des assertions SSO **n'est pas implémentée** — `SSOService.php:184` lève l'exception, `SSOController.php:132` renvoie 501 |
+| Frontières de couches testées | ⚠️ | un seul test d'archi (`QueueTenantContextArchitectureTest`) ; pas de Deptrac/PHPArkitect |
+
+### BC Paiements / Wallet
+
+| Critère | Verdict | Preuve |
+|---|---|---|
+| Wallet, solde dérivé du ledger | ✅ | `Wallet.php:65` `balance()` = `SUM(CASE direction…)` ; doc `:18` « jamais stocké » |
+| Unicité `(owner_type, owner_id, devise)` | ✅ | migration tenant `...000001_8680:43` `unique(['company_id','owner_type','owner_id','currency'])` |
+| `owner_type` couvre platform/tenant/client | ✅ | `WalletOwnerType.php:13-16` |
+| Ledger partie double (2 écritures liées) | ✅ | `PaymentLedgerEntry` + `transfer_group_id`, test « double entry posting creates exactly two linked entries » |
+| Immuabilité au niveau modèle | ✅ | `PaymentLedgerEntry.php:71-82` — `saving`/`deleting` lèvent `ImmutableLedgerEntryException` |
+| Correction par contre-passation | ✅ | `LedgerService.php:90` `reverse()`, `PaymentService.php:163` (refund) |
+| Machine à états transaction | ✅ | test « transaction status machine rejects forbidden transitions » ; `InvalidTransactionTransitionException` |
+| `idempotency_key` unique **en base** | ✅ | migration `...000001_8680:74` `unique(['company_id','idempotency_key'])` |
+| Verrou transactionnel | ✅ | `PaymentService.php:372` `lockForUpdate()` + `DB::transaction` (`:137`, `:197`) ; test concurrence |
+| Transfert interne sans instance | ✅ | test « internal transfer has no provider instance » |
+| Secrets chiffrés at-rest | ✅ | `PaymentProviderInstance.php:68` `'config' => 'encrypted:array'` ; `PaymentWebhookEndpoint.php:53` `'secret_signature' => 'encrypted'` |
+| Secrets masqués côté API | ✅ | `maskedConfig()` ; `storeWebhookEndpoint` ne renvoie **pas** `secret_signature` dans `data` (`PlatformPaymentProviderController.php:313-323`) |
+| `PaymentProviderType` en lecture seule | ✅ | aucun endpoint d'écriture sous `/platform/payments/provider-types` (`api/routes/api.php`) |
+| `PaymentProviderInstance` : tenant_id nullable + priorité | ✅ | `company_id` nullable (NULL = globale), `priority` + index `['status','priority']` |
+| `FeeRule` cascade de spécificité | ✅ | `FeeRuleResolver` : filtres tenant/instance, tri `specificity()` puis `priority`, `null` → zéro |
+| `WebhookEndpoint` token unique | ✅ | migration `...000002_8685:95` `unique('payment_webhook_endpoints_token_unique')` |
+| Routage webhook **par token** | ✅ | `PaymentWebhookController.php:31-36` ; signature HMAC `hash_equals` `:49` |
+| Rejeu de webhook = no-op | ⚠️ | le contrôleur ne mute **aucun** état (il appelle le rail puis renvoie le statut) : `PaymentWebhookController.php:74-82`. Le no-op est donc **trivialement vrai**, mais aucun chemin « webhook → transition de transaction » n'est implémenté : la garantie annoncée n'est pas exercée par un test |
+| `ProviderResolver` (pays/devise/tenant/priorité) | ✅ | test « market switch without code change », « inactive instance is never resolved » |
+| `PaymentRailInterface` stable | ✅ | `code`, `initierCashIn`, `initierCashOut`, `traiterWebhook`, `verifierStatut` |
+| Simulateur configurable, même chemin | ✅ | `SimulatorRail.php:25-28` (`success_rate`, `webhook_success_rate`, `delay_ms`, `fail_reason`) ; aucun `if simulateur` dans le ledger |
+| Réconciliation écart | ✅ | `PaymentReconciliation` + `ReconciliationService` (§2.1) |
+| API interne service-à-service | ✅ | `paiements.php:35-41` + `EnsurePaymentServiceToken` (503 si non configuré, 401 sinon, `hash_equals`) |
+| Rate limiting | ✅ | `throttle:api` (interne + tenant), `throttle:webhooks-inbound` (`AppServiceProvider.php:315`) |
+| OpenAPI versionné | ✅ | `api/openapi.yaml` — 9 chemins BC-38 ; workflow OpenAPI CI `success` sur `407cef0d5` |
+| Superadmin : instances/journal/réconciliation | ✅ | `api/routes/api.php:645-663`, protégé par `auth:super_admin_api` + `platform.permission:companies.*` |
+| **Policies explicites BC-38** | ❌ | `AuthServiceProvider.php` : aucune entrée `Wallet`/`PaymentTransaction`/`PaymentProviderInstance`. L'autorisation repose uniquement sur le middleware + le scope — **signalé en tête (§0 ter)** |
+| Tenant : solde/historique/cash-out/fees | ✅ | `paiements.php:53-59` sous `auth:sanctum` + `tenant` |
+| Scoping inter-tenant tenant | ✅ | `BelongsToCompany` fail-closed sur la surface API tenant |
+| Tests d'accès croisé **Paiements** | ❌ | `api/tests/Feature/Paiements/` : 3 fichiers, 22 tests, **aucun** test Superadmin↔Tenant ni refuse d'accès croisé |
+| Migrations indexées | ✅ | index `['company_id','status']`, `['company_id','created_at']`, `['status','priority']`, `['provider_instance_id','status']` |
+| Seeders simulateur | ✅ | `PaymentSimulatorSeeder.php:32-44` |
+| ADR | ✅ | `docs/adr/BC-38-001…004` |
+| Écran admin Paiements | ❌ | `front/admin-dashboard/src/views/settings/PaymentGatewaysView.vue` = **BC-21 Billing** (`/billing/gateways`, gateways Stripe/Chargily). Aucun appel `paiements/` dans `front/admin-dashboard/src/` : la surface Superadmin BC-38 est **API-only** |
+| Événements de domaine BC-38 | ❌ | aucun `event(`/`dispatch(` dans `api/app/Modules/Paiements/` ; `event-catalogue.yaml` sans entrée BC-38 |
+
+### Transversal
+
+| Critère | Verdict | Preuve |
+|---|---|---|
+| Pas de shim `class_alias` hérité | ✅ | `grep -rn "class_alias" api/app/` → **0 résultat** |
+| Frontières de BC outillées | ⚠️ | 6 gardes shell (`check-layer-purity.sh`, `check-application-layer-placement.sh`, `check-architecture-docs-parity.sh`…) + 84 workflows ; **pas** de Deptrac/PHPArkitect |
+| Ordre Paiements → Identité non cyclique | ✅ | BC-38 dépend de `Core/Auth` + `Core/Tenant`, jamais l'inverse |
+| Communication inter-BC par événements | ❌ | aucun catalogue BC-38 ⇒ Paie/Cagnottes/VTC/Boutique ne peuvent pas réagir |
+| Structure BC décrite et à jour | ⚠️ | `docs/architecture/BOUNDED-CONTEXT-REGISTRY.md` existe mais ne mentionne pas BC-38 |
+| Homogénéité monétaire | ⚠️ | 246 colonnes `decimal(...)` dans les migrations (dont 96 sur des montants) vs `bigint` en BC-38 ; **aucun montant en `float`** ; mais **675** usages de `(float)`/`floatval` dans `api/app/` |
+| CI : workflows applicatifs sur le HEAD | ✅ | voir §3.2 (8/8 `success` sauf Backend Coverage Gate) |
+| CI : attestation de couverture | ❌ | `Backend Coverage Gate` = **`cancelled`, 0 job** sur `4ff4d84e5` (39124310794) **et** sur `9c78677cf` (39130726491) |
+| CI : exploitation | ❌ | 4 workflows d'exploitation en échec préexistant — `startup_failure` du keepalive sur **6 SHA consécutifs** |
+| Protocole « 47 critères API » | ❔ | **non déterminé** : aucune occurrence dans `docs/` ni `dev-hub/` |
+| Versionnement d'API | ✅ | `Route::prefix('v1')` (`api/routes/api.php:109`) |
+
+---
+
+## 0 ter. Sécurité — signaux à traiter en priorité
+
+**Aucune fuite inter-tenant, aucun secret en clair, aucun endpoint non protégé n'a été trouvé.** Trois réserves classées par gravité :
+
+1. **Élevée — pas de politiques d'autorisation dédiées au BC-38.** `AuthServiceProvider.php` n'enregistre aucune `Gate::policy` pour `Wallet`, `PaymentTransaction`, `PaymentProviderInstance`. La protection effective repose sur (a) le middleware `tenant` fail-closed, (b) le scope `BelongsToCompany`, (c) les permissions plateforme `companies.view/manage` — qui sont **celles de la gestion d'entreprise**, pas du paiement. Conséquence : tout rôle plateforme disposant de `companies.view` (support, marketing) peut **lire** le journal des transactions et les rapprochements de **tous** les tenants. Aucun test ne borne ce périmètre. → issue **#8711**.
+2. **Élevée — webhooks factices.** Le contrôleur ne mute aucun état : un émetteur compromis qui rejoue un payload signé obtient `200 ok` sans effet, mais **un fournisseur réel ne pourra pas faire progresser une transaction** (`pending` → `succeeded`) sans un chemin dédié. À traiter **avant** toute intégration réelle. → couvert par **#8712** (événements) et à instruire dans le lot d'intégration.
+3. **Moyenne — téléphone non unique.** `users.phone` n'est ni unique ni indexé (`...create_users_and_company_requests_tables.php:24`). Identifiant de premier rang impossible en l'état sans collision. → décision produit §6.
+
+Points **vérifiés sains** : `secret_signature` et `config` chiffrés et **jamais** renvoyés par l'API de lecture ; token de service comparé en `hash_equals` et **fail-closed** (503 si non configuré) ; webhook en 404 sur token inconnu / endpoint inactif et 400 sur signature absente ou invalide ; routes Superadmin derrière `auth:super_admin_api`.
+
+---
+
 ## 1. BC Identité & Compte unifié
 
 ### 1.1 Structure DDD — le BC Identité vit dans `Core`, pas dans `Modules`
@@ -182,6 +274,61 @@ Chaque issue contient le constat, le risque, les critères d'acceptation vérifi
 3. **P-3 / P-4** — ADR de pont comptable Payroll ↔ Paiements + politique de conversion monétaire.
 4. **T-1 / T-2** — Remise au vert de la CI d'exploitation (hors périmètre BC, à planifier séparément).
 5. **I-1 / I-3** — Durcissement documentaire et tests d'architecture du BC Identité.
+
+---
+
+## 6. Bloquants classés par criticité
+
+| Criticité | Constat | Écart | Issue |
+|---|---|---|---|
+| **Élevée** | Aucune Policy enregistrée pour `Wallet` / `PaymentTransaction` / `PaymentProviderInstance` : les permissions plateforme utilisées (`companies.view`/`companies.manage`) sont celles de la gestion d'entreprise, donc un rôle `support` ou `marketing` peut lire le journal des transactions de **tous** les tenants. | P-1 | #8711 |
+| **Élevée** | Aucun événement de domaine BC-38 : Paie, Cagnottes, VTC et Boutique ne peuvent pas réagir à une transaction réussie. Bloque l'intégration inter-BC annoncée. | P-2 | #8712 |
+| **Élevée** | Aucun chemin « webhook → transition de transaction ». Le contrôleur se contente d'appeler le rail et de renvoyer son statut (`PaymentWebhookController.php:74-82`) : un fournisseur réel ne peut pas faire passer une transaction de `pending` à `succeeded`. | P-2 / intégration | #8712 |
+| **Moyenne** | Deux journaux comptables coexistent sans ADR de pont (`ledger_entries` Payroll en `decimal(12,2)` avec `balance_after` stocké vs `payment_ledger_entries` en `bigint`, solde dérivé). | P-3 | #8713 |
+| **Moyenne** | 246 colonnes `decimal(...)` (dont 96 sur des montants) et **675** usages de `(float)`/`floatval` dans `api/app/`, contre `bigint` en BC-38 : toute intégration exige une conversion explicite. | P-4 | #8714 |
+| **Moyenne** | Aucun test d'accès croisé inter-tenant sur les surfaces Paiements (22 tests, tous domaine/idempotence/resolver). | P-5 | #8715 |
+| **Moyenne** | `Backend Coverage Gate` **annulé sans job** (`cancelled`, 0 job) sur `4ff4d84e5` **et** `9c78677cf` : la couverture n'est jamais attestée. | T-1 | #8718 |
+| **Moyenne** | 4 workflows d'exploitation en échec préexistant ; `Dev Keepalive & Watchdog` en `startup_failure` sur 6 SHA consécutifs. | T-2 | #8719 |
+| **Moyenne** | Téléphone non unique et non indexé ⇒ impossible comme identifiant de premier rang. | nouveau | *à ouvrir* |
+| **Moyenne** | SSO inter-apps **non implémenté** : `SSOService.php:184` lève `SSOValidationNotImplementedException`, `SSOController.php:132` renvoie 501. | nouveau | *à ouvrir* |
+| **Faible** | OTP e-mail uniquement (`LoginCodeController.php:78`) — aucun canal SMS. | nouveau | *à ouvrir* |
+| **Faible** | Surface Superadmin BC-38 **API-only** : aucun écran dans `front/admin-dashboard/src/` (seul `PaymentGatewaysView.vue` existe, et il sert BC-21 Billing). | nouveau | *à ouvrir* |
+| **Faible** | Cumul de rôles **intra-tenant** non modélisé (`employees.role` unique par employé). | nouveau | *à ouvrir* |
+| **Faible** | « 47 critères API » : **non déterminé** — introuvable dans `docs/` et `dev-hub/`. | T-3 | *à clarifier* |
+
+> Les 9 issues #8711–#8719 couvrent les écarts **du rapport initial**. Les cinq constats marqués *à ouvrir* ont été découverts lors de la complétion du tableau de verdict et ne sont pas encore tracés.
+
+---
+
+## 7. Risques de migration de données en production
+
+Aucun des deux BC n'exige aujourd'hui une migration destructive : **les deux socles sont déjà en place et additifs**. Les risques portent sur les évolutions à venir.
+
+| Risque | Déclencheur | Réduction |
+|---|---|---|
+| **Téléphone comme identifiant** — ajouter `unique(phone)` échouera si des doublons existent | Lot « téléphone de 1er rang » | 1) `SELECT phone, COUNT(*) … HAVING COUNT(*)>1` en amont ; 2) migration **additive** (`ADD COLUMN phone_normalized`, backfill, index `UNIQUE … WHERE phone_normalized IS NOT NULL`) ; 3) contrainte posée **après** nettoyage. Jamais de `ALTER … SET NOT NULL` sur une table peuplée sans backfill préalable. |
+| **Dédoublonnage d'identités** — un même humain peut déjà exister en deux `users` (email vs Google) | Fusion de comptes pour l'objectif « un compte » | Table de correspondance `user_merges (source_id, target_id, merged_at)` en **double écriture** ; réaffectation des `user_employee_links` puis des `payment_wallets.owner_id` par batches ; conservation de la ligne source en `status='merged'` pour rollback. |
+| **`owner_id` non contraint** — `payment_wallets.owner_id` est un `string(64)` **sans FK** (`...000001_8680:34-35`) : une suppression d'utilisateur ne casse rien mais laisse des wallets orphelins | Nettoyage RGPD / suppression de compte | Ne **pas** ajouter de FK polymorphe. Ajouter un job de contrôle « wallet orphelin » + une commande de gel (`status`), et traiter la suppression comme une **anonymisation** (`owner_id` conservé, données PII effacées) pour ne pas casser le ledger. |
+| **Contre-passation sur données historiques** — toute correction d'un solde erroné doit passer par un groupe inverse | Découverte d'un écart de réconciliation | Ne **jamais** `UPDATE payment_ledger_entries` (immuabilité au niveau modèle le refuse). Script de contre-passation idempotent, exécuté en `DB::transaction`, avec `reference` explicite et issue de traçabilité. |
+| **Unification monétaire `decimal` → `bigint`** | Lot P-4 | Migration **additive** : nouvelle colonne `amount_minor`, double écriture pendant une période, bascule de lecture derrière un flag, puis suppression de l'ancienne colonne **uniquement** après validation par la réconciliation. Rollback = flag, pas de migration inverse. |
+| **Ajout de FK sur `user_employee_links.employee_id`** — colonne `unsignedBigInteger` **sans FK** (`...:102`) | Durcissement | Vérifier l'absence d'orphelins, puis `ADD CONSTRAINT … NOT VALID` (Postgres) avant `VALIDATE CONSTRAINT` — pas de verrou long sur table chaude. |
+
+**Règle générale retenue** : migrations **additives** d'abord, backfill séparé, contrainte posée en dernier ; double écriture quand deux sources de vérité coexistent temporairement ; rollback par **flag applicatif**, jamais par migration inverse sur des données déjà écrites.
+
+---
+
+## 8. Décisions à trancher par le propriétaire produit
+
+Ces points ne peuvent pas être tranchés par l'ingénierie seule — ils engagent le produit :
+
+1. **Le téléphone est-il un identifiant de premier rang ?** Si oui, cela implique : normalisation E.164, unicité, migration de dédoublonnage, et un provider SMS (coût récurrent + conformité). Si non, le téléphone reste un attribut de contact et l'objectif « superapp grand public » reposera sur l'e-mail.
+2. **Quel canal OTP pour les clients finaux ?** SMS (couverture réelle, coût) ou e-mail (gratuit, friction) — ou les deux avec repli ?
+3. **Le SSO inter-apps est-il requis pour le lancement ?** Aujourd'hui les callbacks renvoient **501**. Soit on l'implémente (OIDC complet, gestion des claims, révocation), soit on le retire du périmètre annoncé pour ne pas laisser croire qu'il fonctionne.
+4. **Un humain doit-il pouvoir cumuler plusieurs rôles dans un même tenant** (ex. manager *et* client final de la même entreprise) ? Si oui, `employees.role` doit devenir une table de rôles ; si non, le modèle actuel suffit et il faut le documenter comme limite assumée.
+5. **Quelle autorité pour les écrans Paiements côté Superadmin ?** Aujourd'hui un rôle `support` peut lire les transactions de tous les tenants via `companies.view`. Faut-il une permission dédiée `payments.view` / `payments.manage` ? (Recommandé : oui — cf. #8711.)
+6. **Payroll doit-il alimenter le ledger BC-38, ou rester un journal séparé ?** Deux journaux coexistent. Si l'objectif est « un seul solde employé », il faut un pont explicite et une date de bascule ; sinon, il faut l'écrire comme décision assumée (#8713).
+7. **Le webhook doit-il faire progresser une transaction ?** Aujourd'hui il ne mute rien. Avant la première intégration réelle, il faut trancher le contrat : quels événements sont acceptés, dans quel ordre, et comment un événement **hors séquence** est traité (ignoré, mis en quarantaine, ou rejoué).
+8. **Politique multi-devise :** les montants sont en plus petite unité, mais aucune liste de devises supportées n'est figée (`TenantPaymentController` retombe sur `$company->currency ?? 'DZD'`). Faut-il une allowlist par instance, et que faire d'une devise non supportée (rejet 422 ou conversion) ?
 
 ---
 
