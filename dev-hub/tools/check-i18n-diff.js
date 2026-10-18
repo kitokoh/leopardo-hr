@@ -226,7 +226,33 @@ function isTechnicalToken(value) {
   // Sélecteurs CSS et media queries (mission vitrine, 2026-10-16) : constantes
   // de style, jamais du texte utilisateur — même famille que #7482/#8000.
   if (isCssSelectorOrMediaQuery(trimmed)) return true;
+  // Directives d'en-tete HTTP (issue #8700).
+  if (isHttpHeaderDirective(trimmed)) return true;
   return /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|Bearer\s|https?:\/\/|wss?:\/\/|https?:|wss?:|api\/|\/api|[A-Z_]{2,})$/.test(trimmed);
+}
+
+// Valeurs d'en-tete HTTP (route handlers Next.js) : directives de protocole,
+// jamais du texte utilisateur. Constat #8700 : la route `/api/status` pose
+// `'Cache-Control': 'no-store, max-age=0'` pour interdire la mise en cache d'un
+// statut qui doit refleter l'instant present -- le motif a virgule l'a fait
+// passer pour une phrase utilisateur. Meme famille que #7482/#8000 : une
+// valeur qui correspond a une directive HTTP connue n'est pas traduisible.
+const httpDirectivePattern = /^[a-z][a-z0-9-]*(?:=[^,\s]+)?(?:\s*,\s*[a-z][a-z0-9-]*(?:=[^,\s]+)?)*$/i;
+const httpDirectiveNames = new Set([
+  'no-store', 'no-cache', 'no-transform', 'must-revalidate', 'proxy-revalidate',
+  'public', 'private', 'immutable', 'max-age', 's-maxage', 'stale-while-revalidate',
+  'stale-if-error', 'max-stale', 'min-fresh', 'only-if-cached', 'no-transform',
+]);
+
+function isHttpHeaderDirective(value) {
+  const trimmed = value.trim();
+  if (!trimmed || !httpDirectivePattern.test(trimmed)) return false;
+  // Au moins une directive doit etre un nom de directive HTTP connu : une
+  // enumeration de mots quelconques separes par des virgules reste flaggee.
+  return trimmed
+    .split(',')
+    .map((part) => part.trim().split('=')[0].toLowerCase())
+    .some((name) => httpDirectiveNames.has(name));
 }
 
 function isCodeExpression(value) {
