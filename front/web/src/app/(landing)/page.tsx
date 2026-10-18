@@ -57,6 +57,9 @@ export default function LandingPage() {
           headline={`${copy.hero.titleTop} ${copy.hero.titleBottom}`}
           animated
           layout="stage"
+          // #8703 — le petit texte secondaire rotatif, sous la phrase
+          // principale : plusieurs phrases se succèdent au même endroit.
+          taglines={copy.hero.rotatingTaglines}
           // La constellation interactive (modules cliquables, #8390) est le
           // visuel plein cadre ; pas de seconde scène estompée derrière elle.
           backgroundScene={false}

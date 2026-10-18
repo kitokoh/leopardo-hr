@@ -71,11 +71,11 @@ export function HeroScene3DPanel() {
       {/* La scène domine (86 %) et le CTA vient juste sous elle : à 100 % la
           constellation poussait le bouton tout en bas (un « no man's land »
           entre les deux, relevé en audit). */}
-      {/* `tabIndex={-1}` : cible de restitution du focus quand la fiche a été
-          ouverte à la souris (l'étoile est un pixel de canvas, sans nœud
-          focusable). Sans cela, le focus retombait sur <body> — défaut mesuré
-          en navigateur. Ouverte au clavier, la fiche rend le focus à
-          l'étiquette-bouton d'origine, qui est un vrai contrôle. */}
+      {/* #8701 — `tabIndex={-1}` : cible de restitution du focus quand la
+          fiche a été ouverte à la souris (l'étoile est un pixel de canvas,
+          sans nœud focusable). Sans cela, le focus retombait sur <body> —
+          défaut mesuré en navigateur. Ouverte au clavier, la fiche rend le
+          focus à l'étiquette-bouton d'origine, qui est un vrai contrôle. */}
       <div ref={sceneRef} tabIndex={-1} className="relative min-h-0 flex-[0_0_86%] outline-none">
         <HeroScene3D onSelectModule={onSelectModule} moduleLabels={moduleLabels} />
       </div>

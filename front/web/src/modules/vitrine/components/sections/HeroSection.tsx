@@ -7,6 +7,7 @@ import { useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { withLocaleHref } from '../../lib/locale-href';
 import { GeoBackdrop } from '../hero/GeoBackdrop';
+import { HeroRotatingTagline } from '../hero/HeroRotatingTagline';
 import { HeroScene3D } from '../hero/HeroScene3D';
 
 export interface HeroSectionProps {
@@ -48,6 +49,12 @@ export interface HeroSectionProps {
    *    la page d'accueil : premier écran = la phrase + la 3D + les CTA.
    */
   layout?: 'centered' | 'split' | 'stage';
+  /**
+   * #8703 — petites phrases secondaires qui se succèdent SOUS le titre
+   * principal, au même endroit (layout `stage` uniquement) : l'une s'efface,
+   * la suivante prend sa place. Absent = rien ne change pour les autres pages.
+   */
+  taglines?: string[];
   /** Optional inline quick-trial form rendered below CTAs (e.g. QuickTrialEmailForm) */
   quickTrialForm?: React.ReactNode;
   /** #8068 — ligne de réassurance sous les CTA (« Gratuit · Sans CB · … »). */
@@ -79,6 +86,7 @@ export function HeroSection({
   stats,
   animated = true,
   layout = 'centered',
+  taglines,
   quickTrialForm,
   ctaReassurance,
   backgroundScene = true,
@@ -155,6 +163,20 @@ export function HeroSection({
                 {headline}
               </span>
             </motion.h1>
+            {/* #8703 — le petit texte secondaire ROTATIF vit dans le même
+                flux que le titre (jamais de calque absolu indépendant — leçon
+                « rupture de profondeur » #8697) : plusieurs phrases se
+                succèdent au même endroit, sous la phrase principale. */}
+            {taglines && taglines.length > 0 && (
+              <motion.div
+                initial={animated ? { y: 16 } : {}}
+                animate={animated ? { y: 0 } : {}}
+                transition={{ duration: 0.9, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="relative"
+              >
+                <HeroRotatingTagline phrases={taglines} />
+              </motion.div>
+            )}
           </div>
 
           {/* Cartes en orbite — dans le flux, sous le titre. La marge haute
