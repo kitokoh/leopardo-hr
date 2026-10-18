@@ -255,7 +255,10 @@ export function HeroBusinessOS3D({
     host.appendChild(renderer.domElement);
 
     const scene = new Scene();
-    const camera = new PerspectiveCamera(42, 1, 0.1, 60);
+    // Passe Fondateur (#8704) — champ rétréci (42° → 39°) : la constellation
+    // gagne ~8 % de présence à cadre égal — retour propriétaire : elle doit
+    // DOMINER la première page, pas survivre au fond.
+    const camera = new PerspectiveCamera(39, 1, 0.1, 60);
     camera.position.set(0, 0.4, 10.8);
     camera.lookAt(0, 0, 0);
 
@@ -272,10 +275,12 @@ export function HeroBusinessOS3D({
     // constellation descend d'un demi-monde pour que le noyau (la grosse
     // gemme) ne croise jamais le texte — seuls les petits modules en orbite
     // le frôlent, ce qui fait tout le charme de la composition.
-    // Vague 6 — la scène descend franchement sous le titre : le noyau et les
-    // anneaux occupent le tiers médian, le tiers haut appartient à la phrase.
-    // C'est ce qui la rend lisible SANS la sortir de sous la constellation.
-    world.position.y = -0.95;
+    // Passe Fondateur (#8704) — la scène vit désormais DANS LE FLUX, entre
+    // le titre et le CTA : plus aucune raison de la descendre (le −0.95 de la
+    // vague 6 datait de l'époque où elle était la toile de fond absolue de
+    // tout le héros — elle finissait cachée sous le CTA, mesuré en
+    // navigateur). Elle se centre dans son cadre pour le DOMINER.
+    world.position.y = -0.15;
     scene.add(world);
 
     // ── Noyau : la plateforme (gemme à facettes + halo) ────────────────
