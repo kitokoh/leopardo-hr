@@ -6035,6 +6035,9 @@ trait CreatesMvpSchema
                 $table->string('mime_type', 120)->nullable();
                 $table->string('extension', 12)->nullable();
                 $table->unsignedBigInteger('size')->nullable();
+                // #8675 — nom d'origine conserve pour proposer un nom lisible au
+                // telechargement (migration tenant 2026_10_18_120000_8675).
+                $table->string('original_name', 180)->nullable();
                 $table->string('disk', 40)->nullable();
                 $table->string('path', 512)->nullable();
                 $table->string('preview_path', 512)->nullable();

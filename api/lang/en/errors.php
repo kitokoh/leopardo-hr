@@ -316,6 +316,7 @@ return [
     // #7268 — Onboarding: localized step messages (no more hardcoded literals)
     'ONBOARDING_STEP_REQUIRED' => 'This step is required and cannot be skipped.',
     'ONBOARDING_STEP_NOT_DONE' => 'This step cannot be marked complete: no matching action has been recorded yet.',
+    'ONBOARDING_STEP_NOT_FOUND' => 'This step does not exist for your workspace.',
     'COMPANY_CONTEXT_REQUIRED' => 'A company context is required.',
     // #7322 — Client self-activation of a horizontal module.
     'SOLO_TEAM_TOOL_NOT_AVAILABLE' => 'Team tool outside an independent (solo) profile scope: :module.',
