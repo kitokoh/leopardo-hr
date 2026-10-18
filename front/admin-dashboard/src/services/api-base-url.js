@@ -66,19 +66,16 @@ export function resolveApiBaseUrl() {
     // Diagnostic technique destiné au développeur, PAS de la copie d'UI :
     // volontairement hors catalogues i18n, préfixé `[admin-dashboard]` comme
     // le reconnaît la garde PA2-I18N-014 (cf. #7842).
+    // Chaque message porte l'étiquette `[admin-dashboard]` en tête : c'est la
+    // convention du dépôt reconnue par la garde i18n (#7482) pour les
+    // diagnostics destinés aux développeurs, jamais rendus dans l'UI.
     throw new Error(
-      "[admin-dashboard] Aucune URL d'API configurée dans ce build de production. " +
-        'Définissez VITE_API_PROXY_BASE_URL (recommandé : URL du proxy du front web, ' +
-        'ex. https://<web>/api/v1) pour que la cible reste lue au runtime, ou ' +
-        "VITE_API_URL pour un appel direct. Le repli silencieux vers l'API dev " +
-        'onrender.com a été retiré (#7842).',
+      "[admin-dashboard] Aucune URL d'API configurée dans ce build de production — définissez VITE_API_PROXY_BASE_URL (recommandé : URL du proxy du front web, ex. https://<web>/api/v1) ou VITE_API_URL pour un appel direct. Le repli silencieux vers l'API dev onrender.com a été retiré (#7842).",
     )
   }
 
   console.warn(
-    '[admin-dashboard] Ni VITE_API_PROXY_BASE_URL ni VITE_API_URL ne sont définies — ' +
-      `repli sur le backend local ${DEV_FALLBACK_API_BASE_URL} (dev/test uniquement, ` +
-      'interdit en production, #7842/#7963/#8707).',
+    `[admin-dashboard] Ni VITE_API_PROXY_BASE_URL ni VITE_API_URL ne sont définies — repli sur le backend local ${DEV_FALLBACK_API_BASE_URL} (dev/test uniquement, interdit en production, #7842/#7963/#8707).`,
   )
   return { baseURL: DEV_FALLBACK_API_BASE_URL, mode: 'dev-fallback' }
 }
@@ -96,10 +93,6 @@ export function assertProductionInvariant(resolved) {
   if (import.meta.env.VITE_ALLOW_DIRECT_API_IN_PROD === 'true') return
 
   throw new Error(
-    "[admin-dashboard] Build de production avec un appel DIRECT à l'API " +
-      `(${resolved.baseURL}). Cela fige l'URL d'un fournisseur dans le bundle : ` +
-      'une bascule de stack exigera un rebuild. Utilisez VITE_API_PROXY_BASE_URL ' +
-      "(URL du proxy du front web) pour que la cible reste lue au runtime, ou " +
-      "posez VITE_ALLOW_DIRECT_API_IN_PROD=true pour l'assumer explicitement (#8707).",
+    `[admin-dashboard] Build de production avec un appel DIRECT à l'API (${resolved.baseURL}) — cela fige l'URL d'un fournisseur dans le bundle, donc une bascule de stack exigera un rebuild. Utilisez VITE_API_PROXY_BASE_URL (URL du proxy du front web) pour que la cible reste lue au runtime, ou posez VITE_ALLOW_DIRECT_API_IN_PROD=true pour l'assumer explicitement (#8707).`,
   )
 }

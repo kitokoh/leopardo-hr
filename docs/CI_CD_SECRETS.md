@@ -203,6 +203,7 @@ le retard de déploiement doit être visible. Runbook : `docs/ops/travel-web-ver
 | Variable | Used by | Purpose | Default if unset |
 |---|---|---|---|
 | `DEV_API_BASE_URL` | `deploy-main.yml`, `deploy-web-prod`… (14 workflows) | Base URL de l'API du tier dev/continu. ⚠️ **Dette de nommage** : elle est aussi lue par `deploy-prod.yml` comme référence de comparaison | URL dev codée en dur dans certains workflows |
+| `DEV_API_PROXY_BASE_URL` | `deploy-admin-dashboard.yml` | **URL du proxy STABLE du front web dev** injectée comme `VITE_API_PROXY_BASE_URL` dans le build du dashboard admin (#8707). Le dashboard appelle ce proxy au lieu d'une URL Render brute : la cible d'API est choisie au runtime (`API_PROXY_TARGET` > `BACKEND_API_URL` > `NEXT_PUBLIC_API_URL`), donc une bascule de stack ne demande plus aucun rebuild du front. Variable optionnelle : à défaut, le workflow retombe sur `https://gestionemployer-backend.vercel.app/api/v1` | Changer cette valeur n'a de sens que si le proxy lui-même déménage — pour changer d'API, modifier `API_PROXY_TARGET` côté Vercel |
 | `DEV_WEB_URL` / `DEV_ADMIN_URL` | `launch-observability-smoke.yml`, `e2e-staging.yml`, `admin-pages-deploy-guard.yml` | URLs du portail et de l'admin du tier dev pour les sondes | Valeurs codées en dur |
 | `PROD_API_BASE_URL` | `desktop-distribute.yml` | Base URL de l'API prod pour les builds desktop | — |
 | `PROD_WEB_PROD_URL` / `PROD_ADMIN_PROD_URL` / `PROD_RENDER_SERVICE_URL` | `deploy-prod.yml` | URLs de contrôle post-déploiement (vitrine, admin, service Render) | — |
