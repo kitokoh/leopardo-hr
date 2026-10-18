@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "reason": "False positives Redocly: Laravel disambiguates these routes with numeric constraints or a deprecated alias.",
+  "pairs": [
+    {
+      "paths": ["/attendance/geo-sessions/{id}", "/attendance/{attendanceLog}/punch-photo"],
+      "constraint": "geo-sessions/{id} uses whereNumber(id); punch-photo alias uses whereNumber(attendanceLog)."
+    },
+    {
+      "paths": ["/delivery/deliveries/{delivery}/tracking-link", "/delivery/deliveries/routes/{route}"],
+      "constraint": "Both route identifiers use whereNumber(); the static routes segment is not a delivery identifier."
+    },
+    {
+      "paths": ["/webhooks/fundraising/{provider}", "/webhooks/{webhookEndpoint}/dead-letters"],
+      "constraint": "fundraising provider is a provider slug; webhookEndpoint is numeric in the admin route."
+    },
+    {
+      "paths": ["/webhooks/fundraising/{provider}", "/webhooks/{webhookEndpoint}/test"],
+      "constraint": "fundraising provider is a provider slug; webhookEndpoint is numeric in the admin route."
+    },
+    {
+      "paths": ["/accounting/documents/{document}/checkout", "/accounting/documents/shared/{token}"],
+      "constraint": "document uses whereNumber(); shared token is a non-numeric public token."
+    },
+    {
+      "paths": ["/accounting/documents/shared/{token}", "/accounting/documents/{document}/journal"],
+      "constraint": "document uses whereNumber(); shared token is a non-numeric public token."
+    },
+    {
+      "paths": ["/attendance/{attendanceLog}/punch-photo", "/attendance/day-closures/{id}"],
+      "constraint": "day-closures/{id} uses whereNumber(); punch-photo is a deprecated numeric alias."
+    }
+  ]
+}
