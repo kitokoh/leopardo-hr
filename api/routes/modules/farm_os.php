@@ -19,6 +19,7 @@ declare(strict_types=1);
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\CropCycleController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmDashboardController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmEquipmentController;
+use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmHarvestController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmLivestockController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmInputStockController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmOperationController;
@@ -117,4 +118,17 @@ Route::middleware(['module.farm_os'])
         Route::get('/livestock/animals', [FarmLivestockController::class, 'indexAnimals']);
         Route::post('/livestock/animals', [FarmLivestockController::class, 'storeAnimal']);
         Route::get('/livestock/summary', [FarmLivestockController::class, 'summary']);
+
+        // ── T3.2 Recoltes, entreposage et tracabilite ──
+        // La quantite recoltee est FIGEE a la creation du lot : aucun PUT ne
+        // permet de la modifier. La quantite restante decoule du journal des
+        // mouvements. Une vente doit referencer un document du service de ventes
+        // EXISTANT (sale_document_id) : Farm OS ne cree aucun document commercial.
+        Route::get('/harvests/locations', [FarmHarvestController::class, 'indexLocations']);
+        Route::post('/harvests/locations', [FarmHarvestController::class, 'storeLocation']);
+        Route::get('/harvests/lots', [FarmHarvestController::class, 'indexLots']);
+        Route::post('/harvests/lots', [FarmHarvestController::class, 'storeLot']);
+        Route::get('/harvests/lots/{lot}', [FarmHarvestController::class, 'showLot']);
+        Route::post('/harvests/lots/{lot}/movements', [FarmHarvestController::class, 'recordMovement']);
+        Route::get('/harvests/summary', [FarmHarvestController::class, 'summary']);
     });

@@ -6482,6 +6482,88 @@ trait CreatesMvpSchema
             });
         }
 
+        // Mission Farm OS (BC-37@@FARM@@) -- T3.2 recoltes / entreposage /
+        // tracabilite. Miroir de la migration tenant
+        // 2026_10_18_000500_8703_create_farm_os_harvest_tables.php (issue #5443).
+        if (! Schema::hasTable($this->moduleTable('farm_storage_locations'))) {
+            Schema::create($this->moduleTable('farm_storage_locations'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_site_id')->nullable();
+                $table->string('name', 160);
+                $table->string('reference', 60)->nullable();
+                $table->string('location_type', 32)->default('other');
+                $table->decimal('capacity', 14, 3)->nullable();
+                $table->string('capacity_unit', 24)->nullable();
+                $table->text('notes')->nullable();
+                $table->string('client_location_id', 80)->nullable();
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'client_location_id'], 'farm_storage_locations_client_unique');
+                $table->index(['company_id', 'name'], 'farm_storage_locations_name_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('farm_harvest_lots'))) {
+            Schema::create($this->moduleTable('farm_harvest_lots'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('parcel_id')->nullable();
+                $table->unsignedBigInteger('crop_cycle_id')->nullable();
+                $table->unsignedBigInteger('farm_site_id')->nullable();
+                $table->unsignedBigInteger('farm_operation_id')->nullable();
+                $table->string('lot_code', 80);
+                $table->string('crop_name', 160)->nullable();
+                $table->decimal('quantity_harvested', 14, 3);
+                $table->string('unit', 24);
+                $table->string('quality_grade', 40)->nullable();
+                $table->unsignedBigInteger('storage_location_id')->nullable();
+                $table->timestampTz('harvested_at');
+                $table->decimal('quantity_remaining', 14, 3);
+                $table->string('status', 16)->default('open');
+                $table->text('notes')->nullable();
+                $table->string('client_harvest_id', 80)->nullable();
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'lot_code'], 'farm_harvest_lots_code_unique');
+                $table->unique(['company_id', 'client_harvest_id'], 'farm_harvest_lots_client_unique');
+                $table->index(['company_id', 'parcel_id', 'harvested_at'], 'farm_harvest_lots_parcel_index');
+                $table->index(['company_id', 'status'], 'farm_harvest_lots_status_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('farm_storage_movements'))) {
+            Schema::create($this->moduleTable('farm_storage_movements'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_harvest_lot_id');
+                $table->string('movement_type', 24);
+                $table->decimal('quantity', 14, 3);
+                $table->decimal('quantity_after', 14, 3);
+                $table->unsignedBigInteger('from_location_id')->nullable();
+                $table->unsignedBigInteger('to_location_id')->nullable();
+                $table->unsignedBigInteger('sale_document_id')->nullable();
+                $table->unsignedBigInteger('sale_line_id')->nullable();
+                $table->unsignedBigInteger('counterparty_id')->nullable();
+                $table->decimal('unit_price', 14, 2)->nullable();
+                $table->char('currency', 3)->nullable();
+                $table->string('reason', 200)->nullable();
+                $table->unsignedBigInteger('recorded_by')->nullable();
+                $table->string('client_movement_id', 80)->nullable();
+                $table->timestampTz('occurred_at');
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'client_movement_id'], 'farm_storage_movements_client_unique');
+                $table->index(['company_id', 'farm_harvest_lot_id', 'occurred_at'], 'farm_storage_movements_lot_index');
+                $table->index(['company_id', 'sale_document_id'], 'farm_storage_movements_sale_index');
+            });
+        }
+
         // P0-1 (audit FuelStation) -- catalogue de prix serveur. Parite avec la
         // migration tenant 2026_10_16_120000_9001_create_fuel_product_prices_table
         // (issue #5443 : une table tenant recente doit exister dans la fixture,
