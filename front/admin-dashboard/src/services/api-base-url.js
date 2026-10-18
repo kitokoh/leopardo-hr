@@ -92,7 +92,15 @@ export function assertProductionInvariant(resolved) {
   if (resolved.mode !== 'direct') return
   if (import.meta.env.VITE_ALLOW_DIRECT_API_IN_PROD === 'true') return
 
+  // Message volontairement STATIQUE et non interpolé : la garde i18n découpe
+  // un template literal sur ses `${...}` et n'exempte que les segments
+  // commençant par l'étiquette. L'URL fautive est signalée juste avant, dans
+  // un diagnostic brut qui n'est jamais lu comme du texte utilisateur.
+  //
+  // Le garde-fou n'a pas besoin de la valeur pour être actionnable : la
+  // variable à corriger est nommée.
+  console.error('[admin-dashboard] URL d\'API directe refusée :', resolved.baseURL)
   throw new Error(
-    `[admin-dashboard] Build de production avec un appel DIRECT à l'API (${resolved.baseURL}) — cela fige l'URL d'un fournisseur dans le bundle, donc une bascule de stack exigera un rebuild. Utilisez VITE_API_PROXY_BASE_URL (URL du proxy du front web) pour que la cible reste lue au runtime, ou posez VITE_ALLOW_DIRECT_API_IN_PROD=true pour l'assumer explicitement (#8707).`,
+    "[admin-dashboard] Build de production avec un appel DIRECT à une URL de fournisseur — cela fige l'URL dans le bundle, donc une bascule de stack exigera un rebuild. Utilisez VITE_API_PROXY_BASE_URL (URL du proxy du front web) pour que la cible reste lue au runtime, ou posez VITE_ALLOW_DIRECT_API_IN_PROD=true pour l'assumer explicitement (#8707).",
   )
 }
