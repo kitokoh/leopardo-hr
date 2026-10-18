@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\CropCycleController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmDashboardController;
+use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmEquipmentController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmInputStockController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmOperationController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmSettingsController;
@@ -81,4 +82,21 @@ Route::middleware(['module.farm_os'])
         Route::post('/inputs/{input}/receive', [FarmInputStockController::class, 'receive']);
         Route::post('/inputs/{input}/issue', [FarmInputStockController::class, 'issue']);
         Route::post('/inputs/{input}/adjust', [FarmInputStockController::class, 'adjust']);
+
+        // ── T2.2 Materiel agricole ──
+        // Les releves de compteur et l'historique de maintenance sont en LECTURE
+        // SEULE : on n'y ecrit que par les actions dediees (usage / maintenance /
+        // breakdown), jamais par un PUT. Aucune telemetrie : `meter_source` ne
+        // peut valoir que `manual` ou `imported`.
+        Route::get('/equipment', [FarmEquipmentController::class, 'index']);
+        Route::post('/equipment', [FarmEquipmentController::class, 'store']);
+        Route::get('/equipment/maintenance-due', [FarmEquipmentController::class, 'maintenanceDue']);
+        Route::get('/equipment/{equipment}', [FarmEquipmentController::class, 'show']);
+        Route::post('/equipment/{equipment}/usage', [FarmEquipmentController::class, 'recordUsage']);
+        Route::post('/equipment/{equipment}/meter-reset', [FarmEquipmentController::class, 'resetMeter']);
+        Route::post('/equipment/{equipment}/maintenances', [FarmEquipmentController::class, 'storeMaintenance']);
+        Route::post('/equipment/{equipment}/breakdowns', [FarmEquipmentController::class, 'storeBreakdown']);
+        Route::post('/equipment/{equipment}/documents', [FarmEquipmentController::class, 'storeDocument']);
+        Route::post('/equipment/maintenances/{maintenance}/complete', [FarmEquipmentController::class, 'completeMaintenance']);
+        Route::post('/equipment/breakdowns/{breakdown}/resolve', [FarmEquipmentController::class, 'resolveBreakdown']);
     });

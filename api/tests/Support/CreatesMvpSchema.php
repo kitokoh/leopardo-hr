@@ -6172,6 +6172,139 @@ trait CreatesMvpSchema
             });
         }
 
+        // Mission Farm OS (BC-37@@FARM@@) -- T2.2 materiel agricole. Miroir de
+        // la migration tenant 2026_10_18_000300_8701_create_farm_os_equipment_tables.php
+        // (issue #5443 : une table tenant recente doit exister dans la fixture,
+        // sinon les tests utilisant CreatesMvpSchema echouent en CI).
+        if (! Schema::hasTable($this->moduleTable('farm_equipment'))) {
+            Schema::create($this->moduleTable('farm_equipment'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_site_id')->nullable();
+                $table->string('name', 160);
+                $table->string('reference', 60)->nullable();
+                $table->string('kind', 40);
+                $table->string('brand', 80)->nullable();
+                $table->string('model', 80)->nullable();
+                $table->string('serial_number', 80)->nullable();
+                $table->string('plate_number', 32)->nullable();
+                $table->date('acquired_on')->nullable();
+                $table->decimal('acquisition_cost', 14, 2)->nullable();
+                $table->char('currency', 3)->nullable();
+                $table->string('meter_type', 16)->default('none');
+                $table->decimal('meter_value', 14, 2)->nullable();
+                $table->string('meter_source', 16)->nullable();
+                $table->string('status', 16)->default('active');
+                $table->unsignedBigInteger('assigned_team_id')->nullable();
+                $table->unsignedBigInteger('assigned_employee_id')->nullable();
+                $table->text('notes')->nullable();
+                $table->string('client_equipment_id', 80)->nullable();
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'client_equipment_id'], 'farm_equipment_client_unique');
+                $table->index(['company_id', 'status'], 'farm_equipment_company_status_index');
+                $table->index(['company_id', 'kind'], 'farm_equipment_company_kind_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('farm_equipment_usage_logs'))) {
+            Schema::create($this->moduleTable('farm_equipment_usage_logs'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_equipment_id');
+                $table->decimal('meter_value', 14, 2);
+                $table->decimal('meter_delta', 14, 2)->nullable();
+                $table->string('meter_source', 16)->default('manual');
+                $table->unsignedBigInteger('farm_operation_id')->nullable();
+                $table->unsignedBigInteger('parcel_id')->nullable();
+                $table->unsignedBigInteger('operator_id')->nullable();
+                $table->string('reason', 200)->nullable();
+                $table->unsignedBigInteger('recorded_by')->nullable();
+                $table->string('client_usage_id', 80)->nullable();
+                $table->timestampTz('occurred_at');
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'client_usage_id'], 'farm_equipment_usage_client_unique');
+                $table->index(['company_id', 'farm_equipment_id', 'occurred_at'], 'farm_equipment_usage_equipment_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('farm_equipment_maintenances'))) {
+            Schema::create($this->moduleTable('farm_equipment_maintenances'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_equipment_id');
+                $table->string('maintenance_type', 16);
+                $table->string('status', 16)->default('planned');
+                $table->string('title', 160);
+                $table->text('description')->nullable();
+                $table->timestampTz('planned_at')->nullable();
+                $table->timestampTz('performed_at')->nullable();
+                $table->decimal('meter_value_at', 14, 2)->nullable();
+                $table->decimal('cost_amount', 14, 2)->nullable();
+                $table->char('currency', 3)->nullable();
+                $table->unsignedBigInteger('supplier_id')->nullable();
+                $table->unsignedBigInteger('breakdown_id')->nullable();
+                $table->text('notes')->nullable();
+                $table->unsignedBigInteger('recorded_by')->nullable();
+                $table->string('client_maintenance_id', 80)->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'client_maintenance_id'], 'farm_equipment_maintenance_client_unique');
+                $table->index(['company_id', 'farm_equipment_id', 'status'], 'farm_equipment_maintenance_equipment_index');
+                $table->index(['company_id', 'planned_at'], 'farm_equipment_maintenance_planned_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('farm_equipment_breakdowns'))) {
+            Schema::create($this->moduleTable('farm_equipment_breakdowns'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_equipment_id');
+                $table->string('severity', 16)->default('minor');
+                $table->string('title', 160);
+                $table->text('description')->nullable();
+                $table->timestampTz('occurred_at');
+                $table->timestampTz('resolved_at')->nullable();
+                $table->decimal('downtime_hours', 10, 2)->nullable();
+                $table->decimal('cost_amount', 14, 2)->nullable();
+                $table->char('currency', 3)->nullable();
+                $table->text('notes')->nullable();
+                $table->unsignedBigInteger('reported_by')->nullable();
+                $table->string('client_breakdown_id', 80)->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'client_breakdown_id'], 'farm_equipment_breakdown_client_unique');
+                $table->index(['company_id', 'farm_equipment_id', 'occurred_at'], 'farm_equipment_breakdown_equipment_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('farm_equipment_documents'))) {
+            Schema::create($this->moduleTable('farm_equipment_documents'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_equipment_id');
+                $table->string('document_type', 32)->default('other');
+                $table->string('title', 160);
+                $table->unsignedBigInteger('file_id')->nullable();
+                $table->string('external_url', 500)->nullable();
+                $table->date('issued_on')->nullable();
+                $table->date('expires_on')->nullable();
+                $table->text('notes')->nullable();
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->index(['company_id', 'farm_equipment_id'], 'farm_equipment_documents_equipment_index');
+                $table->index(['company_id', 'expires_on'], 'farm_equipment_documents_expiry_index');
+            });
+        }
+
         // P0-1 (audit FuelStation) -- catalogue de prix serveur. Parite avec la
         // migration tenant 2026_10_16_120000_9001_create_fuel_product_prices_table
         // (issue #5443 : une table tenant recente doit exister dans la fixture,
