@@ -32,14 +32,23 @@
  * Tracés exacts Natural Earth 1:110m (domaine public) — voir
  * `tools/cartography/make_maps.py`. Aucune silhouette aléatoire.
  *
- * Performance / accessibilité : l'animation est 100 % CSS (`transform` +
- * `opacity` seulement, composées par le GPU), aucun `requestAnimationFrame`,
- * aucun état React qui change en boucle. Sous `prefers-reduced-motion:
- * reduce`, ou si les animations ne démarrent pas, une seule carte statique
- * s'affiche : le décor reste lisible, la constellation reste dominante.
+ * Parallaxe différentiel (passe Fondateur, #8704) : le calque de l'arc glisse
+ * TRÈS légèrement à l'opposé du pointeur (±10 px, lissé), pendant que la
+ * constellation WebGL suit doucement la souris. Ce différentiel entre les
+ * deux niveaux est ce qui rend la profondeur palpable — sans lui, les plans
+ * restent vissés l'un à l'autre et la scène se relit « à plat ». Écoute
+ * passive sur `window`, lissage par `requestAnimationFrame` borné (il
+ * s'arrête dès que le calque a rejoint sa cible), AUCUN état React.
+ *
+ * Performance / accessibilité : la circulation des cartes est 100 % CSS
+ * (`transform` + `opacity` seulement, composées par le GPU). Sous
+ * `prefers-reduced-motion: reduce`, ou si les animations ne démarrent pas,
+ * une seule carte statique s'affiche et le parallaxe n'est jamais branché :
+ * le décor reste lisible, la constellation reste dominante.
  * `aria-hidden` : rien à lire, rien à cliquer.
  */
 
+import { useEffect, useRef } from 'react';
 import { MAP_OUTLINES, type MapKey } from '../../data/geo/map-paths';
 
 /**
@@ -70,11 +79,63 @@ const ARC_ORDER: readonly MapKey[] = [
  */
 const CYCLE_SECONDS = 54;
 
+/** Amplitude du parallaxe différentiel (#8704) — subtile par exigence : le
+    calque ne doit jamais sembler « décrocher » de la constellation. */
+const PARALLAX_PX = 10;
+
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+
 export function GeoBackdrop({ locale }: { locale?: string }) {
   void locale; // décoratif : aucun texte, donc aucune locale à lire
+  const arcRef = useRef<HTMLDivElement>(null);
+
+  // Parallaxe différentiel : l'arc (niveau proche) glisse à l'opposé du
+  // pointeur, la constellation (niveau lointain) le suit — la profondeur
+  // entre les deux niveaux devient SENSIBLE. borné, lissé, jamais branché
+  // en mouvement réduit.
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return undefined;
+    if (window.matchMedia(REDUCED_MOTION_QUERY).matches) return undefined;
+    const node = arcRef.current;
+    if (!node) return undefined;
+
+    let raf = 0;
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+
+    const tick = () => {
+      raf = 0;
+      // Lissage exponentiel : le calque « rattrape » sa cible, puis s'arrête
+      // (le rAF ne tourne que pendant le rattrapage, jamais en continu).
+      currentX += (targetX - currentX) * 0.08;
+      currentY += (targetY - currentY) * 0.08;
+      node.style.setProperty('--geo-parallax-x', `${currentX.toFixed(2)}px`);
+      node.style.setProperty('--geo-parallax-y', `${currentY.toFixed(2)}px`);
+      if (Math.abs(targetX - currentX) > 0.05 || Math.abs(targetY - currentY) > 0.05) {
+        raf = requestAnimationFrame(tick);
+      }
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      const nx = (event.clientX / window.innerWidth) * 2 - 1;
+      const ny = (event.clientY / window.innerHeight) * 2 - 1;
+      targetX = -nx * PARALLAX_PX;
+      targetY = -ny * PARALLAX_PX * 0.6;
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    return () => {
+      window.removeEventListener('pointermove', onPointerMove);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
 
   return (
     <div
+      ref={arcRef}
       aria-hidden="true"
       className="geo-arc pointer-events-none absolute inset-0 z-[1] overflow-hidden"
       style={{ ['--geo-count' as string]: String(ARC_ORDER.length) }}

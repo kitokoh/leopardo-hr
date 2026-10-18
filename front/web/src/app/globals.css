@@ -187,7 +187,7 @@ html {
 
 /* ── Héros « stage » — couche de PROFONDEUR premium (vague 6) ───────────────
    Direction artistique : un fond BLEU NUIT / GRAPHITE, jamais un aplat noir.
-   Trois plans seulement, du plus lointain au plus proche :
+   Trois plans de profondeur, du plus lointain au plus proche :
      1. `.hero-stage-base`     — le ciel (dégradés discrets, bleu nuit → graphite) ;
      2. `.hero-stage-halo`     — une lumière diffuse DERRIÈRE la constellation,
                                  qui la détache du fond (le « wow » vient de là) ;
@@ -195,6 +195,13 @@ html {
                                  concentre le regard au centre.
    Aucune de ces couches ne porte de texte : elles restent sous le titre (z-[5])
    et sous la scène WebGL (z-10).
+
+   PILE COMPLÈTE DU HÉROS (passe Fondateur, #8704), du fond vers le visiteur :
+     ciel → halo → trame → DEMI-CERCLE PAYS 3D (`.geo-arc`, z-[1]) →
+     CONSTELLATION WebGL (z-10, interactive) → TITRE + TEXTE ROTATIF (même
+     flux z-10, lisibles par voile + liseré) → CTA (z-20) → vignettage (z-[11])
+     et fondu vers la section suivante (z-[12]). Le parallaxe différentiel
+     entre `.geo-arc` et la constellation rend cette pile palpable.
 
    Style pur, donc ici et non dans le TSX (la garde i18n ne scanne pas les .css ;
    la garde design-tokens lit les .css, d'où rgb() sans #rrggbb). */
@@ -216,8 +223,13 @@ html {
 }
 
 .hero-stage-vignette {
+  /* Passe Fondateur (#8704) — la zone claire couvre désormais la bande du
+     titre (haut du héros) ET la constellation : l'ancienne ellipse (centrée
+     à 48 %, claire à 52 %) posait jusqu'à 55 % de noir sur la phrase —
+     mesuré en navigateur, le titre blanc se relisait gris moyen. Le
+     vignettage ne referme plus que les bords extrêmes. */
   background:
-    radial-gradient(ellipse 78% 68% at 50% 48%, transparent 52%, rgba(3, 7, 14, 0.55) 100%);
+    radial-gradient(ellipse 96% 84% at 50% 44%, transparent 60%, rgba(3, 7, 14, 0.5) 100%);
 }
 
 /* Voile de lisibilité sous la phrase : sans lui, le titre passe derrière les
@@ -233,11 +245,15 @@ html {
   filter: blur(14px);
 }
 
-/* Le titre lui-même : un liseré sombre très doux détache les lettres du ciel
-   étoilé, sans effet « ombre portée » visible. `text-shadow` ne crée pas de
-   contexte d'empilement — la phrase reste bien SOUS la constellation. */
+/* Le titre lui-même : un liseré sombre SERRÉ détache les lettres du ciel
+   étoilé. Passe Fondateur (#8704) — l'ancienne ombre (24 px de flou, 0.85)
+   se peignait DANS les lettres à cause de `background-clip: text` et lavait
+   tout le titre en gris (mesuré : blanc plafonné à rgb(164) au lieu de 255).
+   Un liseré de 2 px garde le détachement sans toucher l'intérieur des
+   glyphes. `text-shadow` ne crée pas de contexte d'empilement — la phrase
+   reste bien SOUS la constellation. */
 .hero-stage-title-text {
-  text-shadow: 0 2px 24px rgba(4, 10, 20, 0.85), 0 1px 3px rgba(4, 10, 20, 0.7);
+  text-shadow: 0 1px 2px rgba(4, 10, 20, 0.6);
 }
 
 /* Respiration du halo : très lente (~14 s), amplitude faible. Neutralisée en
@@ -355,6 +371,10 @@ html {
   /* Perspective COURTE : le rapport de taille proche/lointain (~0.63) rend
      la concavité sensible sans jamais déformer la silhouette. */
   perspective: 52vh;
+  /* Parallaxe différentiel (#8704) : le calque glisse à l'opposé du pointeur
+     (variables alimentées par le composant, lissées par rAF borné) — la
+     profondeur entre les niveaux devient sensible. */
+  transform: translate3d(var(--geo-parallax-x, 0px), var(--geo-parallax-y, 0px), 0);
 }
 
 .geo-arc-card {

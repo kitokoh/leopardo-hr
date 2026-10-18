@@ -19,10 +19,13 @@
  * Le clic sur une étoile n'ouvre pas une page : il affiche la fiche
  * interactive (`SolutionCard`, rendue dans un portail — voir son en-tête).
  *
- * Le conteneur est une COLONNE PLEINE HAUTEUR : la scène (elle domine) puis
- * le CTA unique, ancré bas. La scène reçoit une taille explicite : le canvas
- * WebGL a besoin d'une hauteur réelle, un `absolute inset-0` dans un parent
- * non dimensionné donnait un rendu étiré.
+ * Le conteneur est une COLONNE FLEX qui GRANDIT (`flex-1 min-h-0`) : la
+ * scène (elle domine) puis le CTA unique, ancré bas. JAMAIS de hauteurs en
+ * pourcentage (`h-full`, `flex-[0_0_86%]`) : elles ne se résolvent pas
+ * contre une hauteur issue de flexbox — mesuré en navigateur (#8704), le
+ * panneau retombait sur la hauteur de son contenu et le canvas WebGL
+ * s'effondrait à 1 px. La taille vient de la croissance flex, le canvas la
+ * suit par `ResizeObserver`.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -67,16 +70,16 @@ export function HeroScene3DPanel() {
   }, [selected]);
 
   return (
-    <div className="relative flex h-full w-full flex-col">
-      {/* La scène domine (86 %) et le CTA vient juste sous elle : à 100 % la
-          constellation poussait le bouton tout en bas (un « no man's land »
-          entre les deux, relevé en audit). */}
+    <div className="relative flex min-h-0 w-full flex-1 flex-col">
+      {/* La scène grandit (`flex-1`) et le CTA garde sa hauteur de contenu
+          (`shrink-0`) : la constellation domine naturellement, le bouton
+          reste collé sous elle — sans pourcentage (voir l'en-tête). */}
       {/* #8701 — `tabIndex={-1}` : cible de restitution du focus quand la
           fiche a été ouverte à la souris (l'étoile est un pixel de canvas,
           sans nœud focusable). Sans cela, le focus retombait sur <body> —
           défaut mesuré en navigateur. Ouverte au clavier, la fiche rend le
           focus à l'étiquette-bouton d'origine, qui est un vrai contrôle. */}
-      <div ref={sceneRef} tabIndex={-1} className="relative min-h-0 flex-[0_0_86%] outline-none">
+      <div ref={sceneRef} tabIndex={-1} className="relative min-h-0 flex-1 outline-none">
         <HeroScene3D onSelectModule={onSelectModule} moduleLabels={moduleLabels} />
       </div>
       <div className="relative z-20 flex shrink-0 justify-center px-4 pb-10 sm:pb-12">

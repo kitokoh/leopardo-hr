@@ -127,10 +127,12 @@ export function HeroSection({
         ref={ref}
         className="relative isolate flex min-h-[100dvh] flex-col overflow-hidden bg-slate-950"
       >
-        {/* ── PROFONDEUR (vague 6) ── trois plans seulement, du plus lointain
-            au plus proche : ciel bleu nuit → halo derrière la constellation →
-            vignettage. Les classes vivent dans globals.css (style pur, hors
-            garde i18n) ; la pile est documentée là-bas. */}
+        {/* ── PROFONDEUR (vague 6, pile complète documentée en #8704) ──
+            Du fond vers le visiteur : ciel bleu nuit → halo derrière la
+            constellation → trame → DEMI-CERCLE PAYS 3D (niveau 1, concave
+            vers le visiteur) → CONSTELLATION WebGL (niveau 2, interactive)
+            → titre + texte rotatif → CTA → vignettage. Les classes vivent
+            dans globals.css (style pur, hors garde i18n). */}
         <div aria-hidden="true" className="hero-stage-base absolute inset-0 z-0" />
         <div aria-hidden="true" className="hero-stage-halo absolute inset-0 z-0" />
         {/* Trame discrète (style en globals.css — la garde i18n ne scanne
@@ -150,7 +152,7 @@ export function HeroSection({
             titre ne peut plus « flotter » au-dessus des cartes. Le titre reste
             lisible sur le ciel étoilé grâce au voile radial et au liseré
             (`.hero-stage-title-scrim` / `.hero-stage-title-text`). */}
-        <div className="relative z-10 flex min-h-0 flex-1 flex-col px-4 pt-[15vh] sm:px-6 sm:pt-[13vh]">
+        <div className="relative z-10 flex min-h-0 flex-1 flex-col px-4 pt-[11vh] sm:px-6 sm:pt-[9vh]">
           <div className="relative mx-auto w-full max-w-5xl shrink-0">
             <div aria-hidden="true" className="hero-stage-title-scrim absolute -inset-x-8 -inset-y-10 sm:-inset-x-16" />
             <motion.h1
@@ -159,7 +161,7 @@ export function HeroSection({
               transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
               className="relative text-balance text-center font-black leading-[0.98] tracking-tight text-4xl sm:text-6xl lg:text-7xl"
             >
-              <span className="hero-stage-title-text block bg-gradient-to-b from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">
+              <span className="hero-stage-title-text block bg-gradient-to-b from-white via-white to-slate-200 bg-clip-text text-transparent">
                 {headline}
               </span>
             </motion.h1>
@@ -179,10 +181,14 @@ export function HeroSection({
             )}
           </div>
 
-          {/* Cartes en orbite — dans le flux, sous le titre. La marge haute
-              garantit que la carte la plus haute de l'anneau extérieur ne
-              croise jamais la dernière ligne du titre (mesuré en navigateur). */}
-          <div className="relative mt-6 min-h-0 flex-1 sm:mt-10">{visual}</div>
+          {/* La scène 3D — dans le flux, sous le titre. Le conteneur est un
+              FLEX COLUMN : une hauteur issue de `flex-1` ne « descend » pas
+              aux enfants en pourcentage (`h-full` s'y résout en hauteur de
+              contenu — mesuré en navigateur : canvas WebGL effondré à 1 px,
+              #8704). Le visuel est donc un ITEM FLEX qui grandit (`flex-1`),
+              jamais un bloc à `h-full`. La marge haute garantit que le haut
+              de la constellation ne croise jamais la dernière ligne du titre. */}
+          <div className="relative mt-6 flex min-h-0 flex-1 flex-col sm:mt-10">{visual}</div>
         </div>
 
         {/* Actions (z-20) ancrées en bas. La classe `dark` LOCALE force les
