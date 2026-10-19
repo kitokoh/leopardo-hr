@@ -31,6 +31,7 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\PositionController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\SiteController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\AnnouncementController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\ConversationController;
+use App\Modules\Notification\Interfaces\Api\V1\Controllers\ConversationModerationController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\EndOfContractController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\EstimationController;
@@ -245,13 +246,48 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
     // ── Module 5 (complement) — Conversations employé/manager (PA2-COMM-002) ──
     Route::get('/conversations', [ConversationController::class, 'index']);
-    Route::post('/conversations', [ConversationController::class, 'store']);
+
+    // ── #8750 [BOS-CHAT] — Modération ────────────────────────────────────────
+    // Déclarées AVANT `/conversations/{thread}` : `blocks`, `reports` et
+    // `moderation` sont des segments littéraux, sinon capturés par `{thread}`
+    // (contraint `whereNumber`, donc 404 déroutant au lieu du bon handler).
+    Route::get('/conversations/blocks', [ConversationModerationController::class, 'indexBlocks']);
+    Route::post('/conversations/blocks', [ConversationModerationController::class, 'storeBlock']);
+    Route::delete('/conversations/blocks/{employee}', [ConversationModerationController::class, 'destroyBlock'])
+        ->whereNumber('employee');
+    Route::get('/conversations/reports', [ConversationModerationController::class, 'indexOwnReports']);
+    Route::post('/conversations/reports', [ConversationModerationController::class, 'storeAccountReport'])
+        ->middleware('throttle:chat-send');
+    // File de modération : `ConversationModerationService` refuse tout acteur
+    // qui n'est pas `manager` du tenant (aucun nouveau rôle plateforme).
+    Route::get('/conversations/moderation/reports', [ConversationModerationController::class, 'indexModerationQueue']);
+    Route::post('/conversations/moderation/reports/{report}/resolve', [ConversationModerationController::class, 'resolveReport'])
+        ->whereNumber('report');
+
+    Route::post('/conversations', [ConversationController::class, 'store'])->middleware('throttle:chat-create');
     // #8746 [BOS-CHAT] — déclaré AVANT `/conversations/{thread}` : sans cela,
     // `groups` serait capté par le `{thread}` contraint à `whereNumber` puis
     // renverrait 404 de façon déroutante.
-    Route::post('/conversations/groups', [ConversationController::class, 'storeGroup']);
+    Route::post('/conversations/groups', [ConversationController::class, 'storeGroup'])->middleware('throttle:chat-create');
     Route::get('/conversations/{thread}', [ConversationController::class, 'show'])->whereNumber('thread');
-    Route::post('/conversations/{thread}/messages', [ConversationController::class, 'storeMessage'])->whereNumber('thread');
+
+    // ── #8747 [BOS-CHAT] — Historique paginé par curseur `seq` ───────────────
+    // `before_seq` remonte l'historique, `after_seq` rattrape ce qui est arrivé
+    // pendant une déconnexion (#8749). Déclaré AVANT la route `messages/{message}`
+    // pour que `messages` seul ne soit jamais capturé par le paramètre.
+    Route::get('/conversations/{thread}/messages', [ConversationController::class, 'messages'])->whereNumber('thread');
+    Route::post('/conversations/{thread}/messages', [ConversationController::class, 'storeMessage'])
+        ->whereNumber('thread')->middleware('throttle:chat-send');
+    // #8750 — signalement d'un message : même bucket que l'écriture, un
+    // signalement en boucle est aussi coûteux qu'un message en boucle.
+    Route::post('/conversations/{thread}/reports', [ConversationModerationController::class, 'storeMessageReport'])
+        ->whereNumber('thread')->middleware('throttle:chat-send');
+    // Autorisation côté serveur : auteur du message uniquement (édition), et
+    // auteur ou admin du groupe (suppression). Un non-participant reçoit 404.
+    Route::patch('/conversations/{thread}/messages/{message}', [ConversationController::class, 'updateMessage'])
+        ->whereNumber('thread')->whereNumber('message');
+    Route::delete('/conversations/{thread}/messages/{message}', [ConversationController::class, 'destroyMessage'])
+        ->whereNumber('thread')->whereNumber('message');
     Route::get('/conversations/{thread}/messages/{message}/attachment', [ConversationController::class, 'downloadAttachment'])
         ->whereNumber('thread')->whereNumber('message')->name('conversations.messages.attachment');
 

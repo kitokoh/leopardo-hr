@@ -43,6 +43,19 @@ return [
         // candidate application submission) is unauthenticated by design,
         // so it gets its own dedicated throttle bucket keyed by IP.
         'public_careers_per_minute' => (int) env('RATE_LIMIT_PUBLIC_CAREERS_PER_MINUTE', 60),
+        // #8750 [BOS-CHAT] — anti-spam de la messagerie horizontale.
+        //
+        // Deux dimensions, car un quota unique laisserait passer le cas gênant :
+        // un compte peut rester sous 30/min tout en monopolisant UN fil. Le
+        // bucket par fil borne la conversation, celui par employé borne la
+        // personne. Valeurs alignées sur un usage humain (un message toutes les
+        // 2 s en rafale est déjà très rapide) et non sur une limite technique.
+        'chat_send_per_minute' => (int) env('RATE_LIMIT_CHAT_SEND_PER_MINUTE', 30),
+        'chat_send_thread_per_minute' => (int) env('RATE_LIMIT_CHAT_SEND_THREAD_PER_MINUTE', 60),
+        // Création de fils et de groupes : plus coûteuse (résolution des
+        // participants, notifications multiples), donc quota distinct et plus
+        // serré que l'envoi d'un message.
+        'chat_create_per_minute' => (int) env('RATE_LIMIT_CHAT_CREATE_PER_MINUTE', 10),
     ],
 
     'plan_rate_limits' => [

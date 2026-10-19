@@ -60,6 +60,10 @@ const PROTECTED_PREFIXES = [
   // (zone dashboard) : données commerciales du tenant. Chemin `/trade-os` :
   // `/trade` est la page PUBLIQUE de la vitrine (#8489), indexable.
   '/trade-os',
+  // BOS-CHAT (#8751) — messagerie horizontale (zone dashboard) : conversations
+  // privees, groupes, pieces jointes du tenant. Jamais mise en cache : les
+  // messages du tenant ne doivent pas rester dans le cache du navigateur.
+  '/chat',
 ];
 
 function isProtectedPath(url) {

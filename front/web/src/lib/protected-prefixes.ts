@@ -90,6 +90,10 @@ export const PROTECTED_PREFIXES = [
   // Chemin `/trade-os` : `/trade` est le point d'entrée PUBLIC de la vitrine
   // (#8489) — deux routes ne peuvent pas résoudre le même chemin (Next.js).
   '/trade-os',
+  // BOS-CHAT (#8751) — messagerie horizontale : conversations privées, groupes,
+  // pièces jointes du tenant. Jamais servie sans session (en cas d'absence de
+  // session, la route redirige vers le login comme les autres zones).
+  '/chat',
 ] as const;
 
 /**

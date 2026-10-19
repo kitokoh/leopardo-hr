@@ -34,6 +34,7 @@ use Illuminate\Support\Carbon;
  * @property string $title
  * @property string $status
  * @property int|null $last_message_id
+ * @property int $last_message_seq
  * @property Carbon|null $last_message_at
  * @property Carbon|null $employee_last_read_at
  * @property Carbon|null $manager_last_read_at
@@ -83,6 +84,7 @@ class ConversationThread extends Model
         'created_by',
         'status',
         'last_message_id',
+        'last_message_seq',
         'last_message_at',
         'employee_last_read_at',
         'manager_last_read_at',
@@ -90,6 +92,7 @@ class ConversationThread extends Model
 
     protected $casts = [
         'last_message_at' => 'datetime',
+        'last_message_seq' => 'integer',
         'employee_last_read_at' => 'datetime',
         'manager_last_read_at' => 'datetime',
     ];
@@ -109,7 +112,20 @@ class ConversationThread extends Model
     /** @return HasMany<ConversationMessage, $this> */
     public function messages(): HasMany
     {
-        return $this->hasMany(ConversationMessage::class)->orderBy('created_at')->orderBy('id');
+        // #8747 — l'ordre fait foi sur `seq` (monotone par fil), plus sur
+        // `created_at` : deux messages écrits dans la même transaction
+        // partagent un horodatage, donc `created_at` seul ne départage pas.
+        return $this->hasMany(ConversationMessage::class)
+            ->orderBy('seq')
+            ->orderBy('id');
+    }
+
+    /**
+     * #8747 — curseur du fil : dernier `seq` alloué.
+     */
+    public function lastSeq(): int
+    {
+        return (int) ($this->last_message_seq ?? 0);
     }
 
     /**

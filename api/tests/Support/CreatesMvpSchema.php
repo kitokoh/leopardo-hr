@@ -796,7 +796,11 @@ trait CreatesMvpSchema
             $table->unsignedBigInteger('subject_id')->nullable();
             $table->string('title', 200);
             $table->string('status', 20)->default('open')->index();
+            // #8746 / #8747 [BOS-CHAT] — groupe + curseur `seq` par fil.
+            $table->string('kind', 20)->default('direct');
+            $table->unsignedInteger('created_by')->nullable();
             $table->unsignedBigInteger('last_message_id')->nullable();
+            $table->unsignedBigInteger('last_message_seq')->default(0);
             $table->timestampTz('last_message_at')->nullable();
             $table->timestampTz('employee_last_read_at')->nullable();
             $table->timestampTz('manager_last_read_at')->nullable();
@@ -805,6 +809,7 @@ trait CreatesMvpSchema
             $table->index(['company_id', 'employee_id']);
             $table->index(['company_id', 'manager_id']);
             $table->index(['subject_type', 'subject_id']);
+            $table->index(['company_id', 'kind']);
         });
 
         Schema::create($this->tenantTable('conversation_messages'), function (Blueprint $table): void {
@@ -817,10 +822,25 @@ trait CreatesMvpSchema
             $table->string('attachment_original_name', 255)->nullable();
             $table->string('attachment_mime_type', 100)->nullable();
             $table->unsignedInteger('attachment_size')->nullable();
+            // #8748 [BOS-CHAT] — disque réel de la pièce jointe.
+            $table->string('attachment_disk', 32)->nullable();
+            // #8747 [BOS-CHAT] — ordre total, anti-doublon, réponse,
+            // édition et suppression logique.
+            $table->unsignedBigInteger('seq')->nullable();
+            $table->string('client_message_id', 64)->nullable();
+            $table->unsignedBigInteger('reply_to_message_id')->nullable();
+            $table->timestampTz('edited_at')->nullable();
+            $table->timestampTz('deleted_at')->nullable();
+            $table->unsignedInteger('deleted_by_id')->nullable();
             $table->timestampTz('created_at')->useCurrent();
 
             $table->index(['conversation_thread_id', 'created_at']);
+            $table->index(['conversation_thread_id', 'seq']);
+            $table->index(['conversation_thread_id', 'deleted_at']);
         });
+
+        // #8750 [BOS-CHAT] — modération : tables créées par
+        // createPostSprintModuleTables() (seul chemin exécuté en pgsql).
 
         Schema::create($this->tenantTable('company_announcements'), function (Blueprint $table): void {
             $table->id();
@@ -1402,6 +1422,45 @@ trait CreatesMvpSchema
 
     private function createPostSprintModuleTables(): void
     {
+        // #8750 [BOS-CHAT] — modération du chat horizontal : blocages et
+        // signalements. Placées ici et non dans la fixture statique : c'est le
+        // seul point d'entrée exécuté après le DROP/recréation de
+        // `shared_tenants`, donc le seul où `hasTable()` voit l'état réel.
+        if (! Schema::hasTable($this->moduleTable('conversation_blocks'))) {
+            Schema::create($this->moduleTable('conversation_blocks'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('blocker_id');
+                $table->unsignedInteger('blocked_id');
+                $table->string('reason', 200)->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+
+                $table->unique(['company_id', 'blocker_id', 'blocked_id']);
+                $table->index(['company_id', 'blocked_id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('conversation_reports'))) {
+            Schema::create($this->moduleTable('conversation_reports'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('reporter_id');
+                $table->unsignedBigInteger('conversation_thread_id')->nullable();
+                $table->unsignedBigInteger('conversation_message_id')->nullable();
+                $table->unsignedInteger('reported_employee_id')->nullable();
+                $table->string('reason', 40);
+                $table->string('details', 1000)->nullable();
+                $table->string('status', 20)->default('open');
+                $table->unsignedInteger('reviewed_by_id')->nullable();
+                $table->timestampTz('reviewed_at')->nullable();
+                $table->string('resolution', 500)->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'status']);
+                $table->index(['company_id', 'conversation_thread_id']);
+            });
+        }
+
         // REST-OS-1/2 (#8603/#8604) — travaux d'impression thermique du Restaurant
         // OS : miroir de la migration tenant 2026_10_16_140001 (garde #5443).
         if (! Schema::hasTable($this->moduleTable('restaurant_print_jobs'))) {
@@ -2533,6 +2592,8 @@ trait CreatesMvpSchema
                 $table->string('kind', 20)->default('direct');
                 $table->unsignedInteger('created_by')->nullable();
                 $table->unsignedBigInteger('last_message_id')->nullable();
+                // #8747 [BOS-CHAT] — compteur atomique de `seq` par fil.
+                $table->unsignedBigInteger('last_message_seq')->default(0);
                 $table->timestampTz('last_message_at')->nullable();
                 $table->timestampTz('employee_last_read_at')->nullable();
                 $table->timestampTz('manager_last_read_at')->nullable();
@@ -2574,9 +2635,21 @@ trait CreatesMvpSchema
                 $table->string('attachment_original_name', 255)->nullable();
                 $table->string('attachment_mime_type', 100)->nullable();
                 $table->unsignedInteger('attachment_size')->nullable();
+                // #8748 [BOS-CHAT] — disque réel de la pièce jointe.
+                $table->string('attachment_disk', 32)->nullable();
+                // #8747 [BOS-CHAT] — ordre total, anti-doublon, réponse,
+                // édition et suppression logique.
+                $table->unsignedBigInteger('seq')->nullable();
+                $table->string('client_message_id', 64)->nullable();
+                $table->unsignedBigInteger('reply_to_message_id')->nullable();
+                $table->timestampTz('edited_at')->nullable();
+                $table->timestampTz('deleted_at')->nullable();
+                $table->unsignedInteger('deleted_by_id')->nullable();
                 $table->timestampTz('created_at')->useCurrent();
 
                 $table->index(['conversation_thread_id', 'created_at']);
+                $table->index(['conversation_thread_id', 'seq']);
+                $table->index(['conversation_thread_id', 'deleted_at']);
             });
         }
 
