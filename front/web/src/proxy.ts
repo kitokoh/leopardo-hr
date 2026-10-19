@@ -236,6 +236,7 @@ export const config = {
     '/assistant/:path*', // BOS-035 (#8224) assistant Leo IA — gate session
     '/vtc/:path*', // BC-35 VTC (#8349, VTC-07/#8363) console dispatch — gate session
     '/trade-os/:path*', // BC-36 TRADE (TRADE-009/#8484) espace International Trade OS — gate session
+    '/chat/:path*', // BOS-CHAT (#8751) messagerie horizontale — gate session
     // Vitrine landing — ?lang= → en-tête x-vitrine-lang (issue #4004).
     // Routes statiques (exactes) + préfixes dynamiques (source
     // VITRINE_LANG_PREFIXES, garde protected-prefixes.test.ts).
