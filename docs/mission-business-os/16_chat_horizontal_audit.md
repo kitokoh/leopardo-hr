@@ -544,8 +544,25 @@ Duration: 11.60s
 
 ```
 ./vendor/bin/pint --test app/Modules/Notification … routes/modules/rh.php
-PASS   49 files
+PASS   49 files   (puis 48 après retrait de HasFactory)
 ```
+
+**Analyse statique — check BLOQUANT de `main` (PHPStan level 8) :**
+
+`main` exige le contexte `PHPStan — Strict (Core/Modules/Shared, level 8)`
+(`/branches/main/protection`). Exécuté localement avec la configuration du dépôt :
+
+```
+./vendor/bin/phpstan analyse --configuration=phpstan-local-strict.neon \
+  app/Modules/Notification app/Http/Resources/Api/V1/ConversationThreadResource.php
+[OK] No errors
+```
+
+> Ce passage a révélé une **vraie régression** dans mon premier commit
+> (`resolveParticipants()` retournait `$employee` sur la branche non-manager) :
+> elle aurait cassé la création de fil par un employé. Corrigée avant merge
+> (commit `2fd1ff831`), puis revalidée par les 19 tests. C'est précisément pour
+> cela que le check a été exécuté localement et non présumé vert.
 
 **Gardes de migration du dépôt :**
 
