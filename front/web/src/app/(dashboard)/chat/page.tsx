@@ -32,6 +32,10 @@ export default function ChatPage() {
   const [offline, setOffline] = useState<boolean>(false);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
+  // Locale active : déterminée au montage, avant tout rappel mémorisé qui
+  // produit du texte (sinon `load` capturerait la valeur initiale).
+  const locale = useSyncExternalStore<AppLocale>(() => () => {}, getPreferredLocale, () => 'fr');
+
   // Identité courante — via l'endpoint existant, jamais via un décodage de JWT
   // côté client (le jeton est httpOnly, donc illisible par construction).
   useEffect(() => {
@@ -79,7 +83,7 @@ export default function ChatPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [locale]);
 
   useEffect(() => {
     void load();
@@ -105,8 +109,6 @@ export default function ChatPage() {
       ),
     );
   }, []);
-
-  const locale = useSyncExternalStore<AppLocale>(() => () => {}, getPreferredLocale, () => 'fr');
 
   return (
     <ModulePageShell
