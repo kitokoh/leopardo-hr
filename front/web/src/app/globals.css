@@ -207,19 +207,20 @@ html {
    la garde design-tokens lit les .css, d'où rgb() sans #rrggbb). */
 .hero-stage-base {
   background:
-    radial-gradient(ellipse 120% 75% at 50% -15%, rgba(30, 58, 95, 0.55), transparent 68%),
-    radial-gradient(ellipse 95% 70% at 12% 108%, rgba(13, 148, 136, 0.16), transparent 70%),
-    radial-gradient(ellipse 85% 65% at 92% 104%, rgba(8, 145, 178, 0.13), transparent 72%),
-    linear-gradient(180deg, rgb(8 14 26) 0%, rgb(11 19 34) 46%, rgb(9 14 24) 100%);
+    radial-gradient(ellipse 120% 75% at 50% -15%, rgba(30, 58, 95, 0.65), transparent 68%),
+    radial-gradient(ellipse 95% 70% at 12% 108%, rgba(13, 148, 136, 0.22), transparent 70%),
+    radial-gradient(ellipse 85% 65% at 92% 104%, rgba(8, 145, 178, 0.18), transparent 72%),
+    radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0) 0%, rgba(2, 6, 23, 0.5) 100%),
+    linear-gradient(180deg, rgb(8 14 26) 0%, rgb(11 19 34) 46%, rgb(8 14 26) 100%);
 }
 
 /* Lumière diffuse derrière le cœur de la scène : deux halos concentriques,
    additifs par construction (rgba sur fond nuit), jamais un aplat laiteux. */
 .hero-stage-halo {
   background:
-    radial-gradient(ellipse 42% 34% at 50% 54%, rgba(16, 185, 129, 0.2), transparent 72%),
-    radial-gradient(ellipse 66% 50% at 50% 54%, rgba(45, 212, 191, 0.09), transparent 78%),
-    radial-gradient(ellipse 90% 62% at 50% 46%, rgba(56, 130, 246, 0.07), transparent 80%);
+    radial-gradient(ellipse 42% 34% at 50% 54%, rgba(16, 185, 129, 0.25), transparent 72%),
+    radial-gradient(ellipse 66% 50% at 50% 54%, rgba(45, 212, 191, 0.12), transparent 78%),
+    radial-gradient(ellipse 90% 62% at 50% 46%, rgba(56, 130, 246, 0.09), transparent 80%);
 }
 
 .hero-stage-vignette {
@@ -253,7 +254,7 @@ html {
    glyphes. `text-shadow` ne crée pas de contexte d'empilement — la phrase
    reste bien SOUS la constellation. */
 .hero-stage-title-text {
-  text-shadow: 0 1px 2px rgba(4, 10, 20, 0.6);
+  text-shadow: 0 2px 10px rgba(4, 10, 20, 0.7), 0 0 30px rgba(16, 185, 129, 0.15);
 }
 
 /* Respiration du halo : très lente (~14 s), amplitude faible. Neutralisée en
