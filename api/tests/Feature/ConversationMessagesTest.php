@@ -160,7 +160,7 @@ class ConversationMessagesTest extends TestCase
         $last = $this->getJson("/api/v1/conversations/{$threadId}/messages?per_page=3")
             ->assertOk();
 
-        $this->assertSame([8, 9, 10], collect($last->json('data'))->pluck('seq')->all());
+        $this->assertSame([8, 9, 10], $this->seqsOf($last->json('data')));
         $this->assertTrue($last->json('meta.has_more'));
         $this->assertSame(8, $last->json('meta.next_before_seq'));
         $this->assertSame(10, $last->json('meta.last_seq'));
@@ -169,7 +169,7 @@ class ConversationMessagesTest extends TestCase
         $previous = $this->getJson("/api/v1/conversations/{$threadId}/messages?per_page=3&before_seq=8")
             ->assertOk();
 
-        $this->assertSame([5, 6, 7], collect($previous->json('data'))->pluck('seq')->all());
+        $this->assertSame([5, 6, 7], $this->seqsOf($previous->json('data')));
 
         // Première page : `has_more` faux quand on touche le début du fil.
         $first = $this->getJson("/api/v1/conversations/{$threadId}/messages?per_page=10&before_seq=5")
@@ -204,7 +204,7 @@ class ConversationMessagesTest extends TestCase
         $response = $this->getJson("/api/v1/conversations/{$threadId}/messages?after_seq=1")
             ->assertOk();
 
-        $this->assertSame([2, 3], collect($response->json('data'))->pluck('seq')->all());
+        $this->assertSame([2, 3], $this->seqsOf($response->json('data')));
         $this->assertTrue($response->json('meta.catch_up'));
 
         // Rejouer la même requête est idempotent côté lecture : rien de neuf.
@@ -290,7 +290,7 @@ class ConversationMessagesTest extends TestCase
         $this->assertSame($seq, (int) $fresh->seq);
 
         $page = $this->getJson("/api/v1/conversations/{$threadId}/messages")->assertOk();
-        $row = collect($page->json('data'))->firstWhere('id', $message->id);
+        $row = $this->rowWithId($page->json('data'), $message->id);
 
         $this->assertTrue($row['deleted']);
         $this->assertSame('', $row['body']);
@@ -396,5 +396,49 @@ class ConversationMessagesTest extends TestCase
         // pièce jointe illisible rétroactivement.
         $this->assertSame(config('conversations.attachments.disk'), $message->attachment_disk);
         $this->assertSame($message->attachment_disk, $message->attachmentDisk());
+    }
+
+    /**
+     * Extrait les `seq` d'une page JSON.
+     *
+     * Typé explicitement (`array<int, int>`) plutôt que `collect()->pluck()` :
+     * PHPStan level 8 ne peut pas inférer les types de gabarit depuis un
+     * `mixed` venu de `json()`, et le check requis analyse aussi `tests/`.
+     *
+     * @return list<int>
+     */
+    private function seqsOf(mixed $rows): array
+    {
+        $this->assertIsArray($rows);
+
+        $seqs = [];
+
+        foreach ($rows as $row) {
+            $this->assertIsArray($row);
+            $this->assertArrayHasKey('seq', $row);
+            $seqs[] = (int) $row['seq'];
+        }
+
+        return $seqs;
+    }
+
+    /**
+     * Ligne de la page dont l'`id` correspond, ou échec explicite.
+     *
+     * @return array<string, mixed>
+     */
+    private function rowWithId(mixed $rows, int $id): array
+    {
+        $this->assertIsArray($rows);
+
+        foreach ($rows as $row) {
+            $this->assertIsArray($row);
+
+            if (isset($row['id']) && (int) $row['id'] === $id) {
+                return $row;
+            }
+        }
+
+        $this->fail("Le message {$id} est absent de la page.");
     }
 }

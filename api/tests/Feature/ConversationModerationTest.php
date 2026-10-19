@@ -75,7 +75,7 @@ class ConversationModerationTest extends TestCase
         ]);
 
         $list = $this->getJson('/api/v1/conversations/blocks')->assertOk();
-        $this->assertSame([$colleague->id], collect($list->json('data'))->pluck('employee_id')->all());
+        $this->assertSame([$colleague->id], $this->employeeIdsOf($list->json('data')));
 
         $this->deleteJson("/api/v1/conversations/blocks/{$colleague->id}")->assertNoContent();
         $this->assertSame(0, ConversationBlock::query()->count());
@@ -405,9 +405,10 @@ class ConversationModerationTest extends TestCase
             'reason' => 'spam',
         ])->assertCreated();
 
-        $entry = collect($captured)->firstWhere('message', 'chat.message_reported');
+        $entry = $this->logEntry($captured, 'chat.message_reported');
 
-        $this->assertNotNull($entry, 'Le signalement doit produire un événement de sécurité.');
+        // `logEntry()` échoue explicitement si l'événement manque : plus besoin
+        // d'un `assertNotNull` (que PHPStan signalerait comme toujours vrai).
         $this->assertSame($message->id, $entry['context']['message_id']);
         // Le corps du message n'est JAMAIS journalisé : un log est lisible par
         // plus de monde qu'une table tenant.
@@ -440,5 +441,46 @@ class ConversationModerationTest extends TestCase
 
         $this->assertContains(201, $statuses);
         $this->assertContains(429, $statuses, 'Le limiteur d\'envoi doit renvoyer 429 au-delà du quota.');
+    }
+
+    /**
+     * Extrait les `employee_id` d'une liste JSON.
+     *
+     * Typé explicitement plutôt que `collect()->pluck()` : PHPStan level 8 ne
+     * peut pas inférer les gabarits depuis un `mixed` venu de `json()`, et le
+     * check requis analyse aussi `tests/`.
+     *
+     * @return list<int>
+     */
+    private function employeeIdsOf(mixed $rows): array
+    {
+        $this->assertIsArray($rows);
+
+        $ids = [];
+
+        foreach ($rows as $row) {
+            $this->assertIsArray($row);
+            $this->assertArrayHasKey('employee_id', $row);
+            $ids[] = (int) $row['employee_id'];
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Entrée de journal dont le `message` correspond, ou échec explicite.
+     *
+     * @param  list<array{message: string, context: array<string, mixed>}>  $entries
+     * @return array{message: string, context: array<string, mixed>}
+     */
+    private function logEntry(array $entries, string $message): array
+    {
+        foreach ($entries as $entry) {
+            if ($entry['message'] === $message) {
+                return $entry;
+            }
+        }
+
+        $this->fail("L'événement {$message} est absent du journal.");
     }
 }
