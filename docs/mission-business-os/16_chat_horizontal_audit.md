@@ -757,6 +757,23 @@ pas. Ce lot a suivi **les issues**, pas la numérotation du plan.
 | — | #8746 | Transmission du rôle `creator`, promotion `member` → `admin` |
 | — | #8748 | Choix et configuration effective du disque persistant |
 
-Non traité, conformément aux contraintes : module de paiement, auth, notifications, stockage —
-aucun second système n'a été créé dans ces domaines. Léa n'a reçu aucune instruction et
-aucun historique du chat humain ; aucun test croisé n'a été ajouté.
+### 19.4 Traçabilité finale du lot P2–P6
+
+| Élément | Valeur réelle |
+|---|---|
+| Branche | `feat/bos-chat-phases-2-6` |
+| PR | **#8753** — mergée (squash) |
+| Commit de merge sur `main` | **`4484f3efb`** |
+| Checks requis sur le commit de merge | **4/4 `success`** (PHPStan level 8, Module Structure Validator, Frontend ESLint+TypeScript, actionlint) |
+| Tests relancés **sur `main`** après merge | **53 passed / 282 assertions** |
+| Issues fermées | #8747, #8748, #8749, #8750, #8751 |
+| Issue de suivi créée | **#8754** (UI Vue/Flutter, E2E reconnexion, P7) |
+| Corrections CI réellement nécessaires | 4 : i18n front (`lib/i18n/chat.ts`), parité `.env.example`, catalogue `api/lang` 4 locales, préfixes protégés (`sw.js` + matcher + `PROTECTED_PREFIXES`), helpers typés dans les tests (gabarits `Collection` indécidables par PHPStan) |
+
+Deux échecs non requis (`CrmChannelCrudTest`, `PlatformAdminAiChatTest` via un filtre
+`--filter=Conversation`) sont **préexistants sur `main`** : reproduits sur un worktree
+`origin/main` isolé, ils échouent indépendamment de ce lot.
+
+Non trouvé non plus, et signalé comme tel : aucun test de charge n'a été exécuté,
+aucun chiffre de capacité n'est mesuré. Les sections 6 à 11 du présent rapport restent
+donc **des hypothèses explicitement étiquetées**, pas des mesures.
