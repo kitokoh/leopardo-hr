@@ -1727,3 +1727,43 @@ restent les gates applicables.
   bouton désactivé si `dispatch_configured=false`, refus de l'API remonté en
   toast. Scénario manuel : couper `GITHUB_STACK_SWITCH_TOKEN` sur le service API
   et vérifier que l'écran reste lisible et n'offre pas de bascule.
+
+## Chat horizontal — groupes de discussion (#8746)
+
+- **Contexte** : le fil de discussion existant (`PA2-COMM-002`, `/conversations`)
+  est binaire (employé ↔ manager). Cette livraison ajoute `kind = group` avec
+  `conversation_participants` (rôles `creator`/`admin`/`member`, curseur de
+  lecture par participant). L'appartenance d'un groupe est régie **uniquement**
+  par la table de participants ; celle d'un fil `direct` reste déduite de
+  `employee_id`/`manager_id`.
+- **Surfaces API** : `POST /api/v1/conversations/groups`,
+  `GET|POST /api/v1/conversations/{thread}/participants`,
+  `DELETE /api/v1/conversations/{thread}/participants/{employee}`,
+  `POST /api/v1/conversations/{thread}/leave`.
+  Contrats documentés dans `api/openapi.yaml` (paramètre `ConversationThreadId`,
+  schémas `ConversationThread`, `ConversationParticipant`).
+- **Scénarios attendus côté API** :
+  | Cas | Attendu |
+  |---|---|
+  | création avec participants du même tenant | **201**, `kind: group`, `created_by`, une ligne `creator` + N lignes `member` |
+  | création avec un `employee_id` d'un autre tenant | **422**, aucune ligne créée |
+  | création sans aucun autre participant | **422** |
+  | ajout par un `member` | **404** (jamais 403 : ne révèle pas l'existence du fil) |
+  | ajout par `creator`/`admin` | **201**, `role: member` |
+  | ré-ajout d'un membre déjà présent | **201**, ligne existante (idempotent, pas de doublon) |
+  | retrait d'un `member` par un `admin` | **204**, ligne supprimée |
+  | retrait d'un `admin` par un autre `admin` | **404** |
+  | retrait du `creator` (même par lui) | **422** |
+  | `leave` par un `member` | **204**, puis `GET /conversations/{thread}` → **404** |
+  | `leave` par le `creator` | **422** (doit transmettre son rôle) |
+  | tout endpoint de groupe par un non-participant | **404** sur les 5 |
+  | `GET /conversations` depuis un autre tenant | **200** avec `data: []` (aucune fuite) |
+  | lecture par un participant | met à jour **son** `last_read_message_id`, pas celui des autres |
+  | fil `direct` existant après migration | `kind: direct`, **aucune** ligne de participation, contrat inchangé |
+- **Isolation multi-tenant** : les identifiants de participants sont résolus avec
+  `company_id` explicite ; un id étranger produit 422 et jamais une ligne
+  silencieusement ignorée. `BelongsToCompany` + `findForActor()` restent le
+  garde-fou de lecture.
+- **Non couvert par tests** : charge (`k6`), reconnexion UI (dépend de la phase
+  P6), `migrate` complet hors environnement de test. Spécifications fournies au
+  §13 de `docs/mission-business-os/16_chat_horizontal_audit.md`.
