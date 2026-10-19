@@ -18,7 +18,7 @@ use Illuminate\Support\Carbon;
  * existe déjà pour ce tenant, elle est renvoyée telle quelle — le rejeu d'une
  * écriture mobile ou hors ligne ne crée JAMAIS de doublon.
  */
-final class ScheduleFarmOperation
+final class ScheduleFarmOperationAction
 {
     /**
      * @param  array<string, mixed>  $payload

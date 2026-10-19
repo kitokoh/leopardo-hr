@@ -9,7 +9,7 @@ namespace App\Modules\FarmOs\Domain\Enums;
  *
  * Machine à états FERMÉE : les transitions autorisées sont déclarées ici, une
  * seule fois, et vérifiées côté serveur
- * ({@see \App\Modules\FarmOs\Application\Actions\TransitionFarmOperation}).
+ * ({@see \App\Modules\FarmOs\Application\Actions\TransitionFarmOperationAction}).
  *
  * Règle d'intégrité : une opération `Done` est IMMUABLE — toute correction doit
  * passer par une action dédiée auditée, jamais par un simple PATCH.

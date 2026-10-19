@@ -18,7 +18,7 @@ use Illuminate\Support\Carbon;
  *   - une opération `Done` est IMMUABLE : la correction passe par une action
  *     dédiée auditée, jamais par un PATCH direct.
  */
-final class TransitionFarmOperation
+final class TransitionFarmOperationAction
 {
     /**
      * @param  array<string, mixed>  $payload

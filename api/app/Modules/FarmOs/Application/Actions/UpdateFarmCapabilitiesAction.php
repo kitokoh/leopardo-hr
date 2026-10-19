@@ -21,7 +21,7 @@ use Illuminate\Support\Carbon;
  * place puis insertion si la ligne n'existe pas encore, sur la connexion du
  * modèle (`getConnection()`).
  */
-final class UpdateFarmCapabilities
+final class UpdateFarmCapabilitiesAction
 {
     /**
      * @param  array<string, bool>  $decisions  capacité ⇒ activée ?

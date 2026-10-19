@@ -110,7 +110,9 @@ final class FarmOsNonRegressionTest extends TestCase
         $offenders = [];
 
         foreach (Finder::create()->files()->in(self::MODULE_PATH.'/Domain/Services')->name('*.php') as $file) {
-            $reflection = new ReflectionClass('App\\Modules\\FarmOs\\Domain\\Services\\'.$file->getBasename('.php'));
+            /** @var class-string $serviceClass */
+            $serviceClass = 'App\\Modules\\FarmOs\\Domain\\Services\\'.$file->getBasename('.php');
+            $reflection = new ReflectionClass($serviceClass);
 
             if (! $reflection->isFinal()) {
                 $offenders[] = $file->getRelativePathname();
@@ -123,5 +125,4 @@ final class FarmOsNonRegressionTest extends TestCase
             "Service métier Farm OS non `final` :\n - ".implode("\n - ", $offenders)
         );
     }
-
 }

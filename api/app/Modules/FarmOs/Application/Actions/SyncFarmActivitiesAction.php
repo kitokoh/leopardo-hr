@@ -26,7 +26,7 @@ use Illuminate\Support\Carbon;
  * tables viennent des modèles (`getTable()`) — `DB` et `Schema` sont des
  * façades réservées aux couches Interfaces/Infrastructure.
  */
-final class SyncFarmActivities
+final class SyncFarmActivitiesAction
 {
     /**
      * @param  list<string>  $activities

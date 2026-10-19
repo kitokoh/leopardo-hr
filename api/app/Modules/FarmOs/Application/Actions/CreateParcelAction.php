@@ -18,7 +18,7 @@ use App\Modules\FarmOs\Domain\Services\FarmAreaGuard;
  * unité ensemble, provenance par défaut `declared`, et `measured` refusé sans
  * géométrie (ADR-FARM-0003).
  */
-final class CreateParcel
+final class CreateParcelAction
 {
     public function __construct(
         private readonly FarmAreaGuard $areaGuard,

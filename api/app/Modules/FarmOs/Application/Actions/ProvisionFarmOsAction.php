@@ -23,7 +23,7 @@ use App\Modules\FarmOs\Domain\Services\FarmCapabilityRecommender;
  *     installation des permissions, audit `solution.activated` — aucun second
  *     système de tenants / rôles / permissions / provisioning n'est créé ;
  *   - les activités et les outils passent par les actions existantes du module
- *     ({@see SyncFarmActivities} / {@see UpdateFarmCapabilities}).
+ *     ({@see SyncFarmActivitiesAction} / {@see UpdateFarmCapabilitiesAction}).
  *
  * IDEMPOTENT : rejouer l'étape 4 sur une exploitation déjà provisionnée ne
  * duplique rien et ne détruit rien — l'idempotence est fournie par les
@@ -37,12 +37,12 @@ use App\Modules\FarmOs\Domain\Services\FarmCapabilityRecommender;
  * Ne prétend JAMAIS avoir créé de données métier : le provisioning prépare
  * l'espace, la première parcelle reste un geste explicite de l'exploitant.
  */
-final class ProvisionFarmOs
+final class ProvisionFarmOsAction
 {
     public function __construct(
         private readonly SolutionActivator $activator,
-        private readonly SyncFarmActivities $syncActivities,
-        private readonly UpdateFarmCapabilities $updateCapabilities,
+        private readonly SyncFarmActivitiesAction $syncActivities,
+        private readonly UpdateFarmCapabilitiesAction $updateCapabilities,
         private readonly FarmCapabilityRecommender $recommender,
     ) {}
 

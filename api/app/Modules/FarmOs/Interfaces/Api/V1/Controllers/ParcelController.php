@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\FarmOs\Interfaces\Api\V1\Controllers;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\FarmOs\Application\Actions\CreateParcel;
+use App\Modules\FarmOs\Application\Actions\CreateParcelAction;
 use App\Modules\FarmOs\Domain\Enums\AreaSource;
 use App\Modules\FarmOs\Domain\Enums\AreaUnit;
 use App\Modules\FarmOs\Domain\Enums\FarmCapability;
@@ -28,7 +28,7 @@ use Illuminate\Validation\Rule;
 final class ParcelController
 {
     public function __construct(
-        private readonly CreateParcel $createParcel,
+        private readonly CreateParcelAction $createParcel,
         private readonly FarmCapabilityGate $gate,
     ) {}
 

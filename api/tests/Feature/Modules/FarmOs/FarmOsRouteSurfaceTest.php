@@ -18,13 +18,28 @@ use Tests\TestCase;
 final class FarmOsRouteSurfaceTest extends TestCase
 {
     /**
+     * `RouteCollection` est declare `RouteCollectionInterface` cote Laravel, qui
+     * n'etend pas `IteratorAggregate` : PHPStan refuse un `foreach` direct
+     * (foreach.nonIterable). On passe par `getRoutes()` type explicitement.
+     *
+     * @return iterable<\Illuminate\Routing\Route>
+     */
+    private function routes(): iterable
+    {
+        /** @var \Illuminate\Routing\RouteCollection $collection */
+        $collection = Route::getRoutes();
+
+        return $collection->getRoutes();
+    }
+
+    /**
      * @return list<string>
      */
     private function farmUris(): array
     {
         $uris = [];
 
-        foreach (Route::getRoutes() as $route) {
+        foreach ($this->routes() as $route) {
             $uri = $route->uri();
 
             if (str_contains($uri, 'farm')) {
@@ -81,7 +96,7 @@ final class FarmOsRouteSurfaceTest extends TestCase
     {
         $signatures = [];
 
-        foreach (Route::getRoutes() as $route) {
+        foreach ($this->routes() as $route) {
             $uri = $route->uri();
 
             if (! str_contains($uri, 'farm')) {
@@ -110,7 +125,7 @@ final class FarmOsRouteSurfaceTest extends TestCase
     {
         $ungated = [];
 
-        foreach (Route::getRoutes() as $route) {
+        foreach ($this->routes() as $route) {
             $uri = $route->uri();
 
             if (! str_starts_with($uri, 'api/v1/farm/')) {

@@ -39,7 +39,7 @@ Route::middleware(['module.farm_os'])
         Route::get('/capabilities/available', [FarmSettingsController::class, 'availableCapabilities']);
         Route::put('/capabilities', [FarmSettingsController::class, 'updateCapabilities']);
         // Étape 4 — provisioning idempotent de l'espace d'exploitation
-        // (réutilise SolutionActivator, cf. ProvisionFarmOs).
+        // (réutilise SolutionActivator, cf. ProvisionFarmOsAction).
         Route::post('/provision', [FarmSettingsController::class, 'provision']);
 
         // ── Tableau de bord de l'exploitation ──

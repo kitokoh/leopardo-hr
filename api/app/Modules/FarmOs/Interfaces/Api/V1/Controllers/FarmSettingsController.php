@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\FarmOs\Interfaces\Api\V1\Controllers;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\FarmOs\Application\Actions\ProvisionFarmOs;
-use App\Modules\FarmOs\Application\Actions\SyncFarmActivities;
-use App\Modules\FarmOs\Application\Actions\UpdateFarmCapabilities;
+use App\Modules\FarmOs\Application\Actions\ProvisionFarmOsAction;
+use App\Modules\FarmOs\Application\Actions\SyncFarmActivitiesAction;
+use App\Modules\FarmOs\Application\Actions\UpdateFarmCapabilitiesAction;
 use App\Modules\FarmOs\Domain\Enums\AreaUnit;
 use App\Modules\FarmOs\Domain\Enums\FarmActivity;
 use App\Modules\FarmOs\Domain\Enums\FarmCapability;
@@ -33,9 +33,9 @@ final class FarmSettingsController
     public function __construct(
         private readonly FarmCapabilityGate $gate,
         private readonly FarmCapabilityRecommender $recommender,
-        private readonly SyncFarmActivities $syncActivities,
-        private readonly UpdateFarmCapabilities $updateCapabilities,
-        private readonly ProvisionFarmOs $provisionFarm,
+        private readonly SyncFarmActivitiesAction $syncActivities,
+        private readonly UpdateFarmCapabilitiesAction $updateCapabilities,
+        private readonly ProvisionFarmOsAction $provisionFarm,
     ) {}
 
     public function show(Request $request): JsonResponse

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Modules\FarmOs;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\FarmOs\Application\Actions\ProvisionFarmOs;
+use App\Modules\FarmOs\Application\Actions\ProvisionFarmOsAction;
 use App\Modules\FarmOs\Domain\Enums\FarmActivity;
 use App\Modules\FarmOs\Domain\Enums\FarmCapability;
 use App\Modules\FarmOs\Domain\Models\FarmCapabilitySetting;
@@ -17,7 +17,7 @@ use Tests\TestCase;
  * Farm OS — Étape 4 : contrat de PROVISIONNEMENT (idempotence, récupérabilité,
  * non-destruction, modularité par activité, isolation multi-tenant).
  *
- * Ces tests exercent l'action RÉELLE `ProvisionFarmOs` sur un schéma tenant.
+ * Ces tests exercent l'action RÉELLE `ProvisionFarmOsAction` sur un schéma tenant.
  * Ils ne simulent ni le catalogue de solutions ni l'activation : le pack Farm
  * OS n'ayant qu'une dépendance REQUISE (`rh`, un drapeau du socle déjà actif
  * par défaut), `activateWithDependencies` est réellement exécuté.
@@ -163,7 +163,7 @@ final class FarmProvisioningTest extends TestCase
      */
     private function provision(Company $company, array $activities, ?array $decisions = null): array
     {
-        return app(ProvisionFarmOs::class)->execute($company, $activities, $decisions, null);
+        return app(ProvisionFarmOsAction::class)->execute($company, $activities, $decisions, null);
     }
 
     private function countForCompany(string $table): int

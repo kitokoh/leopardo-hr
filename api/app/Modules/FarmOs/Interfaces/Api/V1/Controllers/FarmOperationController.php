@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\FarmOs\Interfaces\Api\V1\Controllers;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\FarmOs\Application\Actions\AssignFarmOperation;
-use App\Modules\FarmOs\Application\Actions\ScheduleFarmOperation;
-use App\Modules\FarmOs\Application\Actions\TransitionFarmOperation;
+use App\Modules\FarmOs\Application\Actions\AssignFarmOperationAction;
+use App\Modules\FarmOs\Application\Actions\ScheduleFarmOperationAction;
+use App\Modules\FarmOs\Application\Actions\TransitionFarmOperationAction;
 use App\Modules\FarmOs\Domain\Enums\FarmCapability;
 use App\Modules\FarmOs\Domain\Enums\FarmOperationStatus;
 use App\Modules\FarmOs\Domain\Enums\FarmOperationType;
@@ -33,9 +33,9 @@ use Illuminate\Validation\Rule;
 final class FarmOperationController
 {
     public function __construct(
-        private readonly ScheduleFarmOperation $schedule,
-        private readonly TransitionFarmOperation $transition,
-        private readonly AssignFarmOperation $assignOperation,
+        private readonly ScheduleFarmOperationAction $schedule,
+        private readonly TransitionFarmOperationAction $transition,
+        private readonly AssignFarmOperationAction $assignOperation,
         private readonly FarmCapabilityGate $gate,
     ) {}
 
@@ -161,7 +161,7 @@ final class FarmOperationController
      * Affectation d'un ouvrier ou d'une équipe par le responsable.
      *
      * Le contrôle d'appartenance à l'entreprise est fait CÔTÉ SERVEUR par
-     * {@see AssignFarmOperation} : un identifiant d'employé ou d'équipe d'un
+     * {@see AssignFarmOperationAction} : un identifiant d'employé ou d'équipe d'un
      * autre tenant est refusé (422), jamais persisté. Les destinataires
      * réellement notifiés sont renvoyés pour que le front n'affiche pas un
      * succès trompeur.

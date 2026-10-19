@@ -33,7 +33,7 @@ use App\Shared\Contracts\Notification\EmployeeNotifier;
  * IDEMPOTENT : réaffecter la même personne à la même opération ne renvoie
  * qu'une seule notification (comparaison avec l'état persisté avant écriture).
  */
-final class AssignFarmOperation
+final class AssignFarmOperationAction
 {
     public function __construct(
         private readonly EmployeeNotifier $notifier,
