@@ -7,7 +7,6 @@ namespace App\Modules\Notification\Domain\Models;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -48,7 +47,6 @@ use Illuminate\Support\Carbon;
 class ConversationParticipant extends Model
 {
     use BelongsToCompany;
-    use HasFactory;
 
     public const ROLE_CREATOR = 'creator';
 
@@ -59,6 +57,14 @@ class ConversationParticipant extends Model
     /** @var array<int, string> Rôles acceptés — miroir de la colonne `role`. */
     public const ROLES = [self::ROLE_CREATOR, self::ROLE_ADMIN, self::ROLE_MEMBER];
 
+    /**
+     * Aucune factory dédiée : le modèle est instancié directement par
+     * `ConversationService`, qui porte déjà toutes les invariantes (rôles,
+     * résolution tenant). Ne pas déclarer `HasFactory` évite un générique
+     * `TFactory` sans implémentation (PHPStan level 8 : missingType.generics).
+     *
+     * @var list<string>
+     */
     protected $fillable = [
         'company_id',
         'conversation_thread_id',

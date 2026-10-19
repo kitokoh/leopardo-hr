@@ -207,7 +207,7 @@ class ConversationService
             return [$employee, $author];
         }
 
-        return $author->isManager() ? [$employee, $author] : [$author, $author->manager];
+        return [$author, $author->manager];
     }
 
     // ────────────────────────────────────────────────────────────────────
@@ -295,7 +295,14 @@ class ConversationService
 
             $this->postMessage($thread, $author, $dto->body, $attachment);
 
-            return $thread->fresh(['employee', 'manager', 'participants.employee']);
+            // `fresh()` retourne un modèle potentiellement null : on recharge
+            // explicitement pour satisfaire le type de retour déclaré.
+            /** @var ConversationThread $created */
+            $created = ConversationThread::query()
+                ->with(['employee', 'manager', 'participants.employee'])
+                ->findOrFail($thread->id);
+
+            return $created;
         });
     }
 
