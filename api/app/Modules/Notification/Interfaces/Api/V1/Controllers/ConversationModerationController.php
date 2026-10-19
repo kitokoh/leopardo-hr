@@ -153,7 +153,7 @@ class ConversationModerationController extends Controller
 
         if (! isset($validated['employee_id'])) {
             // Signaler un message exige un fil : cet endpoint n'en porte pas.
-            abort(422, 'Un signalement de message doit passer par la conversation concernée.');
+            abort(422, __('conversations.report_requires_conversation'));
         }
 
         $report = $this->moderationService->reportEmployee(

@@ -93,6 +93,8 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/assistant',
   // BC-35 VTC (#8349, VTC-07/#8363) — console dispatch : zone dashboard.
   '/vtc',
+  // BOS-CHAT (#8751) — messagerie horizontale : zone dashboard.
+  '/chat',
 ];
 
 export function proxy(request: NextRequest) {

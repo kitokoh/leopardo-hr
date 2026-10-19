@@ -250,7 +250,7 @@ class ConversationController extends Controller
             // Le fichier a disparu (disque éphémère redéployé — risque R1).
             // 410 Gone dit au client que le message existe mais que la pièce
             // n'est plus récupérable, au lieu d'un 404 ambigu.
-            abort(410, 'Pièce jointe indisponible.');
+            abort(410, __('conversations.attachment_unavailable'));
         }
 
         return $disk->download($path, $conversationMessage->attachment_original_name);
