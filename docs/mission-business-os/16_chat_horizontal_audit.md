@@ -497,9 +497,78 @@ d'un groupe → 404 sur `show`/`messages`.
 | Tests existants de conversation | `php artisan test --filter=ConversationControllerTest` | voir §14.1 |
 | Nouveaux tests de groupe (P1) | `php artisan test --filter=ConversationGroupTest` | voir §14.1 |
 
-### 14.1 Sorties
+### 14.1 Sorties — `[MESURÉ]`
 
-_(renseigné après exécution — voir le commit de la phase P1)_
+Environnement réel d'exécution : PHP 8.4.15, PostgreSQL 15 (base locale
+`leopardo_test`), `CI=true` (le harness `tests/TestCase.php` réécrit sinon l'hôte en
+`pgsql` pour un réseau Docker absent).
+
+**Nouveaux tests — `ConversationGroupTest` :**
+
+```
+PASS  Tests\Feature\ConversationGroupTest
+✓ group is created with creator role and membership rows               2.95s
+✓ group creation rejects a participant from another tenant             0.93s
+✓ member cannot add or remove participants                             0.91s
+✓ creator can add and remove a member but never remove creator         0.87s
+✓ member can leave and then loses access                               0.98s
+✓ creator cannot leave without transferring the role                   0.96s
+✓ non participant gets 404 on every group endpoint                     0.94s
+✓ group thread does not leak into another tenant listing               0.94s
+✓ per participant read state is tracked independently                  0.93s
+✓ existing direct thread contract is unchanged                         0.88s
+
+Tests:    10 passed (50 assertions)
+Duration: 13.28s
+```
+
+**Non-régression — `ConversationControllerTest` (suite préexistante, inchangée) :**
+
+```
+PASS  Tests\Feature\ConversationControllerTest
+✓ employee can start a free standing thread with their manager         1.37s
+✓ thread can be anchored to a salary advance subject                   1.05s
+✓ employee cannot anchor a thread to someone elses subject             1.07s
+✓ manager can reply and thread marks unread for employee               1.06s
+✓ manager cannot see a thread belonging to another managers report     1.03s
+✓ employee cannot see another companys thread                          0.98s
+✓ message can carry a single small attachment and is downloadable…     0.94s
+✓ attachment over size limit is rejected                               0.95s
+✓ manager lists only threads of their own reports                      1.01s
+
+Tests:    9 passed (26 assertions)
+Duration: 11.60s
+```
+
+**Style (garde CI) — Laravel Pint :**
+
+```
+./vendor/bin/pint --test app/Modules/Notification … routes/modules/rh.php
+PASS   49 files
+```
+
+**Gardes de migration du dépôt :**
+
+```
+python3 dev-hub/tools/check-migration-destructive-down.py
+  Fichiers analysés : 516 (+ 14 ignorés — table dynamique)
+  OK — aucun down() destructeur cross-migration détecté.
+```
+
+> ℹ️ `check-migration-basename-collisions.sh` signale un doublon de préfixe
+> `2026_10_17_140000` (`8629` + `8652`). **Il préexiste sur la branche de mission** :
+> `8652` est sur `main`, `8629` a été ajouté par un autre lot. La migration de cette
+> mission (`2026_10_19_000926`) n'est pas concernée et n'introduit aucun doublon.
+
+### 14.2 Tests NON exécutés (et pourquoi)
+
+| Test | Raison | Statut |
+|---|---|---|
+| Charge `k6` (§13.1) | aucun environnement déployé Render/Neon accessible depuis la session | **non exécuté** — spec fournie |
+| Reconnexion (§13.2) | dépend d'une UI qui n'existe pas encore (phase P6) | **non exécuté** — spec fournie |
+| `migrate` complet sur base réelle | `php artisan migrate` a dépassé le délai de 180 s dans cet environnement (bootstrap complet de l'application + migrations public) | **non exécuté** ; la migration a été validée par lint PHP, par les gardes du dépôt (§14.1) et par le miroir de schéma `CreatesMvpSchema` utilisé par les 19 tests |
+
+Aucun de ces trois points n'est présenté comme validé.
 
 ---
 
@@ -523,3 +592,127 @@ _(renseigné après exécution — voir le commit de la phase P1)_
 > `Modules/Notification` — contraire à la règle `ARCHITECTURE.md` (« tout nouveau code
 > métier va dans `api/app/Modules/` »). Non refactoré ici (hors périmètre, risque de
 > régression sur 5 endpoints) ; proposé en issue dédiée.
+
+---
+
+## 16. Issues GitHub créées par cette mission
+
+| Issue | Objet | Phase |
+|---|---|---|
+| [#8746](https://github.com/kitokoh/leopardo-hr/issues/8746) | Groupes : rôles créateur/admin/membre, ajout/retrait, quitter | **P1 — implémenté dans cette livraison** |
+| [#8747](https://github.com/kitokoh/leopardo-hr/issues/8747) | Messages : `seq`, anti-doublon, pagination par curseur, édition/suppression, réponse | P2 |
+| [#8748](https://github.com/kitokoh/leopardo-hr/issues/8748) | Pièces jointes : MIME réel, multi-pièces, URL temporaires, **persistance** | P3 |
+| [#8749](https://github.com/kitokoh/leopardo-hr/issues/8749) | Temps réel et reprise après reconnexion | P4 |
+| [#8750](https://github.com/kitokoh/leopardo-hr/issues/8750) | Modération : blocage, signalement, rate limiting, audit | P5 |
+| [#8751](https://github.com/kitokoh/leopardo-hr/issues/8751) | UI horizontale : Next.js, Vue admin, Flutter | P6 |
+
+Intégration à l'expérience publique (§7) : traitée dans #8751 (référence `site`) et
+#8746 (types de sujet `order`, `booking`, `professional_space`, `site`).
+
+---
+
+## 17. Contrat d'intégration livré en P1 (#8746)
+
+### 17.1 Nouveaux endpoints
+
+| Méthode | Chemin | Corps | Réponse | Droits |
+|---|---|---|---|---|
+| POST | `/api/v1/conversations/groups` | `title`, `body`, `participant_ids[]`, `subject_type?`, `subject_id?`, `attachment?` | `201` thread (`kind: group`) | tout employé authentifié ; membres résolus **dans son tenant** |
+| GET | `/api/v1/conversations/{thread}/participants` | — | `200 {data:[{employee_id,name,role,last_read_message_id,joined_at}]}` | participant du fil |
+| POST | `/api/v1/conversations/{thread}/participants` | `employee_id` | `201 {data:{employee_id,role,joined_at}}` | `creator` ou `admin` |
+| DELETE | `/api/v1/conversations/{thread}/participants/{employee}` | — | `204` | `creator`/`admin` ; jamais le `creator` cible |
+| POST | `/api/v1/conversations/{thread}/leave` | — | `204` | tout participant sauf le `creator` |
+
+### 17.2 Champs ajoutés aux payloads existants (additif, non cassant)
+
+`ConversationThreadResource` expose désormais :
+
+| Champ | Type | Valeur |
+|---|---|---|
+| `kind` | `"direct"\|"group"` | `direct` par défaut (fils historiques inclus) |
+| `created_by` | `int\|null` | auteur du groupe ; `null` pour un fil direct |
+| `participants` | `array\|null` | `null` si relation non chargée ; `[]` pour un direct chargé |
+
+Aucun champ existant n'est retiré ni renommé : les clients actuels (Flutter, admin) ne
+régressent pas — vérifié par le test `existing direct thread contract is unchanged`.
+
+### 17.3 Matrice d'autorisation (serveur uniquement)
+
+| Action | `creator` | `admin` | `member` | non-participant |
+|---|---|---|---|---|
+| Lire le fil / poster | ✅ | ✅ | ✅ | **404** |
+| Ajouter un membre | ✅ | ✅ | **404** | **404** |
+| Retirer un `member` | ✅ | ✅ | **404** | **404** |
+| Retirer un `admin` | ✅ | **404** | **404** | **404** |
+| Retirer le `creator` | **422** (même pour lui) | **404** | **404** | **404** |
+| Quitter | **422** (doit transmettre) | ✅ | ✅ | **404** |
+
+> Le **404** est délibéré : un 403 confirmerait à un tiers l'existence du fil.
+
+### 17.4 Variables d'environnement
+
+**Aucune nouvelle variable.** Le module réutilise `FILESYSTEM_DISK`, `QUEUE_CONNECTION`
+et la connexion PostgreSQL existants. ⚠️ Voir R1 (§11) : `FILESYSTEM_DISK=local` sur un
+disque éphémère reste le risque bloquant de production pour les pièces jointes (#8748).
+
+### 17.5 Fichiers modifiés / créés
+
+| Fichier | Nature |
+|---|---|
+| `api/database/migrations/tenant/2026_10_19_000926_8746_create_conversation_participants_table.php` | **créé** |
+| `api/app/Modules/Notification/Domain/Models/ConversationParticipant.php` | **créé** |
+| `api/app/Modules/Notification/Application/DTOs/CreateGroupThreadDTO.php` | **créé** |
+| `api/app/Modules/Notification/Domain/Policies/ConversationParticipantPolicy.php` | **créé** |
+| `api/app/Modules/Notification/Interfaces/Api/V1/Requests/StoreGroupConversationThreadRequest.php` | **créé** |
+| `api/app/Modules/Notification/Interfaces/Api/V1/Requests/AddConversationParticipantRequest.php` | **créé** |
+| `api/tests/Feature/ConversationGroupTest.php` | **créé** (10 tests) |
+| `api/app/Modules/Notification/Domain/Models/ConversationThread.php` | modifié (`kind`, `created_by`, `participants()`, `isGroup()`, lecture par participant) |
+| `api/app/Modules/Notification/Infrastructure/Services/ConversationService.php` | modifié (groupes, rôles, notification multi-destinataires) |
+| `api/app/Modules/Notification/Interfaces/Api/V1/Controllers/ConversationController.php` | modifié (5 actions) |
+| `api/app/Http/Resources/Api/V1/ConversationThreadResource.php` | modifié (champs additifs) |
+| `api/routes/modules/rh.php` | modifié (4 routes + ordre de déclaration) |
+| `api/config/communication.php` | modifié (template `conversation_group_added`) |
+| `api/lang/{fr,en,ar,tr}/notifications.php` | modifié (2 clés × 4 locales) |
+| `api/tests/Support/CreatesMvpSchema.php` | modifié (miroir de schéma pour les tests) |
+| `docs/mission-business-os/16_chat_horizontal_audit.md` | **créé** (ce document) |
+
+### 17.6 Commandes de test
+
+```bash
+cd api
+CI=true php artisan test --filter=ConversationGroupTest     # 10 passed (50 assertions)
+CI=true php artisan test --filter=ConversationControllerTest # 9 passed (26 assertions)
+./vendor/bin/pint --test app/Modules/Notification routes/modules/rh.php
+```
+
+> `CI=true` est nécessaire hors Docker : `tests/TestCase.php` réécrit `DB_HOST` en
+> `pgsql` (nom de service Compose) quand `CI` n'est pas défini.
+
+---
+
+## 18. Conflits avec l'architecture existante (et résolution minimale)
+
+| Conflit constaté | Décision |
+|---|---|
+| `ConversationThread` porte une sémantique binaire (`employee_id`/`manager_id`) que les groupes ne peuvent pas exprimer | **Extension additive**, pas de refonte : `kind` + table de participants ; `direct` reste le défaut, donc aucune migration de données |
+| Les `Resource` de conversation vivent hors du module (`app/Http/Resources/Api/V1`) | **Non refactoré** : risque de régression sur 5 endpoints pour zéro bénéfice fonctionnel. Documenté comme dette. |
+| `ConversationMessage` est immuable (`UPDATED_AT = null`) | Respecté en P1 (aucune édition). L'édition/suppression est cadrée en #8747, avec `edited_at` explicite plutôt qu'un `updated_at` global. |
+| Le temps réel a été retiré volontairement (#7481) | **Aucune réintroduction.** Polling + curseur en #8749, avec la règle « client d'abord ». |
+| `config/broadcasting.php` absent | **Non créé** : déclarer un driver sans consumer reproduit exactement le défaut corrigé par #7481. |
+| `ChatView.vue` (Vue admin) est le chat **IA** | **Non réutilisé** : composant marqué 501 côté API ; le chat humain ne partage rien avec lui (contrainte Léa distincte). |
+
+---
+
+## 19. Ce qui reste à faire (phases suivantes)
+
+| Phase | Issue | Contenu restant |
+|---|---|---|
+| P2 | #8747 | `seq`, `client_message_id`, `reply_to`, pagination par curseur, édition/suppression |
+| P3 | #8748 | MIME réel (`finfo`), multi-pièces, URLs signées, **persistance S3/volume** |
+| P4 | #8749 | `after_seq`, client à polling adaptatif, états offline, tests de reconnexion |
+| P5 | #8750 | Blocage, signalement, rate limiting, journal d'audit, outils admin |
+| P6 | #8751 | UI Next.js (design system), écran de modération Vue, écran Flutter |
+| P7 | #8751 + #8746 | Branchement `site` / `professional_space` avec le chantier expérience publique |
+
+Non traité, conformément aux contraintes : module de paiement, auth, notifications, stockage —
+aucun second système n'a été créé dans ces domaines.
