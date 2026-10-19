@@ -251,7 +251,19 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     // renverrait 404 de façon déroutante.
     Route::post('/conversations/groups', [ConversationController::class, 'storeGroup']);
     Route::get('/conversations/{thread}', [ConversationController::class, 'show'])->whereNumber('thread');
+
+    // ── #8747 [BOS-CHAT] — Historique paginé par curseur `seq` ───────────────
+    // `before_seq` remonte l'historique, `after_seq` rattrape ce qui est arrivé
+    // pendant une déconnexion (#8749). Déclaré AVANT la route `messages/{message}`
+    // pour que `messages` seul ne soit jamais capturé par le paramètre.
+    Route::get('/conversations/{thread}/messages', [ConversationController::class, 'messages'])->whereNumber('thread');
     Route::post('/conversations/{thread}/messages', [ConversationController::class, 'storeMessage'])->whereNumber('thread');
+    // Autorisation côté serveur : auteur du message uniquement (édition), et
+    // auteur ou admin du groupe (suppression). Un non-participant reçoit 404.
+    Route::patch('/conversations/{thread}/messages/{message}', [ConversationController::class, 'updateMessage'])
+        ->whereNumber('thread')->whereNumber('message');
+    Route::delete('/conversations/{thread}/messages/{message}', [ConversationController::class, 'destroyMessage'])
+        ->whereNumber('thread')->whereNumber('message');
     Route::get('/conversations/{thread}/messages/{message}/attachment', [ConversationController::class, 'downloadAttachment'])
         ->whereNumber('thread')->whereNumber('message')->name('conversations.messages.attachment');
 

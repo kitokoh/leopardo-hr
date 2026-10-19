@@ -796,7 +796,11 @@ trait CreatesMvpSchema
             $table->unsignedBigInteger('subject_id')->nullable();
             $table->string('title', 200);
             $table->string('status', 20)->default('open')->index();
+            // #8746 / #8747 [BOS-CHAT] — groupe + curseur `seq` par fil.
+            $table->string('kind', 20)->default('direct');
+            $table->unsignedInteger('created_by')->nullable();
             $table->unsignedBigInteger('last_message_id')->nullable();
+            $table->unsignedBigInteger('last_message_seq')->default(0);
             $table->timestampTz('last_message_at')->nullable();
             $table->timestampTz('employee_last_read_at')->nullable();
             $table->timestampTz('manager_last_read_at')->nullable();
@@ -805,6 +809,7 @@ trait CreatesMvpSchema
             $table->index(['company_id', 'employee_id']);
             $table->index(['company_id', 'manager_id']);
             $table->index(['subject_type', 'subject_id']);
+            $table->index(['company_id', 'kind']);
         });
 
         Schema::create($this->tenantTable('conversation_messages'), function (Blueprint $table): void {
@@ -817,9 +822,21 @@ trait CreatesMvpSchema
             $table->string('attachment_original_name', 255)->nullable();
             $table->string('attachment_mime_type', 100)->nullable();
             $table->unsignedInteger('attachment_size')->nullable();
+            // #8748 [BOS-CHAT] — disque réel de la pièce jointe.
+            $table->string('attachment_disk', 32)->nullable();
+            // #8747 [BOS-CHAT] — ordre total, anti-doublon, réponse,
+            // édition et suppression logique.
+            $table->unsignedBigInteger('seq')->nullable();
+            $table->string('client_message_id', 64)->nullable();
+            $table->unsignedBigInteger('reply_to_message_id')->nullable();
+            $table->timestampTz('edited_at')->nullable();
+            $table->timestampTz('deleted_at')->nullable();
+            $table->unsignedInteger('deleted_by_id')->nullable();
             $table->timestampTz('created_at')->useCurrent();
 
             $table->index(['conversation_thread_id', 'created_at']);
+            $table->index(['conversation_thread_id', 'seq']);
+            $table->index(['conversation_thread_id', 'deleted_at']);
         });
 
         Schema::create($this->tenantTable('company_announcements'), function (Blueprint $table): void {
@@ -2533,6 +2550,8 @@ trait CreatesMvpSchema
                 $table->string('kind', 20)->default('direct');
                 $table->unsignedInteger('created_by')->nullable();
                 $table->unsignedBigInteger('last_message_id')->nullable();
+                // #8747 [BOS-CHAT] — compteur atomique de `seq` par fil.
+                $table->unsignedBigInteger('last_message_seq')->default(0);
                 $table->timestampTz('last_message_at')->nullable();
                 $table->timestampTz('employee_last_read_at')->nullable();
                 $table->timestampTz('manager_last_read_at')->nullable();
@@ -2574,9 +2593,21 @@ trait CreatesMvpSchema
                 $table->string('attachment_original_name', 255)->nullable();
                 $table->string('attachment_mime_type', 100)->nullable();
                 $table->unsignedInteger('attachment_size')->nullable();
+                // #8748 [BOS-CHAT] — disque réel de la pièce jointe.
+                $table->string('attachment_disk', 32)->nullable();
+                // #8747 [BOS-CHAT] — ordre total, anti-doublon, réponse,
+                // édition et suppression logique.
+                $table->unsignedBigInteger('seq')->nullable();
+                $table->string('client_message_id', 64)->nullable();
+                $table->unsignedBigInteger('reply_to_message_id')->nullable();
+                $table->timestampTz('edited_at')->nullable();
+                $table->timestampTz('deleted_at')->nullable();
+                $table->unsignedInteger('deleted_by_id')->nullable();
                 $table->timestampTz('created_at')->useCurrent();
 
                 $table->index(['conversation_thread_id', 'created_at']);
+                $table->index(['conversation_thread_id', 'seq']);
+                $table->index(['conversation_thread_id', 'deleted_at']);
             });
         }
 

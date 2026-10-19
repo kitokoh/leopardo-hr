@@ -10,6 +10,7 @@ use App\Http\Resources\Api\V1\ConversationMessageResource;
 use App\Http\Resources\Api\V1\ConversationThreadResource;
 use App\Modules\Notification\Application\DTOs\CreateGroupThreadDTO;
 use App\Modules\Notification\Application\DTOs\CreateThreadDTO;
+use App\Modules\Notification\Application\DTOs\MessageCursor;
 use App\Modules\Notification\Domain\Models\ConversationMessage;
 use App\Modules\Notification\Domain\Models\ConversationParticipant;
 use App\Modules\Notification\Domain\Models\ConversationThread;
@@ -18,6 +19,7 @@ use App\Modules\Notification\Interfaces\Api\V1\Requests\AddConversationParticipa
 use App\Modules\Notification\Interfaces\Api\V1\Requests\PostConversationMessageRequest;
 use App\Modules\Notification\Interfaces\Api\V1\Requests\StoreConversationThreadRequest;
 use App\Modules\Notification\Interfaces\Api\V1\Requests\StoreGroupConversationThreadRequest;
+use App\Modules\Notification\Interfaces\Api\V1\Requests\UpdateConversationMessageRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -98,6 +100,10 @@ class ConversationController extends Controller
     /**
      * POST /conversations/{thread}/messages — post a reply (with at most
      * one optional attachment) in an existing thread.
+     *
+     * #8747 — réponse `200` (et non `201`) quand la clé d'idempotence
+     * correspond à un message DÉJÀ écrit : le client distingue ainsi un envoi
+     * réellement créé d'un rejeu, sans avoir à comparer des horodatages.
      */
     public function storeMessage(PostConversationMessageRequest $request, int $thread): JsonResponse
     {
@@ -105,21 +111,121 @@ class ConversationController extends Controller
         $actor = $request->user();
 
         $conversationThread = $this->conversationService->findForActor($thread, $actor);
+        $validated = $request->validated();
 
-        $message = $this->conversationService->postMessage(
+        $clientMessageId = isset($validated['client_message_id']) && is_string($validated['client_message_id'])
+            ? $validated['client_message_id']
+            : null;
+        $replyToMessageId = isset($validated['reply_to_message_id']) ? (int) $validated['reply_to_message_id'] : null;
+
+        [$message, $created] = $this->conversationService->postMessageDeduplicated(
             $conversationThread,
             $actor,
-            $request->validated('body'),
+            (string) ($validated['body'] ?? ''),
             $request->file('attachment'),
+            $clientMessageId,
+            $replyToMessageId,
         );
 
         return (new ConversationMessageResource($message))
             ->response()
-            ->setStatusCode(201);
+            ->setStatusCode($created ? 201 : 200);
+    }
+
+    /**
+     * #8747 — GET /conversations/{thread}/messages?before_seq=&after_seq=&per_page=
+     *
+     * Pagination par curseur sur `seq`. Deux modes, jamais simultanés :
+     * remontée d'historique (`before_seq`) et rattrapage après reconnexion
+     * (`after_seq`, #8749). L'absence des deux renvoie la dernière page.
+     *
+     * Aucun accès au fil entier n'est possible : `per_page` est plafonné à 100
+     * côté service, et un fil de 50 000 messages se lit en pages successives.
+     */
+    public function messages(Request $request, int $thread): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $conversationThread = $this->conversationService->findForActor($thread, $actor);
+
+        $before = $request->query('before_seq');
+        $after = $request->query('after_seq');
+        $perPage = $request->query('per_page');
+
+        $cursor = MessageCursor::fromQuery(
+            beforeSeq: is_numeric($before) ? (int) $before : null,
+            afterSeq: is_numeric($after) ? (int) $after : null,
+            perPage: is_numeric($perPage) ? (int) $perPage : null,
+        );
+
+        $page = $this->conversationService->messagesFor($conversationThread, $cursor);
+
+        // Le GET de l'historique vaut accusé de lecture : sans cela, ouvrir une
+        // conversation ne viderait pas son compteur de non-lus côté client.
+        $conversationThread->markReadFor($actor);
+
+        return response()->json([
+            'data' => ConversationMessageResource::collection($page['messages'])->resolve($request),
+            'meta' => [
+                'has_more' => $page['has_more'],
+                'next_before_seq' => $page['next_before_seq'],
+                'last_seq' => $page['last_seq'],
+                'per_page' => $cursor->perPage,
+                'catch_up' => $cursor->isCatchUp(),
+            ],
+        ]);
+    }
+
+    /**
+     * #8747 — PATCH /conversations/{thread}/messages/{message}
+     *
+     * Auteur uniquement. Renvoie `200` avec le message à jour (et son
+     * `edited_at`, que le client affiche).
+     */
+    public function updateMessage(UpdateConversationMessageRequest $request, int $thread, int $message): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $conversationThread = $this->conversationService->findForActor($thread, $actor);
+
+        $updated = $this->conversationService->editMessage(
+            $conversationThread,
+            $actor,
+            $message,
+            (string) $request->validated('body'),
+        );
+
+        return (new ConversationMessageResource($updated))->response();
+    }
+
+    /**
+     * #8747 — DELETE /conversations/{thread}/messages/{message}
+     *
+     * Suppression logique : la réponse `204` ne dit rien du contenu, mais la
+     * ligne survit côté serveur pour préserver l'ordre et les réponses.
+     */
+    public function destroyMessage(Request $request, int $thread, int $message): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $conversationThread = $this->conversationService->findForActor($thread, $actor);
+
+        $this->conversationService->deleteMessage($conversationThread, $actor, $message);
+
+        return response()->json([], 204);
     }
 
     /**
      * GET /conversations/{thread}/messages/{message}/attachment
+     *
+     * #8748 — le disque est celui ENREGISTRÉ sur le message, pas une constante :
+     * une pièce jointe écrite hier sur `local` reste lisible après bascule vers
+     * un stockage persistant. Le contrôle d'accès (`findForActor` + appartenance
+     * au fil) est rejoué à CHAQUE téléchargement : aucun lien public, aucune
+     * URL devinable ne suffit.
      */
     public function downloadAttachment(Request $request, int $thread, int $message): StreamedResponse
     {
@@ -137,16 +243,17 @@ class ConversationController extends Controller
             abort(404);
         }
 
-        $disk = Storage::disk('local');
+        $disk = Storage::disk($conversationMessage->attachmentDisk());
+        $path = (string) $conversationMessage->attachment_path;
 
-        if (! $disk->exists($conversationMessage->attachment_path)) {
-            abort(404);
+        if (! $disk->exists($path)) {
+            // Le fichier a disparu (disque éphémère redéployé — risque R1).
+            // 410 Gone dit au client que le message existe mais que la pièce
+            // n'est plus récupérable, au lieu d'un 404 ambigu.
+            abort(410, 'Pièce jointe indisponible.');
         }
 
-        return $disk->download(
-            $conversationMessage->attachment_path,
-            $conversationMessage->attachment_original_name,
-        );
+        return $disk->download($path, $conversationMessage->attachment_original_name);
     }
 
     // ──────────────────────────────────────────────────────────────

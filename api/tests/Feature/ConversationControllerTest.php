@@ -194,7 +194,14 @@ class ConversationControllerTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $file = UploadedFile::fake()->create('justificatif.pdf', 100, 'application/pdf');
+        // #8748 — un fichier RÉEL : `UploadedFile::fake()->create()` produit un
+        // contenu vide, que `finfo` identifie comme `application/x-empty` et que
+        // la whitelist de type réel rejette (comportement voulu). On envoie donc
+        // un PDF minimal valide afin de tester le chemin nominal.
+        $file = UploadedFile::fake()->createWithContent(
+            'justificatif.pdf',
+            "%PDF-1.4\n1 0 obj<</Type/Catalog>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF\n",
+        );
 
         $response = $this->postJson('/api/v1/conversations', [
             'title' => 'Justificatif absence',
@@ -231,6 +238,37 @@ class ConversationControllerTest extends TestCase
             'body' => 'Ceci devrait echouer.',
             'attachment' => $file,
         ])->assertUnprocessable();
+    }
+
+    /**
+     * #8748 — le type MIME DÉCLARÉ ne fait pas foi.
+     *
+     * Le fichier est annoncé comme `application/pdf` par le client, mais son
+     * contenu est un exécutable ELF : `finfo` détecte `application/x-executable`
+     * et l'envoi est rejeté. Sans ce contrôle, un exécutable se retrouverait
+     * stocké et proposé au téléchargement d'un participant.
+     */
+    public function test_attachment_with_falsified_mime_type_is_rejected(): void
+    {
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $employee = Employee::factory()->create(['company_id' => $company->id, 'manager_id' => $manager->id]);
+
+        Sanctum::actingAs($employee);
+
+        $file = UploadedFile::fake()->createWithContent(
+            'facture.pdf',
+            "\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00",
+        );
+
+        $response = $this->postJson('/api/v1/conversations', [
+            'title' => 'Piece jointe trompeuse',
+            'body' => 'Voici une facture.',
+            'attachment' => $file,
+        ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['attachment']);
     }
 
     public function test_manager_lists_only_threads_of_their_own_reports(): void
