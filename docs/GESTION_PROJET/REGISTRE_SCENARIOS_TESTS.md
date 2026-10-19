@@ -1771,11 +1771,26 @@ restent les gates applicables.
   non-destruction d'un refus, modularité végétal/élevage, checklist honnête, actions suivantes bornées
   aux outils activés, isolation multi-tenant).
 
-- **Limites déclarées** : `pdo_pgsql`, PostgreSQL et Redis restent indisponibles dans l'environnement de
-  session, et l'extension `pgsql` n'est pas installée ⇒ **aucun scénario HTTP/feature de ce tableau n'a
-  été exécuté localement** ; ils doivent l'être par `api/tests/Feature/**` sur runner CI. `vendor/bin/pint`
-  exige PHP ≥ 8.3 (non disponible localement : PHP 8.2) ⇒ la conformité de style est vérifiée par le job
-  `Backend Quality` en CI, pas localement.
+- **Limites déclarées** (mise à jour 2026-10-19) : PostgreSQL 15 + PostGIS sont désormais
+  disponibles dans l'environnement de session (`php8.2-pgsql`, base `leopardo_test`) ⇒ **les
+  scénarios Feature Farm OS sont exécutés localement** : `tests/Unit/Modules/FarmOs` **87 tests /
+  472 assertions** et `tests/Feature/Modules/FarmOs` **104 tests / 249 assertions**, 0 échec.
+  Invocation locale : `CI=true DB_HOST=127.0.0.1 php vendor/bin/phpunit tests/Feature/Modules/FarmOs`
+  (`CI=true` neutralise la réécriture d'hôte `isRunningInsideDocker()` de `tests/TestCase.php`).
+  Reste **non exécutable localement** : `vendor/bin/pint` exige PHP ≥ 8.3 (session en 8.2) ⇒ la
+  conformité de style est vérifiée en CI par le job `Backend Quality` ; le formatage a toutefois été
+  contrôlé hors CI avec `php-cs-fixer` 3.64 en appliquant les règles du preset Laravel.
+
+- **Suite de régression d'isolation ajoutée (2026-10-19)** : `FarmTenantIsolationTest` (7 cas) couvre
+  récoltes, cheptel, finance et file de synchronisation ; `FarmInputConcurrencyTest` (8 cas) couvre le
+  rejeu du même `client_movement_id`, le refus de surconsommation, l'ajustement absolu convergent et la
+  cohérence `quantity_after` ↔ quantité du lot. **Toute ligne étrangère est insérée en SQL brut puis
+  relue via `crossTenantForPlatformAdmin()`** : `BelongsToCompany` écrase `company_id` à l'écriture
+  (#7646), donc un objet construit en PHP ne prouverait rien.
+  Ces tests ont révélé un **trou d'isolation réel** : `FarmProfitabilityService::linkSale()` acceptait
+  n'importe quel identifiant de lot de récolte ou d'animaux sans vérifier son propriétaire. La garde
+  `FARM_FINANCE_SALE_TARGET_NOT_IN_COMPANY` refuse désormais l'imputation sur une ligne appartenant à
+  un autre tenant.
 - **Surface API (SUPERAPP-P0, #8611)** : nouvelle route publique `GET /api/v1/public/discover`
   (découverte cross-verticale, sans auth, `throttle:shop-public`). Scénarios couverts par
   `api/tests/Feature/Platform/PublicDiscoveryTest.php` : (1) agrégation multi-verticale
