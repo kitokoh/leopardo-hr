@@ -47,8 +47,8 @@ export function FeatureCard({
       <div className={`absolute -inset-px rounded-3xl bg-gradient-to-r ${gradient} opacity-0 group-hover:opacity-25 blur-xl transition-opacity duration-500`} />
 
       <div
-        className={`relative h-full rounded-3xl border border-slate-200/90 bg-white/90 p-8 shadow-sm backdrop-blur-xl transition-all duration-300 hover:shadow-xl dark:border-slate-800/90 dark:bg-slate-900/90 ${
-          isHighlighted ? 'bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 border-emerald-300/60 dark:border-emerald-700/60' : 'hover:border-emerald-300/80 dark:hover:border-emerald-700/80'
+        className={`relative h-full rounded-3xl border border-slate-200/90 bg-white dark:bg-slate-900/80 p-8 shadow-sm backdrop-blur-xl transition-all duration-300 group-hover:shadow-xl hover:border-emerald-300/80 dark:border-slate-800/90 dark:hover:border-emerald-700/80 ${
+          isHighlighted ? 'bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 border-emerald-300/60 dark:border-emerald-700/60' : ''
         }`}
       >
         <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
