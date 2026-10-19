@@ -246,10 +246,23 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     // ── Module 5 (complement) — Conversations employé/manager (PA2-COMM-002) ──
     Route::get('/conversations', [ConversationController::class, 'index']);
     Route::post('/conversations', [ConversationController::class, 'store']);
+    // #8746 [BOS-CHAT] — déclaré AVANT `/conversations/{thread}` : sans cela,
+    // `groups` serait capté par le `{thread}` contraint à `whereNumber` puis
+    // renverrait 404 de façon déroutante.
+    Route::post('/conversations/groups', [ConversationController::class, 'storeGroup']);
     Route::get('/conversations/{thread}', [ConversationController::class, 'show'])->whereNumber('thread');
     Route::post('/conversations/{thread}/messages', [ConversationController::class, 'storeMessage'])->whereNumber('thread');
     Route::get('/conversations/{thread}/messages/{message}/attachment', [ConversationController::class, 'downloadAttachment'])
         ->whereNumber('thread')->whereNumber('message')->name('conversations.messages.attachment');
+
+    // ── #8746 [BOS-CHAT] — Groupes : membres et rôles ──────────────────────
+    // L'autorisation est entièrement serveur (ConversationService +
+    // ConversationParticipantPolicy) : un non-participant reçoit 404.
+    Route::get('/conversations/{thread}/participants', [ConversationController::class, 'participants'])->whereNumber('thread');
+    Route::post('/conversations/{thread}/participants', [ConversationController::class, 'addParticipant'])->whereNumber('thread');
+    Route::delete('/conversations/{thread}/participants/{employee}', [ConversationController::class, 'removeParticipant'])
+        ->whereNumber('thread')->whereNumber('employee');
+    Route::post('/conversations/{thread}/leave', [ConversationController::class, 'leave'])->whereNumber('thread');
 
     // ── Module 5 (complement) — Company announcements (PA2-COMM-004) ──────────
     // PA2-COMM-011 — Moderation: publish/cancel a draft or scheduled announcement.

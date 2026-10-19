@@ -2535,6 +2535,10 @@ trait CreatesMvpSchema
                 $table->unsignedBigInteger('subject_id')->nullable();
                 $table->string('title', 200);
                 $table->string('status', 20)->default('open')->index();
+                // #8746 [BOS-CHAT] — cf. migration
+                // 2026_10_19_000926_8746_create_conversation_participants_table.
+                $table->string('kind', 20)->default('direct');
+                $table->unsignedInteger('created_by')->nullable();
                 $table->unsignedBigInteger('last_message_id')->nullable();
                 $table->timestampTz('last_message_at')->nullable();
                 $table->timestampTz('employee_last_read_at')->nullable();
@@ -2544,6 +2548,25 @@ trait CreatesMvpSchema
                 $table->index(['company_id', 'employee_id']);
                 $table->index(['company_id', 'manager_id']);
                 $table->index(['subject_type', 'subject_id']);
+                $table->index(['company_id', 'kind']);
+            });
+        }
+
+        // #8746 [BOS-CHAT] — participants d'un fil `group`.
+        if (! Schema::hasTable($this->moduleTable('conversation_participants'))) {
+            Schema::create($this->moduleTable('conversation_participants'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('conversation_thread_id');
+                $table->unsignedInteger('employee_id');
+                $table->string('role', 20)->default('member');
+                $table->unsignedBigInteger('last_read_message_id')->nullable();
+                $table->timestampTz('joined_at')->useCurrent();
+                $table->timestamps();
+
+                $table->unique(['conversation_thread_id', 'employee_id']);
+                $table->index(['company_id', 'employee_id']);
+                $table->index(['company_id', 'conversation_thread_id']);
             });
         }
 
