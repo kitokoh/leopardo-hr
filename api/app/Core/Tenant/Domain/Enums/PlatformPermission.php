@@ -46,6 +46,15 @@ enum PlatformPermission: string
     case EdgeManage = 'edge.manage';
 
     /**
+     * BC-38 PAIEMENTS (#8741) — permissions dédiées au socle de paiement :
+     * lecture du journal des transactions et des instances, et mutation
+     * (CRUD des instances, réconciliations, webhooks). Réservées à finance,
+     * admin et super_admin (le support et marketing en sont exclus).
+     */
+    case PaymentsView = 'payments.view';
+    case PaymentsManage = 'payments.manage';
+
+    /**
      * #8673 (épic #8670) — pilotage de l'INFRASTRUCTURE de déploiement :
      * lecture de l'état des stacks (dev/prod) et bascule d'un tier vers une
      * autre stack. C'est un bouton qui peut couper la plateforme : il reste
@@ -128,6 +137,8 @@ enum PlatformPermission: string
             self::AnnouncementsManage => 'Publier des annonces plateforme',
             self::CrmView => 'Consulter le pipeline CRM',
             self::ShowcaseManage => 'Administrer la vitrine publique',
+            self::PaymentsView => 'Consulter les paiements et le journal des transactions',
+            self::PaymentsManage => 'Administrer les instances et réconciliations de paiement',
             self::MarketingOsView => 'Consulter le Marketing OS (stratégie, contenus, médiathèque, publications)',
             self::MarketingOsManage => 'Administrer le Marketing OS (campagnes, briefs, médiathèque, publications)',
             self::EdgeManage => 'Administrer les nœuds edge',

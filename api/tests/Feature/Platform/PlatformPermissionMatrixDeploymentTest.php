@@ -63,14 +63,20 @@ class PlatformPermissionMatrixDeploymentTest extends TestCase
         self::assertTrue(PlatformRole::SuperAdmin->hasPermission(PlatformPermission::WebhooksManage));
         self::assertTrue(PlatformRole::SuperAdmin->hasPermission(PlatformPermission::SettingsManage));
         self::assertTrue(PlatformRole::SuperAdmin->hasPermission(PlatformPermission::PayrollView));
+        self::assertTrue(PlatformRole::SuperAdmin->hasPermission(PlatformPermission::PaymentsView));
+        self::assertTrue(PlatformRole::SuperAdmin->hasPermission(PlatformPermission::PaymentsManage));
 
         self::assertTrue(PlatformRole::Admin->hasPermission(PlatformPermission::PlansManage));
         self::assertTrue(PlatformRole::Admin->hasPermission(PlatformPermission::WebhooksManage));
         self::assertTrue(PlatformRole::Admin->hasPermission(PlatformPermission::SettingsManage));
         self::assertTrue(PlatformRole::Admin->hasPermission(PlatformPermission::PayrollView));
+        self::assertTrue(PlatformRole::Admin->hasPermission(PlatformPermission::PaymentsView));
+        self::assertTrue(PlatformRole::Admin->hasPermission(PlatformPermission::PaymentsManage));
 
         self::assertTrue(PlatformRole::Finance->hasPermission(PlatformPermission::PlansManage));
         self::assertTrue(PlatformRole::Finance->hasPermission(PlatformPermission::PayrollView));
+        self::assertTrue(PlatformRole::Finance->hasPermission(PlatformPermission::PaymentsView));
+        self::assertTrue(PlatformRole::Finance->hasPermission(PlatformPermission::PaymentsManage));
         self::assertFalse(PlatformRole::Finance->hasPermission(PlatformPermission::WebhooksManage));
         self::assertFalse(PlatformRole::Finance->hasPermission(PlatformPermission::SettingsManage));
 
@@ -78,12 +84,16 @@ class PlatformPermissionMatrixDeploymentTest extends TestCase
         self::assertTrue(PlatformRole::Ops->hasPermission(PlatformPermission::PayrollView));
         self::assertFalse(PlatformRole::Ops->hasPermission(PlatformPermission::PlansManage));
         self::assertFalse(PlatformRole::Ops->hasPermission(PlatformPermission::SettingsManage));
+        self::assertFalse(PlatformRole::Ops->hasPermission(PlatformPermission::PaymentsView));
+        self::assertFalse(PlatformRole::Ops->hasPermission(PlatformPermission::PaymentsManage));
 
         foreach ([PlatformRole::Support, PlatformRole::Marketing] as $role) {
             self::assertFalse($role->hasPermission(PlatformPermission::PlansManage), $role->value);
             self::assertFalse($role->hasPermission(PlatformPermission::WebhooksManage), $role->value);
             self::assertFalse($role->hasPermission(PlatformPermission::SettingsManage), $role->value);
             self::assertFalse($role->hasPermission(PlatformPermission::PayrollView), $role->value);
+            self::assertFalse($role->hasPermission(PlatformPermission::PaymentsView), $role->value);
+            self::assertFalse($role->hasPermission(PlatformPermission::PaymentsManage), $role->value);
         }
     }
 
@@ -255,7 +265,44 @@ class PlatformPermissionMatrixDeploymentTest extends TestCase
             'ai monitoring' => ['GET', 'api/v1/admin/platform/ai/monitoring', PlatformPermission::SettingsManage->value],
             'ai health' => ['GET', 'api/v1/admin/platform/ai/health', PlatformPermission::SettingsManage->value],
             'payroll simulate' => ['POST', 'api/v1/admin/payroll/simulate', PlatformPermission::SettingsManage->value],
+            // BC-38 PAIEMENTS (#8741) — registre des instances, webhooks et journal
+            'payments provider types' => ['GET', 'api/v1/platform/payments/provider-types', PlatformPermission::PaymentsView->value],
+            'payments provider instances index' => ['GET', 'api/v1/platform/payments/provider-instances', PlatformPermission::PaymentsView->value],
+            'payments provider instances store' => ['POST', 'api/v1/platform/payments/provider-instances', PlatformPermission::PaymentsManage->value],
+            'payments provider instances update' => ['PATCH', 'api/v1/platform/payments/provider-instances/{instance}', PlatformPermission::PaymentsManage->value],
+            'payments provider instances status' => ['PATCH', 'api/v1/platform/payments/provider-instances/{instance}/status', PlatformPermission::PaymentsManage->value],
+            'payments webhook endpoints' => ['POST', 'api/v1/platform/payments/webhook-endpoints', PlatformPermission::PaymentsManage->value],
+            'payments transactions' => ['GET', 'api/v1/platform/payments/transactions', PlatformPermission::PaymentsView->value],
+            'payments reconciliations index' => ['GET', 'api/v1/platform/payments/reconciliations', PlatformPermission::PaymentsView->value],
+            'payments reconciliations run' => ['POST', 'api/v1/platform/payments/reconciliations', PlatformPermission::PaymentsManage->value],
         ];
+    }
+
+    /**
+     * BC-38 PAIEMENTS (#8741) — isolation des surfaces de paiement.
+     *
+     * Un rôle sans `payments.view` (ex: support) reçoit 403 sur le journal.
+     * Un rôle avec `payments.view` (finance) passe en lecture mais doit avoir
+     * `payments.manage` pour muter.
+     */
+    public function test_payments_endpoints_require_payments_view_and_manage(): void
+    {
+        // Support n'a pas payments.view ni payments.manage
+        $this->actingAsPlatform(PlatformRole::Support);
+        $this->getJson('/api/v1/platform/payments/transactions')->assertForbidden();
+        $this->getJson('/api/v1/platform/payments/provider-instances')->assertForbidden();
+        $this->postJson('/api/v1/platform/payments/provider-instances', [])->assertForbidden();
+
+        // Finance porte payments.view et payments.manage : les middlewares passent
+        $this->actingAsPlatform(PlatformRole::Finance);
+        $transactionsResponse = $this->getJson('/api/v1/platform/payments/transactions');
+        self::assertNotSame(403, $transactionsResponse->getStatusCode(), 'finance (payments.view) doit passer transactions');
+
+        $instancesResponse = $this->getJson('/api/v1/platform/payments/provider-instances');
+        self::assertNotSame(403, $instancesResponse->getStatusCode(), 'finance (payments.view) doit passer provider-instances');
+
+        $storeResponse = $this->postJson('/api/v1/platform/payments/provider-instances', []);
+        self::assertNotSame(403, $storeResponse->getStatusCode(), 'finance (payments.manage) doit passer provider-instances store');
     }
 
     /**

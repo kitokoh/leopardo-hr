@@ -641,23 +641,23 @@ Route::prefix('v1')->group(function (): void {
         // instance à une autre sans déploiement.
         Route::prefix('payments')->group(function (): void {
             Route::get('/provider-types', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'types'])
-                ->middleware('platform.permission:companies.view');
+                ->middleware('platform.permission:payments.view');
             Route::get('/provider-instances', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'indexInstances'])
-                ->middleware('platform.permission:companies.view');
+                ->middleware('platform.permission:payments.view');
             Route::post('/provider-instances', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'storeInstance'])
-                ->middleware('platform.permission:companies.manage');
+                ->middleware('platform.permission:payments.manage');
             Route::patch('/provider-instances/{instance}', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'updateInstance'])
-                ->whereNumber('instance')->middleware('platform.permission:companies.manage');
+                ->whereNumber('instance')->middleware('platform.permission:payments.manage');
             Route::patch('/provider-instances/{instance}/status', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'setInstanceStatus'])
-                ->whereNumber('instance')->middleware('platform.permission:companies.manage');
+                ->whereNumber('instance')->middleware('platform.permission:payments.manage');
             Route::post('/webhook-endpoints', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'storeWebhookEndpoint'])
-                ->middleware('platform.permission:companies.manage');
+                ->middleware('platform.permission:payments.manage');
             Route::get('/transactions', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'transactions'])
-                ->middleware('platform.permission:companies.view');
+                ->middleware('platform.permission:payments.view');
             Route::get('/reconciliations', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'reconciliations'])
-                ->middleware('platform.permission:companies.view');
+                ->middleware('platform.permission:payments.view');
             Route::post('/reconciliations', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'runReconciliation'])
-                ->middleware('platform.permission:companies.manage');
+                ->middleware('platform.permission:payments.manage');
         });
 
         Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show'])->middleware('platform.permission:companies.view');
