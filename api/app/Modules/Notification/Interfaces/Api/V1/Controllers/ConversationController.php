@@ -203,7 +203,7 @@ class ConversationController extends Controller
                     'matricule' => $participant->employee?->matricule,
                     'role' => $participant->role,
                     'last_read_message_id' => $participant->last_read_message_id,
-                    'joined_at' => $participant->joined_at?->toIso8601String(),
+                    'joined_at' => $participant->joined_at->toIso8601String(),
                 ])
                 ->values(),
         ]);
@@ -230,7 +230,7 @@ class ConversationController extends Controller
             'data' => [
                 'employee_id' => $participant->employee_id,
                 'role' => $participant->role,
-                'joined_at' => $participant->joined_at?->toIso8601String(),
+                'joined_at' => $participant->joined_at->toIso8601String(),
             ],
         ], 201);
     }

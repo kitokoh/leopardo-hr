@@ -45,7 +45,7 @@ class ConversationThreadResource extends JsonResource
             'participants' => $this->relationLoaded('participants')
                 ? $this->participants->map(static fn ($participant): array => [
                     'employee_id' => $participant->employee_id,
-                    'name' => trim((string) (($participant->employee?->first_name ?? '').' '.($participant->employee?->last_name ?? ''))),
+                    'name' => trim((string) (($participant->employee->first_name ?? '').' '.($participant->employee->last_name ?? ''))),
                     'role' => $participant->role,
                     'last_read_message_id' => $participant->last_read_message_id,
                 ])->values()
