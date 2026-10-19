@@ -9,7 +9,7 @@ use App\Modules\Notification\Domain\Models\ConversationBlock;
 use App\Modules\Notification\Domain\Models\ConversationMessage;
 use App\Modules\Notification\Domain\Models\ConversationReport;
 use App\Modules\Notification\Domain\Models\ConversationThread;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 

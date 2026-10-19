@@ -722,14 +722,41 @@ CI=true php artisan test --filter=ConversationControllerTest # 9 passed (26 asse
 
 ## 19. Ce qui reste à faire (phases suivantes)
 
+### 19.1 État réel après le lot P2–P6 (2026-10-19)
+
+| Phase | Issue | État | Preuve |
+|---|---|---|---|
+| P2 — ordre, idempotence, curseurs, édition/suppression | #8747 | **Livré** | `ConversationMessagesTest` 15 tests verts |
+| P3/R1 — pièces jointes | #8748 | **Code livré, risque OUVERT** | MIME réel + `attachment_disk` + 410 testés ; `CHAT_ATTACHMENT_DISK` **non configuré en production** |
+| P4 — temps réel | #8749 | **Livré (polling)** | `after_seq` côté API, `use-conversation-polling.ts` + 6 tests `jest` |
+| P5 — modération | #8750 | **Livré** | `ConversationModerationTest` 18 tests verts |
+| P6 — UI | #8751 | **Livré partiellement** | Page Next.js + états complets ; **Vue et Flutter non faits** |
+| P7 — contexte `site` / `professional_space` | #8751 | **Non commencé** | dépend du chantier expérience publique |
+
+**Correction de la lecture initiale du plan** : la numérotation du §12 (P2 = `seq`,
+P3 = pièces jointes) et celle des issues (P2 = #8747, R1 = #8748) ne coïncident
+pas. Ce lot a suivi **les issues**, pas la numérotation du plan.
+
+### 19.2 Ce qui n'est pas fait, et pourquoi
+
+| Élément | État | Raison |
+|---|---|---|
+| **Persistance réelle des pièces jointes** | **Non levée** | Le code est prêt (`attachment_disk`, `CHAT_ATTACHMENT_DISK`), mais aucun disque persistant n'est configuré : positionner la variable reste une décision d'exploitation (coût). **Sans elle, R1 reste entier.** |
+| Tests de charge `k6` | **Non exécutés** | Aucun environnement déployé joignable depuis cet environnement. Les specs restent au §13 ; **aucun chiffre de charge n'est revendiqué**. |
+| Test de reconnexion E2E navigateur | **Non exécuté** | Nécessite un parcours Playwright contre un serveur up. La reprise est couverte **unitairement** (`mergeMessages`) et **côté API** (`after_seq`), pas bout en bout. |
+| UI Vue (admin) | **Non fait** | La file de modération est exposée en API ; l'écran Vue s'appuie sur l'existant et n'a pas été ouvert dans ce lot. |
+| UI Flutter (mobile) | **Non fait** | Aucun écran mobile natif livré ; la page web est responsive jusqu'à 390 px. |
+| URLs signées / multi-pièces | **Non fait** | Une seule pièce par message (contrat historique conservé) ; le téléchargement reste authentifié, ce qui est **plus strict** qu'une URL signée, pas moins. |
+| `seq` sur les messages supprimés côté client | **Assumé** | Le trou d'ordre est comblé par `deleted: true` (la ligne est présente), pas par une renumérotation — renuméroter casserait les réponses. |
+
+### 19.3 Ce qui reste ouvert sur le plan produit
+
 | Phase | Issue | Contenu restant |
 |---|---|---|
-| P2 | #8747 | `seq`, `client_message_id`, `reply_to`, pagination par curseur, édition/suppression |
-| P3 | #8748 | MIME réel (`finfo`), multi-pièces, URLs signées, **persistance S3/volume** |
-| P4 | #8749 | `after_seq`, client à polling adaptatif, états offline, tests de reconnexion |
-| P5 | #8750 | Blocage, signalement, rate limiting, journal d'audit, outils admin |
-| P6 | #8751 | UI Next.js (design system), écran de modération Vue, écran Flutter |
 | P7 | #8751 + #8746 | Branchement `site` / `professional_space` avec le chantier expérience publique |
+| — | #8746 | Transmission du rôle `creator`, promotion `member` → `admin` |
+| — | #8748 | Choix et configuration effective du disque persistant |
 
 Non traité, conformément aux contraintes : module de paiement, auth, notifications, stockage —
-aucun second système n'a été créé dans ces domaines.
+aucun second système n'a été créé dans ces domaines. Léa n'a reçu aucune instruction et
+aucun historique du chat humain ; aucun test croisé n'a été ajouté.

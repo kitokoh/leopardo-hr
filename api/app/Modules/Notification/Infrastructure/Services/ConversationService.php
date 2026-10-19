@@ -24,7 +24,6 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpFoundation\File\File as SymfonyFile;
 
 /**
  * PA2-COMM-002 — Employee/manager discussion threads.
@@ -72,9 +71,6 @@ class ConversationService
 
     /** Maximum number of members in a group thread, attachments and notifications inclusive. */
     private const MAX_GROUP_PARTICIPANTS = 50;
-
-    /** #8747 — taille maximale d'une page de messages. */
-    private const MAX_MESSAGE_PAGE_SIZE = 100;
 
     public function __construct(
         private readonly CommunicationService $communicationService,
