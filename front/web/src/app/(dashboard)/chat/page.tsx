@@ -14,13 +14,15 @@
  */
 
 import { MessageSquare } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 
 import { ModulePageShell } from '@/components/module-page-shell';
 import { ConversationList } from '@/components/chat/conversation-list';
 import { ConversationPanel } from '@/components/chat/conversation-panel';
 import { apiFetch } from '@/lib/api-client';
 import { fetchThreads, type ChatThread } from '@/lib/chat';
+import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
+import { chatT } from '@/lib/i18n/chat';
 
 export default function ChatPage() {
   const [threads, setThreads] = useState<ChatThread[]>([]);
@@ -69,10 +71,10 @@ export default function ChatPage() {
       setOffline(isNetwork);
       setError(
         isNetwork
-          ? 'Réseau indisponible — les conversations se rechargeront automatiquement.'
+          ? chatT(locale, 'offlineNotice')
           : cause instanceof Error && cause.message !== ''
             ? cause.message
-            : 'Impossible de charger les conversations.',
+            : chatT(locale, 'loadError'),
       );
     } finally {
       setLoading(false);
@@ -104,11 +106,13 @@ export default function ChatPage() {
     );
   }, []);
 
+  const locale = useSyncExternalStore<AppLocale>(() => () => {}, getPreferredLocale, () => 'fr');
+
   return (
     <ModulePageShell
-      title="Messagerie"
-      subtitle="Conversations privées et groupes"
-      description="Échangez avec vos collègues dans un fil privé ou un groupe de travail."
+      title={chatT(locale, 'pageTitle')}
+      subtitle={chatT(locale, 'pageSubtitle')}
+      description={chatT(locale, 'pageDescription')}
       icon={MessageSquare}
     >
       {/* Hauteur contrainte : la liste et le fil défilent indépendamment, et
