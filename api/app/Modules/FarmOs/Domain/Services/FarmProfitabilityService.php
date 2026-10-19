@@ -11,6 +11,8 @@ use App\Modules\FarmOs\Domain\Enums\FarmExpenseCategory;
 use App\Modules\FarmOs\Domain\Exceptions\FarmFinanceException;
 use App\Modules\FarmOs\Domain\Models\FarmCampaign;
 use App\Modules\FarmOs\Domain\Models\FarmExpense;
+use App\Modules\FarmOs\Domain\Models\FarmHarvestLot;
+use App\Modules\FarmOs\Domain\Models\FarmLivestockBatch;
 use App\Modules\FarmOs\Domain\Models\FarmSaleLink;
 use Illuminate\Support\Carbon;
 
@@ -185,6 +187,32 @@ final class FarmProfitabilityService
         }
 
         $value = $this->assertPositiveAmount($amount);
+
+        // ISOLATION MULTI-TENANT — FAIL-CLOSED : le lot vise ne doit pas
+        // appartenir a un AUTRE tenant. On interroge explicitement toute la
+        // table (sans le scope courant) : si la ligne existe et porte un autre
+        // `company_id`, l'imputation est refusee. Un identifiant qui n'existe
+        // pas encore n'est pas rejete ici — la cle etrangere logique et les
+        // controles metier du lot restent la source de verite.
+        if ($harvestLotId !== null) {
+            $owner = FarmHarvestLot::crossTenantForPlatformAdmin()
+                ->whereKey($harvestLotId)
+                ->value('company_id');
+
+            if ($owner !== null && $owner !== $company->id) {
+                throw FarmFinanceException::saleTargetNotInCompany('harvest_lot', $harvestLotId);
+            }
+        }
+
+        if ($livestockBatchId !== null) {
+            $owner = FarmLivestockBatch::crossTenantForPlatformAdmin()
+                ->whereKey($livestockBatchId)
+                ->value('company_id');
+
+            if ($owner !== null && $owner !== $company->id) {
+                throw FarmFinanceException::saleTargetNotInCompany('livestock_batch', $livestockBatchId);
+            }
+        }
 
         $connection = FarmSaleLink::query()->getConnection();
 

@@ -57,6 +57,18 @@ final class FarmFinanceException extends RuntimeException
     }
 
     /**
+     * Le lot de recolte (ou le lot d'animaux) vise appartient a un AUTRE tenant.
+     *
+     * Sans ce controle, un tenant pouvait imputer son chiffre d'affaires sur le
+     * lot d'une autre exploitation, faussant les deux rentabilites et exposant
+     * l'existence d'un identifiant etranger.
+     */
+    public static function saleTargetNotInCompany(string $target, int $id): self
+    {
+        return new self(sprintf('FARM_FINANCE_SALE_TARGET_NOT_IN_COMPANY:%s:%d', $target, $id));
+    }
+
+    /**
      * Code stable exploitable par le controleur pour renvoyer un 422 explicite.
      */
     public function errorCode(): string
