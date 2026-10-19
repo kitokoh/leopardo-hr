@@ -82,6 +82,10 @@ enum PlatformRole: string
                 PlatformPermission::PlansManage,
                 PlatformPermission::PayrollView,
                 PlatformPermission::MetricsView,
+                // BC-38 PAIEMENTS (#8741) — registre des instances de paiement,
+                // journal des transactions et réconciliations.
+                PlatformPermission::PaymentsView,
+                PlatformPermission::PaymentsManage,
             ],
             self::Ops => [
                 PlatformPermission::CompaniesView,
