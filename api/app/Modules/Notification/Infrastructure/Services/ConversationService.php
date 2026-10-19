@@ -79,6 +79,7 @@ class ConversationService
     public function __construct(
         private readonly CommunicationService $communicationService,
         private readonly ConversationParticipantPolicy $participantPolicy = new ConversationParticipantPolicy,
+        private readonly ConversationModerationService $moderationService = new ConversationModerationService,
     ) {}
 
     /**
@@ -620,10 +621,28 @@ class ConversationService
                 ->where('company_id', $author->company_id)
                 ->findOrFail($dto->recipientId);
 
+            // #8750 — un blocage ferme la création d'un fil direct, dans les
+            // deux sens. Le message d'erreur reste neutre : il ne dit pas QUI a
+            // bloqué (un blocage n'est pas une information à divulguer).
+            if (! $this->moderationService->canContact($author, $employee->id)) {
+                throw ValidationException::withMessages([
+                    'recipient_id' => ['Cette personne n\'est pas joignable par la messagerie.'],
+                ]);
+            }
+
             return [$employee, $author];
         }
 
-        return [$author, $author->manager];
+        $manager = $author->manager;
+
+        // #8750 — même règle pour un employé qui écrit à son responsable.
+        if ($manager !== null && ! $this->moderationService->canContact($author, $manager->id)) {
+            throw ValidationException::withMessages([
+                'recipient_id' => ['Cette personne n\'est pas joignable par la messagerie.'],
+            ]);
+        }
+
+        return [$author, $manager];
     }
 
     // ────────────────────────────────────────────────────────────────────
@@ -747,6 +766,17 @@ class ConversationService
         if (! $candidate instanceof Employee) {
             throw ValidationException::withMessages([
                 'employee_id' => ['Cet employé n\'appartient pas à votre organisation.'],
+            ]);
+        }
+
+        // #8750 — le bloqueur ne peut pas réintroduire dans un groupe la
+        // personne qu'il a bloquée (ni l'inverse). Le contrôle porte sur le
+        // couple (acteur, candidat), pas sur les autres membres : un groupe
+        // existant peut déjà contenir deux personnes en froid, et l'ajout d'un
+        // tiers ne doit pas être bloqué pour autant.
+        if (! $this->moderationService->canContact($actor, $candidate->id)) {
+            throw ValidationException::withMessages([
+                'employee_id' => ['Cette personne ne peut pas être ajoutée à cette conversation.'],
             ]);
         }
 

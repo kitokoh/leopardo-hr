@@ -502,6 +502,39 @@ class AppServiceProvider extends ServiceProvider
                 ->by('guardian-portal:'.substr(hash('sha256', $token), 0, 16).'|'.$request->ip());
         });
 
+        // #8750 [BOS-CHAT] — anti-spam de l'envoi de messages.
+        //
+        // Un participant authentifié peut inonder un fil : chaque message
+        // déclenche une notification in-app ET un push FCM (coût réel + charge),
+        // donc le débit est borné côté serveur, sur les DEUX dimensions qui
+        // comptent : l'employé (empêche un compte de noyer les autres fils) et
+        // le fil (empêche un groupe d'être monopolisé par plusieurs comptes).
+        //
+        // Bucket DÉDIÉ et non partagé avec `api` : un client qui poll
+        // l'historique (#8749) ne doit pas consommer le quota d'écriture, sinon
+        // une lecture légitime provoquerait un 429 à l'envoi.
+        RateLimiter::for('chat-send', function (Request $request) {
+            $employeeId = $request->user()?->getKey() ?? $request->ip();
+            $threadId = (string) $request->route('thread', 'unknown');
+
+            return [
+                Limit::perMinute((int) config('security.rate_limits.chat_send_per_minute', 30))
+                    ->by('chat-send:user:'.$employeeId),
+                Limit::perMinute((int) config('security.rate_limits.chat_send_thread_per_minute', 60))
+                    ->by('chat-send:thread:'.$threadId),
+            ];
+        });
+
+        // #8750 — création de fils et de groupes : plus coûteuse qu'un message
+        // (résolution de participants, notifications multiples), donc quota
+        // distinct et plus serré.
+        RateLimiter::for('chat-create', function (Request $request) {
+            $employeeId = $request->user()?->getKey() ?? $request->ip();
+
+            return Limit::perMinute((int) config('security.rate_limits.chat_create_per_minute', 10))
+                ->by('chat-create:'.$employeeId);
+        });
+
     }
 
     private function resolvePlanLimit(string $plan): int

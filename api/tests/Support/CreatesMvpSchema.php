@@ -839,6 +839,9 @@ trait CreatesMvpSchema
             $table->index(['conversation_thread_id', 'deleted_at']);
         });
 
+        // #8750 [BOS-CHAT] — modération : tables créées par
+        // createPostSprintModuleTables() (seul chemin exécuté en pgsql).
+
         Schema::create($this->tenantTable('company_announcements'), function (Blueprint $table): void {
             $table->id();
             $table->uuid('company_id')->index();
@@ -1419,6 +1422,45 @@ trait CreatesMvpSchema
 
     private function createPostSprintModuleTables(): void
     {
+        // #8750 [BOS-CHAT] — modération du chat horizontal : blocages et
+        // signalements. Placées ici et non dans la fixture statique : c'est le
+        // seul point d'entrée exécuté après le DROP/recréation de
+        // `shared_tenants`, donc le seul où `hasTable()` voit l'état réel.
+        if (! Schema::hasTable($this->moduleTable('conversation_blocks'))) {
+            Schema::create($this->moduleTable('conversation_blocks'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('blocker_id');
+                $table->unsignedInteger('blocked_id');
+                $table->string('reason', 200)->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+
+                $table->unique(['company_id', 'blocker_id', 'blocked_id']);
+                $table->index(['company_id', 'blocked_id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('conversation_reports'))) {
+            Schema::create($this->moduleTable('conversation_reports'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('reporter_id');
+                $table->unsignedBigInteger('conversation_thread_id')->nullable();
+                $table->unsignedBigInteger('conversation_message_id')->nullable();
+                $table->unsignedInteger('reported_employee_id')->nullable();
+                $table->string('reason', 40);
+                $table->string('details', 1000)->nullable();
+                $table->string('status', 20)->default('open');
+                $table->unsignedInteger('reviewed_by_id')->nullable();
+                $table->timestampTz('reviewed_at')->nullable();
+                $table->string('resolution', 500)->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'status']);
+                $table->index(['company_id', 'conversation_thread_id']);
+            });
+        }
+
         // REST-OS-1/2 (#8603/#8604) — travaux d'impression thermique du Restaurant
         // OS : miroir de la migration tenant 2026_10_16_140001 (garde #5443).
         if (! Schema::hasTable($this->moduleTable('restaurant_print_jobs'))) {
