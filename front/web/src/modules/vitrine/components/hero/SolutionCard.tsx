@@ -145,14 +145,18 @@ export function SolutionCard({ solutionId, locale, onClose, returnFocusRef }: So
         initial={{ opacity: 0, y: 32, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-        className="relative z-10 flex max-h-[88dvh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-emerald-500/20 bg-slate-950/95 shadow-2xl shadow-emerald-500/10 outline-none backdrop-blur-xl"
+        className="relative z-10 flex max-h-[88dvh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-emerald-400/30 bg-slate-950/90 shadow-2xl shadow-emerald-500/20 outline-none backdrop-blur-2xl ring-1 ring-inset ring-white/10"
       >
+        {/* Glow ambient de fond */}
+        <div className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-emerald-500/15 blur-3xl" aria-hidden="true" />
+        <div className="pointer-events-none absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-cyan-500/15 blur-3xl" aria-hidden="true" />
+
         {/* En-tête */}
         <div className="relative border-b border-white/10 px-6 pb-5 pt-6 sm:px-8">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/80 to-transparent" />
           <div className="flex items-start justify-between gap-4">
             <div>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-300">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.2)]">
                 <Sparkles className="h-3 w-3" aria-hidden="true" />
                 {copy.badge}
               </span>
@@ -170,7 +174,7 @@ export function SolutionCard({ solutionId, locale, onClose, returnFocusRef }: So
               type="button"
               onClick={onClose}
               aria-label={copy.close}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-slate-300 transition-all hover:bg-white/20 hover:text-white hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
             >
               <X className="h-5 w-5" aria-hidden="true" />
             </button>
@@ -219,21 +223,24 @@ export function SolutionCard({ solutionId, locale, onClose, returnFocusRef }: So
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col gap-2.5 border-t border-white/10 bg-slate-950/80 px-6 py-5 sm:flex-row sm:px-8">
+        <div className="flex flex-col gap-3 border-t border-white/10 bg-slate-950/90 px-6 py-5 backdrop-blur-md sm:flex-row sm:px-8">
           <Link
             href={withLocaleHref(detail.href, search)}
-            className="group inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-cyan-600 px-6 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+            className="group relative inline-flex min-h-12 flex-1 items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-500 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-950/60 transition-all duration-300 hover:scale-[1.02] hover:shadow-emerald-500/25 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
           >
-            {detail.cta}
-            <ArrowRight
-              className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-              aria-hidden="true"
-            />
+            <span className="relative z-10 flex items-center gap-2">
+              {detail.cta}
+              <ArrowRight
+                className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+                aria-hidden="true"
+              />
+            </span>
+            <span className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
           </Link>
           <Link
             href={withLocaleHref('/signup', search)}
             prefetch={false}
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-white/15 hover:border-white/25 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
           >
             {copy.start}
           </Link>

@@ -40,26 +40,27 @@ export function FeatureCard({
       whileInView={{ y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.6, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -8, transition: { duration: 0.25 } }}
+      whileHover={{ y: -6, transition: { duration: 0.25 } }}
       className={`group relative ${isHighlighted ? 'lg:col-span-1 lg:row-span-2' : ''}`}
     >
       {/* Glow effect */}
-      <div className={`absolute -inset-px rounded-3xl bg-gradient-to-r ${gradient} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500`} />
+      <div className={`absolute -inset-px rounded-3xl bg-gradient-to-r ${gradient} opacity-0 group-hover:opacity-25 blur-xl transition-opacity duration-500`} />
 
       <div
-        className={`relative h-full bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-8 transition-all duration-300 group-hover:border-emerald-200/50 dark:group-hover:border-emerald-800/50 group-hover:shadow-xl ${
-          isHighlighted ? 'bg-gradient-to-br from-emerald-50 to-cyan-50 dark:from-emerald-900/20 dark:to-cyan-900/20' : ''
+        className={`relative h-full rounded-3xl border border-slate-200/90 bg-white/90 p-8 shadow-sm backdrop-blur-xl transition-all duration-300 hover:shadow-xl dark:border-slate-800/90 dark:bg-slate-900/90 ${
+          isHighlighted ? 'bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 border-emerald-300/60 dark:border-emerald-700/60' : 'hover:border-emerald-300/80 dark:hover:border-emerald-700/80'
         }`}
       >
+        <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         {/* Icon + Stats */}
         <div className="flex items-center justify-between mb-6">
-          <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+          <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-md shadow-emerald-950/20 group-hover:scale-105 transition-transform duration-300`}>
             <div className="w-7 h-7 text-white">{icon}</div>
           </div>
           {stats && (
             <div className="text-right">
               <div className="text-2xl font-black text-slate-900 dark:text-white">{stats.value}</div>
-              <div className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">{stats.label}</div>
+              <div className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">{stats.label}</div>
             </div>
           )}
         </div>
