@@ -167,7 +167,7 @@
   {
    "name": "CrmTaskOverdue",
    "class": "App\\Events\\CrmTaskOverdue",
-   "owner": "BC-17 CRM",
+   "owner": "BC-11 CRM",
    "version": 1,
    "status": "active",
    "payload": {
