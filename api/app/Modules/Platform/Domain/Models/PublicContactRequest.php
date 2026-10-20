@@ -17,6 +17,15 @@ use Illuminate\Support\Carbon;
  * visé est porté par (`target_type`, `target_slug`) ; `resolved_company_id`
  * n'est qu'une trace d'acheminement écrite après résolution fail-closed.
  *
+ * EXCEPTION TENANT-SCOPE (#7999) : table PLATEFORME (schéma public) SANS
+ * colonne `company_id` — un visiteur n'appartient à aucun tenant et peut
+ * contacter plusieurs professionnels dans la même session. Le rattachement au
+ * professionnel visé est porté par (`target_type`, `target_slug`) ;
+ * `resolved_company_id` n'est qu'une trace d'acheminement écrite après
+ * résolution fail-closed, jamais un critère de lecture publique. Le trait
+ * `BelongsToCompany` est donc inapplicable (même régime que
+ * `MarketplaceBuyer` #7814 et `FundraiserPublicLink`).
+ *
  * Séparation stricte avec Léa (assistante IA) : cette table n'a AUCUN lien avec
  * `ai_conversations` / `ai_audit_logs` — ni clé, ni service partagé, ni
  * permission commune. Un message humain entrant n'alimente jamais la mémoire
