@@ -105,9 +105,29 @@ const fr = {
     free: "Libre",
     selected: "Sélectionné",
     taken: "Indisponible",
+    held: "Réservation en cours",
+    reserved: "Réservé",
+    pendingPayment: "Paiement en attente",
+    sold: "Vendu",
+    blocked: "Bloqué",
+    unavailable: "Indisponible",
+    aisle: "Couloir",
+    absent: "Siège absent",
+    legendTitle: "États des sièges",
+    mapLabel: "Plan des sièges du véhicule",
+    freeOnTotal: "place(s) libre(s) sur",
+    selectedCountLabel: "sélectionnée(s)",
+    seatLabel: "Siège",
     autoAssign: "Attribution automatique par l'agence",
     selectedCount: "sièges sélectionnés",
     seatWord: "Siège",
+    revalidatedOnConfirm:
+      "La disponibilité est vérifiée à nouveau par le serveur au moment de la confirmation : si un siège a été pris entre-temps, la réservation est refusée et le plan actualisé.",
+    refreshing: "Actualisation du plan…",
+    refreshNote:
+      "Le plan s'actualise automatiquement. La disponibilité définitive est vérifiée par le serveur à la confirmation.",
+    seatTakenDuringSelection:
+      "Un siège que vous aviez sélectionné vient d'être pris. Il a été retiré de votre sélection — choisissez-en un autre.",
   },
   checkout: {
     title: "Vos informations",
@@ -412,6 +432,26 @@ const en: Dict = {
     autoAssign: "Automatic assignment by the agency",
     selectedCount: "seats selected",
     seatWord: "Seat",
+    held: "Booking in progress",
+    reserved: "Reserved",
+    pendingPayment: "Payment pending",
+    sold: "Sold",
+    blocked: "Blocked",
+    unavailable: "Unavailable",
+    aisle: "Aisle",
+    absent: "Seat absent",
+    legendTitle: "Seat states",
+    mapLabel: "Vehicle seat map",
+    freeOnTotal: "seat(s) free out of",
+    selectedCountLabel: "selected",
+    seatLabel: "Seat",
+    revalidatedOnConfirm:
+      "Availability is checked again by the server at confirmation: if a seat was taken in the meantime, the booking is refused and the seat map refreshed.",
+    refreshing: "Refreshing the seat map…",
+    refreshNote:
+      "The seat map refreshes automatically. Final availability is checked by the server at confirmation.",
+    seatTakenDuringSelection:
+      "A seat you had selected was just taken. It has been removed from your selection — please pick another one.",
   },
   checkout: {
     title: "Your details",
@@ -667,4 +707,21 @@ export function statusLabel(dict: Dict, value: string | null | undefined): strin
     refunded: dict.status.refunded,
   };
   return map[value] ?? value;
+}
+
+/** Libellé humain d'un état de siège (plan de sièges, #8602). */
+export function seatStatusLabel(dict: Dict, status: string): string {
+  const map: Record<string, string> = {
+    free: dict.seats.free,
+    selected: dict.seats.selected,
+    held: dict.seats.held,
+    reserved: dict.seats.reserved,
+    pending_payment: dict.seats.pendingPayment,
+    sold: dict.seats.sold,
+    blocked: dict.seats.blocked,
+    unavailable: dict.seats.unavailable,
+    aisle: dict.seats.aisle,
+    absent: dict.seats.absent,
+  };
+  return map[status] ?? status;
 }

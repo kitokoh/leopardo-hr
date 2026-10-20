@@ -16,9 +16,7 @@ import {
   Mail,
   Menu,
   Monitor,
-  Moon,
   Plane,
-  Sun,
   UtensilsCrossed,
   X,
 } from 'lucide-react'
@@ -28,8 +26,6 @@ import type { AppLocale } from '@/lib/i18n'
 import { getEnvConfig } from '../lib/env'
 
 type Props = {
-  isDark: boolean
-  onToggleDark: () => void
   /**
    * #8437 — la page d'accueil ouvre sur un héro « nuit permanente » (layout
    * `stage`). Tant que la page n'a pas scrollé, la barre flotte sur fond
@@ -105,10 +101,10 @@ function buildNavEntries(locale: AppLocale): NavEntry[] {
   // Applications mobiles) ; « Comparer » (/alternatives) monte en entrée
   // directe, c'est un argument de vente.
   return [
-    // #8489 (I-02) — le point d'entree nome du Business OS : « Trade »
-    // precede les packs (il repond d'abord au modele d'activite, puis au
-    // metier). Libelle depuis le catalogue partage (`vitrine.nav.trade`).
-    { href: '/trade', label: nav('trade') },
+    // Mission Leopardo — « Trade » quitte la barre du haut : le point d'entrée
+    // du Business OS vit désormais dans les offres (/packs, carte dédiée) ET
+    // sous la constellation (fiche interactive). Le lien profond /trade reste
+    // servi — routes, sitemap et redirections inchangés.
     { href: '/pricing', label: nav('pricing') },
     {
       label: nav('packs'),
@@ -173,7 +169,55 @@ function DropdownMenu({
   )
 }
 
-export function Navbar({ isDark, onToggleDark, overDarkStage = false }: Props) {
+/**
+ * #8461 (vague 7) — sélecteur de langue en ICÔNE SEULE.
+ *
+ * Retour propriétaire : le libellé texte (« Français ») à côté du globe doit
+ * disparaître — l'icône suffit. Le `<select>` natif reste le VRAI contrôle
+ * (clavier, lecteur d'écran, menu du système) mais devient invisible et couvre
+ * la pastille : rien à réapprendre, aucune perte d'accessibilité — le nom
+ * accessible (`aria-label`) et l'infobulle (`title`) portent désormais la
+ * sémantique que le texte visible assurait.
+ */
+function LocaleSwitcher({
+  locale,
+  options,
+  label,
+  onChange,
+  variant = 'desktop',
+}: {
+  locale: AppLocale
+  options: ReadonlyArray<{ value: AppLocale; nativeLabel: string }>
+  label: string
+  onChange: (next: AppLocale) => void
+  variant?: 'desktop' | 'mobile'
+}) {
+  return (
+    <span
+      className={`relative inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200/80 bg-white/80 text-slate-600 transition-colors hover:text-slate-900 focus-within:ring-2 focus-within:ring-emerald-500/70 dark:border-slate-800/80 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:text-white ${
+        variant === 'desktop' ? 'hidden md:inline-flex' : ''
+      }`}
+      title={label}
+    >
+      <Globe className="h-4 w-4" aria-hidden="true" />
+      <select
+        value={locale}
+        onChange={(event) => onChange(event.target.value as AppLocale)}
+        aria-label={label}
+        title={label}
+        className="absolute inset-0 h-full w-full cursor-pointer appearance-none rounded-xl bg-transparent text-transparent opacity-0 outline-none"
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.nativeLabel}
+          </option>
+        ))}
+      </select>
+    </span>
+  )
+}
+
+export function Navbar({ overDarkStage = false }: Props) {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
@@ -346,30 +390,12 @@ export function Navbar({ isDark, onToggleDark, overDarkStage = false }: Props) {
           </nav>
 
           <div className="flex items-center gap-3">
-            <label className="hidden md:flex items-center gap-2 rounded-xl border border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/80 px-3 py-2 text-sm text-slate-600 dark:text-slate-300">
-              <Globe className="w-4 h-4" />
-              <span className="sr-only">{copy.nav.localeLabel}</span>
-              <select
-                value={locale}
-                onChange={(event) => handleLocaleChange(event.target.value as typeof locale)}
-                className="bg-transparent outline-none"
-                aria-label={copy.nav.localeLabel}
-              >
-                {options.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.nativeLabel}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <button
-              onClick={onToggleDark}
-              className="p-2.5 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
-              aria-label={copy.nav.themeLabel}
-            >
-              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
+            <LocaleSwitcher
+              locale={locale}
+              options={options}
+              label={copy.nav.localeLabel}
+              onChange={handleLocaleChange}
+            />
 
             {hasSession ? (
               /* #7492 — session active : un seul CTA, vers l'espace. */
@@ -437,20 +463,14 @@ export function Navbar({ isDark, onToggleDark, overDarkStage = false }: Props) {
             className="lg:hidden bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl border-t border-slate-200/50 dark:border-slate-800/50 max-h-[80vh] overflow-y-auto"
           >
             <div className="px-6 py-6 space-y-1">
-              <div className="mb-4 flex items-center gap-2 rounded-xl border border-slate-200/80 dark:border-slate-800/80 px-4 py-3 text-sm text-slate-700 dark:text-slate-300">
-                <Globe className="w-4 h-4" />
-                <select
-                  value={locale}
-                  onChange={(event) => handleLocaleChange(event.target.value as typeof locale)}
-                  className="w-full bg-transparent outline-none"
-                  aria-label={copy.nav.localeLabel}
-                >
-                  {options.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.nativeLabel}
-                    </option>
-                  ))}
-                </select>
+              <div className="mb-4">
+                <LocaleSwitcher
+                  locale={locale}
+                  options={options}
+                  label={copy.nav.localeLabel}
+                  onChange={handleLocaleChange}
+                  variant="mobile"
+                />
               </div>
 
               {entries.map((entry, index) =>

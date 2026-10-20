@@ -109,6 +109,7 @@ return [
     'EMAIL_ALREADY_REGISTERED' => 'Bu e-postayla zaten bir hesap var. Doğrudan giriş yapın.',
     'SESSION_ALREADY_ACTIVE' => 'Zaten bir Leopardo çalışma alanında oturum açmışsınız. Yeni bir tane oluşturmadan önce çıkış yapın.',
     'INVALID_SOLUTION' => 'Bilinmeyen veya kullanılamayan sektörel çözüm: :solution.',
+    'INVALID_TRADE_PROFILE' => 'Bu profesyonel profil seçilen pazarla uyumlu değil (uluslararası: ithalatçı, ihracatçı veya her ikisi; yerel: toptancı veya perakendeci).',
     'INVALID_COUNTRY' => 'Kayıt ülkesi geçersiz veya desteklenmiyor. Lütfen kaydı yeniden başlatın.',
     'NO_PLAN_AVAILABLE' => 'Deneme hizmeti geçici olarak kullanılamıyor.',
     'PROVISIONING_FAILED' => 'Çalışma alanınız oluşturulurken hata oluştu. Lütfen tekrar deneyin.',
@@ -245,6 +246,7 @@ return [
     // Platform — RTMX (#5277): mobil yazma işlemlerinin idempotent tekrarı
     'INVALID_IDEMPOTENCY_KEY' => 'Geçersiz idempotency anahtarı.',
     'IDEMPOTENCY_IN_PROGRESS' => 'Aynı istek zaten işleniyor. Birazdan tekrar deneyin.',
+    'IDEMPOTENCY_KEY_REUSED' => 'Bu idempotency anahtarı farklı bir istek için kullanıldı.',
     'ATTENDANCE_PERIOD_CLOSED' => 'Devam süresi kapatıldı: düzeltmeler kilitli.',
     'DEPARTMENT_DELETED' => 'Departman silindi.',
     'POSITION_DELETED' => 'Pozisyon silindi.',
@@ -307,6 +309,7 @@ return [
     // #7268 — Onboarding: yerelleştirilmiş adım mesajları (sabit metin yok)
     'ONBOARDING_STEP_REQUIRED' => 'Bu adım zorunludur ve atlanamaz.',
     'ONBOARDING_STEP_NOT_DONE' => 'Bu adım tamamlandı olarak işaretlenemez: ilgili bir işlem kaydedilmedi.',
+    'ONBOARDING_STEP_NOT_FOUND' => 'Bu adım çalışma alanınızda mevcut değil.',
     'COMPANY_CONTEXT_REQUIRED' => 'Bir şirket bağlamı gerekli.',
     // #7322 — Kullanıcının yatay modülü kendi kendine etkinleştirmesi.
     'SOLO_TEAM_TOOL_NOT_AVAILABLE' => 'Bağımsız (solo) profil kapsamı dışındaki ekip aracı: :module.',

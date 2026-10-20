@@ -174,6 +174,53 @@ describe('POST /api/forms/signup — contrat de la demande d’essai', () => {
     expect(lastBackendBody(fetchMock).company).toBeUndefined();
   });
 
+  // BOS-O-02 / #8625 — l'intention de marché du point d'entrée « Trade » doit
+  // SURVIVRE au tunnel. Avant ce correctif, `market_type`/`trade_profile`
+  // n'étaient pas déclarés dans le schéma zod : ils étaient supprimés
+  // silencieusement et le tenant naissait sans marché ni profil.
+  it('#8625 — transmet l’intention de marché au backend', async () => {
+    const response = await POST(
+      makeRequest({
+        email: 'negociant@exemple.dz',
+        company: 'Negoce',
+        country: 'DZ',
+        locale: 'fr',
+        market_type: 'international',
+        trade_profile: 'importer',
+      }),
+    );
+
+    expect(response.status).toBe(200);
+
+    const body = lastBackendBody(fetchMock);
+    expect(body.market_type).toBe('international');
+    expect(body.trade_profile).toBe('importer');
+  });
+
+  it('#8625 — n’invente aucune intention quand le visiteur n’en a pas déclaré', async () => {
+    await POST(makeRequest({ email: 'neutre@exemple.dz', company: 'Neutre', country: 'DZ' }));
+
+    const body = lastBackendBody(fetchMock);
+    expect(body.market_type).toBeUndefined();
+    expect(body.trade_profile).toBeUndefined();
+  });
+
+  it('#8625 — refuse une valeur de marché hors allowlist (400, aucun appel backend)', async () => {
+    const response = await POST(
+      makeRequest({
+        email: 'forge@exemple.dz',
+        company: 'Forge',
+        country: 'DZ',
+        market_type: 'planetary',
+      }),
+    );
+
+    // Le schéma zod de la route rejette la valeur (400) AVANT tout appel au
+    // backend : une intention forgée ne peut pas atteindre le provisioning.
+    expect(response.status).toBe(400);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it('#7301 — expose l’état réel de persistance du lead (jamais un succès muet)', async () => {
     mockedLeadCapture.captureMarketingLead.mockResolvedValueOnce({
       id: 'signup_pending',

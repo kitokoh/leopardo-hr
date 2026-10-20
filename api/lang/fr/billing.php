@@ -11,4 +11,7 @@ return [
     'trial_password_link_expired' => 'Ce lien de définition de mot de passe a expiré (72 h). Demandez un code de connexion depuis la page de connexion, puis définissez votre mot de passe depuis votre espace.',
     'trial_password_manager_missing' => "Compte administrateur de l'essai introuvable. Contactez le support.",
     'trial_password_set' => 'Mot de passe enregistré. Vous pouvez maintenant vous connecter.',
+    // BOS-O-01/03 (#8623/#8625) — messages du provisioning guidé (garde i18n PA2-I18N-007).
+    'invalid_market_intent' => 'Intention de marché invalide : profil « :profile » incompatible avec le marché « :market ».',
+    'primary_site_name' => 'Établissement principal',
 ];

@@ -11,4 +11,7 @@ return [
     'trial_password_link_expired' => 'انتهت صلاحية رابط تعيين كلمة المرور هذا (72 ساعة). اطلب رمز تسجيل دخول من صفحة تسجيل الدخول، ثم عيّن كلمة المرور من مساحتك.',
     'trial_password_manager_missing' => 'لم يتم العثور على حساب مسؤول التجربة. يُرجى التواصل مع الدعم.',
     'trial_password_set' => 'تم حفظ كلمة المرور. يمكنك الآن تسجيل الدخول.',
+    // BOS-O-01/03 (#8623/#8625) — guided provisioning messages (i18n guard PA2-I18N-007).
+    'invalid_market_intent' => 'نية سوق غير صالحة: الملف الشخصي «:profile» غير متوافق مع السوق «:market».',
+    'primary_site_name' => 'المنشأة الرئيسية',
 ];

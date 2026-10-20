@@ -55,9 +55,25 @@ class StoreFuelSaleRequest extends FormRequest
                     fn (Builder $query): Builder => $query->where('company_id', $actor?->company_id)
                 ),
             ],
+            // Fidélité (FUEL-016) : la vente peut être rattachée à un client du
+            // même tenant. Sans cette règle, `customer_id` était silencieusement
+            // abandonné par `create()` ($fillable) → aucun point de fidélité.
+            'customer_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('fuel_customers', 'id')->where(
+                    fn (Builder $query): Builder => $query->where('company_id', $actor?->company_id)
+                ),
+            ],
             'product' => ['required', 'string', 'max:80'],
             'quantity' => ['required', 'numeric', 'gt:0', 'max:999999999999.999'],
             'unit_price' => ['required', 'numeric', 'min:0', 'max:999999999999.99'],
+            // P1-a (audit 2026-10-17) — nature du reglement. `source` decrit la
+            // provenance de la saisie, `payment_method` le reglement : les deux
+            // sont necessaires pour ventiler l'encaissement d'une session.
+            'payment_method' => ['nullable', Rule::in(FuelSale::PAYMENT_METHODS)],
+            // Reference externe opaque (TPE, bon, compte pro) — jamais un PAN.
+            'payment_reference' => ['nullable', 'string', 'max:120'],
             'sale_time' => ['nullable', 'date'],
             'source' => ['nullable', Rule::in(FuelSale::SOURCES)],
             'external_id' => ['nullable', 'string', 'max:120'],

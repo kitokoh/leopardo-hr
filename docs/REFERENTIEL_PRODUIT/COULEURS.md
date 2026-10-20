@@ -97,6 +97,34 @@ Voir `docs/REFERENTIEL_PRODUIT/STATUTS.md` pour l'association statut ↔ couleur
 - **Jamais de couleur hardcodée** dans un écran ou une vue. Toujours passer par les tokens.
 - **Une couleur = un domaine** (L.05). Interdiction de réutiliser le vert RH pour de la finance.
 - **Contraste minimum** : le texte sur un fond doit respecter WCAG AA (ratio ≥ 4.5 pour texte normal, ≥ 3 pour texte large).
+## Palette du plan de sièges Travel OS (BC-24, documentée le 2026-10-17)
+
+> États d'un siège sur le plan visuel du véhicule (front grand public +
+> back-office). Chaque état est **aussi** porté par un symbole et un libellé
+> texte : la couleur n'est jamais la seule information (accessibilité, daltonisme,
+> impression noir & blanc). Ces teintes sont les palettes Tailwind par défaut,
+> documentées ici en application de la règle **L.07**.
+
+| État | Rôle | Hex | Tailwind |
+|---|---|---|---|
+| Libre | siège disponible | `#FFFFFF` | `bg-white` |
+| Sélectionné | sélection en cours (vue locale) | `#2563EB` | `bg-blue-600` |
+| Sélectionné (halo) | anneau de focus | `#BFDBFE` | `ring-blue-200` |
+| Réservation en cours | grâce period (`reserved_until`) | `#FEF3C7` | `bg-amber-100` |
+| Réservation en cours (bord) | bord de la grâce period | `#FBBF24` | `border-amber-400` |
+| Réservé | en attente de paiement | `#FFEDD5` | `bg-orange-100` |
+| Réservé (bord) | bord réservé | `#FB923C` | `border-orange-400` |
+| Paiement en attente | statut de paiement non abouti | `#EDE9FE` | `bg-violet-100` |
+| Paiement en attente (bord) | bord paiement en attente | `#A78BFA` | `border-violet-400` |
+| Vendu | réservé et confirmé | `#64748B` | `bg-slate-500` |
+| Bloqué | blocage opérateur | `#FEE2E2` | `bg-red-100` |
+| Bloqué (bord) | bord bloqué | `#F87171` | `border-red-400` |
+| Indisponible | indisponibilité documentée | `#F1F5F9` | `bg-slate-100` |
+| Texte vendu | libellé sur fond vendu | `#F1F5F9` | `text-slate-100` |
+| Texte bloqué | libellé bloqué | `#991B1B` | `text-red-800` |
+| Texte réservé | libellé réservé | `#9A3412` | `text-orange-800` |
+| Texte grâce period | libellé grâce period | `#92400E` | `text-amber-800` |
+
 - **Mode sombre / clair par surface** : **mobile (apps Flutter) = dark par défaut**
   (expérience principale, décision PA2-MOB-012 — `app_theme.dart`), le light étant conservé
   pour previews/tests ; **web & admin = light par défaut** (Tailwind). Les tokens `Dark`

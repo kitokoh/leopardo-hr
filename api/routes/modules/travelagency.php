@@ -38,6 +38,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelDistributorKeyC
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelDistributorReadController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelEngagementController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelExportController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelFleetTrackingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelLoyaltyController;
@@ -115,6 +116,16 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // Dernière position connue d'un véhicule (#8540) — ingestion par un
         // dispositif autorisé (boîtier GPS ou application).
         Route::post('/vehicles/{travelVehicle}/position', [TravelVehicleController::class, 'recordPosition']);
+        // #8548 — historique des positions RÉELLEMENT transmises (borné par
+        // tenant, véhicule et fenêtre temporelle). Liste vide si le véhicule
+        // n'a aucun dispositif : jamais de points fabriqués.
+        Route::get('/vehicles/{travelVehicle}/positions', [TravelVehicleController::class, 'positionHistory']);
+
+        // Tableau de bord de suivi de la flotte (#8548) — lecture seule :
+        // dernière position connue, fraîcheur (récente/ancienne/indisponible),
+        // distinction mesure/estimation et départs à venir par véhicule.
+        // Aucun fournisseur de télémétrie n'est appelé ici.
+        Route::get('/fleet/tracking', [TravelFleetTrackingController::class, 'index']);
 
         // Routes ville→ville + étapes ordonnées (TRAVEL-307/#6037).
         Route::get('/routes', [TravelRouteController::class, 'index']);
@@ -146,6 +157,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // Manifeste des passagers (TRAVEL-318/#6048) + équipage (#7638).
         Route::get('/trips/{travelTrip}/manifest', [TravelTripController::class, 'manifest']);
 
+        // #8621 — Inventaire des sièges pour le plan de sièges du back-office
+        // (tenant-scopé : le responsable ne voit que ses propres trajets).
+        Route::get('/trips/{travelTrip}/seats', [TravelTripController::class, 'seats']);
+
+        // #8622 — Évaluation d'un remplacement de véhicule (aucune écriture) :
+        // l'opérateur voit les conflits avant de valider.
+        Route::get('/trips/{travelTrip}/vehicle-assessment', [TravelTripController::class, 'assessVehicle']);
+
         // Affectations d'équipage — pont RH employee_id (TRAVEL-STAFF/#7638).
         Route::get('/staff-assignments', [TravelStaffAssignmentController::class, 'index']);
         Route::post('/staff-assignments', [TravelStaffAssignmentController::class, 'store']);
@@ -167,6 +186,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // Vérification d'authenticité d'un billet (#8538) — LECTURE SEULE,
         // distincte de la consommation (check-in ci-dessous).
         Route::post('/tickets/verify', [TravelTicketController::class, 'verify']);
+
+        // #8546 — recherche manuelle par référence (secours caméra
+        // indisponible). LECTURE SEULE également : ne consomme jamais.
+        Route::post('/tickets/lookup', [TravelTicketController::class, 'lookup']);
 
         // Check-in / embarquement (TRAVEL-317/#6047).
         Route::post('/tickets/{travelTicket}/check-in', [TravelTicketController::class, 'checkIn']);

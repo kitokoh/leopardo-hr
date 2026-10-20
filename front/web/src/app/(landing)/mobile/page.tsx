@@ -1,6 +1,5 @@
 ﻿'use client';
 
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
@@ -246,7 +245,6 @@ const colorMap: Record<string, { bg: string; icon: string; border: string; badge
    Page component
 ───────────────────────────────────────── */
 export default function MobilePage() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const { locale: lang, direction, setLocale } = useVitrineLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -269,10 +267,10 @@ export default function MobilePage() {
 
   return (
     <div
-      className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}
+      className={`min-h-screen bg-white `}
       dir={isRtl ? 'rtl' : 'ltr'}
     >
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+      <Navbar />
 
       {/* ── Hero ───────────────────────────────── */}
       <section className="pt-32 pb-20 px-4">

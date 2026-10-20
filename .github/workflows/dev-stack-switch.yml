@@ -1,0 +1,161 @@
+name: Dev Stack Switch
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Épic #8659 / issues #8662 (manuelle) et #8663 (automatique).
+#
+# Bascule le tier dev vers une autre stack du registre deploy/dev-stacks.json.
+# Deux déclencheurs, une seule logique (scripts/dev-stack-switch.sh) :
+#   - workflow_dispatch : un dev lance la bascule à la demande (« dire à un
+#     dev de le faire » = lui donner ce bouton) ;
+#   - workflow_call : appelé par le watchdog de dev-keepalive.yml quand la
+#     stack active reste malade (bascule automatique, cooldown côté appelant).
+#
+# Ce workflow n'écrit QUE des variables DEV_* du dépôt : la PROD (secrets
+# d'environnement production, render.prod.yaml, deploy-prod.yml) est hors de
+# portée. Les secrets Render par stack (DEV_STACK_<X>_RENDER_API_KEY) ne sont
+# requis QUE pour --seed ; absents → bascule sans reseed, étape sautée.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_dispatch:
+    inputs:
+      stack:
+        description: "Stack cible (registre deploy/dev-stacks.json)"
+        type: choice
+        options: [a, b, c]
+        required: true
+      seed:
+        description: "Re-initialiser la base de la cible (RESET_TEST_DB_ONCE one-shot — données fictives)"
+        type: boolean
+        default: false
+      force:
+        description: "Basculer même si la cible n'est pas 'ready'/saine (débogage assumé)"
+        type: boolean
+        default: false
+  workflow_call:
+    inputs:
+      stack:
+        type: string
+        required: true
+      seed:
+        type: boolean
+        default: false
+      force:
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: write    # gh variable set (DEV_ACTIVE_STACK, DEV_API_BASE_URL…)
+  issues: write     # rapport [dev-switch]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: dev-stack-switch
+  cancel-in-progress: false
+
+jobs:
+  switch:
+    name: Bascule dev → stack ${{ inputs.stack }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout (scripts + registre)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: |
+            scripts/dev-stack-health.sh
+            scripts/dev-stack-switch.sh
+            deploy/dev-stacks.json
+          sparse-checkout-cone-mode: false
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bascule (scripts/dev-stack-switch.sh)
+        id: run
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          # Clés API Render par stack — utilisées UNIQUEMENT si seed=true.
+          DEV_STACK_A_RENDER_API_KEY: ${{ secrets.DEV_STACK_A_RENDER_API_KEY }}
+          DEV_STACK_B_RENDER_API_KEY: ${{ secrets.DEV_STACK_B_RENDER_API_KEY }}
+          DEV_STACK_C_RENDER_API_KEY: ${{ secrets.DEV_STACK_C_RENDER_API_KEY }}
+        run: |
+          set -euo pipefail
+          chmod +x scripts/dev-stack-switch.sh
+
+          stack="${{ inputs.stack }}"
+          args=("$stack")
+          [[ "${{ inputs.force }}" == "true" ]] && args+=(--force)
+
+          if [[ "${{ inputs.seed }}" == "true" ]]; then
+            key_var="DEV_STACK_${stack^^}_RENDER_API_KEY"
+            if [[ -n "${!key_var:-}" ]]; then
+              export RENDER_API_KEY="${!key_var}"
+              args+=(--seed)
+            else
+              echo "::warning::seed demandé mais secret ${key_var} absent — bascule SANS reseed (données dev fictives, à rejouer à la main)."
+            fi
+          fi
+
+          scripts/dev-stack-switch.sh "${args[@]}" | tee /tmp/switch.log
+
+      - name: Propager API_PROXY_TARGET sur Vercel (proxy runtime #8710)
+        if: steps.run.outcome == 'success'
+        shell: bash
+        env:
+          VERCEL_DEV_TOKEN: ${{ secrets.VERCEL_DEV_TOKEN }}
+          VERCEL_DEV_PROJECT_ID: ${{ vars.VERCEL_DEV_PROJECT_ID }}
+          VERCEL_DEV_TEAM_ID: ${{ vars.VERCEL_DEV_TEAM_ID }}
+        run: |
+          set -euo pipefail
+          # Le proxy Next résout sa cible au RUNTIME via API_PROXY_TARGET (#8710) :
+          # sans cette propagation, une bascule auto laisserait le proxy appeler
+          # l'ancienne stack. Secret absent → étape sautée avec warning (pas de
+          # casse de la bascule Render, mais le proxy ne suivrait pas).
+          if [[ -z "${VERCEL_DEV_TOKEN:-}" ]]; then
+            echo "::warning::VERCEL_DEV_TOKEN absent — propagation Vercel sautée. Poser API_PROXY_TARGET à la main puis redeployer le proxy."
+            exit 0
+          fi
+          target="${{ vars.DEV_API_BASE_URL }}"
+          project_id="${VERCEL_DEV_PROJECT_ID:-prj_RcRVAujaFul8WNZXxgnNKTb9lXdr}"
+          team_id="${VERCEL_DEV_TEAM_ID:-team_pjMBnfirN9999uUp6Fg9u6F9}"
+          for key in API_PROXY_TARGET NEXT_PUBLIC_API_URL; do
+            curl -sS -X POST "https://api.vercel.com/v10/projects/${project_id}/env?teamId=${team_id}" \
+              -H "Authorization: Bearer ${VERCEL_DEV_TOKEN}" -H "Content-Type: application/json" \
+              -d "{\"key\":\"${key}\",\"value\":\"${target}\",\"target\":[\"production\",\"preview\"],\"type\":\"plain\"}" \
+              >/dev/null
+          done
+          curl -sS -X POST "https://api.vercel.com/v13/deployments?teamId=${team_id}&forceNew=1" \
+            -H "Authorization: Bearer ${VERCEL_DEV_TOKEN}" -H "Content-Type: application/json" \
+            -d "{\"name\":\"leopardo\",\"project\":\"${project_id}\",\"target\":\"production\",\"gitSource\":{\"type\":\"github\",\"repoId\":1061111898,\"ref\":\"main\"}}" \
+            >/dev/null
+          echo "Proxy Vercel propagé vers ${target} + redeploy déclenché."
+
+      - name: Rapport de bascule (issue [dev-switch])
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          outcome="${{ steps.run.outcome }}"
+          if [[ "$outcome" == "success" ]]; then
+            title="[dev-switch] Bascule dev → stack ${{ inputs.stack }} (${{ github.event_name }})"
+            body="$(printf '%s\n\n%s\n%s\n\n%s\n\n%s' \
+              "Bascule **réussie** le $(date -u '+%Y-%m-%d %H:%M UTC') (déclencheur : ${{ github.event_name }}, seed=${{ inputs.seed }})." \
+              "- DEV_ACTIVE_STACK = ${{ inputs.stack }}" \
+              "- DEV_API_BASE_URL = voir le log du run #${{ github.run_number }}" \
+              "**À faire (manuel, protection de branche)** : aligner deploy/dev-stacks.json (active_stack, statuts) dans une prochaine PR — le watchdog lit l'état courant depuis les variables, le registre reste la source documentaire." \
+              "_Référence : épic #8659._")"
+          else
+            title="[dev-switch] ÉCHEC de bascule dev → stack ${{ inputs.stack }}"
+            body="$(printf '%s\n\n%s' \
+              "La bascule vers ${{ inputs.stack }} a **échoué** (run #${{ github.run_number }}, $(date -u '+%Y-%m-%d %H:%M UTC')). Voir le log du job. Runbook : docs/ops/DEV_STACK_ROTATION.md § Dépannage." \
+              "_Référence : épic #8659._")"
+          fi
+          gh issue create --repo "${{ github.repository }}" --title "$title" --body "$body" >/dev/null
+          echo "Rapport créé : $title"

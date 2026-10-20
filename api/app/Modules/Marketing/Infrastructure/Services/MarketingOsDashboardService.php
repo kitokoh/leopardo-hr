@@ -7,6 +7,7 @@ namespace App\Modules\Marketing\Infrastructure\Services;
 use App\Modules\Marketing\Domain\Enums\ContentIdeaStatus;
 use App\Modules\Marketing\Domain\Enums\MarketingAssetValidationStatus;
 use App\Modules\Marketing\Domain\Enums\MarketingCampaignStatus;
+use App\Modules\Marketing\Domain\Enums\MarketingPublicationStatsSource;
 use App\Modules\Marketing\Domain\Enums\MarketingPublicationStatus;
 use App\Modules\Marketing\Domain\Models\ContentIdea;
 use App\Modules\Marketing\Domain\Models\MarketingAsset;
@@ -246,10 +247,31 @@ class MarketingOsDashboardService
      */
     private function publicationPerformance(string $companyId): array
     {
-        $withStats = MarketingPublication::query()
+        // Provenance RÉELLE : on compte séparément les valeurs renvoyées par
+        // une API de plateforme et celles saisies à la main. Compter « toute
+        // ligne non nulle » comme une mesure de plateforme affichait des
+        // chiffres manuels sous l'étiquette `platform` — exactement ce que le
+        // brief §A/§H interdit.
+        $measuredFromPlatform = MarketingPublication::query()
             ->crossTenantForPlatformAdmin()
             ->where('company_id', $companyId)
-            ->whereNotNull('stats')
+            ->where('stats_source', MarketingPublicationStatsSource::Platform->value)
+            ->count();
+
+        $measuredManually = MarketingPublication::query()
+            ->crossTenantForPlatformAdmin()
+            ->where('company_id', $companyId)
+            ->where('stats_source', MarketingPublicationStatsSource::Manual->value)
+            ->count();
+
+        $unavailable = MarketingPublication::query()
+            ->crossTenantForPlatformAdmin()
+            ->where('company_id', $companyId)
+            ->where('status', MarketingPublicationStatus::Published->value)
+            ->where(static function ($query): void {
+                $query->whereNull('stats_source')
+                    ->orWhere('stats_source', MarketingPublicationStatsSource::Unavailable->value);
+            })
             ->count();
 
         $published = MarketingPublication::query()
@@ -258,15 +280,29 @@ class MarketingOsDashboardService
             ->where('status', MarketingPublicationStatus::Published->value)
             ->count();
 
+        $statsSource = match (true) {
+            $measuredFromPlatform > 0 => 'platform',
+            $measuredManually > 0 => 'manual',
+            default => 'unavailable',
+        };
+
+        $note = match ($statsSource) {
+            'platform' => 'Statistiques fournies par la plateforme pour '.$measuredFromPlatform.' publication(s).'
+                .($measuredManually > 0 ? ' '.$measuredManually.' autre(s) saisie(s) manuellement.' : ''),
+            'manual' => 'Aucune statistique de plateforme : '.$measuredManually.' publication(s) renseignee(s) manuellement, a ne pas lire comme une mesure automatique.',
+            default => 'Aucune statistique de plateforme disponible : aucune estimation n\'est affichee.',
+        };
+
         return [
             'published_total' => $published,
-            'with_measured_stats' => $withStats,
-            // Provenance : sans remontée de la plateforme, la valeur est
-            // explicitement déclarée indisponible plutôt qu'estimée.
-            'stats_source' => $withStats > 0 ? 'platform' : 'unavailable',
-            'note' => $withStats > 0
-                ? 'Statistiques fournies par la plateforme pour '.$withStats.' publication(s).'
-                : 'Aucune statistique de plateforme disponible : aucune estimation n\'est affichée.',
+            'with_measured_stats' => $measuredFromPlatform + $measuredManually,
+            'measured_from_platform' => $measuredFromPlatform,
+            'measured_manually' => $measuredManually,
+            'unavailable' => $unavailable,
+            // Provenance : `platform` seulement quand une API a réellement
+            // répondu, `manual` quand un humain a saisi, `unavailable` sinon.
+            'stats_source' => $statsSource,
+            'note' => $note,
         ];
     }
 

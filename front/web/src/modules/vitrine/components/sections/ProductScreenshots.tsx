@@ -317,7 +317,8 @@ export function ProductScreenshots({ locale = 'fr' }: ProductScreenshotsProps) {
               transition={{ duration: 0.6, delay: index * 0.15 }}
               className="group"
             >
-              <div className="bg-white dark:bg-slate-900/80 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 p-6 hover:shadow-xl transition-all duration-300">
+              <div className="group/card relative h-full rounded-3xl border border-slate-200/90 bg-white/90 p-6 shadow-sm backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl dark:border-slate-800/90 dark:bg-slate-900/90">
+                <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-slate-400/20 to-transparent opacity-0 transition-opacity duration-300 group-hover/card:opacity-100" />
                 <div className="mb-6">
                   <MockupFrame
                     type={screen.mockup}

@@ -41,6 +41,7 @@ class FuelProductController extends Controller
                 'current_page' => $products->currentPage(),
                 'last_page' => $products->lastPage(),
                 'total' => $products->total(),
+                'per_page' => $products->perPage(),
             ],
         ]);
     }

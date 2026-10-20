@@ -776,3 +776,71 @@ propagation i18n du 2026-09-14 (PR #7350).
 
 - Jest `VerticalsAndZKTeco.test.tsx` (6 cartes dont « VTC & Taxi » + lien `/packs/vtc`) — check « Frontend — ESLint + TypeScript ».
 - Gardes vitrine : mojibake, french-copy, pages orphelines (`/packs/vtc` référencé depuis la home et le hub `/packs`).
+
+## Addendum 2026-10-17 — plan de sièges Travel OS (BC-24, issues #8600/#8601/#8602)
+
+**Surface** : nouveau composant back-office `front/admin-dashboard/src/components/travel/TravelSeatMap.vue`
+(plan de sièges du véhicule), alimenté par les sièges **réels** du trajet et la
+disposition du véhicule affecté. Même source de vérité que le plan grand public
+(`front/travel-web/src/components/seat-map.tsx`) via le helper pur partagé
+`front/travel-web/src/lib/seat-layout.ts`.
+
+### Scénarios de recette
+
+1. **Disposition réelle** : pour un véhicule de 40 places en 2+2, le plan rend 10 rangées et 5 colonnes
+   avec une colonne couloir centrale (sièges 1,2 │ 3,4) ; une dernière rangée partielle ne fabrique aucun siège.
+2. **États distinguables sans couleur** : chaque état (libre, sélectionné, réservation en cours, réservé,
+   paiement en attente, vendu, bloqué, indisponible) porte un **symbole** non coloré, un **libellé texte** et un
+   `aria-label` (« Siège 12, Vendu ») ; la légende est en icône + texte. Vérifiable en niveaux de gris / impression N&B.
+3. **Lecture seule vs sélection** : sans écouteur `toggle`, le plan est en lecture seule ; seuls les sièges
+   `free`/`selected` sont activables — tous les autres états sont `disabled`.
+4. **Référence de réservation** : pour un siège rattaché, l'infobulle du responsable affiche
+   « <état> — <référence> », jamais de PII passager.
+5. **i18n** : libellés `travel.seats.*` ×4 locales (fr/en/ar/tr) via `translate(locale, clé)` ; aucune chaîne
+   utilisateur codée en dur (garde `check-i18n-diff` verte).
+6. **Non-régression réservation** : le plan n'écrit rien — la disponibilité reste validée côté serveur
+   (verrou `FOR UPDATE`), un siège pris entre-temps produit un refus conflictuel et un rafraîchissement.
+
+### Vérification automatique
+
+- `npx vitest run src/lib/seat-layout.test.ts` (front grand public) → 10/10 — check « Frontend — ESLint + TypeScript ».
+- `npx eslint src/components/travel/TravelSeatMap.vue` → 0 erreur.
+- Gardes du dépôt : `check-i18n-diff`, `check-web-design-tokens.sh`, `check-i18n-catalog-parity.sh`.
+- E2E Playwright du back-office : le composant n'est pas encore monté dans une vue route (intégration ultérieure) —
+  la recette ci-dessus se joue au niveau composant/unité tant que le branchement de vue n'est pas livré.
+
+## Addendum 2026-10-18 — URL d'API stable du dashboard (#8707, issue #8709)
+
+### Ce qui change
+
+Le dashboard admin ne grave plus l'URL d'un fournisseur dans son bundle. Il résout
+sa base d'API dans `src/services/api-base-url.js` : `VITE_API_PROXY_BASE_URL`
+(proxy du front web) prioritaire, `VITE_API_URL` (appel direct) en second, échec
+explicite en production si aucune n'est posée.
+
+### Scénarios de recette
+
+1. **Build sans proxy** : un build de production sans `VITE_API_PROXY_BASE_URL` ni
+   `VITE_API_URL` échoue avec un message portant `[admin-dashboard]` ; aucune
+   sortie `dist/` n'est produite (garde `vite.config.js`).
+2. **Build nominal** : les workflows dev et prod injectent
+   `VITE_API_PROXY_BASE_URL` ; `dist/assets/*.js` ne contient **aucune** occurrence
+   de `.onrender.com` et contient l'URL du proxy.
+3. **CSP** : `connect-src` du `dist/_headers` porte l'origine du **proxy**
+   (et non celle d'un fournisseur) ; `node scripts/check-csp-guard.mjs` répond OK.
+4. **Préflight navigateur** : `OPTIONS` depuis `https://leo-admin.pages.dev` vers le
+   proxy renvoie `204` avec `Access-Control-Allow-Origin` égal à cette origine ;
+   l'appel `POST /platform/auth/login` qui suit renvoie `200` + token.
+5. **Garde-fou de production** : un build de prod avec `VITE_API_URL` absolue et
+   sans `VITE_ALLOW_DIRECT_API_IN_PROD=true` échoue au chargement du module.
+6. **Aucune régression de fallback** : en dev/test sans variable, le module
+   retombe sur `http://localhost:8000/api/v1` avec un `console.warn` préfixé.
+
+### Vérification automatique
+
+- `npx vite build` (avec `VITE_API_PROXY_BASE_URL`) → OK, puis
+  `grep -c onrender.com dist/assets/*.js` → 0.
+- `npx eslint src/services/api-base-url.js src/services/api.js` → 0 erreur.
+- `node scripts/check-csp-guard.mjs` → OK.
+- Gardes du dépôt : `check-i18n-diff` (messages préfixés `[admin-dashboard]`),
+  `check-ci-secrets-doc.sh` (`DEV_API_PROXY_BASE_URL` documenté), `actionlint`.

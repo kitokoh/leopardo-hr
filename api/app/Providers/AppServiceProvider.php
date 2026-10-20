@@ -26,8 +26,12 @@ use App\Policies\CrmDashboardPolicy;
 use App\Policies\CrmSearchPolicy;
 use App\Policies\CrmTaskPolicy;
 use App\Policies\ExportPolicy;
+use App\Shared\Contracts\Discovery\PublicDiscoverableProvider;
+use App\Shared\Contracts\Geo\GeoServiceContract;
+use App\Shared\Discovery\PublicDiscoveryService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -46,6 +50,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // SUPERAPP-P0 — decouverte publique cross-verticale : agregateur de
+        // lecture seule (aucune table, aucune migration). Chaque verticale
+        // fournit son provider tague `public.discoverable` depuis son propre
+        // ServiceProvider (inversion de dependance, garde d'isolation #5584).
+        $this->app->singleton(PublicDiscoveryService::class, function (Application $app): PublicDiscoveryService {
+            /** @var iterable<PublicDiscoverableProvider> $providers */
+            $providers = $app->tagged('public.discoverable');
+
+            return new PublicDiscoveryService(
+                $providers,
+                $app->make(GeoServiceContract::class),
+            );
+        });
         // Contrat transversal de notification in-app (garde cross-module #5584) :
         // les modules métier type-hintent le contrat Core, l'implémentation vit
         // dans le module Notification (BC-13).
@@ -483,6 +500,39 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinute((int) config('security.rate_limits.guardian_portal_per_minute', 10))
                 ->by('guardian-portal:'.substr(hash('sha256', $token), 0, 16).'|'.$request->ip());
+        });
+
+        // #8750 [BOS-CHAT] — anti-spam de l'envoi de messages.
+        //
+        // Un participant authentifié peut inonder un fil : chaque message
+        // déclenche une notification in-app ET un push FCM (coût réel + charge),
+        // donc le débit est borné côté serveur, sur les DEUX dimensions qui
+        // comptent : l'employé (empêche un compte de noyer les autres fils) et
+        // le fil (empêche un groupe d'être monopolisé par plusieurs comptes).
+        //
+        // Bucket DÉDIÉ et non partagé avec `api` : un client qui poll
+        // l'historique (#8749) ne doit pas consommer le quota d'écriture, sinon
+        // une lecture légitime provoquerait un 429 à l'envoi.
+        RateLimiter::for('chat-send', function (Request $request) {
+            $employeeId = $request->user()?->getKey() ?? $request->ip();
+            $threadId = (string) $request->route('thread', 'unknown');
+
+            return [
+                Limit::perMinute((int) config('security.rate_limits.chat_send_per_minute', 30))
+                    ->by('chat-send:user:'.$employeeId),
+                Limit::perMinute((int) config('security.rate_limits.chat_send_thread_per_minute', 60))
+                    ->by('chat-send:thread:'.$threadId),
+            ];
+        });
+
+        // #8750 — création de fils et de groupes : plus coûteuse qu'un message
+        // (résolution de participants, notifications multiples), donc quota
+        // distinct et plus serré.
+        RateLimiter::for('chat-create', function (Request $request) {
+            $employeeId = $request->user()?->getKey() ?? $request->ip();
+
+            return Limit::perMinute((int) config('security.rate_limits.chat_create_per_minute', 10))
+                ->by('chat-create:'.$employeeId);
         });
 
     }

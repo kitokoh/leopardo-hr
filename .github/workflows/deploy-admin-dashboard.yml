@@ -55,7 +55,7 @@ jobs:
           lfs: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -67,7 +67,18 @@ jobs:
           # QA 2026-08-15 (#2659) : sans cette variable, le défaut du code
           # (production) s'applique — l'expliciter protège contre toute
           # régression de fallback et garde le contrat avec la doc.
-          VITE_API_URL: ${{ vars.DEV_API_BASE_URL }}
+          #
+          # #8707 — AVANT : `VITE_API_URL: vars.DEV_API_BASE_URL`, c'est-à-dire
+          # l'URL BRUTE du service Render de la stack active, inlinée dans le
+          # bundle Vite. Une bascule de stack imposait donc un rebuild complet
+          # du dashboard, et un bundle périmé continuait d'appeler une stack
+          # suspendue (incident 2026-09-20 → 2026-10-18).
+          #
+          # DÉSORMAIS : on cible le proxy STABLE du front web, dont la cible
+          # d'API est lue au RUNTIME côté Next (API_PROXY_TARGET >
+          # BACKEND_API_URL > NEXT_PUBLIC_API_URL). Bascule de stack = une
+          # variable Vercel + redéploiement du web ; ce dashboard ne bouge plus.
+          VITE_API_PROXY_BASE_URL: ${{ vars.DEV_API_PROXY_BASE_URL || 'https://gestionemployer-backend.vercel.app/api/v1' }}
           # Serveur push Socket.IO (optionnel) — sinon le client dérive wss://<hôte API> (#3392).
           VITE_WEBSOCKET_URL: ${{ secrets.VITE_WEBSOCKET_URL }}
         run: |

@@ -10,7 +10,7 @@
 
 import type { AppLocale } from '@/lib/i18n';
 
-export type PackVerticalSlug = 'station-service' | 'ecole' | 'agence-de-voyage' | 'cagnottes' | 'vtc';
+export type PackVerticalSlug = 'station-service' | 'ecole' | 'agence-de-voyage' | 'cagnottes' | 'vtc' | 'trade';
 
 export const PACK_VERTICALS: PackVerticalSlug[] = [
   'station-service',
@@ -18,6 +18,8 @@ export const PACK_VERTICALS: PackVerticalSlug[] = [
   'agence-de-voyage',
   'cagnottes',
   'vtc',
+  // BC-36 TRADE (TRADE-009) — commerce international & B2B domestique.
+  'trade',
 ];
 
 /**
@@ -32,6 +34,12 @@ export const PACK_SECTORS: Record<PackVerticalSlug, string> = {
   'agence-de-voyage': 'travel',
   cagnottes: 'association',
   vtc: 'services',
+  // BC-36 TRADE (TRADE-009/#8484) — le commerce international n'a pas de
+  // secteur dédié dans l'allowlist `SetupInterviewPlanner::QUESTIONS['sector']`
+  // (`restaurant|fuel_station|education|commerce|services|travel|association|other`) :
+  // on retient `commerce`, qui couvre l'activité d'achat/revente et évite
+  // d'inventer une valeur que le serveur rejetterait.
+  trade: 'commerce',
 };
 
 export type PackBenefitIcon =
@@ -62,6 +70,128 @@ export type PackPageCopy = {
 };
 
 export const PACK_PAGES: Record<PackVerticalSlug, Record<AppLocale, PackPageCopy>> = {
+  // BC-36 TRADE (TRADE-009) — « Trade » : le point d'entrée de la verticale
+  // commerce international. Le visiteur choisit d'abord le PÉRIMÈTRE
+  // (International / Domestique), puis son rôle — c'est exactement ce que
+  // porte le survey `trade` côté serveur (TradeSurvey). Le pack est offert.
+  trade: {
+    fr: {
+      badge: 'Pack Commerce international offert',
+      title: 'Importez, exportez ou vendez en gros',
+      highlight: 'sans tableur ni e-mails perdus.',
+      subtitle:
+        'Décrivez ce que vous cherchez, envoyez une demande de prix à plusieurs fournisseurs, comparez les offres, chiffrez le coût réel rendu (transport, assurance, douane, taxes) et suivez chaque commande jusqu’à la livraison — le tout dans un espace unique. Activez votre pack Commerce international gratuitement.',
+      points: ['Pack offert', 'Sans carte bancaire', 'Importer ET exporter'],
+      benefitsTitle: 'Pensé pour le négoce international et le B2B',
+      benefits: [
+        { icon: 'file', title: 'Demandes de prix multi-fournisseurs', text: 'Une demande structurée (produit, quantités, destination, budget, délai) diffusée à plusieurs fournisseurs, avec suivi des réponses reçues — fini le suivi par e-mails dispersés.' },
+        { icon: 'chart', title: 'Offres comparables', text: 'Les offres sont comparées à périmètre égal (Incoterm, frais inclus ou exclus, validité, délai) : deux prix qui ne couvrent pas la même chose ne sont jamais présentés comme équivalents.' },
+        { icon: 'wallet', title: 'Coût rendu chiffré', text: 'Prix d’achat, fret international, assurance, manutention, droits, taxes, transport final : chaque poste porte sa source, et un taux de change inconnu n’est jamais inventé.' },
+        { icon: 'shield', title: 'Aide à la préparation douanière', text: 'Documents potentiellement requis et informations manquantes signalées, avec orientation vers un transitaire qualifié. Estimation, jamais décision officielle.' },
+      ],
+      includedTitle: 'Inclus dans le pack',
+      included: [
+        'Espace d’achat : demandes de prix (RFQ), invitations fournisseurs, comparaison d’offres',
+        'Espace de vente : catalogue produits, offres, devis et factures pro forma, suivi clients',
+        'Dossiers de transaction : conversations, documents et historique complet au même endroit',
+        'Commandes et expéditions suivies jusqu’à la livraison',
+        'Demandes de cotation transport et réponses structurées des transitaires',
+        'Calcul du coût total rendu, avec conversion monétaire tracée',
+        'Aide à la préparation documentaire douanière',
+        'Extensible aux prestataires : transporteurs, transitaires, contrôle qualité',
+      ],
+      ctaPrimary: 'Activer mon pack gratuit',
+      ctaSecondary: 'Parler à un conseiller',
+      note: 'Activation gratuite à la création de votre espace — choisissez « International » ou « Domestique » à l’entretien de préparation. Une même entreprise peut importer et exporter. Aucun engagement.',
+    },
+    en: {
+      badge: 'Free International Trade Pack',
+      title: 'Import, export or wholesale',
+      highlight: 'without spreadsheets or lost emails.',
+      subtitle:
+        'Describe what you need, send a structured request for quote to several suppliers, compare offers, work out the true landed cost (freight, insurance, duties, taxes) and track every order through to delivery — all in one workspace. Activate your International Trade Pack for free.',
+      points: ['Free pack', 'No credit card', 'Import AND export'],
+      benefitsTitle: 'Built for international trade and B2B',
+      benefits: [
+        { icon: 'file', title: 'Multi-supplier requests for quote', text: 'One structured request (product, quantities, destination, budget, deadline) sent to several suppliers, with responses tracked — no more chasing scattered email threads.' },
+        { icon: 'chart', title: 'Comparable offers', text: 'Offers are compared on equal footing (Incoterm, fees included or excluded, validity, lead time): two prices that do not cover the same scope are never presented as equivalent.' },
+        { icon: 'wallet', title: 'Costed landed price', text: 'Purchase price, international freight, insurance, handling, duties, taxes, final transport: every line carries its source, and an unknown exchange rate is never invented.' },
+        { icon: 'shield', title: 'Customs preparation support', text: 'Potentially required documents and missing information flagged, with referral to a qualified broker. Estimation only, never an official decision.' },
+      ],
+      includedTitle: 'Included in your free pack',
+      included: [
+        'Buyer workspace: requests for quote, supplier invitations, offer comparison',
+        'Seller workspace: product catalogue, offers, quotes and proforma invoices, client follow-up',
+        'Transaction files: conversations, documents and full history in one place',
+        'Orders and shipments tracked through to delivery',
+        'Freight quote requests and structured carrier responses',
+        'Total landed-cost calculation with traced currency conversion',
+        'Customs document preparation support',
+        'Extensible to service providers: carriers, freight forwarders, quality control',
+      ],
+      ctaPrimary: 'Activate my free pack',
+      ctaSecondary: 'Talk to an advisor',
+      note: 'Free activation when you create your workspace — pick “International” or “Domestic” during setup. One company can both import and export. No commitment.',
+    },
+    tr: {
+      badge: 'Ücretsiz Uluslararası Ticaret Paketi',
+      title: 'İthal edin, ihraç edin veya toptan satın',
+      highlight: 'tablo ve kayıp e-postalar olmadan.',
+      subtitle:
+        'Ne aradığınızı tanımlayın, birkaç tedarikçiye yapılandırılmış fiyat talebi gönderin, teklifleri karşılaştırın, gerçek teslim maliyetini hesaplayın (navlun, sigorta, gümrük, vergiler) ve her siparişi teslimata kadar izleyin — hepsi tek alanda. Uluslararası Ticaret Paketinizi ücretsiz etkinleştirin.',
+      points: ['Ücretsiz paket', 'Kredi kartı yok', 'İthalat VE ihracat'],
+      benefitsTitle: 'Uluslararası ticaret ve B2B için tasarlandı',
+      benefits: [
+        { icon: 'file', title: 'Çok tedarikçili fiyat talebi', text: 'Tek yapılandırılmış talep (ürün, miktar, varış yeri, bütçe, süre) birden fazla tedarikçiye gönderilir ve yanıtlar izlenir — dağınık e-posta zincirleri son bulur.' },
+        { icon: 'chart', title: 'Karşılaştırılabilir teklifler', text: 'Teklifler eşit kapsamda karşılaştırılır (Incoterm, dahil/hariç masraflar, geçerlilik, süre): aynı kapsamı kapsamayan iki fiyat asla eşdeğer gösterilmez.' },
+        { icon: 'wallet', title: 'Hesaplanmış teslim maliyeti', text: 'Alış fiyatı, navlun, sigorta, elleçleme, gümrük vergileri, vergiler, son taşıma: her kalem kaynağını taşır ve bilinmeyen kur asla uydurulmaz.' },
+        { icon: 'shield', title: 'Gümrük hazırlığı desteği', text: 'Olası gerekli belgeler ve eksik bilgiler işaretlenir, yetkin bir müşavir yönlendirmesi yapılır. Yalnızca tahmin, asla resmî karar değildir.' },
+      ],
+      includedTitle: 'Ücretsiz paketinize dahil',
+      included: [
+        'Alıcı alanı: fiyat talepleri, tedarikçi davetleri, teklif karşılaştırması',
+        'Satıcı alanı: ürün kataloğu, teklifler, proforma faturalar, müşteri takibi',
+        'İşlem dosyaları: görüşmeler, belgeler ve tüm geçmiş tek yerde',
+        'Sipariş ve sevkiyatların teslimata kadar takibi',
+        'Navlun teklif talepleri ve taşıyıcı yanıtları',
+        'Para birimi dönüşümü izlenerek toplam teslim maliyeti hesaplama',
+        'Gümrük belge hazırlığı desteği',
+        'Hizmet sağlayıcılara genişletilebilir: taşıyıcılar, müşavirler, kalite kontrol',
+      ],
+      ctaPrimary: 'Ücretsiz paketimi etkinleştir',
+      ctaSecondary: 'Bir danışmanla konuş',
+      note: 'Çalışma alanınızı oluştururken ücretsiz etkinleşir — kurulumda “Uluslararası” veya “Yurt içi” seçin. Bir şirket hem ithalat hem ihracat yapabilir. Taahhüt yok.',
+    },
+    ar: {
+      badge: 'حزمة التجارة الدولية مجانًا',
+      title: 'استورد أو صدّر أو بِع بالجملة',
+      highlight: 'دون جداول ولا رسائل ضائعة.',
+      subtitle:
+        'صِف ما تبحث عنه، وأرسل طلب عرض سعر منظمًا إلى عدة موردين، وقارن العروض، واحسب تكلفة الوصول الحقيقية (الشحن، التأمين، الرسوم، الضرائب)، وتابع كل طلبية حتى التسليم — كل ذلك في مساحة واحدة. فعّل حزمة التجارة الدولية مجانًا.',
+      points: ['حزمة مجانية', 'بدون بطاقة بنكية', 'الاستيراد والتصدير'],
+      benefitsTitle: 'مصممة للتجارة الدولية وB2B',
+      benefits: [
+        { icon: 'file', title: 'طلبات عروض من عدة موردين', text: 'طلب واحد منظم (المنتج، الكميات، الوجهة، الميزانية، المهلة) يُرسل إلى عدة موردين مع تتبع الردود — وداعًا لسلاسل البريد المتناثرة.' },
+        { icon: 'chart', title: 'عروض قابلة للمقارنة', text: 'تُقارن العروض على أساس متساوٍ (الإنكوترم، الرسوم المشمولة أو المستبعدة، الصلاحية، المدة): لا يُعرض سعران مختلفا النطاق كأنهما متكافئان.' },
+        { icon: 'wallet', title: 'تكلفة وصول محسوبة', text: 'سعر الشراء، الشحن الدولي، التأمين، المناولة، الرسوم الجمركية، الضرائب، النقل النهائي: كل بند يحمل مصدره، وسعر صرف مجهول لا يُخترع أبدًا.' },
+        { icon: 'shield', title: 'دعم تحضير التخليص الجمركي', text: 'إشارة إلى المستندات المحتمل طلبها والمعلومات الناقصة، مع توجيه إلى مخلص جمركي مؤهل. تقدير فقط، وليس قرارًا رسميًا.' },
+      ],
+      includedTitle: 'مضمّن في حزمتك المجانية',
+      included: [
+        'مساحة المشتري: طلبات عروض الأسعار، دعوات الموردين، مقارنة العروض',
+        'مساحة البائع: كتالوج المنتجات، العروض، الفواتير الأولية، متابعة العملاء',
+        'ملفات الصفقات: المحادثات والمستندات والسجل الكامل في مكان واحد',
+        'متابعة الطلبيات والشحنات حتى التسليم',
+        'طلبات عروض الشحن وردود منظمة من الناقلين',
+        'حساب تكلفة الوصول الإجمالية مع تتبع تحويل العملة',
+        'دعم تحضير المستندات الجمركية',
+        'قابلة للتوسع لمقدمي الخدمات: الناقلون، المخلصون، مراقبة الجودة',
+      ],
+      ctaPrimary: 'فعّل حزمتي المجانية',
+      ctaSecondary: 'تحدث إلى مستشار',
+      note: 'تفعيل مجاني عند إنشاء مساحتك — اختر «دولي» أو «محلي» أثناء التهيئة. يمكن للشركة الواحدة أن تستورد وتصدّر. بلا التزام.',
+    },
+  },
   // FUND-095 (#8414) — pack « Cagnottes solidaires » : la verticale de
   // collecte de fonds (lien public, carte + mobile money, reversements)
   // rejoint l'offre d'entrée grand public de la vitrine.
@@ -496,13 +626,13 @@ export const PACK_PAGES: Record<PackVerticalSlug, Record<AppLocale, PackPageCopy
       title: 'Votre agence au niveau des grandes,',
       highlight: 'le pack est offert.',
       subtitle:
-        'Dossiers clients, billetterie, commissions et paie des équipes au même endroit — comptoir comme terrain. Activez votre pack Agence de voyage gratuitement et démarrez aujourd\'hui.',
+        'Dossiers clients, billetterie et paie des équipes au même endroit — comptoir comme terrain. Activez votre pack Agence de voyage gratuitement et démarrez aujourd\'hui.',
       points: ['Pack offert', 'Sans carte bancaire', 'Activé en quelques minutes'],
       benefitsTitle: 'Pensé pour les agences de voyage',
       benefits: [
         { icon: 'file', title: 'Dossiers clients centralisés', text: 'Réservations, documents et historique client réunis dans un CRM intégré.' },
         { icon: 'ticket', title: 'Billetterie & check-in', text: 'L\'app Travel Agent couvre la billetterie, le check-in et le point de vente au comptoir.' },
-        { icon: 'wallet', title: 'Commissions maîtrisées', text: 'Suivi des commissions par agent et paie des équipes sans double saisie.' },
+        { icon: 'wallet', title: 'Règlements des ventes suivis', text: 'Paiements, remboursements et règlements de la période suivis dans l’agence, paie des équipes sans double saisie.' },
         { icon: 'clock', title: 'Équipes pointées', text: 'Comptoir, accueil groupes, tournées — le pointage suit vos horaires réels.' },
       ],
       includedTitle: 'Inclus dans votre pack offert',
@@ -510,7 +640,7 @@ export const PACK_PAGES: Record<PackVerticalSlug, Record<AppLocale, PackPageCopy
         'CRM dossiers clients',
         'App Travel Agent (billetterie, point de vente)',
         'Pointage mobile et planning',
-        'Préparation de paie avec commissions',
+        'Préparation de paie des équipes',
         'Application Employé et Manager',
       ],
       ctaPrimary: 'Activer mon pack offert',
@@ -522,13 +652,13 @@ export const PACK_PAGES: Record<PackVerticalSlug, Record<AppLocale, PackPageCopy
       title: 'Your agency at the level of the big ones,',
       highlight: 'the pack is free.',
       subtitle:
-        'Client files, ticketing, commissions and team payroll in one place — front desk and field alike. Activate your Travel Agency Pack for free and start today.',
+        'Client files, ticketing and team payroll in one place — front desk and field alike. Activate your Travel Agency Pack for free and start today.',
       points: ['Free pack', 'No credit card', 'Activated in minutes'],
       benefitsTitle: 'Built for travel agencies',
       benefits: [
         { icon: 'file', title: 'Centralized client files', text: 'Bookings, documents and client history brought together in an integrated CRM.' },
         { icon: 'ticket', title: 'Ticketing & check-in', text: 'The Travel Agent app covers ticketing, check-in and point of sale at the counter.' },
-        { icon: 'wallet', title: 'Commissions under control', text: 'Per-agent commission tracking and team payroll without double entry.' },
+        { icon: 'wallet', title: 'Sales settlements tracked', text: 'Period payments, refunds and settlements tracked in the agency, team payroll without double entry.' },
         { icon: 'clock', title: 'Teams clocked in', text: 'Counter, group reception, tours — attendance follows your real schedules.' },
       ],
       includedTitle: 'Included in your free pack',
@@ -536,7 +666,7 @@ export const PACK_PAGES: Record<PackVerticalSlug, Record<AppLocale, PackPageCopy
         'Client files CRM',
         'Travel Agent app (ticketing, point of sale)',
         'Mobile clock-ins and scheduling',
-        'Payroll preparation with commissions',
+        'Team payroll preparation',
         'Employee and Manager apps',
       ],
       ctaPrimary: 'Activate my free pack',
@@ -548,13 +678,13 @@ export const PACK_PAGES: Record<PackVerticalSlug, Record<AppLocale, PackPageCopy
       title: 'Acenteniz büyükler seviyesinde,',
       highlight: 'paket ücretsiz.',
       subtitle:
-        'Müşteri dosyaları, biletleme, komisyonlar ve ekip bordrosu tek yerde — gişe ve saha birlikte. Seyahat Acentesi Paketinizi ücretsiz etkinleştirin ve bugün başlayın.',
+        'Müşteri dosyaları, biletleme ve ekip bordrosu tek yerde — gişe ve saha birlikte. Seyahat Acentesi Paketinizi ücretsiz etkinleştirin ve bugün başlayın.',
       points: ['Ücretsiz paket', 'Kredi kartı yok', 'Dakikalar içinde aktif'],
       benefitsTitle: 'Seyahat acenteleri için tasarlandı',
       benefits: [
         { icon: 'file', title: 'Merkezi müşteri dosyaları', text: 'Rezervasyonlar, belgeler ve müşteri geçmişi entegre CRM\'de bir arada.' },
         { icon: 'ticket', title: 'Biletleme & check-in', text: 'Travel Agent uygulaması biletleme, check-in ve gişe satışını kapsar.' },
-        { icon: 'wallet', title: 'Kontrollü komisyonlar', text: 'Acente bazlı komisyon takibi ve çift giriş olmadan ekip bordrosu.' },
+        { icon: 'wallet', title: 'Kontrollü satış mahsupları', text: 'Dönem bazlı ödemeler, iadeler ve mahsuplar acentede takip edilir; çift giriş olmadan ekip bordrosu.' },
         { icon: 'clock', title: 'Ekip yoklaması', text: 'Gişe, grup karşılama, turlar — yoklama gerçek saatlerinizi izler.' },
       ],
       includedTitle: 'Ücretsiz paketinize dahil',
@@ -562,7 +692,7 @@ export const PACK_PAGES: Record<PackVerticalSlug, Record<AppLocale, PackPageCopy
         'Müşteri dosyaları CRM\'i',
         'Travel Agent uygulaması (biletleme, satış noktası)',
         'Mobil yoklama ve planlama',
-        'Komisyonlu bordro hazırlığı',
+        'Ekip bordrosu hazırlığı',
         'Çalışan ve Yönetici uygulamaları',
       ],
       ctaPrimary: 'Ücretsiz paketimi etkinleştir',
@@ -574,13 +704,13 @@ export const PACK_PAGES: Record<PackVerticalSlug, Record<AppLocale, PackPageCopy
       title: 'وكالتك بمستوى الكبار،',
       highlight: 'والحزمة مجانية.',
       subtitle:
-        'ملفات العملاء وإصدار التذاكر والعمولات ورواتب الفريق في مكان واحد — المكتب والميدان معًا. فعّل حزمة وكالة السفر مجانًا وابدأ اليوم.',
+        'ملفات العملاء وإصدار التذاكر ورواتب الفريق في مكان واحد — المكتب والميدان معًا. فعّل حزمة وكالة السفر مجانًا وابدأ اليوم.',
       points: ['حزمة مجانية', 'بدون بطاقة بنكية', 'تُفعَّل في دقائق'],
       benefitsTitle: 'مصممة لوكالات السفر',
       benefits: [
         { icon: 'file', title: 'ملفات عملاء مركزية', text: 'الحجوزات والمستندات وسجل العميل مجتمعة في نظام CRM مدمج.' },
         { icon: 'ticket', title: 'التذاكر وتسجيل الوصول', text: 'يغطي تطبيق Travel Agent إصدار التذاكر وتسجيل الوصول ونقطة البيع.' },
-        { icon: 'wallet', title: 'عمولات تحت السيطرة', text: 'تتبع العمولات لكل وكيل ورواتب الفريق دون إدخال مزدوج.' },
+        { icon: 'wallet', title: 'تسويات المبيعات تحت السيطرة', text: 'تتبع المدفوعات والمرتجعات وتسويات الفترة داخل الوكالة، ورواتب الفريق دون إدخال مزدوج.' },
         { icon: 'clock', title: 'حضور الفريق', text: 'المكتب واستقبال المجموعات والجولات — الحضور يتبع جداولك الفعلية.' },
       ],
       includedTitle: 'مضمن في حزمتك المجانية',
@@ -588,7 +718,7 @@ export const PACK_PAGES: Record<PackVerticalSlug, Record<AppLocale, PackPageCopy
         'نظام CRM لملفات العملاء',
         'تطبيق Travel Agent (التذاكر، نقطة البيع)',
         'تسجيل الحضور بالجوال والجدولة',
-        'إعداد الرواتب مع العمولات',
+        'إعداد رواتب الفريق',
         'تطبيقا الموظف والمدير',
       ],
       ctaPrimary: 'فعّل حزمتي المجانية',
@@ -628,8 +758,9 @@ export const PACKS_HUB_COPY: Record<AppLocale, PacksHubCopy> = {
       { slug: 'restaurant', name: 'Restaurants', line: 'Caisse, cuisine, réservations, stock — composé en 3 questions.', linkLabel: 'Composer mon pack' },
       { slug: 'station-service', name: 'Stations-service', line: 'Rotations 3×8, pointage par poste, majorations vers la paie.', linkLabel: 'Découvrir le pack' },
       { slug: 'ecole', name: 'Écoles & formation', line: 'Présence du personnel, remplacements, paie calendrier scolaire.', linkLabel: 'Découvrir le pack' },
-      { slug: 'agence-de-voyage', name: 'Agences de voyage', line: 'Dossiers clients, billetterie, commissions, paie des équipes.', linkLabel: 'Découvrir le pack' },
+      { slug: 'agence-de-voyage', name: 'Agences de voyage', line: 'Dossiers clients, billetterie, paiements et paie des équipes.', linkLabel: 'Découvrir le pack' },
       { slug: 'vtc', name: 'VTC & Taxi', line: 'Chauffeurs, dispatch au plus proche, réservation publique sans compte.', linkLabel: 'Découvrir le pack' },
+      { slug: 'trade', name: 'Trade — commerce international', line: 'Sourcing multi-fournisseurs, offres comparées, coût rendu, douane — import et export.', linkLabel: 'Découvrir le pack' },
     ],
     freeBadge: 'Offert',
     note: 'Chaque pack s’active gratuitement à la création de votre espace Leopardo. Aucun engagement.',
@@ -645,8 +776,9 @@ export const PACKS_HUB_COPY: Record<AppLocale, PacksHubCopy> = {
       { slug: 'restaurant', name: 'Restaurants', line: 'POS, kitchen, reservations, stock — built in 3 questions.', linkLabel: 'Build my pack' },
       { slug: 'station-service', name: 'Fuel stations', line: '3×8 rotations, per-post clock-ins, overtime to payroll.', linkLabel: 'See the pack' },
       { slug: 'ecole', name: 'Schools & training', line: 'Staff attendance, replacements, school-calendar payroll.', linkLabel: 'See the pack' },
-      { slug: 'agence-de-voyage', name: 'Travel agencies', line: 'Client files, ticketing, commissions, team payroll.', linkLabel: 'See the pack' },
+      { slug: 'agence-de-voyage', name: 'Travel agencies', line: 'Client files, ticketing, payments, team payroll.', linkLabel: 'See the pack' },
       { slug: 'vtc', name: 'VTC & Taxi', line: 'Drivers, nearest-first dispatch, account-free public booking.', linkLabel: 'See the pack' },
+      { slug: 'trade', name: 'Trade — international commerce', line: 'Multi-supplier sourcing, compared offers, landed cost, customs — import and export.', linkLabel: 'See the pack' },
     ],
     freeBadge: 'Free',
     note: 'Every pack is activated free when you create your Leopardo workspace. No commitment.',
@@ -662,8 +794,9 @@ export const PACKS_HUB_COPY: Record<AppLocale, PacksHubCopy> = {
       { slug: 'restaurant', name: 'Restoranlar', line: 'Kasa, mutfak, rezervasyon, stok — 3 soruda oluşturun.', linkLabel: 'Paketimi oluştur' },
       { slug: 'station-service', name: 'Akaryakıt istasyonları', line: '3×8 vardiyalar, posta bazlı yoklama, fazla mesai bordroya.', linkLabel: 'Paketi gör' },
       { slug: 'ecole', name: 'Okullar & eğitim', line: 'Personel yoklaması, yerine geçmeler, okul takvimi bordrosu.', linkLabel: 'Paketi gör' },
-      { slug: 'agence-de-voyage', name: 'Seyahat acenteleri', line: 'Müşteri dosyaları, biletleme, komisyonlar, ekip bordrosu.', linkLabel: 'Paketi gör' },
+      { slug: 'agence-de-voyage', name: 'Seyahat acenteleri', line: 'Müşteri dosyaları, biletleme, ödemeler, ekip bordrosu.', linkLabel: 'Paketi gör' },
       { slug: 'vtc', name: 'VTC & Taksi', line: 'Sürücüler, en yakına atama, hesapsız herkese açık rezervasyon.', linkLabel: 'Paketi gör' },
+      { slug: 'trade', name: 'Trade — uluslararası ticaret', line: 'Çok tedarikçili kaynak bulma, karşılaştırılmış teklifler, teslim maliyeti, gümrük — ithalat ve ihracat.', linkLabel: 'Paketi gör' },
     ],
     freeBadge: 'Ücretsiz',
     note: 'Her paket, Leopardo çalışma alanınızı oluştururken ücretsiz etkinleşir. Taahhüt yok.',
@@ -679,8 +812,9 @@ export const PACKS_HUB_COPY: Record<AppLocale, PacksHubCopy> = {
       { slug: 'restaurant', name: 'المطاعم', line: 'نقاط البيع والمطبخ والحجوزات والمخزون — أنشئها في 3 أسئلة.', linkLabel: 'أنشئ حزمتي' },
       { slug: 'station-service', name: 'محطات الوقود', line: 'مناوبات 3×8، حضور حسب الموضع، الإضافي إلى الرواتب.', linkLabel: 'شاهد الحزمة' },
       { slug: 'ecole', name: 'المدارس والتكوين', line: 'حضور الطاقم والبدلاء ورواتب التقويم المدرسي.', linkLabel: 'شاهد الحزمة' },
-      { slug: 'agence-de-voyage', name: 'وكالات السفر', line: 'ملفات العملاء والتذاكر والعمولات ورواتب الفريق.', linkLabel: 'شاهد الحزمة' },
+      { slug: 'agence-de-voyage', name: 'وكالات السفر', line: 'ملفات العملاء والتذاكر والمدفوعات ورواتب الفريق.', linkLabel: 'شاهد الحزمة' },
       { slug: 'vtc', name: 'VTC والأجرة', line: 'السائقون، الإرسال للأقرب، الحجز العام دون حساب.', linkLabel: 'شاهد الحزمة' },
+      { slug: 'trade', name: 'Trade — التجارة الدولية', line: 'توريد متعدد الموردين، عروض مقارنة، تكلفة الوصول، الجمارك — الاستيراد والتصدير.', linkLabel: 'شاهد الحزمة' },
     ],
     freeBadge: 'مجانًا',
     note: 'تُفعَّل كل حزمة مجانًا عند إنشاء مساحة ليوباردو الخاصة بك. بلا التزام.',
@@ -699,6 +833,12 @@ const PACK_EXTRA_SHORT_NAMES: Record<string, Record<AppLocale, string>> = {
     en: 'Solidarity fundraisers',
     tr: 'Dayanışma kampanyaları',
     ar: 'حملات التضامن',
+  },
+  trade: {
+    fr: 'Trade — commerce international',
+    en: 'Trade — international commerce',
+    tr: 'Trade — uluslararası ticaret',
+    ar: 'Trade — التجارة الدولية',
   },
 };
 

@@ -978,7 +978,12 @@ CREATE TABLE public.marketing_leads (
     captured_at timestamptz NULL,
     created_at timestamp NULL,
     updated_at timestamp NULL,
-    CONSTRAINT marketing_leads_type_check CHECK (type IN ('signup', 'demo_request', 'newsletter', 'contact')),
+    -- Etat migre final : `2026_07_26_000001` cree la contrainte avec les 4
+    -- types d'origine, puis `2026_09_01_000001_6692` (`solution_survey`) et
+    -- `2026_10_13_000100_8440` (`equity_interest`) la remplacent. La fixture
+    -- doit refleter la liste FINALE, sinon un lead `solution_survey` echoue
+    -- avec `violates check constraint "marketing_leads_type_check"`.
+    CONSTRAINT marketing_leads_type_check CHECK (type IN ('signup', 'demo_request', 'newsletter', 'contact', 'solution_survey', 'equity_interest')),
     CONSTRAINT marketing_leads_status_check CHECK (status IN ('new', 'contacted', 'qualified', 'converted', 'rejected'))
 );
 

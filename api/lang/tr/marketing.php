@@ -30,5 +30,10 @@ return [
         'campaign_not_found' => 'Bu şirket için kampanya bulunamadı.',
         'asset_not_found' => 'Bu şirket için kaynak bulunamadı.',
         'file_required' => '«:kind» türünde bir kaynak için dosya zorunludur.',
+        // #8675 — medya kütüphanesindeki bir kaynağı indirme.
+        'asset_has_no_file' => 'Bu kaynak metin içeriğidir (senaryo, istem, başlık): indirilecek dosyası yoktur.',
+        'asset_file_missing' => 'Bu kaynağın dosyası depolamada bulunamadı. Kayıt hâlâ mevcut; dosya temizlenmiş ya da geri yükleme tamamlanmamış olabilir.',
+        // #8531 — arama motorlarında veya yapay zeka asistanlarında görünürlük garanti edilmez.
+        'visibility_no_guarantee' => 'Arama motorlarında veya yapay zeka asistanlarında görünürlük garanti edilmez: göstergeler ölçülmüş ya da açıkça tahmin olarak belirtilmiştir.',
     ],
 ];

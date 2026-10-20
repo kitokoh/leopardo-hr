@@ -6,6 +6,7 @@ namespace App\Modules\Marketing\Infrastructure\Services;
 
 use App\Modules\Marketing\Domain\Contracts\SocialAccountRepositoryInterface;
 use App\Modules\Marketing\Domain\Enums\MarketingPublicationMode;
+use App\Modules\Marketing\Domain\Enums\MarketingPublicationStatsSource;
 use App\Modules\Marketing\Domain\Enums\MarketingPublicationStatus;
 use App\Modules\Marketing\Domain\Models\MarketingPublication;
 use App\Modules\Marketing\Domain\Models\SocialAccount;
@@ -59,6 +60,7 @@ class MarketingPublicationModeResolver
         ?string $platformAccount = null,
         ?Carbon $publishedAt = null,
         ?array $stats = null,
+        ?string $externalPostId = null,
     ): MarketingPublication {
         $publication->status = MarketingPublicationStatus::Published;
         $publication->published_url = $publishedUrl;
@@ -66,11 +68,27 @@ class MarketingPublicationModeResolver
         $publication->platform_account = $platformAccount ?? $publication->platform_account;
         $publication->error_message = null;
 
-        if ($stats !== null) {
-            $publication->stats = $stats;
-            $publication->stats_source = 'manual';
+        // #8530 — identifiant externe : sans lui, l'API de statistiques de la
+        // plateforme ne peut pas etre interrogee. On ne l'ecrase jamais par
+        // une valeur nulle (une publication deja tracee le reste).
+        if ($externalPostId !== null && $externalPostId !== '') {
+            $publication->external_post_id = $externalPostId;
         }
 
+        if ($stats !== null) {
+            $publication->stats = $stats;
+            // Releve saisi par un humain : la provenance est `manual`, jamais
+            // `platform` (reserve aux valeurs renvoyees par une API).
+            $publication->stats_source = MarketingPublicationStatsSource::Manual->value;
+            $publication->stats_error = null;
+        }
+
+        // `attempts` compte les TENTATIVES, pas les echecs : une mise en ligne
+        // reussie est une tentative. Sans cette incrementation, une publication
+        // publiee du premier coup affichait `attempts = 0` alors que son
+        // `attempt_history` contenait deja une entree — deux compteurs du meme
+        // fait qui se contredisaient a l'ecran.
+        $publication->attempts++;
         $publication->attempt_history = $this->appendAttempt($publication, 'published');
         $publication->save();
 

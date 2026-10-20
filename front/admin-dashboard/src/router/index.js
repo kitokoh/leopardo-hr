@@ -407,6 +407,18 @@ const routes = [
           icon: 'PaperAirplaneIcon'
         }
       },
+      // ── Verticale International Trade OS (BC-36 TRADE, TRADE-010 #8485) ──
+      // Suivi plateforme : compteurs agrégés + état RÉEL des adaptateurs
+      // externes. Endpoints réels /platform/trade/* — aucune donnée mock.
+      {
+        path: '/trade',
+        name: 'trade',
+        component: () => import('../views/trade/TradeOverviewView.vue'),
+        meta: {
+          title: 'navigation.trade',
+          icon: 'GlobeAltIcon'
+        }
+      },
       {
         // Verticale FUNDRAISING (cagnottes solidaires) — surface admin du
         // paramétrage tenant (FUND-070) : moyens de paiement offerts,

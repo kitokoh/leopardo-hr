@@ -11,4 +11,7 @@ return [
     'trial_password_link_expired' => 'This password setup link has expired (72 h). Request a login code from the login page, then set your password from your workspace.',
     'trial_password_manager_missing' => 'Trial administrator account not found. Please contact support.',
     'trial_password_set' => 'Password saved. You can now sign in.',
+    // BOS-O-01/03 (#8623/#8625) — guided provisioning messages (i18n guard PA2-I18N-007).
+    'invalid_market_intent' => 'Invalid market intent: profile ":profile" is incompatible with market ":market".',
+    'primary_site_name' => 'Main establishment',
 ];

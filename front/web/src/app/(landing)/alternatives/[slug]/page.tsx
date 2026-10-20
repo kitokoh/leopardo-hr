@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, CheckCircle, Scale } from 'lucide-react';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
 import {
   getAlternativePage,
@@ -26,7 +25,6 @@ interface AlternativePageProps {
 }
 
 export default function AlternativeComparisonPage({ params }: AlternativePageProps) {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const { locale, direction } = useVitrineLocale();
   useScrollReveal();
   const { slug } = use(params);
@@ -43,9 +41,9 @@ export default function AlternativeComparisonPage({ params }: AlternativePagePro
   return (
     <div
       dir={direction}
-      className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}
+      className={`min-h-screen bg-white `}
     >
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+      <Navbar />
 
       {/* Hero */}
       <section className="relative pt-32 pb-12 overflow-hidden">

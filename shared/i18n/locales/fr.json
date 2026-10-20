@@ -2171,7 +2171,30 @@
     "serviceUnreachable": "service injoignable",
     "statsLoadError": "Erreur lors du chargement des stats système",
     "subtitle": "Monitoring, configuration et automatisation de la plateforme Leopardo.",
-    "title": "Administration Système"
+    "title": "Administration Système",
+    "infra": {
+      "title": "Infrastructure — stacks",
+      "subtitle": "État des stacks de déploiement et bascule d'un tier (dev ou prod).",
+      "refresh": "Actualiser",
+      "loading": "Chargement…",
+      "activeStack": "stack active : {stack}",
+      "registryUpdated": "registre du {date}",
+      "stackLabel": "Stack {id}",
+      "activeBadge": "active",
+      "api": "API",
+      "region": "Région",
+      "switchTo": "Basculer vers {id}",
+      "switching": "Bascule…",
+      "alreadyActive": "Cette stack est déjà active.",
+      "confirmHint": "Basculer le tier {tier} vers la stack {id}.",
+      "confirmMessage": "Basculer le tier {tier} vers la stack {id} ?\n\nLa bascule touche un environnement en service : elle est journalisée et suivie dans l'onglet Actions.",
+      "switchQueued": "Bascule {tier} → {id} déclenchée. Suivez le workflow « Stack Switch ».",
+      "switchError": "La bascule a échoué.",
+      "forbidden": "Vous n'avez pas la permission de piloter l'infrastructure (infra.manage).",
+      "loadError": "Impossible de charger l'état des stacks.",
+      "hintDispatch": "La bascule passe par un workflow GitHub : le résultat et l'historique sont dans l'onglet Actions.",
+      "hintNoToken": "Bascule désactivée : le jeton GITHUB_STACK_SWITCH_TOKEN n'est pas configuré sur le service API."
+    }
   },
   "billing": {
     "cancel_subscription_confirm": "Annuler votre abonnement ? Vous perdrez l'accès aux modules premium à la fin de la période en cours.",
@@ -5780,7 +5803,21 @@
       "active": "Active",
       "revoked": "Révoquée",
       "expired": "Expirée"
-    }
+    },
+    "travel.seats.summary.free": "place(s) libre(s) sur",
+    "travel.seats.summary.selected": "sélectionnée(s)",
+    "travel.seats.legend.title": "États des sièges",
+    "travel.seats.map.label": "Plan des sièges du véhicule",
+    "travel.seats.state.free": "Libre",
+    "travel.seats.state.selected": "Sélectionné",
+    "travel.seats.state.held": "Réservation en cours",
+    "travel.seats.state.reserved": "Réservé",
+    "travel.seats.state.pendingPayment": "Paiement en attente",
+    "travel.seats.state.sold": "Vendu",
+    "travel.seats.state.blocked": "Bloqué",
+    "travel.seats.state.unavailable": "Indisponible",
+    "travel.seats.state.aisle": "Couloir",
+    "travel.seats.state.seat": "Siège"
   },
   "travelPortal": {
     "title": "Portail voyageur",
@@ -6570,7 +6607,7 @@
     },
     "nav": {
       "pricing": "Tarifs",
-      "packs": "Packs offerts",
+      "packs": "Pack",
       "packsHub": "Tous les packs",
       "packsHubDesc": "Un pack offert par métier — découvrez l'offre",
       "packsRestaurant": "Restaurants",
@@ -6580,7 +6617,7 @@
       "packsEdu": "Écoles & formation",
       "packsEduDesc": "Présence du personnel, remplacements, paie scolaire",
       "packsTravel": "Agences de voyage",
-      "packsTravelDesc": "Dossiers clients, billetterie, commissions, paie",
+      "packsTravelDesc": "Dossiers clients, billetterie, paiements, paie",
       "resources": "Ressources",
       "guides": "Guides",
       "guidesDesc": "Bonnes pratiques RH et tutoriels",
@@ -6607,7 +6644,6 @@
       "trade": "Trade"
     },
     "hero3d": {
-      "hint": "Cliquez sur un module pour explorer",
       "demo": "Démo",
       "cagnottes": "Cagnottes",
       "freeTrial": "Essai gratuit"
@@ -6644,7 +6680,13 @@
       "reassurance": "Gratuit, sans carte bancaire, vos donnees restent les votres",
       "backHome": "Retour a l'accueil",
       "metaTitle": "Trade, configurez votre entreprise en quelques minutes",
-      "metaDescription": "Trade, le point d'entree du Leopardo Business OS : choisissez import/export ou marche local, configurez votre entreprise, activez vos modules et lancez votre premiere operation."
+      "metaDescription": "Trade, le point d'entree du Leopardo Business OS : choisissez import/export ou marche local, configurez votre entreprise, activez vos modules et lancez votre premiere operation.",
+      "profileLabel": "Votre profil",
+      "profile_importer": "Importateur",
+      "profile_exporter": "Exportateur",
+      "profile_both": "Importateur & exportateur",
+      "profile_wholesaler": "Grossiste",
+      "profile_retailer": "Détaillant"
     }
   },
   "commerce": {
@@ -7556,6 +7598,71 @@
       "titleSuffix": "Cagnotte solidaire"
     }
   },
+  "trade": {
+    "title": "Commerce international",
+    "subtitle": "Sourcing, offres, commandes et coût rendu sur un noyau commercial partagé",
+    "moduleDisabled": "La verticale Commerce international n'est pas activée pour votre entreprise.",
+    "loadError": "Impossible de charger les données.",
+    "loading": "Chargement…",
+    "noData": "Aucune donnée",
+    "retry": "Réessayer",
+    "create": "Créer",
+    "search": "Rechercher…",
+    "overview": {
+      "title": "Vue d'ensemble",
+      "subtitle": "Dossiers ouverts, demandes de prix, offres et commandes en cours.",
+      "deals": "Dossiers ouverts",
+      "rfqs": "Demandes de prix actives",
+      "quotes": "Offres en attente",
+      "orders": "Commandes en cours",
+      "integrations": "Intégrations",
+      "integrationsDegraded": "Certaines fonctions dépendent d'adaptateurs non configurés et restent indisponibles."
+    },
+    "integrations": {
+      "title": "Intégrations externes",
+      "notice": "Une intégration non configurée est présentée comme indisponible : aucune donnée n'est simulée.",
+      "stateOperational": "Opérationnelle",
+      "stateUnconfigured": "Non configurée",
+      "configured": "configurées"
+    },
+    "sourcing": {
+      "title": "Sourcing & demandes de prix",
+      "subtitle": "Émettre une RFQ, inviter des fournisseurs, comparer les offres reçues."
+    },
+    "sales": {
+      "title": "Ventes & offres",
+      "subtitle": "Offres émises, versions, statuts et contreparties clients."
+    },
+    "orders": {
+      "title": "Commandes & expéditions",
+      "subtitle": "Commandes d'achat et de vente, expéditions et transitions."
+    },
+    "transport": {
+      "title": "Transport",
+      "subtitle": "Demandes de cotation et réponses des prestataires."
+    },
+    "costs": {
+      "title": "Coûts & douane",
+      "subtitle": "Coût total rendu par poste et préparation documentaire.",
+      "disclaimer": "Estimation indicative — ni déclaration douanière officielle ni garantie de conformité."
+    },
+    "catalog": {
+      "title": "Catalogue produits",
+      "subtitle": "Produits, spécifications et conditions commerciales."
+    },
+    "settings": {
+      "title": "Paramètres Trade",
+      "subtitle": "Profil commercial, marchés desservis et conditions."
+    },
+    "columns": {
+      "reference": "Référence",
+      "title": "Intitulé",
+      "status": "Statut",
+      "createdAt": "Créé le",
+      "destination": "Destination",
+      "incoterm": "Incoterm"
+    }
+  },
   "vtc": {
     "title": "VTC & taxi",
     "subtitle": "Dispatch des courses et suivi des chauffeurs en temps réel",
@@ -7719,6 +7826,8 @@
     "pilot": "Demander l’accès pilote",
     "soon": "Bientôt disponible",
     "offlineBadge": "Fonctionne hors-ligne",
+    "offlineBadgeVerified": "Hors-ligne vérifié",
+    "offlineImplementedHint": "File hors-ligne branchée — scénario de coupure non encore rejoué en CI",
     "qrAria": "Afficher le QR code d’installation",
     "qrTitle": "Installer sur cet appareil",
     "qrHint": "Scannez avec l’appareil à équiper : le lien d’installation s’ouvre directement.",
@@ -7726,70 +7835,231 @@
     "apps": {
       "manager": {
         "name": "Leopardo Manager",
-        "description": "Pilotez votre entreprise depuis votre poche : équipes, pointages, validations et alertes en temps réel."
+        "description": "Pilotez votre entreprise depuis votre poche : équipes, pointages, validations et alertes en temps réel.",
+        "details": {
+          "role": "Piloter l'entreprise depuis un mobile : équipes, pointages, validations et alertes.",
+          "audiences": "Dirigeant, manager, responsable d'établissement.",
+          "features": "Pointages et présences, validation des demandes, tâches, alertes et notifications.",
+          "prerequisites": "Un compte utilisateur rattaché à l'entreprise et un smartphone Android ou iOS.",
+          "connection": "Connexion avec l'identifiant professionnel, ou scan du QR de l'entreprise depuis l'application.",
+          "permissions": "Selon le rôle attribué : dirigeant, manager ou RH.",
+          "setup": "Installer l'application, se connecter, puis scanner le QR de l'entreprise pour rattacher l'appareil."
+        }
       },
       "employee": {
         "name": "Leopardo Employé",
-        "description": "Le compagnon de vos équipes : pointage GPS, absences, soldes et notifications."
+        "description": "Le compagnon de vos équipes : pointage GPS, absences, soldes et notifications.",
+        "details": {
+          "role": "Donner à chaque salarié son compagnon de travail : pointage, absences, soldes et documents.",
+          "audiences": "Salariés, opérateurs, équipes terrain.",
+          "features": "Pointage GPS ou biométrique, demandes d'absence, soldes de congés, tâches et notifications.",
+          "prerequisites": "Un compte salarié créé par l'entreprise et un smartphone.",
+          "connection": "Connexion avec l'identifiant personnel, ou scan du QR employé remis par l'entreprise.",
+          "permissions": "Accès limité aux données du salarié connecté.",
+          "setup": "Installer l'application, se connecter, puis scanner le QR employé remis par le manager."
+        }
       },
       "desktop-attendance": {
         "name": "Poste de pointage & kiosk",
-        "description": "Client desktop et borne de pointage ZKTeco — fonctionne hors-ligne, synchronisé au retour du réseau. Accès pilote accompagné."
+        "description": "Client desktop et borne de pointage ZKTeco — fonctionne hors-ligne, synchronisé au retour du réseau. Accès pilote accompagné.",
+        "details": {
+          "role": "Poste de pointage fixe et borne kiosque pour l'entrée des équipes.",
+          "audiences": "Accueil, RH, responsables de site.",
+          "features": "Pointage hors-ligne, synchronisation différée, lecteur biométrique ZKTeco.",
+          "prerequisites": "Un poste Windows ou une borne compatible, et un accès pilote validé.",
+          "connection": "Appairage du poste avec l'entreprise via un jeton à usage unique fourni par l'administrateur.",
+          "permissions": "Compte administrateur ou RH pour l'appairage.",
+          "setup": "Demander l'accès pilote, installer le client, appairer le poste, puis vérifier la synchronisation."
+        }
       },
       "restaurant-pos": {
         "name": "Caisse Restaurant (POS)",
-        "description": "Encaissez au comptoir et en salle : commandes, paiements et tickets, directement dans le navigateur."
+        "description": "Encaissez au comptoir et en salle : commandes, paiements et tickets, directement dans le navigateur.",
+        "details": {
+          "role": "Encaisser et prendre les commandes au comptoir comme en salle.",
+          "audiences": "Caissiers, serveurs, gérants de restaurant.",
+          "features": "Commandes, paiements, tickets, envoi en cuisine, fonctionnement hors-ligne.",
+          "prerequisites": "La solution Restaurant activée et au moins un établissement configuré.",
+          "connection": "Ouverture directe dans le navigateur du poste, connecté au compte de l'entreprise.",
+          "permissions": "Rôle caisse ou gérant.",
+          "setup": "Activer la solution Restaurant, ouvrir la caisse sur le poste, puis vérifier l'envoi en cuisine."
+        }
       },
       "restaurant-kds": {
         "name": "Écran Cuisine (KDS)",
-        "description": "La file des commandes en temps réel pour la cuisine : réception, préparation, service."
+        "description": "La file des commandes en temps réel pour la cuisine : réception, préparation, service.",
+        "details": {
+          "role": "Afficher la file des commandes en cuisine et suivre leur préparation.",
+          "audiences": "Cuisine, chefs de partie, gérants.",
+          "features": "Réception des commandes, marquage des étapes, rappels et priorités.",
+          "prerequisites": "La solution Restaurant activée et un écran dédié en cuisine.",
+          "connection": "Ouverture dans le navigateur de l'écran cuisine, connecté au compte de l'entreprise.",
+          "permissions": "Rôle cuisine ou gérant.",
+          "setup": "Activer la solution Restaurant, ouvrir l'écran cuisine, puis tester une commande de bout en bout."
+        }
       },
       "restaurant-server": {
         "name": "App Serveur",
-        "description": "Prise de commande en salle sur mobile, envoyée instantanément en cuisine et en caisse."
+        "description": "Prise de commande en salle sur mobile, envoyée instantanément en cuisine et en caisse.",
+        "details": {
+          "role": "Prendre les commandes en salle sur mobile et les envoyer en cuisine.",
+          "audiences": "Serveurs, gérants.",
+          "features": "Prise de commande en salle, envoi en cuisine, suivi des tables.",
+          "prerequisites": "La solution Restaurant activée et un smartphone.",
+          "connection": "Connexion avec l'identifiant professionnel une fois l'application distribuée.",
+          "permissions": "Rôle serveur ou gérant.",
+          "setup": "Aucun canal de distribution public aujourd'hui : l'application est en préparation."
+        }
       },
       "restaurant-kiosk": {
         "name": "Kiosque libre-service",
-        "description": "Vos clients commandent et paient en autonomie sur tablette de comptoir."
+        "description": "Vos clients commandent et paient en autonomie sur tablette de comptoir.",
+        "details": {
+          "role": "Laisser les clients commander et payer en autonomie sur une tablette de comptoir.",
+          "audiences": "Clients du restaurant, gérants.",
+          "features": "Commande en autonomie, paiement, envoi direct en cuisine.",
+          "prerequisites": "La solution Restaurant activée et une tablette de comptoir.",
+          "connection": "Ouverture en plein écran sur la tablette, connectée au compte de l'entreprise.",
+          "permissions": "Aucune permission utilisateur : le kiosque est un mode public contrôlé.",
+          "setup": "Activer la solution Restaurant, ouvrir le kiosque sur la tablette, puis le passer en plein écran."
+        }
       },
       "fuel-console": {
         "name": "Console Station-service",
-        "description": "Pompes, volumes, écarts et rotations d’équipe — le poste de contrôle de votre station."
+        "description": "Pompes, volumes, écarts et rotations d’équipe — le poste de contrôle de votre station.",
+        "details": {
+          "role": "Contrôler les pompes, les volumes et les écarts d'une station-service.",
+          "audiences": "Gérants de station, opérateurs, responsables de piste.",
+          "features": "Relevés de pompes, rotations d'équipe, suivi des écarts, rapports par station.",
+          "prerequisites": "La solution Station-service activée et un établissement configuré.",
+          "connection": "Ouverture dans le navigateur du poste de contrôle, connecté au compte de l'entreprise.",
+          "permissions": "Rôle gérant ou opérateur.",
+          "setup": "Activer la solution Station-service, ouvrir la console, puis enregistrer un premier relevé."
+        }
       },
       "commerce-pos": {
         "name": "Caisse Commerce (POS)",
-        "description": "Vendez en boutique : produits, stock et encaissements, dans le navigateur."
+        "description": "Vendez en boutique : produits, stock et encaissements, dans le navigateur.",
+        "details": {
+          "role": "Vendre en boutique : produits, stock et encaissements.",
+          "audiences": "Commerçants, vendeurs, gérants de boutique.",
+          "features": "Catalogue produits, encaissement, suivi du stock, fonctionnement hors-ligne.",
+          "prerequisites": "La solution Commerce activée et un catalogue produit.",
+          "connection": "Ouverture dans le navigateur du poste de vente, connecté au compte de l'entreprise.",
+          "permissions": "Rôle vendeur ou gérant.",
+          "setup": "Activer la solution Commerce, créer les produits, puis encaisser une première vente."
+        }
       },
       "travel-agent": {
         "name": "App Agent de voyage",
-        "description": "Vente guichet multi-passagers, encaissement cash, check-in QR et manifeste."
+        "description": "Vente guichet multi-passagers, encaissement cash, check-in QR et manifeste.",
+        "details": {
+          "role": "Vendre au guichet : réservations multi-passagers, encaissement et check-in.",
+          "audiences": "Agents de voyage, gérants d'agence.",
+          "features": "Vente guichet, encaissement, check-in par QR, manifestes passagers.",
+          "prerequisites": "La solution Travel activée et un guichet configuré.",
+          "connection": "Connexion avec l'identifiant professionnel une fois l'application distribuée.",
+          "permissions": "Rôle agent ou gérant d'agence.",
+          "setup": "Aucun canal de distribution public aujourd'hui : l'application est en préparation."
+        }
       },
       "edu-portal": {
         "name": "Portail Scolarité",
-        "description": "Campus, classes, élèves et notes : toute votre scolarité dans le navigateur."
+        "description": "Campus, classes, élèves et notes : toute votre scolarité dans le navigateur.",
+        "details": {
+          "role": "Gérer la scolarité : campus, classes, élèves et notes.",
+          "audiences": "Directions d'établissement, enseignants, administration.",
+          "features": "Campus et classes, dossiers élèves, notes, suivi de scolarité.",
+          "prerequisites": "La solution Éducation activée et un établissement scolaire configuré.",
+          "connection": "Ouverture dans le navigateur, connecté au compte de l'établissement.",
+          "permissions": "Rôle administration ou enseignant.",
+          "setup": "Activer la solution Éducation, créer les classes, puis inscrire un premier élève."
+        }
       },
       "health-portal": {
         "name": "Portail Santé",
-        "description": "Patients, rendez-vous et admissions : le poste d’accueil de votre établissement."
+        "description": "Patients, rendez-vous et admissions : le poste d’accueil de votre établissement.",
+        "details": {
+          "role": "Tenir l'accueil d'un établissement de santé : patients, rendez-vous et admissions.",
+          "audiences": "Accueil, secrétariat médical, directions.",
+          "features": "Dossiers patients, rendez-vous, admissions, suivi des passages.",
+          "prerequisites": "La solution Santé activée et un établissement configuré.",
+          "connection": "Ouverture dans le navigateur, connecté au compte de l'établissement.",
+          "permissions": "Rôle accueil ou administration.",
+          "setup": "Activer la solution Santé, créer un premier patient, puis planifier un rendez-vous."
+        }
       },
       "hr-mobile": {
         "name": "Leopardo RH",
-        "description": "Suivi des employés, présences, tâches et recrutement pour vos équipes RH."
+        "description": "Suivi des employés, présences, tâches et recrutement pour vos équipes RH.",
+        "details": {
+          "role": "Suivre les employés, les présences, les tâches et le recrutement.",
+          "audiences": "RH, dirigeants, managers.",
+          "features": "Dossiers employés, présences, tâches, recrutement.",
+          "prerequisites": "Les modules RH activés et un smartphone.",
+          "connection": "Connexion avec l'identifiant professionnel une fois l'application distribuée.",
+          "permissions": "Rôle RH ou dirigeant.",
+          "setup": "Aucun canal de distribution public aujourd'hui : l'application est en préparation."
+        }
       },
       "accounting-mobile": {
         "name": "Leopardo Comptabilité",
-        "description": "Facturation et suivi des impayés, partout avec vous."
+        "description": "Facturation et suivi des impayés, partout avec vous.",
+        "details": {
+          "role": "Facturer et suivre les impayés depuis un mobile.",
+          "audiences": "Comptables, dirigeants.",
+          "features": "Facturation, suivi des impayés, consultation des documents.",
+          "prerequisites": "Le module Comptabilité activé et un smartphone.",
+          "connection": "Connexion avec l'identifiant professionnel une fois l'application distribuée.",
+          "permissions": "Rôle comptable ou dirigeant.",
+          "setup": "Aucun canal de distribution public aujourd'hui : l'application est en préparation."
+        }
       },
       "marketing-mobile": {
         "name": "Leopardo Marketing",
-        "description": "Planifiez et publiez sur vos réseaux sociaux en un clic."
+        "description": "Planifiez et publiez sur vos réseaux sociaux en un clic.",
+        "details": {
+          "role": "Planifier et publier sur les réseaux sociaux.",
+          "audiences": "Responsables marketing, dirigeants.",
+          "features": "Planification de publications, publication multi-réseaux, suivi.",
+          "prerequisites": "Le module Marketing activé et un smartphone.",
+          "connection": "Connexion avec l'identifiant professionnel une fois l'application distribuée.",
+          "permissions": "Rôle marketing ou dirigeant.",
+          "setup": "Aucun canal de distribution public aujourd'hui : l'application est en préparation."
+        }
       },
       "cameras-mobile": {
         "name": "Leopardo Caméras",
-        "description": "Votre mur de caméras en mobilité : visionnage direct, événements et alertes."
+        "description": "Votre mur de caméras en mobilité : visionnage direct, événements et alertes.",
+        "details": {
+          "role": "Consulter le mur de caméras et les événements en mobilité.",
+          "audiences": "Sécurité, dirigeants, responsables de site.",
+          "features": "Visionnage direct, événements, alertes.",
+          "prerequisites": "Le module Caméras activé et un smartphone.",
+          "connection": "Connexion avec l'identifiant professionnel une fois l'application distribuée.",
+          "permissions": "Rôle sécurité ou dirigeant.",
+          "setup": "Aucun canal de distribution public aujourd'hui : l'application est en préparation."
+        }
       }
     },
-    "dashboardCard": "Installez les applications de votre métier — serveur, cuisine, caisse, mobile."
+    "dashboardCard": "Installez les applications de votre métier — serveur, cuisine, caisse, mobile.",
+    "availability": {
+      "published": "Publiée",
+      "pilot": "Accès pilote",
+      "not_distributed": "Non distribuée"
+    },
+    "details": {
+      "toggle": "Voir la fiche de l'application",
+      "heading": "Fiche de l'application",
+      "availability": "Disponibilité",
+      "role": "Rôle",
+      "audiences": "Profils concernés",
+      "features": "Fonctionnalités principales",
+      "prerequisites": "Prérequis",
+      "connection": "Connexion à l'espace de travail",
+      "permissions": "Permissions nécessaires",
+      "setup": "Mise en service"
+    }
   },
   "marketingOs": {
     "title": "Marketing OS",
@@ -8077,5 +8347,7 @@
     "created": "Appareil enrole.",
     "revoked": "Appareil revoque.",
     "secretWarning": "Ne partagez jamais ce jeton : il n'est affiche qu'une fois."
-  }
+  },
+  "travel.seats.state.absent": "Siège absent",
+  "travel.seats.layoutNotice": "Modifier la disposition des sièges ne déplace pas les passagers déjà réservés : leurs sièges restent inchangés. Utilisez la procédure de remplacement de véhicule pour résoudre un conflit."
 }

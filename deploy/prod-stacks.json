@@ -1,0 +1,116 @@
+{
+  "$schema": "./prod-stacks.schema.md",
+  "version": 1,
+  "tier": "prod",
+  "description": "Registre des stacks du tier PROD (épic #8670, issue #8672). Une stack prod = un ensemble complet {API Render + front web Vercel + admin Cloudflare Pages + DB Neon} hébergé sur un jeu de comptes DISTINCT. Contrairement au tier dev, la base prod porte des données bêta RÉELLES : une bascule de stack ne reseed JAMAIS, ne reset JAMAIS, et ne change JAMAIS de base de données (le mécanisme standby prod est db-standby-failover.yml, RPO <= 6 h). Seuls l'API et les fronts basculent. Source de vérité humaine ; les pointeurs runtime vivent dans les variables du dépôt (PROD_ACTIVE_STACK, PROD_API_BASE_URL...) synchronisées par scripts/stack-switch.sh --tier prod.",
+  "active_stack": "a",
+  "updated_at": "2026-10-18",
+  "policies": {
+    "db_in_scope": false,
+    "db_mechanism": "db-standby-failover.yml",
+    "reseed_forbidden": true,
+    "promotion": "tag vX.Y.Z validé uniquement (deploy-prod.yml)",
+    "fanout": "un tag déployé sur TOUTES les stacks prod provisoirement 'ready' ; seule la stack ACTIVE fait échouer le run",
+    "suspension_risk": "un service Render free pingé 24/7 consomme ~750 h/mois = quota entier. La prod a déjà été suspendue pour 'Monthly Quota Exceeded' du 2026-09-28 au 2026-10-01."
+  },
+  "stacks": {
+    "a": {
+      "status": "ready",
+      "status_note": "Stack historique (compte ibrahimkoubaye). Prod live depuis v4.33.0 mais FIGÉE : le déploiement Vercel du 2026-09-20 a échoué sur 'api-deployments-free-per-day' (>100 déploiements/jour). Aucun tag depuis. Voir docs/ops/PROD_STACK_ROTATION.md § Incident.",
+      "accounts": {
+        "render": "ibrahimkoubaye (ALI MAHADI's workspace, tea-da9svvpsrm7s73d8o2j0)",
+        "neon": "ALI MAHADI (org-shiny-snow-15524747)",
+        "vercel": "ibrahimkoubaye-6514 (team_EWSaydzjiTNOT4JlQEXRyrpa)",
+        "cloudflare": "compte principal (Account ID 30540c0bc96ca1925a0d4d041b98d098)"
+      },
+      "api": {
+        "provider": "render",
+        "service_id": "srv-dacsr6gae00c73ddk150",
+        "service_name": "leopardo-prod",
+        "region": "frankfurt",
+        "plan": "free",
+        "base_url": "https://leopardo-prod.onrender.com/api/v1",
+        "health_url": "https://leopardo-prod.onrender.com/api/v1/health",
+        "deploy_hook_secret": null,
+        "note": "Déploiement par API (RENDER_PROD_API_KEY + RENDER_PROD_SERVICE_ID), pas par hook."
+      },
+      "db": {
+        "provider": "neon",
+        "project": "LEOPARDO",
+        "project_id": "rough-cherry-23234590",
+        "host": "ep-odd-morning-abt600ow.eu-west-2.aws.neon.tech",
+        "region": "aws-eu-central-1",
+        "plan": "free",
+        "note": "Hors périmètre de bascule de stack : la DB prod ne change JAMAIS de cible à la bascule (données bêta réelles). Failover = db-standby-failover.yml."
+      },
+      "web": {
+        "provider": "vercel",
+        "project": "leopardo-prod",
+        "project_id": "prj_Q2UQ7h5SeozRB2fVttHRAAq8PTdc",
+        "team_id": "team_EWSaydzjiTNOT4JlQEXRyrpa",
+        "url": "https://leopardo-prod.vercel.app",
+        "secret_token": "VERCEL_PROD_TOKEN",
+        "secret_org": "VERCEL_PROD_ORG_ID",
+        "secret_project": "VERCEL_PROD_PROJECT_ID"
+      },
+      "admin": {
+        "provider": "cloudflare-pages",
+        "project": "leo-admin-prod",
+        "account_id": "30540c0bc96ca1925a0d4d041b98d098",
+        "url": "https://leo-admin-prod.pages.dev",
+        "secret_token": "CLOUDFLARE_PROD_API_TOKEN",
+        "secret_account": "CLOUDFLARE_PROD_ACCOUNT_ID"
+      }
+    },
+    "b": {
+      "status": "planned",
+      "status_note": "Comptes vérifiés vides le 2026-10-18 : Render ibrahim.ali (rnd_GoF7… → 0 service), Vercel team_VHKD… (0 projet). Blueprint render.prod-b.yaml prêt à importer. Bloquant : la DB reste celle de la stack A (pas de DB B tant que les données sont réelles) → la stack B ne peut PAS porter la prod avant une décision explicite (voir COUTS_ET_PERF.md § Plan B).",
+      "accounts": {
+        "render": "ibrahim.ali (alimahadiibrahim-6503)",
+        "neon": "À CRÉER — ou réutiliser le projet leo de l'org Nour (us-east-2, PG18) APRÈS réplication depuis la prod",
+        "vercel": "alimahadiibrahim-6503 (team_VHKDY50iJHW2ADKvAD7gKkZu)",
+        "cloudflare": "À CRÉER (optionnel — Pages peut rester sur le compte principal)"
+      },
+      "api": {
+        "provider": "render",
+        "service_id": null,
+        "service_name": "leopardo-prod-b",
+        "region": "frankfurt",
+        "plan": "free",
+        "base_url": null,
+        "health_url": null,
+        "deploy_hook_secret": null,
+        "secret_api_key": "RENDER_PROD_API_KEY_STACK_B",
+        "secret_service_id": "RENDER_PROD_SERVICE_ID_STACK_B",
+        "note": "Déploiement par API comme la stack A : le fan-out de deploy-prod.yml exige les deux secrets ci-dessus."
+      },
+      "db": {
+        "provider": "neon",
+        "project": null,
+        "host": null,
+        "region": "aws-us-east-2",
+        "plan": "free",
+        "note": "Aucune DB prod B tant que les données sont réelles. Candidat : org Nour (org-spring-pond-49296155), projet 'leo' (long-hat-28351058), PG18."
+      },
+      "web": {
+        "provider": "vercel",
+        "project": "leopardo-prod-b",
+        "project_id": null,
+        "team_id": "team_VHKDY50iJHW2ADKvAD7gKkZu",
+        "url": null,
+        "secret_token": "VERCEL_PROD_B_TOKEN",
+        "secret_org": "VERCEL_PROD_B_ORG_ID",
+        "secret_project": "VERCEL_PROD_B_PROJECT_ID"
+      },
+      "admin": {
+        "provider": "cloudflare-pages",
+        "project": "leo-admin-prod-b",
+        "account_id": "28a39f5640d9a5b9a5f0a86ec7ef5111",
+        "url": null,
+        "secret_token": "CLOUDFLARE_DEV_API_TOKEN",
+        "secret_account": "CLOUDFLARE_DEV_ACCOUNT_ID",
+        "note": "Optionnel : l'admin prod B peut rester sur le compte CF principal (leo-admin-prod) tant que la stack B n'est qu'un secours API."
+      }
+    }
+  }
+}

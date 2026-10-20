@@ -1,0 +1,192 @@
+name: Stack Switch (dev | prod)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Épic #8670 / issue #8672 (bascule manuelle) + #8673 (bouton superadmin).
+#
+# Généralise dev-stack-switch.yml (#8662) en workflow unique pour les deux
+# tiers. Trois déclencheurs, une seule logique (scripts/stack-switch.sh) :
+#   - workflow_dispatch : un opérateur lance la bascule depuis l'onglet Actions ;
+#   - repository_dispatch (`stack-switch`) : le bouton Super Admin
+#     (POST /api/v1/platform/infra/stack-switch) — le payload porte tier/stack ;
+#   - workflow_call : appelé par un watchdog (bascule automatique, cooldown
+#     côté appelant).
+#
+# Ce workflow n'écrit QUE des variables du dépôt :
+#   tier=dev  → DEV_ACTIVE_STACK / DEV_API_BASE_URL / DEV_WEB_URL / DEV_ADMIN_URL
+#   tier=prod → PROD_ACTIVE_STACK / PROD_API_BASE_URL / PROD_WEB_URL /
+#               PROD_ADMIN_URL / PROD_RENDER_SERVICE_URL
+# Il ne touche NI les secrets de déploiement (Render/Vercel/Cloudflare), NI le
+# registre versionné (protégé par la protection de branche : il s'aligne en PR).
+#
+# ⚠️ PROD : les garde-fous de DONNÉES sont dans le script (jamais de reseed,
+# cible obligatoirement sur la même base, --force refusé). Les fronts et les
+# verrous de queue ne sont pas automatisés : la sortie du script affiche la
+# checklist, reprise dans docs/ops/PROD_STACK_ROTATION.md.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: "Tier à basculer"
+        type: choice
+        options: [prod, dev]
+        required: true
+        default: prod
+      stack:
+        description: "Stack cible (id du registre deploy/<tier>-stacks.json)"
+        type: string
+        required: true
+      force:
+        description: "DEV uniquement — basculer même si la cible n'est pas 'ready'"
+        type: boolean
+        default: false
+  repository_dispatch:
+    types: [stack-switch]
+  workflow_call:
+    inputs:
+      tier:
+        type: string
+        required: true
+      stack:
+        type: string
+        required: true
+      force:
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: write    # gh variable set
+  issues: write     # rapport de bascule
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  # Une seule bascule à la fois, tous tiers confondus : deux bascules
+  # concurrentes sur des tiers différents écriraient des variables cohérentes
+  # mais un rapport illisible. Une prod ne doit jamais attendre un dev.
+  group: stack-switch
+  cancel-in-progress: false
+
+jobs:
+  switch:
+    name: Bascule ${{ inputs.tier || github.event.client_payload.tier }} → ${{ inputs.stack || github.event.client_payload.stack }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Résoudre les entrées
+        id: in
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          IN_TIER: ${{ inputs.tier }}
+          IN_STACK: ${{ inputs.stack }}
+          IN_FORCE: ${{ inputs.force }}
+          PAYLOAD: ${{ toJson(github.event.client_payload) }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "repository_dispatch" ]]; then
+            tier="$(jq -r '.tier // ""' <<<"$PAYLOAD")"
+            stack="$(jq -r '.stack // ""' <<<"$PAYLOAD")"
+            # Une bascule prod n'est JAMAIS forcée par le bouton : le payload
+            # ne peut pas contourner le garde-fou (le script le refuserait).
+            force="false"
+            source="superadmin:$(jq -r '.requested_by // "inconnu"' <<<"$PAYLOAD")"
+          else
+            tier="${IN_TIER}"
+            stack="${IN_STACK}"
+            force="${IN_FORCE:-false}"
+            source="$EVENT_NAME"
+          fi
+
+          if [[ "$tier" != "prod" && "$tier" != "dev" ]]; then
+            echo "::error::Tier invalide : '${tier}' (attendu prod|dev)"
+            exit 1
+          fi
+          if [[ ! "$stack" =~ ^[a-z0-9]+$ ]]; then
+            echo "::error::Stack invalide : '${stack}'"
+            exit 1
+          fi
+
+          # Redirections groupées : shellcheck SC2129 (une seule ouverture).
+          {
+            echo "tier=$tier"
+            echo "stack=$stack"
+            echo "force=$force"
+            echo "source=$source"
+          } >> "$GITHUB_OUTPUT"
+          echo "Bascule demandée : tier=${tier} stack=${stack} force=${force} (${source})"
+
+      - name: Checkout (scripts + registres)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: |
+            scripts/stack-health.sh
+            scripts/stack-switch.sh
+            deploy/dev-stacks.json
+            deploy/prod-stacks.json
+          sparse-checkout-cone-mode: false
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bascule (scripts/stack-switch.sh)
+        id: run
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          # Clés API Render par stack — utilisées UNIQUEMENT par `--seed`
+          # (dev). Les clés prod ne sont volontairement pas exposées ici : la
+          # bascule prod n'a besoin que des variables du dépôt.
+          DEV_STACK_A_RENDER_API_KEY: ${{ secrets.DEV_STACK_A_RENDER_API_KEY }}
+          DEV_STACK_B_RENDER_API_KEY: ${{ secrets.DEV_STACK_B_RENDER_API_KEY }}
+          DEV_STACK_C_RENDER_API_KEY: ${{ secrets.DEV_STACK_C_RENDER_API_KEY }}
+        run: |
+          set -euo pipefail
+          chmod +x scripts/stack-switch.sh scripts/stack-health.sh
+
+          tier="${{ steps.in.outputs.tier }}"
+          stack="${{ steps.in.outputs.stack }}"
+          args=("$stack" "--tier" "$tier")
+
+          if [[ "$tier" == "dev" && "${{ steps.in.outputs.force }}" == "true" ]]; then
+            args+=(--force)
+          fi
+
+          scripts/stack-switch.sh "${args[@]}" | tee /tmp/switch.log
+
+      - name: Rapport de bascule (issue [stack-switch])
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TIER: ${{ steps.in.outputs.tier }}
+          STACK: ${{ steps.in.outputs.stack }}
+          SOURCE: ${{ steps.in.outputs.source }}
+        run: |
+          set -euo pipefail
+          outcome="${{ steps.run.outcome }}"
+          tier="${TIER:-?}"
+          stack="${STACK:-?}"
+          source="${SOURCE:-inconnu}"
+          now="$(date -u '+%Y-%m-%d %H:%M UTC')"
+
+          if [[ "$outcome" == "success" ]]; then
+            title="[stack-switch] ${tier} → ${stack} (${source})"
+            body="$(printf '%s\n\n%s\n%s\n\n%s\n\n%s' \
+              "Bascule **réussie** le ${now} (déclencheur : ${source})." \
+              "- tier = ${tier}" \
+              "- stack active = ${stack}" \
+              "**À finir manuellement** : aligner \`deploy/${tier}-stacks.json\` (active_stack, statuts) en PR — le registre est la source documentaire, les variables du dépôt sont l'état runtime. Procédure : \`docs/ops/PROD_STACK_ROTATION.md\` (prod) / \`docs/ops/DEV_STACK_ROTATION.md\` (dev)." \
+              "_Réf. : épic #8670._")"
+          else
+            title="[stack-switch] ÉCHEC ${tier} → ${stack}"
+            body="$(printf '%s\n\n%s\n\n%s' \
+              "La bascule **${tier} → ${stack}** a échoué le ${now} (run #${{ github.run_number }}). Voir le log du job : la cible était probablement malade ou le registre incomplet (bascule refusée, rien n'a été modifié)." \
+              "Aucun impact attendu : les variables du dépôt ne sont écrites qu'après la sonde de santé de la cible." \
+              "_Réf. : épic #8670._")"
+          fi
+          gh issue create --repo "${{ github.repository }}" --title "$title" --body "$body" >/dev/null
+          echo "Rapport créé : $title"

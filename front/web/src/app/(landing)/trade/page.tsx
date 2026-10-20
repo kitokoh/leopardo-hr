@@ -18,7 +18,6 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Check, Compass } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer } from '@/modules/vitrine';
 import { HeroScene3D } from '@/modules/vitrine/components/hero/HeroScene3D';
 import { TradeOnboardingChoice } from '@/modules/vitrine/components/TradeOnboardingChoice';
@@ -28,7 +27,6 @@ import { t } from '@/lib/i18n/locale-catalog';
 import { normalizeTradeIntent } from '@/modules/vitrine/lib/trade-intent';
 
 export default function TradePage() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const { direction, locale } = useVitrineLocale();
   const searchParams = useSearchParams();
   const search = searchParams.toString();
@@ -43,9 +41,9 @@ export default function TradePage() {
   return (
     <div
       dir={direction}
-      className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}
+      className={`min-h-screen bg-white `}
     >
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+      <Navbar />
 
       <section className="relative overflow-hidden pt-32 pb-16">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-emerald-50/30 to-cyan-50/20 dark:from-slate-950 dark:via-emerald-950/20 dark:to-cyan-950/10" />

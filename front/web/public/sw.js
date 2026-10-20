@@ -56,6 +56,14 @@ const PROTECTED_PREFIXES = [
   '/assistant',
   // BC-35 VTC (#8349, VTC-07/#8363) — console dispatch (zone dashboard).
   '/vtc',
+  // BC-36 TRADE (TRADE-009/#8484) — espace International Trade OS
+  // (zone dashboard) : données commerciales du tenant. Chemin `/trade-os` :
+  // `/trade` est la page PUBLIQUE de la vitrine (#8489), indexable.
+  '/trade-os',
+  // BOS-CHAT (#8751) — messagerie horizontale (zone dashboard) : conversations
+  // privees, groupes, pieces jointes du tenant. Jamais mise en cache : les
+  // messages du tenant ne doivent pas rester dans le cache du navigateur.
+  '/chat',
 ];
 
 function isProtectedPath(url) {

@@ -252,4 +252,58 @@ class AppColors {
   static const Color emerald800 = Color(0xFF065F46);
   static const Color emerald900 = Color(0xFF064E3B);
   static const Color emerald950 = Color(0xFF022C22);
+
+  // -------------------------------------------------------------------------
+  // Palette « plan de sièges Travel OS » (mission BC-24, 2026-10-17).
+  //
+  // Règle L.07 : `docs/REFERENTIEL_PRODUIT/COULEURS.md` (§ « Palette du plan de
+  // sièges Travel OS ») et les configs Tailwind web/admin bougent ensemble avec
+  // cette échelle — garde `check-design-token-sync.py`. Ces teintes portent les
+  // ÉTATS d'un siège sur le plan visuel du véhicule (front grand public, admin,
+  // et toute surface mobile de vente/embarquement). La couleur n'y est jamais la
+  // seule information : chaque état porte aussi un symbole et un libellé texte
+  // (`travel.seats.state.*`, parité i18n 4 langues).
+  // -------------------------------------------------------------------------
+
+  /// Siège libre (disponible) — neutre clair.
+  static const Color seatFree = Color(0xFFFFFFFF); // white
+  static const Color seatFreeBorder = Color(0xFFCBD5E1); // slate-300
+
+  /// Siège sélectionné par l'utilisateur (état de vue, non persisté).
+  static const Color seatSelected = Color(0xFF2563EB); // blue-600
+  static const Color seatSelectedRing = Color(0xFFBFDBFE); // blue-200
+
+  /// Réservation temporairement en cours (grâce period, `reserved_until`).
+  static const Color seatHeld = Color(0xFFFEF3C7); // amber-100
+  static const Color seatHeldBorder = Color(0xFFFBBF24); // amber-400
+  static const Color seatHeldText = Color(0xFF92400E); // amber-800
+
+  /// Réservé (en attente de paiement / confirmation).
+  static const Color seatReserved = Color(0xFFFFEDD5); // orange-100
+  static const Color seatReservedBorder = Color(0xFFFB923C); // orange-400
+  static const Color seatReservedText = Color(0xFF9A3412); // orange-800
+
+  /// Paiement en attente (statut de paiement non abouti) — état de vue.
+  static const Color seatPendingPayment = Color(0xFFEDE9FE); // violet-100
+  static const Color seatPendingPaymentBorder = Color(0xFFA78BFA); // violet-400
+  static const Color seatPendingPaymentText = Color(0xFF5B21B6); // violet-800
+
+  /// Vendu (réservé et confirmé) — plus jamais libéré par l'expiration.
+  static const Color seatSold = Color(0xFF64748B); // slate-500
+  static const Color seatSoldBorder = Color(0xFF94A3B8); // slate-400
+  static const Color seatSoldText = Color(0xFFF1F5F9); // slate-100
+
+  /// Bloqué par l'opérateur (raison opérationnelle).
+  static const Color seatBlocked = Color(0xFFFEE2E2); // red-100
+  static const Color seatBlockedBorder = Color(0xFFF87171); // red-400
+  static const Color seatBlockedText = Color(0xFF991B1B); // red-800
+
+  /// Indisponible pour une raison documentée.
+  static const Color seatUnavailable = Color(0xFFF1F5F9); // slate-100
+  static const Color seatUnavailableBorder = Color(0xFFE2E8F0); // slate-200
+  static const Color seatUnavailableText = Color(0xFF94A3B8); // slate-400
+
+  /// Encre secondaire du plan (résumé, légende).
+  static const Color seatMapMuted = Color(0xFF475569); // slate-600
+  static const Color seatMapInk = Color(0xFF334155); // slate-700
 }

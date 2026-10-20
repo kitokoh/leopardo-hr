@@ -10,7 +10,6 @@
 
 import { motion } from 'framer-motion';
 import { Check, Gift } from 'lucide-react';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer } from '@/modules/vitrine';
 import { RestaurantSolutionWizard } from '@/modules/vitrine/components/RestaurantSolutionWizard';
 import { HeroScene3D } from '@/modules/vitrine/components/hero/HeroScene3D';
@@ -18,13 +17,12 @@ import { RESTAURANT_HERO_COPY } from '@/modules/vitrine/data/restaurant-wizard';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 
 export default function RestaurantPage() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const { direction, locale } = useVitrineLocale();
   const hero = RESTAURANT_HERO_COPY[locale] ?? RESTAURANT_HERO_COPY.fr;
 
   return (
-    <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+    <div dir={direction} className={`min-h-screen bg-white `}>
+      <Navbar />
 
       <section className="relative pt-32 pb-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-emerald-50/30 to-cyan-50/20 dark:from-slate-950 dark:via-emerald-950/20 dark:to-cyan-950/10" />

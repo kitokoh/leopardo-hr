@@ -1,4 +1,3 @@
-export { useDarkMode } from './useDarkMode';
 export { useScrollReveal } from './useScrollReveal';
 export {
   useAnalyticsPageView,

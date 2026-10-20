@@ -381,10 +381,25 @@ jobs:
         shell: bash
         env:
           RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          RENDER_DEPLOY_HOOK_URL_STACK_B: ${{ secrets.RENDER_DEPLOY_HOOK_URL_STACK_B }}
+          RENDER_DEPLOY_HOOK_URL_STACK_C: ${{ secrets.RENDER_DEPLOY_HOOK_URL_STACK_C }}
+          ACTIVE_STACK: ${{ vars.DEV_ACTIVE_STACK }}
         run: |
           set -euo pipefail
-          if [[ -z "${RENDER_DEPLOY_HOOK_URL}" ]]; then
-            echo "Missing GitHub secret: RENDER_DEPLOY_HOOK_URL"
+          # #8659 : le hook de la stack ACTIVE est obligatoire ; les hooks des
+          # stacks standby sont optionnels (fan-out best-effort, voir step
+          # suivant). RENDER_DEPLOY_HOOK_URL reste le hook historique de la
+          # stack « a » (aucune rotation de secret nécessaire).
+          active="${ACTIVE_STACK:-a}"
+          active_hook=""
+          case "$active" in
+            a) active_hook="${RENDER_DEPLOY_HOOK_URL:-}" ;;
+            b) active_hook="${RENDER_DEPLOY_HOOK_URL_STACK_B:-}" ;;
+            c) active_hook="${RENDER_DEPLOY_HOOK_URL_STACK_C:-}" ;;
+            *) echo "DEV_ACTIVE_STACK invalide: '$active' (a|b|c)"; exit 1 ;;
+          esac
+          if [[ -z "${active_hook}" ]]; then
+            echo "Missing GitHub secret for ACTIVE stack '$active' (a=RENDER_DEPLOY_HOOK_URL, b/c=RENDER_DEPLOY_HOOK_URL_STACK_<X>)"
             exit 1
           fi
 
@@ -392,6 +407,9 @@ jobs:
         shell: bash
         env:
           RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          RENDER_DEPLOY_HOOK_URL_STACK_B: ${{ secrets.RENDER_DEPLOY_HOOK_URL_STACK_B }}
+          RENDER_DEPLOY_HOOK_URL_STACK_C: ${{ secrets.RENDER_DEPLOY_HOOK_URL_STACK_C }}
+          ACTIVE_STACK: ${{ vars.DEV_ACTIVE_STACK }}
           APP_VERSION: ${{ needs.prepare.outputs.app_version }}
           DEPLOY_SHA: ${{ needs.prepare.outputs.sha }}
         run: |
@@ -409,7 +427,30 @@ jobs:
           echo "LIVE_BASELINE_VERSION=${baseline:-unknown}" >> "$GITHUB_ENV"
           echo "Instance live avant deploy : version=${baseline:-unknown}"
 
-          curl --fail --silent --show-error --request POST "${RENDER_DEPLOY_HOOK_URL}"
+          # #8659 — fan-out multi-stacks : TOUTES les stacks dont le hook est
+          # configuré reçoivent le déploiement (standby tenue à jour sur main →
+          # bascule instantanée, aucun rattrapage de code à froid). Seul
+          # l'échec du hook de la stack ACTIVE fait échouer le job : une stack
+          # standby suspendue (quota free épuisé — incident 2026-10-17 sur la
+          # stack « a ») ne doit plus figer le pipeline de l'active.
+          active="${ACTIVE_STACK:-a}"
+          active_failed=0
+          for pair in "a:${RENDER_DEPLOY_HOOK_URL:-}" "b:${RENDER_DEPLOY_HOOK_URL_STACK_B:-}" "c:${RENDER_DEPLOY_HOOK_URL_STACK_C:-}"; do
+            stack="${pair%%:*}"
+            hook="${pair#*:}"
+            [[ -n "$hook" ]] || { echo "stack $stack : hook non configuré, ignorée"; continue; }
+            code="$(curl --silent --output /dev/null --write-out '%{http_code}' --request POST --max-time 30 "$hook" || echo 000)"
+            if [[ "$code" =~ ^2 ]]; then
+              echo "stack $stack : hook OK (HTTP $code)"
+            else
+              echo "::warning::stack $stack : hook KO (HTTP $code)"
+              [[ "$stack" == "$active" ]] && active_failed=1
+            fi
+          done
+          if [[ "$active_failed" -eq 1 ]]; then
+            echo "::error::Le hook de la stack ACTIVE ($active) a échoué — stack suspendue ? Voir docs/ops/DEV_STACK_ROTATION.md (bascule dev)."
+            exit 1
+          fi
 
       - name: Wait for new Render instance (tier dev — health version = SHA git)
         shell: bash

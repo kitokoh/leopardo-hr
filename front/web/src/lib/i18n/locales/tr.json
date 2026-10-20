@@ -2171,7 +2171,30 @@
     "serviceUnreachable": "hizmete ulaşılamıyor",
     "statsLoadError": "Sistem istatistikleri yüklenirken hata oluştu",
     "subtitle": "Leopardo platformunun izlenmesi, yapılandırılması ve otomasyonu.",
-    "title": "Sistem Yönetimi"
+    "title": "Sistem Yönetimi",
+    "infra": {
+      "title": "Altyapı — stack'ler",
+      "subtitle": "Dağıtım stack'lerinin durumu ve tier geçişi (dev veya prod).",
+      "refresh": "Yenile",
+      "loading": "Yükleniyor…",
+      "activeStack": "aktif stack: {stack}",
+      "registryUpdated": "kayıt {date}",
+      "stackLabel": "Stack {id}",
+      "activeBadge": "aktif",
+      "api": "API",
+      "region": "Bölge",
+      "switchTo": "{id} stack'ine geç",
+      "switching": "Geçiliyor…",
+      "alreadyActive": "Bu stack zaten aktif.",
+      "confirmHint": "{tier} tier'ını {id} stack'ine geçir.",
+      "confirmMessage": "{tier} tier'ı {id} stack'ine geçirilsin mi?\n\nBu işlem canlı bir ortamı etkiler: kaydedilir ve Actions sekmesinde izlenir.",
+      "switchQueued": "{tier} → {id} geçişi başlatıldı. “Stack Switch” iş akışını izleyin.",
+      "switchError": "Geçiş başarısız oldu.",
+      "forbidden": "Altyapıyı yönetme yetkiniz yok (infra.manage).",
+      "loadError": "Stack durumu yüklenemedi.",
+      "hintDispatch": "Geçiş bir GitHub iş akışından geçer: sonuçlar ve geçmiş Actions sekmesindedir.",
+      "hintNoToken": "Geçiş devre dışı: API servisinde GITHUB_STACK_SWITCH_TOKEN tanımlı değil."
+    }
   },
   "billing": {
     "cancel_subscription_confirm": "Aboneliğinizi iptal etmek istiyor musunuz? Premium modüllere erişiminizi mevcut dönem sonunda kaybedersiniz.",
@@ -5780,7 +5803,21 @@
       "active": "Aktif",
       "revoked": "İptal edildi",
       "expired": "Süresi doldu"
-    }
+    },
+    "travel.seats.summary.free": "boş koltuk / toplam",
+    "travel.seats.summary.selected": "seçili",
+    "travel.seats.legend.title": "Koltuk durumları",
+    "travel.seats.map.label": "Araç koltuk planı",
+    "travel.seats.state.free": "Boş",
+    "travel.seats.state.selected": "Seçili",
+    "travel.seats.state.held": "Rezervasyon sürüyor",
+    "travel.seats.state.reserved": "Rezerve",
+    "travel.seats.state.pendingPayment": "Ödeme bekliyor",
+    "travel.seats.state.sold": "Satıldı",
+    "travel.seats.state.blocked": "Bloke",
+    "travel.seats.state.unavailable": "Kullanılamaz",
+    "travel.seats.state.aisle": "Koridor",
+    "travel.seats.state.seat": "Koltuk"
   },
   "travelPortal": {
     "title": "Yolcu portalı",
@@ -6570,7 +6607,7 @@
     },
     "nav": {
       "pricing": "Fiyatlar",
-      "packs": "Ücretsiz paketler",
+      "packs": "Paket",
       "packsHub": "Tüm paketler",
       "packsHubDesc": "Her sektöre ücretsiz paket — teklifi keşfedin",
       "packsRestaurant": "Restoranlar",
@@ -6580,7 +6617,7 @@
       "packsEdu": "Okullar & eğitim",
       "packsEduDesc": "Personel yoklaması, yerine geçme, okul bordrosu",
       "packsTravel": "Seyahat acenteleri",
-      "packsTravelDesc": "Müşteri dosyaları, biletleme, komisyonlar, bordro",
+      "packsTravelDesc": "Müşteri dosyaları, biletleme, ödemeler, bordro",
       "resources": "Kaynaklar",
       "guides": "Rehberler",
       "guidesDesc": "İK için en iyi uygulamalar",
@@ -6607,7 +6644,6 @@
       "trade": "Trade"
     },
     "hero3d": {
-      "hint": "Keşfetmek için bir modüle tıklayın",
       "demo": "Demo",
       "cagnottes": "Kampanyalar",
       "freeTrial": "Ücretsiz deneme"
@@ -6644,7 +6680,13 @@
       "reassurance": "Ucretsiz, kredi karti yok, verileriniz sizde kalir",
       "backHome": "Ana sayfaya don",
       "metaTitle": "Trade, isletmenizi dakikalar icinde kurun",
-      "metaDescription": "Trade, Leopardo Business OS'a giris noktasi: ithalat/ihracat veya yerel pazar secin, isletmenizi yapilandirin, modullerinizi etkinlestirin ve ilk isleminizi yapin."
+      "metaDescription": "Trade, Leopardo Business OS'a giris noktasi: ithalat/ihracat veya yerel pazar secin, isletmenizi yapilandirin, modullerinizi etkinlestirin ve ilk isleminizi yapin.",
+      "profileLabel": "Profili­niz",
+      "profile_importer": "İthalatçı",
+      "profile_exporter": "İhracatçı",
+      "profile_both": "İthalatçı ve ihracatçı",
+      "profile_wholesaler": "Toptancı",
+      "profile_retailer": "Perakendeci"
     }
   },
   "commerce": {
@@ -7556,6 +7598,71 @@
       "titleSuffix": "Dayanışma kampanyası"
     }
   },
+  "trade": {
+    "title": "Uluslararası ticaret",
+    "subtitle": "Ortak ticari çekirdek üzerinde tedarik, teklifler, siparişler ve teslim maliyeti",
+    "moduleDisabled": "Uluslararası ticaret dikeyi şirketiniz için etkin değil.",
+    "loadError": "Veriler yüklenemedi.",
+    "loading": "Yükleniyor…",
+    "noData": "Veri yok",
+    "retry": "Yeniden dene",
+    "create": "Oluştur",
+    "search": "Ara…",
+    "overview": {
+      "title": "Genel bakış",
+      "subtitle": "Açık dosyalar, fiyat talepleri, teklifler ve devam eden siparişler.",
+      "deals": "Açık dosyalar",
+      "rfqs": "Aktif fiyat talepleri",
+      "quotes": "Bekleyen teklifler",
+      "orders": "Devam eden siparişler",
+      "integrations": "Entegrasyonlar",
+      "integrationsDegraded": "Bazı işlevler yapılandırılmamış adaptörlere bağlıdır ve kullanılamaz durumdadır."
+    },
+    "integrations": {
+      "title": "Harici entegrasyonlar",
+      "notice": "Yapılandırılmamış bir entegrasyon kullanılamaz olarak gösterilir: hiçbir veri simüle edilmez.",
+      "stateOperational": "Çalışıyor",
+      "stateUnconfigured": "Yapılandırılmadı",
+      "configured": "yapılandırıldı"
+    },
+    "sourcing": {
+      "title": "Tedarik ve fiyat talepleri",
+      "subtitle": "RFQ oluşturun, tedarikçileri davet edin, gelen teklifleri karşılaştırın."
+    },
+    "sales": {
+      "title": "Satış ve teklifler",
+      "subtitle": "Verilen teklifler, sürümler, durumlar ve müşteri karşı tarafları."
+    },
+    "orders": {
+      "title": "Siparişler ve sevkiyatlar",
+      "subtitle": "Alım ve satım siparişleri, sevkiyatlar ve geçişler."
+    },
+    "transport": {
+      "title": "Taşımacılık",
+      "subtitle": "Fiyat talepleri ve taşıyıcı yanıtları."
+    },
+    "costs": {
+      "title": "Maliyetler ve gümrük",
+      "subtitle": "Kalem bazında teslim maliyeti ve belge hazırlığı.",
+      "disclaimer": "Gösterge niteliğinde tahmin — resmî gümrük beyanı veya uygunluk garantisi değildir."
+    },
+    "catalog": {
+      "title": "Ürün kataloğu",
+      "subtitle": "Ürünler, teknik özellikler ve ticari koşullar."
+    },
+    "settings": {
+      "title": "Trade ayarları",
+      "subtitle": "Ticari profil, hizmet verilen pazarlar ve koşullar."
+    },
+    "columns": {
+      "reference": "Referans",
+      "title": "Başlık",
+      "status": "Durum",
+      "createdAt": "Oluşturulma",
+      "destination": "Varış",
+      "incoterm": "Incoterm"
+    }
+  },
   "vtc": {
     "title": "VTC & taksi",
     "subtitle": "Yolculuk ataması ve gerçek zamanlı sürücü takibi",
@@ -7719,6 +7826,8 @@
     "pilot": "Pilot erişim iste",
     "soon": "Çok yakında",
     "offlineBadge": "Çevrimdışı çalışır",
+    "offlineBadgeVerified": "Çevrimdışı doğrulandı",
+    "offlineImplementedHint": "Çevrimdışı kuyruk bağlı — ağ kesintisi senaryosu henüz CI'da yeniden oynatılmadı",
     "qrAria": "Kurulum QR kodunu göster",
     "qrTitle": "Bu cihaza kur",
     "qrHint": "Donatılacak cihazla taratın: kurulum bağlantısı doğrudan açılır.",
@@ -7726,70 +7835,231 @@
     "apps": {
       "manager": {
         "name": "Leopardo Manager",
-        "description": "İşinizi cebinizden yönetin: ekipler, yoklama, onaylar ve gerçek zamanlı uyarılar."
+        "description": "İşinizi cebinizden yönetin: ekipler, yoklama, onaylar ve gerçek zamanlı uyarılar.",
+        "details": {
+          "role": "İşletmeyi telefondan yönetin: ekipler, giriş kayıtları, onaylar ve uyarılar.",
+          "audiences": "İşletme sahibi, yönetici, şube sorumlusu.",
+          "features": "Giriş kayıtları ve devam durumu, talep onayları, görevler ve bildirimler.",
+          "prerequisites": "Şirkete bağlı bir kullanıcı hesabı ve Android veya iOS telefon.",
+          "connection": "İş kimlik bilgileriyle giriş yapın veya uygulamadan şirket QR kodunu tarayın.",
+          "permissions": "Atanan role göre: sahip, yönetici veya İK.",
+          "setup": "Uygulamayı kurun, giriş yapın, ardından cihazı bağlamak için şirket QR kodunu tarayın."
+        }
       },
       "employee": {
         "name": "Leopardo Employee",
-        "description": "Ekiplerinizin yol arkadaşı: GPS ile giriş, izinler, bakiyeler ve bildirimler."
+        "description": "Ekiplerinizin yol arkadaşı: GPS ile giriş, izinler, bakiyeler ve bildirimler.",
+        "details": {
+          "role": "Her çalışana iş arkadaşı: giriş kaydı, izinler, bakiyeler ve belgeler.",
+          "audiences": "Çalışanlar, operatörler, saha ekipleri.",
+          "features": "GPS veya biyometrik giriş kaydı, izin talepleri, izin bakiyeleri, görevler ve bildirimler.",
+          "prerequisites": "Şirketin oluşturduğu bir çalışan hesabı ve bir telefon.",
+          "connection": "Kişisel kimlik bilgileriyle giriş yapın veya şirketin verdiği çalışan QR kodunu tarayın.",
+          "permissions": "Erişim, giriş yapan çalışanın kendi verileriyle sınırlıdır.",
+          "setup": "Uygulamayı kurun, giriş yapın, ardından yöneticinin verdiği çalışan QR kodunu tarayın."
+        }
       },
       "desktop-attendance": {
         "name": "Yoklama istasyonu & kiosk",
-        "description": "ZKTeco masaüstü istemcisi ve yoklama terminali — çevrimdışı çalışır, ağ dönünce senkronize olur. Rehberli pilot erişim."
+        "description": "ZKTeco masaüstü istemcisi ve yoklama terminali — çevrimdışı çalışır, ağ dönünce senkronize olur. Rehberli pilot erişim.",
+        "details": {
+          "role": "Ekip girişi için sabit giriş kayıt istasyonu ve kiosk terminali.",
+          "audiences": "Resepsiyon, İK, saha sorumluları.",
+          "features": "Çevrimdışı giriş kaydı, ertelenmiş eşitleme, ZKTeco biyometrik okuyucu.",
+          "prerequisites": "Bir Windows bilgisayarı veya uyumlu terminal ve onaylanmış pilot erişim.",
+          "connection": "Yöneticinin verdiği tek kullanımlık jetonla bilgisayarı şirkete eşleştirin.",
+          "permissions": "Eşleştirme için yönetici veya İK hesabı.",
+          "setup": "Pilot erişim isteyin, istemciyi kurun, bilgisayarı eşleştirin, ardından eşitlemeyi doğrulayın."
+        }
       },
       "restaurant-pos": {
         "name": "Restoran Kasa (POS)",
-        "description": "Tezgahta ve masada tahsilat: siparişler, ödemeler ve fişler, doğrudan tarayıcıda."
+        "description": "Tezgahta ve masada tahsilat: siparişler, ödemeler ve fişler, doğrudan tarayıcıda.",
+        "details": {
+          "role": "Siparişleri ve ödemeleri kasada ve salonda alın.",
+          "audiences": "Kasiyerler, garsonlar, restoran yöneticileri.",
+          "features": "Siparişler, ödemeler, fişler, mutfağa iletim, çevrimdışı çalışma.",
+          "prerequisites": "Restoran çözümünün etkinleştirilmiş olması ve en az bir yapılandırılmış şube.",
+          "connection": "Şirket hesabıyla oturum açılmış olarak bilgisayarın tarayıcısında doğrudan açılır.",
+          "permissions": "Kasiyer veya yönetici rolü.",
+          "setup": "Restoran çözümünü etkinleştirin, kasayı bilgisayarda açın, ardından mutfağa iletimi doğrulayın."
+        }
       },
       "restaurant-kds": {
         "name": "Mutfak Ekranı (KDS)",
-        "description": "Mutfak için gerçek zamanlı sipariş kuyruğu: kabul, hazırlık, servis."
+        "description": "Mutfak için gerçek zamanlı sipariş kuyruğu: kabul, hazırlık, servis.",
+        "details": {
+          "role": "Mutfaktaki sipariş kuyruğunu gösterin ve hazırlığı izleyin.",
+          "audiences": "Mutfak ekibi, bölüm şefleri, yöneticiler.",
+          "features": "Sipariş alma, adım işaretleme, hatırlatmalar ve öncelikler.",
+          "prerequisites": "Restoran çözümünün etkinleştirilmiş olması ve mutfakta ayrı bir ekran.",
+          "connection": "Şirket hesabıyla oturum açılmış olarak mutfak ekranının tarayıcısında açılır.",
+          "permissions": "Mutfak veya yönetici rolü.",
+          "setup": "Restoran çözümünü etkinleştirin, mutfak ekranını açın, ardından bir siparişi baştan sona test edin."
+        }
       },
       "restaurant-server": {
         "name": "Garson Uygulaması",
-        "description": "Masada mobil sipariş alımı, anında mutfağa ve kasaya iletilir."
+        "description": "Masada mobil sipariş alımı, anında mutfağa ve kasaya iletilir.",
+        "details": {
+          "role": "Salondaki siparişleri telefondan alın ve mutfağa gönderin.",
+          "audiences": "Garsonlar, yöneticiler.",
+          "features": "Salonda sipariş alma, mutfağa iletim, masa takibi.",
+          "prerequisites": "Restoran çözümünün etkinleştirilmiş olması ve bir telefon.",
+          "connection": "Uygulama dağıtıldığında iş kimlik bilgileriyle giriş yapın.",
+          "permissions": "Garson veya yönetici rolü.",
+          "setup": "Bugün genel bir dağıtım kanalı yok: uygulama hazırlanıyor."
+        }
       },
       "restaurant-kiosk": {
         "name": "Self servis kiosku",
-        "description": "Müşterileriniz tezgahtaki tabletten kendi kendine sipariş verip öder."
+        "description": "Müşterileriniz tezgahtaki tabletten kendi kendine sipariş verip öder.",
+        "details": {
+          "role": "Misafirlerin kasadaki tabletten kendi başlarına sipariş verip ödemesini sağlayın.",
+          "audiences": "Restoran misafirleri, yöneticiler.",
+          "features": "Self servis sipariş, ödeme, doğrudan mutfağa iletim.",
+          "prerequisites": "Restoran çözümünün etkinleştirilmiş olması ve bir kasa tableti.",
+          "connection": "Şirket hesabına bağlı tablette tam ekran açılır.",
+          "permissions": "Kullanıcı izni gerekmez: kiosk kontrollü bir genel moddur.",
+          "setup": "Restoran çözümünü etkinleştirin, kiosku tablette açın, ardından tam ekrana geçirin."
+        }
       },
       "fuel-console": {
         "name": "Akaryakıt İstasyonu Konsolu",
-        "description": "Pompalar, hacimler, farklar ve ekip rotasyonları — istasyonunuzun kontrol kulesi."
+        "description": "Pompalar, hacimler, farklar ve ekip rotasyonları — istasyonunuzun kontrol kulesi.",
+        "details": {
+          "role": "Akaryakıt istasyonunda pompaları, hacimleri ve farkları kontrol edin.",
+          "audiences": "İstasyon yöneticileri, operatörler, saha sorumluları.",
+          "features": "Pompa okumaları, vardiya rotasyonları, fark takibi, istasyon bazlı raporlar.",
+          "prerequisites": "Akaryakıt istasyonu çözümünün etkinleştirilmiş olması ve yapılandırılmış bir şube.",
+          "connection": "Şirket hesabıyla oturum açılmış olarak kontrol bilgisayarının tarayıcısında açılır.",
+          "permissions": "Yönetici veya operatör rolü.",
+          "setup": "Akaryakıt istasyonu çözümünü etkinleştirin, konsolu açın, ardından ilk okumayı kaydedin."
+        }
       },
       "commerce-pos": {
         "name": "Mağaza Kasa (POS)",
-        "description": "Mağazada satış: ürünler, stok ve tahsilatlar tarayıcıda."
+        "description": "Mağazada satış: ürünler, stok ve tahsilatlar tarayıcıda.",
+        "details": {
+          "role": "Mağazada satış: ürünler, stok ve tahsilat.",
+          "audiences": "Perakendeciler, satış personeli, mağaza yöneticileri.",
+          "features": "Ürün kataloğu, kasa, stok takibi, çevrimdışı çalışma.",
+          "prerequisites": "Ticaret çözümünün etkinleştirilmiş olması ve bir ürün kataloğu.",
+          "connection": "Şirket hesabıyla oturum açılmış olarak satış bilgisayarının tarayıcısında açılır.",
+          "permissions": "Satış veya yönetici rolü.",
+          "setup": "Ticaret çözümünü etkinleştirin, ürünleri oluşturun, ardından ilk satışı yapın."
+        }
       },
       "travel-agent": {
         "name": "Seyahat Acentesi Uygulaması",
-        "description": "Çok yolculu gişe satışı, nakit tahsilat, QR check-in ve yolcu listesi."
+        "description": "Çok yolculu gişe satışı, nakit tahsilat, QR check-in ve yolcu listesi.",
+        "details": {
+          "role": "Gişede satış: çok yolculu rezervasyonlar, tahsilat ve check-in.",
+          "audiences": "Seyahat acenteleri, acente yöneticileri.",
+          "features": "Gişe satışı, tahsilat, QR ile check-in, yolcu manifestoları.",
+          "prerequisites": "Seyahat çözümünün etkinleştirilmiş olması ve yapılandırılmış bir gişe.",
+          "connection": "Uygulama dağıtıldığında iş kimlik bilgileriyle giriş yapın.",
+          "permissions": "Acente veya acente yöneticisi rolü.",
+          "setup": "Bugün genel bir dağıtım kanalı yok: uygulama hazırlanıyor."
+        }
       },
       "edu-portal": {
         "name": "Eğitim Portalı",
-        "description": "Kampüsler, sınıflar, öğrenciler ve notlar: tüm okulunuz tarayıcıda."
+        "description": "Kampüsler, sınıflar, öğrenciler ve notlar: tüm okulunuz tarayıcıda.",
+        "details": {
+          "role": "Okul yönetimi: kampüs, sınıflar, öğrenciler ve notlar.",
+          "audiences": "Okul yönetimi, öğretmenler, idari personel.",
+          "features": "Kampüs ve sınıflar, öğrenci dosyaları, notlar, kayıt takibi.",
+          "prerequisites": "Eğitim çözümünün etkinleştirilmiş olması ve yapılandırılmış bir okul.",
+          "connection": "Okul hesabıyla oturum açılmış olarak tarayıcıda açılır.",
+          "permissions": "İdari veya öğretmen rolü.",
+          "setup": "Eğitim çözümünü etkinleştirin, sınıfları oluşturun, ardından ilk öğrenciyi kaydedin."
+        }
       },
       "health-portal": {
         "name": "Sağlık Portalı",
-        "description": "Hastalar, randevular ve kabuller: tesisinizin danışma noktası."
+        "description": "Hastalar, randevular ve kabuller: tesisinizin danışma noktası.",
+        "details": {
+          "role": "Bir sağlık kuruluşunun resepsiyonunu yönetin: hastalar, randevular ve kabuller.",
+          "audiences": "Resepsiyon, tıbbi sekreterlik, yönetim.",
+          "features": "Hasta dosyaları, randevular, kabuller, ziyaret takibi.",
+          "prerequisites": "Sağlık çözümünün etkinleştirilmiş olması ve yapılandırılmış bir kuruluş.",
+          "connection": "Kuruluş hesabıyla oturum açılmış olarak tarayıcıda açılır.",
+          "permissions": "Resepsiyon veya idari rol.",
+          "setup": "Sağlık çözümünü etkinleştirin, ilk hastayı oluşturun, ardından bir randevu planlayın."
+        }
       },
       "hr-mobile": {
         "name": "Leopardo HR",
-        "description": "İK ekibiniz için çalışan takibi, yoklama, görevler ve işe alım."
+        "description": "İK ekibiniz için çalışan takibi, yoklama, görevler ve işe alım.",
+        "details": {
+          "role": "Çalışanları, devam durumunu, görevleri ve işe alımı takip edin.",
+          "audiences": "İK, yönetim, yöneticiler.",
+          "features": "Çalışan dosyaları, devam durumu, görevler, işe alım.",
+          "prerequisites": "İK modüllerinin etkinleştirilmiş olması ve bir telefon.",
+          "connection": "Uygulama dağıtıldığında iş kimlik bilgileriyle giriş yapın.",
+          "permissions": "İK veya sahip rolü.",
+          "setup": "Bugün genel bir dağıtım kanalı yok: uygulama hazırlanıyor."
+        }
       },
       "accounting-mobile": {
         "name": "Leopardo Accounting",
-        "description": "Faturalama ve gecikmiş ödeme takibi her zaman yanınızda."
+        "description": "Faturalama ve gecikmiş ödeme takibi her zaman yanınızda.",
+        "details": {
+          "role": "Telefondan fatura kesin ve ödenmemiş bakiyeleri izleyin.",
+          "audiences": "Muhasebeciler, yönetim.",
+          "features": "Faturalama, ödenmemiş takibi, belge görüntüleme.",
+          "prerequisites": "Muhasebe modülünün etkinleştirilmiş olması ve bir telefon.",
+          "connection": "Uygulama dağıtıldığında iş kimlik bilgileriyle giriş yapın.",
+          "permissions": "Muhasebeci veya sahip rolü.",
+          "setup": "Bugün genel bir dağıtım kanalı yok: uygulama hazırlanıyor."
+        }
       },
       "marketing-mobile": {
         "name": "Leopardo Marketing",
-        "description": "Sosyal ağlarınıza tek tıkla planlayın ve yayınlayın."
+        "description": "Sosyal ağlarınıza tek tıkla planlayın ve yayınlayın.",
+        "details": {
+          "role": "Sosyal ağlarda planlayın ve yayınlayın.",
+          "audiences": "Pazarlama sorumluları, yönetim.",
+          "features": "Gönderi planlama, çok ağlı yayınlama, takip.",
+          "prerequisites": "Pazarlama modülünün etkinleştirilmiş olması ve bir telefon.",
+          "connection": "Uygulama dağıtıldığında iş kimlik bilgileriyle giriş yapın.",
+          "permissions": "Pazarlama veya sahip rolü.",
+          "setup": "Bugün genel bir dağıtım kanalı yok: uygulama hazırlanıyor."
+        }
       },
       "cameras-mobile": {
         "name": "Leopardo Cameras",
-        "description": "Kamera duvarınız hareket halinde: canlı izleme, olaylar ve uyarılar."
+        "description": "Kamera duvarınız hareket halinde: canlı izleme, olaylar ve uyarılar.",
+        "details": {
+          "role": "Kamera duvarını ve olayları hareket halindeyken görüntüleyin.",
+          "audiences": "Güvenlik, yönetim, saha sorumluları.",
+          "features": "Canlı izleme, olaylar, uyarılar.",
+          "prerequisites": "Kamera modülünün etkinleştirilmiş olması ve bir telefon.",
+          "connection": "Uygulama dağıtıldığında iş kimlik bilgileriyle giriş yapın.",
+          "permissions": "Güvenlik veya sahip rolü.",
+          "setup": "Bugün genel bir dağıtım kanalı yok: uygulama hazırlanıyor."
+        }
       }
     },
-    "dashboardCard": "Mesleğinizin uygulamalarını kurun — garson, mutfak, kasa, mobil."
+    "dashboardCard": "Mesleğinizin uygulamalarını kurun — garson, mutfak, kasa, mobil.",
+    "availability": {
+      "published": "Yayında",
+      "pilot": "Pilot erişim",
+      "not_distributed": "Dağıtımda değil"
+    },
+    "details": {
+      "toggle": "Uygulama kartını görüntüle",
+      "heading": "Uygulama kartı",
+      "availability": "Kullanılabilirlik",
+      "role": "Rol",
+      "audiences": "Hedef kullanıcılar",
+      "features": "Ana özellikler",
+      "prerequisites": "Ön koşullar",
+      "connection": "Çalışma alanına bağlanma",
+      "permissions": "Gerekli izinler",
+      "setup": "Devreye alma"
+    }
   },
   "marketingOs": {
     "title": "Marketing OS",
@@ -8077,5 +8347,7 @@
     "created": "Cihaz kaydedildi.",
     "revoked": "Cihaz iptal edildi.",
     "secretWarning": "Bu jetonu asla paylaşmayın: yalnızca bir kez gösterilir."
-  }
+  },
+  "travel.seats.state.absent": "Koltuk yok",
+  "travel.seats.layoutNotice": "Koltuk düzeni değiştirildiğinde rezervasyonu olan yolcular taşınmaz: koltukları değişmez. Bir çakışmayı çözmek için araç değiştirme prosedürünü kullanın."
 }

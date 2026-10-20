@@ -273,6 +273,40 @@ class FuelReportController extends Controller
     }
 
     /**
+     * P1-f (audit 2026-10-17) - vue comparative inter-stations.
+     *
+     * GET /fuel-station/reports/station-comparison - manager. Une ligne par
+     * station du tenant sur la periode : ventes, ecarts de rapprochement,
+     * etat des cuves. Les stations sans activite sont incluses a zero.
+     */
+    public function stationComparison(Request $request): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        abort_unless(app(FuelReportPolicy::class)->viewAny($actor), 403);
+
+        $start = $request->filled('period_start')
+            ? Carbon::parse((string) $request->string('period_start'))->toDateString()
+            : now()->startOfMonth()->toDateString();
+        $end = $request->filled('period_end')
+            ? Carbon::parse((string) $request->string('period_end'))->toDateString()
+            : now()->toDateString();
+
+        $stationId = $request->filled('station_id') ? $request->integer('station_id') : null;
+
+        return response()->json([
+            'data' => $this->typedReports->compareStations(
+                (string) $actor->company_id,
+                $start,
+                $end,
+                $stationId,
+            ),
+        ]);
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private function exportPayload(FuelReportExport $export): array

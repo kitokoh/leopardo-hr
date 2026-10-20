@@ -19,9 +19,6 @@ jest.mock('@/modules/vitrine/lib/vitrine-locale', () => ({
 jest.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(mockSearch),
 }));
-jest.mock('@/modules/vitrine/hooks/useDarkMode', () => ({
-  useDarkMode: () => ({ isDark: false, toggleDarkMode: () => {} }),
-}));
 jest.mock('@/modules/vitrine/components/hero/HeroScene3D', () => ({
   HeroScene3D: () => null,
 }));

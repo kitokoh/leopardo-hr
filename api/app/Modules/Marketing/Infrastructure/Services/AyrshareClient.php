@@ -155,6 +155,35 @@ class AyrshareClient
     }
 
     /**
+     * Statistiques d'un post publie (#8530). Reference : POST /analytics/post.
+     *
+     * On transmet l'identifiant du post tel qu'Ayrshare l'a retourne a la
+     * publication. La reponse est renvoyee BRUTE : c'est le provider
+     * (`AyrshareAnalyticsProvider`) qui extrait les indicateurs reellement
+     * presents, sans jamais fabriquer de valeur manquante.
+     *
+     * @return array<string, mixed>
+     */
+    public function fetchPostAnalytics(string $profileKey, string $ayrsharePostId): array
+    {
+        $response = $this->profileClient($profileKey)->post("{$this->baseUrl}/analytics/post", [
+            'id' => $ayrsharePostId,
+        ]);
+
+        $body = $response->json();
+        $body = is_array($body) ? $body : [];
+
+        if (! $response->successful() || ($body['status'] ?? null) === 'error') {
+            $this->logFailure('fetchPostAnalytics', $response->status(), $body);
+            throw new RuntimeException(
+                'Ayrshare: echec de recuperation des statistiques — '.$this->firstErrorMessage($body)
+            );
+        }
+
+        return $body;
+    }
+
+    /**
      * Commentaires reçus sur un post publié (toutes plateformes du post) —
      * Issue #7754. Référence : GET /comments/{ayrsharePostId}.
      *

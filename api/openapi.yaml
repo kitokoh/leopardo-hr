@@ -121,6 +121,8 @@ tags:
   description: 'BC-34 GEO — core géospatial transverse (GEO-05 #8354) : distance géodésique, recherche « les plus proches » (registry opt-in geo.searchables), diagnostic PostGIS. Réutilisable par toute verticale (VTC en premier, BC-35).'
 - name: Vtc
   description: 'BC-35 VTC — verticale VTC/taxi (spec MODULE_GEOCORE_ET_VERTICAL_VTC, VTC-01 #8357 → VTC-07 #8363) : estimation de tarif, réservation idempotente, dispatch au chauffeur le plus proche via le core geo (BC-34), cycle de course complet, console de répartition, administration (chauffeurs, véhicules, profils tarifaires). RBAC deny-by-default (docs/architecture/VTC_RBAC.md).'
+- name: Trade
+  description: 'BC-36 TRADE — verticale International Trade OS (TRADE-001 #8476 → TRADE-011 #8486, spec docs/specifications/VERTICAL_TRADE_OS.md) : noyau commercial partagé (profils professionnels, catalogue, demandes de prix, offres, commandes, transport, coûts rendus, documents) avec vues acheteur et vendeur sur les MÊMES objets. RBAC par opération, deny-by-default (TradeRoleResolver : purchase / sales / logistics / admin).'
 
 paths:
   /public/fundraisers/{slug}:
@@ -1133,6 +1135,143 @@ paths:
           description: Scope bookings.read absent de la cle
         '404':
           description: Reference inconnue dans le tenant de la cle
+  /travel/trips/{travelTrip}/seats:
+    get:
+      tags:
+      - Travel
+      summary: "Plan de sièges du trajet (back-office, lecture seule)"
+      description: >-
+        #8621 — Inventaire des sièges du trajet pour le plan de sièges du
+        back-office. Contrairement à la surface publique
+        (`/public/travel/marketplace/trips/{trip}`), le personnel voit EN PLUS
+        la `booking_reference` rattachée au siège : c'est l'information
+        opérationnelle nécessaire pour retrouver une vente dans le bus.
+        Aucune donnée passager n'est exposée (le manifeste reste la seule voie
+        autorisée pour les identités).
+
+        Bornage tenant : le scope `BelongsToCompany` ET une comparaison
+        explicite `company_id` protègent l'accès — un trajet d'une autre
+        entreprise répond 404 (fail-closed), jamais 403 avec fuite d'existence.
+        Permission : lecture des trajets de l'entreprise.
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Inventaire des sièges (numéro, état, référence de réservation)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      trip_id:
+                        type: integer
+                      code:
+                        type: string
+                      total_seats:
+                        type: integer
+                      seats:
+                        type: array
+                        description: Trié par `seat_number`.
+                        items:
+                          type: object
+                          required: [seat_number, status]
+                          properties:
+                            seat_number:
+                              type: integer
+                            status:
+                              type: string
+                              enum: [free, reserved, sold, blocked, unavailable]
+                            booking_reference:
+                              type: string
+                              nullable: true
+                              description: Référence de réservation (personnel uniquement).
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /travel/trips/{travelTrip}/vehicle-assessment:
+    get:
+      tags:
+      - Travel
+      summary: "Évaluation d'un remplacement de véhicule (aucune écriture)"
+      description: >-
+        #8622 — Calcule les conflits d'un changement de véhicule SANS RIEN
+        ÉCRIRE, pour que l'opérateur voie ce qui bloque avant d'agir.
+
+        `compatible` est faux dès qu'un siège RÉSERVÉ ou VENDU porte un numéro
+        supérieur à la capacité du véhicule cible (conflit `blocking`) : le
+        changement serait refusé par `PUT /travel/trips/{travelTrip}` (409).
+        Les sièges libres ou bloqués au-delà de la capacité remontent en
+        `warning` uniquement. Un véhicule inconnu du tenant produit
+        `compatible: false` avec `error: vehicle_not_found` (fail-closed).
+
+        Aucun passager n'est déplacé silencieusement : la résolution de
+        conflit reste une décision explicite de l'opérateur.
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: vehicle_id
+        in: query
+        required: false
+        schema:
+          type: integer
+          nullable: true
+        description: Véhicule cible à évaluer.
+      responses:
+        '200':
+          description: Verdict de compatibilité et liste des conflits
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      compatible:
+                        type: boolean
+                      current_vehicle_id:
+                        type: integer
+                        nullable: true
+                      target_vehicle_id:
+                        type: integer
+                        nullable: true
+                      target_capacity:
+                        type: integer
+                      trip_total_seats:
+                        type: integer
+                      conflicts:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                              enum: [seat_beyond_capacity, free_seat_beyond_capacity, blocked_seat_beyond_capacity]
+                            seat_number:
+                              type: integer
+                            severity:
+                              type: string
+                              enum: [blocking, warning]
+                            booking_reference:
+                              type: string
+                              nullable: true
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /travel/tickets/verify:
     post:
       tags:
@@ -1226,6 +1365,93 @@ paths:
           description: Permission travel.checkin requise
         '404':
           description: Reference ou code de controle invalide (reponse identique dans les deux cas)
+        '422':
+          description: Corps de requete invalide
+  /travel/tickets/lookup:
+    post:
+      tags:
+      - Travel
+      summary: Rechercher une reservation par reference (secours camera)
+      description: >-
+        BC-24 TRAVEL OS (#8546) — recherche MANUELLE par reference, utilisee
+        quand la camera ne fonctionne pas ou que l'appareil n'a pas de capteur.
+        LECTURE SEULE, comme `/travel/tickets/verify` : ne consomme JAMAIS le
+        billet. Ne retourne aucun code de controle (il n'est delivre qu'a
+        l'emission) — seulement la reservation, ses billets et leur statut
+        operationnel. L'identite du passager n'est renvoyee que si l'operateur
+        est habilite au controle (`travel.checkin`). Cross-tenant -> 404.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reference]
+              properties:
+                reference:
+                  type: string
+                  maxLength: 64
+                  description: Reference de la reservation.
+      responses:
+        '200':
+          description: Reservation trouvee (billets et statuts)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      booking_reference:
+                        type: string
+                      trip:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                            nullable: true
+                          departure_date:
+                            type: string
+                            format: date
+                            nullable: true
+                          departure_time:
+                            type: string
+                            nullable: true
+                          origin:
+                            type: string
+                            nullable: true
+                          destination:
+                            type: string
+                            nullable: true
+                      tickets:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            ticket_number:
+                              type: string
+                            seat_number:
+                              type: integer
+                              nullable: true
+                            status:
+                              type: string
+                              enum: [valid, void, expired, already_used]
+                            passenger:
+                              type: object
+                              nullable: true
+                              description: >-
+                                `null` si l'operateur n'a pas la permission
+                                `travel.checkin`.
+                              properties:
+                                full_name:
+                                  type: string
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission travel.checkin requise
+        '404':
+          description: Reference inconnue ou hors du tenant
         '422':
           description: Corps de requete invalide
   /travel/reports/offices:
@@ -1471,6 +1697,235 @@ paths:
           description: Vehicule inexistant ou hors du tenant
         '422':
           description: Coordonnees hors bornes ou source inconnue
+  /travel/vehicles/{travelVehicle}/positions:
+    get:
+      tags:
+      - Travel
+      summary: Historique des positions transmises d'un vehicule
+      description: >-
+        BC-24 TRAVEL OS (#8548) — historique des positions REELLEMENT
+        transmises par un dispositif autorise (boitier GPS ou application).
+        Aucune position n'est fabriquee : un vehicule sans equipement retourne
+        une liste VIDE (`count: 0`), jamais des points inventes. Lecture bornee
+        par tenant (isolation `company_id`), par vehicule et par fenetre
+        temporelle optionnelle. `is_measured` vaut `false` pour une position
+        estimee — elle n'est jamais presentee comme une mesure GPS.
+        Permission : lecture flotte (tout employe du tenant) ; cross-tenant
+        -> 404.
+      parameters:
+      - name: travelVehicle
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Borne inferieure (incluse) sur `recorded_at`.
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Borne superieure (incluse) sur `recorded_at`.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 500
+          default: 100
+      responses:
+        '200':
+          description: Historique des positions (liste vide si aucun dispositif)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      vehicle_id:
+                        type: integer
+                      vehicle_code:
+                        type: string
+                      count:
+                        type: integer
+                      points:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            latitude:
+                              type: number
+                              format: float
+                            longitude:
+                              type: number
+                              format: float
+                            source:
+                              type: string
+                              enum: [gps, app, estimated]
+                            source_label:
+                              type: string
+                            is_measured:
+                              type: boolean
+                              description: >-
+                                `false` pour une position estimee — jamais
+                                presentee comme une position GPS.
+                            recorded_at:
+                              type: string
+                              format: date-time
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission de lecture flotte requise
+        '404':
+          description: Vehicule inexistant ou hors du tenant
+  /travel/fleet/tracking:
+    get:
+      tags:
+      - Travel
+      summary: Tableau de bord de suivi de la flotte
+      description: >-
+        BC-24 TRAVEL OS (#8548) — lecture seule. Reutilise la derniere position
+        connue livree par #8540 (aucune nouvelle table, aucun appel a un
+        fournisseur de telemetrie). Expose par vehicule : la position connue
+        (`null` si aucun dispositif n'a transmis — aucune coordonnee inventee),
+        la distinction mesure/estimation (`is_measured`), la FRAICHEUR
+        (`fresh` / `stale` / `unavailable`, seuil explicite
+        `travel.fleet_position.stale_after_minutes`) et les departs a venir.
+        Une position ancienne est signalee `stale` et une absence de donnee
+        `unavailable` — jamais presentees comme une position courante.
+        Permission : viewAny (tout employe du tenant) ; cross-tenant -> 404.
+      parameters:
+      - name: vehicle_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Cible un vehicule precis (hors tenant -> 404).
+      responses:
+        '200':
+          description: Tableau de bord de la flotte
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      vehicles:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            code:
+                              type: string
+                            registration_number:
+                              type: string
+                              nullable: true
+                            status:
+                              type: string
+                            position:
+                              type: object
+                              nullable: true
+                              description: >-
+                                Derniere position connue — `null` si aucun
+                                dispositif n'a transmis (aucune coordonnee
+                                inventee).
+                              properties:
+                                latitude:
+                                  type: number
+                                  format: float
+                                longitude:
+                                  type: number
+                                  format: float
+                                source:
+                                  type: string
+                                  enum: [gps, app, estimated]
+                                source_label:
+                                  type: string
+                                is_measured:
+                                  type: boolean
+                                  description: >-
+                                    `false` pour une position estimee — jamais
+                                    presentee comme une position GPS.
+                                recorded_at:
+                                  type: string
+                                  format: date-time
+                                  nullable: true
+                            freshness:
+                              type: object
+                              properties:
+                                state:
+                                  type: string
+                                  enum: [fresh, stale, unavailable]
+                                label:
+                                  type: string
+                                is_current:
+                                  type: boolean
+                                is_stale:
+                                  type: boolean
+                                is_unavailable:
+                                  type: boolean
+                                age_seconds:
+                                  type: integer
+                                  nullable: true
+                                stale_after_seconds:
+                                  type: integer
+                                  nullable: true
+                            upcoming_departures:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                  code:
+                                    type: string
+                                  departure_date:
+                                    type: string
+                                    format: date
+                                  departure_time:
+                                    type: string
+                                  status:
+                                    type: string
+                                  status_label:
+                                    type: string
+                      summary:
+                        type: object
+                        properties:
+                          vehicles:
+                            type: integer
+                          with_position:
+                            type: integer
+                          current:
+                            type: integer
+                          stale:
+                            type: integer
+                          unavailable:
+                            type: integer
+                          measured:
+                            type: integer
+                          estimated:
+                            type: integer
+                      stale_after_minutes:
+                        type: integer
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission de lecture de la flotte requise
+        '404':
+          description: Vehicule inexistant ou hors du tenant
   /travel/staff-assignments:
     get:
       tags:
@@ -4476,6 +4931,147 @@ paths:
             text/plain:
               schema:
                 type: string
+  /public/discover:
+    get:
+      tags:
+      - Discovery
+      summary: Decouverte publique cross-verticale Leopardo.com (SUPERAPP-P0, #8611)
+      description: >-
+        Point d'entree NEUTRE de la plateforme grand public : agrege les
+        entites PUBLIEES de plusieurs verticales (restaurants, hebergements,
+        vitrines) via les providers du contrat `PublicDiscoverableProvider`.
+        Route isolee sans authentification (throttle `shop-public`), patron
+        BC-27/BC-28. Invariants : fail-closed par provider (`is_public` /
+        `status=published`, societe ni suspendue ni expiree, feature verticale
+        active) ; DTO public strict (jamais d'id interne, de company_id ni de
+        donnee RH/commerciale) ; deduplication `(type, slug)` ; `?near=lat,lng`
+        ne retient que les entites geolocalisees dans `radius_km`, triees par
+        distance croissante via le core geo. Un `?type=` inconnu renvoie 422
+        (jamais de filtre silencieux). `per_page` borne a 50.
+      security: []
+      parameters:
+      - name: q
+        in: query
+        required: false
+        description: Recherche texte sur le nom et la description publique.
+        schema:
+          type: string
+          maxLength: 120
+      - name: city
+        in: query
+        required: false
+        description: Filtre ville (insensible a la casse en PostgreSQL).
+        schema:
+          type: string
+          maxLength: 120
+      - name: type
+        in: query
+        required: false
+        description: Type canonique de provider (`restaurant`, `hospitality_property`, `showcase`). Valeur inconnue -> 422.
+        schema:
+          type: string
+      - name: near
+        in: query
+        required: false
+        description: Point de recherche `lat,lng`. Seules les entites geolocalisees dans le rayon sont retenues.
+        schema:
+          type: string
+          example: '36.7538,3.0588'
+      - name: radius_km
+        in: query
+        required: false
+        description: Rayon de proximite en kilometres (0.1 a 50, defaut 10).
+        schema:
+          type: number
+          format: float
+          minimum: 0.1
+          maximum: 50
+      - name: per_page
+        in: query
+        required: false
+        description: Taille de page (1 a 50, defaut 20).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+      - name: page
+        in: query
+        required: false
+        description: Numero de page (a partir de 1).
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Entites publiques agregees (data[]) et metadonnees de pagination (meta)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        slug:
+                          type: string
+                        name:
+                          type: string
+                        category:
+                          type: string
+                          nullable: true
+                        city:
+                          type: string
+                          nullable: true
+                        country:
+                          type: string
+                          nullable: true
+                        description:
+                          type: string
+                          nullable: true
+                        image_url:
+                          type: string
+                          nullable: true
+                        latitude:
+                          type: number
+                          format: float
+                          nullable: true
+                        longitude:
+                          type: number
+                          format: float
+                          nullable: true
+                        distance_km:
+                          type: number
+                          format: float
+                          nullable: true
+                        url:
+                          type: string
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      per_page:
+                        type: integer
+                      page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      types:
+                        type: array
+                        items:
+                          type: string
+                      radius_km:
+                        type: number
+                        format: float
+                        nullable: true
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
   /showcase:
     get:
       tags:
@@ -7522,6 +8118,123 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /platform/infra/stacks:
+    get:
+      tags:
+      - Platform
+      summary: Etat des stacks de deploiement (dev et prod) — issue #8673
+      description: |
+        Retourne, pour chaque tier (prod, dev), les stacks decrites dans les
+        registres versionnes `deploy/prod-stacks.json` et `deploy/dev-stacks.json`
+        : identifiant, statut, service API, URLs des fronts et indicateur
+        `switchable` (statut ready/active ET endpoint de sante connu).
+        Le drapeau `dispatch_configured` indique si la bascule est disponible :
+        il vaut false quand GITHUB_STACK_SWITCH_TOKEN n'est pas configure sur le
+        service API. L'ecran super-admin desactive alors le bouton.
+        Permission requise : `infra.manage` (super_admin, ops).
+      operationId: listPlatformInfraStacks
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Etat des stacks par tier
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformInfraTier'
+                  dispatch_configured:
+                    type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /platform/infra/stack-switch:
+    post:
+      tags:
+      - Platform
+      summary: Basculer un tier vers une autre stack — issue #8673
+      description: |
+        Declenche la bascule d'un tier (prod ou dev) vers une stack cible.
+
+        L'API n'execute pas la bascule : elle emet un `repository_dispatch`
+        GitHub (`stack-switch`) analyse par `.github/workflows/stack-switch-dispatch.yml`
+        puis execute par `.github/workflows/stack-switch.yml` et
+        `scripts/stack-switch.sh`. L'API ne detient donc aucune cle Render ou
+        Vercel.
+
+        Garde-fous :
+        - 503 si `GITHUB_STACK_SWITCH_TOKEN` n'est pas configure (fail-closed) ;
+        - 409 si la stack est deja active ou n'est pas basculable (statut
+          `planned`/`suspended`, ou URL de sante absente) ;
+        - 422 si le tier ou la stack sont inconnus du registre.
+        En prod, le script refuse toute bascule qui changerait de base de
+        donnees et refuse tout reseed : les donnees beta sont reelles.
+        Permission requise : `infra.manage`.
+      operationId: switchPlatformInfraStack
+      security:
+      - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tier, stack, confirm]
+              properties:
+                tier:
+                  type: string
+                  enum: [prod, dev]
+                stack:
+                  type: string
+                  maxLength: 8
+                  pattern: '^[a-z0-9]+$'
+                confirm:
+                  type: boolean
+                  description: Garde d'interface (evite le clic accidentel).
+      responses:
+        '202':
+          description: Bascule acceptee (workflow GitHub declenche)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ok:
+                        type: boolean
+                      tier:
+                        type: string
+                      stack:
+                        type: string
+                      previous:
+                        type: string
+                        description: Stack active avant la bascule.
+                      message:
+                        type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Validation422'
+        '503':
+          description: Bascule indisponible (jeton GitHub non configure)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
   /admin/tax-slabs:
     get:
       tags:
@@ -10563,6 +11276,21 @@ paths:
                 notes:
                   type: string
                   nullable: true
+                payment_method:
+                  type: string
+                  nullable: true
+                  enum:
+                  - cash
+                  - card
+                  - account
+                  - voucher
+                  - other
+                  description: P1-a (audit 2026-10-17) - nature du reglement (defaut cash).
+                payment_reference:
+                  type: string
+                  nullable: true
+                  maxLength: 120
+                  description: Reference externe opaque (TPE, bon, compte pro) - jamais un PAN.
       responses:
         '200':
           description: Vente enregistree (ou vente existante si rejeu external_id)
@@ -10592,6 +11320,50 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           description: Vente introuvable ou autre tenant
+  /fuel-station/sales/{sale}/cancel:
+    post:
+      tags:
+      - FuelStation
+      summary: Annuler une vente (manager) - ecriture compensatoire, jamais destructive
+      description: |
+        P1-b (audit FuelStation 2026-10-17). L'annulation est une ECRITURE
+        COMPENSATOIRE : la ligne d'origine est CONSERVEE et marquee `cancelled`
+        (aucun DELETE), le montant, la quantite et l'operateur restent lisibles.
+        Refusee (422) si la session de caisse de la vente est deja
+        `closed`/`approved`, ou si la vente est deja annulee. Publie
+        `fuel.sale.cancelled.v1` pour la comptabilite.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: sale
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 500
+      responses:
+        '200':
+          description: Vente annulee (statut cancelled, ligne conservee)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Vente introuvable ou autre tenant
+        '422':
+          description: Motif manquant, vente deja annulee ou session de caisse cloturee
   /fuel-station/me/sales:
     get:
       tags:
@@ -10637,6 +11409,381 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           description: Affectation introuvable ou autre tenant
+  /fuel-station/{resource}:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister le referentiel d'une ressource (stations, sites, pumps, tanks, meters, products)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - stations
+          - sites
+          - pumps
+          - tanks
+          - meters
+          - products
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Referentiel pagine
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Creer une entree du referentiel (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - stations
+          - sites
+          - pumps
+          - tanks
+          - meters
+          - products
+      responses:
+        '201':
+          description: Entree creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Donnees invalides
+  /fuel-station/{resource}/{id}:
+    get:
+      tags:
+      - FuelStation
+      summary: Lire une entree du referentiel
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - stations
+          - sites
+          - pumps
+          - tanks
+          - meters
+          - products
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Entree du referentiel
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Entree introuvable ou autre tenant
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre a jour une entree du referentiel (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - stations
+          - sites
+          - pumps
+          - tanks
+          - meters
+          - products
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Entree mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Entree introuvable ou autre tenant
+        '422':
+          description: Donnees invalides
+  /fuel-station/readings/sync:
+    post:
+      tags:
+      - FuelStation
+      summary: Synchroniser hors-ligne un lot de releves de compteur (idempotent)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Lot traite, resultat par element
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Cle d'idempotence ou lot invalide
+  /fuel-station/stocks:
+    get:
+      tags:
+      - FuelStation
+      summary: Niveau des cuves (theorique et mesure) avec fill_ratio
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Etat des stocks par cuve
+        '401':
+          $ref: '#/components/responses/Error401'
+  /fuel-station/tanks/{tank}/deliveries:
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer une livraison de cuve (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: tank
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Livraison enregistree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Donnees invalides
+  /fuel-station/stations/{station}/reconciliations:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les rapprochements d'une station
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Rapprochements pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      tags:
+      - FuelStation
+      summary: Lancer un rapprochement par station (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Rapprochement execute
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/reconciliations/{run}:
+    get:
+      tags:
+      - FuelStation
+      summary: Lire un rapprochement
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: run
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Rapprochement
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Rapprochement introuvable ou autre tenant
+  /fuel-station/maintenance-tasks/{task}/transition:
+    post:
+      tags:
+      - FuelStation
+      summary: Transitionner une tache de maintenance
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tache transitionnee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Transition illegale
+  /fuel-station/reports/station-comparison:
+    get:
+      tags:
+      - FuelStation
+      summary: Vue comparative inter-stations (manager)
+      description: |
+        Une ligne par station du tenant sur la periode demandee : ventes (nombre,
+        quantite, montant), ecarts de rapprochement et etat des cuves. Les stations
+        sans activite sont incluses a zero. Lecture seule, tenant-scoped.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: period_start
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: period_end
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Comparaison inter-stations
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/stations/{station}/logo:
+    post:
+      tags:
+      - FuelStation
+      summary: Televerser le logo d'une station (manager)
+      description: |
+        Reutilise le stockage du branding societe (disque `public`, chemin par
+        tenant). Le logo d'un autre tenant est indiscernable d'un inexistant (404).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - logo
+              properties:
+                logo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Station avec logo
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station inexistante ou hors tenant
+        '422':
+          description: Fichier invalide (image png/jpg/jpeg/webp/svg, 2 Mo max)
+    delete:
+      tags:
+      - FuelStation
+      summary: Supprimer le logo d'une station (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Station sans logo
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station inexistante ou hors tenant
+  /fuel-station/reports/{type}:
+    get:
+      tags:
+      - FuelStation
+      summary: Rapport type par segments d'URL (snapshot)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Snapshot du rapport
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Type de snapshot inconnu
 
   /accounting/contacts:
     get:
@@ -13915,6 +15062,180 @@ paths:
           $ref: '#/components/responses/Error401'
         '422':
           $ref: '#/components/responses/Validation422'
+  /conversations/groups:
+    post:
+      tags:
+      - Notifications
+      summary: Creer une conversation de groupe (#8746)
+      description: >
+        Cree un fil de discussion `kind = group` dont l'appelant devient
+        `creator`. Les participants sont resolus STRICTEMENT dans le tenant de
+        l'appelant : un identifiant d'un autre tenant est rejete en 422.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              - body
+              - participant_ids
+              properties:
+                title:
+                  type: string
+                  maxLength: 200
+                body:
+                  type: string
+                  maxLength: 2000
+                participant_ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 49
+                  items:
+                    type: integer
+                subject_type:
+                  type: string
+                  nullable: true
+                  enum:
+                  - salary_advance
+                  - attendance_correction
+                  - absence
+                  - order
+                  - booking
+                  - professional_space
+                  - site
+                subject_id:
+                  type: integer
+                  nullable: true
+      responses:
+        '201':
+          description: Groupe cree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConversationThread'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /conversations/{thread}/participants:
+    get:
+      tags:
+      - Notifications
+      summary: Lister les participants d'un groupe (#8746)
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      responses:
+        '200':
+          description: Participants du groupe
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConversationParticipant'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      tags:
+      - Notifications
+      summary: Ajouter un participant a un groupe (#8746)
+      description: >
+        Reserve au `creator` ou a un `admin` du fil. Idempotent : reajouter un
+        membre deja present renvoie sa ligne existante. Un non-participant
+        recoit 404 (jamais 403).
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - employee_id
+              properties:
+                employee_id:
+                  type: integer
+      responses:
+        '201':
+          description: Participant ajoute
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConversationParticipant'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /conversations/{thread}/participants/{employee}:
+    delete:
+      tags:
+      - Notifications
+      summary: Retirer un participant d'un groupe (#8746)
+      description: >
+        Le `creator` est indeboulonnable ; un `admin` ne peut pas retirer un
+        pair ; seul le `creator` peut retirer un `admin`.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      - name: employee
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Participant retire
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /conversations/{thread}/leave:
+    post:
+      tags:
+      - Notifications
+      summary: Quitter une conversation de groupe (#8746)
+      description: >
+        Tout participant peut quitter, sauf le `creator` (422) : il doit
+        d'abord transmettre son role, sans quoi le groupe resterait sans
+        administrateur.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      responses:
+        '204':
+          description: Le participant a quitte le groupe
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
   /conversations/{thread}:
     get:
       tags:
@@ -13943,18 +15264,150 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
   /conversations/{thread}/messages:
+    get:
+      tags:
+      - Notifications
+      summary: Historique pagine d'une conversation (curseur `seq`)
+      description: >
+        Pagination par curseur sur `seq` (#8747). `before_seq` remonte
+        l'historique (page triee en ordre croissant) ; `after_seq` rattrape ce
+        qui est arrive depuis une deconnexion (#8749) et renvoie uniquement les
+        messages posterieurs au curseur. Les deux parametres ne se combinent
+        pas. `per_page` est plafonne a 100 cote serveur. La consultation vaut
+        accuse de lecture pour l'appelant.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      - name: before_seq
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+      - name: after_seq
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 30
+      responses:
+        '200':
+          description: Page de messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConversationMessage'
+                  meta:
+                    type: object
+                    properties:
+                      has_more:
+                        type: boolean
+                      next_before_seq:
+                        type: integer
+                        nullable: true
+                      last_seq:
+                        type: integer
+                      per_page:
+                        type: integer
+                      catch_up:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
     post:
       tags:
       - Notifications
       summary: Repondre dans une conversation
+      description: >
+        Envoi idempotent (#8747) : `client_message_id` identifie l'envoi ; si un
+        message portant cette cle existe deja dans le fil, il est renvoye avec
+        le statut 200 au lieu de 201 et aucun doublon n'est cree. Un message
+        peut ne contenir qu'une piece jointe.
       security:
       - BearerAuth: []
       parameters:
-      - name: thread
-        in: path
+      - $ref: '#/components/parameters/ConversationThreadId'
+      requestBody:
         required: true
-        schema:
-          type: integer
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                body:
+                  type: string
+                  maxLength: 2000
+                  description: Obligatoire si aucune piece jointe n'est fournie.
+                attachment:
+                  type: string
+                  format: binary
+                  nullable: true
+                  description: 5 Mo maximum, type reel verifie cote serveur.
+                client_message_id:
+                  type: string
+                  maxLength: 64
+                  nullable: true
+                  description: Cle d'idempotence fournie par le client.
+                reply_to_message_id:
+                  type: integer
+                  nullable: true
+                  description: Message du meme fil auquel celui-ci repond.
+      responses:
+        '201':
+          description: Message cree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConversationMessage'
+        '200':
+          description: Rejeu detecte — le message existant est renvoye
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConversationMessage'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+        '429':
+          description: Quota d'envoi depasse (anti-spam, #8750)
+  /conversations/{thread}/messages/{message}:
+    patch:
+      tags:
+      - Notifications
+      summary: Modifier son propre message
+      description: >
+        Reserve a l'auteur du message (#8747). Une tentative par un autre
+        participant renvoie 404, jamais 403. Un message supprime n'est plus
+        modifiable (422).
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      - $ref: '#/components/parameters/ConversationMessageId'
       requestBody:
         required: true
         content:
@@ -13967,24 +15420,307 @@ paths:
                 body:
                   type: string
                   maxLength: 2000
-                attachment:
-                  type: string
-                  format: binary
-                  nullable: true
       responses:
-        '201':
-          description: Message ajoute
+        '200':
+          description: Message mis a jour
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    type: object
+                    $ref: '#/components/schemas/ConversationMessage'
         '401':
           $ref: '#/components/responses/Error401'
         '404':
           $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      tags:
+      - Notifications
+      summary: Supprimer un message (suppression logique)
+      description: >
+        L'auteur peut supprimer son message ; un `creator`/`admin` du groupe peut
+        supprimer n'importe quel message (#8750). La ligne survit avec son `seq`
+        pour preserver l'ordre et les reponses ; le corps et la piece jointe
+        sont effaces. Idempotent.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      - $ref: '#/components/parameters/ConversationMessageId'
+      responses:
+        '204':
+          description: Message supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /conversations/{thread}/reports:
+    post:
+      tags:
+      - Notifications
+      summary: Signaler un message ou un compte
+      description: >
+        L'appelant doit participer au fil (#8750). Un `message_id` d'un autre fil
+        est rejete en 422. Le contenu du message signale n'est jamais duplique
+        dans la reponse ni dans les journaux.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reason
+              properties:
+                message_id:
+                  type: integer
+                  nullable: true
+                employee_id:
+                  type: integer
+                  nullable: true
+                reason:
+                  type: string
+                  enum:
+                  - harassment
+                  - spam
+                  - inappropriate_content
+                  - threat
+                  - impersonation
+                  - other
+                details:
+                  type: string
+                  maxLength: 1000
+                  nullable: true
+      responses:
+        '201':
+          description: Signalement enregistre
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConversationReport'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /conversations/blocks:
+    get:
+      tags:
+      - Notifications
+      summary: Lister les employes bloques par l'appelant
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des blocages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConversationBlock'
+                  meta:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      tags:
+      - Notifications
+      summary: Bloquer un employe
+      description: >
+        Idempotent. Le blocage empeche la creation d'un fil direct entre les deux
+        personnes (dans les deux sens) et l'ajout du bloque dans un groupe dont
+        l'appelant est admin (#8750). Aucune notification n'est envoyee au
+        bloque.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - employee_id
+              properties:
+                employee_id:
+                  type: integer
+                reason:
+                  type: string
+                  maxLength: 200
+                  nullable: true
+      responses:
+        '201':
+          description: Blocage enregistre
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /conversations/blocks/{employee}:
+    delete:
+      tags:
+      - Notifications
+      summary: Debloquer un employe
+      description: Silencieux si aucun blocage n'existait (idempotent).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: employee
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Blocage retire
+        '401':
+          $ref: '#/components/responses/Error401'
+  /conversations/reports:
+    get:
+      tags:
+      - Notifications
+      summary: Signalements emis par l'appelant
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des signalements de l'appelant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConversationReport'
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      tags:
+      - Notifications
+      summary: Signaler un compte
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - employee_id
+              - reason
+              properties:
+                employee_id:
+                  type: integer
+                reason:
+                  type: string
+                  enum:
+                  - harassment
+                  - spam
+                  - inappropriate_content
+                  - threat
+                  - impersonation
+                  - other
+                details:
+                  type: string
+                  maxLength: 1000
+                  nullable: true
+      responses:
+        '201':
+          description: Signalement enregistre
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /conversations/moderation/reports:
+    get:
+      tags:
+      - Notifications
+      summary: File de moderation (managers)
+      description: >
+        Reservee aux responsables du tenant (`Employee::isManager()`). Un employe
+        non manager recoit 422. Les signalements d'un autre tenant ne sont jamais
+        visibles. Cette file ne donne AUCUN acces aux conversations privees.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - open
+          - reviewed
+          - dismissed
+      responses:
+        '200':
+          description: Signalements du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConversationReport'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /conversations/moderation/reports/{report}/resolve:
+    post:
+      tags:
+      - Notifications
+      summary: Cloturer un signalement (managers)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: report
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  enum:
+                  - reviewed
+                  - dismissed
+                resolution:
+                  type: string
+                  maxLength: 500
+                  nullable: true
+      responses:
+        '200':
+          description: Signalement cloture (idempotent si deja clos)
+        '401':
+          $ref: '#/components/responses/Error401'
         '422':
           $ref: '#/components/responses/Validation422'
   /conversations/{thread}/messages/{message}/attachment:
@@ -28640,6 +30376,63 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /onboarding-setup/state:
+    get:
+      tags:
+      - Onboarding
+      summary: État d'onboarding de l'entreprise (reprise du parcours)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: État courant permettant de reprendre un parcours interrompu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      current_step:
+                        type: string
+                        nullable: true
+                      completed_steps:
+                        type: array
+                        items:
+                          type: string
+                      updated_at:
+                        type: string
+                        nullable: true
+        '401':
+          $ref: '#/components/responses/Error401'
+    patch:
+      tags:
+      - Onboarding
+      summary: Mettre à jour l'état d'onboarding de l'entreprise (manager)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                current_step:
+                  type: string
+                  nullable: true
+                completed_steps:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: État mis à jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Réservé aux managers (api.manager)
   /onboarding-setup/checklist:
     get:
       tags:
@@ -36637,6 +38430,343 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+  /restaurant/orders/{restaurantOrder}/print-jobs:
+    post:
+      tags:
+      - Restaurant
+      summary: Mettre un ticket de cuisine en file d'impression (REST-OS-1/2)
+      description: >-
+        REST-OS-1/2 - enfile un travail d'impression KITCHEN pour une commande.
+        IDEMPOTENT : une double soumission (meme commande, meme revision, meme
+        type de ticket) renvoie le travail EXISTANT (201) sans creer de doublon
+        — garanti par la contrainte UNIQUE `(company_id, order_id, ticket_kind,
+        revision)`. Autorisation : `restaurant.print_jobs.operate`
+        (cuisine/service). 404 cross-tenant. Un travail cree n'est JAMAIS
+        `printed` : seul un ack du bridge (REST-OS-3) le fait passer a `printed`.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Travail d'impression cree ou deja existant (idempotent)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/print-jobs:
+    get:
+      tags:
+      - Restaurant
+      summary: Lister les travaux d'impression de la succursale (REST-OS-1)
+      description: >-
+        REST-OS-1 - liste des travaux d'impression de LA succursale active.
+        Portee stricte : `company_id` + `branch_id` du contexte. Autorisation :
+        `restaurant.print_jobs.manage`.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: X-Branch-Id
+        in: header
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Travaux de la succursale
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/print-jobs/{restaurantPrintJob}:
+    get:
+      tags:
+      - Restaurant
+      summary: Detail d'un travail d'impression (REST-OS-1)
+      description: >-
+        REST-OS-1 - detail d'un travail. 404 si le travail appartient a une
+        AUTRE societe (jamais de fuite cross-tenant ni d'enumeration).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Travail d'impression
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/print-jobs/{restaurantPrintJob}/requeue:
+    post:
+      tags:
+      - Restaurant
+      summary: Re-enfiler un travail en nouvelle revision (REST-OS-5)
+      description: >-
+        REST-OS-5 - cree une NOUVELLE revision du ticket (revision + 1) plutot
+        que de reutiliser le travail existant : l'historique d'impression reste
+        auditable et un ticket deja imprime n'est jamais rejoue a l'identique.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Nouvelle revision enfilee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/health:
+    get:
+      tags:
+      - Restaurant
+      summary: Sonde de disponibilite du bridge local (REST-OS-3)
+      description: >-
+        REST-OS-3 - sonde sans donnee metier. AUTH DEDIEE par jeton partage
+        hache (header `X-Restaurant-Print-Bridge-Token`, hash SHA-256 en
+        variable d'environnement) + `X-Company-Id`. FAIL-CLOSED : desactive
+        (404) si `RESTAURANT_PRINT_BRIDGE_ENABLED` n'est pas true ou si le hash
+        n'est pas configure. Ce n'est pas une route Sanctum.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Etat du bridge
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/jobs:
+    get:
+      tags:
+      - Restaurant
+      summary: Travaux imprimables de la succursale (bridge local, REST-OS-3)
+      description: >-
+        REST-OS-3 - file des travaux KITCHEN imprimables (pending, failed
+        reessayable, claimed dont le bail est expire). Scopee a la succursale.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: branch_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Travaux imprimables
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/jobs/{restaurantPrintJob}/claim:
+    post:
+      tags:
+      - Restaurant
+      summary: Reclamer ATOMIQUEMENT un travail (bridge local, REST-OS-3/5)
+      description: >-
+        REST-OS-3/5 - reclamation atomique : `UPDATE ... WHERE status IN
+        (pending, failed) OR (claimed AND bail expire)`. Le premier appel gagne ;
+        les suivants obtiennent 409. `attempts` est incremente. Une reclamation
+        ne vaut JAMAIS preuve d'impression.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Travail reclame (payload ESC/POS + hash)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Travail deja reclame par une autre instance du bridge
+  /restaurant/printing/bridge/jobs/{restaurantPrintJob}/ack:
+    post:
+      tags:
+      - Restaurant
+      summary: Accuser une impression REELLE (bridge local, REST-OS-3/5)
+      description: >-
+        REST-OS-3/5 - SEUL chemin faisant passer un travail a `printed`. Idem-
+        potent : un second ack renvoie 200 sans nouvel effet ni nouvelle
+        publication d'evenement (outbox). 404 cross-tenant.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Impression accusee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/jobs/{restaurantPrintJob}/fail:
+    post:
+      tags:
+      - Restaurant
+      summary: Signaler un echec d'impression (bridge local, REST-OS-3)
+      description: >-
+        REST-OS-3 - marque le travail `failed` avec le message d'erreur du
+        bridge. Le travail redevient reessayable (claim), jamais perdu.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Echec enregistre
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/jobs/{restaurantPrintJob}/payload:
+    get:
+      tags:
+      - Restaurant
+      summary: Payload ESC/POS d'un travail (bridge local, REST-OS-3)
+      description: >-
+        REST-OS-3 - octets ESC/POS rendus + hash SHA-256 (le bridge verifie le
+        hash avant d'imprimer). Aucune modification d'etat.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Payload + hash
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/jobs/{restaurantPrintJob}/preview:
+    get:
+      tags:
+      - Restaurant
+      summary: Previsualisation TEXTE d'un ticket (bridge local, REST-OS-3)
+      description: >-
+        REST-OS-3 - rendu texte du ticket pour diagnostic, sans consommer de
+        papier ni modifier l'etat du travail.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Rendu texte
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+
   /catalog/inquiries:
     get:
       tags:
@@ -36867,11 +38997,19 @@ paths:
     get:
       tags:
       - Travel
-      summary: "Marketplace : détail d'un trajet + plan de sièges libres"
+      summary: "Marketplace : détail d'un trajet + plan de sièges"
       description: >-
         BC-24 TRAVEL (#7737) — le tenant est résolu PAR TRAJET. Un trajet
         inconnu, non publié ou d'une agence non opt-in répond 404
         (fail-closed, aucune fuite cross-tenant).
+
+        #8619 — `data.seats` expose l'INVENTAIRE COMPLET du véhicule affecté
+        (et non plus seulement les places libres) : chaque entrée porte
+        `seat_number` et l'état PERSISTÉ (`free`, `reserved`, `sold`,
+        `blocked`, `unavailable`). Aucune donnée personnelle, aucune
+        `booking_reference` et aucun identifiant de tenant ne sont exposés :
+        la surface publique ne permet pas de remonter à un passager.
+        `data.available_seats` ne compte que les sièges `free`.
       parameters:
       - name: trip
         in: path
@@ -36880,7 +39018,32 @@ paths:
           type: integer
       responses:
         '200':
-          description: Détail du trajet (prix, sièges libres, agence)
+          description: Détail du trajet (prix, inventaire complet des sièges, agence)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      available_seats:
+                        type: integer
+                        description: Nombre de sièges au statut `free` uniquement.
+                      seats:
+                        type: array
+                        description: >-
+                          Inventaire complet du trajet, trié par `seat_number`.
+                          Ni PII ni référence de réservation (surface publique).
+                        items:
+                          type: object
+                          required: [seat_number, status]
+                          properties:
+                            seat_number:
+                              type: integer
+                            status:
+                              type: string
+                              enum: [free, reserved, sold, blocked, unavailable]
         '404':
           $ref: '#/components/responses/Error404'
   /public/travel/marketplace/bookings:
@@ -44494,6 +46657,1226 @@ paths:
           $ref: '#/components/responses/Error404'
         '409':
           $ref: '#/components/responses/Error409'
+  /trade/ping:
+    get:
+      tags:
+      - Trade
+      summary: Sonde de la verticale International Trade OS
+      description: >-
+        BC-36 TRADE (#8476) — lecture pure derrière la gate `module.trade` :
+        prouve que le feature flag est actif et que le stack tenant canonique
+        est traversé. 403 `TRADE_SOLUTION_INACTIVE` si la verticale n'est pas
+        activée pour l'entreprise.
+      responses:
+        '200':
+          description: Module actif (`data.module` = `trade`, `data.status` = `ok`)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /trade/rfqs:
+    get:
+      tags:
+      - Trade
+      summary: Lister les demandes de prix (RFQ) du tenant
+      description: >-
+        TRADE-003 (#8478) — opération d'ACHAT (`trade.role:purchase,admin`).
+        Filtres optionnels `status` et `deal_id` ; pagination standard
+        (`per_page` borné 1..100, défaut 20). Le périmètre tenant est appliqué
+        par `BelongsToCompany` : une ressource d'une autre entreprise est
+        introuvable (404), jamais 403.
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: deal_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Liste paginée des RFQ (lignes incluses)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Trade
+      summary: Créer une demande de prix (RFQ)
+      description: >-
+        TRADE-003 (#8478) — opération d'ACHAT. Au moins une ligne est exigée
+        (`lines` min:1) : une RFQ sans ligne serait un objet vide qui ne peut
+        rien produire. Les montants sont en unités mineures (entiers) — aucun
+        flottant ne représente de l'argent.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              - lines
+              properties:
+                title:
+                  type: string
+                  maxLength: 200
+                destination_country:
+                  type: string
+                  description: Code pays ISO 3166-1 alpha-2
+                  minLength: 2
+                  maxLength: 2
+                destination_port:
+                  type: string
+                  maxLength: 120
+                incoterm:
+                  type: string
+                  description: Incoterm 2020 (3 lettres, ex. FOB, CIF)
+                  minLength: 3
+                  maxLength: 3
+                budget_minor:
+                  type: integer
+                  minimum: 0
+                budget_currency:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                deadline_at:
+                  type: string
+                  format: date-time
+                notes:
+                  type: string
+                  maxLength: 2000
+                trade_deal_id:
+                  type: integer
+                  minimum: 1
+                lines:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required:
+                    - description
+                    - quantity
+                    properties:
+                      description:
+                        type: string
+                        maxLength: 300
+                      quantity:
+                        type: number
+                        minimum: 0
+                        exclusiveMinimum: true
+                      unit:
+                        type: string
+                        maxLength: 20
+                      trade_product_id:
+                        type: integer
+                        minimum: 1
+                      target_unit_price_minor:
+                        type: integer
+                        minimum: 0
+                      specs:
+                        type: object
+                        additionalProperties: true
+      responses:
+        '201':
+          description: RFQ créée (lignes et invitations incluses)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /trade/rfqs/{rfq}:
+    get:
+      tags:
+      - Trade
+      summary: Consulter une RFQ (vue acheteur ou vendeur)
+      description: >-
+        TRADE-003 (#8478) — lecture PARTAGÉE (`trade.role:purchase,sales,admin`) :
+        le vendeur invité consulte le même objet depuis son espace. Lignes,
+        invitations et offres reçues sont incluses.
+      parameters:
+      - name: rfq
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: RFQ détaillée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /trade/rfqs/{rfq}/send:
+    post:
+      tags:
+      - Trade
+      summary: Diffuser une RFQ à des contreparties
+      description: >-
+        TRADE-003 (#8478) — opération d'ACHAT. Génère les liens de réponse et
+        les retourne EN CLAIR **une seule fois** : ils ne sont jamais
+        relisibles ensuite. `counterparty_ids` min:1 — diffuser à personne
+        masquerait une erreur de saisie derrière un succès apparent. Une
+        transition d'état refusée est un 422 métier
+        (`INVALID_STATUS_TRANSITION`), pas une erreur serveur.
+      parameters:
+      - name: rfq
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - counterparty_ids
+              properties:
+                counterparty_ids:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: integer
+                    minimum: 1
+                message:
+                  type: string
+                  maxLength: 2000
+                token_lifetime_days:
+                  type: integer
+                  minimum: 1
+                  maximum: 180
+                  default: 30
+      responses:
+        '200':
+          description: >-
+            RFQ diffusée + `response_links` (jetons en clair, affichés une
+            seule fois) + `notice` d'avertissement
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /trade/quotes:
+    get:
+      tags:
+      - Trade
+      summary: Lister les offres commerciales (vue acheteur ou vendeur)
+      description: >-
+        TRADE-004 (#8479) — MÊME CONTRÔLEUR POUR LES DEUX ESPACES : le filtre
+        `direction` (`incoming` = offres reçues côté acheteur, `outgoing` =
+        offres émises côté vendeur) sélectionne la vue. Il n'existe pas deux
+        implémentations à maintenir. Filtres `status`, `rfq_id`, `deal_id`.
+      parameters:
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [incoming, outgoing]
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: rfq_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: deal_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Liste paginée des offres (lignes incluses)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Trade
+      summary: Émettre une offre commerciale
+      description: >-
+        TRADE-004 (#8479) — opération de VENTE (`trade.role:sales,admin`).
+        AUCUN TOTAL N'EST ACCEPTÉ DU CLIENT : seuls les prix unitaires et les
+        quantités le sont, le serveur calcule `subtotal_minor` et
+        `total_minor`. Un champ `total_minor` envoyé serait ignoré.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - currency
+              - lines
+              properties:
+                currency:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                incoterm:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                validity_until:
+                  type: string
+                  format: date
+                lead_time_days:
+                  type: integer
+                  minimum: 0
+                  maximum: 3650
+                payment_terms:
+                  type: string
+                  maxLength: 200
+                notes:
+                  type: string
+                  maxLength: 2000
+                trade_rfq_id:
+                  type: integer
+                  minimum: 1
+                trade_rfq_invitation_id:
+                  type: integer
+                  minimum: 1
+                trade_deal_id:
+                  type: integer
+                  minimum: 1
+                trade_counterparty_id:
+                  type: integer
+                  minimum: 1
+                submit:
+                  type: boolean
+                  default: true
+                  description: false = conserver en brouillon
+                lines:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required:
+                    - description
+                    - quantity
+                    - unit_price_minor
+                    properties:
+                      description:
+                        type: string
+                        maxLength: 300
+                      quantity:
+                        type: number
+                        minimum: 0
+                        exclusiveMinimum: true
+                      unit:
+                        type: string
+                        maxLength: 20
+                      unit_price_minor:
+                        type: integer
+                        minimum: 0
+                      trade_product_id:
+                        type: integer
+                        minimum: 1
+                      moq_quantity:
+                        type: number
+                        minimum: 0
+                        exclusiveMinimum: true
+                      lead_time_days:
+                        type: integer
+                        minimum: 0
+                        maximum: 3650
+      responses:
+        '201':
+          description: Offre créée (totaux calculés par le serveur)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /trade/quotes/{quote}:
+    get:
+      tags:
+      - Trade
+      summary: Consulter une offre commerciale
+      description: >-
+        TRADE-004 (#8479) — lecture partagée acheteur/vendeur. Les totaux
+        exposés sont ceux FIGÉS par le serveur.
+      parameters:
+      - name: quote
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Offre détaillée (lignes incluses)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /trade/quotes/{quote}/accept:
+    post:
+      tags:
+      - Trade
+      summary: Accepter une offre et créer la commande
+      description: >-
+        TRADE-004 (#8479) — opération d'ACHAT (`trade.role:purchase,admin`) :
+        l'engagement est pris par l'acheteur. Crée la commande correspondante
+        (`total_minor` repris de l'offre acceptée, jamais d'une entrée client).
+        Une transition refusée (offre déjà acceptée, brouillon jamais émis) est
+        un 422 métier (`INVALID_STATUS_TRANSITION`).
+      parameters:
+      - name: quote
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expected_delivery_at:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: Commande créée (expéditions incluses)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /trade/cost-estimates:
+    get:
+      tags:
+      - Trade
+      summary: Lister les estimations de coût total rendu
+      description: >-
+        TRADE-007 (#8482) — `trade.role:purchase,logistics,admin`. Filtres
+        `deal_id` et `order_id`. Chaque réponse porte le `disclaimer` de
+        non-responsabilité douanière.
+      parameters:
+      - name: deal_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: order_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Liste paginée des estimations + `disclaimer`
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Trade
+      summary: Calculer un coût total rendu
+      description: >-
+        TRADE-007 (#8482) — règles DÉTERMINISTES et testées. Chaque poste porte
+        sa `source` (`confirmed|estimated|user_input|unavailable`) : un poste
+        indisponible n'est jamais chiffré. Le taux de change est TRACÉ
+        (`fx.rate`, `fx.date`, `fx.source`) ; sans lui, les postes en devise
+        étrangère sont signalés comme non convertis plutôt que convertis avec
+        un taux inventé. La réponse expose `is_complete` et ses motifs
+        (`unavailable_lines`, `unconverted_lines`, `missing_expected_types`) —
+        un total partiel n'est jamais présenté comme un prix final.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - goods_value_minor
+              - goods_currency
+              - display_currency
+              properties:
+                goods_value_minor:
+                  type: integer
+                  minimum: 0
+                goods_currency:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                display_currency:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                origin_country:
+                  type: string
+                  minLength: 2
+                  maxLength: 2
+                destination_country:
+                  type: string
+                  minLength: 2
+                  maxLength: 2
+                incoterm:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                trade_deal_id:
+                  type: integer
+                  minimum: 1
+                trade_quote_id:
+                  type: integer
+                  minimum: 1
+                trade_order_id:
+                  type: integer
+                  minimum: 1
+                notes:
+                  type: string
+                  maxLength: 2000
+                fx:
+                  type: object
+                  description: Taux de change tracé (facultatif)
+                  required:
+                  - rate
+                  - date
+                  - source
+                  properties:
+                    rate:
+                      type: number
+                      minimum: 0
+                      exclusiveMinimum: true
+                    date:
+                      type: string
+                      format: date
+                    source:
+                      type: string
+                      maxLength: 40
+                lines:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - type
+                    - amount_minor
+                    - currency
+                    properties:
+                      type:
+                        type: string
+                        maxLength: 40
+                      amount_minor:
+                        type: integer
+                      currency:
+                        type: string
+                        minLength: 3
+                        maxLength: 3
+                      source:
+                        type: string
+                        maxLength: 20
+                      label:
+                        type: string
+                        maxLength: 200
+                      note:
+                        type: string
+                        maxLength: 300
+      responses:
+        '201':
+          description: Estimation créée (postes + état de complétude + `disclaimer`)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /trade/cost-estimates/{costEstimate}:
+    get:
+      tags:
+      - Trade
+      summary: Consulter une estimation de coût total rendu
+      parameters:
+      - name: costEstimate
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Estimation détaillée (postes + `disclaimer`)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /trade/customs/checklist:
+    get:
+      tags:
+      - Trade
+      summary: Checklist documentaire et aide à la préparation douanière
+      description: >-
+        TRADE-007 (#8482) — Leopardo facilite l'estimation, la préparation
+        documentaire et la mise en relation avec un prestataire compétent ; il
+        ne rend AUCUNE décision douanière officielle. `duty_rate_percent` est
+        explicitement `null` et `duty_rate_available` vaut `false` : aucune
+        source de tarifs douaniers n'étant configurée, la capacité est
+        INDISPONIBLE — jamais « estimée à 0 ». La réponse porte toujours le
+        `disclaimer` et la liste des informations manquantes.
+      parameters:
+      - name: hs_code
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: incoterm
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: transport_mode
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: origin_country
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: destination_country
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: goods_value_minor
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: >-
+            Documents potentiellement requis, informations manquantes,
+            `is_quotable`, `duty_rate_available: false`, `notices` + `disclaimer`
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /trade/meta/integrations:
+    get:
+      tags:
+      - Trade
+      summary: État réel des adaptateurs externes de la verticale Trade
+      description: >-
+        TRADE-007 (#8482, spec §8) — expose `{key, configured, available, mode,
+        reason}` pour les 4 adaptateurs (taux de change, tarifs douaniers,
+        vérification d'entreprises, cotations transport). AUCUN secret ne
+        transite. Une intégration non configurée est déclarée `available:
+        false` avec sa raison : elle n'est JAMAIS présentée comme
+        opérationnelle, et aucune donnée n'est simulée pour la masquer.
+      responses:
+        '200':
+          description: >-
+            `data.integrations` (4 entrées), `data.degraded` (vrai si au moins
+            une intégration n'est pas configurée) et `data.notice`
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /platform/trade/overview:
+    get:
+      tags:
+      - Trade
+      summary: Suivi plateforme de la verticale Trade — compteurs agrégés
+      description: >-
+        TRADE-010 (#8485) — console superadmin EXISTANTE (aucune seconde
+        console). Agrège des COMPTEURS par tenant : entreprises portant le flag
+        `trade`, puis répartition par statut des deals / RFQ / offres /
+        commandes. Aucun contenu commercial privé (prix, offres, messages,
+        documents) n'est exposé à l'administration plateforme ; l'accès à un
+        dossier précis relève d'une impersonation auditée.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        description: Nombre de tenants agrégés (défaut 200, plafonné à 500).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 500
+      responses:
+        '200':
+          description: >-
+            `data.companies` (scanned / with_trade / with_activity),
+            `data.counts` (deals, rfqs, quotes, orders par statut),
+            `data.roles`, `data.window` et `data.notice`
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /platform/trade/integrations:
+    get:
+      tags:
+      - Trade
+      summary: Suivi plateforme des intégrations externes de la verticale Trade
+      description: >-
+        TRADE-010 (#8485) — état réel des 4 adaptateurs, plus l'identité du
+        manifest (`code`, `name`, `maturity`, `industry`) et un résumé
+        configurées / non configurées. Jamais de secret : uniquement
+        `configured` / `available` / `mode` / `reason`.
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: >-
+            `data.solution`, `data.integrations`, `data.summary` et
+            `data.notice`
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+
+  /v1/paiements/internal/credit:
+    post:
+      tags: [Paiements]
+      summary: Crediter un wallet (API interne service-a-service)
+      description: |
+        Consomme par les autres BC (Paie, Cagnottes, VTC, Boutique).
+        Authentification par jeton de service (`Authorization: Bearer <token>` ou
+        `X-Service-Token`). **Idempotence obligatoire** : la cle est unique par
+        tenant en base ; un rejeu retourne la transaction existante sans effet
+        de bord. Aucun secret ni identifiant interne de fournisseur n'est renvoye.
+      security:
+        - ServiceToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaiementsInternalOperationRequest'
+      responses:
+        '201':
+          description: Operation enregistree
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaiementsOperationResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/paiements/internal/debit:
+    post:
+      tags: [Paiements]
+      summary: Debiter un wallet (API interne service-a-service)
+      description: |
+        Decaissement vers le rail resolu pour le marche du tenant. Meme contrat
+        d'idempotence que le credit.
+      security:
+        - ServiceToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaiementsInternalOperationRequest'
+      responses:
+        '201':
+          description: Operation enregistree
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaiementsOperationResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/paiements/internal/transfer:
+    post:
+      tags: [Paiements]
+      summary: Transfert strictement interne entre deux wallets
+      description: |
+        Aucun rail externe : `provider_instance_id` reste nul. Le mouvement
+        produit une paire d'ecritures en partie double.
+      security:
+        - ServiceToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaiementsInternalTransferRequest'
+      responses:
+        '201':
+          description: Operation enregistree
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaiementsOperationResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/paiements/internal/refund:
+    post:
+      tags: [Paiements]
+      summary: Rembourser un mouvement (contre-passation)
+      description: |
+        Cree le groupe d'ecritures inverse du groupe d'origine. Le ledger etant
+        immuable, la correction passe toujours par une contre-passation.
+      security:
+        - ServiceToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaiementsInternalRefundRequest'
+      responses:
+        '201':
+          description: Operation enregistree
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaiementsOperationResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/paiements/webhooks/{token}:
+    post:
+      tags: [Paiements]
+      summary: Webhook entrant d'un fournisseur
+      description: |
+        Le routage se fait **par le token de l'endpoint**, jamais par parsing du
+        payload ni par le nom du fournisseur. La signature HMAC est verifiee en
+        fail-closed : sans secret configure, tout payload est rejete. Un rejeu
+        est un no-op.
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                external_reference:
+                  type: string
+                event:
+                  type: string
+      responses:
+        '200':
+          description: Webhook traite
+        '400':
+          description: Signature invalide ou secret absent
+        '404':
+          description: Endpoint inconnu
+  /v1/paiements/wallet:
+    get:
+      tags: [Paiements]
+      summary: Solde du wallet du tenant
+      description: |
+        Le solde est **derive du ledger** (`SUM(credits) - SUM(debits)`), jamais
+        stocke. Scope au tenant courant.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: currency
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+      responses:
+        '200':
+          description: Solde du wallet
+        '401':
+          $ref: '#/components/responses/Error401'
+  /v1/paiements/wallet/history:
+    get:
+      tags: [Paiements]
+      summary: Historique des ecritures du wallet du tenant
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Historique du wallet
+        '401':
+          $ref: '#/components/responses/Error401'
+  /v1/paiements/market:
+    get:
+      tags: [Paiements]
+      summary: Marche du tenant et instance resolue
+      description: |
+        Information, pas choix : le tenant ne selectionne jamais son fournisseur,
+        c'est le `ProviderResolver` qui tranche selon pays + devise + priorite.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Marche du tenant
+        '401':
+          $ref: '#/components/responses/Error401'
+  /v1/paiements/fees:
+    get:
+      tags: [Paiements]
+      summary: Commissions prelevees sur les transactions du tenant
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Commissions prelevees
+        '401':
+          $ref: '#/components/responses/Error401'
+  /v1/paiements/cash-out:
+    post:
+      tags: [Paiements]
+      summary: Demander un retrait (cash-out)
+      description: |
+        L'instance est resolue cote serveur pour le marche du tenant. Aucun
+        `provider_instance_id` n'est accepte en entree.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount, idempotency_key]
+              properties:
+                amount:
+                  type: integer
+                  minimum: 1
+                currency:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                idempotency_key:
+                  type: string
+                  maxLength: 120
+      responses:
+        '201':
+          description: Demande de retrait enregistree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/platform/payments/provider-types:
+    get:
+      tags: [Paiements]
+      summary: Liste des types de fournisseur (LECTURE SEULE)
+      description: |
+        Les types viennent du **code** (`ProviderTypeRegistry`) : aucun endpoint
+        ne permet de les creer, modifier ou supprimer. Les types sont generiques,
+        sans nom commercial.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Types disponibles
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /v1/platform/payments/provider-instances:
+    get:
+      tags: [Paiements]
+      summary: Lister les instances de fournisseur
+      description: |
+        Les secrets sont masques (`••••`) : la configuration n'est jamais
+        renvoyee en clair.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, inactive, sandbox]
+        - name: type_code
+          in: query
+          schema:
+            type: string
+        - name: company_id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Instances de fournisseur
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags: [Paiements]
+      summary: Creer une instance de fournisseur
+      description: |
+        Ajouter un moyen de paiement d'un type deja implemente ne demande
+        **aucune ligne de code** : c'est une operation de configuration.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaiementsProviderInstanceRequest'
+      responses:
+        '201':
+          description: Instance creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/platform/payments/provider-instances/{instance}:
+    patch:
+      tags: [Paiements]
+      summary: Mettre a jour une instance de fournisseur
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: instance
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaiementsProviderInstanceRequest'
+      responses:
+        '200':
+          description: Instance mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /v1/platform/payments/provider-instances/{instance}/status:
+    patch:
+      tags: [Paiements]
+      summary: Activer / desactiver une instance
+      description: |
+        C'est l'operation qui rend le critere d'acceptation du BC verifiable :
+        basculer un marche d'une instance a une autre du meme type, sans
+        deploiement ni modification de code.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: instance
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [active, inactive, sandbox]
+      responses:
+        '200':
+          description: Statut mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /v1/platform/payments/webhook-endpoints:
+    post:
+      tags: [Paiements]
+      summary: Creer un endpoint de webhook pour une instance
+      description: |
+        Le token est genere cote serveur et identifie l'instance sans ambiguite.
+        Le secret de signature est chiffre at-rest et n'est renvoye qu'a la
+        creation.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider_instance_id, secret_signature]
+              properties:
+                provider_instance_id:
+                  type: integer
+                company_id:
+                  type: string
+                secret_signature:
+                  type: string
+                  minLength: 16
+                  maxLength: 190
+      responses:
+        '201':
+          description: Endpoint cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /v1/platform/payments/transactions:
+    get:
+      tags: [Paiements]
+      summary: Journal des transactions (filtrable)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: company_id
+          in: query
+          schema:
+            type: string
+        - name: provider_instance_id
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, processing, succeeded, failed, cancelled]
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Journal des transactions
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /v1/platform/payments/reconciliations:
+    get:
+      tags: [Paiements]
+      summary: Historique des rapprochements
+      description: |
+        Chaque ligne compare le solde externe declare au solde interne recalcule
+        depuis le ledger, avec l'ecart `declared - computed`.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: company_id
+          in: query
+          schema:
+            type: string
+        - name: provider_instance_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Historique des rapprochements
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags: [Paiements]
+      summary: Lancer un rapprochement
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [company_id, provider_instance_id, currency, declared_balance]
+              properties:
+                company_id:
+                  type: string
+                provider_instance_id:
+                  type: integer
+                currency:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                declared_balance:
+                  type: integer
+      responses:
+        '201':
+          description: Rapprochement enregistre
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
 
 components:
   securitySchemes:
@@ -44501,6 +47884,15 @@ components:
       type: http
       scheme: bearer
       bearerFormat: Sanctum
+    # BC-38 PAIEMENTS (#8689) — authentification service-a-service de l'API
+    # interne. Un BC consommateur n'est pas un utilisateur : jamais de session.
+    ServiceToken:
+      type: http
+      scheme: bearer
+      description: |
+        Jeton de service partage par les BC consommateurs (Paie, Cagnottes, VTC,
+        Boutique). Fail-closed : sans jeton configure cote serveur, l'API interne
+        rejette toute requete (503).
     SuperAdminBearerAuth:
       type: http
       scheme: bearer
@@ -44605,6 +47997,20 @@ components:
         type: integer
         minimum: 1
         maximum: 100
+    ConversationThreadId:
+      name: thread
+      in: path
+      required: true
+      description: Identifiant du fil de discussion
+      schema:
+        type: integer
+    ConversationMessageId:
+      name: message
+      in: path
+      required: true
+      description: Identifiant du message dans le fil
+      schema:
+        type: integer
     Page:
       name: page
       in: query
@@ -44678,6 +48084,299 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    ConversationThread:
+      type: object
+      description: >
+        Fil de discussion. `kind` vaut `direct` (fil binaire historique
+        employe/manager, PA2-COMM-002) ou `group` (#8746). `participants`
+        n'est present que pour un groupe.
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        status:
+          type: string
+        kind:
+          type: string
+          enum:
+          - direct
+          - group
+        created_by:
+          type: integer
+          nullable: true
+        subject_type:
+          type: string
+          nullable: true
+        subject_id:
+          type: integer
+          nullable: true
+        last_message_at:
+          type: string
+          format: date-time
+          nullable: true
+        unread:
+          type: boolean
+        participants:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/ConversationParticipant'
+    ConversationMessage:
+      type: object
+      description: >
+        Message d'un fil de conversation (#8747). `seq` est le curseur d'ordre
+        monotone par fil ; il doit etre utilise pour trier et paginer, jamais
+        `created_at` (deux messages d'une meme transaction partagent la valeur).
+      properties:
+        id:
+          type: integer
+        conversation_thread_id:
+          type: integer
+        author_id:
+          type: integer
+        author:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        seq:
+          type: integer
+          nullable: true
+          description: Curseur d'ordre monotone dans le fil.
+        client_message_id:
+          type: string
+          nullable: true
+          description: Cle d'idempotence renvoyee telle quelle au client.
+        deleted:
+          type: boolean
+          description: Vrai pour un message supprime (corps vide, ligne conservee).
+        body:
+          type: string
+        edited_at:
+          type: string
+          format: date-time
+          nullable: true
+        reply_to:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            author_id:
+              type: integer
+            body:
+              type: string
+            deleted:
+              type: boolean
+        attachment:
+          type: object
+          nullable: true
+          properties:
+            original_name:
+              type: string
+              nullable: true
+            mime_type:
+              type: string
+              nullable: true
+              description: Type detecte sur le contenu (finfo), pas celui declare par le client.
+            size:
+              type: integer
+              nullable: true
+            url:
+              type: string
+              description: Route authentifiee ; le controle d'acces est rejoue a chaque GET.
+        created_at:
+          type: string
+          format: date-time
+    ConversationBlock:
+      type: object
+      description: Blocage unilaterale entre deux employes (#8750).
+      properties:
+        employee_id:
+          type: integer
+        name:
+          type: string
+        matricule:
+          type: string
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+    ConversationReport:
+      type: object
+      description: >
+        Signalement d'un message ou d'un compte (#8750). La reponse ne contient
+        JAMAIS le corps du message signale.
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - open
+          - reviewed
+          - dismissed
+        reason:
+          type: string
+        details:
+          type: string
+          nullable: true
+        conversation_thread_id:
+          type: integer
+          nullable: true
+        conversation_message_id:
+          type: integer
+          nullable: true
+        reported_employee_id:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        reviewed_at:
+          type: string
+          format: date-time
+          nullable: true
+        resolution:
+          type: string
+          nullable: true
+    ConversationParticipant:
+      type: object
+      description: Membre d'un fil `group`, avec son role et son curseur de lecture.
+      properties:
+        employee_id:
+          type: integer
+        name:
+          type: string
+        role:
+          type: string
+          enum:
+          - creator
+          - admin
+          - member
+        last_read_message_id:
+          type: integer
+          nullable: true
+        joined_at:
+          type: string
+          format: date-time
+    # ── BC-38 PAIEMENTS ────────────────────────────────────────────────────
+    PaiementsInternalOperationRequest:
+      type: object
+      required: [company_id, amount, currency, idempotency_key]
+      properties:
+        company_id:
+          type: string
+          maxLength: 64
+        amount:
+          type: integer
+          minimum: 1
+          description: Plus petite unite de la devise (entier, jamais de flottant).
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        idempotency_key:
+          type: string
+          maxLength: 120
+          description: |
+            Unique par tenant, en base. Un rejeu retourne la transaction
+            existante sans effet de bord.
+        country:
+          type: string
+          minLength: 2
+          maxLength: 2
+        metadata:
+          type: object
+          additionalProperties: true
+    PaiementsInternalTransferRequest:
+      allOf:
+        - $ref: '#/components/schemas/PaiementsInternalOperationRequest'
+        - type: object
+          required: [from_wallet_id, to_wallet_id]
+          properties:
+            from_wallet_id:
+              type: integer
+            to_wallet_id:
+              type: integer
+    PaiementsInternalRefundRequest:
+      allOf:
+        - $ref: '#/components/schemas/PaiementsInternalOperationRequest'
+        - type: object
+          required: [transfer_group_id]
+          properties:
+            transfer_group_id:
+              type: string
+              description: Groupe d'ecritures a contre-passer.
+    PaiementsOperationResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            transaction_id:
+              type: integer
+            type:
+              type: string
+              enum: [cash_in, cash_out, internal_transfer, refund]
+            status:
+              type: string
+              enum: [pending, processing, succeeded, failed, cancelled]
+            amount:
+              type: integer
+            fee_amount:
+              type: integer
+            currency:
+              type: string
+            external_reference:
+              type: string
+              nullable: true
+    PaiementsProviderInstanceRequest:
+      type: object
+      required: [type_code, display_name]
+      properties:
+        type_code:
+          type: string
+          maxLength: 60
+          description: Reference un type du CODE (ProviderTypeRegistry).
+        display_name:
+          type: string
+          maxLength: 120
+        company_id:
+          type: string
+          nullable: true
+          description: Nul = instance globale ; sinon instance dediee au tenant.
+        countries:
+          type: array
+          items:
+            type: string
+        currencies:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [active, inactive, sandbox]
+        config:
+          type: object
+          additionalProperties: true
+          description: |
+            Chiffre at-rest. Jamais renvoye en clair : masque `••••` en lecture.
+        priority:
+          type: integer
+          minimum: 0
     VtcGeoPointInput:
       type: object
       required: [lat, lng]
@@ -47713,6 +51412,65 @@ components:
           type: string
           format: date-time
           nullable: true
+    PlatformInfraStack:
+      type: object
+      description: Une stack de deploiement telle que decrite au registre du tier (issue #8673).
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          description: ready, active, planned, suspended ou unknown.
+        status_note:
+          type: string
+          nullable: true
+        active:
+          type: boolean
+        api:
+          type: object
+          properties:
+            service:
+              type: string
+              nullable: true
+            base_url:
+              type: string
+              nullable: true
+            health_url:
+              type: string
+              nullable: true
+            region:
+              type: string
+              nullable: true
+            plan:
+              type: string
+              nullable: true
+            switchable:
+              type: boolean
+              description: Statut ready/active ET endpoint de sante connu.
+        web_url:
+          type: string
+          nullable: true
+        admin_url:
+          type: string
+          nullable: true
+        db_host:
+          type: string
+          nullable: true
+    PlatformInfraTier:
+      type: object
+      properties:
+        tier:
+          type: string
+          enum: [prod, dev]
+        active_stack:
+          type: string
+        updated_at:
+          type: string
+          nullable: true
+        stacks:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformInfraStack'
     PlatformMetricsOverviewResponse:
       type: object
       properties:

@@ -81,5 +81,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // la boucle — jamais de publication automatique) + bilan hebdo.
         // ----------------------------------------------------------------
         Route::post('/ai/suggest-post', [MarketingAiController::class, 'suggestPost']);
+        // #8533 — brief de production assiste (script, description, legende,
+        // hashtags, prompts). L'IA propose ; elle ne produit aucun media et ne
+        // change jamais le statut d'une publication.
+        Route::post('/ai/suggest-production-brief', [MarketingAiController::class, 'suggestProductionBrief']);
         Route::get('/reports/weekly', [MarketingAiController::class, 'weeklyReport']);
     });

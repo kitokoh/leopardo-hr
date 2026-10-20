@@ -181,17 +181,20 @@ export function ZKTecoHookSection({ locale = 'fr' }: ZKTecoHookSectionProps) {
               {copy.subtitle}
             </p>
 
-            <ul className="space-y-5 mb-10">
+            <ul className="mb-10 space-y-4">
               {copy.benefits.map((benefit) => (
-                <li key={benefit.title} className="flex gap-4">
-                  <div className="flex-shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15">
+                <li
+                  key={benefit.title}
+                  className="flex gap-4 rounded-2xl border border-slate-200/80 bg-white/70 p-4.5 shadow-sm backdrop-blur-md transition-all duration-300 hover:border-emerald-300 hover:bg-white dark:border-slate-800/80 dark:bg-slate-900/60 dark:hover:border-emerald-800"
+                >
+                  <div className="flex-shrink-0 inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500/15 to-teal-500/10 text-emerald-600 ring-1 ring-emerald-500/20 dark:from-emerald-500/25 dark:to-teal-500/15 dark:text-emerald-400">
                     {benefit.icon}
                   </div>
                   <div>
-                    <div className="font-bold text-slate-900 dark:text-white">
+                    <div className="text-base font-bold text-slate-900 dark:text-white">
                       {benefit.title}
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
+                    <div className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
                       {benefit.description}
                     </div>
                   </div>
@@ -202,14 +205,14 @@ export function ZKTecoHookSection({ locale = 'fr' }: ZKTecoHookSectionProps) {
             <div className="flex flex-wrap items-center gap-4">
               <Link
                 href="/demo"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition-colors"
+                className="group inline-flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-7 py-3.5 text-base font-bold text-white shadow-lg shadow-emerald-950/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-emerald-500/25 active:scale-[0.98]"
               >
                 {copy.cta}
-                <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
               </Link>
               <Link
                 href="/mobile"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/80 px-7 py-3.5 text-base font-semibold text-slate-700 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-emerald-400 hover:bg-white hover:text-emerald-600 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:border-emerald-500 dark:hover:text-emerald-400"
               >
                 {copy.ctaSecondary}
               </Link>
@@ -224,21 +227,23 @@ export function ZKTecoHookSection({ locale = 'fr' }: ZKTecoHookSectionProps) {
             transition={{ duration: 0.6, delay: 0.15 }}
             className="relative"
           >
-            <div className="absolute -inset-4 bg-gradient-to-r from-emerald-500/15 to-cyan-500/15 rounded-3xl blur-2xl" aria-hidden="true" />
-            <div className="relative mx-auto max-w-sm rounded-2xl overflow-hidden shadow-2xl border border-slate-200/60 dark:border-slate-700/60 bg-white dark:bg-slate-900">
-              <Image
-                src="/screenshots/mobile-attendance.png"
-                alt={copy.visualAlt}
-                width={390}
-                height={844}
-                className="w-full h-auto"
-              />
+            <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 blur-2xl" aria-hidden="true" />
+            <div className="relative mx-auto max-w-sm overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-2 shadow-2xl shadow-emerald-950/15 dark:border-slate-700/80 dark:bg-slate-900">
+              <div className="overflow-hidden rounded-2xl">
+                <Image
+                  src="/screenshots/mobile-attendance.png"
+                  alt={copy.visualAlt}
+                  width={390}
+                  height={844}
+                  className="h-auto w-full"
+                />
+              </div>
             </div>
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
+            <div className="mt-5 flex flex-wrap justify-center gap-2">
               {copy.visualChips.map((chip) => (
                 <span
                   key={chip}
-                  className="px-3 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300"
+                  className="rounded-full border border-emerald-500/20 bg-white/90 px-3.5 py-1 text-xs font-bold text-slate-700 shadow-sm backdrop-blur-md dark:border-emerald-500/30 dark:bg-slate-800/90 dark:text-slate-200"
                 >
                   {chip}
                 </span>

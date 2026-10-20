@@ -142,9 +142,12 @@ class FuelIncidentController extends Controller
 
         $this->authorize('resolve', $incident);
 
+        // Endpoint dedie de resolution : les notes sont OPTIONNELLES ici.
+        // L'exigence de notes reste portee par l'endpoint de workflow
+        // generique `/transition` (cible `resolved` sans notes -> 422), qui
+        // est le point d'entree strict. Exiger les notes sur les deux
+        // chemins rendait la resolution rapide impossible depuis l'UI.
         $notes = (string) $request->input('resolution_notes', '');
-
-        abort_if(trim($notes) === '', 422, 'RESOLUTION_NOTES_REQUIRED');
 
         $incident = $this->incidents->resolve($actor, $incident, $notes);
 
@@ -257,9 +260,9 @@ class FuelIncidentController extends Controller
 
         $this->authorize('close', $incident);
 
+        // Idem `resolve` : notes de cloture optionnelles sur l'endpoint
+        // dedie, le workflow strict restant `/transition`.
         $notes = (string) $request->input('closure_notes', '');
-
-        abort_if(trim($notes) === '', 422, 'CLOSURE_NOTES_REQUIRED');
 
         $incident = $this->incidents->close($actor, $incident, $notes);
 

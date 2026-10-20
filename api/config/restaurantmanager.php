@@ -106,4 +106,28 @@ return [
             'outbound_url' => env('RESTAURANT_GLOVO_OUTBOUND_URL'),
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Impression thermique cuisine (REST-OS-3, Mission Leopardo Restaurant OS)
+    |--------------------------------------------------------------------------
+    |
+    | Le bridge d'impression est un composant LOCAL (poste cuisine) : il
+    | s'authentifie par un jeton partage, dont seul le HASH SHA-256 est
+    | stocke cote plateforme (aucun secret en clair). Fail-closed : bridge
+    | desactive ou hash absent = refus. Le mode d'impression d'une succursale
+    | (`kitchen_mode`) est porte par l'enregistrement de l'imprimante cote
+    | client, jamais par un secret.
+    |
+    */
+    'printing' => [
+        'bridge_enabled' => (bool) env('RESTAURANT_PRINT_BRIDGE_ENABLED', false),
+        // hash('sha256', <jeton partage>) — JAMAIS le jeton en clair.
+        'bridge_token_hash' => env('RESTAURANT_PRINT_BRIDGE_TOKEN_HASH'),
+        // Largeur papier par defaut du rendu ESC/POS (58 ou 80 mm).
+        'paper_width' => (int) env('RESTAURANT_PRINT_PAPER_WIDTH', 80),
+        // Duree (minutes) au-dela de laquelle un travail `claimed` sans accuse
+        // est considere orphelin (bridge plante) et remis en file.
+        'claim_lease_minutes' => (int) env('RESTAURANT_PRINT_CLAIM_LEASE_MINUTES', 15),
+    ],
 ];

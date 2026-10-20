@@ -240,6 +240,21 @@ function resolveApiBaseUrl() {
 JS
 git -C "$REPO_TECH" add -A
 git -C "$REPO_TECH" commit -q -m "diagnostics développeur préfixés [composant] (#7842)"
+# Cas 1septies — sélecteurs CSS et media queries (mission vitrine, 2026-10-16) :
+# le focus-trap d'une modale (`a[href], button:not([disabled]), ...`) et la
+# media query `(prefers-reduced-motion: reduce)` sont des constantes de style,
+# pas du texte utilisateur — même famille que #7482/#8000.
+mkdir -p "$REPO_TECH/front/web/src/modules/vitrine/components/hero"
+cat > "$REPO_TECH/front/web/src/modules/vitrine/components/hero/Modal.tsx" <<'TSX'
+const FOCUSABLE =
+  'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+export function Modal() {
+  return <div data-focusable={FOCUSABLE} data-motion={REDUCED_MOTION_QUERY} />;
+}
+TSX
+git -C "$REPO_TECH" add -A
+git -C "$REPO_TECH" commit -q -m "sélecteur CSS + media query (mission vitrine)"
 run_guard "$REPO_TECH"
 if [[ "$GUARD_STATUS" -ne 0 ]]; then
   printf '%s\n' "$OUT" >&2
@@ -260,6 +275,8 @@ expect_clean 'Acces administrateur' "valeur du catalogue i18n kiosk (#7651)"
 expect_clean 'PIN invalide.' "valeur du catalogue i18n kiosk (#7651)"
 expect_clean '[admin-dashboard] VITE_API_URL is not set' "diagnostic développeur préfixé [composant] (#7842)"
 expect_clean 'system-ui, sans-serif' "pile de polices CSS (font-family d'un avatar SVG local) — #8000"
+expect_clean 'a[href], button:not([disabled])' "sélecteur CSS de focus-trap (mission vitrine)"
+expect_clean '(prefers-reduced-motion: reduce)' "media query CSS (mission vitrine)"
 
 # ── Cas 1bis : glyphes SVG (attributs de géométrie) → VERT ───────────────────
 # Constat mesuré (2026-09-21, vitrine) : `d="M2 12h4l2.5-6 3 12 2.5-6h8"` était
@@ -338,6 +355,32 @@ expect_flagged 'Bonjour, le monde' "texte à virgule sans famille générique �
 for motif in 'form[key]' 'item.x == null' 'flex items-center' 'companies'; do
   expect_clean "$motif" "motif technique « $motif » (cas 2)"
 done
+
+# ── Cas 2b : directives d'en-tête HTTP (#8700) ────────────────────────────────
+# La route `/api/status` pose `'Cache-Control': 'no-store, max-age=0'` pour
+# interdire la mise en cache d'un statut instantané. Le motif « texte à virgule »
+# l'a signalé comme une phrase utilisateur : une garde qui fait réécrire du code
+# correct est une garde qu'on contourne (#7482, encore).
+# Le contre-contrôle ci-dessous vérifie que l'exception ne s'ouvre PAS à une
+# énumération de mots quelconques — sinon on aurait remplacé un faux positif par
+# une fuite silencieuse.
+mkdir -p "$REPO_TEXT/front/web/src/app/api/status"
+cat > "$REPO_TEXT/front/web/src/app/api/status/route.ts" <<'TSX'
+export async function GET() {
+  const cacheDirective = 'no-store, max-age=0'
+  const revalidation = 'public, max-age=60'
+  // Contre-contrôle : deux mots à virgule qui ne sont pas des directives HTTP.
+  const greeting = 'Bonjour, le monde'
+  return { cacheDirective, revalidation, greeting }
+}
+TSX
+git -C "$REPO_TEXT" add -A
+git -C "$REPO_TEXT" commit -q -m "directives d'en-tete HTTP (#8700)"
+run_guard "$REPO_TEXT"
+for motif in 'no-store, max-age=0' 'public, max-age=60'; do
+  expect_clean "$motif" "directive d'en-tête HTTP « $motif » (#8700)"
+done
+expect_flagged 'Bonjour, le monde' "contre-contrôle : énumération à virgule non-HTTP reste flaggée (#8700)"
 
 # ── Cas 3 : le message d'erreur dit quoi faire (critère 3) ───────────────────
 if ! printf '%s\n' "$OUT" | grep -qF 'catalogue i18n'; then

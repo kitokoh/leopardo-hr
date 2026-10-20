@@ -73,6 +73,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformTeamController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUsersController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicDiscoveryController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportedCountryController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
@@ -348,6 +349,14 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/public/restaurant/kiosk/orders/{reference}', [RestaurantKioskController::class, 'track']);
     });
 
+    // SUPERAPP-P0 — decouverte publique cross-verticale (Leopardo.com) :
+    // surface NEUTRE qui agrege les entites publiques de PLUSIEURS verticales
+    // (restaurants, hebergements, vitrines) via les providers tagues
+    // `public.discoverable`. Route isolee SANS auth ni middleware tenant
+    // (patron BC-27/BC-28) ; chaque entite reste soumise a sa propre garde
+    // fail-closed (is_public, statut societe, feature verticale).
+    Route::middleware(['throttle:shop-public'])->get('/public/discover', [PublicDiscoveryController::class, 'index']);
+
     Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
         Route::get('/auth/me', [AuthController::class, 'me']);
         Route::patch('/auth/profile', [AuthController::class, 'updateProfile']);
@@ -534,6 +543,14 @@ Route::prefix('v1')->group(function (): void {
     // BC-35 VTC — verticale VTC/taxi (VTC-01/#8357), feature flag `vtc` posé par SolutionActivator.
     require __DIR__.'/modules/vtc.php';
 
+    // BC-36 TRADE — verticale International Trade OS (TRADE-001/#8476), feature flag `trade` posé par SolutionActivator.
+    require __DIR__.'/modules/trade.php';
+
+    // BC-38 PAIEMENTS (#8680) — socle de paiement interne : API service-a-service,
+    // webhooks entrants (routage par token) et surface Tenant. La surface
+    // Superadmin est enregistrée dans le groupe `platform` ci-dessous.
+    require __DIR__.'/modules/paiements.php';
+
     // IA Module — fichier requis DANS le groupe v1 (prefix /api/v1) :
     // chemins réels /api/v1/ai/* (drift doc #4936)
     require __DIR__.'/ai.php';
@@ -582,6 +599,13 @@ Route::prefix('v1')->group(function (): void {
         // #7576 — la piste d'audit survit à la purge : lecture plateforme, non
         // scopée à une entreprise vivante (sinon la preuve est inexploitable).
         Route::get('/tenant-deletion-audits', [PlatformCompanyDeletionController::class, 'auditTrail'])->middleware('platform.permission:companies.view');
+
+        // BC-36 TRADE (TRADE-010/#8485) — suivi de la verticale depuis la
+        // console plateforme EXISTANTE (aucune seconde console). Compteurs
+        // agreges et etat des adaptateurs UNIQUEMENT : jamais le contenu
+        // commercial prive d'un tenant (prix, offres, messages, documents).
+        Route::get('/trade/overview', [\App\Modules\Trade\Interfaces\Api\V1\Controllers\PlatformTradeController::class, 'overview'])->middleware('platform.permission:companies.view');
+        Route::get('/trade/integrations', [\App\Modules\Trade\Interfaces\Api\V1\Controllers\PlatformTradeController::class, 'integrations'])->middleware('platform.permission:companies.view');
         Route::delete('/companies/{company}', [PlatformCompanyDeletionController::class, 'destroy'])->middleware('platform.permission:companies.manage');
 
         // #8441 — paramétrage de la verticale cagnottes DANS le contexte de
@@ -608,6 +632,34 @@ Route::prefix('v1')->group(function (): void {
         Route::put('/billing/gateways', [PlatformPaymentGatewayController::class, 'update'])->middleware('platform.permission:billing.manage');
         Route::post('/billing/gateways/{gateway}/test', [PlatformPaymentGatewayController::class, 'test'])
             ->where('gateway', '[a-z]+')->middleware('platform.permission:billing.manage');
+        // BC-38 PAIEMENTS (#8690) — registre des moyens de paiement de la
+        // plateforme. Ne pas confondre avec `/billing/gateways` ci-dessus
+        // (BC-21 BILLING : passerelles d'abonnement Stripe/Chargily). Ici il
+        // s'agit du socle de paiement interne : les TYPES viennent du code
+        // (lecture seule, aucun endpoint d'écriture) et les INSTANCES sont de
+        // la configuration — c'est ce qui permet de basculer un marché d'une
+        // instance à une autre sans déploiement.
+        Route::prefix('payments')->group(function (): void {
+            Route::get('/provider-types', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'types'])
+                ->middleware('platform.permission:payments.view');
+            Route::get('/provider-instances', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'indexInstances'])
+                ->middleware('platform.permission:payments.view');
+            Route::post('/provider-instances', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'storeInstance'])
+                ->middleware('platform.permission:payments.manage');
+            Route::patch('/provider-instances/{instance}', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'updateInstance'])
+                ->whereNumber('instance')->middleware('platform.permission:payments.manage');
+            Route::patch('/provider-instances/{instance}/status', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'setInstanceStatus'])
+                ->whereNumber('instance')->middleware('platform.permission:payments.manage');
+            Route::post('/webhook-endpoints', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'storeWebhookEndpoint'])
+                ->middleware('platform.permission:payments.manage');
+            Route::get('/transactions', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'transactions'])
+                ->middleware('platform.permission:payments.view');
+            Route::get('/reconciliations', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'reconciliations'])
+                ->middleware('platform.permission:payments.view');
+            Route::post('/reconciliations', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'runReconciliation'])
+                ->middleware('platform.permission:payments.manage');
+        });
+
         Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show'])->middleware('platform.permission:companies.view');
         Route::patch('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'update'])->middleware('platform.permission:companies.manage');
 
@@ -694,6 +746,19 @@ Route::prefix('v1')->group(function (): void {
             Route::post('/{nodeId}/sync', [EdgeNodeController::class, 'forceSync'])->middleware('platform.permission:edge.manage');
             Route::delete('/{nodeId}', [EdgeNodeController::class, 'revokeNode'])->middleware('platform.permission:edge.manage');
         });
+
+        // #8673 (épic #8670) — pilotage de l'infrastructure de déploiement.
+        // Lecture de l'état des stacks (registres deploy/*-stacks.json) et
+        // bascule d'un tier vers une autre stack. La bascule n'exécute rien
+        // ici : elle émet un `repository_dispatch` que
+        // .github/workflows/stack-switch-dispatch.yml route vers
+        // stack-switch.yml (qui détient les secrets et applique les garde-fous
+        // de données prod). Permission dédiée `infra.manage` : ce bouton peut
+        // couper la plateforme, il n'est pas délégué au support.
+        Route::prefix('infra')->middleware('platform.permission:infra.manage')->group(function (): void {
+            Route::get('/stacks', [\App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformInfraController::class, 'stacks']);
+            Route::post('/stack-switch', [\App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformInfraController::class, 'switch']);
+        });
     });
     // Admin cockpit (super-admin) — contrat SPA front/admin-dashboard.
     // Endpoints appelés par le SPA sans exister côté API (issue #1764) :
@@ -771,9 +836,28 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/companies/{company}/marketing-os/assets', [$marketingOs, 'indexAssets'])->middleware('platform.permission:marketing_os.view');
         Route::post('/companies/{company}/marketing-os/assets', [$marketingOs, 'storeAsset'])->middleware('platform.permission:marketing_os.manage');
         Route::get('/companies/{company}/marketing-os/assets/{asset}/publications', [$marketingOs, 'assetPublications'])->whereNumber('asset')->middleware('platform.permission:marketing_os.view');
+        // #8675 — la mediatheque etait en ECRITURE SEULE : le binaire etait
+        // stocke sur le disk prive mais aucune route ne le relisait. Le detail
+        // et le telechargement sont donc ajoutes AVANT la route de detail
+        // generique, et `{asset}` est contraint au numerique pour qu'aucun
+        // segment texte (« download ») ne puisse etre pris pour un identifiant.
+        Route::get('/companies/{company}/marketing-os/assets/{asset}/download', [$marketingOs, 'downloadAsset'])->whereNumber('asset')->middleware('platform.permission:marketing_os.view');
+        Route::get('/companies/{company}/marketing-os/assets/{asset}', [$marketingOs, 'showAsset'])->whereNumber('asset')->middleware('platform.permission:marketing_os.view');
         Route::get('/companies/{company}/marketing-os/publications', [$marketingOs, 'indexPublications'])->middleware('platform.permission:marketing_os.view');
         Route::post('/companies/{company}/marketing-os/publications', [$marketingOs, 'storePublication'])->middleware('platform.permission:marketing_os.manage');
         Route::patch('/companies/{company}/marketing-os/publications/{publication}/status', [$marketingOs, 'updatePublicationStatus'])->whereNumber('publication')->middleware('platform.permission:marketing_os.manage');
+        // #8530 — remontee des statistiques REELLES de la plateforme (aucune
+        // valeur inventee : « indisponible » est un etat explicite).
+        Route::post('/companies/{company}/marketing-os/publications/{publication}/stats/refresh', [$marketingOs, 'refreshPublicationStats'])->whereNumber('publication')->middleware('platform.permission:marketing_os.manage');
+
+        // #8531 — objectifs de visibilite SEO/SEA/AEO/GEO rattaches aux contenus.
+        Route::get('/companies/{company}/marketing-os/visibility-objectives', [$marketingOs, 'indexVisibilityObjectives'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/companies/{company}/marketing-os/visibility-objectives', [$marketingOs, 'storeVisibilityObjective'])->middleware('platform.permission:marketing_os.manage');
+
+        // #8532 — matrice des capacites REELLES de publication par plateforme
+        // (quelles plateformes autorisent le direct, et pourquoi les autres
+        // restent en mode assiste).
+        Route::get('/companies/{company}/marketing-os/publishing-capabilities', [$marketingOs, 'publishingCapabilities'])->middleware('platform.permission:marketing_os.view');
 
         // #7496 — conversions du funnel d'acquisition par étape/jour/source
         // (dashboard admin CRM commercial, données acquisition_funnel_events).

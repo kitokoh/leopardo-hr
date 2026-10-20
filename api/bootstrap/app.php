@@ -123,6 +123,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'tenant' => TenantMiddleware::class,
+            // BC-38 PAIEMENTS (#8689) — authentification service-a-service de
+            // l'API interne (jamais de session utilisateur pour un BC
+            // consommateur). Fail-closed : sans jeton configure, 503.
+            'paiements.service' => \App\Modules\Paiements\Interfaces\Http\Middleware\EnsurePaymentServiceToken::class,
             'manager' => EnsureManagerMiddleware::class,
             'manager_role' => EnsureManagerRoleMiddleware::class,
             'employee' => EnsureEmployeeMiddleware::class,
@@ -141,6 +145,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'crm.enabled' => \App\Http\Middleware\Crm\EnsureCrmEnabledMiddleware::class,
             // RESTO-805 (#6226) — boutique publique RestaurantManager (jeton signé par tenant).
             'restaurant.public.shop' => EnsureRestaurantPublicShopAccess::class,
+            // REST-OS-3 — bridge d'impression local RestaurantManager (jeton partagé, hash env).
+            'restaurant.print.bridge' => \App\Http\Middleware\Restaurant\EnsureRestaurantPrintBridgeAccess::class,
             // TRAVEL-1001 (#6114) — boutique publique (jeton tenant signé).
             'travel.public.shop' => \App\Http\Middleware\EnsurePublicShopAccess::class,
             'module.delivery' => EnsureDeliveryModuleMiddleware::class,
@@ -152,6 +158,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.vtc' => \App\Http\Middleware\Vtc\EnsureVtcModuleMiddleware::class,
             // BC-35 VTC (VTC-05/#8361) — matrice RBAC vtc.role (driver/dispatcher/admin).
             'vtc.role' => \App\Http\Middleware\Vtc\EnsureVtcRoleMiddleware::class,
+            // BC-36 TRADE (TRADE-001/#8476) — gate feature flag trade (verticale International Trade OS).
+            'module.trade' => \App\Http\Middleware\Trade\EnsureTradeModuleMiddleware::class,
+            // BC-36 TRADE (TRADE-001/#8476) — matrice RBAC trade.role (admin/purchase/sales/logistics/reports).
+            'trade.role' => \App\Http\Middleware\Trade\EnsureTradeRoleMiddleware::class,
             // BC-28 CATALOG — gate feature flag b2b_catalog (#6881).
             'module.catalog' => \App\Http\Middleware\Catalog\EnsureCatalogModuleMiddleware::class,
             // BC-17 RETAIL — gate feature flag retail (#7672).
