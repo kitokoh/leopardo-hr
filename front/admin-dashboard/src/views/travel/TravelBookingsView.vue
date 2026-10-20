@@ -137,8 +137,26 @@
           {{ seatMapError }}
         </p>
 
+        <!-- #8654 — un changement de disposition ne déplace AUCUN passager :
+             les réservations restent rattachées à leurs numéros de siège. Le
+             comportement est sûr, mais l'interface doit le dire — sinon le
+             responsable peut croire que les passagers ont été replacés, ou
+             craindre une perte de réservations. -->
+        <p
+          v-if="seatMapLayout"
+          role="note"
+          class="mt-3 rounded-lg border border-sky-200 bg-sky-50 p-3 text-sm text-sky-900 dark:border-sky-800 dark:bg-sky-900/20 dark:text-sky-200"
+        >
+          {{ t('travel.seats.layoutNotice', 'Modifier la disposition des sièges ne déplace pas les passagers déjà réservés : leurs sièges restent inchangés. Utilisez la procédure de remplacement de véhicule pour résoudre un conflit.') }}
+        </p>
+
         <div class="mt-4">
-          <TravelSeatMap :seats="seatMapSeats" :selected="[]" :seats-per-row="seatMapSeatsPerRow" />
+          <TravelSeatMap
+            :seats="seatMapSeats"
+            :selected="[]"
+            :seats-per-row="seatMapSeatsPerRow"
+            :layout="seatMapLayout"
+          />
         </div>
       </section>
 
@@ -439,6 +457,16 @@ const seatMapSeatsPerRow = computed(() => {
 })
 
 /**
+ * #8646 — disposition PHYSIQUE renvoyée par l'endpoint des sièges.
+ *
+ * `null` quand le serveur n'en fournit pas : le composant retombe alors sur
+ * `seatMapSeatsPerRow`. Aucun calcul de géométrie n'est refait ici — la
+ * déduction par capacité n'est qu'un repli explicite, jamais une seconde
+ * source de vérité.
+ */
+const seatMapLayout = ref(null)
+
+/**
  * #8621 — Charge l'inventaire réel des sièges du trajet sélectionné.
  *
  * Source serveur unique (endpoint tenant-scopé `/travel/trips/{id}/seats`) :
@@ -456,8 +484,13 @@ async function loadSeatMap() {
     const response = await travelGetAction('trips', tripFilter.value, 'seats')
     const payload = travelItem(response) || {}
     seatMapSeats.value = Array.isArray(payload.seats) ? payload.seats : []
+    // #8646 — géométrie du véhicule affecté, telle que renvoyée par le serveur.
+    seatMapLayout.value = payload.seat_layout && typeof payload.seat_layout === 'object'
+      ? payload.seat_layout
+      : null
   } catch (e) {
     seatMapSeats.value = []
+    seatMapLayout.value = null
     seatMapError.value =
       e?.response?.data?.message || e?.message || t('travel.common.loadErrorBody', 'Une erreur est survenue.')
   } finally {

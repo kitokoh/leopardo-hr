@@ -1,0 +1,76 @@
+name: Release drift check
+
+# Vérifie que le tag de release publié correspond au code RÉELLEMENT servi par
+# la prod (issue #8700).
+#
+# Pourquoi ce workflow existe : entre le 2026-09-20 et le 2026-10-18, `main` a
+# avancé de dizaines de commits pendant que la prod restait figée sur v4.33.0 —
+# aucun signal ne reliait « tag publié » à « code en ligne ». Cette vérification
+# transforme ce silence en échec visible.
+#
+# Rollout : ce contrôle est ADVISORY au départ. Il ne doit pas bloquer une
+# release tant que la prod n'a pas été ré-alignée une première fois — un gate
+# rouge le jour de sa mise en service pousserait à le désactiver.
+
+on:
+  schedule:
+    # Tous les jours à 06:15 UTC (09:15 Istanbul) — avant la journée de travail,
+    # pour que le fondateur voie la dérive en arrivant.
+    - cron: '15 6 * * *'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag à vérifier (défaut : dernier tag du dépôt)'
+        required: false
+        type: string
+
+concurrency:
+  group: release-drift
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  drift:
+    name: Tag publié vs prod en ligne
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Vérifier la dérive
+        id: check
+        run: |
+          set +e
+          ./scripts/release-drift-check.sh \
+            ${INPUT_TAG:+--tag "$INPUT_TAG"} \
+            --json > drift.json
+          code=$?
+          set -e
+          cat drift.json
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          # 0 = match, 1 = drift réel, 2 = indéterminé (service down/injoignable).
+          # Seul 1 doit faire échouer le workflow : un 2 signifie « on ne sait
+          # pas », et une page de statut qui crie au drift quand la prod est en
+          # panne envoie l'équipe sur la mauvaise piste.
+          if [ "$code" = "1" ]; then
+            echo "::error::La production ne sert pas le tag publié — voir drift.json"
+            exit 1
+          fi
+          if [ "$code" = "2" ]; then
+            echo "::warning::Vérification indéterminée (API prod injoignable ou suspendue)"
+          fi
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+
+      - name: Publier le rapport
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: drift-report
+          path: drift.json
+          retention-days: 30

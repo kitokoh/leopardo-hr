@@ -1,96 +1,171 @@
 'use client';
 
 /**
- * GeoBackdrop — cartes géographiques en arrière-plan de la constellation.
+ * GeoBackdrop — cartes géographiques qui défilent sur un DEMI-CERCLE 3D
+ * CONCAVE autour de la constellation (passe Fondateur, #8702).
  *
- * Option A retenue (transition successive) : une carte s'efface pendant que la
- * suivante apparaît — fondu croisé lent, aucune carte ne coexiste avec une
- * autre, la constellation reste l'élément visuel dominant.
+ * Le demi-cercle est « tourné vers le visiteur, par sa concavité » : la paroi
+ * intérieure d'une cuvette. La géométrie réelle (translate3d + perspective,
+ * voir le bloc `.geo-arc` de `globals.css`) donne :
  *
- * Cycle : France → Algérie → Turquie → Tchad → continent africain. La France
- * n'est donc plus un décor figé (elle était seule, en dur dans `HeroSection`).
+ *   gauche (PROCHE, présente) → sommet (LOINTAIN, plonge derrière le plan de
+ *   la constellation) → droite (PROCHE) → sortie du demi-cercle, puis la
+ *   suivante.
  *
- * Direction artistique : un plan DERRIÈRE la scène WebGL, opacité maîtrisée
- * (la silhouette se lit sans concurrencer les étoiles, les libellés ni le CTA).
- * Tracés exacts Natural Earth (voir `data/geo/map-paths.ts`) — pas de
- * silhouette aléatoire. Décoratif : `aria-hidden`, aucun texte (rien à
- * traduire), jamais cliquable.
+ * La taille suit la profondeur RÉELLE (le navigateur la calcule, ce n'est pas
+ * un scale() simulé) et chaque carte pivote légèrement (rotateY), plaquée sur
+ * la paroi : la concavité se lit à l'œil. La carte au sommet est la plus
+ * éloignée — elle ne concurrence plus jamais les étoiles (défaut relevé en
+ * vague 5), et les deux bouts qui reviennent vers le visiteur encadrent la
+ * constellation comme deux ailes. Le calque reste en `z-[1]` (la scène WebGL
+ * est en `z-10`) : aucune carte ne passe devant les étoiles à l'écran, la
+ * profondeur étant portée par la taille et l'opacité.
  *
- * Accessibilité : sous `prefers-reduced-motion: reduce`, l'intervalle n'est
- * jamais posé — seule la première carte (la France) reste affichée, sans
- * fondu (la transition est neutralisée en CSS). Si `matchMedia` ou les
- * animations avancées ne sont pas disponibles, on affiche la France statique :
- * aucune information n'est perdue, le décor est purement visuel.
+ * Ordre de défilement : d'abord les CONTINENTS (Afrique, Europe, Asie), puis
+ * les PAYS (France, Algérie, Turquie, Tchad, Maroc, Tunisie, Sénégal, Arabic
+ * Saoudite). Le cycle se répète.
+ *
+ * Intérieur VIDE : chaque carte n'est qu'une silhouette — un fond teinté, un
+ * contour fin, rien d'autre (ni texte, ni grille, ni détail intérieur). C'est
+ * un décor de profondeur, pas une carte à lire.
+ *
+ * Tracés exacts Natural Earth 1:110m (domaine public) — voir
+ * `tools/cartography/make_maps.py`. Aucune silhouette aléatoire.
+ *
+ * Parallaxe différentiel (passe Fondateur, #8704) : le calque de l'arc glisse
+ * TRÈS légèrement à l'opposé du pointeur (±10 px, lissé), pendant que la
+ * constellation WebGL suit doucement la souris. Ce différentiel entre les
+ * deux niveaux est ce qui rend la profondeur palpable — sans lui, les plans
+ * restent vissés l'un à l'autre et la scène se relit « à plat ». Écoute
+ * passive sur `window`, lissage par `requestAnimationFrame` borné (il
+ * s'arrête dès que le calque a rejoint sa cible), AUCUN état React.
+ *
+ * Performance / accessibilité : la circulation des cartes est 100 % CSS
+ * (`transform` + `opacity` seulement, composées par le GPU). Sous
+ * `prefers-reduced-motion: reduce`, ou si les animations ne démarrent pas,
+ * une seule carte statique s'affiche et le parallaxe n'est jamais branché :
+ * le décor reste lisible, la constellation reste dominante.
+ * `aria-hidden` : rien à lire, rien à cliquer.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { MAP_OUTLINES, type MapKey } from '../../data/geo/map-paths';
 
-/** Ordre du cycle. La France ouvre le cycle (continuité avec l'existant). */
-const MAP_ORDER: readonly MapKey[] = ['france', 'algeria', 'turkey', 'chad', 'africa'];
+/**
+ * Ordre de défilement : les continents d'abord, puis les pays.
+ * Chaque entrée = une carte du demi-cercle.
+ */
+const ARC_ORDER: readonly MapKey[] = [
+  // Continents
+  'africa',
+  'europe',
+  'asia',
+  // Pays
+  'france',
+  'algeria',
+  'turkey',
+  'chad',
+  'morocco',
+  'tunisia',
+  'senegal',
+  'saudi',
+];
 
-/** Durée d'affichage d'une carte (le fondu CSS dure 1,4 s). */
-const HOLD_MS = 9000;
+/**
+ * Durée d'un tour complet du demi-cercle, et décalage entre deux cartes.
+ * `--geo-count` porte le nombre de cartes ; le décalage négatif fait entrer
+ * les cartes en continu, une par une, sans jamais toutes réapparaître d'un
+ * coup. Le cycle complet est long (lent = élégant, jamais « clignotant »).
+ */
+const CYCLE_SECONDS = 54;
 
-/** Classes de cadrage par carte : l'Afrique (plus large que haute) respire. */
-const MAP_SIZE: Record<MapKey, string> = {
-  france: 'h-[86vmin] w-[86vmin]',
-  algeria: 'h-[86vmin] w-[86vmin]',
-  turkey: 'h-[86vmin] w-[86vmin]',
-  chad: 'h-[86vmin] w-[86vmin]',
-  africa: 'h-[78vmin] w-[78vmin]',
-};
+/** Amplitude du parallaxe différentiel (#8704) — subtile par exigence : le
+    calque ne doit jamais sembler « décrocher » de la constellation. */
+const PARALLAX_PX = 10;
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 
 export function GeoBackdrop({ locale }: { locale?: string }) {
   void locale; // décoratif : aucun texte, donc aucune locale à lire
-  const [index, setIndex] = useState(0);
-  const [rotating, setRotating] = useState(false);
+  const arcRef = useRef<HTMLDivElement>(null);
 
+  // Parallaxe différentiel : l'arc (niveau proche) glisse à l'opposé du
+  // pointeur, la constellation (niveau lointain) le suit — la profondeur
+  // entre les deux niveaux devient SENSIBLE. borné, lissé, jamais branché
+  // en mouvement réduit.
   useEffect(() => {
-    // jsdom (tests) et très vieux navigateurs : pas de `matchMedia` → la
-    // France statique, sans erreur.
     if (typeof window.matchMedia !== 'function') return undefined;
     if (window.matchMedia(REDUCED_MOTION_QUERY).matches) return undefined;
+    const node = arcRef.current;
+    if (!node) return undefined;
 
-    setRotating(true);
-    const timer = window.setInterval(() => {
-      setIndex((current) => (current + 1) % MAP_ORDER.length);
-    }, HOLD_MS);
-    return () => window.clearInterval(timer);
+    let raf = 0;
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+
+    const tick = () => {
+      raf = 0;
+      // Lissage exponentiel : le calque « rattrape » sa cible, puis s'arrête
+      // (le rAF ne tourne que pendant le rattrapage, jamais en continu).
+      currentX += (targetX - currentX) * 0.08;
+      currentY += (targetY - currentY) * 0.08;
+      node.style.setProperty('--geo-parallax-x', `${currentX.toFixed(2)}px`);
+      node.style.setProperty('--geo-parallax-y', `${currentY.toFixed(2)}px`);
+      if (Math.abs(targetX - currentX) > 0.05 || Math.abs(targetY - currentY) > 0.05) {
+        raf = requestAnimationFrame(tick);
+      }
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      const nx = (event.clientX / window.innerWidth) * 2 - 1;
+      const ny = (event.clientY / window.innerHeight) * 2 - 1;
+      targetX = -nx * PARALLAX_PX;
+      targetY = -ny * PARALLAX_PX * 0.6;
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    return () => {
+      window.removeEventListener('pointermove', onPointerMove);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
 
   return (
     <div
+      ref={arcRef}
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"
+      className="geo-arc pointer-events-none absolute inset-0 z-[1] overflow-hidden"
+      style={{ ['--geo-count' as string]: String(ARC_ORDER.length) }}
     >
-      {MAP_ORDER.map((key, position) => {
-        // Sans rotation (reduced-motion / matchMedia absent) : seule la
-        // première carte est rendue — pas de couche cachée inutile.
-        if (!rotating && position !== 0) return null;
-        const active = position === index;
+      {ARC_ORDER.map((key, index) => {
+        const outline = MAP_OUTLINES[key];
         return (
-          <svg
+          <div
             key={key}
-            viewBox="0 0 100 100"
-            preserveAspectRatio="xMidYMid meet"
-            focusable="false"
-            className={`geo-map-layer absolute shrink-0 ${MAP_SIZE[key]} ${
-              active ? 'opacity-[0.22]' : 'opacity-0'
-            }`}
+            className="geo-arc-card"
+            style={{ animationDelay: `${-(index * CYCLE_SECONDS) / ARC_ORDER.length}s` }}
           >
-            <path
-              d={MAP_OUTLINES[key].d}
-              fill="#10b981"
-              fillOpacity={0.16}
-              stroke="#06b6d4"
-              strokeWidth={0.32}
-              strokeOpacity={0.75}
-              strokeLinejoin="round"
-            />
-          </svg>
+            <svg
+              viewBox="0 0 100 100"
+              preserveAspectRatio="xMidYMid meet"
+              focusable="false"
+              className="h-full w-full"
+            >
+              {/* Silhouette vide : un fond, un contour. Rien à l'intérieur. */}
+              <path d={outline.d} fill="currentColor" fillOpacity={0.1} stroke="none" />
+              <path
+                d={outline.d}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={0.45}
+                strokeOpacity={0.55}
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
         );
       })}
     </div>

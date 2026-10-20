@@ -35,7 +35,7 @@ export interface SeatInput {
 export interface SeatCell {
   /** Numéro de siège, ou `null` pour la colonne couloir. */
   seatNumber: number | null;
-  status: SeatStatusValue | "aisle";
+  status: SeatStatusValue | "aisle" | "absent";
   /** Symbole non coloré (accessibilité / impression N&B). */
   symbol: string;
   /** Libellé texte de l'état. */
@@ -63,10 +63,25 @@ export interface LayoutOptions {
   seatsPerRow?: number;
   /** Insérer une colonne couloir au milieu de la rangée. Défaut : true. */
   aisle?: boolean;
+  /**
+   * Position (1-based) de la colonne APRÈS laquelle se trouve le couloir.
+   * `null` = pas de couloir. Quand fourni, prime sur `aisle`.
+   */
+  aisleAfter?: number | null;
+  /**
+   * #8652 — numéros de sièges PHYSIQUEMENT ABSENTS du véhicule.
+   *
+   * L'inventaire du trajet ne contient aucune ligne pour ces sièges : sans
+   * cette liste, le plan les ignorerait et **décalerait** les sièges suivants
+   * (un car de 30 places dont la 30e est absente afficherait 29 places
+   * compactées, et le client ne retrouverait pas son siège dans le bus).
+   * Chaque siège absent occupe donc sa place réelle, en case non cliquable.
+   */
+  absentSeats?: readonly number[];
 }
 
 /** Symboles non colorés par état — lisibles en niveaux de gris. */
-const STATUS_SYMBOL: Record<SeatStatusValue | "aisle", string> = {
+const STATUS_SYMBOL: Record<SeatStatusValue | "aisle" | "absent", string> = {
   free: "",
   selected: "\u2713\u2713", // ✓✓ sélectionné
   held: "\u25F4", // ◴ réservation en cours
@@ -76,10 +91,11 @@ const STATUS_SYMBOL: Record<SeatStatusValue | "aisle", string> = {
   blocked: "\u2716", // ✖ bloqué
   unavailable: "\u2013", // – indisponible
   aisle: "",
+  absent: "\u25A2", // ▢ siège inexistant dans le bus
 };
 
 /** Libellés texte (FR) par état — source unique pour la légende et l'aria. */
-const STATUS_LABEL: Record<SeatStatusValue | "aisle", string> = {
+const STATUS_LABEL: Record<SeatStatusValue | "aisle" | "absent", string> = {
   free: "Libre",
   selected: "Sélectionné",
   held: "Réservation en cours",
@@ -89,6 +105,7 @@ const STATUS_LABEL: Record<SeatStatusValue | "aisle", string> = {
   blocked: "Bloqué",
   unavailable: "Indisponible",
   aisle: "Couloir",
+  absent: "Siège absent",
 };
 
 /** Ordre d'affichage de la légende. */
@@ -103,11 +120,11 @@ export const LEGEND_ORDER: SeatStatusValue[] = [
   "unavailable",
 ];
 
-export function seatStatusLabel(status: SeatStatusValue | "aisle"): string {
+export function seatStatusLabel(status: SeatStatusValue | "aisle" | "absent"): string {
   return STATUS_LABEL[status] ?? String(status);
 }
 
-export function seatStatusSymbol(status: SeatStatusValue | "aisle"): string {
+export function seatStatusSymbol(status: SeatStatusValue | "aisle" | "absent"): string {
   return STATUS_SYMBOL[status] ?? "";
 }
 
@@ -137,22 +154,67 @@ export function buildSeatMapLayout(
   options: LayoutOptions = {},
 ): SeatMapLayout {
   const seatsPerRow = Math.max(1, Math.trunc(options.seatsPerRow ?? 4));
-  const aisle = options.aisle ?? seatsPerRow >= 3;
 
-  const sorted = [...seats].sort((a, b) => a.seat_number - b.seat_number);
-  const aisleAfter = aisle ? Math.ceil(seatsPerRow / 2) : null;
+  // #8652 — quand le véhicule déclare des sièges physiquement absents, on
+  // reconstruit la séquence PHYSIQUE complète (1..N) : chaque siège absent
+  // occupe sa place réelle en case non cliquable, au lieu d'être simplement
+  // omis — ce qui décalerait tous les sièges suivants et ferait mentir le plan.
+  const absentSeats = options.absentSeats ?? [];
+  const absentSet = new Set(absentSeats);
+
+  const sorted: SeatInput[] = (() => {
+    if (absentSeats.length === 0) {
+      return [...seats].sort((a, b) => a.seat_number - b.seat_number);
+    }
+
+    const byNumber = new Map(seats.map((seat) => [seat.seat_number, seat]));
+    const maxNumber = Math.max(
+      0,
+      ...seats.map((seat) => seat.seat_number),
+      ...absentSeats,
+    );
+
+    const sequence: SeatInput[] = [];
+    for (let number = 1; number <= maxNumber; number += 1) {
+      if (absentSet.has(number)) {
+        // Marqueur de trou : rendu en case « absent », jamais sélectionnable.
+        sequence.push({ seat_number: number, status: "absent" as SeatStatusValue });
+        continue;
+      }
+
+      const seat = byNumber.get(number);
+      if (seat) sequence.push(seat);
+    }
+
+    return sequence;
+  })();
+
+  // #8646 — quand le serveur précise la position du couloir, elle fait foi ;
+  // `null` signifie explicitement « aucun couloir ». Sinon on garde l'ancien
+  // comportement (couloir dès 3 sièges par rangée).
+  const aisleAfter =
+    options.aisleAfter !== undefined && options.aisleAfter !== null
+      ? Math.min(Math.max(1, Math.trunc(options.aisleAfter)), seatsPerRow - 1)
+      : options.aisleAfter === null
+        ? null
+        : (options.aisle ?? seatsPerRow >= 3)
+          ? Math.ceil(seatsPerRow / 2)
+          : null;
 
   const rows: SeatRowLayout[] = [];
   for (let i = 0; i < sorted.length; i += seatsPerRow) {
     const chunk = sorted.slice(i, i + seatsPerRow);
     const cells: SeatCell[] = [];
     chunk.forEach((seat, index) => {
+      const isAbsent = absentSet.has(seat.seat_number);
+      const status = isAbsent ? "absent" : seat.status;
+
       cells.push({
         seatNumber: seat.seat_number,
-        status: seat.status,
-        symbol: seatStatusSymbol(seat.status),
-        label: seatStatusLabel(seat.status),
-        bookingReference: seat.booking_reference ?? null,
+        status,
+        symbol: seatStatusSymbol(status),
+        label: seatStatusLabel(status),
+        bookingReference: isAbsent ? null : (seat.booking_reference ?? null),
       });
       if (aisleAfter !== null && index + 1 === aisleAfter) {
         cells.push({
@@ -168,7 +230,7 @@ export function buildSeatMapLayout(
 
   return {
     rows,
-    columns: seatsPerRow + (aisle ? 1 : 0),
+    columns: seatsPerRow + (aisleAfter !== null ? 1 : 0),
     aisleColumn: aisleAfter,
     seatsPerRow,
   };
@@ -211,4 +273,98 @@ export function selectableSeatNumbers(seats: readonly SeatInput[]): number[] {
 export function resolveSeatsPerRow(totalSeats: number): number {
   if (!Number.isFinite(totalSeats) || totalSeats <= 0) return 4;
   return totalSeats > 15 ? 4 : 3;
+}
+
+/**
+ * #8646 — disposition de sièges telle qu'exposée par l'API.
+ *
+ * `seats_per_row` / `aisle_after` sont des ENTIERS de géométrie ;
+ * `is_configured` dit si la géométrie a été LUE sur le véhicule ou DÉDUITE de
+ * sa capacité. Une disposition déduite ne doit jamais être présentée comme
+ * une donnée du véhicule.
+ */
+export interface SeatLayoutConfig {
+  seats_per_row: number;
+  aisle_after: number | null;
+  is_configured?: boolean;
+  /** #8652 — sièges physiquement absents du véhicule (numéros). */
+  absent_seats?: number[] | null;
+}
+
+/** Disposition effective prête à être passée au plan de sièges. */
+export interface ResolvedSeatLayout {
+  seatsPerRow: number;
+  aisleAfter: number | null;
+  /** `true` quand la géométrie vient du véhicule, `false` quand elle est déduite. */
+  isConfigured: boolean;
+  /** #8652 — sièges physiquement absents (vide quand le véhicule n'en déclare pas). */
+  absentSeats: number[];
+}
+
+/**
+ * #8646 — résout la disposition EFFECTIVE d'un plan de sièges.
+ *
+ * Priorité : configuration serveur → repli historique sur la capacité. Le
+ * repli existe uniquement pour les véhicules non configurés (antérieurs à
+ * #8644) et pour les trajets sans véhicule affecté ; il est signalé par
+ * `isConfigured: false` afin que l'UI ne fasse pas passer une déduction pour
+ * une donnée lue.
+ */
+export function resolveSeatLayout(
+  totalSeats: number,
+  layout?: SeatLayoutConfig | null,
+): ResolvedSeatLayout {
+  if (
+    layout &&
+    Number.isInteger(layout.seats_per_row) &&
+    layout.seats_per_row >= 1 &&
+    layout.seats_per_row <= 6
+  ) {
+    const aisleAfter =
+      layout.aisle_after === null || layout.aisle_after === undefined
+        ? null
+        : Math.trunc(layout.aisle_after);
+
+    if (aisleAfter !== null && (aisleAfter < 1 || aisleAfter >= layout.seats_per_row)) {
+      // Géométrie serveur incohérente : on ne rend pas un plan impossible.
+      return fallbackSeatLayout(totalSeats);
+    }
+
+    return {
+      seatsPerRow: layout.seats_per_row,
+      aisleAfter,
+      isConfigured: layout.is_configured !== false,
+      absentSeats: normalizeAbsentSeats(layout.absent_seats),
+    };
+  }
+
+  return fallbackSeatLayout(totalSeats);
+}
+
+/**
+ * #8652 — normalise `absent_seats` reçu de l'API : entiers positifs, uniques,
+ * triés. Une forme inexploitable est ignorée (aucun siège absent) plutôt que de
+ * faire échouer le rendu du plan.
+ */
+function normalizeAbsentSeats(raw: number[] | null | undefined): number[] {
+  if (!Array.isArray(raw)) return [];
+
+  const unique = new Set<number>();
+  for (const value of raw) {
+    if (Number.isInteger(value) && value >= 1) unique.add(value);
+  }
+
+  return [...unique].sort((a, b) => a - b);
+}
+
+/** Repli historique — utilisé UNIQUEMENT quand aucune géométrie n'est connue. */
+function fallbackSeatLayout(totalSeats: number): ResolvedSeatLayout {
+  const seatsPerRow = resolveSeatsPerRow(totalSeats);
+
+  return {
+    seatsPerRow,
+    aisleAfter: seatsPerRow >= 3 ? Math.ceil(seatsPerRow / 2) : null,
+    isConfigured: false,
+    absentSeats: [],
+  };
 }

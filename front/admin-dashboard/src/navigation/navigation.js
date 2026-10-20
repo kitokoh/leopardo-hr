@@ -382,6 +382,19 @@ export const NAV_ENTRIES = [
     group: 'modules-clients',
     flag: 'travelagency',
   },
+  // BC-36 TRADE (TRADE-010/#8485) — suivi de la verticale International Trade
+  // OS depuis la console plateforme EXISTANTE (aucune seconde console).
+  // Protégé par la permission plateforme `companies.view` (contrat
+  // `permissions[]` de /platform/auth/me) : la garde API reste la source de
+  // vérité, le menu ne fait que filtrer l'affichage.
+  {
+    name: 'trade',
+    path: '/trade',
+    titleKey: 'navigation.trade',
+    icon: GlobeAltIcon,
+    permission: 'companies.view',
+    group: 'modules-clients',
+  },
   // #7725 — UNE entrée « Stations-service » avec sous-menu (Hub / Opérations) :
   // le hub et ses opérations (#7554) ne sont plus deux entrées de premier
   // niveau. Noms de routes normalisés kebab-case (`fuel-station`).

@@ -4,6 +4,7 @@ import {
   buildSeatMapLayout,
   countSeatsByStatus,
   isSeatSelectable,
+  resolveSeatLayout,
   resolveSeatsPerRow,
   seatAriaLabel,
   seatStatusLabel,
@@ -169,5 +170,140 @@ describe("resolveSeatsPerRow (#8620)", () => {
     expect(resolveSeatsPerRow(12)).toBe(3);
     expect(resolveSeatsPerRow(16)).toBe(4);
     expect(resolveSeatsPerRow(0)).toBe(4);
+  });
+});
+
+describe("resolveSeatLayout (#8646)", () => {
+  it("privilégie la disposition réelle du véhicule sur la déduction", () => {
+    // Un 30 places réellement en 2+1 ne doit PAS être affiché en 2+2.
+    const layout = resolveSeatLayout(30, {
+      seats_per_row: 3,
+      aisle_after: 1,
+      is_configured: true,
+    });
+
+    expect(layout).toEqual({
+      seatsPerRow: 3,
+      aisleAfter: 1,
+      isConfigured: true,
+      absentSeats: [],
+    });
+  });
+
+  it("retombe sur la déduction quand aucun véhicule n'est configuré", () => {
+    expect(resolveSeatLayout(30, null)).toEqual({
+      seatsPerRow: 4,
+      aisleAfter: 2,
+      isConfigured: false,
+      absentSeats: [],
+    });
+    expect(resolveSeatLayout(12, null)).toEqual({
+      seatsPerRow: 3,
+      aisleAfter: 2,
+      isConfigured: false,
+      absentSeats: [],
+    });
+  });
+
+  it("respecte un couloir absent explicitement demandé", () => {
+    expect(
+      resolveSeatLayout(30, { seats_per_row: 2, aisle_after: null, is_configured: true }),
+    ).toEqual({ seatsPerRow: 2, aisleAfter: null, isConfigured: true, absentSeats: [] });
+  });
+
+  it("refuse une géométrie serveur incohérente et retombe sur le repli", () => {
+    // Couloir après la dernière colonne : plan impossible, on ne le rend pas.
+    expect(
+      resolveSeatLayout(30, { seats_per_row: 3, aisle_after: 3, is_configured: true }),
+    ).toEqual({ seatsPerRow: 4, aisleAfter: 2, isConfigured: false, absentSeats: [] });
+
+    // Colonnes hors bornes.
+    expect(
+      resolveSeatLayout(30, { seats_per_row: 9, aisle_after: null, is_configured: true }),
+    ).toEqual({ seatsPerRow: 4, aisleAfter: 2, isConfigured: false, absentSeats: [] });
+  });
+
+  it("place le couloir là où le serveur l'indique dans la grille", () => {
+    const layout = buildSeatMapLayout(
+      Array.from({ length: 30 }, (_, i) => ({ seat_number: i + 1, status: "free" as const })),
+      { seatsPerRow: 3, aisleAfter: 1 },
+    );
+
+    // 3 colonnes de sièges + 1 colonne de couloir.
+    expect(layout.columns).toBe(4);
+    expect(layout.aisleColumn).toBe(1);
+    expect(layout.seatsPerRow).toBe(3);
+    expect(layout.rows).toHaveLength(10);
+  });
+
+  // ── #8652 — sièges physiquement absents ──────────────────────────────────
+
+  it("rend un siège absent à sa place réelle, sans décaler les suivants", () => {
+    // Car de 30 places dont la 30e n'existe pas physiquement : l'inventaire
+    // serveur ne contient que 1..29. Sans `absentSeats`, le plan afficherait
+    // 29 places compactées et le client ne retrouverait pas son siège.
+    const seats = Array.from({ length: 29 }, (_, i) => ({
+      seat_number: i + 1,
+      status: "free" as const,
+    }));
+
+    const layout = buildSeatMapLayout(seats, {
+      seatsPerRow: 4,
+      aisleAfter: 2,
+      absentSeats: [30],
+    });
+
+    const cells = layout.rows.flatMap((row) => row.cells);
+    const seatCells = cells.filter((cell) => cell.seatNumber !== null);
+
+    // Le siège 30 est présent comme case « absent », pas omis.
+    const absent = seatCells.find((cell) => cell.seatNumber === 30);
+    expect(absent).toBeDefined();
+    expect(absent?.status).toBe("absent");
+    expect(absent?.label).toBe("Siège absent");
+    expect(absent?.symbol).not.toBe("");
+
+    // Aucun siège n'a été renuméroté : 1..30 tous présents.
+    expect(seatCells.map((cell) => cell.seatNumber)).toEqual(
+      Array.from({ length: 30 }, (_, i) => i + 1),
+    );
+  });
+
+  it("n'ajoute aucune case absente quand le véhicule n'en déclare pas", () => {
+    const seats = Array.from({ length: 12 }, (_, i) => ({
+      seat_number: i + 1,
+      status: "free" as const,
+    }));
+
+    const layout = buildSeatMapLayout(seats, { seatsPerRow: 3, aisleAfter: 2 });
+    const seatCells = layout.rows
+      .flatMap((row) => row.cells)
+      .filter((cell) => cell.seatNumber !== null);
+
+    expect(seatCells).toHaveLength(12);
+    expect(seatCells.some((cell) => cell.status === "absent")).toBe(false);
+  });
+
+  it("normalise absent_seats reçu de l'API (entiers positifs, uniques, triés)", () => {
+    const layout = resolveSeatLayout(30, {
+      seats_per_row: 4,
+      aisle_after: 2,
+      is_configured: true,
+      absent_seats: [30, 29, 30, 0, -1],
+    });
+
+    expect(layout.absentSeats).toEqual([29, 30]);
+  });
+
+  it("ignore une forme absent_seats inexploitable sans casser le rendu", () => {
+    const layout = resolveSeatLayout(30, {
+      seats_per_row: 4,
+      aisle_after: 2,
+      is_configured: true,
+      absent_seats: null,
+    });
+
+    expect(layout.absentSeats).toEqual([]);
+    expect(layout.isConfigured).toBe(true);
   });
 });

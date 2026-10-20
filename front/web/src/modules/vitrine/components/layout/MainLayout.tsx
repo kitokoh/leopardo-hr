@@ -4,14 +4,12 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar } from '../Navbar';
 import { Footer } from '../Footer';
-import { useDarkMode } from '../../hooks/useDarkMode';
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
 export function MainLayout({ children }: MainLayoutProps) {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const [scrollToTop, setScrollToTop] = useState(false);
 
   useEffect(() => {
@@ -29,11 +27,11 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   // #4301 : le layout doit se rendre côté serveur (SEO) — seul le toggle
   // dark est client-side ; l'état initial est résolu de façon synchrone
-  // dans useDarkMode pour éviter tout flash au premier paint.
+  // d'un thème unique clair (#8461) : plus de bascule jour/nuit.
   return (
-    <div className={isDark ? 'dark' : ''}>
+    <div>
       <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300">
-        <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+        <Navbar />
 
         <motion.main
           initial={{ opacity: 0, y: 20 }}

@@ -34,6 +34,14 @@ class UpdateTravelVehicleRequest extends FormRequest
             'code' => ['sometimes', 'string', 'max:40'],
             'registration_number' => ['nullable', 'string', 'max:40'],
             'seat_capacity' => ['sometimes', 'integer', 'min:1', 'max:200'],
+            'seat_layout' => ['nullable', 'array'],
+            'seat_layout.seats_per_row' => ['required_with:seat_layout', 'integer', 'min:1', 'max:6'],
+            'seat_layout.aisle_after' => ['nullable', 'integer', 'min:1', 'lt:seat_layout.seats_per_row'],
+            // #8652 — sièges physiquement absents : entiers positifs, uniques.
+            // La borne haute (capacité) est tranchée par
+            // ValidateSeatLayoutCoherenceAction, qui renvoie un 422 motivé.
+            'seat_layout.absent_seats' => ['nullable', 'array'],
+            'seat_layout.absent_seats.*' => ['integer', 'min:1', 'distinct'],
             'carrier_id' => [
                 'nullable',
                 'integer',

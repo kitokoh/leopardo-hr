@@ -1738,6 +1738,7 @@
     "account": "Hesabim",
     "notFound": "Sayfa bulunamadi",
     "travelAgency": "Seyahat acentesi",
+    "trade": "Uluslararası ticaret",
     "emailTemplates": "E-postalar",
     "settings": "Ayarlar"
   },
@@ -2171,7 +2172,30 @@
     "serviceUnreachable": "hizmete ulaşılamıyor",
     "statsLoadError": "Sistem istatistikleri yüklenirken hata oluştu",
     "subtitle": "Leopardo platformunun izlenmesi, yapılandırılması ve otomasyonu.",
-    "title": "Sistem Yönetimi"
+    "title": "Sistem Yönetimi",
+    "infra": {
+      "title": "Altyapı — stack'ler",
+      "subtitle": "Dağıtım stack'lerinin durumu ve tier geçişi (dev veya prod).",
+      "refresh": "Yenile",
+      "loading": "Yükleniyor…",
+      "activeStack": "aktif stack: {stack}",
+      "registryUpdated": "kayıt {date}",
+      "stackLabel": "Stack {id}",
+      "activeBadge": "aktif",
+      "api": "API",
+      "region": "Bölge",
+      "switchTo": "{id} stack'ine geç",
+      "switching": "Geçiliyor…",
+      "alreadyActive": "Bu stack zaten aktif.",
+      "confirmHint": "{tier} tier'ını {id} stack'ine geçir.",
+      "confirmMessage": "{tier} tier'ı {id} stack'ine geçirilsin mi?\n\nBu işlem canlı bir ortamı etkiler: kaydedilir ve Actions sekmesinde izlenir.",
+      "switchQueued": "{tier} → {id} geçişi başlatıldı. “Stack Switch” iş akışını izleyin.",
+      "switchError": "Geçiş başarısız oldu.",
+      "forbidden": "Altyapıyı yönetme yetkiniz yok (infra.manage).",
+      "loadError": "Stack durumu yüklenemedi.",
+      "hintDispatch": "Geçiş bir GitHub iş akışından geçer: sonuçlar ve geçmiş Actions sekmesindedir.",
+      "hintNoToken": "Geçiş devre dışı: API servisinde GITHUB_STACK_SWITCH_TOKEN tanımlı değil."
+    }
   },
   "billing": {
     "cancel_subscription_confirm": "Aboneliğinizi iptal etmek istiyor musunuz? Premium modüllere erişiminizi mevcut dönem sonunda kaybedersiniz.",
@@ -5054,6 +5078,94 @@
       "deleteConfirm": "Bu öğe silinsin mi?"
     }
   },
+  "trade": {
+    "overview": {
+      "title": "Genel bakış",
+      "subtitle": "Açık dosyalar, fiyat talepleri, teklifler ve devam eden siparişler.",
+      "scopeNotice": "Yalnızca sayaçlar: müşterilerin fiyatları, teklifleri, mesajları ve belgeleri platform yönetimine açılmaz.",
+      "loadError": "Dikey takibi yüklenemedi.",
+      "companiesScanned": "İncelenen şirketler",
+      "companiesWithTrade": "Trade dikeyine sahip",
+      "companiesWithActivity": "Ticari faaliyeti olan",
+      "integrationsUnconfigured": "Yapılandırılmamış entegrasyonlar",
+      "deals": "Açık dosyalar",
+      "rfqs": "Aktif fiyat talepleri",
+      "quotes": "Bekleyen teklifler",
+      "orders": "Devam eden siparişler",
+      "integrations": "Entegrasyonlar",
+      "integrationsDegraded": "Bazı işlevler yapılandırılmamış adaptörlere bağlıdır ve kullanılamaz durumdadır."
+    },
+    "common": {
+      "retry": "Yeniden dene",
+      "noData": "Veri yok"
+    },
+    "counts": {
+      "deals": "Dosyalar (deals)",
+      "rfqs": "Fiyat talepleri (RFQ)",
+      "quotes": "Ticari teklifler",
+      "orders": "Siparişler"
+    },
+    "integrations": {
+      "title": "Harici entegrasyonlar",
+      "configured": "yapılandırıldı",
+      "notice": "Yapılandırılmamış bir entegrasyon kullanılamaz olarak gösterilir: hiçbir veri simüle edilmez.",
+      "colKey": "Entegrasyon",
+      "colMode": "Mod",
+      "colState": "Durum",
+      "colReason": "Ayrıntı",
+      "stateOperational": "Çalışıyor",
+      "stateUnconfigured": "Yapılandırılmadı"
+    },
+    "roles": {
+      "title": "Trade iş rolleri"
+    },
+    "title": "Uluslararası ticaret",
+    "subtitle": "Ortak ticari çekirdek üzerinde tedarik, teklifler, siparişler ve teslim maliyeti",
+    "moduleDisabled": "Uluslararası ticaret dikeyi şirketiniz için etkin değil.",
+    "loadError": "Veriler yüklenemedi.",
+    "loading": "Yükleniyor…",
+    "noData": "Veri yok",
+    "retry": "Yeniden dene",
+    "create": "Oluştur",
+    "search": "Ara…",
+    "sourcing": {
+      "title": "Tedarik ve fiyat talepleri",
+      "subtitle": "RFQ oluşturun, tedarikçileri davet edin, gelen teklifleri karşılaştırın."
+    },
+    "sales": {
+      "title": "Satış ve teklifler",
+      "subtitle": "Verilen teklifler, sürümler, durumlar ve müşteri karşı tarafları."
+    },
+    "orders": {
+      "title": "Siparişler ve sevkiyatlar",
+      "subtitle": "Alım ve satım siparişleri, sevkiyatlar ve geçişler."
+    },
+    "transport": {
+      "title": "Taşımacılık",
+      "subtitle": "Fiyat talepleri ve taşıyıcı yanıtları."
+    },
+    "costs": {
+      "title": "Maliyetler ve gümrük",
+      "subtitle": "Kalem bazında teslim maliyeti ve belge hazırlığı.",
+      "disclaimer": "Gösterge niteliğinde tahmin — resmî gümrük beyanı veya uygunluk garantisi değildir."
+    },
+    "catalog": {
+      "title": "Ürün kataloğu",
+      "subtitle": "Ürünler, teknik özellikler ve ticari koşullar."
+    },
+    "settings": {
+      "title": "Trade ayarları",
+      "subtitle": "Ticari profil, hizmet verilen pazarlar ve koşullar."
+    },
+    "columns": {
+      "reference": "Referans",
+      "title": "Başlık",
+      "status": "Durum",
+      "createdAt": "Oluşturulma",
+      "destination": "Varış",
+      "incoterm": "Incoterm"
+    }
+  },
   "travel": {
     "travel.ageCategory.adult": "Yetişkin",
     "travel.ageCategory.child": "Çocuk",
@@ -6584,7 +6696,7 @@
     },
     "nav": {
       "pricing": "Fiyatlar",
-      "packs": "Ücretsiz paketler",
+      "packs": "Paket",
       "packsHub": "Tüm paketler",
       "packsHubDesc": "Her sektöre ücretsiz paket — teklifi keşfedin",
       "packsRestaurant": "Restoranlar",
@@ -6658,7 +6770,13 @@
       "reassurance": "Ucretsiz, kredi karti yok, verileriniz sizde kalir",
       "backHome": "Ana sayfaya don",
       "metaTitle": "Trade, isletmenizi dakikalar icinde kurun",
-      "metaDescription": "Trade, Leopardo Business OS'a giris noktasi: ithalat/ihracat veya yerel pazar secin, isletmenizi yapilandirin, modullerinizi etkinlestirin ve ilk isleminizi yapin."
+      "metaDescription": "Trade, Leopardo Business OS'a giris noktasi: ithalat/ihracat veya yerel pazar secin, isletmenizi yapilandirin, modullerinizi etkinlestirin ve ilk isleminizi yapin.",
+      "profileLabel": "Profili­niz",
+      "profile_importer": "İthalatçı",
+      "profile_exporter": "İhracatçı",
+      "profile_both": "İthalatçı ve ihracatçı",
+      "profile_wholesaler": "Toptancı",
+      "profile_retailer": "Perakendeci"
     }
   },
   "commerce": {
@@ -8254,5 +8372,7 @@
     "created": "Cihaz kaydedildi.",
     "revoked": "Cihaz iptal edildi.",
     "secretWarning": "Bu jetonu asla paylaşmayın: yalnızca bir kez gösterilir."
-  }
+  },
+  "travel.seats.state.absent": "Koltuk yok",
+  "travel.seats.layoutNotice": "Koltuk düzeni değiştirildiğinde rezervasyonu olan yolcular taşınmaz: koltukları değişmez. Bir çakışmayı çözmek için araç değiştirme prosedürünü kullanın."
 }

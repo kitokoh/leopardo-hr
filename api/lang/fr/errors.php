@@ -110,6 +110,9 @@ return [
     'EMAIL_ALREADY_REGISTERED' => 'Un compte avec cet email existe déjà. Connectez-vous directement.',
     'SESSION_ALREADY_ACTIVE' => 'Vous êtes déjà connecté à un espace Leopardo. Déconnectez-vous avant de créer un nouvel espace.',
     'INVALID_SOLUTION' => "Solution sectorielle inconnue ou non disponible : ':solution'.",
+    // BOS-O-01 / #8625 — intention Trade incohérente (profil incompatible
+    // avec le marché). Fail-closed : refusée plutôt que stockée telle quelle.
+    'INVALID_TRADE_PROFILE' => 'Ce profil professionnel ne correspond pas au marché sélectionné (international : importateur, exportateur ou les deux ; domestique : grossiste ou détaillant).',
     'INVALID_COUNTRY' => "Le pays du signup est invalide ou non supporté. Veuillez recommencer l'inscription.",
     'NO_PLAN_AVAILABLE' => "Le service d'essai est temporairement indisponible.",
     'PROVISIONING_FAILED' => 'Erreur lors de la création de votre espace. Veuillez réessayer.',
@@ -246,6 +249,7 @@ return [
     // Plateforme — RTMX (#5277) : rejeu idempotent des écritures mobiles
     'INVALID_IDEMPOTENCY_KEY' => "Clé d'idempotence invalide.",
     'IDEMPOTENCY_IN_PROGRESS' => 'Une requête identique est déjà en cours. Réessayez dans un instant.',
+    'IDEMPOTENCY_KEY_REUSED' => "Cette clé d'idempotence a déjà servi pour une autre demande.",
     'ATTENDANCE_PERIOD_CLOSED' => 'La période de pointage est clôturée : aucune correction possible.',
     'DEPARTMENT_DELETED' => 'Département supprimé.',
     'POSITION_DELETED' => 'Poste supprimé.',
@@ -308,6 +312,7 @@ return [
     // #7268 — Onboarding : messages d'étape localisés (fin des littéraux en dur)
     'ONBOARDING_STEP_REQUIRED' => 'Cette étape est obligatoire et ne peut pas être ignorée.',
     'ONBOARDING_STEP_NOT_DONE' => 'Cette étape ne peut pas être marquée terminée : aucune action correspondante constatée.',
+    'ONBOARDING_STEP_NOT_FOUND' => "Cette étape n'existe pas pour votre espace.",
     'COMPANY_CONTEXT_REQUIRED' => 'Un contexte d\'entreprise est requis.',
     // #7322 — Auto-activation d'un module horizontal par le client.
     'SOLO_TEAM_TOOL_NOT_AVAILABLE' => 'Outil d\'équipe hors du socle d\'un profil indépendant : :module.',

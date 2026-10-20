@@ -1738,6 +1738,7 @@
     "account": "My account",
     "notFound": "Page not found",
     "travelAgency": "Travel agency",
+    "trade": "International trade",
     "emailTemplates": "Emails",
     "settings": "Settings"
   },
@@ -2171,7 +2172,30 @@
     "serviceUnreachable": "service unreachable",
     "statsLoadError": "Error loading system stats",
     "subtitle": "Monitoring, configuration and automation of the Leopardo platform.",
-    "title": "System Administration"
+    "title": "System Administration",
+    "infra": {
+      "title": "Infrastructure — stacks",
+      "subtitle": "Deployment stack status and tier switch-over (dev or prod).",
+      "refresh": "Refresh",
+      "loading": "Loading…",
+      "activeStack": "active stack: {stack}",
+      "registryUpdated": "registry {date}",
+      "stackLabel": "Stack {id}",
+      "activeBadge": "active",
+      "api": "API",
+      "region": "Region",
+      "switchTo": "Switch to {id}",
+      "switching": "Switching…",
+      "alreadyActive": "This stack is already active.",
+      "confirmHint": "Switch tier {tier} to stack {id}.",
+      "confirmMessage": "Switch tier {tier} to stack {id}?\n\nThis affects a live environment: the switch is audited and tracked in the Actions tab.",
+      "switchQueued": "Switch {tier} → {id} triggered. Follow the “Stack Switch” workflow.",
+      "switchError": "The switch failed.",
+      "forbidden": "You are not allowed to operate the infrastructure (infra.manage).",
+      "loadError": "Could not load stack status.",
+      "hintDispatch": "Switching goes through a GitHub workflow: results and history live in the Actions tab.",
+      "hintNoToken": "Switching disabled: GITHUB_STACK_SWITCH_TOKEN is not configured on the API service."
+    }
   },
   "billing": {
     "cancel_subscription_confirm": "Cancel your subscription? You will lose access to premium modules at the end of the current period.",
@@ -5054,6 +5078,94 @@
       "deleteConfirm": "Delete this item?"
     }
   },
+  "trade": {
+    "overview": {
+      "title": "Overview",
+      "subtitle": "Open deals, requests for quotation, quotes and orders in progress.",
+      "scopeNotice": "Counters only: customer prices, quotes, messages and documents are not exposed to platform administration.",
+      "loadError": "Unable to load the vertical tracking.",
+      "companiesScanned": "Companies scanned",
+      "companiesWithTrade": "With the Trade vertical",
+      "companiesWithActivity": "With commercial activity",
+      "integrationsUnconfigured": "Unconfigured integrations",
+      "deals": "Open deals",
+      "rfqs": "Active requests for quotation",
+      "quotes": "Pending quotes",
+      "orders": "Orders in progress",
+      "integrations": "Integrations",
+      "integrationsDegraded": "Some features depend on unconfigured adapters and remain unavailable."
+    },
+    "common": {
+      "retry": "Retry",
+      "noData": "No data"
+    },
+    "counts": {
+      "deals": "Deals",
+      "rfqs": "Requests for quotation (RFQ)",
+      "quotes": "Commercial quotes",
+      "orders": "Orders"
+    },
+    "integrations": {
+      "title": "External integrations",
+      "configured": "configured",
+      "notice": "An unconfigured integration is shown as unavailable: no data is simulated.",
+      "colKey": "Integration",
+      "colMode": "Mode",
+      "colState": "Status",
+      "colReason": "Detail",
+      "stateOperational": "Operational",
+      "stateUnconfigured": "Not configured"
+    },
+    "roles": {
+      "title": "Trade business roles"
+    },
+    "title": "International trade",
+    "subtitle": "Sourcing, quotes, orders and landed cost on a shared commercial core",
+    "moduleDisabled": "The International trade vertical is not enabled for your company.",
+    "loadError": "Unable to load the data.",
+    "loading": "Loading…",
+    "noData": "No data",
+    "retry": "Retry",
+    "create": "Create",
+    "search": "Search…",
+    "sourcing": {
+      "title": "Sourcing & requests for quotation",
+      "subtitle": "Issue an RFQ, invite suppliers, compare the quotes received."
+    },
+    "sales": {
+      "title": "Sales & quotes",
+      "subtitle": "Issued quotes, versions, statuses and customer counterparties."
+    },
+    "orders": {
+      "title": "Orders & shipments",
+      "subtitle": "Purchase and sales orders, shipments and transitions."
+    },
+    "transport": {
+      "title": "Transport",
+      "subtitle": "Quote requests and carrier responses."
+    },
+    "costs": {
+      "title": "Costs & customs",
+      "subtitle": "Landed cost per line item and documentary preparation.",
+      "disclaimer": "Indicative estimate — neither an official customs declaration nor a compliance guarantee."
+    },
+    "catalog": {
+      "title": "Product catalogue",
+      "subtitle": "Products, specifications and commercial terms."
+    },
+    "settings": {
+      "title": "Trade settings",
+      "subtitle": "Commercial profile, markets served and terms."
+    },
+    "columns": {
+      "reference": "Reference",
+      "title": "Title",
+      "status": "Status",
+      "createdAt": "Created on",
+      "destination": "Destination",
+      "incoterm": "Incoterm"
+    }
+  },
   "travel": {
     "travel.ageCategory.adult": "Adult",
     "travel.ageCategory.child": "Child",
@@ -6584,7 +6696,7 @@
     },
     "nav": {
       "pricing": "Pricing",
-      "packs": "Free packs",
+      "packs": "Pack",
       "packsHub": "All packs",
       "packsHubDesc": "A free pack per trade — discover the offer",
       "packsRestaurant": "Restaurants",
@@ -6658,7 +6770,13 @@
       "reassurance": "Free, no credit card, your data stays yours",
       "backHome": "Back to home",
       "metaTitle": "Trade, set up your business in minutes",
-      "metaDescription": "Trade, the entry point to Leopardo Business OS: choose import/export or local market, configure your business, activate your modules and run your first operation."
+      "metaDescription": "Trade, the entry point to Leopardo Business OS: choose import/export or local market, configure your business, activate your modules and run your first operation.",
+      "profileLabel": "Your profile",
+      "profile_importer": "Importer",
+      "profile_exporter": "Exporter",
+      "profile_both": "Importer & exporter",
+      "profile_wholesaler": "Wholesaler",
+      "profile_retailer": "Retailer"
     }
   },
   "commerce": {
@@ -8254,5 +8372,7 @@
     "created": "Device enrolled.",
     "revoked": "Device revoked.",
     "secretWarning": "Never share this token: it is shown only once."
-  }
+  },
+  "travel.seats.state.absent": "Seat absent",
+  "travel.seats.layoutNotice": "Changing the seat layout does not move already-booked passengers: their seats stay unchanged. Use the vehicle replacement procedure to resolve a conflict."
 }

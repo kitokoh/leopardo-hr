@@ -1,7 +1,6 @@
 'use client';
 
 import { use, useState } from 'react';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
@@ -41,7 +40,6 @@ const accentByIndustry: Record<string, string> = {
 };
 
 export default function CaseStudyPage({ params }: CaseStudyPageProps) {
-  const { isDark, toggleDarkMode } = useDarkMode();
   useScrollReveal();
   const { slug } = use(params);
 
@@ -58,8 +56,8 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
   const colors = colorMap[accent] ?? colorMap.emerald;
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+    <div className={`min-h-screen bg-white `}>
+      <Navbar />
 
       {/* Hero */}
       <section className="relative pt-32 pb-16 overflow-hidden">

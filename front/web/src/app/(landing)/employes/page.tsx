@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import {
   Navbar,
   HeroSection,
@@ -20,7 +19,6 @@ import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { Zap, Users, Calendar, TrendingUp } from 'lucide-react';
 
 export default function EmployesPage() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const { locale } = useVitrineLocale();
   useScrollReveal();
 
@@ -62,8 +60,8 @@ export default function EmployesPage() {
   }));
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+    <div className={`min-h-screen bg-white `}>
+      <Navbar />
 
       {/* Hero Section */}
       <HeroSection

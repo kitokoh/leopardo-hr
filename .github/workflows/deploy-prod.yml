@@ -429,6 +429,109 @@ jobs:
           fi
 
   # ──────────────────────────────────────────────────────────────────────────
+  # #8672 (épic #8670) — Fan-out vers la stack PROD « B » (service de secours).
+  #
+  # Pourquoi ce job : le registre deploy/prod-stacks.json promet une bascule
+  # vers la stack B. Une bascule vers une stack B qui n'a jamais reçu le tag
+  # servirait un code périmé — pire qu'une panne. Ce job maintient donc B au
+  # même niveau que A à chaque release.
+  #
+  # Désactivé tant que la stack B n'est pas provisionnée : il ne s'exécute que
+  # si la variable de dépôt PROD_STACK_B_ENABLED vaut 'true'. Aucun secret
+  # manquant ne peut donc casser la release prod (contrairement au job A, dont
+  # l'absence de secrets DOIT échouer).
+  #
+  # Il ne fait PAS de rollback et ne bloque PAS la release : si B échoue, la
+  # prod reste sur A (qui vient d'être déployée) et l'incident est visible dans
+  # l'onglet Actions — c'est exactement le comportement attendu d'un secours.
+  deploy-prod-b:
+    timeout-minutes: 30
+    name: Deploy API to Render (prod stack B, best-effort)
+    runs-on: ubuntu-latest
+    needs: [verify, deploy-prod]
+    if: ${{ vars.PROD_STACK_B_ENABLED == 'true' }}
+    environment:
+      name: production
+      url: ${{ vars.PROD_RENDER_SERVICE_B_URL }}
+    permissions:
+      contents: read
+    steps:
+      - name: Validate stack B secrets
+        shell: bash
+        env:
+          RENDER_PROD_API_KEY_STACK_B: ${{ secrets.RENDER_PROD_API_KEY_STACK_B }}
+          RENDER_PROD_SERVICE_ID_STACK_B: ${{ secrets.RENDER_PROD_SERVICE_ID_STACK_B }}
+        run: |
+          set -euo pipefail
+          missing=()
+          [[ -z "${RENDER_PROD_API_KEY_STACK_B}" ]] && missing+=("secrets.RENDER_PROD_API_KEY_STACK_B")
+          [[ -z "${RENDER_PROD_SERVICE_ID_STACK_B}" ]] && missing+=("secrets.RENDER_PROD_SERVICE_ID_STACK_B")
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            echo "::error::PROD_STACK_B_ENABLED=true mais ${missing[*]} absent(s) — stack B non déployable (voir docs/ops/PROD_STACK_ROTATION.md § Onboarding)."
+            exit 1
+          fi
+
+      - name: Pin APP_VERSION to the release tag (stack B)
+        shell: bash
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_PROD_API_KEY_STACK_B }}
+          SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID_STACK_B }}
+          RELEASE_TAG: ${{ needs.verify.outputs.tag }}
+        run: |
+          set -euo pipefail
+          VERSION="${RELEASE_TAG#v}"
+          BASE="https://api.render.com/v1/services/${SERVICE_ID}/env-vars"
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X PUT \
+            -H "Authorization: Bearer ${RENDER_API_KEY}" -H 'Content-Type: application/json' \
+            -d "{\"value\":\"${VERSION}\"}" "${BASE}/APP_VERSION" || echo 000)
+          if [[ "${code}" == "200" || "${code}" == "201" ]]; then
+            echo "::notice::APP_VERSION=${VERSION} positionné sur la stack B."
+          else
+            echo "::warning::APP_VERSION non positionné sur la stack B (HTTP ${code})."
+          fi
+
+      - name: Trigger and wait for stack B deploy
+        shell: bash
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_PROD_API_KEY_STACK_B }}
+          SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID_STACK_B }}
+        run: |
+          set -euo pipefail
+          HTTP_CODE=$(curl --silent --show-error -o /dev/null -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer ${RENDER_API_KEY}" \
+            -H "Content-Type: application/json" \
+            "https://api.render.com/v1/services/${SERVICE_ID}/deploys" -d '{}')
+          if [[ "${HTTP_CODE}" != "202" && "${HTTP_CODE}" != "201" ]]; then
+            echo "::error::Stack B deploy trigger failed (HTTP ${HTTP_CODE})."
+            exit 1
+          fi
+
+          DEPLOY_ID=""
+          for attempt in {1..10}; do
+            DEPLOY_ID=$(curl --fail --silent --show-error \
+              -H "Authorization: Bearer ${RENDER_API_KEY}" \
+              "https://api.render.com/v1/services/${SERVICE_ID}/deploys?limit=1" \
+              | jq -r '.[0].deploy.id // ""')
+            [[ -n "${DEPLOY_ID}" ]] && break
+            sleep 3
+          done
+          [[ -n "${DEPLOY_ID}" ]] || { echo "::error::Deploy ID B introuvable."; exit 1; }
+
+          for attempt in {1..40}; do
+            STATUS=$(curl --fail --silent --show-error \
+              -H "Authorization: Bearer ${RENDER_API_KEY}" \
+              "https://api.render.com/v1/services/${SERVICE_ID}/deploys/${DEPLOY_ID}" | jq -r '.status')
+            echo "Stack B deploy status ${attempt}/40: ${STATUS}"
+            case "${STATUS}" in
+              live) echo "Stack B live."; exit 0 ;;
+              build_failed|update_failed|canceled|deactivated)
+                echo "::error::Stack B deploy ${DEPLOY_ID} terminé en ${STATUS}."; exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo "::error::Stack B deploy ${DEPLOY_ID} n'a pas atteint 'live' à temps."
+          exit 1
+
   # Web client (front/web, Next.js) — Vercel PROD (compte ibrahimkoubaye).
   # Projet : leopardo-prod (prj_Q2UQ7h5SeozRB2fVttHRAAq8PTdc, équipe
   # team_EWSaydzjiTNOT4JlQEXRyrpa). Les variables de prod du projet pointent
@@ -575,8 +678,17 @@ jobs:
         working-directory: front/admin-dashboard
         env:
           # QA 2026-08-15 (#2659) : sans VITE_API_URL explicite, le fallback
-          # du code pointe l'API dev — on cible ici l'API de production.
+          # du code pointe l'API dev — on cible ici le proxy STABLE du web prod.
+          #
+          # #8707 — AVANT : `secrets.PROD_RENDER_API_BASE_URL` (URL Render brute)
+          # inlinée dans le bundle, donc toute bascule de stack prod imposait un
+          # rebuild de l'admin et un bundle périmé pouvait appeler une stack morte.
+          # DÉSORMAIS : le proxy du web prod, dont la cible est lue au RUNTIME.
+          VITE_API_PROXY_BASE_URL: ${{ vars.PROD_WEB_PROD_URL }}/api/v1
+          # Appel direct conservé pour les outils qui le lisent encore ; il est
+          # refusé par le garde-fou de production (assertProductionInvariant).
           VITE_API_URL: ${{ secrets.PROD_RENDER_API_BASE_URL }}/api/v1
+          VITE_ALLOW_DIRECT_API_IN_PROD: 'false'
         run: |
           npm ci
           npm run build

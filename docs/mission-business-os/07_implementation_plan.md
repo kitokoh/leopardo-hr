@@ -48,6 +48,7 @@ Trois contraintes ordonnent les lots :
 | **Tests** | deux `POST /trial/signup` avec la même clé → un seul tenant ; deux soumissions concurrentes sans clé → un seul tenant (contrainte unique + gestion `23505`) ; reprise après abandon → même étape ; étape validée non rejouée |
 | **Risque** | le verrou `23505` sur `slug` n'est pas suffisant si deux e-mails différents visent le même nom — la clé d'idempotence est la vraie garantie |
 | **Rollback** | colonne jsonb supprimable sans perte métier |
+| **État (2026-10-18)** | **Terminé.** Incrément 1 : idempotence cliente de `/trial/signup` — table `public.idempotency_keys` (migration `2026_10_17_130000_8626`), `App\Core\Http\Idempotency\IdempotencyStore`, wrapper dans `SelfServiceTrialController::signup` (header `Idempotency-Key`, rejeu `Idempotent-Replayed`), test `TrialSignupIdempotencyTest` (4 tests). Incrément 2 : reprise du parcours — colonne `companies.onboarding_state` (migration `2026_10_18_100000_8627`), `ResumeOnboardingStep`, `CompanyOnboardingStateWriter`, `OnboardingStateController` (`GET`/`PATCH /onboarding-setup/state`), test `OnboardingResumeTest` (11 tests), i18n fr/en/ar/tr. **Reste hors de ce lot** : brancher le front sur `furthest_step` et le profil professionnel dans l'entretien. |
 
 ## Lot 4 — Honnêteté des applications et du hors-ligne
 

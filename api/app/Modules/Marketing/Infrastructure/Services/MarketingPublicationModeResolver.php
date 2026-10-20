@@ -83,6 +83,12 @@ class MarketingPublicationModeResolver
             $publication->stats_error = null;
         }
 
+        // `attempts` compte les TENTATIVES, pas les echecs : une mise en ligne
+        // reussie est une tentative. Sans cette incrementation, une publication
+        // publiee du premier coup affichait `attempts = 0` alors que son
+        // `attempt_history` contenait deja une entree — deux compteurs du meme
+        // fait qui se contredisaient a l'ecran.
+        $publication->attempts++;
         $publication->attempt_history = $this->appendAttempt($publication, 'published');
         $publication->save();
 

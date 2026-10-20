@@ -47,7 +47,9 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 
 | Fichier | Déclencheur | Rôle |
 |---|---|---|
-| `deploy-main.yml` | Push → main | Déploiement continu dev/test (Render `gestionemployerbackend` via hook) |
+| `deploy-main.yml` | Push → main | Déploiement continu dev/test (hooks Render **fan-out #8659** : toutes les stacks configurées reçoivent le déploiement, seul l'échec du hook de la stack ACTIVE fait échouer le pipeline — voir `docs/ops/DEV_STACK_ROTATION.md`) |
+| `dev-keepalive.yml` | Cron fenêtré (06–23 UTC) + push (≤ 1/h) + manuel | Keepalive **quota-aware** de la stack dev active (#8659 — le ping 24/7 a suspendu la stack « a » le 2026-09-20) + **watchdog de bascule automatique** (3 sondes KO → switch si une stack `ready`, cooldown 24 h, issue `[dev-switch]`) |
+| `dev-stack-switch.yml` | Manuel + `workflow_call` | Bascule du tier dev vers une stack du registre `deploy/dev-stacks.json` (jamais vers une stack malade ; reseed one-shot optionnel ; rapport d'issue) |
 | `deploy-prod.yml` | GitHub Release publiée (tag `vX.Y.Z` → `release.yml` → `release: published`) + `workflow_dispatch` | Déploiement PROD des trois surfaces : API Render `leopardo-prod` (job `deploy-prod`, rollback API), web Vercel `leopardo-prod` (job `deploy-web-prod`), admin Cloudflare Pages `leo-admin-prod` (job `deploy-admin-prod`) — voir `docs/ops/RENDER_DEV_PROD_TOPOLOGY.md` |
 | `deploy-staging.yml` | **Supprimé** (#7846) | Workflow mort supprimé le 2026-09-20 : aucun staging n'a jamais existé (#7256/#1485), le déclenchement sur push produisait des runs verts qui ne déployaient rien, puis plus aucun run depuis le passage en dispatch-only (2026-09-13). À recréer depuis l'historique git (`git log -- .github/workflows/deploy-staging.yml`) quand un environnement staging sera provisionné |
 | `e2e-staging.yml` | **Manuel** (dispatch) — #7846 | Smoke Playwright contre la **prod** (nom de fichier historique ; contenu : `E2E - Playwright Prod Smoke`). Le déclencheur `workflow_run` post-deploy est désactivé (#7846) : il martelait la prod free-tier à chaque push main faute de staging réel |

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 /**
  * Marketing OS — ressource de la médiathèque (brief §C, §D).
@@ -36,6 +37,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $mime_type
  * @property string|null $extension
  * @property int|null $size
+ * @property string|null $original_name
  * @property string|null $disk
  * @property string|null $path
  * @property string|null $preview_path
@@ -70,6 +72,7 @@ class MarketingAsset extends Model
         'mime_type',
         'extension',
         'size',
+        'original_name',
         'disk',
         'path',
         'preview_path',
@@ -130,5 +133,74 @@ class MarketingAsset extends Model
     public function hasFile(): bool
     {
         return $this->disk !== null && $this->path !== null;
+    }
+
+    /**
+     * Nom proposé au téléchargement (#8675).
+     *
+     * Le fichier est stocké sous un nom aléatoire (32 caractères hexadécimaux,
+     * `MarketingAssetStorage::store()`) : le servir tel quel donnerait à
+     * l'opérateur un nom illisible. On préfère donc, dans cet ordre :
+     *
+     *   1. `original_name` — le nom d'origine, sanitisé au téléversement ;
+     *   2. un nom dérivé du titre + extension réelle du fichier, pour les
+     *      ressources téléversées AVANT l'ajout de la colonne (aucun backfill
+     *      n'a été fait : elles restent téléchargeables, avec un nom reconstruit) ;
+     *   3. `asset` en dernier recours.
+     *
+     * Le nom reconstruit est volontairement ASCII : `Str::slug()` neutralise
+     * les accents et les séparateurs de chemin, donc aucun nom ne peut
+     * s'échapper du répertoire de destination côté client.
+     */
+    public function downloadName(): string
+    {
+        if (is_string($this->original_name) && $this->original_name !== '') {
+            return $this->original_name;
+        }
+
+        $base = Str::slug((string) $this->name);
+        $base = $base !== '' ? $base : 'asset';
+
+        return $this->extension !== null && $this->extension !== ''
+            ? $base.'.'.$this->extension
+            : $base;
+    }
+
+    /**
+     * La ressource peut-elle être réutilisée (brief §G) ?
+     *
+     * Réutiliser ne signifie pas republier : cela signifie qu'une nouvelle
+     * publication peut s'appuyer sur cette ressource sans enfreindre un droit
+     * d'utilisation ni reprendre un livrable rejeté. La règle est volontairement
+     * PERMISSIVE sur l'information absente (pas de droits déclarés = pas de
+     * blocage inventé) et STRICTE sur l'information présente (droits expirés,
+     * validation rejetée).
+     */
+    public function isReusable(): bool
+    {
+        return $this->reuseBlockers() === [];
+    }
+
+    /**
+     * Motifs de non-réutilisation, en clair.
+     *
+     * `[]` = réutilisable. Chaque motif est une phrase exploitable telle
+     * quelle par l'interface : pas de code opaque à retraduire côté client.
+     *
+     * @return list<string>
+     */
+    public function reuseBlockers(): array
+    {
+        $blockers = [];
+
+        if ($this->validation_status === MarketingAssetValidationStatus::Rejected) {
+            $blockers[] = 'Ressource rejetée en validation : elle ne peut pas être republiée en l\'état.';
+        }
+
+        if ($this->rights_expires_at !== null && $this->rights_expires_at->isPast()) {
+            $blockers[] = 'Droits d\'utilisation expirés le '.$this->rights_expires_at->toDateString().' : une nouvelle publication exige un renouvellement.';
+        }
+
+        return $blockers;
     }
 }

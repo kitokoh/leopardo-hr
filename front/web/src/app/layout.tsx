@@ -7,7 +7,6 @@ import { headers } from "next/headers";
 import "./globals.css";
 import { LocaleSync } from "@/components/locale-sync";
 import { PWAProvider } from "@/components/PWAProvider";
-import { DarkModeProvider } from "@/components/DarkModeProvider";
 import { MotionProvider } from "@/components/MotionProvider";
 import { ConsentProvider } from "@/modules/vitrine/components/ConsentProvider";
 import { ConsentBanner } from "@/modules/vitrine/components/ConsentBanner";
@@ -91,6 +90,7 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(siteUrl),
     icons: {
       icon: [
+        { url: "/favicon-premium.svg", type: "image/svg+xml" },
         { url: "/icon.svg", type: "image/svg+xml" },
         { url: "/favicon.svg", type: "image/svg+xml" },
       ],
@@ -244,7 +244,6 @@ export default async function RootLayout({
         <WebSiteJsonLd locale={ssrLang} />
         <ConsentProvider>
         <MotionProvider>
-        <DarkModeProvider>
           <PWAProvider>
             <LocaleSync />
             {/* Traceurs conditionnés au consentement (#7593) */}
@@ -255,7 +254,6 @@ export default async function RootLayout({
               </LocaleSsrProvider>
             </main>
           </PWAProvider>
-        </DarkModeProvider>
         </MotionProvider>
         <ConsentBanner />
         </ConsentProvider>

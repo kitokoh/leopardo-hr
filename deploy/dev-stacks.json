@@ -1,0 +1,153 @@
+{
+  "$schema": "./dev-stacks.schema.md",
+  "version": 1,
+  "tier": "dev",
+  "description": "Registre des stacks du tier DEV (épic #8659). Une stack = un ensemble complet {API Render + DB Neon + KV + front Vercel + admin Pages} hébergé sur UN jeu de comptes distinct. La PROD est hors de ce registre (render.prod.yaml, deploy-prod.yml — inchangée). Source de vérité humaine ; les pointeurs runtime vivent dans les variables du dépôt (DEV_ACTIVE_STACK, DEV_API_BASE_URL...) synchronisées par scripts/dev-stack-switch.sh.",
+  "active_stack": "b",
+  "updated_at": "2026-10-18",
+  "stacks": {
+    "a": {
+      "status": "suspended",
+      "status_note": "Render suspenders=[billing], service down depuis 2026-09-20 (constaté à nouveau le 2026-10-18 : GET /api/v1/health → HTTP 503). Ne repasse pas tout seul : le quota 750 h/mois du workspace est épuisé et le service reste suspendu jusqu'à upgrade/paiment. NE PAS basculer dessus.",
+      "accounts": {
+        "render": "africanovatech",
+        "neon": "compte principal (projet leopardorh)",
+        "vercel": "africanovatech",
+        "cloudflare": "compte principal"
+      },
+      "api": {
+        "provider": "render",
+        "service_id": "srv-d7dro8u7r5hc73a395pg",
+        "service_name": "gestionemployerBackend",
+        "region": "frankfurt",
+        "plan": "free",
+        "base_url": "https://gestionemployerbackend.onrender.com/api/v1",
+        "health_url": "https://gestionemployerbackend.onrender.com/api/v1/health",
+        "deploy_hook_secret": "RENDER_DEPLOY_HOOK_URL"
+      },
+      "db": {
+        "provider": "neon",
+        "project": "leopardorh",
+        "host": "ep-odd-morning-abt600ow.eu-west-2.aws.neon.tech",
+        "region": "eu-west-2",
+        "plan": "free"
+      },
+      "kv": {
+        "provider": "render-kv",
+        "name": "leopardoai",
+        "region": "frankfurt",
+        "plan": "free",
+        "note": "CACHE_STORE/SESSION_DRIVER déclarés file ; le probe d'entrypoint bascule sur redis si joignable (voir render.yaml)."
+      },
+      "web": {
+        "provider": "vercel",
+        "url": "https://gestionemployer-backend.vercel.app",
+        "project": "gestionemployer-backend"
+      },
+      "admin": {
+        "provider": "cloudflare-pages",
+        "url": "https://leo-admin.pages.dev",
+        "project": "leo-admin"
+      }
+    },
+    "b": {
+      "status": "active",
+      "status_note": "PROVISIONNÉE ET EN LIGNE le 2026-10-18 : service Render créé via API sur le workspace ibrahim.ali (tea-db9tcsbncjis73ajl2p0), deploy dep-dba688uq1p3s73afu5cg status=live, base Neon créée dans l'org nour (org-spring-pond-49296155). Health 200 mesuré. Stack pointée par DEV_ACTIVE_STACK.",
+      "accounts": {
+        "render": "ibrahim.ali (tea-db9tcsbncjis73ajl2p0)",
+        "neon": "nour (org-spring-pond-49296155 → projet leopardo-dev-b)",
+        "vercel": "nour (team_OODVOTi98eo34Pvmgo5Kw0mX) — web non encore provisionné",
+        "cloudflare": "à créer (optionnel)"
+      },
+      "api": {
+        "provider": "render",
+        "service_id": "srv-dba64d0m7kps73fkhmug",
+        "service_name": "leopardo-dev-b",
+        "region": "frankfurt",
+        "plan": "free",
+        "base_url": "https://leopardo-dev-b.onrender.com/api/v1",
+        "health_url": "https://leopardo-dev-b.onrender.com/api/v1/health",
+        "deploy_hook_secret": "RENDER_DEPLOY_HOOK_URL_STACK_B"
+      },
+      "db": {
+        "provider": "neon",
+        "project": "leopardo-dev-b",
+        "host": "ep-little-snow-b98tt8j4.c-7.eu-central-1.aws.neon.tech",
+        "region": "eu-central-1",
+        "plan": "free"
+      },
+      "kv": {
+        "provider": "render-kv",
+        "name": null,
+        "plan": "free"
+      },
+      "web": {
+        "provider": "vercel",
+        "url": null,
+        "project": null
+      },
+      "admin": {
+        "provider": "cloudflare-pages",
+        "url": null,
+        "project": null
+      },
+      "provisioned_at": "2026-10-18",
+      "last_verified": {
+        "health_http": 200,
+        "version": "02b9bf5",
+        "checked_at": "2026-10-18T06:50Z",
+        "platform_login_http": 200,
+        "note": "main@02b9bf5 déployé manuellement (le secret RENDER_DEPLOY_HOOK_URL pointe encore la stack A suspendue) ; base seedée, login superadmin 200."
+      }
+    },
+    "c": {
+      "status": "planned",
+      "status_note": "Troisième rotation (optionnelle) — même procédure que B.",
+      "accounts": {
+        "render": "À CRÉER (compte dédié stack C)",
+        "neon": "À CRÉER",
+        "vercel": "À CRÉER",
+        "cloudflare": "À CRÉER (optionnel)"
+      },
+      "api": {
+        "provider": "render",
+        "service_id": null,
+        "service_name": "leopardo-dev-c",
+        "region": "frankfurt",
+        "plan": "free",
+        "base_url": null,
+        "health_url": null,
+        "deploy_hook_secret": "RENDER_DEPLOY_HOOK_URL_STACK_C"
+      },
+      "db": {
+        "provider": "neon",
+        "project": null,
+        "host": null,
+        "region": "eu-west-2",
+        "plan": "free"
+      },
+      "kv": {
+        "provider": "render-kv",
+        "name": null,
+        "plan": "free"
+      },
+      "web": {
+        "provider": "vercel",
+        "url": null,
+        "project": null
+      },
+      "admin": {
+        "provider": "cloudflare-pages",
+        "url": null,
+        "project": null
+      }
+    }
+  },
+  "status_enum": {
+    "active": "Stack pointée par DEV_API_BASE_URL — reçoit le trafic dev et le keepalive.",
+    "ready": "Stack provisionnée, saine, déployée sur main — bascule possible immédiate.",
+    "degraded": "Provisionnée mais malade (healthcheck KO) — pas de bascule vers elle.",
+    "suspended": "Suspendue par le fournisseur (quota/billing) — documentée dans status_note.",
+    "planned": "Comptes non créés — placeholder de rotation."
+  }
+}

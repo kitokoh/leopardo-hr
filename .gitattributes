@@ -63,5 +63,13 @@ site/gh-pages/assets/*.jpg !filter !diff !merge -text
 site/gh-pages/assets/*.jpeg !filter !diff !merge -text
 site/gh-pages/assets/*.webp !filter !diff !merge -text
 site/gh-pages/assets/*.gif !filter !diff !merge -text
+# Captures de mission (docs/mission-leopardo/captures/) : JPG commités en
+# binaires réels, pas en pointeurs LFS — même exception que site/gh-pages et
+# front/web/public (#5698, #8528, #8526). Sans cette règle, `validate-and-sync`
+# (`git diff --exit-code` après les sync i18n) rougit sur TOUTE PR qui ajoute
+# une capture : git-lfs réécrit le pointeur au checkout CI alors que le dépôt
+# contient le binaire réel. La règle doit venir APRÈS les globs *.jpg
+# filter=lfs ci-dessus (la dernière règle gagnante prime).
+docs/mission-leopardo/captures/*.jpg !filter !diff !merge -text
 
 # Assets design/screenshots (assets/) : restent en VRAI Git LFS (pointeurs).

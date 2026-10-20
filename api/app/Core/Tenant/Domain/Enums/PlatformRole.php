@@ -82,6 +82,10 @@ enum PlatformRole: string
                 PlatformPermission::PlansManage,
                 PlatformPermission::PayrollView,
                 PlatformPermission::MetricsView,
+                // BC-38 PAIEMENTS (#8741) — registre des instances de paiement,
+                // journal des transactions et réconciliations.
+                PlatformPermission::PaymentsView,
+                PlatformPermission::PaymentsManage,
             ],
             self::Ops => [
                 PlatformPermission::CompaniesView,
@@ -93,6 +97,9 @@ enum PlatformRole: string
                 // cross-tenant (débogage des calculs).
                 PlatformPermission::WebhooksManage,
                 PlatformPermission::PayrollView,
+                // #8673 — la bascule de stack est une opération d'exploitation :
+                // ops la porte avec les kill switches et l'observabilité.
+                PlatformPermission::InfraManage,
             ],
             self::Marketing => [
                 PlatformPermission::CompaniesView,

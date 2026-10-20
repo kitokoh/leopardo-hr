@@ -15,6 +15,7 @@ use App\Modules\Billing\Interfaces\Api\V1\Controllers\BillingCollectionControlle
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\BillingController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\FeatureFlagController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\TenantPaymentProfileController;
+use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingStateController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingStepController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,15 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     // api.manager pour un employé non-manager).
     Route::get('/onboarding-setup/checklist', [OnboardingStepController::class, 'checklist']);
     Route::get('/onboarding-setup/progress', [OnboardingStepController::class, 'progress']);
+
+    // BOS-O-06 / #8627 — état de REPRISE du parcours (`current_step` mobile +
+    // `furthest_step` monotone), distinct de la checklist qui ne décrit que la
+    // complétion. Lecture ouverte au tenant ; l'écriture (déclarer son étape
+    // courante, y compris un retour en arrière) reste réservée aux managers
+    // comme les autres mutations d'état d'onboarding (#3430).
+    Route::get('/onboarding-setup/state', [OnboardingStateController::class, 'show']);
+    Route::patch('/onboarding-setup/state', [OnboardingStateController::class, 'update'])
+        ->middleware('api.manager');
     // #3430 : écritures d'état company-level réservées aux managers (api.manager) —
     // un employé simple ne peut plus falsifier le progrès d'onboarding de l'entreprise.
     Route::post('/onboarding-setup/{stepKey}/complete', [OnboardingStepController::class, 'complete'])

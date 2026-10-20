@@ -2171,7 +2171,30 @@
     "serviceUnreachable": "service injoignable",
     "statsLoadError": "Erreur lors du chargement des stats système",
     "subtitle": "Monitoring, configuration et automatisation de la plateforme Leopardo.",
-    "title": "Administration Système"
+    "title": "Administration Système",
+    "infra": {
+      "title": "Infrastructure — stacks",
+      "subtitle": "État des stacks de déploiement et bascule d'un tier (dev ou prod).",
+      "refresh": "Actualiser",
+      "loading": "Chargement…",
+      "activeStack": "stack active : {stack}",
+      "registryUpdated": "registre du {date}",
+      "stackLabel": "Stack {id}",
+      "activeBadge": "active",
+      "api": "API",
+      "region": "Région",
+      "switchTo": "Basculer vers {id}",
+      "switching": "Bascule…",
+      "alreadyActive": "Cette stack est déjà active.",
+      "confirmHint": "Basculer le tier {tier} vers la stack {id}.",
+      "confirmMessage": "Basculer le tier {tier} vers la stack {id} ?\n\nLa bascule touche un environnement en service : elle est journalisée et suivie dans l'onglet Actions.",
+      "switchQueued": "Bascule {tier} → {id} déclenchée. Suivez le workflow « Stack Switch ».",
+      "switchError": "La bascule a échoué.",
+      "forbidden": "Vous n'avez pas la permission de piloter l'infrastructure (infra.manage).",
+      "loadError": "Impossible de charger l'état des stacks.",
+      "hintDispatch": "La bascule passe par un workflow GitHub : le résultat et l'historique sont dans l'onglet Actions.",
+      "hintNoToken": "Bascule désactivée : le jeton GITHUB_STACK_SWITCH_TOKEN n'est pas configuré sur le service API."
+    }
   },
   "billing": {
     "cancel_subscription_confirm": "Annuler votre abonnement ? Vous perdrez l'accès aux modules premium à la fin de la période en cours.",
@@ -6584,7 +6607,7 @@
     },
     "nav": {
       "pricing": "Tarifs",
-      "packs": "Packs offerts",
+      "packs": "Pack",
       "packsHub": "Tous les packs",
       "packsHubDesc": "Un pack offert par métier — découvrez l'offre",
       "packsRestaurant": "Restaurants",
@@ -6621,7 +6644,6 @@
       "trade": "Trade"
     },
     "hero3d": {
-      "hint": "Cliquez sur un module pour explorer",
       "demo": "Démo",
       "cagnottes": "Cagnottes",
       "freeTrial": "Essai gratuit"
@@ -6658,7 +6680,13 @@
       "reassurance": "Gratuit, sans carte bancaire, vos donnees restent les votres",
       "backHome": "Retour a l'accueil",
       "metaTitle": "Trade, configurez votre entreprise en quelques minutes",
-      "metaDescription": "Trade, le point d'entree du Leopardo Business OS : choisissez import/export ou marche local, configurez votre entreprise, activez vos modules et lancez votre premiere operation."
+      "metaDescription": "Trade, le point d'entree du Leopardo Business OS : choisissez import/export ou marche local, configurez votre entreprise, activez vos modules et lancez votre premiere operation.",
+      "profileLabel": "Votre profil",
+      "profile_importer": "Importateur",
+      "profile_exporter": "Exportateur",
+      "profile_both": "Importateur & exportateur",
+      "profile_wholesaler": "Grossiste",
+      "profile_retailer": "Détaillant"
     }
   },
   "commerce": {
@@ -7570,6 +7598,71 @@
       "titleSuffix": "Cagnotte solidaire"
     }
   },
+  "trade": {
+    "title": "Commerce international",
+    "subtitle": "Sourcing, offres, commandes et coût rendu sur un noyau commercial partagé",
+    "moduleDisabled": "La verticale Commerce international n'est pas activée pour votre entreprise.",
+    "loadError": "Impossible de charger les données.",
+    "loading": "Chargement…",
+    "noData": "Aucune donnée",
+    "retry": "Réessayer",
+    "create": "Créer",
+    "search": "Rechercher…",
+    "overview": {
+      "title": "Vue d'ensemble",
+      "subtitle": "Dossiers ouverts, demandes de prix, offres et commandes en cours.",
+      "deals": "Dossiers ouverts",
+      "rfqs": "Demandes de prix actives",
+      "quotes": "Offres en attente",
+      "orders": "Commandes en cours",
+      "integrations": "Intégrations",
+      "integrationsDegraded": "Certaines fonctions dépendent d'adaptateurs non configurés et restent indisponibles."
+    },
+    "integrations": {
+      "title": "Intégrations externes",
+      "notice": "Une intégration non configurée est présentée comme indisponible : aucune donnée n'est simulée.",
+      "stateOperational": "Opérationnelle",
+      "stateUnconfigured": "Non configurée",
+      "configured": "configurées"
+    },
+    "sourcing": {
+      "title": "Sourcing & demandes de prix",
+      "subtitle": "Émettre une RFQ, inviter des fournisseurs, comparer les offres reçues."
+    },
+    "sales": {
+      "title": "Ventes & offres",
+      "subtitle": "Offres émises, versions, statuts et contreparties clients."
+    },
+    "orders": {
+      "title": "Commandes & expéditions",
+      "subtitle": "Commandes d'achat et de vente, expéditions et transitions."
+    },
+    "transport": {
+      "title": "Transport",
+      "subtitle": "Demandes de cotation et réponses des prestataires."
+    },
+    "costs": {
+      "title": "Coûts & douane",
+      "subtitle": "Coût total rendu par poste et préparation documentaire.",
+      "disclaimer": "Estimation indicative — ni déclaration douanière officielle ni garantie de conformité."
+    },
+    "catalog": {
+      "title": "Catalogue produits",
+      "subtitle": "Produits, spécifications et conditions commerciales."
+    },
+    "settings": {
+      "title": "Paramètres Trade",
+      "subtitle": "Profil commercial, marchés desservis et conditions."
+    },
+    "columns": {
+      "reference": "Référence",
+      "title": "Intitulé",
+      "status": "Statut",
+      "createdAt": "Créé le",
+      "destination": "Destination",
+      "incoterm": "Incoterm"
+    }
+  },
   "vtc": {
     "title": "VTC & taxi",
     "subtitle": "Dispatch des courses et suivi des chauffeurs en temps réel",
@@ -8254,5 +8347,7 @@
     "created": "Appareil enrole.",
     "revoked": "Appareil revoque.",
     "secretWarning": "Ne partagez jamais ce jeton : il n'est affiche qu'une fois."
-  }
+  },
+  "travel.seats.state.absent": "Siège absent",
+  "travel.seats.layoutNotice": "Modifier la disposition des sièges ne déplace pas les passagers déjà réservés : leurs sièges restent inchangés. Utilisez la procédure de remplacement de véhicule pour résoudre un conflit."
 }

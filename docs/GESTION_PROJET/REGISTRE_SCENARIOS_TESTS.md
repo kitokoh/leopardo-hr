@@ -1,3 +1,80 @@
+> **MAJ 2026-10-17 — #8652, #8653, #8654, #8655, Travel OS : sièges physiquement absents, cohérence disposition ↔ inventaire, rafraîchissement du plan — PR #8656.**
+> Surface **API (`api/app/Modules/TravelAgency`)** : `SeatLayout` accepte `absent_seats` (entiers positifs, uniques,
+> bornés par la capacité) et expose `sellableCapacity()` ; `GenerateTripSeatsAction` ne crée **aucune** ligne
+> `travel_trip_seats` pour un siège physiquement absent — l'inventaire correspond au bus réel, pas au nombre de
+> places déclaré. Nouvelle `ValidateSeatLayoutCoherenceAction` (lecture seule) : refus **422** motivé d'une
+> disposition incohérente, jamais de correction silencieuse ; refuse aussi de rendre absent un siège **déjà
+> réservé**, en listant les sièges en conflit. `StoreTravelVehicleRequest` / `UpdateTravelVehicleRequest` valident
+> `seat_layout.absent_seats` (entiers, distincts). Migration **idempotente** `2026_10_17_140000_8652` :
+> `absent_seats` vit dans le JSONB `seat_layout` existant, aucune colonne nouvelle, aucune ligne réécrite.
+> Surface **web grand public (`front/travel-web`)** : `buildSeatMapLayout` reconstruit la séquence **physique**
+> complète quand le véhicule déclare des sièges absents — chaque siège absent occupe sa place réelle en case non
+> cliquable, au lieu d'être omis (ce qui **décalerait** tous les sièges suivants) ; état `absent` avec symbole
+> dédié, libellé texte et style barré (jamais la couleur seule) ; `resolveSeatLayout` normalise `absent_seats`.
+> `booking-flow.tsx` rafraîchit périodiquement le plan (30 s), annule au démontage, et **désélectionne + signale**
+> un siège devenu indisponible — aucun temps réel simulé, la disponibilité définitive reste tranchée par le
+> serveur à la confirmation.
+> Surface **web admin (`front/admin-dashboard`)** : `TravelSeatMap.vue` rend les sièges absents (case non
+> cliquable, légende conditionnelle) ; `TravelBookingsView.vue` affiche un bandeau `role="note"` signalant qu'un
+> changement de disposition **ne déplace pas** les passagers déjà réservés.
+> Surface **i18n** : sources `shared/i18n/locales/{fr,en,tr,ar}.json` éditées puis propagées par
+> `sync-web`/`sync-backend`/`sync-mobile` — **aucun catalogue généré modifié à la main**. Les ARB mobile reçoivent
+> `travelSeatsStateAbsent` / `travelSeatsLayoutnotice` (propagation automatique du catalogue partagé).
+> Scénarios automatisés : `api/tests/Feature/Travel/TravelAbsentSeatsTest.php` (**12 tests / 24 assertions** :
+> `sellableCapacity`, siège absent hors capacité → disposition inexploitable, inventaire sans siège absent,
+> véhicule non configuré inchangé, refus 422 hors capacité / doublon, refus de rendre absent un siège réservé avec
+> liste des conflits, acceptation d'un siège absent libre, véhicule non configuré accepté sans géométrie) ;
+> `front/travel-web/src/lib/seat-layout.test.ts` (**+4 cas** : siège absent à sa place réelle sans décalage,
+> aucune case absente sans déclaration, normalisation, forme inexploitable ignorée). Suites Travel : **40/40
+> verts** ; `travel-web` vitest **37/37** ; PHPStan niveau 8 → **No errors** ; idempotence de la migration vérifiée
+> sur la base réelle. **Non-régression mesurée** : `tests/Feature/Travel` complet comparé à un worktree propre de
+> `origin/main` → **16 erreurs / 83 échecs des deux côtés**, +12 tests (les nouveaux) : **0 régression**.
+
+> **MAJ 2026-10-17 — vague 6 (correctif a11y), vitrine : constellation atteignable au clavier, focus restitué à l'étoile.**
+> Surface **web (`front/web/src/modules/vitrine/components/hero`)** : les étiquettes d'étoiles de `HeroBusinessOS3D`
+> passent de `<div>` décoratifs (`pointer-events-none`, aucun `tabindex`) à de **vrais `<button>` focusables**
+> (`aria-label`, `tabindex 0`, anneau `focus-visible`) — la fiche s'ouvre au clavier (Entrée/Espace) comme à la
+> souris ; le survol souris **ou** le focus clavier allume l'étoile ; une étiquette hors cadre passe en
+> `visibility:hidden` + `tabindex -1` (plus de boutons invisibles dans l'ordre de tabulation) ; `aria-hidden` est
+> retiré en mode interactif (il aurait masqué de vrais contrôles) ; `HeroScene3DPanel` donne `tabindex -1` à la
+> scène, cible de restitution du focus quand la fiche a été ouverte à la souris (l'étoile est un pixel de canvas).
+> **Défaut mesuré en navigateur sur `main` (7859b93c4)** : aucun chemin clavier vers la fiche, focus retombant sur
+> `<body>` à la fermeture. Scénarios automatisés : nouveau
+> `front/web/src/modules/vitrine/components/hero/__tests__/HeroScene3DPanel-a11y.test.tsx` (**4 cas** : étiquette
+> focusable par solution, ouverture clavier + fermeture Échap, scène `tabindex -1`, `role=dialog` + `aria-modal`).
+> Suite vitrine complète : **57 suites / 662 tests** verts. Aucune clé i18n ajoutée, aucun catalogue généré modifié.
+
+> **MAJ 2026-10-17 — vague 6, vitrine : direction artistique premium du héros `stage`.**
+> Surface **web (`front/web/src/modules/vitrine` + `front/web/src/app/globals.css`)** : couche de profondeur
+> (`.hero-stage-base` bleu nuit/graphite, `.hero-stage-halo` derrière la scène, `.hero-stage-vignette`, voile
+> `.hero-stage-title-scrim`) ; pile inchangée et explicite — cartes `z-[1]` < titre `z-[5]` < constellation `z-10`
+> < vignettage `z-[11]` < CTA `z-20` ; arc géographique recalé (`--geo-r: min(30vw, 21vh)`, `--geo-apex: 54%`)
+> pour que son sommet tombe sur le cœur de la scène et non sur la phrase ; `HeroScene3DPanel` porte la scène à
+> 86 % de la hauteur pour rapprocher le CTA unique ; indicateur de défilement retiré du layout `stage` (il occupait
+> exactement la place du CTA). Scénarios couverts par le nouveau `HeroStageDepth.test.tsx` (9 cas) : présence et
+> `aria-hidden` des trois plans, ordre des couches titre/scène/vignettage, absence de l'indicateur, règles CSS du
+> fond (dégradés + bleu nuit `rgb(8 14 26)`), du halo et du vignettage, neutralisation de `hero-halo-breathe` hors
+> `no-preference`, calage de l'arc (`--geo-apex`, `--geo-r`) et courbe d'échelle `0.68 → 1 → 0.68`. Suite vitrine
+> complète : **56 suites / 658 tests** verts. Aucune clé i18n ajoutée, aucun catalogue généré modifié.
+
+> **MAJ 2026-10-17 — #8638, vitrine : retours vague 5 (fiche accessible, CTA unique, cartes derrière la constellation) — PR #8637.**
+> Surface **web (`front/web/src/modules/vitrine`)** : `HeroSolutionsCTA` ne rend plus qu'**un seul** lien
+> (« Découvrir nos solutions » → `/packs`, `?lang=` préservé), rendu par `HeroScene3DPanel` donc **sous** la
+> scène ; `SolutionCard` passe en `createPortal(document.body)` avec overlay `fixed inset-0 z-[100]`
+> (fermeture X / fond / Échap, focus piégé puis restitué à l'étoile) ; `GeoBackdrop` passe en `z-[1]`
+> (11 cartes en demi-cercle, continents puis pays, intérieur vide, échelle 0,68→1→0,68) ; pile explicite
+> cartes `z-[1]` < titre `z-[5]` < constellation `z-10` ; constellation agrandie (échelle 3D 1,12→1,3) ;
+> libellés d'étoiles bornés à 15 % du cadre. Copie allégée : `hero3d.hint` (« Modules to explore »),
+> titre/sous-titre CTA et réassurance commerciale retirés ; `nav.packs` → « Pack ».
+> Surface **i18n** : sources `shared/i18n/locales/{fr,en,tr,ar}.json` éditées puis propagées aux cibles
+> générées (`sync-web`, `sync-mobile`, `sync-backend`) — **aucun catalogue généré modifié à la main**.
+> Scénarios automatisés : `front/web/src/modules/vitrine/components/hero/__tests__/mission-leopardo.test.tsx`
+> (fiche : ouverture, fermeture X/fond/Échap, focus piégé et restitué ; CTA unique ; cartes derrière la
+> constellation) — **55 suites / 649 tests verts** sur `src/modules/vitrine`.
+> Vérifié localement : `npx tsc --noEmit` exit 0, `npx eslint src/modules/vitrine --max-warnings 0` exit 0,
+> gardes `check:french-copy` / `check:mojibake` / `check:orphans` / `check:assets` vertes.
+> `next build` **non concluant en local** (exit 137 — OOM, cgroup 2 Gio du sandbox) : à valider en CI.
+> Surface **API** : aucun changement de route, de contrôleur ni de contrat.
 > **MAJ 2026-10-17 — #8584, #8585, #8586, #8578, Fuel Station OS : cle d'idempotence du lot de releves, test outbox sans consommateur, endpoints dedies resolve/close.**
 > Surface **API (api/app/Modules/FuelStation/Interfaces/Api/V1/Controllers/FuelIncidentController.php)** :
 > les endpoints dedies `POST /fuel-station/incidents/{incident}/resolve` et `.../close` n'exigent plus
@@ -110,6 +187,47 @@
 > (diff des listes numérotées) : **0 régression**. Colonnes vérifiées en base
 > (`information_schema`).
 >
+> **MAJ 2026-10-17 — BC-24 TRAVEL OS, clôture #8546 / #8547 / #8548 (contrôle billets, impression QR, historique télémétrie).**
+> Surface **API** : trois surfaces TravelAgency complétées, **sans reconstruire
+> l'existant** (`VerifyTicketAction` #8538, `CheckInTicketAction` #8539,
+> `TravelTicketQrCode`, `TravelTicketPdfGenerator`, `RecordVehiclePositionAction`
+> #8540, `VehiclePositionFreshness`, `BuildTravelFleetTrackingAction`, PostGIS +
+> module core `Geo` réutilisés tels quels).
+> **(1) #8546** — `POST /api/v1/travel/tickets/lookup` : recherche **manuelle par
+> référence**, secours quand la caméra est indisponible. **LECTURE SEULE** — ne
+> consomme jamais le billet, ne divulgue aucun code de contrôle, identité du
+> passager réservée à `travel.checkin`, cross-tenant → 404.
+> **(2) #8547** — preuve que le QR du billet est **réellement scannable depuis le
+> PDF livré** : `TravelTicketQrDecoder` (décodeur QR en PHP pur, vérifie les
+> syndromes de Reed-Solomon et **refuse** une image dégradée plutôt que de
+> deviner) + `PdfEmbeddedImageExtractor` (lit l'image telle qu'embarquée par
+> dompdf : FlateDecode + inversion du prédicteur PNG).
+> **(3) #8548** — `GET /api/v1/travel/vehicles/{id}/positions` : **historique des
+> positions réellement transmises** (table `travel_vehicle_position_logs`,
+> append-only, isolation `company_id`), instantané **et** historique dans la
+> **même transaction**, `recorded_at` borné (`before_or_equal:now`,
+> `after:-30 days`), **liste VIDE** si aucun dispositif — jamais de points
+> fabriqués.
+> Scénarios PHPUnit : `api/tests/Feature/Travel/TravelTicketLookupTest.php`
+> (9 cas : lecture seule, aucun code divulgué, 403 non habilité, 404
+> cross-tenant, statut `void` remonté), `TravelTicketPrintingTest.php` (10 cas :
+> QR décodé **depuis le PDF**, charge utile sans PII, payloads distincts,
+> refus d'une image illisible/blanche, PDF valide, une seule image couleur),
+> `TravelVehiclePositionHistoryTest.php` (17 cas : instantané + historique
+> atomiques, horodatage de mesure conservé, date future/trop ancienne refusée,
+> source inconnue refusée, coordonnées hors bornes refusées, historique vide
+> sans dispositif, ordre antéchronologique, fenêtre temporelle, `limit` plafonné,
+> estimation jamais `is_measured`, 404 cross-tenant, 403 non habilité, périmètre
+> par véhicule). **36 tests / 88 assertions, 0 échec** (PHP 8.4.26 + PostgreSQL +
+> PostGIS + Redis) ; PHPStan strict niveau 8 → 0 erreur ; non-régression
+> `tests/Feature/Travel` : `main` 561 succès / 100 échecs → branche **611 succès /
+> 100 échecs**, noms des échecs **byte-identiques** (aucune régression).
+> **Limites assumées** : scan caméra et impression thermique ESC/POS nécessitent
+> un **appareil réel** (aucune compatibilité affirmée) ; le **suivi GPS temps
+> réel n'est pas déclaré opérationnel** (aucun fournisseur de télémétrie
+> n'alimente le système, aucune position simulée) ; détection de retard non
+> livrée. Documentation : `docs/ops/TRAVEL_IMPRESSION_BILLETS.md`,
+> `docs/ops/TRAVEL_SUIVI_FLOTTE.md`.
 > **MAJ 2026-10-17 — #8579 + #8580, Fuel Station OS : moyens de paiement et annulation compensatoire des ventes.**
 > Surface **API (api/routes/modules/fuel_station.php)** : nouvelle route
 > `POST /fuel-station/sales/{sale}/cancel` (bloc manager, `throttle:fuel-sensitive`),
@@ -166,6 +284,43 @@
 > programme partenaire) ; remplacée par « paiements / règlements des ventes suivis ».
 > Source corrigée dans `shared/i18n/locales/*.json` puis propagée par `sync-web.js`
 > (catalogues web + admin + `versions.json`), conformément à #4805.
+> **MAJ 2026-10-15 — #8476→#8486 (PR #8487), verticale « International Trade OS » (BC-36 TRADE).**
+> Surface **API HTTP** (`api/routes/modules/trade.php`, gate `module.trade` fail-closed + `trade.role:*`) :
+> noyau commercial **partagé** entre les deux espaces — `GET/POST /v1/trade/rfqs`,
+> `POST /v1/trade/rfqs/{rfq}/send` (liens de réponse retournés en clair **une seule fois**),
+> `GET /v1/trade/quotes`, `POST /v1/trade/quotes/{quote}/accept` (l'acceptation
+> crée la commande), `GET/POST /v1/trade/cost-estimates`, `GET /v1/trade/customs/checklist`,
+> et `GET /v1/trade/meta/integrations` (état RÉEL des 4 adaptateurs externes).
+> **?direction=incoming|outgoing** sélectionne la vue acheteur/vendeur sur les
+> MÊMES objets : pas deux implémentations, et une même entreprise peut importer
+> ET exporter sans rôle irréversible. Isolation tenant par `BelongsToCompany` :
+> une ressource d'une autre entreprise est **introuvable (404), jamais 403**.
+> Honnêteté du calcul : chaque poste porte sa `source`
+> (`confirmed|estimated|user_input|unavailable`) et `duty_rate_available` reste
+> `false` tant qu'aucune source de tarifs n'est configurée — la capacité est
+> INDISPONIBLE, jamais « estimée à 0 ».
+> Surface **API superadmin** (`api/routes/api.php`, groupe `/platform`) :
+> `GET /platform/trade/overview` (compteurs agrégés par tenant — entreprises
+> portant le flag `trade`, répartition par statut des deals/RFQ/offres/commandes)
+> et `GET /platform/trade/integrations` (état des adaptateurs + identité du
+> manifest). **Compteurs uniquement** : aucun contenu commercial privé (prix,
+> offres, messages, documents) n'est exposé à l'administration plateforme.
+> Surface **web tenant** (`front/web`) : route protégée `/trade` — onglets
+> « Vue d'ensemble », « Sourcing & demandes de prix » (acheteur),
+> « Ventes & offres » (vendeur), « Coûts & douane » (avec disclaimer de
+> non-responsabilité douanière) ; 403 `MODULE_DISABLED` → état dédié.
+> Surface **web admin** (`front/admin-dashboard`) : `views/trade/TradeOverviewView.vue`
+> (route `/trade`, nav groupe « Clients & croissance », perm `companies.view`),
+> tableau des intégrations avec badge « Opérationnelle » / « Non configurée ».
+> Couverture : `api/tests/Unit/Trade/TradeSurveyTest.php` (11 tests — les 3
+> critères d'acceptation du périmètre, parité i18n, garde anti-sur-promesse
+> `mobile_field`), `TradeVerticalConsistencyTest.php` (conformité manifest,
+> données sensibles déclarées, les 3 points d'enregistrement obligatoires dont
+> `Company::KNOWN_MODULES`, bijection rôles ↔ permissions),
+> `api/tests/Feature/Security/TradeTenantIsolationTest.php` (6 tests d'isolation
+> inter-entreprise). **Aucun service payant souscrit, aucune clé inventée** :
+> les 4 adaptateurs sont en mode dégradé explicite (`manual`/`null`) et déclarés
+> non configurés — voir `docs/architecture/TradeIntegrationAdapters.md`.
 > **MAJ 2026-10-13 — #8447 + #8451, « Mon Logiciel » et checklists par profil métier.**
 > Surface **web (front/web)** : nouvelle route protégée `/mon-logiciel` (hub
 > d'installation des apps du tenant, filtrée par solutions activées via
@@ -1540,3 +1695,158 @@ restent les gates applicables.
   (3) `?type=` inconnu → `422` ; (4) `?near=lat,lng` → seules les entités géolocalisées
   dans `radius_km`, triées par distance croissante ; (5) DTO public strict (aucun `id`,
   `company_id`, `status`) ; (6) `per_page` borné à 50. Aucune migration, aucun nouveau rôle.
+
+## Mise à jour 2026-10-18 — pilotage des stacks de déploiement (PR #8699, issues #8671-#8674)
+
+- **Surface API (superadmin)** : deux routes plateforme sous
+  `platform.permission:infra.manage` —
+  `GET /api/v1/platform/infra/stacks` (état des stacks dev/prod lues dans
+  `deploy/*-stacks.json` + `dispatch_configured`) et
+  `POST /api/v1/platform/infra/stack-switch` (bascule d'un tier).
+  Contrats documentés dans `api/openapi.yaml` (schémas `PlatformInfraStack`,
+  `PlatformInfraTier`).
+- **Scénarios attendus côté API** :
+  | Cas | Attendu |
+  |---|---|
+  | appel sans `infra.manage` (support, finance, marketing) | **403** |
+  | `GET /stacks` avec jeton configuré | 200, `dispatch_configured: true`, une entrée par tier |
+  | `GET /stacks` sans `GITHUB_STACK_SWITCH_TOKEN` | 200, `dispatch_configured: false` (écran informatif) |
+  | `POST` sur la stack déjà active | **409**, `reason: deja_active` |
+  | `POST` sur une stack `planned` (sans `health_url`) | **409**, `reason: non_basculable` |
+  | `POST` sur une stack absente du registre | **422**, `reason: stack_inconnue` |
+  | `POST` avec `confirm` absent/faux | **422** (garde d'interface) |
+  | `POST` valide, jeton absent | **503** (fail-closed, rien n'est déclenché) |
+  | `POST` valide, jeton présent | **202**, `data.previous` = stack active avant bascule |
+  | rejeu du même `POST` après succès du workflow | la stack cible est devenue active → **409** (aucun ping-pong) |
+- **Surface infrastructure (non testable en PHPUnit)** : `scripts/stack-switch.sh`
+  refuse en prod `--seed`, `--force` seul, une cible sans `health_url`, une cible
+  malade, et une cible dont `db.host` diffère de la stack active. Scénarios
+  couverts par exécution réelle du script sur le registre du dépôt
+  (`--dry-run`) et par `scripts/stack-health.sh --tier prod`.
+- **Surface admin (Vue)** : carte `InfraStacksCard.vue` sur Supervision Système —
+  bouton désactivé si `dispatch_configured=false`, refus de l'API remonté en
+  toast. Scénario manuel : couper `GITHUB_STACK_SWITCH_TOKEN` sur le service API
+  et vérifier que l'écran reste lisible et n'offre pas de bascule.
+
+## Chat horizontal — groupes de discussion (#8746)
+
+- **Contexte** : le fil de discussion existant (`PA2-COMM-002`, `/conversations`)
+  est binaire (employé ↔ manager). Cette livraison ajoute `kind = group` avec
+  `conversation_participants` (rôles `creator`/`admin`/`member`, curseur de
+  lecture par participant). L'appartenance d'un groupe est régie **uniquement**
+  par la table de participants ; celle d'un fil `direct` reste déduite de
+  `employee_id`/`manager_id`.
+- **Surfaces API** : `POST /api/v1/conversations/groups`,
+  `GET|POST /api/v1/conversations/{thread}/participants`,
+  `DELETE /api/v1/conversations/{thread}/participants/{employee}`,
+  `POST /api/v1/conversations/{thread}/leave`.
+  Contrats documentés dans `api/openapi.yaml` (paramètre `ConversationThreadId`,
+  schémas `ConversationThread`, `ConversationParticipant`).
+- **Scénarios attendus côté API** :
+  | Cas | Attendu |
+  |---|---|
+  | création avec participants du même tenant | **201**, `kind: group`, `created_by`, une ligne `creator` + N lignes `member` |
+  | création avec un `employee_id` d'un autre tenant | **422**, aucune ligne créée |
+  | création sans aucun autre participant | **422** |
+  | ajout par un `member` | **404** (jamais 403 : ne révèle pas l'existence du fil) |
+  | ajout par `creator`/`admin` | **201**, `role: member` |
+  | ré-ajout d'un membre déjà présent | **201**, ligne existante (idempotent, pas de doublon) |
+  | retrait d'un `member` par un `admin` | **204**, ligne supprimée |
+  | retrait d'un `admin` par un autre `admin` | **404** |
+  | retrait du `creator` (même par lui) | **422** |
+  | `leave` par un `member` | **204**, puis `GET /conversations/{thread}` → **404** |
+  | `leave` par le `creator` | **422** (doit transmettre son rôle) |
+  | tout endpoint de groupe par un non-participant | **404** sur les 5 |
+  | `GET /conversations` depuis un autre tenant | **200** avec `data: []` (aucune fuite) |
+  | lecture par un participant | met à jour **son** `last_read_message_id`, pas celui des autres |
+  | fil `direct` existant après migration | `kind: direct`, **aucune** ligne de participation, contrat inchangé |
+- **Isolation multi-tenant** : les identifiants de participants sont résolus avec
+  `company_id` explicite ; un id étranger produit 422 et jamais une ligne
+  silencieusement ignorée. `BelongsToCompany` + `findForActor()` restent le
+  garde-fou de lecture.
+- **Non couvert par tests** : charge (`k6`), reconnexion UI (dépend de la phase
+  P6), `migrate` complet hors environnement de test. Spécifications fournies au
+  §13 de `docs/mission-business-os/16_chat_horizontal_audit.md`.
+
+## Mise a jour 2026-10-19 — Chat horizontal, phases P2 a P6 (PR feat/bos-chat-phases-2-6, issues #8747, #8748, #8749, #8750, #8751)
+
+Perimetre : extension du module existant `App\Modules\Notification` (BC-13 COMMS).
+Aucun nouveau BC, aucun second systeme de messagerie, d'auth, de notification ou
+de fichiers.
+
+- **Surfaces API ajoutees ou etendues** :
+  `GET /api/v1/conversations/{thread}/messages` (curseur `before_seq` /
+  `after_seq` / `per_page`), `PATCH|DELETE /api/v1/conversations/{thread}/messages/{message}`,
+  `POST /api/v1/conversations/{thread}/reports`,
+  `GET|POST /api/v1/conversations/blocks`,
+  `DELETE /api/v1/conversations/blocks/{employee}`,
+  `GET|POST /api/v1/conversations/reports`,
+  `GET /api/v1/conversations/moderation/reports`,
+  `POST /api/v1/conversations/moderation/reports/{report}/resolve`.
+  Contrats dans `api/openapi.yaml` (schemas `ConversationMessage`,
+  `ConversationBlock`, `ConversationReport`, parametre `ConversationMessageId`).
+- **Migrations** : `2026_10_19_000928_8747_...` (colonnes `seq`,
+  `client_message_id`, `reply_to_message_id`, `edited_at`, `deleted_at`,
+  `deleted_by_id`, `attachment_disk`, `last_message_seq` + index partiels) ;
+  `2026_10_19_000929_8750_...` (`conversation_blocks`, `conversation_reports`).
+  Les deux sont **additives** et reentrantes (`schemaTableExists` /
+  `schemaHasColumn`), avec backfill de `seq` pour l'existant.
+- **Scenarios attendus cote API** :
+  | Cas | Attendu |
+  |---|---|
+  | envoi nominal | **201**, `seq` alloue, `last_message_seq` incrementé |
+  | rejeu du meme `client_message_id` | **200**, meme `id`, **aucun** second message |
+  | meme `client_message_id` dans un autre fil | **201** (unicite **par fil**) |
+  | deux envois concurrents, meme cle | **une seule** ligne creee (course rattrapee, 23505) |
+  | `reply_to_message_id` d'un autre fil | **422** |
+  | `GET` sans parametre | derniere page, ordre `seq` croissant |
+  | `before_seq` | messages anterieurs, ordre croissant, `has_more` fiable |
+  | `after_seq` | uniquement les messages posterieurs (rattrapage) |
+  | `per_page=100000` | **200** mais `per_page: 100` (plafonne) |
+  | `PATCH` par l'auteur | **200**, `edited_at` renseigne, aucun nouveau message |
+  | `PATCH` par un autre participant (meme manager) | **404**, corps inchange |
+  | `PATCH` sur un message supprime | **422** |
+  | `DELETE` par l'auteur | **204**, `deleted_at` pose, `seq` conserve, corps vide |
+  | `DELETE` repete | **204** (idempotent) |
+  | message supprime dans l'historique | ligne presente, `deleted: true`, `body: ""` |
+  | message sans corps ni piece jointe | **422** |
+  | piece jointe seule | **201**, `body: ""` |
+  | piece jointe > 5 Mo | **422** |
+  | piece jointe dont le MIME declare ment (ELF en `.pdf`) | **422** (type reel via `finfo`) |
+  | telechargement par un non-participant | **404** |
+  | fichier absent du disque | **410** |
+  | non-participant sur `GET`/`POST`/`PATCH`/`DELETE` | **404** sur chacun, jamais 403 |
+  | fil ou message d'un autre tenant | **404** |
+  | blocage d'un employe | **201**, unique par paire, idempotent |
+  | auto-blocage | **422** |
+  | blocage d'un employe d'un autre tenant | **422**, aucune ligne |
+  | creation de fil direct apres blocage (les deux sens) | **422** |
+  | ajout du bloque dans un groupe | **422** |
+  | tiers non concerne par le blocage | **201** (fil cree) |
+  | signalement d'un message du fil | **201**, `reported_employee_id` = auteur |
+  | signalement d'un message d'un autre fil | **422** |
+  | signalement par un non-participant | **404** |
+  | motif hors liste fermee | **422** |
+  | `GET /conversations/reports` | **200**, uniquement les signalements de l'appelant |
+  | file de moderation par un non-manager | **422** |
+  | file de moderation par un manager d'un autre tenant | **200** avec `data: []` |
+  | cloture d'un signalement deja clos | **200**, premiere decision preservee |
+  | envoi au-dela du quota | **429** |
+- **Isolation multi-tenant** : toute lecture passe par `findForActor()`
+  (scope `company_id` + appartenance) ; les identifiants cibles (blocage,
+  signalement) sont resolus **dans le tenant de l'appelant** et un identifiant
+  etranger produit **422**, jamais une ligne silencieuse. La file de moderation
+  est explicitement tenant-scopee.
+- **Lea** : aucun scenario croise. Le chat humain et l'assistant IA restent deux
+  systemes separes ; aucun test de chat ne traverse `PlatformAdminAiChatTest`.
+- **Resultats reels** (`CI=true`, PHP 8.4 + PostgreSQL 15) :
+  `ConversationMessagesTest` **15 tests** verts, `ConversationModerationTest`
+  **18 tests** verts, suite conversation **53 tests / 259 assertions** vertes ;
+  `pint --test` **PASS** ; **PHPStan niveau 8 `[OK] No errors`** ; frontend
+  `tsc --noEmit` 0 erreur, `eslint` 0 warning, `jest` 6/6 sur `lib/chat.ts`.
+- **Non couvert par tests** : charge (`k6`) — aucun environnement deploye
+  joignable ; la reprise de connexion est couverte cote client (`mergeMessages`)
+  et cote API (`after_seq`), mais pas en E2E navigateur ; `CHAT_ATTACHMENT_DISK`
+  n'est pas positionne en production, donc la perte des pieces jointes au
+  redeploiement (risque R1) reste **ouverte** tant que l'exploitant ne l'a pas
+  configure.

@@ -33,4 +33,6 @@ return [
     'interview_invalid_answer' => 'إجابة غير صالحة: :question',
     'demo_data_vertical_inactive' => 'الحل :code غير مفعّل في مساحتك.',
     'demo_data_kit_unavailable' => 'لا تتوفر بيانات تجريبية للحل :code.',
+    'resume_unknown_step' => 'هذه الخطوة ليست جزءًا من مسار الإعداد الخاص بك.',
+    'resume_invalid_step' => 'معرّف الخطوة غير صالح.',
 ];

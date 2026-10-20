@@ -29,8 +29,22 @@ final class GenerateTripSeatsAction
             return;
         }
 
-        DB::transaction(function () use ($trip): void {
+        // #8652 — les sièges PHYSIQUEMENT ABSENTS du véhicule affecté ne sont
+        // jamais créés : l'inventaire doit correspondre au bus réel, pas au
+        // nombre de places déclaré. Un trajet sans véhicule (ou dont le
+        // véhicule n'est pas configuré) n'a aucun siège absent → comportement
+        // strictement inchangé.
+        //
+        // `?->` court-circuite toute la chaîne : un trajet sans véhicule, ou un
+        // véhicule non configuré, donne `null` puis `[]` — jamais d'erreur.
+        $absentSeats = $trip->vehicle?->seatLayout()->absentSeats ?? [];
+
+        DB::transaction(function () use ($trip, $absentSeats): void {
             for ($seatNumber = 1; $seatNumber <= $trip->total_seats; $seatNumber++) {
+                if (in_array($seatNumber, $absentSeats, true)) {
+                    continue;
+                }
+
                 TravelTripSeat::query()->create([
                     'trip_id' => $trip->id,
                     'seat_number' => $seatNumber,
