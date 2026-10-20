@@ -205,7 +205,7 @@ const copyByLocale: Record<AppLocale, Copy> = {
 function SectorCard({ sector, label }: { sector: Sector; label: string }) {
   const { Icon } = sector;
   return (
-    <div className="flex items-center justify-center gap-3 px-5 py-3 rounded-xl border bg-gradient-to-br from-emerald-500/10 to-cyan-500/5 border-emerald-500/20 backdrop-blur-sm hover:scale-105 transition-transform duration-300">
+    <div className="flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl border bg-slate-900/40 dark:bg-slate-900/60 border-emerald-500/20 shadow-lg shadow-emerald-950/20 backdrop-blur-xl hover:scale-105 transition-transform duration-300">
       <div className="w-10 h-10 rounded-lg bg-white/80 dark:bg-white/10 flex items-center justify-center shadow-sm shrink-0">
         <Icon className="w-5 h-5 text-emerald-700 dark:text-emerald-400 symbol-breathe" />
       </div>

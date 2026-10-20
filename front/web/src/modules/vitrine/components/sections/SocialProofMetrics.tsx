@@ -79,7 +79,10 @@ export function SocialProofMetrics({ locale = 'fr' }: SocialProofMetricsProps) {
 
   return (
     <section className="relative py-16 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-cyan-600 dark:from-emerald-800 dark:to-cyan-800" />
+      <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 dark:from-emerald-900 dark:via-slate-900 dark:to-cyan-950" />
+      <div className="pointer-events-none absolute -top-40 -left-40 h-80 w-80 rounded-full bg-emerald-400/20 blur-3xl" aria-hidden="true" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-cyan-400/20 blur-3xl" aria-hidden="true" />
+
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIxIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiLz48L3N2Zz4=')] opacity-50" />
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -93,10 +96,10 @@ export function SocialProofMetrics({ locale = 'fr' }: SocialProofMetricsProps) {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="text-center"
             >
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-white/10 text-white mb-3">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-white mb-3 shadow-inner shadow-white/10">
                 {metric.icon}
               </div>
-              <div className="text-3xl sm:text-4xl font-black text-white mb-1">
+              <div className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-1 drop-shadow-sm">
                 {metric.value}
               </div>
               <div className="text-sm text-white/80 font-medium">
