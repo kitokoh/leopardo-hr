@@ -18,6 +18,15 @@
 > (**27 tests / 76 assertions**, non-régression). Garde de couverture OpenAPI
 > (`check-openapi-route-coverage.py --strict-staleness`) → **exit 0**.
 
+
+> **MAJ 2026-10-19 — #8741, BC-38 Paiements : permissions dédiées payments.view et payments.manage.**
+> Surface **API (`api/app/Core/Tenant/Domain/Enums`)** : création de `PlatformPermission::PaymentsView` et
+> `PlatformPermission::PaymentsManage`, intégration à `PlatformRole::permissions()` pour `Finance` (avec `Admin`
+> et `SuperAdmin`), restriction des endpoints Superadmin `/api/v1/platform/payments/*` dans `api/routes/api.php`.
+> Scénarios automatisés : `api/tests/Feature/Platform/PlatformPermissionMatrixDeploymentTest.php` (+1 test dédié
+> `test_payments_endpoints_require_payments_view_and_manage`, 9 routes vérifiées dans le DataProvider, assertions
+> de matrice pour tous les rôles plateforme).
+>
 > **MAJ 2026-10-17 — #8652, #8653, #8654, #8655, Travel OS : sièges physiquement absents, cohérence disposition ↔ inventaire, rafraîchissement du plan — PR #8656.**
 > Surface **API (`api/app/Modules/TravelAgency`)** : `SeatLayout` accepte `absent_seats` (entiers positifs, uniques,
 > bornés par la capacité) et expose `sellableCapacity()` ; `GenerateTripSeatsAction` ne crée **aucune** ligne
