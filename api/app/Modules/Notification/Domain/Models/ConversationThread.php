@@ -73,6 +73,14 @@ class ConversationThread extends Model
     /** #8746 [BOS-CHAT] — fil à participants multiples (`conversation_participants`). */
     public const KIND_GROUP = 'group';
 
+    /**
+     * #8760 [BOS-CHAT] — fil entre un CLIENT de la passerelle publique et un
+     * professionnel. Le client est un `users.id` plateforme (guard `user_api`),
+     * pas un `employees.id` : il n'a donc aucune ligne `conversation_participants`
+     * et l'appartenance est portée par `public_client_id`.
+     */
+    public const KIND_PUBLIC = 'public';
+
     protected $fillable = [
         'company_id',
         'employee_id',
@@ -82,6 +90,8 @@ class ConversationThread extends Model
         'title',
         'kind',
         'created_by',
+        'public_client_id',
+        'public_target_slug',
         'status',
         'last_message_id',
         'last_message_seq',
@@ -148,6 +158,14 @@ class ConversationThread extends Model
     }
 
     /**
+     * #8760 — le fil relie un client public à un professionnel.
+     */
+    public function isPublic(): bool
+    {
+        return $this->kind === self::KIND_PUBLIC;
+    }
+
+    /**
      * #8746 — participation effective, tous types de fil confondus.
      *
      * Délègue au participant chargé quand il existe ; sinon retombe sur la
@@ -179,7 +197,75 @@ class ConversationThread extends Model
             return $this->participantFor($employee->id) !== null;
         }
 
+        // #8760 — un fil public appartient au tenant cible : seuls ses MANAGERS
+        // actifs y répondent. Un simple employé du même tenant n'a pas à lire
+        // les échanges commerciaux du professionnel avec ses clients.
+        if ($this->isPublic()) {
+            return $employee->company_id === $this->company_id && $employee->isManager();
+        }
+
         return $this->employee_id === $employee->id || $this->manager_id === $employee->id;
+    }
+
+    /**
+     * #8760 — le client public donné est-il le propriétaire de ce fil ?
+     *
+     * Contrôle AUTORITAIRE côté serveur : c'est le seul test qui autorise un
+     * accès côté client public. Un identifiant changé dans l'URL ne suffit
+     * jamais — l'appelant compare toujours l'identité authentifiée.
+     */
+    public function belongsToPublicClient(int $userId): bool
+    {
+        return $this->isPublic() && $this->public_client_id === $userId;
+    }
+
+    /**
+     * #8760 — état de lecture côté CLIENT public.
+     *
+     * Un fil public ne peut pas réutiliser `isUnreadFor()` : celui-ci attend un
+     * `Employee` (le client n'en est pas un). La règle est la même : non lu si
+     * le dernier message n'est pas du client et qu'il est postérieur à son
+     * dernier accusé de lecture (`employee_last_read_at`, réutilisé comme
+     * marqueur de lecture du client — le fil n'a pas d'employé propriétaire).
+     */
+    public function isUnreadForClient(): bool
+    {
+        if (! $this->isPublic() || $this->last_message_at === null || $this->last_message_id === null) {
+            return false;
+        }
+
+        $this->loadMissing('messages');
+
+        $lastMessage = $this->messages->last();
+
+        // Le dernier message est le sien : rien à lire.
+        if ($lastMessage instanceof ConversationMessage && $lastMessage->isFromPublicClient()) {
+            return false;
+        }
+
+        $lastRead = $this->employee_last_read_at;
+        $lastAt = $this->last_message_at;
+
+        if (! $lastAt instanceof Carbon) {
+            return false;
+        }
+
+        return $lastRead === null || $lastAt->greaterThan($lastRead);
+    }
+
+    /**
+     * #8760 — date du dernier message, formatée pour l'API publique.
+     *
+     * Accesseur typé plutôt qu'un `?->` sur la propriété : le type de
+     * `last_message_at` est `Carbon|null` en PHPDoc mais Larastan le résout
+     * comme non-nullable dans certains contextes, ce qui rend le `?->`
+     * incohérent selon l'appelant. Ici le contrat est explicite et unique.
+     */
+    public function lastMessageAtIso(): ?string
+    {
+        $at = $this->last_message_at;
+
+        return $at instanceof Carbon ? $at->toIso8601String() : null;
     }
 
     /**
@@ -205,6 +291,15 @@ class ConversationThread extends Model
                 $participant->last_read_message_id = $this->last_message_id;
                 $participant->save();
             }
+
+            return;
+        }
+
+        // #8760 — côté tenant, l'accusé de lecture d'un fil public est porté par
+        // `manager_last_read_at` (le fil n'a pas d'employé propriétaire).
+        if ($this->isPublic()) {
+            $this->manager_last_read_at = now();
+            $this->save();
 
             return;
         }
