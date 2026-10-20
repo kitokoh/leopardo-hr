@@ -66,6 +66,7 @@ final class ResumeOnboardingStep
         foreach ($steps as $step) {
             if ($step['status'] !== 'pending') {
                 $completed++;
+
                 continue;
             }
 
