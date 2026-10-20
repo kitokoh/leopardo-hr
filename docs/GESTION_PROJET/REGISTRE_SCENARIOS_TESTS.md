@@ -1,3 +1,31 @@
+> **MAJ 2026-10-20 — passerelle publique « Leopardo Public » : page `/decouvrir` sur `GET /api/v1/public/discover` — PR #8763.**
+> Surface **web grand public (`front/web`)** : nouvelle page SSR indexable `/decouvrir` (recherche métier/service/nom,
+> ville, catégorie, pagination) consommant l'agrégateur cross-verticale **déjà existant** (`PublicDiscoveryService`,
+> SUPERAPP-P0 #8611) — **aucun BC créé, aucun fichier backend modifié**. Catégories dérivées de `meta.types` ;
+> géolocalisation **sur action explicite** avec repli saisie manuelle ville/zone (aucune collecte en arrière-plan,
+> position jamais dans l'URL SSR) ; chaque résultat pointe vers la fiche publique verticale fournie par l'API
+> (`item.url`) ; CTA réservation uniquement pour les verticales qui la prennent en charge, sinon état explicite.
+> Surface **i18n** : 31 clés `discovery.*` dans `shared/i18n/locales/{fr,en,ar,tr}.json`, propagées par
+> `sync-web`/`sync-mobile`/`sync-backend` — **aucun catalogue généré modifié à la main** ; les ARB mobile reçoivent
+> les mêmes clés par propagation automatique (d'où la mise à jour de ce registre, exigée par la garde de gouvernance
+> dès qu'une surface `front/mobile_apps/` ou `front/admin-dashboard/` bouge).
+> Scénarios automatisés : `front/web/src/app/decouvrir/__tests__/public-discovery-api.test.ts` (**7 cas** : query vide,
+> encodage `q`/`city`, `type` inconnu **jamais transmis** (l'API répond 422), type canonique transmis, rayon borné et
+> envoyé seulement avec une position, `per_page` plafonné à 50, `page=1` omis) ;
+> `front/web/src/app/decouvrir/__tests__/discovery-explorer.test.tsx` (**6 cas** : rendu multi-verticales, lien de sortie
+> propre à chaque verticale, état vide, état erreur + réessai, **aucun identifiant interne** dans le HTML rendu,
+> action de réservation présente uniquement pour les verticales qui la supportent). **Résultats réels** :
+> `jest src/app/decouvrir` **13/13** ; `jest src/modules/vitrine src/app/restaurants src/app/__tests__`
+> **713/713 (66 suites)** ; `tsc --noEmit` **0 erreur** ; `eslint src --max-warnings 0` **0 warning** ;
+> `check:mojibake` / `check:assets` / `check:orphans` / `check:french-copy` **OK** ;
+> `shared/i18n/validators/validate.js` → `I18N_VALIDATION_OK (4 locales)` ; `check-i18n-catalog-parity.sh` → parité
+> fr/en/ar/tr ; `check-i18n-diff.js main HEAD` → aucune chaîne hardcodée nouvelle ; `next build` **compilé**
+> (`/decouvrir` dans `app-path-routes-manifest.json`).
+> **Non couvert par tests** : la phase « Collecting page data » du build n'a pas pu s'exécuter dans le sandbox
+> (cgroup 2 Gio, 47 workers → OOM) — la compilation et le typecheck passent, la génération statique complète reste
+> à valider par la CI du dépôt ; les parcours E2E navigateur (géolocalisation réelle, refus d'autorisation) ne sont
+> pas exécutés localement.
+
 > **MAJ 2026-10-17 — #8652, #8653, #8654, #8655, Travel OS : sièges physiquement absents, cohérence disposition ↔ inventaire, rafraîchissement du plan — PR #8656.**
 > Surface **API (`api/app/Modules/TravelAgency`)** : `SeatLayout` accepte `absent_seats` (entiers positifs, uniques,
 > bornés par la capacité) et expose `sellableCapacity()` ; `GenerateTripSeatsAction` ne crée **aucune** ligne
