@@ -11,6 +11,8 @@ use App\Modules\Retail\Domain\Manifests\RetailManifest;
 use App\Modules\Retail\Infrastructure\Payments\ChargilyProvider;
 use App\Modules\Retail\Infrastructure\Payments\MockProvider;
 use App\Modules\Retail\Infrastructure\Payments\RetailPaymentProviderRegistry;
+use App\Modules\Retail\Infrastructure\Services\RetailDiscoverableProvider;
+use App\Modules\Retail\Infrastructure\Services\RetailProfileResolver;
 use App\Modules\Retail\Interfaces\Console\ReconcileRetailPaymentsCommand;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
@@ -53,6 +55,13 @@ class RetailServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // C-1 (#8773) — exposion de la boutique sur la passerelle publique.
+        // Source de vérité unique : `RetailMarketplaceService` (opt-in
+        // `retail_online_settings.enabled` + feature `retail` + société
+        // active), déjà utilisée par `GET /public/market/sellers`.
+        $this->app->tag([RetailDiscoverableProvider::class], 'public.discoverable');
+        $this->app->tag([RetailProfileResolver::class], 'public.profile_resolver');
+
         // Les Policies métier sont enregistrées centralement dans
         // App\Providers\AuthServiceProvider (règle PA2-ARCH-008).
 
