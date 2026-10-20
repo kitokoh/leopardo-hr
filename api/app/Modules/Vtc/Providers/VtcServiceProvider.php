@@ -19,6 +19,8 @@ use App\Modules\Vtc\Domain\Events\VtcRideExpired;
 use App\Modules\Vtc\Domain\Events\VtcRideRequested;
 use App\Modules\Vtc\Domain\Manifests\VtcManifest;
 use App\Modules\Vtc\Infrastructure\Geo\VtcDispatchableDriver;
+use App\Modules\Vtc\Infrastructure\Services\VtcDiscoverableProvider;
+use App\Modules\Vtc\Infrastructure\Services\VtcProfileResolver;
 use App\Shared\Contracts\Geo\GeoServiceContract;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
@@ -80,6 +82,17 @@ class VtcServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // C-1 (#8773) — expositions de la passerelle publique. Le provider et le
+        // resolver s'appuient tous deux sur `VtcMarketplaceService` (opt-in
+        // `vtc_marketplace_operators` + feature `vtc` + société active) : une
+        // seule règle de publication, donc aucune divergence possible entre
+        // « apparaît dans la recherche » et « joignable au contact ».
+        //
+        // Tag de conteneur (inversion de dépendance, garde d'isolation #5584) :
+        // `Shared/` ne référence jamais `App\Modules\*`.
+        $this->app->tag([VtcDiscoverableProvider::class], 'public.discoverable');
+        $this->app->tag([VtcProfileResolver::class], 'public.profile_resolver');
+
         // VTC-04 (#8360) — démarrage du dispatch sur demande de course
         // (découplage par événement : la cascade d'offres vit dans la file
         // `vtc`, la création reste synchrone).
