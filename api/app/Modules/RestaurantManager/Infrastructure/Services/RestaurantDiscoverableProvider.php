@@ -27,6 +27,19 @@ final class RestaurantDiscoverableProvider implements PublicDiscoverableProvider
         return 'restaurant';
     }
 
+    /**
+     * #8761 — le restaurant prend en charge la commande publique
+     * (`RestaurantPublicOrderService` / `POST /api/v1/restaurant/public/orders`)
+     * ET la réservation via sa fiche publique ; le contact passe par la
+     * passerelle commune.
+     *
+     * @return list<string>
+     */
+    public function supportedActions(): array
+    {
+        return ['contact', 'order', 'booking'];
+    }
+
     public function search(array $filters): array
     {
         $query = $this->baseQuery()->select([

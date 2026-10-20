@@ -35,6 +35,10 @@ return [
     'platform_announcement_title' => 'Leopardo platform duyurusu',
     'platform_announcement_body' => 'Yeni bir platform duyurusu mevcut.',
 
+    // SUPERAPP-P1 (#8760) — genel gecitten gelen iletisim talebi.
+    'public_contact_request_title' => 'Yeni genel iletisim talebi',
+    'public_contact_request_body' => ':sender_name size genel profilinizden (:target_slug) ulasti.',
+
     'company_announcement_title' => 'Şirket duyurusu',
     'company_announcement_body' => 'Şirketinizde yeni bir duyuru yayınlandı.',
 

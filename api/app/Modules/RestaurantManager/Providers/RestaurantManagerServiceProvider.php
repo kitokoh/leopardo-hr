@@ -58,6 +58,7 @@ use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDemoSeederSe
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDiscoverableProvider;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsumerRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantProfileResolver;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
 use App\Modules\RestaurantManager\Policies\RestaurantPrintJobPolicy;
 use Illuminate\Contracts\Foundation\Application;
@@ -88,6 +89,9 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         // SUPERAPP-P0 — la verticale expose ses etablissements PUBLICS a la
         // decouverte unifiee (`/public/discover`) via le contrat partage.
         $this->app->tag([RestaurantDiscoverableProvider::class], 'public.discoverable');
+        // SUPERAPP-P1 (#8760) — resolution fail-closed du profil pour le
+        // contact public (memes gardes que la decouverte, aucune duplication).
+        $this->app->tag([RestaurantProfileResolver::class], 'public.profile_resolver');
         // BOS-014 (#8201) — le manifest (contrat Core v2) est enregistré au
         // catalogue central des solutions (clé d'allowlist
         // `restaurantmanager`) : la verticale devient activable via

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Showcase\Providers;
 
 use App\Modules\Showcase\Infrastructure\Services\ShowcaseDiscoverableProvider;
+use App\Modules\Showcase\Infrastructure\Services\ShowcaseProfileResolver;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -27,6 +28,10 @@ class ShowcaseServiceProvider extends ServiceProvider
         // SUPERAPP-P0 — les vitrines PUBLIEES sont exposees a la decouverte
         // unifiee (`/public/discover`) via le contrat partage.
         $this->app->tag([ShowcaseDiscoverableProvider::class], 'public.discoverable');
+        // SUPERAPP-P1 (#8760) — memes gardes fail-closed, mais pour la
+        // RESOLUTION (« ce slug est-il joignable MAINTENANT ? ») alimente le
+        // contact public : un profil depublie/suspendu renvoie null.
+        $this->app->tag([ShowcaseProfileResolver::class], 'public.profile_resolver');
         // Rien à binder au socle domaine — les contrats Infrastructure
         // seront enregistrés au fil des lots API (V-SECTIONS-API #6866,
         // V-PUBLIC-API #6867).

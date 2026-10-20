@@ -5262,6 +5262,99 @@ paths:
           $ref: '#/components/responses/Error422'
         '429':
           $ref: '#/components/responses/Error429'
+  /public/contact-requests:
+    post:
+      tags:
+      - Discovery
+      summary: Contact public client -> professionnel (SUPERAPP-P1, #8760)
+      description: >-
+        Demande de contact envoyee depuis un profil public de la passerelle
+        Leopardo Public. Route isolee SANS authentification ni middleware
+        tenant (throttle `shop-public`), patron BC-27/BC-28. Le tenant
+        destinataire n'est JAMAIS lu depuis la requete : il est resolu cote
+        serveur par (`target_type`, `target_slug`) via les
+        `PublicProfileResolver` des verticales, fail-closed. Un profil
+        inexistant, depublie, suspendu ou dont la verticale est inactive
+        renvoie un 404 UNIFORME (anti-enumeration). Idempotence par
+        `idempotency_key` : un rejeu reseau renvoie 200 avec la meme demande
+        au lieu d'en creer une seconde. Honeypot `company_website` : rempli ->
+        201 factice sans persistance. Consentement RGPD explicite requis.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - target_type
+              - target_slug
+              - sender_name
+              - sender_email
+              - message
+              - consent
+              - idempotency_key
+              properties:
+                target_type:
+                  type: string
+                  maxLength: 40
+                  description: Type canonique resolvable du profil vise.
+                target_slug:
+                  type: string
+                  maxLength: 160
+                  description: Slug public du profil vise (identifiant public).
+                sender_name:
+                  type: string
+                  minLength: 2
+                  maxLength: 120
+                sender_email:
+                  type: string
+                  format: email
+                  maxLength: 255
+                sender_phone:
+                  type: string
+                  maxLength: 40
+                  nullable: true
+                message:
+                  type: string
+                  minLength: 10
+                  maxLength: 2000
+                consent:
+                  type: boolean
+                  description: Consentement RGPD explicite (doit valoir true).
+                idempotency_key:
+                  type: string
+                  minLength: 8
+                  maxLength: 80
+                  description: Cle d'idempotence generee par le client (anti-doublon).
+                company_website:
+                  type: string
+                  maxLength: 500
+                  nullable: true
+                  description: Honeypot anti-spam (doit rester vide).
+      responses:
+        '201':
+          description: Demande de contact creee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      reference:
+                        type: string
+        '200':
+          description: Rejeu idempotent (meme demande, aucun doublon)
+        '404':
+          description: Profil inexistant ou non publiable (reponse uniforme, anti-enumeration)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
   /showcase:
     get:
       operationId: api_get_showcase

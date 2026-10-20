@@ -216,4 +216,48 @@ class PublicDiscoveryTest extends TestCase
             ->assertOk()
             ->assertJsonPath('meta.per_page', 50);
     }
+
+    /**
+     * #8761 — les capacités par type sont la source de vérité UNIQUE du
+     * frontend : plus aucune liste codée en dur côté client. Un type qui ne
+     * prend pas une action en charge la déclare absente, ce qui produit un
+     * état « indisponible » explicite au lieu d'un bouton inopérant.
+     */
+    public function test_discover_publishes_real_per_type_actions(): void
+    {
+        $this->publicRestaurant(['name' => 'Le Public', 'public_slug' => 'le-public']);
+
+        $response = $this->getJson('/api/v1/public/discover')->assertOk();
+
+        $actions = $response->json('meta.actions');
+
+        $this->assertIsArray($actions);
+
+        // Le restaurant sert commande ET réservation, et accepte le contact.
+        $this->assertContains('order', $actions['restaurant']);
+        $this->assertContains('booking', $actions['restaurant']);
+        $this->assertContains('contact', $actions['restaurant']);
+
+        // La vitrine n'expose que le contact : ni commande ni réservation.
+        $this->assertSame(['contact'], $actions['showcase']);
+        $this->assertNotContains('booking', $actions['showcase']);
+        $this->assertNotContains('order', $actions['showcase']);
+    }
+
+    /**
+     * Fail-closed : un type présent dans `meta.types` mais sans action
+     * déclarée ne doit jamais laisser le frontend supposer une capacité.
+     */
+    public function test_discover_actions_map_covers_every_discoverable_type(): void
+    {
+        $response = $this->getJson('/api/v1/public/discover')->assertOk();
+
+        $types = $response->json('meta.types');
+        $actions = $response->json('meta.actions');
+
+        foreach ($types as $type) {
+            $this->assertArrayHasKey($type, $actions, "le type `{$type}` doit déclarer ses actions");
+            $this->assertIsArray($actions[$type]);
+        }
+    }
 }
