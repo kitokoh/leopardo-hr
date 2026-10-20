@@ -8418,6 +8418,7 @@
     "conversationUnread": "Yeni",
     "conversationBack": "Geri",
     "conversationStart": "Konuşma başlat",
-    "conversationStarted": "Mesajınız profesyonel gönderildi."
+    "conversationStarted": "Mesajınız profesyonel gönderildi.",
+    "conversationStartBody": "Merhaba, sizinle iletişime geçmek istiyorum."
   }
 }

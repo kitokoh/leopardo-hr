@@ -8443,6 +8443,7 @@
     "conversationUnread": "New",
     "conversationBack": "Back",
     "conversationStart": "Start a conversation",
-    "conversationStarted": "Your message was sent to the professional."
+    "conversationStarted": "Your message was sent to the professional.",
+    "conversationStartBody": "Hello, I would like to get in touch."
   }
 }

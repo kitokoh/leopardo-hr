@@ -8418,6 +8418,7 @@
     "conversationUnread": "جديد",
     "conversationBack": "رجوع",
     "conversationStart": "بدء محادثة",
-    "conversationStarted": "تم إرسال رسالتك إلى المهني."
+    "conversationStarted": "تم إرسال رسالتك إلى المهني.",
+    "conversationStartBody": "مرحبًا، أرغب في التواصل معكم."
   }
 }

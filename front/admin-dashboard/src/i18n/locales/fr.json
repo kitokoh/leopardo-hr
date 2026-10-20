@@ -9876,6 +9876,7 @@
     "conversationUnread": "Nouveau",
     "conversationBack": "Retour",
     "conversationStart": "Démarrer une conversation",
-    "conversationStarted": "Votre message a été envoyé au professionnel."
+    "conversationStarted": "Votre message a été envoyé au professionnel.",
+    "conversationStartBody": "Bonjour, je souhaite vous contacter."
   }
 }
