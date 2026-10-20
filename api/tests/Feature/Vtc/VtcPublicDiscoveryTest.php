@@ -136,7 +136,7 @@ class VtcPublicDiscoveryTest extends TestCase
             'description', 'image_url', 'latitude', 'longitude', 'url',
         ], array_keys($item));
 
-        $this->assertStringNotContainsString((string) $company->id, $response->getContent());
+        $this->assertStringNotContainsString((string) $company->id, (string) $response->getContent());
     }
 
     public function test_search_filters_by_name_and_city(): void

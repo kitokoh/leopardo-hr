@@ -35,6 +35,7 @@ class RetailPublicDiscoveryTest extends TestCase
 
     /**
      * @param  array<string, mixed>  $attributes
+     * @param  array<string, mixed>  $settings
      */
     private function shop(
         string $slug,
