@@ -5355,6 +5355,452 @@ paths:
           $ref: '#/components/responses/Error422'
         '429':
           $ref: '#/components/responses/Error429'
+  /public/conversations:
+    get:
+      tags:
+      - Discovery
+      summary: Conversations du client public (SUPERAPP-P1, #8760)
+      description: >-
+        Liste des conversations du client authentifie avec des professionnels,
+        tous tenants confondus. Guard `user_api` (le client est un `users.id`
+        plateforme, pas un employe) : AUCUN middleware tenant, le tenant est
+        resolu cote serveur. La lecture s'appuie sur la table de ROUTAGE
+        `public_conversation_index` (client -> tenant + fil), qui ne contient
+        aucun contenu de message et n'autorise rien a elle seule : chaque fil
+        est ensuite relu DANS son contexte tenant avec le controle
+        `belongsToPublicClient()`. Un fil appartenant a un autre client est
+        indistinguable d'un fil inexistant.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 30
+      responses:
+        '200':
+          description: Conversations du client
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PublicConversationSummary'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '429':
+          $ref: '#/components/responses/Error429'
+    post:
+      tags:
+      - Discovery
+      summary: Demarrer (ou reprendre) une conversation publique (SUPERAPP-P1, #8760)
+      description: >-
+        Ouvre un fil entre le client authentifie et un professionnel, ou
+        retrouve le fil existant. Idempotent par (`client`, `tenant`, `profil`) :
+        un client qui revient sur la meme fiche retrouve sa conversation au lieu
+        d'en creer une seconde. Le tenant n'est JAMAIS lu depuis la requete : il
+        est resolu cote serveur par (`target_type`, `target_slug`) via les
+        `PublicProfileResolver` des verticales, fail-closed. Un profil
+        inexistant, depublie, suspendu ou dont la verticale est inactive renvoie
+        un 404 UNIFORME (anti-enumeration). Aucun WebSocket : le transport est le
+        polling par curseur `seq`.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - target_type
+              - target_slug
+              - body
+              properties:
+                target_type:
+                  type: string
+                  maxLength: 40
+                  description: Type canonique resolvable du profil vise.
+                target_slug:
+                  type: string
+                  maxLength: 160
+                  description: Slug public du profil vise (identifiant public).
+                body:
+                  type: string
+                  minLength: 2
+                  maxLength: 2000
+      responses:
+        '201':
+          description: Conversation creee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PublicConversationDetail'
+        '200':
+          description: Conversation existante reprise (idempotent)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PublicConversationDetail'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Profil inexistant ou non publiable (reponse uniforme, anti-enumeration)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /public/conversations/{companyId}/{thread}:
+    get:
+      tags:
+      - Discovery
+      summary: Detail d'une conversation publique (SUPERAPP-P1, #8760)
+      description: >-
+        Fil et historique complet, vus par le CLIENT. Le controle d'acces est
+        rejoue cote serveur DANS le contexte du tenant : un `companyId` ou un
+        `thread` modifie dans l'URL renvoie 404, jamais 403 (un 403 revelerait
+        l'existence du fil). La consultation vaut accuse de lecture cote client.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: companyId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: thread
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Conversation et historique
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PublicConversationDetail'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Conversation inexistante ou non accessible (reponse uniforme)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /public/conversations/{companyId}/{thread}/messages:
+    get:
+      tags:
+      - Discovery
+      summary: Messages d'une conversation publique (curseur `seq`) (SUPERAPP-P1, #8760)
+      description: >-
+        Pagination par curseur sur `seq`, meme contrat que le chat interne
+        (#8747). `before_seq` remonte l'historique ; `after_seq` rattrape ce qui
+        est arrive depuis une deconnexion. Les deux ne se combinent pas. Aucun
+        WebSocket : le client polle.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: companyId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: thread
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      - name: before_seq
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+      - name: after_seq
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 30
+      responses:
+        '200':
+          description: Page de messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PublicConversationMessage'
+                  meta:
+                    type: object
+                    properties:
+                      has_more:
+                        type: boolean
+                      next_before_seq:
+                        type: integer
+                        nullable: true
+                      last_seq:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Conversation inexistante ou non accessible (reponse uniforme)
+        '429':
+          $ref: '#/components/responses/Error429'
+    post:
+      tags:
+      - Discovery
+      summary: Repondre dans une conversation publique (SUPERAPP-P1, #8760)
+      description: >-
+        Ecrit un message du CLIENT dans son fil. Le controle d'appartenance est
+        refait cote serveur, pas delegue au controleur. Le `seq` est alloue par
+        un compteur atomique du fil (`UPDATE ... RETURNING`), jamais par un
+        `max() + 1` : l'ordre total tient sous concurrence.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: companyId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: thread
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - body
+              properties:
+                body:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+      responses:
+        '201':
+          description: Message enregistre
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PublicConversationMessage'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Conversation inexistante ou non accessible (reponse uniforme)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /conversations/public:
+    get:
+      tags:
+      - Notifications
+      summary: Boite de reception des demandes publiques (SUPERAPP-P1, #8760)
+      description: >-
+        Fils publics du tenant de l'appelant, pour le Business OS. Acces reserve
+        aux MANAGERS du tenant cible : un simple employe, meme du bon tenant,
+        recoit 404 — les echanges commerciaux avec les clients ne sont pas dans
+        son perimetre. Un manager d'un AUTRE tenant recoit 404 egalement (jamais
+        403, qui revelerait l'existence du fil).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 30
+      responses:
+        '200':
+          description: Fils publics du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PublicConversationSummary'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /conversations/public/{thread}:
+    get:
+      tags:
+      - Notifications
+      summary: Detail d'un fil public cote professionnel (SUPERAPP-P1, #8760)
+      description: >-
+        Fil et historique vus par le PROFESSIONNEL. La consultation vaut accuse
+        de lecture pour le manager appelant (`markReadFor()`), comme le chat
+        interne.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      responses:
+        '200':
+          description: Fil public et historique
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PublicConversationDetail'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Fil inexistant ou non accessible (reponse uniforme)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /conversations/public/{thread}/messages:
+    get:
+      tags:
+      - Notifications
+      summary: Messages d'un fil public cote professionnel (SUPERAPP-P1, #8760)
+      description: >-
+        Pagination par curseur sur `seq`, contrat identique au chat interne.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      - name: before_seq
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+      - name: after_seq
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 30
+      responses:
+        '200':
+          description: Page de messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PublicConversationMessage'
+                  meta:
+                    type: object
+                    properties:
+                      has_more:
+                        type: boolean
+                      next_before_seq:
+                        type: integer
+                        nullable: true
+                      last_seq:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Fil inexistant ou non accessible (reponse uniforme)
+        '429':
+          $ref: '#/components/responses/Error429'
+    post:
+      tags:
+      - Notifications
+      summary: Repondre a un client depuis le Business OS (SUPERAPP-P1, #8760)
+      description: >-
+        Ecrit un message du PROFESSIONNEL dans un fil public. L'auteur est un
+        employe du tenant cible, identifie par son token Sanctum ; seuls les
+        managers y accedent.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - body
+              properties:
+                body:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+      responses:
+        '201':
+          description: Message enregistre
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PublicConversationMessage'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Fil inexistant ou non accessible (reponse uniforme)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
   /showcase:
     get:
       operationId: api_get_showcase
@@ -49745,12 +50191,73 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    PublicConversationSummary:
+      type: object
+      description: >
+        Resume d'une conversation publique (#8760), tel qu'expose au client.
+        Aucun identifiant interne de tenant, aucun nom d'employe, aucune donnee
+        RH : uniquement de quoi afficher une carte.
+      properties:
+        company_id:
+          type: string
+          format: uuid
+          description: Tenant hote du fil (necessaire pour adresser le fil).
+        thread_id:
+          type: integer
+        title:
+          type: string
+        target_slug:
+          type: string
+          nullable: true
+        last_message_at:
+          type: string
+          format: date-time
+          nullable: true
+        last_message_seq:
+          type: integer
+        unread:
+          type: boolean
+    PublicConversationMessage:
+      type: object
+      description: >
+        Message d'un fil public (#8760). `from` vaut `client` ou `professional`
+        — l'identite de l'employe auteur n'est jamais exposee au client.
+      properties:
+        id:
+          type: integer
+        seq:
+          type: integer
+          description: Curseur d'ordre monotone par fil (jamais `created_at`).
+        from:
+          type: string
+          enum:
+          - client
+          - professional
+        body:
+          type: string
+        deleted:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+    PublicConversationDetail:
+      allOf:
+      - $ref: '#/components/schemas/PublicConversationSummary'
+      - type: object
+        properties:
+          status:
+            type: string
+          messages:
+            type: array
+            items:
+              $ref: '#/components/schemas/PublicConversationMessage'
     ConversationThread:
       type: object
       description: >
         Fil de discussion. `kind` vaut `direct` (fil binaire historique
-        employe/manager, PA2-COMM-002) ou `group` (#8746). `participants`
-        n'est present que pour un groupe.
+        employe/manager, PA2-COMM-002), `group` (#8746) ou `public` (#8760 :
+        fil entre un client de la passerelle publique et un professionnel, sans
+        employe proprietaire). `participants` n'est present que pour un groupe.
       properties:
         id:
           type: integer
@@ -49763,6 +50270,7 @@ components:
           enum:
           - direct
           - group
+          - public
         created_by:
           type: integer
           nullable: true

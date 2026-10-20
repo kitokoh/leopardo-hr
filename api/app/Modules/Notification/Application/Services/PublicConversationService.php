@@ -459,13 +459,13 @@ final class PublicConversationService
 
         if ($trimmed === '') {
             throw ValidationException::withMessages([
-                'body' => ['Le message ne peut pas être vide.'],
+                'body' => [(string) __('conversations.public_empty_body')],
             ]);
         }
 
         if (mb_strlen($trimmed) > self::MAX_BODY_LENGTH) {
             throw ValidationException::withMessages([
-                'body' => [sprintf('Le message ne peut pas dépasser %d caractères.', self::MAX_BODY_LENGTH)],
+                'body' => [(string) __('conversations.public_body_too_long', ['max' => self::MAX_BODY_LENGTH])],
             ]);
         }
 
@@ -476,7 +476,7 @@ final class PublicConversationService
     {
         $name = trim($displayName) !== '' ? trim($displayName) : $targetType;
 
-        return mb_substr('Conversation avec '.$name, 0, 200);
+        return mb_substr((string) __('conversations.public_thread_title', ['name' => $name]), 0, 200);
     }
 
     /**
