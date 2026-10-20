@@ -12,9 +12,13 @@ on:
     paths:
       - "api/openapi.yaml"
       - "api/routes/**"
+      - "redocly.yaml"
+      - "redocly-strict.yaml"
       - "dev-hub/tools/generate-openapi-sdk.mjs"
       - "dev-hub/tools/check-openapi-route-coverage.py"
       - "dev-hub/tools/openapi-coverage-allowlist.txt"
+      - "dev-hub/tools/openapi-ambiguity-allowlist.json"
+      - "dev-hub/tools/check-openapi-ambiguity-allowlist.py"
       - ".github/workflows/openapi-ci.yml"
 
 permissions:
@@ -40,6 +44,14 @@ jobs:
 
       - name: Lint api/openapi.yaml
         run: npx --yes @redocly/cli@1.34.5 lint api/openapi.yaml
+
+      - name: Guard reviewed Laravel path ambiguities
+        run: |
+          npx --yes @redocly/cli@1.34.5 lint api/openapi.yaml \
+            --config redocly-strict.yaml --format json --max-problems 5000 \
+            > /tmp/openapi-redocly-default.json
+          python3 dev-hub/tools/check-openapi-ambiguity-allowlist.py \
+            /tmp/openapi-redocly-default.json
 
       - name: Setup Node.js
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
