@@ -8381,6 +8381,22 @@
     "contactUnavailable": "التواصل غير متاح",
     "typeShowcase": "مهني",
     "typeRestaurant": "مطعم",
-    "typeHospitalityProperty": "إقامة"
+    "typeHospitalityProperty": "إقامة",
+    "contact": "تواصل",
+    "contactTitle": "تواصل مع هذا المهني",
+    "contactName": "اسمك",
+    "contactEmail": "بريدك الإلكتروني",
+    "contactPhone": "الهاتف (اختياري)",
+    "contactMessage": "رسالتك",
+    "contactConsent": "أوافق على مشاركة بياناتي مع هذا المهني حتى يتمكن من الرد علي.",
+    "contactSend": "إرسال",
+    "contactSending": "جارٍ الإرسال…",
+    "contactCancel": "إلغاء",
+    "contactClose": "إغلاق",
+    "contactSent": "تم إرسال طلبك.",
+    "contactReference": "المرجع",
+    "contactError": "فشل الإرسال. تحقق من اتصالك ثم أعد المحاولة.",
+    "contactInvalid": "يرجى التحقق من حقول النموذج.",
+    "contactNotAvailable": "هذا المهني لا يستقبل طلبات حالياً."
   }
 }

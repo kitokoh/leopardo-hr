@@ -1,3 +1,25 @@
+> **MAJ 2026-10-20 (#2) — passerelle publique : contact client → professionnel `POST /api/v1/public/contact-requests` (PR #8763, issue #8760).**
+> Surface **backend (`api`) + web grand public (`front/web`)** : le CTA « Contacter » de `/decouvrir` ouvre un formulaire
+> public qui route vers le **tenant propriétaire** du profil. Réutilisation stricte de l'existant — aucun moteur nouveau :
+> contrat `PublicProfileResolver` + `PublicProfileLocator` (même inversion de dépendance que `PublicDiscoverableProvider`),
+> gardes fail-closed **identiques** à la découverte (`status=published`, `is_public`, société non `suspended`/`expired`,
+> feature verticale active), flux Événement → listener calqué sur `CatalogInquiryReceived` (lead CRM BC-11 + notification
+> BC-13 via `CommunicationService`), idempotence par `idempotency_key` unique. Table **plateforme** `public_contact_requests`
+> (schéma public, **sans `company_id`** : le visiteur n'appartient à aucun tenant, comme `travel_customer_accounts`) ;
+> le tenant est résolu **côté serveur**, jamais accepté en entrée. Séparation stricte avec Léa : aucune table `ai_*`,
+> aucun service IA. Anti-spam : honeypot + `throttle:shop-public`. RGPD : consentement horodaté, IP **hashée**, rétention bornée.
+> Scénarios automatisés : `api/tests/Feature/Platform/PublicContactRequestTest.php` (**10 cas** : acceptation + lead CRM
+> tenant-scopé, notification manager, **404 uniforme** pour profil `draft`/feature absente/slug inexistant, société
+> suspendue, **isolation cross-tenant** (2 tenants, aucun lead ni notification chez le non-visé), **aucune écriture `ai_*`**,
+> rejeu idempotent sans doublon, `target_type` inconnu → 422, consentement manquant → 422, honeypot → succès factice sans
+> persistance) ; `front/web/src/app/decouvrir/__tests__/contact-dialog.test.tsx` (**4 cas** : envoi avec **seuls**
+> `target_type`/`target_slug` (aucun `company_id`), 404 → état indisponible **sans faux succès**, panne réseau → erreur
+> réessayable, **même clé d'idempotence** conservée entre deux tentatives).
+> **Résultats réels** : `php artisan test --filter=PublicContactRequestTest` **10/10 (37 assertions)** ;
+> `jest src/app/decouvrir` **17/17 (3 suites)** ; `tsc --noEmit` **0 erreur** ; `eslint src --max-warnings 0` **0 warning** ;
+> `check:mojibake` / `check:assets` / `check:orphans` / `check:french-copy` **OK** ; `validate.js` → `I18N_VALIDATION_OK (4 locales)` ;
+> `check-i18n-catalog-parity.sh` **OK** ; `check-i18n-diff.js main HEAD` **aucune chaîne hardcodée nouvelle**.
+
 > **MAJ 2026-10-20 — passerelle publique « Leopardo Public » : page `/decouvrir` sur `GET /api/v1/public/discover` — PR #8763.**
 > Surface **web grand public (`front/web`)** : nouvelle page SSR indexable `/decouvrir` (recherche métier/service/nom,
 > ville, catégorie, pagination) consommant l'agrégateur cross-verticale **déjà existant** (`PublicDiscoveryService`,

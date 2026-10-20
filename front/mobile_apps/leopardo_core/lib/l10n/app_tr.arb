@@ -6643,5 +6643,21 @@
   "discoveryContactunavailable": "İletişim mevcut değil",
   "discoveryTypeshowcase": "Profesyonel",
   "discoveryTyperestaurant": "Restoran",
-  "discoveryTypehospitalityproperty": "Konaklama"
+  "discoveryTypehospitalityproperty": "Konaklama",
+  "discoveryContact": "İletişim",
+  "discoveryContacttitle": "Bu profesyonelle iletişime geç",
+  "discoveryContactname": "Adınız",
+  "discoveryContactemail": "E-postanız",
+  "discoveryContactphone": "Telefon (isteğe bağlı)",
+  "discoveryContactmessage": "Mesajınız",
+  "discoveryContactconsent": "Yanıt verebilmesi için iletişim bilgilerimin bu profesyonelle paylaşılmasını kabul ediyorum.",
+  "discoveryContactsend": "Gönder",
+  "discoveryContactsending": "Gönderiliyor…",
+  "discoveryContactcancel": "İptal",
+  "discoveryContactclose": "Kapat",
+  "discoveryContactsent": "Talebiniz gönderildi.",
+  "discoveryContactreference": "Referans",
+  "discoveryContacterror": "Gönderim başarısız. Bağlantınızı kontrol edip tekrar deneyin.",
+  "discoveryContactinvalid": "Lütfen form alanlarını kontrol edin.",
+  "discoveryContactnotavailable": "Bu profesyonel şu anda talep kabul etmiyor."
 }

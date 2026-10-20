@@ -6643,5 +6643,21 @@
   "discoveryContactunavailable": "Contact non disponible",
   "discoveryTypeshowcase": "Professionnel",
   "discoveryTyperestaurant": "Restaurant",
-  "discoveryTypehospitalityproperty": "Hébergement"
+  "discoveryTypehospitalityproperty": "Hébergement",
+  "discoveryContact": "Contacter",
+  "discoveryContacttitle": "Contacter ce professionnel",
+  "discoveryContactname": "Votre nom",
+  "discoveryContactemail": "Votre e-mail",
+  "discoveryContactphone": "Téléphone (facultatif)",
+  "discoveryContactmessage": "Votre message",
+  "discoveryContactconsent": "J'accepte que mes coordonnées soient transmises à ce professionnel afin qu'il me réponde.",
+  "discoveryContactsend": "Envoyer",
+  "discoveryContactsending": "Envoi…",
+  "discoveryContactcancel": "Annuler",
+  "discoveryContactclose": "Fermer",
+  "discoveryContactsent": "Votre demande a bien été envoyée.",
+  "discoveryContactreference": "Référence",
+  "discoveryContacterror": "L'envoi a échoué. Vérifiez votre connexion puis réessayez.",
+  "discoveryContactinvalid": "Vérifiez les champs du formulaire.",
+  "discoveryContactnotavailable": "Ce professionnel n'accepte pas de demande pour le moment."
 }

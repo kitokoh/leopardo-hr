@@ -6643,5 +6643,21 @@
   "discoveryContactunavailable": "التواصل غير متاح",
   "discoveryTypeshowcase": "مهني",
   "discoveryTyperestaurant": "مطعم",
-  "discoveryTypehospitalityproperty": "إقامة"
+  "discoveryTypehospitalityproperty": "إقامة",
+  "discoveryContact": "تواصل",
+  "discoveryContacttitle": "تواصل مع هذا المهني",
+  "discoveryContactname": "اسمك",
+  "discoveryContactemail": "بريدك الإلكتروني",
+  "discoveryContactphone": "الهاتف (اختياري)",
+  "discoveryContactmessage": "رسالتك",
+  "discoveryContactconsent": "أوافق على مشاركة بياناتي مع هذا المهني حتى يتمكن من الرد علي.",
+  "discoveryContactsend": "إرسال",
+  "discoveryContactsending": "جارٍ الإرسال…",
+  "discoveryContactcancel": "إلغاء",
+  "discoveryContactclose": "إغلاق",
+  "discoveryContactsent": "تم إرسال طلبك.",
+  "discoveryContactreference": "المرجع",
+  "discoveryContacterror": "فشل الإرسال. تحقق من اتصالك ثم أعد المحاولة.",
+  "discoveryContactinvalid": "يرجى التحقق من حقول النموذج.",
+  "discoveryContactnotavailable": "هذا المهني لا يستقبل طلبات حالياً."
 }

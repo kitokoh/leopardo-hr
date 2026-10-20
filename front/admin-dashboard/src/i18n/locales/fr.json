@@ -9839,6 +9839,22 @@
     "contactUnavailable": "Contact non disponible",
     "typeShowcase": "Professionnel",
     "typeRestaurant": "Restaurant",
-    "typeHospitalityProperty": "Hébergement"
+    "typeHospitalityProperty": "Hébergement",
+    "contact": "Contacter",
+    "contactTitle": "Contacter ce professionnel",
+    "contactName": "Votre nom",
+    "contactEmail": "Votre e-mail",
+    "contactPhone": "Téléphone (facultatif)",
+    "contactMessage": "Votre message",
+    "contactConsent": "J'accepte que mes coordonnées soient transmises à ce professionnel afin qu'il me réponde.",
+    "contactSend": "Envoyer",
+    "contactSending": "Envoi…",
+    "contactCancel": "Annuler",
+    "contactClose": "Fermer",
+    "contactSent": "Votre demande a bien été envoyée.",
+    "contactReference": "Référence",
+    "contactError": "L'envoi a échoué. Vérifiez votre connexion puis réessayez.",
+    "contactInvalid": "Vérifiez les champs du formulaire.",
+    "contactNotAvailable": "Ce professionnel n'accepte pas de demande pour le moment."
   }
 }

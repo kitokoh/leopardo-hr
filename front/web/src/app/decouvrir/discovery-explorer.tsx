@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { AlertTriangle, LocateFixed, MapPin, Search } from 'lucide-react';
+import { AlertTriangle, LocateFixed, MapPin, MessageSquare, Search } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import type { AppLocale } from '@/lib/i18n';
 import { catalogDirection, t } from '@/lib/i18n/locale-catalog';
@@ -11,6 +11,7 @@ import {
   type PublicDiscoveryItem,
   type PublicDiscoveryMeta,
 } from '@/lib/public-discovery-api';
+import ContactDialog from './contact-dialog';
 
 /**
  * SUPERAPP-P0 (#8611) — explorateur client de la passerelle publique.
@@ -74,6 +75,8 @@ export default function DiscoveryExplorer({
   const [error, setError] = useState(initialError);
   const [geoState, setGeoState] = useState<GeoState>('idle');
   const [near, setNear] = useState<string | null>(null);
+  /** Résultat dont le formulaire de contact est ouvert (null = fermé). */
+  const [contactTarget, setContactTarget] = useState<PublicDiscoveryItem | null>(null);
 
   const knownTypes = meta?.types ?? [];
 
@@ -294,19 +297,36 @@ export default function DiscoveryExplorer({
                 )}
 
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {item.url ? (
+                  {item.url && (
                     <Link
                       href={item.url}
                       className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white"
                     >
                       {t(locale, 'discovery.viewProfile')}
                     </Link>
-                  ) : (
-                    <span className="text-xs text-slate-400">
-                      {t(locale, 'discovery.contactUnavailable')}
-                    </span>
                   )}
 
+                  {/*
+                    #8760 — Contact : ouvre le formulaire public. Le couple
+                    (type, slug) est le SEUL identifiant transmis ; le tenant
+                    est résolu côté serveur. Toujours proposé : une demande de
+                    contact ne dépend d'aucune capacité de réservation.
+                  */}
+                  <button
+                    type="button"
+                    onClick={() => setContactTarget(item)}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700"
+                  >
+                    <MessageSquare className="h-3.5 w-3.5" aria-hidden />
+                    {t(locale, 'discovery.contact')}
+                  </button>
+
+                  {/*
+                    #8761 — Réservation : rendue UNIQUEMENT pour les verticales
+                    qui la prennent réellement en charge ET dont la fiche
+                    publique existe. Sinon, on affiche l'état explicite
+                    « indisponible » — jamais un bouton inopérant.
+                  */}
                   {BOOKING_TYPES.has(item.type) &&
                     (item.url ? (
                       <Link
@@ -373,6 +393,16 @@ export default function DiscoveryExplorer({
             </nav>
           )}
         </>
+      )}
+
+      {contactTarget && (
+        <ContactDialog
+          locale={locale}
+          targetType={contactTarget.type}
+          targetSlug={contactTarget.slug}
+          targetName={contactTarget.name}
+          onClose={() => setContactTarget(null)}
+        />
       )}
     </div>
   );

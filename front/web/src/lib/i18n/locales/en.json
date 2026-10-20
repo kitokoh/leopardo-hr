@@ -8381,6 +8381,22 @@
     "contactUnavailable": "Contact unavailable",
     "typeShowcase": "Professional",
     "typeRestaurant": "Restaurant",
-    "typeHospitalityProperty": "Accommodation"
+    "typeHospitalityProperty": "Accommodation",
+    "contact": "Contact",
+    "contactTitle": "Contact this professional",
+    "contactName": "Your name",
+    "contactEmail": "Your email",
+    "contactPhone": "Phone (optional)",
+    "contactMessage": "Your message",
+    "contactConsent": "I agree to share my contact details with this professional so they can reply.",
+    "contactSend": "Send",
+    "contactSending": "Sending…",
+    "contactCancel": "Cancel",
+    "contactClose": "Close",
+    "contactSent": "Your request has been sent.",
+    "contactReference": "Reference",
+    "contactError": "Sending failed. Check your connection and try again.",
+    "contactInvalid": "Please check the form fields.",
+    "contactNotAvailable": "This professional is not accepting requests right now."
   }
 }

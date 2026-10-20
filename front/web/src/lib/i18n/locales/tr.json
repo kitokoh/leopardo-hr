@@ -8381,6 +8381,22 @@
     "contactUnavailable": "İletişim mevcut değil",
     "typeShowcase": "Profesyonel",
     "typeRestaurant": "Restoran",
-    "typeHospitalityProperty": "Konaklama"
+    "typeHospitalityProperty": "Konaklama",
+    "contact": "İletişim",
+    "contactTitle": "Bu profesyonelle iletişime geç",
+    "contactName": "Adınız",
+    "contactEmail": "E-postanız",
+    "contactPhone": "Telefon (isteğe bağlı)",
+    "contactMessage": "Mesajınız",
+    "contactConsent": "Yanıt verebilmesi için iletişim bilgilerimin bu profesyonelle paylaşılmasını kabul ediyorum.",
+    "contactSend": "Gönder",
+    "contactSending": "Gönderiliyor…",
+    "contactCancel": "İptal",
+    "contactClose": "Kapat",
+    "contactSent": "Talebiniz gönderildi.",
+    "contactReference": "Referans",
+    "contactError": "Gönderim başarısız. Bağlantınızı kontrol edip tekrar deneyin.",
+    "contactInvalid": "Lütfen form alanlarını kontrol edin.",
+    "contactNotAvailable": "Bu profesyonel şu anda talep kabul etmiyor."
   }
 }
