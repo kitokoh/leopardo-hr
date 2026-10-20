@@ -68,7 +68,7 @@ class OnboardingStateController extends Controller
             return $this->errorResponse('ONBOARDING_STEP_NOT_FOUND', 404);
         }
 
-        $result = $this->resume->moveTo($company, $stepKey, $steps);
+        $result = $this->resume->execute($company, $stepKey, $steps);
         $data = $result['state'];
         $data['changed'] = $result['changed'];
 
@@ -84,7 +84,7 @@ class OnboardingStateController extends Controller
         $companyId = (string) $company->id;
         $steps = $this->steps($companyId);
 
-        $state = $this->resume->read($company, $steps);
+        $state = $this->resume->stateOf($company, $steps);
 
         if ($includeSteps) {
             $state['steps'] = $steps;
