@@ -81,7 +81,10 @@ class PublicContactRequestTest extends TestCase
         });
     }
 
-    /** @param array<string, mixed> $overrides */
+    /**
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
     private function payload(string $slug, array $overrides = []): array
     {
         return array_merge([
@@ -132,7 +135,6 @@ class PublicContactRequestTest extends TestCase
 
         $this->assertInstanceOf(CrmLead::class, $lead, 'la demande doit produire un lead CRM dans le tenant');
         $this->assertSame('public_gateway', $lead->source);
-        $this->assertNotNull($manager);
     }
 
     public function test_contact_request_notifies_the_tenant_manager(): void
@@ -228,8 +230,6 @@ class PublicContactRequestTest extends TestCase
             ->count();
 
         $this->assertSame(0, $betaNotified, 'le tenant non visé ne doit recevoir aucune notification');
-
-        $this->assertNotNull($alphaManager);
     }
 
     public function test_contact_request_never_writes_into_ai_tables(): void

@@ -96,7 +96,7 @@ class CreateCrmLeadFromPublicContact
             (string) $request->target_slug
         );
 
-        if (is_string($request->message) && trim($request->message) !== '') {
+        if (trim($request->message) !== '') {
             $notes .= ' — '.trim($request->message);
         }
 

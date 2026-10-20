@@ -80,7 +80,7 @@ final class PublicDiscoveryService
             $type = $provider->type();
             $actions = array_values(array_unique(array_filter(
                 $provider->supportedActions(),
-                static fn (mixed $action): bool => is_string($action) && $action !== '',
+                static fn (string $action): bool => $action !== '',
             )));
             sort($actions);
             $map[$type] = $actions;
