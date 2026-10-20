@@ -58,30 +58,32 @@ export function HeroRotatingTagline({ phrases, intervalMs = 3800 }: HeroRotating
   if (phrases.length === 0) return null;
 
   return (
-    <p
+    <div
       data-testid="hero-rotating-tagline"
-      className="relative mt-4 grid place-items-center text-center sm:mt-5"
+      className="relative mt-5 flex justify-center"
     >
-      {/* Version lecteur d'écran : la première phrase, une fois. La rotation
-          visuelle est marquée aria-hidden ci-dessous. */}
-      <span className="sr-only">{phrases[0]}</span>
-      {phrases.map((phrase, index) => (
-        <span
-          key={phrase}
-          aria-hidden="true"
-          className={`col-start-1 row-start-1 flex items-center justify-center gap-2.5 text-sm font-medium tracking-wide text-emerald-300/90 transition-all duration-700 ease-out sm:text-base ${
-            index === active
-              ? 'translate-y-0 opacity-100'
-              : 'pointer-events-none translate-y-1.5 opacity-0'
-          }`}
-        >
-          {/* Point-étoile : le texte secondaire appartient à la même nuit que
-              la constellation — une pulsation douce, comme une étoile de plus. */}
-          <span className="inline-block h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-emerald-400" />
-          <span>{phrase}</span>
-        </span>
-      ))}
-    </p>
+      <div className="relative inline-grid place-items-center rounded-full border border-emerald-500/20 bg-slate-900/60 px-5 py-2 text-center shadow-lg shadow-emerald-950/40 backdrop-blur-md">
+        {/* Version lecteur d'écran : la première phrase, une fois. La rotation
+            visuelle est marquée aria-hidden ci-dessous. */}
+        <span className="sr-only">{phrases[0]}</span>
+        {phrases.map((phrase, index) => (
+          <span
+            key={phrase}
+            aria-hidden="true"
+            className={`col-start-1 row-start-1 flex items-center justify-center gap-2.5 text-xs font-semibold tracking-wide text-emerald-300 transition-all duration-700 ease-out sm:text-sm ${
+              index === active
+                ? 'translate-y-0 opacity-100'
+                : 'pointer-events-none translate-y-1.5 opacity-0'
+            }`}
+          >
+            {/* Point-étoile : le texte secondaire appartient à la même nuit que
+                la constellation — une pulsation douce, comme une étoile de plus. */}
+            <span className="inline-block h-2 w-2 shrink-0 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+            <span>{phrase}</span>
+          </span>
+        ))}
+      </div>
+    </div>
   );
 }
 

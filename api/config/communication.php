@@ -192,6 +192,15 @@ return [
             'body_key' => 'notifications.conversation_message_received_body',
             'vars' => ['author', 'thread'],
         ],
+        // #8746 [BOS-CHAT] — un membre ajouté à un groupe est prévenu une
+        // seule fois, sur le canal in-app uniquement (pas de doublon push
+        // avec le message d'ouverture).
+        'conversation_group_added' => [
+            'category' => 'communication',
+            'title_key' => 'notifications.conversation_group_added_title',
+            'body_key' => 'notifications.conversation_group_added_body',
+            'vars' => ['thread'],
+        ],
         'platform_announcement' => [
             'category' => 'platform',
             'title_key' => 'notifications.platform_announcement_title',

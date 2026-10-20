@@ -42,6 +42,19 @@
 > (non secrète, `wrangler.toml`) et se déploie avec le token Cloudflare du
 > compte dev, conservé hors GitHub — aucun secret GitHub requis.
 
+## Complément 2026-10-18 — propagation du proxy Vercel (#8735)
+
+| Secret / Variable | Used by | Purpose | Required? |
+|---|---|---|---|
+| `VERCEL_DEV_TOKEN` (secret) | `dev-stack-switch.yml` (étape « Propager API_PROXY_TARGET ») | Token Vercel de l'équipe dev (`africanovatech-8316`) pour poser `API_PROXY_TARGET`/`NEXT_PUBLIC_API_URL` et redéployer le proxy Next. Absent = étape sautée avec `::warning` (la bascule Render a lieu, mais le proxy ne suivrait pas) | Optional (recommandé) |
+| `VERCEL_DEV_PROJECT_ID` (variable) | `dev-stack-switch.yml` | Id du projet Vercel dev `leopardo` (`prj_RcRVAujaFul8WNZXxgnNKTb9lXdr`) — défaut codé si absent | Default `prj_RcRVAujaFul8WNZXxgnNKTb9lXdr` |
+| `VERCEL_DEV_TEAM_ID` (variable) | `dev-stack-switch.yml` | Id d'équipe Vercel dev (`team_pjMBnfirN9999uUp6Fg9u6F9`) — défaut codé si absent | Default `team_pjMBnfirN9999uUp6Fg9u6F9` |
+
+> Ces trois références sont consommées par la nouvelle étape de propagation
+> du proxy (#8710) ajoutée à `dev-stack-switch.yml` : sans `API_PROXY_TARGET`
+> posé + redeploy, une bascule auto laisserait le proxy appeler l'ancienne
+> stack sans rebuild.
+
 ## Complément — secrets manquants au premier inventaire (re-audit #4345)
 
 | Secret | Used by | Purpose | Required? |

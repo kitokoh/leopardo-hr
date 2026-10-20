@@ -1831,3 +1831,126 @@ restent les gates applicables.
   bouton désactivé si `dispatch_configured=false`, refus de l'API remonté en
   toast. Scénario manuel : couper `GITHUB_STACK_SWITCH_TOKEN` sur le service API
   et vérifier que l'écran reste lisible et n'offre pas de bascule.
+
+## Chat horizontal — groupes de discussion (#8746)
+
+- **Contexte** : le fil de discussion existant (`PA2-COMM-002`, `/conversations`)
+  est binaire (employé ↔ manager). Cette livraison ajoute `kind = group` avec
+  `conversation_participants` (rôles `creator`/`admin`/`member`, curseur de
+  lecture par participant). L'appartenance d'un groupe est régie **uniquement**
+  par la table de participants ; celle d'un fil `direct` reste déduite de
+  `employee_id`/`manager_id`.
+- **Surfaces API** : `POST /api/v1/conversations/groups`,
+  `GET|POST /api/v1/conversations/{thread}/participants`,
+  `DELETE /api/v1/conversations/{thread}/participants/{employee}`,
+  `POST /api/v1/conversations/{thread}/leave`.
+  Contrats documentés dans `api/openapi.yaml` (paramètre `ConversationThreadId`,
+  schémas `ConversationThread`, `ConversationParticipant`).
+- **Scénarios attendus côté API** :
+  | Cas | Attendu |
+  |---|---|
+  | création avec participants du même tenant | **201**, `kind: group`, `created_by`, une ligne `creator` + N lignes `member` |
+  | création avec un `employee_id` d'un autre tenant | **422**, aucune ligne créée |
+  | création sans aucun autre participant | **422** |
+  | ajout par un `member` | **404** (jamais 403 : ne révèle pas l'existence du fil) |
+  | ajout par `creator`/`admin` | **201**, `role: member` |
+  | ré-ajout d'un membre déjà présent | **201**, ligne existante (idempotent, pas de doublon) |
+  | retrait d'un `member` par un `admin` | **204**, ligne supprimée |
+  | retrait d'un `admin` par un autre `admin` | **404** |
+  | retrait du `creator` (même par lui) | **422** |
+  | `leave` par un `member` | **204**, puis `GET /conversations/{thread}` → **404** |
+  | `leave` par le `creator` | **422** (doit transmettre son rôle) |
+  | tout endpoint de groupe par un non-participant | **404** sur les 5 |
+  | `GET /conversations` depuis un autre tenant | **200** avec `data: []` (aucune fuite) |
+  | lecture par un participant | met à jour **son** `last_read_message_id`, pas celui des autres |
+  | fil `direct` existant après migration | `kind: direct`, **aucune** ligne de participation, contrat inchangé |
+- **Isolation multi-tenant** : les identifiants de participants sont résolus avec
+  `company_id` explicite ; un id étranger produit 422 et jamais une ligne
+  silencieusement ignorée. `BelongsToCompany` + `findForActor()` restent le
+  garde-fou de lecture.
+- **Non couvert par tests** : charge (`k6`), reconnexion UI (dépend de la phase
+  P6), `migrate` complet hors environnement de test. Spécifications fournies au
+  §13 de `docs/mission-business-os/16_chat_horizontal_audit.md`.
+
+## Mise a jour 2026-10-19 — Chat horizontal, phases P2 a P6 (PR feat/bos-chat-phases-2-6, issues #8747, #8748, #8749, #8750, #8751)
+
+Perimetre : extension du module existant `App\Modules\Notification` (BC-13 COMMS).
+Aucun nouveau BC, aucun second systeme de messagerie, d'auth, de notification ou
+de fichiers.
+
+- **Surfaces API ajoutees ou etendues** :
+  `GET /api/v1/conversations/{thread}/messages` (curseur `before_seq` /
+  `after_seq` / `per_page`), `PATCH|DELETE /api/v1/conversations/{thread}/messages/{message}`,
+  `POST /api/v1/conversations/{thread}/reports`,
+  `GET|POST /api/v1/conversations/blocks`,
+  `DELETE /api/v1/conversations/blocks/{employee}`,
+  `GET|POST /api/v1/conversations/reports`,
+  `GET /api/v1/conversations/moderation/reports`,
+  `POST /api/v1/conversations/moderation/reports/{report}/resolve`.
+  Contrats dans `api/openapi.yaml` (schemas `ConversationMessage`,
+  `ConversationBlock`, `ConversationReport`, parametre `ConversationMessageId`).
+- **Migrations** : `2026_10_19_000928_8747_...` (colonnes `seq`,
+  `client_message_id`, `reply_to_message_id`, `edited_at`, `deleted_at`,
+  `deleted_by_id`, `attachment_disk`, `last_message_seq` + index partiels) ;
+  `2026_10_19_000929_8750_...` (`conversation_blocks`, `conversation_reports`).
+  Les deux sont **additives** et reentrantes (`schemaTableExists` /
+  `schemaHasColumn`), avec backfill de `seq` pour l'existant.
+- **Scenarios attendus cote API** :
+  | Cas | Attendu |
+  |---|---|
+  | envoi nominal | **201**, `seq` alloue, `last_message_seq` incrementé |
+  | rejeu du meme `client_message_id` | **200**, meme `id`, **aucun** second message |
+  | meme `client_message_id` dans un autre fil | **201** (unicite **par fil**) |
+  | deux envois concurrents, meme cle | **une seule** ligne creee (course rattrapee, 23505) |
+  | `reply_to_message_id` d'un autre fil | **422** |
+  | `GET` sans parametre | derniere page, ordre `seq` croissant |
+  | `before_seq` | messages anterieurs, ordre croissant, `has_more` fiable |
+  | `after_seq` | uniquement les messages posterieurs (rattrapage) |
+  | `per_page=100000` | **200** mais `per_page: 100` (plafonne) |
+  | `PATCH` par l'auteur | **200**, `edited_at` renseigne, aucun nouveau message |
+  | `PATCH` par un autre participant (meme manager) | **404**, corps inchange |
+  | `PATCH` sur un message supprime | **422** |
+  | `DELETE` par l'auteur | **204**, `deleted_at` pose, `seq` conserve, corps vide |
+  | `DELETE` repete | **204** (idempotent) |
+  | message supprime dans l'historique | ligne presente, `deleted: true`, `body: ""` |
+  | message sans corps ni piece jointe | **422** |
+  | piece jointe seule | **201**, `body: ""` |
+  | piece jointe > 5 Mo | **422** |
+  | piece jointe dont le MIME declare ment (ELF en `.pdf`) | **422** (type reel via `finfo`) |
+  | telechargement par un non-participant | **404** |
+  | fichier absent du disque | **410** |
+  | non-participant sur `GET`/`POST`/`PATCH`/`DELETE` | **404** sur chacun, jamais 403 |
+  | fil ou message d'un autre tenant | **404** |
+  | blocage d'un employe | **201**, unique par paire, idempotent |
+  | auto-blocage | **422** |
+  | blocage d'un employe d'un autre tenant | **422**, aucune ligne |
+  | creation de fil direct apres blocage (les deux sens) | **422** |
+  | ajout du bloque dans un groupe | **422** |
+  | tiers non concerne par le blocage | **201** (fil cree) |
+  | signalement d'un message du fil | **201**, `reported_employee_id` = auteur |
+  | signalement d'un message d'un autre fil | **422** |
+  | signalement par un non-participant | **404** |
+  | motif hors liste fermee | **422** |
+  | `GET /conversations/reports` | **200**, uniquement les signalements de l'appelant |
+  | file de moderation par un non-manager | **422** |
+  | file de moderation par un manager d'un autre tenant | **200** avec `data: []` |
+  | cloture d'un signalement deja clos | **200**, premiere decision preservee |
+  | envoi au-dela du quota | **429** |
+- **Isolation multi-tenant** : toute lecture passe par `findForActor()`
+  (scope `company_id` + appartenance) ; les identifiants cibles (blocage,
+  signalement) sont resolus **dans le tenant de l'appelant** et un identifiant
+  etranger produit **422**, jamais une ligne silencieuse. La file de moderation
+  est explicitement tenant-scopee.
+- **Lea** : aucun scenario croise. Le chat humain et l'assistant IA restent deux
+  systemes separes ; aucun test de chat ne traverse `PlatformAdminAiChatTest`.
+- **Resultats reels** (`CI=true`, PHP 8.4 + PostgreSQL 15) :
+  `ConversationMessagesTest` **15 tests** verts, `ConversationModerationTest`
+  **18 tests** verts, suite conversation **53 tests / 259 assertions** vertes ;
+  `pint --test` **PASS** ; **PHPStan niveau 8 `[OK] No errors`** ; frontend
+  `tsc --noEmit` 0 erreur, `eslint` 0 warning, `jest` 6/6 sur `lib/chat.ts`.
+- **Non couvert par tests** : charge (`k6`) — aucun environnement deploye
+  joignable ; la reprise de connexion est couverte cote client (`mergeMessages`)
+  et cote API (`after_seq`), mais pas en E2E navigateur ; `CHAT_ATTACHMENT_DISK`
+  n'est pas positionne en production, donc la perte des pieces jointes au
+  redeploiement (risque R1) reste **ouverte** tant que l'exploitant ne l'a pas
+  configure.

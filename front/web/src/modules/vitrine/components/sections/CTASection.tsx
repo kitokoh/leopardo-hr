@@ -126,18 +126,19 @@ export function CTASection({
           whileInView={{ y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          className="flex flex-col sm:flex-row items-center justify-center gap-5"
         >
           {resolvedPrimaryCta && (
             <Link
               href={withLocaleHref(resolvedPrimaryCta.href, search)}
               {...(/^https?:\/\//i.test(resolvedPrimaryCta.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-              className="group relative px-8 py-4 bg-white text-emerald-700 font-bold rounded-2xl overflow-hidden transition-all duration-300 cta-glow-white hover:scale-[1.03] active:scale-[0.98]"
+              className="group relative px-9 py-4 bg-white text-emerald-800 font-extrabold rounded-2xl overflow-hidden transition-all duration-300 shadow-2xl hover:scale-[1.03] hover:shadow-white/30 active:scale-[0.98] ring-2 ring-white/40"
             >
               <span className="relative z-10 flex items-center gap-2.5 text-base">
                 {resolvedPrimaryCta.text}
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-300" />
               </span>
+              <span className="absolute inset-0 bg-gradient-to-r from-emerald-50 via-white to-teal-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </Link>
           )}
 
@@ -145,10 +146,10 @@ export function CTASection({
             <Link
               href={withLocaleHref(resolvedSecondaryCta.href, search)}
               {...(/^https?:\/\//i.test(resolvedSecondaryCta.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-              className="group flex items-center gap-2.5 px-8 py-4 bg-white/10 text-white font-semibold rounded-2xl border border-white/20 hover:bg-white/20 transition-all duration-300 backdrop-blur-sm"
+              className="group flex items-center gap-2.5 px-9 py-4 bg-white/10 text-white font-bold rounded-2xl border border-white/30 hover:bg-white/20 hover:border-white/50 transition-all duration-300 backdrop-blur-md shadow-lg"
             >
               {resolvedSecondaryCta.text}
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-300" />
             </Link>
           )}
         </motion.div>

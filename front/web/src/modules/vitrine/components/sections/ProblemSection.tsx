@@ -64,19 +64,20 @@ export function ProblemSection({
               whileHover={{ y: -4, transition: { duration: 0.25 } }}
               className="group"
             >
-              <div className="relative h-full bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl border border-slate-200/80 dark:border-slate-800/80 p-8 transition-all duration-300 group-hover:border-red-200/50 dark:group-hover:border-red-800/50 group-hover:shadow-lg">
+              <div className="relative h-full rounded-3xl border border-slate-200/90 bg-white/90 p-8 shadow-sm backdrop-blur-xl transition-all duration-300 hover:border-red-300 hover:shadow-xl hover:shadow-red-500/5 dark:border-slate-800/90 dark:bg-slate-900/90 dark:hover:border-red-900/60 dark:hover:shadow-red-950/20">
+                <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-red-500/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 {/* Icon */}
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 mb-6">
-                  <div className="w-6 h-6 text-white">
-                    {item.icon || <AlertCircle className="w-6 h-6" />}
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-amber-500 shadow-md shadow-red-500/20 transition-transform duration-300 group-hover:scale-105">
+                  <div className="h-7 w-7 text-white">
+                    {item.icon || <AlertCircle className="h-7 w-7" />}
                   </div>
                 </div>
 
                 {/* Content */}
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
+                <h3 className="mb-3 text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                   {item.title}
                 </h3>
-                <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-[15px]">
+                <p className="text-[15px] leading-relaxed text-slate-600 dark:text-slate-300">
                   {item.description}
                 </p>
               </div>
