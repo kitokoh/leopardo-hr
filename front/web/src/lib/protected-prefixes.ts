@@ -94,6 +94,10 @@ export const PROTECTED_PREFIXES = [
   // pièces jointes du tenant. Jamais servie sans session (en cas d'absence de
   // session, la route redirige vers le login comme les autres zones).
   '/chat',
+  // BOS-CHAT (#8760) — boîte de réception des demandes publiques : messages
+  // envoyés par des CLIENTS depuis la passerelle Leopardo Public. Contenu
+  // commercial et données personnelles de tiers : jamais servis sans session.
+  '/demandes-publiques',
 ] as const;
 
 /**

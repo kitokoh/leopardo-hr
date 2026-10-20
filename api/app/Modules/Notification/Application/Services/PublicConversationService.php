@@ -12,11 +12,11 @@ use App\Modules\Notification\Application\DTOs\MessageCursor;
 use App\Modules\Notification\Domain\Exceptions\ConversationThreadNotFoundException;
 use App\Modules\Notification\Domain\Models\ConversationMessage;
 use App\Modules\Notification\Domain\Models\ConversationThread;
+use App\Modules\Notification\Infrastructure\Repositories\PublicConversationIndexRepository;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
+use App\Modules\Notification\Infrastructure\Services\ConversationTransactionRunner;
 use App\Shared\Discovery\PublicProfileLocator;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -53,6 +53,8 @@ final class PublicConversationService
         private readonly PublicProfileLocator $locator,
         private readonly TenantManager $tenants,
         private readonly CommunicationService $communicationService,
+        private readonly PublicConversationIndexRepository $index,
+        private readonly ConversationTransactionRunner $transactions,
     ) {}
 
     /**
@@ -97,7 +99,7 @@ final class PublicConversationService
                 return ['thread' => $existing->fresh(['messages']) ?? $existing, 'created' => false];
             }
 
-            $thread = DB::transaction(function () use ($client, $company, $targetType, $targetSlug, $body, $target): ConversationThread {
+            $thread = $this->transactions->run(function () use ($client, $company, $targetType, $targetSlug, $body, $target): ConversationThread {
                 /** @var ConversationThread $thread */
                 $thread = ConversationThread::query()->create([
                     'company_id' => $company->id,
@@ -124,18 +126,7 @@ final class PublicConversationService
             // Trace de ROUTAGE plateforme : quel schéma interroger pour lister
             // « mes conversations ». Aucun contenu de message n'y figure, et
             // elle n'autorise aucune lecture à elle seule.
-            DB::table('public_conversation_index')->updateOrInsert(
-                [
-                    'user_id' => $client->id,
-                    'company_id' => $company->id,
-                    'target_slug' => $targetSlug,
-                ],
-                [
-                    'thread_id' => $thread->id,
-                    'updated_at' => now(),
-                    'created_at' => now(),
-                ],
-            );
+            $this->index->remember($client->id, (string) $company->id, $targetSlug, $thread->id);
 
             return ['thread' => $thread->fresh(['messages']) ?? $thread, 'created' => true];
         });
@@ -154,11 +145,7 @@ final class PublicConversationService
         // Table de ROUTAGE plateforme (aucun contenu de message) : elle dit
         // uniquement dans QUEL schéma tenant chercher. Chaque lecture de fil
         // rejoue ensuite le contrôle d'accès dans son propre contexte.
-        $rows = DB::table('public_conversation_index')
-            ->where('user_id', $client->id)
-            ->orderByDesc('updated_at')
-            ->limit($perPage)
-            ->get();
+        $rows = $this->index->forUser($client->id, $perPage);
 
         $threads = new Collection;
 
@@ -296,11 +283,7 @@ final class PublicConversationService
         // Rafraîchit la récence du fil dans l'index de routage (tri « mes
         // conversations »). Best-effort : un échec ici ne perd pas le message.
         try {
-            DB::table('public_conversation_index')
-                ->where('user_id', $client->id)
-                ->where('company_id', $thread->company_id)
-                ->where('thread_id', $thread->id)
-                ->update(['updated_at' => now()]);
+            $this->index->touch($client->id, (string) $thread->company_id, (int) $thread->id);
         } catch (\Throwable) {
             // Volontairement silencieux : le message est déjà persisté.
         }
@@ -413,12 +396,9 @@ final class PublicConversationService
         ?int $publicAuthorId,
         string $body,
     ): array {
-        return DB::transaction(function () use ($thread, $employeeAuthor, $publicAuthorId, $body): array {
+        return $this->transactions->run(function () use ($thread, $employeeAuthor, $publicAuthorId, $body): array {
             /** @var object{last_message_seq: int|string}|null $row */
-            $row = DB::selectOne(
-                'UPDATE conversation_threads SET last_message_seq = last_message_seq + 1 WHERE id = ? RETURNING last_message_seq',
-                [$thread->id],
-            );
+            $row = $this->transactions->nextSeq($thread->id);
 
             if ($row === null) {
                 throw new ConversationThreadNotFoundException($thread->id);
@@ -511,10 +491,7 @@ final class PublicConversationService
                 );
             }
         } catch (\Throwable $e) {
-            Log::warning('public-conversation: notification des managers impossible', [
-                'conversation_thread_id' => $thread->id,
-                'error' => $e->getMessage(),
-            ]);
+            $this->transactions->logNotificationFailure((int) $thread->id, $e->getMessage());
         }
     }
 }

@@ -5,6 +5,18 @@
 
 ## Journal des mises à jour de surface (`front/mobile_apps/`)
 
+- **2026-10-20 (#8760, mission Leopardo Public / BC-13 COMMS)** — `leopardo_core/lib/l10n/app_{fr,en,ar,tr}.arb` :
+  namespace `publicInbox` (33 clés) ajouté **côté web** (`shared/i18n/locales/*.json`) puis propagé
+  mécaniquement par `shared/i18n/sync/sync-mobile.js`. **Aucune surface fonctionnelle mobile modifiée** :
+  aucun écran Flutter ne consomme encore ces clés, aucun contrat d'API touché, aucune dépendance changée.
+  Le changement de fond est **web** (nouvelle page `front/web/src/app/(dashboard)/demandes-publiques/` :
+  boîte de réception des demandes publiques, mobile-first), traité dans
+  `SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md`. Aucun nouveau scénario mobile requis ; les scénarios
+  existants restent valides. Vérifié : `I18N_SYNC_MOBILE_OK`, `I18N_VALIDATION_OK (4 locales)`,
+  `check-i18n-catalog-parity.sh` → **vert**. Distinction importante : l'écran de réception pro n'existe
+  **que sur le web** — l'app mobile ne lit pas encore les conversations publiques, et ce lot ne prétend
+  donc pas le contraire.
+
 - **2026-10-17 (#8633, mission Business OS / gap F-01)** — `leopardo_core/lib/l10n/app_{fr,en,ar,tr}.arb` :
   clés `offlineBadgeVerified` et `offlineImplementedHint` ajoutées **côté web**
   (`shared/i18n/locales/*.json`) puis propagées mécaniquement par `shared/i18n/sync/sync-mobile.js`.
