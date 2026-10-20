@@ -637,5 +637,15 @@ class AuthServiceProvider extends ServiceProvider
         // sans modèle propre) : la règle effective vit dans
         // RestaurantPermissions::canViewReports() (source unique, #7599).
         Gate::define('restaurant.reports', [RestaurantPermissions::class, 'canViewReports']);
+
+        // REST-OS-6 (#8608) — capacités `restaurant.*` opérationnelles : les
+        // permissions documentaires du manifest deviennent des Gates
+        // EFFECTIFS, fail-closed (rôle inconnu → refus). Source unique :
+        // RestaurantPermissions::can().
+        Gate::define('restaurant.manage', [RestaurantPermissions::class, 'canManage']);
+        Gate::define('restaurant.manager', [RestaurantPermissions::class, 'canManageFloor']);
+        Gate::define('restaurant.server', [RestaurantPermissions::class, 'canServe']);
+        Gate::define('restaurant.kitchen', [RestaurantPermissions::class, 'canWorkKitchen']);
+        Gate::define('restaurant.rider', [RestaurantPermissions::class, 'canDeliver']);
     }
 }
