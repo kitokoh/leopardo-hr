@@ -17,9 +17,9 @@ declare(strict_types=1);
  * PEER_TOKEN, THREAD_ID), sur une seule ligne, prêtes à copier.
  */
 
-require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__.'/../../vendor/autoload.php';
 
-$app = require __DIR__ . '/../../bootstrap/app.php';
+$app = require __DIR__.'/../../bootstrap/app.php';
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
 use App\Core\Auth\Domain\Models\Employee;
