@@ -8397,6 +8397,8 @@
     "contactReference": "Reference",
     "contactError": "Sending failed. Check your connection and try again.",
     "contactInvalid": "Please check the form fields.",
-    "contactNotAvailable": "This professional is not accepting requests right now."
+    "contactNotAvailable": "This professional is not accepting requests right now.",
+    "order": "Order",
+    "orderUnavailable": "Ordering unavailable"
   }
 }

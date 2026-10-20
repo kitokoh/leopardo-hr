@@ -6659,5 +6659,7 @@
   "discoveryContactreference": "Reference",
   "discoveryContacterror": "Sending failed. Check your connection and try again.",
   "discoveryContactinvalid": "Please check the form fields.",
-  "discoveryContactnotavailable": "This professional is not accepting requests right now."
+  "discoveryContactnotavailable": "This professional is not accepting requests right now.",
+  "discoveryOrder": "Order",
+  "discoveryOrderunavailable": "Ordering unavailable"
 }

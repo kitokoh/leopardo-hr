@@ -8422,6 +8422,8 @@
     "contactReference": "المرجع",
     "contactError": "فشل الإرسال. تحقق من اتصالك ثم أعد المحاولة.",
     "contactInvalid": "يرجى التحقق من حقول النموذج.",
-    "contactNotAvailable": "هذا المهني لا يستقبل طلبات حالياً."
+    "contactNotAvailable": "هذا المهني لا يستقبل طلبات حالياً.",
+    "order": "اطلب",
+    "orderUnavailable": "الطلب غير متاح"
   }
 }

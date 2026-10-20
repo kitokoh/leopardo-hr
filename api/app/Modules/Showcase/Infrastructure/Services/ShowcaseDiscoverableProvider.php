@@ -26,6 +26,18 @@ final class ShowcaseDiscoverableProvider implements PublicDiscoverableProvider
         return 'showcase';
     }
 
+    /**
+     * #8761 — une vitrine PUBLIÉE accepte une demande de contact. Elle ne
+     * propose ni réservation ni commande : la verticale n'expose aucun service
+     * métier de ce type, et un bouton inopérant serait pire qu'aucun bouton.
+     *
+     * @return list<string>
+     */
+    public function supportedActions(): array
+    {
+        return ['contact'];
+    }
+
     public function search(array $filters): array
     {
         $query = $this->baseQuery()->select([

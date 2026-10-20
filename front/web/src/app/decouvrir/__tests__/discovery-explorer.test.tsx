@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
 import DiscoveryExplorer from '../discovery-explorer';
 import type { PublicDiscoveryItem, PublicDiscoveryMeta } from '@/lib/public-discovery-api';
 
@@ -26,6 +26,8 @@ const meta: PublicDiscoveryMeta = {
   last_page: 1,
   types: ['hospitality_property', 'restaurant', 'showcase'],
   radius_km: null,
+  // #8761 — capacités déclarées par le backend (`supportedActions()`).
+  actions: { restaurant: ['booking', 'contact', 'order'], showcase: ['contact'] },
 };
 
 const items: PublicDiscoveryItem[] = [
@@ -57,6 +59,12 @@ const baseProps = {
 };
 
 describe('DiscoveryExplorer', () => {
+  // `cleanup` explicite : sans lui, le DOM du test précédent reste monté et
+  // les requêtes `getByRole` peuvent matcher deux cartes à la fois.
+  afterEach(() => {
+    cleanup();
+  });
+
   it('renders aggregated results from several verticals', () => {
     render(<DiscoveryExplorer {...baseProps} initialItems={items} />);
 
@@ -101,5 +109,54 @@ describe('DiscoveryExplorer', () => {
     // restaurant → réservation prise en charge ; showcase → aucune action de
     // réservation (jamais de bouton inopérant).
     expect(screen.getAllByRole('link', { name: /réserver/i })).toHaveLength(1);
+  });
+
+  /**
+   * #8761 — les capacités ne sont plus codées en dur côté frontend : elles
+   * viennent de `meta.actions`, déclarées par chaque verticale backend.
+   */
+  it('renders booking and order CTAs from server-declared actions', () => {
+    render(
+      <DiscoveryExplorer
+        {...baseProps}
+        initialItems={items}
+        initialMeta={{
+          ...meta,
+          actions: { restaurant: ['booking', 'contact', 'order'], showcase: ['contact'] },
+        }}
+      />,
+    );
+
+    expect(screen.getAllByRole('link', { name: /réserver/i })).toHaveLength(1);
+    expect(screen.getAllByRole('link', { name: /^commander$/i })).toHaveLength(1);
+  });
+
+  it('hides every business CTA when the server declares no action for the type', () => {
+    render(
+      <DiscoveryExplorer
+        {...baseProps}
+        initialItems={items}
+        initialMeta={{ ...meta, actions: { restaurant: [], showcase: [] } }}
+      />,
+    );
+
+    expect(screen.queryByRole('link', { name: /réserver/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /^commander$/i })).not.toBeInTheDocument();
+    // Le contact reste disponible : il ne dépend d'aucun service métier.
+    // (`getAllBy` : plusieurs cartes exposent un bouton « Contacter ».)
+    expect(screen.getAllByRole('button', { name: /contacter/i }).length).toBeGreaterThan(0);
+  });
+
+  it('never assumes an action when meta.actions is missing (fail-closed)', () => {
+    // Payload sans `actions` (ancien backend / réponse partielle) : aucune
+    // capacité n'est supposée disponible.
+    const { actions: _omitted, ...metaWithoutActions } = meta;
+
+    render(
+      <DiscoveryExplorer {...baseProps} initialItems={items} initialMeta={metaWithoutActions} />,
+    );
+
+    expect(screen.queryByRole('link', { name: /réserver/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /^commander$/i })).not.toBeInTheDocument();
   });
 });

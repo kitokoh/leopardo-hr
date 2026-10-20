@@ -37,8 +37,25 @@ interface DiscoveryExplorerProps {
 
 type GeoState = 'idle' | 'locating' | 'active' | 'denied' | 'unsupported';
 
-/** Types canoniques dont la verticale prend réellement en charge la réservation. */
-const BOOKING_TYPES = new Set(['restaurant', 'hospitality_property']);
+/**
+ * Actions publiques par type, déclarées par le BACKEND (#8761).
+ *
+ * Remplace la liste `BOOKING_TYPES` codée en dur : elle dérivait dès qu'une
+ * verticale changeait de capacité et affichait potentiellement un bouton
+ * inopérant. La source de vérité unique est `meta.actions`
+ * (`PublicDiscoverableProvider::supportedActions()`).
+ *
+ * Fail-closed : sans `meta.actions`, aucune action n'est supposée disponible.
+ */
+function supportsAction(
+  actions: Record<string, string[]> | undefined,
+  type: string,
+  action: string,
+): boolean {
+  if (!actions) return false;
+  const list = actions[type];
+  return Array.isArray(list) && list.includes(action);
+}
 
 const TYPE_LABEL_KEYS: Record<string, string> = {
   showcase: 'discovery.typeShowcase',
@@ -322,12 +339,12 @@ export default function DiscoveryExplorer({
                   </button>
 
                   {/*
-                    #8761 — Réservation : rendue UNIQUEMENT pour les verticales
-                    qui la prennent réellement en charge ET dont la fiche
-                    publique existe. Sinon, on affiche l'état explicite
+                    #8761 — Réservation : rendue UNIQUEMENT si la verticale
+                    dÉCLARE l'action `booking` (source de vérité backend) ET
+                    que la fiche publique existe. Sinon, état explicite
                     « indisponible » — jamais un bouton inopérant.
                   */}
-                  {BOOKING_TYPES.has(item.type) &&
+                  {supportsAction(meta?.actions, item.type, 'booking') &&
                     (item.url ? (
                       <Link
                         href={item.url}
@@ -338,6 +355,25 @@ export default function DiscoveryExplorer({
                     ) : (
                       <span className="text-xs text-slate-400">
                         {t(locale, 'discovery.bookingUnavailable')}
+                      </span>
+                    ))}
+
+                  {/*
+                    #8761 — Commande : même règle, action `order`. Aucune
+                    verticale sans service métier réel ne peut donc afficher ce
+                    CTA.
+                  */}
+                  {supportsAction(meta?.actions, item.type, 'order') &&
+                    (item.url ? (
+                      <Link
+                        href={item.url}
+                        className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700"
+                      >
+                        {t(locale, 'discovery.order')}
+                      </Link>
+                    ) : (
+                      <span className="text-xs text-slate-400">
+                        {t(locale, 'discovery.orderUnavailable')}
                       </span>
                     ))}
                 </div>

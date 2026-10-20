@@ -6659,5 +6659,7 @@
   "discoveryContactreference": "Referans",
   "discoveryContacterror": "Gönderim başarısız. Bağlantınızı kontrol edip tekrar deneyin.",
   "discoveryContactinvalid": "Lütfen form alanlarını kontrol edin.",
-  "discoveryContactnotavailable": "Bu profesyonel şu anda talep kabul etmiyor."
+  "discoveryContactnotavailable": "Bu profesyonel şu anda talep kabul etmiyor.",
+  "discoveryOrder": "Sipariş ver",
+  "discoveryOrderunavailable": "Sipariş mevcut değil"
 }

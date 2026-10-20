@@ -6659,5 +6659,7 @@
   "discoveryContactreference": "Référence",
   "discoveryContacterror": "L'envoi a échoué. Vérifiez votre connexion puis réessayez.",
   "discoveryContactinvalid": "Vérifiez les champs du formulaire.",
-  "discoveryContactnotavailable": "Ce professionnel n'accepte pas de demande pour le moment."
+  "discoveryContactnotavailable": "Ce professionnel n'accepte pas de demande pour le moment.",
+  "discoveryOrder": "Commander",
+  "discoveryOrderunavailable": "Commande non disponible"
 }

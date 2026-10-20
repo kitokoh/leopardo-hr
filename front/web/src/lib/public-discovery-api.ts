@@ -42,6 +42,13 @@ export interface PublicDiscoveryMeta {
   /** Types canoniques autorisés à `?type=` (source des catégories affichées). */
   types: string[];
   radius_km: number | null;
+  /**
+   * #8761 — actions RÉELLES par type canonique, déclarées par chaque verticale
+   * côté backend (`PublicDiscoverableProvider::supportedActions()`). Le
+   * frontend s'en sert comme unique source de vérité : aucune liste de
+   * capacités codée en dur ici, donc aucun bouton inopérant.
+   */
+  actions?: Record<string, string[]>;
 }
 
 export interface PublicDiscoveryParams {
@@ -111,6 +118,8 @@ function normalizeMeta(
     last_page: meta?.last_page ?? 1,
     types: Array.isArray(meta?.types) ? meta.types : [],
     radius_km: meta?.radius_km ?? null,
+    actions:
+      meta?.actions && typeof meta.actions === 'object' ? meta.actions : undefined,
   };
 }
 

@@ -1,3 +1,20 @@
+> **MAJ 2026-10-20 (#3) — passerelle publique : capacités métier déclarées par le backend `meta.actions` (PR #8763, issue #8761).**
+> Le frontend portait un `BOOKING_TYPES` codé en dur : il dérivait dès qu'une verticale changeait de capacité et pouvait
+> afficher un bouton inopérant. La source de vérité est désormais **le backend** : `PublicDiscoverableProvider::supportedActions()`
+> (nouvelle méthode du contrat) déclarée par chaque verticale, agrégée par `PublicDiscoveryService::actionsByType()` et exposée
+> dans `meta.actions`. Valeurs actuelles — `restaurant` : `contact`,`order`,`booking` ; `showcase` : `contact` ;
+> `hospitality_property` : `contact`,`booking`. Aucun moteur universel, aucun service dupliqué : le CTA pointe vers le flux
+> métier réel déjà en place (`POST /api/v1/restaurant/public/orders`, fiche publique d'hébergement). Fail-closed : sans
+> `meta.actions`, le frontend n'affiche **aucune** action métier ; un type sans action déclarée affiche l'état explicite
+> « indisponible » jamais un bouton mort. Ajout d'un CTA `order` distinct du `booking`.
+> Scénarios automatisés : `api/tests/Feature/Platform/PublicDiscoveryTest.php` (+2 cas : `meta.actions` réel par type ;
+> couverture de tous les `meta.types`) ; `front/web/src/app/decouvrir/__tests__/discovery-explorer.test.tsx`
+> (+4 cas : CTA depuis les actions serveur, aucun CTA si actions vides, **fail-closed sans `meta.actions`**, réservation
+> limitée aux verticales qui la déclarent).
+> **Résultats réels** : `php artisan test --filter=PublicDiscovery` **9/9 (47 assertions)** ; `jest src/app/decouvrir`
+> **20/20 (3 suites)** ; `tsc --noEmit` **0 erreur** ; `eslint --max-warnings 0` **0 warning** ; `check:mojibake` / `check:orphans` /
+> `check:french-copy` **OK** ; `validate.js` → `I18N_VALIDATION_OK (4 locales)`.
+
 > **MAJ 2026-10-20 (#2) — passerelle publique : contact client → professionnel `POST /api/v1/public/contact-requests` (PR #8763, issue #8760).**
 > Surface **backend (`api`) + web grand public (`front/web`)** : le CTA « Contacter » de `/decouvrir` ouvre un formulaire
 > public qui route vers le **tenant propriétaire** du profil. Réutilisation stricte de l'existant — aucun moteur nouveau :

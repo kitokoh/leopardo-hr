@@ -26,6 +26,17 @@ final class HospitalityDiscoverableProvider implements PublicDiscoverableProvide
         return 'hospitality_property';
     }
 
+    /**
+     * #8761 — l'hébergement expose la réservation sur sa fiche publique et
+     * accepte le contact. Aucune commande publique n'est servie.
+     *
+     * @return list<string>
+     */
+    public function supportedActions(): array
+    {
+        return ['contact', 'booking'];
+    }
+
     public function search(array $filters): array
     {
         $query = $this->baseQuery()->select([

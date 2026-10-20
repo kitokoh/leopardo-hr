@@ -9855,6 +9855,8 @@
     "contactReference": "Référence",
     "contactError": "L'envoi a échoué. Vérifiez votre connexion puis réessayez.",
     "contactInvalid": "Vérifiez les champs du formulaire.",
-    "contactNotAvailable": "Ce professionnel n'accepte pas de demande pour le moment."
+    "contactNotAvailable": "Ce professionnel n'accepte pas de demande pour le moment.",
+    "order": "Commander",
+    "orderUnavailable": "Commande non disponible"
   }
 }

@@ -8422,6 +8422,8 @@
     "contactReference": "Referans",
     "contactError": "Gönderim başarısız. Bağlantınızı kontrol edip tekrar deneyin.",
     "contactInvalid": "Lütfen form alanlarını kontrol edin.",
-    "contactNotAvailable": "Bu profesyonel şu anda talep kabul etmiyor."
+    "contactNotAvailable": "Bu profesyonel şu anda talep kabul etmiyor.",
+    "order": "Sipariş ver",
+    "orderUnavailable": "Sipariş mevcut değil"
   }
 }

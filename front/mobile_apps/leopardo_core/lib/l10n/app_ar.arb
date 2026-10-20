@@ -6659,5 +6659,7 @@
   "discoveryContactreference": "المرجع",
   "discoveryContacterror": "فشل الإرسال. تحقق من اتصالك ثم أعد المحاولة.",
   "discoveryContactinvalid": "يرجى التحقق من حقول النموذج.",
-  "discoveryContactnotavailable": "هذا المهني لا يستقبل طلبات حالياً."
+  "discoveryContactnotavailable": "هذا المهني لا يستقبل طلبات حالياً.",
+  "discoveryOrder": "اطلب",
+  "discoveryOrderunavailable": "الطلب غير متاح"
 }
