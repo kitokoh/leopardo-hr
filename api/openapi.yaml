@@ -15622,6 +15622,180 @@ paths:
           $ref: '#/components/responses/Error401'
         '422':
           $ref: '#/components/responses/Validation422'
+  /conversations/groups:
+    post:
+      tags:
+      - Notifications
+      summary: Creer une conversation de groupe (#8746)
+      description: >
+        Cree un fil de discussion `kind = group` dont l'appelant devient
+        `creator`. Les participants sont resolus STRICTEMENT dans le tenant de
+        l'appelant : un identifiant d'un autre tenant est rejete en 422.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              - body
+              - participant_ids
+              properties:
+                title:
+                  type: string
+                  maxLength: 200
+                body:
+                  type: string
+                  maxLength: 2000
+                participant_ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 49
+                  items:
+                    type: integer
+                subject_type:
+                  type: string
+                  nullable: true
+                  enum:
+                  - salary_advance
+                  - attendance_correction
+                  - absence
+                  - order
+                  - booking
+                  - professional_space
+                  - site
+                subject_id:
+                  type: integer
+                  nullable: true
+      responses:
+        '201':
+          description: Groupe cree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConversationThread'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /conversations/{thread}/participants:
+    get:
+      tags:
+      - Notifications
+      summary: Lister les participants d'un groupe (#8746)
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      responses:
+        '200':
+          description: Participants du groupe
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConversationParticipant'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      tags:
+      - Notifications
+      summary: Ajouter un participant a un groupe (#8746)
+      description: >
+        Reserve au `creator` ou a un `admin` du fil. Idempotent : reajouter un
+        membre deja present renvoie sa ligne existante. Un non-participant
+        recoit 404 (jamais 403).
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - employee_id
+              properties:
+                employee_id:
+                  type: integer
+      responses:
+        '201':
+          description: Participant ajoute
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConversationParticipant'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /conversations/{thread}/participants/{employee}:
+    delete:
+      tags:
+      - Notifications
+      summary: Retirer un participant d'un groupe (#8746)
+      description: >
+        Le `creator` est indeboulonnable ; un `admin` ne peut pas retirer un
+        pair ; seul le `creator` peut retirer un `admin`.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      - name: employee
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Participant retire
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /conversations/{thread}/leave:
+    post:
+      tags:
+      - Notifications
+      summary: Quitter une conversation de groupe (#8746)
+      description: >
+        Tout participant peut quitter, sauf le `creator` (422) : il doit
+        d'abord transmettre son role, sans quoi le groupe resterait sans
+        administrateur.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      responses:
+        '204':
+          description: Le participant a quitte le groupe
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
   /conversations/{thread}:
     get:
       operationId: api_get_conversations_by_thread
@@ -15651,19 +15825,151 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
   /conversations/{thread}/messages:
+    get:
+      tags:
+      - Notifications
+      summary: Historique pagine d'une conversation (curseur `seq`)
+      description: >
+        Pagination par curseur sur `seq` (#8747). `before_seq` remonte
+        l'historique (page triee en ordre croissant) ; `after_seq` rattrape ce
+        qui est arrive depuis une deconnexion (#8749) et renvoie uniquement les
+        messages posterieurs au curseur. Les deux parametres ne se combinent
+        pas. `per_page` est plafonne a 100 cote serveur. La consultation vaut
+        accuse de lecture pour l'appelant.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      - name: before_seq
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+      - name: after_seq
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 30
+      responses:
+        '200':
+          description: Page de messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConversationMessage'
+                  meta:
+                    type: object
+                    properties:
+                      has_more:
+                        type: boolean
+                      next_before_seq:
+                        type: integer
+                        nullable: true
+                      last_seq:
+                        type: integer
+                      per_page:
+                        type: integer
+                      catch_up:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
     post:
       operationId: api_post_conversations_by_thread_messages
       tags:
       - Notifications
       summary: Repondre dans une conversation
+      description: >
+        Envoi idempotent (#8747) : `client_message_id` identifie l'envoi ; si un
+        message portant cette cle existe deja dans le fil, il est renvoye avec
+        le statut 200 au lieu de 201 et aucun doublon n'est cree. Un message
+        peut ne contenir qu'une piece jointe.
       security:
       - BearerAuth: []
       parameters:
-      - name: thread
-        in: path
+      - $ref: '#/components/parameters/ConversationThreadId'
+      requestBody:
         required: true
-        schema:
-          type: integer
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                body:
+                  type: string
+                  maxLength: 2000
+                  description: Obligatoire si aucune piece jointe n'est fournie.
+                attachment:
+                  type: string
+                  format: binary
+                  nullable: true
+                  description: 5 Mo maximum, type reel verifie cote serveur.
+                client_message_id:
+                  type: string
+                  maxLength: 64
+                  nullable: true
+                  description: Cle d'idempotence fournie par le client.
+                reply_to_message_id:
+                  type: integer
+                  nullable: true
+                  description: Message du meme fil auquel celui-ci repond.
+      responses:
+        '201':
+          description: Message cree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConversationMessage'
+        '200':
+          description: Rejeu detecte — le message existant est renvoye
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConversationMessage'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+        '429':
+          description: Quota d'envoi depasse (anti-spam, #8750)
+  /conversations/{thread}/messages/{message}:
+    patch:
+      tags:
+      - Notifications
+      summary: Modifier son propre message
+      description: >
+        Reserve a l'auteur du message (#8747). Une tentative par un autre
+        participant renvoie 404, jamais 403. Un message supprime n'est plus
+        modifiable (422).
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      - $ref: '#/components/parameters/ConversationMessageId'
       requestBody:
         required: true
         content:
@@ -15676,24 +15982,307 @@ paths:
                 body:
                   type: string
                   maxLength: 2000
-                attachment:
-                  type: string
-                  format: binary
-                  nullable: true
       responses:
-        '201':
-          description: Message ajoute
+        '200':
+          description: Message mis a jour
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    type: object
+                    $ref: '#/components/schemas/ConversationMessage'
         '401':
           $ref: '#/components/responses/Error401'
         '404':
           $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      tags:
+      - Notifications
+      summary: Supprimer un message (suppression logique)
+      description: >
+        L'auteur peut supprimer son message ; un `creator`/`admin` du groupe peut
+        supprimer n'importe quel message (#8750). La ligne survit avec son `seq`
+        pour preserver l'ordre et les reponses ; le corps et la piece jointe
+        sont effaces. Idempotent.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      - $ref: '#/components/parameters/ConversationMessageId'
+      responses:
+        '204':
+          description: Message supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /conversations/{thread}/reports:
+    post:
+      tags:
+      - Notifications
+      summary: Signaler un message ou un compte
+      description: >
+        L'appelant doit participer au fil (#8750). Un `message_id` d'un autre fil
+        est rejete en 422. Le contenu du message signale n'est jamais duplique
+        dans la reponse ni dans les journaux.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/ConversationThreadId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reason
+              properties:
+                message_id:
+                  type: integer
+                  nullable: true
+                employee_id:
+                  type: integer
+                  nullable: true
+                reason:
+                  type: string
+                  enum:
+                  - harassment
+                  - spam
+                  - inappropriate_content
+                  - threat
+                  - impersonation
+                  - other
+                details:
+                  type: string
+                  maxLength: 1000
+                  nullable: true
+      responses:
+        '201':
+          description: Signalement enregistre
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConversationReport'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /conversations/blocks:
+    get:
+      tags:
+      - Notifications
+      summary: Lister les employes bloques par l'appelant
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des blocages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConversationBlock'
+                  meta:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      tags:
+      - Notifications
+      summary: Bloquer un employe
+      description: >
+        Idempotent. Le blocage empeche la creation d'un fil direct entre les deux
+        personnes (dans les deux sens) et l'ajout du bloque dans un groupe dont
+        l'appelant est admin (#8750). Aucune notification n'est envoyee au
+        bloque.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - employee_id
+              properties:
+                employee_id:
+                  type: integer
+                reason:
+                  type: string
+                  maxLength: 200
+                  nullable: true
+      responses:
+        '201':
+          description: Blocage enregistre
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /conversations/blocks/{employee}:
+    delete:
+      tags:
+      - Notifications
+      summary: Debloquer un employe
+      description: Silencieux si aucun blocage n'existait (idempotent).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: employee
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Blocage retire
+        '401':
+          $ref: '#/components/responses/Error401'
+  /conversations/reports:
+    get:
+      tags:
+      - Notifications
+      summary: Signalements emis par l'appelant
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des signalements de l'appelant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConversationReport'
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      tags:
+      - Notifications
+      summary: Signaler un compte
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - employee_id
+              - reason
+              properties:
+                employee_id:
+                  type: integer
+                reason:
+                  type: string
+                  enum:
+                  - harassment
+                  - spam
+                  - inappropriate_content
+                  - threat
+                  - impersonation
+                  - other
+                details:
+                  type: string
+                  maxLength: 1000
+                  nullable: true
+      responses:
+        '201':
+          description: Signalement enregistre
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /conversations/moderation/reports:
+    get:
+      tags:
+      - Notifications
+      summary: File de moderation (managers)
+      description: >
+        Reservee aux responsables du tenant (`Employee::isManager()`). Un employe
+        non manager recoit 422. Les signalements d'un autre tenant ne sont jamais
+        visibles. Cette file ne donne AUCUN acces aux conversations privees.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - open
+          - reviewed
+          - dismissed
+      responses:
+        '200':
+          description: Signalements du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConversationReport'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /conversations/moderation/reports/{report}/resolve:
+    post:
+      tags:
+      - Notifications
+      summary: Cloturer un signalement (managers)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: report
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  enum:
+                  - reviewed
+                  - dismissed
+                resolution:
+                  type: string
+                  maxLength: 500
+                  nullable: true
+      responses:
+        '200':
+          description: Signalement cloture (idempotent si deja clos)
+        '401':
+          $ref: '#/components/responses/Error401'
         '422':
           $ref: '#/components/responses/Validation422'
   /conversations/{thread}/messages/{message}/attachment:
@@ -48980,6 +49569,20 @@ components:
         type: integer
         minimum: 1
         maximum: 100
+    ConversationThreadId:
+      name: thread
+      in: path
+      required: true
+      description: Identifiant du fil de discussion
+      schema:
+        type: integer
+    ConversationMessageId:
+      name: message
+      in: path
+      required: true
+      description: Identifiant du message dans le fil
+      schema:
+        type: integer
     Page:
       name: page
       in: query
@@ -49049,6 +49652,190 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    ConversationThread:
+      type: object
+      description: >
+        Fil de discussion. `kind` vaut `direct` (fil binaire historique
+        employe/manager, PA2-COMM-002) ou `group` (#8746). `participants`
+        n'est present que pour un groupe.
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        status:
+          type: string
+        kind:
+          type: string
+          enum:
+          - direct
+          - group
+        created_by:
+          type: integer
+          nullable: true
+        subject_type:
+          type: string
+          nullable: true
+        subject_id:
+          type: integer
+          nullable: true
+        last_message_at:
+          type: string
+          format: date-time
+          nullable: true
+        unread:
+          type: boolean
+        participants:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/ConversationParticipant'
+    ConversationMessage:
+      type: object
+      description: >
+        Message d'un fil de conversation (#8747). `seq` est le curseur d'ordre
+        monotone par fil ; il doit etre utilise pour trier et paginer, jamais
+        `created_at` (deux messages d'une meme transaction partagent la valeur).
+      properties:
+        id:
+          type: integer
+        conversation_thread_id:
+          type: integer
+        author_id:
+          type: integer
+        author:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        seq:
+          type: integer
+          nullable: true
+          description: Curseur d'ordre monotone dans le fil.
+        client_message_id:
+          type: string
+          nullable: true
+          description: Cle d'idempotence renvoyee telle quelle au client.
+        deleted:
+          type: boolean
+          description: Vrai pour un message supprime (corps vide, ligne conservee).
+        body:
+          type: string
+        edited_at:
+          type: string
+          format: date-time
+          nullable: true
+        reply_to:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            author_id:
+              type: integer
+            body:
+              type: string
+            deleted:
+              type: boolean
+        attachment:
+          type: object
+          nullable: true
+          properties:
+            original_name:
+              type: string
+              nullable: true
+            mime_type:
+              type: string
+              nullable: true
+              description: Type detecte sur le contenu (finfo), pas celui declare par le client.
+            size:
+              type: integer
+              nullable: true
+            url:
+              type: string
+              description: Route authentifiee ; le controle d'acces est rejoue a chaque GET.
+        created_at:
+          type: string
+          format: date-time
+    ConversationBlock:
+      type: object
+      description: Blocage unilaterale entre deux employes (#8750).
+      properties:
+        employee_id:
+          type: integer
+        name:
+          type: string
+        matricule:
+          type: string
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+    ConversationReport:
+      type: object
+      description: >
+        Signalement d'un message ou d'un compte (#8750). La reponse ne contient
+        JAMAIS le corps du message signale.
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - open
+          - reviewed
+          - dismissed
+        reason:
+          type: string
+        details:
+          type: string
+          nullable: true
+        conversation_thread_id:
+          type: integer
+          nullable: true
+        conversation_message_id:
+          type: integer
+          nullable: true
+        reported_employee_id:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        reviewed_at:
+          type: string
+          format: date-time
+          nullable: true
+        resolution:
+          type: string
+          nullable: true
+    ConversationParticipant:
+      type: object
+      description: Membre d'un fil `group`, avec son role et son curseur de lecture.
+      properties:
+        employee_id:
+          type: integer
+        name:
+          type: string
+        role:
+          type: string
+          enum:
+          - creator
+          - admin
+          - member
+        last_read_message_id:
+          type: integer
+          nullable: true
+        joined_at:
+          type: string
+          format: date-time
     # ── BC-38 PAIEMENTS ────────────────────────────────────────────────────
     PaiementsInternalOperationRequest:
       type: object

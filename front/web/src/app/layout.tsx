@@ -90,6 +90,7 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(siteUrl),
     icons: {
       icon: [
+        { url: "/favicon-premium.svg", type: "image/svg+xml" },
         { url: "/icon.svg", type: "image/svg+xml" },
         { url: "/favicon.svg", type: "image/svg+xml" },
       ],

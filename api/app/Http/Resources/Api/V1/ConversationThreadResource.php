@@ -25,6 +25,9 @@ class ConversationThreadResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'status' => $this->status,
+            // #8746 [BOS-CHAT] — `direct` (PA2-COMM-002) ou `group`.
+            'kind' => $this->kind ?? ConversationThread::KIND_DIRECT,
+            'created_by' => $this->created_by,
             'subject_type' => $this->subject_type,
             'subject_id' => $this->subject_id,
             'employee' => $this->relationLoaded('employee') && $this->employee ? [
@@ -37,7 +40,19 @@ class ConversationThreadResource extends JsonResource
                 'name' => trim(($this->manager->first_name ?? '').' '.($this->manager->last_name ?? '')),
             ] : null,
             'last_message_at' => $this->last_message_at?->toIso8601String(),
+            // #8747 — curseur du fil : le client poll `after_seq=last_message_seq`
+            // sans avoir à charger l'historique pour le connaître.
+            'last_message_seq' => $this->lastSeq(),
             'unread' => $actor !== null ? $this->isUnreadFor($actor) : false,
+            // #8746 — membres d'un groupe (vide/absent pour un fil `direct`).
+            'participants' => $this->relationLoaded('participants')
+                ? $this->participants->map(static fn ($participant): array => [
+                    'employee_id' => $participant->employee_id,
+                    'name' => trim((string) (($participant->employee->first_name ?? '').' '.($participant->employee->last_name ?? ''))),
+                    'role' => $participant->role,
+                    'last_read_message_id' => $participant->last_read_message_id,
+                ])->values()
+                : null,
             'messages' => $this->relationLoaded('messages')
                 ? ConversationMessageResource::collection($this->messages)
                 : null,

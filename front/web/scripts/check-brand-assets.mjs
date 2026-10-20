@@ -17,9 +17,10 @@
 
 import { readdirSync } from 'node:fs';
 import { join, extname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
-const BRAND_DIR = new URL('../public/brand', import.meta.url).pathname;
+const BRAND_DIR = fileURLToPath(new URL('../public/brand', import.meta.url));
 const EXTS = new Set(['.webp', '.png', '.jpg', '.jpeg']);
 
 const targets = process.argv.slice(2).length
