@@ -29,6 +29,9 @@
       </div>
     </div>
 
+    <!-- Infrastructure — stacks de déploiement (#8673, épic #8670) -->
+    <InfraStacksCard />
+
     <!-- Queue / Jobs Observability (PA2-QA-006 — GET /platform/observability/queues) -->
     <QueueObservabilityCard
       :data="queueObservability"
@@ -96,6 +99,7 @@ import { translate } from '@/i18n/index.js'
 // Components
 import SystemStatusCard from '@/components/system/SystemStatusCard.vue'
 import QueueObservabilityCard from '@/components/system/QueueObservabilityCard.vue'
+import InfraStacksCard from '@/components/system/InfraStacksCard.vue'
 import NotificationObservabilityCard from '@/components/system/NotificationObservabilityCard.vue'
 
 const toast = useToast()

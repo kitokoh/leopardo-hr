@@ -33,4 +33,6 @@ return [
     'interview_invalid_answer' => 'Geçersiz yanıt: :question',
     'demo_data_vertical_inactive' => ':code çözümü çalışma alanınızda etkin değil.',
     'demo_data_kit_unavailable' => ':code çözümü için demo veri seti mevcut değil.',
+    'resume_unknown_step' => 'Bu adım katılım akışınızın bir parçası değil.',
+    'resume_invalid_step' => 'Geçersiz adım tanımlayıcısı.',
 ];

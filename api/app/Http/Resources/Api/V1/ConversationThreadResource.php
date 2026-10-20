@@ -40,6 +40,9 @@ class ConversationThreadResource extends JsonResource
                 'name' => trim(($this->manager->first_name ?? '').' '.($this->manager->last_name ?? '')),
             ] : null,
             'last_message_at' => $this->last_message_at?->toIso8601String(),
+            // #8747 — curseur du fil : le client poll `after_seq=last_message_seq`
+            // sans avoir à charger l'historique pour le connaître.
+            'last_message_seq' => $this->lastSeq(),
             'unread' => $actor !== null ? $this->isUnreadFor($actor) : false,
             // #8746 — membres d'un groupe (vide/absent pour un fil `direct`).
             'participants' => $this->relationLoaded('participants')

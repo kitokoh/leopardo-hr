@@ -42,6 +42,7 @@ use Illuminate\Support\Facades\DB;
  * @property int|null $referrer_partner_id
  * @property array<mixed> $features
  * @property array<mixed> $metadata
+ * @property array<mixed>|null $onboarding_state État de reprise du parcours (BOS-O-06) : current_step + furthest_step
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -92,11 +93,15 @@ class Company extends Model
         'notes',
         'features',
         'metadata',
+        'onboarding_state',
     ];
 
     protected $casts = [
         'features' => 'array',
         'metadata' => 'array',
+        // BOS-O-06 / #8627 — état de reprise : jsonb typé, distinct de
+        // `metadata` pour ne pas mélanger un contrat structuré au fourre-tout.
+        'onboarding_state' => 'array',
     ];
 
     protected $attributes = [
@@ -219,6 +224,13 @@ class Company extends Model
         // conservé (défaut false) ; gate serveur `module.vtc` sur
         // /api/v1/vtc/*.
         'vtc',
+        // BC-36 TRADE (TRADE-001/#8476) — verticale International Trade OS
+        // (code du TradeManifest, flag posé par SolutionActivator ; aucun
+        // module requis). Enregistrée ici DÈS la création (leçon #7220/#7235 :
+        // sans cette entrée, l'admin plateforme ne peut jamais activer la
+        // verticale). Fail-closed conservé (défaut false) ; gate serveur
+        // `module.trade` sur /api/v1/trade/*.
+        'trade',
     ];
 
     /**

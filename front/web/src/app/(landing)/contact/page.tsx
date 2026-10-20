@@ -1,7 +1,6 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { useSearchParams } from 'next/navigation';
 import { Navbar, HeroSection, Footer, useScrollReveal } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
@@ -147,7 +146,6 @@ const contactCopy: Record<string, {
 
 function ContactPageInner() {
   const searchParams = useSearchParams();
-  const { isDark, toggleDarkMode } = useDarkMode();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -214,8 +212,8 @@ function ContactPageInner() {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+    <div className={`min-h-screen bg-white `}>
+      <Navbar />
 
       <HeroSection
         headline={copy.hero.headline}

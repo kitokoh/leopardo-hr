@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowRight, CarTaxiFront, Fuel, Gift, GraduationCap, Plane, UtensilsCrossed } from 'lucide-react';
+import { ArrowRight, CarTaxiFront, Container, Fuel, Gift, GraduationCap, Plane, UtensilsCrossed } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
 
 /**
@@ -79,6 +79,14 @@ const copyByLocale: Record<AppLocale, Copy> = {
         href: '/packs/vtc',
         linkLabel: 'Découvrir',
       },
+      {
+        icon: <Container className={iconClass} />,
+        name: 'Trade international',
+        benefit:
+          'Sourcing multi-fournisseurs, offres comparées, coût rendu chiffré, cotations transport et aide à la préparation douanière — imports et exports dans un seul espace.',
+        href: '/packs/trade',
+        linkLabel: 'Voir le pack offert',
+      },
     ],
   },
   en: {
@@ -128,6 +136,14 @@ const copyByLocale: Record<AppLocale, Copy> = {
         benefit: 'Your rides bookable account-free on the public marketplace, dispatched to the nearest available driver.',
         href: '/packs/vtc',
         linkLabel: 'Discover',
+      },
+      {
+        icon: <Container className={iconClass} />,
+        name: 'International Trade',
+        benefit:
+          'Multi-supplier sourcing, compared quotes, costed landed price, freight quotes and customs preparation support — imports and exports in one workspace.',
+        href: '/packs/trade',
+        linkLabel: 'See the free pack',
       },
     ],
   },
@@ -179,6 +195,14 @@ const copyByLocale: Record<AppLocale, Copy> = {
         href: '/packs/vtc',
         linkLabel: 'Keşfedin',
       },
+      {
+        icon: <Container className={iconClass} />,
+        name: 'Uluslararası Ticaret (Trade)',
+        benefit:
+          'Çok tedarikçili kaynak bulma, karşılaştırılmış teklifler, hesaplanmış teslim maliyeti, navlun teklifleri ve gümrük hazırlığı desteği — ithalat ve ihracat tek alanda.',
+        href: '/packs/trade',
+        linkLabel: 'Ücretsiz paketi görün',
+      },
     ],
   },
   ar: {
@@ -228,6 +252,14 @@ const copyByLocale: Record<AppLocale, Copy> = {
         benefit: 'رحلاتكم قابلة للحجز دون حساب على السوق العامة، مع الإرسال لأقرب سائق متاح.',
         href: '/packs/vtc',
         linkLabel: 'اكتشف',
+      },
+      {
+        icon: <Container className={iconClass} />,
+        name: 'التجارة الدولية (Trade)',
+        benefit:
+          'توريد من عدة موردين، عروض مقارنة، تكلفة وصول محسوبة، عروض شحن ودعم تحضير التخليص الجمركي — الاستيراد والتصدير في مساحة واحدة.',
+        href: '/packs/trade',
+        linkLabel: 'شاهد الحزمة المجانية',
       },
     ],
   },
@@ -280,23 +312,24 @@ export function VerticalsSection({ locale = 'fr' }: VerticalsSectionProps) {
               <Link
                 href={card.href}
                 aria-label={`${card.name} — ${card.linkLabel}`}
-                className="group flex h-full flex-col rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/60 p-6 transition-all duration-300 hover:border-emerald-300 dark:hover:border-emerald-700 hover:shadow-lg"
+                className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200/90 bg-white/90 p-7 shadow-sm backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-emerald-400/50 hover:shadow-xl hover:shadow-emerald-500/10 dark:border-slate-800/90 dark:bg-slate-900/90 dark:hover:border-emerald-600/50"
               >
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 mb-4">
+                <div className="pointer-events-none absolute -right-12 -top-12 h-28 w-28 rounded-full bg-emerald-500/10 blur-2xl transition-all duration-300 group-hover:bg-emerald-500/20" />
+                <div className="mb-5 inline-flex h-13 w-13 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 text-emerald-600 shadow-sm ring-1 ring-emerald-500/20 transition-transform duration-300 group-hover:scale-105 dark:from-emerald-500/20 dark:to-teal-500/20 dark:text-emerald-400">
                   {card.icon}
                 </div>
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                <div className="mb-2.5 flex items-center justify-between gap-2">
+                  <h3 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                     {card.name}
                   </h3>
                 </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 flex-1">
+                <p className="mb-6 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
                   {card.benefit}
                 </p>
-                <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                <span className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-600 transition-colors group-hover:text-emerald-500 dark:text-emerald-400">
                   {card.linkLabel}
                   <ArrowRight
-                    className="w-4 h-4 transition-transform group-hover:translate-x-1"
+                    className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5"
                     aria-hidden="true"
                   />
                 </span>

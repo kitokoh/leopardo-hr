@@ -120,9 +120,16 @@ export interface HeroBusinessOS3DProps {
 // « qu'elle présente encore plus nos solutions ». Modules légèrement plus
 // petits (0.19) pour que les 12 étiquettes respirent.
 const MODULES_PER_RING = [6, 6];
-const RING_RADII = [2.6, 3.9];
+// Refonte vitrine #8461 — la constellation est AGRANDIE (retour propriétaire :
+// « agrandir la taille globale ») : rayons +29 % / +27 %.
+const RING_RADII = [3.35, 4.95];
 const RING_TILT = [0.42, -0.28];
-const RING_SPEED = [0.00022, -0.00015];
+// Refonte vitrine #8461 — le mouvement orbital était quasi imperceptible
+// (≈ 0.013 rad/s). Les vitesses de base sont ~2× plus élevées et,
+// surtout, DÉSYNCHRONISÉES par étoile via `speedMul`/`radiusMul` (voir
+// ModuleNode) : plus deux satellites ne tournent au même rythme ni à la
+// même distance, ce qui évite l'effet mécanique/rouage.
+const RING_SPEED = [0.00044, -0.00031];
 
 const EMERALD = new Color('#10b981');
 const CYAN = new Color('#06b6d4');
@@ -145,6 +152,10 @@ type ModuleNode = {
   glow: Sprite;
   ring: number;
   angle: number;
+  /** Multiplicateur de vitesse angulaire propre au satellite (0.82–1.32). */
+  speedMul: number;
+  /** Multiplicateur de rayon d'orbite propre au satellite (0.9–1.18). */
+  radiusMul: number;
   baseScale: number;
   hoverT: number;
   pulse: number;
@@ -244,8 +255,11 @@ export function HeroBusinessOS3D({
     host.appendChild(renderer.domElement);
 
     const scene = new Scene();
-    const camera = new PerspectiveCamera(42, 1, 0.1, 60);
-    camera.position.set(0, 0.4, 9.2);
+    // Passe Fondateur (#8704) — champ rétréci (42° → 39°) : la constellation
+    // gagne ~8 % de présence à cadre égal — retour propriétaire : elle doit
+    // DOMINER la première page, pas survivre au fond.
+    const camera = new PerspectiveCamera(39, 1, 0.1, 60);
+    camera.position.set(0, 0.4, 10.8);
     camera.lookAt(0, 0, 0);
 
     scene.add(new AmbientLight(0xffffff, 0.75));
@@ -261,10 +275,12 @@ export function HeroBusinessOS3D({
     // constellation descend d'un demi-monde pour que le noyau (la grosse
     // gemme) ne croise jamais le texte — seuls les petits modules en orbite
     // le frôlent, ce qui fait tout le charme de la composition.
-    // Vague 6 — la scène descend franchement sous le titre : le noyau et les
-    // anneaux occupent le tiers médian, le tiers haut appartient à la phrase.
-    // C'est ce qui la rend lisible SANS la sortir de sous la constellation.
-    world.position.y = -0.85;
+    // Passe Fondateur (#8704) — la scène vit désormais DANS LE FLUX, entre
+    // le titre et le CTA : plus aucune raison de la descendre (le −0.95 de la
+    // vague 6 datait de l'époque où elle était la toile de fond absolue de
+    // tout le héros — elle finissait cachée sous le CTA, mesuré en
+    // navigateur). Elle se centre dans son cadre pour le DOMINER.
+    world.position.y = -0.15;
     scene.add(world);
 
     // ── Noyau : la plateforme (gemme à facettes + halo) ────────────────
@@ -301,7 +317,7 @@ export function HeroBusinessOS3D({
         blending: AdditiveBlending,
       }),
     );
-    coreHalo.scale.setScalar(6.4);
+    coreHalo.scale.setScalar(7.4);
     coreHalo.position.set(0, 0, -0.4);
     world.add(coreHalo);
 
@@ -323,7 +339,7 @@ export function HeroBusinessOS3D({
 
     // ── Modules métier en orbite (avec lueur propre) ───────────────────
     const nodes: ModuleNode[] = [];
-    const nodeGeo = new OctahedronGeometry(0.19, 0);
+    const nodeGeo = new OctahedronGeometry(0.21, 0);
     const glowTextures = [makeGlowTexture('#10b981'), makeGlowTexture('#06b6d4')];
     RING_RADII.forEach((radius, ringIndex) => {
       const count = MODULES_PER_RING[ringIndex];
@@ -351,11 +367,18 @@ export function HeroBusinessOS3D({
         world.add(glow);
         const angle = (i / count) * Math.PI * 2 + ringIndex * 0.7;
         const nodeIndex = nodes.length;
+        // Variance DÉTERMINISTE (pas de Math.random : le rendu reste stable
+        // entre deux visites) — vitesses et rayons d'orbite différents par
+        // satellite, pour un ballet organique plutôt qu'un rouage.
+        const speedMul = 0.82 + ((nodeIndex * 37) % 11) * (0.5 / 11);
+        const radiusMul = 0.9 + ((nodeIndex * 53) % 7) * (0.28 / 7);
         nodes.push({
           mesh,
           glow,
           ring: ringIndex,
           angle,
+          speedMul,
+          radiusMul,
           baseScale: 1,
           hoverT: 0,
           pulse: 0,
@@ -401,7 +424,7 @@ export function HeroBusinessOS3D({
     // Poussière d'étoiles pour la profondeur (deux tons, deux vitesses).
     // #8438 — densité et dispersion augmentées : la scène est plein cadre
     // (layout `stage`), le ciel étoilé doit couvrir tout l'écran.
-    const DUST_COUNT = 220;
+    const DUST_COUNT = 420;
     const dustPositions = new Float32Array(DUST_COUNT * 3);
     for (let i = 0; i < DUST_COUNT; i += 1) {
       const r = 4.5 + Math.random() * 5;
@@ -419,7 +442,7 @@ export function HeroBusinessOS3D({
     );
     world.add(dust);
 
-    const DUST2_COUNT = 140;
+    const DUST2_COUNT = 260;
     const dust2Positions = new Float32Array(DUST2_COUNT * 3);
     for (let i = 0; i < DUST2_COUNT; i += 1) {
       const r = 4 + Math.random() * 5.5;
@@ -436,6 +459,27 @@ export function HeroBusinessOS3D({
       new PointsMaterial({ color: EMERALD, size: 0.055, transparent: true, opacity: 0.45 }),
     );
     world.add(dust2);
+
+    // Refonte vitrine #8461 — TROISIÈME couche d'étoiles, lointaine, fine et
+    // discrète : c'est elle qui crée la profondeur/parallaxe demandée (trois
+    // plans de tailles et d'opacités différentes : 0.045 / 0.055 / 0.03).
+    const DUST3_COUNT = 340;
+    const dust3Positions = new Float32Array(DUST3_COUNT * 3);
+    for (let i = 0; i < DUST3_COUNT; i += 1) {
+      const r = 7.5 + Math.random() * 8;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      dust3Positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      dust3Positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta) * 0.8;
+      dust3Positions[i * 3 + 2] = r * Math.cos(phi) * 0.45 - 3;
+    }
+    const dust3Geo = new BufferGeometry();
+    dust3Geo.setAttribute('position', new Float32BufferAttribute(dust3Positions, 3));
+    const dust3 = new Points(
+      dust3Geo,
+      new PointsMaterial({ color: CYAN, size: 0.03, transparent: true, opacity: 0.3 }),
+    );
+    world.add(dust3);
 
     // #8438 — nébuleuses additives en dérive lente (émeraude, cyan, indigo) :
     // la « magie » du mode nuit reproduite en permanence. Sprites plats,
@@ -631,17 +675,29 @@ export function HeroBusinessOS3D({
     let inView = true;
     let pageVisible = !document.hidden;
 
+    // Delta-temps borné (0.05 s) : la vitesse orbitale devient indépendante du
+    // taux de rafraîchissement (60/120/144 Hz) sans dériver après un onglet
+    // en arrière-plan.
+    let lastTickAt = performance.now() * 0.001;
+
     const tick = (): void => {
       raf = requestAnimationFrame(tick);
       if (!inView || !pageVisible) return;
 
       const still = reducedRef.current;
       const t = performance.now() * 0.001;
+      const dt = Math.min(0.05, t - lastTickAt);
+      lastTickAt = t;
 
       // Orbites des modules + liens vers le noyau + liens inter-modules.
       nodes.forEach((node, index) => {
-        if (!still) node.angle += RING_SPEED[node.ring] * (node.ring === 0 ? 1.6 : 1);
-        const radius = RING_RADII[node.ring];
+        if (!still) {
+          // `* dt * 60` restitue l'échelle per-frame historique tout en la
+          // rendant indépendante du frame-rate ; `speedMul` désynchro par étoile.
+          node.angle +=
+            RING_SPEED[node.ring] * (node.ring === 0 ? 1.6 : 1) * node.speedMul * dt * 60;
+        }
+        const radius = RING_RADII[node.ring] * node.radiusMul;
         const tilt = RING_TILT[node.ring];
         const x = Math.cos(node.angle) * radius;
         const z = Math.sin(node.angle) * radius * Math.cos(tilt);
@@ -700,6 +756,9 @@ export function HeroBusinessOS3D({
         glowLight.intensity = 16 + Math.sin(t * 1.4) * 3;
         dust.rotation.y += 0.0004;
         dust2.rotation.y -= 0.0003;
+        // Couche lointaine : rotation plus lente → parallaxe (les plans
+        // proches défilent plus vite que les lointains).
+        dust3.rotation.y += 0.00016;
         // #8438 — dérive lente des nébuleuses (respiration de la lueur incluse).
         nebulas.forEach((nebula, i) => {
           nebula.sprite.position.x = nebula.baseX + Math.sin(t * 0.07 * nebula.drift + i * 2.1) * 0.8;
@@ -710,6 +769,7 @@ export function HeroBusinessOS3D({
         // #8461 — scintillement doux de la poussière d'étoiles.
         dust.material.opacity = 0.55 + Math.sin(t * 0.7) * 0.12;
         dust2.material.opacity = 0.45 + Math.cos(t * 0.55) * 0.1;
+        dust3.material.opacity = 0.3 + Math.sin(t * 0.42) * 0.07;
         // #8461 — étoiles filantes : spawn différé, traversée ~1 s, estompage
         // en sinusoïde. Sprites pré-alloués, aucune allocation ici.
         shootingStars.forEach((star) => {
@@ -895,6 +955,8 @@ export function HeroBusinessOS3D({
       (dust.material as PointsMaterial).dispose();
       dust2Geo.dispose();
       (dust2.material as PointsMaterial).dispose();
+      dust3Geo.dispose();
+      (dust3.material as PointsMaterial).dispose();
       nebulas.forEach((nebula) => {
         (nebula.sprite.material as SpriteMaterial).dispose();
         (nebula.sprite.material as SpriteMaterial).map?.dispose();

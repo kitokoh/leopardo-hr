@@ -89,16 +89,26 @@ describe('Héros « stage » — profondeur premium (vague 6)', () => {
     expect(vignette.className).toContain('z-[11]');
   });
 
-  it('garde le titre SOUS la constellation (z-[5] < z-10) mais sur un voile lisible', () => {
+  it('ramène le titre dans le MÊME FLUX que les cartes (point 4, proposition B)', () => {
     const { container } = render(<HeroSection {...stageProps} />);
-    // `motion.h1` est mocké en `div` : on repère la couche par sa classe de pile.
-    const titleLayer = Array.from(container.querySelectorAll('div')).find((el) =>
+    // Le titre n'est plus un calque `absolute z-[5]` indépendant : c'était
+    // cette indépendance de flux — pas le z-index — qui créait la « rupture de
+    // profondeur » relevée par le propriétaire produit. Il vit désormais dans
+    // le conteneur de flux, au-dessus des cartes, et partage donc leur plan.
+    const legacyTitleLayer = Array.from(container.querySelectorAll('div')).find((el) =>
       el.className.includes('z-[5]'),
-    )!;
-    expect(titleLayer).toBeDefined();
-    expect(titleLayer.className).toContain('pointer-events-none');
-    expect(titleLayer.textContent).toContain(stageProps.headline);
-    // Voile radial propre au titre + ombre portée : lisibilité sans sortir du plan.
+    );
+    expect(legacyTitleLayer).toBeUndefined();
+
+    const flow = Array.from(container.querySelectorAll('div')).find(
+      (el) => el.className.includes('z-10') && el.className.includes('flex-col'),
+    );
+    expect(flow).toBeDefined();
+    expect(flow!.textContent).toContain(stageProps.headline);
+    // Les cartes sont DANS ce même flux, après le titre — un seul axe vertical.
+    expect(flow!.querySelector('[data-testid="stage-visual"]')).not.toBeNull();
+
+    // Lisibilité conservée : voile radial + liseré sombre.
     expect(container.querySelector('.hero-stage-title-scrim')).not.toBeNull();
     expect(container.querySelector('.hero-stage-title-text')).not.toBeNull();
   });
@@ -135,20 +145,34 @@ describe('Héros « stage » — profondeur premium (vague 6)', () => {
   });
 });
 
-describe('Arc géographique — sommet sur la constellation (vague 6)', () => {
+describe('Arc géographique — demi-cercle 3D concave (passe Fondateur, #8702)', () => {
   it('cale le sommet de l’arc sur le cœur de la scène, pas sur le titre', () => {
     const arc = ruleBody('.geo-arc');
-    expect(arc).toMatch(/--geo-apex:\s*54%/);
-    // Rayon resserré : l'ancien `min(54vw, 40vh)` faisait passer l'arc 20 vh trop haut.
-    expect(arc).toMatch(/--geo-r:\s*min\(30vw, 21vh\)/);
+    expect(arc).toMatch(/--geo-apex:\s*54vh/);
+    // Vraie profondeur : la cuvette a un recul maximal et une perspective
+    // dédiée — plus aucun `scale()` simulé.
+    expect(arc).toMatch(/--geo-depth:/);
+    expect(arc).toMatch(/perspective:/);
   });
 
-  it('décrit un demi-cercle avec l’échelle demandée 0.68 → 1 → 0.68', () => {
+  it('décrit la concavité : profond au sommet, proche aux deux bouts', () => {
     expect(globalsCss).toMatch(/@keyframes geo-arc-sweep/);
     const frames = globalsCss.match(/@keyframes geo-arc-sweep\s*\{[\s\S]*?\n  \}/)?.[0] ?? '';
-    expect(frames).toMatch(/rotate\(-76deg\)[\s\S]*scale\(0\.68\)/);
-    expect(frames).toMatch(/50%\s*\{[\s\S]*?scale\(1\)/);
-    expect(frames).toMatch(/100%\s*\{[\s\S]*?scale\(0\.68\)/);
+    // Sommet (50 %) : recul maximal — la carte plonge derrière le plan de la
+    // constellation ; extrémités (0 %/100 %) : presque au plan du visiteur.
+    expect(frames).toMatch(/50%\s*\{[\s\S]*?calc\(-1 \* var\(--geo-depth\)\)/);
+    expect(frames).toMatch(/0%\s*\{[\s\S]*?calc\(-0\.242 \* var\(--geo-depth\)\)/);
+    expect(frames).toMatch(/100%\s*\{[\s\S]*?calc\(-0\.242 \* var\(--geo-depth\)\)/);
+    // Les cartes pivotent sur la paroi (rotateY ±32°) — l'indice de
+    // profondeur le plus lisible — et la course va bien de GAUCHE (−x) à
+    // DROITE (+x).
+    expect(frames).toMatch(/0%\s*\{[\s\S]*?calc\(-0\.97 \* var\(--geo-rx\)\)[\s\S]*?rotateY\(32deg\)/);
+    expect(frames).toMatch(/100%\s*\{[\s\S]*?calc\(0\.97 \* var\(--geo-rx\)\)[\s\S]*?rotateY\(-32deg\)/);
+    // Subtilité : l'opacité décroît avec la profondeur (sommet le plus
+    // estompé) et s'annule aux deux bouts — jamais de clignotement.
+    expect(frames).toMatch(/50%\s*\{[\s\S]*?opacity:\s*0\.18/);
+    expect(frames).toMatch(/0%\s*\{[\s\S]*?opacity:\s*0;/);
+    expect(frames).toMatch(/100%\s*\{[\s\S]*?opacity:\s*0;/);
   });
 
   it('reste DERRIÈRE la constellation sur les trois formats', () => {

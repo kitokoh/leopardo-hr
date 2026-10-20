@@ -1,6 +1,5 @@
 'use client';
 
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import {
   Navbar,
   HeroSection,
@@ -18,14 +17,13 @@ import { localImageProps } from '@/modules/vitrine/lib/image-props';
 const valueIcons = [Zap, Heart, Users, Shield];
 
 export default function AboutPage() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const { locale } = useVitrineLocale();
   useScrollReveal();
   const content = getAboutContent(locale);
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+    <div className={`min-h-screen bg-white `}>
+      <Navbar />
 
       <HeroSection
         headline={content.hero.headline}

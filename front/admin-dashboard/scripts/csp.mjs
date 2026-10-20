@@ -34,7 +34,13 @@ function originOf(url) {
  * @returns {string} valeur du header CSP.
  */
 export function buildCsp(env = {}) {
-  const apiOrigin = originOf(env.VITE_API_URL) || originOf(DEFAULT_API_URL)
+  // #8707 — `connect-src` doit autoriser l'origine RÉELLEMENT appelée par le
+  // bundle. Depuis que le dashboard passe par le proxy du front web
+  // (`VITE_API_PROXY_BASE_URL`), l'origine à autoriser est celle du PROXY, pas
+  // celle d'un fournisseur. On garde `VITE_API_URL` en second pour les builds
+  // qui assument un appel direct (dérogation explicite).
+  const apiOrigin =
+    originOf(env.VITE_API_PROXY_BASE_URL) || originOf(env.VITE_API_URL) || originOf(DEFAULT_API_URL)
   // Serveur push Socket.IO optionnel (#7303) : sans VITE_WEBSOCKET_URL le
   // client ne tente AUCUNE connexion websocket — pas d'origine à autoriser.
   const wsOrigin = originOf(env.VITE_WEBSOCKET_URL)

@@ -803,7 +803,11 @@ trait CreatesMvpSchema
             $table->unsignedBigInteger('subject_id')->nullable();
             $table->string('title', 200);
             $table->string('status', 20)->default('open')->index();
+            // #8746 / #8747 [BOS-CHAT] — groupe + curseur `seq` par fil.
+            $table->string('kind', 20)->default('direct');
+            $table->unsignedInteger('created_by')->nullable();
             $table->unsignedBigInteger('last_message_id')->nullable();
+            $table->unsignedBigInteger('last_message_seq')->default(0);
             $table->timestampTz('last_message_at')->nullable();
             $table->timestampTz('employee_last_read_at')->nullable();
             $table->timestampTz('manager_last_read_at')->nullable();
@@ -812,6 +816,7 @@ trait CreatesMvpSchema
             $table->index(['company_id', 'employee_id']);
             $table->index(['company_id', 'manager_id']);
             $table->index(['subject_type', 'subject_id']);
+            $table->index(['company_id', 'kind']);
         });
 
         Schema::create($this->tenantTable('conversation_messages'), function (Blueprint $table): void {
@@ -824,10 +829,25 @@ trait CreatesMvpSchema
             $table->string('attachment_original_name', 255)->nullable();
             $table->string('attachment_mime_type', 100)->nullable();
             $table->unsignedInteger('attachment_size')->nullable();
+            // #8748 [BOS-CHAT] — disque réel de la pièce jointe.
+            $table->string('attachment_disk', 32)->nullable();
+            // #8747 [BOS-CHAT] — ordre total, anti-doublon, réponse,
+            // édition et suppression logique.
+            $table->unsignedBigInteger('seq')->nullable();
+            $table->string('client_message_id', 64)->nullable();
+            $table->unsignedBigInteger('reply_to_message_id')->nullable();
+            $table->timestampTz('edited_at')->nullable();
+            $table->timestampTz('deleted_at')->nullable();
+            $table->unsignedInteger('deleted_by_id')->nullable();
             $table->timestampTz('created_at')->useCurrent();
 
             $table->index(['conversation_thread_id', 'created_at']);
+            $table->index(['conversation_thread_id', 'seq']);
+            $table->index(['conversation_thread_id', 'deleted_at']);
         });
+
+        // #8750 [BOS-CHAT] — modération : tables créées par
+        // createPostSprintModuleTables() (seul chemin exécuté en pgsql).
 
         Schema::create($this->tenantTable('company_announcements'), function (Blueprint $table): void {
             $table->id();
@@ -1409,6 +1429,45 @@ trait CreatesMvpSchema
 
     private function createPostSprintModuleTables(): void
     {
+        // #8750 [BOS-CHAT] — modération du chat horizontal : blocages et
+        // signalements. Placées ici et non dans la fixture statique : c'est le
+        // seul point d'entrée exécuté après le DROP/recréation de
+        // `shared_tenants`, donc le seul où `hasTable()` voit l'état réel.
+        if (! Schema::hasTable($this->moduleTable('conversation_blocks'))) {
+            Schema::create($this->moduleTable('conversation_blocks'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('blocker_id');
+                $table->unsignedInteger('blocked_id');
+                $table->string('reason', 200)->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+
+                $table->unique(['company_id', 'blocker_id', 'blocked_id']);
+                $table->index(['company_id', 'blocked_id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('conversation_reports'))) {
+            Schema::create($this->moduleTable('conversation_reports'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('reporter_id');
+                $table->unsignedBigInteger('conversation_thread_id')->nullable();
+                $table->unsignedBigInteger('conversation_message_id')->nullable();
+                $table->unsignedInteger('reported_employee_id')->nullable();
+                $table->string('reason', 40);
+                $table->string('details', 1000)->nullable();
+                $table->string('status', 20)->default('open');
+                $table->unsignedInteger('reviewed_by_id')->nullable();
+                $table->timestampTz('reviewed_at')->nullable();
+                $table->string('resolution', 500)->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'status']);
+                $table->index(['company_id', 'conversation_thread_id']);
+            });
+        }
+
         // REST-OS-1/2 (#8603/#8604) — travaux d'impression thermique du Restaurant
         // OS : miroir de la migration tenant 2026_10_16_140001 (garde #5443).
         if (! Schema::hasTable($this->moduleTable('restaurant_print_jobs'))) {
@@ -2540,6 +2599,8 @@ trait CreatesMvpSchema
                 $table->string('kind', 20)->default('direct');
                 $table->unsignedInteger('created_by')->nullable();
                 $table->unsignedBigInteger('last_message_id')->nullable();
+                // #8747 [BOS-CHAT] — compteur atomique de `seq` par fil.
+                $table->unsignedBigInteger('last_message_seq')->default(0);
                 $table->timestampTz('last_message_at')->nullable();
                 $table->timestampTz('employee_last_read_at')->nullable();
                 $table->timestampTz('manager_last_read_at')->nullable();
@@ -2581,9 +2642,21 @@ trait CreatesMvpSchema
                 $table->string('attachment_original_name', 255)->nullable();
                 $table->string('attachment_mime_type', 100)->nullable();
                 $table->unsignedInteger('attachment_size')->nullable();
+                // #8748 [BOS-CHAT] — disque réel de la pièce jointe.
+                $table->string('attachment_disk', 32)->nullable();
+                // #8747 [BOS-CHAT] — ordre total, anti-doublon, réponse,
+                // édition et suppression logique.
+                $table->unsignedBigInteger('seq')->nullable();
+                $table->string('client_message_id', 64)->nullable();
+                $table->unsignedBigInteger('reply_to_message_id')->nullable();
+                $table->timestampTz('edited_at')->nullable();
+                $table->timestampTz('deleted_at')->nullable();
+                $table->unsignedInteger('deleted_by_id')->nullable();
                 $table->timestampTz('created_at')->useCurrent();
 
                 $table->index(['conversation_thread_id', 'created_at']);
+                $table->index(['conversation_thread_id', 'seq']);
+                $table->index(['conversation_thread_id', 'deleted_at']);
             });
         }
 
@@ -4195,6 +4268,142 @@ trait CreatesMvpSchema
                 $table->timestamps();
 
                 $table->unique('company_id', 'fundraising_settings_company_unique');
+            });
+        }
+
+        // BC-38 PAIEMENTS (#8680/#8685/#8692) — socle de paiement interne.
+        // Miroir des migrations tenant 2026_10_18_000001/000002/000003 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('payment_wallets'))) {
+            Schema::create($this->moduleTable('payment_wallets'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('owner_type', 20);
+                $table->string('owner_id', 64);
+                $table->char('currency', 3);
+                $table->jsonb('metadata')->nullable();
+                $table->timestampsTz();
+
+                $table->unique(['company_id', 'owner_type', 'owner_id', 'currency'], 'payment_wallets_owner_currency_unique');
+                $table->index(['company_id', 'currency']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('payment_transactions'))) {
+            Schema::create($this->moduleTable('payment_transactions'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('type', 30);
+                $table->string('status', 20)->default('pending');
+                $table->unsignedBigInteger('provider_instance_id')->nullable();
+                $table->unsignedBigInteger('wallet_id')->nullable();
+                $table->unsignedBigInteger('counterparty_wallet_id')->nullable();
+                $table->bigInteger('amount');
+                $table->bigInteger('fee_amount')->default(0);
+                $table->char('currency', 3);
+                $table->string('idempotency_key', 120);
+                $table->string('external_reference', 190)->nullable();
+                $table->jsonb('metadata')->nullable();
+                $table->timestampsTz();
+
+                $table->unique(['company_id', 'idempotency_key'], 'payment_transactions_idempotency_unique');
+                $table->index(['company_id', 'status']);
+                $table->index(['company_id', 'created_at']);
+                $table->index(['company_id', 'type']);
+                $table->index('provider_instance_id');
+                $table->index('external_reference');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('payment_ledger_entries'))) {
+            Schema::create($this->moduleTable('payment_ledger_entries'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('wallet_id');
+                $table->string('direction', 6);
+                $table->bigInteger('amount');
+                $table->char('currency', 3);
+                $table->unsignedBigInteger('transaction_id')->nullable();
+                $table->uuid('transfer_group_id');
+                $table->string('reference', 190)->nullable();
+                $table->jsonb('metadata')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+
+                $table->index(['company_id', 'wallet_id', 'created_at']);
+                $table->index('transfer_group_id');
+                $table->index('transaction_id');
+                $table->index(['company_id', 'currency']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('payment_provider_instances'))) {
+            Schema::create($this->moduleTable('payment_provider_instances'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('type_code', 60);
+                $table->string('display_name', 120);
+                $table->jsonb('countries')->nullable();
+                $table->jsonb('currencies')->nullable();
+                $table->string('status', 20)->default('inactive');
+                $table->text('config')->nullable();
+                $table->integer('priority')->default(100);
+                $table->timestampsTz();
+
+                $table->index(['type_code', 'status']);
+                $table->index(['status', 'priority']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('payment_fee_rules'))) {
+            Schema::create($this->moduleTable('payment_fee_rules'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('operation_type', 30);
+                $table->unsignedBigInteger('provider_instance_id')->nullable();
+                $table->string('mode', 20);
+                $table->bigInteger('value');
+                $table->char('currency', 3)->nullable();
+                $table->bigInteger('min_amount')->nullable();
+                $table->bigInteger('max_amount')->nullable();
+                $table->integer('priority')->default(100);
+                $table->timestampsTz();
+
+                $table->index(['company_id', 'operation_type']);
+                $table->index('provider_instance_id');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('payment_webhook_endpoints'))) {
+            Schema::create($this->moduleTable('payment_webhook_endpoints'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('provider_instance_id');
+                $table->string('token', 64)->unique('payment_webhook_endpoints_token_unique');
+                $table->string('path', 190);
+                $table->text('secret_signature')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestampsTz();
+
+                $table->index(['provider_instance_id', 'status']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('payment_reconciliations'))) {
+            Schema::create($this->moduleTable('payment_reconciliations'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('provider_instance_id');
+                $table->char('currency', 3);
+                $table->bigInteger('declared_balance');
+                $table->bigInteger('computed_balance');
+                $table->bigInteger('difference');
+                $table->string('status', 20);
+                $table->timestampTz('checked_at');
+                $table->jsonb('metadata')->nullable();
+                $table->timestampsTz();
+
+                $table->index(['company_id', 'provider_instance_id', 'currency']);
+                $table->index(['company_id', 'status']);
+                $table->index(['company_id', 'checked_at']);
             });
         }
 
@@ -5938,6 +6147,9 @@ trait CreatesMvpSchema
                 $table->string('mime_type', 120)->nullable();
                 $table->string('extension', 12)->nullable();
                 $table->unsignedBigInteger('size')->nullable();
+                // #8675 — nom d'origine conserve pour proposer un nom lisible au
+                // telechargement (migration tenant 2026_10_18_120000_8675).
+                $table->string('original_name', 180)->nullable();
                 $table->string('disk', 40)->nullable();
                 $table->string('path', 512)->nullable();
                 $table->string('preview_path', 512)->nullable();

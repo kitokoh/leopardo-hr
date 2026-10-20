@@ -30,6 +30,9 @@ return [
         'campaign_not_found' => 'Campaign not found for this company.',
         'asset_not_found' => 'Asset not found for this company.',
         'file_required' => 'A file is required for a resource of type “:kind”.',
+        // #8675 — downloading a media library resource.
+        'asset_has_no_file' => 'This resource is text content (script, prompt, caption): it has no file to download.',
+        'asset_file_missing' => 'The file for this resource cannot be found in storage. The record still exists; the binary may have been purged or the restore is incomplete.',
         // #8531 — SEO/SEA/AEO/GEO visibility: no visibility is promised.
         'visibility_no_guarantee' => 'No visibility is guaranteed in search engines or AI assistants: indicators are measured or explicitly identified as estimates.',
     ],

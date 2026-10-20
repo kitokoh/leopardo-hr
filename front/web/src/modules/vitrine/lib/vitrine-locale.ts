@@ -41,7 +41,6 @@ type LandingCopy = {
     trial: string
     /** #7492 — CTA unique quand une session est active (remplace login+trial). */
     mySpace: string
-    themeLabel: string
     menuLabel: string
     localeLabel: string
     brandTagline: string
@@ -58,6 +57,8 @@ type LandingCopy = {
     secondaryCta: string
     /** #8068 — réassurance sous les CTA (« Gratuit · Sans CB · Vos données, chez vous »). */
     ctaReassurance: string
+    /** #8703 — petites phrases secondaires qui tournent sous le titre du héros (même emplacement). */
+    rotatingTaglines: string[]
     mobileBadge?: string
     downloadCta?: string
     visualAlt?: string
@@ -179,7 +180,6 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       login: 'Connexion',
       trial: 'Créer un compte',
       mySpace: 'Mon espace',
-      themeLabel: 'Changer le thème',
       menuLabel: 'Menu',
       localeLabel: 'Langue',
       // Positionnement unique : « Leopardo » seul, baseline « Business OS ».
@@ -202,6 +202,14 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       primaryCta: 'Essayer gratuitement',
       secondaryCta: 'Découvrir les packs offerts',
       ctaReassurance: 'Gratuit · Sans carte bancaire · Vos données, chez vous',
+      // #8703 — texte secondaire rotatif du héros : courtes, uniques, dans
+      // l'esprit « constellation de pays » du premier niveau 3D.
+      rotatingTaglines: [
+        'Paie, pointage, CRM, compta — tout se répond.',
+        'De Paris à Dakar, vos équipes sur la même constellation.',
+        'Web, mobile et bornes : un seul réflexe.',
+        'Hébergée par nous, ou sur votre serveur.',
+      ],
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Pays couverts (paie)' },
         { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'Langues (FR/EN/AR/TR)' },
@@ -330,7 +338,6 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       login: 'Sign in',
       trial: 'Sign up',
       mySpace: 'My space',
-      themeLabel: 'Toggle theme',
       menuLabel: 'Menu',
       localeLabel: 'Language',
       // Single naming: "Leopardo" alone, baseline "Business OS".
@@ -351,6 +358,13 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       primaryCta: 'Try for free',
       secondaryCta: 'Explore the packs',
       ctaReassurance: 'Free · No credit card · Your data, your server',
+      // #8703 — rotating secondary taglines, same intent as FR
+      rotatingTaglines: [
+        'Payroll, attendance, CRM, accounting — all in sync.',
+        'From Paris to Dakar, your teams on the same constellation.',
+        'Web, mobile and kiosks: one single habit.',
+        'Hosted by us, or on your own server.',
+      ],
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Payroll countries' },
         { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'Languages (FR/EN/AR/TR)' },
@@ -479,7 +493,6 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       login: 'Giris yap',
       trial: 'Ucretsiz dene',
       mySpace: 'Hesabim',
-      themeLabel: 'Temayi degistir',
       menuLabel: 'Menu',
       localeLabel: 'Dil',
       // Tek adlandırma: yalnız "Leopardo", alt başlık "Business OS".
@@ -500,6 +513,13 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       primaryCta: 'Ucretsiz dene',
       secondaryCta: 'Ücretsiz paketleri keşfedin',
       ctaReassurance: 'Ucretsiz · Kredi karti yok · Verileriniz sizde',
+      // #8703 — dönen ikincil metinler (FR ile aynı niyet)
+      rotatingTaglines: [
+        'Bordro, puantaj, CRM, muhasebe — hepsi birbiriyle konuşur.',
+        'Paris’ten Dakar’a, ekipleriniz aynı takımyıldızda.',
+        'Web, mobil ve kiosk: tek bir alışkanlık.',
+        'Bizde barındırın, ya da kendi sunucunuzda.',
+      ],
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Bordro ulkesi' },
         { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'Dil (FR/EN/AR/TR)' },
@@ -628,7 +648,6 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       login: 'تسجيل الدخول',
       trial: 'تجربة مجانية',
       mySpace: 'مساحتي',
-      themeLabel: 'تبديل السمة',
       menuLabel: 'القائمة',
       localeLabel: 'اللغة',
       // تسمية موحّدة: «Leopardo» فقط، مع الوصف «نظام تشغيل الأعمال».
@@ -649,6 +668,13 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       primaryCta: 'جرّب مجانًا',
       secondaryCta: 'اكتشف الحزم المجانية',
       ctaReassurance: 'مجاني · بدون بطاقة بنكية · بياناتك عندك',
+      // #8703 — عبارات ثانوية دوّارة تحت العنوان (نفس نية النسخة الفرنسية)
+      rotatingTaglines: [
+        'الرواتب والحضور وإدارة العملاء والمحاسبة — كلها متصلة.',
+        'من باريس إلى داكار، فرقك على كوكبة واحدة.',
+        'الويب والجوال وأجهزة الحضور: عادة واحدة.',
+        'مستضافة لدينا، أو على خادمك الخاص.',
+      ],
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'دول الرواتب' },
         { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'لغات (FR/EN/AR/TR)' },

@@ -309,6 +309,7 @@ return [
     // #7268 — Onboarding: yerelleştirilmiş adım mesajları (sabit metin yok)
     'ONBOARDING_STEP_REQUIRED' => 'Bu adım zorunludur ve atlanamaz.',
     'ONBOARDING_STEP_NOT_DONE' => 'Bu adım tamamlandı olarak işaretlenemez: ilgili bir işlem kaydedilmedi.',
+    'ONBOARDING_STEP_NOT_FOUND' => 'Bu adım çalışma alanınızda mevcut değil.',
     'COMPANY_CONTEXT_REQUIRED' => 'Bir şirket bağlamı gerekli.',
     // #7322 — Kullanıcının yatay modülü kendi kendine etkinleştirmesi.
     'SOLO_TEAM_TOOL_NOT_AVAILABLE' => 'Bağımsız (solo) profil kapsamı dışındaki ekip aracı: :module.',

@@ -1,6 +1,5 @@
 'use client';
 
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Footer, Navbar } from '@/modules/vitrine';
 import { SignupForm } from '@/modules/vitrine/components/forms';
 import { SignupArtwork } from '@/modules/vitrine/components/SignupArtwork';
@@ -26,15 +25,14 @@ import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
  * surfaces (hero de l'accueil, campagnes).
  */
 export default function SignupPage() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const { direction } = useVitrineLocale();
 
   return (
     <div
       dir={direction}
-      className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}
+      className={`min-h-screen bg-white `}
     >
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+      <Navbar />
 
       <main id="signup-form" className="relative overflow-hidden py-10 sm:py-16">
         <div className="absolute inset-0 bg-gradient-to-b from-white via-slate-50/60 to-white dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950" />

@@ -33,8 +33,11 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 py-16 dark:bg-slate-950">
-      <div className="w-full max-w-lg text-center">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-50 px-6 py-16 dark:bg-slate-950">
+      <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
+        <div className="h-96 w-96 rounded-full bg-red-500/10 blur-3xl dark:bg-red-500/15" />
+      </div>
+      <div className="w-full max-w-lg rounded-3xl border border-slate-200/80 bg-white/80 p-8 text-center shadow-xl backdrop-blur-xl sm:p-10 dark:border-slate-800/80 dark:bg-slate-900/60 dark:shadow-2xl">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-red-600 dark:text-red-400">
           {t(locale, 'vitrine.error.kicker')}
         </p>

@@ -356,6 +356,32 @@ for motif in 'form[key]' 'item.x == null' 'flex items-center' 'companies'; do
   expect_clean "$motif" "motif technique « $motif » (cas 2)"
 done
 
+# ── Cas 2b : directives d'en-tête HTTP (#8700) ────────────────────────────────
+# La route `/api/status` pose `'Cache-Control': 'no-store, max-age=0'` pour
+# interdire la mise en cache d'un statut instantané. Le motif « texte à virgule »
+# l'a signalé comme une phrase utilisateur : une garde qui fait réécrire du code
+# correct est une garde qu'on contourne (#7482, encore).
+# Le contre-contrôle ci-dessous vérifie que l'exception ne s'ouvre PAS à une
+# énumération de mots quelconques — sinon on aurait remplacé un faux positif par
+# une fuite silencieuse.
+mkdir -p "$REPO_TEXT/front/web/src/app/api/status"
+cat > "$REPO_TEXT/front/web/src/app/api/status/route.ts" <<'TSX'
+export async function GET() {
+  const cacheDirective = 'no-store, max-age=0'
+  const revalidation = 'public, max-age=60'
+  // Contre-contrôle : deux mots à virgule qui ne sont pas des directives HTTP.
+  const greeting = 'Bonjour, le monde'
+  return { cacheDirective, revalidation, greeting }
+}
+TSX
+git -C "$REPO_TEXT" add -A
+git -C "$REPO_TEXT" commit -q -m "directives d'en-tete HTTP (#8700)"
+run_guard "$REPO_TEXT"
+for motif in 'no-store, max-age=0' 'public, max-age=60'; do
+  expect_clean "$motif" "directive d'en-tête HTTP « $motif » (#8700)"
+done
+expect_flagged 'Bonjour, le monde' "contre-contrôle : énumération à virgule non-HTTP reste flaggée (#8700)"
+
 # ── Cas 3 : le message d'erreur dit quoi faire (critère 3) ───────────────────
 if ! printf '%s\n' "$OUT" | grep -qF 'catalogue i18n'; then
   printf '%s\n' "$OUT" >&2

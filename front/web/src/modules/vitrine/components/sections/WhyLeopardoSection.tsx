@@ -155,13 +155,14 @@ export function WhyLeopardoSection({ locale = 'fr' }: { locale?: AppLocale }) {
                 whileInView={{ y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.55, delay: index * 0.1 }}
-                className="rounded-lg border border-white/10 bg-white/[0.06] p-6 shadow-2xl shadow-black/10 backdrop-blur"
+                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-slate-900/60 p-7 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:bg-slate-900/80"
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-emerald-300/15 text-emerald-200">
-                  <Icon className="h-5 w-5" aria-hidden="true" />
+                <div className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-emerald-500/10 blur-xl transition-all duration-300 group-hover:bg-emerald-500/20" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400/20 to-teal-400/10 text-emerald-300 ring-1 ring-emerald-400/25 transition-transform duration-300 group-hover:scale-105">
+                  <Icon className="h-6 w-6" aria-hidden="true" />
                 </div>
-                <h3 className="mt-5 text-lg font-bold">{card.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-300">{card.text}</p>
+                <h3 className="mt-5 text-xl font-bold tracking-tight text-white">{card.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-slate-300">{card.text}</p>
               </motion.article>
             );
           })}

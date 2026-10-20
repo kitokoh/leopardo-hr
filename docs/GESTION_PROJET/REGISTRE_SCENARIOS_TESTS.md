@@ -304,6 +304,43 @@
 > programme partenaire) ; remplacée par « paiements / règlements des ventes suivis ».
 > Source corrigée dans `shared/i18n/locales/*.json` puis propagée par `sync-web.js`
 > (catalogues web + admin + `versions.json`), conformément à #4805.
+> **MAJ 2026-10-15 — #8476→#8486 (PR #8487), verticale « International Trade OS » (BC-36 TRADE).**
+> Surface **API HTTP** (`api/routes/modules/trade.php`, gate `module.trade` fail-closed + `trade.role:*`) :
+> noyau commercial **partagé** entre les deux espaces — `GET/POST /v1/trade/rfqs`,
+> `POST /v1/trade/rfqs/{rfq}/send` (liens de réponse retournés en clair **une seule fois**),
+> `GET /v1/trade/quotes`, `POST /v1/trade/quotes/{quote}/accept` (l'acceptation
+> crée la commande), `GET/POST /v1/trade/cost-estimates`, `GET /v1/trade/customs/checklist`,
+> et `GET /v1/trade/meta/integrations` (état RÉEL des 4 adaptateurs externes).
+> **?direction=incoming|outgoing** sélectionne la vue acheteur/vendeur sur les
+> MÊMES objets : pas deux implémentations, et une même entreprise peut importer
+> ET exporter sans rôle irréversible. Isolation tenant par `BelongsToCompany` :
+> une ressource d'une autre entreprise est **introuvable (404), jamais 403**.
+> Honnêteté du calcul : chaque poste porte sa `source`
+> (`confirmed|estimated|user_input|unavailable`) et `duty_rate_available` reste
+> `false` tant qu'aucune source de tarifs n'est configurée — la capacité est
+> INDISPONIBLE, jamais « estimée à 0 ».
+> Surface **API superadmin** (`api/routes/api.php`, groupe `/platform`) :
+> `GET /platform/trade/overview` (compteurs agrégés par tenant — entreprises
+> portant le flag `trade`, répartition par statut des deals/RFQ/offres/commandes)
+> et `GET /platform/trade/integrations` (état des adaptateurs + identité du
+> manifest). **Compteurs uniquement** : aucun contenu commercial privé (prix,
+> offres, messages, documents) n'est exposé à l'administration plateforme.
+> Surface **web tenant** (`front/web`) : route protégée `/trade` — onglets
+> « Vue d'ensemble », « Sourcing & demandes de prix » (acheteur),
+> « Ventes & offres » (vendeur), « Coûts & douane » (avec disclaimer de
+> non-responsabilité douanière) ; 403 `MODULE_DISABLED` → état dédié.
+> Surface **web admin** (`front/admin-dashboard`) : `views/trade/TradeOverviewView.vue`
+> (route `/trade`, nav groupe « Clients & croissance », perm `companies.view`),
+> tableau des intégrations avec badge « Opérationnelle » / « Non configurée ».
+> Couverture : `api/tests/Unit/Trade/TradeSurveyTest.php` (11 tests — les 3
+> critères d'acceptation du périmètre, parité i18n, garde anti-sur-promesse
+> `mobile_field`), `TradeVerticalConsistencyTest.php` (conformité manifest,
+> données sensibles déclarées, les 3 points d'enregistrement obligatoires dont
+> `Company::KNOWN_MODULES`, bijection rôles ↔ permissions),
+> `api/tests/Feature/Security/TradeTenantIsolationTest.php` (6 tests d'isolation
+> inter-entreprise). **Aucun service payant souscrit, aucune clé inventée** :
+> les 4 adaptateurs sont en mode dégradé explicite (`manual`/`null`) et déclarés
+> non configurés — voir `docs/architecture/TradeIntegrationAdapters.md`.
 > **MAJ 2026-10-13 — #8447 + #8451, « Mon Logiciel » et checklists par profil métier.**
 > Surface **web (front/web)** : nouvelle route protégée `/mon-logiciel` (hub
 > d'installation des apps du tenant, filtrée par solutions activées via
@@ -1678,3 +1715,158 @@ restent les gates applicables.
   (3) `?type=` inconnu → `422` ; (4) `?near=lat,lng` → seules les entités géolocalisées
   dans `radius_km`, triées par distance croissante ; (5) DTO public strict (aucun `id`,
   `company_id`, `status`) ; (6) `per_page` borné à 50. Aucune migration, aucun nouveau rôle.
+
+## Mise à jour 2026-10-18 — pilotage des stacks de déploiement (PR #8699, issues #8671-#8674)
+
+- **Surface API (superadmin)** : deux routes plateforme sous
+  `platform.permission:infra.manage` —
+  `GET /api/v1/platform/infra/stacks` (état des stacks dev/prod lues dans
+  `deploy/*-stacks.json` + `dispatch_configured`) et
+  `POST /api/v1/platform/infra/stack-switch` (bascule d'un tier).
+  Contrats documentés dans `api/openapi.yaml` (schémas `PlatformInfraStack`,
+  `PlatformInfraTier`).
+- **Scénarios attendus côté API** :
+  | Cas | Attendu |
+  |---|---|
+  | appel sans `infra.manage` (support, finance, marketing) | **403** |
+  | `GET /stacks` avec jeton configuré | 200, `dispatch_configured: true`, une entrée par tier |
+  | `GET /stacks` sans `GITHUB_STACK_SWITCH_TOKEN` | 200, `dispatch_configured: false` (écran informatif) |
+  | `POST` sur la stack déjà active | **409**, `reason: deja_active` |
+  | `POST` sur une stack `planned` (sans `health_url`) | **409**, `reason: non_basculable` |
+  | `POST` sur une stack absente du registre | **422**, `reason: stack_inconnue` |
+  | `POST` avec `confirm` absent/faux | **422** (garde d'interface) |
+  | `POST` valide, jeton absent | **503** (fail-closed, rien n'est déclenché) |
+  | `POST` valide, jeton présent | **202**, `data.previous` = stack active avant bascule |
+  | rejeu du même `POST` après succès du workflow | la stack cible est devenue active → **409** (aucun ping-pong) |
+- **Surface infrastructure (non testable en PHPUnit)** : `scripts/stack-switch.sh`
+  refuse en prod `--seed`, `--force` seul, une cible sans `health_url`, une cible
+  malade, et une cible dont `db.host` diffère de la stack active. Scénarios
+  couverts par exécution réelle du script sur le registre du dépôt
+  (`--dry-run`) et par `scripts/stack-health.sh --tier prod`.
+- **Surface admin (Vue)** : carte `InfraStacksCard.vue` sur Supervision Système —
+  bouton désactivé si `dispatch_configured=false`, refus de l'API remonté en
+  toast. Scénario manuel : couper `GITHUB_STACK_SWITCH_TOKEN` sur le service API
+  et vérifier que l'écran reste lisible et n'offre pas de bascule.
+
+## Chat horizontal — groupes de discussion (#8746)
+
+- **Contexte** : le fil de discussion existant (`PA2-COMM-002`, `/conversations`)
+  est binaire (employé ↔ manager). Cette livraison ajoute `kind = group` avec
+  `conversation_participants` (rôles `creator`/`admin`/`member`, curseur de
+  lecture par participant). L'appartenance d'un groupe est régie **uniquement**
+  par la table de participants ; celle d'un fil `direct` reste déduite de
+  `employee_id`/`manager_id`.
+- **Surfaces API** : `POST /api/v1/conversations/groups`,
+  `GET|POST /api/v1/conversations/{thread}/participants`,
+  `DELETE /api/v1/conversations/{thread}/participants/{employee}`,
+  `POST /api/v1/conversations/{thread}/leave`.
+  Contrats documentés dans `api/openapi.yaml` (paramètre `ConversationThreadId`,
+  schémas `ConversationThread`, `ConversationParticipant`).
+- **Scénarios attendus côté API** :
+  | Cas | Attendu |
+  |---|---|
+  | création avec participants du même tenant | **201**, `kind: group`, `created_by`, une ligne `creator` + N lignes `member` |
+  | création avec un `employee_id` d'un autre tenant | **422**, aucune ligne créée |
+  | création sans aucun autre participant | **422** |
+  | ajout par un `member` | **404** (jamais 403 : ne révèle pas l'existence du fil) |
+  | ajout par `creator`/`admin` | **201**, `role: member` |
+  | ré-ajout d'un membre déjà présent | **201**, ligne existante (idempotent, pas de doublon) |
+  | retrait d'un `member` par un `admin` | **204**, ligne supprimée |
+  | retrait d'un `admin` par un autre `admin` | **404** |
+  | retrait du `creator` (même par lui) | **422** |
+  | `leave` par un `member` | **204**, puis `GET /conversations/{thread}` → **404** |
+  | `leave` par le `creator` | **422** (doit transmettre son rôle) |
+  | tout endpoint de groupe par un non-participant | **404** sur les 5 |
+  | `GET /conversations` depuis un autre tenant | **200** avec `data: []` (aucune fuite) |
+  | lecture par un participant | met à jour **son** `last_read_message_id`, pas celui des autres |
+  | fil `direct` existant après migration | `kind: direct`, **aucune** ligne de participation, contrat inchangé |
+- **Isolation multi-tenant** : les identifiants de participants sont résolus avec
+  `company_id` explicite ; un id étranger produit 422 et jamais une ligne
+  silencieusement ignorée. `BelongsToCompany` + `findForActor()` restent le
+  garde-fou de lecture.
+- **Non couvert par tests** : charge (`k6`), reconnexion UI (dépend de la phase
+  P6), `migrate` complet hors environnement de test. Spécifications fournies au
+  §13 de `docs/mission-business-os/16_chat_horizontal_audit.md`.
+
+## Mise a jour 2026-10-19 — Chat horizontal, phases P2 a P6 (PR feat/bos-chat-phases-2-6, issues #8747, #8748, #8749, #8750, #8751)
+
+Perimetre : extension du module existant `App\Modules\Notification` (BC-13 COMMS).
+Aucun nouveau BC, aucun second systeme de messagerie, d'auth, de notification ou
+de fichiers.
+
+- **Surfaces API ajoutees ou etendues** :
+  `GET /api/v1/conversations/{thread}/messages` (curseur `before_seq` /
+  `after_seq` / `per_page`), `PATCH|DELETE /api/v1/conversations/{thread}/messages/{message}`,
+  `POST /api/v1/conversations/{thread}/reports`,
+  `GET|POST /api/v1/conversations/blocks`,
+  `DELETE /api/v1/conversations/blocks/{employee}`,
+  `GET|POST /api/v1/conversations/reports`,
+  `GET /api/v1/conversations/moderation/reports`,
+  `POST /api/v1/conversations/moderation/reports/{report}/resolve`.
+  Contrats dans `api/openapi.yaml` (schemas `ConversationMessage`,
+  `ConversationBlock`, `ConversationReport`, parametre `ConversationMessageId`).
+- **Migrations** : `2026_10_19_000928_8747_...` (colonnes `seq`,
+  `client_message_id`, `reply_to_message_id`, `edited_at`, `deleted_at`,
+  `deleted_by_id`, `attachment_disk`, `last_message_seq` + index partiels) ;
+  `2026_10_19_000929_8750_...` (`conversation_blocks`, `conversation_reports`).
+  Les deux sont **additives** et reentrantes (`schemaTableExists` /
+  `schemaHasColumn`), avec backfill de `seq` pour l'existant.
+- **Scenarios attendus cote API** :
+  | Cas | Attendu |
+  |---|---|
+  | envoi nominal | **201**, `seq` alloue, `last_message_seq` incrementé |
+  | rejeu du meme `client_message_id` | **200**, meme `id`, **aucun** second message |
+  | meme `client_message_id` dans un autre fil | **201** (unicite **par fil**) |
+  | deux envois concurrents, meme cle | **une seule** ligne creee (course rattrapee, 23505) |
+  | `reply_to_message_id` d'un autre fil | **422** |
+  | `GET` sans parametre | derniere page, ordre `seq` croissant |
+  | `before_seq` | messages anterieurs, ordre croissant, `has_more` fiable |
+  | `after_seq` | uniquement les messages posterieurs (rattrapage) |
+  | `per_page=100000` | **200** mais `per_page: 100` (plafonne) |
+  | `PATCH` par l'auteur | **200**, `edited_at` renseigne, aucun nouveau message |
+  | `PATCH` par un autre participant (meme manager) | **404**, corps inchange |
+  | `PATCH` sur un message supprime | **422** |
+  | `DELETE` par l'auteur | **204**, `deleted_at` pose, `seq` conserve, corps vide |
+  | `DELETE` repete | **204** (idempotent) |
+  | message supprime dans l'historique | ligne presente, `deleted: true`, `body: ""` |
+  | message sans corps ni piece jointe | **422** |
+  | piece jointe seule | **201**, `body: ""` |
+  | piece jointe > 5 Mo | **422** |
+  | piece jointe dont le MIME declare ment (ELF en `.pdf`) | **422** (type reel via `finfo`) |
+  | telechargement par un non-participant | **404** |
+  | fichier absent du disque | **410** |
+  | non-participant sur `GET`/`POST`/`PATCH`/`DELETE` | **404** sur chacun, jamais 403 |
+  | fil ou message d'un autre tenant | **404** |
+  | blocage d'un employe | **201**, unique par paire, idempotent |
+  | auto-blocage | **422** |
+  | blocage d'un employe d'un autre tenant | **422**, aucune ligne |
+  | creation de fil direct apres blocage (les deux sens) | **422** |
+  | ajout du bloque dans un groupe | **422** |
+  | tiers non concerne par le blocage | **201** (fil cree) |
+  | signalement d'un message du fil | **201**, `reported_employee_id` = auteur |
+  | signalement d'un message d'un autre fil | **422** |
+  | signalement par un non-participant | **404** |
+  | motif hors liste fermee | **422** |
+  | `GET /conversations/reports` | **200**, uniquement les signalements de l'appelant |
+  | file de moderation par un non-manager | **422** |
+  | file de moderation par un manager d'un autre tenant | **200** avec `data: []` |
+  | cloture d'un signalement deja clos | **200**, premiere decision preservee |
+  | envoi au-dela du quota | **429** |
+- **Isolation multi-tenant** : toute lecture passe par `findForActor()`
+  (scope `company_id` + appartenance) ; les identifiants cibles (blocage,
+  signalement) sont resolus **dans le tenant de l'appelant** et un identifiant
+  etranger produit **422**, jamais une ligne silencieuse. La file de moderation
+  est explicitement tenant-scopee.
+- **Lea** : aucun scenario croise. Le chat humain et l'assistant IA restent deux
+  systemes separes ; aucun test de chat ne traverse `PlatformAdminAiChatTest`.
+- **Resultats reels** (`CI=true`, PHP 8.4 + PostgreSQL 15) :
+  `ConversationMessagesTest` **15 tests** verts, `ConversationModerationTest`
+  **18 tests** verts, suite conversation **53 tests / 259 assertions** vertes ;
+  `pint --test` **PASS** ; **PHPStan niveau 8 `[OK] No errors`** ; frontend
+  `tsc --noEmit` 0 erreur, `eslint` 0 warning, `jest` 6/6 sur `lib/chat.ts`.
+- **Non couvert par tests** : charge (`k6`) — aucun environnement deploye
+  joignable ; la reprise de connexion est couverte cote client (`mergeMessages`)
+  et cote API (`after_seq`), mais pas en E2E navigateur ; `CHAT_ATTACHMENT_DISK`
+  n'est pas positionne en production, donc la perte des pieces jointes au
+  redeploiement (risque R1) reste **ouverte** tant que l'exploitant ne l'a pas
+  configure.

@@ -281,5 +281,19 @@ return [
             'killable' => true,
             'description' => 'Solution VTC/taxi (BC-35, VTC-01/#8357 ; gate `module.vtc`) : réservation de courses, dispatch au plus proche chauffeur via le core géospatial `geo` (requis), tarification et suivi.',
         ],
+        // BC-36 TRADE (TRADE-001/#8476) — verticale International Trade OS :
+        // commerce international (import/export) et B2B domestique (grossiste)
+        // — sourcing, RFQ multi-fournisseurs, offres, commandes, cotations
+        // transport, coût rendu, aide documentaire. Code du TradeManifest.
+        // Enregistré ici ET dans `Company::KNOWN_MODULES` + `ModuleRegistry`
+        // dès la création (leçon #7220/#7235). Fail-closed : défaut false,
+        // gate serveur `module.trade` sur les routes /api/v1/trade/*.
+        'trade' => [
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.36.0',
+            'killable' => true,
+            'description' => 'Solution International Trade OS (BC-36, TRADE-001/#8476 ; gate `module.trade`) : commerce international & B2B domestique — sourcing, RFQ, offres, commandes, transport, coûts rendus, documents.',
+        ],
     ],
 ];

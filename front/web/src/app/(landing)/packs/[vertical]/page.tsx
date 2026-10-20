@@ -28,7 +28,6 @@ import {
   Users,
   Wallet,
 } from 'lucide-react';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer } from '@/modules/vitrine';
 import { HeroScene3D } from '@/modules/vitrine/components/hero/HeroScene3D';
 import { Button } from '@/modules/vitrine/components/common';
@@ -60,7 +59,6 @@ export default function PackVerticalPage({
   params: Promise<{ vertical: string }>;
 }) {
   const { vertical } = use(params);
-  const { isDark, toggleDarkMode } = useDarkMode();
   const { direction, locale } = useVitrineLocale();
   const searchParams = useSearchParams();
   const search = searchParams.toString();
@@ -71,8 +69,8 @@ export default function PackVerticalPage({
   const copy = PACK_PAGES[vertical][locale] ?? PACK_PAGES[vertical].fr;
 
   return (
-    <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+    <div dir={direction} className={`min-h-screen bg-white `}>
+      <Navbar />
 
       {/* ─── Héro « Pack offert » sur constellation 3D ─── */}
       <section className="relative overflow-hidden pt-32 pb-20">

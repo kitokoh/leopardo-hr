@@ -43,8 +43,11 @@ export default async function NotFound() {
   const locale = normalizeLocale(headerList.get('x-vitrine-lang') ?? '');
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 py-16 dark:bg-slate-950">
-      <div className="w-full max-w-lg text-center">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-50 px-6 py-16 dark:bg-slate-950">
+      <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
+        <div className="h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl dark:bg-emerald-500/15" />
+      </div>
+      <div className="w-full max-w-lg rounded-3xl border border-slate-200/80 bg-white/80 p-8 text-center shadow-xl backdrop-blur-xl sm:p-10 dark:border-slate-800/80 dark:bg-slate-900/60 dark:shadow-2xl">
         {/* #8497 — mascotte de marque (leopard debranche) sur les etats hors
             parcours. `alt` localise (vitrine.notFound.mascotAlt, x4) : jamais
             de chaine en dur (PA2-I18N-014). */}
@@ -54,6 +57,8 @@ export default async function NotFound() {
           alt={t(locale, 'vitrine.notFound.mascotAlt')}
           width={200}
           height={200}
+          loading="lazy"
+          decoding="async"
           className="mx-auto mb-6 h-auto w-40 sm:w-48"
         />
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-400">

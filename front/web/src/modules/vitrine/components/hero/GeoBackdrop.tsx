@@ -1,21 +1,25 @@
 'use client';
 
 /**
- * GeoBackdrop — cartes géographiques qui défilent sur un DEMI-CERCLE derrière
- * la constellation.
+ * GeoBackdrop — cartes géographiques qui défilent sur un DEMI-CERCLE 3D
+ * CONCAVE autour de la constellation (passe Fondateur, #8702).
  *
- * Retour utilisateur (vague 5) : les cartes passaient au milieu de la scène et
- * concurrençaient les étoiles. Elles décrivent désormais un demi-cercle qui
- * ENTURE la constellation :
+ * Le demi-cercle est « tourné vers le visiteur, par sa concavité » : la paroi
+ * intérieure d'une cuvette. La géométrie réelle (translate3d + perspective,
+ * voir le bloc `.geo-arc` de `globals.css`) donne :
  *
- *   gauche (petite, estompée) → centre (la plus grande, DERRIÈRE les étoiles)
- *   → droite (petite, estompée) → sortie du demi-cercle, puis la suivante.
+ *   gauche (PROCHE, présente) → sommet (LOINTAIN, plonge derrière le plan de
+ *   la constellation) → droite (PROCHE) → sortie du demi-cercle, puis la
+ *   suivante.
  *
- * La taille suit la position : une carte grossit à mesure qu'elle s'approche du
- * centre (elle « passe derrière » la constellation, donc au plus près) et
- * rapetisse en sortant. Aucune carte n'est jamais devant : le calque est en
- * `z-[1]`, la scène WebGL en `z-10` — la constellation reste TOUJOURS au
- * premier plan.
+ * La taille suit la profondeur RÉELLE (le navigateur la calcule, ce n'est pas
+ * un scale() simulé) et chaque carte pivote légèrement (rotateY), plaquée sur
+ * la paroi : la concavité se lit à l'œil. La carte au sommet est la plus
+ * éloignée — elle ne concurrence plus jamais les étoiles (défaut relevé en
+ * vague 5), et les deux bouts qui reviennent vers le visiteur encadrent la
+ * constellation comme deux ailes. Le calque reste en `z-[1]` (la scène WebGL
+ * est en `z-10`) : aucune carte ne passe devant les étoiles à l'écran, la
+ * profondeur étant portée par la taille et l'opacité.
  *
  * Ordre de défilement : d'abord les CONTINENTS (Afrique, Europe, Asie), puis
  * les PAYS (France, Algérie, Turquie, Tchad, Maroc, Tunisie, Sénégal, Arabic
@@ -28,14 +32,23 @@
  * Tracés exacts Natural Earth 1:110m (domaine public) — voir
  * `tools/cartography/make_maps.py`. Aucune silhouette aléatoire.
  *
- * Performance / accessibilité : l'animation est 100 % CSS (`transform` +
- * `opacity` seulement, composées par le GPU), aucun `requestAnimationFrame`,
- * aucun état React qui change en boucle. Sous `prefers-reduced-motion:
- * reduce`, ou si les animations ne démarrent pas, une seule carte statique
- * s'affiche : le décor reste lisible, la constellation reste dominante.
+ * Parallaxe différentiel (passe Fondateur, #8704) : le calque de l'arc glisse
+ * TRÈS légèrement à l'opposé du pointeur (±10 px, lissé), pendant que la
+ * constellation WebGL suit doucement la souris. Ce différentiel entre les
+ * deux niveaux est ce qui rend la profondeur palpable — sans lui, les plans
+ * restent vissés l'un à l'autre et la scène se relit « à plat ». Écoute
+ * passive sur `window`, lissage par `requestAnimationFrame` borné (il
+ * s'arrête dès que le calque a rejoint sa cible), AUCUN état React.
+ *
+ * Performance / accessibilité : la circulation des cartes est 100 % CSS
+ * (`transform` + `opacity` seulement, composées par le GPU). Sous
+ * `prefers-reduced-motion: reduce`, ou si les animations ne démarrent pas,
+ * une seule carte statique s'affiche et le parallaxe n'est jamais branché :
+ * le décor reste lisible, la constellation reste dominante.
  * `aria-hidden` : rien à lire, rien à cliquer.
  */
 
+import { useEffect, useRef } from 'react';
 import { MAP_OUTLINES, type MapKey } from '../../data/geo/map-paths';
 
 /**
@@ -66,11 +79,63 @@ const ARC_ORDER: readonly MapKey[] = [
  */
 const CYCLE_SECONDS = 54;
 
+/** Amplitude du parallaxe différentiel (#8704) — subtile par exigence : le
+    calque ne doit jamais sembler « décrocher » de la constellation. */
+const PARALLAX_PX = 10;
+
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+
 export function GeoBackdrop({ locale }: { locale?: string }) {
   void locale; // décoratif : aucun texte, donc aucune locale à lire
+  const arcRef = useRef<HTMLDivElement>(null);
+
+  // Parallaxe différentiel : l'arc (niveau proche) glisse à l'opposé du
+  // pointeur, la constellation (niveau lointain) le suit — la profondeur
+  // entre les deux niveaux devient SENSIBLE. borné, lissé, jamais branché
+  // en mouvement réduit.
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return undefined;
+    if (window.matchMedia(REDUCED_MOTION_QUERY).matches) return undefined;
+    const node = arcRef.current;
+    if (!node) return undefined;
+
+    let raf = 0;
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+
+    const tick = () => {
+      raf = 0;
+      // Lissage exponentiel : le calque « rattrape » sa cible, puis s'arrête
+      // (le rAF ne tourne que pendant le rattrapage, jamais en continu).
+      currentX += (targetX - currentX) * 0.08;
+      currentY += (targetY - currentY) * 0.08;
+      node.style.setProperty('--geo-parallax-x', `${currentX.toFixed(2)}px`);
+      node.style.setProperty('--geo-parallax-y', `${currentY.toFixed(2)}px`);
+      if (Math.abs(targetX - currentX) > 0.05 || Math.abs(targetY - currentY) > 0.05) {
+        raf = requestAnimationFrame(tick);
+      }
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      const nx = (event.clientX / window.innerWidth) * 2 - 1;
+      const ny = (event.clientY / window.innerHeight) * 2 - 1;
+      targetX = -nx * PARALLAX_PX;
+      targetY = -ny * PARALLAX_PX * 0.6;
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    return () => {
+      window.removeEventListener('pointermove', onPointerMove);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
 
   return (
     <div
+      ref={arcRef}
       aria-hidden="true"
       className="geo-arc pointer-events-none absolute inset-0 z-[1] overflow-hidden"
       style={{ ['--geo-count' as string]: String(ARC_ORDER.length) }}

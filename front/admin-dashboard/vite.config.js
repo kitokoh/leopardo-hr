@@ -5,14 +5,23 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { buildCsp, assertCspHardened, CSP_PLACEHOLDER } from './scripts/csp.mjs'
 
 // #4715 (audit 360° 2026-08-16) : fail-closed — un build de production sans
-// VITE_API_URL produirait un bundle dont les appels API et le fallback
+// aucune URL d'API produirait un bundle dont les appels API et le fallback
 // WebSocket (wss://<hôte API>) viseraient des défauts silencieux (ex.
 // ws://localhost:6001 chez le visiteur). Le CI passe la variable
 // (deploy-admin-dashboard.yml) ; sans elle, on échoue explicitement.
-if (process.env.NODE_ENV === 'production' && !process.env.VITE_API_URL) {
+//
+// #8707 — deux variables acceptées, par ordre de préférence :
+//   VITE_API_PROXY_BASE_URL (proxy stable du front web — cible lue au runtime)
+//   VITE_API_URL            (appel direct, déconseillé, soumis au garde-fou)
+if (
+  process.env.NODE_ENV === 'production' &&
+  !process.env.VITE_API_PROXY_BASE_URL &&
+  !process.env.VITE_API_URL
+) {
   throw new Error(
-    'VITE_API_URL manquant : le build production exige VITE_API_URL ' +
-      '(issue #4715) — ex. https://api.example.com/api/v1'
+    'URL d\'API manquante : le build production exige VITE_API_PROXY_BASE_URL ' +
+      '(recommandé — URL du proxy du front web, ex. https://<web>/api/v1) ou ' +
+      'VITE_API_URL (appel direct, issues #4715 / #8707).'
   )
 }
 

@@ -15,7 +15,6 @@
  */
 
 import { Suspense, useState } from 'react';
-import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, HeroSection, Footer, useScrollReveal } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
@@ -41,7 +40,6 @@ const PILLAR_ICONS = [TrendingUp, Scale, LineChart] as const;
 const STEP_ICONS = [Send, Users, ShieldCheck] as const;
 
 function InvestirPageInner() {
-  const { isDark, toggleDarkMode } = useDarkMode();
   const { locale } = useVitrineLocale();
   const copy = investCopy[locale] ?? investCopy.fr;
   useScrollReveal();
@@ -111,8 +109,8 @@ function InvestirPageInner() {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+    <div className={`min-h-screen bg-white `}>
+      <Navbar />
 
       <HeroSection
         headline={copy.hero.headline}
