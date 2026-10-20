@@ -9857,6 +9857,25 @@
     "contactInvalid": "Vérifiez les champs du formulaire.",
     "contactNotAvailable": "Ce professionnel n'accepte pas de demande pour le moment.",
     "order": "Commander",
-    "orderUnavailable": "Commande non disponible"
+    "orderUnavailable": "Commande non disponible",
+    "conversationsTitle": "Mes conversations",
+    "conversationsEmpty": "Vous n'avez pas encore de conversation. Contactez un professionnel depuis sa fiche pour en démarrer une.",
+    "conversationsLoadError": "Impossible de charger vos conversations. Réessayez.",
+    "conversationOpen": "Ouvrir la conversation",
+    "conversationWith": "Conversation avec",
+    "conversationSend": "Envoyer",
+    "conversationSending": "Envoi…",
+    "conversationPlaceholder": "Écrivez votre message…",
+    "conversationEmpty": "Aucun message pour le moment.",
+    "conversationLoadMore": "Charger les messages précédents",
+    "conversationSendError": "Le message n'a pas pu être envoyé. Vérifiez votre connexion puis réessayez.",
+    "conversationUnavailable": "Cette conversation n'est plus disponible.",
+    "conversationLoginRequired": "Connectez-vous pour retrouver vos conversations.",
+    "conversationFromClient": "Vous",
+    "conversationFromProfessional": "Professionnel",
+    "conversationUnread": "Nouveau",
+    "conversationBack": "Retour",
+    "conversationStart": "Démarrer une conversation",
+    "conversationStarted": "Votre message a été envoyé au professionnel."
   }
 }

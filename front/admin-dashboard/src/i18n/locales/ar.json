@@ -8424,6 +8424,25 @@
     "contactInvalid": "يرجى التحقق من حقول النموذج.",
     "contactNotAvailable": "هذا المهني لا يستقبل طلبات حالياً.",
     "order": "اطلب",
-    "orderUnavailable": "الطلب غير متاح"
+    "orderUnavailable": "الطلب غير متاح",
+    "conversationsTitle": "محادثاتي",
+    "conversationsEmpty": "ليس لديك أي محادثة بعد. تواصل مع مهني من صفحته لبدء محادثة.",
+    "conversationsLoadError": "تعذر تحميل محادثاتك. حاول مرة أخرى.",
+    "conversationOpen": "فتح المحادثة",
+    "conversationWith": "محادثة مع",
+    "conversationSend": "إرسال",
+    "conversationSending": "جارٍ الإرسال…",
+    "conversationPlaceholder": "اكتب رسالتك…",
+    "conversationEmpty": "لا توجد رسائل بعد.",
+    "conversationLoadMore": "تحميل الرسائل السابقة",
+    "conversationSendError": "تعذر إرسال الرسالة. تحقق من اتصالك ثم حاول مرة أخرى.",
+    "conversationUnavailable": "هذه المحادثة لم تعد متاحة.",
+    "conversationLoginRequired": "سجّل الدخول لعرض محادثاتك.",
+    "conversationFromClient": "أنت",
+    "conversationFromProfessional": "المهني",
+    "conversationUnread": "جديد",
+    "conversationBack": "رجوع",
+    "conversationStart": "بدء محادثة",
+    "conversationStarted": "تم إرسال رسالتك إلى المهني."
   }
 }

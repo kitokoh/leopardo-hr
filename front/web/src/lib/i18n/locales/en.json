@@ -8399,6 +8399,25 @@
     "contactInvalid": "Please check the form fields.",
     "contactNotAvailable": "This professional is not accepting requests right now.",
     "order": "Order",
-    "orderUnavailable": "Ordering unavailable"
+    "orderUnavailable": "Ordering unavailable",
+    "conversationsTitle": "My conversations",
+    "conversationsEmpty": "You have no conversations yet. Contact a professional from their profile to start one.",
+    "conversationsLoadError": "Could not load your conversations. Please try again.",
+    "conversationOpen": "Open conversation",
+    "conversationWith": "Conversation with",
+    "conversationSend": "Send",
+    "conversationSending": "Sending…",
+    "conversationPlaceholder": "Write your message…",
+    "conversationEmpty": "No messages yet.",
+    "conversationLoadMore": "Load earlier messages",
+    "conversationSendError": "The message could not be sent. Check your connection and try again.",
+    "conversationUnavailable": "This conversation is no longer available.",
+    "conversationLoginRequired": "Sign in to see your conversations.",
+    "conversationFromClient": "You",
+    "conversationFromProfessional": "Professional",
+    "conversationUnread": "New",
+    "conversationBack": "Back",
+    "conversationStart": "Start a conversation",
+    "conversationStarted": "Your message was sent to the professional."
   }
 }

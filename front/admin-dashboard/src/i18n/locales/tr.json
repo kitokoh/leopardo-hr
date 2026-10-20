@@ -8424,6 +8424,25 @@
     "contactInvalid": "Lütfen form alanlarını kontrol edin.",
     "contactNotAvailable": "Bu profesyonel şu anda talep kabul etmiyor.",
     "order": "Sipariş ver",
-    "orderUnavailable": "Sipariş mevcut değil"
+    "orderUnavailable": "Sipariş mevcut değil",
+    "conversationsTitle": "Konuşmalarım",
+    "conversationsEmpty": "Henüz konuşmanız yok. Başlatmak için bir profesyonelin profilinden iletişime geçin.",
+    "conversationsLoadError": "Konuşmalarınız yüklenemedi. Tekrar deneyin.",
+    "conversationOpen": "Konuşmayı aç",
+    "conversationWith": "Şununla konuşma:",
+    "conversationSend": "Gönder",
+    "conversationSending": "Gönderiliyor…",
+    "conversationPlaceholder": "Mesajınızı yazın…",
+    "conversationEmpty": "Henüz mesaj yok.",
+    "conversationLoadMore": "Önceki mesajları yükle",
+    "conversationSendError": "Mesaj gönderilemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+    "conversationUnavailable": "Bu konuşma artık kullanılamıyor.",
+    "conversationLoginRequired": "Konuşmalarınızı görmek için giriş yapın.",
+    "conversationFromClient": "Siz",
+    "conversationFromProfessional": "Profesyonel",
+    "conversationUnread": "Yeni",
+    "conversationBack": "Geri",
+    "conversationStart": "Konuşma başlat",
+    "conversationStarted": "Mesajınız profesyonel gönderildi."
   }
 }
