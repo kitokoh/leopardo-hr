@@ -1,5 +1,26 @@
 # SCENARIOS DE TEST WEB ADMIN POUR GITHUB ACTIONS
 
+## Journal des mises à jour de surface (`front/web/`)
+
+- **2026-10-20 (#8760, mission Leopardo Public / BC-13 COMMS)** — nouvelle surface **web dashboard** :
+  `front/web/src/app/(dashboard)/demandes-publiques/` (boîte de réception des demandes publiques du
+  tenant). Elle consomme le contrat pro `/api/v1/conversations/public` (`auth:sanctum` + `tenant`),
+  déjà couvert côté API par `PublicConversationTest` (18 cas).
+  - **Scénarios à couvrir** : la liste n'affiche que les demandes du **tenant courant** (un fil d'une
+    autre entreprise → `404`, écran « conversation indisponible », jamais une erreur générique) ;
+    un **employé non manager** du bon tenant reçoit également `404` (les échanges commerciaux ne sont
+    pas dans son périmètre) ; la réponse du manager apparaît **après** le `201` serveur et non avant ;
+    une session expirée (`401`) affiche l'invitation à se reconnecter, pas une panne ; un `429`
+    (quota) est traité comme un échec d'envoi, jamais comme un succès ; l'état vide, l'état de chargement
+    et l'échec réseau ont chacun leur écran.
+  - **Protection** : `/demandes-publiques` est déclaré dans `PROTECTED_PREFIXES`, `DASHBOARD_PREFIXES`,
+    le matcher de `src/proxy.ts` et `public/sw.js` (miroir vérifié par 114 assertions dans
+    `protected-prefixes.test.ts`). Une zone de messages clients n'est ni servie sans session ni mise en
+    cache par le service worker.
+  - **Couverture frontend du lot** : `public-conversation-inbox.test.ts` (14 cas — traduction HTTP → état)
+    et `public-conversation-api.test.ts` (17 cas, côté client). **Aucune surface admin/manager existante
+    n'est modifiée** : ce lot ajoute une page, il n'en change aucune autre.
+
 ## Objectif
 
 Donner une base de scenarios stable pour le dashboard `front/admin-dashboard/`, avec une execution automatique dans Playwright et des artefacts exploitables en CI.
