@@ -9,7 +9,6 @@ use App\Core\Auth\Domain\Models\User;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\Notification\Domain\Models\ConversationMessage;
-use App\Modules\Notification\Domain\Models\ConversationThread;
 use App\Modules\RestaurantManager\Domain\Enums\RestaurantRecordStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use Illuminate\Support\Facades\DB;
@@ -186,7 +185,9 @@ class PublicParcoursEndToEndTest extends TestCase
         $response = $this->getJson('/api/v1/public/discover?q=Tajine')
             ->assertOk();
 
-        $slugs = collect($response->json('data'))->pluck('slug')->all();
+        /** @var array<int, array<string, mixed>> $items */
+        $items = $response->json('data');
+        $slugs = array_map(static fn (array $item): string => (string) $item['slug'], $items);
 
         $this->assertContains('tajine-public-e2e', $slugs, 'Le profil publié doit apparaître dans la découverte.');
     }
@@ -268,7 +269,9 @@ class PublicParcoursEndToEndTest extends TestCase
         Sanctum::actingAs($this->manager);
 
         $inbox = $this->getJson('/api/v1/conversations/public')->assertOk();
-        $threads = collect($inbox->json('data'))->pluck('id')->map(fn ($id): int => (int) $id)->all();
+        /** @var array<int, array<string, mixed>> $inboxItems */
+        $inboxItems = $inbox->json('data');
+        $threads = array_map(static fn (array $item): int => (int) $item['id'], $inboxItems);
         $this->assertContains($threadId, $threads, 'Le manager doit voir le fil public.');
 
         // 7. le professionnel répond
@@ -520,7 +523,9 @@ class PublicParcoursEndToEndTest extends TestCase
 
         // Et le client le retrouve bien dans sa liste.
         $list = $this->getJson('/api/v1/public/conversations')->assertOk();
-        $ids = collect($list->json('data'))->pluck('thread_id')->map(fn ($id): int => (int) $id)->all();
+        /** @var array<int, array<string, mixed>> $listItems */
+        $listItems = $list->json('data');
+        $ids = array_map(static fn (array $item): int => (int) $item['thread_id'], $listItems);
         $this->assertContains($threadId, $ids, 'Sans index, le fil devient invisible côté client.');
     }
 
