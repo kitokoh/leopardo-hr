@@ -11,4 +11,7 @@ declare(strict_types=1);
 return [
     'attachment_unavailable' => 'المرفق غير متاح.',
     'report_requires_conversation' => 'يجب أن يمر التبليغ عن رسالة عبر المحادثة المعنية.',
+    'public_empty_body' => 'لا يمكن أن تكون الرسالة فارغة.',
+    'public_body_too_long' => 'لا يمكن أن تتجاوز الرسالة :max حرفًا.',
+    'public_thread_title' => 'محادثة مع :name',
 ];

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { AlertTriangle, LocateFixed, MapPin, MessageSquare, Search } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import type { AppLocale } from '@/lib/i18n';
@@ -11,6 +12,7 @@ import {
   type PublicDiscoveryItem,
   type PublicDiscoveryMeta,
 } from '@/lib/public-discovery-api';
+import { startConversation } from '@/lib/public-conversation-api';
 import ContactDialog from './contact-dialog';
 
 /**
@@ -81,6 +83,7 @@ export default function DiscoveryExplorer({
   initialQuery,
 }: DiscoveryExplorerProps) {
   const dir = catalogDirection(locale);
+  const router = useRouter();
 
   const [q, setQ] = useState(initialQuery.q);
   const [city, setCity] = useState(initialQuery.city);
@@ -94,6 +97,52 @@ export default function DiscoveryExplorer({
   const [near, setNear] = useState<string | null>(null);
   /** Résultat dont le formulaire de contact est ouvert (null = fermé). */
   const [contactTarget, setContactTarget] = useState<PublicDiscoveryItem | null>(null);
+  /** Slug du professionnel dont la conversation est en cours d'ouverture. */
+  const [startingSlug, setStartingSlug] = useState<string | null>(null);
+  /** Slug dont la conversation a été ouverte avec succès (confirmation). */
+  const [startedSlug, setStartedSlug] = useState<string | null>(null);
+  /** Slug dont l'ouverture de conversation a échoué. */
+  const [startErrorSlug, setStartErrorSlug] = useState<string | null>(null);
+
+  /**
+   * #8760 — Démarrer une conversation depuis une fiche publique.
+   *
+   * Le couple (`type`, `slug`) est le SEUL identifiant transmis : le tenant est
+   * résolu côté serveur, exactement comme pour le contact. Aucun `company_id`
+   * ne transite par le navigateur.
+   *
+   * États explicites : `401` → l'utilisateur doit se connecter (on l'y envoie
+   * avec un retour vers `/conversations`) ; `404` → profil indisponible ;
+   * autre → erreur réseau avec possibilité de réessayer. Jamais de faux succès.
+   */
+  const handleStartConversation = async (item: PublicDiscoveryItem) => {
+    if (startingSlug) return;
+
+    setStartingSlug(item.slug);
+    setStartErrorSlug(null);
+    setStartedSlug(null);
+
+    const result = await startConversation({
+      target_type: item.type,
+      target_slug: item.slug,
+      body: t(locale, 'discovery.conversationStartBody'),
+    });
+
+    setStartingSlug(null);
+
+    if (result.status === 'ok') {
+      setStartedSlug(item.slug);
+      return;
+    }
+
+    if (result.status === 'unauthenticated') {
+      // Le client doit se connecter : on l'y amène en conservant la destination.
+      router.push(`/auth/login?next=${encodeURIComponent('/conversations')}`);
+      return;
+    }
+
+    setStartErrorSlug(item.slug);
+  };
 
   const knownTypes = meta?.types ?? [];
 
@@ -337,6 +386,39 @@ export default function DiscoveryExplorer({
                     <MessageSquare className="h-3.5 w-3.5" aria-hidden />
                     {t(locale, 'discovery.contact')}
                   </button>
+
+                  {/*
+                    #8760 — Démarrer une conversation (messagerie suivie).
+                    Distinct du contact ponctuel : le client retrouve l'échange
+                    et la réponse du professionnel dans `/conversations`.
+                    Nécessite un compte — un `401` redirige vers la connexion.
+                  */}
+                  <button
+                    type="button"
+                    onClick={() => void handleStartConversation(item)}
+                    disabled={startingSlug === item.slug}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 disabled:opacity-50"
+                  >
+                    <MessageSquare className="h-3.5 w-3.5" aria-hidden />
+                    {startingSlug === item.slug
+                      ? t(locale, 'discovery.conversationSending')
+                      : t(locale, 'discovery.conversationStart')}
+                  </button>
+
+                  {startedSlug === item.slug && (
+                    <p className="w-full text-xs font-medium text-emerald-700" role="status">
+                      {t(locale, 'discovery.conversationStarted')}{' '}
+                      <Link href="/conversations" className="underline">
+                        {t(locale, 'discovery.conversationsTitle')}
+                      </Link>
+                    </p>
+                  )}
+
+                  {startErrorSlug === item.slug && (
+                    <p className="w-full text-xs font-medium text-red-700" role="alert">
+                      {t(locale, 'discovery.conversationSendError')}
+                    </p>
+                  )}
 
                   {/*
                     #8761 — Réservation : rendue UNIQUEMENT si la verticale

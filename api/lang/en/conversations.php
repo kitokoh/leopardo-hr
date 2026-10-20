@@ -11,4 +11,7 @@ declare(strict_types=1);
 return [
     'attachment_unavailable' => 'Attachment unavailable.',
     'report_requires_conversation' => 'A message report must go through the conversation concerned.',
+    'public_empty_body' => 'The message cannot be empty.',
+    'public_body_too_long' => 'The message cannot exceed :max characters.',
+    'public_thread_title' => 'Conversation with :name',
 ];
