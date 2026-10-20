@@ -56,9 +56,9 @@ use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\Mobile
 use App\Modules\RestaurantManager\Infrastructure\Services\ReceivingService;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDemoSeederService;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDiscoverableProvider;
-use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantProfileResolver;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsumerRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantProfileResolver;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
 use App\Modules\RestaurantManager\Policies\RestaurantPrintJobPolicy;
 use Illuminate\Contracts\Foundation\Application;
