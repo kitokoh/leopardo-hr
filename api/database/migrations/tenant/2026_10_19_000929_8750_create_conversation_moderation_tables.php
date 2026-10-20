@@ -45,7 +45,7 @@ return new class extends Migration
                 $table->index(['company_id', 'blocked_id'], 'conversation_blocks_blocked_index');
             });
 
-            DB::statement("COMMENT ON TABLE conversation_blocks IS '[BOS-CHAT #8750] Blocage unilatéral entre deux employés : empêche la création d''un fil direct et l''ajout dans un groupe, sans supprimer l''historique.']");
+            DB::statement("COMMENT ON TABLE conversation_blocks IS '[BOS-CHAT #8750] Blocage unilatéral entre deux employés : empêche la création d''un fil direct et l''ajout dans un groupe, sans supprimer l''historique.]'");
         }
 
         if (! schemaTableExists('conversation_reports')) {
@@ -84,7 +84,7 @@ return new class extends Migration
                 CHECK (conversation_message_id IS NOT NULL OR reported_employee_id IS NOT NULL)
             SQL);
 
-            DB::statement("COMMENT ON TABLE conversation_reports IS '[BOS-CHAT #8750] Signalement d''un message ou d''un compte, traité par un manager du même tenant uniquement.']");
+            DB::statement("COMMENT ON TABLE conversation_reports IS '[BOS-CHAT #8750] Signalement d''un message ou d''un compte, traité par un manager du même tenant uniquement.]'");
         }
     }
 

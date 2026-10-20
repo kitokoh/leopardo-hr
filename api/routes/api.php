@@ -73,6 +73,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformTeamController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUsersController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicContactRequestController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicDiscoveryController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportedCountryController;
@@ -356,6 +357,16 @@ Route::prefix('v1')->group(function (): void {
     // (patron BC-27/BC-28) ; chaque entite reste soumise a sa propre garde
     // fail-closed (is_public, statut societe, feature verticale).
     Route::middleware(['throttle:shop-public'])->get('/public/discover', [PublicDiscoveryController::class, 'index']);
+
+    // SUPERAPP-P1 (#8760) — contact public « Contacter ce professionnel ».
+    // Route isolee SANS auth ni middleware tenant (patron BC-27/BC-28) : le
+    // tenant destinataire est resolu COTE SERVEUR par (type, slug public)
+    // via les `PublicProfileResolver` des verticales, fail-closed (404
+    // uniforme : impossible d'enumerer les profils ou de viser une entreprise
+    // arbitraire en changeant un identifiant). Idempotence par
+    // `idempotency_key` : un retry reseau ne notifie pas deux fois le pro.
+    Route::middleware(['throttle:shop-public'])
+        ->post('/public/contact-requests', [PublicContactRequestController::class, 'store']);
 
     Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
         Route::get('/auth/me', [AuthController::class, 'me']);

@@ -35,6 +35,10 @@ return [
     'platform_announcement_title' => 'Annonce de la plateforme Leopardo',
     'platform_announcement_body' => 'Une nouvelle annonce de la plateforme est disponible.',
 
+    // SUPERAPP-P1 (#8760) — demande de contact recue sur la passerelle publique.
+    'public_contact_request_title' => 'Nouvelle demande de contact publique',
+    'public_contact_request_body' => ':sender_name vous a contacte depuis votre profil public (:target_slug).',
+
     'company_announcement_title' => 'Annonce de l’entreprise',
     'company_announcement_body' => 'Une nouvelle annonce a été publiée dans votre entreprise.',
 

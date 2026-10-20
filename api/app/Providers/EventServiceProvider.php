@@ -12,6 +12,7 @@ use App\Events\AttendanceCheckedOut;
 use App\Events\CatalogInquiryErased;
 use App\Events\CatalogInquiryReceived;
 use App\Events\CompanyCreated;
+use App\Events\PublicContactRequestReceived;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
 use App\Events\EmployeeRoleAssigned;
@@ -26,6 +27,7 @@ use App\Events\TaxRateSubmitted;
 use App\Listeners\AuditLogger;
 use App\Listeners\ConvertMarketingLeadToContact;
 use App\Listeners\CreateCrmLeadFromCatalogInquiry;
+use App\Listeners\CreateCrmLeadFromPublicContact;
 use App\Listeners\EraseCrmLeadsOnCatalogInquiryErased;
 use App\Listeners\FuelStationAlertListener;
 use App\Listeners\LinkPartnerToNewCompany;
@@ -75,5 +77,16 @@ class EventServiceProvider extends ServiceProvider
         // BC-28 CATALOG (C-RGPD #6889) — effacement RGPD d'une demande →
         // propagation aux leads CRM BC-11 du même acheteur.
         CatalogInquiryErased::class => [EraseCrmLeadsOnCatalogInquiryErased::class],
+
+        // SUPERAPP-P1 (#8760) — demande de contact publique → lead CRM BC-11
+        // + notification tenant BC-13. Même contrat cross-BC que le catalogue :
+        // Platform n'écrit jamais dans les tables CRM/Notification par import
+        // direct, les listeners écrivent dans leurs propres BC.
+        //
+        // Enregistrement explicite `Class@méthode` (convention du repo, cf.
+        // ligne 63) : la forme nue `Class` est résolue DEUX fois par le
+        // conteneur (classe + `@handle`), ce qui exécuterait le listener deux
+        // fois — deux leads CRM et deux notifications pour une seule demande.
+        PublicContactRequestReceived::class => [CreateCrmLeadFromPublicContact::class.'@handle'],
     ];
 }
