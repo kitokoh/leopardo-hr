@@ -8460,7 +8460,13 @@
     "operatorEstimateTitle": "Fiyat teklifi isteyin",
     "operatorEstimateHint": "Ücret, güzergâhınıza göre operatör tarafından hesaplanır.",
     "operatorNotFoundTitle": "Operatör bulunamadı",
-    "operatorBackToDirectory": "Tüm profesyoneller"
+    "operatorBackToDirectory": "Tüm profesyoneller",
+    "companyTitle": "Uluslararası ticaret",
+    "companyAboutTitle": "Şirket hakkında",
+    "companyImport": "İthalat",
+    "companyExport": "İhracat",
+    "companyDomestic": "İç pazar",
+    "companyNotFoundTitle": "Şirket bulunamadı"
   },
   "publicInbox": {
     "pageTitle": "Genel talepler",

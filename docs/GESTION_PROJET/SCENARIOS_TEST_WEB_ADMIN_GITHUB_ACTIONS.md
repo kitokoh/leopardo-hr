@@ -871,3 +871,9 @@ explicite en production si aucune n'est posée.
 **Aucun changement de comportement du back-office.** Le diff sur `front/admin-dashboard/src/i18n/locales/{fr,en,ar,tr}.json` est uniquement la régénération mécanique (`shared/i18n/sync/sync-web.js`) des 18 clés partagées `discovery.*` introduites pour les **fiches publiques web** `/boutiques/{slug}` (Retail) et `/operateurs/{slug}` (VTC) : libellés de type (`typeRetailShop`, `typeVtcOperator`), titres de section, compteurs et états « introuvable ». Aucun écran de la console ne consomme ces clés — elles sont servies par le catalogue partagé, comme les lots i18n précédents. Scénarios existants valides tels quels.
 
 Vérifié : `node shared/i18n/sync/sync-web.js` → `I18N_SYNC_WEB_OK`, `node shared/i18n/validators/validate.js` → `I18N_VALIDATION_OK (4 locales)`, parité ×4 (`check-i18n-catalog-parity.sh`) **verte**, `git diff --exit-code` **propre** après les trois syncs (web, mobile, backend).
+
+## Note de conservation 2026-10-21 — clés i18n `discovery.company*` (fiche publique `/commerce/[slug]`, Trade) propagées aux catalogues du back-office
+
+**Aucun changement de comportement.** Le diff sur `front/admin-dashboard/src/i18n/locales/{fr,en,ar,tr}.json` est uniquement la régénération mécanique (`shared/i18n/sync/sync-web.js`) des **6 clés partagées** `discovery.company*` introduites pour la **fiche publique web** `/commerce/[slug]` de la verticale Trade (P2-01, #8802) : `companyTitle`, `companyAboutTitle`, `companyImport`, `companyExport`, `companyDomestic`, `companyNotFoundTitle`. Aucun écran de la console ne consomme ces clés — elles sont servies par le catalogue partagé, comme les lots i18n précédents. Scénarios existants valides tels quels.
+
+Vérifié : `node shared/i18n/sync/sync-web.js` → `I18N_SYNC_WEB_OK`, `node shared/i18n/validators/validate.js` → `I18N_VALIDATION_OK (4 locales)`, et `git diff --exit-code` **propre** après les trois syncs (web, mobile, backend).

@@ -55,6 +55,10 @@ class PublicDiscoverableProviderContractTest extends TestCase
         'retail_shop' => 'boutiques',
         'showcase' => 'vitrine',
         'vtc_operator' => 'operateurs',
+        // P2-01 (#8802) — première verticale dotée d'un opt-in public a
+        // posteriori. La page `front/web/src/app/commerce/[slug]/page.tsx`
+        // doit exister pour que ce mapping reste vrai.
+        'trade_company' => 'commerce',
     ];
 
     /**

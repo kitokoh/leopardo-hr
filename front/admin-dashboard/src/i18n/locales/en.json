@@ -8460,7 +8460,13 @@
     "operatorEstimateTitle": "Request a quote",
     "operatorEstimateHint": "The fare is calculated by the operator from your trip.",
     "operatorNotFoundTitle": "Operator not found",
-    "operatorBackToDirectory": "All professionals"
+    "operatorBackToDirectory": "All professionals",
+    "companyTitle": "International trade",
+    "companyAboutTitle": "About this company",
+    "companyImport": "Import",
+    "companyExport": "Export",
+    "companyDomestic": "Domestic market",
+    "companyNotFoundTitle": "Company not found"
   },
   "publicInbox": {
     "pageTitle": "Public requests",

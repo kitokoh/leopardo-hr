@@ -8460,7 +8460,13 @@
     "operatorEstimateTitle": "اطلب عرض سعر",
     "operatorEstimateHint": "يحسب المشغّل السعر انطلاقاً من رحلتك.",
     "operatorNotFoundTitle": "المشغّل غير موجود",
-    "operatorBackToDirectory": "كل المهنيين"
+    "operatorBackToDirectory": "كل المهنيين",
+    "companyTitle": "التجارة الدولية",
+    "companyAboutTitle": "حول الشركة",
+    "companyImport": "استيراد",
+    "companyExport": "تصدير",
+    "companyDomestic": "السوق المحلية",
+    "companyNotFoundTitle": "الشركة غير موجودة"
   },
   "publicInbox": {
     "pageTitle": "الطلبات العامة",
