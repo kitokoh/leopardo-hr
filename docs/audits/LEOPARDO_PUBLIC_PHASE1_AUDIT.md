@@ -591,6 +591,31 @@ authentifié sur `sanctum`. **Tout test d'isolation d'acteur doit utiliser un vr
 ou vider les guards** — sinon il mesure l'acteur précédent, ce qui produit exactement
 l'inverse du résultat attendu (un faux positif de vulnérabilité ici).
 
+### 13.6 Playwright — exécuté pour la première fois, 7/7
+
+Le spec était livré **NON VÉRIFIÉ** (aucun serveur lancé en Phase 1). Il a été exécuté
+le 2026-10-21 avec Chromium après `npx playwright install chromium` et démarrage de
+`front/web` (Next 16.4, Turbopack) :
+
+```
+npx playwright test e2e/leopardo-public-parcours.spec.ts --project=chromium --workers=1
+→ 7 passed (27.6s)
+```
+
+**Deux tests étaient faux par construction et ont été corrigés.** `/decouvrir` est
+rendue **côté serveur** (`searchPublicDiscovery()` dans le Server Component, page
+indexable) : `page.route()` n'intercepte que les fetch du navigateur, il ne peut donc
+pas figer la liste du premier rendu. Les deux tests mockaient `GET /public/discover`
+puis asseraient un item visible et son `a[href]` — impossible. Ils asserent désormais
+ce qui est vérifiable en e2e (la page se rend, aucun href de fiche fabriqué) ; le
+rendu des items et `item.url` → href restent couverts en Jest
+(`discovery-explorer.test.tsx`, href exact).
+
+⚠️ **Contrainte d'environnement, pas un échec de test :** en parallélisme par défaut
+(7 workers) le serveur Next est tué par le noyau (`SIGKILL`) — pression mémoire du
+sandbox. `--workers=1` est nécessaire ici ; en CI, `workers: 1` est déjà la valeur
+quand `CI=true`.
+
 ---
 
 ## 14. Plan priorisé P0–P3, suite E2E et réponses aux 10 questions
