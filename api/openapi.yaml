@@ -295,6 +295,55 @@ paths:
           description: Opérateur inconnu, dépublié ou hors périmètre (404 uniforme)
         '429':
           $ref: '#/components/responses/Error429'
+  /public/trade/companies/{slug}:
+    get:
+      operationId: api_get_public_trade_company
+      tags:
+      - Trade
+      summary: Fiche publique d'une entreprise de commerce international (#8802, P2-01)
+      description: >-
+        Fiche publique d'une entreprise de commerce (BC-36 TRADE), résolue par
+        slug via `TradeProfileResolver` — donc avec un périmètre fail-closed :
+        opt-in `is_public` (défaut FAUX), `public_slug` unique GLOBAL
+        (cross-tenant), `public_name` non vide, société ni suspendue ni expirée,
+        et feature `trade` active. Un profil dépublié disparaît de
+        `/public/discover` ET de sa fiche, indistinguablement d'un slug
+        inexistant.
+
+        Cette route est la **première** d'une verticale qui n'avait aucune
+        sémantique de publication ; la sémantique qu'elle applique fait
+        désormais référence pour toute verticale sans opt-in (voir la migration
+        `2026_10_21_000001_8802_add_public_profile_to_trade_company_profiles`).
+
+        DTO public strict : slug, nom commercial, description, ville, pays,
+        catégories produits, devise et directions (import/export/national).
+        Jamais `company_id`, jamais `notes`, jamais `capabilities`. Le pays
+        publié est celui de la SOCIÉTÉ (`companies.country`), pas le
+        `hq_country` du profil (saisie libre) — même règle que Retail.
+
+        Actions publiques déclarées : `contact` uniquement. BC-36 n'a ni
+        commande ni réservation grand public (`TradeOrder` est un ordre négocié
+        entre professionnels), donc aucun bouton inopérant n'est exposé.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9\-]{0,159}$'
+        description: Slug public de l'entreprise (unique global, cross-tenant)
+      responses:
+        '200':
+          description: >-
+            Fiche publique (slug, name, description, city, country,
+            product_categories, currency, import_enabled, export_enabled,
+            domestic_scope)
+        '404':
+          description: >-
+            Entreprise inconnue, dépubliée, société suspendue/expirée ou feature
+            `trade` inactive (404 uniforme, jamais 403)
+        '429':
+          $ref: '#/components/responses/Error429'
   /public/vtc/marketplace/estimate:
     post:
       operationId: api_post_public_vtc_marketplace_estimate
