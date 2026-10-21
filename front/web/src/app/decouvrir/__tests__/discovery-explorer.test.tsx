@@ -159,4 +159,37 @@ describe('DiscoveryExplorer', () => {
     expect(screen.queryByRole('link', { name: /réserver/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /^commander$/i })).not.toBeInTheDocument();
   });
+
+  /**
+   * P1-02 — les verticales Retail et VTC ont désormais une fiche publique :
+   * `item.url` est fourni par l'API (`/boutiques/{slug}`, `/operateurs/{slug}`)
+   * et le libellé de type est traduit — jamais le type canonique brut.
+   */
+  it('links Retail and VTC results to their own public profile page', () => {
+    const verticalItems: PublicDiscoveryItem[] = [
+      {
+        type: 'retail_shop',
+        slug: 'epicerie-du-marche',
+        name: 'Épicerie du Marché',
+        url: '/boutiques/epicerie-du-marche',
+      },
+      {
+        type: 'vtc_operator',
+        slug: 'taxi-ville',
+        name: 'Taxi Ville',
+        url: '/operateurs/taxi-ville',
+      },
+    ];
+
+    render(<DiscoveryExplorer {...baseProps} initialItems={verticalItems} />);
+
+    const profileLinks = screen.getAllByRole('link', { name: /voir la fiche/i });
+
+    expect(profileLinks[0]).toHaveAttribute('href', '/boutiques/epicerie-du-marche');
+    expect(profileLinks[1]).toHaveAttribute('href', '/operateurs/taxi-ville');
+
+    // Libellés lisibles (i18n), pas `retail_shop` / `vtc_operator`.
+    expect(screen.getByText('Boutique')).toBeInTheDocument();
+    expect(screen.getByText('VTC / taxi')).toBeInTheDocument();
+  });
 });

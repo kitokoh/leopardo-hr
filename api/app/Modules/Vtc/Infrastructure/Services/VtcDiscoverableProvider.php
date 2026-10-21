@@ -105,9 +105,11 @@ final class VtcDiscoverableProvider implements PublicDiscoverableProvider
             // dans un annuaire public.
             'latitude' => null,
             'longitude' => null,
-            // Aucune fiche publique dédiée côté front à ce jour : le client
-            // ouvre le contact depuis la carte de résultat.
-            'url' => null,
+            // P1-02 — la fiche publique de l'opérateur est servie par
+            // `front/web` (`/operateurs/{slug}`), qui consomme
+            // `GET /public/vtc/marketplace/operators/{slug}` (même DTO et même
+            // périmètre fail-closed que l'annuaire).
+            'url' => '/operateurs/'.$slug,
         ];
     }
 

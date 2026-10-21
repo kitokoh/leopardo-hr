@@ -265,6 +265,36 @@ paths:
           description: Opérateurs opt-in (slug, name, city, country, currency)
         '429':
           $ref: '#/components/responses/Error429'
+  /public/vtc/marketplace/operators/{slug}:
+    get:
+      operationId: api_get_public_vtc_marketplace_operator
+      tags:
+      - Vtc
+      summary: Fiche publique d'un opérateur VTC/taxi (#8779, P1-02)
+      description: >-
+        Fiche publique d'un opérateur, résolue par slug via
+        `VtcMarketplaceService::operatorBySlug()` — donc avec EXACTEMENT le
+        même périmètre fail-closed que l'annuaire (annuaire actif + feature
+        `vtc` + société ni suspendue ni expirée). Un opérateur dépublié
+        disparaît de l'annuaire ET de sa fiche, sans divergence possible.
+        DTO public strict : slug, nom, ville, pays, devise — jamais
+        d'identifiant interne ni de grille tarifaire (un prix s'obtient par
+        `POST /public/vtc/marketplace/estimate`). 404 uniforme : slug inconnu,
+        dépublié ou hors périmètre sont indiscernables (aucune énumération).
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Slug public de l'opérateur (identifiant de l'annuaire)
+      responses:
+        '200':
+          description: Fiche publique (slug, name, city, country, currency)
+        '404':
+          description: Opérateur inconnu, dépublié ou hors périmètre (404 uniforme)
+        '429':
+          $ref: '#/components/responses/Error429'
   /public/vtc/marketplace/estimate:
     post:
       operationId: api_post_public_vtc_marketplace_estimate

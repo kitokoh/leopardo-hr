@@ -161,6 +161,67 @@ test.describe('Leopardo Public — parcours visiteur', () => {
   });
 });
 
+test.describe('Leopardo Public — fiches publiques Retail et VTC (P1-02)', () => {
+  /**
+   * ⚠️ Ces deux pages sont des Server Components : `page.route()` ne peut pas
+   * figer leur premier rendu (même raison que `/decouvrir` ci-dessus). Ce qui
+   * EST vérifiable en e2e, et qui est exactement ce que P1-02 devait livrer :
+   *
+   *  - la route EXISTE (avant ce lot, `/boutiques/{slug}` et
+   *    `/operateurs/{slug}` n'existaient pas du tout) ;
+   *  - elle est **fail-closed** : un slug inconnu produit l'état « introuvable »
+   *    propre, jamais un 500 ni une page vide ;
+   *  - elle ne fabrique jamais de lien vers une fiche inexistante.
+   *
+   * ⚠️ Mesuré, pas supposé : dans cet environnement (Next 16.4 dev/Turbopack),
+   * `notFound()` rend bien le contenu de `not-found.tsx` mais la réponse HTTP
+   * reste **200** — comportement **préexistant et global à l'application**,
+   * reproduit à l'identique sur `/vitrine/{slug inconnu}` (le patron dont ces
+   * pages sont issues). Les assertions portent donc sur le CONTENU rendu, pas
+   * sur le code de statut : asserter `404` ici serait un test faux par
+   * construction. Le statut réel en production (`next build` + `next start`)
+   * n'a pas pu être mesuré dans ce sandbox et n'est pas revendiqué.
+   *
+   * Le rendu du profil (nom, ville, catégories, CTA de contact) et le contrat
+   * `item.url` → `href` sont couverts en Jest, où le composant est monté
+   * directement : `src/app/boutiques/__tests__/shop-page.test.tsx`,
+   * `src/app/operateurs/__tests__/operator-page.test.tsx`,
+   * `src/app/decouvrir/__tests__/discovery-explorer.test.tsx`.
+   */
+  test('la fiche boutique rend un état introuvable propre pour un slug inconnu (fail-closed)', async ({ page }) => {
+    const response = await page.goto('/boutiques/zzz-boutique-inexistante-e2e');
+
+    // Pas de 500 : la page ne plante pas sur un slug inconnu.
+    expect(response?.status()).toBeLessThan(500);
+    await expect(page).toHaveTitle(/introuvable/i);
+    await expect(page.locator('body')).not.toBeEmpty();
+  });
+
+  test('la fiche opérateur rend un état introuvable propre pour un slug inconnu (fail-closed)', async ({ page }) => {
+    const response = await page.goto('/operateurs/zzz-operateur-inexistant-e2e');
+
+    expect(response?.status()).toBeLessThan(500);
+    await expect(page).toHaveTitle(/introuvable/i);
+    await expect(page.locator('body')).not.toBeEmpty();
+  });
+
+  test('les fiches verticales ne sont pas servies sous /restaurants (route devinée)', async ({ page }) => {
+    // Avant P1-02, la découverte Retail/VTC renvoyait `url: null` et le client
+    // retombait sur `/restaurants/{slug}`. Or `/restaurants/*` est une surface
+    // PROTÉGÉE (redirection vers la connexion), pas une fiche publique : y
+    // pointer un visiteur anonyme était donc un lien mort. La garde mesure
+    // exactement ça — la navigation aboutit sur la connexion, elle ne sert pas
+    // de profil public.
+    //
+    // ⚠️ `page.goto()` SUIT les redirections : `response.status()` vaut donc le
+    // statut FINAL (200 = page de connexion), pas le 307 intermédiaire. On
+    // asserte sur l'URL d'arrivée, seule mesure fiable ici.
+    await page.goto('/restaurants/zzz-boutique-inexistante-e2e');
+
+    expect(page.url()).toContain('/auth/login');
+  });
+});
+
 test.describe('Leopardo Public — conversation client <-> professionnel', () => {
   test('un visiteur non authentifié est renvoyé vers la connexion, pas vers un 403', async ({ page }) => {
     await page.route('**/api/v1/public/conversations*', (route: Route) =>

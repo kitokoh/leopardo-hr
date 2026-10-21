@@ -618,6 +618,105 @@ quand `CI=true`.
 
 ---
 
+### 13.7 Incrément P1-02 + trou CI (2026-10-21) — ce que l'exécution a encore corrigé
+
+Deuxième incrément d'implémentation après le contre-audit §13.5. **P1-02 est clos** et
+le trou CI **P0-06** est comblé. Trois constats de ce lot viennent de l'**exécution**,
+pas de la lecture.
+
+#### a) P1-02 — les `url: null` de la découverte
+
+Le lot #8773 avait étendu la découverte de 3 à 5 verticales, mais
+`RetailDiscoverableProvider` et `VtcDiscoverableProvider` publiaient **`url: null`** :
+un résultat Retail ou VTC apparaissait dans `/decouvrir` **sans fiche publique**, et le
+client retombait sur `/restaurants/{slug}`. **Vérifié à l'exécution** : `/restaurants/*`
+est une surface **protégée** — un visiteur anonyme y est redirigé vers `/auth/login`
+(307). Le lien de repli était donc **mort**, pas seulement imprécis.
+
+Livré :
+
+| Élément | Nature |
+|---|---|
+| `GET /public/vtc/marketplace/operators/{slug}` | Route **manquante** créée ; réutilise `VtcMarketplaceService::operatorBySlug()` et le **même DTO** que l'annuaire → même périmètre fail-closed, aucune règle dupliquée |
+| `RetailDiscoverableProvider` / `VtcDiscoverableProvider` | `url` = `/boutiques/{slug}` et `/operateurs/{slug}` |
+| `front/web/src/app/boutiques/[slug]/page.tsx` | Page SSR indexable, JSON-LD `Store` |
+| `front/web/src/app/operateurs/[slug]/page.tsx` | Page SSR indexable, JSON-LD `TaxiService` |
+| `retail-public-api.ts` / `vtc-public-api.ts` | Clients SSR, 404 fail-closed → `notFound()` |
+| `public-contact-cta.tsx` | Seul point d'entrée du contact hors `/decouvrir`, réutilise `ContactDialog` |
+| `api/openapi.yaml` | Nouvelle route documentée (`OpenApiDocsTest` 9/9) |
+
+**Décision assumée** : la fiche VTC n'affiche **aucun** CTA de réservation —
+`VtcDiscoverableProvider` ne déclare que l'action `contact`, donc un bouton
+« Réserver » serait inopérant (règle P1-03). La grille tarifaire reste interne.
+
+#### b) ⚠️ `notFound()` rend le contenu 404 mais la réponse HTTP reste **200**
+
+**Mesuré, pas supposé.** Dans cet environnement (Next 16.4 dev/Turbopack), une fiche
+dont le slug est inconnu rend bien le contenu de `not-found.tsx` (titre « Boutique
+introuvable ») mais la réponse HTTP est **200**, pas 404 :
+
+```
+/boutiques/zzz-inexistant    HTTP 200   (titre : « Boutique introuvable »)
+/operateurs/zzz-inexistant   HTTP 200   (titre : « Opérateur introuvable »)
+/vitrine/zzz-inexistant      HTTP 200   ← le PATRON dont ces pages sont issues
+```
+
+C'est donc un comportement **préexistant et global à l'application**, pas une
+régression de ce lot : `/vitrine/{slug inconnu}` — la page modèle — se comporte à
+l'identique. **Conséquence SEO réelle** : une fiche inexistante est servie en 200, donc
+potentiellement indexable comme page valide. Le statut en production
+(`next build` + `next start`) **n'a pas pu être mesuré** dans ce sandbox et n'est **pas
+revendiqué** ; le comportement dev/Turbopack n'est pas nécessairement celui du build.
+
+**Trois tests Playwright écrits d'abord étaient faux par construction** et ont été
+corrigés : ils asseraient `404` sur ces routes. Ils asserent désormais ce qui est
+réellement vérifiable (pas de 500, titre « introuvable », corps non vide) et le
+comportement mesuré est documenté dans le test lui-même. Un quatrième test asserait le
+307 de `/restaurants/*` : `page.goto()` **suit** les redirections, donc
+`response.status()` vaut le statut **final** (200 = page de connexion) — l'assertion
+porte maintenant sur l'URL d'arrivée.
+
+#### c) Trou CI P0-06 — les builds mobiles n'existaient pas sur PR backend
+
+`mobile-apps-ci.yml` filtre ses déclencheurs `pull_request` sur
+`front/mobile_apps/**` (correctif #7541). Sur une PR **backend**, le workflow n'est
+**même pas déclenché** : les 8 jobs `Build Debug` n'apparaissent pas « skipped », ils
+**n'existent pas**. Une régression de compilation mobile introduite par un changement
+d'API partagée reste donc invisible jusqu'à la distribution Firebase sur `main`.
+
+Nouveau `.github/workflows/mobile-smoke.yml` : **un** APK debug (`leopardo_employee`)
+construit sur **chaque** PR vers `main`, sans réactiver les 8 jobs lourds et **sans
+affaiblir aucun contrôle existant**. Validé par `actionlint 1.7.7` (exit 0) ; **aucun
+build Flutter local** (SDK absent) — validé statiquement, pas exécuté.
+
+⚠️ Ce workflow **n'est pas** dans les checks requis de la protection de `main` : il rend
+la régression **visible**. La rendre **bloquante** est une décision de paramétrage du
+dépôt, pas un changement de code.
+
+#### d) Preuve locale réelle de ce lot
+
+| Commande | Résultat |
+|---|---|
+| `phpunit tests/Feature/Retail/RetailPublicDiscoveryTest.php tests/Feature/Vtc/VtcPublicDiscoveryTest.php` | **OK (23 tests, 100 assertions)** |
+| `phpunit tests/Feature/LeopardoPublic/` | **OK (19 tests, 90 assertions)** |
+| `phpunit tests/Feature/OpenApiDocsTest.php` | **9/9** |
+| `pint --test` | **PASS** |
+| `phpstan analyse --level=8` | **`[OK] No errors`** |
+| `jest` (3 suites du périmètre) | **32/32** |
+| `jest` (suite `front/web` complète) | **189 suites, 1579 tests verts** (2 suites tuées par le noyau en parallèle, rejouées seules → vertes) |
+| `eslint` + `tsc --noEmit` | **propres** |
+| `playwright test … --workers=1` | **10 passed (27.3 s)** |
+| `actionlint 1.7.7` sur `mobile-smoke.yml` | **exit 0** |
+
+**Limites assumées** : la suite Jest complète a dû être relancée avec `--maxWorkers=2`
+puis les 2 suites tuées rejouées seules (pression mémoire du sandbox) ; Playwright exige
+`--workers=1` et un serveur Next démarré à la main (`BASE_URL` désactive le `webServer`
+de la config) ; aucun build Flutter/Android local ; la généralisation de la publication
+aux 32 verticales restantes (dont Pharmacy et Trade, **sans aucune sémantique
+d'opt-in**) est **reportée** — elle demande une décision métier par verticale.
+
+---
+
 ## 14. Plan priorisé P0–P3, suite E2E et réponses aux 10 questions
 
 ### 14.1 Plan d'exécution priorisé
