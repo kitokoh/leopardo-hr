@@ -251,9 +251,19 @@ final class SeedDefaultSteps
         // restaurant : étapes DÉCLARATIVES, aucun import inter-module.
         //
         // Détection : le code DÉCLARÉ `fuel_station` (SECTOR_SOLUTIONS du
-        // planner) OU le flag opérationnel `fuel` (featureKeys du catalogue
-        // front) — la checklist suit dans les deux sens.
-        if ($company->hasFeature('fuel_station') || $company->hasFeature('fuel')) {
+        // planner, ModuleRegistry).
+        //
+        // AUDIT PHASE 1 (2026-10-21) — `hasFeature('fuel')` RETIRÉ. La condition
+        // citait « le flag opérationnel `fuel` (featureKeys du catalogue front) »,
+        // mais `'fuel'` n'existe QUE dans le catalogue frontend
+        // (`front/web/src/lib/client-features.ts`, namespaces `capabilityKeys` /
+        // `featureKeys` / `vertical`) — **jamais** comme clé du `ModuleRegistry`
+        // backend, qui ne connait que `fuel_station`. La branche était donc
+        // TOUJOURS fausse côté backend : du code mort qui faisait échouer
+        // `ModuleRegistryGuardTest` (FR-6) et brouillait la règle réelle.
+        // Les deux catalogues sont des espaces de noms distincts ; affirmer le
+        // contraire dans un commentaire ne le rend pas vrai.
+        if ($company->hasFeature('fuel_station')) {
             $steps[] = ['key' => 'fuel_setup_station', 'title' => __('onboarding.step_fuel_setup_station'), 'required' => true, 'estimated_minutes' => 6];
             if ($team) {
                 $steps[] = ['key' => 'fuel_setup_team', 'title' => __('onboarding.step_fuel_setup_team'), 'required' => true, 'estimated_minutes' => 5];
@@ -284,7 +294,7 @@ final class SeedDefaultSteps
         // « Mon Logiciel » (#8447) est le point d'entrée unique. Déclarée en
         // optionnel : elle ne bloque jamais le go-live.
         $hasInstallableApps = $company->hasFeature('restaurantmanager') || $company->hasFeature('restaurant')
-            || $company->hasFeature('fuel_station') || $company->hasFeature('fuel')
+            || $company->hasFeature('fuel_station')
             || $company->hasFeature('retail');
         if ($hasInstallableApps) {
             $steps[] = ['key' => 'install_apps', 'title' => __('onboarding.step_install_apps'), 'required' => false, 'estimated_minutes' => 4];
