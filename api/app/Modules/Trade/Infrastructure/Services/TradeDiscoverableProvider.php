@@ -169,10 +169,16 @@ final class TradeDiscoverableProvider implements PublicDiscoverableProvider
             // et en inventer rendrait la recherche `near` faussement pertinente.
             'latitude' => null,
             'longitude' => null,
-            // Fiche publique servie par `front/web` sous `/commerce/{slug}`.
+            // ⚠️ Segment `/entreprises`, PAS `/commerce`. `/commerce` est un préfixe
+            // **dashboard** (espace vendeur BC-17) déclaré dans `src/proxy.ts` : une
+            // fiche sous `/commerce/{slug}` serait redirigée vers `/auth/login`
+            // (307) pour tout visiteur public — lien mort. Le premier jet utilisait
+            // `/commerce` et la garde de contrat ne l'a pas vu, car elle vérifiait
+            // l'EXISTENCE du fichier, pas sa JOIGNABILITÉ publique.
+            // Fiche publique servie par `front/web` sous `/entreprises/{slug}`.
             // Le segment est déclaré dans le mapping de la garde de contrat
             // (#8794) : ajouter une verticale sans y toucher fait échouer le test.
-            'url' => '/commerce/'.$slug,
+            'url' => '/entreprises/'.$slug,
         ];
     }
 

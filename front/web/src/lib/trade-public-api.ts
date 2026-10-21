@@ -3,7 +3,7 @@
  * commerce international / B2B (BC-36 TRADE).
  *
  * Rend la ressource publique `GET /api/v1/public/trade/companies/{slug}`
- * consommée par la page SSR `/commerce/{slug}` — même pattern que
+ * consommée par la page SSR `/entreprises/{slug}` — même pattern que
  * `vtc-public-api.ts` et `retail-public-api.ts` : appel direct à l'API Laravel
  * depuis un Server Component (aucune auth, DTO public strict, 404 fail-closed
  * → `null`).

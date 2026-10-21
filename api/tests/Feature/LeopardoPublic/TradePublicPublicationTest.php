@@ -139,7 +139,7 @@ class TradePublicPublicationTest extends TestCase
         $this->assertSame('Atlas Import Export', $item['name']);
         $this->assertSame('Lyon', $item['city']);
         $this->assertSame('FR', $item['country']);
-        $this->assertSame('/commerce/atlas-import-export', $item['url']);
+        $this->assertSame('/entreprises/atlas-import-export', $item['url']);
 
         // DTO STRICT : les internes ne doivent pas exister, pas seulement être
         // vides. `assertArrayNotHasKey` attrape aussi une fuite par ajout.

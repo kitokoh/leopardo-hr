@@ -11,7 +11,7 @@ import PublicContactCta from '@/app/decouvrir/public-contact-cta';
 
 /**
  * P2-01 (#8802) — page publique SEO d'une entreprise de commerce international
- * / B2B (`/commerce/{slug}`, BC-36 TRADE).
+ * / B2B (`/entreprises/{slug}`, BC-36 TRADE).
  *
  * SSR indexable (même modèle que `/boutiques/{slug}` et `/operateurs/{slug}`) :
  * metadata dynamique + JSON-LD schema.org `Organization`, profil (nom
@@ -20,7 +20,7 @@ import PublicContactCta from '@/app/decouvrir/public-contact-cta';
  * `GET /public/trade/companies/{slug}` (404 fail-closed → `notFound()`).
  *
  * Pourquoi cette page existe : `TradeDiscoverableProvider` publie
- * `url = /commerce/{slug}` dans `/public/discover`. Sans elle, un résultat de
+ * `url = /entreprises/{slug}` dans `/public/discover`. Sans elle, un résultat de
  * cette verticale serait un lien mort — exactement le défaut corrigé par
  * #8794 pour Restaurant, puis par P1-02 pour Retail et VTC. La garde
  * `PublicDiscoverableProviderContractTest` échoue d'ailleurs explicitement
@@ -53,7 +53,7 @@ export async function generateMetadata({ params, searchParams }: CompanyPageProp
   return {
     title,
     description,
-    alternates: { canonical: `${SITE_URL}/commerce/${company.slug}` },
+    alternates: { canonical: `${SITE_URL}/entreprises/${company.slug}` },
     robots: { index: true, follow: true },
     openGraph: { title, description, type: 'website' },
   };
@@ -64,7 +64,7 @@ function companyJsonLd(company: PublicTradeCompanyProfile): Record<string, unkno
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: company.name,
-    url: `${SITE_URL}/commerce/${company.slug}`,
+    url: `${SITE_URL}/entreprises/${company.slug}`,
   };
 
   if (company.description) {
