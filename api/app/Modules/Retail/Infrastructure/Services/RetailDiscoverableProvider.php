@@ -120,11 +120,12 @@ final class RetailDiscoverableProvider implements PublicDiscoverableProvider
             // légitimement (pas de coordonnées inventées).
             'latitude' => null,
             'longitude' => null,
-            // La fiche publique est servie par l'application Leopardo Marché
-            // (`/boutiques/{slug}`), dont l'origine est inconnue du backend :
-            // exposer un chemin relatif ici produirait un lien mort depuis
-            // `front/web`. On ne publie donc pas d'URL plutôt qu'une fausse.
-            'url' => null,
+            // P1-02 — la fiche publique de la boutique est désormais servie par
+            // `front/web` (`/boutiques/{slug}`), qui consomme le contrat public
+            // déjà opérationnel `GET /public/market/sellers/{sellerSlug}`
+            // (même périmètre opt-in que ce provider). Le chemin est relatif à
+            // l'origine de la passerelle publique, comme pour Restaurant.
+            'url' => '/boutiques/'.$slug,
         ];
     }
 

@@ -865,3 +865,9 @@ explicite en production si aucune n'est posée.
 - `node scripts/check-csp-guard.mjs` → OK.
 - Gardes du dépôt : `check-i18n-diff` (messages préfixés `[admin-dashboard]`),
   `check-ci-secrets-doc.sh` (`DEV_API_PROXY_BASE_URL` documenté), `actionlint`.
+
+## Note de conservation — propagation i18n des clés `discovery.*` (PR #8790, issue #8792, 2026-10-21)
+
+**Aucun changement de comportement du back-office.** Le diff sur `front/admin-dashboard/src/i18n/locales/{fr,en,ar,tr}.json` est uniquement la régénération mécanique (`shared/i18n/sync/sync-web.js`) des 18 clés partagées `discovery.*` introduites pour les **fiches publiques web** `/boutiques/{slug}` (Retail) et `/operateurs/{slug}` (VTC) : libellés de type (`typeRetailShop`, `typeVtcOperator`), titres de section, compteurs et états « introuvable ». Aucun écran de la console ne consomme ces clés — elles sont servies par le catalogue partagé, comme les lots i18n précédents. Scénarios existants valides tels quels.
+
+Vérifié : `node shared/i18n/sync/sync-web.js` → `I18N_SYNC_WEB_OK`, `node shared/i18n/validators/validate.js` → `I18N_VALIDATION_OK (4 locales)`, parité ×4 (`check-i18n-catalog-parity.sh`) **verte**, `git diff --exit-code` **propre** après les trois syncs (web, mobile, backend).

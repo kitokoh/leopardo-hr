@@ -2328,6 +2328,7 @@ Surface publique isolée `/api/v1/public/vtc/marketplace/*` (groupe `throttle:sh
 | Cas | Attendu |
 |---|---|
 | `GET /public/vtc/marketplace/operators` | 200, seuls les opérateurs opt-in (annuaire actif + feature `vtc` + société saine) ; DTO strict sans id interne |
+| `GET /public/vtc/marketplace/operators/{slug}` | 200, **même DTO et même périmètre fail-closed que l'annuaire** (résolu par `VtcMarketplaceService::operatorBySlug()`) ; slug inconnu / opérateur jamais publié / repassé `inactive` → **404 uniforme** (anti-énumération) |
 | `POST /public/vtc/marketplace/estimate` sur opérateur opt-in | 200, distance/durée/prix minor units calculés côté serveur (grille interne jamais exposée) |
 | `POST /public/vtc/marketplace/estimate` hors opt-in / slug inconnu | 404 uniforme (anti-énumération) |
 | `POST /public/vtc/marketplace/rides` (invité, `idempotency_key` UUID) | 201 + `tracking_code` présenté une seule fois ; course dans LE tenant de l'opérateur, `passenger_user_id` null |
