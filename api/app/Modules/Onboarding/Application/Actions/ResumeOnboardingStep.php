@@ -55,7 +55,7 @@ final class ResumeOnboardingStep
      *     not_before_verification: bool
      * }
      */
-    public function read(Company $company, array $steps): array
+    public function stateOf(Company $company, array $steps): array
     {
         $state = $this->normalize($company);
 
@@ -66,6 +66,7 @@ final class ResumeOnboardingStep
         foreach ($steps as $step) {
             if ($step['status'] !== 'pending') {
                 $completed++;
+
                 continue;
             }
 
@@ -104,7 +105,7 @@ final class ResumeOnboardingStep
      * @param  list<array{step_key: string, order: int, status: string}>  $steps
      * @return array{changed: bool, state: array<string, mixed>}
      */
-    public function moveTo(Company $company, string $stepKey, array $steps): array
+    public function execute(Company $company, string $stepKey, array $steps): array
     {
         $target = null;
         foreach ($steps as $step) {
@@ -149,7 +150,7 @@ final class ResumeOnboardingStep
 
         return [
             'changed' => ! $unchanged,
-            'state' => $this->read($this->withState($company, $state), $steps),
+            'state' => $this->stateOf($this->withState($company, $state), $steps),
         ];
     }
 

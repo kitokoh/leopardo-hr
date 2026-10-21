@@ -25,7 +25,10 @@ android {
         applicationId = "com.leopardo.manager"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        // #8774 (D-1) — sentry_flutter ^10 exige minSdk 26 : le defaut Flutter
+        // (24) fait echouer le manifest merger. Android 7.0/7.1 (API 24-25)
+        // n'est donc plus supporte.
+        minSdk = 26
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
