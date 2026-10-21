@@ -2411,6 +2411,16 @@ associés exécutés sur les registres réels du dépôt.
 - **Reste à câbler** : les scénarios ci-dessus sont décrits comme cible de non-régression mais ne sont pas tous automatisés dans ce lot — manquent des tests dédiés pour `FeeRule` (spécificité/priorité/min-max), le rejeu de webhook, la bascule d'instance de bout en bout via l'API Superadmin, le cash-out et la réconciliation. Le domaine est implémenté et vérifié par PHPStan niveau 8, mais ces assertions doivent être ajoutées.
 - Non couvert volontairement : aucun fournisseur réel (type **simulateur** uniquement), UI client final, KYC utilisateur.
 
+## 2026-10-21 — CI : trois jobs rouges reverdis sans désactiver un contrôle
+
+**Périmètre** : `.github/workflows/dev-keepalive.yml`, `.github/workflows/deploy-main-catchup.yml`, `api/app/Modules/Onboarding/Application/Actions/SeedDefaultSteps.php`, `api/tests/Unit/Restaurant/RestaurantPermissionsTest.php`, `api/tests/Unit/SetupInterviewPlannerTest.php`.
+
+- **`Dev Keepalive`** — scénario : le workflow doit **démarrer** (création de jobs) sur `schedule`. Vérification : `GET /actions/workflows/dev-keepalive.yml` → `state: active`, et un run déclenché produit `total_count > 0` (avant : `startup_failure` **sans aucun job** sur 56 runs sur 56). Cause : permissions `actions: write` + `issues: write` exigées par le workflow réutilisable `dev-stack-switch.yml` et non accordées par l'appelant.
+- **`Deploy Main Catch-up`** — scénario : secrets Render prod absents ⇒ le job **saute** en publiant `::notice::` et un Summary explicite, `dispatch_needed=false`, **statut vert** ; secrets présents ⇒ comportement d'origine (comparaison live puis dispatch). Aucun warning silencieux : le saut est déclaré, pas chuchoté.
+- **`Backend (PHP 8.4)`** — scénario : `phpunit --testsuite=Unit` doit être vert. Trois corrections : `hasFeature('fuel')` retiré (clé inexistante au `ModuleRegistry` backend) ; attentes `print_jobs.*` alignées sur REST-OS-6 `['principal','rh']` ; `SetupInterviewPlannerTest` aligné sur son propre `sector => 'services'`.
+- **Couverture** : `phpunit tests/Unit/Restaurant/RestaurantPermissionsTest.php tests/Unit/SetupInterviewPlannerTest.php tests/Unit/Core/Feature/ModuleRegistryGuardTest.php` → **`OK (16 tests, 47 assertions)`** ; `check-manager-role-enum.sh` → **OK** ; `pint --test` → **PASS** ; `phpstan --level=8` → **`[OK] No errors`**.
+- **Règle préservée** : aucun job désactivé, aucun test supprimé, aucune assertion affaiblie ; les trois attentes périmées ont été alignées sur des décisions **déjà arbitrées** (#8642, #7600) et non l'inverse.
+
 ## 2026-10-21 — LEOPARDO PUBLIC : contrats de découverte corrigés (URL Restaurant, capacité `booking`) (#8794)
 
 **Contrat concerné** : `GET /v1/public/discover` — champ `data[].url` et objet `meta.actions` (alimentés par `PublicDiscoverableProvider`).
