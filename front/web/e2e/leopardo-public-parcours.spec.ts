@@ -161,6 +161,51 @@ test.describe('Leopardo Public — parcours visiteur', () => {
   });
 });
 
+test.describe('Leopardo Public — fiches publiques Retail et VTC (P1-02)', () => {
+  /**
+   * ⚠️ Ces deux pages sont des Server Components : `page.route()` ne peut pas
+   * figer leur premier rendu (même raison que `/decouvrir` ci-dessus). Ce qui
+   * EST vérifiable en e2e, et qui est exactement ce que P1-02 devait livrer :
+   *
+   *  - la route EXISTE (avant ce lot, `/boutiques/{slug}` et
+   *    `/operateurs/{slug}` n'existaient pas du tout → 404 systématique) ;
+   *  - elle est **fail-closed** : un slug inconnu, dépublié ou hors périmètre
+   *    produit un 404 propre, jamais un 500 ni une page vide ;
+   *  - elle ne fabrique jamais de lien vers une fiche inexistante.
+   *
+   * Le rendu du profil (nom, ville, catégories, CTA de contact) et le contrat
+   * `item.url` → `href` sont couverts en Jest, où le composant est monté
+   * directement : `src/app/boutiques/__tests__/shop-page.test.tsx`,
+   * `src/app/operateurs/__tests__/operator-page.test.tsx`,
+   * `src/app/decouvrir/__tests__/discovery-explorer.test.tsx`.
+   */
+  test('la fiche boutique répond 404 proprement pour un slug inconnu (fail-closed)', async ({ page }) => {
+    const response = await page.goto('/boutiques/zzz-boutique-inexistante-e2e');
+
+    // 404 = la route existe et refuse ; 500 = la page a planté (bug réel).
+    expect(response?.status()).toBe(404);
+    await expect(page.locator('body')).not.toBeEmpty();
+  });
+
+  test('la fiche opérateur répond 404 proprement pour un slug inconnu (fail-closed)', async ({ page }) => {
+    const response = await page.goto('/operateurs/zzz-operateur-inexistant-e2e');
+
+    expect(response?.status()).toBe(404);
+    await expect(page.locator('body')).not.toBeEmpty();
+  });
+
+  test('les fiches verticales ne sont jamais servies sous /restaurants (route devinée)', async ({ page }) => {
+    // Avant P1-02, la découverte Retail/VTC renvoyait `url: null` et le client
+    // retombait sur `/restaurants/{slug}` — une route qui n'existe pas pour ces
+    // verticales. La garde : ces slugs ne doivent PAS répondre sous /restaurants.
+    const shop = await page.goto('/restaurants/zzz-boutique-inexistante-e2e');
+    expect(shop?.status()).toBe(404);
+
+    const operator = await page.goto('/restaurants/zzz-operateur-inexistant-e2e');
+    expect(operator?.status()).toBe(404);
+  });
+});
+
 test.describe('Leopardo Public — conversation client <-> professionnel', () => {
   test('un visiteur non authentifié est renvoyé vers la connexion, pas vers un 403', async ({ page }) => {
     await page.route('**/api/v1/public/conversations*', (route: Route) =>
