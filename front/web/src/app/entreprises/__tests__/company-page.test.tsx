@@ -3,7 +3,7 @@ import CompanyPage, { generateMetadata } from '../[slug]/page';
 import { getPublicTradeCompany, type PublicTradeCompanyProfile } from '@/lib/trade-public-api';
 
 /**
- * P2-01 (#8802) — fiche publique d'une entreprise de commerce (`/commerce/{slug}`).
+ * P2-01 (#8802) — fiche publique d'une entreprise de commerce (`/entreprises/{slug}`).
  *
  * Vérifie le contrat de la page : rendu SSR du profil, absence de donnée
  * interne, 404 fail-closed (`notFound()`) quand l'API ne résout pas le slug, et
@@ -44,7 +44,7 @@ const company: PublicTradeCompanyProfile = {
 const params = Promise.resolve({ slug: 'atlas-import-export' });
 const searchParams = Promise.resolve({ lang: 'fr' });
 
-describe('CompanyPage (/commerce/[slug])', () => {
+describe('CompanyPage (/entreprises/[slug])', () => {
   beforeEach(() => {
     // `notFound()` de Next.js LÈVE une exception : sans ce comportement, le
     // rendu continuerait après l'appel et le test ne prouverait rien.
@@ -111,7 +111,7 @@ describe('CompanyPage (/commerce/[slug])', () => {
     const metadata = await generateMetadata({ params, searchParams });
 
     expect(metadata.title).toBe('Atlas Import Export — Lyon');
-    expect(metadata.alternates?.canonical).toContain('/commerce/atlas-import-export');
+    expect(metadata.alternates?.canonical).toContain('/entreprises/atlas-import-export');
     expect(metadata.robots).toEqual({ index: true, follow: true });
   });
 

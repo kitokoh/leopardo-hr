@@ -56,9 +56,9 @@ class PublicDiscoverableProviderContractTest extends TestCase
         'showcase' => 'vitrine',
         'vtc_operator' => 'operateurs',
         // P2-01 (#8802) — première verticale dotée d'un opt-in public a
-        // posteriori. La page `front/web/src/app/commerce/[slug]/page.tsx`
-        // doit exister pour que ce mapping reste vrai.
-        'trade_company' => 'commerce',
+        // posteriori. La page `front/web/src/app/entreprises/[slug]/page.tsx`
+        // doit exister ET ne pas être sous un préfixe dashboard.
+        'trade_company' => 'entreprises',
     ];
 
     /**
@@ -97,6 +97,66 @@ class PublicDiscoverableProviderContractTest extends TestCase
     private function appDir(): string
     {
         return dirname(base_path()).'/front/web/src/app';
+    }
+
+    /**
+     * Préfixes DASHBOARD déclarés dans `front/web/src/proxy.ts`.
+     *
+     * La source de vérité est le fichier lui-même : recopier la liste ici
+     * ferait diverger la garde du produit au premier ajout de préfixe. On lit
+     * donc le tableau `DASHBOARD_PREFIXES` jusqu'à sa fermeture `];` et on en
+     * extrait les littéraux `'/segment'`.
+     *
+     * Lecture volontairement tolérante : si le format du fichier change, la
+     * garde renvoie un tableau vide plutôt que de casser sur un parse fragile —
+     * elle reste alors aussi permissive qu'avant #8802, jamais plus stricte
+     * par accident.
+     *
+     * @return list<string>
+     */
+    private function dashboardPrefixes(): array
+    {
+        $path = dirname(base_path()).'/front/web/src/proxy.ts';
+
+        if (! is_file($path)) {
+            return [];
+        }
+
+        $source = (string) file_get_contents($path);
+
+        $start = strpos($source, 'DASHBOARD_PREFIXES');
+
+        if ($start === false) {
+            return [];
+        }
+
+        $end = strpos($source, '];', $start);
+
+        if ($end === false) {
+            return [];
+        }
+
+        $block = substr($source, $start, $end - $start);
+
+        // Seuls les littéraux de tête de segment nous intéressent, et on ignore
+        // les commentaires (qui citent des chemins comme `/trade` ou `/commerce`
+        // sans les déclarer).
+        $lines = preg_split('/\R/', $block) ?: [];
+        $prefixes = [];
+
+        foreach ($lines as $line) {
+            $trimmed = ltrim($line);
+
+            if (str_starts_with($trimmed, '//') || str_starts_with($trimmed, '*')) {
+                continue;
+            }
+
+            if (preg_match("/'\\/([a-z0-9-]+)'/", $line, $m) === 1) {
+                $prefixes[] = $m[1];
+            }
+        }
+
+        return array_values(array_unique($prefixes));
     }
 
     private function publicRouteServes(string $action): bool
@@ -173,6 +233,28 @@ class PublicDiscoverableProviderContractTest extends TestCase
                     $type,
                     $segment,
                     $segment
+                )
+            );
+
+            // ⚠️ Exister ne suffit PAS. Une page sous un préfixe DASHBOARD est
+            // interceptée par `src/proxy.ts`, qui redirige (307) tout visiteur
+            // sans cookie de session vers `/auth/login` : la fiche existe, se
+            // compile, passe ce test… et reste un lien mort.
+            //
+            // Ce cas s'est produit pour de vrai (#8802) : la première fiche
+            // Trade a été créée sous `/commerce`, préfixe déjà pris par l'espace
+            // vendeur BC-17. Seule une requête HTTP réelle l'a révélé. La garde
+            // est donc étendue ici plutôt que laissée à la vigilance du
+            // relecteur.
+            $this->assertNotContains(
+                $segment,
+                $this->dashboardPrefixes(),
+                sprintf(
+                    'Le segment `%s` (type `%s`) est déclaré comme préfixe DASHBOARD dans `front/web/src/proxy.ts` : '
+                    .'la fiche sera redirigée vers `/auth/login` (307) pour tout visiteur public, donc inatteignable. '
+                    .'Choisir un segment public distinct (ex. `/entreprises` plutôt que `/commerce`).',
+                    $segment,
+                    $type
                 )
             );
         }
