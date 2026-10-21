@@ -179,6 +179,14 @@ use App\Modules\HR\Domain\Models\Position;
 use App\Modules\HR\Domain\Models\TrainingCourse;
 use App\Modules\Marketing\Domain\Models\SocialAccount;
 use App\Modules\Marketing\Domain\Models\SocialPost;
+use App\Modules\Paiements\Domain\Models\PaymentProviderInstance;
+use App\Modules\Paiements\Domain\Models\PaymentTransaction;
+use App\Modules\Paiements\Domain\Models\PaymentWebhookEndpoint;
+use App\Modules\Paiements\Domain\Models\Wallet;
+use App\Modules\Paiements\Policies\PaymentProviderInstancePolicy;
+use App\Modules\Paiements\Policies\PaymentTransactionPolicy;
+use App\Modules\Paiements\Policies\PaymentWebhookEndpointPolicy;
+use App\Modules\Paiements\Policies\WalletPolicy;
 use App\Modules\Payroll\Domain\Models\EmployeeLoan;
 use App\Modules\Payroll\Domain\Models\PayrollCalculationAudit;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
@@ -627,6 +635,19 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(PharmacySale::class, PharmacySalePolicy::class);
         Gate::policy(PharmacyPrescriber::class, PharmacyPrescriberPolicy::class);
         Gate::policy(PharmacyPrescription::class, PharmacyPrescriptionPolicy::class);
+
+        // — Paiements (BC-38) — issue #8711 (ecart P-1 de l'audit readiness).
+        // Avant cette date, le BC-38 n'avait AUCUNE policy : l'autorisation
+        // reposait uniquement sur le middleware `tenant` et le scope
+        // `BelongsToCompany`, si bien qu'une regression de scope devenait
+        // silencieuse. Les quatre modeles sensibles sont desormais gardes
+        // explicitement, y compris `PaymentProviderInstance` (company_id
+        // nullable : une instance globale ne doit jamais etre lue par un
+        // tenant) et `PaymentWebhookEndpoint` (secret de signature).
+        Gate::policy(Wallet::class, WalletPolicy::class);
+        Gate::policy(PaymentTransaction::class, PaymentTransactionPolicy::class);
+        Gate::policy(PaymentProviderInstance::class, PaymentProviderInstancePolicy::class);
+        Gate::policy(PaymentWebhookEndpoint::class, PaymentWebhookEndpointPolicy::class);
 
         // Gate definitions
         Gate::define('manage-billing', [BillingPolicy::class, 'manageSubscription']);
