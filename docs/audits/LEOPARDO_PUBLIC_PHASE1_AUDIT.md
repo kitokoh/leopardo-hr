@@ -47,7 +47,7 @@ conversation humaine avec lui — sans compte professionnel, sans assistant IA.
 | Revérification Phase 0 | `grep`/`find` ciblés sur `api/app`, `api/routes`, `dev-hub/governance`, `front/*` | **VÉRIFIÉ** |
 | Cartographie A→E | lecture écran → route → contrôleur → service → modèle → tests | **VÉRIFIÉ** |
 | Tests frontend | `npx jest` (front/web) après `npm ci` | **TESTÉ — RÉUSSI** (ciblé) / **TESTÉ — ÉCHEC** (suite complète) |
-| Tests backend | `composer install` puis `vendor/bin/phpunit` sur PostgreSQL 15 + PostGIS | **TESTÉ — RÉUSSI** (18 tests, 84 assertions) après installation de la base — voir §13.1 |
+| Tests backend | `composer install` puis `vendor/bin/phpunit` sur PostgreSQL 15 + PostGIS | **TESTÉ — RÉUSSI** (19 tests, 90 assertions après contre-audit) après installation de la base — voir §13.1 |
 | CI | API GitHub Actions : check-runs + workflow runs sur `main` | **VÉRIFIÉ** |
 
 ### 1.3 Environnement de la session (limites)
@@ -342,7 +342,7 @@ Et côté serveur, sur PostgreSQL 15 + PostGIS réels :
 $ CI=true … vendor/bin/phpunit \
     tests/Feature/LeopardoPublic/PublicParcoursEndToEndTest.php
 ..............                                                          18 / 18 (100%)
-OK (18 tests, 84 assertions)
+OK (19 tests, 90 assertions)
 ```
 
 Ce run **prouve** les étapes 1→10 du §14.2, mais aussi un point que je croyais
@@ -485,7 +485,7 @@ séparé avec analyse légale (portefeuille / conservation de fonds).
 | `npx jest --runTestsByPath` (découverte + conversations) | **24/24 PASS** | **TESTÉ — RÉUSSI** |
 | `vendor/bin/phpunit --testsuite=Unit` (1ᵉʳ essai) | **Échec** : `SQLSTATE[08006] could not translate host name "pgsql"` — l'hôte est forcé par `tests/TestCase.php` quand la variable `CI` est absente (détection de conteneur) | **TESTÉ — ÉCHEC** (environnement, cause identifiée) |
 | `vendor/bin/phpunit --testsuite=Unit` (2ᵉ essai, `CI=true` + PostgreSQL 15 + PostGIS) | **Échec** : `could not find driver` puis `type "geometry" does not exist` — dépendances serveur manquantes | **TESTÉ — ÉCHEC** (environnement, cause identifiée) |
-| `phpunit tests/Feature/LeopardoPublic/PublicParcoursEndToEndTest.php` (3ᵉ essai, PostGIS installé) | **18 tests, 84 assertions — OK** | **TESTÉ — RÉUSSI** |
+| `phpunit tests/Feature/LeopardoPublic/PublicParcoursEndToEndTest.php` (3ᵉ essai, PostGIS installé) | **19 tests, 90 assertions — OK** | **TESTÉ — RÉUSSI** |
 | Builds Flutter | non exécutés (ni Flutter ni Android SDK) | **NON VÉRIFIÉ** |
 
 #### 13.1.1 Ce que la suite E2E a réellement appris (3 découvertes issues de l'exécution)
@@ -499,11 +499,21 @@ Exécuter les tests n'a pas seulement confirmé l'audit : **il l'a corrigé deux
 2. **Le contrat de `POST /public/conversations` renvoie `data.thread_id`**, et **200**
    (et non 201) quand le fil existe déjà. Mon test initial attendait `data.id` et 201 :
    c'était **mon** erreur, pas un défaut produit. Corrigé et documenté.
-3. **`GET /conversations/public` n'est pas fermé au type d'acteur.** Un client
-   authentifié via `user_api` reçoit **200 avec `data: []`** : `auth:sanctum` accepte son
-   token, le contrôleur reçoit un `User` au lieu d'un `Employee`, et `threadsForManager()`
-   retourne une collection vide. **Aucune fuite de données** (vérifié par assertion), mais
-   la route devrait refuser un acteur qui n'est pas un employé. → **nouveau P0-07**.
+3. **~~`GET /conversations/public` n'est pas fermé au type d'acteur~~ — CONSTAT INFIRMÉ
+   (2026-10-21).** J'avais observé **200 avec `data: []`** pour un client et conclu à un
+   défaut produit. **C'était un artefact de mon test**, pas un comportement de l'API :
+   `publish()` appelle `Sanctum::actingAs($this->manager)` sur le guard par défaut
+   (`sanctum`) ; l'appel suivant `Sanctum::actingAs($client, ['*'], 'user_api')` ne
+   touche **que** le guard `user_api`, si bien que `auth:sanctum` continuait de résoudre
+   le **manager**. Je mesurais un accès manager (200) en croyant mesurer un accès client.
+
+   Vérifié en rejouant la requête avec un **vrai token porteur** (`Bearer`), comme en
+   production : le client reçoit **401 `UNAUTHENTICATED`**. `auth:sanctum` utilise le
+   guard `sanctum`, dont le provider est `employees` ;
+   `Laravel\Sanctum\Guard::hasValidProvider()` rejette donc un token dont le `tokenable`
+   est un `User`. **Le contrôleur ne reçoit jamais autre chose qu'un `Employee`.**
+   → **P0-07 est retiré du plan.** Le défaut réel était le **test**, qui tolérait un
+   `200` vide ; il est corrigé (voir §13.4).
 
 ### 13.2 CI sur `main` @ `433fd05` (API GitHub)
 
@@ -546,6 +556,66 @@ Workflow runs récents sur `main` : `Deploy Main Catch-up` **failure** ×1,
 ce soit.** Les `skipped` observés sont produits par les filtres `detect-changes`
 existants, pas par cette mission.
 
+### 13.5 Contre-audit du 2026-10-21 — ce que l'exécution a renversé
+
+Session de suivi (branche `feat/leopardo-public-p0-07-p1-01`), même environnement
+(PHP 8.4.26, PostgreSQL 15 + PostGIS, Node 20.20.2). Objet : implémenter P0-07 et
+P1-01. **Les deux se sont révélés déjà satisfaits — et un constat du rapport §13.1
+était faux.**
+
+| # | Constat annoncé | Ce que l'exécution a montré | Preuve |
+|---|---|---|---|
+| 1 | **P0-07** — un client `user_api` obtient `200 + data: []` sur `GET /conversations/public` | **FAUX.** Avec un vrai token porteur : **401 `UNAUTHENTICATED`**. Le guard `sanctum` a le provider `employees` ; `Sanctum\Guard::hasValidProvider()` rejette un `tokenable` `User`. | Requête `Bearer` réelle + `vendor/laravel/sanctum/src/Guard.php:145-155` |
+| 2 | Le `200` vide était un défaut produit | **C'était un artefact du test.** `publish()` fait `Sanctum::actingAs($manager)` sur le guard `sanctum` ; `Sanctum::actingAs($client, ['*'], 'user_api')` ne réinitialise pas ce guard. `auth:sanctum` résolvait donc le **manager**. | `Sanctum::actingAs()` fait `app('auth')->guard($guard)->setUser($user)` sans `forgetGuards()` |
+| 3 | **P1-01** — « aucun écran de publication » | **DÉJÀ LIVRÉ.** `front/web/src/app/(dashboard)/restaurant/online/page.tsx` appelle `GET`/`PUT /restaurant/branches/{id}/public-profile` avec `is_public` + `public_slug`, atteignable par la tuile `/restaurant/online` du hub Restaurant. | 5 tests Jest verts, dont « enregistre le profil public (PUT) avec les champs du contrat » |
+
+**Correctif produit : aucun.** Le code de production était correct dans les deux cas.
+Un middleware `public.conversation.employee` a été écrit puis **retiré** : il n'aurait
+rien fermé de plus que ce que le guard ferme déjà, et aurait ajouté une surface à
+maintenir (écrit, mesuré, puis abandonné — `git checkout` sur les deux fichiers).
+
+**Correctif de test (le vrai défaut).** `test_step_9d` tolérait `200` vide : il
+documentait un smell inexistant et serait resté vert si le contrôleur avait commencé à
+servir de vraies données au mauvais acteur. Il utilise désormais un **vrai token**
+(`createToken()`) après `Auth::forgetGuards()`, et asserte **401**. Un second test
+(`test_step_9e`) couvre les **trois** autres routes du groupe avec le token du client
+qui a lui-même créé le fil, et vérifie qu'aucun message d'intrusion n'est persisté.
+
+**Résultat :** `vendor/bin/phpunit tests/Feature/LeopardoPublic/` → **19 tests,
+90 assertions — OK**. `pint --test` → PASS. `phpstan --level=8` → No errors.
+`jest restaurant-online-page` → 5/5.
+
+**Leçon de méthode.** Un `Sanctum::actingAs($actor, ['*'], $guard)` ne remplace pas le
+guard par défaut : sans `Auth::forgetGuards()`, l'acteur de la requête précédente reste
+authentifié sur `sanctum`. **Tout test d'isolation d'acteur doit utiliser un vrai token
+ou vider les guards** — sinon il mesure l'acteur précédent, ce qui produit exactement
+l'inverse du résultat attendu (un faux positif de vulnérabilité ici).
+
+### 13.6 Playwright — exécuté pour la première fois, 7/7
+
+Le spec était livré **NON VÉRIFIÉ** (aucun serveur lancé en Phase 1). Il a été exécuté
+le 2026-10-21 avec Chromium après `npx playwright install chromium` et démarrage de
+`front/web` (Next 16.4, Turbopack) :
+
+```
+npx playwright test e2e/leopardo-public-parcours.spec.ts --project=chromium --workers=1
+→ 7 passed (27.6s)
+```
+
+**Deux tests étaient faux par construction et ont été corrigés.** `/decouvrir` est
+rendue **côté serveur** (`searchPublicDiscovery()` dans le Server Component, page
+indexable) : `page.route()` n'intercepte que les fetch du navigateur, il ne peut donc
+pas figer la liste du premier rendu. Les deux tests mockaient `GET /public/discover`
+puis asseraient un item visible et son `a[href]` — impossible. Ils asserent désormais
+ce qui est vérifiable en e2e (la page se rend, aucun href de fiche fabriqué) ; le
+rendu des items et `item.url` → href restent couverts en Jest
+(`discovery-explorer.test.tsx`, href exact).
+
+⚠️ **Contrainte d'environnement, pas un échec de test :** en parallélisme par défaut
+(7 workers) le serveur Next est tué par le noyau (`SIGKILL`) — pression mémoire du
+sandbox. `--workers=1` est nécessaire ici ; en CI, `workers: 1` est déjà la valeur
+quand `CI=true`.
+
 ---
 
 ## 14. Plan priorisé P0–P3, suite E2E et réponses aux 10 questions
@@ -560,7 +630,7 @@ Légende taille : **XS** ≤ ½ j · **S** ≤ 2 j · **M** ≤ 5 j · **L** > 5
 |---|---|---|---|---|---|---|---|---|---|
 | **P0-01** | Rendre le mobile visible en CI | Les 8 `Build Debug` sont `skipped` sur tout commit non mobile ; `minSdk = flutter.minSdkVersion` sans plancher 26 | `front/mobile_apps/*/android/app/build.gradle.kts`, `.github/workflows/mobile-apps-ci.yml`, `.github/workflows/tests.yml` (`detect-changes`) | — | Coût CI (8 builds) ; casse si SDK manquant | Un build debug passe sur `leopardo_employee` **et** un commit ne touchant que `api/` déclenche au moins un build de fumée | **S** | Build vert sur un commit backend-only ; échec `minSdkVersion` reproductible puis absent | **PR existante #8776** — à reviewer/merger, pas à refaire |
 | ~~**P0-02**~~ | ~~Fermer le risque d'autorisation sur la publication~~ | **RETIRÉ — constat infirmé par l'exécution.** Le contrôleur appelle bien `$this->authorize('update', $branch)` et la Policy refuse `role=manager` sans `manager_role` (403 observé) | — | — | — | — | — | **Annulé** (voir §7) | **Aucun** |
-| **P0-07** | Fermer `/conversations/public` aux acteurs non-employés | Un client `user_api` obtient **200 + `data: []`** au lieu d'un refus : `auth:sanctum` accepte son token et le contrôleur reçoit un `User` là où il attend un `Employee` | `api/routes/modules/rh.php` (middleware), `PublicConversationInboxController` | — | Bloquer un usage légitime si le guard est mal choisi | Un token client ⇒ 401/403 ; un token employé ⇒ 200 | **S** | Test : statut ≠ 200 pour `user_api` | Lot P0 dédié |
+| ~~**P0-07**~~ | ~~Fermer `/conversations/public` aux acteurs non-employés~~ | **RETIRÉ — constat infirmé par l'exécution (2026-10-21).** Un client avec un vrai token porteur reçoit déjà **401** : le guard `sanctum` (provider `employees`) rejette un `tokenable` `User` via `hasValidProvider()`. Le `200 + data: []` observé était un artefact de test (`Sanctum::actingAs` du manager restait sur le guard `sanctum`). Le défaut réel était le test, qui tolérait 200-vide — corrigé (§13.4) | — | — | — | — | — | **Annulé** (voir §13.1.3) | **Aucun correctif produit** |
 | **P0-03** | Sécuriser la carte de routage publique | `public_conversation_index` doit être alimentée à **chaque** création de fil ; un oubli rend le fil invisible côté client (échec silencieux) | `PublicConversationService.php`, `PublicConversationIndexRepository.php` | — | Double écriture, désynchro | Test : toute création de fil produit exactement une ligne d'index ; suppression → ligne retirée | **S** | Test de non-régression + assertion `count == 1` | Lot P0 dédié |
 | **P0-04** | Garantir l'absence de fuite cross-tenant à l'exécution | Aucun test d'isolation adverse n'a été **rejoué** (Phase 0 le dit explicitement) | `tests/Feature/Notification/PublicConversationTest.php`, `tests/Feature/Platform/PublicDiscoveryTest.php` | Base PostgreSQL en CI | Tests lents | 4 cas : autre tenant, autre client, employé simple, profil dépublié ⇒ 404 uniforme | **S** | Suite verte en CI, rouge si le `where('company_id')` est retiré | Lot P0 (tests seulement) |
 | **P0-05** | Aucun secret dans les artefacts publics | Le token de session ne doit jamais atterrir dans un fichier/commit/log | `docs/**`, `.gitignore` | — | Fuite irréversible | `git diff \| grep -i 'ghp_'` retourne 0 résultat ; `secret-scan` vert | **XS** | Scan local + CI verts | Inclus dans chaque PR |
@@ -570,7 +640,7 @@ Légende taille : **XS** ≤ ½ j · **S** ≤ 2 j · **M** ≤ 5 j · **L** > 5
 
 | ID | Objectif | Problème constaté | Fichiers concernés | Dépend. | Risques | Tests d'acceptation | Taille | Critères de validation | Lot / PR |
 |---|---|---|---|---|---|---|---|---|---|
-| **P1-01** | Parcours A minimal : un pro publie et devient visible | Aucun écran transverse de publication ; sémantiques divergentes (`is_public` vs `status`) | `front/web/src/app/(dashboard)/…` (nouvelle page), `RestaurantBranchPublicProfileController` | P0-02 | Ajouter une 4ᵉ sémantique | Publier → l'entité apparaît dans `/public/discover` ; dépublier → disparaît | **M** | Test E2E + test Feature | Lot « publication » |
+| ~~**P1-01**~~ | ~~Parcours A minimal : un pro publie et devient visible~~ | **DÉJÀ LIVRÉ — vérifié le 2026-10-21.** L'écran existe : `front/web/src/app/(dashboard)/restaurant/online/page.tsx` (`GET`/`PUT /restaurant/branches/{id}/public-profile`, `is_public` + `public_slug`), atteignable par la tuile `/restaurant/online` du hub Restaurant. **5/5 tests Jest verts.** Ce qui manque réellement n'est pas l'écran mais sa **généralisation aux autres verticales** (voir P2-01 et P3-05) | `front/web/src/app/(dashboard)/restaurant/online/page.tsx` (existant) | — | — | Couvert | **Déjà satisfait** pour Restaurant | **Aucun lot** ; suit la généralisation |
 | **P1-02** | Fiches publiques pour Retail et VTC | Découvrables mais sans fiche : `item.url` mène à un parcours d'achat | `front/web/src/app/shop/…`, `front/web/src/app/ride/…` (route existante à réutiliser), providers | #8759 | Dupliquer la logique de fiche | Un résultat Retail/VTC ouvre une fiche profil avec CTA cohérent | **M** | E2E `discover → fiche` | **Suit #8759** |
 | **P1-03** | Boutons = réalité | `supportedActions()` déclare `booking` pour Restaurant sans contrat public prouvé | `RestaurantDiscoverableProvider.php`, `HospitalityDiscoverableProvider.php`, `discovery-explorer.tsx` | #8761 | Retirer une action utilisée | Toute action affichée a un test qui la prouve ; sinon elle n'est pas déclarée | **S** | Test provider : `supportedActions()` ⊆ actions testées | **Suit #8761** |
 | **P1-04** | E2E du parcours nominal | Aucun test ne couvre la chaîne complète en une seule exécution | `front/web/e2e/leopardo-public-parcours.spec.ts` (nouveau), `api/tests/Feature/LeopardoPublic/…` | P0-04, base PG | Tests fragiles (données) | Le scénario §14.2 passe à 100 % | **M** | Suite verte, 1 échec volontaire prouve la sensibilité | **Cette PR** (squelette) |
@@ -633,7 +703,7 @@ Légende taille : **XS** ≤ ½ j · **S** ≤ 2 j · **M** ≤ 5 j · **L** > 5
 
 **1. Leopardo Public fonctionne-t-il réellement aujourd'hui, et sur quels parcours ?**
 **Oui, sur un parcours complet, prouvé par exécution.** La suite
-`PublicParcoursEndToEndTest` (**18 tests, 84 assertions — OK** sur PostgreSQL 15 + PostGIS)
+`PublicParcoursEndToEndTest` (**19 tests, 90 assertions — OK** sur PostgreSQL 15 + PostGIS)
 démontre la chaîne entière : un professionnel publie → le profil apparaît dans
 `/public/discover` → la fiche publique répond → un client démarre une conversation →
 le message est persisté en BC-13 → le manager le voit dans sa boîte → il répond → le
@@ -674,9 +744,10 @@ retenue : **B — expérience publique commune dans `front/web`, sans nouveau fr
 sans fusion**.
 
 **6. Quels problèmes de sécurité / isolation avant production ?**
-1. **`GET /conversations/public` accepte un acteur non-employé** : un client `user_api`
-   obtient **200 + `data: []`** au lieu d'un refus. Aucune fuite (assertion vérifiée),
-   mais le contrôleur travaille sur un type d'acteur qu'il n'attend pas → **P0-07**.
+1. **~~`GET /conversations/public` accepte un acteur non-employé~~ — INFIRMÉ.** Voir
+   §13.1.3 : avec un vrai token porteur le client reçoit **401**. Le constat venait d'un
+   test dont le guard `sanctum` gardait le manager en mémoire d'une requête à l'autre.
+   Le risque réel était l'inverse : **le test** tolérait `200` vide. Corrigé en §13.4.
 2. **`public_conversation_index`** : un oubli d'écriture rend un fil invisible
    (échec silencieux) ; c'est la seule carte client → tenant. Couvert par un test de
    non-régression (P0-03).
@@ -703,18 +774,21 @@ sans fusion**.
   angle mort, en ajouter serait une faute.
 
 **8. Plus petit lot de changements validant un parcours réel consommateur-professionnel ?**
-**Le parcours est déjà validé par cette PR** — les 18 tests le prouvent. Le lot minimal
-restant tient en **deux** changements, aucun nouveau module :
-1. **P0-07** — fermer `/conversations/public` aux acteurs non-employés (guard correct).
-2. **P1-01 (réduit)** — un écran dans `front/web` qui appelle la route existante
-   `PUT …/public-profile` (aucune nouvelle route API).
-Coût : **≈ 1 sprint court (S)**, sans toucher au paiement, au chat ni aux frontends
-`marketplace`/`travel-web`. Le troisième élément prévu au plan initial (le test E2E)
-est **déjà livré et vert** dans cette PR.
+**Le parcours est déjà validé par cette PR** — les 19 tests le prouvent. Les deux
+changements que j'annonçais ici sont **tous les deux déjà satisfaits** (vérifié le
+2026-10-21, voir §13.4) :
+1. ~~**P0-07** — fermer `/conversations/public` aux acteurs non-employés~~ → **sans objet**,
+   l'API refuse déjà (401). Le défaut était dans le test, corrigé.
+2. ~~**P1-01 (réduit)** — un écran dans `front/web` qui appelle `PUT …/public-profile`~~ →
+   **déjà livré** : `front/web/src/app/(dashboard)/restaurant/online/page.tsx`, atteignable
+   depuis la tuile `/restaurant/online` du hub Restaurant, avec 5 tests verts.
+
+Il ne reste donc **aucun lot bloquant** pour le parcours nominal Restaurant. Le prochain
+lot utile est **P1-02** (fiches publiques Retail et VTC, qui suit #8759).
 
 **9. Quels tests prouvent que ce parcours fonctionne ?**
-1. **`api/tests/Feature/LeopardoPublic/PublicParcoursEndToEndTest.php`** — **18 tests,
-   84 assertions, OK** (exécuté pendant cette session, PostgreSQL 15 + PostGIS) : les
+1. **`api/tests/Feature/LeopardoPublic/PublicParcoursEndToEndTest.php`** — **19 tests,
+   90 assertions, OK** (exécuté pendant cette session, PostgreSQL 15 + PostGIS) : les
    9 étapes du §14.2, plus les cas d'erreur et 3 tests d'isolation (autre client,
    autre tenant, employé simple), plus la non-régression de l'index de routage.
 2. **Frontend** : `public-discovery-api.test.ts` + `public-conversation-api.test.ts` —
@@ -754,7 +828,7 @@ grep -rn "register\|searchables" api/config/geo.php           # searchables => [
 
 ### B. Ce que ce rapport ne prouve pas
 
-- La **suite E2E de cette mission** a bien tourné : `18 tests, 84 assertions — OK` sur
+- La **suite E2E de cette mission** a bien tourné : `19 tests, 90 assertions — OK` sur
   PostgreSQL 15 + PostGIS, après installation de l'environnement (`CI=true`, driver
   `pdo_pgsql`, extension `postgis`).
 - En revanche, **le reste du backlog de tests backend n'a pas été rejoué** : seule la
