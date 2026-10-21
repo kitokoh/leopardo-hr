@@ -876,6 +876,12 @@
       "to": "BC-02",
       "baseline": false,
       "note": "PAIEMENTS -> TENANT : la surface Tenant (solde, historique, demande de cash-out) lit le tenant courant via currentCompany() et le scope global `company` du trait BelongsToCompany, meme patron que les autres BC verticaux."
+    },
+    {
+      "from": "BC-38",
+      "to": "BC-03",
+      "baseline": false,
+      "note": "PAIEMENTS -> AUTH : les policies du BC-38 (#8711) typent leur acteur en `App\\Core\\Auth\\Domain\\Models\\Employee` pour lire le role metier (`isPrincipal()`, `isHr()`). C'est l'acteur d'autorisation, pas une dependance metier : la policy ne lit aucune donnee RH, seulement l'identite portee par le token. Alternative ecartee : dupliquer la notion de role dans Paiements, qui divergerait au premier role ajoute."
     }
   ]
 }
