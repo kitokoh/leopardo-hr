@@ -9893,7 +9893,13 @@
     "operatorEstimateTitle": "Demander un devis",
     "operatorEstimateHint": "Le prix d'une course est calculé par l'opérateur à partir de votre trajet.",
     "operatorNotFoundTitle": "Opérateur introuvable",
-    "operatorBackToDirectory": "Tous les professionnels"
+    "operatorBackToDirectory": "Tous les professionnels",
+    "companyTitle": "Commerce international",
+    "companyAboutTitle": "À propos de l'entreprise",
+    "companyImport": "Import",
+    "companyExport": "Export",
+    "companyDomestic": "Marché national",
+    "companyNotFoundTitle": "Entreprise introuvable"
   },
   "publicInbox": {
     "pageTitle": "Demandes publiques",
