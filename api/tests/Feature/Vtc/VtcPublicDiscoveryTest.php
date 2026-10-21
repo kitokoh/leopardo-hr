@@ -217,6 +217,51 @@ class VtcPublicDiscoveryTest extends TestCase
         ])->assertStatus(404);
     }
 
+    /**
+     * P1-02 — l'item de découverte doit pointer vers une fiche publique qui
+     * EXISTE réellement. Avant ce lot, `url` valait `null` : un résultat VTC
+     * n'avait aucune fiche profil.
+     *
+     * Le test APPELLE la route cible : un `url` pointant vers une route
+     * inexistante échoue ici, et le DTO de la fiche doit être EXACTEMENT celui
+     * de l'annuaire (même ressource, donc aucune divergence possible).
+     */
+    public function test_discovery_item_points_to_a_reachable_public_operator_profile(): void
+    {
+        $this->operator('express-vtc', 'Express VTC', attributes: ['city' => 'Douala']);
+
+        $this->getJson('/api/v1/public/discover?type=vtc_operator')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.url', '/operateurs/express-vtc');
+
+        $profile = $this->getJson('/api/v1/public/vtc/marketplace/operators/express-vtc')
+            ->assertOk()
+            ->assertJsonPath('data.slug', 'express-vtc')
+            ->assertJsonPath('data.name', 'Express VTC');
+
+        // DTO strict : identité publique uniquement, jamais la grille tarifaire.
+        $this->assertSame(
+            ['slug', 'name', 'city', 'country', 'currency'],
+            array_keys($profile->json('data')),
+        );
+    }
+
+    /**
+     * P1-02 — la fiche opérateur est fail-closed : un opérateur jamais publié
+     * ou repassé inactif répond 404 (jamais 403), donc aucune énumération de
+     * profils n'est possible depuis la fiche.
+     */
+    public function test_operator_profile_is_fail_closed_for_unpublished_operators(): void
+    {
+        $this->operator('vtc-non-publie', 'VTC Non Publié', publish: false);
+        $this->operator('vtc-inactif', 'VTC Inactif', operatorStatus: VtcMarketplaceOperator::STATUS_INACTIVE);
+
+        $this->getJson('/api/v1/public/vtc/marketplace/operators/vtc-non-publie')->assertNotFound();
+        $this->getJson('/api/v1/public/vtc/marketplace/operators/vtc-inactif')->assertNotFound();
+        $this->getJson('/api/v1/public/vtc/marketplace/operators/inconnu')->assertNotFound();
+    }
+
     public function test_provider_returns_empty_list_when_no_operator_is_eligible(): void
     {
         $this->operator('vtc-non-publie', 'VTC Non Publié', publish: false);

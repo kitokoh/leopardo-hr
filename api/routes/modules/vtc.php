@@ -46,6 +46,9 @@ Route::middleware(['throttle:shop-public'])
     ->group(function (): void {
         // M-11 — annuaire des opérateurs VTC opt-in (DTO strict).
         Route::get('/operators', [VtcMarketplaceController::class, 'operators']);
+        // P1-02 — fiche publique d'un opérateur : même DTO et même périmètre
+        // fail-closed que l'annuaire (404 uniforme, aucune règle dupliquée).
+        Route::get('/operators/{slug}', [VtcMarketplaceController::class, 'operator']);
         // M-12 — devis public (tenant résolu par slug opérateur).
         Route::post('/estimate', [VtcMarketplaceController::class, 'estimate']);
         // M-13 — réservation invitée idempotente : throttle renforcé en plus

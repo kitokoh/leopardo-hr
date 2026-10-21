@@ -205,6 +205,52 @@ class RetailPublicDiscoveryTest extends TestCase
         ])->assertCreated();
     }
 
+    /**
+     * P1-02 — l'item de découverte doit pointer vers une fiche publique qui
+     * EXISTE réellement. Avant ce lot, `url` valait `null` : un résultat Retail
+     * n'avait aucune fiche profil et renvoyait vers un parcours d'achat.
+     *
+     * Le test ne se contente pas de vérifier la chaîne : il APPELLE la route
+     * cible, donc un `url` pointant vers une route inexistante échoue ici.
+     */
+    public function test_discovery_item_points_to_a_reachable_public_shop_profile(): void
+    {
+        $this->shop('boutique-alpha', 'Boutique Alpha', settings: ['city' => 'Alger']);
+
+        $this->getJson('/api/v1/public/discover?type=retail_shop')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.url', '/boutiques/boutique-alpha');
+
+        // La cible du lien répond réellement (même périmètre opt-in).
+        $this->getJson('/api/v1/public/market/sellers/boutique-alpha')
+            ->assertOk()
+            ->assertJsonPath('data.slug', 'boutique-alpha')
+            ->assertJsonPath('data.name', 'Boutique Alpha');
+    }
+
+    /**
+     * P1-02 — cohérence dépublication : une boutique retirée de la marketplace
+     * disparaît de la découverte ET sa fiche cesse de répondre (404 uniforme).
+     * Sans ce test, un `url` publié pourrait survivre à la dépublication.
+     */
+    public function test_unpublished_shop_disappears_from_discovery_and_its_profile_404s(): void
+    {
+        $company = $this->shop('boutique-alpha', 'Boutique Alpha');
+
+        $this->getJson('/api/v1/public/market/sellers/boutique-alpha')->assertOk();
+
+        RetailOnlineSettings::query()
+            ->where('company_id', (string) $company->id)
+            ->update(['enabled' => false]);
+
+        $this->getJson('/api/v1/public/discover?type=retail_shop')
+            ->assertOk()
+            ->assertJsonCount(0, 'data');
+
+        $this->getJson('/api/v1/public/market/sellers/boutique-alpha')->assertNotFound();
+    }
+
     public function test_provider_returns_empty_list_when_nothing_is_eligible(): void
     {
         $this->shop('boutique-fermee', 'Boutique Fermée', enabled: false);
