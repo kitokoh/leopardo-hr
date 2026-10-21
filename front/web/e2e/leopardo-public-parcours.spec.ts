@@ -173,14 +173,19 @@ test.describe('Leopardo Public — fiches publiques Retail et VTC (P1-02)', () =
    *    propre, jamais un 500 ni une page vide ;
    *  - elle ne fabrique jamais de lien vers une fiche inexistante.
    *
-   * ⚠️ Mesuré, pas supposé : dans cet environnement (Next 16.4 dev/Turbopack),
-   * `notFound()` rend bien le contenu de `not-found.tsx` mais la réponse HTTP
-   * reste **200** — comportement **préexistant et global à l'application**,
-   * reproduit à l'identique sur `/vitrine/{slug inconnu}` (le patron dont ces
-   * pages sont issues). Les assertions portent donc sur le CONTENU rendu, pas
-   * sur le code de statut : asserter `404` ici serait un test faux par
-   * construction. Le statut réel en production (`next build` + `next start`)
-   * n'a pas pu être mesuré dans ce sandbox et n'est pas revendiqué.
+   * ✅ #8791 — LE STATUT EST DÉSORMAIS ASSERTÉ, parce qu'il a été CORRIGÉ.
+   *
+   * Historique mesuré (2026-10-21, mode production `next build` + `next start`) :
+   * avant le lot #8791, `notFound()` rendait le contenu de `not-found.tsx` mais
+   * la réponse HTTP restait **200**. La cause n'était pas `notFound()` mais le
+   * `loading.tsx` placé à la RACINE de `app/` : il enveloppait toute
+   * l'application dans une frontière `Suspense`, donc Next envoyait l'en-tête
+   * 200 (et le loader) avant que la page n'ait décidé du 404.
+   *
+   * Le loader est désormais porté par le groupe `(landing)` ; les 4 surfaces
+   * concernées (`/boutiques`, `/operateurs`, `/vitrine`, `/stay`) répondent un
+   * vrai **404**, et les pages réelles restent 200. L'assertion ci-dessous
+   * garde cette propriété contre une régression.
    *
    * Le rendu du profil (nom, ville, catégories, CTA de contact) et le contrat
    * `item.url` → `href` sont couverts en Jest, où le composant est monté
@@ -191,8 +196,8 @@ test.describe('Leopardo Public — fiches publiques Retail et VTC (P1-02)', () =
   test('la fiche boutique rend un état introuvable propre pour un slug inconnu (fail-closed)', async ({ page }) => {
     const response = await page.goto('/boutiques/zzz-boutique-inexistante-e2e');
 
-    // Pas de 500 : la page ne plante pas sur un slug inconnu.
-    expect(response?.status()).toBeLessThan(500);
+    // #8791 — un slug inconnu ne doit pas être indexable : vrai 404, pas 200.
+    expect(response?.status()).toBe(404);
     await expect(page).toHaveTitle(/introuvable/i);
     await expect(page.locator('body')).not.toBeEmpty();
   });
@@ -200,7 +205,8 @@ test.describe('Leopardo Public — fiches publiques Retail et VTC (P1-02)', () =
   test('la fiche opérateur rend un état introuvable propre pour un slug inconnu (fail-closed)', async ({ page }) => {
     const response = await page.goto('/operateurs/zzz-operateur-inexistant-e2e');
 
-    expect(response?.status()).toBeLessThan(500);
+    // #8791 — même exigence que pour `/boutiques/{slug}`.
+    expect(response?.status()).toBe(404);
     await expect(page).toHaveTitle(/introuvable/i);
     await expect(page.locator('body')).not.toBeEmpty();
   });

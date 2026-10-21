@@ -715,6 +715,86 @@ de la config) ; aucun build Flutter/Android local ; la généralisation de la pu
 aux 32 verticales restantes (dont Pharmacy et Trade, **sans aucune sémantique
 d'opt-in**) est **reportée** — elle demande une décision métier par verticale.
 
+### 13.8 Issue #8791 fermée le 2026-10-21 — mesure en mode production, cause racine et correctif
+
+Le §13.7 laissait #8791 **ouverte** et explicitement **non mesurée** en production
+(« le statut en production n'a pas pu être mesuré et n'est pas revendiqué »). Elle l'est
+maintenant, et la cause n'était pas celle qu'on supposait.
+
+#### Mesure — avant correctif
+
+`next build` + `next start` (production, pas le dev) sur `front/web` :
+
+| URL | Statut | Titre rendu |
+|---|---|---|
+| `/boutiques/non-existent-slug-zzz` | **HTTP 200** | Boutique introuvable |
+| `/operateurs/non-existent-slug-zzz` | **HTTP 200** | Opérateur introuvable |
+| `/vitrine/non-existent-slug-zzz` | **HTTP 200** | Page introuvable |
+| `/stay/non-existent-slug-zzz` | **HTTP 200** | Établissement introuvable |
+| `/restaurants/non-existent-slug-zzz` | HTTP 307 | (surface protégée → `/auth/login`) |
+
+Le constat du §13.7 est donc **confirmé en production** : ce n'était ni un artefact du
+dev/Turbopack, ni un problème limité aux pages P1-02 — **4 surfaces** sont touchées, dont
+`/vitrine` et `/stay` qui préexistaient à ce lot. Un slug inexistant était donc
+**indexable** (`200` + contenu 404), ce qui est exactement le risque SEO décrit.
+
+#### Cause racine — ce n'était pas `notFound()`
+
+Deux contre-épreuves ont écarté les hypothèses initiales :
+
+- une URL **non routée** (`/this-route-does-not-exist-at-all`, `/boutiques`, `/vitrine`)
+  répond **404 correctement** — donc `not-found.tsx` et `notFound()` fonctionnent ;
+- `src/proxy.ts` ne fait **aucun rewrite** sur ces chemins (uniquement des `redirect`).
+
+La vraie cause est **`src/app/loading.tsx`** : un `loading.tsx` à la **racine** de `app/`
+enveloppe toute l'application dans une frontière `Suspense`. Next envoie alors l'en-tête
+HTTP **200** et commence à streamer le loader **avant** que la page n'ait chargé ses
+données ; quand `notFound()` lève ensuite, le statut est déjà parti — seul le **corps**
+est remplacé par la 404.
+
+**Preuve par élimination** : retirer temporairement `src/app/loading.tsx`, reconstruire,
+redémarrer → les 4 surfaces passent à **404**. Réintroduire le fichier → retour à `200`.
+
+#### Correctif (« minimal » au sens de la mission)
+
+Le loader n'est pas supprimé (#8446 l'avait introduit pour éviter un flash vide dans la
+vitrine) : il est **déplacé vers le groupe de routes qui le justifiait**.
+
+- supprimé : `src/app/loading.tsx`
+- ajouté : `src/app/(landing)/loading.tsx` (même composant `BrandLoader`, même rendu)
+
+Aucune route, aucun contrat, aucune règle métier touchés. Les pages qui appellent
+`notFound()` (`/boutiques`, `/operateurs`, `/vitrine`, `/stay`) ne sont plus streamées avant
+la décision ; le confort de chargement reste sur la vitrine marketing.
+
+#### Mesure — après correctif (production)
+
+| URL | Avant | Après |
+|---|---|---|
+| `/boutiques/non-existent-slug-zzz` | 200 | **404** |
+| `/operateurs/non-existent-slug-zzz` | 200 | **404** |
+| `/vitrine/non-existent-slug-zzz` | 200 | **404** |
+| `/stay/non-existent-slug-zzz` | 200 | **404** |
+| `/decouvrir`, `/pricing`, `/faq` | 200 | **200** (non-régression) |
+
+#### Test qui garde la propriété
+
+`front/web/e2e/leopardo-public-parcours.spec.ts` : les deux tests de fiche publique
+assertaient `status() < 500` **parce que** le 200 était jugé irréparable. Ils asserent
+désormais **`toBe(404)`**. Exécutés contre le serveur de production ci-dessus :
+**10 passed (17.1 s)** avec `--workers=1`.
+
+#### Limite de méthode — à ne pas lire comme un succès
+
+`next build` **ne tient pas** dans le cgroup de 2 Go de ce sandbox : le type-check et la
+collecte de données sont tués par le noyau (`oom_kill` incrémenté dans
+`/sys/fs/cgroup/memory.events`). Pour obtenir la mesure, deux réglages **temporaires et
+non commités** ont été utilisés (`typescript.ignoreBuildErrors`, `experimental.cpus: 2`),
+puis **retirés** : `git diff` sur `next.config.ts` est vide au moment du commit. Le
+type-check complet, lui, a été validé séparément (`Finished TypeScript in 44s` lors
+d'un build ultérieur) et reste couvert par le check CI `Frontend — ESLint + TypeScript`.
+
+
 ---
 
 ## 14. Plan priorisé P0–P3, suite E2E et réponses aux 10 questions
