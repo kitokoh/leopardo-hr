@@ -991,6 +991,114 @@ lot utile est **P1-02** (fiches publiques Retail et VTC, qui suit #8759).
 
 ---
 
+### 13.9 P2-01 livré le 2026-10-21 — Trade devient la première verticale à opt-in explicite, et un lien mort corrigé
+
+Le §14 laissait P2-01 (généraliser la publication) et P3-05 (32 verticales restantes)
+**ouverts**, au motif qu'ils demandaient « une décision métier par verticale ». C'était
+vrai pour l'**implémentation en masse** ; ce n'était pas vrai pour la **sémantique**, qui
+pouvait être écrite une fois, testée, et appliquée à une verticale représentative.
+
+#### Ce qui a été livré
+
+| Lot | Commit | Contenu |
+|---|---|---|
+| P2-01 | `1be377eb8` (PR #8803) | Trade publiable : provider, resolver, contrôleur + route, page SSR, garde de contrat, migration |
+| Correctif | `c83383be2` (PR #8808) | Fiche déplacée `/commerce` → `/entreprises`, garde **durcie** |
+
+**Sémantique par défaut** (désormais la référence pour toute verticale sans opt-in) :
+
+1. **Opt-in explicite** — `is_public` défaut **FAUX**. Jamais d'heuristique « profil complet
+   donc publiable » : ce serait publier sans consentement.
+2. **Fail-closed à la lecture** — `WHERE is_public = true` dans la requête **et** règle du
+   modèle : deux barrières, la première protège la requête, la seconde tout appelant qui
+   construirait le DTO autrement.
+3. **Slug public unique GLOBAL** — index unique cross-tenant : une URL publique ne dépend
+   jamais du tenant courant.
+4. **Périmètre public minimal** — nom commercial, ville, pays, description, catégories
+   choisies. Jamais `notes`, `capabilities`, `company_id`.
+5. **404 uniforme** — slug inconnu, profil dépublié et société suspendue sont
+   **indistinguables**. Jamais de 403 : il révélerait l'existence du slug.
+
+#### Trois défauts trouvés en EXÉCUTANT, pas en relisant
+
+- **Le DTO publiait `hq_country`** (saisie libre du profil, souvent « FR » par défaut) comme
+  pays de la fiche, alors que Retail publie `companies.country`. La fiche aurait annoncé une
+  nationalité que le professionnel n'avait pas déclarée. Aligné sur `companies.country` des
+  deux côtés (provider **et** contrôleur) : la carte de découverte et la fiche disent
+  désormais la même chose.
+- **La factory `Company` tire `country` au hasard** : l'assertion sur le pays passait ou
+  échouait selon la graine. Pays rendu explicite dans le test.
+- **Le test de filtre créait deux profils Trade dans le même tenant**, interdit par
+  `trade_company_profiles_company_unique` ; l'échec qui suivait était un
+  `current transaction is aborted`, pas une assertion. La faute était au test : second
+  professionnel placé dans un tenant distinct, ce qui correspond au cas réel (deux
+  entreprises = deux comptes).
+
+#### Le quatrième défaut était le plus grave — et c'est la leçon de ce lot
+
+La fiche livrée en #8803 répondait **307 → `/auth/login`** pour tout visiteur anonyme :
+
+```
+/entreprises/slug-inexistant   HTTP=404
+/commerce/slug-inexistant      HTTP=307 -> /auth/login
+```
+
+`/commerce` est un préfixe **dashboard** (espace vendeur BC-17) déclaré dans
+`front/web/src/proxy.ts`. Le résultat de découverte de la verticale Trade pointait donc vers
+un **mur de connexion** — exactement le défaut « lien mort » que #8794 et #8793 venaient de
+corriger pour Restaurant, Retail et VTC.
+
+**Pourquoi les tests ne l'ont pas vu** : `PublicDiscoverableProviderContractTest` vérifiait
+que `front/web/src/app/{segment}/[slug]/page.tsx` **existe**. La page existait, compilait, et
+passait. **Exister n'est pas être joignable.**
+
+**Correctif en deux volets** : page déplacée vers `src/app/entreprises/[slug]/`, et la garde
+**lit désormais `DASHBOARD_PREFIXES` depuis `proxy.ts`** pour refuser un segment protégé.
+La liste est lue dans le fichier source et non recopiée : une copie divergerait au premier
+préfixe ajouté. Lecture tolérante — si le format change, la garde renvoie `[]` et reste
+aussi permissive qu'avant, jamais plus stricte par accident.
+
+**Vérifié dans les deux sens** :
+
+```
+'trade_company' => 'entreprises'  ->  OK (31 tests, 195 assertions)
+'trade_company' => 'commerce'     ->  FAILURES! (1 test, 19 assertions)
+```
+
+Réintroduire le mauvais segment fait échouer la garde : elle protège réellement, elle ne
+décore pas.
+
+#### Preuves réelles
+
+| Commande | Résultat |
+|---|---|
+| `phpunit tests/Feature/LeopardoPublic/` | **OK (31 tests, 195 assertions)** — 24 avant ce lot |
+| `pint --test` | **PASS** (87 fichiers) |
+| `phpstan analyse --level=8` | **`[OK] No errors`** |
+| `jest src/app/entreprises` | **6/6** |
+| `tsc --noEmit` / `eslint --max-warnings 0` | propres |
+| `validate.js` après les 3 syncs | **`I18N_VALIDATION_OK (4 locales)`** |
+| HTTP réel (`next dev`) | `/decouvrir` **200** · `/entreprises/*` **404** · `/commerce/*` **307** |
+
+#### Statut des constats du plan
+
+| Constat | Avant | Après |
+|---|---|---|
+| P2-01 publication transverse (Trade) | ABSENT | **TESTÉ — RÉUSSI** |
+| P3-05 32 verticales restantes | ABSENT | **PARTIEL** (1/32, sémantique établie) |
+| Lien de découverte Trade | — | **TESTÉ — RÉUSSI** (404, plus de 307) |
+| Pharmacy | ABSENT | **NON VÉRIFIÉ** — décision produit/légal requise |
+
+**Pharmacy délibérément exclue** : publier une officine expose des données de santé et relève
+de la publicité pharmaceutique, dont le régime varie par pays. Ce n'est pas une décision
+d'ingénierie ; elle est tracée dans une issue dédiée plutôt que tranchée ici.
+
+#### Ce qui reste décisionnel (et n'a PAS été deviné)
+
+Quatre issues ouvertes, chacune avec la question exacte et des options chiffrées :
+identité client (`users` vs `travel_customers`), attribution de BC-37 et comptage officiel
+des BC, rail PSP réel pour BC-38, application mobile grand public.
+
 ## Annexes
 
 ### A. Commandes de constat reproductibles
