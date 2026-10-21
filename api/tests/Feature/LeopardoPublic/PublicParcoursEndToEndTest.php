@@ -11,6 +11,7 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\Notification\Domain\Models\ConversationMessage;
 use App\Modules\RestaurantManager\Domain\Enums\RestaurantRecordStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -377,37 +378,90 @@ class PublicParcoursEndToEndTest extends TestCase
             ->assertJsonMissing(['id' => $threadId]);
     }
 
+    /**
+     * ⚠️ Constat P0-07 de l'audit Phase 1 — INFIRMÉ par l'exécution.
+     *
+     * L'audit affirmait qu'un client `user_api` obtenait `200 + data: []` sur
+     * cette route. C'était un **artefact du test**, pas un comportement produit :
+     *
+     *   - `publish()` appelle `Sanctum::actingAs($this->manager)` (guard par
+     *     défaut `sanctum`), ce qui pose le manager SUR le guard `sanctum` ;
+     *   - `Sanctum::actingAs($client, ['*'], 'user_api')` ne touche QUE le guard
+     *     `user_api` ; le guard `sanctum` gardait donc le manager en mémoire ;
+     *   - `auth:sanctum` résolvait alors `$request->user()` = le MANAGER.
+     *     Le test mesurait un accès manager (200) en croyant mesurer un accès
+     *     client.
+     *
+     * Vérifié à l'exécution avec un VRAI token porteur (Bearer), comme en
+     * production : le client reçoit **401 UNAUTHENTICATED**. `auth:sanctum`
+     * utilise le guard `sanctum`, dont le provider est `employees` ;
+     * `Laravel\Sanctum\Guard::hasValidProvider()` rejette donc un token dont le
+     * `tokenable` est un `User` — le contrôleur ne reçoit jamais autre chose
+     * qu'un `Employee`. **Aucun correctif produit n'est nécessaire.**
+     *
+     * Ce test utilise désormais un vrai token et vide les guards mémoïsés, pour
+     * qu'il ne puisse plus se tromper d'acteur.
+     */
     public function test_step_9d_the_client_cannot_reach_the_professional_inbox(): void
     {
         $this->publish($this->branch);
 
-        Sanctum::actingAs($this->client, ['*'], 'user_api');
+        // `publish()` a laissé le manager sur le guard `sanctum` : sans ce
+        // nettoyage, la requête suivante l'authentifierait encore.
+        Auth::forgetGuards();
 
-        // Guard `user_api` ≠ guard `sanctum`. ⚠️ L'assertion 401 testée d'abord
-        // s'est révélée FAUSSE à l'exécution : `auth:sanctum` accepte le token
-        // Sanctum du client, donc le contrôleur reçoit un `User` là où il attend
-        // un `Employee`. Le code travaille alors sur le mauvais type d'acteur —
-        // c'est un constat de sécurité à arbitrer (rapport §10.2, P0-07), pas
-        // une propriété à figer. On vérifie donc le comportement RÉEL : soit 401,
-        // soit 404/403/500 — jamais une liste de fils lisible.
-        $response = $this->getJson('/api/v1/conversations/public');
+        $token = $this->client->createToken('e2e-client-inbox')->plainTextToken;
 
-        // Comportement RÉEL observé : 200 avec `data: []`. `auth:sanctum` accepte
-        // le token du client, `threadsForManager()` reçoit un `User` (pas un
-        // `Employee`), `isManager()` vaut faux et la collection est vide.
-        // ⇒ aucune fuite de données, mais la route n'est pas fermée au bon type
-        // d'acteur : c'est un smell à corriger (P0-07 du plan), pas un vert.
-        $this->assertNotSame(500, $response->status(), 'La route ne doit pas exploser sur le mauvais type d’acteur.');
+        $this->withHeader('Authorization', 'Bearer '.$token)
+            ->getJson('/api/v1/conversations/public')
+            ->assertUnauthorized();
+    }
 
-        if ($response->status() === 200) {
-            $this->assertSame(
-                [],
-                $response->json('data'),
-                'Aucun fil professionnel ne doit être lisible par un client public.'
-            );
-        } else {
-            $this->assertContains($response->status(), [401, 403, 404]);
+    /**
+     * Le refus vaut pour TOUTES les routes du groupe, pas seulement l'index.
+     *
+     * Un token accepté sur `show`/`messages`/`storeMessage` suffirait à lire ou
+     * écrire dans un fil ; le test couvre donc les trois, avec le token du
+     * client qui a lui-même créé le fil (le cas le plus favorable à une fuite).
+     */
+    public function test_step_9e_a_client_is_refused_on_every_public_inbox_route(): void
+    {
+        $this->publish($this->branch);
+        Auth::forgetGuards();
+
+        $clientToken = $this->client->createToken('e2e-client-thread')->plainTextToken;
+
+        $threadId = (int) $this->withHeader('Authorization', 'Bearer '.$clientToken)
+            ->postJson('/api/v1/public/conversations', [
+                'target_type' => 'restaurant',
+                'target_slug' => 'tajine-public-e2e',
+                'body' => 'Message privé.',
+            ])->assertCreated()->json('data.thread_id');
+
+        Auth::forgetGuards();
+        $clientToken = $this->client->createToken('e2e-client-routes')->plainTextToken;
+
+        foreach ([
+            "/api/v1/conversations/public/{$threadId}",
+            "/api/v1/conversations/public/{$threadId}/messages",
+        ] as $url) {
+            $this->withHeader('Authorization', 'Bearer '.$clientToken)
+                ->getJson($url)
+                ->assertUnauthorized();
         }
+
+        $this->withHeader('Authorization', 'Bearer '.$clientToken)
+            ->postJson("/api/v1/conversations/public/{$threadId}/messages", ['body' => 'Intrusion.'])
+            ->assertUnauthorized();
+
+        // Non-régression : rien n'a été persisté par la tentative refusée.
+        Auth::forgetGuards();
+        $managerToken = $this->manager->createToken('e2e-manager-check')->plainTextToken;
+
+        $this->withHeader('Authorization', 'Bearer '.$managerToken)
+            ->getJson("/api/v1/conversations/public/{$threadId}/messages")
+            ->assertOk()
+            ->assertJsonMissing(['body' => 'Intrusion.']);
     }
 
     // ── 10 : dépublication ─────────────────────────────────────────────────────
