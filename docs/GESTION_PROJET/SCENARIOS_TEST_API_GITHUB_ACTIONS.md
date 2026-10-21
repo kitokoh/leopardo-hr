@@ -2410,3 +2410,17 @@ associés exécutés sur les registres réels du dépôt.
 - Couverture : `api/tests/Feature/Paiements/` — `PaymentDomainTest.php` (partie double, immuabilité, machine à états), `PaymentIdempotencyTest.php` (rejeu, concurrence), `PaymentProviderResolverTest.php` (marchés multiples, instance inactive, fallback, absence, bascule) — **22 tests, 64 assertions, verts** sur PostgreSQL 15.
 - **Reste à câbler** : les scénarios ci-dessus sont décrits comme cible de non-régression mais ne sont pas tous automatisés dans ce lot — manquent des tests dédiés pour `FeeRule` (spécificité/priorité/min-max), le rejeu de webhook, la bascule d'instance de bout en bout via l'API Superadmin, le cash-out et la réconciliation. Le domaine est implémenté et vérifié par PHPStan niveau 8, mais ces assertions doivent être ajoutées.
 - Non couvert volontairement : aucun fournisseur réel (type **simulateur** uniquement), UI client final, KYC utilisateur.
+
+## 2026-10-21 — LEOPARDO PUBLIC : contrats de découverte corrigés (URL Restaurant, capacité `booking`) (#8794)
+
+**Contrat concerné** : `GET /v1/public/discover` — champ `data[].url` et objet `meta.actions` (alimentés par `PublicDiscoverableProvider`).
+
+**URL de fiche publique (`data[].url`)** — un chemin RELATIF À L'ORIGINE du navigateur, jamais un préfixe d'API :
+`restaurant` → `/restaurants/{slug}` · `hospitality_property` → `/stay/{slug}` · `retail_shop` → `/boutiques/{slug}` · `showcase` → `/vitrine/{slug}` · `vtc_operator` → `/operateurs/{slug}`.
+
+**Actions déclarées (`meta.actions.{type}`)** : uniquement celles adossées à une route `api/v1/public/**` réellement déclarée.
+`restaurant` → `contact`, `order` · `hospitality_property` → `contact`, `booking` · `retail_shop` → `contact`, `order` · `showcase` → `contact` · `vtc_operator` → `contact`.
+
+- Scénarios à vérifier : **URL de fiche existante** — pour chaque type découvrable, `/segment/{slug}` doit correspondre à un répertoire `front/web/src/app/{segment}/[slug]/page.tsx` existant (une URL plausible mais non routée est un lien mort, indistinguable d'un slug inconnu en HTTP) ; **aucun préfixe d'API** — `data[].url` ne contient jamais `/public/`, qui désigne `/api/v1/public` et non une route de navigateur ; **capacité ⇒ route** — toute action de `meta.actions` est servie par au moins une route `api/v1/public/**`, sinon le frontend affiche un bouton inopérant (la règle #8761 est que `supportedActions()` est la seule source de vérité) ; **non-régression Restaurant** — `supportedActions()` vaut exactement `['contact','order']` et `booking` ne revient qu'avec un contrat public de réservation (P3-01) **et** un test qui le prouve ; **dépublication** — `is_public=false` retire l'entrée de `data` et la fiche répond 404, sans changer `meta.actions`.
+- Couverture : `api/tests/Feature/LeopardoPublic/PublicDiscoverableProviderContractTest.php` — **5 tests, 67 assertions**, indépendants des données (mapping statique `type ⇒ segment` + inspection de la source de chaque provider). Contre-épreuve effectuée : bug réintroduit → **1 failure** ; correctif remis → **vert**. Suite complète `tests/Feature/LeopardoPublic/` → **24 tests, 164 assertions, OK**.
+- Écart constaté et corrigé dans ce lot : `RestaurantDiscoverableProvider` émettait `/public/restaurants/{slug}` (route inexistante dans `front/web`) et déclarait `booking` sans contrat public — deux déclarations fausses exposées à chaque visiteur de `/decouvrir` depuis #8761.
