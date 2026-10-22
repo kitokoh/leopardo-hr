@@ -35,6 +35,10 @@ return [
     'platform_announcement_title' => 'إعلان منصة Leopardo',
     'platform_announcement_body' => 'يتوفر إعلان جديد للمنصة.',
 
+    // SUPERAPP-P1 (#8760) — طلب تواصل وصل عبر البوابة العامة.
+    'public_contact_request_title' => 'طلب تواصل عام جديد',
+    'public_contact_request_body' => 'تواصل معك :sender_name من ملفك العام (:target_slug).',
+
     'company_announcement_title' => 'إعلان الشركة',
     'company_announcement_body' => 'تم نشر إعلان جديد في شركتك.',
 

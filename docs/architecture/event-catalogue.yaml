@@ -74,6 +74,34 @@ events:
       data: { inquiry_id: 42, buyer_email: "acheteur@example.com" }
     deprecation: null
 
+  - name: public.contact_request_received
+    version: 1.0.0
+    bc: platform
+    class: App\Events\PublicContactRequestReceived
+    description: Demande de contact recue via la passerelle publique Leopardo Public (#8760). Emise APRES commit par Platform ; consommee par CRM (creation d'un lead BC-11, source public_gateway) et notifications (BC-13, managers du tenant). Le tenant destinataire est resolu cote serveur (fail-closed), jamais accepte en entree.
+    consumers:
+      - App\Listeners\CreateCrmLeadFromPublicContact
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [public.contact_request_received] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [contact_request_id]
+          properties:
+            contact_request_id: { type: integer }
+    sample:
+      event_name: public.contact_request_received
+      version: "1.0.0"
+      occurred_at: "2026-10-20T12:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { contact_request_id: 42 }
+    deprecation: null
+
   - name: company.created
     version: 1.0.0
     bc: platform

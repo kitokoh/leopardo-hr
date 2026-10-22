@@ -34,6 +34,12 @@ use Illuminate\Support\Carbon;
  * @property array<string, mixed>|null $capabilities
  * @property string|null $notes
  * @property Carbon|null $onboarding_completed_at
+ * @property bool $is_public Opt-in annuaire public (P2-01/#8802), défaut PRIVÉ
+ * @property string|null $public_slug Slug public unique GLOBAL, cross-tenant
+ * @property string|null $public_name Nom commercial publiable (≠ raison sociale)
+ * @property string|null $public_description Description éditoriale publique
+ * @property string|null $public_city Ville publiée volontairement (pas une adresse)
+ * @property Carbon|null $public_published_at Date de première publication
  */
 final class TradeCompanyProfile extends Model
 {
@@ -56,6 +62,12 @@ final class TradeCompanyProfile extends Model
         'capabilities',
         'notes',
         'onboarding_completed_at',
+        'is_public',
+        'public_slug',
+        'public_name',
+        'public_description',
+        'public_city',
+        'public_published_at',
     ];
 
     /** @return array<string, string> */
@@ -69,7 +81,25 @@ final class TradeCompanyProfile extends Model
             'product_categories' => 'array',
             'capabilities' => 'array',
             'onboarding_completed_at' => 'datetime',
+            'is_public' => 'boolean',
+            'public_published_at' => 'datetime',
         ];
+    }
+
+    /**
+     * P2-01 (#8802) — ce profil est-il publiable dans l'annuaire public ?
+     *
+     * Fail-closed : les quatre conditions doivent être vraies. Un profil dont
+     * l'un des champs manque n'est pas publié — pas de repli sur la raison
+     * sociale, pas de slug dérivé automatiquement.
+     */
+    public function isPubliclyVisible(): bool
+    {
+        return $this->is_public === true
+            && is_string($this->public_slug)
+            && $this->public_slug !== ''
+            && is_string($this->public_name)
+            && $this->public_name !== '';
     }
 
     /**

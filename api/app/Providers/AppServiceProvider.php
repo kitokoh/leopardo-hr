@@ -27,8 +27,10 @@ use App\Policies\CrmSearchPolicy;
 use App\Policies\CrmTaskPolicy;
 use App\Policies\ExportPolicy;
 use App\Shared\Contracts\Discovery\PublicDiscoverableProvider;
+use App\Shared\Contracts\Discovery\PublicProfileResolver;
 use App\Shared\Contracts\Geo\GeoServiceContract;
 use App\Shared\Discovery\PublicDiscoveryService;
+use App\Shared\Discovery\PublicProfileLocator;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Foundation\Application;
@@ -62,6 +64,17 @@ class AppServiceProvider extends ServiceProvider
                 $providers,
                 $app->make(GeoServiceContract::class),
             );
+        });
+        // SUPERAPP-P1 (#8760) — RESOLUTION d'un profil public vers son tenant
+        // (« ce slug est-il joignable MAINTENANT ? »). Meme inversion de
+        // dependance que la decouverte : chaque verticale tague son
+        // `PublicProfileResolver` sous `public.profile_resolver`, ce service
+        // n'importe aucune classe `App\Modules\*` (garde #5584).
+        $this->app->singleton(PublicProfileLocator::class, function (Application $app): PublicProfileLocator {
+            /** @var iterable<PublicProfileResolver> $resolvers */
+            $resolvers = $app->tagged('public.profile_resolver');
+
+            return new PublicProfileLocator($resolvers);
         });
         // Contrat transversal de notification in-app (garde cross-module #5584) :
         // les modules métier type-hintent le contrat Core, l'implémentation vit

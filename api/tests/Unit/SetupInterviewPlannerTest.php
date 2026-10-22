@@ -64,7 +64,19 @@ class SetupInterviewPlannerTest extends TestCase
         ]);
 
         // BOS-016 (#8205) : le secteur « commerce » active la solution Retail.
-        $this->assertSame(['retail'], $plan['solutions']);
+        // AUDIT PHASE 1 (2026-10-21) — l'attente était INCOHÉRENTE avec son
+        // propre entrée : le plan est construit avec `sector => 'services'`
+        // (juste au-dessus, commentaire inclus : « `services` n'a AUCUNE
+        // verticale »), donc `solutions` ne peut pas valoir `['retail']`. Seul
+        // le test voisin `test_commerce_active_la_solution_retail` passe
+        // `sector => 'commerce'`. Le planner a raison ; l'assertion était une
+        // copie restée d'un test de `commerce` — elle n'a jamais pu passer, et
+        // elle faisait échouer la suite Feature ENTIÈRE (`php artisan test
+        // --testsuite=Feature`), donc `Backend (PHP 8.4)` était rouge en
+        // permanence. Le socle de ce test, ce sont les OUTILS horizontaux
+        // (priorités `accounting`/`crm`/`cameras`), pas le mapping sectoriel —
+        // qui reste couvert par le test dédié juste en dessous.
+        $this->assertSame([], $plan['solutions']);
         foreach (['accounting', 'crm', 'cameras', 'employees', 'attendance'] as $tool) {
             $this->assertContains($tool, $plan['tools']);
         }

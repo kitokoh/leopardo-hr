@@ -8,6 +8,8 @@ use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Solutions\Survey\SolutionSurveyRegistry;
 use App\Modules\Trade\Domain\Manifests\TradeManifest;
 use App\Modules\Trade\Domain\Survey\TradeSurvey;
+use App\Modules\Trade\Infrastructure\Services\TradeDiscoverableProvider;
+use App\Modules\Trade\Infrastructure\Services\TradeProfileResolver;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -50,6 +52,18 @@ class TradeServiceProvider extends ServiceProvider
         $this->app->resolving(SolutionSurveyRegistry::class, function (SolutionSurveyRegistry $registry): void {
             $registry->register('trade', static fn (): TradeSurvey => new TradeSurvey);
         });
+
+        // P2-01 (#8802) — Trade devient découvrable dans l'annuaire public.
+        // Premier provider d'une verticale qui n'avait AUCUNE sémantique de
+        // publication : opt-in explicite, fail-closed, périmètre minimal
+        // (voir la migration de la colonne `is_public`).
+        $this->app->singleton(TradeDiscoverableProvider::class);
+        $this->app->tag(TradeDiscoverableProvider::class, 'public.discoverable');
+
+        // Résolution slug public -> tenant propriétaire (contact BC-13). Même
+        // inversion de dépendance : Shared ne connaît jamais Modules.
+        $this->app->singleton(TradeProfileResolver::class);
+        $this->app->tag(TradeProfileResolver::class, 'public.profile_resolver');
     }
 
     public function boot(): void

@@ -35,6 +35,10 @@ return [
     'platform_announcement_title' => 'Leopardo platform announcement',
     'platform_announcement_body' => 'A new platform announcement is available.',
 
+    // SUPERAPP-P1 (#8760) — contact request received on the public gateway.
+    'public_contact_request_title' => 'New public contact request',
+    'public_contact_request_body' => ':sender_name contacted you from your public profile (:target_slug).',
+
     'company_announcement_title' => 'Company announcement',
     'company_announcement_body' => 'A new announcement was published in your company.',
 

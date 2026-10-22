@@ -11,4 +11,7 @@ declare(strict_types=1);
 return [
     'attachment_unavailable' => 'Ek dosya kullanılamıyor.',
     'report_requires_conversation' => 'Bir mesaj bildirimi ilgili konuşma üzerinden yapılmalıdır.',
+    'public_empty_body' => 'Mesaj boş olamaz.',
+    'public_body_too_long' => 'Mesaj :max karakteri aşamaz.',
+    'public_thread_title' => ':name ile konuşma',
 ];

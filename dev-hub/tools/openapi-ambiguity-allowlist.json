@@ -29,6 +29,26 @@
     {
       "paths": ["/attendance/{attendanceLog}/punch-photo", "/attendance/day-closures/{id}"],
       "constraint": "day-closures/{id} uses whereNumber(); punch-photo is a deprecated numeric alias."
+    },
+    {
+      "paths": ["/conversations/public/{thread}", "/conversations/{thread}/participants"],
+      "constraint": "Both {thread} use whereNumber(); 'public' is a literal segment declared before the {thread} group in api/routes/modules/rh.php."
+    },
+    {
+      "paths": ["/conversations/public/{thread}", "/conversations/{thread}/leave"],
+      "constraint": "Both {thread} use whereNumber(); 'public' is a literal segment declared before the {thread} group in api/routes/modules/rh.php."
+    },
+    {
+      "paths": ["/conversations/public/{thread}", "/conversations/{thread}/messages"],
+      "constraint": "Both {thread} use whereNumber(); 'public' is a literal segment declared before the {thread} group in api/routes/modules/rh.php."
+    },
+    {
+      "paths": ["/conversations/public/{thread}", "/conversations/{thread}/reports"],
+      "constraint": "Both {thread} use whereNumber(); 'public' is a literal segment declared before the {thread} group in api/routes/modules/rh.php."
+    },
+    {
+      "paths": ["/conversations/{thread}/participants", "/conversations/blocks/{employee}"],
+      "constraint": "Both {thread} and {employee} use whereNumber(); 'blocks' is a literal segment declared before the {thread} group."
     }
   ]
 }

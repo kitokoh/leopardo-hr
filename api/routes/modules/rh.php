@@ -33,6 +33,7 @@ use App\Modules\Notification\Interfaces\Api\V1\Controllers\AnnouncementControlle
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\ConversationController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\ConversationModerationController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;
+use App\Modules\Notification\Interfaces\Api\V1\Controllers\PublicConversationInboxController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\EndOfContractController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\EstimationController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\LedgerController;
@@ -265,6 +266,22 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         ->whereNumber('report');
 
     Route::post('/conversations', [ConversationController::class, 'store'])->middleware('throttle:chat-create');
+
+    // ── #8760 [BOS-CHAT] — Boîte de réception des demandes publiques ──────────
+    // Déclarées AVANT `/conversations/{thread}` : `public` est un segment
+    // littéral, sinon capturé par `{thread}` (contraint `whereNumber`, donc 404
+    // déroutant au lieu du bon handler).
+    //
+    // Accès : managers du tenant cible uniquement (`hasParticipant()`). Un
+    // simple employé, même du bon tenant, reçoit 404 — les échanges
+    // commerciaux avec les clients ne sont pas dans son périmètre.
+    Route::get('/conversations/public', [PublicConversationInboxController::class, 'index']);
+    Route::get('/conversations/public/{thread}', [PublicConversationInboxController::class, 'show'])
+        ->whereNumber('thread');
+    Route::get('/conversations/public/{thread}/messages', [PublicConversationInboxController::class, 'messages'])
+        ->whereNumber('thread');
+    Route::post('/conversations/public/{thread}/messages', [PublicConversationInboxController::class, 'storeMessage'])
+        ->whereNumber('thread')->middleware('throttle:chat-send');
     // #8746 [BOS-CHAT] — déclaré AVANT `/conversations/{thread}` : sans cela,
     // `groups` serait capté par le `{thread}` contraint à `whereNumber` puis
     // renverrait 404 de façon déroutante.
