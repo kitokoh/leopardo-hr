@@ -6688,6 +6688,14 @@
       "profile_both": "Importateur & exportateur",
       "profile_wholesaler": "Grossiste",
       "profile_retailer": "Détaillant"
+    },
+    "forbidden": {
+      "kicker": "Erreur 403",
+      "title": "Acces refuse",
+      "body": "Votre role ne permet pas cette action. Si vous pensez qu'il s'agit d'une erreur, demandez l'acces a un administrateur.",
+      "ctaHome": "Retour a l'accueil",
+      "ctaSupport": "Demander l'acces",
+      "mascotAlt": "Illustration : un leopard devant une porte fermee, acces refuse"
     }
   },
   "commerce": {

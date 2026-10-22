@@ -17,6 +17,7 @@ use App\Modules\EdgeSync\Interfaces\Api\V1\Requests\EdgeNodeActionRequest;
 use App\Modules\EdgeSync\Interfaces\Api\V1\Requests\IssueLicenseRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 /**
  * Cloud-side API consumed by:
@@ -204,6 +205,92 @@ class EdgeNodeController extends Controller
             'pending_records' => SyncQueue::where('edge_node_id', $node->id)
                 ->where('status', 'pending')
                 ->count(),
+            // #8629 — un heartbeat qui ne rapporte que `pending` fait passer
+            // une file bloquée pour une file saine : les items `failed` et
+            // `conflict` disparaissaient du diagnostic.
+            'failed_records' => SyncQueue::where('edge_node_id', $node->id)
+                ->where('status', 'failed')
+                ->count(),
+            'conflict_records' => SyncQueue::where('edge_node_id', $node->id)
+                ->where('status', 'conflict')
+                ->count(),
+        ]);
+    }
+
+    /**
+     * #8629 (Lot 5) — Diagnostic de synchronisation d'un nœud Edge.
+     *
+     * GET /api/v1/edge-node/{nodeId}/sync-diagnostic
+     *
+     * Répond à la question que l'exploitant se pose réellement devant un
+     * terrain qui « ne remonte plus » : combien d'items attendent, depuis
+     * quand, lesquels ont échoué et POURQUOI. Les messages d'erreur sont
+     * bornés et proviennent de la file elle-même (jamais d'une trace serveur).
+     *
+     * Charge utile : `node_id`, `last_seen_at`, `last_sync_at`,
+     * `queue{pending,processing,failed,conflict}`, `oldest_pending_at`,
+     * `oldest_pending_age_seconds`, `recent_failures[]`, `recent_conflicts[]`.
+     */
+    public function syncDiagnostic(Request $request, string $nodeId): JsonResponse
+    {
+        $node = EdgeNode::findOrFail($nodeId);
+        $this->authorizeEdgeToken($request, $node);
+
+        $counts = SyncQueue::where('edge_node_id', $node->id)
+            ->selectRaw('status, COUNT(*) as aggregate')
+            ->groupBy('status')
+            ->pluck('aggregate', 'status');
+
+        $oldestPendingAt = SyncQueue::where('edge_node_id', $node->id)
+            ->where('status', 'pending')
+            ->min('created_at');
+
+        $oldestPending = $oldestPendingAt !== null ? Carbon::parse((string) $oldestPendingAt) : null;
+
+        $failures = SyncQueue::where('edge_node_id', $node->id)
+            ->whereIn('status', ['failed', 'pending'])
+            ->whereNotNull('last_error')
+            ->orderByDesc('last_attempt_at')
+            ->limit(10)
+            ->get(['id', 'entity_type', 'entity_id', 'operation', 'status', 'attempt_count', 'last_error', 'last_attempt_at']);
+
+        $conflicts = SyncQueue::where('edge_node_id', $node->id)
+            ->where('status', 'conflict')
+            ->orderByDesc('conflict_at')
+            ->limit(10)
+            ->get(['id', 'entity_type', 'entity_id', 'operation', 'conflict_resolution', 'conflict_note', 'conflict_at']);
+
+        return response()->json([
+            'node_id' => $node->id,
+            'last_seen_at' => $node->last_seen_at?->toIso8601String(),
+            'last_sync_at' => $node->last_sync_at?->toIso8601String(),
+            'queue' => [
+                'pending' => (int) ($counts['pending'] ?? 0),
+                'processing' => (int) ($counts['processing'] ?? 0),
+                'failed' => (int) ($counts['failed'] ?? 0),
+                'conflict' => (int) ($counts['conflict'] ?? 0),
+            ],
+            'oldest_pending_at' => $oldestPending?->toIso8601String(),
+            'oldest_pending_age_seconds' => $oldestPending?->diffInSeconds(now()),
+            'recent_failures' => $failures->map(static fn (SyncQueue $item): array => [
+                'id' => $item->id,
+                'entity_type' => $item->entity_type,
+                'entity_id' => $item->entity_id,
+                'operation' => $item->operation,
+                'status' => $item->status,
+                'attempt_count' => $item->attempt_count,
+                'last_error' => $item->last_error,
+                'last_attempt_at' => $item->last_attempt_at?->toIso8601String(),
+            ])->all(),
+            'recent_conflicts' => $conflicts->map(static fn (SyncQueue $item): array => [
+                'id' => $item->id,
+                'entity_type' => $item->entity_type,
+                'entity_id' => $item->entity_id,
+                'operation' => $item->operation,
+                'conflict_resolution' => $item->conflict_resolution,
+                'conflict_note' => $item->conflict_note,
+                'conflict_at' => $item->conflict_at?->toIso8601String(),
+            ])->all(),
         ]);
     }
 

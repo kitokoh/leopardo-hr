@@ -1,3 +1,23 @@
+> **MAJ 2026-10-17 — Business OS, Lot 6 : console de provisionnement superadmin — PR #8668.**
+> Surface **API (`api/routes/api.php`, module Platform)** : nouvelle route
+> `GET /api/v1/platform/provisioning` (`PlatformProvisioningController`, middleware
+> `platform.permission:companies.view`) — étapes de provisionnement franchies par tenant
+> (`blocked_no_site` / `site_ready` / `onboarding_started` / `operational`), erreurs d'onboarding
+> avec **email masqué** (minimisation RGPD) et message borné à 300 caractères, tenants sans
+> établissement, catalogue des verticales avec leur maturité réelle. Faits de provisionnement
+> uniquement, **aucun agrégat métier client**. Documentée dans `api/openapi.yaml`
+> (`/platform/provisioning`).
+> Surface **API (module EdgeSync)** : `GET /api/v1/edge-node/{nodeId}/sync-diagnostic` — file de
+> synchronisation par statut, âge du plus ancien item en attente, échecs et conflits **avec leur
+> cause** ; le heartbeat ne masque plus les `failed`/`conflict`. Colonnes `idempotency_key`,
+> `last_error`, `last_attempt_at`, `conflict_at` sur `sync_queue` (migrations miroir tenant + edge).
+> Documentée dans `api/openapi.yaml`.
+> Scénarios automatisés : `api/tests/Feature/Platform/PlatformProvisioningApiTest.php`
+> (**6 tests / 65 assertions**), `api/tests/Feature/EdgeSync/EdgeSyncDiagnosticsTest.php` +
+> `EdgeSchemaParityTest.php` (**6 tests / 47 assertions**), `tests/Feature/BusinessOs`
+> (**27 tests / 76 assertions**, non-régression). Garde de couverture OpenAPI
+> (`check-openapi-route-coverage.py --strict-staleness`) → **exit 0**.
+
 > **MAJ 2026-10-20 (#3) — passerelle publique : capacités métier déclarées par le backend `meta.actions` (PR #8763, issue #8761).**
 > Le frontend portait un `BOOKING_TYPES` codé en dur : il dérivait dès qu'une verticale changeait de capacité et pouvait
 > afficher un bouton inopérant. La source de vérité est désormais **le backend** : `PublicDiscoverableProvider::supportedActions()`

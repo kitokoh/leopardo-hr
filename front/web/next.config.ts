@@ -289,6 +289,11 @@ const nextConfig: NextConfig = {
 
   // Experimental features for performance
   experimental: {
+    // BOS-B-02 — active `forbidden()` / `unauthorized()` (App Router). Sans ce
+    // drapeau, `forbidden()` lève une erreur générique au lieu de rendre
+    // `app/forbidden.tsx` : un rôle insuffisant tombait sur la frontière
+    // d'erreur 500 au lieu d'une page 403 explicite.
+    authInterrupts: true,
     optimizePackageImports: ["lucide-react"],
     // #7531 — `optimizeCss` retiré : l'option exige `critters`, qui n'est
     // déclaré NI dans `package.json` NI dans `package-lock.json` (donc absent

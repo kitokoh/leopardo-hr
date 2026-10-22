@@ -6688,6 +6688,14 @@
       "profile_both": "Importer & exporter",
       "profile_wholesaler": "Wholesaler",
       "profile_retailer": "Retailer"
+    },
+    "forbidden": {
+      "kicker": "Error 403",
+      "title": "Access denied",
+      "body": "Your role does not allow this action. If you believe this is a mistake, ask an administrator for access.",
+      "ctaHome": "Back to home",
+      "ctaSupport": "Request access",
+      "mascotAlt": "Illustration: a leopard in front of a closed door, access denied"
     }
   },
   "commerce": {

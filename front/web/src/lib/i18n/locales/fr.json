@@ -6597,6 +6597,14 @@
       "ctaContact": "Contacter le support",
       "mascotAlt": "Illustration : un leopard debranche, page introuvable"
     },
+    "forbidden": {
+      "kicker": "Erreur 403",
+      "title": "Acces refuse",
+      "body": "Votre role ne permet pas cette action. Si vous pensez qu'il s'agit d'une erreur, demandez l'acces a un administrateur.",
+      "ctaHome": "Retour a l'accueil",
+      "ctaSupport": "Demander l'acces",
+      "mascotAlt": "Illustration : un leopard devant une porte fermee, acces refuse"
+    },
     "error": {
       "kicker": "Erreur inattendue",
       "title": "Quelque chose s'est mal passé",

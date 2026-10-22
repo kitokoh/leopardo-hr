@@ -6597,6 +6597,14 @@
       "ctaContact": "Destek ile iletişime geçin",
       "mascotAlt": "Gorsel: baglantisi kesilmis bir leopar, sayfa bulunamadi"
     },
+    "forbidden": {
+      "kicker": "Hata 403",
+      "title": "Erisim reddedildi",
+      "body": "Rolunuz bu isleme izin vermiyor. Bunun bir hata oldugunu dusunuyorsaniz bir yoneticiden erisim isteyin.",
+      "ctaHome": "Ana sayfaya don",
+      "ctaSupport": "Erisim isteyin",
+      "mascotAlt": "Gorsel: kapali bir kapi onunde bir leopar, erisim reddedildi"
+    },
     "error": {
       "kicker": "Beklenmeyen hata",
       "title": "Bir şeyler ters gitti",

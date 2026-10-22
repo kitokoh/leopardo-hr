@@ -23,6 +23,12 @@ export type TenantBranding = {
   logo_url: string | null;
   primary_color: string;
   accent_color: string;
+  /**
+   * BOS-B-01 — couleur de TEXTE lisible sur `primary_color`, calculée côté
+   * serveur (WCAG 2.1, `ContrastingTextColor`). Optionnelle : un cache écrit
+   * avant l'ajout du champ reste valide (repli sur le token CSS par défaut).
+   */
+  primary_color_foreground?: string | null;
   brand_mode: string;
 };
 
@@ -42,7 +48,11 @@ function isTenantBranding(value: unknown): value is TenantBranding {
     typeof candidate.accent_color === 'string' &&
     typeof candidate.brand_mode === 'string' &&
     (candidate.logo_url === null || typeof candidate.logo_url === 'string') &&
-    (candidate.display_name === null || typeof candidate.display_name === 'string')
+    (candidate.display_name === null || typeof candidate.display_name === 'string') &&
+    // Champ optionnel : absent (cache antérieur) ou null/string acceptés.
+    (candidate.primary_color_foreground === undefined ||
+      candidate.primary_color_foreground === null ||
+      typeof candidate.primary_color_foreground === 'string')
   );
 }
 
@@ -84,6 +94,7 @@ export function storeTenantBranding(branding: TenantBranding): void {
     logo_url: branding.logo_url,
     primary_color: branding.primary_color,
     accent_color: branding.accent_color,
+    primary_color_foreground: branding.primary_color_foreground ?? null,
     brand_mode: branding.brand_mode,
   };
   try {
