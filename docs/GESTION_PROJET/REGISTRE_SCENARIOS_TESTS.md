@@ -2049,3 +2049,47 @@ de fichiers.
   n'est pas positionne en production, donc la perte des pieces jointes au
   redeploiement (risque R1) reste **ouverte** tant que l'exploitant ne l'a pas
   configure.
+
+## Mise a jour 2026-10-20 — Chat horizontal, lot UI Vue/Flutter + R1 + charge (#8754)
+
+Surfaces **sans nouvelle route** : ce lot ne modifie aucune API. Il ajoute des
+clients (Vue, Flutter) et des tests de charge sur `/conversations/*` deja livre.
+Le contrat d'autorisation est donc **inchange** et reste verifie par les tests
+existants (`ConversationMessagesTest`, `ConversationModerationTest`).
+
+| Cas | Attendu |
+|---|---|
+| piece jointe ecrite sur le disque A, configuration basculee vers B, telechargement | **200** (le disque est relu depuis le message, pas depuis la config) |
+| piece jointe ecrite apres bascule de configuration | **200** depuis le nouveau disque |
+| fichier reellement absent du disque | **410**, jamais 500 ni 404 |
+| telechargement par un non-participant | **404**, jamais 403 |
+| liste des fils sans contexte tenant (super-admin hors impersonation) | **401** -> etat UI explicite « contexte entreprise requis » |
+| messagerie desactivee pour l'entreprise | **403** -> etat UI « messagerie desactivee » |
+| envoi avec un `client_message_id` deja utilise | **200** (rejeu reconnu), jamais un doublon |
+| envoi au-dela du quota d'ecriture | **429** |
+| reprise apres coupure reseau (`after_seq`) | messages manques recuperes, **aucune perte, aucun doublon**, ordre `seq` croissant |
+
+- **Isolation** : le client Vue n'affiche que ce que l'API renvoie ; aucun filtre
+  d'acces cote navigateur n'est presente comme une securite. Aucun scenario ne
+  traverse `PlatformAdminAiChatTest` — le chat humain et **Lea** restent deux
+  systemes separes.
+- **Resultats reels executes** (`CI=true`, PHP 8.4 + PostgreSQL 15) :
+  `ConversationAttachmentPersistenceTest` **4 tests / 19 assertions** verts ;
+  `--filter=Conversation` **88 tests / 392 assertions** vertes ;
+  `jest src/lib/__tests__/chat.test.ts` **6/6** ;
+  **PHPStan niveau 8 `[OK] No errors`** sur `app/Modules/Notification` + le test R1 ;
+  `pint --test` PASS sur les fichiers du lot ; `eslint` **0 erreur** ;
+  `vite build` **reussi** (30,80 s).
+- **Tests de charge reellement executes** (k6 v0.49.0, API locale `artisan serve`
+  mono-processus, `CACHE_STORE=array`) : `smoke` **674/674** checks, p95 **111 ms** ;
+  `launch` (15 VU) **4365/4396** checks, p95 **827 ms** — seuil de 800 ms
+  **franchi**, consigne tel quel ; reconnexion **12/12**, **0 message perdu,
+  0 doublon**. Ces valeurs sont un **plancher** de developpement, jamais une
+  mesure de capacite de production.
+- **Decouverte operationnelle** : avec `CACHE_STORE=redis` et aucun Redis
+  joignable, **toutes** les routes repondent `429 TOO_MANY_REQUESTS_DEGRADED`
+  (fail-closed du throttle) — le chat depend donc entierement de Redis/Upstash.
+- **Non couvert** : Flutter **non compile** (aucun SDK Dart dans l'environnement
+  d'execution) ; E2E navigateur de reconnexion ; scenario `growth` (120 VU) ecrit
+  mais non execute ; `CHAT_ATTACHMENT_DISK` toujours **non positionne** en
+  production, donc **R1 reste ouvert** (`docs/mission-business-os/17_chat_attachments_runbook.md`).

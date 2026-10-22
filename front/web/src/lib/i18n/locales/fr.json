@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-10-11T00:00:00Z",
+  "_updated_at": "2026-10-20T00:00:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo — suite métier"
@@ -1739,7 +1739,8 @@
     "notFound": "Page non trouvee",
     "travelAgency": "Agence de voyage",
     "emailTemplates": "E-mails",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "messaging": "Messagerie"
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?"
@@ -8358,6 +8359,86 @@
   },
   "travel.seats.state.absent": "Siège absent",
   "travel.seats.layoutNotice": "Modifier la disposition des sièges ne déplace pas les passagers déjà réservés : leurs sièges restent inchangés. Utilisez la procédure de remplacement de véhicule pour résoudre un conflit.",
+  "chatHub": {
+    "title": "Messagerie",
+    "subtitle": "Conversations avec vos collègues et vos groupes de travail",
+    "list": {
+      "title": "Conversations",
+      "search": "Rechercher une conversation",
+      "empty": "Aucune conversation",
+      "emptyHint": "Les échanges avec votre manager ou vos groupes apparaîtront ici.",
+      "loadError": "Impossible de charger les conversations.",
+      "unread": "non lu(s)",
+      "noSubject": "Discussion",
+      "conversation": "Conversation",
+      "kindGroup": "Groupe"
+    },
+    "thread": {
+      "selectTitle": "Sélectionnez une conversation",
+      "selectHint": "Choisissez un fil à gauche pour afficher les messages.",
+      "empty": "Aucun message",
+      "emptyHint": "Écrivez le premier message de cette conversation.",
+      "loadError": "Impossible de charger les messages.",
+      "placeholder": "Écrivez un message…",
+      "send": "Envoyer",
+      "sending": "Envoi…",
+      "enterHint": "Entrée pour envoyer, Maj+Entrée pour un retour à la ligne.",
+      "loadOlder": "Charger les messages précédents",
+      "edited": "modifié",
+      "deletedMessage": "Message supprimé",
+      "reply": "Répondre",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "report": "Signaler",
+      "editingMessage": "Modification du message",
+      "replyingTo": "En réponse à :",
+      "attach": "Joindre un fichier",
+      "attachment": "Pièce jointe",
+      "attachmentTooLarge": "Fichier trop volumineux pour être envoyé.",
+      "attachmentGone": "Pièce jointe indisponible : le fichier a été perdu lors d’un redéploiement.",
+      "attachmentForbidden": "Pièce jointe introuvable ou accès refusé.",
+      "attachmentFailed": "Téléchargement de la pièce jointe impossible.",
+      "offline": "Hors ligne",
+      "live": "À jour",
+      "deleteConfirm": "Supprimer ce message ?",
+      "reportPrompt": "Motif du signalement",
+      "reportSent": "Signalement transmis à la modération.",
+      "reportFailed": "Signalement impossible.",
+      "editForbidden": "Vous ne pouvez modifier que vos propres messages.",
+      "editFailed": "Modification impossible.",
+      "deleteFailed": "Suppression impossible.",
+      "sendFailed": "Envoi impossible. Réessayez.",
+      "offlineSendFailed": "Vous êtes hors ligne : le message n’a pas été envoyé.",
+      "notParticipant": "Cette conversation n’est plus accessible.",
+      "rateLimited": "Trop de messages envoyés. Patientez un instant.",
+      "invalidMessage": "Message invalide.",
+      "directSubtitle": "Conversation privée",
+      "groupMembers": "Membres du groupe"
+    },
+    "tenantRequired": {
+      "title": "Contexte entreprise requis",
+      "body": "La messagerie est accessible avec une session entreprise (impersonation ou compte manager)."
+    },
+    "forbidden": {
+      "title": "Messagerie désactivée",
+      "body": "Le module de messagerie n’est pas activé pour cette entreprise."
+    },
+    "common": {
+      "loading": "Chargement…",
+      "retry": "Réessayer",
+      "refresh": "Rafraîchir",
+      "save": "Enregistrer",
+      "cancel": "Annuler"
+    },
+    "subjects": {
+      "salary_advance": "Avance sur salaire",
+      "attendance_correction": "Correction de pointage",
+      "absence": "Absence"
+    },
+    "report": {
+      "reasonsHint": "harassment, spam, inappropriate_content, threat, impersonation, other"
+    }
+  },
   "discovery": {
     "title": "Trouvez un professionnel près de chez vous",
     "description": "Recherchez un métier, un service ou un nom, puis contactez le professionnel directement.",
