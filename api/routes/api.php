@@ -557,6 +557,9 @@ Route::prefix('v1')->group(function (): void {
     // BC-35 VTC — verticale VTC/taxi (VTC-01/#8357), feature flag `vtc` posé par SolutionActivator.
     require __DIR__.'/modules/vtc.php';
 
+    // BC-37 FARM OS (mission Farm OS) — verticale agricole : routes tenant-scoped
+    // derriere le feature flag `farm_os` (gate `module.farm_os`, fail-closed).
+    require __DIR__.'/modules/farm_os.php';
     // BC-36 TRADE — verticale International Trade OS (TRADE-001/#8476), feature flag `trade` posé par SolutionActivator.
     require __DIR__.'/modules/trade.php';
 

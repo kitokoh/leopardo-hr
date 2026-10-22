@@ -186,6 +186,15 @@ return [
             'body_key' => 'notifications.task_comment_added_body',
             'vars' => ['task', 'author'],
         ],
+        // BC-37 AGRICULTURE — Farm OS (T1.3) : une intervention affectée à un
+        // travailleur ou à une équipe le notifie via le contrat partagé
+        // EmployeeNotifier (les préférences du destinataire restent maîtresses).
+        'farm_operation_assigned' => [
+            'category' => 'farm_os',
+            'title_key' => 'farm.notifications.operation_assigned_title',
+            'body_key' => 'farm.notifications.operation_assigned_body',
+            'vars' => ['title'],
+        ],
         'conversation_message_received' => [
             'category' => 'communication',
             'title_key' => 'notifications.conversation_message_received_title',
