@@ -68,6 +68,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMarketingLeadCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMarketingOAuthConfigController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformNotificationObservabilityController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformProvisioningController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSolutionSurveyStatsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformTeamController;
@@ -556,6 +557,9 @@ Route::prefix('v1')->group(function (): void {
     // BC-35 VTC — verticale VTC/taxi (VTC-01/#8357), feature flag `vtc` posé par SolutionActivator.
     require __DIR__.'/modules/vtc.php';
 
+    // BC-37 FARM OS (mission Farm OS) — verticale agricole : routes tenant-scoped
+    // derriere le feature flag `farm_os` (gate `module.farm_os`, fail-closed).
+    require __DIR__.'/modules/farm_os.php';
     // BC-36 TRADE — verticale International Trade OS (TRADE-001/#8476), feature flag `trade` posé par SolutionActivator.
     require __DIR__.'/modules/trade.php';
 
@@ -599,6 +603,11 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/companies', [PlatformCompanyController::class, 'index'])->middleware('platform.permission:companies.view');
         Route::post('/companies', [PlatformCompanyController::class, 'store'])->middleware('platform.permission:companies.provision');
         Route::get('/companies/health', [PlatformCompanyHealthController::class, 'index'])->middleware('platform.permission:companies.view');
+        // #8626/#8627 (Lot 6) — console de PROVISIONNEMENT : étapes franchies,
+        // échecs et blocages, tenants sans établissement, catalogue des
+        // verticales avec leur maturité réelle. Faits de provisionnement
+        // uniquement, aucune donnée métier client.
+        Route::get('/provisioning', PlatformProvisioningController::class)->middleware('platform.permission:companies.view');
         Route::get('/companies/{company}/health', PlatformCompanyHealthController::class)->middleware('platform.permission:companies.view');
         // #7475 — suppression sûre d'un tenant : parcours en deux temps
         // (désactivation d'abord), inventaire chiffré, confirmation par

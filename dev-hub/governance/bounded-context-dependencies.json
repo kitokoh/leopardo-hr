@@ -866,6 +866,24 @@
       "note": "VTC → TENANT — marketplace publique #8423 (M-10→M-14) : résolution du tenant par ressource via l'annuaire public opt-in (VtcMarketplaceOperator → Company) puis bascule PublicTenantResolver BOS-050 ; pattern annuaires plateforme FUNDRAISING #8379"
     },
     {
+      "from": "BC-37",
+      "to": "BC-02",
+      "baseline": false,
+      "note": "FARM OS → TENANT — verticale agricole (mission Farm OS, PR #8572) : l'entreprise courante est le propriétaire de TOUTES les tables farm_* (company_id) et FarmCompanyContext résout le tenant via le helper socle currentCompany() (TenantManager). Aucun contrat partagé n'existe pour « entreprise courante » dans ce dépôt (pattern identique aux verticales BC-33 FUNDRAISING et BC-35 VTC) : l'aiguillage direct est donc assumé et documenté plutôt que dupliqué."
+    },
+    {
+      "from": "BC-37",
+      "to": "BC-03",
+      "baseline": false,
+      "note": "FARM OS → IDENTITY — acteur authentifié (Employee) : auteur/responsable d'une parcelle et d'une intervention (farm_parcels.created_by, farm_operations.assigned_to / responsible_id / created_by), décideur d'une activation d'outil (farm_capabilities.decided_by). Réutilise le socle d'identité, aucun modèle d'acteur propre."
+    },
+    {
+      "from": "BC-37",
+      "to": "BC-04",
+      "baseline": false,
+      "note": "FARM OS → HR — travailleurs et équipes : appartenance d'un employé à une équipe de terrain (farm_team_members.employee_id) et chef d'équipe (farm_teams.lead_id). Farm OS ne crée AUCUN système de rôles : les permissions sont celles du socle (EmployeeModuleGrant / SolutionPermissionInstaller) et l'affectation d'un travailleur réutilise Employee. Exigence explicite du brief : réutiliser RH plutôt que dupliquer."
+    },
+    {
       "from": "BC-12",
       "to": "BC-02",
       "baseline": false,

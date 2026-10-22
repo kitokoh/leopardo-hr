@@ -11,6 +11,7 @@ import 'package:leopardo_core/features/absences/data/absence_repository.dart';
 import 'package:leopardo_core/features/salary_advances/data/salary_advance_repository.dart';
 import 'package:leopardo_core/features/payrolls/data/payroll_repository.dart';
 import 'package:leopardo_core/features/notifications/data/notification_repository.dart';
+import 'package:leopardo_core/features/chat/data/conversation_repository.dart';
 import 'package:leopardo_core/features/evaluations/data/evaluation_repository.dart';
 import 'package:leopardo_core/features/cabinet/data/cabinet_repository.dart';
 import 'package:leopardo_core/features/schedules/data/schedule_repository.dart';
@@ -83,6 +84,16 @@ final payrollRepositoryProvider = Provider<PayrollRepository>((ref) {
 final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return NotificationRepository(apiClient);
+});
+
+/// #8754 [BOS-CHAT] — chat horizontal (BC-13 COMMS).
+///
+/// Le module vit dans `leopardo_core` pour être partagé par les apps employé et
+/// manager, exactement comme `notificationRepositoryProvider` ci-dessus : un
+/// seul client, aucun second système de messagerie.
+final conversationRepositoryProvider = Provider<ConversationRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return ConversationRepository(apiClient);
 });
 
 final evaluationRepositoryProvider = Provider<EvaluationRepository>((ref) {

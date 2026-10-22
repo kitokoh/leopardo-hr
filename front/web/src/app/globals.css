@@ -12,6 +12,10 @@
 :root {
   --background: #ffffff;
   --foreground: #0f172a;
+  /* BOS-B-01 — libellé par défaut sur un fond primaire de tenant. Le shell
+     écrase ce token avec `primary_color_foreground` (contraste WCAG calculé
+     côté serveur) ; ce repli couvre l'absence de branding. */
+  --tenant-on-primary: #ffffff;
 }
 
 @theme inline {

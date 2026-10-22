@@ -281,6 +281,24 @@ return [
             'killable' => true,
             'description' => 'Solution VTC/taxi (BC-35, VTC-01/#8357 ; gate `module.vtc`) : réservation de courses, dispatch au plus proche chauffeur via le core géospatial `geo` (requis), tarification et suivi.',
         ],
+        // BC-37 FARM OS — verticale agricole (mission Farm OS) : exploitations et
+        // parcelles, calendrier des travaux, intrants et stock, materiel, cheptel,
+        // recoltes, achats/ventes, couts. Module requis : `rh` (employes, roles,
+        // permissions) — Farm OS ne cree AUCUN systeme de roles propre. Les 13
+        // outils agricoles sont des CAPACITES internes (farm_capabilities), pas
+        // des flags : voir ADR-FARM-0001. Fail-closed : defaut false, gate
+        // serveur `module.farm_os` sur les routes /api/v1/farm/*.
+        'farm_os' => [
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.36.0',
+            'killable' => true,
+            // Projection octet-identique de l'entree `farm_os` du ModuleRegistry
+            // (FR-2 / ModuleRegistryTest::test_flags_projection_is_byte_identical).
+            // Ne jamais editer ce libelle seul : modifier la source declarative
+            // app/Core/Feature/Domain/ModuleRegistry.php et re-projeter.
+            'description' => 'Solution agricole Farm OS (BC-37, mission Farm OS ; gate `module.farm_os`) : exploitations et parcelles, cycles culturaux et calendrier des travaux, intrants et stock, materiel, cheptel, recoltes et tracabilite, achats et ventes, couts et rentabilite. Modularite interne par CAPACITES (table farm_capabilities), pas par 13 flags.',
+        ],
         // BC-36 TRADE (TRADE-001/#8476) — verticale International Trade OS :
         // commerce international (import/export) et B2B domestique (grossiste)
         // — sourcing, RFQ multi-fournisseurs, offres, commandes, cotations

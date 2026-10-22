@@ -140,6 +140,7 @@ class SyncEngineService
                 ->update([
                     'status' => 'processing',
                     'attempt_count' => $item->attempt_count + 1,
+                    'last_attempt_at' => now(),
                 ]);
 
             if ($claimed === 0) {
@@ -152,14 +153,22 @@ class SyncEngineService
                 if ($result['conflict']) {
                     $conflicts++;
                     $resolution = $this->resolveConflict($item, $result);
+                    // #8629 — un conflit doit rester DIAGNOSTIQUABLE : on
+                    // persiste la cause et l'instant, pas seulement le statut.
                     $item->update([
                         'status' => 'conflict',
                         'conflict_resolution' => $resolution,
                         'conflict_note' => $result['conflict_note'] ?? null,
+                        'last_error' => $this->truncateError($result['conflict_note'] ?? null),
+                        'conflict_at' => now(),
                     ]);
                     $resolved++;
                 } else {
-                    $item->update(['status' => 'synced', 'synced_at' => now()]);
+                    $item->update([
+                        'status' => 'synced',
+                        'synced_at' => now(),
+                        'last_error' => null,
+                    ]);
                     $sent++;
                 }
             } catch (\Throwable $e) {
@@ -168,7 +177,21 @@ class SyncEngineService
                 ]);
 
                 $newStatus = $item->attempt_count >= 5 ? 'failed' : 'pending';
-                $item->update(['status' => $newStatus]);
+
+                // #8629 — la cause de l'échec est désormais conservée sur la
+                // ligne elle-même : sans elle, « pending » et « failed »
+                // étaient indiscernables d'une file simplement vide au
+                // moment du diagnostic.
+                //
+                // Update par requête, PAS `$item->update()` : le modèle en
+                // mémoire porte encore `processing` (écrit par le claim
+                // atomique) et Eloquent n'émettrait aucun UPDATE si l'on
+                // réassignait une valeur identique à cet état local — la
+                // ligne resterait bloquée en `processing` pour toujours.
+                SyncQueue::whereKey($item->getKey())->update([
+                    'status' => $newStatus,
+                    'last_error' => $this->truncateError($e->getMessage()),
+                ]);
             }
         }
 
@@ -224,6 +247,22 @@ class SyncEngineService
             'absences' => $this->applyAbsence($item),
             default => $this->applyGeneric($item, $table),
         };
+    }
+
+    /**
+     * #8629 — borne la taille de l'erreur persistée.
+     *
+     * Une trace SQL brute peut dépasser plusieurs kilo-octets ; `last_error`
+     * sert au DIAGNOSTIC opérateur, pas à l'archivage. On conserve donc le
+     * début du message, lisible dans l'écran de diagnostic, et on tronque.
+     */
+    private function truncateError(?string $message): ?string
+    {
+        if ($message === null || trim($message) === '') {
+            return null;
+        }
+
+        return mb_substr($message, 0, 1000);
     }
 
     /**

@@ -128,7 +128,15 @@ const nextConfig: NextConfig = {
         },
         {
           key: "Permissions-Policy",
-          value: "geolocation=(), microphone=(), camera=()",
+          // #8762 — `geolocation=(self)` et non `()` : la passerelle publique
+          // `/decouvrir` propose « Autour de moi » (`navigator.geolocation`).
+          // Avec `geolocation=()`, Chromium refusait l'API au niveau du
+          // document (`Permissions policy violation`, code 1) AVANT même la
+          // demande d'autorisation utilisateur : le bouton ne pouvait donc
+          // jamais fonctionner en production. L'ouverture reste strictement
+          // limitée à NOTRE origine (aucun iframe tiers ne peut demander la
+          // position), et microphone/caméra restent totalement interdits.
+          value: "geolocation=(self), microphone=(), camera=()",
         },
         // #7650 — plus de CSP ici : elle est émise par le proxy en mode
         // enforce avec un nonce par requête (cf. bloc de décision ci-dessus).
@@ -281,6 +289,11 @@ const nextConfig: NextConfig = {
 
   // Experimental features for performance
   experimental: {
+    // BOS-B-02 — active `forbidden()` / `unauthorized()` (App Router). Sans ce
+    // drapeau, `forbidden()` lève une erreur générique au lieu de rendre
+    // `app/forbidden.tsx` : un rôle insuffisant tombait sur la frontière
+    // d'erreur 500 au lieu d'une page 403 explicite.
+    authInterrupts: true,
     optimizePackageImports: ["lucide-react"],
     // #7531 — `optimizeCss` retiré : l'option exige `critters`, qui n'est
     // déclaré NI dans `package.json` NI dans `package-lock.json` (donc absent

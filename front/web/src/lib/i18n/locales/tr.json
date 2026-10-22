@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-10-11T00:00:00Z",
+  "_updated_at": "2026-10-20T00:00:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo — İşletme Yönetimi Paketi"
@@ -1739,7 +1739,8 @@
     "notFound": "Sayfa bulunamadi",
     "travelAgency": "Seyahat acentesi",
     "emailTemplates": "E-postalar",
-    "settings": "Ayarlar"
+    "settings": "Ayarlar",
+    "messaging": "Mesajlaşma"
   },
   "webhooks": {
     "confirm_delete": "Bu webhook silinsin mi?"
@@ -6596,6 +6597,14 @@
       "ctaContact": "Destek ile iletişime geçin",
       "mascotAlt": "Gorsel: baglantisi kesilmis bir leopar, sayfa bulunamadi"
     },
+    "forbidden": {
+      "kicker": "Hata 403",
+      "title": "Erisim reddedildi",
+      "body": "Rolunuz bu isleme izin vermiyor. Bunun bir hata oldugunu dusunuyorsaniz bir yoneticiden erisim isteyin.",
+      "ctaHome": "Ana sayfaya don",
+      "ctaSupport": "Erisim isteyin",
+      "mascotAlt": "Gorsel: kapali bir kapi onunde bir leopar, erisim reddedildi"
+    },
     "error": {
       "kicker": "Beklenmeyen hata",
       "title": "Bir şeyler ters gitti",
@@ -8350,6 +8359,86 @@
   },
   "travel.seats.state.absent": "Koltuk yok",
   "travel.seats.layoutNotice": "Koltuk düzeni değiştirildiğinde rezervasyonu olan yolcular taşınmaz: koltukları değişmez. Bir çakışmayı çözmek için araç değiştirme prosedürünü kullanın.",
+  "chatHub": {
+    "title": "Mesajlaşma",
+    "subtitle": "İş arkadaşlarınızla ve çalışma gruplarınızla sohbetler",
+    "list": {
+      "title": "Sohbetler",
+      "search": "Sohbet ara",
+      "empty": "Sohbet yok",
+      "emptyHint": "Yöneticinizle veya gruplarınızla yazışmalar burada görünecek.",
+      "loadError": "Sohbetler yüklenemedi.",
+      "unread": "okunmamış",
+      "noSubject": "Görüşme",
+      "conversation": "Sohbet",
+      "kindGroup": "Grup"
+    },
+    "thread": {
+      "selectTitle": "Bir sohbet seçin",
+      "selectHint": "Mesajları görmek için soldan bir sohbet seçin.",
+      "empty": "Mesaj yok",
+      "emptyHint": "Bu sohbetin ilk mesajını yazın.",
+      "loadError": "Mesajlar yüklenemedi.",
+      "placeholder": "Bir mesaj yazın…",
+      "send": "Gönder",
+      "sending": "Gönderiliyor…",
+      "enterHint": "Göndermek için Enter, yeni satır için Shift+Enter.",
+      "loadOlder": "Önceki mesajları yükle",
+      "edited": "düzenlendi",
+      "deletedMessage": "Mesaj silindi",
+      "reply": "Yanıtla",
+      "edit": "Düzenle",
+      "delete": "Sil",
+      "report": "Bildir",
+      "editingMessage": "Mesaj düzenleniyor",
+      "replyingTo": "Yanıt:",
+      "attach": "Dosya ekle",
+      "attachment": "Ek",
+      "attachmentTooLarge": "Dosya göndermek için çok büyük.",
+      "attachmentGone": "Ek kullanılamıyor: dosya yeniden dağıtım sırasında kayboldu.",
+      "attachmentForbidden": "Ek bulunamadı veya erişim reddedildi.",
+      "attachmentFailed": "Ek indirilemedi.",
+      "offline": "Çevrimdışı",
+      "live": "Güncel",
+      "deleteConfirm": "Bu mesaj silinsin mi?",
+      "reportPrompt": "Bildirim nedeni",
+      "reportSent": "Bildirim moderasyona iletildi.",
+      "reportFailed": "Bildirim yapılamadı.",
+      "editForbidden": "Yalnızca kendi mesajlarınızı düzenleyebilirsiniz.",
+      "editFailed": "Düzenleme yapılamadı.",
+      "deleteFailed": "Silme yapılamadı.",
+      "sendFailed": "Gönderilemedi. Tekrar deneyin.",
+      "offlineSendFailed": "Çevrimdışısınız: mesaj gönderilmedi.",
+      "notParticipant": "Bu sohbet artık erişilebilir değil.",
+      "rateLimited": "Çok fazla mesaj. Lütfen bekleyin.",
+      "invalidMessage": "Geçersiz mesaj.",
+      "directSubtitle": "Özel sohbet",
+      "groupMembers": "Grup üyeleri"
+    },
+    "tenantRequired": {
+      "title": "Şirket bağlamı gerekli",
+      "body": "Mesajlaşma bir şirket oturumu (kimlik taklidi veya yönetici hesabı) gerektirir."
+    },
+    "forbidden": {
+      "title": "Mesajlaşma kapalı",
+      "body": "Mesajlaşma modülü bu şirket için etkin değil."
+    },
+    "common": {
+      "loading": "Yükleniyor…",
+      "retry": "Yeniden dene",
+      "refresh": "Yenile",
+      "save": "Kaydet",
+      "cancel": "İptal"
+    },
+    "subjects": {
+      "salary_advance": "Maaş avansı",
+      "attendance_correction": "Puantaj düzeltmesi",
+      "absence": "Devamsızlık"
+    },
+    "report": {
+      "reasonsHint": "harassment, spam, inappropriate_content, threat, impersonation, other"
+    }
+  },
   "discovery": {
     "title": "Yakınınızdaki bir profesyoneli bulun",
     "description": "Bir meslek, hizmet veya isim arayın, ardından profesyonelle doğrudan iletişime geçin.",

@@ -15,17 +15,23 @@ use Illuminate\Support\Carbon;
  *
  * @property string $id
  * @property string $edge_node_id
- * @property string $entity_type   e.g. attendance_logs, absences
- * @property string $entity_id     UUID of the local record
- * @property string $operation     create|update|delete
+ * @property string $entity_type e.g. attendance_logs, absences
+ * @property string $entity_id UUID of the local record
+ * @property string $operation create|update|delete
  * @property array<string,mixed> $payload
- * @property string $status        pending|processing|synced|conflict|failed
- * @property int    $attempt_count
- * @property string|null $conflict_resolution  local_wins|cloud_wins|manual
+ * @property string $status pending|processing|synced|conflict|failed
+ * @property int $attempt_count
+ * @property string|null $dedup_key
+ * @property string|null $idempotency_key clé de rejeu fournie par le nœud Edge (#8629)
+ * @property string|null $conflict_resolution local_wins|cloud_wins|manual
  * @property string|null $conflict_note
+ * @property string|null $last_error cause du dernier échec (#8629)
+ * @property Carbon|null $last_attempt_at horodatage de la dernière tentative (#8629)
+ * @property Carbon|null $conflict_at horodatage du passage en conflit (#8629)
  * @property Carbon|null $synced_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class SyncQueue extends Model
@@ -41,13 +47,16 @@ class SyncQueue extends Model
 
     protected $fillable = [
         'edge_node_id', 'entity_type', 'entity_id', 'operation',
-        'payload', 'status', 'attempt_count', 'dedup_key',
+        'payload', 'status', 'attempt_count', 'dedup_key', 'idempotency_key',
         'conflict_resolution', 'conflict_note', 'synced_at',
+        'last_error', 'last_attempt_at', 'conflict_at',
     ];
 
     protected $casts = [
-        'payload'   => 'array',
+        'payload' => 'array',
         'synced_at' => 'datetime',
+        'last_attempt_at' => 'datetime',
+        'conflict_at' => 'datetime',
     ];
 
     public function edgeNode(): BelongsTo

@@ -354,6 +354,26 @@ const routes = [
           icon: 'SparklesIcon'
         }
       },
+      // #8754 [BOS-CHAT] — MESSAGERIE HUMAINE (BC-13 COMMS).
+      //
+      // Chemin distinct de `/chat` À DESSEIN : `/chat` est l'assistant IA
+      // plateforme (Léa, `/admin/ai/*`) ; ici c'est le chat entre employés
+      // (`/conversations/*`, module Notification). Deux produits, deux
+      // historiques, aucune fusion possible.
+      //
+      // Aucune permission plateforme n'est exigée : l'autorisation est
+      // ENTIÈREMENT serveur (404 pour un non-participant, jamais 403). Un
+      // compte plateforme sans contexte tenant voit l'état explicite
+      // « contexte entreprise requis » plutôt qu'une fausse erreur.
+      {
+        path: '/messagerie',
+        name: 'chat-hub',
+        component: () => import('@/views/chat/ChatHubView.vue'),
+        meta: {
+          title: 'navigation.messaging',
+          icon: 'ChatBubbleLeftRightIcon'
+        }
+      },
       {
         path: '/webhooks',
         name: 'webhooks',

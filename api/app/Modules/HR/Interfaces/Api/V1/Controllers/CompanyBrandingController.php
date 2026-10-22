@@ -7,6 +7,7 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
+use App\Modules\HR\Infrastructure\Support\ContrastingTextColor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -105,16 +106,27 @@ class CompanyBrandingController extends Controller
         return is_array($branding) ? $branding : [];
     }
 
-    /** @param array<string, mixed> $branding */
+    /**
+     * @param  array<string, mixed>  $branding
+     * @return array<string, mixed>
+     */
     private function normalizeBranding(array $branding, Company $company): array
     {
+        $primaryColor = $this->hexOrDefault($branding['primary_color'] ?? null, '#10B981');
+
         return [
             'display_name' => $this->stringOrNull($branding['display_name'] ?? null) ?: $company->name,
             'logo_url' => $this->stringOrNull($branding['logo_url'] ?? null),
             'logo_path' => $this->stringOrNull($branding['logo_path'] ?? null),
             'logo_disk' => $this->stringOrNull($branding['logo_disk'] ?? null),
-            'primary_color' => $this->hexOrDefault($branding['primary_color'] ?? null, '#10B981'),
+            'primary_color' => $primaryColor,
             'accent_color' => $this->hexOrDefault($branding['accent_color'] ?? null, '#2563EB'),
+            // BOS-B-01 — le contraste du libellé n'est pas laissé au client.
+            // Un `primary_color` clair (`#A3E635`) avec du texte blanc donnait
+            // ~1.3:1 : illisible. Le serveur renvoie la couleur de texte qui
+            // contraste le plus, donc les combinaisons illisibles ne peuvent
+            // plus atteindre le rendu.
+            'primary_color_foreground' => ContrastingTextColor::for($primaryColor),
             'brand_mode' => in_array($branding['brand_mode'] ?? null, ['default', 'light', 'dark', 'auto'], true)
                 ? $branding['brand_mode']
                 : 'default',
