@@ -37,6 +37,8 @@ servers:
 security:
 - BearerAuth: []
 tags:
+- name: Farm OS
+  description: 'BC-37@@FARM@@ (mission Farm OS) — verticale agricole : exploitations et parcelles, cycles culturaux, interventions, outils activables par capacités.'
 - name: Fundraising
   description: 'BC-34@@FUND@@ (#8379) — verticale Cagnottes solidaires : liens publics de collecte, contributions carte et mobile money, reversements au bénéficiaire.'
 - name: Health
@@ -50068,6 +50070,2616 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+  /farm/settings:
+    get:
+      tags: [FarmSettings]
+      summary: Réglages Farm OS de l'exploitation (activités, capacités, référentiels)
+      operationId: showFarmSettings
+      x-farm-capability: solution
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/activities:
+    put:
+      tags: [FarmSettings]
+      summary: Déclarer ou retirer les activités agricoles de l'exploitation (registre fermé)
+      operationId: updateFarmActivities
+      x-farm-capability: solution
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "activities"
+              properties:
+                activities:
+                  type: "array"
+                  minItems: 1
+                  items:
+                    type: "string"
+                    enum:
+                      - "cereal_crops"
+                      - "market_gardening"
+                      - "orchards"
+                      - "viticulture"
+                      - "greenhouse"
+                      - "cattle"
+                      - "sheep_goat"
+                      - "poultry"
+                      - "pig_farming"
+                      - "dairy"
+                      - "beekeeping"
+                      - "aquaculture"
+                      - "mixed_farming"
+                      - "cooperative"
+                      - "agri_services"
+                      - "agri_food"
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/capabilities/available:
+    get:
+      tags: [FarmSettings]
+      summary: Outils métier recommandés et optionnels selon les activités déclarées
+      operationId: listFarmAvailableCapabilities
+      x-farm-capability: solution
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/capabilities:
+    put:
+      tags: [FarmSettings]
+      summary: Activer, refuser ou modifier les outils métier de l'exploitation
+      operationId: updateFarmCapabilities
+      x-farm-capability: solution
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "capabilities"
+              properties:
+                capabilities:
+                  type: "object"
+                  additionalProperties:
+                    type: "boolean"
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/provision:
+    post:
+      tags: [FarmSettings]
+      summary: Approvisionner l'espace d'exploitation (idempotent, réutilise l'activation de solution existante)
+      operationId: provisionFarmOs
+      x-farm-capability: solution
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "activities"
+              properties:
+                activities:
+                  type: "array"
+                  minItems: 1
+                  items:
+                    type: "string"
+                capabilities:
+                  type: "object"
+                  description: Décisions explicites de l'utilisateur (accepté, refusé, modifié) ; absent = proposition du recommandeur.
+                  additionalProperties:
+                    type: "boolean"
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/dashboard:
+    get:
+      tags: [FarmDashboard]
+      summary: Tableau de bord de l'exploitation (sections selon les outils réellement activés)
+      operationId: showFarmDashboard
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/sites:
+    get:
+      tags: [FarmSites]
+      summary: Lister les exploitations et sites
+      operationId: listFarmSites
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+    post:
+      tags: [FarmSites]
+      summary: Créer une exploitation ou un site
+      operationId: createFarmSite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "name"
+              properties:
+                name:
+                  type: "string"
+                  maxLength: 160
+                reference:
+                  type: "string"
+                  maxLength: 40
+                kind:
+                  type: "string"
+                  enum:
+                    - "production"
+                    - "building"
+                    - "storage"
+                    - "other"
+                country_code:
+                  type: "string"
+                  maxLength: 2
+                region:
+                  type: "string"
+                address:
+                  type: "string"
+                timezone:
+                  type: "string"
+                total_area_value:
+                  type: "number"
+                  minimum: 0
+                total_area_unit:
+                  type: "string"
+                  enum:
+                    - "ha"
+                    - "m2"
+                    - "acre"
+                    - "are"
+                total_area_source:
+                  type: "string"
+                  enum:
+                    - "declared"
+                    - "imported"
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/sites/{site}:
+    get:
+      tags: [FarmSites]
+      summary: Détail d'une exploitation ou d'un site
+      operationId: showFarmSite
+      parameters:
+        - name: site
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/parcels:
+    get:
+      tags: [FarmParcels]
+      summary: Lister les parcelles de l'exploitation
+      operationId: listFarmParcels
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/sites/{site}/parcels:
+    post:
+      tags: [FarmParcels]
+      summary: Créer une parcelle sur une exploitation
+      operationId: createFarmParcel
+      parameters:
+        - name: site
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "name"
+              properties:
+                name:
+                  type: "string"
+                  maxLength: 160
+                reference:
+                  type: "string"
+                  maxLength: 40
+                area_value:
+                  type: "number"
+                  minimum: 0
+                area_unit:
+                  type: "string"
+                  enum:
+                    - "ha"
+                    - "m2"
+                    - "acre"
+                    - "are"
+                area_source:
+                  type: "string"
+                  enum:
+                    - "declared"
+                    - "imported"
+                    - "measured"
+                  description: "`measured` exige une géométrie réellement stockée."
+                geometry_wkt:
+                  type: "string"
+                soil_type:
+                  type: "string"
+                irrigation_type:
+                  type: "string"
+                  enum:
+                    - "rainfed"
+                    - "drip"
+                    - "sprinkler"
+                    - "furrow"
+                    - "other"
+                notes:
+                  type: "string"
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/parcels/{parcel}:
+    get:
+      tags: [FarmParcels]
+      summary: Détail d'une parcelle
+      operationId: showFarmParcel
+      parameters:
+        - name: parcel
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/parcels/{parcel}/history:
+    get:
+      tags: [FarmParcels]
+      summary: Historique d'une parcelle (cycles culturaux et interventions)
+      operationId: showFarmParcelHistory
+      parameters:
+        - name: parcel
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/crop-cycles:
+    get:
+      tags: [FarmCropCycles]
+      summary: Lister les cycles culturaux
+      operationId: listFarmCropCycles
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/parcels/{parcel}/crop-cycles:
+    post:
+      tags: [FarmCropCycles]
+      summary: Ouvrir un cycle cultural sur une parcelle
+      operationId: createFarmCropCycle
+      parameters:
+        - name: parcel
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "crop_code"
+              properties:
+                crop_code:
+                  type: "string"
+                  maxLength: 60
+                crop_variety:
+                  type: "string"
+                season_label:
+                  type: "string"
+                planned_sowing_on:
+                  type: "string"
+                  format: "date"
+                actual_sowing_on:
+                  type: "string"
+                  format: "date"
+                planned_harvest_on:
+                  type: "string"
+                  format: "date"
+                expected_yield_value:
+                  type: "number"
+                  minimum: 0
+                expected_yield_unit:
+                  type: "string"
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/crop-cycles/{cycle}/close:
+    post:
+      tags: [FarmCropCycles]
+      summary: Clôturer un cycle cultural (récolte, échec ou annulation)
+      operationId: closeFarmCropCycle
+      parameters:
+        - name: cycle
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "status"
+              properties:
+                status:
+                  type: "string"
+                  enum:
+                    - "harvested"
+                    - "failed"
+                    - "cancelled"
+                actual_harvest_on:
+                  type: "string"
+                  format: "date"
+                actual_yield_value:
+                  type: "number"
+                  minimum: 0
+                actual_yield_unit:
+                  type: "string"
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/operations:
+    get:
+      tags: [FarmOperations]
+      summary: Lister les interventions agricoles
+      operationId: listFarmOperations
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/operations/today:
+    get:
+      tags: [FarmOperations]
+      summary: Interventions du jour
+      operationId: listFarmOperationsToday
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/operations/late:
+    get:
+      tags: [FarmOperations]
+      summary: Interventions en retard
+      operationId: listFarmOperationsLate
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/sites/{site}/operations:
+    post:
+      tags: [FarmOperations]
+      summary: Planifier une intervention agricole (idempotent si client_operation_id fourni)
+      operationId: createFarmOperation
+      parameters:
+        - name: site
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "op_type"
+              properties:
+                op_type:
+                  type: "string"
+                  enum:
+                    - "soil_preparation"
+                    - "sowing_planting"
+                    - "fertilization"
+                    - "irrigation"
+                    - "weeding"
+                    - "crop_protection"
+                    - "crop_monitoring"
+                    - "harvesting"
+                    - "storage_handling"
+                    - "marketing_sale"
+                title:
+                  type: "string"
+                  maxLength: 160
+                instructions:
+                  type: "string"
+                parcel_id:
+                  type: "integer"
+                crop_cycle_id:
+                  type: "integer"
+                priority:
+                  type: "string"
+                  enum:
+                    - "low"
+                    - "normal"
+                    - "high"
+                planned_start_at:
+                  type: "string"
+                  format: "date-time"
+                planned_end_at:
+                  type: "string"
+                  format: "date-time"
+                assigned_to:
+                  type: "integer"
+                farm_team_id:
+                  type: "integer"
+                quantity_value:
+                  type: "number"
+                  minimum: 0
+                quantity_unit:
+                  type: "string"
+                notes:
+                  type: "string"
+                client_operation_id:
+                  type: "string"
+                  maxLength: 64
+                  description: "Identifiant unique par tenant : rejeu idempotent depuis le mobile ou le mode hors ligne."
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/operations/{operation}:
+    get:
+      tags: [FarmOperations]
+      summary: Détail d'une intervention
+      operationId: showFarmOperation
+      parameters:
+        - name: operation
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/operations/{operation}/start:
+    post:
+      tags: [FarmOperations]
+      summary: Démarrer une intervention
+      operationId: startFarmOperation
+      parameters:
+        - name: operation
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                reason:
+                  type: "string"
+                  description: "Motif obligatoire pour annuler une intervention déjà démarrée."
+                progress_percent:
+                  type: "number"
+                  minimum: 0
+                  maximum: 100
+                quantity_value:
+                  type: "number"
+                  minimum: 0
+                quantity_unit:
+                  type: "string"
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/operations/{operation}/complete:
+    post:
+      tags: [FarmOperations]
+      summary: Clôturer une intervention (une intervention clôturée est immuable)
+      operationId: completeFarmOperation
+      parameters:
+        - name: operation
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                reason:
+                  type: "string"
+                  description: "Motif obligatoire pour annuler une intervention déjà démarrée."
+                progress_percent:
+                  type: "number"
+                  minimum: 0
+                  maximum: 100
+                quantity_value:
+                  type: "number"
+                  minimum: 0
+                quantity_unit:
+                  type: "string"
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/operations/{operation}/skip:
+    post:
+      tags: [FarmOperations]
+      summary: Marquer une intervention comme non réalisée
+      operationId: skipFarmOperation
+      parameters:
+        - name: operation
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                reason:
+                  type: "string"
+                  description: "Motif obligatoire pour annuler une intervention déjà démarrée."
+                progress_percent:
+                  type: "number"
+                  minimum: 0
+                  maximum: 100
+                quantity_value:
+                  type: "number"
+                  minimum: 0
+                quantity_unit:
+                  type: "string"
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/operations/{operation}/cancel:
+    post:
+      tags: [FarmOperations]
+      summary: Annuler une intervention (motif requis après démarrage)
+      operationId: cancelFarmOperation
+      parameters:
+        - name: operation
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                reason:
+                  type: "string"
+                  description: "Motif obligatoire pour annuler une intervention déjà démarrée."
+                progress_percent:
+                  type: "number"
+                  minimum: 0
+                  maximum: 100
+                quantity_value:
+                  type: "number"
+                  minimum: 0
+                quantity_unit:
+                  type: "string"
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/operations/{operation}/assign:
+    post:
+      tags: [FarmOperations]
+      summary: Affecter un ouvrier, une équipe ou un responsable à une intervention
+      operationId: assignFarmOperation
+      parameters:
+        - name: operation
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                assigned_to:
+                  type: "integer"
+                farm_team_id:
+                  type: "integer"
+                responsible_id:
+                  type: "integer"
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/operations/{operation}/progress:
+    post:
+      tags: [FarmOperations]
+      summary: Déclarer l'avancement d'une intervention depuis le terrain
+      operationId: reportFarmOperationProgress
+      parameters:
+        - name: operation
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "progress_percent"
+              properties:
+                progress_percent:
+                  type: "number"
+                  minimum: 0
+                  maximum: 100
+                quantity_value:
+                  type: "number"
+                  minimum: 0
+                quantity_unit:
+                  type: "string"
+                note:
+                  type: "string"
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+  /farm/operations/{operation}/report-problem:
+    post:
+      tags: [FarmOperations]
+      summary: Signaler un problème rencontré sur une intervention
+      operationId: reportFarmOperationProblem
+      parameters:
+        - name: operation
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "message"
+              properties:
+                message:
+                  type: "string"
+                  maxLength: 2000
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
+
+  /farm/inputs:
+    get:
+      tags: [FarmInputs]
+      summary: Catalogue des intrants agricoles et quantités disponibles
+      operationId: listFarmInputs
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema: {type: string}
+          description: Filtre sur la catégorie d'intrant (registre fermé).
+        - name: search
+          in: query
+          required: false
+          schema: {type: string}
+          description: Recherche partielle sur le nom.
+        - name: per_page
+          in: query
+          required: false
+          schema: {type: integer}
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+    post:
+      tags: [FarmInputs]
+      summary: Créer un intrant au catalogue
+      operationId: createFarmInput
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "name"
+                - "category"
+                - "unit"
+              properties:
+                name:
+                  type: "string"
+                  maxLength: 160
+                reference:
+                  type: "string"
+                  maxLength: 60
+                category:
+                  type: "string"
+                  description: Catégorie d'intrant (registre fermé FarmInputCategory).
+                unit:
+                  type: "string"
+                  description: Unité de gestion (registre fermé FarmInputUnit).
+                packaging:
+                  type: "string"
+                  maxLength: 80
+                alert_threshold:
+                  type: "number"
+                  minimum: 0
+                is_regulated:
+                  type: "boolean"
+                notes:
+                  type: "string"
+                  maxLength: 2000
+      responses:
+        '201':
+          description: Intrant créé.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides.
+
+  /farm/inputs/alerts:
+    get:
+      tags: [FarmInputs]
+      summary: Intrants sous le seuil d'alerte ou en rupture
+      operationId: listFarmInputAlerts
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+
+  /farm/inputs/{input}:
+    get:
+      tags: [FarmInputs]
+      summary: Détail d'un intrant et de ses lots
+      operationId: showFarmInput
+      parameters:
+        - name: input
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+
+  /farm/inputs/{input}/movements:
+    get:
+      tags: [FarmInputs]
+      summary: Journal des mouvements de stock d'un intrant (lecture seule)
+      operationId: listFarmInputMovements
+      parameters:
+        - name: input
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+        - name: movement_type
+          in: query
+          required: false
+          schema: {type: string}
+          description: Filtre sur le type de mouvement (receipt, issue, adjustment).
+        - name: per_page
+          in: query
+          required: false
+          schema: {type: integer}
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+
+  /farm/inputs/{input}/receive:
+    post:
+      tags: [FarmInputs]
+      summary: Réception d'un lot d'intrant (entrée de stock)
+      operationId: receiveFarmInputStock
+      parameters:
+        - name: input
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "lot_number"
+                - "quantity"
+              properties:
+                lot_number:
+                  type: "string"
+                  maxLength: 80
+                quantity:
+                  type: "number"
+                  minimum: 0
+                  exclusiveMinimum: true
+                expiry_date:
+                  type: "string"
+                  format: date
+                supplier_id:
+                  type: "integer"
+                client_movement_id:
+                  type: "string"
+                  maxLength: 80
+                  description: Identifiant d'idempotence pour le rejeu hors ligne.
+                occurred_at:
+                  type: "string"
+                  format: date-time
+      responses:
+        '201':
+          description: Mouvement enregistré.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides ou mouvement refusé.
+
+  /farm/inputs/{input}/issue:
+    post:
+      tags: [FarmInputs]
+      summary: Sortie de stock d'un intrant (consommation, vente, perte)
+      operationId: issueFarmInputStock
+      parameters:
+        - name: input
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "lot_number"
+                - "quantity"
+              properties:
+                lot_number:
+                  type: "string"
+                  maxLength: 80
+                quantity:
+                  type: "number"
+                  minimum: 0
+                  exclusiveMinimum: true
+                farm_operation_id:
+                  type: "integer"
+                parcel_id:
+                  type: "integer"
+                reason:
+                  type: "string"
+                  maxLength: 200
+                client_movement_id:
+                  type: "string"
+                  maxLength: 80
+                  description: Identifiant d'idempotence pour le rejeu hors ligne.
+                occurred_at:
+                  type: "string"
+                  format: date-time
+      responses:
+        '201':
+          description: Mouvement enregistré.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides, stock insuffisant ou lot inexistant.
+
+  /farm/inputs/{input}/adjust:
+    post:
+      tags: [FarmInputs]
+      summary: Ajustement d'inventaire d'un lot (quantité cible absolue)
+      operationId: adjustFarmInputStock
+      parameters:
+        - name: input
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "lot_number"
+                - "quantity"
+              properties:
+                lot_number:
+                  type: "string"
+                  maxLength: 80
+                quantity:
+                  type: "number"
+                  minimum: 0
+                  description: Quantité CIBLE du lot après ajustement (pas un delta).
+                reason:
+                  type: "string"
+                  maxLength: 200
+                client_movement_id:
+                  type: "string"
+                  maxLength: 80
+                  description: Identifiant d'idempotence pour le rejeu hors ligne.
+                occurred_at:
+                  type: "string"
+                  format: date-time
+      responses:
+        '201':
+          description: Mouvement enregistré.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides ou mouvement refusé.
+
+  /farm/equipment:
+    get:
+      tags: [FarmEquipment]
+      summary: Liste du materiel agricole
+      operationId: getFarmEquipment
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+    post:
+      tags: [FarmEquipment]
+      summary: Enregistrer un materiel (saisie manuelle)
+      operationId: postFarmEquipment
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                name:
+                  type: "string"
+                  description: "Nom du materiel."
+                kind:
+                  type: "string"
+                  description: "Type de materiel (registre ferme)."
+                meter_type:
+                  type: "string"
+                  description: "Type de compteur suivi, ou `none`."
+                meter_value:
+                  type: "number"
+                  description: "Valeur de compteur DECLAREE (jamais lue automatiquement)."
+                status:
+                  type: "string"
+                  description: "Etat DECLARE par l'exploitant."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/equipment/maintenance-due:
+    get:
+      tags: [FarmEquipment]
+      summary: Entretiens planifies arrives a echeance
+      operationId: getFarmEquipmentMaintenanceDue
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+  /farm/equipment/{equipment}:
+    get:
+      tags: [FarmEquipment]
+      summary: Detail d'un materiel
+      operationId: getFarmEquipmentEquipment
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: equipment
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+  /farm/equipment/{equipment}/usage:
+    post:
+      tags: [FarmEquipment]
+      summary: Relever un compteur (saisie manuelle)
+      operationId: postFarmEquipmentEquipmentUsage
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: equipment
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                meter_value:
+                  type: "number"
+                  description: "Nouvelle valeur de compteur. Ne peut pas reculer."
+                meter_source:
+                  type: "string"
+                  description: "`manual` ou `imported` — jamais une telemetrie."
+                occurred_at:
+                  type: "string"
+                  description: "Horodatage du releve."
+                client_usage_id:
+                  type: "string"
+                  description: "Identifiant d'idempotence pour le rejeu hors ligne."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/equipment/{equipment}/meter-reset:
+    post:
+      tags: [FarmEquipment]
+      summary: Remplacer un compteur (remise a zero)
+      operationId: postFarmEquipmentEquipmentMeterReset
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: equipment
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                meter_value:
+                  type: "number"
+                  description: "Nouvelle valeur de reference du compteur."
+                reason:
+                  type: "string"
+                  description: "Motif du remplacement."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/equipment/{equipment}/maintenances:
+    post:
+      tags: [FarmEquipment]
+      summary: Planifier un entretien
+      operationId: postFarmEquipmentEquipmentMaintenances
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: equipment
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                maintenance_type:
+                  type: "string"
+                  description: "`preventive` ou `corrective`."
+                title:
+                  type: "string"
+                  description: "Intitule de l'entretien."
+                planned_at:
+                  type: "string"
+                  description: "Date planifiee."
+                cost_amount:
+                  type: "number"
+                  description: "Cout DECLARE. Laisser vide si inconnu (jamais zero de remplissage)."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/equipment/{equipment}/breakdowns:
+    post:
+      tags: [FarmEquipment]
+      summary: Declarer une panne
+      operationId: postFarmEquipmentEquipmentBreakdowns
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: equipment
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                severity:
+                  type: "string"
+                  description: "Gravite DECLAREE par l'exploitant."
+                title:
+                  type: "string"
+                  description: "Intitule de la panne."
+                occurred_at:
+                  type: "string"
+                  description: "Date de survenue."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/equipment/{equipment}/documents:
+    post:
+      tags: [FarmEquipment]
+      summary: Associer un document a un materiel
+      operationId: postFarmEquipmentEquipmentDocuments
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: equipment
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                document_type:
+                  type: "string"
+                  description: "Type de document (registre ferme)."
+                title:
+                  type: "string"
+                  description: "Intitule du document."
+                file_id:
+                  type: "integer"
+                  description: "Identifiant du fichier dans le service de fichiers EXISTANT."
+                external_url:
+                  type: "string"
+                  description: "Lien fourni par l'exploitant (jamais fabrique par Farm OS)."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/equipment/maintenances/{maintenance}/complete:
+    post:
+      tags: [FarmEquipment]
+      summary: Cloturer un entretien
+      operationId: postFarmEquipmentMaintenancesMaintenanceComplete
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: maintenance
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                performed_at:
+                  type: "string"
+                  description: "Date de realisation."
+                cost_amount:
+                  type: "number"
+                  description: "Cout reel DECLARE."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/equipment/breakdowns/{breakdown}/resolve:
+    post:
+      tags: [FarmEquipment]
+      summary: Resoudre une panne
+      operationId: postFarmEquipmentBreakdownsBreakdownResolve
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: breakdown
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                resolved_at:
+                  type: "string"
+                  description: "Date de resolution."
+                cost_amount:
+                  type: "number"
+                  description: "Cout de reparation DECLARE."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/livestock/batches:
+    get:
+      tags: [FarmLivestock]
+      summary: Liste des lots de cheptel
+      operationId: getFarmLivestockBatches
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+    post:
+      tags: [FarmLivestock]
+      summary: Creer un lot de cheptel (effectif initial zero)
+      operationId: postFarmLivestockBatches
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                name:
+                  type: "string"
+                  description: "Nom du lot."
+                species:
+                  type: "string"
+                  description: "Espece (registre ferme)."
+                sex:
+                  type: "string"
+                  description: "Sexe, ou `unknown`."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/livestock/batches/{batch}:
+    get:
+      tags: [FarmLivestock]
+      summary: Detail d'un lot de cheptel
+      operationId: getFarmLivestockBatchesBatch
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: batch
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+  /farm/livestock/batches/{batch}/events:
+    post:
+      tags: [FarmLivestock]
+      summary: Enregistrer un mouvement d'effectif
+      operationId: postFarmLivestockBatchesBatchEvents
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: batch
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                event_type:
+                  type: "string"
+                  description: "Type d'evenement : le SENS est porte par le type."
+                quantity:
+                  type: "integer"
+                  description: "Quantite toujours POSITIVE."
+                occurred_at:
+                  type: "string"
+                  description: "Date de l'evenement."
+                client_event_id:
+                  type: "string"
+                  description: "Identifiant d'idempotence pour le rejeu hors ligne."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/livestock/batches/{batch}/health-events:
+    post:
+      tags: [FarmLivestock]
+      summary: Enregistrer un evenement sanitaire
+      operationId: postFarmLivestockBatchesBatchHealthEvents
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: batch
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                event_type:
+                  type: "string"
+                  description: "`vaccination`, `treatment`, `deworming`, `checkup`, `other`."
+                title:
+                  type: "string"
+                  description: "Intitule de l'evenement."
+                administered_at:
+                  type: "string"
+                  description: "Date d'administration."
+                next_due_at:
+                  type: "string"
+                  description: "Date du rappel, si declaree (aucun rappel n'est invente)."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/livestock/batches/{batch}/reproduction-events:
+    post:
+      tags: [FarmLivestock]
+      summary: Enregistrer un evenement de reproduction
+      operationId: postFarmLivestockBatchesBatchReproductionEvents
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: batch
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                event_type:
+                  type: "string"
+                  description: "`heat`, `mating`, `pregnancy_check`, `birth`, `abortion`, `drying_off`."
+                occurred_at:
+                  type: "string"
+                  description: "Date de l'evenement."
+                gestation_days:
+                  type: "integer"
+                  description: "Duree de gestation SAISIE. Sans elle, aucune date de mise bas n'est produite."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/livestock/batches/{batch}/production:
+    post:
+      tags: [FarmLivestock]
+      summary: Enregistrer une production animale
+      operationId: postFarmLivestockBatchesBatchProduction
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: batch
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                production_type:
+                  type: "string"
+                  description: "`milk`, `eggs`, `wool`, `honey`, `meat`, `manure`, `other`."
+                quantity:
+                  type: "number"
+                  description: "Quantite DECLAREE."
+                unit:
+                  type: "string"
+                  description: "Unite de saisie."
+                produced_at:
+                  type: "string"
+                  description: "Date de production."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/livestock/batches/{batch}/feed:
+    post:
+      tags: [FarmLivestock]
+      summary: Enregistrer une distribution d'alimentation
+      operationId: postFarmLivestockBatchesBatchFeed
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: batch
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                feed_name:
+                  type: "string"
+                  description: "Nom de l'aliment."
+                quantity:
+                  type: "number"
+                  description: "Quantite distribuee."
+                unit:
+                  type: "string"
+                  description: "Unite de saisie."
+                fed_at:
+                  type: "string"
+                  description: "Date de distribution."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/livestock/animals:
+    get:
+      tags: [FarmLivestock]
+      summary: Liste des animaux identifies individuellement
+      operationId: getFarmLivestockAnimals
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+    post:
+      tags: [FarmLivestock]
+      summary: Enregistrer un animal
+      operationId: postFarmLivestockAnimals
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                tag_number:
+                  type: "string"
+                  description: "Identifiant de l'animal."
+                species:
+                  type: "string"
+                  description: "Espece (registre ferme)."
+                sex:
+                  type: "string"
+                  description: "Sexe, ou `unknown`."
+                birth_date:
+                  type: "string"
+                  description: "Date de naissance, si connue (aucun age n'est invente)."
+                origin:
+                  type: "string"
+                  description: "`born`, `purchased`, `transferred`, `unknown`."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/livestock/summary:
+    get:
+      tags: [FarmLivestock]
+      summary: Synthese du cheptel present
+      operationId: getFarmLivestockSummary
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+  /farm/harvests/locations:
+    get:
+      tags: [FarmHarvests]
+      summary: Liste des emplacements de stockage
+      operationId: getFarmHarvestsLocations
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+    post:
+      tags: [FarmHarvests]
+      summary: Creer un emplacement de stockage
+      operationId: postFarmHarvestsLocations
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                name:
+                  type: "string"
+                  description: "Nom de l'emplacement."
+                location_type:
+                  type: "string"
+                  description: "Type d'emplacement (registre ferme)."
+                capacity:
+                  type: "number"
+                  description: "Capacite DECLAREE, si connue."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/harvests/lots:
+    get:
+      tags: [FarmHarvests]
+      summary: Liste des lots de recolte
+      operationId: getFarmHarvestsLots
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+    post:
+      tags: [FarmHarvests]
+      summary: Enregistrer une recolte (quantite figee)
+      operationId: postFarmHarvestsLots
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                lot_code:
+                  type: "string"
+                  description: "Code de lot (tracabilite)."
+                quantity_harvested:
+                  type: "number"
+                  description: "Quantite recoltee. Ecrite UNE SEULE FOIS, jamais mise a jour."
+                unit:
+                  type: "string"
+                  description: "Unite de saisie."
+                harvested_at:
+                  type: "string"
+                  description: "Date de recolte."
+                client_harvest_id:
+                  type: "string"
+                  description: "Identifiant d'idempotence pour le rejeu hors ligne."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/harvests/lots/{lot}:
+    get:
+      tags: [FarmHarvests]
+      summary: Detail d'un lot de recolte
+      operationId: getFarmHarvestsLotsLot
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: lot
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+  /farm/harvests/lots/{lot}/movements:
+    post:
+      tags: [FarmHarvests]
+      summary: Enregistrer un mouvement de stock
+      operationId: postFarmHarvestsLotsLotMovements
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: lot
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                movement_type:
+                  type: "string"
+                  description: "`in`, `transfer`, `loss`, `adjustment`, `sale`, `consumption`."
+                quantity:
+                  type: "number"
+                  description: "Quantite toujours POSITIVE. Une sortie ne peut pas depasser le stock restant."
+                sale_document_id:
+                  type: "integer"
+                  description: "Document du service de VENTES EXISTANT (obligatoire pour une vente)."
+                client_movement_id:
+                  type: "string"
+                  description: "Identifiant d'idempotence pour le rejeu hors ligne."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/harvests/summary:
+    get:
+      tags: [FarmHarvests]
+      summary: Synthese du stock de recolte
+      operationId: getFarmHarvestsSummary
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+  /farm/finance/campaigns:
+    get:
+      tags: [FarmFinance]
+      summary: Liste des campagnes agricoles
+      operationId: getFarmFinanceCampaigns
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+    post:
+      tags: [FarmFinance]
+      summary: Creer une campagne agricole
+      operationId: postFarmFinanceCampaigns
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                name:
+                  type: "string"
+                  description: "Nom de la campagne."
+                start_year:
+                  type: "integer"
+                  description: "Annee de debut."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/finance/expenses:
+    get:
+      tags: [FarmFinance]
+      summary: Liste des depenses enregistrees
+      operationId: getFarmFinanceExpenses
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+    post:
+      tags: [FarmFinance]
+      summary: Enregistrer une depense
+      operationId: postFarmFinanceExpenses
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                category:
+                  type: "string"
+                  description: "Categorie de depense (registre ferme)."
+                label:
+                  type: "string"
+                  description: "Intitule de la depense."
+                amount:
+                  type: "number"
+                  description: "Montant DECLARE, strictement positif."
+                is_estimated:
+                  type: "boolean"
+                  description: "`true` si le montant est une estimation, pas une piece reelle."
+                spent_on:
+                  type: "string"
+                  description: "Date de la depense."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/finance/sale-links:
+    get:
+      tags: [FarmFinance]
+      summary: Liste des ventes rattachees a un objet agricole
+      operationId: getFarmFinanceSaleLinks
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+    post:
+      tags: [FarmFinance]
+      summary: Rattacher un document de vente EXISTANT a un objet agricole
+      operationId: postFarmFinanceSaleLinks
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                sale_document_id:
+                  type: "integer"
+                  description: "Document du service de ventes existant. Farm OS n'en cree aucun."
+                amount:
+                  type: "number"
+                  description: "Montant impute a cet objet."
+                sold_on:
+                  type: "string"
+                  description: "Date de vente."
+                farm_harvest_lot_id:
+                  type: "integer"
+                  description: "Lot de recolte concerne (ou lot d'animaux)."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/finance/profitability:
+    get:
+      tags: [FarmFinance]
+      summary: Rentabilite par axe (reel / estime / manquant)
+      operationId: getFarmFinanceProfitability
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+  /farm/finance/profitability-by-campaign:
+    get:
+      tags: [FarmFinance]
+      summary: Rentabilite par campagne
+      operationId: getFarmFinanceProfitabilityByCampaign
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+  /farm/apps/catalogue:
+    get:
+      tags: [FarmApps]
+      summary: Catalogue « Mes logiciels » (aucun faux lien)
+      operationId: getFarmAppsCatalogue
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+  /farm/apps/roles/{role}/tools:
+    get:
+      tags: [FarmApps]
+      summary: Outils recommandes pour un profil, restreints aux outils actives
+      operationId: getFarmAppsRolesRoleTools
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: role
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+  /farm/sync/operations:
+    post:
+      tags: [FarmSync]
+      summary: Pousser un lot d'operations realisees hors ligne
+      operationId: postFarmSyncOperations
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                operations:
+                  type: "array"
+                  description: "Operations a synchroniser (1 a 200)."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/sync/status:
+    get:
+      tags: [FarmSync]
+      summary: Etat de la file de synchronisation
+      operationId: getFarmSyncStatus
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+  /farm/sync/errors:
+    get:
+      tags: [FarmSync]
+      summary: Historique des erreurs de synchronisation
+      operationId: getFarmSyncErrors
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+  /farm/sync/conflicts:
+    get:
+      tags: [FarmSync]
+      summary: Conflits en attente d'arbitrage humain
+      operationId: getFarmSyncConflicts
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+  /farm/sync/conflicts/{conflict}/resolve:
+    post:
+      tags: [FarmSync]
+      summary: Resoudre explicitement un conflit
+      operationId: postFarmSyncConflictsConflictResolve
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: conflict
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                strategy:
+                  type: "string"
+                  description: "`local_wins`, `server_wins` ou `manual_review`."
+                note:
+                  type: "string"
+                  description: "Motif de la decision (conserve pour audit)."
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+        '422':
+          description: Donnees invalides ou operation refusee (code d'erreur stable).
+  /farm/assistant/context:
+    get:
+      tags: [FarmAssistant]
+      summary: Contexte interne de l'assistant (donnees autorisees uniquement)
+      operationId: getFarmAssistantContext
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+  /farm/assistant/advisor-questions:
+    get:
+      tags: [FarmAssistant]
+      summary: Questions a poser a un conseiller agricole
+      operationId: getFarmAssistantAdvisorQuestions
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
+  /farm/integrations:
+    get:
+      tags: [FarmIntegrations]
+      summary: Matrice des integrations externes (aucune API payante activee)
+      operationId: getFarmIntegrations
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Succes.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifie.
+        '403':
+          description: Module Farm OS non active, ou outil metier non active.
 components:
   securitySchemes:
     BearerAuth:

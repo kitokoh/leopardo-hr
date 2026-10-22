@@ -3,7 +3,7 @@
     "title": "Bounded Context Registry — Leopardo HR",
     "description": "Registre canonique machine-readable des bounded contexts (MAT-001, issue #5859). Référence humaine : docs/architecture/BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md (plan de gouvernance, PR agent-readiness).",
     "maintained_by": "dev-hub/tools/check-bounded-context-registry.sh (garde CI)",
-    "updated": "2026-10-14"
+    "updated": "2026-10-18"
   },
   "_shared_exceptions": [
     {
@@ -1093,6 +1093,34 @@
       "dependencies": [
         "BC-02",
         "BC-34"
+      ]
+    },
+    {
+      "code": "BC-37",
+      "name": "FARM OS",
+      "context": "FarmOs",
+      "responsibility": "Verticale agricole Farm OS (mission Farm OS) : exploitations et parcelles, cycles culturaux et calendrier des travaux, travailleurs et equipes, intrants et stock, materiel agricole, cheptel, recoltes et tracabilite, achats et ventes, couts et rentabilite, tableau de bord d'exploitation. Module requis : rh (employes, roles, permissions). Optionnels : geo, planning, notifications, fleet, billing, accounting, expense, crm, catalog, ai. Modularite INTERNE par capacites (table farm_capabilities) — aucun systeme de roles, de tenants ni de provisioning propre (reutilisation de SolutionActivator / ModuleRegistry / EmployeeModuleGrant).",
+      "owner": "Agent 37 — BC-FARM OS",
+      "priority": "P1",
+      "status": "in_progress",
+      "paths": [
+        {
+          "path": "api/app/Modules/FarmOs",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/farm_os.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\FarmOs\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-04"
       ]
     },
     {
