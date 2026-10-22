@@ -42,7 +42,23 @@ concurrency:
   # quand le slot se libère, aucun calcul parti n'est annulé par un autre
   # coverage. Durée de feedback coverage allongée : acceptable (informatif).
   # #2131 (main) reste respecté : pas d'annulation d'un run main en cours.
-  group: coverage-gate-serialized
+  #
+  # Issue #8718 (ecart T-1) — CORRECTION 2026-10-22. Le groupe GLOBAL
+  # (`coverage-gate-serialized`), même avec `cancel-in-progress: false`,
+  # produisait exactement le defaut que l'audit reproche : sur `main`, chaque
+  # push remplacait le run « pending » du slot unique. GitHub ne fait que
+  # remplacer un run *pending* (il n'annule pas un run *in_progress*) : les
+  # push rapproches (pattern admin merge, rafales de merges d'agents)
+  # laissaient donc une file de runs `cancelled` avec **0 job execute** —
+  # constate sur les runs 39719291538, 39718728513, 39711349299 (0 job chacun,
+  # workflow `push`/`main`). Le check requis « Backend Coverage » ne concluait
+  # alors jamais, et la couverture n'etait jamais attestee.
+  #
+  # La serialisation est conservee, mais **par ref et par evenement** : un run
+  # n'est plus remplace que par un push sur la MEME ref, ce qui garde
+  # l'objectif #6928 (un seul slot pcov a la fois par branche, pas de famine
+  # des runners) tout en laissant le run de `main` atteindre un verdict.
+  group: coverage-gate-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: false
 
 # Pour activer comme required check :
