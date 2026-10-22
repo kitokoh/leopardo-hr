@@ -1,7 +1,7 @@
 # 10 — Rapport final « Leopardo Public »
 
-**Base :** `main` @ `f8a43a423` · **Date :** 2026-10-21
-**PR de cet incrément :** [#8818](https://github.com/kitokoh/leopardo-hr/pull/8818) · **Branche :** `fix/8762-geolocation-permissions-policy`
+**Base :** `main` @ `ebdacdbd2` · **Date :** 2026-10-22 (voir §11 pour la mise à jour de vérification)
+**PR de cet incrément :** [#8818](https://github.com/kitokoh/leopardo-hr/pull/8818) — **fusionnée** dans `main` en `ebdacdbd2` · **Branche :** `fix/8762-geolocation-permissions-policy` (supprimée après fusion)
 **PR fondatrice (fusionnée) :** [#8763](https://github.com/kitokoh/leopardo-hr/pull/8763) — `feat/8758-leopardo-public-gateway`, mergée en `0c93465b4`
 **Issues :** #8758 (fermée), #8760 (fermée), #8759 / #8761 / #8762 (ouvertes)
 
@@ -177,3 +177,109 @@ d'agent écrasé.**
 3. Traiter la dette CI `Déploiement aligné (dev)` / `(prod)` dans un lot dédié.
 4. Étendre l'E2E géolocalisation aux autres surfaces publiques (`/restaurants`,
    `/boutiques`) qui exposent le même bouton.
+
+---
+
+## 11. Mise à jour de vérification — `main` @ `ebdacdbd2` (2026-10-22)
+
+> Section **ajoutée** par le run de vérification. Les §0–§10 ci-dessus sont conservés
+> tels quels (travail d'autres agents) ; ce qui suit les **corrige ou les complète**.
+
+### 11.1 Synchronisation
+
+`git fetch --all --prune` + `git pull --ff-only origin main` : `main` **à jour** sur
+`ebdacdbd2`. La branche `feat/8758-leopardo-public-gateway` n'existe **plus** ni en local
+ni en distant (supprimée par GitHub à la fusion de #8763, puis localement).
+**Aucun travail d'agent écrasé** : les 23 commits arrivés depuis `0c93465b4` sont tous
+présents et intacts.
+
+### 11.2 `PublicContactJourneyTest` : n'existe pas
+
+Le fichier `api/tests/Feature/Platform/PublicContactJourneyTest.php` **n'existe nulle part
+dans le dépôt** (`find api/tests -name '*Journey*'`). Ce n'est **pas** une régression : il
+n'a jamais été poussé (le lot local du run précédent avait été archivé hors dépôt, cf. §1).
+Sa couverture est assurée par deux suites réelles, toutes deux vertes :
+`PublicContactRequestTest` et `PublicDiscoveryTest` (qui inclut `VtcPublicDiscoveryTest`).
+
+### 11.3 Tests réellement exécutés dans ce run (sorties mesurées)
+
+| Commande | Résultat réel |
+|---|---|
+| `php artisan test --filter=PublicContactRequestTest` | **10 passed** (35 assertions) |
+| `php artisan test --filter=PublicDiscoveryTest` | **32 passed** (143 assertions) — inclut `VtcPublicDiscoveryTest` |
+| `php artisan test --filter='PublicParcoursEndToEndTest\|PublicConversationTest'` | **37 passed** (124 assertions) |
+| `npx jest src/app/decouvrir` | **21 passed**, 3 suites |
+| `npm run typecheck` (`tsc --noEmit`) | exit 0, 0 erreur |
+| `npm run lint` (`eslint src --max-warnings 0`) | exit 0, 0 warning |
+| `npm run lint:e2e` (`eslint e2e --max-warnings 0`) | exit 0, 0 warning |
+| `npm run check:mojibake` | `OK — no double-encoded UTF-8 found` |
+| `npm run check:assets` | `5 asset(s) OK` |
+| `npm run check:orphans` | `27 pages (landing) : toutes sont liées en interne` |
+| `npm run check:french-copy` | `OK — aucune forme interdite` |
+| `node shared/i18n/validators/validate.js` | `I18N_VALIDATION_OK (4 locales)` |
+| `bash dev-hub/tools/check-i18n-catalog-parity.sh` | `parité i18n OK (backend api/lang, shared/i18n, ARB mobile — 4 langues)` |
+| `python3 dev-hub/tools/check-i18n-locale-parity.py` | fr/en/ar/tr : **6961 clés**, 0 manquante, 0 surnuméraire |
+| `node dev-hub/tools/check-i18n-diff.js main HEAD` | `nothing to check` (aucune surface à risque modifiée) |
+
+**Environnement local** : PostgreSQL 15 démarré, et `/etc/hosts` complété par
+`127.0.0.1 pgsql` — `tests/TestCase.php:106` bascule l'hôte sur le nom de service Docker
+`pgsql` dès qu'on tourne dans un conteneur hors CI. **Aucune modification du dépôt** pour ça.
+
+### 11.4 E2E navigateur : présents, non réécrits
+
+Les deux specs existent déjà sur `main` et couvrent exactement le périmètre demandé :
+
+- `front/web/e2e/leopardo-public-geolocation.spec.ts` (203 lignes, **5 scénarios**) :
+  autorisation accordée (`near=36.75380,3.05880`, `radius_km` borné 0–50, position jamais
+  dans l'URL partageable), effacement de la position, **refus** (message explicite, aucun
+  `near` émis), **repli manuel ville/zone après refus**, navigateur sans API géoloc.
+- `front/web/e2e/leopardo-public-parcours.spec.ts` (263 lignes) : découverte SSR, type
+  inconnu → 422, aucun faux lien de fiche, DTO sans champ interne, état vide, fiches
+  Retail/VTC fail-closed, conversation (401 → connexion, fil d'un autre client → 404).
+
+Aucun test E2E n'a été réécrit : ils étaient substantiellement corrects.
+
+### 11.5 Classification CI de `main` @ `ebdacdbd2`
+
+**79 check-runs, 11 non-verts** — et **aucun n'est causé par #8763 ni #8818** :
+
+| Check | Conclusion | Classement |
+|---|---|---|
+| `Déploiement aligné (dev)` ×2 | failure | **Dette préexistante** — déjà en échec sur `f8a43a423`, avant #8818 |
+| `Déploiement aligné (prod)` ×2 | failure | **Dette préexistante** — idem |
+| `Sonde prod + watchdog` ×3 | failure | **Infra prod** (watchdog de disponibilité), hors périmètre |
+| `Backend Coverage (PHP 8.4 + PostgreSQL 16)` | cancelled | **Annulation** (run concurrent), pas un échec |
+| `Rapport d'état des checks (#7480)` | queued | **En vol** au moment du relevé |
+| `Rattraper la prod Render si en retard sur main (#8092)` | queued | **En vol** |
+| `Re-dispatch deploy-main si dev en retard` | queued | **En vol** |
+
+**Améliorations constatées** (dette résorbée par d'autres agents entre-temps) :
+`Backend (PHP 8.4 + PostgreSQL 16 + Redis 7)` était en **failure** sur `f8a43a423` **et**
+sur `0c93465b4` (fusion de #8763) — il est **vert** sur `ebdacdbd2` (corrigé par #8796).
+Les 8 `Build Debug leopardo_*` en échec sur `0c93465b4` sont également **verts** sur
+`ebdacdbd2` (corrigés par #8776 / #8790).
+
+**Verdict :** `main` est **vert sur tout ce qui touche le parcours public** (Frontend
+ESLint+TS, Web Build/Lint/E2E, PHPStan Strict level 8, PHPStan Modules Architecture,
+Hygiene Guards, TruffleHog, Lighthouse, Web Marketing Funnel E2E). Les échecs restants
+sont de l'infra de déploiement/sonde prod, **sans lien** avec ce périmètre.
+
+### 11.6 Statuts après ce run
+
+| Statut | Éléments |
+|---|---|
+| **Implémenté** | Rien de nouveau dans ce run — le parcours public est déjà livré sur `main` (#8763, #8760, #8802, #8808, #8818) |
+| **Testé** | 79 tests backend + 21 Jest + 7 gardes + 4 contrôles i18n, **tous verts** (§11.3) ; E2E géoloc/parcours présents (§11.4) |
+| **Intégré** | #8763 et #8818 **fusionnées dans `main`** ; branche de travail supprimée |
+| **Déployé** | ❌ Non — aucun déploiement déclenché par ce run |
+| **Disponible pour les utilisateurs** | ⚠️ **Code sur `main`**, mais la mise à disposition dépend du pipeline de déploiement, dont les checks `Déploiement aligné (dev)/(prod)` sont **en échec préexistant** |
+
+### 11.7 Ce qui reste ouvert
+
+1. **#8759 et #8761 restent ouvertes** : leur périmètre est couvert par le code déjà
+   fusionné (`item.url`, `meta.actions`, CTA conditionnels fail-closed), mais la
+   **décision de clôture** revient au propriétaire — ce run ne ferme pas d'issue.
+2. **Dette CI de déploiement** (`Déploiement aligné (dev)/(prod)`, `Sonde prod + watchdog`) :
+   préexistante, non masquée, non corrigée ici — elle relève d'un lot d'infra dédié.
+3. **Aucune PR de correctif ouverte** : aucun échec CI n'étant imputable à #8763/#8818,
+   il n'y a rien à corriger.
