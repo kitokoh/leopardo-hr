@@ -22,6 +22,7 @@
     "api/routes/modules/crm.php": "tenant",
     "api/routes/modules/dashboard.php": "tenant",
     "api/routes/modules/expense.php": "tenant",
+    "api/routes/modules/farm_os.php": "tenant",
     "api/routes/modules/growth.php": "tenant",
     "api/routes/modules/hr_app.php": "tenant",
     "api/routes/modules/hr_extended.php": "tenant",

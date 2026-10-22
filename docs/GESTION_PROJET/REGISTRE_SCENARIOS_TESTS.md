@@ -1762,6 +1762,110 @@ restent les gates applicables.
   avertissement, révocation via `DELETE /edge/{id}`).
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
   partagé `devices.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+
+## Mise à jour 2026-10-16 — verticale agricole Farm OS (BC-37@@FARM@@, PR #8572, issues #8560-#8564)
+
+- **Surface API** : nouvelle surface tenant `/api/v1/farm/*` (27 routes, `api/routes/modules/farm_os.php`)
+  — réglages (`PUT /farm/activities`, `PUT /farm/capabilities`, `GET /farm/capabilities/available`),
+  `GET /farm/dashboard`, `GET|POST /farm/sites`, `GET|POST /farm/parcels`
+  (+ `GET /farm/parcels/{id}/history`), `GET|POST /farm/crop-cycles`
+  (+ `POST /farm/crop-cycles/{cycle}/close`), `GET|POST /farm/operations` (+ `/today`, `/late`,
+  `/start`, `/complete`, `/skip`, `/cancel`, `/assign`, `/progress`, `/report-problem`).
+  Toutes derrière le gate `module.farm_os` (feature flag `companies.features.farm_os`,
+  fail-closed ⇒ 403 sans le flag). Aucun contrat existant n'est modifié.
+
+- **Scénarios attendus (À EXÉCUTER en CI — non exécutés dans cet environnement, cf. limites) :**
+
+| Cas | Attendu |
+|---|---|
+| requête `/api/v1/farm/*` sans `companies.features.farm_os` | 403 (gate module, fail-closed) |
+| outil métier non activé (`farm_capabilities.enabled = false`), appel **direct** de l'API | 403 (gating serveur, pas seulement UI) |
+| parcelle avec `area_value` sans `area_unit` (ou l'inverse) | 422 |
+| parcelle `area_source = measured` **sans** géométrie stockée | 422 (ADR-FARM-0003) |
+| parcelle `area_source = measured` **avec** géométrie | 201, `geometry_available = true` |
+| superficie saisie sans `area_source` | 201, provenance enregistrée `declared` (jamais `measured` par déduction) |
+| planifier `fertilization` / `crop_protection` sans capacité `stocks_inputs` | 403 |
+| opération `planned` → `done` directement | 422 (`INVALID_TRANSITION`) |
+| modification d'une opération `done` (`/progress`) | 422 (`OPERATION_IMMUTABLE`) |
+| `cancel` d'une opération `in_progress` sans motif | 422 (motif requis) |
+| rejeu `POST /farm/sites/{site}/operations` avec le même `client_operation_id` | même opération renvoyée, **une seule ligne persistée** |
+| `PUT /farm/activities` : ajout d'une activité, retrait d'une autre | ajout idempotent ; retrait = clôture `ended_at`, **aucune donnée supprimée** |
+| valeur hors registre fermé (activité, `op_type`, `area_unit`) | 422 (allowlist fail-closed) |
+| ressource d'un autre tenant | 404/403 uniforme, aucune fuite inter-tenant |
+| `GET /farm/dashboard` | sections filtrées par capacités RÉELLEMENT activées + `pending_capabilities` pour les modules non livrés (jamais de zéro trompeur) |
+
+- **Couverture livrée et RÉELLEMENT EXÉCUTÉE (domaine pur, sans base)** :
+  `api/tests/Unit/Modules/FarmOs/` — `FarmAreaGuardTest` (cohérence valeur/unité, `measured` sans
+  géométrie refusé, défaut `declared`, conversion m²), `FarmCapabilityRecommenderTest` (profil
+  végétal sans cheptel, éleveur sans irrigation, socle toujours proposé, valeurs inconnues
+  ignorées), `FarmOperationStatusTest` (machine à états fermée, opération close immuable),
+  `FarmOsManifestTest` (identité `farm_os`/`agriculture`, dépendance dure `rh` seule, permissions
+  `farm.*`, 13 capacités) → **23 tests, 85 assertions, OK** (PHPUnit 11.5, bootstrap PSR-4 autonome,
+  PHP 8.2 local) ; `php -l` → 0 erreur sur les 35 fichiers Farm OS.
+
+- **Limites déclarées** : `composer install` impossible dans l'environnement de la session (vendor
+  absent ; `pdo_pgsql`, `redis`, `imagick` et PostgreSQL indisponibles) ⇒ **aucun scénario HTTP/feature
+  de ce tableau n'a été exécuté** ; ils restent à couvrir par `api/tests/Feature/FarmOs/**` sur
+  runner CI. L'isolation multi-tenant et le gating par permission ont été vérifiés par lecture du
+  socle (`BelongsToCompany`, `TenantManager`, `EmployeeModuleGrant`), **pas par exécution**.
+
+- **Surface web / mobile** : aucune page web ni clé ARB Farm OS dans cette tranche ⇒ aucun scénario
+  Jest/Flutter nouveau requis. Onboarding (étapes front) et application mobile agricole restent à
+  concevoir après audit (Phase 4 de la mission).
+
+## Mise à jour 2026-10-16 (2) — Farm OS étape 4 : PROVISIONNEMENT de l'espace (BC-37, PR #8572)
+
+- **Surface API ajoutée** : `POST /api/v1/farm/provision` (`api/routes/modules/farm_os.php`,
+  `FarmSettingsController::provision`) — la surface tenant `/api/v1/farm/*` passe de 27 à **28 routes**.
+  Toujours derrière le gate `module.farm_os` (fail-closed ⇒ 403 sans le flag). Aucun contrat existant
+  n'est modifié ; réutilise le mécanisme d'activation existant (`SolutionActivator::activateWithDependencies`)
+  — **aucun second système de tenants, rôles, permissions ou provisioning**.
+
+- **Scénarios attendus (À EXÉCUTER en CI — non exécutés dans cet environnement, cf. limites) :**
+
+| Cas | Attendu |
+|---|---|
+| `POST /farm/provision` avec une activité valide et aucun outil décidé | 200 ; flag `farm_os` posé ; outil = proposition du recommandeur ; refus explicites persistés pour le reste |
+| rejeu du même `POST /farm/provision` | 200, statut `already_active` ; **aucune** ligne dupliquée (`farm_activities`, `farm_capabilities`) |
+| `POST /farm/provision` avec `capabilities: {parcels_crops: false}` | outil refusé persisté et **respecté** (jamais réactivé par le recommandeur) |
+| refus explicite rejoué une seconde fois | le refus **reste** un refus (idempotence ≠ réinitialisation) |
+| profil `cereal_crops` uniquement | jamais de capacité `livestock` ; jamais d'action « cheptel » dans `next_actions` |
+| profil `cattle` uniquement | capacité `livestock` activée ; jamais de capacité `irrigation` |
+| `POST /farm/provision` sans `activities` ou avec une valeur hors registre fermé | 422 (allowlist fail-closed) |
+| `POST /farm/provision` puis relecture de la `checklist` | `farm_first_site` / `farm_first_parcel` / `farm_first_operation` à `false` — le provisioning ne prétend jamais avoir créé de donnée métier |
+| provisioning de l'exploitation A | aucune ligne `farm_*` pour l'exploitation B ; `farm_os` non activé pour B (isolation multi-tenant) |
+
+- **Couverture livrée et RÉELLEMENT EXÉCUTÉE (domaine pur, sans base)** : `api/tests/Unit/Modules/FarmOs/`
+  + `api/tests/Unit/Core/Feature/` → **43 tests, 741 assertions** (PHPUnit 11.5, PHP 8.2 local) ;
+  `php -l` → 0 erreur sur les fichiers modifiés. Les 2 échecs restants de cette sélection
+  (`ModuleRegistryGuardTest` clé « fuel » ; `SetupInterviewPlannerTest` mapping `commerce`→`retail`)
+  sont **pré-existants sur `main`** (run CI `38855132171`, commit `bb0d4153`) et hors périmètre Farm OS.
+
+- **Contrat de provisioning couvert par tests feature à exécuter en CI** (aucune base ici) :
+  `api/tests/Feature/Modules/FarmOs/FarmProvisioningTest.php` — 9 cas (activation, idempotence,
+  non-destruction d'un refus, modularité végétal/élevage, checklist honnête, actions suivantes bornées
+  aux outils activés, isolation multi-tenant).
+
+- **Limites déclarées** (mise à jour 2026-10-19) : PostgreSQL 15 + PostGIS sont désormais
+  disponibles dans l'environnement de session (`php8.2-pgsql`, base `leopardo_test`) ⇒ **les
+  scénarios Feature Farm OS sont exécutés localement** : `tests/Unit/Modules/FarmOs` **87 tests /
+  472 assertions** et `tests/Feature/Modules/FarmOs` **104 tests / 249 assertions**, 0 échec.
+  Invocation locale : `CI=true DB_HOST=127.0.0.1 php vendor/bin/phpunit tests/Feature/Modules/FarmOs`
+  (`CI=true` neutralise la réécriture d'hôte `isRunningInsideDocker()` de `tests/TestCase.php`).
+  Reste **non exécutable localement** : `vendor/bin/pint` exige PHP ≥ 8.3 (session en 8.2) ⇒ la
+  conformité de style est vérifiée en CI par le job `Backend Quality` ; le formatage a toutefois été
+  contrôlé hors CI avec `php-cs-fixer` 3.64 en appliquant les règles du preset Laravel.
+
+- **Suite de régression d'isolation ajoutée (2026-10-19)** : `FarmTenantIsolationTest` (7 cas) couvre
+  récoltes, cheptel, finance et file de synchronisation ; `FarmInputConcurrencyTest` (8 cas) couvre le
+  rejeu du même `client_movement_id`, le refus de surconsommation, l'ajustement absolu convergent et la
+  cohérence `quantity_after` ↔ quantité du lot. **Toute ligne étrangère est insérée en SQL brut puis
+  relue via `crossTenantForPlatformAdmin()`** : `BelongsToCompany` écrase `company_id` à l'écriture
+  (#7646), donc un objet construit en PHP ne prouverait rien.
+  Ces tests ont révélé un **trou d'isolation réel** : `FarmProfitabilityService::linkSale()` acceptait
+  n'importe quel identifiant de lot de récolte ou d'animaux sans vérifier son propriétaire. La garde
+  `FARM_FINANCE_SALE_TARGET_NOT_IN_COMPANY` refuse désormais l'imputation sur une ligne appartenant à
+  un autre tenant.
 - **Surface API (SUPERAPP-P0, #8611)** : nouvelle route publique `GET /api/v1/public/discover`
   (découverte cross-verticale, sans auth, `throttle:shop-public`). Scénarios couverts par
   `api/tests/Feature/Platform/PublicDiscoveryTest.php` : (1) agrégation multi-verticale

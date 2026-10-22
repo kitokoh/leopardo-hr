@@ -555,7 +555,7 @@ final class ModuleRegistry
             'known_order' => 23,
             'description' => 'Solution VTC/taxi (BC-35, VTC-01/#8357 ; gate `module.vtc`) : réservation de courses, dispatch au plus proche chauffeur via le core géospatial `geo` (requis), tarification et suivi.',
         ],
-        'trade' => [
+        'farm_os' => [
             'kind' => 'solution',
             'scope' => 'solution',
             'default' => false,
@@ -567,6 +567,20 @@ final class ModuleRegistry
             'metadata_mirror' => null,
             'horizontal_order' => null,
             'known_order' => 24,
+            'description' => 'Solution agricole Farm OS (BC-37, mission Farm OS ; gate `module.farm_os`) : exploitations et parcelles, cycles culturaux et calendrier des travaux, intrants et stock, materiel, cheptel, recoltes et tracabilite, achats et ventes, couts et rentabilite. Modularite interne par CAPACITES (table farm_capabilities), pas par 13 flags.',
+        ],
+        'trade' => [
+            'kind' => 'solution',
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.36.0',
+            'killable' => true,
+            'platform_flag' => true,
+            'exposed_in_flags' => true,
+            'platform_exposable' => true,
+            'metadata_mirror' => null,
+            'horizontal_order' => null,
+            'known_order' => 25,
             'description' => 'Solution International Trade OS (BC-36, TRADE-001/#8476 ; gate `module.trade`) : commerce international & B2B domestique — sourcing, RFQ, offres, commandes, transport, coûts rendus, documents.',
         ],
     ];
