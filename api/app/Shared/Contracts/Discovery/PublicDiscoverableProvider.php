@@ -36,6 +36,27 @@ interface PublicDiscoverableProvider
     public function type(): string;
 
     /**
+     * Actions RÉELLEMENT prises en charge par cette verticale sur un profil
+     * public (#8761).
+     *
+     * C'est la source de vérité unique exposée au frontend via `meta.actions` :
+     * la passerelle publique n'a donc AUCUNE liste de capacités codée en dur
+     * (un `BOOKING_TYPES` frontend dériverait silencieusement du backend et
+     * afficherait un bouton inopérant sur une verticale non prête).
+     *
+     * Valeurs reconnues aujourd'hui :
+     *   - `contact`   : la verticale accepte une demande de contact publique ;
+     *   - `booking`   : réservation prise en charge par un service métier réel ;
+     *   - `order`     : commande publique prise en charge (restauration, retail).
+     *
+     * Un provider qui n'implémente pas ce comportement expose une liste VIDE :
+     * fail-closed, aucune action n'est annoncée par défaut.
+     *
+     * @return list<string>
+     */
+    public function supportedActions(): array;
+
+    /**
      * Entités PUBLIQUES de la verticale correspondant aux filtres.
      *
      * Clés de filtre reconnues (toutes optionnelles) :

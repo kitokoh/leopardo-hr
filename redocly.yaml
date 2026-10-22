@@ -1,0 +1,9 @@
+extends:
+  - recommended
+
+# Ces sept paires sont désambiguïsées par les contraintes Laravel whereNumber()
+# ou par un alias HTTP déprécié. Redocly ne tient pas compte de ces contraintes
+# d'exécution dans no-ambiguous-paths. Elles sont contrôlées par
+# dev-hub/tools/check-openapi-ambiguity-allowlist.py.
+rules:
+  no-ambiguous-paths: off

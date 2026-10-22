@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "reason": "False positives Redocly: Laravel disambiguates these routes with numeric constraints or a deprecated alias.",
+  "pairs": [
+    {
+      "paths": ["/attendance/geo-sessions/{id}", "/attendance/{attendanceLog}/punch-photo"],
+      "constraint": "geo-sessions/{id} uses whereNumber(id); punch-photo alias uses whereNumber(attendanceLog)."
+    },
+    {
+      "paths": ["/delivery/deliveries/{delivery}/tracking-link", "/delivery/deliveries/routes/{route}"],
+      "constraint": "Both route identifiers use whereNumber(); the static routes segment is not a delivery identifier."
+    },
+    {
+      "paths": ["/webhooks/fundraising/{provider}", "/webhooks/{webhookEndpoint}/dead-letters"],
+      "constraint": "fundraising provider is a provider slug; webhookEndpoint is numeric in the admin route."
+    },
+    {
+      "paths": ["/webhooks/fundraising/{provider}", "/webhooks/{webhookEndpoint}/test"],
+      "constraint": "fundraising provider is a provider slug; webhookEndpoint is numeric in the admin route."
+    },
+    {
+      "paths": ["/accounting/documents/{document}/checkout", "/accounting/documents/shared/{token}"],
+      "constraint": "document uses whereNumber(); shared token is a non-numeric public token."
+    },
+    {
+      "paths": ["/accounting/documents/shared/{token}", "/accounting/documents/{document}/journal"],
+      "constraint": "document uses whereNumber(); shared token is a non-numeric public token."
+    },
+    {
+      "paths": ["/attendance/{attendanceLog}/punch-photo", "/attendance/day-closures/{id}"],
+      "constraint": "day-closures/{id} uses whereNumber(); punch-photo is a deprecated numeric alias."
+    },
+    {
+      "paths": ["/conversations/public/{thread}", "/conversations/{thread}/participants"],
+      "constraint": "Both {thread} use whereNumber(); 'public' is a literal segment declared before the {thread} group in api/routes/modules/rh.php."
+    },
+    {
+      "paths": ["/conversations/public/{thread}", "/conversations/{thread}/leave"],
+      "constraint": "Both {thread} use whereNumber(); 'public' is a literal segment declared before the {thread} group in api/routes/modules/rh.php."
+    },
+    {
+      "paths": ["/conversations/public/{thread}", "/conversations/{thread}/messages"],
+      "constraint": "Both {thread} use whereNumber(); 'public' is a literal segment declared before the {thread} group in api/routes/modules/rh.php."
+    },
+    {
+      "paths": ["/conversations/public/{thread}", "/conversations/{thread}/reports"],
+      "constraint": "Both {thread} use whereNumber(); 'public' is a literal segment declared before the {thread} group in api/routes/modules/rh.php."
+    },
+    {
+      "paths": ["/conversations/{thread}/participants", "/conversations/blocks/{employee}"],
+      "constraint": "Both {thread} and {employee} use whereNumber(); 'blocks' is a literal segment declared before the {thread} group."
+    }
+  ]
+}

@@ -128,7 +128,15 @@ const nextConfig: NextConfig = {
         },
         {
           key: "Permissions-Policy",
-          value: "geolocation=(), microphone=(), camera=()",
+          // #8762 — `geolocation=(self)` et non `()` : la passerelle publique
+          // `/decouvrir` propose « Autour de moi » (`navigator.geolocation`).
+          // Avec `geolocation=()`, Chromium refusait l'API au niveau du
+          // document (`Permissions policy violation`, code 1) AVANT même la
+          // demande d'autorisation utilisateur : le bouton ne pouvait donc
+          // jamais fonctionner en production. L'ouverture reste strictement
+          // limitée à NOTRE origine (aucun iframe tiers ne peut demander la
+          // position), et microphone/caméra restent totalement interdits.
+          value: "geolocation=(self), microphone=(), camera=()",
         },
         // #7650 — plus de CSP ici : elle est émise par le proxy en mode
         // enforce avec un nonce par requête (cf. bloc de décision ci-dessus).

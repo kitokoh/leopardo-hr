@@ -42,6 +42,10 @@ export function getFooterHref(sectionIndex: number, linkIndex: number): string |
     '0-8': '/employes',
     '0-9': '/comptabilite',
     '0-10': '/marketing',
+    // SUPERAPP-P0 (#8611) : passerelle publique « Leopardo Public » — point
+    // d'entrée neutre cross-verticale (recherche métier/service/nom, proximité,
+    // fiches publiques). Liée depuis le footer pour ne pas être orpheline (#8075).
+    '0-11': '/decouvrir',
     '1-0': '/docs',
     '1-1': '/guides/rh-startup',
     '1-2': '/blog',

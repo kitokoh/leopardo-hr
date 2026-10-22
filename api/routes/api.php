@@ -73,6 +73,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformTeamController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUsersController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicContactRequestController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicDiscoveryController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportedCountryController;
@@ -357,6 +358,16 @@ Route::prefix('v1')->group(function (): void {
     // fail-closed (is_public, statut societe, feature verticale).
     Route::middleware(['throttle:shop-public'])->get('/public/discover', [PublicDiscoveryController::class, 'index']);
 
+    // SUPERAPP-P1 (#8760) — contact public « Contacter ce professionnel ».
+    // Route isolee SANS auth ni middleware tenant (patron BC-27/BC-28) : le
+    // tenant destinataire est resolu COTE SERVEUR par (type, slug public)
+    // via les `PublicProfileResolver` des verticales, fail-closed (404
+    // uniforme : impossible d'enumerer les profils ou de viser une entreprise
+    // arbitraire en changeant un identifiant). Idempotence par
+    // `idempotency_key` : un retry reseau ne notifie pas deux fois le pro.
+    Route::middleware(['throttle:shop-public'])
+        ->post('/public/contact-requests', [PublicContactRequestController::class, 'store']);
+
     Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
         Route::get('/auth/me', [AuthController::class, 'me']);
         Route::patch('/auth/profile', [AuthController::class, 'updateProfile']);
@@ -525,6 +536,8 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/catalog_public.php';
     // BC-17 #7807/#7808 — marketplace publique Leopardo Marché (routes isolées, sans auth)
     require __DIR__.'/modules/market_public.php';
+    // BC-36 P2-01 #8802 — fiche publique des entreprises de commerce (routes isolées, sans auth)
+    require __DIR__.'/modules/trade_public.php';
     require __DIR__.'/modules/solutions.php';
 
     // Multi-App dedicated route modules
@@ -641,23 +654,23 @@ Route::prefix('v1')->group(function (): void {
         // instance à une autre sans déploiement.
         Route::prefix('payments')->group(function (): void {
             Route::get('/provider-types', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'types'])
-                ->middleware('platform.permission:companies.view');
+                ->middleware('platform.permission:payments.view');
             Route::get('/provider-instances', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'indexInstances'])
-                ->middleware('platform.permission:companies.view');
+                ->middleware('platform.permission:payments.view');
             Route::post('/provider-instances', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'storeInstance'])
-                ->middleware('platform.permission:companies.manage');
+                ->middleware('platform.permission:payments.manage');
             Route::patch('/provider-instances/{instance}', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'updateInstance'])
-                ->whereNumber('instance')->middleware('platform.permission:companies.manage');
+                ->whereNumber('instance')->middleware('platform.permission:payments.manage');
             Route::patch('/provider-instances/{instance}/status', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'setInstanceStatus'])
-                ->whereNumber('instance')->middleware('platform.permission:companies.manage');
+                ->whereNumber('instance')->middleware('platform.permission:payments.manage');
             Route::post('/webhook-endpoints', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'storeWebhookEndpoint'])
-                ->middleware('platform.permission:companies.manage');
+                ->middleware('platform.permission:payments.manage');
             Route::get('/transactions', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'transactions'])
-                ->middleware('platform.permission:companies.view');
+                ->middleware('platform.permission:payments.view');
             Route::get('/reconciliations', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'reconciliations'])
-                ->middleware('platform.permission:companies.view');
+                ->middleware('platform.permission:payments.view');
             Route::post('/reconciliations', [\App\Modules\Paiements\Interfaces\Api\V1\Controllers\PlatformPaymentProviderController::class, 'runReconciliation'])
-                ->middleware('platform.permission:companies.manage');
+                ->middleware('platform.permission:payments.manage');
         });
 
         Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show'])->middleware('platform.permission:companies.view');

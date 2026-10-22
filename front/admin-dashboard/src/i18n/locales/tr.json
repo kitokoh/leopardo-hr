@@ -1738,7 +1738,6 @@
     "account": "Hesabim",
     "notFound": "Sayfa bulunamadi",
     "travelAgency": "Seyahat acentesi",
-    "trade": "Uluslararası ticaret",
     "emailTemplates": "E-postalar",
     "settings": "Ayarlar",
     "messaging": "Mesajlaşma"
@@ -5079,94 +5078,6 @@
       "deleteConfirm": "Bu öğe silinsin mi?"
     }
   },
-  "trade": {
-    "overview": {
-      "title": "Genel bakış",
-      "subtitle": "Açık dosyalar, fiyat talepleri, teklifler ve devam eden siparişler.",
-      "scopeNotice": "Yalnızca sayaçlar: müşterilerin fiyatları, teklifleri, mesajları ve belgeleri platform yönetimine açılmaz.",
-      "loadError": "Dikey takibi yüklenemedi.",
-      "companiesScanned": "İncelenen şirketler",
-      "companiesWithTrade": "Trade dikeyine sahip",
-      "companiesWithActivity": "Ticari faaliyeti olan",
-      "integrationsUnconfigured": "Yapılandırılmamış entegrasyonlar",
-      "deals": "Açık dosyalar",
-      "rfqs": "Aktif fiyat talepleri",
-      "quotes": "Bekleyen teklifler",
-      "orders": "Devam eden siparişler",
-      "integrations": "Entegrasyonlar",
-      "integrationsDegraded": "Bazı işlevler yapılandırılmamış adaptörlere bağlıdır ve kullanılamaz durumdadır."
-    },
-    "common": {
-      "retry": "Yeniden dene",
-      "noData": "Veri yok"
-    },
-    "counts": {
-      "deals": "Dosyalar (deals)",
-      "rfqs": "Fiyat talepleri (RFQ)",
-      "quotes": "Ticari teklifler",
-      "orders": "Siparişler"
-    },
-    "integrations": {
-      "title": "Harici entegrasyonlar",
-      "configured": "yapılandırıldı",
-      "notice": "Yapılandırılmamış bir entegrasyon kullanılamaz olarak gösterilir: hiçbir veri simüle edilmez.",
-      "colKey": "Entegrasyon",
-      "colMode": "Mod",
-      "colState": "Durum",
-      "colReason": "Ayrıntı",
-      "stateOperational": "Çalışıyor",
-      "stateUnconfigured": "Yapılandırılmadı"
-    },
-    "roles": {
-      "title": "Trade iş rolleri"
-    },
-    "title": "Uluslararası ticaret",
-    "subtitle": "Ortak ticari çekirdek üzerinde tedarik, teklifler, siparişler ve teslim maliyeti",
-    "moduleDisabled": "Uluslararası ticaret dikeyi şirketiniz için etkin değil.",
-    "loadError": "Veriler yüklenemedi.",
-    "loading": "Yükleniyor…",
-    "noData": "Veri yok",
-    "retry": "Yeniden dene",
-    "create": "Oluştur",
-    "search": "Ara…",
-    "sourcing": {
-      "title": "Tedarik ve fiyat talepleri",
-      "subtitle": "RFQ oluşturun, tedarikçileri davet edin, gelen teklifleri karşılaştırın."
-    },
-    "sales": {
-      "title": "Satış ve teklifler",
-      "subtitle": "Verilen teklifler, sürümler, durumlar ve müşteri karşı tarafları."
-    },
-    "orders": {
-      "title": "Siparişler ve sevkiyatlar",
-      "subtitle": "Alım ve satım siparişleri, sevkiyatlar ve geçişler."
-    },
-    "transport": {
-      "title": "Taşımacılık",
-      "subtitle": "Fiyat talepleri ve taşıyıcı yanıtları."
-    },
-    "costs": {
-      "title": "Maliyetler ve gümrük",
-      "subtitle": "Kalem bazında teslim maliyeti ve belge hazırlığı.",
-      "disclaimer": "Gösterge niteliğinde tahmin — resmî gümrük beyanı veya uygunluk garantisi değildir."
-    },
-    "catalog": {
-      "title": "Ürün kataloğu",
-      "subtitle": "Ürünler, teknik özellikler ve ticari koşullar."
-    },
-    "settings": {
-      "title": "Trade ayarları",
-      "subtitle": "Ticari profil, hizmet verilen pazarlar ve koşullar."
-    },
-    "columns": {
-      "reference": "Referans",
-      "title": "Başlık",
-      "status": "Durum",
-      "createdAt": "Oluşturulma",
-      "destination": "Varış",
-      "incoterm": "Incoterm"
-    }
-  },
   "travel": {
     "travel.ageCategory.adult": "Yetişkin",
     "travel.ageCategory.child": "Çocuk",
@@ -6734,7 +6645,6 @@
       "trade": "Trade"
     },
     "hero3d": {
-      "hint": "Keşfetmek için bir modüle tıklayın",
       "demo": "Demo",
       "cagnottes": "Kampanyalar",
       "freeTrial": "Ücretsiz deneme"
@@ -7689,6 +7599,71 @@
       "titleSuffix": "Dayanışma kampanyası"
     }
   },
+  "trade": {
+    "title": "Uluslararası ticaret",
+    "subtitle": "Ortak ticari çekirdek üzerinde tedarik, teklifler, siparişler ve teslim maliyeti",
+    "moduleDisabled": "Uluslararası ticaret dikeyi şirketiniz için etkin değil.",
+    "loadError": "Veriler yüklenemedi.",
+    "loading": "Yükleniyor…",
+    "noData": "Veri yok",
+    "retry": "Yeniden dene",
+    "create": "Oluştur",
+    "search": "Ara…",
+    "overview": {
+      "title": "Genel bakış",
+      "subtitle": "Açık dosyalar, fiyat talepleri, teklifler ve devam eden siparişler.",
+      "deals": "Açık dosyalar",
+      "rfqs": "Aktif fiyat talepleri",
+      "quotes": "Bekleyen teklifler",
+      "orders": "Devam eden siparişler",
+      "integrations": "Entegrasyonlar",
+      "integrationsDegraded": "Bazı işlevler yapılandırılmamış adaptörlere bağlıdır ve kullanılamaz durumdadır."
+    },
+    "integrations": {
+      "title": "Harici entegrasyonlar",
+      "notice": "Yapılandırılmamış bir entegrasyon kullanılamaz olarak gösterilir: hiçbir veri simüle edilmez.",
+      "stateOperational": "Çalışıyor",
+      "stateUnconfigured": "Yapılandırılmadı",
+      "configured": "yapılandırıldı"
+    },
+    "sourcing": {
+      "title": "Tedarik ve fiyat talepleri",
+      "subtitle": "RFQ oluşturun, tedarikçileri davet edin, gelen teklifleri karşılaştırın."
+    },
+    "sales": {
+      "title": "Satış ve teklifler",
+      "subtitle": "Verilen teklifler, sürümler, durumlar ve müşteri karşı tarafları."
+    },
+    "orders": {
+      "title": "Siparişler ve sevkiyatlar",
+      "subtitle": "Alım ve satım siparişleri, sevkiyatlar ve geçişler."
+    },
+    "transport": {
+      "title": "Taşımacılık",
+      "subtitle": "Fiyat talepleri ve taşıyıcı yanıtları."
+    },
+    "costs": {
+      "title": "Maliyetler ve gümrük",
+      "subtitle": "Kalem bazında teslim maliyeti ve belge hazırlığı.",
+      "disclaimer": "Gösterge niteliğinde tahmin — resmî gümrük beyanı veya uygunluk garantisi değildir."
+    },
+    "catalog": {
+      "title": "Ürün kataloğu",
+      "subtitle": "Ürünler, teknik özellikler ve ticari koşullar."
+    },
+    "settings": {
+      "title": "Trade ayarları",
+      "subtitle": "Ticari profil, hizmet verilen pazarlar ve koşullar."
+    },
+    "columns": {
+      "reference": "Referans",
+      "title": "Başlık",
+      "status": "Durum",
+      "createdAt": "Oluşturulma",
+      "destination": "Varış",
+      "incoterm": "Incoterm"
+    }
+  },
   "vtc": {
     "title": "VTC & taksi",
     "subtitle": "Yolculuk ataması ve gerçek zamanlı sürücü takibi",
@@ -7852,6 +7827,8 @@
     "pilot": "Pilot erişim iste",
     "soon": "Çok yakında",
     "offlineBadge": "Çevrimdışı çalışır",
+    "offlineBadgeVerified": "Çevrimdışı doğrulandı",
+    "offlineImplementedHint": "Çevrimdışı kuyruk bağlı — ağ kesintisi senaryosu henüz CI'da yeniden oynatılmadı",
     "qrAria": "Kurulum QR kodunu göster",
     "qrTitle": "Bu cihaza kur",
     "qrHint": "Donatılacak cihazla taratın: kurulum bağlantısı doğrudan açılır.",
@@ -8083,9 +8060,7 @@
       "connection": "Çalışma alanına bağlanma",
       "permissions": "Gerekli izinler",
       "setup": "Devreye alma"
-    },
-    "offlineBadgeVerified": "Çevrimdışı doğrulandı",
-    "offlineImplementedHint": "Çevrimdışı kuyruk bağlı — ağ kesintisi senaryosu henüz CI'da yeniden oynatılmadı"
+    }
   },
   "marketingOs": {
     "title": "Marketing OS",
@@ -8455,5 +8430,133 @@
     "report": {
       "reasonsHint": "harassment, spam, inappropriate_content, threat, impersonation, other"
     }
+  },
+  "discovery": {
+    "title": "Yakınınızdaki bir profesyoneli bulun",
+    "description": "Bir meslek, hizmet veya isim arayın, ardından profesyonelle doğrudan iletişime geçin.",
+    "searchLabel": "Arama",
+    "searchPlaceholder": "Meslek, hizmet, isim…",
+    "search": "Ara",
+    "cityLabel": "Şehir veya bölge",
+    "cityPlaceholder": "Örn. Kazablanka",
+    "categoryLabel": "Kategori",
+    "categoryAll": "Tüm kategoriler",
+    "nearMe": "Yakınımda",
+    "locating": "Konum alınıyor…",
+    "nearActive": "Konumunuz çevresindeki sonuçlar",
+    "clearNear": "Konumu temizle",
+    "geoDenied": "Konum izni verilmedi — konumunuza erişime izin verin veya bir şehir girin.",
+    "geoUnsupported": "Bu cihazda konum kullanılamıyor.",
+    "noResults": "Aramanızla eşleşen profesyonel yok.",
+    "loadError": "Sonuçlar yüklenemedi. Tekrar deneyin.",
+    "retry": "Tekrar dene",
+    "loading": "Yükleniyor…",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "pageLabel": "Sayfa",
+    "resultsCount": "sonuç",
+    "distanceSuffix": "km",
+    "viewProfile": "Profili gör",
+    "book": "Rezervasyon",
+    "bookingUnavailable": "Rezervasyon mevcut değil",
+    "contactUnavailable": "İletişim mevcut değil",
+    "typeShowcase": "Profesyonel",
+    "typeRestaurant": "Restoran",
+    "typeHospitalityProperty": "Konaklama",
+    "typeRetailShop": "Mağaza",
+    "typeVtcOperator": "Taksi / VTC",
+    "shopTitle": "Mağaza",
+    "shopAboutTitle": "Mağaza hakkında",
+    "shopCategoriesTitle": "Kategoriler",
+    "shopProductsCount": "ürün çevrimiçi",
+    "shopRatingSuffix": "değerlendirme",
+    "shopContactTitle": "Mağazayla iletişime geç",
+    "shopNotFoundTitle": "Mağaza bulunamadı",
+    "shopBackToDirectory": "Tüm profesyoneller",
+    "operatorTitle": "VTC operatörü",
+    "operatorAboutTitle": "Operatör hakkında",
+    "operatorEstimateTitle": "Fiyat teklifi isteyin",
+    "operatorEstimateHint": "Ücret, güzergâhınıza göre operatör tarafından hesaplanır.",
+    "operatorNotFoundTitle": "Operatör bulunamadı",
+    "operatorBackToDirectory": "Tüm profesyoneller",
+    "companyTitle": "Uluslararası ticaret",
+    "companyAboutTitle": "Şirket hakkında",
+    "companyImport": "İthalat",
+    "companyExport": "İhracat",
+    "companyDomestic": "İç pazar",
+    "companyNotFoundTitle": "Şirket bulunamadı",
+    "contact": "İletişim",
+    "contactTitle": "Bu profesyonelle iletişime geç",
+    "contactName": "Adınız",
+    "contactEmail": "E-postanız",
+    "contactPhone": "Telefon (isteğe bağlı)",
+    "contactMessage": "Mesajınız",
+    "contactConsent": "Yanıt verebilmesi için iletişim bilgilerimin bu profesyonelle paylaşılmasını kabul ediyorum.",
+    "contactSend": "Gönder",
+    "contactSending": "Gönderiliyor…",
+    "contactCancel": "İptal",
+    "contactClose": "Kapat",
+    "contactSent": "Talebiniz gönderildi.",
+    "contactReference": "Referans",
+    "contactError": "Gönderim başarısız. Bağlantınızı kontrol edip tekrar deneyin.",
+    "contactInvalid": "Lütfen form alanlarını kontrol edin.",
+    "contactNotAvailable": "Bu profesyonel şu anda talep kabul etmiyor.",
+    "order": "Sipariş ver",
+    "orderUnavailable": "Sipariş mevcut değil",
+    "conversationsTitle": "Konuşmalarım",
+    "conversationsEmpty": "Henüz konuşmanız yok. Başlatmak için bir profesyonelin profilinden iletişime geçin.",
+    "conversationsLoadError": "Konuşmalarınız yüklenemedi. Tekrar deneyin.",
+    "conversationOpen": "Konuşmayı aç",
+    "conversationWith": "Şununla konuşma:",
+    "conversationSend": "Gönder",
+    "conversationSending": "Gönderiliyor…",
+    "conversationPlaceholder": "Mesajınızı yazın…",
+    "conversationEmpty": "Henüz mesaj yok.",
+    "conversationLoadMore": "Önceki mesajları yükle",
+    "conversationSendError": "Mesaj gönderilemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+    "conversationUnavailable": "Bu konuşma artık kullanılamıyor.",
+    "conversationLoginRequired": "Konuşmalarınızı görmek için giriş yapın.",
+    "conversationFromClient": "Siz",
+    "conversationFromProfessional": "Profesyonel",
+    "conversationUnread": "Yeni",
+    "conversationBack": "Geri",
+    "conversationStart": "Konuşma başlat",
+    "conversationStarted": "Mesajınız profesyonel gönderildi.",
+    "conversationStartBody": "Merhaba, sizinle iletişime geçmek istiyorum."
+  },
+  "publicInbox": {
+    "pageTitle": "Genel talepler",
+    "pageSubtitle": "Leopardo Public üzerinden gelen müşteriler",
+    "pageDescription": "Genel profilinizden gelen mesajları burada yönetin.",
+    "listTitle": "Konuşmalar",
+    "listEmpty": "Henüz talep yok.",
+    "listEmptyBody": "Müşterilerin genel profilinizden gönderdiği mesajlar burada görünecek.",
+    "listLoading": "Talepler yükleniyor…",
+    "listError": "Talepler yüklenemedi. Tekrar deneyin.",
+    "listRetry": "Tekrar dene",
+    "unread": "Yeni",
+    "fromClient": "Müşteri",
+    "noSlug": "Genel profil",
+    "threadEmpty": "Bu konuşmada mesaj yok.",
+    "threadEmptyBody": "Müşterinin ilk mesajı burada görünecek.",
+    "threadLoading": "Mesajlar yükleniyor…",
+    "threadError": "Mesajlar yüklenemedi. Tekrar deneyin.",
+    "threadNotSelected": "Bir talep seçin",
+    "threadNotSelectedBody": "Görüşmeyi göstermek için soldan bir konuşma seçin.",
+    "threadUnavailable": "Bu konuşma artık kullanılamıyor.",
+    "threadUnavailableBody": "Silinmiş olabilir veya artık erişiminiz olmayabilir.",
+    "backToList": "Taleplere dön",
+    "loadOlder": "Önceki mesajları yükle",
+    "noOlder": "Konuşmanın başına ulaştınız.",
+    "composerLabel": "Müşteriye yanıt ver",
+    "composerPlaceholder": "Yanıtınızı yazın…",
+    "send": "Gönder",
+    "sending": "Gönderiliyor…",
+    "sent": "Mesaj gönderildi.",
+    "sendError": "Mesaj gönderilemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+    "emptyBody": "Mesaj boş olamaz.",
+    "tooLong": "Mesaj {max} karakteri aşamaz.",
+    "unauthenticated": "Oturumunuz sona erdi. Devam etmek için tekrar giriş yapın.",
+    "overloaded": "Çok fazla mesaj gönderildi. Kısa bir süre bekleyip tekrar deneyin."
   }
 }

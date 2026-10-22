@@ -95,6 +95,9 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/vtc',
   // BOS-CHAT (#8751) — messagerie horizontale : zone dashboard.
   '/chat',
+  // BOS-CHAT (#8760) — boîte de réception des demandes publiques : messages de
+  // CLIENTS, contenu commercial et données personnelles de tiers.
+  '/demandes-publiques',
 ];
 
 export function proxy(request: NextRequest) {
@@ -237,6 +240,7 @@ export const config = {
     '/vtc/:path*', // BC-35 VTC (#8349, VTC-07/#8363) console dispatch — gate session
     '/trade-os/:path*', // BC-36 TRADE (TRADE-009/#8484) espace International Trade OS — gate session
     '/chat/:path*', // BOS-CHAT (#8751) messagerie horizontale — gate session
+    '/demandes-publiques/:path*', // BOS-CHAT (#8760) boîte de réception publique — gate session
     // Vitrine landing — ?lang= → en-tête x-vitrine-lang (issue #4004).
     // Routes statiques (exactes) + préfixes dynamiques (source
     // VITRINE_LANG_PREFIXES, garde protected-prefixes.test.ts).

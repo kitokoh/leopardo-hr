@@ -196,8 +196,34 @@ jobs:
           [[ -z "${RENDER_PROD_API_KEY}" ]] && missing+=("secrets.RENDER_PROD_API_KEY")
           [[ -z "${RENDER_PROD_SERVICE_ID}" ]] && missing+=("secrets.RENDER_PROD_SERVICE_ID")
           if (( ${#missing[@]} > 0 )); then
-            echo "::error::Rattrapage prod impossible — ${missing[*]} manquant(s) (#8092, voir docs/ops/RENDER_DEV_PROD_TOPOLOGY.md)."
-            exit 1
+            # AUDIT PHASE 1 (2026-10-21) — decision explicite, plus de `exit 1`.
+            #
+            # Le job echouait DUR quand les secrets Render prod sont absents, donc
+            # a chaque execution horaire depuis la mise en place du job. Ce rouge
+            # permanent n'apprenait rien (aucun code produit n'est en cause), et
+            # surtout il rendait le workflow illisible : un VRAI retard de prod
+            # aurait ete noye dans le meme signal. Or l'audit reproche justement
+            # les `::warning::` silencieux : on ne remplace donc pas l'echec par
+            # un warning discret.
+            #
+            # Critere binaire et documente : sans acces API Render prod, le
+            # rattrapage est IMPOSSIBLE, pas EN ECHEC. On saute en le declarant
+            # dans l'onglet Summary (visible, historique) et dans l'annotation
+            # `::notice::`, et on n'annonce PAS `dispatch_needed`, donc les jobs
+            # en aval ne declenchent rien. Des que les secrets existent, le
+            # comportement d'origine reprend sans modification.
+            echo "::notice title=Rattrapage prod indisponible::${missing[*]} manquant(s) — le rail Render prod n'est pas provisionne (#8092). Rien n'est declenche ; provisionner les secrets reactive ce job sans changement de code."
+            {
+              echo "## Rattrapage prod — SAUTE (rail non provisionne)"
+              echo ""
+              echo "**Manquant** : \`${missing[*]}\`"
+              echo ""
+              echo "Le rattrapage prod Render est **impossible** sans acces a l'API Render, ce qui n'est pas un echec du depot."
+              echo "Ce job ne declenche rien et ne rougit plus : un vrai retard de prod reste ainsi identifiable."
+              echo "Voir \`docs/ops/RENDER_DEV_PROD_TOPOLOGY.md\` (#8092)."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "dispatch_needed=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
           head_sha="$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | awk '{print $1}')"

@@ -1,3 +1,78 @@
+> **MAJ 2026-10-20 (#3) — passerelle publique : capacités métier déclarées par le backend `meta.actions` (PR #8763, issue #8761).**
+> Le frontend portait un `BOOKING_TYPES` codé en dur : il dérivait dès qu'une verticale changeait de capacité et pouvait
+> afficher un bouton inopérant. La source de vérité est désormais **le backend** : `PublicDiscoverableProvider::supportedActions()`
+> (nouvelle méthode du contrat) déclarée par chaque verticale, agrégée par `PublicDiscoveryService::actionsByType()` et exposée
+> dans `meta.actions`. Valeurs actuelles — `restaurant` : `contact`,`order`,`booking` ; `showcase` : `contact` ;
+> `hospitality_property` : `contact`,`booking`. Aucun moteur universel, aucun service dupliqué : le CTA pointe vers le flux
+> métier réel déjà en place (`POST /api/v1/restaurant/public/orders`, fiche publique d'hébergement). Fail-closed : sans
+> `meta.actions`, le frontend n'affiche **aucune** action métier ; un type sans action déclarée affiche l'état explicite
+> « indisponible » jamais un bouton mort. Ajout d'un CTA `order` distinct du `booking`.
+> Scénarios automatisés : `api/tests/Feature/Platform/PublicDiscoveryTest.php` (+2 cas : `meta.actions` réel par type ;
+> couverture de tous les `meta.types`) ; `front/web/src/app/decouvrir/__tests__/discovery-explorer.test.tsx`
+> (+4 cas : CTA depuis les actions serveur, aucun CTA si actions vides, **fail-closed sans `meta.actions`**, réservation
+> limitée aux verticales qui la déclarent).
+> **Résultats réels** : `php artisan test --filter=PublicDiscovery` **9/9 (47 assertions)** ; `jest src/app/decouvrir`
+> **20/20 (3 suites)** ; `tsc --noEmit` **0 erreur** ; `eslint --max-warnings 0` **0 warning** ; `check:mojibake` / `check:orphans` /
+> `check:french-copy` **OK** ; `validate.js` → `I18N_VALIDATION_OK (4 locales)`.
+
+> **MAJ 2026-10-20 (#2) — passerelle publique : contact client → professionnel `POST /api/v1/public/contact-requests` (PR #8763, issue #8760).**
+> Surface **backend (`api`) + web grand public (`front/web`)** : le CTA « Contacter » de `/decouvrir` ouvre un formulaire
+> public qui route vers le **tenant propriétaire** du profil. Réutilisation stricte de l'existant — aucun moteur nouveau :
+> contrat `PublicProfileResolver` + `PublicProfileLocator` (même inversion de dépendance que `PublicDiscoverableProvider`),
+> gardes fail-closed **identiques** à la découverte (`status=published`, `is_public`, société non `suspended`/`expired`,
+> feature verticale active), flux Événement → listener calqué sur `CatalogInquiryReceived` (lead CRM BC-11 + notification
+> BC-13 via `CommunicationService`), idempotence par `idempotency_key` unique. Table **plateforme** `public_contact_requests`
+> (schéma public, **sans `company_id`** : le visiteur n'appartient à aucun tenant, comme `travel_customer_accounts`) ;
+> le tenant est résolu **côté serveur**, jamais accepté en entrée. Séparation stricte avec Léa : aucune table `ai_*`,
+> aucun service IA. Anti-spam : honeypot + `throttle:shop-public`. RGPD : consentement horodaté, IP **hashée**, rétention bornée.
+> Scénarios automatisés : `api/tests/Feature/Platform/PublicContactRequestTest.php` (**10 cas** : acceptation + lead CRM
+> tenant-scopé, notification manager, **404 uniforme** pour profil `draft`/feature absente/slug inexistant, société
+> suspendue, **isolation cross-tenant** (2 tenants, aucun lead ni notification chez le non-visé), **aucune écriture `ai_*`**,
+> rejeu idempotent sans doublon, `target_type` inconnu → 422, consentement manquant → 422, honeypot → succès factice sans
+> persistance) ; `front/web/src/app/decouvrir/__tests__/contact-dialog.test.tsx` (**4 cas** : envoi avec **seuls**
+> `target_type`/`target_slug` (aucun `company_id`), 404 → état indisponible **sans faux succès**, panne réseau → erreur
+> réessayable, **même clé d'idempotence** conservée entre deux tentatives).
+> **Résultats réels** : `php artisan test --filter=PublicContactRequestTest` **10/10 (37 assertions)** ;
+> `jest src/app/decouvrir` **17/17 (3 suites)** ; `tsc --noEmit` **0 erreur** ; `eslint src --max-warnings 0` **0 warning** ;
+> `check:mojibake` / `check:assets` / `check:orphans` / `check:french-copy` **OK** ; `validate.js` → `I18N_VALIDATION_OK (4 locales)` ;
+> `check-i18n-catalog-parity.sh` **OK** ; `check-i18n-diff.js main HEAD` **aucune chaîne hardcodée nouvelle**.
+
+> **MAJ 2026-10-20 — passerelle publique « Leopardo Public » : page `/decouvrir` sur `GET /api/v1/public/discover` — PR #8763.**
+> Surface **web grand public (`front/web`)** : nouvelle page SSR indexable `/decouvrir` (recherche métier/service/nom,
+> ville, catégorie, pagination) consommant l'agrégateur cross-verticale **déjà existant** (`PublicDiscoveryService`,
+> SUPERAPP-P0 #8611) — **aucun BC créé, aucun fichier backend modifié**. Catégories dérivées de `meta.types` ;
+> géolocalisation **sur action explicite** avec repli saisie manuelle ville/zone (aucune collecte en arrière-plan,
+> position jamais dans l'URL SSR) ; chaque résultat pointe vers la fiche publique verticale fournie par l'API
+> (`item.url`) ; CTA réservation uniquement pour les verticales qui la prennent en charge, sinon état explicite.
+> Surface **i18n** : 31 clés `discovery.*` dans `shared/i18n/locales/{fr,en,ar,tr}.json`, propagées par
+> `sync-web`/`sync-mobile`/`sync-backend` — **aucun catalogue généré modifié à la main** ; les ARB mobile reçoivent
+> les mêmes clés par propagation automatique (d'où la mise à jour de ce registre, exigée par la garde de gouvernance
+> dès qu'une surface `front/mobile_apps/` ou `front/admin-dashboard/` bouge).
+> Scénarios automatisés : `front/web/src/app/decouvrir/__tests__/public-discovery-api.test.ts` (**7 cas** : query vide,
+> encodage `q`/`city`, `type` inconnu **jamais transmis** (l'API répond 422), type canonique transmis, rayon borné et
+> envoyé seulement avec une position, `per_page` plafonné à 50, `page=1` omis) ;
+> `front/web/src/app/decouvrir/__tests__/discovery-explorer.test.tsx` (**6 cas** : rendu multi-verticales, lien de sortie
+> propre à chaque verticale, état vide, état erreur + réessai, **aucun identifiant interne** dans le HTML rendu,
+> action de réservation présente uniquement pour les verticales qui la supportent). **Résultats réels** :
+> `jest src/app/decouvrir` **13/13** ; `jest src/modules/vitrine src/app/restaurants src/app/__tests__`
+> **713/713 (66 suites)** ; `tsc --noEmit` **0 erreur** ; `eslint src --max-warnings 0` **0 warning** ;
+> `check:mojibake` / `check:assets` / `check:orphans` / `check:french-copy` **OK** ;
+> `shared/i18n/validators/validate.js` → `I18N_VALIDATION_OK (4 locales)` ; `check-i18n-catalog-parity.sh` → parité
+> fr/en/ar/tr ; `check-i18n-diff.js main HEAD` → aucune chaîne hardcodée nouvelle ; `next build` **compilé**
+> (`/decouvrir` dans `app-path-routes-manifest.json`).
+> **Non couvert par tests** : la phase « Collecting page data » du build n'a pas pu s'exécuter dans le sandbox
+> (cgroup 2 Gio, 47 workers → OOM) — la compilation et le typecheck passent, la génération statique complète reste
+> à valider par la CI du dépôt ; les parcours E2E navigateur (géolocalisation réelle, refus d'autorisation) ne sont
+> pas exécutés localement.
+
+> **MAJ 2026-10-19 — #8741, BC-38 Paiements : permissions dédiées payments.view et payments.manage.**
+> Surface **API (`api/app/Core/Tenant/Domain/Enums`)** : création de `PlatformPermission::PaymentsView` et
+> `PlatformPermission::PaymentsManage`, intégration à `PlatformRole::permissions()` pour `Finance` (avec `Admin`
+> et `SuperAdmin`), restriction des endpoints Superadmin `/api/v1/platform/payments/*` dans `api/routes/api.php`.
+> Scénarios automatisés : `api/tests/Feature/Platform/PlatformPermissionMatrixDeploymentTest.php` (+1 test dédié
+> `test_payments_endpoints_require_payments_view_and_manage`, 9 routes vérifiées dans le DataProvider, assertions
+> de matrice pour tous les rôles plateforme).
+>
 > **MAJ 2026-10-17 — #8652, #8653, #8654, #8655, Travel OS : sièges physiquement absents, cohérence disposition ↔ inventaire, rafraîchissement du plan — PR #8656.**
 > Surface **API (`api/app/Modules/TravelAgency`)** : `SeatLayout` accepte `absent_seats` (entiers positifs, uniques,
 > bornés par la capacité) et expose `sellableCapacity()` ; `GenerateTripSeatsAction` ne crée **aucune** ligne

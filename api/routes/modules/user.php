@@ -11,6 +11,7 @@ use App\Core\Auth\Interfaces\Api\V1\Controllers\UserAuthController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\CompanyRequestController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyIntegrationRequestController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\UserEmployeeLinkController;
+use App\Modules\Notification\Interfaces\Api\V1\Controllers\PublicConversationController;
 use Illuminate\Support\Facades\Route;
 
 // Public (sans auth, throttle strict)
@@ -44,6 +45,29 @@ Route::middleware(['throttle:api', 'auth:user_api'])->prefix('user')->group(func
 
     // Liens employé
     Route::get('/employee-links', [UserEmployeeLinkController::class, 'myLinks']);
+});
+
+// #8760 [BOS-CHAT] — Messagerie de la passerelle publique, côté CLIENT.
+//
+// Groupe DÉDIÉ, hors du préfixe `user` : l'URL publique est
+// `/api/v1/public/conversations`, pas `/api/v1/user/public/conversations`.
+//
+// Le client est un `users.id` (guard `user_api`), pas un employé : il n'y a
+// donc AUCUN middleware `tenant` ici. Un client converse avec plusieurs
+// entreprises, et le tenant est résolu côté serveur depuis le `target_slug`
+// du profil public — jamais depuis un identifiant fourni par le client.
+//
+// Throttle `shop-public` : ce sont des écritures déclenchées par un visiteur,
+// elles ne doivent pas pouvoir saturer un professionnel.
+Route::middleware(['throttle:shop-public', 'auth:user_api'])->prefix('public/conversations')->group(function (): void {
+    Route::get('/', [PublicConversationController::class, 'index']);
+    Route::post('/', [PublicConversationController::class, 'store']);
+    Route::get('/{companyId}/{thread}', [PublicConversationController::class, 'show'])
+        ->whereNumber('thread');
+    Route::get('/{companyId}/{thread}/messages', [PublicConversationController::class, 'messages'])
+        ->whereNumber('thread');
+    Route::post('/{companyId}/{thread}/messages', [PublicConversationController::class, 'storeMessage'])
+        ->whereNumber('thread');
 });
 
 // Manager: lier un utilisateur ordinaire a un employe

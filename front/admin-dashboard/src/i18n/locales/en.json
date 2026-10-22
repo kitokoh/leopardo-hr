@@ -1738,7 +1738,6 @@
     "account": "My account",
     "notFound": "Page not found",
     "travelAgency": "Travel agency",
-    "trade": "International trade",
     "emailTemplates": "Emails",
     "settings": "Settings",
     "messaging": "Messaging"
@@ -5079,94 +5078,6 @@
       "deleteConfirm": "Delete this item?"
     }
   },
-  "trade": {
-    "overview": {
-      "title": "Overview",
-      "subtitle": "Open deals, requests for quotation, quotes and orders in progress.",
-      "scopeNotice": "Counters only: customer prices, quotes, messages and documents are not exposed to platform administration.",
-      "loadError": "Unable to load the vertical tracking.",
-      "companiesScanned": "Companies scanned",
-      "companiesWithTrade": "With the Trade vertical",
-      "companiesWithActivity": "With commercial activity",
-      "integrationsUnconfigured": "Unconfigured integrations",
-      "deals": "Open deals",
-      "rfqs": "Active requests for quotation",
-      "quotes": "Pending quotes",
-      "orders": "Orders in progress",
-      "integrations": "Integrations",
-      "integrationsDegraded": "Some features depend on unconfigured adapters and remain unavailable."
-    },
-    "common": {
-      "retry": "Retry",
-      "noData": "No data"
-    },
-    "counts": {
-      "deals": "Deals",
-      "rfqs": "Requests for quotation (RFQ)",
-      "quotes": "Commercial quotes",
-      "orders": "Orders"
-    },
-    "integrations": {
-      "title": "External integrations",
-      "configured": "configured",
-      "notice": "An unconfigured integration is shown as unavailable: no data is simulated.",
-      "colKey": "Integration",
-      "colMode": "Mode",
-      "colState": "Status",
-      "colReason": "Detail",
-      "stateOperational": "Operational",
-      "stateUnconfigured": "Not configured"
-    },
-    "roles": {
-      "title": "Trade business roles"
-    },
-    "title": "International trade",
-    "subtitle": "Sourcing, quotes, orders and landed cost on a shared commercial core",
-    "moduleDisabled": "The International trade vertical is not enabled for your company.",
-    "loadError": "Unable to load the data.",
-    "loading": "Loading…",
-    "noData": "No data",
-    "retry": "Retry",
-    "create": "Create",
-    "search": "Search…",
-    "sourcing": {
-      "title": "Sourcing & requests for quotation",
-      "subtitle": "Issue an RFQ, invite suppliers, compare the quotes received."
-    },
-    "sales": {
-      "title": "Sales & quotes",
-      "subtitle": "Issued quotes, versions, statuses and customer counterparties."
-    },
-    "orders": {
-      "title": "Orders & shipments",
-      "subtitle": "Purchase and sales orders, shipments and transitions."
-    },
-    "transport": {
-      "title": "Transport",
-      "subtitle": "Quote requests and carrier responses."
-    },
-    "costs": {
-      "title": "Costs & customs",
-      "subtitle": "Landed cost per line item and documentary preparation.",
-      "disclaimer": "Indicative estimate — neither an official customs declaration nor a compliance guarantee."
-    },
-    "catalog": {
-      "title": "Product catalogue",
-      "subtitle": "Products, specifications and commercial terms."
-    },
-    "settings": {
-      "title": "Trade settings",
-      "subtitle": "Commercial profile, markets served and terms."
-    },
-    "columns": {
-      "reference": "Reference",
-      "title": "Title",
-      "status": "Status",
-      "createdAt": "Created on",
-      "destination": "Destination",
-      "incoterm": "Incoterm"
-    }
-  },
   "travel": {
     "travel.ageCategory.adult": "Adult",
     "travel.ageCategory.child": "Child",
@@ -6734,7 +6645,6 @@
       "trade": "Trade"
     },
     "hero3d": {
-      "hint": "Click a module to explore",
       "demo": "Demo",
       "cagnottes": "Fundraisers",
       "freeTrial": "Free trial"
@@ -7689,6 +7599,71 @@
       "titleSuffix": "Solidarity fundraiser"
     }
   },
+  "trade": {
+    "title": "International trade",
+    "subtitle": "Sourcing, quotes, orders and landed cost on a shared commercial core",
+    "moduleDisabled": "The International trade vertical is not enabled for your company.",
+    "loadError": "Unable to load the data.",
+    "loading": "Loading…",
+    "noData": "No data",
+    "retry": "Retry",
+    "create": "Create",
+    "search": "Search…",
+    "overview": {
+      "title": "Overview",
+      "subtitle": "Open deals, requests for quotation, quotes and orders in progress.",
+      "deals": "Open deals",
+      "rfqs": "Active requests for quotation",
+      "quotes": "Pending quotes",
+      "orders": "Orders in progress",
+      "integrations": "Integrations",
+      "integrationsDegraded": "Some features depend on unconfigured adapters and remain unavailable."
+    },
+    "integrations": {
+      "title": "External integrations",
+      "notice": "An unconfigured integration is shown as unavailable: no data is simulated.",
+      "stateOperational": "Operational",
+      "stateUnconfigured": "Not configured",
+      "configured": "configured"
+    },
+    "sourcing": {
+      "title": "Sourcing & requests for quotation",
+      "subtitle": "Issue an RFQ, invite suppliers, compare the quotes received."
+    },
+    "sales": {
+      "title": "Sales & quotes",
+      "subtitle": "Issued quotes, versions, statuses and customer counterparties."
+    },
+    "orders": {
+      "title": "Orders & shipments",
+      "subtitle": "Purchase and sales orders, shipments and transitions."
+    },
+    "transport": {
+      "title": "Transport",
+      "subtitle": "Quote requests and carrier responses."
+    },
+    "costs": {
+      "title": "Costs & customs",
+      "subtitle": "Landed cost per line item and documentary preparation.",
+      "disclaimer": "Indicative estimate — neither an official customs declaration nor a compliance guarantee."
+    },
+    "catalog": {
+      "title": "Product catalogue",
+      "subtitle": "Products, specifications and commercial terms."
+    },
+    "settings": {
+      "title": "Trade settings",
+      "subtitle": "Commercial profile, markets served and terms."
+    },
+    "columns": {
+      "reference": "Reference",
+      "title": "Title",
+      "status": "Status",
+      "createdAt": "Created on",
+      "destination": "Destination",
+      "incoterm": "Incoterm"
+    }
+  },
   "vtc": {
     "title": "Ride-hailing & taxi",
     "subtitle": "Ride dispatch and real-time driver tracking",
@@ -7852,6 +7827,8 @@
     "pilot": "Request pilot access",
     "soon": "Coming soon",
     "offlineBadge": "Works offline",
+    "offlineBadgeVerified": "Offline verified",
+    "offlineImplementedHint": "Offline queue wired — network-cut scenario not yet replayed in CI",
     "qrAria": "Show the installation QR code",
     "qrTitle": "Install on this device",
     "qrHint": "Scan with the device to equip: the installation link opens directly.",
@@ -8083,9 +8060,7 @@
       "connection": "Connecting to the workspace",
       "permissions": "Required permissions",
       "setup": "Getting started"
-    },
-    "offlineBadgeVerified": "Offline verified",
-    "offlineImplementedHint": "Offline queue wired — network-cut scenario not yet replayed in CI"
+    }
   },
   "marketingOs": {
     "title": "Marketing OS",
@@ -8455,5 +8430,133 @@
     "report": {
       "reasonsHint": "harassment, spam, inappropriate_content, threat, impersonation, other"
     }
+  },
+  "discovery": {
+    "title": "Find a professional near you",
+    "description": "Search a trade, a service or a name, then contact the professional directly.",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Trade, service, name…",
+    "search": "Search",
+    "cityLabel": "City or area",
+    "cityPlaceholder": "e.g. Casablanca",
+    "categoryLabel": "Category",
+    "categoryAll": "All categories",
+    "nearMe": "Near me",
+    "locating": "Locating…",
+    "nearActive": "Results around your position",
+    "clearNear": "Clear position",
+    "geoDenied": "Geolocation denied — allow access to your position or enter a city.",
+    "geoUnsupported": "Geolocation is not available on this device.",
+    "noResults": "No professional matches your search.",
+    "loadError": "Unable to load results. Please try again.",
+    "retry": "Retry",
+    "loading": "Loading…",
+    "previous": "Previous",
+    "next": "Next",
+    "pageLabel": "Page",
+    "resultsCount": "results",
+    "distanceSuffix": "km",
+    "viewProfile": "View profile",
+    "book": "Book",
+    "bookingUnavailable": "Booking unavailable",
+    "contactUnavailable": "Contact unavailable",
+    "typeShowcase": "Professional",
+    "typeRestaurant": "Restaurant",
+    "typeHospitalityProperty": "Accommodation",
+    "typeRetailShop": "Shop",
+    "typeVtcOperator": "Taxi / ride-hailing",
+    "shopTitle": "Shop",
+    "shopAboutTitle": "About this shop",
+    "shopCategoriesTitle": "Categories",
+    "shopProductsCount": "products online",
+    "shopRatingSuffix": "reviews",
+    "shopContactTitle": "Contact the shop",
+    "shopNotFoundTitle": "Shop not found",
+    "shopBackToDirectory": "All professionals",
+    "operatorTitle": "Ride-hailing operator",
+    "operatorAboutTitle": "About this operator",
+    "operatorEstimateTitle": "Request a quote",
+    "operatorEstimateHint": "The fare is calculated by the operator from your trip.",
+    "operatorNotFoundTitle": "Operator not found",
+    "operatorBackToDirectory": "All professionals",
+    "companyTitle": "International trade",
+    "companyAboutTitle": "About this company",
+    "companyImport": "Import",
+    "companyExport": "Export",
+    "companyDomestic": "Domestic market",
+    "companyNotFoundTitle": "Company not found",
+    "contact": "Contact",
+    "contactTitle": "Contact this professional",
+    "contactName": "Your name",
+    "contactEmail": "Your email",
+    "contactPhone": "Phone (optional)",
+    "contactMessage": "Your message",
+    "contactConsent": "I agree to share my contact details with this professional so they can reply.",
+    "contactSend": "Send",
+    "contactSending": "Sending…",
+    "contactCancel": "Cancel",
+    "contactClose": "Close",
+    "contactSent": "Your request has been sent.",
+    "contactReference": "Reference",
+    "contactError": "Sending failed. Check your connection and try again.",
+    "contactInvalid": "Please check the form fields.",
+    "contactNotAvailable": "This professional is not accepting requests right now.",
+    "order": "Order",
+    "orderUnavailable": "Ordering unavailable",
+    "conversationsTitle": "My conversations",
+    "conversationsEmpty": "You have no conversations yet. Contact a professional from their profile to start one.",
+    "conversationsLoadError": "Could not load your conversations. Please try again.",
+    "conversationOpen": "Open conversation",
+    "conversationWith": "Conversation with",
+    "conversationSend": "Send",
+    "conversationSending": "Sending…",
+    "conversationPlaceholder": "Write your message…",
+    "conversationEmpty": "No messages yet.",
+    "conversationLoadMore": "Load earlier messages",
+    "conversationSendError": "The message could not be sent. Check your connection and try again.",
+    "conversationUnavailable": "This conversation is no longer available.",
+    "conversationLoginRequired": "Sign in to see your conversations.",
+    "conversationFromClient": "You",
+    "conversationFromProfessional": "Professional",
+    "conversationUnread": "New",
+    "conversationBack": "Back",
+    "conversationStart": "Start a conversation",
+    "conversationStarted": "Your message was sent to the professional.",
+    "conversationStartBody": "Hello, I would like to get in touch."
+  },
+  "publicInbox": {
+    "pageTitle": "Public requests",
+    "pageSubtitle": "Customers from Leopardo Public",
+    "pageDescription": "Handle the messages received from your public profile here.",
+    "listTitle": "Conversations",
+    "listEmpty": "No request yet.",
+    "listEmptyBody": "Messages sent by customers from your public profile will appear here.",
+    "listLoading": "Loading requests…",
+    "listError": "Could not load the requests. Try again.",
+    "listRetry": "Try again",
+    "unread": "New",
+    "fromClient": "Customer",
+    "noSlug": "Public profile",
+    "threadEmpty": "No message in this conversation.",
+    "threadEmptyBody": "The customer's first message will appear here.",
+    "threadLoading": "Loading messages…",
+    "threadError": "Could not load the messages. Try again.",
+    "threadNotSelected": "Select a request",
+    "threadNotSelectedBody": "Choose a conversation on the left to display the exchange.",
+    "threadUnavailable": "This conversation is no longer available.",
+    "threadUnavailableBody": "It may have been deleted, or you no longer have access to it.",
+    "backToList": "Back to requests",
+    "loadOlder": "Load previous messages",
+    "noOlder": "You have reached the start of the conversation.",
+    "composerLabel": "Reply to the customer",
+    "composerPlaceholder": "Write your reply…",
+    "send": "Send",
+    "sending": "Sending…",
+    "sent": "Message sent.",
+    "sendError": "The message could not be sent. Check your connection and try again.",
+    "emptyBody": "The message cannot be empty.",
+    "tooLong": "The message cannot exceed {max} characters.",
+    "unauthenticated": "Your session has expired. Sign in again to continue.",
+    "overloaded": "Too many messages sent. Wait a moment and try again."
   }
 }

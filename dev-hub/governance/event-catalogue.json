@@ -167,7 +167,7 @@
   {
    "name": "CrmTaskOverdue",
    "class": "App\\Events\\CrmTaskOverdue",
-   "owner": "BC-17 CRM",
+   "owner": "BC-11 CRM",
    "version": 1,
    "status": "active",
    "payload": {
@@ -406,6 +406,20 @@
    },
    "consumers": [
     "App\\Modules\\Retail\\Application\\Listeners\\StoreRetailOrderDeliveryReference"
+   ]
+  },
+  {
+   "name": "PublicContactRequestReceived",
+   "class": "App\\Events\\PublicContactRequestReceived",
+   "owner": "BC-38 PLATFORM",
+   "version": 1,
+   "status": "active",
+   "payload": {
+    "companyId": "string",
+    "contactRequest": "App\\Modules\\Platform\\Domain\\Models\\PublicContactRequest"
+   },
+   "consumers": [
+    "App\\Listeners\\CreateCrmLeadFromPublicContact"
    ]
   }
  ],

@@ -167,17 +167,24 @@ jobs:
           FIREBASE_APP_ID_SECRET_NAME: ${{ matrix.app.firebase_secret }}
         run: |
           set -euo pipefail
+          # #8774 (D-1) — sans les secrets Firebase, la distribution est SAUTÉE
+          # explicitement au lieu de faire échouer le workflow : un build staging
+          # reste utile même quand les secrets d'un dépôt cloné ne sont pas
+          # provisionnés. Les contrôles de COHÉRENCE (app id vs google-services.json)
+          # restent fail-closed quand les secrets sont présents.
+          READY=true
           if [[ -z "${FIREBASE_APP_ID}" ]]; then
-            echo "Missing GitHub secret: ${FIREBASE_APP_ID_SECRET_NAME}"
-            exit 1
+            echo "::warning::Missing GitHub secret: ${FIREBASE_APP_ID_SECRET_NAME} — distribution Firebase sautée (voir docs/GESTION_PROJET/CI_SECRETS_FIREBASE.md)."
+            READY=false
           fi
           if [[ -z "${FIREBASE_TOKEN}" ]]; then
-            echo "Missing GitHub secret: FIREBASE_TOKEN"
-            exit 1
+            echo "::warning::Missing GitHub secret: FIREBASE_TOKEN — distribution Firebase sautée (voir docs/GESTION_PROJET/CI_SECRETS_FIREBASE.md)."
+            READY=false
           fi
+          echo "FIREBASE_READY=${READY}" >> "$GITHUB_ENV"
 
       - name: Validate app Firebase config presence
-        if: env.SHOULD_BUILD == 'true'
+        if: env.SHOULD_BUILD == 'true' && env.FIREBASE_READY == 'true'
         shell: bash
         # actions/excessive-secrets-exposure: see rationale on the
         # "Validate required secrets for staging distribution" step above.
@@ -319,7 +326,7 @@ jobs:
           retention-days: 30
 
       - name: Firebase App Distribution (staging)
-        if: env.SHOULD_BUILD == 'true' && env.TARGET == 'staging'
+        if: env.SHOULD_BUILD == 'true' && env.TARGET == 'staging' && env.FIREBASE_READY == 'true'
         uses: wzieba/Firebase-Distribution-Github-Action@bd494989dd4bec0343f78adee87fe66e48279ad6 # v1.7.1
         # actions/excessive-secrets-exposure: see rationale on the
         # "Validate required secrets for staging distribution" step above.
@@ -335,7 +342,7 @@ jobs:
             Backend: ${{ vars.DEV_API_BASE_URL }}
 
       - name: Verify Firebase App Distribution release is visible
-        if: env.SHOULD_BUILD == 'true' && env.TARGET == 'staging'
+        if: env.SHOULD_BUILD == 'true' && env.TARGET == 'staging' && env.FIREBASE_READY == 'true'
         shell: bash
         # actions/excessive-secrets-exposure: see rationale on the
         # "Validate required secrets for staging distribution" step above.
