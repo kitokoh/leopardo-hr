@@ -556,6 +556,20 @@ export const NAV_ENTRIES = [
     permission: 'companies.manage',
     group: 'plateforme',
   },
+  // #8754 [BOS-CHAT] — messagerie HUMAINE (BC-13 COMMS, `/conversations/*`).
+  //
+  // Entrée SÉPARÉE de `chat` ci-dessus (assistant IA Léa) : deux produits
+  // distincts, deux historiques, aucun mélange. Aucune permission plateforme :
+  // le serveur autorise seul (404 pour un non-participant). Un compte sans
+  // contexte tenant affiche l'état explicite « contexte entreprise requis ».
+  {
+    name: 'chat-hub',
+    path: '/messagerie',
+    titleKey: 'navigation.messaging',
+    icon: UsersIcon,
+    permission: null,
+    group: 'rh-paie',
+  },
   {
     name: 'webhooks',
     path: '/webhooks',

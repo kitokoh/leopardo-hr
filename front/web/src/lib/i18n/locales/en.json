@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-10-11T00:00:00Z",
+  "_updated_at": "2026-10-20T00:00:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo — Business Suite"
@@ -1739,7 +1739,8 @@
     "notFound": "Page not found",
     "travelAgency": "Travel agency",
     "emailTemplates": "Emails",
-    "settings": "Settings"
+    "settings": "Settings",
+    "messaging": "Messaging"
   },
   "webhooks": {
     "confirm_delete": "Delete this webhook?"
@@ -8350,6 +8351,86 @@
   },
   "travel.seats.state.absent": "Seat absent",
   "travel.seats.layoutNotice": "Changing the seat layout does not move already-booked passengers: their seats stay unchanged. Use the vehicle replacement procedure to resolve a conflict.",
+  "chatHub": {
+    "title": "Messaging",
+    "subtitle": "Conversations with your colleagues and work groups",
+    "list": {
+      "title": "Conversations",
+      "search": "Search a conversation",
+      "empty": "No conversation",
+      "emptyHint": "Exchanges with your manager or your groups will appear here.",
+      "loadError": "Unable to load conversations.",
+      "unread": "unread",
+      "noSubject": "Discussion",
+      "conversation": "Conversation",
+      "kindGroup": "Group"
+    },
+    "thread": {
+      "selectTitle": "Select a conversation",
+      "selectHint": "Pick a thread on the left to display its messages.",
+      "empty": "No message",
+      "emptyHint": "Write the first message of this conversation.",
+      "loadError": "Unable to load messages.",
+      "placeholder": "Write a message…",
+      "send": "Send",
+      "sending": "Sending…",
+      "enterHint": "Enter to send, Shift+Enter for a new line.",
+      "loadOlder": "Load previous messages",
+      "edited": "edited",
+      "deletedMessage": "Message deleted",
+      "reply": "Reply",
+      "edit": "Edit",
+      "delete": "Delete",
+      "report": "Report",
+      "editingMessage": "Editing message",
+      "replyingTo": "Replying to:",
+      "attach": "Attach a file",
+      "attachment": "Attachment",
+      "attachmentTooLarge": "File too large to be sent.",
+      "attachmentGone": "Attachment unavailable: the file was lost during a redeploy.",
+      "attachmentForbidden": "Attachment not found or access denied.",
+      "attachmentFailed": "Unable to download the attachment.",
+      "offline": "Offline",
+      "live": "Up to date",
+      "deleteConfirm": "Delete this message?",
+      "reportPrompt": "Report reason",
+      "reportSent": "Report sent to moderation.",
+      "reportFailed": "Unable to report.",
+      "editForbidden": "You can only edit your own messages.",
+      "editFailed": "Unable to edit.",
+      "deleteFailed": "Unable to delete.",
+      "sendFailed": "Unable to send. Please retry.",
+      "offlineSendFailed": "You are offline: the message was not sent.",
+      "notParticipant": "This conversation is no longer accessible.",
+      "rateLimited": "Too many messages. Please wait a moment.",
+      "invalidMessage": "Invalid message.",
+      "directSubtitle": "Private conversation",
+      "groupMembers": "Group members"
+    },
+    "tenantRequired": {
+      "title": "Company context required",
+      "body": "Messaging requires a company session (impersonation or manager account)."
+    },
+    "forbidden": {
+      "title": "Messaging disabled",
+      "body": "The messaging module is not enabled for this company."
+    },
+    "common": {
+      "loading": "Loading…",
+      "retry": "Retry",
+      "refresh": "Refresh",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "subjects": {
+      "salary_advance": "Salary advance",
+      "attendance_correction": "Attendance correction",
+      "absence": "Absence"
+    },
+    "report": {
+      "reasonsHint": "harassment, spam, inappropriate_content, threat, impersonation, other"
+    }
+  },
   "discovery": {
     "title": "Find a professional near you",
     "description": "Search a trade, a service or a name, then contact the professional directly.",
