@@ -6,7 +6,7 @@
     "platform_guard_middleware": "Authenticate:super_admin_api",
     "tenant_middleware": "TenantMiddleware",
     "baseline": "route:list sur main 8b3609f — 913 routes (109 platform, 678 tenant, 126 public), audit 2026-08-28 ; 6 fichiers modules post-consolidation déclarés le 2026-09-05 (travelagency, restaurantmanager, fuel_station, edu_manager, delivery, solutions)",
-    "updated": "2026-08-28"
+    "updated": "2026-10-22"
   },
   "scope_by_default": "tenant",
   "route_files": {
@@ -40,7 +40,21 @@
     "api/routes/modules/edu_manager.php": "tenant",
     "api/routes/modules/delivery.php": "tenant",
     "api/routes/modules/solutions.php": "mixed",
-    "api/routes/modules/catalog.php": "tenant"
+    "api/routes/modules/catalog.php": "tenant",
+    "api/routes/modules/catalog_public.php": "public",
+    "api/routes/modules/communication.php": "tenant",
+    "api/routes/modules/fundraising.php": "mixed",
+    "api/routes/modules/geo.php": "tenant",
+    "api/routes/modules/health_manager.php": "tenant",
+    "api/routes/modules/hospitality_manager.php": "tenant",
+    "api/routes/modules/market_public.php": "public",
+    "api/routes/modules/paiements.php": "mixed",
+    "api/routes/modules/pharmacy.php": "tenant",
+    "api/routes/modules/retail.php": "tenant",
+    "api/routes/modules/showcase.php": "mixed",
+    "api/routes/modules/trade.php": "tenant",
+    "api/routes/modules/trade_public.php": "public",
+    "api/routes/modules/vtc.php": "tenant"
   },
   "platform_controller_exceptions": [
     {
