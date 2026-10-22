@@ -236,12 +236,19 @@ export function TrustedBrands({ locale = 'fr' }: TrustedBrandsProps) {
     if (reducedMotion) return undefined;
     const id = setInterval(() => {
       setVisible((current) => {
-        const slot = Math.floor(Math.random() * current.length);
+        // Rotation garantie (#8392). L'ancien ordre tirait le slot AVANT de
+        // calculer les candidats : `Math.random() * 3` pouvait retomber sur le
+        // slot qui venait justement de recevoir un nouveau secteur, si bien que
+        // « une carte sort puis rentre » dans le meme tick. A l'ecran rien ne
+        // bougeait et le test de rotation devenait rouge par intermittence.
+        // On tire donc d'abord le secteur ENTRANT (hors carte deja affichees),
+        // puis le slot a remplacer : le changement est alors garanti.
         const candidates = sectors
           .map((_, index) => index)
           .filter((index) => !current.includes(index));
         if (candidates.length === 0) return current;
         const next = candidates[Math.floor(Math.random() * candidates.length)];
+        const slot = Math.floor(Math.random() * current.length);
         const updated = [...current];
         updated[slot] = next;
         return updated;
