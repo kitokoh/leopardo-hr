@@ -88,12 +88,24 @@ async function mockDiscover(page: Page, items: unknown[], meta?: Record<string, 
 }
 
 test.describe('Leopardo Public — parcours visiteur', () => {
-  test('la découverte affiche les résultats et respecte le contrat public', async ({ page }) => {
-    await mockDiscover(page, [publicItem()]);
+  /**
+   * ⚠️ `/decouvrir` est rendue **côté serveur** (`searchPublicDiscovery()` dans le
+   * Server Component, page indexable). `page.route()` n'intercepte QUE les fetch
+   * du navigateur : il ne peut donc pas figer la liste affichée au premier rendu.
+   *
+   * Ces deux tests ont d'abord été écrits avec un mock de `GET /public/discover`
+   * — ils échouaient (élément introuvable) pour cette raison, pas à cause d'un
+   * bug produit. Ils asserent désormais ce qui est **vérifiable en e2e** : la
+   * page se rend et son contrat de lien tient. Le rendu des items et
+   * `item.url` → href de la fiche sont couverts en Jest
+   * (`src/app/decouvrir/__tests__/discovery-explorer.test.tsx`).
+   */
+  test('la découverte se rend côté serveur avec son titre et son champ de recherche', async ({ page }) => {
     await page.goto('/decouvrir');
 
-    await expect(page.getByText('Leopardo Tajine')).toBeVisible();
-    await expect(page.getByText('Alger')).toBeVisible();
+    await expect(page.locator('h1')).toContainText('Trouvez un professionnel');
+    // Le point d'entrée neutre doit être utilisable sans JS client.
+    await expect(page.locator('body')).not.toBeEmpty();
   });
 
   test('un type inconnu est refusé en 422 — jamais une liste vide silencieuse', async ({ page }) => {
@@ -111,12 +123,20 @@ test.describe('Leopardo Public — parcours visiteur', () => {
     await expect(page.locator('body')).not.toBeEmpty();
   });
 
-  test('un résultat pointe vers sa fiche publique via item.url', async ({ page }) => {
-    await mockDiscover(page, [publicItem()]);
-    await page.goto('/decouvrir');
+  /**
+   * Le contrat « un résultat pointe vers sa fiche via `item.url` » ne peut pas
+   * être vérifié ici pour la même raison (rendu serveur). Il l'est en Jest sur
+   * le composant client (`discovery-explorer.test.tsx` : href exact attendu).
+   * En e2e on garde la garde **anti-faux-lien** : aucun lien de fiche ne doit
+   * apparaître quand un résultat est attendu sans donnée disponible.
+   */
+  test('aucun faux lien de fiche : un lien de résultat ne pointe jamais vers une route devinée', async ({ page }) => {
+    await page.goto('/decouvrir?q=zzz-aucun-resultat-e2e');
 
-    const link = page.locator('a[href="/restaurants/leopardo-tajine"]').first();
-    await expect(link).toBeVisible();
+    // Une URL de fiche est TOUJOURS dérivée de `item.url` côté API (§7 du rapport) :
+    // la page ne doit jamais fabriquer `/restaurants/<slug>` à partir d'un nom.
+    await expect(page.locator('a[href^="/restaurants/"]')).toHaveCount(0);
+    await expect(page.locator('a[href^="/vitrine/"]')).toHaveCount(0);
   });
 
   test('le DTO public ne divulgue aucun champ interne', async ({ page }) => {
@@ -138,6 +158,73 @@ test.describe('Leopardo Public — parcours visiteur', () => {
     await page.goto('/decouvrir?q=zzz-aucun-resultat');
 
     await expect(page.locator('a[href="/restaurants/leopardo-tajine"]')).toHaveCount(0);
+  });
+});
+
+test.describe('Leopardo Public — fiches publiques Retail et VTC (P1-02)', () => {
+  /**
+   * ⚠️ Ces deux pages sont des Server Components : `page.route()` ne peut pas
+   * figer leur premier rendu (même raison que `/decouvrir` ci-dessus). Ce qui
+   * EST vérifiable en e2e, et qui est exactement ce que P1-02 devait livrer :
+   *
+   *  - la route EXISTE (avant ce lot, `/boutiques/{slug}` et
+   *    `/operateurs/{slug}` n'existaient pas du tout) ;
+   *  - elle est **fail-closed** : un slug inconnu produit l'état « introuvable »
+   *    propre, jamais un 500 ni une page vide ;
+   *  - elle ne fabrique jamais de lien vers une fiche inexistante.
+   *
+   * ✅ #8791 — LE STATUT EST DÉSORMAIS ASSERTÉ, parce qu'il a été CORRIGÉ.
+   *
+   * Historique mesuré (2026-10-21, mode production `next build` + `next start`) :
+   * avant le lot #8791, `notFound()` rendait le contenu de `not-found.tsx` mais
+   * la réponse HTTP restait **200**. La cause n'était pas `notFound()` mais le
+   * `loading.tsx` placé à la RACINE de `app/` : il enveloppait toute
+   * l'application dans une frontière `Suspense`, donc Next envoyait l'en-tête
+   * 200 (et le loader) avant que la page n'ait décidé du 404.
+   *
+   * Le loader est désormais porté par le groupe `(landing)` ; les 4 surfaces
+   * concernées (`/boutiques`, `/operateurs`, `/vitrine`, `/stay`) répondent un
+   * vrai **404**, et les pages réelles restent 200. L'assertion ci-dessous
+   * garde cette propriété contre une régression.
+   *
+   * Le rendu du profil (nom, ville, catégories, CTA de contact) et le contrat
+   * `item.url` → `href` sont couverts en Jest, où le composant est monté
+   * directement : `src/app/boutiques/__tests__/shop-page.test.tsx`,
+   * `src/app/operateurs/__tests__/operator-page.test.tsx`,
+   * `src/app/decouvrir/__tests__/discovery-explorer.test.tsx`.
+   */
+  test('la fiche boutique rend un état introuvable propre pour un slug inconnu (fail-closed)', async ({ page }) => {
+    const response = await page.goto('/boutiques/zzz-boutique-inexistante-e2e');
+
+    // #8791 — un slug inconnu ne doit pas être indexable : vrai 404, pas 200.
+    expect(response?.status()).toBe(404);
+    await expect(page).toHaveTitle(/introuvable/i);
+    await expect(page.locator('body')).not.toBeEmpty();
+  });
+
+  test('la fiche opérateur rend un état introuvable propre pour un slug inconnu (fail-closed)', async ({ page }) => {
+    const response = await page.goto('/operateurs/zzz-operateur-inexistant-e2e');
+
+    // #8791 — même exigence que pour `/boutiques/{slug}`.
+    expect(response?.status()).toBe(404);
+    await expect(page).toHaveTitle(/introuvable/i);
+    await expect(page.locator('body')).not.toBeEmpty();
+  });
+
+  test('les fiches verticales ne sont pas servies sous /restaurants (route devinée)', async ({ page }) => {
+    // Avant P1-02, la découverte Retail/VTC renvoyait `url: null` et le client
+    // retombait sur `/restaurants/{slug}`. Or `/restaurants/*` est une surface
+    // PROTÉGÉE (redirection vers la connexion), pas une fiche publique : y
+    // pointer un visiteur anonyme était donc un lien mort. La garde mesure
+    // exactement ça — la navigation aboutit sur la connexion, elle ne sert pas
+    // de profil public.
+    //
+    // ⚠️ `page.goto()` SUIT les redirections : `response.status()` vaut donc le
+    // statut FINAL (200 = page de connexion), pas le 307 intermédiaire. On
+    // asserte sur l'URL d'arrivée, seule mesure fiable ici.
+    await page.goto('/restaurants/zzz-boutique-inexistante-e2e');
+
+    expect(page.url()).toContain('/auth/login');
   });
 });
 

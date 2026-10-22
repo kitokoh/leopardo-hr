@@ -300,3 +300,34 @@ Note 2026-09-16 (PR #7518, issue #7428 — positionnement « suite métier ») :
 ## Note de conservation 2026-10-11 — clé i18n « secteur association » propagée aux catalogues mobiles (PR #8401, issue #8400)
 
 **Aucun changement de comportement des apps Flutter.** Le diff sur `front/mobile_apps/leopardo_core/lib/l10n/app_{fr,en,ar,tr}.arb` est uniquement la régénération mécanique (`shared/i18n/sync/sync-mobile.js`) de la clé partagée `setupInterview.questions.sector.options.association` (« Association / ONG ») introduite pour l'activation de la verticale fundraising via l'entretien de préparation (FUND-080) : aucun écran ni code Dart n'est modifié, l'option de secteur est servie aux surfaces d'onboarding par le catalogue partagé selon leur logique existante. Scénarios existants valides tels quels.
+
+
+## Note 2026-10-20 — plancher Android relevé à l'API 26 sur les 8 apps (PR #8776, issue #8774)
+
+**Changement de configuration Android, aucun changement d'écran ni de code Dart.**
+
+Les 8 apps Flutter (`leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin`, `leopardo_marketing`, `leopardo_accounting`, `leopardo_travel_agent`, `leopardo_cameras`) passent de `minSdk = flutter.minSdkVersion` (24) à **`minSdk = 26`** dans `android/app/build.gradle.kts`.
+
+**Pourquoi** : `sentry_flutter ^10.0.0` déclare `minSdk 26`. Le défaut Flutter (24) faisait échouer le manifest merger à chaque build :
+
+```
+uses-sdk:minSdkVersion 24 cannot be smaller than version 26 declared in library [:sentry_flutter]
+```
+
+Les 8 jobs `Build Debug leopardo_*` étaient donc rouges sur `main` en permanence, ce qui **masquait toute régression mobile** réelle. La correction débloque ces 8 jobs.
+
+**Conséquence produit à connaître** : Android 7.0 / 7.1 (API 24-25) n'est plus une cible supportée. Conserver ce parc imposerait de retirer `sentry_flutter` — décision produit, hors de ce lot.
+
+**Impact sur les scénarios existants** : inchangés. Aucun écran, aucune navigation, aucune clé i18n, aucun test widget n'est modifié ; seuls les `build.gradle.kts` changent.
+
+**Vérification** : les jobs `Build Debug leopardo_*` se lancent et compilent (ils échouaient auparavant au manifest merger avant même l'assemblage). Aucun test local Flutter n'a été exécuté dans la sandbox (SDK Flutter absent) — la CI fait foi pour cette surface.
+
+## Note de conservation 2026-10-21 — clés i18n « discovery.* » (fiches Retail et VTC) propagées aux catalogues mobiles (PR #8790, issue #8792)
+
+**Aucun changement de comportement des apps Flutter.** Le diff sur `front/mobile_apps/leopardo_core/lib/l10n/app_{fr,en,ar,tr}.arb` est uniquement la régénération mécanique (`shared/i18n/sync/sync-mobile.js`) des 18 clés partagées `discovery.*` introduites pour les **fiches publiques web** `/boutiques/{slug}` (Retail) et `/operateurs/{slug}` (VTC) : libellés de type (`typeRetailShop`, `typeVtcOperator`), titres de section, compteurs et états « introuvable ». Les clés sont disponibles pour une future surface mobile de découverte, **aucun écran Dart existant ne les consomme**. Scénarios existants valides tels quels. Vérifié : `node shared/i18n/sync/sync-mobile.js` → `I18N_SYNC_MOBILE_OK`, `node shared/i18n/validators/validate.js` → `I18N_VALIDATION_OK (4 locales)`, parité ×4 (`check-i18n-catalog-parity.sh`) **verte**, et `git diff --exit-code` **propre** après les trois syncs (web, mobile, backend).
+
+## Note de conservation 2026-10-21 — clés i18n `discovery.company*` (fiche publique `/commerce/[slug]`, Trade) propagées aux catalogues mobiles
+
+**Aucun changement de comportement.** Le diff sur `front/mobile_apps/leopardo_core/lib/l10n/app_{fr,en,ar,tr}.arb` est uniquement la régénération mécanique (`shared/i18n/sync/sync-mobile.js`) des **6 clés partagées** `discovery.company*` introduites pour la **fiche publique web** `/commerce/[slug]` de la verticale Trade (P2-01, #8802) : `companyTitle`, `companyAboutTitle`, `companyImport`, `companyExport`, `companyDomestic`, `companyNotFoundTitle`. Les clés sont disponibles pour une future surface mobile de découverte, **aucun écran Dart existant ne les consomme**. Scénarios existants valides tels quels.
+
+Vérifié : `node shared/i18n/sync/sync-mobile.js` → `I18N_SYNC_MOBILE_OK`, `node shared/i18n/validators/validate.js` → `I18N_VALIDATION_OK (4 locales)`, et `git diff --exit-code` **propre** après les trois syncs (web, mobile, backend).

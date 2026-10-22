@@ -774,6 +774,109 @@ Deux échecs non requis (`CrmChannelCrudTest`, `PlatformAdminAiChatTest` via un 
 `--filter=Conversation`) sont **préexistants sur `main`** : reproduits sur un worktree
 `origin/main` isolé, ils échouent indépendamment de ce lot.
 
-Non trouvé non plus, et signalé comme tel : aucun test de charge n'a été exécuté,
-aucun chiffre de capacité n'est mesuré. Les sections 6 à 11 du présent rapport restent
-donc **des hypothèses explicitement étiquetées**, pas des mesures.
+> ⚠️ **Cette dernière phrase était vraie au moment du lot P2–P6. Elle ne l'est plus :
+> voir §20, où les tests de charge ont été écrits ET exécutés.**
+
+---
+
+## 20. État final du lot #8754 (UI Vue/Flutter, R1, charge)
+
+### 20.1 Ce qui a été livré
+
+| Livrable | Fichiers | État |
+|---|---|---|
+| Écrans **Vue** (console) | `views/chat/ChatHubView.vue`, `components/chat/conversation-list.vue`, `components/chat/conversation-panel.vue` | compilés (`vite build` ✓), ESLint 0 erreur |
+| Polling **Vue** | `composables/useChatPolling.js` | miroir de `use-conversation-polling.ts` |
+| Client **Vue** | `lib/chat-api.js` | miroir de `front/web/src/lib/chat.ts` |
+| Écrans **Flutter** | `leopardo_core/lib/features/chat/**`, `models/chat_thread.dart` | ⚠️ **non compilés** (voir §20.4) |
+| Navigation Flutter | `leopardo_employee/lib/app.dart`, `leopardo_manager/lib/app.dart` (routes `/chat`, `/chat/:threadId`) | idem |
+| Runbook R1 | `docs/mission-business-os/17_chat_attachments_runbook.md` | livré |
+| Tests de charge | `api/tests/k6/chat-load.js`, `chat-reconnection.js`, `seed-load-test.php` | **exécutés** (§20.3) |
+
+**Point d'architecture tranché** : le chat humain vit sur `/messagerie`, chemin
+**distinct** de `/chat` — ce dernier est l'assistant IA plateforme (`ChatView.vue`,
+Léa). Deux produits, deux historiques, aucune fusion. Une instruction écrite dans
+un message humain ne déclenche aucune action métier.
+
+**Contexte tenant** : le dashboard Vue s'authentifie en super-admin plateforme. Les
+écrans gèrent donc les trois cas honnêtement — `401` → « contexte entreprise
+requis » (et non une fausse erreur serveur), `403` → « messagerie désactivée pour
+cette entreprise », `404` → fil inaccessible (jamais `403`, qui révélerait son
+existence).
+
+### 20.2 Résultats RÉELS — suite de tests
+
+| Périmètre | Résultat |
+|---|---|
+| `ConversationAttachmentPersistenceTest` (R1) | **4 passed / 19 assertions** |
+| `--filter=Conversation` (tous les tests du chat) | **88 passed / 392 assertions** |
+| `front/web` — `jest src/lib/__tests__/chat.test.ts` | **6 passed** |
+| PHPStan level 8 — `app/Modules/Notification` + test R1 | **`[OK] No errors`** |
+| Pint — fichiers de ce lot | **PASS** |
+| ESLint — fichiers Vue de ce lot | **0 erreur** |
+| `vite build` (admin-dashboard) | **✓ built in 30.80s** |
+
+**Deux échecs, non imputables à ce lot** : `CrmChannelCrudTest` et
+`PlatformAdminAiChatTest` échouent quand on les exécute via
+`--filter=Conversation` (`SQLSTATE[42601]`), mais **passent isolément** (8/8 et
+7/7) et passent sur `origin/main`. Ce sont des tests **instables en exécution
+groupée**, dans des modules (`CRM`, `Platform`) qu'aucun fichier de ce lot ne
+touche — vérifié : `git diff --name-only origin/main...HEAD` ne contient aucun
+chemin `CRM`, `Platform` ou migration. À traiter séparément.
+
+### 20.3 Résultats RÉELS — tests de charge (k6 v0.49.0)
+
+Conditions : API locale (`artisan serve`, **mono-processus**), PostgreSQL local,
+`CACHE_STORE=array`. Ce sont des mesures **de plancher**, pas de capacité de
+production : un serveur de développement PHP sérialise les requêtes.
+
+| Scénario | Charge | Checks | Latence p95 | Verdict |
+|---|---|---|---|---|
+| `smoke` | 2 VU, ~70 s | **674/674** | **111 ms** | ✅ |
+| `launch` | 15 VU, ~3 min | **4365/4396 (99,29 %)** | **827 ms** | ⚠️ seuil 800 ms **franchi** |
+| `reconnexion` | 1 itération | **12/12** — 0 message perdu, 0 doublon, ordre `seq` respecté, rejeu idempotent (`201` puis `200`, même id) | 121 ms | ✅ |
+
+**Ce que le test `launch` révèle réellement** : à 15 VU soutenues, le serveur de
+développement dépasse l'objectif de 800 ms. Ce n'est **pas** une mesure de
+production (le serveur réel est un pool PHP-FPM multi-processus derrière un
+reverse proxy), et ce n'est **pas** non plus une preuve que la production tiendra
+— personne ne l'a mesuré. La conclusion défendable est : *le seuil a besoin
+d'être validé sur l'environnement Render, pas ici.* Le chiffre est consigné tel
+quel, sans arrondi favorable.
+
+**Découverte opérationnelle importante** : avec `CACHE_STORE=redis` et aucun
+Redis joignable, **toutes** les routes répondent `429 TOO_MANY_REQUESTS_DEGRADED`.
+Ce n'est pas un dépassement de quota mais un **fail-closed** volontaire du
+middleware de throttle : sans stockage de compteur, il refuse plutôt que de
+laisser passer. Conséquence directe pour la production : **le chat dépend
+entièrement de Redis/Upstash**. Une panne de ce service ne dégrade pas la
+messagerie, elle la coupe entièrement — y compris en lecture. À documenter comme
+point de défaillance unique (voir §6).
+
+### 20.4 Ce qui n'est PAS fait, et n'est pas revendiqué
+
+- **Flutter non compilé.** Aucun SDK Dart dans l'environnement d'exécution
+  (`dart`/`flutter` introuvables). Le code suit les patterns existants
+  (`notification_repository.dart`, `MobileSurface`, `MobileTopBar`), et les
+  signatures ont été vérifiées à la lecture — mais **aucun `flutter analyze` ni
+  `flutter test` n'a été exécuté**. Ces fichiers ne doivent pas être présentés
+  comme validés avant un passage en CI.
+- **R1 non levé.** Le code est prêt, la variable `CHAT_ATTACHMENT_DISK` n'est
+  **pas** positionnée en production. Voir le runbook §17.
+- **E2E navigateur de reconnexion** non écrit : le test k6 prouve la reprise
+  serveur (curseur, perte, doublon), pas le comportement de l'onglet hors ligne.
+- **P7** (`site` / `professional_space`) toujours ouvert.
+- **Test `growth`** (120 VU) écrit mais **non exécuté** : il aurait saturé le
+  serveur mono-processus et n'aurait rien prouvé de transposable.
+
+### 20.5 Pièges rencontrés, à garder
+
+| Piège | Conséquence |
+|---|---|
+| k6 v0.49 : pas de spread d'objet (`{...a, b}`) | échec à la compilation du script |
+| k6 v0.49 : pas de `catch {}` sans binding | idem |
+| `artisan serve` = **mono-processus** | toute mesure de charge y est un plancher |
+| `CACHE_STORE=redis` sans Redis joignable | `429` fail-closed sur **toutes** les routes |
+| `php artisan test` complet → SIGKILL (273 fichiers) | mémoire insuffisante ; lancer par périmètre |
+| PHPStan parallèle tué (OOM) | forcer `maximumNumberOfProcesses: 1` et cibler un module |
+| `git checkout origin/main -- .` puis `stash pop` | a réverti des fichiers suivis ; récupéré par `git reset --hard HEAD` |

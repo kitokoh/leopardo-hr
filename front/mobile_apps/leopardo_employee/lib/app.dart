@@ -24,6 +24,8 @@ import 'package:leopardo_employee/features/absences/screens/absence_list_screen.
 import 'package:leopardo_employee/features/salary_advances/screens/salary_advance_list_screen.dart';
 import 'package:leopardo_employee/features/payrolls/screens/payroll_list_screen.dart';
 import 'package:leopardo_employee/features/notifications/screens/notification_list_screen.dart';
+import 'package:leopardo_core/features/chat/screens/conversation_list_screen.dart';
+import 'package:leopardo_core/features/chat/screens/conversation_screen.dart';
 import 'package:leopardo_employee/features/evaluations/screens/evaluation_list_screen.dart';
 import 'package:leopardo_employee/features/cabinet/screens/cabinet_screen.dart';
 import 'package:leopardo_employee/features/settings/screens/settings_screen.dart';
@@ -197,6 +199,28 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/notifications',
             builder: (context, state) => const NotificationListScreen(),
+          ),
+          // #8754 [BOS-CHAT] — messagerie HUMAINE (BC-13 COMMS,
+          // `/conversations/*`). Écran distinct de tout assistant IA : aucun
+          // historique partagé, aucune action métier déclenchée par un message.
+          GoRoute(
+            path: '/chat',
+            builder: (context, state) => const ConversationListScreen(),
+          ),
+          GoRoute(
+            path: '/chat/:threadId',
+            builder: (context, state) {
+              final threadId = int.tryParse(
+                state.pathParameters['threadId'] ?? '',
+              );
+              // Deep-link non numérique : écran vide plutôt qu'une exception,
+              // même choix que `/cabinet/folder/:folderId` ci-dessus.
+              if (threadId == null) {
+                return const Scaffold(body: SizedBox.shrink());
+              }
+
+              return ConversationScreen(threadId: threadId);
+            },
           ),
           GoRoute(
             path: '/evaluations',

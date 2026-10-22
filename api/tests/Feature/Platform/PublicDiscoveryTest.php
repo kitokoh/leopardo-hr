@@ -233,10 +233,19 @@ class PublicDiscoveryTest extends TestCase
 
         $this->assertIsArray($actions);
 
-        // Le restaurant sert commande ET réservation, et accepte le contact.
+        // Le restaurant sert commande ET accepte le contact. Il ne declare PAS
+        // `booking` : aucun contrat public de reservation n'existe (#8795 a
+        // retire l'action fantome de `supportedActions()`). Cette assertion
+        // etait restee sur l'ancienne valeur apres #8795 — elle exigeait une
+        // capacite que le produit a deliberement retiree, donc `main` etait
+        // rouge sur un test qui contredisait le code.
         $this->assertContains('order', $actions['restaurant']);
-        $this->assertContains('booking', $actions['restaurant']);
         $this->assertContains('contact', $actions['restaurant']);
+        $this->assertNotContains(
+            'booking',
+            $actions['restaurant'],
+            'P3-01 n\'est pas livre : Restaurant ne doit pas annoncer une reservation sans contrat public'
+        );
 
         // La vitrine n'expose que le contact : ni commande ni réservation.
         $this->assertSame(['contact'], $actions['showcase']);

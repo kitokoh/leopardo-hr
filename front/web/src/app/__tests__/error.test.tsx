@@ -51,6 +51,20 @@ describe('GlobalError (i18n)', () => {
     expect(reset).toHaveBeenCalledTimes(1);
   });
 
+  it('leaks no stack trace or technical detail (500 boundary)', () => {
+    mockLocale = 'fr';
+    const boom = Object.assign(new Error('SQLSTATE[42S02]: base table not found'), {
+      digest: 'abc123',
+      stack: 'Error: boom\n    at /srv/app/api/secret.php:42',
+    });
+    render(<GlobalError error={boom} reset={jest.fn()} />);
+    const text = document.body.textContent ?? '';
+    // Le message d'erreur brut et la stack ne doivent JAMAIS atteindre le DOM.
+    expect(text).not.toMatch(/SQLSTATE|base table|secret\.php/);
+    // Seul l'identifiant de corrélation (digest) est exposé, jamais la stack.
+    expect(text).toContain('abc123');
+  });
+
   it('exposes a support link and a home link', () => {
     renderError('fr');
     expect(screen.getByRole('link', { name: "Retour à l'accueil" })).toHaveAttribute('href', '/');

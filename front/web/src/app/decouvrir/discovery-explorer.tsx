@@ -63,6 +63,11 @@ const TYPE_LABEL_KEYS: Record<string, string> = {
   showcase: 'discovery.typeShowcase',
   restaurant: 'discovery.typeRestaurant',
   hospitality_property: 'discovery.typeHospitalityProperty',
+  // P1-02 — les deux verticales dont la fiche publique a été livrée avec ce
+  // lot. Sans libellé, la carte affichait le type canonique brut
+  // (`retail_shop`, `vtc_operator`) au lieu d'un mot lisible.
+  retail_shop: 'discovery.typeRetailShop',
+  vtc_operator: 'discovery.typeVtcOperator',
 };
 
 function typeLabel(locale: AppLocale, type: string): string {

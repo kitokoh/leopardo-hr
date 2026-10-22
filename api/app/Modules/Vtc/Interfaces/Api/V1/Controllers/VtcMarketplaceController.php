@@ -67,6 +67,25 @@ final class VtcMarketplaceController extends Controller
     }
 
     /**
+     * Fiche publique d'un opérateur VTC (P1-02) : identité publique servie par
+     * le MÊME DTO que l'annuaire (`VtcMarketplaceOperatorResource`), résolue
+     * par slug via `VtcMarketplaceService::operatorBySlug()` — donc avec
+     * EXACTEMENT le même périmètre fail-closed que l'annuaire (opt-in
+     * `active`, feature `vtc` active, société ni `suspended` ni `expired`).
+     *
+     * Conséquence voulue : un opérateur dépublié disparaît de l'annuaire ET
+     * de sa fiche, sans divergence possible entre les deux surfaces — aucune
+     * règle de publication n'est ré-implémentée ici.
+     *
+     * 404 uniforme (jamais 403) : slug inconnu, dépublié ou hors périmètre sont
+     * indiscernables — aucune énumération de profils possible.
+     */
+    public function operator(string $slug): VtcMarketplaceOperatorResource
+    {
+        return new VtcMarketplaceOperatorResource($this->marketplace->operatorBySlug($slug));
+    }
+
+    /**
      * Devis public d'une course (M-12) : l'opérateur est résolu par slug
      * (404 uniforme si non opt-in / module inactif), puis le calcul est
      * délégué à `EstimateRideFareAction` dans SON tenant — aucune logique

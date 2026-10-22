@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-10-11T00:00:00Z",
+  "_updated_at": "2026-10-20T00:00:00Z",
   "_locale": "ar",
   "app": {
     "title": "ليوباردو — حزمة الأعمال"
@@ -1739,7 +1739,8 @@
     "notFound": "الصفحة غير موجودة",
     "travelAgency": "وكالة السفر",
     "emailTemplates": "البريد الإلكتروني",
-    "settings": "الإعدادات"
+    "settings": "الإعدادات",
+    "messaging": "المراسلة"
   },
   "webhooks": {
     "confirm_delete": "حذف خطاف الويب هذا؟"
@@ -6596,6 +6597,14 @@
       "ctaContact": "التواصل مع الدعم",
       "mascotAlt": "رسم توضيحي: فهد غير متصل، الصفحة غير موجودة"
     },
+    "forbidden": {
+      "kicker": "خطأ 403",
+      "title": "تم رفض الوصول",
+      "body": "دورك لا يسمح بهذا الإجراء. إذا كنت تعتقد أن هذا خطأ، اطلب الوصول من أحد المسؤولين.",
+      "ctaHome": "العودة إلى الصفحة الرئيسية",
+      "ctaSupport": "طلب الوصول",
+      "mascotAlt": "رسم توضيحي: فهد أمام باب مغلق، تم رفض الوصول"
+    },
     "error": {
       "kicker": "خطأ غير متوقع",
       "title": "حدث خطأ ما",
@@ -8350,6 +8359,86 @@
   },
   "travel.seats.state.absent": "مقعد غير موجود",
   "travel.seats.layoutNotice": "تغيير تخطيط المقاعد لا ينقل الركاب الذين لديهم حجوزات: تبقى مقاعدهم كما هي. استخدم إجراء استبدال المركبة لحل أي تعارض.",
+  "chatHub": {
+    "title": "المراسلة",
+    "subtitle": "محادثات مع زملائك ومجموعات العمل",
+    "list": {
+      "title": "المحادثات",
+      "search": "البحث عن محادثة",
+      "empty": "لا توجد محادثة",
+      "emptyHint": "ستظهر هنا المحادثات مع مديرك أو مجموعاتك.",
+      "loadError": "تعذر تحميل المحادثات.",
+      "unread": "غير مقروء",
+      "noSubject": "نقاش",
+      "conversation": "محادثة",
+      "kindGroup": "مجموعة"
+    },
+    "thread": {
+      "selectTitle": "اختر محادثة",
+      "selectHint": "اختر محادثة من اليسار لعرض الرسائل.",
+      "empty": "لا توجد رسالة",
+      "emptyHint": "اكتب أول رسالة في هذه المحادثة.",
+      "loadError": "تعذر تحميل الرسائل.",
+      "placeholder": "اكتب رسالة…",
+      "send": "إرسال",
+      "sending": "جارٍ الإرسال…",
+      "enterHint": "Enter للإرسال، Shift+Enter لسطر جديد.",
+      "loadOlder": "تحميل الرسائل السابقة",
+      "edited": "معدلة",
+      "deletedMessage": "رسالة محذوفة",
+      "reply": "رد",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "report": "إبلاغ",
+      "editingMessage": "تعديل الرسالة",
+      "replyingTo": "ردًا على:",
+      "attach": "إرفاق ملف",
+      "attachment": "مرفق",
+      "attachmentTooLarge": "الملف كبير جدًا للإرسال.",
+      "attachmentGone": "المرفق غير متاح: فُقد الملف أثناء إعادة النشر.",
+      "attachmentForbidden": "المرفق غير موجود أو الوصول مرفوض.",
+      "attachmentFailed": "تعذر تنزيل المرفق.",
+      "offline": "غير متصل",
+      "live": "محدّث",
+      "deleteConfirm": "حذف هذه الرسالة؟",
+      "reportPrompt": "سبب الإبلاغ",
+      "reportSent": "أُرسل الإبلاغ إلى المراجعة.",
+      "reportFailed": "تعذر الإبلاغ.",
+      "editForbidden": "يمكنك تعديل رسائلك فقط.",
+      "editFailed": "تعذر التعديل.",
+      "deleteFailed": "تعذر الحذف.",
+      "sendFailed": "تعذر الإرسال. أعد المحاولة.",
+      "offlineSendFailed": "أنت غير متصل: لم تُرسل الرسالة.",
+      "notParticipant": "لم تعد هذه المحادثة متاحة.",
+      "rateLimited": "رسائل كثيرة جدًا. انتظر لحظة.",
+      "invalidMessage": "رسالة غير صالحة.",
+      "directSubtitle": "محادثة خاصة",
+      "groupMembers": "أعضاء المجموعة"
+    },
+    "tenantRequired": {
+      "title": "سياق الشركة مطلوب",
+      "body": "المراسلة متاحة بجلسة شركة (انتحال هوية أو حساب مدير)."
+    },
+    "forbidden": {
+      "title": "المراسلة معطلة",
+      "body": "وحدة المراسلة غير مفعّلة لهذه الشركة."
+    },
+    "common": {
+      "loading": "جارٍ التحميل…",
+      "retry": "إعادة المحاولة",
+      "refresh": "تحديث",
+      "save": "حفظ",
+      "cancel": "إلغاء"
+    },
+    "subjects": {
+      "salary_advance": "سلفة على الراتب",
+      "attendance_correction": "تصحيح الحضور",
+      "absence": "غياب"
+    },
+    "report": {
+      "reasonsHint": "حدد سبب الإبلاغ من القائمة"
+    }
+  },
   "discovery": {
     "title": "ابحث عن مهني قريب منك",
     "description": "ابحث عن مهنة أو خدمة أو اسم، ثم تواصل مع المهني مباشرة.",
@@ -8382,6 +8471,28 @@
     "typeShowcase": "مهني",
     "typeRestaurant": "مطعم",
     "typeHospitalityProperty": "إقامة",
+    "typeRetailShop": "متجر",
+    "typeVtcOperator": "سيارة أجرة / نقل",
+    "shopTitle": "متجر",
+    "shopAboutTitle": "حول المتجر",
+    "shopCategoriesTitle": "الفئات",
+    "shopProductsCount": "منتج متاح",
+    "shopRatingSuffix": "تقييم",
+    "shopContactTitle": "تواصل مع المتجر",
+    "shopNotFoundTitle": "المتجر غير موجود",
+    "shopBackToDirectory": "كل المهنيين",
+    "operatorTitle": "مشغّل النقل",
+    "operatorAboutTitle": "حول المشغّل",
+    "operatorEstimateTitle": "اطلب عرض سعر",
+    "operatorEstimateHint": "يحسب المشغّل السعر انطلاقاً من رحلتك.",
+    "operatorNotFoundTitle": "المشغّل غير موجود",
+    "operatorBackToDirectory": "كل المهنيين",
+    "companyTitle": "التجارة الدولية",
+    "companyAboutTitle": "حول الشركة",
+    "companyImport": "استيراد",
+    "companyExport": "تصدير",
+    "companyDomestic": "السوق المحلية",
+    "companyNotFoundTitle": "الشركة غير موجودة",
     "contact": "تواصل",
     "contactTitle": "تواصل مع هذا المهني",
     "contactName": "اسمك",

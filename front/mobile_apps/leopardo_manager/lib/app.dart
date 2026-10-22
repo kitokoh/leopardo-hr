@@ -26,6 +26,8 @@ import 'package:leopardo_core/features/absences/screens/absence_list_screen.dart
 import 'package:leopardo_core/features/salary_advances/screens/salary_advance_list_screen.dart';
 import 'package:leopardo_manager/features/payrolls/screens/payroll_list_screen.dart';
 import 'package:leopardo_core/features/notifications/screens/notification_list_screen.dart';
+import 'package:leopardo_core/features/chat/screens/conversation_list_screen.dart';
+import 'package:leopardo_core/features/chat/screens/conversation_screen.dart';
 import 'package:leopardo_core/features/evaluations/screens/evaluation_list_screen.dart';
 import 'package:leopardo_core/features/cabinet/screens/cabinet_screen.dart';
 import 'package:leopardo_core/features/settings/screens/settings_screen.dart';
@@ -229,6 +231,27 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/notifications',
             builder: (context, state) => const NotificationListScreen(),
+          ),
+          // #8754 [BOS-CHAT] — messagerie HUMAINE (BC-13 COMMS). Le manager
+          // utilise le MÊME module que l'employé (`leopardo_core`) : un seul
+          // client, aucune duplication. L'autorisation reste serveur (404 pour
+          // un non-participant).
+          GoRoute(
+            path: '/chat',
+            builder: (context, state) => const ConversationListScreen(),
+          ),
+          GoRoute(
+            path: '/chat/:threadId',
+            builder: (context, state) {
+              final threadId = int.tryParse(
+                state.pathParameters['threadId'] ?? '',
+              );
+              if (threadId == null) {
+                return const Scaffold(body: SizedBox.shrink());
+              }
+
+              return ConversationScreen(threadId: threadId);
+            },
           ),
           GoRoute(
             path: '/crm',

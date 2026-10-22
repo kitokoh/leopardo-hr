@@ -30,14 +30,21 @@ final class RestaurantDiscoverableProvider implements PublicDiscoverableProvider
     /**
      * #8761 — le restaurant prend en charge la commande publique
      * (`RestaurantPublicOrderService` / `POST /api/v1/restaurant/public/orders`)
-     * ET la réservation via sa fiche publique ; le contact passe par la
-     * passerelle commune.
+     * ET le contact via la passerelle commune.
+     *
+     * AUDIT PHASE 1 — `booking` RETIRÉ (2026-10-21). Aucun contrat public de
+     * réservation n'existe : `RestaurantReservationController` n'est monté que
+     * dans le groupe `auth:sanctum` du dashboard (`routes/modules/
+     * restaurantmanager.php`), et aucune route `public/.../reservation` n'est
+     * déclarée. Déclarer `booking` produisait un bouton inopérant côté
+     * `front/web`. La capacité est donc retirée tant qu'un contrat public
+     * (P3-01) n'est pas livré : `supportedActions()` doit rester la vérité.
      *
      * @return list<string>
      */
     public function supportedActions(): array
     {
-        return ['contact', 'order', 'booking'];
+        return ['contact', 'order'];
     }
 
     public function search(array $filters): array
@@ -105,8 +112,15 @@ final class RestaurantDiscoverableProvider implements PublicDiscoverableProvider
             'image_url' => self::asString($row['image_url'] ?? null),
             'latitude' => self::asFloat($row['latitude'] ?? null),
             'longitude' => self::asFloat($row['longitude'] ?? null),
-            // Le client résout la fiche publique via SON annuaire vertical (slug).
-            'url' => '/public/restaurants/'.$slug,
+            // AUDIT PHASE 1 (2026-10-21) — la fiche publique est servie par
+            // `front/web` sous `/restaurants/{slug}` (`src/app/restaurants/
+            // [slug]/page.tsx`, RESTO-903/#7748). L'ancienne valeur
+            // `/public/restaurants/{slug}` désignait le préfixe de l'API
+            // (`/api/v1/public/restaurants`), pas une route du navigateur :
+            // chaque résultat Restaurant de `/decouvrir` pointait donc vers
+            // une page inexistante (même classe de bug que P1-02, mais côté
+            // Restaurant, et non détectée alors).
+            'url' => '/restaurants/'.$slug,
         ];
     }
 

@@ -168,6 +168,12 @@ export default function DashboardLayout({
     if (HEX_COLOR_PATTERN.test(tenantBranding.accent_color ?? '')) {
       style['--tenant-accent'] = tenantBranding.accent_color;
     }
+    // BOS-B-01 — libellé lisible sur le fond primaire : la couleur vient du
+    // serveur (contraste WCAG calculé), jamais d'un blanc codé en dur. Sans
+    // elle, un `primary_color` clair rendait le texte des boutons illisible.
+    if (HEX_COLOR_PATTERN.test(tenantBranding.primary_color_foreground ?? '')) {
+      style['--tenant-on-primary'] = tenantBranding.primary_color_foreground as string;
+    }
     return Object.keys(style).length > 0 ? (style as React.CSSProperties) : undefined;
   }, [tenantBranding]);
 

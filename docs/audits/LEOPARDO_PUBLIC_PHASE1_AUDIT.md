@@ -14,6 +14,39 @@
 
 ---
 
+## Statut actuel au 2026-10-21
+
+> Tableau de vérité courant, ajouté le **2026-10-21** à la demande de la mission. Il
+> remplace la lecture des seuls tableaux du §14.1, qui décrivent l'état **à la rédaction**.
+> Les sections plus bas ne sont pas réécrites : chacune porte une ligne datée quand elle a
+> été corrigée. `main` = `c456f2acf`.
+
+| Constat | État réel | Où / preuve |
+|---|---|---|
+| **P0-01** — mobile invisible en CI | **LIVRÉ** | #8776 mergée (`minSdk` 26) ; `.github/workflows/mobile-smoke.yml` vert |
+| **P0-02** — autorisation de publication | **INFIRMÉ** | `authorize('update', $branch)` présent, 403 observé (§7) |
+| **P0-03** — index de routage public | **LIVRÉ** | `test_the_routing_index_has_exactly_one_row_per_public_thread` |
+| **P0-04** — isolation cross-tenant | **LIVRÉ** | 3 tests `404` (autre client, autre tenant, employé simple) |
+| **P0-05** — aucun secret dans les artefacts | **TENU** | scan local + CI à chaque PR de la mission |
+| **P0-06** — `Deploy Main Catch-up` / keepalive | **LIVRÉ** | #8796 |
+| **P0-07** — `/conversations/public` accepte un non-employé | **INFIRMÉ** | vrai token ⇒ **401** (§13.5) |
+| **P1-01** — écran de publication Restaurant | **DÉJÀ LIVRÉ** avant la mission | `(dashboard)/restaurant/online/page.tsx`, 5/5 Jest |
+| **P1-02** — fiches publiques Retail et VTC | **LIVRÉ** | `/boutiques/[slug]`, `/operateurs/[slug]` (§13.7) |
+| **P1-03** — boutons = réalité (`booking`) | **LIVRÉ** | #8795, `test_declared_actions_are_subset_of_the_proven_ones` |
+| **P1-04 / P1-05** — E2E du parcours nominal | **LIVRÉ** | 19 tests / 90 assertions ; Playwright **10/10** (§13.6, §13.8) |
+| **P2-01** — publication transverse | **PARTIEL : 1/32 verticales** | Trade livrée (#8803, #8808) ; sémantique réutilisable (§13.9) |
+| **P2-02** — `SearchableRegistry` vide | **OUVERT** | `searchables => []` dans `config/geo.php` |
+| **P2-05** — pièces jointes dans les fils publics | **OUVERT** | non exposées aujourd'hui, donc pas de fuite ; à concevoir |
+| **P2-06** — build mobile de fumée sur PR backend | **LIVRÉ** | `mobile-smoke.yml` (non requis, donc informatif) |
+| **P2-03** — `users` vs `travel_customers` | **BLOQUÉ — décision user** | #8804 |
+| **P2-04** — comptage des BC et BC-37 | **BLOQUÉ — décision user** | #8805 |
+| **P3-01 / P3-02** — réservation, 1ᵉʳ consommateur BC-38 | **OUVERT** | aucun contrat public de réservation ; 0 appelant de `paiements/internal` |
+| **P3-03** — rail PSP réel | **BLOQUÉ — décision légale** | #8806 |
+| **P3-04** — app mobile grand public | **BLOQUÉ — décision produit** | #8807 |
+| **P3-05** — 32 verticales restantes | **PARTIEL : 6/37 découvrables** | Restaurent, Hospitality, Showcase, Retail, Vtc, Trade |
+
+---
+
 ## Statuts utilisés
 
 | Statut | Signification exacte |
@@ -47,7 +80,7 @@ conversation humaine avec lui — sans compte professionnel, sans assistant IA.
 | Revérification Phase 0 | `grep`/`find` ciblés sur `api/app`, `api/routes`, `dev-hub/governance`, `front/*` | **VÉRIFIÉ** |
 | Cartographie A→E | lecture écran → route → contrôleur → service → modèle → tests | **VÉRIFIÉ** |
 | Tests frontend | `npx jest` (front/web) après `npm ci` | **TESTÉ — RÉUSSI** (ciblé) / **TESTÉ — ÉCHEC** (suite complète) |
-| Tests backend | `composer install` puis `vendor/bin/phpunit` sur PostgreSQL 15 + PostGIS | **TESTÉ — RÉUSSI** (18 tests, 84 assertions) après installation de la base — voir §13.1 |
+| Tests backend | `composer install` puis `vendor/bin/phpunit` sur PostgreSQL 15 + PostGIS | **TESTÉ — RÉUSSI** (19 tests, 90 assertions après contre-audit) après installation de la base — voir §13.1 |
 | CI | API GitHub Actions : check-runs + workflow runs sur `main` | **VÉRIFIÉ** |
 
 ### 1.3 Environnement de la session (limites)
@@ -341,9 +374,15 @@ Et côté serveur, sur PostgreSQL 15 + PostGIS réels :
 ```
 $ CI=true … vendor/bin/phpunit \
     tests/Feature/LeopardoPublic/PublicParcoursEndToEndTest.php
-..............                                                          18 / 18 (100%)
-OK (18 tests, 84 assertions)
+...................                                                     19 / 19 (100%)
+OK (19 tests, 90 assertions)
 ```
+
+> **Corrigé le 2026-10-21.** Ce bloc mélangeait deux exécutions : `18 / 18` provient du run
+> d'avant l'ajout de `test_step_9e` (le fichier ne comptait alors que 18 méthodes), alors
+> que la ligne `OK (19 tests, 90 assertions)` provient du run suivant. Rejoué à
+> l'identification ci-dessus, sur `main` = `c456f2acf` : **`19 / 19 (100%)`,
+> `OK (19 tests, 90 assertions)`, 2,9 s**. Le fichier compte bien **19** méthodes de test.
 
 Ce run **prouve** les étapes 1→10 du §14.2, mais aussi un point que je croyais
 inexistant : la publication est bien autorisée par Policy (§7).
@@ -359,7 +398,7 @@ inexistant : la publication est bien autorisée par Policy (§7).
 | C1 — fiche restaurant | `front/web/src/app/restaurants/[slug]/page.tsx` | `GET /api/v1/public/restaurants/{slug}` (annuaire public) | tenant, `is_public=true`, `public_slug` non nul | **VÉRIFIÉ** |
 | C2 — fiche hébergement | `front/web/src/app/stay/[slug]/page.tsx` | routes `hospitality_manager.php` | tenant | **VÉRIFIÉ** |
 | C3 — fiche vitrine | `front/web/src/app/vitrine/[slug]/page.tsx` | `GET /api/v1/public/vitrine/{slug}` | `status=published` | **VÉRIFIÉ** |
-| C4 — fiche retail / VTC | *(pas de page dédiée dans `front/web`)* | provider discoverable uniquement | — | **PARTIEL** — découvrable mais **sans fiche publique** : `item.url` pointe vers la vitrine marchande, pas vers une fiche profil |
+| C4 — fiche retail / VTC | `front/web/src/app/boutiques/[slug]/page.tsx`, `front/web/src/app/operateurs/[slug]/page.tsx` | `GET /api/v1/public/retail/shops/{slug}`, `GET /api/v1/public/vtc/marketplace/operators/{slug}` | tenant, `is_public=true`, `public_slug` non nul | **LIVRÉ le 2026-10-21** (§13.7) — l'ancien constat « pas de page dédiée » était exact à la rédaction |
 | C5 — cohérence du contrat | — | `PublicDiscoverableProvider` | DTO fermé | **VÉRIFIÉ** |
 | C6 — profil désactivé retiré | — | filtres `is_public`/`status` dans chaque provider | — | **VÉRIFIÉ** (lecture) / **NON VÉRIFIÉ** (exécution) |
 
@@ -485,12 +524,16 @@ séparé avec analyse légale (portefeuille / conservation de fonds).
 | `npx jest --runTestsByPath` (découverte + conversations) | **24/24 PASS** | **TESTÉ — RÉUSSI** |
 | `vendor/bin/phpunit --testsuite=Unit` (1ᵉʳ essai) | **Échec** : `SQLSTATE[08006] could not translate host name "pgsql"` — l'hôte est forcé par `tests/TestCase.php` quand la variable `CI` est absente (détection de conteneur) | **TESTÉ — ÉCHEC** (environnement, cause identifiée) |
 | `vendor/bin/phpunit --testsuite=Unit` (2ᵉ essai, `CI=true` + PostgreSQL 15 + PostGIS) | **Échec** : `could not find driver` puis `type "geometry" does not exist` — dépendances serveur manquantes | **TESTÉ — ÉCHEC** (environnement, cause identifiée) |
-| `phpunit tests/Feature/LeopardoPublic/PublicParcoursEndToEndTest.php` (3ᵉ essai, PostGIS installé) | **18 tests, 84 assertions — OK** | **TESTÉ — RÉUSSI** |
+| `phpunit tests/Feature/LeopardoPublic/PublicParcoursEndToEndTest.php` (3ᵉ essai, PostGIS installé) | **19 tests, 90 assertions — OK** | **TESTÉ — RÉUSSI** |
 | Builds Flutter | non exécutés (ni Flutter ni Android SDK) | **NON VÉRIFIÉ** |
 
 #### 13.1.1 Ce que la suite E2E a réellement appris (3 découvertes issues de l'exécution)
 
-Exécuter les tests n'a pas seulement confirmé l'audit : **il l'a corrigé deux fois**.
+Exécuter les tests n'a pas seulement confirmé l'audit : **il l'a corrigé trois fois**.
+
+> **Note du 2026-10-21** : la version d'origine disait « deux fois ». Le troisième
+> constat (P0-07) est le point 3 ci-dessous, infirmé par le contre-audit (§13.5) :
+> l'exécution a corrigé le rapport, puis corrigé le constat lui-même.
 
 1. **`authorize()` existe bel et bien.** Ma lecture statique concluait à son absence dans
    `RestaurantBranchPublicProfileController`. Faux : `$this->authorize('update', $branch)`
@@ -499,11 +542,21 @@ Exécuter les tests n'a pas seulement confirmé l'audit : **il l'a corrigé deux
 2. **Le contrat de `POST /public/conversations` renvoie `data.thread_id`**, et **200**
    (et non 201) quand le fil existe déjà. Mon test initial attendait `data.id` et 201 :
    c'était **mon** erreur, pas un défaut produit. Corrigé et documenté.
-3. **`GET /conversations/public` n'est pas fermé au type d'acteur.** Un client
-   authentifié via `user_api` reçoit **200 avec `data: []`** : `auth:sanctum` accepte son
-   token, le contrôleur reçoit un `User` au lieu d'un `Employee`, et `threadsForManager()`
-   retourne une collection vide. **Aucune fuite de données** (vérifié par assertion), mais
-   la route devrait refuser un acteur qui n'est pas un employé. → **nouveau P0-07**.
+3. **~~`GET /conversations/public` n'est pas fermé au type d'acteur~~ — CONSTAT INFIRMÉ
+   (2026-10-21).** J'avais observé **200 avec `data: []`** pour un client et conclu à un
+   défaut produit. **C'était un artefact de mon test**, pas un comportement de l'API :
+   `publish()` appelle `Sanctum::actingAs($this->manager)` sur le guard par défaut
+   (`sanctum`) ; l'appel suivant `Sanctum::actingAs($client, ['*'], 'user_api')` ne
+   touche **que** le guard `user_api`, si bien que `auth:sanctum` continuait de résoudre
+   le **manager**. Je mesurais un accès manager (200) en croyant mesurer un accès client.
+
+   Vérifié en rejouant la requête avec un **vrai token porteur** (`Bearer`), comme en
+   production : le client reçoit **401 `UNAUTHENTICATED`**. `auth:sanctum` utilise le
+   guard `sanctum`, dont le provider est `employees` ;
+   `Laravel\Sanctum\Guard::hasValidProvider()` rejette donc un token dont le `tokenable`
+   est un `User`. **Le contrôleur ne reçoit jamais autre chose qu'un `Employee`.**
+   → **P0-07 est retiré du plan.** Le défaut réel était le **test**, qui tolérait un
+   `200` vide ; il est corrigé (voir **§13.5**).
 
 ### 13.2 CI sur `main` @ `433fd05` (API GitHub)
 
@@ -534,17 +587,263 @@ Workflow runs récents sur `main` : `Deploy Main Catch-up` **failure** ×1,
 
 ⇒ **La dette CI de Phase 0 n'est pas résorbée : elle est devenue silencieuse.**
 
+> **Note du 2026-10-21 — dette résorbée.** Le raisonnement ci-dessus reste le bon, mais
+> ses deux prémisses ont été traitées : **#8776 est mergée** (`da9a1f592`, `minSdk` 26 sur
+> les 8 apps) et `mobile-smoke.yml` construit **un** APK debug sur **chaque** PR vers
+> `main`, sans filtre de chemin. Le job est passé au vert sur le commit `bc038b01f`.
+> Réserve maintenue : ce job **n'est pas** dans les checks requis, il rend donc la
+> régression **visible sans bloquer** le merge (voir §15.3 de ce rapport).
+
 ### 13.4 Séparation demandée par la mission
 
 | Catégorie | Éléments |
 |---|---|
 | **Échecs préexistants sur `main`** | `Deploy Main Catch-up` (retard prod Render) ; `Dev Keepalive & Watchdog` `startup_failure` ; `Backend Coverage Gate` annulé (timeout/queue) |
 | **Échecs introduits par des changements en cours** | **Aucun détecté** sur `main` — la branche `audit/leopardo-public-phase1` n'ajoute aucun code exécutable (documentation + tests) |
-| **Échecs révélés par les nouveaux tests** | Non applicables dans cette session (tests E2E ajoutés mais backend non exécutable — voir §14.2) |
+| **Échecs révélés par les nouveaux tests** | ~~Non applicables dans cette session (tests E2E ajoutés mais backend non exécutable — voir §14.2)~~ → **FAUX le 2026-10-21** : le backend **était** exécutable. La suite a tourné (`19 tests, 90 assertions — OK`, §8) et le contre-audit a produit 2 tests faux puis corrigés (§13.5) |
 
 **Aucun test ni contrôle n'a été désactivé, contourné ou assoupli pour verdir quoi que
 ce soit.** Les `skipped` observés sont produits par les filtres `detect-changes`
 existants, pas par cette mission.
+
+### 13.5 Contre-audit du 2026-10-21 — ce que l'exécution a renversé
+
+Session de suivi (branche `feat/leopardo-public-p0-07-p1-01`), même environnement
+(PHP 8.4.26, PostgreSQL 15 + PostGIS, Node 20.20.2). Objet : implémenter P0-07 et
+P1-01. **Les deux se sont révélés déjà satisfaits — et un constat du rapport §13.1
+était faux.**
+
+| # | Constat annoncé | Ce que l'exécution a montré | Preuve |
+|---|---|---|---|
+| 1 | **P0-07** — un client `user_api` obtient `200 + data: []` sur `GET /conversations/public` | **FAUX.** Avec un vrai token porteur : **401 `UNAUTHENTICATED`**. Le guard `sanctum` a le provider `employees` ; `Sanctum\Guard::hasValidProvider()` rejette un `tokenable` `User`. | Requête `Bearer` réelle + `vendor/laravel/sanctum/src/Guard.php:145-155` |
+| 2 | Le `200` vide était un défaut produit | **C'était un artefact du test.** `publish()` fait `Sanctum::actingAs($manager)` sur le guard `sanctum` ; `Sanctum::actingAs($client, ['*'], 'user_api')` ne réinitialise pas ce guard. `auth:sanctum` résolvait donc le **manager**. | `Sanctum::actingAs()` fait `app('auth')->guard($guard)->setUser($user)` sans `forgetGuards()` |
+| 3 | **P1-01** — « aucun écran de publication » | **DÉJÀ LIVRÉ.** `front/web/src/app/(dashboard)/restaurant/online/page.tsx` appelle `GET`/`PUT /restaurant/branches/{id}/public-profile` avec `is_public` + `public_slug`, atteignable par la tuile `/restaurant/online` du hub Restaurant. | 5 tests Jest verts, dont « enregistre le profil public (PUT) avec les champs du contrat » |
+
+**Correctif produit : aucun.** Le code de production était correct dans les deux cas.
+Un middleware `public.conversation.employee` a été écrit puis **retiré** : il n'aurait
+rien fermé de plus que ce que le guard ferme déjà, et aurait ajouté une surface à
+maintenir (écrit, mesuré, puis abandonné — `git checkout` sur les deux fichiers).
+
+**Correctif de test (le vrai défaut).** `test_step_9d` tolérait `200` vide : il
+documentait un smell inexistant et serait resté vert si le contrôleur avait commencé à
+servir de vraies données au mauvais acteur. Il utilise désormais un **vrai token**
+(`createToken()`) après `Auth::forgetGuards()`, et asserte **401**. Un second test
+(`test_step_9e`) couvre les **trois** autres routes du groupe avec le token du client
+qui a lui-même créé le fil, et vérifie qu'aucun message d'intrusion n'est persisté.
+
+**Résultat :** `vendor/bin/phpunit tests/Feature/LeopardoPublic/` → **19 tests,
+90 assertions — OK**. `pint --test` → PASS. `phpstan --level=8` → No errors.
+`jest restaurant-online-page` → 5/5.
+
+**Leçon de méthode.** Un `Sanctum::actingAs($actor, ['*'], $guard)` ne remplace pas le
+guard par défaut : sans `Auth::forgetGuards()`, l'acteur de la requête précédente reste
+authentifié sur `sanctum`. **Tout test d'isolation d'acteur doit utiliser un vrai token
+ou vider les guards** — sinon il mesure l'acteur précédent, ce qui produit exactement
+l'inverse du résultat attendu (un faux positif de vulnérabilité ici).
+
+### 13.6 Playwright — exécuté pour la première fois, 7/7
+
+Le spec était livré **NON VÉRIFIÉ** (aucun serveur lancé en Phase 1). Il a été exécuté
+le 2026-10-21 avec Chromium après `npx playwright install chromium` et démarrage de
+`front/web` (Next 16.4, Turbopack) :
+
+```
+npx playwright test e2e/leopardo-public-parcours.spec.ts --project=chromium --workers=1
+→ 7 passed (27.6s)
+```
+
+**Deux tests étaient faux par construction et ont été corrigés.** `/decouvrir` est
+rendue **côté serveur** (`searchPublicDiscovery()` dans le Server Component, page
+indexable) : `page.route()` n'intercepte que les fetch du navigateur, il ne peut donc
+pas figer la liste du premier rendu. Les deux tests mockaient `GET /public/discover`
+puis asseraient un item visible et son `a[href]` — impossible. Ils asserent désormais
+ce qui est vérifiable en e2e (la page se rend, aucun href de fiche fabriqué) ; le
+rendu des items et `item.url` → href restent couverts en Jest
+(`discovery-explorer.test.tsx`, href exact).
+
+⚠️ **Contrainte d'environnement, pas un échec de test :** en parallélisme par défaut
+(7 workers) le serveur Next est tué par le noyau (`SIGKILL`) — pression mémoire du
+sandbox. `--workers=1` est nécessaire ici ; en CI, `workers: 1` est déjà la valeur
+quand `CI=true`.
+
+---
+
+### 13.7 Incrément P1-02 + trou CI (2026-10-21) — ce que l'exécution a encore corrigé
+
+Deuxième incrément d'implémentation après le contre-audit §13.5. **P1-02 est clos** et
+le trou CI **P0-06** est comblé. Trois constats de ce lot viennent de l'**exécution**,
+pas de la lecture.
+
+#### a) P1-02 — les `url: null` de la découverte
+
+Le lot #8773 avait étendu la découverte de 3 à 5 verticales, mais
+`RetailDiscoverableProvider` et `VtcDiscoverableProvider` publiaient **`url: null`** :
+un résultat Retail ou VTC apparaissait dans `/decouvrir` **sans fiche publique**, et le
+client retombait sur `/restaurants/{slug}`. **Vérifié à l'exécution** : `/restaurants/*`
+est une surface **protégée** — un visiteur anonyme y est redirigé vers `/auth/login`
+(307). Le lien de repli était donc **mort**, pas seulement imprécis.
+
+Livré :
+
+| Élément | Nature |
+|---|---|
+| `GET /public/vtc/marketplace/operators/{slug}` | Route **manquante** créée ; réutilise `VtcMarketplaceService::operatorBySlug()` et le **même DTO** que l'annuaire → même périmètre fail-closed, aucune règle dupliquée |
+| `RetailDiscoverableProvider` / `VtcDiscoverableProvider` | `url` = `/boutiques/{slug}` et `/operateurs/{slug}` |
+| `front/web/src/app/boutiques/[slug]/page.tsx` | Page SSR indexable, JSON-LD `Store` |
+| `front/web/src/app/operateurs/[slug]/page.tsx` | Page SSR indexable, JSON-LD `TaxiService` |
+| `retail-public-api.ts` / `vtc-public-api.ts` | Clients SSR, 404 fail-closed → `notFound()` |
+| `public-contact-cta.tsx` | Seul point d'entrée du contact hors `/decouvrir`, réutilise `ContactDialog` |
+| `api/openapi.yaml` | Nouvelle route documentée (`OpenApiDocsTest` 9/9) |
+
+**Décision assumée** : la fiche VTC n'affiche **aucun** CTA de réservation —
+`VtcDiscoverableProvider` ne déclare que l'action `contact`, donc un bouton
+« Réserver » serait inopérant (règle P1-03). La grille tarifaire reste interne.
+
+#### b) ⚠️ `notFound()` rend le contenu 404 mais la réponse HTTP reste **200**
+
+**Mesuré, pas supposé.** Dans cet environnement (Next 16.4 dev/Turbopack), une fiche
+dont le slug est inconnu rend bien le contenu de `not-found.tsx` (titre « Boutique
+introuvable ») mais la réponse HTTP est **200**, pas 404 :
+
+```
+/boutiques/zzz-inexistant    HTTP 200   (titre : « Boutique introuvable »)
+/operateurs/zzz-inexistant   HTTP 200   (titre : « Opérateur introuvable »)
+/vitrine/zzz-inexistant      HTTP 200   ← le PATRON dont ces pages sont issues
+```
+
+C'est donc un comportement **préexistant et global à l'application**, pas une
+régression de ce lot : `/vitrine/{slug inconnu}` — la page modèle — se comporte à
+l'identique. **Conséquence SEO réelle** : une fiche inexistante est servie en 200, donc
+potentiellement indexable comme page valide. Le statut en production
+(`next build` + `next start`) **n'a pas pu être mesuré** dans ce sandbox et n'est **pas
+revendiqué** ; le comportement dev/Turbopack n'est pas nécessairement celui du build.
+
+**Trois tests Playwright écrits d'abord étaient faux par construction** et ont été
+corrigés : ils asseraient `404` sur ces routes. Ils asserent désormais ce qui est
+réellement vérifiable (pas de 500, titre « introuvable », corps non vide) et le
+comportement mesuré est documenté dans le test lui-même. Un quatrième test asserait le
+307 de `/restaurants/*` : `page.goto()` **suit** les redirections, donc
+`response.status()` vaut le statut **final** (200 = page de connexion) — l'assertion
+porte maintenant sur l'URL d'arrivée.
+
+#### c) Trou CI P0-06 — les builds mobiles n'existaient pas sur PR backend
+
+`mobile-apps-ci.yml` filtre ses déclencheurs `pull_request` sur
+`front/mobile_apps/**` (correctif #7541). Sur une PR **backend**, le workflow n'est
+**même pas déclenché** : les 8 jobs `Build Debug` n'apparaissent pas « skipped », ils
+**n'existent pas**. Une régression de compilation mobile introduite par un changement
+d'API partagée reste donc invisible jusqu'à la distribution Firebase sur `main`.
+
+Nouveau `.github/workflows/mobile-smoke.yml` : **un** APK debug (`leopardo_employee`)
+construit sur **chaque** PR vers `main`, sans réactiver les 8 jobs lourds et **sans
+affaiblir aucun contrôle existant**. Validé par `actionlint 1.7.7` (exit 0) ; **aucun
+build Flutter local** (SDK absent) — validé statiquement, pas exécuté.
+
+⚠️ Ce workflow **n'est pas** dans les checks requis de la protection de `main` : il rend
+la régression **visible**. La rendre **bloquante** est une décision de paramétrage du
+dépôt, pas un changement de code.
+
+#### d) Preuve locale réelle de ce lot
+
+| Commande | Résultat |
+|---|---|
+| `phpunit tests/Feature/Retail/RetailPublicDiscoveryTest.php tests/Feature/Vtc/VtcPublicDiscoveryTest.php` | **OK (23 tests, 100 assertions)** |
+| `phpunit tests/Feature/LeopardoPublic/` | **OK (19 tests, 90 assertions)** |
+| `phpunit tests/Feature/OpenApiDocsTest.php` | **9/9** |
+| `pint --test` | **PASS** |
+| `phpstan analyse --level=8` | **`[OK] No errors`** |
+| `jest` (3 suites du périmètre) | **32/32** |
+| `jest` (suite `front/web` complète) | **189 suites, 1579 tests verts** (2 suites tuées par le noyau en parallèle, rejouées seules → vertes) |
+| `eslint` + `tsc --noEmit` | **propres** |
+| `playwright test … --workers=1` | **10 passed (27.3 s)** |
+| `actionlint 1.7.7` sur `mobile-smoke.yml` | **exit 0** |
+
+**Limites assumées** : la suite Jest complète a dû être relancée avec `--maxWorkers=2`
+puis les 2 suites tuées rejouées seules (pression mémoire du sandbox) ; Playwright exige
+`--workers=1` et un serveur Next démarré à la main (`BASE_URL` désactive le `webServer`
+de la config) ; aucun build Flutter/Android local ; la généralisation de la publication
+aux 32 verticales restantes (dont Pharmacy et Trade, **sans aucune sémantique
+d'opt-in**) est **reportée** — elle demande une décision métier par verticale.
+
+### 13.8 Issue #8791 fermée le 2026-10-21 — mesure en mode production, cause racine et correctif
+
+Le §13.7 laissait #8791 **ouverte** et explicitement **non mesurée** en production
+(« le statut en production n'a pas pu être mesuré et n'est pas revendiqué »). Elle l'est
+maintenant, et la cause n'était pas celle qu'on supposait.
+
+#### Mesure — avant correctif
+
+`next build` + `next start` (production, pas le dev) sur `front/web` :
+
+| URL | Statut | Titre rendu |
+|---|---|---|
+| `/boutiques/non-existent-slug-zzz` | **HTTP 200** | Boutique introuvable |
+| `/operateurs/non-existent-slug-zzz` | **HTTP 200** | Opérateur introuvable |
+| `/vitrine/non-existent-slug-zzz` | **HTTP 200** | Page introuvable |
+| `/stay/non-existent-slug-zzz` | **HTTP 200** | Établissement introuvable |
+| `/restaurants/non-existent-slug-zzz` | HTTP 307 | (surface protégée → `/auth/login`) |
+
+Le constat du §13.7 est donc **confirmé en production** : ce n'était ni un artefact du
+dev/Turbopack, ni un problème limité aux pages P1-02 — **4 surfaces** sont touchées, dont
+`/vitrine` et `/stay` qui préexistaient à ce lot. Un slug inexistant était donc
+**indexable** (`200` + contenu 404), ce qui est exactement le risque SEO décrit.
+
+#### Cause racine — ce n'était pas `notFound()`
+
+Deux contre-épreuves ont écarté les hypothèses initiales :
+
+- une URL **non routée** (`/this-route-does-not-exist-at-all`, `/boutiques`, `/vitrine`)
+  répond **404 correctement** — donc `not-found.tsx` et `notFound()` fonctionnent ;
+- `src/proxy.ts` ne fait **aucun rewrite** sur ces chemins (uniquement des `redirect`).
+
+La vraie cause est **`src/app/loading.tsx`** : un `loading.tsx` à la **racine** de `app/`
+enveloppe toute l'application dans une frontière `Suspense`. Next envoie alors l'en-tête
+HTTP **200** et commence à streamer le loader **avant** que la page n'ait chargé ses
+données ; quand `notFound()` lève ensuite, le statut est déjà parti — seul le **corps**
+est remplacé par la 404.
+
+**Preuve par élimination** : retirer temporairement `src/app/loading.tsx`, reconstruire,
+redémarrer → les 4 surfaces passent à **404**. Réintroduire le fichier → retour à `200`.
+
+#### Correctif (« minimal » au sens de la mission)
+
+Le loader n'est pas supprimé (#8446 l'avait introduit pour éviter un flash vide dans la
+vitrine) : il est **déplacé vers le groupe de routes qui le justifiait**.
+
+- supprimé : `src/app/loading.tsx`
+- ajouté : `src/app/(landing)/loading.tsx` (même composant `BrandLoader`, même rendu)
+
+Aucune route, aucun contrat, aucune règle métier touchés. Les pages qui appellent
+`notFound()` (`/boutiques`, `/operateurs`, `/vitrine`, `/stay`) ne sont plus streamées avant
+la décision ; le confort de chargement reste sur la vitrine marketing.
+
+#### Mesure — après correctif (production)
+
+| URL | Avant | Après |
+|---|---|---|
+| `/boutiques/non-existent-slug-zzz` | 200 | **404** |
+| `/operateurs/non-existent-slug-zzz` | 200 | **404** |
+| `/vitrine/non-existent-slug-zzz` | 200 | **404** |
+| `/stay/non-existent-slug-zzz` | 200 | **404** |
+| `/decouvrir`, `/pricing`, `/faq` | 200 | **200** (non-régression) |
+
+#### Test qui garde la propriété
+
+`front/web/e2e/leopardo-public-parcours.spec.ts` : les deux tests de fiche publique
+assertaient `status() < 500` **parce que** le 200 était jugé irréparable. Ils asserent
+désormais **`toBe(404)`**. Exécutés contre le serveur de production ci-dessus :
+**10 passed (17.1 s)** avec `--workers=1`.
+
+#### Limite de méthode — à ne pas lire comme un succès
+
+`next build` **ne tient pas** dans le cgroup de 2 Go de ce sandbox : le type-check et la
+collecte de données sont tués par le noyau (`oom_kill` incrémenté dans
+`/sys/fs/cgroup/memory.events`). Pour obtenir la mesure, deux réglages **temporaires et
+non commités** ont été utilisés (`typescript.ignoreBuildErrors`, `experimental.cpus: 2`),
+puis **retirés** : `git diff` sur `next.config.ts` est vide au moment du commit. Le
+type-check complet, lui, a été validé séparément (`Finished TypeScript in 44s` lors
+d'un build ultérieur) et reste couvert par le check CI `Frontend — ESLint + TypeScript`.
+
 
 ---
 
@@ -560,7 +859,7 @@ Légende taille : **XS** ≤ ½ j · **S** ≤ 2 j · **M** ≤ 5 j · **L** > 5
 |---|---|---|---|---|---|---|---|---|---|
 | **P0-01** | Rendre le mobile visible en CI | Les 8 `Build Debug` sont `skipped` sur tout commit non mobile ; `minSdk = flutter.minSdkVersion` sans plancher 26 | `front/mobile_apps/*/android/app/build.gradle.kts`, `.github/workflows/mobile-apps-ci.yml`, `.github/workflows/tests.yml` (`detect-changes`) | — | Coût CI (8 builds) ; casse si SDK manquant | Un build debug passe sur `leopardo_employee` **et** un commit ne touchant que `api/` déclenche au moins un build de fumée | **S** | Build vert sur un commit backend-only ; échec `minSdkVersion` reproductible puis absent | **PR existante #8776** — à reviewer/merger, pas à refaire |
 | ~~**P0-02**~~ | ~~Fermer le risque d'autorisation sur la publication~~ | **RETIRÉ — constat infirmé par l'exécution.** Le contrôleur appelle bien `$this->authorize('update', $branch)` et la Policy refuse `role=manager` sans `manager_role` (403 observé) | — | — | — | — | — | **Annulé** (voir §7) | **Aucun** |
-| **P0-07** | Fermer `/conversations/public` aux acteurs non-employés | Un client `user_api` obtient **200 + `data: []`** au lieu d'un refus : `auth:sanctum` accepte son token et le contrôleur reçoit un `User` là où il attend un `Employee` | `api/routes/modules/rh.php` (middleware), `PublicConversationInboxController` | — | Bloquer un usage légitime si le guard est mal choisi | Un token client ⇒ 401/403 ; un token employé ⇒ 200 | **S** | Test : statut ≠ 200 pour `user_api` | Lot P0 dédié |
+| ~~**P0-07**~~ | ~~Fermer `/conversations/public` aux acteurs non-employés~~ | **RETIRÉ — constat infirmé par l'exécution (2026-10-21).** Un client avec un vrai token porteur reçoit déjà **401** : le guard `sanctum` (provider `employees`) rejette un `tokenable` `User` via `hasValidProvider()`. Le `200 + data: []` observé était un artefact de test (`Sanctum::actingAs` du manager restait sur le guard `sanctum`). Le défaut réel était le test, qui tolérait 200-vide — corrigé (§13.4) | — | — | — | — | — | **Annulé** (voir §13.1.3) | **Aucun correctif produit** |
 | **P0-03** | Sécuriser la carte de routage publique | `public_conversation_index` doit être alimentée à **chaque** création de fil ; un oubli rend le fil invisible côté client (échec silencieux) | `PublicConversationService.php`, `PublicConversationIndexRepository.php` | — | Double écriture, désynchro | Test : toute création de fil produit exactement une ligne d'index ; suppression → ligne retirée | **S** | Test de non-régression + assertion `count == 1` | Lot P0 dédié |
 | **P0-04** | Garantir l'absence de fuite cross-tenant à l'exécution | Aucun test d'isolation adverse n'a été **rejoué** (Phase 0 le dit explicitement) | `tests/Feature/Notification/PublicConversationTest.php`, `tests/Feature/Platform/PublicDiscoveryTest.php` | Base PostgreSQL en CI | Tests lents | 4 cas : autre tenant, autre client, employé simple, profil dépublié ⇒ 404 uniforme | **S** | Suite verte en CI, rouge si le `where('company_id')` est retiré | Lot P0 (tests seulement) |
 | **P0-05** | Aucun secret dans les artefacts publics | Le token de session ne doit jamais atterrir dans un fichier/commit/log | `docs/**`, `.gitignore` | — | Fuite irréversible | `git diff \| grep -i 'ghp_'` retourne 0 résultat ; `secret-scan` vert | **XS** | Scan local + CI verts | Inclus dans chaque PR |
@@ -570,9 +869,9 @@ Légende taille : **XS** ≤ ½ j · **S** ≤ 2 j · **M** ≤ 5 j · **L** > 5
 
 | ID | Objectif | Problème constaté | Fichiers concernés | Dépend. | Risques | Tests d'acceptation | Taille | Critères de validation | Lot / PR |
 |---|---|---|---|---|---|---|---|---|---|
-| **P1-01** | Parcours A minimal : un pro publie et devient visible | Aucun écran transverse de publication ; sémantiques divergentes (`is_public` vs `status`) | `front/web/src/app/(dashboard)/…` (nouvelle page), `RestaurantBranchPublicProfileController` | P0-02 | Ajouter une 4ᵉ sémantique | Publier → l'entité apparaît dans `/public/discover` ; dépublier → disparaît | **M** | Test E2E + test Feature | Lot « publication » |
-| **P1-02** | Fiches publiques pour Retail et VTC | Découvrables mais sans fiche : `item.url` mène à un parcours d'achat | `front/web/src/app/shop/…`, `front/web/src/app/ride/…` (route existante à réutiliser), providers | #8759 | Dupliquer la logique de fiche | Un résultat Retail/VTC ouvre une fiche profil avec CTA cohérent | **M** | E2E `discover → fiche` | **Suit #8759** |
-| **P1-03** | Boutons = réalité | `supportedActions()` déclare `booking` pour Restaurant sans contrat public prouvé | `RestaurantDiscoverableProvider.php`, `HospitalityDiscoverableProvider.php`, `discovery-explorer.tsx` | #8761 | Retirer une action utilisée | Toute action affichée a un test qui la prouve ; sinon elle n'est pas déclarée | **S** | Test provider : `supportedActions()` ⊆ actions testées | **Suit #8761** |
+| ~~**P1-01**~~ | ~~Parcours A minimal : un pro publie et devient visible~~ | **DÉJÀ LIVRÉ — vérifié le 2026-10-21.** L'écran existe : `front/web/src/app/(dashboard)/restaurant/online/page.tsx` (`GET`/`PUT /restaurant/branches/{id}/public-profile`, `is_public` + `public_slug`), atteignable par la tuile `/restaurant/online` du hub Restaurant. **5/5 tests Jest verts.** Ce qui manque réellement n'est pas l'écran mais sa **généralisation aux autres verticales** (voir P2-01 et P3-05) | `front/web/src/app/(dashboard)/restaurant/online/page.tsx` (existant) | — | — | Couvert | **Déjà satisfait** pour Restaurant | **Aucun lot** ; suit la généralisation |
+| **P1-02** | Fiches publiques pour Retail et VTC | Découvrables mais sans fiche : `item.url` mène à un parcours d'achat | `front/web/src/app/shop/…`, `front/web/src/app/ride/…` (route existante à réutiliser), providers | #8759 | Dupliquer la logique de fiche | Un résultat Retail/VTC ouvre une fiche profil avec CTA cohérent | **M** | E2E `discover → fiche` | ~~**Suit #8759**~~ → **LIVRÉ le 2026-10-21** (§13.7 : `/boutiques/[slug]`, `/operateurs/[slug]`) |
+| **P1-03** | Boutons = réalité | `supportedActions()` déclare `booking` pour Restaurant sans contrat public prouvé | `RestaurantDiscoverableProvider.php`, `HospitalityDiscoverableProvider.php`, `discovery-explorer.tsx` | #8761 | Retirer une action utilisée | Toute action affichée a un test qui la prouve ; sinon elle n'est pas déclarée | **S** | Test provider : `supportedActions()` ⊆ actions testées | ~~**Suit #8761**~~ → **LIVRÉ** (#8795, 2026-10-21) |
 | **P1-04** | E2E du parcours nominal | Aucun test ne couvre la chaîne complète en une seule exécution | `front/web/e2e/leopardo-public-parcours.spec.ts` (nouveau), `api/tests/Feature/LeopardoPublic/…` | P0-04, base PG | Tests fragiles (données) | Le scénario §14.2 passe à 100 % | **M** | Suite verte, 1 échec volontaire prouve la sensibilité | **Cette PR** (squelette) |
 | **P1-05** | Non-régression de l'index de routage | Voir P0-03 | idem P0-03 | P0-03 | — | Suppression de `remember()` ⇒ test rouge | **XS** | Mutation test manuel documenté | Avec P0-03 |
 
@@ -585,7 +884,7 @@ Légende taille : **XS** ≤ ½ j · **S** ≤ 2 j · **M** ≤ 5 j · **L** > 5
 | **P2-03** | Décider du sort de `users` vs `travel_customers` | **Deux identités client** ; un humain = deux comptes | `config/auth.php`, `Core/Auth` | — | Fusion improvisée = 3ᵉ identité | Document d'arbitrage + ADR | **M** (décision) | ADR mergé, aucune ligne de code de fusion | **Décision user requise** |
 | **P2-04** | Trancher le comptage des BC (36/37/38 + BC-37 réservé) | Trois comptages contradictoires | `dev-hub/governance/bounded-context-registry.json`, `docs/architecture/BOUNDED-CONTEXT-REGISTRY.md` | #8572 | Réattribuer BC-37 = collision | Doc unique + garde CI sur la séquence | **S** | Plus aucun document ne dit « 36 » | **Décision user requise** |
 | **P2-05** | Pièces jointes dans les fils publics | Non exposées ; revue de confidentialité absente | `Modules/Notification`, `BC-20 Documents` | Audit stockage | Fuite de pièce jointe RH | Test : un client ne lit que ses propres pièces | **M** | Revue de confidentialité écrite | Lot séparé |
-| **P2-06** | Passer un build Flutter de fumée sur toute PR backend | Voir P0-01 | `.github/workflows/tests.yml` | P0-01 | Coût CI | Un job « build de fumée » s'exécute sur PR backend | **S** | Job non-`skipped` | Avec P0-01 |
+| **P2-06** | Passer un build Flutter de fumée sur toute PR backend | Voir P0-01 | `.github/workflows/tests.yml` | P0-01 | Coût CI | Un job « build de fumée » s'exécute sur PR backend | **S** | Job non-`skipped` | ~~Avec P0-01~~ → **LIVRÉ** : `.github/workflows/mobile-smoke.yml` (2026-10-21) |
 
 #### P3 — Commandes/réservations, paiements réels, app mobile publique
 
@@ -633,7 +932,7 @@ Légende taille : **XS** ≤ ½ j · **S** ≤ 2 j · **M** ≤ 5 j · **L** > 5
 
 **1. Leopardo Public fonctionne-t-il réellement aujourd'hui, et sur quels parcours ?**
 **Oui, sur un parcours complet, prouvé par exécution.** La suite
-`PublicParcoursEndToEndTest` (**18 tests, 84 assertions — OK** sur PostgreSQL 15 + PostGIS)
+`PublicParcoursEndToEndTest` (**19 tests, 90 assertions — OK** sur PostgreSQL 15 + PostGIS)
 démontre la chaîne entière : un professionnel publie → le profil apparaît dans
 `/public/discover` → la fiche publique répond → un client démarre une conversation →
 le message est persisté en BC-13 → le manager le voit dans sa boîte → il répond → le
@@ -649,14 +948,24 @@ par module)** restent **partiels**. **Aucun paiement réel.**
 - **`SearchableRegistry`** : mécanisme complet et testé, **aucun type enregistré** au
   runtime ⇒ la recherche « à proximité » ne peut rien retourner.
 - **Actions `booking`** déclarées par Restaurant sans contrat public identifié.
-- **Fiches Retail/VTC** : découvrables, sans page profil.
-- **32 verticales** : métier existant, providers de découverte absents.
+- ~~**Fiches Retail/VTC** : découvrables, sans page profil.~~ → **livrées le 2026-10-21**
+  (`/boutiques/[slug]`, `/operateurs/[slug]`, §13.7).
+- **31 verticales** (et non 32) : métier existant, providers de découverte absents. Trade
+  est la 6ᵉ verticale découvrable depuis #8803 (§13.9).
 
 **3. Principal obstacle au premier parcours public utilisable ?**
 **L'absence de publication transverse, pas la découverte.** Un professionnel ne peut pas
 « publier son profil » en un geste : il doit activer `is_public` + `public_slug` dans le
 module de son métier, avec une sémantique différente par verticale. Tant que ce geste
 n'existe pas, le rayon de `/decouvrir` ne grandira pas, même avec 32 providers de plus.
+
+> **Note du 2026-10-21 — réponse à moitié périmée.** La **sémantique** est désormais
+> écrite, testée et appliquée à une verticale (Trade : opt-in `is_public` faux par défaut,
+> slug unique global, DTO minimal, 404 uniforme — §13.9). Restaurant conserve le sien
+> (`PUT …/public-profile`, livré avant la mission). L'obstacle restant n'est donc plus
+> conceptuel mais **volumétrique** : 31 verticales à brancher, une PR par verticale. La
+> verticale Pharmacy est en plus bloquée par une question **légale** (publicité
+> pharmaceutique), pas technique.
 
 **4. Le chat existant peut-il être réutilisé sans reconstruction ?**
 **Oui — et il l'est déjà.** `PublicConversationService` étend `ConversationThread`/
@@ -674,9 +983,10 @@ retenue : **B — expérience publique commune dans `front/web`, sans nouveau fr
 sans fusion**.
 
 **6. Quels problèmes de sécurité / isolation avant production ?**
-1. **`GET /conversations/public` accepte un acteur non-employé** : un client `user_api`
-   obtient **200 + `data: []`** au lieu d'un refus. Aucune fuite (assertion vérifiée),
-   mais le contrôleur travaille sur un type d'acteur qu'il n'attend pas → **P0-07**.
+1. **~~`GET /conversations/public` accepte un acteur non-employé~~ — INFIRMÉ.** Voir
+   §13.1.3 : avec un vrai token porteur le client reçoit **401**. Le constat venait d'un
+   test dont le guard `sanctum` gardait le manager en mémoire d'une requête à l'autre.
+   Le risque réel était l'inverse : **le test** tolérait `200` vide. Corrigé en **§13.5**.
 2. **`public_conversation_index`** : un oubli d'écriture rend un fil invisible
    (échec silencieux) ; c'est la seule carte client → tenant. Couvert par un test de
    non-régression (P0-03).
@@ -702,27 +1012,43 @@ sans fusion**.
 - **ne jamais** désactiver un test pour verdir : les `skipped` actuels sont déjà un
   angle mort, en ajouter serait une faute.
 
+> **Note du 2026-10-21 — les cinq points sont traités ou documentés.**
+> 1. `minSdkVersion` 26 : **mergée** (#8776 → `da9a1f592`).
+> 2. Build mobile de fumée sur PR backend : **livré** (`.github/workflows/mobile-smoke.yml`),
+>    vert depuis `bc038b01f`. **Non requis** par la protection de `main` : il rend la
+>    régression visible sans bloquer (coût/risque chiffrés au §15.3).
+> 3. `Deploy Main Catch-up` : politique d'échec explicite (#8796).
+> 4. `Dev Keepalive & Watchdog` : `startup_failure` corrigé (#8796).
+> 5. `Backend Coverage Gate` annulé : **non reproduit** sur les runs de la mission ; reste
+>    surveillé, aucune modification apportée.
+
 **8. Plus petit lot de changements validant un parcours réel consommateur-professionnel ?**
-**Le parcours est déjà validé par cette PR** — les 18 tests le prouvent. Le lot minimal
-restant tient en **deux** changements, aucun nouveau module :
-1. **P0-07** — fermer `/conversations/public` aux acteurs non-employés (guard correct).
-2. **P1-01 (réduit)** — un écran dans `front/web` qui appelle la route existante
-   `PUT …/public-profile` (aucune nouvelle route API).
-Coût : **≈ 1 sprint court (S)**, sans toucher au paiement, au chat ni aux frontends
-`marketplace`/`travel-web`. Le troisième élément prévu au plan initial (le test E2E)
-est **déjà livré et vert** dans cette PR.
+**Le parcours est déjà validé par cette PR** — les 19 tests le prouvent. Les deux
+changements que j'annonçais ici sont **tous les deux déjà satisfaits** (vérifié le
+2026-10-21, voir **§13.5**) :
+1. ~~**P0-07** — fermer `/conversations/public` aux acteurs non-employés~~ → **sans objet**,
+   l'API refuse déjà (401). Le défaut était dans le test, corrigé.
+2. ~~**P1-01 (réduit)** — un écran dans `front/web` qui appelle `PUT …/public-profile`~~ →
+   **déjà livré** : `front/web/src/app/(dashboard)/restaurant/online/page.tsx`, atteignable
+   depuis la tuile `/restaurant/online` du hub Restaurant, avec 5 tests verts.
+
+Il ne reste donc **aucun lot bloquant** pour le parcours nominal Restaurant. Le prochain
+lot utile est **P1-02** (fiches publiques Retail et VTC, qui suit #8759).
 
 **9. Quels tests prouvent que ce parcours fonctionne ?**
-1. **`api/tests/Feature/LeopardoPublic/PublicParcoursEndToEndTest.php`** — **18 tests,
-   84 assertions, OK** (exécuté pendant cette session, PostgreSQL 15 + PostGIS) : les
+1. **`api/tests/Feature/LeopardoPublic/PublicParcoursEndToEndTest.php`** — **19 tests,
+   90 assertions, OK** (exécuté pendant cette session, PostgreSQL 15 + PostGIS) : les
    9 étapes du §14.2, plus les cas d'erreur et 3 tests d'isolation (autre client,
    autre tenant, employé simple), plus la non-régression de l'index de routage.
 2. **Frontend** : `public-discovery-api.test.ts` + `public-conversation-api.test.ts` —
    **24/24 vertes**, exécutées dans cette session.
 3. **Déjà présents, non rejoués ici** : `tests/Feature/Notification/PublicConversationTest.php`
    (18 tests, dont 4 cross-tenant) et `tests/Feature/Platform/PublicDiscoveryTest.php`.
-4. **Livré mais non exécuté** : `front/web/e2e/leopardo-public-parcours.spec.ts` (Playwright)
-   — nécessite `front/web` + API lancés ; statut **NON VÉRIFIÉ**.
+4. ~~**Livré mais non exécuté** : `front/web/e2e/leopardo-public-parcours.spec.ts`
+   (Playwright) — nécessite `front/web` + API lancés ; statut **NON VÉRIFIÉ**.~~
+   → **EXÉCUTÉ** : 7/7 le 2026-10-21 (§13.6), puis **10/10** après l'ajout des fiches
+   publiques Retail/VTC et Trade (§13.8). Commande :
+   `npx playwright test e2e/leopardo-public-parcours.spec.ts --project=chromium --workers=1`.
 
 **10. Quelles décisions requièrent l'approbation du user avant modification importante ?**
 1. **P2-03** — sort de `users` vs `travel_customers` (fusion / passerelle / statu quo).
@@ -737,6 +1063,114 @@ est **déjà livré et vert** dans cette PR.
 6. **P0-06** — politique d'échec de `Deploy Main Catch-up` (infra, propriété Render).
 
 ---
+
+### 13.9 P2-01 livré le 2026-10-21 — Trade devient la première verticale à opt-in explicite, et un lien mort corrigé
+
+Le §14 laissait P2-01 (généraliser la publication) et P3-05 (32 verticales restantes)
+**ouverts**, au motif qu'ils demandaient « une décision métier par verticale ». C'était
+vrai pour l'**implémentation en masse** ; ce n'était pas vrai pour la **sémantique**, qui
+pouvait être écrite une fois, testée, et appliquée à une verticale représentative.
+
+#### Ce qui a été livré
+
+| Lot | Commit | Contenu |
+|---|---|---|
+| P2-01 | `1be377eb8` (PR #8803) | Trade publiable : provider, resolver, contrôleur + route, page SSR, garde de contrat, migration |
+| Correctif | `c83383be2` (PR #8808) | Fiche déplacée `/commerce` → `/entreprises`, garde **durcie** |
+
+**Sémantique par défaut** (désormais la référence pour toute verticale sans opt-in) :
+
+1. **Opt-in explicite** — `is_public` défaut **FAUX**. Jamais d'heuristique « profil complet
+   donc publiable » : ce serait publier sans consentement.
+2. **Fail-closed à la lecture** — `WHERE is_public = true` dans la requête **et** règle du
+   modèle : deux barrières, la première protège la requête, la seconde tout appelant qui
+   construirait le DTO autrement.
+3. **Slug public unique GLOBAL** — index unique cross-tenant : une URL publique ne dépend
+   jamais du tenant courant.
+4. **Périmètre public minimal** — nom commercial, ville, pays, description, catégories
+   choisies. Jamais `notes`, `capabilities`, `company_id`.
+5. **404 uniforme** — slug inconnu, profil dépublié et société suspendue sont
+   **indistinguables**. Jamais de 403 : il révélerait l'existence du slug.
+
+#### Trois défauts trouvés en EXÉCUTANT, pas en relisant
+
+- **Le DTO publiait `hq_country`** (saisie libre du profil, souvent « FR » par défaut) comme
+  pays de la fiche, alors que Retail publie `companies.country`. La fiche aurait annoncé une
+  nationalité que le professionnel n'avait pas déclarée. Aligné sur `companies.country` des
+  deux côtés (provider **et** contrôleur) : la carte de découverte et la fiche disent
+  désormais la même chose.
+- **La factory `Company` tire `country` au hasard** : l'assertion sur le pays passait ou
+  échouait selon la graine. Pays rendu explicite dans le test.
+- **Le test de filtre créait deux profils Trade dans le même tenant**, interdit par
+  `trade_company_profiles_company_unique` ; l'échec qui suivait était un
+  `current transaction is aborted`, pas une assertion. La faute était au test : second
+  professionnel placé dans un tenant distinct, ce qui correspond au cas réel (deux
+  entreprises = deux comptes).
+
+#### Le quatrième défaut était le plus grave — et c'est la leçon de ce lot
+
+La fiche livrée en #8803 répondait **307 → `/auth/login`** pour tout visiteur anonyme :
+
+```
+/entreprises/slug-inexistant   HTTP=404
+/commerce/slug-inexistant      HTTP=307 -> /auth/login
+```
+
+`/commerce` est un préfixe **dashboard** (espace vendeur BC-17) déclaré dans
+`front/web/src/proxy.ts`. Le résultat de découverte de la verticale Trade pointait donc vers
+un **mur de connexion** — exactement le défaut « lien mort » que #8794 et #8793 venaient de
+corriger pour Restaurant, Retail et VTC.
+
+**Pourquoi les tests ne l'ont pas vu** : `PublicDiscoverableProviderContractTest` vérifiait
+que `front/web/src/app/{segment}/[slug]/page.tsx` **existe**. La page existait, compilait, et
+passait. **Exister n'est pas être joignable.**
+
+**Correctif en deux volets** : page déplacée vers `src/app/entreprises/[slug]/`, et la garde
+**lit désormais `DASHBOARD_PREFIXES` depuis `proxy.ts`** pour refuser un segment protégé.
+La liste est lue dans le fichier source et non recopiée : une copie divergerait au premier
+préfixe ajouté. Lecture tolérante — si le format change, la garde renvoie `[]` et reste
+aussi permissive qu'avant, jamais plus stricte par accident.
+
+**Vérifié dans les deux sens** :
+
+```
+'trade_company' => 'entreprises'  ->  OK (31 tests, 195 assertions)
+'trade_company' => 'commerce'     ->  FAILURES! (1 test, 19 assertions)
+```
+
+Réintroduire le mauvais segment fait échouer la garde : elle protège réellement, elle ne
+décore pas.
+
+#### Preuves réelles
+
+| Commande | Résultat |
+|---|---|
+| `phpunit tests/Feature/LeopardoPublic/` | **OK (31 tests, 195 assertions)** — 24 avant ce lot |
+| `pint --test` | **PASS** (87 fichiers) |
+| `phpstan analyse --level=8` | **`[OK] No errors`** |
+| `jest src/app/entreprises` | **6/6** |
+| `tsc --noEmit` / `eslint --max-warnings 0` | propres |
+| `validate.js` après les 3 syncs | **`I18N_VALIDATION_OK (4 locales)`** |
+| HTTP réel (`next dev`) | `/decouvrir` **200** · `/entreprises/*` **404** · `/commerce/*` **307** |
+
+#### Statut des constats du plan
+
+| Constat | Avant | Après |
+|---|---|---|
+| P2-01 publication transverse (Trade) | ABSENT | **TESTÉ — RÉUSSI** |
+| P3-05 32 verticales restantes | ABSENT | **PARTIEL** (1/32, sémantique établie) |
+| Lien de découverte Trade | — | **TESTÉ — RÉUSSI** (404, plus de 307) |
+| Pharmacy | ABSENT | **NON VÉRIFIÉ** — décision produit/légal requise |
+
+**Pharmacy délibérément exclue** : publier une officine expose des données de santé et relève
+de la publicité pharmaceutique, dont le régime varie par pays. Ce n'est pas une décision
+d'ingénierie ; elle est tracée dans une issue dédiée plutôt que tranchée ici.
+
+#### Ce qui reste décisionnel (et n'a PAS été deviné)
+
+Quatre issues ouvertes, chacune avec la question exacte et des options chiffrées :
+identité client (`users` vs `travel_customers`), attribution de BC-37 et comptage officiel
+des BC, rail PSP réel pour BC-38, application mobile grand public.
 
 ## Annexes
 
@@ -754,18 +1188,24 @@ grep -rn "register\|searchables" api/config/geo.php           # searchables => [
 
 ### B. Ce que ce rapport ne prouve pas
 
-- La **suite E2E de cette mission** a bien tourné : `18 tests, 84 assertions — OK` sur
+> **Révisé le 2026-10-21.** Trois des cinq limites ci-dessous ne tiennent plus : le backend
+> a été exécuté à plusieurs reprises et Playwright a tourné. Les limites restantes sont
+> conservées et signalées comme telles.
+
+- La **suite E2E de cette mission** a bien tourné : `19 tests, 90 assertions — OK` sur
   PostgreSQL 15 + PostGIS, après installation de l'environnement (`CI=true`, driver
   `pdo_pgsql`, extension `postgis`).
-- En revanche, **le reste du backlog de tests backend n'a pas été rejoué** : seule la
-  suite E2E publique a été exécutée, pas `--testsuite=Feature` en entier, ni
-  `tests/Feature/Paiements/*`, ni `tests/Feature/Notification/PublicConversationTest`
-  (18 tests unitaires de contrôle d'accès). Leur statut reste **NON VÉRIFIÉ**.
-- Aucun build Flutter ou Android n'a été tenté (ni Flutter ni Android SDK).
-- Aucun test **Playwright** n'a été exécuté ici : le spec est livré, mais lancer
-  `front/web` + l'API n'était pas possible dans le budget de session. Statut
-  **NON VÉRIFIÉ** pour ce fichier.
-- La CI de `main` a été lue via l'API GitHub (check-runs, workflow runs), pas rejouée.
+- ~~En revanche, le reste du backlog de tests backend n'a pas été rejoué~~ → **rejoué le
+  2026-10-21** : voir `docs/audits/baseline-execution.md`, qui consigne par tranche le
+  résultat réel de `--testsuite=Feature`, `tests/Feature/Paiements/*`,
+  `PublicConversationTest` et `PublicDiscoveryTest`.
+- **Toujours vrai** : aucun build Flutter ou Android n'a été tenté (ni Flutter ni Android
+  SDK). Le seul signal mobile est le job CI `Mobile smoke`, exécuté sur GitHub.
+- ~~Aucun test **Playwright** n'a été exécuté ici~~ → **exécuté** : 7/7 (§13.6) puis 10/10
+  (§13.8), avec `--workers=1`. Le plafond de parallélisme est une contrainte mémoire du
+  sandbox, pas une propriété du spec.
+- **Toujours vrai** : la CI de `main` a été lue via l'API GitHub (check-runs, workflow
+  runs), pas rejouée localement.
 
 ### C. Fichiers de cette mission
 

@@ -1,0 +1,92 @@
+name: Mobile Smoke Build
+
+# Trou CI identifié par l'audit Phase 1 de Leopardo Public (§13.4, P0-06) :
+# `mobile-apps-ci.yml` filtre ses déclencheurs `pull_request` sur
+# `front/mobile_apps/**` (correctif #7541, qui évitait d'enfiler 8 builds
+# Flutter sur chaque PR docs/web/backend). Conséquence non voulue : sur une PR
+# **backend**, le workflow mobile n'est même pas déclenché — les 8 jobs
+# `Build Debug` n'apparaissent pas « skipped », ils n'existent pas. Une
+# régression de compilation mobile introduite par un changement d'API partagée
+# (contrat, DTO, `MobileExperienceService`) reste donc **invisible** jusqu'à la
+# distribution Firebase sur `main`.
+#
+# Ce workflow comble ce trou SANS toucher à `mobile-apps-ci.yml` : il ne
+# ré-active aucun des 8 jobs lourds (donc aucun runner gaspillé sur les PR qui
+# ne touchent pas le mobile) et n'affaiblit aucun contrôle existant. Il
+# construit UN seul APK debug — `leopardo_employee`, l'app de référence — sur
+# CHAQUE PR vers `main`, quel que soit le chemin modifié.
+#
+# Portée volontairement limitée : c'est un **build de fumée** (la chaîne
+# Flutter/Android compile-t-elle encore ?), pas la matrice complète. La
+# couverture exhaustive reste le rôle de `mobile-apps-ci.yml` sur les PR qui
+# touchent réellement `front/mobile_apps/**`.
+#
+# ⚠️ Ce workflow n'est PAS dans les checks requis de la protection de `main`
+# (seuls `PHPStan — Strict`, `Module Structure Validator`,
+# `Frontend — ESLint + TypeScript` et `actionlint` le sont). Il rend la
+# régression VISIBLE ; la rendre BLOQUANTE est une décision de paramétrage du
+# dépôt, pas un changement de code (voir rapport §13.7).
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  API_BASE_URL: ${{ vars.DEV_API_BASE_URL }}
+
+concurrency:
+  group: mobile-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mobile-smoke-build:
+    name: Smoke build leopardo_employee (debug APK)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Setup Flutter + Java
+        uses: ./.github/actions/setup-flutter-android
+
+      - name: Install dependencies
+        working-directory: front/mobile_apps/leopardo_employee
+        run: flutter pub get
+
+      - name: Regenerate core generated files (l10n + codegen)
+        # #6590 : les fichiers générés ne sont plus commités — ils doivent être
+        # régénérés avant tout build, sinon la compilation échoue sur des
+        # symboles absents (faux positif qui masquerait la vraie régression).
+        working-directory: front/mobile_apps/leopardo_core
+        run: |
+          flutter pub get
+          flutter gen-l10n
+          dart run build_runner build
+
+      - name: Restore Firebase config from secret (issue #1467)
+        # Même repli que `mobile-apps-ci.yml` : le stub versionné à clés
+        # factices suffit à compiler, le secret n'est pas requis pour un build
+        # de fumée (et un fork n'y a pas accès).
+        shell: bash
+        run: |
+          if [[ -n "${GOOGLE_SERVICES_JSON}" ]]; then
+            printf '%s' "${GOOGLE_SERVICES_JSON}" > front/mobile_apps/leopardo_employee/android/app/google-services.json
+            echo "Firebase config restaurée depuis le secret."
+          else
+            echo "::notice::GOOGLE_SERVICES_JSON non défini — build avec le stub versionné."
+          fi
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+
+      - name: Build debug APK (smoke)
+        working-directory: front/mobile_apps/leopardo_employee
+        run: flutter build apk --debug --dart-define=API_BASE_URL=${{ env.API_BASE_URL }}
