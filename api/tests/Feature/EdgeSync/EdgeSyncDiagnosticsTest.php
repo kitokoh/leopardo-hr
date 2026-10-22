@@ -95,11 +95,11 @@ class EdgeSyncDiagnosticsTest extends TestCase
 
         $engine->push($node);
 
-        $fresh = $item->fresh();
+        $fresh = SyncQueue::query()->findOrFail($item->id);
 
-        $this->assertSame('pending', $fresh?->status, 'Un premier échec reste rejouable');
-        $this->assertSame('colonne inconnue: checked_in_at', $fresh?->last_error);
-        $this->assertNotNull($fresh?->last_attempt_at, 'L’âge de la file doit être observable');
+        $this->assertSame('pending', $fresh->status, 'Un premier échec reste rejouable');
+        $this->assertSame('colonne inconnue: checked_in_at', $fresh->last_error);
+        $this->assertNotNull($fresh->last_attempt_at, 'L’âge de la file doit être observable');
     }
 
     public function test_un_conflit_est_horodate_et_motive(): void
@@ -124,11 +124,11 @@ class EdgeSyncDiagnosticsTest extends TestCase
 
         $engine->push($node);
 
-        $fresh = $item->fresh();
+        $fresh = SyncQueue::query()->findOrFail($item->id);
 
-        $this->assertSame('conflict', $fresh?->status);
-        $this->assertNotNull($fresh?->conflict_at, 'Un conflit doit être daté pour être diagnostiqué');
-        $this->assertStringContainsString('hors allowlist', (string) $fresh?->last_error);
+        $this->assertSame('conflict', $fresh->status);
+        $this->assertNotNull($fresh->conflict_at, 'Un conflit doit être daté pour être diagnostiqué');
+        $this->assertStringContainsString('hors allowlist', (string) $fresh->last_error);
     }
 
     public function test_la_cause_persistee_est_bornee(): void

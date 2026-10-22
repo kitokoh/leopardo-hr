@@ -67,7 +67,7 @@ class PlatformProvisioningApiTest extends TestCase
 
         $response->assertOk();
 
-        $items = collect($response->json('tenants'))->keyBy('id');
+        $items = collect((array) $response->json('tenants'))->keyBy('id');
 
         $this->assertSame('operational', $items[$healthy->id]['provisioning_step']);
         $this->assertTrue($items[$healthy->id]['has_site']);
@@ -184,7 +184,7 @@ class PlatformProvisioningApiTest extends TestCase
         Sanctum::actingAs($this->superAdmin(), ['*'], 'super_admin_api');
 
         $response = $this->getJson('/api/v1/platform/provisioning')->assertOk();
-        $failures = collect($response->json('failures'))->keyBy('reference');
+        $failures = collect((array) $response->json('failures'))->keyBy('reference');
 
         // Le provisioning TOUT RÉCENT n'est pas un incident : il progresse.
         $this->assertCount(2, $failures);
@@ -212,7 +212,7 @@ class PlatformProvisioningApiTest extends TestCase
 
         $response = $this->getJson('/api/v1/platform/provisioning')->assertOk();
 
-        $catalogue = collect($response->json('catalogue'));
+        $catalogue = collect((array) $response->json('catalogue'));
 
         $this->assertGreaterThan(0, $catalogue->count(), 'Le catalogue des verticales ne doit pas être vide');
         // La maturité vient du manifest lui-même : elle doit être une valeur
