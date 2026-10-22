@@ -374,5 +374,4 @@ class ConversationController extends Controller
 
         return response()->json([], 204);
     }
-
 }

@@ -881,4 +881,94 @@ class ConversationService
         }
     }
 
+    private function assertSubjectBelongsToEmployee(string $subjectType, ?int $subjectId, Employee $employee): void
+    {
+        if (! array_key_exists($subjectType, self::SUBJECT_MODELS) || $subjectId === null) {
+            throw ValidationException::withMessages([
+                'subject_type' => ['Sujet de discussion invalide.'],
+            ]);
+        }
+
+        $modelClass = self::SUBJECT_MODELS[$subjectType];
+
+        /** @var Model|null $subject */
+        $subject = $modelClass::query()
+            ->where('company_id', $employee->company_id)
+            ->where('employee_id', $employee->id)
+            ->find($subjectId);
+
+        if ($subject === null) {
+            throw ValidationException::withMessages([
+                'subject_id' => ['Le sujet lié n\'a pas été trouvé pour cet employé.'],
+            ]);
+        }
+    }
+
+    private function ensureAttachmentAllowed(UploadedFile $attachment): void
+    {
+        $maxBytes = self::MAX_ATTACHMENT_KB * 1024;
+
+        if ($attachment->getSize() > $maxBytes) {
+            throw ValidationException::withMessages([
+                'attachment' => ['La pièce jointe dépasse la taille maximale autorisée (5 Mo).'],
+            ]);
+        }
+
+        // #8748 — premier filtre sur le type réel du fichier TEMPORAIRE :
+        // rejeter avant d'écrire évite de stocker un fichier interdit, même
+        // quelques millisecondes. Le second contrôle (sur le fichier stocké)
+        // a lieu dans `storeAttachment()` et sert de référence persistée.
+        $detected = $this->detectMimeType($attachment->getRealPath() ?: $attachment->getPathname());
+
+        if (! in_array($detected, self::ALLOWED_ATTACHMENT_MIMES, true)) {
+            throw ValidationException::withMessages([
+                'attachment' => ['Ce type de fichier n\'est pas autorisé dans une conversation.'],
+            ]);
+        }
+    }
+
+    private function notifyOtherParticipant(ConversationThread $thread, Employee $author, ConversationMessage $message): void
+    {
+        $authorName = trim(($author->first_name ?? '').' '.($author->last_name ?? '')) ?: $author->email;
+
+        // #8746 — un groupe notifie TOUS les autres participants, un fil
+        // `direct` l'unique interlocuteur historique. Dans les deux cas on
+        // passe par le même canal (CommunicationService), donc les préférences,
+        // les heures calmes et l'anti-doublon restent centralisés.
+        if ($thread->isGroup()) {
+            $thread->loadMissing('participants.employee');
+
+            foreach ($thread->participants as $participant) {
+                $recipient = $participant->employee;
+
+                if ($recipient === null || $recipient->id === $author->id) {
+                    continue;
+                }
+
+                $this->communicationService->notifyEmployee($recipient, 'conversation_message_received', [
+                    'author' => $authorName,
+                    'thread' => $thread->title,
+                    'conversation_thread_id' => $thread->id,
+                    'conversation_message_id' => $message->id,
+                ], ['app', 'push']);
+            }
+
+            return;
+        }
+
+        $recipient = $thread->employee_id === $author->id
+            ? $thread->manager
+            : $thread->employee;
+
+        if ($recipient === null) {
+            return;
+        }
+
+        $this->communicationService->notifyEmployee($recipient, 'conversation_message_received', [
+            'author' => $authorName,
+            'thread' => $thread->title,
+            'conversation_thread_id' => $thread->id,
+            'conversation_message_id' => $message->id,
+        ], ['app', 'push']);
+    }
 }
