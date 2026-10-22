@@ -105,6 +105,15 @@ return [
         'severity',
         'source',
         'status',
+        // SUPERAPP-P1 (#8760) — références du parcours public. Elles
+        // permettent au client comme au test de rattacher une notification à
+        // UNE demande précise (anti-doublon lisible), sans exposer d'id interne
+        // au public (ces clés ne vivent que dans la boîte du tenant).
+        'contact_request_id',
+        'lead_id',
+        'sender_name',
+        'target_type',
+        'target_slug',
     ],
 
     /*
@@ -205,6 +214,16 @@ return [
             'category' => 'platform',
             'title_key' => 'notifications.platform_announcement_title',
             'body_key' => 'notifications.platform_announcement_body',
+        ],
+        // SUPERAPP-P1 (#8760) — demande de contact recue via la passerelle
+        // publique : meme categorie `crm` que les leads catalogue, donc memes
+        // preferences/heures calmes/quota que le reste du BC-13 (aucun canal
+        // ni plafond nouveau).
+        'public.contact_request_received' => [
+            'category' => 'crm',
+            'title_key' => 'notifications.public_contact_request_title',
+            'body_key' => 'notifications.public_contact_request_body',
+            'vars' => ['sender_name', 'target_type', 'target_slug'],
         ],
 
         'fuel_incident_reported' => [

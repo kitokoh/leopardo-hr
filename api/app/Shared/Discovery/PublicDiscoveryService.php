@@ -62,6 +62,36 @@ final class PublicDiscoveryService
     }
 
     /**
+     * Actions publiques acceptées, par type canonique (#8761).
+     *
+     * Source de vérité UNIQUE des capacités exposées au frontend : chaque
+     * provider déclare ce qu'il sait réellement faire (`supportedActions()`),
+     * et la passerelle publique n'a donc plus aucune liste codée en dur. Un
+     * type sans action n'apparaît simplement pas — le frontend affiche un état
+     * « indisponible » explicite au lieu d'un bouton inopérant.
+     *
+     * @return array<string, list<string>> ex. ['restaurant' => ['contact','order','booking'], 'showcase' => ['contact']]
+     */
+    public function actionsByType(): array
+    {
+        $map = [];
+
+        foreach ($this->providers as $provider) {
+            $type = $provider->type();
+            $actions = array_values(array_unique(array_filter(
+                $provider->supportedActions(),
+                static fn (string $action): bool => $action !== '',
+            )));
+            sort($actions);
+            $map[$type] = $actions;
+        }
+
+        ksort($map);
+
+        return $map;
+    }
+
+    /**
      * Découverte agrégée.
      *
      * @param  array{q?:string, city?:string, type?:string, near?:string, radius_km?:float|int|string, per_page?:int|string, page?:int|string}  $filters
@@ -155,6 +185,9 @@ final class PublicDiscoveryService
                 'last_page' => $perPage > 0 ? (int) max(1, (int) ceil($total / $perPage)) : 1,
                 'types' => $types,
                 'radius_km' => $center !== null ? $radiusKm : null,
+                // #8761 — capacités RÉELLES par type, pour que le frontend
+                // n'affiche jamais d'action qu'aucun service métier ne sert.
+                'actions' => $this->actionsByType(),
             ],
         ];
     }

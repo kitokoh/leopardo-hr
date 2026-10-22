@@ -64,6 +64,7 @@ const PROTECTED_PREFIXES = [
   // privees, groupes, pieces jointes du tenant. Jamais mise en cache : les
   // messages du tenant ne doivent pas rester dans le cache du navigateur.
   '/chat',
+  '/demandes-publiques',
 ];
 
 function isProtectedPath(url) {

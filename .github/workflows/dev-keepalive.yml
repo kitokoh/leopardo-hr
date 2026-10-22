@@ -49,6 +49,20 @@ on:
 
 permissions:
   contents: read
+  # AUDIT PHASE 1 (2026-10-21) — `actions: write` et `issues: write` sont
+  # OBLIGATOIRES ici, et leur absence expliquait un `startup_failure` sur
+  # **56 runs sur 56** (ce workflow n'a jamais demarre depuis sa creation).
+  # Le job `switch` appelle le workflow reutilisable `dev-stack-switch.yml`,
+  # qui declare `actions: write` (gh variable set) et `issues: write`
+  # (rapport [dev-switch]). Un workflow appelE ne peut pas demander plus que
+  # son appelant : GitHub rejette la validation du run AVANT de creer le
+  # moindre job, d'ou `total_count: 0` et aucun log a lire. Le defaut etait
+  # invisible localement (actionlint ne verifie pas cette regle
+  # inter-workflows) et en lecture (les deux fichiers sont valides separement).
+  # La portee reste minimale : ces droits ne sont utilises que par le job
+  # `switch`, qui ne s'execute que si le watchdog a une cible `ready`.
+  actions: write
+  issues: write
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true

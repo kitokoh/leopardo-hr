@@ -64,6 +64,8 @@ class ConversationMessage extends Model
         'company_id',
         'conversation_thread_id',
         'author_id',
+        'author_type',
+        'public_author_id',
         'body',
         'seq',
         'client_message_id',
@@ -84,6 +86,7 @@ class ConversationMessage extends Model
         'deleted_at' => 'datetime',
         'seq' => 'integer',
         'reply_to_message_id' => 'integer',
+        'public_author_id' => 'integer',
         'deleted_by_id' => 'integer',
     ];
 
@@ -112,6 +115,27 @@ class ConversationMessage extends Model
     public function hasAttachment(): bool
     {
         return $this->attachment_path !== null;
+    }
+
+    /**
+     * #8760 — le message a-t-il été écrit par le CLIENT public (et non par un
+     * employé du tenant) ? Le contrôle vit ici pour qu'aucune surface ne puisse
+     * se tromper d'auteur en lisant `author_id` (NULL côté client).
+     */
+    public function isFromPublicClient(): bool
+    {
+        return $this->author_type === 'public_client';
+    }
+
+    /**
+     * #8760 — date de création formatée pour l'API publique.
+     *
+     * `created_at` est typé `Carbon` (non-nullable) : un `?->` déclencherait
+     * `nullsafe.neverNull` en analyse stricte. L'accesseur fixe le contrat.
+     */
+    public function createdAtIso(): string
+    {
+        return $this->created_at->toIso8601String();
     }
 
     /**

@@ -11,4 +11,7 @@ declare(strict_types=1);
 return [
     'attachment_unavailable' => 'Pièce jointe indisponible.',
     'report_requires_conversation' => 'Un signalement de message doit passer par la conversation concernée.',
+    'public_empty_body' => 'Le message ne peut pas être vide.',
+    'public_body_too_long' => 'Le message ne peut pas dépasser :max caractères.',
+    'public_thread_title' => 'Conversation avec :name',
 ];
