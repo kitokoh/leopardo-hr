@@ -18,6 +18,7 @@
         "@tailwindcss/postcss": "^4.3.3"
     },
     "overrides": {
-        "shell-quote": "^1.11.0"
+        "shell-quote": "^1.11.0",
+        "follow-redirects": "^1.16.1"
     }
 }
