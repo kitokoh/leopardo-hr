@@ -159,11 +159,24 @@ class RestaurantInventoryCountTest extends TestCase
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateRestaurant($company);
-        $this->manager($company);
+
+        // Création ET soumission par la direction : ce sont les seuls rôles
+        // autorisés à écrire (`canWriteBranchResource` → principal/rh tant que
+        // le scoping ressource n'est pas actif). Le comptage doit être
+        // `submitted` pour que le refus vienne bien de l'AUTORISATION (403) et
+        // non du cycle de vie (409).
+        $this->principal($company);
         ['branch' => $branch] = $this->makeStockedBranch($company);
 
         $countId = $this->postJson('/api/v1/restaurant/inventory-counts', ['branch_id' => $branch->id])
             ->assertStatus(201)->json('data.id');
+
+        $this->postJson("/api/v1/restaurant/inventory-counts/{$countId}/submit")
+            ->assertStatus(200)
+            ->assertJsonPath('data.status', 'submitted');
+
+        // Tentative d'approbation par un manager de salle → 403.
+        $this->manager($company);
 
         $this->postJson("/api/v1/restaurant/inventory-counts/{$countId}/approve")->assertStatus(403);
     }

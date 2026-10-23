@@ -42,6 +42,22 @@ class SetupInterviewActivationFailureTest extends TestCase
         Sanctum::actingAs($employee);
     }
 
+    /**
+     * Persiste une reponse d'entretien, seul chemin par lequel
+     * `CompleteSetupInterview` prend connaissance du secteur declare (lecture
+     * fraiche de `companies.metadata.setup_interview.answers`).
+     */
+    private function recordSectorAnswer(Company $company, string $sector): void
+    {
+        $fresh = Company::query()->findOrFail($company->id);
+        $metadata = $fresh->metadata ?? [];
+        $metadata['setup_interview'] = [
+            'status' => 'in_progress',
+            'answers' => ['sector' => $sector],
+        ];
+        $fresh->forceFill(['metadata' => $metadata])->save();
+    }
+
     public function test_activation_failure_is_logged_and_surfaced_to_the_client(): void
     {
         /** @var Company $company */
@@ -52,7 +68,14 @@ class SetupInterviewActivationFailureTest extends TestCase
 
         $this->actingAsPrincipal($company);
 
-        // L'activateur échoue pour la verticale : on simule une panne
+        // L'entretien doit avoir DECLARE le secteur restaurant : c'est
+        // `SetupInterviewPlanner::plan()` qui traduit `sector=restaurant` en
+        // code de verticale `restaurant`. Sans reponse, le plan est vide,
+        // aucune activation n'est tentee et le test ne prouverait que la
+        // vacuite — pas la remontee d'echec.
+        $this->recordSectorAnswer($company, 'restaurant');
+
+        // L'activateur echoue pour la verticale : on simule une panne
         // d'infrastructure (dépendance manquante, catalogue indisponible…).
         $this->mock(SolutionActivator::class, function ($mock): void {
             $mock->shouldReceive('activateWithDependencies')
