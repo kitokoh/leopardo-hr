@@ -71,7 +71,11 @@ final class RestaurantMobileManagerService
      * Alertes stock : niveaux sous le seuil d'alerte (actif/approvisionné
      * en premier). Borné aux 100 plus critiques.
      *
-     * @return list<array{id: int, ingredient: string|null, quantity: float, alert_threshold: float|null, branch_id: int|null}>
+     * @return array<int, array{id: int, ingredient: string|null, quantity: float, alert_threshold: float|null, branch_id: int}>
+     *
+     * `array<int, …>` et non `list<…>` : `Collection::map()` préserve les clés,
+     * PHPStan ne peut donc pas prouver la séquentialité 0..n-1. La sérialisation
+     * JSON reste un tableau (clés séquentielles en pratique).
      */
     public function stockAlerts(Employee $actor): array
     {

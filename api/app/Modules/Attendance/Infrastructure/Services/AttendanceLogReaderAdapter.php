@@ -86,7 +86,12 @@ final class AttendanceLogReaderAdapter implements AttendanceLogReader
             ->when(Schema::hasColumn('attendance_logs', 'check_in'), fn (Builder $query) => $query->orderByDesc('check_in'))
             ->get()
             ->groupBy('employee_id')
-            ->map(fn ($logs) => $logs->first())
+            ->map(fn ($logs): ?AttendanceLog => $logs->first())
+            // Un groupe issu de `groupBy` est toujours non vide : le filtre ne
+            // retire rien en pratique, il prouve au typage qu'aucun `null` ne
+            // sort de l'adapter (contrat `array<int, AttendanceLogView>`).
+            ->filter(fn (?AttendanceLog $log): bool => $log !== null)
+            ->values()
             ->all();
     }
 

@@ -27,8 +27,7 @@ final class RestaurantInventoryCountService
 {
     public function __construct(
         private readonly RestaurantStockMovementService $stockMovements,
-    ) {
-    }
+    ) {}
 
     /**
      * Crée un inventaire pré-rempli avec les quantités attendues (stock courant).
@@ -65,6 +64,13 @@ final class RestaurantInventoryCountService
      */
     public function recordCounted(RestaurantInventoryCountItem $item, string $countedQty, ?string $reasonCode = null): RestaurantInventoryCountItem
     {
+        // Garde explicite : `counted_qty` est casté `decimal:3` (donc
+        // `numeric-string`), une saisie non numérique doit échouer avec un
+        // message métier plutôt qu'un `ValueError` de bcmath.
+        if (! is_numeric($countedQty)) {
+            throw new RuntimeException('Quantité comptée invalide : '.$countedQty.'.');
+        }
+
         $expected = $item->expected_qty ?? '0';
         $variance = bcsub($countedQty, (string) $expected, 3);
 
