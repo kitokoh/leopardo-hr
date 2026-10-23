@@ -1,0 +1,47 @@
+# orphan-interfaces-allowlist.txt — interfaces de contrat DDD sans implementation
+# (issue #1492, inventaire date du 2026-10-23 sur main @ 94e2fdf, ADR GOV-001).
+#
+# Regles identiques aux autres listes d'exclusion du depot
+# (actions-convention-allowlist.txt, openapi-coverage) :
+#   - une entree = un NOM D'INTERFACE (sans namespace, sans chemin) ;
+#   - toute interface orpheline ABSENTE de cette liste est bloquante ;
+#   - une entree dont l'interface est desormais implementee DOIT etre purgee
+#     (anti-regression : le garde echoue aussi sur une entree orpheline) ;
+#   - ne JAMAIS ajouter une entree ici sans justification ecrite : c'est la
+#     seule tolerance du garde.
+#
+# Etat : 17 orphelins au 2026-10-23, repartis en 3 catégories.
+
+# ─── Categorie A : liee au conteneur mais SANS consommateur (1) ──────────────
+# Cout a chaque requete, valeur nulle : le binding est resolu par personne.
+# A SUPPRIMER (le contrat) ou a CONSOMMER (remplacer les usages concrets).
+GeofenceValidatorInterface
+
+# ─── Categorie B : contrat mort assume, documente dans le provider (2) ──────
+# Signatures jamais alignees sur l'implementation reelle ; les lier reviendrait
+# a affirmer une architecture qui n'existe pas (docblock de
+# CamerasServiceProvider, #7424). Sortie : realignement ou retrait + baseline
+# PHPStan Strict — travail a part, hors perimetre du garde.
+AccessTokenServiceInterface
+CameraRepositoryInterface
+
+# ─── Categorie C : contrat d'ecriture declare, pas encore consomme (14) ─────
+# Interfaces de repository ecrites AVANT leur implementation (approche
+# contract-first). Aucune classe ne les implemente et aucun code ne les
+# resout : elles ne cassent rien, mais elles ne protegent rien non plus.
+# Decision attendue par module : implementer (le repository concret existe
+# souvent deja sous forme de service) ou supprimer le contrat.
+AttendanceRepositoryInterface
+InvoiceRepositoryInterface
+SubscriptionRepositoryInterface
+DocumentRepositoryInterface
+FolderRepositoryInterface
+PartnerRepositoryInterface
+ContractRepositoryInterface
+DepartmentRepositoryInterface
+EmployeeRepositoryInterface
+NotificationRepositoryInterface
+OnboardingRepositoryInterface
+PlanningRepositoryInterface
+CompanyProvisioningInterface
+JobPostingRepositoryInterface
