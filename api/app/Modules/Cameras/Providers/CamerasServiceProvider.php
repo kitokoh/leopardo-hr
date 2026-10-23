@@ -26,19 +26,27 @@ use Illuminate\Support\ServiceProvider;
  * Convention alignée sur les modules voisins — `FuelStationServiceProvider`
  * enregistre également ses services en `singleton` dans `register()`.
  *
- * NOTE (constat, pas correction) — deux contrats déclarés dans
- * `Domain/Contracts` sont, à ce jour, du **code mort** :
- *   - `AccessTokenServiceInterface` : ses signatures ne correspondent PAS au
- *     `CameraStreamTokenService` réel (`issue(int $cameraId, int $employeeId,
+ * NOTE (constat, pas correction) — deux contrats declares dans
+ * `Domain/Contracts` etaient, jusqu'au 2026-10-23, du **code mort** :
+ *   - `AccessTokenServiceInterface` : ses signatures ne correspondaient PAS au
+ *     `CameraStreamTokenService` reel (`issue(int $cameraId, int $employeeId,
  *     int $ttlSeconds): string` contre `issue(Camera $camera, int|string
- *     $actorEmployeeId): array`) — le contrat a été écrit avant le service et
- *     n'a jamais été réaligné ;
- *   - `CameraRepositoryInterface` : **aucune implémentation** dans le dépôt,
- *     alors qu'il décrit un modèle `object`/`int $id` que les modèles réels
+ *     $actorEmployeeId): array`) — le contrat a ete ecrit avant le service et
+ *     n'a jamais ete realigne ;
+ *   - `CameraRepositoryInterface` : **aucune implementation** dans le depot,
+ *     alors qu'il decrivait un modele `object`/`int $id` que les modeles reels
  *     (UUID, `Camera`) ne suivent pas.
- * Les lier en l'état reviendrait à affirmer une architecture qui n'existe pas.
- * Ils ne sont donc **pas** liés ici : leur réalignement (ou leur retrait) est
- * un travail à part, qui touche la baseline PHPStan Strict.
+ * Les lier en l'etat reviendrait a affirmer une architecture qui n'existe pas.
+ *
+ * ADR GOV-001 (categorie B) : les deux contrats ont ete **SUPPRIMES** le
+ * 2026-10-23 plutot que realignes. Aucun des deux n'avait d'implementation,
+ * de binding, ni de consommateur en production, en test, en route ou en
+ * seeder ; les realigner aurait produit des contrats que personne n'appelle,
+ * et `AccessTokenServiceInterface` decrivait un modele de jeton que le
+ * service reel (JWT HS256 signe par `CameraStreamTokenService`) n'a jamais
+ * utilise. Le jour ou l'abstraction sera reellement necessaire, elle devra
+ * etre ecrite A PARTIR de `CameraStreamTokenService::issue()` — pas reprise
+ * d'un contrat anterieur qui l'a contredit.
  */
 class CamerasServiceProvider extends ServiceProvider
 {
