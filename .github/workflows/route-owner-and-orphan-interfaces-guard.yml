@@ -1,0 +1,83 @@
+name: Route Owner & Orphan Interfaces Guards
+
+# Câblage CI de deux gardes qui existaient mais n'étaient exécutées par AUCUN
+# workflow : leur dette restait invisible en CI (même classe de panne que
+# #6571/#8239, cf. application-layer-placement-guard.yml et
+# actions-convention-guard.yml).
+#
+#  1. check-route-owner-guard.sh (MAT-003/#5861) — une route platform n'est
+#     jamais exposée côté tenant, et inversement. Couche 1 statique (scan des
+#     fichiers de routes + cohérence route-owners.json), couche 2 via
+#     `route:list --json` quand PHP + vendor sont disponibles (ignorée sinon,
+#     non bloquante).
+#  2. check-orphan-interfaces.sh (issue #1492, adr GOV-001) — aucune interface
+#     de `Modules/*/Domain/Contracts/` n'est orpheline, sauf tolerance
+#     explicite dans dev-hub/tools/orphan-interfaces-allowlist.txt.
+#
+# BLOQUANT sur les deux : à la pose du câblage (2026-10-23, main @ 94e2fdf) la
+# dette est nulle au sens des gardes — route owners 0 avertissement, interfaces
+# 17 orphelins TOUS allowlistés et datés (ADR GOV-001), 0 nouveau. Il n'y a donc
+# pas de phase « non bloquante » à prévoir : toute violation future est un
+# vrai signal, pas de la dette historique.
+#
+# ripgrep est installé explicitement : sans `rg`, check-orphan-interfaces.sh
+# retournait TOUTES les interfaces en orphelin (faux positifs massifs, 51 au
+# lieu de 17 mesurés le 2026-10-23). Le script échoue désormais proprement si
+# `rg` manque.
+
+on:
+  pull_request:
+    paths:
+      - "api/routes/**"
+      - "api/app/Modules/**"
+      - "api/app/Core/**"
+      - "api/app/Shared/**"
+      - "dev-hub/governance/route-owners.json"
+      - "dev-hub/tools/check-route-owner-guard.sh"
+      - "dev-hub/tools/check-orphan-interfaces.sh"
+      - "dev-hub/tools/orphan-interfaces-allowlist.txt"
+      - ".github/workflows/route-owner-and-orphan-interfaces-guard.yml"
+  push:
+    branches: [main]
+    paths:
+      - "api/routes/**"
+      - "dev-hub/governance/route-owners.json"
+      - "dev-hub/tools/orphan-interfaces-allowlist.txt"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: route-owner-orphan-guards-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  guards:
+    name: Route owners + interfaces orphelines
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      # jq est requis par la couche 1 (lecture de route-owners.json) ;
+      # ripgrep par check-orphan-interfaces.sh (détection des implémentations).
+      # Les deux sont préinstallés sur ubuntu-latest, l'installation explicite
+      # est une ceinture-bretelles à coût quasi nul.
+      - name: Ensure jq + ripgrep
+        shell: bash
+        run: |
+          command -v jq >/dev/null || sudo apt-get update -qq && sudo apt-get install -y -qq jq
+          command -v rg >/dev/null || sudo apt-get install -y -qq ripgrep
+          jq --version && rg --version | head -1
+
+      - name: Route owners guard (MAT-003/#5861)
+        shell: bash
+        run: bash dev-hub/tools/check-route-owner-guard.sh .
+
+      - name: Orphan interfaces guard (issue #1492, ADR GOV-001)
+        shell: bash
+        run: bash dev-hub/tools/check-orphan-interfaces.sh api
