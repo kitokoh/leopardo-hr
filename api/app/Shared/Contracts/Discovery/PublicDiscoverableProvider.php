@@ -57,6 +57,33 @@ interface PublicDiscoverableProvider
     public function supportedActions(): array;
 
     /**
+     * Destination NAVIGATEUR de chaque action déclarée (#8761, complément).
+     *
+     * `supportedActions()` dit qu'un service métier existe ; il ne dit pas que
+     * le client peut L'ATTEINDRE. Les deux sont nécessaires : Retail sert
+     * réellement `POST /public/market/orders`, mais ce checkout vit dans une
+     * application séparée (`front/marketplace`) absente du dépôt de la
+     * passerelle. Un CTA `order` pointant vers `/boutiques/{slug}` — une fiche
+     * profil sans panier — est donc exactement le bouton inopérant que #8761
+     * interdit, malgré une action légitime.
+     *
+     * Contrat : une clé n'est présente QUE si l'action est effectivement
+     * atteignable depuis la passerelle publique. Absence de clé = action non
+     * exposée au frontend, qui affiche un état « indisponible » explicite.
+     * `null` en valeur = action servie sans destination propre (ex. `contact`,
+     * qui ouvre le formulaire de la passerelle elle-même).
+     *
+     * Les URL sont RELATIVES à l'origine publique (`/restaurants/{slug}#…`),
+     * jamais absolues : une origine en dur casserait les environnements.
+     *
+     * Doit rester un SOUS-ENSEMBLE de `supportedActions()` — la garde
+     * `PublicDiscoverableProviderContractTest` le vérifie.
+     *
+     * @return array<string, string|null> action => URL relative, ou null
+     */
+    public function supportedActionUrls(): array;
+
+    /**
      * Entités PUBLIQUES de la verticale correspondant aux filtres.
      *
      * Clés de filtre reconnues (toutes optionnelles) :

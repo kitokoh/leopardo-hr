@@ -57,6 +57,17 @@ final class TradeDiscoverableProvider implements PublicDiscoverableProvider
         return ['contact'];
     }
 
+    /**
+     * #8761 — Trade n'expose que le contact, servé par la passerelle : aucune
+     * destination propre.
+     *
+     * @return array<string, string|null>
+     */
+    public function supportedActionUrls(): array
+    {
+        return ['contact' => null];
+    }
+
     public function search(array $filters): array
     {
         $term = $this->textFilter($filters['q'] ?? null);

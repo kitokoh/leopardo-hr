@@ -38,6 +38,17 @@ final class ShowcaseDiscoverableProvider implements PublicDiscoverableProvider
         return ['contact'];
     }
 
+    /**
+     * #8761 — la vitrine ne propose qu'un contact, servé par la passerelle
+     * elle-même : aucune destination propre.
+     *
+     * @return array<string, string|null>
+     */
+    public function supportedActionUrls(): array
+    {
+        return ['contact' => null];
+    }
+
     public function search(array $filters): array
     {
         $query = $this->baseQuery()->select([

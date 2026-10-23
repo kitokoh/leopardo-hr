@@ -28,6 +28,11 @@ const meta: PublicDiscoveryMeta = {
   radius_km: null,
   // #8761 — capacités déclarées par le backend (`supportedActions()`).
   actions: { restaurant: ['booking', 'contact', 'order'], showcase: ['contact'] },
+  // #8761 — destinations réelles. `booking` en a une (panneau `/restaurants/
+  // {slug}#reserver`), `order` non : le checkout Retail vit hors passerelle.
+  action_urls: {
+    restaurant: { booking: '/restaurants/{slug}#reserver', contact: null },
+  },
 };
 
 const items: PublicDiscoveryItem[] = [
@@ -106,8 +111,8 @@ describe('DiscoveryExplorer', () => {
   it('offers a booking action only for verticals that support it', () => {
     render(<DiscoveryExplorer {...baseProps} initialItems={items} />);
 
-    // restaurant → réservation prise en charge ; showcase → aucune action de
-    // réservation (jamais de bouton inopérant).
+    // restaurant → réservation prise en charge ET destination connue ;
+    // showcase → aucune action de réservation (jamais de bouton inopérant).
     expect(screen.getAllByRole('link', { name: /réserver/i })).toHaveLength(1);
   });
 
@@ -123,12 +128,76 @@ describe('DiscoveryExplorer', () => {
         initialMeta={{
           ...meta,
           actions: { restaurant: ['booking', 'contact', 'order'], showcase: ['contact'] },
+          action_urls: {
+            restaurant: {
+              booking: '/restaurants/{slug}#reserver',
+              order: '/restaurants/{slug}#commander',
+            },
+          },
         }}
       />,
     );
 
     expect(screen.getAllByRole('link', { name: /réserver/i })).toHaveLength(1);
     expect(screen.getAllByRole('link', { name: /^commander$/i })).toHaveLength(1);
+  });
+
+  /**
+   * #8761 — une action déclarée SANS destination ne doit produire aucun lien.
+   *
+   * C'est le défaut réel corrigé : Retail déclare `order` (le service existe)
+   * mais son checkout vit dans `front/marketplace`, hors passerelle. L'ancien
+   * code liait `item.url` (`/boutiques/{slug}`), une fiche profil sans panier —
+   * un bouton inopérant déguisé en lien valide.
+   */
+  it('shows an explicit unavailable state when the action has no destination', () => {
+    const retailItems: PublicDiscoveryItem[] = [
+      { type: 'retail_shop', slug: 'epicerie', name: 'Épicerie', url: '/boutiques/epicerie' },
+    ];
+
+    render(
+      <DiscoveryExplorer
+        {...baseProps}
+        initialItems={retailItems}
+        initialMeta={{
+          ...meta,
+          actions: { retail_shop: ['contact', 'order'] },
+          action_urls: { retail_shop: { contact: null } },
+        }}
+      />,
+    );
+
+    // Aucun lien « Commander » : le CTA ne mène nulle part de valide.
+    expect(screen.queryByRole('link', { name: /^commander$/i })).not.toBeInTheDocument();
+    // L'état explicite est affiché à la place.
+    expect(screen.getByText(/commande non disponible/i)).toBeInTheDocument();
+  });
+
+  /**
+   * #8761 — la destination vient de `meta.action_urls`, jamais de `item.url`.
+   * Le gabarit `{slug}` est substitué par le slug de l'item, encodé.
+   */
+  it('builds the business CTA href from action_urls with the item slug', () => {
+    const restaurantItems: PublicDiscoveryItem[] = [
+      { type: 'restaurant', slug: 'chez-fatima', name: 'Chez Fatima', url: '/restaurants/chez-fatima' },
+    ];
+
+    render(
+      <DiscoveryExplorer
+        {...baseProps}
+        initialItems={restaurantItems}
+        initialMeta={{
+          ...meta,
+          actions: { restaurant: ['booking', 'contact'] },
+          action_urls: { restaurant: { booking: '/restaurants/{slug}#reserver' } },
+        }}
+      />,
+    );
+
+    expect(screen.getByRole('link', { name: /réserver/i })).toHaveAttribute(
+      'href',
+      '/restaurants/chez-fatima#reserver',
+    );
   });
 
   it('hides every business CTA when the server declares no action for the type', () => {

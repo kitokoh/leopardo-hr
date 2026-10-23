@@ -47,6 +47,31 @@ final class RetailDiscoverableProvider implements PublicDiscoverableProvider
         return ['contact', 'order'];
     }
 
+    /**
+     * #8761 — Retail sert réellement la commande (`POST /api/v1/public/market/
+     * orders`), MAIS aucun parcours d'achat n'existe dans la passerelle :
+     * `/boutiques/{slug}` est une fiche profil (nom, ville, note, catégories)
+     * sans panier, et le checkout vit dans l'application séparée
+     * `front/marketplace` (`/boutiques/{slug}`, `/panier`, `/commande`), déployée
+     * sur une autre origine (`leopardo-marche`).
+     *
+     * Exposer `order` ici produirait exactement le bouton inopérant interdit par
+     * #8761 : un « Commander » qui mène à une fiche sans moyen d'acheter. La
+     * clé est donc ABSENTE tant qu'aucune destination n'existe DANS la
+     * passerelle. `supportedActions()` reste la vérité métier (le service
+     * existe) ; le frontend, lui, s'appuie sur `supportedActionUrls()` pour
+     * afficher l'état « indisponible » explicite.
+     *
+     * Débloquer : soit un panier dans `/boutiques/{slug}`, soit une origine
+     * marketplace configurée et validée — dans les deux cas avec un test.
+     *
+     * @return array<string, string|null>
+     */
+    public function supportedActionUrls(): array
+    {
+        return ['contact' => null];
+    }
+
     public function search(array $filters): array
     {
         /** @var list<string> $eligible */

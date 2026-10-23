@@ -306,7 +306,7 @@ export default function RestaurantOrderPanel({
   const labelClass = 'text-[10px] font-black uppercase tracking-widest text-slate-500';
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+    <div id="commander" className="grid gap-6 lg:grid-cols-[1fr_360px]">
       {/* Menu */}
       <section aria-label={t(locale, 'restaurant.public.menuTitle')}>
         <h2 className="mb-3 text-lg font-black tracking-tight text-slate-950">
