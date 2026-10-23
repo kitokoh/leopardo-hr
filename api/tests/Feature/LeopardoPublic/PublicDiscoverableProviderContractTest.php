@@ -380,4 +380,104 @@ class PublicDiscoverableProviderContractTest extends TestCase
             .'`booking` ne doit revenir qu\'avec un contrat public de réservation (P3-01) ET un test qui le prouve.'
         );
     }
+
+    /**
+     * Garde n°6 — `supportedActionUrls()` est un SOUS-ENSEMBLE de
+     * `supportedActions()` (#8761).
+     *
+     * Une destination pour une action non déclarée serait une incohérence de
+     * contrat, pas une capacité supplémentaire : `actionUrlsByType()` la
+     * filtrerait silencieusement côté agrégateur, et le provider mentirait sur
+     * ce qu'il expose.
+     */
+    public function test_action_urls_are_a_subset_of_declared_actions(): void
+    {
+        foreach ($this->providers() as $type => $provider) {
+            $declared = $provider->supportedActions();
+
+            foreach (array_keys($provider->supportedActionUrls()) as $action) {
+                $this->assertContains(
+                    $action,
+                    $declared,
+                    sprintf(
+                        'Provider `%s` déclare une destination pour `%s` sans le déclarer dans '
+                        .'`supportedActions()` : le contrat est incohérent (#8761).',
+                        $type,
+                        $action
+                    )
+                );
+            }
+        }
+    }
+
+    /**
+     * Garde n°7 — une destination déclarée est ATTEIGNABLE (#8761).
+     *
+     * C'est la correction du défaut Retail : `supportedActions()` prouvait qu'un
+     * service métier existait, pas que le client pouvait l'atteindre. Retail
+     * annonçait `order` alors que le CTA liait `/boutiques/{slug}`, une fiche
+     * profil SANS panier (le checkout vit dans `front/marketplace`, autre
+     * application).
+     *
+     * Règles vérifiées sur chaque destination :
+     *  - relative (jamais une origine en dur : elle casserait les environnements) ;
+     *  - commence par `/{segment}/` où `segment` est celui de la fiche publique
+     *    de la verticale (la même convention que `TYPE_SEGMENTS`) ;
+     *  - porte le gabarit `{slug}` (sinon la destination ne peut pas désigner
+     *    l'entité) ;
+     *  - le fragment d'ancre, s'il existe, est un identifiant DOM plausible.
+     */
+    public function test_declared_action_urls_are_reachable_relative_targets(): void
+    {
+        foreach ($this->providers() as $type => $provider) {
+            $segment = self::TYPE_SEGMENTS[$type] ?? null;
+
+            if ($segment === null) {
+                continue; // couvert par la garde n°2
+            }
+
+            foreach ($provider->supportedActionUrls() as $action => $url) {
+                if ($url === null) {
+                    continue; // action servie par la passerelle elle-même
+                }
+
+                $this->assertStringStartsWith(
+                    '/'.$segment.'/',
+                    $url,
+                    sprintf(
+                        'Provider `%s` : la destination de `%s` (`%s`) ne pointe pas vers la fiche '
+                        .'publique `/%s/{slug}` (#8761).',
+                        $type,
+                        $action,
+                        $url,
+                        $segment
+                    )
+                );
+
+                $this->assertStringContainsString(
+                    '{slug}',
+                    $url,
+                    sprintf(
+                        'Provider `%s` : la destination de `%s` (`%s`) doit porter le gabarit '
+                        .'`{slug}`, sinon elle ne désigne aucune entité (#8761).',
+                        $type,
+                        $action,
+                        $url
+                    )
+                );
+
+                $this->assertStringStartsWith(
+                    '/',
+                    $url,
+                    sprintf(
+                        'Provider `%s` : la destination de `%s` (`%s`) doit être RELATIVE à '
+                        .'l\'origine publique — une origine en dur casserait les environnements (#8761).',
+                        $type,
+                        $action,
+                        $url
+                    )
+                );
+            }
+        }
+    }
 }

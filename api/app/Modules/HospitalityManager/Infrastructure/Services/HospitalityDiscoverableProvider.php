@@ -37,6 +37,21 @@ final class HospitalityDiscoverableProvider implements PublicDiscoverableProvide
         return ['contact', 'booking'];
     }
 
+    /**
+     * #8761 — la réservation est servie dans `front/web/src/app/stay/[slug]/
+     * stay-booking-panel.tsx` (disponibilités → `POST /api/v1/public/
+     * hospitality/properties/{slug}/reservations` → suivi par référence).
+     *
+     * @return array<string, string|null>
+     */
+    public function supportedActionUrls(): array
+    {
+        return [
+            'contact' => null,
+            'booking' => '/stay/{slug}#reserver',
+        ];
+    }
+
     public function search(array $filters): array
     {
         $query = $this->baseQuery()->select([

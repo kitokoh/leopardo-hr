@@ -47,6 +47,18 @@ final class VtcDiscoverableProvider implements PublicDiscoverableProvider
         return ['contact'];
     }
 
+    /**
+     * #8761 — VTC n'expose que le contact public. La course (`POST /public/vtc/
+     * marketplace/rides`) exige une origine ET une destination : elle ne se
+     * déclenche pas depuis un CTA de fiche, donc aucune destination.
+     *
+     * @return array<string, string|null>
+     */
+    public function supportedActionUrls(): array
+    {
+        return ['contact' => null];
+    }
+
     public function search(array $filters): array
     {
         /** @var Collection<int, Company> $operators */

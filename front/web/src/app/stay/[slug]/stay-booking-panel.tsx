@@ -200,7 +200,7 @@ export default function StayBookingPanel({ slug, locale, roomTypes }: StayBookin
     'w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-emerald-600 focus:outline-none';
 
   return (
-    <section className="mt-10" aria-labelledby="stay-booking-title">
+    <section id="reserver" className="mt-10" aria-labelledby="stay-booking-title">
       <h2 id="stay-booking-title" className="text-xl font-semibold text-slate-900">
         {t(locale, 'stay.public.bookingTitle')}
       </h2>

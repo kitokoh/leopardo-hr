@@ -80,6 +80,32 @@ function directoryHref(query: { q: string; city: string; type: string; page: num
   return qs ? `/decouvrir?${qs}` : '/decouvrir';
 }
 
+/**
+ * #8761 — destination NAVIGATEUR d'une action, ou `null` si aucune.
+ *
+ * `meta.actions` prouve qu'un service métier existe ; `meta.action_urls`
+ * prouve que le client peut l'atteindre. Les deux sont nécessaires : Retail
+ * sert une vraie commande, mais son checkout vit dans une autre application —
+ * sans cette distinction, le CTA « Commander » menait à `/boutiques/{slug}`,
+ * une fiche profil sans panier (bouton inopérant).
+ *
+ * Fail-closed : pas d'entrée ⇒ `null` ⇒ l'appelant affiche « indisponible ».
+ */
+function actionHref(
+  actionUrls: Record<string, Record<string, string | null>> | undefined,
+  type: string,
+  action: string,
+  slug: string,
+): string | null {
+  const template = actionUrls?.[type]?.[action];
+
+  // `null` explicite = action servie par la passerelle elle-même (contact),
+  // sans destination propre. Ce n'est PAS un CTA de service métier.
+  if (typeof template !== 'string' || template === '') return null;
+
+  return template.replace('{slug}', encodeURIComponent(slug));
+}
+
 export default function DiscoveryExplorer({
   locale,
   initialItems,
@@ -427,42 +453,51 @@ export default function DiscoveryExplorer({
 
                   {/*
                     #8761 — Réservation : rendue UNIQUEMENT si la verticale
-                    dÉCLARE l'action `booking` (source de vérité backend) ET
-                    que la fiche publique existe. Sinon, état explicite
-                    « indisponible » — jamais un bouton inopérant.
+                    déclare `booking` (source de vérité backend) ET qu'une
+                    destination existe pour la passerelle. Sinon, état explicite
+                    « indisponible » — jamais un bouton inopérant ni un lien
+                    détourné vers la fiche profil.
                   */}
                   {supportsAction(meta?.actions, item.type, 'booking') &&
-                    (item.url ? (
-                      <Link
-                        href={item.url}
-                        className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700"
-                      >
-                        {t(locale, 'discovery.book')}
-                      </Link>
-                    ) : (
-                      <span className="text-xs text-slate-400">
-                        {t(locale, 'discovery.bookingUnavailable')}
-                      </span>
-                    ))}
+                    ((href) =>
+                      href ? (
+                        <Link
+                          href={href}
+                          className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700"
+                        >
+                          {t(locale, 'discovery.book')}
+                        </Link>
+                      ) : (
+                        <span className="text-xs text-slate-400">
+                          {t(locale, 'discovery.bookingUnavailable')}
+                        </span>
+                      ))(
+                      actionHref(meta?.action_urls, item.type, 'booking', item.slug),
+                    )}
 
                   {/*
-                    #8761 — Commande : même règle, action `order`. Aucune
-                    verticale sans service métier réel ne peut donc afficher ce
-                    CTA.
+                    #8761 — Commande : même règle, action `order`. Retail
+                    déclare `order` (le service existe) mais n'a aucune
+                    destination dans la passerelle tant que son checkout vit
+                    dans `front/marketplace` : l'état « indisponible » est donc
+                    affiché, ce qui est exact.
                   */}
                   {supportsAction(meta?.actions, item.type, 'order') &&
-                    (item.url ? (
-                      <Link
-                        href={item.url}
-                        className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700"
-                      >
-                        {t(locale, 'discovery.order')}
-                      </Link>
-                    ) : (
-                      <span className="text-xs text-slate-400">
-                        {t(locale, 'discovery.orderUnavailable')}
-                      </span>
-                    ))}
+                    ((href) =>
+                      href ? (
+                        <Link
+                          href={href}
+                          className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700"
+                        >
+                          {t(locale, 'discovery.order')}
+                        </Link>
+                      ) : (
+                        <span className="text-xs text-slate-400">
+                          {t(locale, 'discovery.orderUnavailable')}
+                        </span>
+                      ))(
+                      actionHref(meta?.action_urls, item.type, 'order', item.slug),
+                    )}
                 </div>
               </li>
             ))}
