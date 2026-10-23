@@ -151,3 +151,23 @@ modification du dépôt pour cela.**
 | **Intégré** | Sur la branche `fix/8761-action-targets` ; **PR #8831 ouverte, non fusionnée** |
 | **Déployé** | ❌ Non |
 | **Disponible pour les utilisateurs** | ❌ Non (PR non fusionnée) |
+
+### 12.9 Addendum — après fusion (état final)
+
+| Étape | Résultat réel |
+|---|---|
+| PR #8831 | **fusionnée** en squash → `main` @ `722ca586f` |
+| Rebase sur `main` (`9446cd19f`, vite/vitest Dependabot) | rebase **sans conflit** ; suite relancée après rebase : `PublicDiscoverableProviderContractTest|PublicDiscoveryTest` **39 passed (248 assertions)**, `RetailPublicDiscoveryTest` **11 passed (45)**, `jest src/app/decouvrir` **23/23**, `tsc --noEmit` exit 0 |
+| Checks **requis** (protection `main`) | `PHPStan — Strict (level 8)` ✅ · `Module Structure Validator` ✅ · `Frontend — ESLint + TypeScript` ✅ · `actionlint (+ shellcheck)` ✅ |
+| Branche `fix/8761-action-targets` | supprimée en local **et** en distant ; `git branch -r` ne renvoie plus que `origin/main` |
+| Arbre de travail | **propre** (`git status --short` vide) |
+| Issue **#8761** | **fermée** automatiquement (`Closes`) — `state_reason: completed`, 2026-10-23T05:16:39Z |
+| Issue **#8759** | **fermée** manuellement après vérification des 5 critères, preuve commentée sur l'issue |
+
+**Checks CI hors protection, sur `722ca586f`** — distinction stricte :
+
+- ✅ `PHPStan Strict`, `PHPStan Modules Architecture`, `Module Structure`, `Frontend ESLint+TS`, `actionlint`, `Governance Gates`, `OpenAPI`, `TruffleHog`, `Hygiene Guards`, `i18n ×3`, `Backend Quality`, `Backend Security`, `Frontend tests`, `Web Build/Lint`, `lighthouse`.
+- ❌ `Smoke build leopardo_employee (debug APK)` — **dette préexistante, hors périmètre** : `flutter pub get` échoue sur un conflit de version entre `leopardo_core` (`firebase_messaging ^17.0.0`) et `leopardo_employee` (`^16.7.0`). Vérifié sur `origin/main` : les deux contraintes y sont déjà en conflit. Le diff de #8831 ne touche **aucun** fichier mobile (`git diff --name-only origin/main...HEAD | grep -i mobile` → vide).
+- ⏳ `Backend (PHP 8.4 + PostgreSQL 16 + Redis 7)` — job **non requis**, encore `in_progress` après plus d'une heure (étapes 1–7 vertes, étape 8 « feature tests » en cours). Job lent par nature, déjà observé `in_progress` sur `main` au run précédent. Les suites backend équivalentes pour ce périmètre sont vertes localement (60 tests, 4 commandes distinctes).
+
+Aucun de ces deux points n'est causé par ce lot ; aucun n'est masqué.
