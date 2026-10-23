@@ -66,7 +66,8 @@ class FuelImportApiTest extends TestCase
             ->assertStatus(200)
             ->assertJsonPath('data.status', 'committed');
 
-        $this->assertSame(2, FuelProduct::query()->count());
+        $productsAfterReplay = FuelProduct::query()->count();
+        $this->assertSame(2, $productsAfterReplay);
     }
 
     public function test_preview_reports_line_errors_without_commit(): void

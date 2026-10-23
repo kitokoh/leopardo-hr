@@ -85,13 +85,19 @@ class AiQuotaAtomicityTest extends TestCase
         $companyId = strval($company->id);
         $period = now()->format('Y-m');
 
-        $this->assertSame(200, $this->rateLimit($manager)->getStatusCode());
-        $this->assertSame(200, $this->rateLimit($manager)->getStatusCode());
-        $this->assertSame(200, $this->rateLimit($manager)->getStatusCode());
+        // Valeurs capturees, une assertion par appel (phpstan#15328).
+        $statusOne = $this->rateLimit($manager)->getStatusCode();
+        $this->assertSame(200, $statusOne);
+        $statusTwo = $this->rateLimit($manager)->getStatusCode();
+        $this->assertSame(200, $statusTwo);
+        $statusThree = $this->rateLimit($manager)->getStatusCode();
+        $this->assertSame(200, $statusThree);
 
         // Quota épuisé, aucun crédit acheté → refus fail-closed.
-        $this->assertSame(422, $this->rateLimit($manager)->getStatusCode());
-        $this->assertSame(422, $this->rateLimit($manager)->getStatusCode());
+        $refusedOne = $this->rateLimit($manager)->getStatusCode();
+        $this->assertSame(422, $refusedOne);
+        $refusedTwo = $this->rateLimit($manager)->getStatusCode();
+        $this->assertSame(422, $refusedTwo);
 
         $this->assertDatabaseHas('ai_usage_counters', [
             'company_id' => $companyId,

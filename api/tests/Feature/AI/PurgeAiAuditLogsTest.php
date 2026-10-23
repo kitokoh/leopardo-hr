@@ -89,8 +89,14 @@ class PurgeAiAuditLogsTest extends TestCase
         $this->insertLog($company->id, $employee->id, now()->subDays(120));
         $this->insertToolExecution($company->id, $employee->id, now()->subDays(120));
 
-        $this->assertSame(0, Artisan::call('ai:purge-audit-logs'));
-        $this->assertSame(0, Artisan::call('ai:purge-audit-logs'));
+        // Chaque valeur est capturee avant l'assertion : `assertSame` porte
+        // `@phpstan-assert =ExpectedType`, donc un second appel inline identique
+        // est vu comme deja narrowé (phpstan#15328, faux positif residuel en
+        // 2.3.1). Capturer la valeur preserve exactement l'intention du test.
+        $firstRun = Artisan::call('ai:purge-audit-logs');
+        $this->assertSame(0, $firstRun);
+        $secondRun = Artisan::call('ai:purge-audit-logs');
+        $this->assertSame(0, $secondRun);
 
         $this->assertSame(0, (int) DB::table('ai_audit_logs')->count());
         $this->assertSame(0, (int) DB::table('ai_tool_executions')->count());

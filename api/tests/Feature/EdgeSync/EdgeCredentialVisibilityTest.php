@@ -79,6 +79,12 @@ class EdgeCredentialVisibilityTest extends TestCase
         $this->assertArrayNotHasKey('metadata', $data, 'metadata (hash edge_token) ne doit pas être sérialisé par défaut.');
         $this->assertArrayHasKey('id', $data);
         $this->assertArrayHasKey('name', $data);
+        // `$data` vient de `toArray()` : Larastan en deduit un shape dont
+        // toutes les cles sont optionnelles, donc l'acces direct `$data['name']`
+        // est signale `offsetAccess.notFound` au niveau 8. `assertIsString`
+        // porte l'invariant de presence ET de type, ce qui est exactement ce
+        // que ce test verifie.
+        $this->assertIsString($data['name'] ?? null);
         $this->assertSame('Site Principal', $data['name']);
     }
 
@@ -98,13 +104,19 @@ class EdgeCredentialVisibilityTest extends TestCase
         // L'émission (store / issueLicense) ré-expose explicitement les
         // credentials via makeVisible() — contrat « montré une seule fois ».
         $nodeData = $this->node->makeVisible(['license_key', 'metadata'])->toArray();
-        $this->assertArrayHasKey('license_key', $nodeData);
-        $this->assertArrayHasKey('metadata', $nodeData);
-        $this->assertSame('lk-visibility-secret', $nodeData['license_key']);
+        // Meme raison que pour $licenseData ci-dessous : shape a cles
+        // optionnelles issu de `toArray()`.
+        $nodeLicenseKey = $nodeData['license_key'] ?? null;
+        $this->assertSame('lk-visibility-secret', $nodeLicenseKey);
 
         $licenseData = $this->license->makeVisible(['license_key', 'signed_payload'])->toArray();
-        $this->assertArrayHasKey('license_key', $licenseData);
-        $this->assertArrayHasKey('signed_payload', $licenseData);
-        $this->assertSame('signed-payload-visibility', $licenseData['signed_payload']);
+        // `toArray()` produit un shape a cles toutes optionnelles : l'acces
+        // direct est signale `offsetAccess.notFound`. Capturer via `?? null`
+        // conserve exactement l'assertion (une cle absente donne `null`, qui
+        // fait echouer le `assertSame` attendu) tout en satisfaisant le typage.
+        $licenseKey = $licenseData['license_key'] ?? null;
+        $signedPayload = $licenseData['signed_payload'] ?? null;
+        $this->assertSame('lk-visibility-secret', $licenseKey);
+        $this->assertSame('signed-payload-visibility', $signedPayload);
     }
 }

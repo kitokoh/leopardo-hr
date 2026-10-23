@@ -120,8 +120,11 @@ class ExpenseAccountingEntriesFlowTest extends TestCase
         ]);
 
         $service = new ExpenseAccountingEntryService;
-        $this->assertSame(2, $service->generateForClaim($claim));
-        $this->assertSame(2, $service->generateForClaim($claim)); // 2e appel → remplacement, pas doublon
+        $firstGeneration = $service->generateForClaim($claim);
+        $this->assertSame(2, $firstGeneration);
+        // 2e appel -> remplacement, pas doublon.
+        $secondGeneration = $service->generateForClaim($claim);
+        $this->assertSame(2, $secondGeneration);
 
         $this->assertSame(2, ExpenseAccountingEntry::query()->where('expense_claim_id', $claim->id)->count());
     }
@@ -147,9 +150,10 @@ class ExpenseAccountingEntriesFlowTest extends TestCase
         $claim->update(['status' => 'submitted', 'submitted_at' => now()]);
         $this->assertSame(0, ExpenseAccountingEntry::query()->where('expense_claim_id', $claim->id)->count());
 
-        // Mise à jour sans changement de statut : aucune écriture.
+        // Mise a jour sans changement de statut : aucune ecriture.
         $claim->update(['description' => 'Mission juin']);
-        $this->assertSame(0, ExpenseAccountingEntry::query()->where('expense_claim_id', $claim->id)->count());
+        $entriesAfterUnrelatedUpdate = ExpenseAccountingEntry::query()->where('expense_claim_id', $claim->id)->count();
+        $this->assertSame(0, $entriesAfterUnrelatedUpdate);
     }
 
     public function test_rejection_of_approved_claim_voids_entries(): void

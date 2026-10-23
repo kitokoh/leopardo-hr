@@ -192,7 +192,11 @@ class AiCreditsTest extends TestCase
         // Rejeu du MÊME événement (redelivrance Stripe) → réponse mémorisée,
         // aucun second crédit (registre webhook #5444).
         $this->postStripeWebhook($event)->assertOk();
-        $this->assertSame(1, AiCreditLedger::query()->where('company_id', $company->id)->count());
+        // Capture avant assertion : `assertSame` porte `@phpstan-assert
+        // =ExpectedType`, donc un appel impur repete a l'identique est vu comme
+        // deja narrowé (phpstan#15328). L'assertion reste la meme.
+        $ledgerCountAfterReplay = AiCreditLedger::query()->where('company_id', $company->id)->count();
+        $this->assertSame(1, $ledgerCountAfterReplay);
 
         // Événement DIFFÉRENT portant la même session (référence) → la
         // référence unique du ledger bloque le double crédit.
@@ -229,8 +233,12 @@ class AiCreditsTest extends TestCase
         $companyId = strval($company->id);
 
         // 2 requêtes dans le quota du plan (compteur persistant en DB).
-        $this->assertSame(200, $this->rateLimit($manager)->getStatusCode());
-        $this->assertSame(200, $this->rateLimit($manager)->getStatusCode());
+        // Une assertion par appel, valeur capturee : deux `getStatusCode()`
+        // inline identiques declenchent phpstan#15328 depuis 2.2.15.
+        $firstStatus = $this->rateLimit($manager)->getStatusCode();
+        $this->assertSame(200, $firstStatus);
+        $secondStatus = $this->rateLimit($manager)->getStatusCode();
+        $this->assertSame(200, $secondStatus);
         $this->assertDatabaseHas('ai_usage_counters', [
             'company_id' => $companyId,
             'period' => now()->format('Y-m'),

@@ -160,7 +160,8 @@ class FuelReportApiTest extends TestCase
             ->assertStatus(200)
             ->assertJsonPath('meta.recomputed', false);
 
-        $this->assertSame(1, FuelReportSnapshot::query()->count());
+        $snapshotsAfterReplay = FuelReportSnapshot::query()->count();
+        $this->assertSame(1, $snapshotsAfterReplay);
     }
 
     public function test_manager_gets_station_performance(): void

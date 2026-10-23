@@ -122,12 +122,13 @@ class TravelWebhookDispatchTest extends TestCase
                 TravelWebhookDelivery::query()->where('subscription_id', $subscription->id)->count(),
             );
 
-            // Seconde passe : idempotent — aucun doublon.
+            // Seconde passe : idempotent — aucun doublon. Valeur capturee
+            // avant l'assertion (phpstan#15328 : `assertSame` porte
+            // `@phpstan-assert =ExpectedType`, donc un appel impur repete
+            // a l'identique est vu comme deja narrowé).
             $this->artisan('travel:webhook-dispatch')->assertExitCode(0);
-            self::assertSame(
-                1,
-                TravelWebhookDelivery::query()->where('subscription_id', $subscription->id)->count(),
-            );
+            $deliveriesAfterReplay = TravelWebhookDelivery::query()->where('subscription_id', $subscription->id)->count();
+            self::assertSame(1, $deliveriesAfterReplay);
         });
     }
 

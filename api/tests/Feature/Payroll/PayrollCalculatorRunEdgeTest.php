@@ -91,7 +91,8 @@ class PayrollCalculatorRunEdgeTest extends TestCase
 
         // Recalcul : les bulletins sont reconstruits, pas dupliqués.
         $calculator->calculateRun($run);
-        $this->assertSame(1, PaySlip::where('payroll_run_id', $run->id)->count());
+        $paySlipsAfterRecalculation = PaySlip::where('payroll_run_id', $run->id)->count();
+        $this->assertSame(1, $paySlipsAfterRecalculation);
         $run->refresh();
         $this->assertSame('calculated', $run->status);
     }
