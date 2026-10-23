@@ -223,6 +223,41 @@ export interface TrustedBrandsProps {
 /** Intervalle de rotation d'une carte (#8392). */
 const ROTATION_INTERVAL_MS = 3600;
 
+/**
+ * Calcule le prochain trio visible (#8392).
+ *
+ * Fonction PURE et exportee : la garantie « le trio change a chaque tick » est
+ * ainsi verifiable sans faux timers ni aleatoire non deterministe, ce qui etait
+ * la cause du test instable.
+ *
+ * Le tirage est fait en deux temps, dans cet ordre precis :
+ *  1. le secteur ENTRANT, tire parmi ceux qui ne sont PAS deja affiches ;
+ *  2. le slot a remplacer.
+ * L'ancien ordre (slot d'abord) pouvait retomber sur le slot qui venait de
+ * recevoir un nouveau secteur, si bien qu'une carte sortait puis rentrait dans
+ * le meme tick : a l'ecran rien ne bougeait.
+ *
+ * `rand` est injecte pour rester testable ; les bornes sont clampees car un
+ * `Math.random` stube peut renvoyer 1 (valeur que le vrai n'atteint jamais).
+ */
+export function nextVisibleSectors(
+  current: number[],
+  total: number,
+  rand: () => number,
+): number[] {
+  if (current.length === 0 || total <= current.length) return current;
+  const candidates = Array.from({ length: total }, (_, index) => index).filter(
+    (index) => !current.includes(index),
+  );
+  if (candidates.length === 0) return current;
+  const pick = (length: number) => Math.min(length - 1, Math.floor(rand() * length));
+  const next = candidates[pick(candidates.length)];
+  const slot = pick(current.length);
+  const updated = [...current];
+  updated[slot] = next;
+  return updated;
+}
+
 export function TrustedBrands({ locale = 'fr' }: TrustedBrandsProps) {
   const copy = copyByLocale[locale] ?? copyByLocale.fr;
   // #8392 — retour propriétaire : TROIS secteurs à la fois, et le contenu
@@ -235,24 +270,10 @@ export function TrustedBrands({ locale = 'fr' }: TrustedBrandsProps) {
   useEffect(() => {
     if (reducedMotion) return undefined;
     const id = setInterval(() => {
-      setVisible((current) => {
-        // Rotation garantie (#8392). L'ancien ordre tirait le slot AVANT de
-        // calculer les candidats : `Math.random() * 3` pouvait retomber sur le
-        // slot qui venait justement de recevoir un nouveau secteur, si bien que
-        // « une carte sort puis rentre » dans le meme tick. A l'ecran rien ne
-        // bougeait et le test de rotation devenait rouge par intermittence.
-        // On tire donc d'abord le secteur ENTRANT (hors carte deja affichees),
-        // puis le slot a remplacer : le changement est alors garanti.
-        const candidates = sectors
-          .map((_, index) => index)
-          .filter((index) => !current.includes(index));
-        if (candidates.length === 0) return current;
-        const next = candidates[Math.floor(Math.random() * candidates.length)];
-        const slot = Math.floor(Math.random() * current.length);
-        const updated = [...current];
-        updated[slot] = next;
-        return updated;
-      });
+      // Rotation garantie (#8392) : voir `nextVisibleSectors`. Le secteur
+      // entrant est tire HORS des cartes deja affichees, donc le trio change a
+      // chaque tick par construction.
+      setVisible((current) => nextVisibleSectors(current, sectors.length, Math.random));
     }, ROTATION_INTERVAL_MS);
     return () => clearInterval(id);
   }, [reducedMotion]);
