@@ -272,7 +272,8 @@ class WebhookIdempotenceTest extends TestCase
         $this->assertSame(1, CommunicationEvent::count());
 
         $this->postBounce($payload)->assertOk();
-        $this->assertSame(1, CommunicationEvent::count());
+        $eventsAfterBounceReplay = CommunicationEvent::count();
+        $this->assertSame(1, $eventsAfterBounceReplay);
 
         $this->assertDatabaseHas('webhook_events', [
             'source' => 'email-bounce',
@@ -302,7 +303,8 @@ class WebhookIdempotenceTest extends TestCase
         // Redelivrance identique : rejoué (201), toujours un seul lead.
         $replay = $this->postLead($payload);
         $replay->assertStatus(201)->assertJsonPath('data.external_id', 'lead-idem-ext-1');
-        $this->assertSame(1, MarketingLead::query()->count());
+        $leadsAfterReplay = MarketingLead::query()->count();
+        $this->assertSame(1, $leadsAfterReplay);
 
         $this->assertDatabaseHas('webhook_events', [
             'source' => 'marketing-lead',

@@ -54,10 +54,14 @@ final class EduReportService
             ->map(fn ($rows, string $date): array => [
                 'date' => $date,
                 'class_id' => $classId,
-                'present' => (int) $rows->where('status', EduAttendance::STATUS_PRESENT)->sum('count'),
-                'absent' => (int) $rows->where('status', EduAttendance::STATUS_ABSENT)->sum('count'),
-                'late' => (int) $rows->where('status', EduAttendance::STATUS_LATE)->sum('count'),
-                'excused' => (int) $rows->where('status', EduAttendance::STATUS_EXCUSED)->sum('count'),
+                // `count` est un alias `DB::raw`, pas un attribut du modèle : un
+                // `sum('count')` obligeait PHPStan à deviner `TReturnType`.
+                // La closure explicite fixe le type de retour (comportement
+                // inchangé : même agrégat, même cast).
+                'present' => $rows->where('status', EduAttendance::STATUS_PRESENT)->sum(fn (EduAttendance $row): int => (int) $row->getAttribute('count')),
+                'absent' => $rows->where('status', EduAttendance::STATUS_ABSENT)->sum(fn (EduAttendance $row): int => (int) $row->getAttribute('count')),
+                'late' => $rows->where('status', EduAttendance::STATUS_LATE)->sum(fn (EduAttendance $row): int => (int) $row->getAttribute('count')),
+                'excused' => $rows->where('status', EduAttendance::STATUS_EXCUSED)->sum(fn (EduAttendance $row): int => (int) $row->getAttribute('count')),
             ])
             ->values()
             ->all();

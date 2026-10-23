@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Infrastructure\Services;
 
 use App\Modules\TravelAgency\Domain\Models\TravelCity;
 use App\Modules\TravelAgency\Domain\Models\TravelCountry;
+use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -14,6 +15,11 @@ use Illuminate\Support\Facades\DB;
  * Upsert IDEMPOTENT : pays par `iso2` (contrôle ISO 3166-1 alpha-2),
  * villes par (country_iso2, name) — doublons détectés, lignes invalides
  * rapportées (jamais silencieuses). Seed rejouable (critère d'acceptation).
+ *
+ * Le rapport est annoté sur la variable locale (`@var GeoReport` ci-dessous) :
+ * sans cela, Larastan 3.13 aligne le type générique de `DB::transaction()`
+ * sur l'inférence exacte du corps et le type déclaré plus large devient un
+ * conflit.
  *
  * @phpstan-type GeoReport array{countries: int, cities: int, skipped: list<string>}
  */
@@ -25,6 +31,7 @@ final class LegacyGeoImportService
      */
     public function import(string $companyId, array $dump, bool $dryRun = false): array
     {
+        /** @var GeoReport $report */
         $report = ['countries' => 0, 'cities' => 0, 'skipped' => []];
 
         if ($dryRun) {
@@ -34,7 +41,10 @@ final class LegacyGeoImportService
             return $report;
         }
 
-        return DB::transaction(function () use ($companyId, $dump, &$report): array {
+        // Pas de `: array` sur la closure : ce type large écraserait le
+        // `GeoReport` inféré depuis `$report` et ferait échouer la contrainte
+        // générique de `Connection::transaction()` (Larastan 3.13).
+        return DB::transaction(function (Connection $connection) use ($companyId, $dump, &$report) {
             $countryIso2 = [];
 
             foreach ((array) ($dump['countries'] ?? []) as $country) {

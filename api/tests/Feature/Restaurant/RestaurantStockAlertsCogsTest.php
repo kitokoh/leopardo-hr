@@ -9,12 +9,12 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantIngredient;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPosSession;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -74,13 +74,15 @@ class RestaurantStockAlertsCogsTest extends TestCase
                 ->where('event_type', 'restaurant.stock.alert.v1')
                 ->count());
 
-            // Second scan (rejeu) → dédup : toujours une seule alerte (pas de spam).
+            // Second scan (rejeu) -> dedup : toujours une seule alerte (pas de
+            // spam). Valeur capturee avant l'assertion (phpstan#15328).
             $this->artisan('leopardo:restaurant:stock-alerts', ['company' => $company->id])
                 ->assertSuccessful();
 
-            $this->assertSame(1, RestaurantOutboxEvent::query()
+            $alertsAfterReplay = RestaurantOutboxEvent::query()
                 ->where('event_type', 'restaurant.stock.alert.v1')
-                ->count());
+                ->count();
+            $this->assertSame(1, $alertsAfterReplay);
 
             // Endpoint lecture des alertes.
             $this->getJson('/api/v1/restaurant/stock/alerts')

@@ -66,12 +66,18 @@ class AccountingDataModelTest extends TestCase
         ] as $table) {
             $found = false;
             foreach (Schema::getColumns($table) as $column) {
-                if (($column['name'] ?? null) !== 'company_id') {
+                // `Schema::getColumns()` renvoie `name` garanti non nullable :
+                // le `?? null` est donc redondant, et PHPStan 2.3 le signale
+                // (`nullCoalesce.offset`). L'acces direct est equivalent ici.
+                if ($column['name'] !== 'company_id') {
                     continue;
                 }
                 $found = true;
-                /** @var array{name: string, nullable: bool} $column */
-                $this->assertFalse($column['nullable'], "company_id doit être NON nullable sur {$table}.");
+                // Plus d'annotation `@var` ici : `Schema::getColumns()` renvoie
+                // deja un shape precis, et le re-narrower a `{name, nullable}`
+                // elargissait le type au lieu de le restreindre — PHPStan 2.3
+                // le refuse desormais.
+                $this->assertFalse($column['nullable'], "company_id doit etre NON nullable sur {$table}.");
             }
             $this->assertTrue($found, "La table {$table} doit porter la colonne company_id.");
         }

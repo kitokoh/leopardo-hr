@@ -135,10 +135,11 @@ class VtcDispatchTest extends TestCase
 
             self::assertSame(3, $ride->events()->count());
 
-            // Timeout avec une séquence inconnue : aucun effet non plus.
+            // Timeout avec une sequence inconnue : aucun effet non plus.
             $dispatch->expireOffer((string) $company->id, $ride->id, $far->id, 99);
 
-            self::assertSame(3, $ride->events()->count());
+            $eventsAfterUnknownSequence = $ride->events()->count();
+            self::assertSame(3, $eventsAfterUnknownSequence);
         });
     }
 

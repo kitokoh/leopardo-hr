@@ -193,7 +193,12 @@ class RestaurantReservationController extends Controller
             return response()->json(['message' => __('restaurant.reservation.deposit_on_terminated')], 422);
         }
 
-        $restaurantReservation->deposit_minor = (int) $request->input('amount_minor');
+        // `amount_minor` est validé `integer|min:1` juste au-dessus : l'annotation
+        // porte cet invariant jusqu'au modèle (`int<0, max>|null`).
+        /** @var int<1, max> $depositMinor */
+        $depositMinor = (int) $request->input('amount_minor');
+
+        $restaurantReservation->deposit_minor = $depositMinor;
         $restaurantReservation->save();
 
         return (new RestaurantReservationResource($restaurantReservation))->response();

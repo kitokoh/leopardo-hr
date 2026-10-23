@@ -314,7 +314,8 @@ class FuelStockApiTest extends TestCase
             ->assertStatus(200)
             ->assertJsonPath('meta.replayed', true);
 
-        $this->assertSame(1, FuelReconciliationRun::query()->count());
+        $runsAfterReplay = FuelReconciliationRun::query()->count();
+        $this->assertSame(1, $runsAfterReplay);
 
         $run = FuelReconciliationRun::query()->firstOrFail();
         $this->assertSame('completed', $run->status);

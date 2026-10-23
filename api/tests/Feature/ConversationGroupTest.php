@@ -123,12 +123,16 @@ class ConversationGroupTest extends TestCase
 
         $this->assertSame(3, ConversationParticipant::query()->where('conversation_thread_id', $thread->id)->count());
 
-        // Re-ajout : idempotent (pas de doublon, pas de 500 sur l'unicité).
+        // Re-ajout : idempotent (pas de doublon, pas de 500 sur l'unicite).
+        // Valeur capturee avant l'assertion : un second `count()` inline
+        // identique est vu comme deja narrowé par `assertSame`
+        // (`@phpstan-assert =ExpectedType`, phpstan#15328).
         $this->postJson("/api/v1/conversations/{$thread->id}/participants", [
             'employee_id' => $bob->id,
         ])->assertCreated();
 
-        $this->assertSame(3, ConversationParticipant::query()->where('conversation_thread_id', $thread->id)->count());
+        $participantsAfterReAdd = ConversationParticipant::query()->where('conversation_thread_id', $thread->id)->count();
+        $this->assertSame(3, $participantsAfterReAdd);
 
         // Retrait effectif.
         $this->deleteJson("/api/v1/conversations/{$thread->id}/participants/{$bob->id}")

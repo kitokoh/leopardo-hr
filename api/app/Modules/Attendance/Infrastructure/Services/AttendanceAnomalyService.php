@@ -312,18 +312,31 @@ class AttendanceAnomalyService
             });
     }
 
+    /**
+     * Les génériques sont annotés explicitement : sans eux, le `Collection`
+     * d'entrée reste `Collection<mixed, mixed>` et la chaîne `groupBy` lose
+     * son type de valeur, ce que PHPStan 2.3 refuse désormais au niveau 8
+     * (le `flatMap` ne peut plus prouver le `array<string, mixed>` retourné).
+     *
+     * @param  Collection<int, AttendanceLog>  $logs
+     * @return Collection<int, array<string, mixed>>
+     */
     private function repeatedExactCheckIns(Collection $logs): Collection
     {
         return $logs
             ->filter(fn (AttendanceLog $log): bool => $log->check_in !== null)
             ->groupBy('employee_id')
-            ->flatMap(function (Collection $employeeLogs): Collection {
+            ->flatMap(function (Collection $employeeLogs) {
                 return $employeeLogs
                     // check_in garanti non nul par le filtre d'entrée — les
                     // « unknown » ne se produisent jamais (narrowing post-filtre).
                     ->groupBy(fn (AttendanceLog $log): string => $log->check_in?->format('H:i') ?? 'unknown')
                     ->filter(fn (Collection $group): bool => $group->count() >= 3)
-                    ->flatMap(fn (Collection $group): Collection => $group->map(fn (AttendanceLog $log): array => $this->item(
+                    // Aucun type de retour déclaré sur ces deux closures : les
+                    // `: array` / `: Collection` explicites écrasaient le type
+                    // précis d'`item()` et faisaient retomber la chaîne sur
+                    // `array` générique (refusé au niveau 8).
+                    ->flatMap(fn (Collection $group) => $group->map(fn (AttendanceLog $log) => $this->item(
                         log: $log,
                         type: 'repeated_exact_check_in',
                         severity: 'warning',

@@ -32,8 +32,7 @@ final class RestaurantStockMovementService
 {
     public function __construct(
         private readonly RestaurantStockLevelRepositoryInterface $stockLevels,
-    ) {
-    }
+    ) {}
 
     /**
      * Applique un mouvement de stock et renvoie le mouvement journalisé.
@@ -121,6 +120,8 @@ final class RestaurantStockMovementService
     /**
      * Coût moyen pondéré : (stock × coût moyen + quantité × prix) / (stock + quantité).
      * Arrondi à l'unité mineure la plus proche (les montants restent entiers).
+     *
+     * @return int<0, max>
      */
     private function recomputeWeightedAverageCost(
         string $currentQuantity,
@@ -141,6 +142,14 @@ final class RestaurantStockMovementService
             throw new RuntimeException('Impossible de calculer un coût moyen avec un stock nul.');
         }
 
-        return (int) round((float) bcdiv($numerator, $denominator, 6));
+        $averageCostMinor = (int) round((float) bcdiv($numerator, $denominator, 6));
+
+        // Invariant métier : un coût moyen pondéré ne peut pas être négatif.
+        // La garde le prouve au typage (`int<0, max>`) au lieu de le supposer.
+        if ($averageCostMinor < 0) {
+            throw new RuntimeException('Un coût moyen pondéré ne peut pas être négatif.');
+        }
+
+        return $averageCostMinor;
     }
 }

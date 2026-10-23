@@ -348,7 +348,10 @@ class PaymentWebhookControllerTest extends TestCase
             ->assertOk()
             ->assertJsonPath('replayed', true);
 
-        $this->assertSame(1, Payment::count());
+        // Valeur capturee avant l'assertion (meme motif que les autres tests
+        // d'idempotence : phpstan#15328 via `@phpstan-assert`).
+        $paymentsAfterReplay = Payment::count();
+        $this->assertSame(1, $paymentsAfterReplay);
         Mail::assertQueued(InvoicePaymentReceiptMail::class, 1);
     }
 

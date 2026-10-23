@@ -64,8 +64,11 @@ class ExpiringContractsAlertTest extends TestCase
         [$company, $employee] = $this->fixture();
         $this->contract($company->id, $employee->id, 30, 'CT-30');
 
-        $this->assertSame(0, Artisan::call('contracts:alert-expiring'));
-        $this->assertSame(0, Artisan::call('contracts:alert-expiring'));
+        // Valeurs capturees : voir PurgeAiAuditLogsTest (phpstan#15328).
+        $firstRun = Artisan::call('contracts:alert-expiring');
+        $this->assertSame(0, $firstRun);
+        $secondRun = Artisan::call('contracts:alert-expiring');
+        $this->assertSame(0, $secondRun);
 
         // Le double scheduler (BOS-006A) fait tourner la commande 2×/jour :
         // une seule alerte par (contrat, seuil, date).

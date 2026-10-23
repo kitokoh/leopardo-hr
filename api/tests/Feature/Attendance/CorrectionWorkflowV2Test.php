@@ -238,7 +238,8 @@ class CorrectionWorkflowV2Test extends TestCase
         // Idempotent : second run → toujours 1 clôture, pas de double audit.
         // @phpstan-ignore-next-line method.nonObject (artisan() retourne PendingCommand|int)
         $this->artisan('attendance:close-period', ['--company' => 'company-a', '--month' => '2026-05'])->assertSuccessful();
-        $this->assertSame(1, AttendancePeriodClosure::query()->where('company_id', $company->id)->count());
+        $closureCountAfterSecondRun = AttendancePeriodClosure::query()->where('company_id', $company->id)->count();
+        $this->assertSame(1, $closureCountAfterSecondRun);
         $this->assertSame(1, AuditLog::query()->where('company_id', $company->id)->where('action', 'attendance_period_closed')->count());
 
         // --month invalide → échec.

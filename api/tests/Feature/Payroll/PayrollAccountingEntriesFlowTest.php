@@ -109,8 +109,11 @@ class PayrollAccountingEntriesFlowTest extends TestCase
         [$company, $run] = $this->runWithSlips('DZ', status: 'validated');
 
         $service = new PayrollAccountingEntryService(new PayrollAccountingExportService);
-        $this->assertSame(12, $service->generateForRun($run));
-        $this->assertSame(12, $service->generateForRun($run)); // 2e appel → remplacement, pas doublon
+        $firstGeneration = $service->generateForRun($run);
+        $this->assertSame(12, $firstGeneration);
+        // 2e appel -> remplacement, pas doublon.
+        $secondGeneration = $service->generateForRun($run);
+        $this->assertSame(12, $secondGeneration);
 
         $this->assertSame(12, PayrollAccountingEntry::query()->where('payroll_run_id', $run->id)->count());
     }

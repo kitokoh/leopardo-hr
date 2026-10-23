@@ -34,7 +34,7 @@ final class RestaurantMobileServerService
      * Commandes actives (ouvertes / en préparation / prêtes / servies) du
      * tenant, triées par antériorité — la file de service du serveur.
      *
-     * @return list<array{id: int, reference: string, status: string, order_type: string, table_name: string|null, total_minor: int, currency: string, items_count: int}>
+     * @return array<int, array{id: int, reference: string, status: string, order_type: string, table_name: string|null, total_minor: int, currency: string, items_count: int}>
      */
     public function activeOrders(Employee $actor): array
     {
@@ -65,13 +65,14 @@ final class RestaurantMobileServerService
                 'currency' => $order->currency,
                 'items_count' => (int) $order->items_count,
             ])
+            ->values()
             ->all();
     }
 
     /**
      * Tables actuellement occupées du tenant (plan de salle serveur).
      *
-     * @return list<array{id: int, name: string, zone: string|null, status: string}>
+     * @return array<int, array{id: int, name: string, zone: string|null, status: string}>
      */
     public function openTables(Employee $actor): array
     {
@@ -90,7 +91,7 @@ final class RestaurantMobileServerService
             'name' => (string) $session->table->label,
             'zone' => $session->table->zone instanceof RestaurantZone ? (string) $session->table->zone->name : null,
             'status' => 'occupied',
-        ])->all();
+        ])->values()->all();
     }
 
     /**

@@ -54,6 +54,12 @@ class AttendanceReportService
     ): array {
         [$start, $end] = $this->periodRange($company, $period, $filters);
 
+        // Filtres hissés hors des closures `when()` : `isset()` ne narrow pas
+        // à l'intérieur d'une closure, d'où deux `offsetAccess.notFound` au
+        // niveau 8. Même sémantique (une valeur `null` reste ignorée).
+        $departmentId = $filters['department_id'] ?? null;
+        $employeeId = $filters['employee_id'] ?? null;
+
         // manager_role=dept is scoped to their own department only (PA2-SEC-002);
         // manager_role=superviseur is scoped to their own assigned team (PA2-SEC-003).
         $isScoped = $scopeActor !== null && $scopeActor->isTeamScoped();
@@ -61,8 +67,8 @@ class AttendanceReportService
         $query = Employee::query()
             ->select(['id', 'company_id', 'department_id', 'first_name', 'last_name', 'matricule', 'status', 'salary_type', 'salary_base', 'hourly_rate'])
             ->where('company_id', $company->id)
-            ->when(isset($filters['department_id']), fn ($query) => $query->where('department_id', (int) $filters['department_id']))
-            ->when(isset($filters['employee_id']), fn ($query) => $query->where('id', (int) $filters['employee_id']))
+            ->when($departmentId !== null, fn ($query) => $query->where('department_id', (int) $departmentId))
+            ->when($employeeId !== null, fn ($query) => $query->where('id', (int) $employeeId))
             ->orderBy('id');
 
         // Scope manager appliqué hors chaîne `when()` pour permettre le

@@ -30,7 +30,9 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class CrmDirectoryController extends Controller
 {
     private const ALLOWED_ACCOUNT_SORTS = ['id', 'name', 'status', 'created_at'];
+
     private const ALLOWED_ACCOUNT_FILTERS = ['status', 'owner_id', 'search'];
+
     private const ALLOWED_ACCOUNT_STATUSES = ['active', 'inactive', 'archived'];
 
     public function leads(Request $request): AnonymousResourceCollection
@@ -87,7 +89,11 @@ class CrmDirectoryController extends Controller
 
         return CrmContactResource::collection(
             CrmContact::query()
-                ->with(['account:id,name' => fn ($query) => $query->where('company_id', $actor->company_id)])
+                // La sélection de colonnes passe par le `select()` de la
+                // closure plutôt que par la syntaxe `account:id,name` : Larastan
+                // 3.13 résout la relation sur la clé entière et ne trouve plus
+                // `account:id,name`. Projection et contrainte identiques.
+                ->with(['account' => fn ($query) => $query->select('id', 'name')->where('company_id', $actor->company_id)])
                 ->where('company_id', $actor->company_id)
                 ->whereNull('archived_at')
                 ->orderByDesc('created_at')
@@ -113,9 +119,9 @@ class CrmDirectoryController extends Controller
     /**
      * Valide les paramètres selon ADR-CRM-005 : sort_by, filter[...], per_page, status.
      *
-     * @param list<string> $allowedSorts
-     * @param list<string> $allowedFilters
-     * @param list<string> $allowedStatuses
+     * @param  list<string>  $allowedSorts
+     * @param  list<string>  $allowedFilters
+     * @param  list<string>  $allowedStatuses
      */
     private function validateDirectoryParams(
         Request $request,
@@ -128,7 +134,7 @@ class CrmDirectoryController extends Controller
         if ($request->has('sort_by')) {
             $sort = (string) $request->input('sort_by');
             if (! in_array($sort, $allowedSorts, true)) {
-                abort(422, "Invalid sort_by parameter.");
+                abort(422, 'Invalid sort_by parameter.');
             }
         }
 
@@ -139,7 +145,7 @@ class CrmDirectoryController extends Controller
             }
             foreach (array_keys($filters) as $filterKey) {
                 if (! in_array((string) $filterKey, $allowedFilters, true)) {
-                    abort(422, "Invalid filter parameter.");
+                    abort(422, 'Invalid filter parameter.');
                 }
             }
         }
@@ -147,7 +153,7 @@ class CrmDirectoryController extends Controller
         if ($request->has('status')) {
             $status = (string) $request->input('status');
             if (! in_array($status, $allowedStatuses, true)) {
-                abort(422, "Invalid status parameter.");
+                abort(422, 'Invalid status parameter.');
             }
         }
     }
