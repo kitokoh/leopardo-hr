@@ -283,3 +283,8 @@ sont de l'infra de déploiement/sonde prod, **sans lien** avec ce périmètre.
    préexistante, non masquée, non corrigée ici — elle relève d'un lot d'infra dédié.
 3. **Aucune PR de correctif ouverte** : aucun échec CI n'étant imputable à #8763/#8818,
    il n'y a rien à corriger.
+
+
+---
+
+> **Suite du rapport** — la correction de #8761 (contrat `supportedActionUrls`, `meta.action_urls`, CTA recâblés) est documentée dans [§12](12_leopardo_public_section12_8761.md).
