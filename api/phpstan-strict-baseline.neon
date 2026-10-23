@@ -3012,12 +3012,6 @@ parameters:
 			path: app/Modules/Onboarding/Application/DTOs/CompleteStepDTO.php
 
 		-
-			message: '#^Method App\\Modules\\Onboarding\\Domain\\Contracts\\OnboardingRepositoryInterface\:\:getProgress\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Onboarding/Domain/Contracts/OnboardingRepositoryInterface.php
-
-		-
 			message: '#^Method App\\Modules\\Onboarding\\Interfaces\\Api\\V1\\Controllers\\OnboardingChecklistController\:\:step\(\) has parameter \$metrics with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -3288,12 +3282,6 @@ parameters:
 			path: app/Modules/Planning/Domain/Models/Schedule.php
 
 		-
-			message: '#^Method App\\Modules\\Platform\\Domain\\Contracts\\CompanyProvisioningInterface\:\:getStatus\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Platform/Domain/Contracts/CompanyProvisioningInterface.php
-
-		-
 			message: '#^Parameter \#1 \$companyId of method App\\AI\\Workflows\\PreparePayrollWorkflow\:\:execute\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -3358,12 +3346,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Modules/Platform/Interfaces/Api/V1/Controllers/TranslationCatalogController.php
-
-		-
-			message: '#^Method App\\Modules\\Recruitment\\Domain\\Contracts\\JobPostingRepositoryInterface\:\:findByStatus\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Recruitment/Domain/Contracts/JobPostingRepositoryInterface.php
 
 		-
 			message: '#^Method App\\Modules\\Recruitment\\Interfaces\\Api\\V1\\Requests\\PublicApplyRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'

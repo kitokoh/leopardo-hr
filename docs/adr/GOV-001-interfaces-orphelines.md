@@ -52,7 +52,7 @@ Le script portait par ailleurs deux défauts bloquants pour un usage en CI :
 |---|---|---|---|
 | **A** | 1 | Liée au conteneur, **aucun consommateur** | Supprimer le contrat ou consommer le binding |
 | **B** | 2 | Contrat mort assumé, documenté dans le provider | Réaligner sur l'implémentation réelle, ou retirer + baseline PHPStan |
-| **C** | 14 | Contrat d'écriture « contract-first », jamais consommé | Implémenter, ou supprimer le contrat |
+| **C** | 14 | Contrat d'écriture « contract-first », jamais consommé | **Supprimées** le 2026-10-23 (0 usage mesuré) |
 
 **Catégorie A — `GeofenceValidatorInterface`.** `AttendanceServiceProvider`
 fait `bind(GeofenceValidatorInterface::class, AttendanceGeofenceService::class)`,
@@ -73,10 +73,41 @@ second décrit un modèle `object`/`int $id` que les modèles réels (UUID,
 n'existe pas**. Leur réalignement touche la baseline PHPStan Strict : travail à
 part, hors périmètre du garde.
 
-**Catégorie C — 14 repositories.** Contrats écrits avant leur implémentation.
-Aucune classe ne les implémente, aucun code ne les résout : ils ne cassent rien,
-mais ils ne protègent rien non plus. Décision attendue **module par module**
-(souvent le service concret existe déjà et il suffit de l'implémenter).
+**Catégorie C — 14 repositories : RÉSOLUE le 2026-10-23 (suppression).**
+Contrats écrits avant leur implémentation. Le plan de sortie prévoyait
+« implémenter (le service concret existe souvent déjà) ou supprimer le
+contrat ». La vérification par module a tranché : **supprimer**, sur preuve.
+
+Preuve, pour chacune des 14 : `rg <Interface>` sur `api/app`, `api/tests`,
+`api/routes`, `api/database`, `api/config` ne retourne **aucune** occurrence
+hors du fichier de définition. Pas d'`implements`, pas de `bind()`/`singleton()`
+en provider, pas d'injection en constructeur, pas de résolution `app()`, pas de
+type-hint, pas de mention en test ni en docblock. Les services concrets du
+module existent bien (`EmployeeService`, `NotificationDispatcher`,
+`OnboardingQrService`…) mais **aucun ne correspond aux signatures** : par
+exemple `CompanyProvisioningInterface::provision(int $companyId, string $plan)`
+face à `CompanyProvisioningService::provisionSharedCompany(array $payload,
+SuperAdmin $superAdmin)` — des signatures différentes, donc pas d'interface à
+câbler, mais deux abstractions concurrentes. Idem
+`EmployeeRepositoryInterface::save(Employee)` face à `EmployeeService::create`.
+Les implémenter « pour ne pas les perdre » aurait donc imposé d'**écrire de
+nouvelles implémentations sans consommateur** — exactement le code mort que cet
+ADR combat.
+
+Supprimées (service + baseline PHPStan Strict nettoyée des 3 entrées
+correspondantes) : `AttendanceRepositoryInterface`, `InvoiceRepositoryInterface`,
+`SubscriptionRepositoryInterface`, `DocumentRepositoryInterface`,
+`FolderRepositoryInterface`, `PartnerRepositoryInterface`,
+`ContractRepositoryInterface`, `DepartmentRepositoryInterface`,
+`EmployeeRepositoryInterface`, `NotificationRepositoryInterface`,
+`OnboardingRepositoryInterface`, `PlanningRepositoryInterface`,
+`CompanyProvisioningInterface`, `JobPostingRepositoryInterface`.
+
+**Verdict** : catégorie C close, allowlist ramenée de 17 à 3 entrées
+(A1 + B2). Vérifié : `check-orphan-interfaces.sh` → `3 orphelin(s) connu(s)
+(allowlist) — 0 nouveau, OK` (exit 0) ; PHPStan Strict level 8 : `[OK] No
+errors` sur les 5 modules touchés. Détail : `docs/adr/GOV-002-montee-phpstan-2.3.md`
+pour le contexte de la montée d'analyseur qui a motivé ce nettoyage.
 
 ## Conséquences
 

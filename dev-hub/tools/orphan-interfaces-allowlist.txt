@@ -10,7 +10,8 @@
 #   - ne JAMAIS ajouter une entree ici sans justification ecrite : c'est la
 #     seule tolerance du garde.
 #
-# Etat : 17 orphelins au 2026-10-23, repartis en 3 catégories.
+# Etat : 3 orphelins au 2026-10-23 (les 14 contrats morts de categorie C ont
+# ete supprimes, voir la section C en fin de fichier).
 
 # ─── Categorie A : liee au conteneur mais SANS consommateur (1) ──────────────
 # Cout a chaque requete, valeur nulle : le binding est resolu par personne.
@@ -25,23 +26,10 @@ GeofenceValidatorInterface
 AccessTokenServiceInterface
 CameraRepositoryInterface
 
-# ─── Categorie C : contrat d'ecriture declare, pas encore consomme (14) ─────
-# Interfaces de repository ecrites AVANT leur implementation (approche
-# contract-first). Aucune classe ne les implemente et aucun code ne les
-# resout : elles ne cassent rien, mais elles ne protegent rien non plus.
-# Decision attendue par module : implementer (le repository concret existe
-# souvent deja sous forme de service) ou supprimer le contrat.
-AttendanceRepositoryInterface
-InvoiceRepositoryInterface
-SubscriptionRepositoryInterface
-DocumentRepositoryInterface
-FolderRepositoryInterface
-PartnerRepositoryInterface
-ContractRepositoryInterface
-DepartmentRepositoryInterface
-EmployeeRepositoryInterface
-NotificationRepositoryInterface
-OnboardingRepositoryInterface
-PlanningRepositoryInterface
-CompanyProvisioningInterface
-JobPostingRepositoryInterface
+# --- Categorie C : contrat d'ecriture declare, pas encore consomme (0) ---
+# VIDE. Les 14 interfaces de repository ecrites AVANT leur implementation
+# (approche contract-first) ont ete SUPPRIMEES le 2026-10-23 : aucune n'avait
+# ni implementation, ni binding, ni le moindre usage hors de son propre
+# fichier -- ni en production, ni en test, ni en route, ni en seeder, ni en
+# commentaire. Elles ne protegeaient donc rien.
+# Voir docs/adr/GOV-001-interfaces-orphelines.md, section "Categorie C".
