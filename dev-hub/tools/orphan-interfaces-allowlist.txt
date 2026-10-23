@@ -1,5 +1,5 @@
 # orphan-interfaces-allowlist.txt — interfaces de contrat DDD sans implementation
-# (issue #1492, inventaire date du 2026-10-23 sur main @ 94e2fdf, ADR GOV-001).
+# (issue #1492, ADR GOV-001).
 #
 # Regles identiques aux autres listes d'exclusion du depot
 # (actions-convention-allowlist.txt, openapi-coverage) :
@@ -10,26 +10,39 @@
 #   - ne JAMAIS ajouter une entree ici sans justification ecrite : c'est la
 #     seule tolerance du garde.
 #
-# Etat : 3 orphelins au 2026-10-23 (les 14 contrats morts de categorie C ont
-# ete supprimes, voir la section C en fin de fichier).
-
-# ─── Categorie A : liee au conteneur mais SANS consommateur (1) ──────────────
-# Cout a chaque requete, valeur nulle : le binding est resolu par personne.
-# A SUPPRIMER (le contrat) ou a CONSOMMER (remplacer les usages concrets).
-GeofenceValidatorInterface
-
-# ─── Categorie B : contrat mort assume, documente dans le provider (2) ──────
-# Signatures jamais alignees sur l'implementation reelle ; les lier reviendrait
-# a affirmer une architecture qui n'existe pas (docblock de
-# CamerasServiceProvider, #7424). Sortie : realignement ou retrait + baseline
-# PHPStan Strict — travail a part, hors perimetre du garde.
-AccessTokenServiceInterface
-CameraRepositoryInterface
-
-# --- Categorie C : contrat d'ecriture declare, pas encore consomme (0) ---
-# VIDE. Les 14 interfaces de repository ecrites AVANT leur implementation
-# (approche contract-first) ont ete SUPPRIMEES le 2026-10-23 : aucune n'avait
-# ni implementation, ni binding, ni le moindre usage hors de son propre
-# fichier -- ni en production, ni en test, ni en route, ni en seeder, ni en
-# commentaire. Elles ne protegeaient donc rien.
-# Voir docs/adr/GOV-001-interfaces-orphelines.md, section "Categorie C".
+# ═══════════════════════════════════════════════════════════════════════════
+# ETAT : VIDE — 0 orphelin au 2026-10-23.
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# Aucune interface de contrat du depot n'est sans implementation. Le garde
+# `check-orphan-interfaces.sh` est donc BLOQUANT (workflow
+# route-owner-and-orphan-interfaces-guard.yml, #8832) : toute nouvelle
+# interface orpheline fera echouer la CI.
+#
+# Historique des entrees purgees (ne PAS les reintroduire) :
+#
+#   Categorie C — 14 contrats « contract-first » jamais consommes
+#     SUPPRIMES le 2026-10-23. Aucun usage hors de leur propre fichier
+#     (ni implements, ni bind, ni injection, ni test, ni seeder, ni route).
+#     Ils ne protegeaient donc rien. Liste complete dans l'ADR GOV-001.
+#
+#   Categorie A — GeofenceValidatorInterface
+#     RESOLUE le 2026-10-23 par IMPLEMENTATION, pas par suppression :
+#     `AttendanceGeofenceService implements GeofenceValidatorInterface`.
+#     Le contrat etait BINDE dans AttendanceServiceProvider sans qu'aucune
+#     classe ne l'implemente — un binding qui se resolvait sans erreur tout
+#     en ne produisant jamais un objet conforme au type declare. C'etait le
+#     seul cas de la liste qui soit un vrai defaut, pas une dette
+#     d'abstraction. `evaluate()` avait deja la signature exacte du contrat.
+#
+#   Categorie B — AccessTokenServiceInterface, CameraRepositoryInterface
+#     SUPPRIMEES le 2026-10-23 (docs/adr/GOV-001-interfaces-orphelines.md).
+#     Aucune implementation, aucun binding, aucun consommateur.
+#     `AccessTokenServiceInterface` decrivait en outre un modele de jeton que
+#     le service reel (`CameraStreamTokenService`, JWT HS256) n'a jamais
+#     utilise : le realigner aurait « presque » marche tout en decrivant une
+#     autre conception. Si l'abstraction redevient necessaire, elle doit etre
+#     ecrite A PARTIR de `CameraStreamTokenService::issue()`.
+#
+# Sortie de dette documentee :
+#   docs/adr/GOV-001-interfaces-orphelines.md

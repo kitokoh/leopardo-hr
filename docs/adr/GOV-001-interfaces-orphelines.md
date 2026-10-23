@@ -50,28 +50,45 @@ Le script portait par ailleurs deux défauts bloquants pour un usage en CI :
 
 | Cat. | Nb | Nature | Sortie attendue |
 |---|---|---|---|
-| **A** | 1 | Liée au conteneur, **aucun consommateur** | Supprimer le contrat ou consommer le binding |
-| **B** | 2 | Contrat mort assumé, documenté dans le provider | Réaligner sur l'implémentation réelle, ou retirer + baseline PHPStan |
+| **A** | 1 | Liée au conteneur, **aucun consommateur** | **RÉSOLUE** le 2026-10-23 : implémentée |
+| **B** | 2 | Contrat mort assumé, documenté dans le provider | **RÉSOLUE** le 2026-10-23 : supprimées |
 | **C** | 14 | Contrat d'écriture « contract-first », jamais consommé | **Supprimées** le 2026-10-23 (0 usage mesuré) |
 
-**Catégorie A — `GeofenceValidatorInterface`.** `AttendanceServiceProvider`
-fait `bind(GeofenceValidatorInterface::class, AttendanceGeofenceService::class)`,
-mais `rg GeofenceValidatorInterface api/app api/tests` ne trouve **aucun**
-consommateur : le binding est résolu par personne, et `AttendanceGeofenceService`
-n'implémente même pas l'interface (héritage absent — le binding ne produirait
-donc pas un objet conforme si quelqu'un le résolvait). Coût à chaque requête,
-valeur nulle. **C'est le seul cas de cette liste qui est un vrai défaut, pas une
-dette d'abstraction.** Recommandation : `AttendanceGeofenceService implements
-GeofenceValidatorInterface` (les signatures `evaluate(Company, Employee, ?float,
-?float): array` concordent) puis consommer le contrat — ou supprimer les deux.
+**État final : 0 orphelin, allowlist vide, guard en mode bloquant (#8832).**
 
-**Catégorie B — `AccessTokenServiceInterface`, `CameraRepositoryInterface`.**
-Documentés comme code mort dans le docblock de `CamerasServiceProvider` (#7424) :
-les signatures du premier ne correspondent pas à `CameraStreamTokenService`, le
-second décrit un modèle `object`/`int $id` que les modèles réels (UUID,
-`Camera`) ne suivent pas. Les lier reviendrait à **affirmer une architecture qui
-n'existe pas**. Leur réalignement touche la baseline PHPStan Strict : travail à
-part, hors périmètre du garde.
+**Catégorie A — `GeofenceValidatorInterface` : RÉSOLUE (implémentation).**
+`AttendanceServiceProvider` faisait `bind(GeofenceValidatorInterface::class,
+AttendanceGeofenceService::class)`, mais `AttendanceGeofenceService`
+n'implémentait **pas** l'interface : le binding se résolvait sans erreur tout en
+ne produisant jamais un objet conforme au type déclaré. C'était le seul cas de
+la liste qui soit un **vrai défaut**, pas une dette d'abstraction — un contrat
+qui ment sur ce qui le satisfait.
+
+Sortie retenue : **implémenter**. `evaluate(Company, Employee, ?float, ?float):
+array` avait déjà exactement la signature du contrat ; ajouter `implements` ne
+coûte rien et rend le binding vérifiable par le typeur. Supprimer le contrat
+aurait aussi été correct, mais aurait laissé un `bind()` sans type de retour
+contractuel — le provider continuerait de promettre une abstraction inexistante.
+
+**Catégorie B — `AccessTokenServiceInterface`, `CameraRepositoryInterface` :
+RÉSOLUE (suppression).** Documentés comme code mort dans le docblock de
+`CamerasServiceProvider` (#7424). Sortie retenue : **supprimer**, pas réaligner.
+
+Preuve, pour les deux : aucune implémentation, aucun `bind()`/`singleton()`, aucun
+consommateur en production, en test, en route, en seeder ou en docblock hors du
+fichier de définition. Les réaligner aurait produit des contrats que personne
+n'appelle — exactement le code mort que cet ADR combat, et la conséquence déjà
+tirée pour la catégorie C.
+
+`AccessTokenServiceInterface` méritait un examen séparé : le service réel
+`CameraStreamTokenService` **existe** et signe bien des jetons (JWT HS256). Mais
+son `issue()` prend `(Camera $camera, int|string $actorEmployeeId): array`
+quand le contrat promettait `(int $cameraId, int $employeeId, int $ttlSeconds):
+string` — modèle de jeton entièrement différent. Le contrat n'a pas été «
+presque aligné » : il décrivait une autre conception. Le jour où cette
+abstraction sera réellement nécessaire, elle devra être écrite **à partir de**
+`CameraStreamTokenService::issue()`, pas reprise du contrat antérieur qui l'a
+contredit.
 
 **Catégorie C — 14 repositories : RÉSOLUE le 2026-10-23 (suppression).**
 Contrats écrits avant leur implémentation. Le plan de sortie prévoyait

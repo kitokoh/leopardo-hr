@@ -7,8 +7,20 @@ namespace App\Modules\Attendance\Infrastructure\Services;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Site;
+use App\Modules\Attendance\Domain\Contracts\GeofenceValidatorInterface;
 
-class AttendanceGeofenceService
+/**
+ * Implementation du contrat `GeofenceValidatorInterface` (ADR GOV-001,
+ * categorie A).
+ *
+ * Le contrat etait declare et BINDE dans `AttendanceServiceProvider`, mais
+ * aucune classe ne l'implementait : `bind(GeofenceValidatorInterface::class,
+ * AttendanceGeofenceService::class)` reussissait donc a la resolution tout en
+ * ne produisant jamais un objet conforme au type declare. `evaluate()` avait
+ * deja exactement la signature du contrat, l'implementation ne coutait donc
+ * rien et rend le binding veridique.
+ */
+class AttendanceGeofenceService implements GeofenceValidatorInterface
 {
     /**
      * @return array<string, mixed>
