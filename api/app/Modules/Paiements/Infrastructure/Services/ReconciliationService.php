@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Paiements\Infrastructure\Services;
 
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Infrastructure\Services\TenantEventDispatcher;
+use App\Events\PaymentReconciliationDiscrepancy;
 use App\Modules\Paiements\Domain\Enums\ReconciliationStatus;
 use App\Modules\Paiements\Domain\Models\PaymentProviderInstance;
 use App\Modules\Paiements\Domain\Models\PaymentReconciliation;
@@ -19,7 +22,10 @@ use App\Modules\Paiements\Domain\Models\Wallet;
  */
 class ReconciliationService
 {
-    public function __construct(private readonly LedgerService $ledger) {}
+    public function __construct(
+        private readonly LedgerService $ledger,
+        private readonly TenantEventDispatcher $events,
+    ) {}
 
     /**
      * Solde interne d'une instance pour une devise : somme des mouvements des
@@ -66,6 +72,23 @@ class ReconciliationService
             'status' => ReconciliationStatus::fromDifference($difference)->value,
             'checked_at' => now(),
         ]);
+
+        // BC-38 (#8712) — l'ecart est un signal d'alerte : on ne le publie que
+        // s'il est non nul (un rapprochement sain ne produit aucun bruit). Le
+        // rapprochement lui-meme reste en base dans tous les cas.
+        if ($difference !== 0) {
+            $company = Company::query()->find($companyId);
+
+            if ($company instanceof Company) {
+                $this->events->dispatch(new PaymentReconciliationDiscrepancy(
+                    $companyId,
+                    $currency,
+                    $declaredBalance,
+                    $computed,
+                    $difference,
+                ), $company);
+            }
+        }
 
         return $reconciliation;
     }

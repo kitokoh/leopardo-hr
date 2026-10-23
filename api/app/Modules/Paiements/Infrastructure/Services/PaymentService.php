@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Paiements\Infrastructure\Services;
 
+use App\Core\Tenant\Domain\Contracts\TenantScopedEvent;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Infrastructure\Services\TenantEventDispatcher;
+use App\Events\PaymentCashOutCompleted;
+use App\Events\PaymentCashOutRequested;
+use App\Events\PaymentTransactionFailed;
+use App\Events\PaymentTransactionSucceeded;
 use App\Modules\Paiements\Domain\Contracts\PaymentOperationsInterface;
 use App\Modules\Paiements\Domain\DTOs\CashInRequest;
 use App\Modules\Paiements\Domain\DTOs\CashOutRequest;
@@ -43,6 +50,7 @@ class PaymentService implements PaymentOperationsInterface
         private readonly ProviderResolver $resolver,
         private readonly ProviderTypeRegistry $registry,
         private readonly FeeRuleResolver $fees,
+        private readonly TenantEventDispatcher $events,
     ) {}
 
     /**
@@ -194,7 +202,10 @@ class PaymentService implements PaymentOperationsInterface
         }
 
         try {
-            return DB::transaction(function () use (
+            /** @var list<TenantScopedEvent> $pending */
+            $pending = [];
+
+            $transaction = DB::transaction(function () use (
                 $companyId,
                 $type,
                 $amount,
@@ -204,6 +215,7 @@ class PaymentService implements PaymentOperationsInterface
                 $metadata,
                 $fromWalletId,
                 $toWalletId,
+                &$pending,
             ): PaymentTransaction {
                 // Rejeu : on retourne le resultat existant, sans effet de bord.
                 $existing = $this->findByIdempotencyKey($companyId, $idempotencyKey, lock: true);
@@ -250,6 +262,19 @@ class PaymentService implements PaymentOperationsInterface
                     feeAmount: $fee,
                 );
 
+                // BC-38 (#8712) — un retrait est signale des sa CREATION, avant
+                // toute ecriture comptable : le consommateur peut notifier
+                // « retrait en cours » meme si le rail echoue ensuite (un
+                // `payment.transaction.failed` suivra alors).
+                if ($type === PaymentTransactionType::CashOut) {
+                    $pending[] = new PaymentCashOutRequested(
+                        $companyId,
+                        (int) $transaction->id,
+                        $amount,
+                        $currency,
+                    );
+                }
+
                 // Un echec de rail ne produit AUCUNE ecriture comptable :
                 // l'argent n'a pas bouge, le ledger ne doit pas le dire.
                 if ($railResult !== null && ! $railResult->isSucceeded()) {
@@ -258,7 +283,16 @@ class PaymentService implements PaymentOperationsInterface
                         'metadata' => array_merge($metadata, ['failure_reason' => $railResult->failureReason]),
                     ])->save();
 
-                    return $transaction->refresh();
+                    $failed = $transaction->refresh();
+
+                    $pending[] = new PaymentTransactionFailed(
+                        $companyId,
+                        (int) $failed->id,
+                        $type->value,
+                        (string) $railResult->failureReason,
+                    );
+
+                    return $failed;
                 }
 
                 $this->postLedger(
@@ -277,8 +311,45 @@ class PaymentService implements PaymentOperationsInterface
                     'external_reference' => $railResult?->externalReference,
                 ])->save();
 
-                return $transaction->refresh();
+                $succeeded = $transaction->refresh();
+
+                $pending[] = new PaymentTransactionSucceeded(
+                    $companyId,
+                    (int) $succeeded->id,
+                    $type->value,
+                    $amount,
+                    $currency,
+                );
+
+                // Le retrait abouti porte DEUX evenements : le generique
+                // (transaction reussie) et l'intentionnel (sortie de fonds du
+                // tenant), qui permet un rapprochement sans relire le type.
+                if ($type === PaymentTransactionType::CashOut) {
+                    $pending[] = new PaymentCashOutCompleted(
+                        $companyId,
+                        (int) $succeeded->id,
+                        $amount,
+                        $currency,
+                    );
+                }
+
+                return $succeeded;
             });
+
+            // BC-38 (#8712) — publication APRES le commit, jamais dedans :
+            //  - un evenement ne doit pas partir pour un etat qui a ete rollback ;
+            //  - un listener en echec ne doit pas annuler un paiement deja
+            //    enregistre (les fonds ont bouge, l'evenement est secondaire) ;
+            //  - `DB::afterCommit()` ne conviendrait pas : sous transaction
+            //    englobante (tests, appelant transactionnel) il differerait le
+            //    dispatch hors du cycle de vie observable.
+            // Les evenements ont ete collectes dans `$pending` PENDANT la
+            // transaction ; on les emet ici dans l'ordre metier.
+            foreach ($pending as $event) {
+                $this->publish($event, $companyId);
+            }
+
+            return $transaction;
         } catch (QueryException $exception) {
             // Course concurrente : la contrainte unique a tranche. Le perdant
             // retourne la transaction du gagnant — une seule paire d'ecritures.
@@ -415,5 +486,25 @@ class PaymentService implements PaymentOperationsInterface
     {
         return ($exception->errorInfo[0] ?? null) === '23505'
             || str_contains($exception->getMessage(), 'payment_transactions_idempotency_unique');
+    }
+
+    /**
+     * BC-38 (#8712) — publication sur le bus tenant-scope.
+     *
+     * `TenantEventDispatcher` resout le tenant et echoue en fail-closed s'il
+     * n'y en a pas : on lui passe la compagnie de la transaction, qui est
+     * TOUJOURS la compagnie concernee (un job hors requete n'a pas de tenant
+     * courant). Compagnie introuvable = pas d'evenement plutot qu'une
+     * exception qui ferait echouer un paiement deja commite.
+     */
+    private function publish(TenantScopedEvent $event, string $companyId): void
+    {
+        $company = Company::query()->find($companyId);
+
+        if (! $company instanceof Company) {
+            return;
+        }
+
+        $this->events->dispatch($event, $company);
     }
 }

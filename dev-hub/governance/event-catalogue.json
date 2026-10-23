@@ -421,6 +421,78 @@
    "consumers": [
     "App\\Listeners\\CreateCrmLeadFromPublicContact"
    ]
+  },
+  {
+   "name": "PaymentTransactionSucceeded",
+   "class": "App\\Events\\PaymentTransactionSucceeded",
+   "owner": "BC-38 PAIEMENTS",
+   "version": 1,
+   "status": "active",
+   "payload": {
+    "companyId": "string",
+    "transactionId": "int",
+    "type": "string",
+    "amount": "int",
+    "currency": "string"
+   },
+   "consumers": []
+  },
+  {
+   "name": "PaymentTransactionFailed",
+   "class": "App\\Events\\PaymentTransactionFailed",
+   "owner": "BC-38 PAIEMENTS",
+   "version": 1,
+   "status": "active",
+   "payload": {
+    "companyId": "string",
+    "transactionId": "int",
+    "type": "string",
+    "failureReason": "string"
+   },
+   "consumers": []
+  },
+  {
+   "name": "PaymentCashOutRequested",
+   "class": "App\\Events\\PaymentCashOutRequested",
+   "owner": "BC-38 PAIEMENTS",
+   "version": 1,
+   "status": "active",
+   "payload": {
+    "companyId": "string",
+    "transactionId": "int",
+    "amount": "int",
+    "currency": "string"
+   },
+   "consumers": []
+  },
+  {
+   "name": "PaymentCashOutCompleted",
+   "class": "App\\Events\\PaymentCashOutCompleted",
+   "owner": "BC-38 PAIEMENTS",
+   "version": 1,
+   "status": "active",
+   "payload": {
+    "companyId": "string",
+    "transactionId": "int",
+    "amount": "int",
+    "currency": "string"
+   },
+   "consumers": []
+  },
+  {
+   "name": "PaymentReconciliationDiscrepancy",
+   "class": "App\\Events\\PaymentReconciliationDiscrepancy",
+   "owner": "BC-38 PAIEMENTS",
+   "version": 1,
+   "status": "active",
+   "payload": {
+    "companyId": "string",
+    "currency": "string",
+    "declaredBalance": "int",
+    "computedBalance": "int",
+    "difference": "int"
+   },
+   "consumers": []
   }
  ],
  "compatibility_rules": [
