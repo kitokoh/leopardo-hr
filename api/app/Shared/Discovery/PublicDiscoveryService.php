@@ -124,7 +124,7 @@ final class PublicDiscoveryService
             $urls = [];
 
             foreach ($provider->supportedActionUrls() as $action => $url) {
-                if (! is_string($action) || ! in_array($action, $declared, true)) {
+                if (! in_array($action, $declared, true)) {
                     continue;
                 }
 
