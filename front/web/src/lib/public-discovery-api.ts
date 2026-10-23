@@ -43,6 +43,17 @@ export interface PublicDiscoveryMeta {
   types: string[];
   radius_km: number | null;
   /**
+   * #8761 — destinations navigateur des actions, par type canonique.
+   *
+   * Distinct de `actions` : `actions` dit qu'un service métier EXISTE,
+   * `action_urls` dit si le client peut l'ATTEINDRE. Absence de clé ⇒ aucune
+   * destination dans la passerelle ⇒ l'UI affiche « indisponible » au lieu de
+   * lier vers la fiche profil (qui n'a pas toujours de parcours d'achat).
+   *
+   * Gabarit `{slug}` à substituer par le slug de l'item.
+   */
+  action_urls?: Record<string, Record<string, string | null>>;
+  /**
    * #8761 — actions RÉELLES par type canonique, déclarées par chaque verticale
    * côté backend (`PublicDiscoverableProvider::supportedActions()`). Le
    * frontend s'en sert comme unique source de vérité : aucune liste de

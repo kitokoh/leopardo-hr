@@ -92,6 +92,59 @@ final class PublicDiscoveryService
     }
 
     /**
+     * Destinations navigateur des actions exposées, par type (#8761).
+     *
+     * `actionsByType()` dit qu'un service métier existe ; cette carte dit si le
+     * client peut l'ATTEINDRE depuis la passerelle. Les deux sont nécessaires :
+     * Retail sert une vraie commande, mais son checkout vit dans une autre
+     * application — exposer `order` sans destination produirait un bouton
+     * inopérant (voir `PublicDiscoverableProvider::supportedActionUrls()`).
+     *
+     * Le gabarit `{slug}` est remplacé par le slug de l'item au moment du rendu
+     * (`actionUrlsFor()`), pas ici : la carte reste indépendante des entités.
+     *
+     * Un type sans destination n'apparaît pas. Fail-closed : un provider qui ne
+     * surcharge pas le contrat n'expose aucune destination, jamais une URL
+     * devinée.
+     *
+     * @return array<string, array<string, string|null>> ex. ['restaurant' => ['order' => '/restaurants/{slug}#commander']]
+     */
+    public function actionUrlsByType(): array
+    {
+        $map = [];
+
+        foreach ($this->providers as $provider) {
+            $type = $provider->type();
+
+            // Sous-ensemble STRICT de `supportedActions()` : une destination
+            // pour une action non déclarée serait une incohérence de contrat,
+            // pas une capacité supplémentaire.
+            $declared = $provider->supportedActions();
+
+            $urls = [];
+
+            foreach ($provider->supportedActionUrls() as $action => $url) {
+                if (! in_array($action, $declared, true)) {
+                    continue;
+                }
+
+                $urls[$action] = is_string($url) && $url !== '' ? $url : null;
+            }
+
+            if ($urls === []) {
+                continue;
+            }
+
+            ksort($urls);
+            $map[$type] = $urls;
+        }
+
+        ksort($map);
+
+        return $map;
+    }
+
+    /**
      * Découverte agrégée.
      *
      * @param  array{q?:string, city?:string, type?:string, near?:string, radius_km?:float|int|string, per_page?:int|string, page?:int|string}  $filters
@@ -188,6 +241,10 @@ final class PublicDiscoveryService
                 // #8761 — capacités RÉELLES par type, pour que le frontend
                 // n'affiche jamais d'action qu'aucun service métier ne sert.
                 'actions' => $this->actionsByType(),
+                // #8761 — destinations navigateur. Seules les actions
+                // ATTEIGNABLES depuis la passerelle y figurent : le frontend
+                // affiche « indisponible » pour toutes les autres.
+                'action_urls' => $this->actionUrlsByType(),
             ],
         ];
     }

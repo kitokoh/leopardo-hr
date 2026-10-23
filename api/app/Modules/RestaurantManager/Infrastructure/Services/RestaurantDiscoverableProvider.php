@@ -47,6 +47,22 @@ final class RestaurantDiscoverableProvider implements PublicDiscoverableProvider
         return ['contact', 'order'];
     }
 
+    /**
+     * #8761 — la commande est servie DANS le parcours public de la verticale :
+     * `front/web/src/app/restaurants/[slug]/restaurant-order-panel.tsx` (menu →
+     * panier → `POST /api/v1/restaurant/public/orders` → suivi). `contact` n'a
+     * pas de destination propre : il ouvre le formulaire de la passerelle.
+     *
+     * @return array<string, string|null>
+     */
+    public function supportedActionUrls(): array
+    {
+        return [
+            'contact' => null,
+            'order' => '/restaurants/{slug}#commander',
+        ];
+    }
+
     public function search(array $filters): array
     {
         $query = $this->baseQuery()->select([
