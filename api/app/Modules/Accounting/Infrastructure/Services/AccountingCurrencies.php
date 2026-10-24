@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Accounting\Infrastructure\Services;
 
-use App\Support\CountryDefaults;
+use App\Support\SupportedCurrencies;
 
 /**
  * Registre des devises supportées par le module Comptabilité — issue #5270.
@@ -14,12 +14,15 @@ use App\Support\CountryDefaults;
  * TD, CF, GQ, FR, TR, GB, US, CA). La validation de la devise des contacts,
  * des settings et de l'endpoint de conversion passe TOUTE par ce registre —
  * jamais de liste codée en dur ailleurs (règle #5270, anti-divergence).
+ *
+ * Depuis #8743, l'algorithme vit dans `App\Support\SupportedCurrencies` :
+ * le BC-38 Paiements a besoin de exactement la même liste, et la garde
+ * d'isolation des modules lui interdit d'importer `Modules/Accounting`.
+ * Ce fichier reste l'API publique de son BC (aucun appelant ne change) et
+ * délègue — la source est désormais partagée au lieu d'être dupliquée.
  */
 final class AccountingCurrencies
 {
-    /** @var array<int, string>|null */
-    private static ?array $supported = null;
-
     /**
      * Codes ISO 4217 (3 lettres) des devises supportées, triés.
      *
@@ -27,22 +30,7 @@ final class AccountingCurrencies
      */
     public static function supported(): array
     {
-        if (self::$supported !== null) {
-            return self::$supported;
-        }
-
-        $currencies = [];
-
-        foreach (CountryDefaults::all() as $defaults) {
-            $currencies[strtoupper((string) $defaults['currency'])] = true;
-        }
-
-        $list = array_keys($currencies);
-        sort($list);
-
-        self::$supported = $list;
-
-        return $list;
+        return SupportedCurrencies::all();
     }
 
     /**
@@ -51,19 +39,11 @@ final class AccountingCurrencies
      */
     public static function normalize(?string $currency): ?string
     {
-        $value = strtoupper(trim((string) $currency));
-
-        if ($value === '' || preg_match('/^[A-Z]{3}$/', $value) !== 1) {
-            return null;
-        }
-
-        return $value;
+        return SupportedCurrencies::normalize($currency);
     }
 
     public static function isSupported(?string $currency): bool
     {
-        $normalized = self::normalize($currency);
-
-        return $normalized !== null && in_array($normalized, self::supported(), true);
+        return SupportedCurrencies::isSupported($currency);
     }
 }
