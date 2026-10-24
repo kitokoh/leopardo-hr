@@ -174,17 +174,17 @@ final class Money
 
         $value = trim((string) $amount);
 
-        if ($value === '' || preg_match('/^-?\d+(\.\d+)?$/', $value) !== 1) {
+        // Le motif impose la forme decimale stricte (pas de notation
+        // scientifique, pas de separateur de milliers) ; `is_numeric` est
+        // ensuite ce qui permet a PHPStan d'affiner le type en `numeric-string`
+        // — un `@var` explicite entrerait en conflit avec le type deja infere.
+        if ($value === '' || preg_match('/^-?\d+(\.\d+)?$/', $value) !== 1 || ! is_numeric($value)) {
             throw new InvalidArgumentException(sprintf(
                 'Montant decimal invalide : "%s".',
                 $value,
             ));
         }
 
-        // Le motif ci-dessus garantit une chaine numerique ; PHPStan ne peut pas
-        // le deduire d'un `preg_match`, donc l'annotation est explicite plutot
-        // qu'un cast qui masquerait le contrat.
-        /** @var numeric-string $value */
         return $value;
     }
 
