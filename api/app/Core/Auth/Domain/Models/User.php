@@ -18,6 +18,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $last_name
  * @property string $email
  * @property string|null $phone
+ * @property string|null $phone_e164 Numero normalise E.164 (#8736) — identifiant de premier rang, unique quand renseigne
  * @property string|null $password_hash
  * @property string|null $google_id
  * @property string|null $avatar_url
@@ -61,6 +62,7 @@ class User extends Authenticatable
         'last_name',
         'email',
         'phone',
+        'phone_e164', // #8736 — forme normalisee, seule porteuse de l'unicite
         'google_id',
         'avatar_url',
         'provider',
