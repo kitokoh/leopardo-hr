@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Building2, Globe2, Layers, ShieldCheck } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
 import { HeroTrustBadge } from '../hero/HeroProductShowcase';
+import { AnimatedCounter } from '../AnimatedCounter';
 
 /**
  * PA2-MKT-006: this section previously showed "500+ active companies",
@@ -100,7 +101,7 @@ export function SocialProofMetrics({ locale = 'fr' }: SocialProofMetricsProps) {
                 {metric.icon}
               </div>
               <div className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-1 drop-shadow-sm">
-                {metric.value}
+                <AnimatedCounter value={metric.value} />
               </div>
               <div className="text-sm text-white/80 font-medium">
                 {metric.label}

@@ -37,6 +37,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
+ *
+ * EXCEPTION TENANT-SCOPE (#7999) : `company_id` est NULLABLE par conception —
+ * NULL = evenement d'une instance GLOBALE (meme convention que `payment_webhook_endpoints`).
+ * Le routage d'un webhook entrant se fait hors contexte tenant prealable (l'appelant
+ * est un fournisseur, pas un utilisateur) : un scope fail-closed exclurait les
+ * evenements des fournisseurs globaux.
  */
 class PaymentWebhookEvent extends Model
 {
