@@ -81,7 +81,7 @@ class TenantPaymentController
 
         // #8743 : `size:3` acceptait n'importe quel trigramme, y compris une
         // devise inexistante. L'allowlist est desormais portee par le registre
-        // unique `AccountingCurrencies`, jamais par une liste locale.
+        // partage `App\Support\SupportedCurrencies`, jamais par une liste locale.
         /** @var array{amount: int, currency?: string|null, idempotency_key: string} $validated */
         $validated = $request->validate([
             'amount' => ['required', 'integer', 'min:1'],
@@ -89,9 +89,7 @@ class TenantPaymentController
             'idempotency_key' => ['required', 'string', 'max:120'],
         ]);
 
-        $requested = isset($validated['currency']) && is_string($validated['currency'])
-            ? $validated['currency']
-            : null;
+        $requested = $validated['currency'] ?? null;
 
         try {
             $currency = $this->currencies->resolve($requested, $company->currency, $company->country);

@@ -28,9 +28,16 @@ final class UnsupportedCurrencyException extends RuntimeException
         return new self($currency, 'absente de l\'allowlist des devises supportees');
     }
 
-    public static function notConfigured(): self
+    public static function notConfigured(?string $country = null): self
     {
-        return new self('', 'aucune devise fournie et aucune devise configuree pour l\'entreprise ou le pays');
+        $scope = $country === null || trim($country) === ''
+            ? 'aucune devise fournie et aucune devise configuree pour l\'entreprise'
+            : sprintf(
+                'aucune devise fournie, entreprise sans devise supportee, et pays « %s » absent du registre pays',
+                strtoupper(trim($country)),
+            );
+
+        return new self('', $scope);
     }
 
     public static function malformed(string $currency): self

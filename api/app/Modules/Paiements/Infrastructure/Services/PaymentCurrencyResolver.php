@@ -4,41 +4,44 @@ declare(strict_types=1);
 
 namespace App\Modules\Paiements\Infrastructure\Services;
 
-use App\Modules\Accounting\Infrastructure\Services\AccountingCurrencies;
 use App\Modules\Paiements\Domain\Exceptions\UnsupportedCurrencyException;
-use App\Support\CountryDefaults;
+use App\Support\SupportedCurrencies;
 
 /**
- * BC-38 PAIEMENTS (#8743) — resolution de la devise d'une operation.
+ * BC-38 PAIEMENTS (#8743) — résolution de la devise d'une opération.
  *
- * Source de verite de l'allowlist : `AccountingCurrencies` (#5270), qui derive
- * elle-meme du registre pays `CountryDefaults`. Aucune liste n'est codee en dur
- * ici : ajouter un pays au registre suffit a ouvrir sa devise, et les deux BC
- * ne peuvent pas diverger.
+ * Allowlist : `App\Support\SupportedCurrencies`, registre partagé du noyau,
+ * dérivé du registre pays `CountryDefaults`. Deux raisons de ne PAS appeler
+ * `Modules/Accounting\...\AccountingCurrencies` directement :
+ *   1. la garde d'isolation des modules (`ARCHITECTURE.md` §2, #5584) refuse
+ *      tout import inter-module, et la CI le vérifie (« Nouveaux imports
+ *      croisés détectés ») ;
+ *   2. une seule source partagée rend la divergence structurellement
+ *      impossible, au lieu de compter sur la discipline.
  *
- * Difference de fond avec l'ancien comportement : la chaine `?currency` ->
- * `company.currency` -> `'DZD'` **inventait** une devise. Une devise absente de
- * l'allowlist est maintenant refusee explicitement (422 cote HTTP), et le
+ * Différence de fond avec l'ancien comportement : la chaîne `?currency` →
+ * `company.currency` → `'DZD'` **inventait** une devise. Une devise absente de
+ * l'allowlist est maintenant refusée explicitement (422 côté HTTP), et le
  * dernier recours est la devise du **pays** de l'entreprise — jamais une
- * constante. Une configuration incomplete doit se voir, pas produire un solde
- * en dirhams algeriens chez un tenant senegalais.
+ * constante. Une configuration incomplète doit se voir, pas produire un solde
+ * en dirhams algériens chez un tenant sénégalais.
  */
 final class PaymentCurrencyResolver
 {
     /**
-     * Devise demandee par le client, validee contre l'allowlist.
+     * Devise demandée par le client, validée contre l'allowlist.
      *
      * @throws UnsupportedCurrencyException
      */
     public function fromRequest(?string $requested): string
     {
-        $normalized = AccountingCurrencies::normalize($requested);
+        $normalized = SupportedCurrencies::normalize($requested);
 
         if ($normalized === null) {
             throw UnsupportedCurrencyException::malformed((string) $requested);
         }
 
-        if (! AccountingCurrencies::isSupported($normalized)) {
+        if (! SupportedCurrencies::isSupported($normalized)) {
             throw UnsupportedCurrencyException::notInAllowlist($normalized);
         }
 
@@ -46,29 +49,26 @@ final class PaymentCurrencyResolver
     }
 
     /**
-     * Devise de l'operation quand le client n'en fournit pas.
+     * Devise de l'opération quand le client n'en fournit pas.
      *
-     * Ordre : devise de l'entreprise si elle est supportee, sinon devise du
-     * pays de l'entreprise. Un pays inconnu retombe sur le defaut du registre
-     * pays (DZ) — decision du registre, pas de ce resolver, et desormais
-     * tracee comme telle dans la reponse (`currency_source`).
+     * Ordre : devise de l'entreprise si elle est supportée, sinon devise du
+     * pays de l'entreprise. Un pays non couvert par le registre lève
+     * explicitement — on ne retombe pas sur `DZ` par accident.
      *
      * @throws UnsupportedCurrencyException
      */
     public function forCompany(?string $companyCurrency, ?string $companyCountry): string
     {
-        $normalized = AccountingCurrencies::normalize($companyCurrency);
+        $normalized = SupportedCurrencies::normalize($companyCurrency);
 
-        if ($normalized !== null && AccountingCurrencies::isSupported($normalized)) {
+        if ($normalized !== null && SupportedCurrencies::isSupported($normalized)) {
             return $normalized;
         }
 
-        $fallback = AccountingCurrencies::normalize(
-            (string) CountryDefaults::for($companyCountry)['currency'],
-        );
+        $fallback = SupportedCurrencies::countryDefault($companyCountry);
 
-        if ($fallback === null || ! AccountingCurrencies::isSupported($fallback)) {
-            throw UnsupportedCurrencyException::notConfigured();
+        if ($fallback === null) {
+            throw UnsupportedCurrencyException::notConfigured($companyCountry);
         }
 
         return $fallback;
@@ -89,8 +89,8 @@ final class PaymentCurrencyResolver
     }
 
     /**
-     * Origine de la devise retenue — exposee aux clients pour rendre la
-     * resolution observable au lieu de la laisser deviner.
+     * Origine de la devise retenue — exposée aux clients pour rendre la
+     * résolution observable au lieu de la laisser deviner.
      */
     public function sourceFor(?string $requested, ?string $companyCurrency): string
     {
@@ -98,11 +98,7 @@ final class PaymentCurrencyResolver
             return 'request';
         }
 
-        $normalized = AccountingCurrencies::normalize($companyCurrency);
-
-        return ($normalized !== null && AccountingCurrencies::isSupported($normalized))
-            ? 'company'
-            : 'country_default';
+        return SupportedCurrencies::isSupported($companyCurrency) ? 'company' : 'country_default';
     }
 
     /**
@@ -112,6 +108,6 @@ final class PaymentCurrencyResolver
      */
     public function allowlist(): array
     {
-        return AccountingCurrencies::supported();
+        return SupportedCurrencies::all();
     }
 }

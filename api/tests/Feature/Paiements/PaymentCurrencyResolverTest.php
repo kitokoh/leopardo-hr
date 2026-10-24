@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Paiements;
 
-use App\Modules\Accounting\Infrastructure\Services\AccountingCurrencies;
 use App\Modules\Paiements\Domain\Exceptions\UnsupportedCurrencyException;
 use App\Modules\Paiements\Infrastructure\Services\PaymentCurrencyResolver;
+use App\Support\SupportedCurrencies;
 use Tests\TestCase;
 
 /**
@@ -16,8 +16,12 @@ use Tests\TestCase;
  * absente de la configuration tombait sur `'DZD'` sans le dire, et le solde
  * retourne etait faux. Ces tests verrouillent donc trois choses : une devise
  * inconnue est refusee, aucune constante n'est inventee quand la configuration
- * manque, et l'allowlist reste derivee du registre unique `AccountingCurrencies`
- * (ajouter une devise au registre suffit, sans toucher a ce module).
+ * manque, et l'allowlist reste derivee du registre pays unique — ajouter un
+ * pays au registre suffit, sans toucher a ce module.
+ *
+ * Depuis la correction de la garde d'isolation (#5584), l'allowlist vit dans
+ * `App\Support\SupportedCurrencies` et non dans le module Comptabilite : un
+ * module ne peut pas importer un autre module.
  */
 class PaymentCurrencyResolverTest extends TestCase
 {
@@ -48,7 +52,7 @@ class PaymentCurrencyResolverTest extends TestCase
         // 'XTS' est le code ISO reserve aux tests : valide en forme, jamais
         // supporte par le registre. C'est exactement la classe de valeur que
         // `size:3` laissait passer.
-        $this->assertFalse(AccountingCurrencies::isSupported('XTS'));
+        $this->assertFalse(SupportedCurrencies::isSupported('XTS'));
 
         $this->expectException(UnsupportedCurrencyException::class);
 
@@ -85,12 +89,25 @@ class PaymentCurrencyResolverTest extends TestCase
         $this->assertSame('request', $this->resolver->sourceFor('EUR', 'DZD'));
     }
 
-    public function test_allowlist_is_the_shared_accounting_registry(): void
+    public function test_country_outside_registry_is_refused_instead_of_defaulting_to_dzd(): void
     {
-        $this->assertSame(AccountingCurrencies::supported(), $this->resolver->allowlist());
-        $this->assertContains('DZD', $this->resolver->allowlist());
-        $this->assertContains('EUR', $this->resolver->allowlist());
-        $this->assertNotContains('XTS', $this->resolver->allowlist());
+        // `CountryDefaults::for()` replie un pays inconnu sur DZ — donc DZD.
+        // Ce repli silencieux est precisement le defaut de #8743 : un pays non
+        // couvert doit lever, pas operer en dirham algerien.
+        $this->expectException(UnsupportedCurrencyException::class);
+
+        $this->resolver->resolve(null, null, 'ZZ');
+    }
+
+    public function test_allowlist_is_the_shared_core_registry(): void
+    {
+        $allowlist = $this->resolver->allowlist();
+
+        $this->assertSame(SupportedCurrencies::all(), $allowlist);
+        $this->assertContains('DZD', $allowlist);
+        $this->assertContains('EUR', $allowlist);
+        $this->assertNotContains('XTS', $allowlist);
+        $this->assertSame($allowlist, array_values($allowlist));
     }
 
     public function test_exception_messages_name_the_currency(): void
