@@ -11,7 +11,6 @@ use App\Modules\EdgeSync\Domain\Models\SyncQueue;
 use App\Modules\EdgeSync\Infrastructure\Services\EdgeDaemonSyncClient;
 use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Schema;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -60,7 +59,7 @@ class EdgeSyncDedupTest extends TestCase
     {
         foreach (['edge_version', 'capabilities', 'license_expires_at', 'site_address', 'license_key'] as $column) {
             $this->assertTrue(
-                Schema::hasColumn('edge_nodes', $column),
+                schemaHasColumn('edge_nodes', $column),
                 "La fixture `edge_nodes` doit porter la colonne canonique `{$column}` (#8396).",
             );
         }
