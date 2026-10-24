@@ -152,14 +152,14 @@ export function HeroSection({
             titre ne peut plus « flotter » au-dessus des cartes. Le titre reste
             lisible sur le ciel étoilé grâce au voile radial et au liseré
             (`.hero-stage-title-scrim` / `.hero-stage-title-text`). */}
-        <div className="relative z-10 flex min-h-0 flex-1 flex-col px-4 pt-[11vh] sm:px-6 sm:pt-[9vh]">
+        <div className="relative z-10 flex min-h-0 flex-1 flex-col px-4 pt-[9vh] sm:px-6 sm:pt-[7.5vh]">
           <div className="relative mx-auto w-full max-w-5xl shrink-0">
             <div aria-hidden="true" className="hero-stage-title-scrim absolute -inset-x-8 -inset-y-10 sm:-inset-x-16" />
             <motion.h1
               initial={animated ? { y: 30 } : {}}
               animate={animated ? { y: 0 } : {}}
               transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-              className="relative text-balance text-center font-black leading-[0.98] tracking-tight text-4xl sm:text-6xl lg:text-7xl"
+              className="relative text-balance text-center font-black leading-[1.02] tracking-tight text-3xl sm:text-5xl lg:text-6xl"
             >
               <span className="hero-stage-title-text block bg-gradient-to-b from-white via-white to-slate-200 bg-clip-text text-transparent">
                 {headline}

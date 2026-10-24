@@ -122,7 +122,7 @@ export interface HeroBusinessOS3DProps {
 const MODULES_PER_RING = [6, 6];
 // Refonte vitrine #8461 — la constellation est AGRANDIE (retour propriétaire :
 // « agrandir la taille globale ») : rayons +29 % / +27 %.
-const RING_RADII = [3.35, 4.95];
+const RING_RADII = [3.65, 5.35];
 const RING_TILT = [0.42, -0.28];
 // Refonte vitrine #8461 — le mouvement orbital était quasi imperceptible
 // (≈ 0.013 rad/s). Les vitesses de base sont ~2× plus élevées et,
@@ -259,7 +259,7 @@ export function HeroBusinessOS3D({
     // gagne ~8 % de présence à cadre égal — retour propriétaire : elle doit
     // DOMINER la première page, pas survivre au fond.
     const camera = new PerspectiveCamera(39, 1, 0.1, 60);
-    camera.position.set(0, 0.4, 10.8);
+    camera.position.set(0, 0.35, 9.6);
     camera.lookAt(0, 0, 0);
 
     scene.add(new AmbientLight(0xffffff, 0.75));

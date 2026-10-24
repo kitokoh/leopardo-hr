@@ -99,12 +99,12 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">
           <div className="col-span-2">
             <Link href="/" className="flex items-center gap-2.5 mb-4">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 via-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-amber-500/20 ring-1 ring-white/20">
                 <span className="text-white font-black text-sm">L</span>
               </div>
               <div className="flex flex-col">
                 <span className="font-black text-lg text-slate-900 dark:text-white leading-none">Leopardo</span>
-                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-400">
+                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400/90">
                   {copy.nav.brandTagline}
                 </span>
               </div>

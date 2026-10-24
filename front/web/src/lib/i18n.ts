@@ -708,9 +708,9 @@ const copy: Record<AppLocale, CopyTree> = {
   fr: {
     login: {
       title: 'Connexion à Leopardo',
-      subtitle: 'Accédez à votre espace RH, suivez vos équipes et pilotez les modules actifs de votre entreprise.',
+      subtitle: 'Accédez à votre espace d\'entreprise, suivez vos opérations et pilotez vos modules actifs.',
       clientSpace: 'Espace client',
-      heroTitle: 'Un accès RH clair pour chaque manager, chaque pays et chaque équipe.',
+      heroTitle: 'Le Business OS unifié pour piloter votre entreprise, chaque équipe et chaque pays.',
       heroCopy: 'Votre portail client reste connecté à l’API Leopardo, avec permissions, langue et contexte tenant appliqués dès la connexion.',
       secureBadge: 'Connexion sécurisée',
       trustPoints: [
@@ -2167,9 +2167,9 @@ const copy: Record<AppLocale, CopyTree> = {
   tr: {
     login: {
       title: 'Leopardo IK girisi',
-      subtitle: 'Sirket alaniniza, ekiplerinize ve aktif IK modullerinize guvenli sekilde erisin.',
+      subtitle: 'Sirket alaniniza, operasyonlariniza ve aktif tum modullerinize guvenli sekilde erisin.',
       clientSpace: 'Musteri alani',
-      heroTitle: 'Her yonetici, ulke ve ekip icin net bir IK girisi.',
+      heroTitle: 'Sirketinizi, tum ekipleri ve ulkeleri yoneten birlesik Business OS.',
       heroCopy: 'Leopardo portali giristen itibaren tenant, rol, dil ve izin baglaminizi uygular.',
       secureBadge: 'Guvenli giris',
       trustPoints: [
@@ -2893,9 +2893,9 @@ const copy: Record<AppLocale, CopyTree> = {
   en: {
     login: {
       title: 'Sign in to Leopardo',
-      subtitle: 'Access your HR workspace, follow your teams, and manage the modules enabled for your company.',
+      subtitle: 'Access your company workspace, track your operations, and manage all active business modules.',
       clientSpace: 'Client workspace',
-      heroTitle: 'A clear HR access point for every manager, country, and team.',
+      heroTitle: 'The unified Business OS to run your company, every team, and every country.',
       heroCopy: 'Your client portal stays connected to the Leopardo API with tenant context, language, and permissions applied after sign-in.',
       secureBadge: 'Secure sign-in',
       trustPoints: [
