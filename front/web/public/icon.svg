@@ -1,6 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Leopardo RH">
-  <rect width="512" height="512" rx="96" fill="#0f172a"/>
-  <path d="M118 339V143h55v148h102v48H118Z" fill="#ecfeff"/>
-  <path d="M284 143h110v48h-55v148h-55V143Z" fill="#34d399"/>
-  <path d="M102 382h308" stroke="#22d3ee" stroke-width="26" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Leopardo">
+  <!--
+    Favicon Leopardo (#8497 / #8446) — monogramme LT, geometrie resserree,
+    fond en degrade, lisible de 16 a 64 px. Palette de prestige : ardoise,
+    or chaud (#fbbf24) et emeraude (#34d399).
+  -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#101a30"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbbf24"/>
+      <stop offset="0.5" stop-color="#34d399"/>
+      <stop offset="1" stop-color="#059669"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#bg)"/>
+  <rect x="1.5" y="1.5" width="61" height="61" rx="13.5" fill="none"
+        stroke="#fbbf24" stroke-opacity="0.3"/>
+  <path d="M16 44V17.5h8V37h14v7H16Z" fill="#ecfeff"/>
+  <path d="M39 17.5h13v7h-6.5V44H39V17.5Z" fill="url(#accent)"/>
 </svg>

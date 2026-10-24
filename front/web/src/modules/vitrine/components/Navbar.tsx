@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
@@ -153,7 +153,7 @@ function DropdownMenu({
             href={withLocaleHref(item.href, search)}
             onClick={onClose}
             aria-current={pathname === item.href ? 'page' : undefined}
-            className="flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-transparent dark:hover:bg-slate-800/80 transition-colors group"
+            className="flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-slate-800/80 transition-colors group"
           >
             <div className="mt-0.5 flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 flex items-center justify-center group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/50 transition-colors">
               {item.icon}

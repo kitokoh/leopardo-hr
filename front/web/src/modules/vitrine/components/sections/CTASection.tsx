@@ -55,7 +55,7 @@ export function CTASection({
   const resolvedPrimaryCta = ctaPrimary ?? primaryCta;
   const resolvedSecondaryCta = ctaSecondary ?? secondaryCta;
   const bgClasses = {
-    gradient: 'bg-gradient-to-r from-emerald-500 via-emerald-600 to-cyan-600',
+    gradient: 'bg-gradient-to-r from-emerald-700 via-emerald-600 to-amber-700/80',
     solid: 'bg-slate-900 dark:bg-slate-950',
     image: `bg-cover bg-center`,
   }[background];
@@ -79,7 +79,7 @@ export function CTASection({
 
       {/* Gradient orbs */}
       <div className="absolute top-1/4 -left-32 w-[500px] h-[500px] bg-white/10 rounded-full blur-[120px]" />
-      <div className="absolute bottom-1/4 -right-32 w-[500px] h-[500px] bg-white/10 rounded-full blur-[120px]" />
+      <div className="absolute bottom-1/4 -right-32 w-[500px] h-[500px] bg-amber-400/15 rounded-full blur-[120px]" />
 
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Badge */}
@@ -132,13 +132,13 @@ export function CTASection({
             <Link
               href={withLocaleHref(resolvedPrimaryCta.href, search)}
               {...(/^https?:\/\//i.test(resolvedPrimaryCta.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-              className="group relative px-9 py-4 bg-white text-emerald-800 font-extrabold rounded-2xl overflow-hidden transition-all duration-300 shadow-2xl hover:scale-[1.03] hover:shadow-white/30 active:scale-[0.98] ring-2 ring-white/40"
+              className="group relative px-9 py-4 bg-white text-emerald-800 font-extrabold rounded-2xl overflow-hidden transition-all duration-300 shadow-2xl hover:scale-[1.03] hover:shadow-amber-500/20 active:scale-[0.98] ring-2 ring-white/40"
             >
               <span className="relative z-10 flex items-center gap-2.5 text-base">
                 {resolvedPrimaryCta.text}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-300" />
               </span>
-              <span className="absolute inset-0 bg-gradient-to-r from-emerald-50 via-white to-teal-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              <span className="absolute inset-0 bg-gradient-to-r from-emerald-50 via-white to-amber-50/70 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </Link>
           )}
 

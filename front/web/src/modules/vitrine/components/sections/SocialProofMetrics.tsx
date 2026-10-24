@@ -81,7 +81,7 @@ export function SocialProofMetrics({ locale = 'fr' }: SocialProofMetricsProps) {
     <section className="relative py-16 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 dark:from-emerald-900 dark:via-slate-900 dark:to-cyan-950" />
       <div className="pointer-events-none absolute -top-40 -left-40 h-80 w-80 rounded-full bg-emerald-400/20 blur-3xl" aria-hidden="true" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-cyan-400/20 blur-3xl" aria-hidden="true" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-amber-400/15 blur-3xl" aria-hidden="true" />
 
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIxIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiLz48L3N2Zz4=')] opacity-50" />
 

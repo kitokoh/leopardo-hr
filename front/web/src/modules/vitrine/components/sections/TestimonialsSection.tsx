@@ -50,7 +50,7 @@ export function TestimonialsSection({
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6 tracking-tight">
             {title}
             {subtitle && (
-              <span className="block bg-gradient-to-r from-emerald-500 to-cyan-500 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 bg-clip-text text-transparent">
                 {subtitle}
               </span>
             )}

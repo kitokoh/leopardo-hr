@@ -1441,10 +1441,10 @@ const copy: Record<AppLocale, CopyTree> = {
   ar: {
     login: {
       title: 'تسجيل الدخول إلى Leopardo',
-      subtitle: 'ادخل إلى مساحة الموارد البشرية مع اللغة والدور والصلاحيات المناسبة.',
+      subtitle: 'ادخل إلى مساحة شركتك، وتابع عملياتك، وأدِر وحداتك التشغيلية النشطة.',
       clientSpace: 'مساحة العميل',
-      heroTitle: 'دخول واضح وآمن للمديرين وفرق الموارد البشرية والموظفين.',
-      heroCopy: 'تطبق البوابة سياق الشركة واللغة والصلاحيات مباشرة بعد تسجيل الدخول.',
+      heroTitle: 'نظام Business OS الموحّد لإدارة شركتك، وكل فرقك، في كل بلد.',
+      heroCopy: 'تبقى بوابة العميل متصلة بنظام Leopardo، مع تطبيق الصلاحيات واللغة وسياق المؤسسة فور تسجيل الدخول.',
       secureBadge: 'تسجيل دخول آمن',
       trustPoints: [
         'جلسة مرتبطة بالشركة',
@@ -1608,7 +1608,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     accountActivation: {
       title: 'تفعيل حسابك',
-      subtitle: 'حدد كلمة مرور لتفعيل حسابك في ليوباردو RH.',
+      subtitle: 'حدد كلمة مرور لتفعيل حسابك في ليوباردو.',
       passwordLabel: 'كلمة المرور',
       passwordPlaceholder: '8 أحرف على الأقل',
       confirmPasswordLabel: 'تأكيد كلمة المرور',
@@ -2166,7 +2166,7 @@ const copy: Record<AppLocale, CopyTree> = {
   },
   tr: {
     login: {
-      title: 'Leopardo IK girisi',
+      title: 'Leopardo girisi',
       subtitle: 'Sirket alaniniza, operasyonlariniza ve aktif tum modullerinize guvenli sekilde erisin.',
       clientSpace: 'Musteri alani',
       heroTitle: 'Sirketinizi, tum ekipleri ve ulkeleri yoneten birlesik Business OS.',

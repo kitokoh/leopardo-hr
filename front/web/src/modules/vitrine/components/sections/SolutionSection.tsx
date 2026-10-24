@@ -48,7 +48,7 @@ export function SolutionSection({
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6 tracking-tight">
             {title}
             {subtitle && (
-              <span className="block bg-gradient-to-r from-emerald-500 to-cyan-500 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 bg-clip-text text-transparent">
                 {subtitle}
               </span>
             )}
@@ -73,7 +73,7 @@ export function SolutionSection({
               <div className="relative h-full rounded-3xl border border-slate-200/90 bg-white/90 p-8 shadow-sm backdrop-blur-xl transition-all duration-300 hover:border-emerald-300 hover:shadow-xl hover:shadow-emerald-500/5 dark:border-slate-800/90 dark:bg-slate-900/90 dark:hover:border-emerald-900/60 dark:hover:shadow-emerald-950/20">
                 <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 {/* Icon */}
-                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-400 shadow-md shadow-emerald-500/20 transition-transform duration-300 group-hover:scale-105">
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 shadow-md shadow-emerald-500/20 transition-transform duration-300 group-hover:scale-105">
                   <CheckCircle2 className="h-7 w-7 text-white" />
                 </div>
 
