@@ -337,6 +337,172 @@ class PlatformCompanyProvisioningTest extends TestCase
         $this->assertEquals(35.0, (float) $schedule->overtime_threshold_weekly);
     }
 
+    public function test_provisioning_creates_exactly_one_primary_site(): void
+    {
+        // BOS-O-03 / #8623 — un tenant ne doit JAMAIS naître sans lieu
+        // d'exploitation : le provisioning crée l'établissement principal dans
+        // la MÊME transaction que l'entreprise et expose son identifiant.
+        Mail::fake();
+
+        DB::table('plans')->insert([
+            'id' => 21,
+            'name' => 'Starter',
+            'price_monthly' => 29,
+            'price_yearly' => 290,
+            'trial_days' => 14,
+            'is_active' => true,
+        ]);
+
+        $superAdmin = new SuperAdmin([
+            'name' => 'Platform Admin',
+            'email' => 'admin-site@leopardo-rh.com',
+        ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
+
+        $response = $this
+            ->actingAs($superAdmin, 'super_admin_api')
+            ->postJson('/api/v1/platform/companies', [
+                'name' => 'Groupe Site SARL',
+                'sector' => 'restaurant',
+                'country' => 'DZ',
+                'city' => 'Alger',
+                'email' => 'contact@groupe-site.dz',
+                'plan_id' => 21,
+                'manager_first_name' => 'Nadia',
+                'manager_last_name' => 'Haddad',
+                'manager_email' => 'nadia.haddad@groupe-site.dz',
+                'site_name' => 'Restaurant Central',
+            ]);
+
+        $response->assertCreated();
+
+        $companyId = $response->json('data.company.id');
+        $primarySiteId = $response->json('data.primary_site_id');
+
+        $this->assertNotNull($primarySiteId, 'La réponse doit exposer primary_site_id.');
+
+        DB::statement('SET search_path TO shared_tenants,public');
+
+        $sites = DB::table('sites')->where('company_id', $companyId)->get();
+
+        DB::statement('SET search_path TO public');
+
+        $this->assertCount(1, $sites, 'Le provisioning doit créer exactement 1 établissement.');
+        $this->assertSame('Restaurant Central', $sites->first()->name);
+        $this->assertSame('PRINCIPAL', $sites->first()->code);
+        $this->assertSame('active', $sites->first()->status);
+        $this->assertSame((int) $primarySiteId, (int) $sites->first()->id);
+    }
+
+    public function test_provisioning_without_site_name_still_creates_a_primary_site(): void
+    {
+        // Le contrat « payload minimal » (app mobile) reste valide : sans
+        // `site_name`, l'établissement prend le nom de l'entreprise — jamais
+        // d'absence d'établissement.
+        Mail::fake();
+
+        DB::table('plans')->insert([
+            'id' => 22,
+            'name' => 'Starter',
+            'price_monthly' => 29,
+            'price_yearly' => 290,
+            'trial_days' => 14,
+            'is_active' => true,
+        ]);
+
+        $superAdmin = new SuperAdmin([
+            'name' => 'Platform Admin',
+            'email' => 'admin-min@leopardo-rh.com',
+        ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
+
+        $response = $this
+            ->actingAs($superAdmin, 'super_admin_api')
+            ->postJson('/api/v1/platform/companies', [
+                'name' => 'Minimal Co',
+                'sector' => 'services',
+                'country' => 'DZ',
+                'city' => 'Oran',
+                'email' => 'contact@minimal-co.dz',
+                'plan_id' => 22,
+                'manager_first_name' => 'Karim',
+                'manager_last_name' => 'Ziani',
+                'manager_email' => 'karim.ziani@minimal-co.dz',
+            ]);
+
+        $response->assertCreated();
+
+        $companyId = $response->json('data.company.id');
+
+        DB::statement('SET search_path TO shared_tenants,public');
+
+        $site = DB::table('sites')->where('company_id', $companyId)->first();
+
+        DB::statement('SET search_path TO public');
+
+        $this->assertNotNull($site, 'Un tenant ne peut pas naître sans établissement.');
+        $this->assertSame('Minimal Co', $site->name);
+    }
+
+    public function test_primary_site_creation_is_idempotent_on_replay(): void
+    {
+        // Un rejeu de provisioning (reprise après échec, #3600) ne doit pas
+        // créer un second établissement : la garde est le `company_id`.
+        Mail::fake();
+
+        DB::table('plans')->insert([
+            'id' => 23,
+            'name' => 'Starter',
+            'price_monthly' => 29,
+            'price_yearly' => 290,
+            'trial_days' => 14,
+            'is_active' => true,
+        ]);
+
+        $superAdmin = new SuperAdmin([
+            'name' => 'Platform Admin',
+            'email' => 'admin-idem@leopardo-rh.com',
+        ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
+
+        $response = $this
+            ->actingAs($superAdmin, 'super_admin_api')
+            ->postJson('/api/v1/platform/companies', [
+                'name' => 'Idem Site Co',
+                'sector' => 'services',
+                'country' => 'DZ',
+                'city' => 'Constantine',
+                'email' => 'contact@idem-site.dz',
+                'plan_id' => 23,
+                'manager_first_name' => 'Sara',
+                'manager_last_name' => 'Bouzid',
+                'manager_email' => 'sara.bouzid@idem-site.dz',
+            ]);
+
+        $response->assertCreated();
+
+        $companyId = $response->json('data.company.id');
+        $company = Company::query()->findOrFail($companyId);
+
+        // Rejeu direct de la garde d'idempotence sur le MÊME tenant.
+        $service = app(\App\Modules\Platform\Infrastructure\Services\CompanyProvisioningService::class);
+        $method = new \ReflectionMethod($service, 'ensurePrimarySite');
+        $method->setAccessible(true);
+
+        $first = $method->invoke($service, $company, []);
+        $second = $method->invoke($service, $company, ['site_name' => 'Autre nom']);
+
+        $this->assertSame($first, $second, 'Un rejeu doit retourner le même établissement.');
+
+        DB::statement('SET search_path TO shared_tenants,public');
+
+        $count = DB::table('sites')->where('company_id', $companyId)->count();
+
+        DB::statement('SET search_path TO public');
+
+        $this->assertSame(1, $count, 'Un rejeu ne doit pas créer un 2ᵉ établissement.');
+    }
+
     public function test_super_admin_api_login_returns_token(): void
     {
         $superAdmin = new SuperAdmin([
