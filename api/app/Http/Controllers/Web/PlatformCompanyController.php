@@ -113,6 +113,11 @@ class PlatformCompanyController extends Controller
             'country' => ['required', 'string', 'size:2'],
             'city' => ['required', 'string', 'max:100'],
             'address' => ['nullable', 'string', 'max:255'],
+            // BOS-O-03 / #8623 : nom de l'établissement principal. Facultatif
+            // (défaut = nom de l'entreprise) — un tenant ne peut jamais naître
+            // sans établissement, mais le contrat « payload minimal » reste
+            // valide pour l'app mobile.
+            'site_name' => ['nullable', 'string', 'max:150'],
             'email' => ['required', 'email', 'max:150', Rule::unique('companies', 'email')],
             'phone' => ['nullable', 'string', 'max:30'],
             'plan_id' => ['nullable', 'integer', Rule::exists('plans', 'id')],
@@ -204,6 +209,9 @@ class PlatformCompanyController extends Controller
                     'role' => $result['manager']->role,
                     'manager_role' => $result['manager']->manager_role,
                 ],
+                // BOS-O-03 / #8623 : identifiant de l'établissement principal
+                // créé dans la même transaction que l'entreprise.
+                'primary_site_id' => $result['primary_site_id'] ?? null,
             ];
 
             // #6693 : statut d'activation des solutions demandées.

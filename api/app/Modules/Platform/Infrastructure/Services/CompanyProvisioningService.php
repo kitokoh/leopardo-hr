@@ -33,7 +33,7 @@ class CompanyProvisioningService
 
     /**
      * @param  array<string, mixed>  $payload
-     * @return array{company: Company, manager: Employee, solutions?: array<string, array{code: string, status: string, missing?: list<string>}>}
+     * @return array{company: Company, manager: Employee, primary_site_id: int|null, solutions?: array<string, array{code: string, status: string, missing?: list<string>}>}
      */
     public function provisionSharedCompany(array $payload, SuperAdmin $superAdmin): array
     {
@@ -67,7 +67,7 @@ class CompanyProvisioningService
             }
         }
 
-        /** @var array{company: Company, manager: Employee} $result */
+        /** @var array{company: Company, manager: Employee, primary_site_id: int|null} $result */
         $result = DB::transaction(function () use ($payload, &$solutionsStatus): array {
             $plan = DB::table('plans')->where('id', $payload['plan_id'])->first();
             $trialDays = (int) ($plan->trial_days ?? 14);
@@ -98,6 +98,8 @@ class CompanyProvisioningService
             DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
             $this->tenantManager->setTenant($company);
 
+            $primarySiteId = null;
+
             try {
                 /** @var Employee $manager */
                 $manager = new Employee([
@@ -124,6 +126,12 @@ class CompanyProvisioningService
                 $manager->password_hash = bcrypt(Str::random(32));
                 $manager->save();
 
+                // BOS-O-03 / #8623 : un tenant ne doit JAMAIS naître sans lieu
+                // d'exploitation. Sans `site_id`, les modules métier (ventes,
+                // stock, pointage géolocalisé) n'ont rien à référencer et
+                // l'exploitant doit découvrir seul qu'il doit en créer un.
+                $primarySiteId = $this->ensurePrimarySite($company, $payload);
+
                 // P1.3: Apply sectorial template
                 $this->sectorTemplateService->applyTemplate($company);
 
@@ -146,6 +154,7 @@ class CompanyProvisioningService
             $result = [
                 'company' => $company,
                 'manager' => $manager,
+                'primary_site_id' => $primarySiteId,
             ];
 
             if ($solutionsStatus !== []) {
@@ -163,6 +172,46 @@ class CompanyProvisioningService
         );
 
         return $result;
+    }
+
+    /**
+     * Crée l'établissement principal du tenant s'il n'existe pas encore (#8623).
+     *
+     * BOS-O-03 : `provisionSharedCompany()` créait l'entreprise, le schéma, le
+     * manager et les étapes d'onboarding — jamais un `sites`. Un tenant pouvait
+     * donc exister sans lieu d'exploitation : aucun `site_id` à référencer pour
+     * le pointage, le stock ou une vente. La garde d'idempotence est le
+     * `company_id` : un rejeu de provisioning (reprise après échec) ne crée pas
+     * un second établissement.
+     *
+     * Le nom vient de `site_name` s'il est fourni, sinon du nom de l'entreprise :
+     * un tenant ne peut JAMAIS naître sans établissement, quel que soit le
+     * payload (le contrat « payload minimal » de l'app mobile reste valide).
+     *
+     * @param  array<string, mixed>  $payload
+     */
+    private function ensurePrimarySite(Company $company, array $payload): int
+    {
+        $existing = DB::table('shared_tenants.sites')
+            ->where('company_id', $company->id)
+            ->orderBy('id')
+            ->value('id');
+
+        if ($existing !== null) {
+            return (int) $existing;
+        }
+
+        $name = trim((string) ($payload['site_name'] ?? '')) ?: (string) $company->name;
+
+        return (int) DB::table('shared_tenants.sites')->insertGetId([
+            'company_id' => $company->id,
+            'name' => $name,
+            'code' => 'PRINCIPAL',
+            'site_type' => 'office',
+            'status' => 'active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 
     /**
