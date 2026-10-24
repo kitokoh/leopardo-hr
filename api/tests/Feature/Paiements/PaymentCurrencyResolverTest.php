@@ -103,11 +103,13 @@ class PaymentCurrencyResolverTest extends TestCase
     {
         $allowlist = $this->resolver->allowlist();
 
-        $this->assertSame(SupportedCurrencies::all(), $allowlist);
+        // PHPStan voit `list<string>` dans le PHPDoc, donc verifier la nature de
+        // liste a l'execution serait tautologique (`function.alreadyNarrowedType`).
+        // Ce qui compte ici est le contrat de contenu, pas sa forme.
+        $this->assertSame($allowlist, SupportedCurrencies::all());
         $this->assertContains('DZD', $allowlist);
         $this->assertContains('EUR', $allowlist);
         $this->assertNotContains('XTS', $allowlist);
-        $this->assertTrue(array_is_list($allowlist));
     }
 
     public function test_exception_messages_name_the_currency(): void
