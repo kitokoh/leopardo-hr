@@ -1,0 +1,55 @@
+name: Mobile Distribution Status Guard
+
+# BOS-A-05 / #8628 — la table versionnée
+# `front/web/src/lib/mobile-distribution-status.ts` déclare l'état réel des
+# canaux de distribution mobile ; le catalogue « Mon Logiciel » s'en sert pour
+# requalifier une app en `not_distributed` quand son canal est en échec.
+#
+# Cette garde empêche la table de pourrir en silence : elle compare la
+# déclaration au dernier run de `mobile-distribute-main.yml` sur `main` et
+# échoue si un canal déclaré sain est en réalité en échec (ou l'inverse).
+# Sans elle, la déclaration redeviendrait un mensonge au premier changement
+# d'état — exactement le défaut que #8628 corrige.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'front/web/src/lib/mobile-distribution-status.ts'
+      - 'front/web/src/lib/software-catalog.ts'
+      - 'dev-hub/tools/check-mobile-distribution-status.py'
+      - '.github/workflows/mobile-distribution-status-guard.yml'
+  schedule:
+    # Vérification quotidienne : un canal peut changer d'état sans qu'aucune
+    # PR ne touche ces fichiers (échec de distribution sur `main`).
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: mobile-distribution-status-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  status-guard:
+    name: Statut de distribution cohérent
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Vérifier la cohérence du statut de distribution
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python3 dev-hub/tools/check-mobile-distribution-status.py

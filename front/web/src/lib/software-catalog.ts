@@ -17,6 +17,7 @@ import {
   Video,
 } from 'lucide-react';
 import type { ClientModuleAccess, ClientModuleKey } from '@/lib/client-features';
+import { isDistributionHealthy } from '@/lib/mobile-distribution-status';
 import { mobileDownloadTarget, type MobileAppSlug } from '@/modules/vitrine/lib/mobile-download';
 
 /**
@@ -139,6 +140,14 @@ export function isOfflineClaimed(app: SoftwareApp): boolean {
  * « Installer »).
  */
 export function softwareAvailability(app: SoftwareApp): SoftwareAvailability {
+  // BOS-A-05 / #8628 — un statut ne peut pas être `published`/`pilot` si le
+  // canal de distribution correspondant est en échec CONNU (ou d'état inconnu).
+  // Sans cette garde, un job CI `Distribute <app> to Firebase` rouge en
+  // permanence laissait la fiche annoncer « accès pilote » avec un bouton
+  // d'installation : la règle d'honnêteté #6697 était contournée par la CI.
+  if (!isDistributionHealthy(app.slug)) {
+    return 'not_distributed';
+  }
   if (app.targets.some((target) => target.kind === 'link')) {
     return 'published';
   }
@@ -151,6 +160,15 @@ export function softwareAvailability(app: SoftwareApp): SoftwareAvailability {
 /** Cibles mobiles factorisées sur le mécanisme vitrine (stores → Firebase → repli). */
 function mobileTargets(slug: MobileAppSlug): SoftwareTarget[] {
   const platforms = ['android', 'ios'] as const;
+
+  // BOS-A-05 / #8628 — canal en échec connu : AUCUN `href` d'installation.
+  // Le lien Firebase/store pointerait vers un build qui n'existe pas ; on
+  // retombe sur l'état honnête « soon » (bouton désactivé, jamais d'ancre
+  // morte), exactement comme le repli vitrine.
+  if (!isDistributionHealthy(slug)) {
+    return platforms.map((platform) => ({ platform, kind: 'soon' as const }));
+  }
+
   return platforms.map((platform) => {
     const target = mobileDownloadTarget(slug, platform);
     // Le repli vitrine renvoie vers /signup (capture de lead) — hors sujet
