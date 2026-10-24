@@ -31,7 +31,7 @@ class PaymentCurrencyResolverTest extends TestCase
     {
         parent::setUp();
 
-        $this->resolver = new PaymentCurrencyResolver();
+        $this->resolver = new PaymentCurrencyResolver;
     }
 
     public function test_explicit_supported_currency_is_accepted_and_normalized(): void
@@ -107,7 +107,7 @@ class PaymentCurrencyResolverTest extends TestCase
         $this->assertContains('DZD', $allowlist);
         $this->assertContains('EUR', $allowlist);
         $this->assertNotContains('XTS', $allowlist);
-        $this->assertSame($allowlist, array_values($allowlist));
+        $this->assertTrue(array_is_list($allowlist));
     }
 
     public function test_exception_messages_name_the_currency(): void

@@ -42,10 +42,12 @@ final class SupportedCurrencies
             $currencies[strtoupper((string) $defaults['currency'])] = true;
         }
 
-        $list = array_values(array_keys($currencies));
+        // `array_keys()` sur un tableau a cles chaines rend deja un
+        // `list<string>` : `array_values()` serait redondant (PHPStan strict
+        // le refuse, `arrayValues.list`).
+        $list = array_keys($currencies);
         sort($list);
 
-        /** @var list<string> $list */
         self::$supported = $list;
 
         return $list;
