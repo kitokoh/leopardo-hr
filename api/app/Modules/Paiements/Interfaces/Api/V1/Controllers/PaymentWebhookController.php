@@ -7,6 +7,7 @@ namespace App\Modules\Paiements\Interfaces\Api\V1\Controllers;
 use App\Modules\Paiements\Domain\DTOs\WebhookPayload;
 use App\Modules\Paiements\Domain\Models\PaymentWebhookEndpoint;
 use App\Modules\Paiements\Infrastructure\Services\ProviderTypeRegistry;
+use App\Modules\Paiements\Infrastructure\Services\WebhookEventProcessor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -19,12 +20,20 @@ use Illuminate\Http\Request;
  * l'instance sans ambiguite.
  *
  * Signature verifiee en fail-closed : sans secret configure, tout payload est
- * rejete. Un rejeu est un no-op (le rail est deterministe et l'idempotence
- * aval empeche tout doublon d'ecriture).
+ * rejete.
+ *
+ * #8742 — le webhook **applique** desormais un contrat, il ne se contente plus
+ * de relayer le statut du rail : l'evenement est journalise (idempotence par
+ * `event_id`), la transaction progresse via sa machine a etats, et un
+ * evenement hors sequence est enregistre sans etre applique. Un rejeu est un
+ * no-op qui retourne le resultat existant.
  */
 class PaymentWebhookController
 {
-    public function __construct(private readonly ProviderTypeRegistry $registry) {}
+    public function __construct(
+        private readonly ProviderTypeRegistry $registry,
+        private readonly WebhookEventProcessor $processor,
+    ) {}
 
     public function handle(Request $request, string $token): JsonResponse
     {
@@ -71,12 +80,25 @@ class PaymentWebhookController
             config: $instance->config ?? [],
         ));
 
+        // #8742 — le contrat d'application : idempotence, progression via la
+        // machine a etats, et journalisation du hors-sequence. Le verdict est
+        // retourne au fournisseur pour qu'il puisse distinguer un traitement
+        // reel d'un rejeu.
+        $event = $this->processor->apply($endpoint, new WebhookPayload(
+            externalReference: is_string($externalReference) ? $externalReference : '',
+            eventType: is_string($eventType) ? $eventType : 'unknown',
+            body: $body,
+            config: $instance->config ?? [],
+        ), $result, $body);
+
         return response()->json([
             'code' => 'ok',
             'message' => 'Webhook traite.',
             'data' => [
                 'status' => $result->status->value,
                 'external_reference' => $result->externalReference,
+                'outcome' => $event->outcome(),
+                'replayed' => $event->replayed,
             ],
         ]);
     }
