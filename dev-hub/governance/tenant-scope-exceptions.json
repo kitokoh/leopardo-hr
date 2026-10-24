@@ -62,6 +62,11 @@
       "added": "2026-10-18"
     },
     {
+      "model": "App\\Modules\\Paiements\\Domain\\Models\\PaymentWebhookEvent",
+      "reason": "Journal d'idempotence des webhooks entrants (#8742) : company_id NULLABLE = evenement recu sur un endpoint d'instance GLOBALE. Ecrit hors contexte tenant par le processing d'un webhook (l'appelant est un fournisseur, pas un utilisateur) et denormalise depuis l'endpoint. Un scope fail-closed rendrait les evenements globaux invisibles a la lecture d'idempotence et rejouerait des webhooks deja traites. Meme regime que PaymentWebhookEndpoint.",
+      "added": "2026-10-24"
+    },
+    {
       "model": "App\\Modules\\Platform\\Domain\\Models\\PublicContactRequest",
       "reason": "Table PLATEFORME (schema public) SANS colonne company_id : une demande de contact nait d'un visiteur qui n'appartient a aucun tenant et peut contacter plusieurs professionnels dans la meme session (#8760). Le rattachement au professionnel vise est porte par (target_type, target_slug) ; resolved_company_id n'est qu'une trace d'acheminement ecrite apres resolution fail-closed, jamais un critere de lecture publique. Trait inapplicable (meme regime que MarketplaceBuyer #7814 et FundraiserPublicLink).",
       "added": "2026-10-20"
