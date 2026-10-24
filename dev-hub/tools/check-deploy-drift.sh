@@ -29,7 +29,9 @@
 #   -h | --help
 #
 # Sortie : 0 = aligné (ou incomparable assumé), 1 = DÉRIVE détectée,
-#          2 = erreur technique (URL injoignable, réponse illisible).
+#          2 = erreur technique (URL injoignable, réponse illisible, service
+#              Render suspendu par son propriétaire — distinguer ces cas, car
+#              le remède diffère : reprendre le service ≠ redéployer).
 #
 # Exemple (ce que fait la garde CI `deploy-drift-guard.yml`) :
 #   dev-hub/tools/check-deploy-drift.sh \
@@ -102,6 +104,18 @@ EXPECT="$(echo "${EXPECT}" | tr '[:upper:]' '[:lower:]')"
 EXPECT_SHORT="${EXPECT:0:7}"
 
 PAYLOAD="$(curl -fsS --max-time "${TIMEOUT}" "${URL}" 2>/dev/null)" || {
+  # Un non-2xx n'est pas toujours une dérive : Render répond 503 avec une page
+  # « service suspended by its owner » quand le propriétaire a suspendu le
+  # service (quota/billing). Diagnostiquer ce cas EXPLICITEMENT — sinon la
+  # garde recommande « aligner l'environnement » (un geste de déploiement qui
+  # ne peut rien, le service étant hors service) alors que le vrai remède est
+  # de reprendre le service côté Render. Un environnement suspendu ne peut
+  # pas non plus être qualifié d'aligné → exit 2 inchangé.
+  BODY="$(curl -s --max-time "${TIMEOUT}" "${URL}" 2>/dev/null || true)"
+  if printf '%s' "${BODY}" | grep -qiE "suspended by its owner|service suspended"; then
+    echo "::error::[${LABEL}] ${URL} répond 503 « service suspended » : le service Render est SUSPENDU par son propriétaire (quota/billing). Ce n'est PAS une dérive de code et aucun redéploiement ne le réparera — action propriétaire requise : dashboard Render → ce service → Resume. Tant qu'il est suspendu, la comparaison version déployée ↔ main est impossible (issue #8397)." >&2
+    exit 2
+  fi
   echo "::error::[${LABEL}] ${URL} injoignable ou non-2xx (issue #7304 : un environnement muet ne peut pas être qualifié d'aligné)." >&2
   exit 2
 }

@@ -101,7 +101,14 @@ final class PhoneNumber
             $digits = $dialCode.$digits;
         }
 
-        return self::isValidE164($digits) ? '+'.$digits : null;
+        // On valide la forme composee `+<digits>`, jamais les chiffres seuls :
+        // `isValidE164()` exige un `+` initial, or `$digits` n'en porte pas
+        // encore — lui passer `$digits` rendait la validation FAUSSEMENT
+        // negative et `toE164()` renvoyait `null` sur TOUS les cas (constate
+        // en CI : toute la table de convergence de #8736 echouait).
+        $candidate = '+'.$digits;
+
+        return self::isValidE164($candidate) ? $candidate : null;
     }
 
     /**
