@@ -37,7 +37,7 @@ export function HeroSolutionsCTA() {
     >
       <Link
         href={withLocaleHref('/packs', search)}
-        className="group cta-glow-emerald relative inline-flex min-h-14 items-center gap-3 overflow-hidden rounded-2xl border border-emerald-400/30 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 px-8 py-4 text-base font-bold text-white shadow-2xl shadow-emerald-900/60 ring-1 ring-inset ring-white/20 transition-all duration-300 hover:scale-[1.03] hover:border-emerald-300/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300 active:scale-[0.98] sm:px-10"
+        className="group cta-glow-emerald relative inline-flex min-h-14 items-center gap-3 overflow-hidden rounded-2xl border border-amber-400/40 bg-gradient-to-r from-emerald-700 via-emerald-600 to-amber-600 px-8 py-4 text-base font-bold text-white shadow-2xl shadow-emerald-950/70 ring-1 ring-inset ring-white/25 transition-all duration-300 hover:scale-[1.03] hover:border-amber-300/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300 active:scale-[0.98] sm:px-10"
       >
         <span className="relative z-10 flex items-center gap-2.5">
           {copy.ctaPrimary}
@@ -46,8 +46,8 @@ export function HeroSolutionsCTA() {
             aria-hidden="true"
           />
         </span>
-        <span className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-        <span className="absolute -inset-px -z-10 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-300 opacity-20 blur-sm group-hover:opacity-40 transition-opacity" />
+        <span className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-amber-500 to-amber-400 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+        <span className="absolute -inset-px -z-10 rounded-2xl bg-gradient-to-r from-amber-400 via-emerald-400 to-amber-300 opacity-25 blur-sm group-hover:opacity-50 transition-opacity" />
       </Link>
     </div>
   );

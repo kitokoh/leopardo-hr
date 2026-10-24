@@ -62,7 +62,7 @@ export function HeroRotatingTagline({ phrases, intervalMs = 3800 }: HeroRotating
       data-testid="hero-rotating-tagline"
       className="relative mt-5 flex justify-center"
     >
-      <div className="relative inline-grid place-items-center rounded-full border border-emerald-500/20 bg-slate-900/60 px-5 py-2 text-center shadow-lg shadow-emerald-950/40 backdrop-blur-md">
+      <div className="relative inline-grid place-items-center rounded-full border border-amber-400/25 bg-slate-900/70 px-5 py-2 text-center shadow-lg shadow-amber-950/30 backdrop-blur-xl ring-1 ring-white/10">
         {/* Version lecteur d'écran : la première phrase, une fois. La rotation
             visuelle est marquée aria-hidden ci-dessous. */}
         <span className="sr-only">{phrases[0]}</span>
@@ -70,7 +70,7 @@ export function HeroRotatingTagline({ phrases, intervalMs = 3800 }: HeroRotating
           <span
             key={phrase}
             aria-hidden="true"
-            className={`col-start-1 row-start-1 flex items-center justify-center gap-2.5 text-xs font-semibold tracking-wide text-emerald-300 transition-all duration-700 ease-out sm:text-sm ${
+            className={`col-start-1 row-start-1 flex items-center justify-center gap-2.5 text-xs font-semibold tracking-wide text-amber-200/90 transition-all duration-700 ease-out sm:text-sm ${
               index === active
                 ? 'translate-y-0 opacity-100'
                 : 'pointer-events-none translate-y-1.5 opacity-0'
@@ -78,7 +78,7 @@ export function HeroRotatingTagline({ phrases, intervalMs = 3800 }: HeroRotating
           >
             {/* Point-étoile : le texte secondaire appartient à la même nuit que
                 la constellation — une pulsation douce, comme une étoile de plus. */}
-            <span className="inline-block h-2 w-2 shrink-0 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+            <span className="inline-block h-2 w-2 shrink-0 animate-pulse rounded-full bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.85)]" />
             <span>{phrase}</span>
           </span>
         ))}
