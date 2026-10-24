@@ -948,7 +948,6 @@ GET /v1/crm/accounts/{param}
 GET /v1/crm/contacts/{param}
 GET /v1/crm/duplicates/suggestions
 GET /v1/crm/leads/{param}
-GET /v1/fuel-station/reports/{param}/export
 GET /v1/travel/community/articles
 GET /v1/travel/community/articles/{param}
 GET /v1/travel/community/articles/{param}/comments
@@ -962,10 +961,6 @@ POST /v1/crm/accounts
 POST /v1/crm/contacts
 POST /v1/crm/imports/preview
 POST /v1/crm/leads
-POST /v1/fuel-station/imports/preview
-POST /v1/fuel-station/imports/{param}/cancel
-POST /v1/fuel-station/imports/{param}/commit
-POST /v1/kiosks/{param}/verify-face
 POST /v1/travel/community/articles
 POST /v1/travel/community/articles/{param}/comments
 POST /v1/travel/community/articles/{param}/like
@@ -1004,11 +999,6 @@ POST /v1/crm/accounts
 GET /v1/crm/accounts/{param}
 POST /v1/crm/contacts
 GET /v1/crm/contacts/{param}
-GET /v1/fuel-station/reports/{param}/export
-POST /v1/fuel-station/imports/preview
-POST /v1/fuel-station/imports/{param}/commit
-POST /v1/fuel-station/imports/{param}/cancel
-POST /v1/kiosks/{param}/verify-face
 GET /v1/travel/community/categories
 POST /v1/travel/community/categories
 PUT /v1/travel/community/categories/{param}

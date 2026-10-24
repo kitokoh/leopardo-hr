@@ -12949,6 +12949,152 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: Type de snapshot inconnu
+  /fuel-station/reports/{type}/export:
+    get:
+      operationId: api_get_fuel_station_reports_by_type_export
+      tags:
+      - FuelStation
+      summary: Exporter un rapport FuelStation (CSV)
+      description: |-
+        Export CSV d'un snapshot de rapport FuelStation (FUEL-019, #5813).
+        `type` est restreint à l'allowlist serveur (`pump_volumes`, `sales`,
+        `shifts`, `variances`, `stock`, `station_performance`) — un type hors
+        allowlist renvoie 404 `SNAPSHOT_TYPE_UNKNOWN`. La station est résolue
+        dans le tenant de l'acteur (404 hors tenant). Solution FuelStation
+        active requise (403 sinon). Remédiation du drift OpenAPI #8381.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [pump_volumes, sales, shifts, variances, stock, station_performance]
+      - name: station_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: period_start
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: period_end
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Export CSV du rapport
+          content:
+            text/csv:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Solution inactive ou permission manquante
+        '404':
+          description: Type de snapshot inconnu ou station hors tenant
+  /fuel-station/imports/preview:
+    post:
+      operationId: api_post_fuel_station_imports_preview
+      tags:
+      - FuelStation
+      summary: Prévisualiser un import CSV FuelStation (aucune écriture)
+      description: |-
+        Analyse un fichier CSV sans AUCUNE écriture (FUEL-018, #5812) :
+        `entity_type` est restreint à l'allowlist serveur (`products`, `pumps`,
+        `tanks`, `shifts`, `readings`), fichier ≤ 2 Mo, ≤ 5 000 lignes.
+        Renvoie les lignes valides, les rejets avec leur motif et un jeton de
+        prévisualisation à confirmer. Solution FuelStation active requise.
+        Remédiation du drift OpenAPI #8381.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [entity_type, file]
+              properties:
+                entity_type:
+                  type: string
+                  enum: [products, pumps, tanks, shifts, readings]
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Prévisualisation (lignes valides, rejets, jeton)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Solution inactive ou permission manquante
+        '422':
+          description: Fichier trop volumineux, trop de lignes ou entité hors allowlist
+  /fuel-station/imports/{import}/commit:
+    post:
+      operationId: api_post_fuel_station_imports_by_import_commit
+      tags:
+      - FuelStation
+      summary: Confirmer un import FuelStation prévisualisé
+      description: |-
+        Applique un import prévisualisé (FUEL-018, #5812). Isolation tenant
+        fail-closed : un import d'un autre tenant renvoie 404. Solution
+        FuelStation active requise. Remédiation du drift OpenAPI #8381.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: import
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Import appliqué (statut, compteurs, résultat)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Solution inactive ou permission manquante
+        '404':
+          description: Import introuvable (hors tenant)
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /fuel-station/imports/{import}/cancel:
+    post:
+      operationId: api_post_fuel_station_imports_by_import_cancel
+      tags:
+      - FuelStation
+      summary: Annuler un import FuelStation prévisualisé
+      description: |-
+        Annule un import prévisualisé sans appliquer ses lignes (FUEL-018,
+        #5812). Isolation tenant fail-closed (404 hors tenant). Solution
+        FuelStation active requise. Remédiation du drift OpenAPI #8381.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: import
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Import annulé (statut, compteurs)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Solution inactive ou permission manquante
+        '404':
+          description: Import introuvable (hors tenant)
 
   /accounting/contacts:
     get:
@@ -14126,6 +14272,59 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           $ref: '#/components/responses/Error404'
+  /kiosks/{deviceCode}/verify-face:
+    post:
+      operationId: api_post_kiosks_by_deviceCode_verify_face
+      tags:
+      - Kiosks
+      summary: Pointage kiosque par vérification faciale 1:1 (BIO-004)
+      description: |-
+        Identification → capture (multipart) → qualité/liveness/comparaison
+        (moteur configurable, défaut fail-closed) → événement de pointage
+        (BIO-004 #6765). Un échec facial ne crée JAMAIS de présence : réponse
+        structurée (422, ou 503 si le moteur est indisponible) avec les
+        méthodes de repli réellement activées (BIO-006). `device_event_id`
+        porte l'idempotence côté appareil (BIO-007) et la corrélation d'audit
+        (BIO-008) — jamais de gabarit dans les réponses. Authentification
+        appareil par en-tête `X-Kiosk-Token`. Remédiation du drift OpenAPI #8381.
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/DeviceCode'
+      - $ref: '#/components/parameters/KioskTokenHeader'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [identifier, capture]
+              properties:
+                identifier:
+                  type: string
+                  maxLength: 150
+                capture:
+                  type: string
+                  format: binary
+                action:
+                  type: string
+                  enum: [check_in, check_out]
+                work_type:
+                  type: string
+                  enum: [normal, overtime, break, resume, mission, travel, training, other]
+                device_event_id:
+                  type: string
+                  maxLength: 100
+      responses:
+        '200':
+          description: Vérification réussie — check-out enregistré
+        '201':
+          description: Vérification réussie — check-in enregistré
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Échec facial (rejet, qualité, liveness, employé non enrôlé) — aucune présence créée
+        '503':
+          description: Moteur de vérification faciale indisponible — aucune présence créée
   /kiosks/{deviceCode}/qr-punch:
     post:
       operationId: api_post_kiosks_by_deviceCode_qr_punch
