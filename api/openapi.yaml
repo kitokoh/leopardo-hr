@@ -52993,6 +52993,1203 @@ paths:
           description: Non authentifie.
         '403':
           description: Module Farm OS non active, ou outil metier non active.
+  /travel/community/categories:
+    get:
+      operationId: api_get_travel_community_categories
+      tags:
+      - Travel
+      summary: 'Lister les categories d''articles'
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `viewAny` sur TravelArticle requise.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des categories du tenant (id, slug, name).
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+    post:
+      operationId: api_post_travel_community_categories
+      tags:
+      - Travel
+      summary: 'Creer une categorie d''articles'
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `create` sur TravelArticle requise. Slug unique par tenant.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug, name]
+              properties:
+                slug:
+                  type: string
+                  maxLength: 60
+                name:
+                  type: string
+                  maxLength: 160
+      responses:
+        '201':
+          description: Categorie creee.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '422':
+          description: Charge utile invalide.
+  /travel/community/categories/{category}:
+    put:
+      operationId: api_put_travel_community_categories_by_category
+      tags:
+      - Travel
+      summary: 'Mettre a jour une categorie d''articles'
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Reserve aux roles manager (`principal`, `rh`).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: category
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: 'Identifiant de la categorie d''articles.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 60
+                name:
+                  type: string
+                  maxLength: 160
+                is_active:
+                  type: boolean
+      responses:
+        '200':
+          description: Categorie mise a jour.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+    delete:
+      operationId: api_delete_travel_community_categories_by_category
+      tags:
+      - Travel
+      summary: 'Supprimer une categorie d''articles'
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Reserve aux roles manager (`principal`, `rh`).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: category
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: 'Identifiant de la categorie d''articles.'
+      responses:
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+        '204':
+          description: Suppression effectuee (aucun corps).
+  /travel/community/articles:
+    get:
+      operationId: api_get_travel_community_articles
+      tags:
+      - Travel
+      summary: Lister les articles
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `viewAny` sur TravelArticle requise.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        description: Taille de page (1..1000, defaut 50).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 50
+      responses:
+        '200':
+          description: Liste paginee Laravel (data, links, meta).
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+    post:
+      operationId: api_post_travel_community_articles
+      tags:
+      - Travel
+      summary: Creer un article
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `create` sur TravelArticle requise. `author_type`/`author_id`
+        sont poses par le serveur (jamais par le client) ; `published_at` est
+        horodate si `status = published`.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, body]
+              properties:
+                title:
+                  type: string
+                  maxLength: 255
+                body:
+                  type: string
+                category_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [draft, published]
+                  default: draft
+      responses:
+        '201':
+          description: Article cree.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '422':
+          description: Charge utile invalide.
+  /travel/community/articles/{article}:
+    get:
+      operationId: api_get_travel_community_articles_by_article
+      tags:
+      - Travel
+      summary: Consulter un article
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `view` sur l'article requise.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: 'Identifiant de l''article (resolution tenant-scoped).'
+      responses:
+        '200':
+          description: Article (corps redige, statut, compteurs).
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+    put:
+      operationId: api_put_travel_community_articles_by_article
+      tags:
+      - Travel
+      summary: Mettre a jour un article
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `update` sur l'article requise. Le passage a `published`
+        horodate `published_at` s'il etait nul.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: 'Identifiant de l''article (resolution tenant-scoped).'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: []
+              properties:
+                title:
+                  type: string
+                  maxLength: 255
+                body:
+                  type: string
+                category_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [draft, published]
+                  default: draft
+      responses:
+        '200':
+          description: Article mis a jour.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+        '422':
+          description: Charge utile invalide.
+    delete:
+      operationId: api_delete_travel_community_articles_by_article
+      tags:
+      - Travel
+      summary: Supprimer un article
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `delete` sur l'article requise.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: 'Identifiant de l''article (resolution tenant-scoped).'
+      responses:
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+        '204':
+          description: Suppression effectuee (aucun corps).
+  /travel/community/articles/{article}/publish:
+    post:
+      operationId: api_post_travel_community_articles_by_article_publish
+      tags:
+      - Travel
+      summary: Publier un article
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Reserve aux roles manager (`principal`, `rh`). Seuls `draft` et
+        `reported` sont publiables ; les autres statuts sont laisses inchanges
+        (idempotent, jamais d'erreur).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: 'Identifiant de l''article (resolution tenant-scoped).'
+      responses:
+        '200':
+          description: Article publie (ou inchange si deja publie).
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+  /travel/community/articles/{article}/moderate:
+    post:
+      operationId: api_post_travel_community_articles_by_article_moderate
+      tags:
+      - Travel
+      summary: Moderer un article
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `update` sur l'article requise. Statut hors
+        `draft|published|flagged` -> 422. La moderation est tracee
+        (`moderated_by_user_id`, `moderated_at`).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: 'Identifiant de l''article (resolution tenant-scoped).'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [draft, published, flagged]
+      responses:
+        '200':
+          description: Article modere.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+        '422':
+          description: Charge utile invalide.
+  /travel/community/articles/{article}/comments:
+    get:
+      operationId: api_get_travel_community_articles_by_article_comments
+      tags:
+      - Travel
+      summary: 'Lister les commentaires d''un article'
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `viewAny` sur TravelComment requise.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: 'Identifiant de l''article (resolution tenant-scoped).'
+      - name: per_page
+        in: query
+        required: false
+        description: Taille de page (1..1000, defaut 50).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 50
+      responses:
+        '200':
+          description: Liste paginee des commentaires.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+    post:
+      operationId: api_post_travel_community_articles_by_article_comments
+      tags:
+      - Travel
+      summary: Commenter un article
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `create` sur TravelComment requise. Le commentaire nait en
+        statut `pending` (moderation a priori) ; contenu borne a 2000 caracteres.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: 'Identifiant de l''article (resolution tenant-scoped).'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [article_id, content]
+              properties:
+                article_id:
+                  type: integer
+                content:
+                  type: string
+                  maxLength: 2000
+      responses:
+        '201':
+          description: Commentaire cree (statut `pending`).
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '422':
+          description: Charge utile invalide.
+  /travel/community/comments/{comment}:
+    delete:
+      operationId: api_delete_travel_community_comments_by_comment
+      tags:
+      - Travel
+      summary: Supprimer un commentaire
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `update` sur le commentaire requise.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: comment
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Identifiant du commentaire.
+      responses:
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+        '204':
+          description: Suppression effectuee (aucun corps).
+  /travel/community/comments/{comment}/approve:
+    post:
+      operationId: api_post_travel_community_comments_by_comment_approve
+      tags:
+      - Travel
+      summary: Approuver un commentaire
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `moderate` sur le commentaire requise. Raccourci de
+        moderation vers le statut `approved`.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: comment
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Identifiant du commentaire.
+      responses:
+        '200':
+          description: Commentaire approuve.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+  /travel/community/comments/{comment}/reject:
+    post:
+      operationId: api_post_travel_community_comments_by_comment_reject
+      tags:
+      - Travel
+      summary: Rejeter un commentaire
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `moderate` sur le commentaire requise. Raccourci de
+        moderation vers le statut `rejected`.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: comment
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Identifiant du commentaire.
+      responses:
+        '200':
+          description: Commentaire rejete.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+  /travel/community/comments/{comment}/report:
+    post:
+      operationId: api_post_travel_community_comments_by_comment_report
+      tags:
+      - Travel
+      summary: Signaler un commentaire
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Ouvert a tout employe du tenant (pas de permission de moderation
+        requise) : le statut passe a `flagged`. Idempotent si deja signale.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: comment
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Identifiant du commentaire.
+      responses:
+        '200':
+          description: Commentaire signale.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+  /travel/community/articles/{article}/like:
+    post:
+      operationId: api_post_travel_community_articles_by_article_like
+      tags:
+      - Travel
+      summary: Aimer un article
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `engage` sur l'article requise. Unicite
+        (tenant, article, acteur) : un second appel est un no-op idempotent.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: 'Identifiant de l''article (resolution tenant-scoped).'
+      responses:
+        '200':
+          description: 'Article aime (`liked: true`, `like_id`).'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+  /travel/community/articles/{article}/unlike:
+    post:
+      operationId: api_post_travel_community_articles_by_article_unlike
+      tags:
+      - Travel
+      summary: 'Retirer son like d''un article'
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `engage` sur l'article requise. Idempotent.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: 'Identifiant de l''article (resolution tenant-scoped).'
+      responses:
+        '200':
+          description: 'Like retire (`liked: false`).'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+  /travel/community/articles/{article}/share:
+    post:
+      operationId: api_post_travel_community_articles_by_article_share
+      tags:
+      - Travel
+      summary: Partager un article
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `engage` sur l'article requise. Canal hors
+        `link|whatsapp|facebook|x|email` -> 422.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: 'Identifiant de l''article (resolution tenant-scoped).'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channel:
+                  type: string
+                  enum: [link, whatsapp, facebook, x, email]
+                  default: link
+      responses:
+        '201':
+          description: 'Partage enregistre (`shared: true`, `share_id`).'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+        '422':
+          description: Charge utile invalide.
+  /travel/community/articles/{article}/rate:
+    post:
+      operationId: api_post_travel_community_articles_by_article_rate
+      tags:
+      - Travel
+      summary: Noter un article
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `engage` sur l'article requise. Note hors 1..5 -> 422.
+        Une seule note par acteur (mise a jour, jamais de doublon).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: 'Identifiant de l''article (resolution tenant-scoped).'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rating]
+              properties:
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+      responses:
+        '200':
+          description: 'Note enregistree + agregats d''engagement.'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+        '422':
+          description: Charge utile invalide.
+  /travel/community/articles/{article}/engagement:
+    get:
+      operationId: api_get_travel_community_articles_by_article_engagement
+      tags:
+      - Travel
+      summary: 'Agregats d''engagement d''un article'
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Compteurs calcules cote serveur (likes, partages, note moyenne).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: 'Identifiant de l''article (resolution tenant-scoped).'
+      responses:
+        '200':
+          description: Agregats (likes_count, shares_count, rating_avg, ratings_count).
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+  /travel/community/quizzes/{quiz}:
+    get:
+      operationId: api_get_travel_community_quizzes_by_quiz
+      tags:
+      - Travel
+      summary: Consulter un quiz
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Quiz tenant-scoped (404 hors tenant).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: quiz
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Identifiant du quiz.
+      responses:
+        '200':
+          description: Quiz et ses questions.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+  /travel/community/quizzes/{quiz}/publish:
+    post:
+      operationId: api_post_travel_community_quizzes_by_quiz_publish
+      tags:
+      - Travel
+      summary: Publier un quiz
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Reserve aux roles manager (`principal`, `rh`).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: quiz
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Identifiant du quiz.
+      responses:
+        '200':
+          description: Quiz publie.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+  /travel/community/quizzes/{quiz}/questions:
+    post:
+      operationId: api_post_travel_community_quizzes_by_quiz_questions
+      tags:
+      - Travel
+      summary: Ajouter une question a un quiz
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Reserve aux roles manager (`principal`, `rh`).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: quiz
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Identifiant du quiz.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [label]
+              properties:
+                label:
+                  type: string
+                  maxLength: 255
+                choices:
+                  type: array
+                  items:
+                    type: string
+                correct_index:
+                  type: integer
+                  nullable: true
+      responses:
+        '201':
+          description: Question creee.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+        '422':
+          description: Charge utile invalide.
+  /travel/community/quiz-questions/{question}:
+    delete:
+      operationId: api_delete_travel_community_quiz_questions_by_question
+      tags:
+      - Travel
+      summary: Supprimer une question de quiz
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Reserve aux roles manager (`principal`, `rh`).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: question
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Identifiant de la question de quiz.
+      responses:
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+        '204':
+          description: Suppression effectuee (aucun corps).
+  /travel/community/quizzes/{quiz}/participate:
+    post:
+      operationId: api_post_travel_community_quizzes_by_quiz_participate
+      tags:
+      - Travel
+      summary: Participer a un quiz
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Ouvert a tout employe du tenant. Les reponses sont evaluees cote
+        serveur ; le score est retourne sans exposer les corriges.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: quiz
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Identifiant du quiz.
+      responses:
+        '200':
+          description: Resultat de la participation (score).
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+  /travel/community/quizzes/{quiz}/results:
+    get:
+      operationId: api_get_travel_community_quizzes_by_quiz_results
+      tags:
+      - Travel
+      summary: 'Resultats d''un quiz'
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Agregats de participation du tenant.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: quiz
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Identifiant du quiz.
+      responses:
+        '200':
+          description: Resultats agreges du quiz.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+  /travel/community/tourist-sites:
+    post:
+      operationId: api_post_travel_community_tourist_sites
+      tags:
+      - Travel
+      summary: Creer un site touristique
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `create` sur TravelTouristSite requise. La description est
+        redigee (pas de PII inutile).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, city_id]
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                description:
+                  type: string
+                city_id:
+                  type: integer
+                latitude:
+                  type: number
+                  format: float
+                  nullable: true
+                longitude:
+                  type: number
+                  format: float
+                  nullable: true
+                image_asset_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, inactive]
+      responses:
+        '201':
+          description: Site cree (id).
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '422':
+          description: Charge utile invalide.
+  /travel/community/tourist-sites/search:
+    get:
+      operationId: api_get_travel_community_tourist_sites_search
+      tags:
+      - Travel
+      summary: Rechercher des sites touristiques par ville
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        `city_id` est OBLIGATOIRE (> 0) : absent ou nul -> 422. Seuls les sites
+        `active` du tenant sont retournes.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: city_id
+        in: query
+        required: true
+        description: Identifiant de ville (obligatoire, > 0).
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Sites actifs de la ville.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Charge utile invalide.
+  /travel/community/tourist-sites/{site}:
+    put:
+      operationId: api_put_travel_community_tourist_sites_by_site
+      tags:
+      - Travel
+      summary: Mettre a jour un site touristique
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `update` sur le site requise (404 hors tenant).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: site
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Identifiant du site touristique.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: []
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                description:
+                  type: string
+                city_id:
+                  type: integer
+                latitude:
+                  type: number
+                  format: float
+                  nullable: true
+                longitude:
+                  type: number
+                  format: float
+                  nullable: true
+                image_asset_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, inactive]
+      responses:
+        '200':
+          description: Site mis a jour (id).
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+        '422':
+          description: Charge utile invalide.
+    delete:
+      operationId: api_delete_travel_community_tourist_sites_by_site
+      tags:
+      - Travel
+      summary: Supprimer un site touristique
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Permission `update` sur le site requise (404 hors tenant).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: site
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Identifiant du site touristique.
+      responses:
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+        '204':
+          description: Suppression effectuee (aucun corps).
+  /travel/contacts/{travelCustomerContact}/consent:
+    patch:
+      operationId: api_patch_travel_contacts_by_travelcustomercontact_consent
+      tags:
+      - Travel
+      summary: 'Mettre a jour le consentement d''un contact client'
+      description: |-
+        Consentement RGPD d'un contact client (TRAVEL-910). `travelCustomerContact`
+        est numerique (`whereNumber`) : un identifiant non numerique ne matche pas
+        la route (404). Contact hors tenant -> 404 sur. Remediation du drift OpenAPI #8381 (sous-lot travel/community).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCustomerContact
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Identifiant du contact client (numerique, `whereNumber`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [consent]
+              properties:
+                consent:
+                  type: boolean
+                channel:
+                  type: string
+                  enum: [email, sms, whatsapp]
+                  nullable: true
+      responses:
+        '200':
+          description: Consentement mis a jour.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+        '422':
+          description: Charge utile invalide.
+    put:
+      operationId: api_put_travel_contacts_by_travelcustomercontact_consent
+      tags:
+      - Travel
+      summary: 'Mettre a jour le consentement d''un contact client (alias PUT)'
+      description: |-
+        Alias `PUT` de `PATCH /travel/contacts/{travelCustomerContact}/consent` :
+        meme controller, meme contrat (les clients qui n'emettent pas de PATCH
+        disposent d'une ecriture complete). Remediation du drift OpenAPI #8381 (sous-lot travel/community).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCustomerContact
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Identifiant du contact client (numerique, `whereNumber`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [consent]
+              properties:
+                consent:
+                  type: boolean
+                channel:
+                  type: string
+                  enum: [email, sms, whatsapp]
+                  nullable: true
+      responses:
+        '200':
+          description: Consentement mis a jour.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+        '422':
+          description: Charge utile invalide.
+
 components:
   securitySchemes:
     BearerAuth:
