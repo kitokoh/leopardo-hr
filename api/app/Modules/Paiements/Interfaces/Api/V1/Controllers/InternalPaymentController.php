@@ -6,10 +6,13 @@ namespace App\Modules\Paiements\Interfaces\Api\V1\Controllers;
 
 use App\Modules\Paiements\Domain\Exceptions\IdempotencyKeyRequiredException;
 use App\Modules\Paiements\Domain\Exceptions\ProviderNotResolvableException;
+use App\Modules\Paiements\Domain\Exceptions\UnsupportedCurrencyException;
 use App\Modules\Paiements\Domain\Models\PaymentTransaction;
+use App\Modules\Paiements\Infrastructure\Services\PaymentCurrencyResolver;
 use App\Modules\Paiements\Infrastructure\Services\PaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 /**
  * BC-38 PAIEMENTS (#8689) — API interne service-a-service.
@@ -22,7 +25,10 @@ use Illuminate\Http\Request;
  */
 class InternalPaymentController
 {
-    public function __construct(private readonly PaymentService $payments) {}
+    public function __construct(
+        private readonly PaymentService $payments,
+        private readonly PaymentCurrencyResolver $currencies,
+    ) {}
 
     public function credit(Request $request): JsonResponse
     {
@@ -94,7 +100,8 @@ class InternalPaymentController
         $validated = $request->validate([
             'company_id' => ['required', 'string', 'max:64'],
             'amount' => ['required', 'integer', 'min:1'],
-            'currency' => ['required', 'string', 'size:3'],
+            // #8743 : `size:3` laissait passer n'importe quel trigramme.
+            'currency' => ['required', 'string', Rule::in($this->currencies->allowlist())],
             'idempotency_key' => ['required', 'string', 'max:120'],
             'country' => ['nullable', 'string', 'size:2'],
             'from_wallet_id' => ['nullable', 'integer'],
@@ -117,6 +124,8 @@ class InternalPaymentController
             return $this->error('idempotency_key_required', $exception->getMessage(), 422);
         } catch (ProviderNotResolvableException $exception) {
             return $this->error('provider_not_resolvable', $exception->getMessage(), 422);
+        } catch (UnsupportedCurrencyException $exception) {
+            return $this->error('unsupported_currency', $exception->getMessage(), 422);
         }
 
         return response()->json([

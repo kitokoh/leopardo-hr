@@ -7,10 +7,13 @@ namespace App\Modules\Paiements\Interfaces\Api\V1\Controllers;
 use App\Modules\Paiements\Application\Actions\RequestCashOutAction;
 use App\Modules\Paiements\Application\Queries\WalletBalanceQuery;
 use App\Modules\Paiements\Domain\Exceptions\ProviderNotResolvableException;
+use App\Modules\Paiements\Domain\Exceptions\UnsupportedCurrencyException;
 use App\Modules\Paiements\Domain\Models\PaymentTransaction;
+use App\Modules\Paiements\Infrastructure\Services\PaymentCurrencyResolver;
 use App\Modules\Paiements\Infrastructure\Services\ProviderResolver;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 /**
  * BC-38 PAIEMENTS (#8691) — surface Tenant.
@@ -30,19 +33,31 @@ class TenantPaymentController
         private readonly ProviderResolver $resolver,
         private readonly RequestCashOutAction $requestCashOut,
         private readonly WalletBalanceQuery $walletQuery,
+        private readonly PaymentCurrencyResolver $currencies,
     ) {}
 
     public function balance(Request $request): JsonResponse
     {
         $company = currentCompany();
-        $currency = (string) $request->query('currency', $company->currency ?? 'DZD');
+
+        $requested = $this->requestedCurrency($request);
+
+        try {
+            $currency = $this->currencies->resolve($requested, $company->currency, $company->country);
+        } catch (UnsupportedCurrencyException $exception) {
+            return $this->unsupportedCurrency($exception);
+        }
 
         $wallet = $this->requestCashOut->tenantWallet((string) $company->id, $currency);
+
+        $payload = $this->walletQuery->forWallet($wallet);
+        // #8743 : rendre la resolution de devise observable plutot que devinee.
+        $payload['currency_source'] = $this->currencies->sourceFor($requested, $company->currency);
 
         return response()->json([
             'code' => 'ok',
             'message' => 'Solde du wallet.',
-            'data' => $this->walletQuery->forWallet($wallet),
+            'data' => $payload,
         ]);
     }
 
@@ -64,14 +79,25 @@ class TenantPaymentController
     {
         $company = currentCompany();
 
+        // #8743 : `size:3` acceptait n'importe quel trigramme, y compris une
+        // devise inexistante. L'allowlist est desormais portee par le registre
+        // unique `AccountingCurrencies`, jamais par une liste locale.
         /** @var array{amount: int, currency?: string|null, idempotency_key: string} $validated */
         $validated = $request->validate([
             'amount' => ['required', 'integer', 'min:1'],
-            'currency' => ['nullable', 'string', 'size:3'],
+            'currency' => ['nullable', 'string', Rule::in($this->currencies->allowlist())],
             'idempotency_key' => ['required', 'string', 'max:120'],
         ]);
 
-        $currency = (string) ($validated['currency'] ?? $company->currency ?? 'DZD');
+        $requested = isset($validated['currency']) && is_string($validated['currency'])
+            ? $validated['currency']
+            : null;
+
+        try {
+            $currency = $this->currencies->resolve($requested, $company->currency, $company->country);
+        } catch (UnsupportedCurrencyException $exception) {
+            return $this->unsupportedCurrency($exception);
+        }
 
         try {
             $transaction = $this->requestCashOut->execute(
@@ -142,7 +168,14 @@ class TenantPaymentController
     public function market(Request $request): JsonResponse
     {
         $company = currentCompany();
-        $currency = (string) $request->query('currency', $company->currency ?? 'DZD');
+
+        $requested = $this->requestedCurrency($request);
+
+        try {
+            $currency = $this->currencies->resolve($requested, $company->currency, $company->country);
+        } catch (UnsupportedCurrencyException $exception) {
+            return $this->unsupportedCurrency($exception);
+        }
 
         $instance = $this->resolver->resolveOrNull(
             (string) ($company->country ?? 'DZ'),
@@ -156,8 +189,32 @@ class TenantPaymentController
             'data' => [
                 'country' => $company->country,
                 'currency' => $currency,
+                'currency_source' => $this->currencies->sourceFor($requested, $company->currency),
                 'provider_instance' => $instance?->toSafeArray(),
             ],
         ]);
+    }
+
+    /**
+     * Devise demandee en query string, ou null. Le cast explicite evite de
+     * laisser remonter un tableau (`?currency[]=`) vers le resolver.
+     */
+    private function requestedCurrency(Request $request): ?string
+    {
+        $value = $request->query('currency');
+
+        return is_string($value) && trim($value) !== '' ? $value : null;
+    }
+
+    /**
+     * #8743 : refus explicite, jamais un repli silencieux.
+     */
+    private function unsupportedCurrency(UnsupportedCurrencyException $exception): JsonResponse
+    {
+        return response()->json([
+            'code' => 'unsupported_currency',
+            'message' => $exception->getMessage(),
+            'data' => null,
+        ], 422);
     }
 }
