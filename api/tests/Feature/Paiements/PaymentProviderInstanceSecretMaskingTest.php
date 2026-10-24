@@ -145,10 +145,26 @@ final class PaymentProviderInstanceSecretMaskingTest extends TestCase
             'La reponse de lecture ne doit contenir aucun secret en clair (#8739).',
         );
 
-        $row = collect($response->json('data'))->firstWhere('id', $id);
+        // Boucle explicite plutot que `collect()` : `json('data')` est `mixed`,
+        // et PHPStan niveau 8 ne peut pas resoudre les templates de `collect()`
+        // sur un `mixed` (`argument.templateType`).
+        /** @var array<int, array<string, mixed>> $rows */
+        $rows = $response->json('data');
+
+        $row = null;
+        foreach ($rows as $candidate) {
+            if (($candidate['id'] ?? null) === $id) {
+                $row = $candidate;
+                break;
+            }
+        }
 
         self::assertNotNull($row, 'L\'instance creee doit figurer dans la liste.');
-        self::assertSame('••••', $row['config']['api_key'] ?? null);
+
+        /** @var array<string, mixed> $config */
+        $config = $row['config'] ?? [];
+
+        self::assertSame('••••', $config['api_key'] ?? null);
     }
 
     public function test_created_instance_response_is_already_masked(): void
