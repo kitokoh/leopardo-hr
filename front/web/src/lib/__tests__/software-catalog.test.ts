@@ -120,4 +120,32 @@ describe('software-catalog (#8447)', () => {
       expect(app.targets.every((target) => target.kind === 'soon')).toBe(true);
     }
   });
+
+  // BOS-A-05 / #8628 — un canal de distribution en échec connu ne peut pas
+  // être annoncé publié/pilote, et ne doit porter AUCUN href d'installation.
+  it('un canal de distribution en échec est requalifié en not_distributed', () => {
+    const employee = TENANT_SOFTWARE.find((app) => app.slug === 'employee');
+    const manager = TENANT_SOFTWARE.find((app) => app.slug === 'manager');
+
+    expect(employee && softwareAvailability(employee)).toBe('not_distributed');
+    expect(manager && softwareAvailability(manager)).toBe('not_distributed');
+  });
+
+  it('un canal en échec ne porte aucun href d’installation', () => {
+    for (const slug of ['employee', 'manager']) {
+      const app = TENANT_SOFTWARE.find((candidate) => candidate.slug === slug);
+      expect(app).toBeDefined();
+      expect(app!.targets.every((target) => target.kind === 'soon')).toBe(true);
+      expect(app!.targets.every((target) => target.href === undefined)).toBe(true);
+    }
+  });
+
+  it('la requalification ne touche pas les apps servies par un simple lien web', () => {
+    // Non-régression : un canal `link` valide reste `published`.
+    const pos = TENANT_SOFTWARE.find((app) => app.slug === 'restaurant-pos');
+    expect(pos && softwareAvailability(pos)).toBe('published');
+
+    const desktop = TENANT_SOFTWARE.find((app) => app.slug === 'desktop-attendance');
+    expect(desktop && softwareAvailability(desktop)).toBe('pilot');
+  });
 });
