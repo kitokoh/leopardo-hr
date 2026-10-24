@@ -163,6 +163,8 @@ final class Money
      * Un `float` est converti sans notation scientifique : `sprintf('%.10F')`
      * fixe la representation, puis les zeros de queue sont retires pour que
      * `bcmath` recoive une chaine canonique.
+     *
+     * @return numeric-string
      */
     private static function normalizeDecimal(string|int|float $amount): string
     {
@@ -179,6 +181,10 @@ final class Money
             ));
         }
 
+        // Le motif ci-dessus garantit une chaine numerique ; PHPStan ne peut pas
+        // le deduire d'un `preg_match`, donc l'annotation est explicite plutot
+        // qu'un cast qui masquerait le contrat.
+        /** @var numeric-string $value */
         return $value;
     }
 
