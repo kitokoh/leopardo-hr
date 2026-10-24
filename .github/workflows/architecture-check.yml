@@ -135,6 +135,15 @@ jobs:
       - name: Migration alter-before-create guard (issue #8862)
         run: python3 dev-hub/tools/check-migration-alter-before-create.py --root .
 
+      # #8396 (lot L1) — une fixture de test ne peut pas laisser une table
+      # canonique REDUITE : `EdgeSyncDedupTest` creait `edge_nodes` avec 10
+      # colonnes sur 18 (sans `edge_version`) et la laissait en place, ce qui
+      # cassait les classes `EdgeSync\*` suivantes du worker en
+      # `SQLSTATE[42703]`. Detection mecanique, baseline documentee :
+      # dev-hub/tools/test-fixture-schema-parity-allowlist.txt
+      - name: Test fixture schema parity guard (issue #8396)
+        run: python3 dev-hub/tools/check-test-fixture-schema-parity.py --root .
+
       # #7961 — cliquet BRANCHE vs main : le total d'occurrences (somme des
       # count:) des 3 baselines PHPStan ne peut pas croître par rapport à
       # origin/main. Complémentaire aux gardes diff-scopées #5448/#7655 et
