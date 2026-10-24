@@ -124,6 +124,17 @@ jobs:
       - name: Migration root orphans guard (issue #7975)
         run: bash dev-hub/tools/check-migration-root-orphans.sh
 
+      # #8862 — une migration d'ALTER dont la sequence precede le fichier qui
+      # CREE la table ne s'execute jamais : sa garde `schemaTableExists()` rend
+      # `false`, elle sort en silence, et elle est enregistree comme appliquee.
+      # Detection mecanique (aucune connaissance du domaine requise) : trois
+      # migrations Restaurant avaient ainsi perdu 4 colonnes (rappel de
+      # reservation J-1, politique d'annulation, opt-in RGPD fidelite).
+      # Baseline historique documentee :
+      # dev-hub/tools/migrations-alter-before-create-allowlist.txt
+      - name: Migration alter-before-create guard (issue #8862)
+        run: python3 dev-hub/tools/check-migration-alter-before-create.py --root .
+
       # #7961 — cliquet BRANCHE vs main : le total d'occurrences (somme des
       # count:) des 3 baselines PHPStan ne peut pas croître par rapport à
       # origin/main. Complémentaire aux gardes diff-scopées #5448/#7655 et

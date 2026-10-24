@@ -1,0 +1,25 @@
+# Baseline historique — garde #8862 (migration altere une table creee plus tard)
+#
+# Une entree = un couple (fichier d'ALTER, table) dont le defaut est CONNU,
+# DEJA livre en production, et dont l'effet est deja repare autrement.
+#
+# Regle : la garde ne signale plus ces lignes (dette gelee et documentee), mais
+# tout NOUVEAU cas echoue. Ne jamais ajouter d'entree pour faire passer une
+# migration qu'on vient d'ecrire : la corriger (renommer le fichier d'ALTER
+# apres le fichier de creation) est toujours la bonne reponse.
+#
+# Format : <fichier_alter>|<table>
+#
+# --- #8862 (2026-10-24) ------------------------------------------------------
+# Trois migrations Restaurant portent une sequence inferieure au fichier qui
+# cree leur table, donc leur `schemaTableExists()` rend `false` et elles sont
+# no-op depuis leur livraison. Colonnes perdues : restaurant_branches
+# (cancel_free_hours, cancel_fee_bps), restaurant_loyalty_customers
+# (opted_in_at), restaurant_reservations (reminder_sent_at).
+# Effet repare par la migration de rattrapage
+# 2026_10_24_000300_8862_repair_missing_restaurant_columns.php — les fichiers
+# d'origine sont conserves tels quels car ils sont deja appliques partout
+# (les modifier ne rejouerait rien et ferait diverger l'historique).
+2026_08_30_000714_6208_add_cancellation_policy_to_restaurant_branches.php|restaurant_branches
+2026_08_30_000715_6211_add_opt_in_to_restaurant_loyalty_customers.php|restaurant_loyalty_customers
+2026_08_30_000716_6213_add_reservation_reminder_sent_at.php|restaurant_reservations
