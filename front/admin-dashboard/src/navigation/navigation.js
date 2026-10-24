@@ -532,6 +532,28 @@ export const NAV_ENTRIES = [
     permission: 'billing.manage',
     group: 'parametres',
   },
+  // #8739 (BC-38 PAIEMENTS) — « Operations de paiement » : surface Superadmin
+  // du socle de paiement. Permission alignee sur les routes
+  // `/platform/payments/*` (`payments.view`).
+  {
+    name: 'payments-operations',
+    path: '/payments/operations',
+    titleKey: 'paymentsOperations.nav',
+    icon: CreditCardIcon,
+    permission: 'payments.view',
+    group: 'plateforme',
+  },
+  // #8739 (BC-38 PAIEMENTS) — « Paiements » cote tenant : solde, historique,
+  // commissions, demande de retrait. Aucune permission plateforme : la garde
+  // est le contexte tenant lui-meme (routes `auth:sanctum` + `tenant`).
+  {
+    name: 'tenant-payments',
+    path: '/payments/wallet',
+    titleKey: 'tenantPayments.nav',
+    icon: BanknotesIcon,
+    permission: null,
+    group: 'entreprise',
+  },
   {
     name: 'settings-email-templates',
     path: '/settings/emails',

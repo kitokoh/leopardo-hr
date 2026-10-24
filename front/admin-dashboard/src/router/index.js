@@ -610,6 +610,33 @@ const routes = [
         }
       },
       {
+        // #8739 (BC-38 PAIEMENTS) — « Operations de paiement » : surface
+        // Superadmin du socle de paiement (types en lecture seule, CRUD des
+        // instances, journal des transactions, reconciliation). Le backend
+        // exposait deja `/platform/payments/*` sans qu'aucun ecran ne les
+        // consomme : le BC etait inexploitable par un administrateur non
+        // technique. Permission alignee sur les routes (`payments.view`).
+        path: '/payments/operations',
+        name: 'payments-operations',
+        component: () => import('@/views/paiements/PaymentsOperationsView.vue'),
+        meta: {
+          title: 'paymentsOperations.nav',
+          icon: 'CreditCardIcon'
+        }
+      },
+      {
+        // #8739 (BC-38 PAIEMENTS) — « Paiements » cote tenant : solde,
+        // historique, commissions et demande de retrait. Le tenant ne choisit
+        // jamais son fournisseur (le marche est resolu cote serveur).
+        path: '/payments/wallet',
+        name: 'tenant-payments',
+        component: () => import('@/views/paiements/TenantPaymentsView.vue'),
+        meta: {
+          title: 'tenantPayments.nav',
+          icon: 'BanknotesIcon'
+        }
+      },
+      {
         // #7384/#7385 — assistant IA : réglages éditables + suivi (Paramètres › Assistant IA).
         path: '/settings/ai',
         name: 'settings-ai-assistant',
