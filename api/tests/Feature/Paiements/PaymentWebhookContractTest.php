@@ -85,6 +85,7 @@ class PaymentWebhookContractTest extends TestCase
 
     /**
      * @param  array<string, mixed>  $body
+     * @return \Illuminate\Testing\TestResponse<\Illuminate\Http\JsonResponse>
      */
     private function postWebhook(array $body): \Illuminate\Testing\TestResponse
     {
@@ -108,7 +109,7 @@ class PaymentWebhookContractTest extends TestCase
         ])->assertOk()->assertJsonPath('data.outcome', PaymentWebhookEvent::OUTCOME_PROCESSED);
 
         // La transaction a REELLEMENT progresse : c'est le defaut corrige.
-        $this->assertSame(PaymentTransactionStatus::Succeeded, $transaction->fresh()->status);
+        $this->assertSame(PaymentTransactionStatus::Succeeded, $transaction->refresh()->status);
 
         $this->assertDatabaseHas('payment_webhook_events', [
             'event_id' => 'evt_advance_1',
@@ -134,7 +135,7 @@ class PaymentWebhookContractTest extends TestCase
 
         // Un seul evenement journalise, une seule application.
         $this->assertSame(1, PaymentWebhookEvent::query()->where('event_id', 'evt_replay_1')->count());
-        $this->assertSame(PaymentTransactionStatus::Succeeded, $transaction->fresh()->status);
+        $this->assertSame(PaymentTransactionStatus::Succeeded, $transaction->refresh()->status);
     }
 
     public function test_out_of_sequence_event_never_resurrects_a_terminal_state(): void
@@ -152,7 +153,7 @@ class PaymentWebhookContractTest extends TestCase
 
         $this->assertSame(
             PaymentTransactionStatus::Cancelled,
-            $transaction->fresh()->status,
+            $transaction->refresh()->status,
             'Un evenement hors sequence ne doit JAMAIS ressusciter un etat terminal.',
         );
 
@@ -196,7 +197,7 @@ class PaymentWebhookContractTest extends TestCase
         $this->postWebhook($body)->assertOk()->assertJsonPath('data.replayed', true);
 
         $this->assertSame(1, PaymentWebhookEvent::query()->count());
-        $this->assertSame(PaymentTransactionStatus::Succeeded, $transaction->fresh()->status);
+        $this->assertSame(PaymentTransactionStatus::Succeeded, $transaction->refresh()->status);
     }
 
     public function test_invalid_signature_is_still_rejected_before_any_journaling(): void

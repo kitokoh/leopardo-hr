@@ -189,8 +189,6 @@ class WebhookEventProcessor
     /**
      * Enregistre l'evenement. La contrainte d'unicite est la garantie reelle :
      * si une livraison concurrente a gagne la course, on retourne SA ligne.
-     *
-     * @param  array<string, mixed>  $payload
      */
     private function record(
         PaymentWebhookEndpoint $endpoint,
