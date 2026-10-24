@@ -4886,6 +4886,30 @@
       "employeesLabel": "Çalışanlar",
       "selectPlaceholder": "Seçin…",
       "assigning": "Atanıyor…"
+    },
+    "printing": {
+      "printerTitle": "Yazıcı",
+      "printerReady": "Hazır",
+      "printerOffline": "Çevrimdışı",
+      "printerNotConfigured": "Yapılandırılmadı",
+      "printerNotConfiguredHint": "Bu şube için yazıcı yapılandırılmadı. Fişler otomatik yazdırılmayacak.",
+      "printerOfflineHint": "Bir fiş 5 dakikadan uzun süredir onay bekliyor: yazıcıyı ve yazdırma köprüsünü kontrol edin.",
+      "reprint": "Yeniden yazdır",
+      "reprintQueued": "Yeniden yazdırma kuyruğa alındı (yeni revizyon).",
+      "reprintError": "Yeniden yazdırma başarısız, tekrar deneyin.",
+      "retryPrint": "Yazdırmayı yeniden dene",
+      "printFailed": "Yazdırma başarısız",
+      "printFailedHint": "Fiş yazdırılamadı. Aşağıdaki listeden yeniden deneyin.",
+      "printJobsTitle": "Yazdırma fişleri",
+      "printJobsEmpty": "Bu şube için yazdırma fişi yok.",
+      "printJobsLoadError": "Yazdırma fişleri yüklenemedi.",
+      "printStatusPending": "Bekliyor",
+      "printStatusClaimed": "Alındı",
+      "printStatusPrinted": "Yazdırıldı",
+      "printStatusFailed": "Başarısız",
+      "printStatusCancelled": "İptal edildi",
+      "printAttempts": "deneme",
+      "printRevision": "rev."
     }
   },
   "edu": {

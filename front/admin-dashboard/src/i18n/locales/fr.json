@@ -4886,6 +4886,30 @@
       "employeesLabel": "Employés",
       "selectPlaceholder": "Sélectionner…",
       "assigning": "Affectation…"
+    },
+    "printing": {
+      "printerTitle": "Imprimante",
+      "printerReady": "Prête",
+      "printerOffline": "Hors ligne",
+      "printerNotConfigured": "Non configurée",
+      "printerNotConfiguredHint": "Aucune imprimante n'est configurée pour cette branche. Les tickets ne seront pas imprimés automatiquement.",
+      "printerOfflineHint": "Un ticket attend depuis plus de 5 minutes sans accusé : vérifiez l'imprimante et le pont d'impression.",
+      "reprint": "Réimprimer",
+      "reprintQueued": "Réimpression mise en file (nouvelle révision).",
+      "reprintError": "Réimpression impossible, réessayez.",
+      "retryPrint": "Relancer l'impression",
+      "printFailed": "Échec d'impression",
+      "printFailedHint": "Le ticket n'a pas pu être imprimé. Relancez l'impression depuis la liste ci-dessous.",
+      "printJobsTitle": "Tickets d'impression",
+      "printJobsEmpty": "Aucun ticket d'impression pour cette branche.",
+      "printJobsLoadError": "Impossible de charger les tickets d'impression.",
+      "printStatusPending": "En attente",
+      "printStatusClaimed": "Prise en charge",
+      "printStatusPrinted": "Imprimée",
+      "printStatusFailed": "Échouée",
+      "printStatusCancelled": "Annulée",
+      "printAttempts": "tentative(s)",
+      "printRevision": "rév."
     }
   },
   "edu": {

@@ -1,3 +1,18 @@
+> **MAJ 2026-10-24 — Restaurant OS, REST-OS-5 : UI impression de l'écran cuisine (issue #8607).**
+> Surface **front/web** (`src/app/(dashboard)/restaurant/kitchen/page.tsx`) : l'écran cuisine affiche désormais un **bandeau d'état
+> d'imprimante** (prête / hors ligne / non configurée) et permet la **réimpression** d'un ticket.
+> L'état est **dérivé des travaux d'impression** de la branche (`GET /restaurant/print-jobs?branch_id=X`) — le bridge
+> `GET /restaurant/printing/bridge/health` est authentifié par jeton d'appareil et n'est pas exposé au navigateur. Dérivation
+> dans `front/web/src/lib/restaurant/printer-status.ts` : `ready` (au moins un `printer_ref`, aucun ticket bloqué), `offline`
+> (ticket `pending`/`claimed` > 5 min sans accusé), `not_configured` (aucun `printer_ref`) — **fail-closed**, jamais `ready`
+> sans preuve. Réimpression = `POST /restaurant/print-jobs/{id}/requeue` → **nouvelle révision** côté serveur (jamais
+> automatique). i18n : 22 clés `restaurant.printing.*` dans les 4 catalogues partagés (fr/en/ar/tr), propagées aux cibles
+> web, admin-dashboard, mobile (ARB) et backend.
+> Scénarios automatisés : `front/web/src/lib/restaurant/__tests__/printer-status.test.ts` (10 cas) et
+> `front/web/src/app/(dashboard)/restaurant/kitchen/__tests__/restaurant-kitchen-page.test.tsx` (9 cas, dont les 3 états et
+> les deux actions de réimpression). Preuve : `jest` 19/19, `tsc --noEmit` exit 0, `eslint` exit 0,
+> `shared/i18n/validators/validate.js` → `I18N_VALIDATION_OK (4 locales)`.
+
 > **MAJ 2026-10-24 — Business OS, écart O-03 : le provisioning superadmin crée l'établissement principal (issue #8623).**
 > Surface **API (`api/app/Http/Controllers/Web/PlatformCompanyController.php`, module Platform)** : `POST /api/v1/platform/companies`
 > accepte désormais `site_name` (`nullable|string|max:150`) et sa réponse expose `primary_site_id`.
