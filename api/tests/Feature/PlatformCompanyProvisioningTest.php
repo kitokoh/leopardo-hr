@@ -388,10 +388,13 @@ class PlatformCompanyProvisioningTest extends TestCase
         DB::statement('SET search_path TO public');
 
         $this->assertCount(1, $sites, 'Le provisioning doit créer exactement 1 établissement.');
-        $this->assertSame('Restaurant Central', $sites->first()->name);
-        $this->assertSame('PRINCIPAL', $sites->first()->code);
-        $this->assertSame('active', $sites->first()->status);
-        $this->assertSame((int) $primarySiteId, (int) $sites->first()->id);
+
+        $site = $sites->first();
+        $this->assertNotNull($site, 'L\'établissement principal doit exister.');
+        $this->assertSame('Restaurant Central', $site->name);
+        $this->assertSame('PRINCIPAL', $site->code);
+        $this->assertSame('active', $site->status);
+        $this->assertSame((int) $primarySiteId, (int) $site->id);
     }
 
     public function test_provisioning_without_site_name_still_creates_a_primary_site(): void

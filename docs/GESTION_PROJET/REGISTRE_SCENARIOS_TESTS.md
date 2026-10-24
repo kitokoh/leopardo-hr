@@ -1,3 +1,17 @@
+> **MAJ 2026-10-24 — Business OS, écart O-03 : le provisioning superadmin crée l'établissement principal (issue #8623).**
+> Surface **API (`api/app/Http/Controllers/Web/PlatformCompanyController.php`, module Platform)** : `POST /api/v1/platform/companies`
+> accepte désormais `site_name` (`nullable|string|max:150`) et sa réponse expose `primary_site_id`.
+> `CompanyProvisioningService::provisionSharedCompany()` crée l'établissement principal **dans la même transaction** que
+> l'entreprise (`code = 'PRINCIPAL'`, `site_type = 'office'`, `status = 'active'`) — un tenant ne peut plus naître sans lieu
+> d'exploitation (aucun `site_id` à référencer pour le pointage géolocalisé, le stock ou une vente). Idempotence par
+> `company_id` : un rejeu de provisioning retourne l'établissement existant au lieu d'en créer un second. Le nom vient de
+> `site_name` s'il est fourni, sinon du nom de l'entreprise (le contrat « payload minimal » de l'app mobile reste valide).
+> Scénarios automatisés : `api/tests/Feature/PlatformCompanyProvisioningTest.php` (+3 cas : création nominale — exactement
+> 1 site, nom/code/statut, `primary_site_id` cohérent ; payload sans `site_name` → nom = entreprise ; idempotence du rejeu —
+> même id retourné, 1 seul site en base).
+> **Limite assumée** : aucun PHP ni `vendor` dans l'environnement d'exécution — `phpunit`/`pint`/`phpstan` non lancés
+> localement ; l'exécution réelle est laissée aux checks CI requis.
+
 > **MAJ 2026-10-17 — Business OS, Lot 6 : console de provisionnement superadmin — PR #8668.**
 > Surface **API (`api/routes/api.php`, module Platform)** : nouvelle route
 > `GET /api/v1/platform/provisioning` (`PlatformProvisioningController`, middleware

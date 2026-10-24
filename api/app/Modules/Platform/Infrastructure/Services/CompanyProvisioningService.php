@@ -33,7 +33,7 @@ class CompanyProvisioningService
 
     /**
      * @param  array<string, mixed>  $payload
-     * @return array{company: Company, manager: Employee, solutions?: array<string, array{code: string, status: string, missing?: list<string>}>}
+     * @return array{company: Company, manager: Employee, primary_site_id: int|null, solutions?: array<string, array{code: string, status: string, missing?: list<string>}>}
      */
     public function provisionSharedCompany(array $payload, SuperAdmin $superAdmin): array
     {
