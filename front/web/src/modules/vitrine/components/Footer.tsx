@@ -137,7 +137,7 @@ export function Footer() {
 
                   return (
                     <li key={`${section.title}-link-${linkIndex}`}>
-                      <Link href={withLocaleHref(href, search)} className="text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                      <Link href={withLocaleHref(href, search)} className="text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-amber-400 transition-colors">
                         {link}
                       </Link>
                     </li>
@@ -147,7 +147,7 @@ export function Footer() {
                     de le donner : ce contrôle est présent sur toutes les pages. */}
                 {index === copy.footer.sections.length - 1 && (
                   <li>
-                    <CookieSettingsButton className="text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors text-left" />
+                    <CookieSettingsButton className="text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-amber-400 transition-colors text-left" />
                   </li>
                 )}
               </ul>

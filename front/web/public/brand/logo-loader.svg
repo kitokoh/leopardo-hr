@@ -6,6 +6,10 @@
   -->
   <defs>
     <clipPath id="round"><rect width="64" height="64" rx="14"/></clipPath>
+    <linearGradient id="loader-accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fbbf24"/>
+      <stop offset="1" stop-color="#34d399"/>
+    </linearGradient>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#0f172a"/>
       <stop offset="1" stop-color="#16213b"/>
@@ -20,7 +24,7 @@
              dur="1.6s" repeatCount="indefinite" calcMode="spline"
              keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
   </path>
-  <path d="M38 18h14v7h-7v18h-7V18Z" fill="#34d399">
+  <path d="M38 18h14v7h-7v18h-7V18Z" fill="url(#loader-accent)">
     <animate attributeName="opacity" values="0.45;1;0.45" keyTimes="0;0.5;1"
              dur="1.6s" repeatCount="indefinite" calcMode="spline"
              keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
