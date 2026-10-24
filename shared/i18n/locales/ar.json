@@ -4886,6 +4886,30 @@
       "employeesLabel": "الموظفون",
       "selectPlaceholder": "اختر…",
       "assigning": "جارٍ التعيين…"
+    },
+    "printing": {
+      "printerTitle": "الطابعة",
+      "printerReady": "جاهزة",
+      "printerOffline": "غير متصلة",
+      "printerNotConfigured": "غير مهيأة",
+      "printerNotConfiguredHint": "لا توجد طابعة مهيأة لهذا الفرع. لن تُطبع التذاكر تلقائيًا.",
+      "printerOfflineHint": "تذكرة تنتظر منذ أكثر من 5 دقائق دون إشعار: تحقق من الطابعة وجسر الطباعة.",
+      "reprint": "إعادة الطباعة",
+      "reprintQueued": "تمت إضافة إعادة الطباعة إلى قائمة الانتظار (نسخة جديدة).",
+      "reprintError": "تعذّرت إعادة الطباعة، حاول مرة أخرى.",
+      "retryPrint": "إعادة محاولة الطباعة",
+      "printFailed": "فشل الطباعة",
+      "printFailedHint": "تعذّرت طباعة التذكرة. أعد المحاولة من القائمة أدناه.",
+      "printJobsTitle": "تذاكر الطباعة",
+      "printJobsEmpty": "لا توجد تذكرة طباعة لهذا الفرع.",
+      "printJobsLoadError": "تعذّر تحميل تذاكر الطباعة.",
+      "printStatusPending": "في الانتظار",
+      "printStatusClaimed": "قيد المعالجة",
+      "printStatusPrinted": "مطبوعة",
+      "printStatusFailed": "فاشلة",
+      "printStatusCancelled": "ملغاة",
+      "printAttempts": "محاولة",
+      "printRevision": "نسخة"
     }
   },
   "edu": {

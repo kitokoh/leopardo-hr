@@ -4886,6 +4886,30 @@
       "employeesLabel": "Employees",
       "selectPlaceholder": "Select…",
       "assigning": "Assigning…"
+    },
+    "printing": {
+      "printerTitle": "Printer",
+      "printerReady": "Ready",
+      "printerOffline": "Offline",
+      "printerNotConfigured": "Not configured",
+      "printerNotConfiguredHint": "No printer is configured for this branch. Tickets will not be printed automatically.",
+      "printerOfflineHint": "A ticket has been waiting for over 5 minutes without acknowledgement: check the printer and the print bridge.",
+      "reprint": "Reprint",
+      "reprintQueued": "Reprint queued (new revision).",
+      "reprintError": "Reprint failed, please retry.",
+      "retryPrint": "Retry printing",
+      "printFailed": "Print failed",
+      "printFailedHint": "The ticket could not be printed. Retry printing from the list below.",
+      "printJobsTitle": "Print tickets",
+      "printJobsEmpty": "No print ticket for this branch.",
+      "printJobsLoadError": "Unable to load print tickets.",
+      "printStatusPending": "Pending",
+      "printStatusClaimed": "Claimed",
+      "printStatusPrinted": "Printed",
+      "printStatusFailed": "Failed",
+      "printStatusCancelled": "Cancelled",
+      "printAttempts": "attempt(s)",
+      "printRevision": "rev."
     }
   },
   "edu": {

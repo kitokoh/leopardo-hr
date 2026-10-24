@@ -1,13 +1,20 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ChefHat, Loader2, RefreshCw, UtensilsCrossed } from 'lucide-react';
+import { ChefHat, Loader2, Printer, RefreshCw, RotateCcw, UtensilsCrossed } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { ConnectionIndicator } from '@/components/offline/ConnectionIndicator';
 import { useOfflineSync } from '@/lib/offline/use-offline-sync';
 import { t } from '@/lib/i18n/locale-catalog';
 import { getPreferredLocale } from '@/lib/i18n';
+import {
+  canRequeue,
+  derivePrinterStatus,
+  failedPrintJobs,
+  type PrintJobLike,
+  type PrinterStatus,
+} from '@/lib/restaurant/printer-status';
 
 /**
  * RESTO-707 (#6220) — Écran cuisine : file de commandes temps réel.
@@ -65,6 +72,11 @@ export default function RestaurantKitchenPage() {
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
+  // REST-OS-5 (#8607) — état d'impression de la branche.
+  const [printJobs, setPrintJobs] = useState<PrintJobLike[]>([]);
+  const [printError, setPrintError] = useState<string | null>(null);
+  const [reprintingId, setReprintingId] = useState<number | null>(null);
+
   // #8493 — file hors-ligne partagée : l'envoi réel d'une transition.
   const sendTransition = useCallback(async (operation: { payload: unknown }) => {
     const { orderId, action } = operation.payload as { orderId: number; action: 'start' | 'ready' };
@@ -111,6 +123,60 @@ export default function RestaurantKitchenPage() {
   useEffect(() => {
     void loadBranches();
   }, [loadBranches]);
+
+  // REST-OS-5 (#8607) — charge les travaux d'impression de la branche. L'état
+  // d'imprimante est DÉRIVÉ de ces travaux (le bridge `health` est authentifié
+  // par jeton d'appareil et n'est pas exposé au navigateur du cuisinier).
+  const loadPrintJobs = useCallback(async () => {
+    if (branchId === null) {
+      setPrintJobs([]);
+      return;
+    }
+
+    try {
+      const res = await apiFetch(`/restaurant/print-jobs?branch_id=${branchId}`, {
+        _cacheBust: true,
+      });
+      const json = (await res.json()) as { data: PrintJobLike[] };
+      setPrintJobs(Array.isArray(json?.data) ? json.data : []);
+      setPrintError(null);
+    } catch {
+      setPrintError(t(locale, 'restaurant.printing.printJobsLoadError'));
+    }
+  }, [branchId, locale]);
+
+  useEffect(() => {
+    void loadPrintJobs();
+  }, [loadPrintJobs]);
+
+  // REST-OS-5 (#8607) — réimpression EXPLICITE : POST requeue crée une nouvelle
+  // révision côté serveur (jamais de réimpression automatique).
+  const reprint = useCallback(
+    async (jobId: number) => {
+      setReprintingId(jobId);
+      setPrintError(null);
+      try {
+        await apiFetch(`/restaurant/print-jobs/${jobId}/requeue`, {
+          method: 'POST',
+          _idempotent: true,
+        });
+        setActionError(t(locale, 'restaurant.printing.reprintQueued'));
+        await loadPrintJobs();
+      } catch {
+        setPrintError(t(locale, 'restaurant.printing.reprintError'));
+      } finally {
+        setReprintingId(null);
+      }
+    },
+    [loadPrintJobs, locale],
+  );
+
+  const printerStatus: PrinterStatus = useMemo(
+    () => derivePrinterStatus(printJobs),
+    [printJobs],
+  );
+
+  const failedJobs = useMemo(() => failedPrintJobs(printJobs), [printJobs]);
 
   useEffect(() => {
     void loadOrders();
@@ -270,6 +336,134 @@ export default function RestaurantKitchenPage() {
         {/* #8493 — état de connexion + opérations en attente (Partie 7). */}
         <ConnectionIndicator state={connectionState} pendingCount={pendingCount} onRetry={() => void flush()} />
       </div>
+
+      {/* REST-OS-5 (#8607) — bandeau d'état de l'imprimante. Trois états
+          visuels, jamais un quatrième « optimiste » : prête / hors ligne /
+          non configurée. L'état est DÉRIVÉ des travaux d'impression. */}
+      <section
+        className={`flex flex-wrap items-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium ${
+          printerStatus === 'ready'
+            ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+            : printerStatus === 'offline'
+              ? 'border-amber-200 bg-amber-50 text-amber-800'
+              : 'border-slate-200 bg-slate-50 text-slate-600'
+        }`}
+        role="status"
+        aria-live="polite"
+        data-testid="printer-status-banner"
+      >
+        <Printer className="h-4 w-4" />
+        <span className="font-bold">{t(locale, 'restaurant.printing.printerTitle')}</span>
+        <span className="rounded-full bg-white/70 px-2 py-0.5 text-xs font-black uppercase tracking-wide">
+          {printerStatus === 'ready'
+            ? t(locale, 'restaurant.printing.printerReady')
+            : printerStatus === 'offline'
+              ? t(locale, 'restaurant.printing.printerOffline')
+              : t(locale, 'restaurant.printing.printerNotConfigured')}
+        </span>
+        {printerStatus === 'offline' && (
+          <span className="text-xs">{t(locale, 'restaurant.printing.printerOfflineHint')}</span>
+        )}
+        {printerStatus === 'not_configured' && (
+          <span className="text-xs">{t(locale, 'restaurant.printing.printerNotConfiguredHint')}</span>
+        )}
+      </section>
+
+      {/* REST-OS-5 (#8607) — échecs d'impression : action « Relancer
+          l'impression » (POST requeue → nouvelle révision côté serveur). */}
+      {failedJobs.length > 0 && (
+        <section className="rounded-xl border border-red-200 bg-red-50 px-4 py-3" role="alert">
+          <h2 className="mb-2 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-red-700">
+            <RotateCcw className="h-4 w-4" />
+            {t(locale, 'restaurant.printing.printFailed')}
+          </h2>
+          <p className="mb-3 text-xs text-red-700">
+            {t(locale, 'restaurant.printing.printFailedHint')}
+          </p>
+          <ul className="space-y-2">
+            {failedJobs.map((job) => (
+              <li key={job.id} className="flex flex-wrap items-center gap-2 text-sm text-red-800">
+                <span className="font-mono font-bold">#{job.id}</span>
+                <span className="text-xs">
+                  {t(locale, 'restaurant.printing.printRevision')} {job.attempts}{' '}
+                  {t(locale, 'restaurant.printing.printAttempts')}
+                </span>
+                {job.last_error !== null && (
+                  <span className="text-xs italic text-red-600">{job.last_error}</span>
+                )}
+                {canRequeue(job) && (
+                  <button
+                    type="button"
+                    onClick={() => void reprint(job.id)}
+                    disabled={reprintingId === job.id}
+                    className="ml-auto inline-flex items-center gap-1 rounded-lg bg-red-700 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-red-800 disabled:opacity-50"
+                  >
+                    {reprintingId === job.id ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <RotateCcw className="h-3 w-3" />
+                    )}
+                    {t(locale, 'restaurant.printing.retryPrint')}
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {printError !== null && (
+        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700" role="alert">
+          {printError}
+        </p>
+      )}
+
+      {/* REST-OS-5 (#8607) — tickets d'impression récents : statut + bouton
+          « Réimprimer » (geste EXPLICITE → nouvelle révision côté serveur). */}
+      {printJobs.length > 0 && (
+        <section className="rounded-xl border border-slate-200 bg-white/70 px-4 py-3">
+          <h2 className="mb-2 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-slate-600">
+            <Printer className="h-4 w-4 text-brand-500" />
+            {t(locale, 'restaurant.printing.printJobsTitle')}
+          </h2>
+          <ul className="space-y-1">
+            {printJobs.slice(0, 10).map((job) => (
+              <li key={job.id} className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
+                <span className="font-mono font-bold text-slate-800">#{job.id}</span>
+                <span className="rounded-full bg-slate-100 px-2 py-0.5 font-bold">
+                  {job.status === 'pending'
+                    ? t(locale, 'restaurant.printing.printStatusPending')
+                    : job.status === 'claimed'
+                      ? t(locale, 'restaurant.printing.printStatusClaimed')
+                      : job.status === 'printed'
+                        ? t(locale, 'restaurant.printing.printStatusPrinted')
+                        : job.status === 'failed'
+                          ? t(locale, 'restaurant.printing.printStatusFailed')
+                          : t(locale, 'restaurant.printing.printStatusCancelled')}
+                </span>
+                <span className="text-slate-400">
+                  {t(locale, 'restaurant.printing.printRevision')} {job.attempts}
+                </span>
+                {job.status === 'printed' && (
+                  <button
+                    type="button"
+                    onClick={() => void reprint(job.id)}
+                    disabled={reprintingId === job.id}
+                    className="ml-auto inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 font-bold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
+                  >
+                    {reprintingId === job.id ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <RotateCcw className="h-3 w-3" />
+                    )}
+                    {t(locale, 'restaurant.printing.reprint')}
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {error !== null && (
         <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700" role="alert">

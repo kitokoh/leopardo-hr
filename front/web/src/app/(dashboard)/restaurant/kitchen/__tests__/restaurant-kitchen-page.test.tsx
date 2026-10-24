@@ -130,3 +130,128 @@ it('affiche une alerte quand le chargement échoue', async () => {
     expect(screen.getByRole('alert')).toBeInTheDocument();
   });
 });
+
+// REST-OS-5 (#8607) — bandeau d'état imprimante + réimpression.
+const printJobsReady = {
+  data: [
+    {
+      id: 91,
+      status: 'printed',
+      printer_ref: 'PRN-01',
+      attempts: 1,
+      last_error: null,
+      created_at: new Date().toISOString(),
+    },
+  ],
+};
+
+const printJobsFailed = {
+  data: [
+    {
+      id: 92,
+      status: 'failed',
+      printer_ref: 'PRN-01',
+      attempts: 3,
+      last_error: 'paper jam',
+      created_at: new Date().toISOString(),
+    },
+  ],
+};
+
+function mockWithPrintJobs(printJobs: unknown) {
+  mockedApiFetch.mockImplementation((endpoint: string) => {
+    if (endpoint.startsWith('/restaurant/branches')) {
+      return Promise.resolve(jsonResponse(branches));
+    }
+    if (endpoint.startsWith('/restaurant/print-jobs')) {
+      return Promise.resolve(jsonResponse(printJobs));
+    }
+    return Promise.resolve(jsonResponse(orders));
+  });
+}
+
+it('affiche « Prête » quand une imprimante est configurée et aucun ticket bloqué', async () => {
+  mockWithPrintJobs(printJobsReady);
+
+  render(<RestaurantKitchenPage />);
+
+  // « Prête » est aussi le libellé du bouton de transition cuisine : on scope
+  // la requête au bandeau d'état (role="status").
+  await waitFor(() => {
+    expect(screen.getByTestId('printer-status-banner')).toHaveTextContent('Prête');
+  });
+});
+
+it('affiche « Non configurée » quand aucun ticket ne porte de printer_ref', async () => {
+  mockWithPrintJobs({ data: [] });
+
+  render(<RestaurantKitchenPage />);
+
+  await waitFor(() => {
+    expect(screen.getByTestId('printer-status-banner')).toHaveTextContent('Non configurée');
+  });
+});
+
+it('affiche « Hors ligne » quand un ticket attend au-delà du seuil', async () => {
+  mockWithPrintJobs({
+    data: [
+      {
+        id: 93,
+        status: 'pending',
+        printer_ref: 'PRN-01',
+        attempts: 0,
+        last_error: null,
+        created_at: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
+      },
+    ],
+  });
+
+  render(<RestaurantKitchenPage />);
+
+  await waitFor(() => {
+    expect(screen.getByTestId('printer-status-banner')).toHaveTextContent('Hors ligne');
+  });
+});
+
+it('un échec d’impression expose « Relancer l’impression » et POST requeue', async () => {
+  mockedApiFetch.mockImplementation((endpoint: string, options?: RequestInit) => {
+    if (endpoint.startsWith('/restaurant/branches')) {
+      return Promise.resolve(jsonResponse(branches));
+    }
+    if (options?.method === 'POST' && endpoint.includes('/requeue')) {
+      return Promise.resolve(jsonResponse({ data: { id: 92, status: 'pending' } }));
+    }
+    if (endpoint.startsWith('/restaurant/print-jobs')) {
+      return Promise.resolve(jsonResponse(printJobsFailed));
+    }
+    return Promise.resolve(jsonResponse(orders));
+  });
+
+  render(<RestaurantKitchenPage />);
+
+  const retry = await screen.findByRole('button', { name: /Relancer l'impression/i });
+  await userEvent.click(retry);
+
+  await waitFor(() => {
+    expect(mockedApiFetch).toHaveBeenCalledWith(
+      '/restaurant/print-jobs/92/requeue',
+      expect.objectContaining({ method: 'POST' }),
+    );
+  });
+});
+
+it('un ticket imprimé expose « Réimprimer » (geste explicite)', async () => {
+  mockWithPrintJobs(printJobsReady);
+
+  render(<RestaurantKitchenPage />);
+
+  const reprint = await screen.findByRole('button', { name: /Réimprimer/i });
+  await userEvent.click(reprint);
+
+  await waitFor(() => {
+    expect(mockedApiFetch).toHaveBeenCalledWith(
+      '/restaurant/print-jobs/91/requeue',
+      expect.objectContaining({ method: 'POST' }),
+    );
+  });
+});
