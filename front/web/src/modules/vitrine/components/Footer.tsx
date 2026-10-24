@@ -129,7 +129,7 @@ export function Footer() {
 
           {copy.footer.sections.map((section, index) => (
             <div key={`${section.title}-${index}`}>
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wider">{section.title}</h4>
+              <h4 className="text-xs font-extrabold text-slate-900 dark:text-slate-100 mb-4 uppercase tracking-[0.15em] flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-amber-400/80 inline-block"></span>{section.title}</h4>
               <ul className="space-y-2.5">
                 {section.links.map((link, linkIndex) => {
                   const href = getFooterHref(index, linkIndex)
@@ -137,7 +137,7 @@ export function Footer() {
 
                   return (
                     <li key={`${section.title}-link-${linkIndex}`}>
-                      <Link href={withLocaleHref(href, search)} className="text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-amber-400 transition-colors">
+                      <Link href={withLocaleHref(href, search)} className="text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-amber-400 transition-all duration-200 hover:translate-x-0.5 inline-block">
                         {link}
                       </Link>
                     </li>
