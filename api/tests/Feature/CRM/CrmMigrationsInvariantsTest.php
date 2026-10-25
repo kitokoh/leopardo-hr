@@ -59,34 +59,37 @@ class CrmMigrationsInvariantsTest extends TestCase
     {
         $pipelineId = $this->createPipeline($this->companyA->id);
 
-        $this->expectException(QueryException::class);
-
-        DB::table('crm_pipeline_stages')->insert([
-            'company_id' => $this->companyA->id,
-            'pipeline_id' => $pipelineId,
-            'name' => 'Négatif',
-            'position' => -1,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Insert isolé dans un savepoint : une violation de CHECK avorte la
+        // transaction PostgreSQL courante ; sans savepoint, le tearDown
+        // (SET search_path) échoue en 25P02 et empoisonne les tests suivants.
+        $this->assertInsertRejected(function () use ($pipelineId): void {
+            DB::table('crm_pipeline_stages')->insert([
+                'company_id' => $this->companyA->id,
+                'pipeline_id' => $pipelineId,
+                'name' => 'Négatif',
+                'position' => -1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        });
     }
 
     public function test_stage_rejects_won_and_lost_together(): void
     {
         $pipelineId = $this->createPipeline($this->companyA->id);
 
-        $this->expectException(QueryException::class);
-
-        DB::table('crm_pipeline_stages')->insert([
-            'company_id' => $this->companyA->id,
-            'pipeline_id' => $pipelineId,
-            'name' => 'Les deux',
-            'position' => 1,
-            'is_won' => true,
-            'is_lost' => true,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $this->assertInsertRejected(function () use ($pipelineId): void {
+            DB::table('crm_pipeline_stages')->insert([
+                'company_id' => $this->companyA->id,
+                'pipeline_id' => $pipelineId,
+                'name' => 'Les deux',
+                'position' => 1,
+                'is_won' => true,
+                'is_lost' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        });
     }
 
     // ---------------------------------------------------------------------
@@ -97,8 +100,9 @@ class CrmMigrationsInvariantsTest extends TestCase
     {
         $this->createPipeline($this->companyA->id, 'Pipeline A');
 
-        $this->expectException(QueryException::class);
-        $this->createPipeline($this->companyA->id, 'Pipeline A');
+        $this->assertInsertRejected(function (): void {
+            $this->createPipeline($this->companyA->id, 'Pipeline A');
+        });
     }
 
     public function test_same_pipeline_name_allowed_across_companies(): void
@@ -112,7 +116,10 @@ class CrmMigrationsInvariantsTest extends TestCase
     public function test_stage_position_unique_per_pipeline(): void
     {
         $pipelineA = $this->createPipeline($this->companyA->id);
-        $pipelineB = $this->createPipeline($this->companyB->id);
+        // Le second pipeline doit appartenir au MÊME tenant : la FK composite
+        // (pipeline_id, company_id) → crm_pipelines(id, company_id) rejette un
+        // stage de A pointant un pipeline de B (c'est le test suivant).
+        $pipelineB = $this->createPipeline($this->companyA->id, 'Pipeline B');
 
         $this->createStage($pipelineA, $this->companyA->id, 0);
 
@@ -127,8 +134,9 @@ class CrmMigrationsInvariantsTest extends TestCase
         ]);
 
         // Même position dans le MÊME pipeline : refusé.
-        $this->expectException(QueryException::class);
-        $this->createStage($pipelineA, $this->companyA->id, 0);
+        $this->assertInsertRejected(function () use ($pipelineA): void {
+            $this->createStage($pipelineA, $this->companyA->id, 0);
+        });
     }
 
     // ---------------------------------------------------------------------
@@ -139,21 +147,45 @@ class CrmMigrationsInvariantsTest extends TestCase
     {
         $pipelineOfB = $this->createPipeline($this->companyB->id);
 
-        $this->expectException(QueryException::class);
-
-        DB::table('crm_pipeline_stages')->insert([
-            'company_id' => $this->companyA->id,
-            'pipeline_id' => $pipelineOfB,
-            'name' => 'Fuite',
-            'position' => 0,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $this->assertInsertRejected(function () use ($pipelineOfB): void {
+            DB::table('crm_pipeline_stages')->insert([
+                'company_id' => $this->companyA->id,
+                'pipeline_id' => $pipelineOfB,
+                'name' => 'Fuite',
+                'position' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        });
     }
 
     // ---------------------------------------------------------------------
     // Helpers
     // ---------------------------------------------------------------------
+
+    /**
+     * Exécute une écriture censée être rejetée par une contrainte, dans un
+     * savepoint (DB::transaction imbriquée) : la transaction de test survit à
+     * la violation, donc le tearDown (SET search_path) ne part pas en 25P02.
+     *
+     * @param  callable(): void  $write
+     */
+    private function assertInsertRejected(callable $write): void
+    {
+        $rejected = false;
+
+        try {
+            // Closure littérale : PHPStan L8 exige la signature
+            // Closure(Connection): mixed attendue par DB::transaction().
+            DB::transaction(static function () use ($write): void {
+                $write();
+            });
+        } catch (QueryException) {
+            $rejected = true;
+        }
+
+        $this->assertTrue($rejected, 'La contrainte attendue n\'a pas rejeté l\'écriture.');
+    }
 
     private function createPipeline(string $companyId, string $name = 'Pipeline'): int
     {
