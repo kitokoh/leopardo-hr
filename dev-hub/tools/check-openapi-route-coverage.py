@@ -427,6 +427,25 @@ def load_reverse_allowlist() -> set[str]:
     return entries
 
 
+ORPHAN_ALLOWLIST_FILE = Path(__file__).resolve().parent / "openapi-orphan-allowlist.txt"
+
+
+def load_orphan_allowlist() -> set[str]:
+    """Entrées d'allowlist connues comme ne correspondant à aucune route (#8719).
+
+    Gel de la dette pré-existante uniquement : toute nouvelle orpheline bloque
+    le garde, et une entrée gelée qui redevient valide doit être purgée.
+    """
+    if not ORPHAN_ALLOWLIST_FILE.exists():
+        return set()
+    entries = set()
+    for line in ORPHAN_ALLOWLIST_FILE.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#"):
+            entries.add(line)
+    return entries
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--json", action="store_true", help="sortie JSON")
@@ -475,6 +494,42 @@ def main() -> int:
     # Passe inverse : parseur précis (préfixes composés avec '/') qui couvre
     # aussi les fichiers de routes DDD (EdgeSync, Attendance).
     route_ops |= parse_routes_accurate()
+
+    # ── Entrées ORPHELINES (issue #8719) ────────────────────────────────────
+    # Une entrée d'allowlist qui ne correspond à AUCUNE route déclarée est du
+    # bruit : elle gonfle artificiellement le décompte des gaps « connus » et
+    # survit indéfiniment parce que la garde de staleness ne regarde que les
+    # entrées devenues DOCUMENTÉES. Cas réel : 113 entrées `/v1/v1/...` et une
+    # entrée `/v1/restaurant/reports/exports/{param}/download` pointaient vers
+    # des routes supprimées ou jamais existantes.
+    orphan_entries: list[str] = []
+    for entry in sorted(allowlist):
+        parts = entry.split(" ", 1)
+        if len(parts) != 2:
+            continue
+        method, path = parts[0].lower(), parts[1]
+        forms = {path}
+        canonical = canonical_spec_path(path)
+        if canonical is not None:
+            forms.add(canonical)
+        spec = spec_form(path)
+        if spec is not None:
+            forms.add(spec)
+        if not any((method, form) in route_ops for form in forms):
+            orphan_entries.append(entry)
+
+    if orphan_entries:
+        print(
+            f"\n  - entrées allowlist ORPHELINES (aucune route correspondante): {len(orphan_entries)}"
+        )
+
+    # Les orphelines antérieures à #8719 sont gelées dans un fichier dédié :
+    # toute NOUVELLE orpheline bloque, et toute entrée gelée qui redevient
+    # valide doit être purgée (sinon la dette se re-gèle silencieusement).
+    orphan_allowlist = load_orphan_allowlist()
+    new_orphans = [e for e in orphan_entries if e not in orphan_allowlist]
+    stale_orphan_allowlist = [e for e in sorted(orphan_allowlist) if e not in orphan_entries]
+
 
     # ── Drift des NOMS de paramètres (issue #5583) ────────────────────────────
     # L'ancienne normalisation {param} comparait les chemins mais pas les noms :
@@ -568,6 +623,9 @@ def main() -> int:
         "param_drift": len(param_drift),
         "new_param_drift": len(new_param_drift),
         "allowlist_stale": len(stale_entries),
+        "allowlist_orphan": len(orphan_entries),
+        "new_allowlist_orphan": len(new_orphans),
+        "stale_orphan_allowlist": len(stale_orphan_allowlist),
         "by_module": {k: v for k, v in sorted(by_module.items())},
     }
 
@@ -624,6 +682,26 @@ def main() -> int:
             for entry in stale_entries[:50]:
                 print(f"::error::  {entry}")
             return 1
+
+    # ── Blocage orphelines (#8719) ─────────────────────────────────────────
+    if new_orphans:
+        print(
+            "::error::Allowlist OpenAPI — entrées ORPHELINES NOUVELLES (aucune route "
+            "correspondante ; elles gonflent le décompte des gaps réels, issue #8719) :"
+        )
+        for entry in new_orphans[:50]:
+            print(f"::error::  {entry}")
+        return 1
+
+    if stale_orphan_allowlist:
+        print(
+            "::error::openapi-orphan-allowlist.txt contient des entrées qui correspondent "
+            "désormais à une route réelle — à purger du gel (issue #8719) :"
+        )
+        for entry in stale_orphan_allowlist[:50]:
+            print(f"::error::  {entry}")
+        return 1
+
     return 0
 
 

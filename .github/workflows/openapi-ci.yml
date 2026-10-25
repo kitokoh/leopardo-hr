@@ -16,7 +16,9 @@ on:
       - "redocly-strict.yaml"
       - "dev-hub/tools/generate-openapi-sdk.mjs"
       - "dev-hub/tools/check-openapi-route-coverage.py"
+      - "dev-hub/tools/test_openapi_route_coverage_orphans.py"
       - "dev-hub/tools/openapi-coverage-allowlist.txt"
+      - "dev-hub/tools/openapi-orphan-allowlist.txt"
       - "dev-hub/tools/openapi-ambiguity-allowlist.json"
       - "dev-hub/tools/check-openapi-ambiguity-allowlist.py"
       - ".github/workflows/openapi-ci.yml"
@@ -97,3 +99,8 @@ jobs:
         # --strict-staleness (#3596) : une entrée allowlistée devenue
         # documentée doit être purgée (anti-régression remédiation #1473).
         run: python3 dev-hub/tools/check-openapi-route-coverage.py --strict-staleness
+
+      - name: Test the coverage guard itself (#8719)
+        # Le garde est un script : sans test, une régression de sa logique
+        # d'orphelines passerait inaperçue. Le test importe le script réel.
+        run: python3 dev-hub/tools/test_openapi_route_coverage_orphans.py
