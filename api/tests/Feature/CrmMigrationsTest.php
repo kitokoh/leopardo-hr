@@ -53,6 +53,50 @@ class CrmMigrationsTest extends TestCase
         }
     }
 
+    /**
+     * #8866 (lot L4 de #8396) — `crm_contacts.phone` doit pouvoir contenir la
+     * valeur que le code y écrit.
+     *
+     * Le modèle `CrmContact` caste `email` ET `phone` en `encrypted` (#5713) :
+     * le payload chiffré d'un numéro fait ~200-228 caractères. La migration
+     * d'origine déclarait `phone` en `varchar(60)`, donc toute écriture d'un
+     * contact avec téléphone levait `SQLSTATE[22001]` (HTTP 500 sur
+     * `POST /api/v1/crm/contacts`). Ce test échoue si la colonne redevient
+     * étroite, indépendamment de la migration de rattrapage.
+     */
+    public function test_crm_contacts_phone_accepts_encrypted_payload(): void
+    {
+        $payload = app('encrypter')->encrypt('+213555999999', false);
+
+        $this->assertGreaterThan(
+            60,
+            strlen($payload),
+            'Le payload chiffré doit dépasser la largeur historique varchar(60) pour que ce test ait du sens.'
+        );
+
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+
+        // Écriture directe du payload chiffré : reproduit exactement ce que le
+        // cast `encrypted` du modèle produit. Une colonne trop étroite lève ici
+        // SQLSTATE[22001] (value too long for type character varying(60)).
+        DB::table('crm_contacts')->insert([
+            'company_id' => $company->id,
+            'first_name' => 'Width',
+            'last_name' => 'Probe',
+            'phone' => $payload,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $stored = DB::table('crm_contacts')
+            ->where('company_id', $company->id)
+            ->where('first_name', 'Width')
+            ->value('phone');
+
+        $this->assertSame($payload, $stored);
+        $this->assertSame('+213555999999', app('encrypter')->decrypt($stored, false));
+    }
+
     public function test_crm_accounts_indexes_are_created(): void
     {
         $this->assertTrue(Schema::hasIndex('crm_accounts', 'crm_accounts_company_idx'));
@@ -164,6 +208,10 @@ class CrmMigrationsTest extends TestCase
     {
         // Simule une base fraîche pour les deux migrations : tables droppées,
         // entrées retirées du repository, re-run depuis un répertoire dédié.
+        // Ordre de drop : les tables qui RÉFÉRENCENT crm_contacts d'abord
+        // (crm_tasks.contact_id → crm_contacts.id), sinon PostgreSQL lève
+        // 2BP01 (dependent_objects_still_exist).
+        Schema::dropIfExists('crm_tasks');
         Schema::dropIfExists('crm_contacts');
         Schema::dropIfExists('crm_accounts');
         DB::table('migrations')->where('migration', 'like', '%5708%')->delete();
