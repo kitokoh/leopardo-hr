@@ -79,7 +79,14 @@ class CrmLeadConversionTest extends TestCase
             ->assertJsonPath('data.status', 'converted');
 
         self::assertSame(1, CrmAccount::query()->where('name', 'Globex')->count());
-        self::assertSame(1, CrmContact::query()->where('email', 'sarah@example.com')->count());
+
+        // #5713/#5714 — `crm_contacts.email` est casté `encrypted` : la
+        // valeur stockée est un payload chiffré, un `where('email', ...)`
+        // ne peut donc jamais correspondre. On compare la valeur DÉCHIFFRÉE.
+        $contacts = CrmContact::query()->get()
+            ->filter(static fn (CrmContact $contact): bool => $contact->email === 'sarah@example.com');
+
+        self::assertSame(1, $contacts->count(), 'un contact cree pour le lead');
         self::assertSame(1, CrmOpportunity::query()->count());
 
         $lead->refresh();
@@ -99,7 +106,11 @@ class CrmLeadConversionTest extends TestCase
         $this->postJson("/api/v1/crm/leads/{$lead->id}/convert")->assertStatus(200);
 
         self::assertSame(1, CrmAccount::query()->where('name', 'Globex')->count(), 'compte réutilisé, pas dupliqué');
-        $contact = CrmContact::query()->where('email', 'sarah@example.com')->firstOrFail();
+        // Même raison : comparaison sur la valeur déchiffrée.
+        $contact = CrmContact::query()->get()
+            ->first(static fn (CrmContact $candidate): bool => $candidate->email === 'sarah@example.com');
+
+        self::assertInstanceOf(CrmContact::class, $contact, 'contact cree pour le lead');
         self::assertTrue($contact->is_primary, 'premier contact du compte = primaire');
     }
 
