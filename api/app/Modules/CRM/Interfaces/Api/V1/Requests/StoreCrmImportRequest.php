@@ -27,7 +27,7 @@ class StoreCrmImportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'entity_type' => ['required', 'string', 'in:accounts,contacts,leads'],
+            'entity_type' => ['required', 'string', 'in:accounts,contacts,leads,account,contact,lead'],
             'file' => [
                 'required',
                 'file',

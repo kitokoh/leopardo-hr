@@ -63,7 +63,7 @@ class CrmWhatsAppWebhookController extends Controller
         $raw = (string) $request->getContent();
         $signature = (string) $request->header('X-Hub-Signature-256', '');
         if (! $this->signatureIsValid($raw, $signature, $secret)) {
-            throw new CrmWebhookSignatureInvalidException();
+            throw new CrmWebhookSignatureInvalidException;
         }
 
         $entries = (array) $request->json('entry', []);
@@ -87,7 +87,7 @@ class CrmWhatsAppWebhookController extends Controller
         }
 
         $lookup = $this->lookupService->findByProviderKey('whatsapp', $phoneNumberId);
-        if ($lookup === null) {
+        if (! $lookup instanceof \App\Modules\CRM\Domain\Models\CrmWebhookChannelLookup) {
             Log::warning('CRM webhook: aucun lookup tenant pour phone_number_id', [
                 'phone_number_id' => $phoneNumberId,
             ]);

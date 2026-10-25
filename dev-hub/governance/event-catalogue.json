@@ -168,10 +168,10 @@
    "name": "CrmTaskOverdue",
    "class": "App\\Events\\CrmTaskOverdue",
    "owner": "BC-11 CRM",
-   "version": 1,
+   "version": 2,
    "status": "active",
    "payload": {
-    "companyId": "int",
+    "companyId": "string",
     "taskId": "int",
     "assigneeId": "?int",
     "title": "string",
