@@ -53,7 +53,7 @@ class CrmImportController extends Controller
             // Filet de sécurité : la Request valide déjà l'enum, mais un
             // `ValueError` sur l'énumération produisait un 500 au lieu du 422
             // contractuel.
-            abort(422, 'Entité inconnue : autorisé accounts, contacts ou leads.');
+            abort(422, __('crm.merge.unknown_entity'));
         }
 
         try {
