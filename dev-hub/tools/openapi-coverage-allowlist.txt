@@ -932,39 +932,12 @@ POST /v1/showcase/media
 DELETE /v1/showcase/media/{param}
 GET /v1/public/vitrine/{param}/media/{param}
 
-# Drift pré-existant constaté le 2026-10-10 (#8381) : 48 routes mergées sur
-# main sans documentation OpenAPI entre le 2026-09-29 (dernier run vert,
-# e1be891e) et le 2026-10-08 — travel/community (36), crm leads/accounts/
-# contacts/imports (9, via 147faf1b #5731/#8195), fuel-station imports/reports
-# (4), rh kiosk verify-face (1). Exclusion TEMPORAIRE le temps de la
-# remédiation tracée dans #8381 : documenter ces routes dans api/openapi.yaml
-# puis purger cette section. Détecté pendant l'épic #8349 — hors scope GEO+VTC.
-GET /v1/crm/accounts/{param}
-GET /v1/crm/contacts/{param}
-GET /v1/crm/duplicates/suggestions
-GET /v1/crm/leads/{param}
-POST /v1/crm/accounts
-POST /v1/crm/contacts
-POST /v1/crm/imports/preview
-POST /v1/crm/leads
-PUT /v1/crm/leads/{param}
+# #8381 — remédiation close le 2026-10-25 (lot 4) : les 9 routes CRM de ce
+# drift (leads/accounts/contacts/imports/duplicates) sont documentées dans
+# api/openapi.yaml. Restent suivies ici : travel/community (36), fuel-station
+# imports/exports (4), rh kiosk verify-face (1).
 
 # Règle (issue #1473) : toute route absente d'openapi.yaml ET de ce fichier
-# Drift pré-existant main (#8345, restauration routes suite Feature #8127) :
-# routes CRM (imports/duplicates/leads/accounts/contacts), fuel-station
-# (exports/imports), RH (verify-face) et travel community restaurées sans
-# contrat OpenAPI. Gap connu ajouté ici selon la règle #1473 (même régime
-# que les gaps historiques) — documentation OpenAPI à fournir par les
-# verticales concernées (suivi EPIC #6528 côté travel).
-POST /v1/crm/imports/preview
-GET /v1/crm/duplicates/suggestions
-POST /v1/crm/leads
-GET /v1/crm/leads/{param}
-PUT /v1/crm/leads/{param}
-POST /v1/crm/accounts
-GET /v1/crm/accounts/{param}
-POST /v1/crm/contacts
-GET /v1/crm/contacts/{param}
 
 # BC-12 GROWTH/Marketing — Marketing OS (#8528) : espace Super Admin de
 # pilotage marketing (stratégie, médiathèque, publications). Contrat documenté
