@@ -30753,6 +30753,86 @@ paths:
                         type: integer
                       last_page:
                         type: integer
+    post:
+      operationId: api_post_crm_leads
+      tags:
+      - CRM
+      summary: Créer un prospect (lead) du tenant
+      description: "Création tenant-scoped (#8195/#5731). Le `company_id` est imposé par le serveur depuis le contexte tenant et n'est jamais accepté en entrée. Le statut est validé contre la whitelist CrmLeadStatus (ADR-CRM-005) : toute valeur inconnue répond 422."
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - first_name
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 120
+                last_name:
+                  type: string
+                  nullable: true
+                  maxLength: 120
+                company_name:
+                  type: string
+                  nullable: true
+                  maxLength: 255
+                email:
+                  type: string
+                  format: email
+                  nullable: true
+                  maxLength: 255
+                phone:
+                  type: string
+                  nullable: true
+                  maxLength: 40
+                source:
+                  type: string
+                  nullable: true
+                  maxLength: 50
+                status:
+                  type: string
+                  nullable: true
+                  enum:
+                  - new
+                  - contacted
+                  - qualified
+                  - converted
+                  - lost
+                notes:
+                  type: string
+                  nullable: true
+                  maxLength: 5000
+                score:
+                  type: integer
+                  nullable: true
+                  minimum: 0
+                  maximum: 100
+                tags:
+                  type: array
+                  nullable: true
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Lead créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmLead'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
   /crm/accounts:
     get:
       operationId: api_get_crm_accounts
@@ -30795,6 +30875,62 @@ paths:
                         type: integer
                       last_page:
                         type: integer
+    post:
+      operationId: api_post_crm_accounts
+      tags:
+      - CRM
+      summary: Créer un compte CRM du tenant
+      description: "Création tenant-scoped (#8195/#5731). Le `company_id` est imposé par le serveur. Le compte créé est immédiatement visible du répertoire (`GET /crm/accounts`) et non archivé."
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+                email:
+                  type: string
+                  format: email
+                  nullable: true
+                  maxLength: 255
+                phone:
+                  type: string
+                  nullable: true
+                  maxLength: 60
+                status:
+                  type: string
+                  nullable: true
+                  enum:
+                  - active
+                  - inactive
+                  - archived
+                notes:
+                  type: string
+                  nullable: true
+                  maxLength: 5000
+      responses:
+        '201':
+          description: Compte créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmAccount'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
   /crm/contacts:
     get:
       operationId: api_get_crm_contacts
@@ -30837,6 +30973,75 @@ paths:
                         type: integer
                       last_page:
                         type: integer
+    post:
+      operationId: api_post_crm_contacts
+      tags:
+      - CRM
+      summary: Créer un contact CRM du tenant
+      description: "Création tenant-scoped (#8195/#5731). `account_id` est facultatif mais, lorsqu'il est fourni, doit désigner un compte du même tenant. Le contact créé apparaît dans `GET /crm/contacts` avec son compte parent minimal."
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - first_name
+              - last_name
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 100
+                last_name:
+                  type: string
+                  maxLength: 100
+                email:
+                  type: string
+                  format: email
+                  nullable: true
+                  maxLength: 255
+                phone:
+                  type: string
+                  nullable: true
+                  maxLength: 60
+                account_id:
+                  type: integer
+                  nullable: true
+                title:
+                  type: string
+                  nullable: true
+                  maxLength: 100
+                is_primary:
+                  type: boolean
+                  nullable: true
+                status:
+                  type: string
+                  nullable: true
+                  enum:
+                  - active
+                  - inactive
+                notes:
+                  type: string
+                  nullable: true
+                  maxLength: 5000
+      responses:
+        '201':
+          description: Contact créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmContact'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
   /crm/opportunities:
     get:
       operationId: api_get_crm_opportunities
@@ -30940,6 +31145,187 @@ paths:
           description: Lead déjà converti
         '422':
           $ref: '#/components/responses/Validation422'
+  /crm/leads/{lead}:
+    get:
+      operationId: api_get_crm_leads_by_lead
+      tags:
+      - CRM
+      summary: Détail d'un prospect (lead) du tenant
+      description: "Lecture unitaire tenant-scoped (#8195/#5731). Le scope global `BelongsToCompany` répond 404 sur un identifiant d'un autre tenant, jamais 403 : l'existence d'une ressource hors tenant n'est pas divulguée."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: lead
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Lead
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmLead'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_crm_leads_by_lead
+      tags:
+      - CRM
+      summary: Mettre à jour un prospect (lead) du tenant
+      description: "Mise à jour d'un lead tenant-scoped (#8195/#5731). Mêmes règles de validation que la création (StoreCrmLeadRequest) ; le statut reste borné à la whitelist CrmLeadStatus. Cross-tenant → 404 sûr."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: lead
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - first_name
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 120
+                last_name:
+                  type: string
+                  nullable: true
+                  maxLength: 120
+                company_name:
+                  type: string
+                  nullable: true
+                  maxLength: 255
+                email:
+                  type: string
+                  format: email
+                  nullable: true
+                  maxLength: 255
+                phone:
+                  type: string
+                  nullable: true
+                  maxLength: 40
+                source:
+                  type: string
+                  nullable: true
+                  maxLength: 50
+                status:
+                  type: string
+                  nullable: true
+                  enum:
+                  - new
+                  - contacted
+                  - qualified
+                  - converted
+                  - lost
+                notes:
+                  type: string
+                  nullable: true
+                  maxLength: 5000
+                score:
+                  type: integer
+                  nullable: true
+                  minimum: 0
+                  maximum: 100
+                tags:
+                  type: array
+                  nullable: true
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Lead mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmLead'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/accounts/{account}:
+    get:
+      operationId: api_get_crm_accounts_by_account
+      tags:
+      - CRM
+      summary: Détail d'un compte CRM du tenant
+      description: "Lecture unitaire tenant-scoped (#8195/#5731). Cross-tenant → 404 sûr via le scope global `BelongsToCompany`."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: account
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Compte
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmAccount'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/contacts/{contact}:
+    get:
+      operationId: api_get_crm_contacts_by_contact
+      tags:
+      - CRM
+      summary: Détail d'un contact CRM du tenant
+      description: "Lecture unitaire tenant-scoped (#8195/#5731). Le compte parent n'est inclus que si la relation est chargée. Cross-tenant → 404 sûr."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: contact
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Contact
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmContact'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /crm/dedup/suggestions:
     get:
       operationId: api_get_crm_dedup_suggestions
@@ -30968,6 +31354,71 @@ paths:
       responses:
         '200':
           description: Liste de suggestions bornée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        entity:
+                          type: string
+                        reason:
+                          type: string
+                          enum:
+                          - same_email
+                          - similar_name
+                        score:
+                          type: number
+                        winner:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            label:
+                              type: string
+                        loser:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            label:
+                              type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /crm/duplicates/suggestions:
+    get:
+      operationId: api_get_crm_duplicates_suggestions
+      tags:
+      - CRM
+      summary: Suggestions de doublons (alias rétro-compatible de /crm/dedup/suggestions)
+      description: "Alias historique (#8345) de `GET /crm/dedup/suggestions` : même controller, même contrat, mêmes règles tenant. Conservé pour les clients construits avant le renommage ; les paires ne traversent jamais les tenants. Permission : principal/rh."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: entity
+        in: query
+        schema:
+          type: string
+          enum:
+          - accounts
+          - contacts
+          - leads
+          default: accounts
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          maximum: 50
+          default: 20
+      responses:
+        '200':
+          description: Liste de suggestions bornée (contrat identique à /crm/dedup/suggestions)
           content:
             application/json:
               schema:
@@ -31134,6 +31585,51 @@ paths:
                 file:
                   type: string
                   format: binary
+      responses:
+        '201':
+          description: Session previewed (aucune écriture cible)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmImport'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/imports/preview:
+    post:
+      operationId: api_post_crm_imports_preview
+      tags:
+      - CRM
+      summary: Prévisualiser un import CSV CRM (alias rétro-compatible de /crm/imports)
+      description: "Alias historique (#8345) de `POST /crm/imports` : même action (`CrmImportController::store`), même contrat, mêmes garanties — parse et valide le fichier sans écrire dans les tables cibles, retourne 201 avec une session `previewed` et un aperçu PII masqué. Le segment `preview` n'existe qu'en POST : `{crmImport}` reste réservé aux identifiants numériques sur GET."
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - entity_type
+              - file
+              properties:
+                entity_type:
+                  type: string
+                  enum:
+                  - accounts
+                  - contacts
+                  - leads
+                file:
+                  type: string
+                  format: binary
+                  description: CSV ou TXT, 2 Mo maximum
       responses:
         '201':
           description: Session previewed (aucune écriture cible)
