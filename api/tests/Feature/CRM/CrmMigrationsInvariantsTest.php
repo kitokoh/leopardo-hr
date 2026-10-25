@@ -175,7 +175,11 @@ class CrmMigrationsInvariantsTest extends TestCase
         $rejected = false;
 
         try {
-            DB::transaction($write);
+            // Closure littérale : PHPStan L8 exige la signature
+            // Closure(Connection): mixed attendue par DB::transaction().
+            DB::transaction(static function () use ($write): void {
+                $write();
+            });
         } catch (QueryException) {
             $rejected = true;
         }
