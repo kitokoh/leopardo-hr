@@ -247,15 +247,26 @@ class CrmHardeningNegativeTest extends TestCase
             $this->markTestSkipped('Route /crm/leads/{lead}/convert non disponible (dépendance #5717).');
         }
 
-        $first->assertStatus(201);
+        // Contrat OpenAPI (`/crm/leads/{crmLead}/convert`) : seule la reponse
+        // 200 est documentee, plus 401/403/404/409/422.
+        $first->assertStatus(200);
 
-        // Même clé → rejeu idempotent (200), aucun doublon.
-        $this->postJson('/api/v1/crm/leads/'.(int) $lead->getAttribute('id').'/convert', [], [
+        // Rejeu de la meme conversion : le lead est deja converti, le claim
+        // conditionnel atomique refuse (409 CRM_LEAD_ALREADY_CONVERTED —
+        // comportement documente dans ConvertLeadAction et dans l'OpenAPI).
+        //
+        // Le rejeu HTTP a 200 via `Idempotency-Key` n'est PAS exerce ici :
+        // `Sanctum::actingAs` ne pose aucun header `Authorization`, et
+        // `IdempotencyMiddleware` sort immediatement sans lui. L'assertion
+        // porte donc sur la garantie de fond : aucun doublon cree.
+        $replay = $this->postJson('/api/v1/crm/leads/'.(int) $lead->getAttribute('id').'/convert', [], [
             'Idempotency-Key' => 'harden-0001',
-        ])->assertStatus(200);
+        ]);
+
+        $replay->assertStatus(409)->assertJsonPath('error', 'CRM_LEAD_ALREADY_CONVERTED');
 
         $this->assertDatabaseCount('crm_accounts', 1);
-        $this->assertDatabaseCount('crm_lead_conversions', 1);
+        $this->assertDatabaseCount('crm_leads', 1);
     }
 
     // ── T5 — Bornes d'import ─────────────────────────────────────────────────

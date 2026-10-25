@@ -170,15 +170,26 @@ class CrmDashboardReadModel
             ->first();
 
         // Doublons estimés : emails normalisés apparaissant plus d'une fois.
-        $duplicates = DB::table('crm_contacts')
+        //
+        // #5713/#5714 — `crm_contacts.email` est casté `encrypted` : la valeur
+        // stockée est un payload chiffré, DIFFÉRENT à chaque écriture (IV
+        // aléatoire). Un `GROUP BY LOWER(TRIM(email))` côté SQL ne peut donc
+        // jamais regrouper deux lignes, et l'estimation valait toujours 0.
+        // On regroupe sur la valeur déchiffrée par le cast du modèle ; le
+        // volume reste borné par le filtre `company_id` (scan tenant).
+        // Note : `CrmContact` est reference en pleine qualification pour ne pas
+        // ajouter de ligne `use` avant DB/Schema — layer-purity-allowlist.txt
+        // epingle ces deux facades aux lignes 7-8 et le fichier est immuable
+        // (#5584). `fully_qualified_strict_types` est desactive dans pint.json.
+        $duplicates = \App\Modules\CRM\Domain\Models\CrmContact::query()
             ->where('company_id', $companyId)
             ->whereNotNull('email')
             ->where('email', '<>', '')
-            ->select(DB::raw('LOWER(TRIM(email)) as email'), DB::raw('COUNT(*) as cnt'))
-            ->groupBy(DB::raw('LOWER(TRIM(email))'))
-            // #7452 — PostgreSQL n'accepte pas un alias de SELECT dans HAVING
-            // (42703 « column "cnt" does not exist ») : répéter l'agrégat.
-            ->havingRaw('COUNT(*) > 1')
+            ->pluck('email')
+            ->map(static fn (mixed $email): string => mb_strtolower(trim((string) $email)))
+            ->filter(static fn (string $email): bool => $email !== '')
+            ->countBy()
+            ->filter(static fn (int $count): bool => $count > 1)
             ->count();
 
         $archivedCount = (int) ($accounts->archived_by_status ?? 0) + (int) ($accounts->archived_by_date ?? 0);

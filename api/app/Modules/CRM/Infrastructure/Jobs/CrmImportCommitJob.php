@@ -50,8 +50,7 @@ class CrmImportCommitJob implements ShouldQueue, TenantScopedJob
         public readonly int $importId,
         public readonly string $companyId,
         public readonly int $actorId,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<int, object>
@@ -120,7 +119,16 @@ class CrmImportCommitJob implements ShouldQueue, TenantScopedJob
                     $safeRow = array_map(static fn (mixed $value): string => (string) $value, $row);
 
                     try {
-                        $persister->persistRow($entityType, $safeRow);
+                        // Une ligne refusee par la base laisse la transaction
+                        // AVORTEE (25P02) : toutes les lignes suivantes — et
+                        // le `markCommitted` final — echouaient alors avec un
+                        // HTTP 500. Chaque ligne vit donc dans son propre
+                        // savepoint, si bien qu'un rejet n'annule que cette
+                        // ligne et laisse l'import se terminer proprement.
+                        DB::transaction(static function () use ($persister, $entityType, $safeRow): void {
+                            $persister->persistRow($entityType, $safeRow);
+                        });
+
                         $persisted++;
                     } catch (Throwable $e) {
                         $rowErrors[] = [

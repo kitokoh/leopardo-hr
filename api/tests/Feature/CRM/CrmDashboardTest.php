@@ -162,7 +162,9 @@ class CrmDashboardTest extends TestCase
         $this->assertSame(3, $data['contacts_total']);
         // 1 contact sans email + 1 sans téléphone.
         $this->assertSame(1, $data['contacts_without_email']);
-        $this->assertSame(1, $data['contacts_without_phone']);
+        // Le jeu de donnees ci-dessus cree 3 contacts : le 1er a un
+        // telephone, les 2e et 3e n'en ont pas -> 2, pas 1.
+        $this->assertSame(2, $data['contacts_without_phone']);
         // contact@alpha.example apparaît 2 fois (normalisé) → 1 groupe doublon.
         $this->assertSame(1, $data['duplicate_contacts_estimate']);
     }

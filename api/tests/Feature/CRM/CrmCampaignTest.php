@@ -13,6 +13,7 @@ use App\Modules\CRM\Domain\Models\CrmCampaignSend;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -97,6 +98,24 @@ class CrmCampaignTest extends TestCase
                 return in_array($contactId, $this->allowed, true);
             }
         };
+    }
+
+    /**
+     * Isole les scenarios de cycle de vie de la LIVRAISON synchrone.
+     *
+     * `CampaignStarted` est ecoute par `DispatchCampaignSends`, qui pousse
+     * `ProcessCampaignSendsJob`. En `QUEUE_CONNECTION=sync` (phpunit.xml) le
+     * job s'execute DANS la requete : avec des destinataires sans e-mail, tous
+     * les sends passent `failed` et la campagne s'auto-termine (`finished`)
+     * avant meme le retour de `POST /start` — les transitions pause/resume/
+     * cancel/report ne sont alors plus observables.
+     *
+     * Ce n'est pas un defaut applicatif : c'est le comportement attendu d'une
+     * file synchrone. Pour tester les transitions, on neutralise la livraison.
+     */
+    private function withoutSynchronousDelivery(): void
+    {
+        Queue::fake();
     }
 
     /**
@@ -210,6 +229,8 @@ class CrmCampaignTest extends TestCase
 
     public function test_start_is_fail_closed_without_consent_table(): void
     {
+        $this->withoutSynchronousDelivery();
+
         $campaign = $this->createCampaign([100, 101]);
 
         Sanctum::actingAs($this->manager($this->companyA));
@@ -282,6 +303,8 @@ class CrmCampaignTest extends TestCase
 
     public function test_pause_resume_lifecycle(): void
     {
+        $this->withoutSynchronousDelivery();
+
         $campaign = $this->createCampaign([100]);
         $this->app->instance(CampaignConsentCheckerInterface::class, $this->fakeConsentChecker([100]));
 
@@ -298,6 +321,8 @@ class CrmCampaignTest extends TestCase
 
     public function test_cancel_cancels_pending_sends(): void
     {
+        $this->withoutSynchronousDelivery();
+
         $campaign = $this->createCampaign([100, 101]);
         $this->app->instance(CampaignConsentCheckerInterface::class, $this->fakeConsentChecker([100, 101]));
 
@@ -312,6 +337,8 @@ class CrmCampaignTest extends TestCase
 
     public function test_report_counts_sends_by_status(): void
     {
+        $this->withoutSynchronousDelivery();
+
         $campaign = $this->createCampaign([100, 101, 102]);
         $this->app->instance(CampaignConsentCheckerInterface::class, $this->fakeConsentChecker([100, 101, 102]));
 

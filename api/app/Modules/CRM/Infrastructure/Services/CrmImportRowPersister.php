@@ -70,6 +70,18 @@ final class CrmImportRowPersister implements CrmImportRowPersisterInterface
 
         $isPrimary = $this->parseBoolean($row['is_primary'] ?? '');
 
+        // Spec module §4.3 — au plus UN contact primaire par compte, garanti
+        // par l'index partiel `crm_contacts_primary_account_unique`. La
+        // promotion du nouveau primaire doit donc se faire AVANT l'insert :
+        // dans l'ordre inverse, l'index rejette la ligne (23505) et l'import
+        // perd un contact valide.
+        if ($isPrimary && $accountId !== null) {
+            CrmContact::query()
+                ->where('account_id', $accountId)
+                ->where('is_primary', true)
+                ->update(['is_primary' => false]);
+        }
+
         $contact = new CrmContact([
             'account_id' => $accountId,
             'first_name' => $row['first_name'],
@@ -81,15 +93,6 @@ final class CrmImportRowPersister implements CrmImportRowPersisterInterface
             'notes' => $this->blankToNull($row['notes'] ?? null),
         ]);
         $contact->save();
-
-        if ($isPrimary && $accountId !== null) {
-            // Spec module §4.3 : au plus UN contact primaire par compte.
-            CrmContact::query()
-                ->where('account_id', $accountId)
-                ->where('id', '!=', $contact->id)
-                ->where('is_primary', true)
-                ->update(['is_primary' => false]);
-        }
 
         return $contact->id;
     }

@@ -157,7 +157,22 @@ class ProcessCampaignSendsJob implements ShouldQueue, TenantScopedJob
                 $send->refresh();
 
                 try {
-                    $emails->sendCampaignSend($send, $campaign->company_id);
+                    $result = $emails->sendCampaignSend($send, $campaign->company_id);
+
+                    // #5726 — `sendCampaignSend()` rend un `EmailDeliveryResult`
+                    // pour un echec qu'elle sait constater sans lever (contact
+                    // absent, sans e-mail, table non migree). L'appelant avait
+                    // deja reclame le send (`pending -> queued`) et ne revenait
+                    // jamais dessus : la ligne restait `queued` a vie,
+                    // `finishIfDrained()` la comptait comme restante et la
+                    // campagne ne se terminait jamais. On reporte donc le
+                    // statut rendu sur la ligne.
+                    if (! $result->isDelivered() && $result->error !== null) {
+                        $send->update([
+                            'status' => $result->status,
+                            'error' => mb_substr($result->error, 0, 500),
+                        ]);
+                    }
                 } catch (EmailRateLimitExceededException) {
                     // Quota horaire tenant atteint : on rend le send au pool
                     // et on re-planifie le job — jamais de perte d'envoi.

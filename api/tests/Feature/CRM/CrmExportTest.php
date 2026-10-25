@@ -7,6 +7,7 @@ namespace Tests\Feature\CRM;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\CRM\Domain\Models\CrmExportJob;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
@@ -132,7 +133,15 @@ class CrmExportTest extends TestCase
 
     public function test_unavailable_entity_returns_422(): void
     {
-        // crm_contacts n'est PAS créée dans ce test → socle V0 absent.
+        // `RefreshTenantDatabase` applique l'integralite des migrations tenant :
+        // `crm_contacts` existe donc toujours ici, et la garde
+        // `CrmExportEntityUnavailableException` n'est jamais atteinte.
+        // On retire la table DANS la transaction du test pour reproduire
+        // l'etat « socle V0 absent » que la garde protege. PostgreSQL rend la
+        // DDL transactionnelle : le rollback de fin de test la restaure, donc
+        // aucune classe suivante du worker n'herite d'un schema amputé.
+        // CASCADE : `crm_tasks` porte une FK vers `crm_contacts` (2BP01 sinon).
+        DB::statement('DROP TABLE IF EXISTS crm_contacts CASCADE');
         Sanctum::actingAs($this->manager($this->companyA));
 
         $this->postJson('/api/v1/crm/exports', [
