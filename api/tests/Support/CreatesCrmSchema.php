@@ -199,7 +199,6 @@ trait CreatesCrmSchema
      * Insère une ligne crm_accounts de test (schéma canonique, cf. #5708).
      *
      * @param  array<string, mixed>  $overrides
-     * @return int
      */
     private function createCrmAccount(array $overrides = []): int
     {
@@ -228,7 +227,6 @@ trait CreatesCrmSchema
      * Insère une ligne crm_contacts de test (schéma canonique, cf. #5708).
      *
      * @param  array<string, mixed>  $overrides
-     * @return int
      */
     private function createCrmContact(array $overrides = []): int
     {
@@ -271,7 +269,6 @@ trait CreatesCrmSchema
      * Insère une ligne crm_tasks de test (schéma canonique, cf. #5710).
      *
      * @param  array<string, mixed>  $overrides
-     * @return int
      */
     private function createCrmTask(array $overrides = []): int
     {
@@ -299,7 +296,6 @@ trait CreatesCrmSchema
      * Insère une ligne crm_activities de test (schéma canonique, cf. #5710).
      *
      * @param  array<string, mixed>  $overrides
-     * @return int
      */
     private function createCrmActivity(array $overrides = []): int
     {
@@ -318,11 +314,11 @@ trait CreatesCrmSchema
             'updated_at' => now(),
         ], $overrides));
     }
+
     /**
      * Insère une ligne crm_pipelines de test (schéma canonique, cf. #5709).
      *
      * @param  array<string, mixed>  $overrides
-     * @return int
      */
     private function createCrmPipeline(array $overrides = []): int
     {
@@ -339,7 +335,6 @@ trait CreatesCrmSchema
      * Insère une ligne crm_stages de test (schéma canonique, cf. #5709).
      *
      * @param  array<string, mixed>  $overrides
-     * @return int
      */
     private function createCrmStage(array $overrides = []): int
     {
@@ -361,7 +356,6 @@ trait CreatesCrmSchema
      * Insère une ligne crm_opportunities de test (schéma canonique, cf. #5709).
      *
      * @param  array<string, mixed>  $overrides
-     * @return int
      */
     private function createCrmOpportunity(array $overrides = []): int
     {
@@ -385,6 +379,4 @@ trait CreatesCrmSchema
             'updated_at' => now(),
         ], $overrides));
     }
-
 }
-
