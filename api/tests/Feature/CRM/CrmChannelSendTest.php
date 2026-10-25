@@ -28,6 +28,14 @@ class CrmChannelSendTest extends TestCase
     {
         parent::setUp();
 
+        // #5725 — le token système WhatsApp est un prérequis d'environnement
+        // (secret manager). Sans lui, `WhatsAppCloudApiClient::request()`
+        // lève `CrmChannelNotConfiguredException` (503) AVANT tout appel
+        // provider : les tests d'envoi (Http::fake) ne peuvent pas passer.
+        // On le pose explicitement, comme les autres secrets de test
+        // (STRIPE_WEBHOOK_SECRET, TRAVEL_PAYMENT_CALLBACK_SECRET…).
+        config()->set('services.whatsapp.token', 'test-whatsapp-cloud-token');
+
         /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
         $this->company = $company;

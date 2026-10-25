@@ -9,7 +9,6 @@ use App\Modules\CRM\Domain\Models\CrmChannel;
 use App\Modules\CRM\Domain\Models\CrmChannelMessage;
 use App\Modules\CRM\Domain\Models\CrmWebhookChannelLookup;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Testing\TestResponse;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -179,8 +178,6 @@ class CrmWhatsAppWebhookTest extends TestCase
                 ]],
             ]],
         ];
-
-        Log::spy();
 
         $this->postSigned($payload)->assertOk();
 

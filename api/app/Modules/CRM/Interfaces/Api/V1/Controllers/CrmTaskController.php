@@ -68,6 +68,7 @@ class CrmTaskController extends Controller
 
     public function show(CrmTask $task): JsonResponse
     {
+        $this->assertTenantScope($task);
         $this->authorize('view', $task);
 
         $task->load('assignee:id,first_name,last_name');
@@ -77,6 +78,7 @@ class CrmTaskController extends Controller
 
     public function update(CrmUpdateTaskRequest $request, CrmTask $task): JsonResponse
     {
+        $this->assertTenantScope($task);
         $this->authorize('update', $task);
 
         $validated = $request->validated();
@@ -97,6 +99,7 @@ class CrmTaskController extends Controller
 
     public function complete(CrmTask $task): JsonResponse
     {
+        $this->assertTenantScope($task);
         $this->authorize('complete', $task);
 
         return (new CrmTaskResource($this->completeCrmTaskAction->execute($task)))->response();
@@ -104,6 +107,7 @@ class CrmTaskController extends Controller
 
     public function reopen(CrmTask $task): JsonResponse
     {
+        $this->assertTenantScope($task);
         $this->authorize('reopen', $task);
 
         return (new CrmTaskResource($this->reopenCrmTaskAction->execute($task)))->response();
@@ -111,10 +115,31 @@ class CrmTaskController extends Controller
 
     public function destroy(CrmTask $task): JsonResponse
     {
+        $this->assertTenantScope($task);
         $this->authorize('delete', $task);
 
         $task->delete();
 
         return response()->json(['data' => null], 204);
+    }
+
+    /**
+     * #5720 — garde d'isolation tenant explicite.
+     *
+     * Le binding implicite (`SubstituteBindings`) résout le modèle AVANT le
+     * middleware `tenant` : `current_company` n'est pas encore posé, donc le
+     * scope global `BelongsToCompany` ne filtre rien et une tâche d'un AUTRE
+     * tenant est chargée. Sans cette garde, la Policy répond 403 (fuite
+     * d'existence) au lieu du 404 attendu — et un assigné d'un autre tenant
+     * pourrait atteindre la ressource. Même pattern que
+     * `CrmCampaignController::assertTenantScope`.
+     */
+    private function assertTenantScope(CrmTask $task): void
+    {
+        $companyId = request()->user()?->getAttribute('company_id');
+
+        if (is_string($companyId) && (string) $task->company_id !== $companyId) {
+            abort(404);
+        }
     }
 }
