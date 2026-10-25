@@ -24,9 +24,7 @@ use Illuminate\Http\Request;
  */
 class CrmImportController extends Controller
 {
-    public function __construct(private readonly CrmImportService $service)
-    {
-    }
+    public function __construct(private readonly CrmImportService $service) {}
 
     /**
      * Upload + preview : parse et valide le fichier SANS écrire dans les
@@ -47,10 +45,21 @@ class CrmImportController extends Controller
             abort(422, 'Un fichier CSV est requis.');
         }
 
+        /** @var string $rawEntityType */
+        $rawEntityType = (string) $request->input('entity_type');
+        $entityType = CrmImportEntityType::fromLoose($rawEntityType);
+
+        if ($entityType === null) {
+            // Filet de sécurité : la Request valide déjà l'enum, mais un
+            // `ValueError` sur l'énumération produisait un 500 au lieu du 422
+            // contractuel.
+            abort(422, 'Entité inconnue : autorisé accounts, contacts ou leads.');
+        }
+
         try {
             $import = $this->service->preview(
                 $file,
-                CrmImportEntityType::from($request->input('entity_type')),
+                $entityType,
                 $actor,
             );
         } catch (CrmImportException $e) {

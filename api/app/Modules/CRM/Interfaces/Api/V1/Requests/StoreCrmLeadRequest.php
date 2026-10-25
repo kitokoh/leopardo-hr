@@ -23,8 +23,16 @@ class StoreCrmLeadRequest extends FormRequest
      */
     public function rules(): array
     {
+        $creating = $this->isMethod('POST');
+
         return [
-            'first_name' => ['required', 'string', 'max:120'],
+            // #8930 — `first_name` n'est requis qu'à la CRÉATION. `PUT
+            // /crm/leads/{id}` réutilise cette FormRequest pour une mise à jour
+            // partielle : exiger `first_name` renvoyait 422 sur toute mise à
+            // jour de statut, alors que le contrat documenté est un 404
+            // cross-tenant (la garde tenant du contrôleur ne s'exécutait même
+            // pas, la validation passant avant).
+            'first_name' => [$creating ? 'required' : 'sometimes', 'string', 'max:120'],
             'last_name' => ['nullable', 'string', 'max:120'],
             'company_name' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],

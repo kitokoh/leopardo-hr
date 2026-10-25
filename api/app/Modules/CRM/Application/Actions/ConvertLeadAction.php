@@ -33,9 +33,7 @@ use Illuminate\Support\Facades\DB;
  */
 final class ConvertLeadAction
 {
-    public function __construct(private readonly CrmLeadRepositoryInterface $leads)
-    {
-    }
+    public function __construct(private readonly CrmLeadRepositoryInterface $leads) {}
 
     /**
      * @param  array{amount?: numeric-string, currency?: string, expected_close_date?: string, stage?: string}  $data
@@ -61,6 +59,7 @@ final class ConvertLeadAction
 
             if (! $account instanceof CrmAccount) {
                 $account = CrmAccount::query()->create([
+                    'company_id' => $lead->company_id,
                     'name' => $accountName,
                     'email' => $lead->email,
                     'phone' => $lead->phone,
@@ -75,6 +74,7 @@ final class ConvertLeadAction
                 ->exists();
 
             $contact = CrmContact::query()->create([
+                'company_id' => $lead->company_id,
                 'account_id' => $account->id,
                 'first_name' => $lead->first_name,
                 'last_name' => $lead->last_name,
@@ -87,6 +87,12 @@ final class ConvertLeadAction
 
             // ── 3. Opportunité ───────────────────────────────────────────────
             CrmOpportunity::query()->create([
+                'company_id' => $lead->company_id,
+                // #8930 — le lead converti est rattaché explicitement :
+                // `converted_from_lead_id` n'était jamais renseigné, donc
+                // l'idempotence de conversion (#5717) n'était pas vérifiable
+                // côté opportunité.
+                'converted_from_lead_id' => $lead->id,
                 'name' => $accountName,
                 'stage' => $stage->value,
                 'amount' => $data['amount'] ?? null,
