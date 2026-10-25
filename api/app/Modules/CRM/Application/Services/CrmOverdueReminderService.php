@@ -55,10 +55,16 @@ class CrmOverdueReminderService
                 continue; // déjà relancée aujourd'hui — idempotent.
             }
 
+            // #8871 — `company_id` est un UUID : le cast `(int)` le réduisait à
+            // 0, si bien que la notification était créée pour un tenant
+            // inexistant. `assignee_id` n'existe pas sur `crm_tasks` (la colonne
+            // est `assigned_to`) et la projection ci-dessus ne sélectionnait que
+            // `assigned_to` : la lecture renvoyait toujours null, donc le
+            // listener sortait en early-return et AUCUNE relance n'était émise.
             CrmTaskOverdue::dispatch(
-                (int) $task->company_id,
+                (string) $task->company_id,
                 (int) $task->id,
-                $task->assignee_id !== null ? (int) $task->assignee_id : null,
+                $task->assigned_to !== null ? (int) $task->assigned_to : null,
                 (string) $task->title,
                 $task->due_at?->toIso8601String(),
             );

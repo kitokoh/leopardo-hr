@@ -39,11 +39,15 @@ class CrmDirectoryWriteController extends Controller
 
     public function showLead(CrmLead $lead): JsonResponse
     {
+        $this->assertTenantScope($lead);
+
         return (new CrmLeadResource($lead))->response();
     }
 
     public function updateLead(StoreCrmLeadRequest $request, CrmLead $lead): JsonResponse
     {
+        $this->assertTenantScope($lead);
+
         $lead->update($request->validated());
 
         return (new CrmLeadResource($lead))->response();
@@ -63,6 +67,8 @@ class CrmDirectoryWriteController extends Controller
 
     public function showContact(CrmContact $contact): JsonResponse
     {
+        $this->assertTenantScope($contact);
+
         return (new CrmContactResource($contact))->response();
     }
 
@@ -80,6 +86,29 @@ class CrmDirectoryWriteController extends Controller
 
     public function showAccount(CrmAccount $account): JsonResponse
     {
+        $this->assertTenantScope($account);
+
         return (new CrmAccountResource($account))->response();
+    }
+
+    /**
+     * #8871 — garde d'isolation tenant explicite sur la lecture/écriture unitaire.
+     *
+     * Le binding implicite (`SubstituteBindings`) résout le modèle AVANT le
+     * middleware `tenant` : `current_company` n'est pas encore posé, donc le
+     * scope global `BelongsToCompany` ne filtre rien et une ressource d'un AUTRE
+     * tenant est chargée. Sans cette garde, `GET /crm/accounts/{id}` d'un autre
+     * tenant renvoyait 200 avec les données, et `PUT /crm/leads/{id}` permettait
+     * de MODIFIER un lead d'un autre tenant. Même pattern que
+     * `CrmTaskController::assertTenantScope` (#5720) : 404 fail-closed, jamais
+     * 403 — un 403 divulguerait l'existence de la ressource.
+     */
+    private function assertTenantScope(CrmLead|CrmContact|CrmAccount $model): void
+    {
+        $companyId = request()->user()?->getAttribute('company_id');
+
+        if (is_string($companyId) && (string) $model->company_id !== $companyId) {
+            abort(404);
+        }
     }
 }

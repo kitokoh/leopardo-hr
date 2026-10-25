@@ -13,7 +13,7 @@ use Illuminate\Foundation\Events\Dispatchable;
  * permettre au module Notification de créer la notification sans import
  * inter-module (règle ARCHITECTURE.md : modules ↔ événements/contrats).
  *
- * @property int $companyId
+ * @property string $companyId
  * @property int $taskId
  * @property int|null $assigneeId
  * @property string $title
@@ -24,7 +24,7 @@ class CrmTaskOverdue
     use Dispatchable;
 
     public function __construct(
-        public readonly int $companyId,
+        public readonly string $companyId,
         public readonly int $taskId,
         public readonly ?int $assigneeId,
         public readonly string $title,

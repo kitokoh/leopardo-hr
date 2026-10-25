@@ -24,7 +24,11 @@ class StoreCrmLeadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name' => ['required', 'string', 'max:120'],
+            // #8871 — `first_name` n'est obligatoire qu'à la CRÉATION. Exigé
+            // aussi au PUT, il produisait un 422 AVANT la garde tenant, ce qui
+            // masquait le 404 documenté sur un lead d'un autre tenant (et
+            // interdisait toute mise à jour partielle, ex. `{status}`).
+            'first_name' => [$this->isMethod('POST') ? 'required' : 'sometimes', 'string', 'max:120'],
             'last_name' => ['nullable', 'string', 'max:120'],
             'company_name' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],

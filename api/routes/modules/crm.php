@@ -164,14 +164,20 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/dashboard/quality', [CrmDashboardController::class, 'quality']);
 
     // ── Tâches, timeline (#5720) ──────────────────────────────────────────────
-    Route::get('/tasks', [CrmTaskController::class, 'index']);
-    Route::post('/tasks', [CrmTaskController::class, 'store']);
-    Route::get('/tasks/{task}', [CrmTaskController::class, 'show'])->whereNumber('task');
-    Route::patch('/tasks/{task}', [CrmTaskController::class, 'update'])->whereNumber('task');
-    Route::post('/tasks/{task}/complete', [CrmTaskController::class, 'complete'])->whereNumber('task');
-    Route::post('/tasks/{task}/reopen', [CrmTaskController::class, 'reopen'])->whereNumber('task');
-    Route::delete('/tasks/{task}', [CrmTaskController::class, 'destroy'])->whereNumber('task');
-    Route::get('/accounts/{account}/timeline', [CrmTimelineController::class, 'index'])->whereNumber('account');
+    // #8871 — RBAC de route : ce bloc était le seul du groupe à ne pas porter
+    // `api.manager` (contrairement à consents/segments/automations), si bien
+    // que tout employé authentifié atteignait le CRUD (DELETE → 200 au lieu de
+    // 403). Rôles alignés sur CrmTaskPolicy::isCrmRole (principal/rh/marketing).
+    Route::middleware('api.manager:principal,rh,marketing,module:crm')->group(function (): void {
+        Route::get('/tasks', [CrmTaskController::class, 'index']);
+        Route::post('/tasks', [CrmTaskController::class, 'store']);
+        Route::get('/tasks/{task}', [CrmTaskController::class, 'show'])->whereNumber('task');
+        Route::patch('/tasks/{task}', [CrmTaskController::class, 'update'])->whereNumber('task');
+        Route::post('/tasks/{task}/complete', [CrmTaskController::class, 'complete'])->whereNumber('task');
+        Route::post('/tasks/{task}/reopen', [CrmTaskController::class, 'reopen'])->whereNumber('task');
+        Route::delete('/tasks/{task}', [CrmTaskController::class, 'destroy'])->whereNumber('task');
+        Route::get('/accounts/{account}/timeline', [CrmTimelineController::class, 'index'])->whereNumber('account');
+    });
 
 });
 
