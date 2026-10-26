@@ -28,7 +28,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('content_items')) {
+        if (! $this->publicTableExists('content_items')) {
             Schema::create('content_items', function (Blueprint $table) {
                 $table->id();
                 $table->string('title');
@@ -54,7 +54,7 @@ return new class extends Migration
             );
         }
 
-        if (! Schema::hasTable('competitors')) {
+        if (! $this->publicTableExists('competitors')) {
             Schema::create('competitors', function (Blueprint $table) {
                 $table->id();
                 $table->string('name');
@@ -78,4 +78,24 @@ return new class extends Migration
         Schema::dropIfExists('competitors');
         Schema::dropIfExists('content_items');
     }
+
+    /**
+     * `Schema::hasTable()` resolve via `current_schema()`, qui vaut
+     * `shared_tenants` sous le search_path de l'application. Un garde écrit
+     * avec `Schema::hasTable()` sur une table `public` renvoie donc TOUJOURS
+     * `false` : la migration rejoue `CREATE TABLE` et, si la table existe
+     * déjà, échoue ou est silencieusement sautée selon l'état. On interroge
+     * explicitement `public`.
+     */
+    private function publicTableExists(string $table): bool
+    {
+        /** @var object{exists: bool}|null $row */
+        $row = DB::selectOne(
+            'select exists (select 1 from information_schema.tables where table_schema = ? and table_name = ?) as exists',
+            ['public', $table],
+        );
+
+        return $row !== null && (bool) $row->exists;
+    }
+
 };
