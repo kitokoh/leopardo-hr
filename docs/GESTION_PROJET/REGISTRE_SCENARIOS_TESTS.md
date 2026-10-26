@@ -1,3 +1,24 @@
+> **MAJ 2026-10-26 — Growth & Search Intelligence (GSI) : contrat OpenAPI des 26 routes du module (issues #8512, #8513, #8515, #8516, #8517, #8518, #8522).**
+> Surface **API (`api/routes/modules/search_intelligence.php`, module SearchIntelligence, BC GROWTH)** : les **26 routes**
+> du module sont desormais **documentees** dans `api/openapi.yaml` (elles etaient mergees sans contrat, ce qui faisait
+> echouer le check requis `Route -> OpenAPI coverage guard`). Prefixe `/api/v1/platform/search-intel`, garde
+> `auth:super_admin_api` portee par le groupe `platform`, permission route par route : **lecture** `search_intel.view`,
+> **ecriture** `search_intel.manage`. Aucune route n'est exposee a un tenant (agregats cross-tenant par nature : le parc
+> de sites public est unique ; un token Sanctum employee n'a pas le guard `super_admin_api` -> 401 systematique).
+> Comportements reels documentes plutot que lisses : **AEO** — revision humaine obligatoire, la validation **fige** la
+> reponse, workflow `draft -> submitted -> approved -> published`, `to-update` renvoie une reponse publiee en revision ;
+> **GEO** — l'historique des checks est **immuable** (aucun PATCH/DELETE expose), methode de preuve et date obligatoires ;
+> **contenu** — `/content/export` declare avant `/content/{content}` pour ne pas etre capture par le parametre de route,
+> export en `text/csv` ; **concurrents** — une observation sans source datee est refusee (422) ; **SEO** — transition non
+> autorisee par l'etat courant -> 409 ; **scan** — refuse de tourner sans cible declaree (`SEARCH_INTEL_SCAN_BASE_URL`),
+> 409 plutot qu'une URL devinee.
+> Scenarios automatises : `dev-hub/tools/check-openapi-route-coverage.py --strict-staleness` (garde de couverture, exit 0,
+> **0 nouveau drift**, **0 nouveau drift de nom de parametre**) et `dev-hub/tools/test_openapi_route_coverage_orphans.py`
+> (**13/13 verifications**). Gouvernance : `check-bounded-context-registry.sh` exit 0 (38 BCs, SearchIntelligence rattache
+> a GROWTH), `check-route-owner-guard.sh` exit 0, `check-env-example-parity.sh` exit 0 (451 cles).
+> **Limite assumee** : aucun PHP ni `vendor` dans l'environnement d'execution — `phpunit`/`pint` non lances localement ;
+> l'execution reelle est laissee aux checks CI requis.
+
 > **MAJ 2026-10-24 — Restaurant OS, REST-OS-5 : UI impression de l'écran cuisine (issue #8607).**
 > Surface **front/web** (`src/app/(dashboard)/restaurant/kitchen/page.tsx`) : l'écran cuisine affiche désormais un **bandeau d'état
 > d'imprimante** (prête / hors ligne / non configurée) et permet la **réimpression** d'un ticket.
