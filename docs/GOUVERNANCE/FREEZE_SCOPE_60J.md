@@ -5,6 +5,33 @@
 
 ---
 
+## ⚠️ Gate J60 — fenêtre CLOSE (décision du 2026-10-26)
+
+**Statut : `held`.** La fenêtre de validité s'est terminée le **2026-10-17** et le
+gate J60 n'avait **jamais été tenu** : le gel a expiré en silence pendant 9 jours,
+laissant des interdictions affichées comme en vigueur alors que leur fenêtre était
+close — et des chantiers gelés (dont l'app mobile pompiste, #8585) bloqués par une
+règle que personne n'avait reconduite.
+
+**Décision (fondateur/PM) :** un gel à durée déterminée **expire par ses propres
+termes**. Ne pas le reconduire est le **défaut** ; le reconduire demanderait une
+décision explicite. Les restrictions ci-dessous **cessent donc de s'appliquer comme
+règle de revue**.
+
+**Aucune reconduction n'est prononcée ici.** Les priorités produit restent celles du
+plan en cours, et un gel ultérieur doit faire l'objet d'un **nouveau document daté**
+(avec sa propre fenêtre et son propre gate).
+
+**Traçabilité :** `dev-hub/tools/governance-freezes.json` (registre) ·
+`dev-hub/tools/check-freeze-gate.sh` (garde CI, job *Hygiene Guards*) — le garde
+échoue désormais si un gel expire sans décision de gate enregistrée.
+
+> Les sections ci-dessous sont conservées **telles quelles** : elles documentent le
+> périmètre qui a effectivement été appliqué du 19/08 au 17/10/2026. Elles ne
+> constituent plus une règle de revue en vigueur.
+
+---
+
 ## ✅ AUTORISÉ (on fait — toute priorité confondue)
 
 | Domaine | Exemples |
