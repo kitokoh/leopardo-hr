@@ -317,6 +317,9 @@ trait CreatesMvpSchema
             $table->string('iban', 255)->nullable();
             $table->string('bank_account', 255)->nullable();
             $table->string('national_id', 255)->nullable();
+            // #7936 — taux de prelevement a la source (DSN S21.G00.50.006).
+            $table->decimal('pas_rate', 5, 2)->nullable();
+            $table->string('pas_identifier', 64)->nullable();
             // #8004 — resynchronisation fixture ↔ migrations (double source de
             // schéma #7975) : colonnes ajoutées post-création que la fixture
             // n'avait pas (SQLSTATE 42703 en tests, ex. google_id ×16).

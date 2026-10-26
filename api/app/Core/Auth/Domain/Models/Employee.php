@@ -189,6 +189,8 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'contract_type',
         'contract_start',
         'contract_end',
+        'pas_rate',
+        'pas_identifier',
         'salary_type',
         'hourly_rate',
         'manager_id',
@@ -223,6 +225,8 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'date_of_birth' => 'date',
         'contract_start' => 'date',
         'contract_end' => 'date',
+        // #7936 : taux PAS en pourcentage, declare en DSN (S21.G00.50.006).
+        'pas_rate' => 'float',
         'biometric_face_enabled' => 'boolean',
         'biometric_fingerprint_enabled' => 'boolean',
         'biometric_consent_at' => 'datetime',
