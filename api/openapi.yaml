@@ -50733,6 +50733,123 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /v1/platform/search-intel/integrations/{provider}:
+    parameters:
+      - name: provider
+        in: path
+        required: true
+        description: Connecteur cible.
+        schema:
+          type: string
+          enum: [gsc, ga4, google_ads, ms_ads]
+    put:
+      operationId: api_put_v1_platform_search_intel_integrations_provider
+      tags: [Search Intelligence]
+      summary: Enregistre les identifiants d'un connecteur (GSI-8, #8519)
+      description: |
+        Remplace le jeu d'identifiants du connecteur. Les valeurs sont chiffrees
+        au repos et ne sont **jamais** renvoyees par l'API.
+
+        Le remplacement est total, jamais une fusion : un melange avec l'ancien
+        jeu produirait un connecteur partiellement configure.
+
+        Configurer ne connecte pas : le statut repasse a `not_connected` jusqu'a
+        une autorisation fournisseur reelle.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [credentials]
+              properties:
+                credentials:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  description: |
+                    Cles attendues par fournisseur : `gsc` = client_id,
+                    client_secret, refresh_token, site_url ; `ga4` = +
+                    property_id ; `google_ads` = developer_token, client_id,
+                    client_secret, refresh_token, customer_id ; `ms_ads` =
+                    client_id, client_secret, refresh_token, customer_id.
+      responses:
+        '200':
+          description: Connecteur configure (statut `not_connected`)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Fournisseur non supporte
+        '422':
+          description: Identifiants invalides ou cles inconnues
+    delete:
+      operationId: api_delete_v1_platform_search_intel_integrations_provider
+      tags: [Search Intelligence]
+      summary: Revoque un connecteur et efface ses identifiants (GSI-8, #8519)
+      description: |
+        Les identifiants sont **effaces** (et non seulement marques) : conserver
+        un secret apres revocation serait une fuite dormante. Un compte-rendu
+        est ecrit dans `audit_logs` sans jamais journaliser de valeur.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Connecteur revoque
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Fournisseur non supporte
+  /v1/platform/search-intel/integrations/{provider}/test:
+    parameters:
+      - name: provider
+        in: path
+        required: true
+        description: Connecteur cible.
+        schema:
+          type: string
+          enum: [gsc, ga4, google_ads, ms_ads]
+    post:
+      operationId: api_post_v1_platform_search_intel_integrations_provider_test
+      tags: [Search Intelligence]
+      summary: Teste un connecteur sans simuler une connexion (GSI-8, #8519)
+      description: |
+        Valide localement la completude des identifiants. **Aucun appel** aux
+        API Google/Microsoft n'est effectue : l'autorisation fournisseur n'est
+        pas prouvee, donc le resultat renvoie
+        `provider_authorization_verified: false` et le connecteur reste
+        `not_connected`. Un echec de validation renvoie un `error` motive.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Resultat du test (jamais un faux `connected`)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        enum: [not_connected, error]
+                      message:
+                        type: string
+                      provider_authorization_verified:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Fournisseur non supporte
   /v1/platform/search-intel/seo/meta:
     get:
       operationId: api_get_v1_platform_search_intel_seo_meta
