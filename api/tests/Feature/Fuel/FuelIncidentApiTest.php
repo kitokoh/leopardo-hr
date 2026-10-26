@@ -80,7 +80,7 @@ class FuelIncidentApiTest extends TestCase
             'description' => 'Client mécontent, fuite visible', // PII potentielle
         ])
             ->assertStatus(201)
-            ->assertJsonPath('data.status', FuelIncident::STATUS_OPEN);
+            ->assertJsonPath('data.status', FuelIncident::DEFAULT_STATUS);
 
         $event = DB::table('fuel_outbox_events')
             ->where('company_id', $company->id)
@@ -146,7 +146,8 @@ class FuelIncidentApiTest extends TestCase
             'assigned_to' => $operator->id,
         ])
             ->assertStatus(200)
-            ->assertJsonPath('data.status', FuelIncident::STATUS_IN_PROGRESS)
+            // #8578 (D2) — `assign` mène à `assigned`, pas à `in_progress`.
+            ->assertJsonPath('data.status', FuelIncident::STATUS_ASSIGNED)
             ->assertJsonPath('data.assigned_to', $operator->id);
 
         $this->postJson('/api/v1/fuel-station/incidents/'.$incident->id.'/resolve', [
@@ -227,7 +228,11 @@ class FuelIncidentApiTest extends TestCase
         $this->postJson('/api/v1/fuel-station/incidents', [
             'category' => 'equipment',
             'severity' => 'high',
-            'description_redacted' => 'Pompe 1 ne démarre plus',
+            // #8578 (D5) — `description_redacted` etait un vestige (un champ
+            // nomme d'apres un TRAITEMENT, pas d'apres une donnee). Le contrat
+            // est `title` obligatoire + `description` optionnelle + `category`.
+            'title' => 'Pompe 1 ne demarre plus',
+            'description' => 'Pompe 1 hors service',
         ])
             ->assertStatus(201)
             ->assertJsonPath('data.status', 'reported')
@@ -337,7 +342,8 @@ class FuelIncidentApiTest extends TestCase
             'due_at' => now()->addDays(2)->toDateTimeString(),
         ])
             ->assertStatus(201)
-            ->assertJsonPath('data.status', 'open')
+            // #8578 (D4) — un seul etat de naissance : `todo`.
+            ->assertJsonPath('data.status', 'todo')
             ->assertJsonPath('data.incident_id', $incident->id)
             ->assertJsonPath('data.priority', 'high');
 
@@ -469,8 +475,30 @@ class FuelIncidentApiTest extends TestCase
     {
         Sanctum::actingAs($this->operator($this->companyA));
 
+        // #8578 (D6) — « manage » = la GESTION, pas le signalement.
+        //
+        // Le test interrogeait `POST /incidents`, c'est-a-dire l'endpoint de
+        // SIGNALEMENT, et exigeait 403. C'etait en contradiction frontale avec
+        // deux autres tests du meme fichier qui exigent 201 pour un operateur
+        // (creation simple + allowlist de pieces jointes). On a tranche :
+        // signaler reste un droit de terrain (un pompiste qui voit une fuite
+        // doit pouvoir la declarer), la GESTION est reservee au manager.
+        //
+        // `GET /incidents` est la surface de gestion : elle expose le registre
+        // complet des incidents de l'entreprise, avec les notes de resolution.
         $this->getJson('/api/v1/fuel-station/incidents')->assertStatus(403);
-        $this->postJson('/api/v1/fuel-station/incidents', [])->assertStatus(403);
+
+        // Et un operateur ne peut pas faire avancer le cycle de vie.
+        $incident = FuelIncident::query()->create([
+            'company_id' => $this->companyA->id,
+            'title' => 'Incident a assigner',
+            'equipment_type' => 'pump',
+            'severity' => 'low',
+        ]);
+
+        $this->postJson("/api/v1/fuel-station/incidents/{$incident->id}/assign", [
+            'assigned_to' => $this->operator($this->companyA)->id,
+        ])->assertStatus(403);
     }
 
 
@@ -598,7 +626,8 @@ class FuelIncidentApiTest extends TestCase
             'due_at' => '2026-09-15T08:00:00Z',
         ])
             ->assertStatus(201)
-            ->assertJsonPath('data.status', 'pending')
+            // #8578 (D4) — `todo` est le seul etat de naissance.
+            ->assertJsonPath('data.status', 'todo')
             ->json('data');
 
         $this->patchJson("/api/v1/fuel-station/maintenance-tasks/{$task['id']}", [

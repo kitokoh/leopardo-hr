@@ -124,7 +124,10 @@ class FuelAlertsScanCommand extends Command
 
         $tasks = FuelMaintenanceTask::query()
             ->where('company_id', $companyId)
-            ->whereIn('status', [FuelMaintenanceTask::STATUS_PENDING, FuelMaintenanceTask::STATUS_IN_PROGRESS])
+            // #8578 (D4) — `pending` n'existe plus : les taches ouvertes sont
+            // `todo` ou `in_progress`. Filtrer sur un etat supprime aurait
+            // rendu la requete silencieusement vide.
+            ->whereIn('status', [FuelMaintenanceTask::STATUS_TODO, FuelMaintenanceTask::STATUS_IN_PROGRESS])
             ->where('due_at', '<=', $horizon)
             ->limit(200)
             ->get();

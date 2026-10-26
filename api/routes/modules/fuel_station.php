@@ -320,7 +320,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     // porté par le même service d'incidents que `assign`/`resolve`/`close`.
     Route::post('/fuel-station/maintenance-tasks/{task}/transition', [FuelIncidentController::class, 'transitionTask'])
         ->whereNumber('task')
-        ->middleware('throttle:fuel-sensitive');
+        // #8578 (D6) — la transition de tache est un geste de GESTION
+        // (planifier l'avancement d'une intervention), pas un geste
+        // operationnel. La route etait declaree HORS du groupe `api.manager`,
+        // donc la policy repondait 403 a un manager pourtant autorise et le
+        // service n'etait jamais atteint : un acteur AUTORISE recevait 403 la
+        // ou il devait recevoir 422 sur une transition illegale.
+        ->middleware(['api.manager', 'throttle:fuel-sensitive']);
 
     // ---------------------------------------------------------------------
     // Lot 6 (audit 2026-10-17) — P1-f (vue comparative inter-stations).

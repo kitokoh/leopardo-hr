@@ -73,6 +73,17 @@ class FuelIncidentController extends Controller
         $actor = $request->user();
         $this->authorize('create', FuelIncident::class);
 
+        // #8578 — un rejeu ne doit ni créer un doublon ni répondre 201 comme
+        // s'il venait de créer la ressource. On détecte le rejeu AVANT l'appel
+        // pour pouvoir le signaler : `report()` reste idempotent de son côté,
+        // mais seule sa valeur de retour nous dit qu'il a réutilisé une ligne.
+        $key = $request->input('idempotency_key');
+        $existed = is_string($key) && $key !== ''
+            && FuelIncident::query()
+                ->where('company_id', (string) $actor->company_id)
+                ->where('external_id', $key)
+                ->exists();
+
         $incident = $this->incidents->report($actor, $request->validated());
 
         // Pièces jointes contrôlées (métadonnées uniquement).
@@ -88,7 +99,15 @@ class FuelIncidentController extends Controller
             }
         }
 
-        return response()->json(['data' => $this->payload($incident->refresh())], 201);
+        $body = ['data' => $this->payload($incident->refresh())];
+
+        if ($existed) {
+            $body['replayed'] = true;
+
+            return response()->json($body, 200);
+        }
+
+        return response()->json($body, 201);
     }
 
     public function show(Request $request, FuelIncident $incident): JsonResponse
@@ -281,6 +300,7 @@ class FuelIncidentController extends Controller
             'equipment_type' => $incident->equipment_type,
             'equipment_id' => $incident->equipment_id,
             'severity' => $incident->severity,
+            'category' => $incident->category,
             'status' => $incident->status,
             'title' => $incident->title,
             'description' => $incident->description,
