@@ -335,3 +335,48 @@ jobs:
         shell: bash
         run: |
           echo "::notice::Drift front Vercel — déclencher le workflow de déploiement du front en production (travel-web-deploy.yml / marketplace-deploy.yml, workflow_dispatch) ; si les secrets VERCEL_* manquent, action propriétaire requise (#7994 §1 — jamais de token voué à révocation)."
+
+  # ────────────────────────────────────────────────────────────────────────
+  # #8147 — Alerte « prod derrière main > 1 h ».
+  # Le job `drift` ci-dessus n'échoue qu'à 24 h (PROD_DRIFT_MAX_AGE_HOURS) :
+  # c'est le seuil du DoD de #8092 (visibilité), pas celui de #8147 (réactivité).
+  # En production en free-tier, la queue et le scheduler vivent dans le
+  # conteneur web qui s'endort : une correction livrée n'atteint la prod que
+  # lorsqu'on déclenche un déploiement, et rien ne le rappelait sous 24 h.
+  # Ce job mesure le même écart, avec un seuil d'1 h, et échoue au-delà.
+  # Il reste NON BLOQUANT au merge (planifié, hors PR) et sans secret Vercel/Render :
+  # la santé de la prod est publique, l'API GitHub utilise github.token.
+  # ────────────────────────────────────────────────────────────────────────
+  prod-drift-alert:
+    name: Alerte prod derrière main > 1 h (#8147)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.repository == 'kitokoh/leopardo-hr'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 1
+
+      - name: Mesurer l'âge du retard prod ↔ main
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_URL: ${{ vars.PROD_RENDER_SERVICE_URL }}
+          MAX_AGE_HOURS: ${{ vars.PROD_DRIFT_ALERT_HOURS || 1 }}
+          SLACK_MONITORING_WEBHOOK_URL: ${{ secrets.SLACK_MONITORING_WEBHOOK_URL }}
+        run: |
+          set -Eeuo pipefail
+          if [[ -z "${TARGET_URL:-}" ]]; then
+            echo "::notice title=Alerte drift non configurée::vars.PROD_RENDER_SERVICE_URL absent — mesure ignorée (définir la variable de dépôt)."
+            exit 0
+          fi
+          bash dev-hub/tools/check-prod-drift-age.sh \
+            --url "${TARGET_URL}" \
+            --max-age-hours "${MAX_AGE_HOURS}" \
+            --slack-webhook "${SLACK_MONITORING_WEBHOOK_URL:-}"
+
+      - name: Rappel de remédiation
+        if: failure()
+        shell: bash
+        run: |
+          echo "::notice::Retard prod > seuil — deux causes possibles : (a) aucun déploiement déclenché alors que des commits attendent → poser les secrets Render puis deploy-main-catchup (#8397, docs/ops/RENDER_SECRETS_CHECKLIST.md) ; (b) tâches planifiées perdues au spin-down du conteneur web → services worker/scheduler dédiés (#8147, docs/ops/RENDER_WORKER_DECISION.md)."

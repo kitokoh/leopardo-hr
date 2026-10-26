@@ -227,6 +227,7 @@ le retard de déploiement doit être visible. Runbook : `docs/ops/travel-web-ver
 | `QUEUE_MAX_PENDING` / `QUEUE_MAX_FAILED` / `QUEUE_MAX_STALE_MINUTES` | `queue-supervision.yml` | Seuils d'alerte de la queue (jobs en attente, jobs échoués, ancienneté) | `50` / `10` / `10` |
 | `PROD_CATCHUP_MAX_AGE_HOURS` | `deploy-main-catchup.yml` (job `prod-catch-up`, #8092) | Âge (heures) au-delà duquel un deploy prod live SANS commit lisible (`commit: null`, héritage pré-#8092) est considéré en retard et rattrapé | `6` |
 | `PROD_DRIFT_MAX_AGE_HOURS` | `deploy-drift-guard.yml` (rapport prod↔main, #8092) | Âge (heures) du premier commit non déployé au-delà duquel le rapport prod↔main passe de `::warning` à échec rouge | `24` |
+| `PROD_DRIFT_ALERT_HOURS` | `deploy-drift-guard.yml` (job `prod-drift-alert`, #8147) | Âge (heures) du plus vieux commit non déployé au-delà duquel l'alerte de réactivité prod↔main échoue. Distinct de `PROD_DRIFT_MAX_AGE_HOURS` : celui-ci est le seuil de *visibilité* (24 h, #8092), celui-là le seuil de *réactivité* de #8147 | `1` |
 
 ### Propriété et rotation
 
