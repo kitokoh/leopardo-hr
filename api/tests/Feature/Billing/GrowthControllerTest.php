@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Billing;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Billing\Domain\Models\Partner;
 use Illuminate\Support\Facades\Hash;
@@ -34,9 +34,13 @@ class GrowthControllerTest extends TestCase
     use CreatesMvpSchema;
 
     protected Company $company;
+
     protected Company $otherCompany;
+
     protected Employee $manager;
+
     protected Employee $employee;
+
     protected Employee $otherManager;
 
     protected function setUp(): void
@@ -111,7 +115,7 @@ class GrowthControllerTest extends TestCase
             ->assertOk()
             ->assertJsonStructure([
                 'referral_code',
-                'stats'   => ['total_conversions', 'total_earned', 'pending_approval', 'approved_upcoming'],
+                'stats' => ['total_conversions', 'total_earned', 'pending_approval', 'approved_upcoming'],
                 'recent_commissions',
             ])
             ->assertJsonPath('stats.total_conversions', 0);
@@ -121,7 +125,7 @@ class GrowthControllerTest extends TestCase
     public function cross_tenant_isolation_on_partner_data(): void
     {
         $partnerA = $this->createPartnerFor($this->manager);
-        $codeB    = $this->createPartnerFor($this->otherManager)->referral_code;
+        $codeB = $this->createPartnerFor($this->otherManager)->referral_code;
 
         // Tenant A a une entreprise référencée → total_conversions=1 ; B n'en a
         // aucune. Si l'isolation fuitait, B verrait les conversions de A.
@@ -192,7 +196,7 @@ class GrowthControllerTest extends TestCase
     private function makeSuperAdmin(): SuperAdmin
     {
         $superAdmin = new SuperAdmin([
-            'name'  => 'Platform Admin',
+            'name' => 'Platform Admin',
             'email' => 'admin@leopardo-rh.com',
         ]);
         $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
@@ -209,7 +213,7 @@ class GrowthControllerTest extends TestCase
         $user = User::factory()->create(['email' => $employee->email]);
 
         return Partner::create([
-            'user_id'       => $user->id,
+            'user_id' => $user->id,
             'referral_code' => 'P-'.uniqid(),
         ]);
     }

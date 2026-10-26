@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Billing\Application\Actions;
 
-use App\Modules\Billing\Application\DTOs\CreatePartnerDTO;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Billing\Application\DTOs\CreatePartnerDTO;
 use App\Modules\Billing\Domain\Models\Partner;
 use Illuminate\Support\Facades\DB;
 
@@ -19,18 +19,17 @@ final class ApplyAsPartner
         return DB::transaction(function () use ($employee, $dto): Partner {
             /** @var Partner $partner */
             $partner = Partner::create([
-                'employee_id'  => $employee->id,
-                'company_id'   => $employee->company_id,
-                'name'         => $dto->name,
-                'email'        => $dto->email,
-                'phone'        => $dto->phone,
-                'website'      => $dto->website,
+                'employee_id' => $employee->id,
+                'company_id' => $employee->company_id,
+                'name' => $dto->name,
+                'email' => $dto->email,
+                'phone' => $dto->phone,
+                'website' => $dto->website,
                 'commission_rate' => $dto->commissionRate ?? 0.10,
-                'status'       => 'pending',
+                'status' => 'pending',
             ]);
 
             return $partner;
         });
     }
 }
-

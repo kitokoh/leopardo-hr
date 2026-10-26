@@ -10,11 +10,11 @@ use App\Exceptions\DomainException;
 use App\Http\Controllers\Controller;
 use App\Modules\Billing\Domain\Models\Partner;
 use App\Modules\Billing\Infrastructure\Services\PartnerService;
-use App\Modules\Payroll\Domain\Models\Commission;
-use Illuminate\Http\JsonResponse;
 use App\Modules\Billing\Interfaces\Api\V1\Requests\ApplyPartnerRequest;
 use App\Modules\Billing\Interfaces\Api\V1\Requests\PartnerPayoutCreateRequest;
-use Illuminate\Http\Request;
+use App\Modules\Payroll\Domain\Models\Commission;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -27,7 +27,7 @@ class PartnerDashboardController extends Controller
      * Nécessaire car le module Growth stocke les partenaires dans public.partners
      * liés à public.users, alors que l'auth Sanctum identifie un Employee tenant.
      */
-    private function resolveGlobalUser($authUser): User
+    private function resolveGlobalUser(?Authenticatable $authUser): User
     {
         if ($authUser instanceof User) {
             return $authUser;
@@ -63,7 +63,7 @@ class PartnerDashboardController extends Controller
             return new JsonResponse(['error' => 'ALREADY_EXISTS'], 400);
         }
 
-$validated = $request->validated();
+        $validated = $request->validated();
 
         try {
             $partner = $this->partnerService->apply($globalUser->id, $validated);
@@ -141,7 +141,11 @@ $validated = $request->validated();
         $partner = Partner::where('user_id', $globalUser->id)->first();
 
         if (! $partner) {
-            return new JsonResponse(['error' => 'NOT_A_PARTNER', 'message' => 'Vous n\'êtes pas enregistré comme partenaire.'], 403);
+            return new JsonResponse([
+                'error' => 'NOT_A_PARTNER',
+                'message' => __('errors.NOT_A_PARTNER'),
+                'localized_message' => __('errors.NOT_A_PARTNER'),
+            ], 403);
         }
 
         // Optimized with SQL aggregations instead of memory loading

@@ -50,8 +50,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::patch('/onboarding-setup/{stepKey}/skip', [OnboardingStepController::class, 'skip'])
         ->middleware('api.manager');
 
-
-
     // Feature Flags — read for all (la mise à jour de la matrice est réservée à
     // l'administration plateforme ; l'endpoint PUT #3892 n'a jamais été implémenté
     // et renvoyait 403 en dur — retiré du contrat).

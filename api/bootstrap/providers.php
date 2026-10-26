@@ -34,9 +34,9 @@ use App\Modules\Recruitment\Providers\RecruitmentServiceProvider;
 use App\Modules\Restaurant\Providers\RestaurantServiceProvider;
 use App\Modules\RestaurantManager\Providers\RestaurantManagerServiceProvider;
 use App\Modules\Retail\Providers\RetailServiceProvider;
-use App\Modules\Showcase\Providers\ShowcaseServiceProvider;
-// GSI-1 (#8512) — module Growth & Search Intelligence (SEO/SEA/AEO/GEO).
 use App\Modules\SearchIntelligence\Providers\SearchIntelligenceServiceProvider;
+// GSI-1 (#8512) — module Growth & Search Intelligence (SEO/SEA/AEO/GEO).
+use App\Modules\Showcase\Providers\ShowcaseServiceProvider;
 use App\Modules\Trade\Providers\TradeServiceProvider;
 use App\Modules\TravelAgency\Providers\TravelAgencyServiceProvider;
 use App\Modules\Vtc\Providers\VtcServiceProvider;

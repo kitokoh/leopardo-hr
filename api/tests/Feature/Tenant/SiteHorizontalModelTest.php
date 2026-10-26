@@ -25,6 +25,9 @@ final class SiteHorizontalModelTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     private function makeSite(array $attributes = []): Site
     {
         $site = new Site;
@@ -133,6 +136,7 @@ final class SiteHorizontalModelTest extends TestCase
         $site->save();
 
         $fresh = $site->fresh();
+        self::assertNotNull($fresh);
 
         self::assertTrue($fresh->hasCoordinates());
         // Le géocodage n'est pas une précondition : « manual » est un état
@@ -278,7 +282,7 @@ final class SiteHorizontalModelTest extends TestCase
             "opening_hours ne doit créer aucune ligne d'horaire RH",
         );
 
-        self::assertIsArray($site->fresh()->opening_hours);
+        self::assertIsArray($site->fresh()?->opening_hours);
     }
 
     public function test_media_ids_are_references_not_storage_keys(): void
@@ -287,6 +291,6 @@ final class SiteHorizontalModelTest extends TestCase
 
         // On stocke des identifiants, jamais une clé de stockage ni une URL
         // non contrôlée : un DTO public ne doit pas pouvoir exposer un bucket.
-        self::assertSame(['media_42', 'media_43'], $site->fresh()->media_ids);
+        self::assertSame(['media_42', 'media_43'], $site->fresh()?->media_ids);
     }
 }
