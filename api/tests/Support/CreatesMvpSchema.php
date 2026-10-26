@@ -5101,9 +5101,21 @@ trait CreatesMvpSchema
             Schema::create($this->moduleTable('travel_outbox_events'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->index();
+                // #8209 — aligne sur la migration de production
+                // (2026_08_29_000610_6024) : la colonne payload s'appelle
+                // `payload_redacted` (minimisation PII) et il n'y a pas
+                // d'agregats. Un stub a 4 colonnes masquait toute divergence.
+                $table->string('event_type', 80);
+                $table->jsonb('payload_redacted');
+                $table->string('status', 20)->default('pending');
+                $table->unsignedSmallInteger('attempts')->default(0);
+                $table->timestampTz('available_at')->useCurrent();
+                $table->text('last_error')->nullable();
+                $table->string('idempotency_key', 255);
                 $table->timestamps();
 
-                $table->index(['company_id', 'id']);
+                $table->unique(['company_id', 'idempotency_key'], 'travel_outbox_company_key_unique');
+                $table->index(['company_id', 'status', 'available_at'], 'travel_outbox_company_status_due_idx');
             });
         }
 
