@@ -509,6 +509,14 @@ jobs:
         if: needs.detect-changes.outputs.api_changed == 'true'
         run: dev-hub/tools/check-unrouted-controllers.sh api
 
+      - name: Mobile feature duplication guard (issue #7652)
+        # Une feature partagée vit dans leopardo_core/lib/features/<X>/ : une app
+        # qui recrée le même chemin fork la feature (correctifs et fixes de
+        # sécurité non propagés). La dette existante est gelée dans
+        # dev-hub/tools/mobile-feature-duplication-baseline.txt et ne peut que
+        # décroître — toute NOUVELLE duplication fait échouer ce check.
+        run: bash dev-hub/tools/check-mobile-feature-duplication.sh
+
       - name: Architecture docs parity guard — modules réels ↔ docs (issue #5589)
         if: needs.detect-changes.outputs.api_changed == 'true'
         run: bash dev-hub/tools/check-architecture-docs-parity.sh
