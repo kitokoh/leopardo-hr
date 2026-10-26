@@ -30,7 +30,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('campaigns')) {
+        if (! $this->publicTableExists('campaigns')) {
             Schema::create('campaigns', function (Blueprint $table) {
                 $table->id();
                 $table->enum('channel', ['google_ads', 'ms_ads', 'meta', 'other'])->default('google_ads');
@@ -50,7 +50,7 @@ return new class extends Migration
         // valeur par défaut trompeuse : `spend_cents`/`clicks`/`conversions`
         // sont NOT NULL parce qu'un relevé sans ces chiffres n'est pas un
         // relevé — l'API refuse l'insertion plutôt que de stocker des zéros.
-        if (! Schema::hasTable('campaign_metrics')) {
+        if (! $this->publicTableExists('campaign_metrics')) {
             Schema::create('campaign_metrics', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('campaign_id')->constrained('campaigns')->cascadeOnDelete();
@@ -82,7 +82,7 @@ return new class extends Migration
         // Bibliothèque questions-réponses (AEO). La contrainte CHECK matérialise
         // en base la règle métier « pas de publication sans révision humaine » :
         // même un INSERT direct en SQL ne peut pas la contourner.
-        if (! Schema::hasTable('aeo_questions')) {
+        if (! $this->publicTableExists('aeo_questions')) {
             Schema::create('aeo_questions', function (Blueprint $table) {
                 $table->id();
                 $table->text('question');
@@ -109,7 +109,7 @@ return new class extends Migration
         // checks de présence associés. Chaque check porte sa MÉTHODE explicite
         // (`method`) et la date d'observation : une présence sans méthode
         // vérifiable n'est pas une preuve.
-        if (! Schema::hasTable('geo_queries')) {
+        if (! $this->publicTableExists('geo_queries')) {
             Schema::create('geo_queries', function (Blueprint $table) {
                 $table->id();
                 $table->text('query');
@@ -122,7 +122,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('geo_checks')) {
+        if (! $this->publicTableExists('geo_checks')) {
             Schema::create('geo_checks', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('geo_query_id')->constrained('geo_queries')->cascadeOnDelete();
@@ -154,4 +154,24 @@ return new class extends Migration
         Schema::dropIfExists('campaign_metrics');
         Schema::dropIfExists('campaigns');
     }
+
+    /**
+     * `Schema::hasTable()` resolve via `current_schema()`, qui vaut
+     * `shared_tenants` sous le search_path de l'application. Un garde écrit
+     * avec `Schema::hasTable()` sur une table `public` renvoie donc TOUJOURS
+     * `false` : la migration rejoue `CREATE TABLE` et, si la table existe
+     * déjà, échoue ou est silencieusement sautée selon l'état. On interroge
+     * explicitement `public`.
+     */
+    private function publicTableExists(string $table): bool
+    {
+        /** @var object{exists: bool}|null $row */
+        $row = DB::selectOne(
+            'select exists (select 1 from information_schema.tables where table_schema = ? and table_name = ?) as exists',
+            ['public', $table],
+        );
+
+        return $row !== null && (bool) $row->exists;
+    }
+
 };

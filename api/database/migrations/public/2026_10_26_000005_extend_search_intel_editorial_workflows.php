@@ -40,29 +40,29 @@ return new class extends Migration
     /** GSI-4 (#8515) — bibliothèque AEO avec révision humaine obligatoire. */
     private function extendAeoQuestions(): void
     {
-        if (! Schema::hasTable('aeo_questions')) {
+        if (! $this->publicTableExists('aeo_questions')) {
             return;
         }
 
         Schema::table('aeo_questions', function (Blueprint $table): void {
-            if (! Schema::hasColumn('aeo_questions', 'sector')) {
+            if (! $this->publicColumnExists('aeo_questions', 'sector')) {
                 $table->string('sector', 40)->nullable();
             }
-            if (! Schema::hasColumn('aeo_questions', 'sources')) {
+            if (! $this->publicColumnExists('aeo_questions', 'sources')) {
                 // Liste de sources (URL) ayant servi à rédiger la réponse.
                 $table->jsonb('sources')->nullable();
             }
-            if (! Schema::hasColumn('aeo_questions', 'answer_draft')) {
+            if (! $this->publicColumnExists('aeo_questions', 'answer_draft')) {
                 $table->text('answer_draft')->nullable();
             }
             // FIGÉ au moment de la validation : c'est LUI qui est publié.
-            if (! Schema::hasColumn('aeo_questions', 'answer_approved')) {
+            if (! $this->publicColumnExists('aeo_questions', 'answer_approved')) {
                 $table->text('answer_approved')->nullable();
             }
-            if (! Schema::hasColumn('aeo_questions', 'approved_by')) {
+            if (! $this->publicColumnExists('aeo_questions', 'approved_by')) {
                 $table->foreignId('approved_by')->nullable();
             }
-            if (! Schema::hasColumn('aeo_questions', 'approved_at')) {
+            if (! $this->publicColumnExists('aeo_questions', 'approved_at')) {
                 $table->timestamp('approved_at')->nullable();
             }
         });
@@ -88,24 +88,24 @@ return new class extends Migration
     /** GSI-5 (#8516) — checks GEO avec méthode de preuve explicite. */
     private function extendGeoChecks(): void
     {
-        if (! Schema::hasTable('geo_checks')) {
+        if (! $this->publicTableExists('geo_checks')) {
             return;
         }
 
         Schema::table('geo_checks', function (Blueprint $table): void {
-            if (! Schema::hasColumn('geo_checks', 'leopardo_mentioned')) {
+            if (! $this->publicColumnExists('geo_checks', 'leopardo_mentioned')) {
                 $table->boolean('leopardo_mentioned')->default(false);
             }
-            if (! Schema::hasColumn('geo_checks', 'citation_url')) {
+            if (! $this->publicColumnExists('geo_checks', 'citation_url')) {
                 $table->text('citation_url')->nullable();
             }
-            if (! Schema::hasColumn('geo_checks', 'observed_text')) {
+            if (! $this->publicColumnExists('geo_checks', 'observed_text')) {
                 $table->text('observed_text')->nullable();
             }
-            if (! Schema::hasColumn('geo_checks', 'sources')) {
+            if (! $this->publicColumnExists('geo_checks', 'sources')) {
                 $table->jsonb('sources')->nullable();
             }
-            if (! Schema::hasColumn('geo_checks', 'checked_by')) {
+            if (! $this->publicColumnExists('geo_checks', 'checked_by')) {
                 $table->foreignId('checked_by')->nullable();
             }
         });
@@ -137,15 +137,15 @@ return new class extends Migration
     /** GSI-5 (#8516) — pages de référence d'une requête stratégique. */
     private function extendGeoQueries(): void
     {
-        if (! Schema::hasTable('geo_queries')) {
+        if (! $this->publicTableExists('geo_queries')) {
             return;
         }
 
         Schema::table('geo_queries', function (Blueprint $table): void {
-            if (! Schema::hasColumn('geo_queries', 'sector')) {
+            if (! $this->publicColumnExists('geo_queries', 'sector')) {
                 $table->string('sector', 40)->nullable();
             }
-            if (! Schema::hasColumn('geo_queries', 'reference_pages')) {
+            if (! $this->publicColumnExists('geo_queries', 'reference_pages')) {
                 $table->jsonb('reference_pages')->nullable();
             }
         });
@@ -154,24 +154,24 @@ return new class extends Migration
     /** GSI-6 (#8517) — contenu éditorial à statuts contrôlés. */
     private function extendContentItems(): void
     {
-        if (! Schema::hasTable('content_items')) {
+        if (! $this->publicTableExists('content_items')) {
             return;
         }
 
         Schema::table('content_items', function (Blueprint $table): void {
-            if (! Schema::hasColumn('content_items', 'sector')) {
+            if (! $this->publicColumnExists('content_items', 'sector')) {
                 $table->string('sector', 40)->nullable();
             }
-            if (! Schema::hasColumn('content_items', 'target_url')) {
+            if (! $this->publicColumnExists('content_items', 'target_url')) {
                 $table->text('target_url')->nullable();
             }
-            if (! Schema::hasColumn('content_items', 'scheduled_at')) {
+            if (! $this->publicColumnExists('content_items', 'scheduled_at')) {
                 $table->timestamp('scheduled_at')->nullable();
             }
-            if (! Schema::hasColumn('content_items', 'approved_by')) {
+            if (! $this->publicColumnExists('content_items', 'approved_by')) {
                 $table->foreignId('approved_by')->nullable();
             }
-            if (! Schema::hasColumn('content_items', 'approved_at')) {
+            if (! $this->publicColumnExists('content_items', 'approved_at')) {
                 $table->timestamp('approved_at')->nullable();
             }
         });
@@ -201,29 +201,29 @@ return new class extends Migration
     /** GSI-7 (#8518) — concurrence avec sources datées obligatoires. */
     private function extendCompetitors(): void
     {
-        if (! Schema::hasTable('competitors')) {
+        if (! $this->publicTableExists('competitors')) {
             return;
         }
 
         Schema::table('competitors', function (Blueprint $table): void {
-            if (! Schema::hasColumn('competitors', 'positioning')) {
+            if (! $this->publicColumnExists('competitors', 'positioning')) {
                 $table->text('positioning')->nullable();
             }
-            if (! Schema::hasColumn('competitors', 'value_proposition')) {
+            if (! $this->publicColumnExists('competitors', 'value_proposition')) {
                 $table->text('value_proposition')->nullable();
             }
-            if (! Schema::hasColumn('competitors', 'public_features')) {
+            if (! $this->publicColumnExists('competitors', 'public_features')) {
                 $table->jsonb('public_features')->nullable();
             }
-            if (! Schema::hasColumn('competitors', 'pricing_notes')) {
+            if (! $this->publicColumnExists('competitors', 'pricing_notes')) {
                 $table->text('pricing_notes')->nullable();
             }
-            if (! Schema::hasColumn('competitors', 'pricing_sources')) {
+            if (! $this->publicColumnExists('competitors', 'pricing_sources')) {
                 // [{url, label, observed_at}] — obligatoire dès qu'il y a des
                 // notes de tarification.
                 $table->jsonb('pricing_sources')->nullable();
             }
-            if (! Schema::hasColumn('competitors', 'last_reviewed_at')) {
+            if (! $this->publicColumnExists('competitors', 'last_reviewed_at')) {
                 $table->timestamp('last_reviewed_at')->nullable();
             }
         });
@@ -239,7 +239,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (Schema::hasTable('competitors')) {
+        if ($this->publicTableExists('competitors')) {
             DB::statement('ALTER TABLE competitors DROP CONSTRAINT IF EXISTS competitors_pricing_requires_sources');
             Schema::table('competitors', function (Blueprint $table): void {
                 foreach (['last_reviewed_at', 'pricing_sources', 'pricing_notes', 'public_features', 'value_proposition', 'positioning'] as $c) {
@@ -250,7 +250,7 @@ return new class extends Migration
             });
         }
 
-        if (Schema::hasTable('content_items')) {
+        if ($this->publicTableExists('content_items')) {
             DB::statement('ALTER TABLE content_items DROP CONSTRAINT IF EXISTS content_items_status_check');
             DB::statement('ALTER TABLE content_items DROP CONSTRAINT IF EXISTS content_items_kind_check');
             Schema::table('content_items', function (Blueprint $table): void {
@@ -262,7 +262,7 @@ return new class extends Migration
             });
         }
 
-        if (Schema::hasTable('geo_queries')) {
+        if ($this->publicTableExists('geo_queries')) {
             Schema::table('geo_queries', function (Blueprint $table): void {
                 foreach (['reference_pages', 'sector'] as $c) {
                     if (Schema::hasColumn('geo_queries', $c)) {
@@ -272,7 +272,7 @@ return new class extends Migration
             });
         }
 
-        if (Schema::hasTable('geo_checks')) {
+        if ($this->publicTableExists('geo_checks')) {
             DB::statement('ALTER TABLE geo_checks DROP CONSTRAINT IF EXISTS geo_checks_engine_check');
             DB::statement('ALTER TABLE geo_checks DROP CONSTRAINT IF EXISTS geo_checks_method_check');
             Schema::table('geo_checks', function (Blueprint $table): void {
@@ -284,7 +284,7 @@ return new class extends Migration
             });
         }
 
-        if (Schema::hasTable('aeo_questions')) {
+        if ($this->publicTableExists('aeo_questions')) {
             DB::statement('ALTER TABLE aeo_questions DROP CONSTRAINT IF EXISTS aeo_questions_publish_requires_human_review');
             DB::statement('ALTER TABLE aeo_questions DROP CONSTRAINT IF EXISTS aeo_questions_status_check');
             Schema::table('aeo_questions', function (Blueprint $table): void {
@@ -296,4 +296,34 @@ return new class extends Migration
             });
         }
     }
+
+    /**
+     * `Schema::hasTable()` / `hasColumn()` résolvent via `current_schema()`,
+     * qui vaut `shared_tenants` hors du harnais de test : un garde sur une
+     * table `public` renvoie alors systématiquement `false` et la migration
+     * saute ses ALTER sans rien signaler. On interroge `public` explicitement.
+     */
+    private function publicTableExists(string $table): bool
+    {
+        /** @var object{exists: bool}|null $row */
+        $row = DB::selectOne(
+            'select exists (select 1 from information_schema.tables where table_schema = ? and table_name = ?) as exists',
+            ['public', $table],
+        );
+
+        return $row !== null && (bool) $row->exists;
+    }
+
+    private function publicColumnExists(string $table, string $column): bool
+    {
+        /** @var object{exists: bool}|null $row */
+        $row = DB::selectOne(
+            'select exists (select 1 from information_schema.columns '
+            .'where table_schema = ? and table_name = ? and column_name = ?) as exists',
+            ['public', $table, $column],
+        );
+
+        return $row !== null && (bool) $row->exists;
+    }
+
 };
