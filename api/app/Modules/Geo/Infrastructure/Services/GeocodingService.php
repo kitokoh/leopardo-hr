@@ -40,7 +40,7 @@ final class GeocodingService
      * Résout une adresse en coordonnées.
      *
      * @return array{point: GeoPoint, cached: bool}|null null si l'adresse
-     *         n'est pas résolue (le fournisseur ne sait pas, ou est désactivé).
+     *                                                   n'est pas résolue (le fournisseur ne sait pas, ou est désactivé).
      */
     public function geocode(string $address, ?string $countryCode = null): ?array
     {
