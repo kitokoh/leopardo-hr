@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * GSI-1 (#8512) / GSI-2 (#8513) — routes du module Growth & Search Intelligence.
+ * Routes du module Growth & Search Intelligence (GSI).
  *
  * Chargé depuis `routes/api.php` à l'INTÉRIEUR du groupe `platform` :
  *  - préfixe déjà `platform` côté api.php, on ajoute `search-intel` ici ;
@@ -14,8 +14,14 @@ declare(strict_types=1);
  * nature (le parc de sites public est unique), et un token Sanctum employee
  * n'a même pas le guard `super_admin_api` → 401 systématique.
  *
- * Lecture = `search_intel.view` ; toute écriture = `search_intel.manage`.
+ * Règle de permission, appliquée sans exception :
+ *  - **lecture** → `search_intel.view` (marketing, finance, ops, admin) ;
+ *  - **écriture** → `search_intel.manage` (marketing, admin).
  */
+use App\Modules\SearchIntelligence\Interfaces\Api\V1\Controllers\SearchIntelAeoController;
+use App\Modules\SearchIntelligence\Interfaces\Api\V1\Controllers\SearchIntelCompetitorController;
+use App\Modules\SearchIntelligence\Interfaces\Api\V1\Controllers\SearchIntelContentController;
+use App\Modules\SearchIntelligence\Interfaces\Api\V1\Controllers\SearchIntelGeoController;
 use App\Modules\SearchIntelligence\Interfaces\Api\V1\Controllers\SearchIntelIntegrationController;
 use App\Modules\SearchIntelligence\Interfaces\Api\V1\Controllers\SearchIntelOverviewController;
 use App\Modules\SearchIntelligence\Interfaces\Api\V1\Controllers\SearchIntelScanController;
@@ -23,30 +29,104 @@ use App\Modules\SearchIntelligence\Interfaces\Api\V1\Controllers\SearchIntelSeoI
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('search-intel')->group(function (): void {
-    // GSI-9 (#8520) — vue d'ensemble : compteurs réels + états « non connecté »
-    // honnêtes. Lecture seule.
+    // ─── Vue d'ensemble et intégrations ─────────────────────────────────────
     Route::get('/overview', SearchIntelOverviewController::class)
         ->middleware('platform.permission:search_intel.view');
 
-    // GSI-8 (#8519) — état des connecteurs GSC/GA4/Google Ads/MS Ads.
-    // N'expose jamais les secrets (cf. SearchIntelIntegrationController).
     Route::get('/integrations', [SearchIntelIntegrationController::class, 'index'])
         ->middleware('platform.permission:search_intel.view');
 
-    // GSI-2 (#8513) — SE0 : métadonnées du workflow (libellés, gravités).
+    // ─── GSI-2 : SEO technique et workflow de traitement ────────────────────
     Route::get('/seo/meta', [SearchIntelSeoIssueController::class, 'meta'])
         ->middleware('platform.permission:search_intel.view');
 
-    // File de traitement des anomalies, triée par gravité.
     Route::get('/seo/issues', [SearchIntelSeoIssueController::class, 'index'])
         ->middleware('platform.permission:search_intel.view');
 
-    // Transition de workflow — auditée. `manage` : c'est une écriture d'état.
     Route::patch('/seo/issues/{issue}/transition', [SearchIntelSeoIssueController::class, 'transition'])
         ->whereNumber('issue')
         ->middleware('platform.permission:search_intel.manage');
 
-    // Déclenchement d'un scan — LECTURE SEULE côté site, écriture côté base.
     Route::post('/seo/scan', SearchIntelScanController::class)
+        ->middleware('platform.permission:search_intel.manage');
+
+    // ─── GSI-4 : AEO, révision humaine obligatoire ──────────────────────────
+    Route::get('/aeo/questions', [SearchIntelAeoController::class, 'index'])
+        ->middleware('platform.permission:search_intel.view');
+
+    Route::post('/aeo/questions', [SearchIntelAeoController::class, 'store'])
+        ->middleware('platform.permission:search_intel.manage');
+
+    Route::patch('/aeo/questions/{question}', [SearchIntelAeoController::class, 'update'])
+        ->whereNumber('question')
+        ->middleware('platform.permission:search_intel.manage');
+
+    // Transitions : soumission, VALIDATION (fige la réponse), publication.
+    Route::post('/aeo/questions/{question}/submit', [SearchIntelAeoController::class, 'submit'])
+        ->whereNumber('question')
+        ->middleware('platform.permission:search_intel.manage');
+
+    Route::post('/aeo/questions/{question}/approve', [SearchIntelAeoController::class, 'approve'])
+        ->whereNumber('question')
+        ->middleware('platform.permission:search_intel.manage');
+
+    Route::post('/aeo/questions/{question}/publish', [SearchIntelAeoController::class, 'publish'])
+        ->whereNumber('question')
+        ->middleware('platform.permission:search_intel.manage');
+
+    Route::post('/aeo/questions/{question}/to-update', [SearchIntelAeoController::class, 'toUpdate'])
+        ->whereNumber('question')
+        ->middleware('platform.permission:search_intel.manage');
+
+    // ─── GSI-5 : GEO, méthode de preuve explicite ───────────────────────────
+    Route::get('/geo/queries', [SearchIntelGeoController::class, 'indexQueries'])
+        ->middleware('platform.permission:search_intel.view');
+
+    Route::post('/geo/queries', [SearchIntelGeoController::class, 'storeQuery'])
+        ->middleware('platform.permission:search_intel.manage');
+
+    Route::get('/geo/queries/{geoQuery}/checks', [SearchIntelGeoController::class, 'indexChecks'])
+        ->whereNumber('geoQuery')
+        ->middleware('platform.permission:search_intel.view');
+
+    Route::post('/geo/queries/{geoQuery}/checks', [SearchIntelGeoController::class, 'storeCheck'])
+        ->whereNumber('geoQuery')
+        ->middleware('platform.permission:search_intel.manage');
+
+    // Pas de PATCH ni DELETE sur un check : l'historique est immuable.
+
+    // ─── GSI-6 : contenu marketing, statuts contrôlés ───────────────────────
+    Route::get('/content', [SearchIntelContentController::class, 'index'])
+        ->middleware('platform.permission:search_intel.view');
+
+    // L'export doit être déclaré AVANT `/content/{...}` pour ne pas être
+    // capté par un paramètre de route.
+    Route::get('/content/export', [SearchIntelContentController::class, 'export'])
+        ->middleware('platform.permission:search_intel.view');
+
+    Route::post('/content', [SearchIntelContentController::class, 'store'])
+        ->middleware('platform.permission:search_intel.manage');
+
+    Route::patch('/content/{content}', [SearchIntelContentController::class, 'update'])
+        ->whereNumber('content')
+        ->middleware('platform.permission:search_intel.manage');
+
+    Route::post('/content/{content}/transition', [SearchIntelContentController::class, 'transition'])
+        ->whereNumber('content')
+        ->middleware('platform.permission:search_intel.manage');
+
+    // ─── GSI-7 : veille concurrentielle, sources datées obligatoires ────────
+    Route::get('/competitors', [SearchIntelCompetitorController::class, 'index'])
+        ->middleware('platform.permission:search_intel.view');
+
+    Route::post('/competitors', [SearchIntelCompetitorController::class, 'store'])
+        ->middleware('platform.permission:search_intel.manage');
+
+    Route::patch('/competitors/{competitor}', [SearchIntelCompetitorController::class, 'update'])
+        ->whereNumber('competitor')
+        ->middleware('platform.permission:search_intel.manage');
+
+    Route::post('/competitors/{competitor}/review', [SearchIntelCompetitorController::class, 'review'])
+        ->whereNumber('competitor')
         ->middleware('platform.permission:search_intel.manage');
 });

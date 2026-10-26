@@ -13,21 +13,25 @@ use Illuminate\Support\Carbon;
 /**
  * GSI-4 (#8515) — question/réponse AEO avec révision humaine obligatoire.
  *
- * `publish()` est le SEUL chemin de publication côté application : il vérifie
- * la machine à états et la présence des preuves de révision, puis renseigne
- * `published_at`. La contrainte CHECK de la table double la règle pour les
- * écritures qui contourneraient le modèle.
+ * Deux champs de réponse, et la distinction est le cœur du dispositif :
+ *  - `answer_draft` — ce que l'IA (ou un rédacteur) propose ;
+ *  - `answer_approved` — ce que l'humain a relu, FIGÉ à la validation.
+ *
+ * `approve()` copie le brouillon dans le figé et horodate l'acte. `publish()`
+ * publie le figé, jamais le brouillon : une modification du brouillon après
+ * validation ne peut donc pas fuiter en production sans nouvelle validation.
  *
  * @property int $id
  * @property string $question
- * @property string|null $answer
+ * @property string|null $answer_draft
+ * @property string|null $answer_approved
+ * @property string|null $sector
  * @property string $locale
  * @property AeoQuestionStatus $status
- * @property int|null $reviewed_by
- * @property Carbon|null $reviewed_at
+ * @property array<int, mixed>|null $sources
+ * @property int|null $approved_by
+ * @property Carbon|null $approved_at
  * @property Carbon|null $published_at
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
  */
@@ -37,11 +41,10 @@ class AeoQuestion extends Model
 
     protected $fillable = [
         'question',
-        'answer',
+        'answer_draft',
+        'sector',
         'locale',
-        'status',
-        'reviewed_by',
-        'reviewed_at',
+        'sources',
     ];
 
     /** @return array<string, string> */
@@ -49,35 +52,74 @@ class AeoQuestion extends Model
     {
         return [
             'status' => AeoQuestionStatus::class,
-            'reviewed_by' => 'integer',
-            'reviewed_at' => 'datetime',
+            'sources' => 'array',
+            'approved_by' => 'integer',
+            'approved_at' => 'datetime',
             'published_at' => 'datetime',
         ];
     }
 
     /**
-     * Enregistre la révision humaine : c'est cet acte (qui + quand) qui
-     * autorise ensuite la publication.
+     * Soumet le brouillon à la relecture.
+     *
+     * @throws ReviewRequiredException si le statut ne le permet pas.
      */
-    public function markReviewed(int $reviewedBy, ?Carbon $at = null): void
+    public function submitForReview(): void
     {
-        $this->status = AeoQuestionStatus::Reviewed;
-        $this->reviewed_by = $reviewedBy;
-        $this->reviewed_at = $at ?? Carbon::now();
+        $this->assertTransition(AeoQuestionStatus::InReview);
+        $this->status = AeoQuestionStatus::InReview;
     }
 
     /**
-     * Publie la réponse.
+     * ACTE DE VALIDATION HUMAINE : fige le brouillon courant dans
+     * `answer_approved` et enregistre qui, quand.
      *
-     * @throws ReviewRequiredException si la révision humaine manque ou si la
-     *         machine à états refuse la transition.
+     * @throws ReviewRequiredException
+     */
+    public function approve(int $approvedBy, ?Carbon $at = null): void
+    {
+        $this->assertTransition(AeoQuestionStatus::Approved);
+
+        if ($this->answer_draft === null || trim($this->answer_draft) === '') {
+            throw new ReviewRequiredException('Impossible de valider une réponse vide.');
+        }
+
+        $this->status = AeoQuestionStatus::Approved;
+        $this->answer_approved = $this->answer_draft;
+        $this->approved_by = $approvedBy;
+        $this->approved_at = $at ?? Carbon::now();
+    }
+
+    /**
+     * Publie la réponse FIGÉE.
+     *
+     * @throws ReviewRequiredException si la validation humaine manque.
      */
     public function publish(?Carbon $at = null): void
     {
-        $this->status->assertPublishable($this->reviewed_by, $this->answer);
+        $this->status->assertPublishable($this->approved_by, $this->answer_approved);
 
         $this->status = AeoQuestionStatus::Published;
         $this->published_at = $at ?? Carbon::now();
+    }
+
+    /** Le contenu publié a vieilli : il sort du public sans être détruit. */
+    public function markToUpdate(): void
+    {
+        $this->assertTransition(AeoQuestionStatus::ToUpdate);
+        $this->status = AeoQuestionStatus::ToUpdate;
+    }
+
+    /** @throws ReviewRequiredException */
+    private function assertTransition(AeoQuestionStatus $target): void
+    {
+        if (! $this->status->canTransitionTo($target)) {
+            throw new ReviewRequiredException(sprintf(
+                'Transition %s → %s refusée pour la question AEO.',
+                $this->status->value,
+                $target->value,
+            ));
+        }
     }
 
     /** @param  Builder<self>  $query */
