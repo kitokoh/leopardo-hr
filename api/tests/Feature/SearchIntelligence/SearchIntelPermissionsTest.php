@@ -59,7 +59,9 @@ final class SearchIntelPermissionsTest extends TestCase
 
         $this->getJson('/api/v1/platform/search-intel/overview')
             ->assertOk()
-            ->assertJsonPath('data.seo.pages_tracked', 0);
+            // GSI-9 : chaque KPI est désormais enveloppé avec sa provenance,
+            // donc la valeur se lit sous `.value`.
+            ->assertJsonPath('data.seo.pages_tracked.value', 0);
     }
 
     public function test_marketing_role_holds_view_and_manage(): void
