@@ -18,7 +18,6 @@ use App\Modules\Fleet\Providers\FleetServiceProvider;
 use App\Modules\FuelStation\Providers\FuelStationServiceProvider;
 use App\Modules\Fundraising\Providers\FundraisingServiceProvider;
 use App\Modules\Geo\Providers\GeoServiceProvider;
-use App\Modules\Growth\Providers\GrowthServiceProvider;
 use App\Modules\HealthManager\Providers\HealthManagerServiceProvider;
 use App\Modules\HospitalityManager\Providers\HospitalityManagerServiceProvider;
 use App\Modules\HR\Providers\HRServiceProvider;
@@ -67,7 +66,6 @@ return [
     BillingServiceProvider::class,
     CamerasServiceProvider::class,
     CrmServiceProvider::class,
-    GrowthServiceProvider::class,
     AbsenceServiceProvider::class,
     ExpenseServiceProvider::class,
     NotificationServiceProvider::class,

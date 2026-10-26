@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Growth\Domain\Exceptions;
+namespace App\Modules\Billing\Domain\Exceptions;
 
 use App\Exceptions\DomainException;
 

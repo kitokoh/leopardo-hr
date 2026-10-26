@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Growth\Interfaces\Api\V1\Controllers;
+namespace App\Modules\Billing\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
@@ -12,8 +12,8 @@ use App\Modules\Billing\Domain\Models\Partner;
 use App\Modules\Billing\Infrastructure\Services\PartnerService;
 use App\Modules\Payroll\Domain\Models\Commission;
 use Illuminate\Http\JsonResponse;
-use App\Modules\Growth\Interfaces\Api\V1\Requests\ApplyPartnerRequest;
-use App\Modules\Growth\Interfaces\Api\V1\Requests\PartnerPayoutCreateRequest;
+use App\Modules\Billing\Interfaces\Api\V1\Requests\ApplyPartnerRequest;
+use App\Modules\Billing\Interfaces\Api\V1\Requests\PartnerPayoutCreateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;

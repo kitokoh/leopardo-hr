@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Growth\Application\Actions;
+namespace App\Modules\Billing\Application\Actions;
 
-use App\Modules\Growth\Application\DTOs\CreatePartnerDTO;
+use App\Modules\Billing\Application\DTOs\CreatePartnerDTO;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Billing\Domain\Models\Partner;
 use Illuminate\Support\Facades\DB;

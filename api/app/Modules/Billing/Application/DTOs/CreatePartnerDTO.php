@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Growth\Application\DTOs;
+namespace App\Modules\Billing\Application\DTOs;
 
 final class CreatePartnerDTO
 {

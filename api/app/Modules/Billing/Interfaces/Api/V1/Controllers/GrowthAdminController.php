@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Growth\Interfaces\Api\V1\Controllers;
+namespace App\Modules\Billing\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Billing\Domain\Models\Partner;
@@ -11,9 +11,9 @@ use App\Modules\Billing\Domain\Models\PartnerPayoutRequest;
 use App\Modules\Billing\Infrastructure\Services\PartnerService;
 use App\Modules\Payroll\Domain\Models\Commission;
 use Illuminate\Http\JsonResponse;
-use App\Modules\Growth\Interfaces\Api\V1\Requests\UpdateApplicationStatusRequest;
-use App\Modules\Growth\Interfaces\Api\V1\Requests\UpdatePartnerRateRequest;
-use App\Modules\Growth\Interfaces\Api\V1\Requests\UpdatePayoutStatusRequest;
+use App\Modules\Billing\Interfaces\Api\V1\Requests\UpdateApplicationStatusRequest;
+use App\Modules\Billing\Interfaces\Api\V1\Requests\UpdatePartnerRateRequest;
+use App\Modules\Billing\Interfaces\Api\V1\Requests\UpdatePayoutStatusRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

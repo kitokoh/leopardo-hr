@@ -13,6 +13,7 @@ api/app/Modules/Accounting/Application/Services/DocumentWorkflowService.php:22:u
 api/app/Modules/Accounting/Domain/Contracts/PaymentGatewayInterface.php:7:use App\Modules\Accounting\Application\DTOs\PaymentCheckout;
 api/app/Modules/Accounting/Domain/Contracts/PaymentGatewayInterface.php:8:use App\Modules\Accounting\Application\DTOs\PaymentWebhookData;
 api/app/Modules/Attendance/Application/Actions/ApproveGeoSession.php:14:use Illuminate\Support\Facades\DB;
+api/app/Modules/Billing/Application/Actions/ApplyAsPartner.php:10:use Illuminate\Support\Facades\DB;
 api/app/Modules/Billing/Application/Actions/ProvisionGuidedTrial.php:14:use Illuminate\Support\Facades\DB;
 api/app/Modules/Billing/Application/Actions/ProvisionGuidedTrial.php:15:use Illuminate\Support\Facades\Hash;
 api/app/Modules/Billing/Application/Actions/ProvisionGuidedTrial.php:16:use Illuminate\Support\Facades\Log;
@@ -43,7 +44,6 @@ api/app/Modules/CRM/Application/Services/CrmEmailService.php:17:use Illuminate\S
 api/app/Modules/CRM/Application/Services/SegmentService.php:13:use Illuminate\Support\Facades\Auth;
 api/app/Modules/CRM/Application/Services/SegmentService.php:14:use Illuminate\Support\Facades\DB;
 api/app/Modules/EdgeSync/Application/Actions/PushEdgeRecords.php:9:use Illuminate\Support\Facades\DB;
-api/app/Modules/Growth/Application/Actions/ApplyAsPartner.php:10:use Illuminate\Support\Facades\DB;
 api/app/Modules/HR/Domain/Models/UserInvitation.php:11:use Illuminate\Support\Facades\DB;
 api/app/Modules/Marketing/Application/Actions/ConnectSocialAccount.php:10:use Illuminate\Support\Facades\DB;
 api/app/Modules/Marketing/Application/Actions/CreateSocialPost.php:11:use Illuminate\Support\Facades\DB;

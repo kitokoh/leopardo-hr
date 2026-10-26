@@ -30,7 +30,6 @@
     "api/routes/modules/fuel_station.php": "tenant",
     "api/routes/modules/fundraising.php": "mixed",
     "api/routes/modules/geo.php": "tenant",
-    "api/routes/modules/growth.php": "tenant",
     "api/routes/modules/health_manager.php": "tenant",
     "api/routes/modules/hospitality_manager.php": "tenant",
     "api/routes/modules/hr_app.php": "tenant",
