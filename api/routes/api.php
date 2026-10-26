@@ -628,6 +628,12 @@ Route::prefix('v1')->group(function (): void {
         // commercial prive d'un tenant (prix, offres, messages, documents).
         Route::get('/trade/overview', [\App\Modules\Trade\Interfaces\Api\V1\Controllers\PlatformTradeController::class, 'overview'])->middleware('platform.permission:companies.view');
         Route::get('/trade/integrations', [\App\Modules\Trade\Interfaces\Api\V1\Controllers\PlatformTradeController::class, 'integrations'])->middleware('platform.permission:companies.view');
+
+        // GSI-1 (#8512) — Growth & Search Intelligence : le module pose ses
+        // routes SOUS le groupe `platform` déjà protégé (auth:super_admin_api),
+        // avec ses propres gardes `search_intel.view` / `search_intel.manage`.
+        // Aucune seconde console : ce sont de nouveaux écrans de celle-ci.
+        require __DIR__.'/modules/search_intelligence.php';
         Route::delete('/companies/{company}', [PlatformCompanyDeletionController::class, 'destroy'])->middleware('platform.permission:companies.manage');
 
         // #8441 — paramétrage de la verticale cagnottes DANS le contexte de

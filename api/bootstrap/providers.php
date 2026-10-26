@@ -36,6 +36,8 @@ use App\Modules\Restaurant\Providers\RestaurantServiceProvider;
 use App\Modules\RestaurantManager\Providers\RestaurantManagerServiceProvider;
 use App\Modules\Retail\Providers\RetailServiceProvider;
 use App\Modules\Showcase\Providers\ShowcaseServiceProvider;
+// GSI-1 (#8512) — module Growth & Search Intelligence (SEO/SEA/AEO/GEO).
+use App\Modules\SearchIntelligence\Providers\SearchIntelligenceServiceProvider;
 use App\Modules\Trade\Providers\TradeServiceProvider;
 use App\Modules\TravelAgency\Providers\TravelAgencyServiceProvider;
 use App\Modules\Vtc\Providers\VtcServiceProvider;
@@ -70,6 +72,9 @@ return [
     ExpenseServiceProvider::class,
     NotificationServiceProvider::class,
     PlatformServiceProvider::class,
+    // GSI-1 (#8512) — pilotage Growth & Search Intelligence depuis la console
+    // plateforme (routes chargées via routes/api.php).
+    SearchIntelligenceServiceProvider::class,
     OnboardingServiceProvider::class,
     EdgeSyncServiceProvider::class,
     MarketingServiceProvider::class,
