@@ -166,6 +166,9 @@ jobs:
       - name: Canonical domains guard (issue #3706)
         run: bash dev-hub/tools/check-canonical-domains.sh
 
+      - name: Public docs — no PII guard (issue #7982)
+        run: bash dev-hub/tools/check-public-docs-no-pii.sh origin/main
+
       - name: Mobile Firebase stubs guard (issue #3152)
         run: bash dev-hub/tools/check-mobile-firebase-configs.sh
 

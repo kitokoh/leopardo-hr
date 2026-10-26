@@ -79,7 +79,16 @@ Ce dépôt est **public (MIT)**. Ne DOIVENT PAS être publiés dans `docs/` :
 - **Prompts d'orchestration IA internes** (`PROMPTS_EXECUTION/`) : mode opératoire interne.
 - **Données personnelles** de pilotes/employés (carnets `pilotes/`, sessions QA nominatives).
 
-**Décision propriétaire requise (tracée dans #7982)** : déplacer `business/vente/` (au minimum les CSV CRM et scripts), `PROMPTS_EXECUTION/` et les carnets nominatifs de `pilotes/` vers un **dépôt privé** (`leopardo-internal`), ou assumer explicitement leur publication. En attendant : CSV anonymisés + bandeaux « contenu interne » posés (2026-09-23).
+**Décision propriétaire — TRANCHÉE le 2026-10-26 (#7982) : transparence assumée.**
+
+Le contenu commercial (scripts de vente, stratégie d'acquisition, grille tarifaire, pipeline d'exemple) **reste publié** dans ce dépôt public. C'est un choix cohérent avec la licence MIT : le pricing est déjà public sur le site `leopardo-rh.com`, et une grille tarifaire visible n'est pas un secret industriel. Créer un dépôt privé pour y déplacer des scripts de prospection aurait coûté un second dépôt à maintenir pour un gain de confidentialité faible.
+
+**Ce qui reste interdit** (et est désormais *vérifié* par `dev-hub/tools/check-public-docs-no-pii.sh`) :
+
+- des **coordonnées personnelles réelles** (e-mail individuel, téléphone) dans `docs/` ;
+- des **lignes de CRM nominatives** non marquées `DONNEES FICTIVES` — les CSV de pipeline doivent être explicitement fictifs, ligne par ligne.
+
+Ce que la décision **ne** couvre **pas** (toujours interdit, non négociable) : secrets et credentials, données personnelles de pilotes ou d'employés, données de production.
 
 ---
 
