@@ -178,7 +178,9 @@ final class LoginCodeSmsChannelTest extends TestCase
                 return true;
             }
 
-            public function send(string $e164, string $code, string $locale): ?string
+            // Type de retour resserre a `string` (covariance) : cet anonyme
+            // reussit toujours, donc PHPStan signale un `?string` inutile.
+            public function send(string $e164, string $code, string $locale): string
             {
                 return 'trace_test';
             }

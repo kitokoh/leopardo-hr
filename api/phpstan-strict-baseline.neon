@@ -5024,19 +5024,6 @@ parameters:
 			identifier: classConstant.notFound
 			count: 1
 			path: tests/Feature/Fuel/FuelImportExportTest.php
-
-		-
-			message: '#^Access to an undefined property Tests\\Feature\\Fuel\\FuelIncidentApiTest\:\:\$companyA\.$#'
-			identifier: property.notFound
-			count: 10
-			path: tests/Feature/Fuel/FuelIncidentApiTest.php
-
-		-
-			message: '#^Access to an undefined property Tests\\Feature\\Fuel\\FuelIncidentApiTest\:\:\$companyB\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Fuel/FuelIncidentApiTest.php
-
 		-
 			message: '#^Method Tests\\Feature\\Fuel\\FuelIncidentApiTest\:\:createStation\(\) is unused\.$#'
 			identifier: method.unused

@@ -8,13 +8,13 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\FuelStation\Domain\Models\FuelIncident;
 use App\Modules\FuelStation\Domain\Models\FuelIncidentAttachment;
+use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
-use Illuminate\Http\UploadedFile;
 
 /**
  * Incidents, maintenance et tâches — FUEL-010 (issue #5804).
@@ -27,6 +27,18 @@ use Illuminate\Http\UploadedFile;
 class FuelIncidentApiTest extends TestCase
 {
     use RefreshTenantDatabase;
+
+    /**
+     * Tenant de reference des fixtures (le seul reellement relu par les tests).
+     *
+     * `$companyB` n'est jamais relu : il etait ecrit en `setUp()` et declare
+     * en propriete, ce qui declenchait `property.onlyWritten` — et la baseline
+     * tolérait auparavant 10 acces non declares sur `$companyA` alors que le
+     * fichier en comptait 12 (tolerance devenue fausse, check requis rouge).
+     * On declare donc uniquement ce qui est lu ; `$companyB` reste une
+     * variable locale.
+     */
+    private Company $companyA;
 
     private function company(): Company
     {
@@ -210,14 +222,12 @@ class FuelIncidentApiTest extends TestCase
         $this->postJson('/api/v1/fuel-station/incidents/'.$incident->id.'/close', ['closure_notes' => 'x'])->assertStatus(404);
     }
 
-
     public function test_unauthenticated_gets_401(): void
     {
         $this->postJson('/api/v1/fuel-station/incidents', [
             'description_redacted' => 'Pompe 1 hors service',
         ])->assertStatus(401);
     }
-
 
     public function test_operator_reports_incident(): void
     {
@@ -246,7 +256,6 @@ class FuelIncidentApiTest extends TestCase
             'reported_by' => $operator->id,
         ]);
     }
-
 
     public function test_incident_workflow_assign_resolve_close(): void
     {
@@ -280,7 +289,6 @@ class FuelIncidentApiTest extends TestCase
         ]);
     }
 
-
     public function test_illegal_transition_is_rejected(): void
     {
         [$company, $manager, $incident] = $this->seedIncident();
@@ -293,7 +301,6 @@ class FuelIncidentApiTest extends TestCase
 
         $this->assertSame('reported', $incident->refresh()->status);
     }
-
 
     public function test_operator_cannot_transition_incident(): void
     {
@@ -309,7 +316,6 @@ class FuelIncidentApiTest extends TestCase
             ->assertStatus(403);
     }
 
-
     public function test_manager_lists_and_sees_incidents(): void
     {
         [$company, $manager, $incident] = $this->seedIncident();
@@ -324,7 +330,6 @@ class FuelIncidentApiTest extends TestCase
             ->assertStatus(200)
             ->assertJsonPath('data.id', $incident->id);
     }
-
 
     public function test_maintenance_task_workflow(): void
     {
@@ -366,7 +371,6 @@ class FuelIncidentApiTest extends TestCase
         $this->assertSame('done', $task->refresh()->status);
     }
 
-
     public function test_task_illegal_transition_is_rejected(): void
     {
         [$company, $manager, $incident] = $this->seedIncident();
@@ -385,7 +389,6 @@ class FuelIncidentApiTest extends TestCase
             'status' => 'done',
         ])->assertStatus(422);
     }
-
 
     public function test_solution_inactive_returns_403(): void
     {
@@ -424,7 +427,6 @@ class FuelIncidentApiTest extends TestCase
         return [$company, $manager];
     }
 
-
     private function createStation(Company $company): FuelStation
     {
         /** @var FuelStation $station */
@@ -438,7 +440,6 @@ class FuelIncidentApiTest extends TestCase
 
         return $station;
     }
-
 
     protected function setUp(): void
     {
@@ -458,9 +459,11 @@ class FuelIncidentApiTest extends TestCase
             'currency' => 'MAD',
             'features' => ['fuel_station' => true],
         ]);
-        $this->companyB = $companyB;
+        // `$companyB` n'est pas relu : pas de propriete, la variable locale
+        // suffit (le second tenant sert a verifier l'isolation dans le test
+        // qui l'utilise via `$this->company()`).
+        unset($companyB);
     }
-
 
     protected function tearDown(): void
     {
@@ -469,7 +472,6 @@ class FuelIncidentApiTest extends TestCase
 
         parent::tearDown();
     }
-
 
     public function test_operator_cannot_manage_incidents(): void
     {
@@ -501,7 +503,6 @@ class FuelIncidentApiTest extends TestCase
         ])->assertStatus(403);
     }
 
-
     public function test_manager_creates_incident_and_replay_is_idempotent(): void
     {
         Sanctum::actingAs($this->manager($this->companyA));
@@ -529,7 +530,6 @@ class FuelIncidentApiTest extends TestCase
 
         $this->assertDatabaseCount('fuel_incidents', 1);
     }
-
 
     public function test_incident_workflow_is_audited(): void
     {
@@ -576,7 +576,6 @@ class FuelIncidentApiTest extends TestCase
         ])->assertOk()->assertJsonPath('data.status', 'closed');
     }
 
-
     public function test_attachments_are_controlled(): void
     {
         Sanctum::actingAs($this->manager($this->companyA));
@@ -592,17 +591,17 @@ class FuelIncidentApiTest extends TestCase
         ])->assertStatus(201)->json('data');
 
         // Type non autorisé (exe) → 422.
-        $this->post('/api/v1/fuel-station/incidents/' . $incident['id'] . '/attachments', [
+        $this->post('/api/v1/fuel-station/incidents/'.$incident['id'].'/attachments', [
             'attachment' => UploadedFile::fake()->create('malware.exe', 10),
         ])->assertStatus(422);
 
         // Taille > 5 Mo → 422.
-        $this->post('/api/v1/fuel-station/incidents/' . $incident['id'] . '/attachments', [
+        $this->post('/api/v1/fuel-station/incidents/'.$incident['id'].'/attachments', [
             'attachment' => UploadedFile::fake()->create('photo.png', 6 * 1024),
         ])->assertStatus(422);
 
         // PDF valide → 201.
-        $this->post('/api/v1/fuel-station/incidents/' . $incident['id'] . '/attachments', [
+        $this->post('/api/v1/fuel-station/incidents/'.$incident['id'].'/attachments', [
             'attachment' => UploadedFile::fake()->create('constat.pdf', 100, 'application/pdf'),
         ])
             ->assertStatus(201)
@@ -610,7 +609,6 @@ class FuelIncidentApiTest extends TestCase
 
         $this->assertDatabaseCount('fuel_incident_attachments', 1);
     }
-
 
     public function test_maintenance_tasks_lifecycle(): void
     {
