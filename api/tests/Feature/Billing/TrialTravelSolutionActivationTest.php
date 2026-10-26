@@ -32,6 +32,9 @@ class TrialTravelSolutionActivationTest extends TestCase
         Mail::fake();
     }
 
+    /**
+     * @param  array{email: string, company: string, role: string, employees: string, country: string, solution?: string}  $signupPayload
+     */
     private function signupAndVerify(array $signupPayload): Company
     {
         $this->postJson('/api/v1/trial/signup', $signupPayload)->assertStatus(200);
@@ -56,6 +59,9 @@ class TrialTravelSolutionActivationTest extends TestCase
         return $company;
     }
 
+    /**
+     * @return array{email: string, company: string, role: string, employees: string, country: string}
+     */
     private function basePayload(string $email): array
     {
         return [
