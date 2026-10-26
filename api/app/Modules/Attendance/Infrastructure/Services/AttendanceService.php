@@ -160,7 +160,7 @@ class AttendanceService
                 $schedule?->break_minutes,
                 $dto->work_type,
             ),
-            (float) ($schedule?->overtime_threshold_daily ?? 8.0),
+            (float) ($schedule->overtime_threshold_daily ?? 8.0),
         );
         $hours = $worked->hours_worked;
         $overtime = $worked->overtime_hours;
@@ -250,7 +250,7 @@ class AttendanceService
                     $schedule?->break_minutes,
                     $dto->work_type,
                 ),
-                (float) ($schedule?->overtime_threshold_daily ?? 8.0),
+                (float) ($schedule->overtime_threshold_daily ?? 8.0),
             );
             $hours = $worked->hours_worked;
             $overtime = $worked->overtime_hours;
@@ -375,7 +375,7 @@ class AttendanceService
                     $log->work_type,
                     $schedule?->break_minutes,
                 ),
-                (float) ($schedule?->overtime_threshold_daily ?? 8.0),
+                (float) ($schedule->overtime_threshold_daily ?? 8.0),
             );
             $log->hours_worked = $worked->hours_worked;
             $log->overtime_hours = $worked->overtime_hours;
@@ -399,7 +399,11 @@ class AttendanceService
             ],
         );
 
-        return $log->fresh();
+        // `fresh()` est typé `static|null` : la ligne vient d'être sauvegardée
+        // dans la transaction courante, donc elle existe. On retombe sur
+        // l'instance en mémoire plutôt que de propager un `null` (contrat de
+        // retour `AttendanceLog` — #8179).
+        return $log->fresh() ?? $log;
     }
 
     private function resolveSchedule(Employee $employee): ?Schedule

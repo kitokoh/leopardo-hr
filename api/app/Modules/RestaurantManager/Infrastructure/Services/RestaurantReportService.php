@@ -117,8 +117,8 @@ final class RestaurantReportService
 
         return $query->map(fn ($row) => [
             'product_id' => (int) $row->product_id,
-            'quantity' => (string) $row->qty,
-            'revenue_minor' => (int) $row->revenue,
+            'quantity' => (string) $row->getAttribute('qty'),
+            'revenue_minor' => (int) $row->getAttribute('revenue'),
         ])->all();
     }
 
@@ -206,6 +206,9 @@ final class RestaurantReportService
         return $this->renderCsv($rows);
     }
 
+    /**
+     * @return list<array<int, string>>
+     */
     private function csvSales(string $companyId, Carbon $from, Carbon $to, ?int $branchId): array
     {
         $rows = [['date', 'orders_count', 'revenue_minor', 'tax_minor', 'discount_minor']];
@@ -234,6 +237,9 @@ final class RestaurantReportService
         return $rows;
     }
 
+    /**
+     * @return list<array<int, string>>
+     */
     private function csvProducts(string $companyId, Carbon $from, Carbon $to, ?int $branchId): array
     {
         $rows = [['product_id', 'quantity', 'revenue_minor']];
@@ -245,6 +251,9 @@ final class RestaurantReportService
         return $rows;
     }
 
+    /**
+     * @return list<array<int, string>>
+     */
     private function csvCogs(string $companyId, Carbon $from, Carbon $to, ?int $branchId): array
     {
         return [
@@ -253,6 +262,9 @@ final class RestaurantReportService
         ];
     }
 
+    /**
+     * @return list<array<int, string>>
+     */
     private function csvPos(string $companyId, Carbon $from, Carbon $to, ?int $branchId): array
     {
         $rows = [['pos_session_id', 'closed_at', 'opening_cash_minor', 'counted_cash_minor', 'variance_minor']];
@@ -283,6 +295,10 @@ final class RestaurantReportService
     private function renderCsv(array $rows): string
     {
         $handle = fopen('php://temp', 'r+');
+
+        if ($handle === false) {
+            return '';
+        }
 
         foreach ($rows as $row) {
             fputcsv($handle, $row);

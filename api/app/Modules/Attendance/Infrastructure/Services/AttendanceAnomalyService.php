@@ -208,6 +208,10 @@ class AttendanceAnomalyService
         ];
     }
 
+    /**
+     * @param  Collection<int, AttendanceLog>  $logs
+     * @return Collection<int, array<string, mixed>>
+     */
     private function lateArrivals(Collection $logs): Collection
     {
         return $logs
@@ -223,6 +227,10 @@ class AttendanceAnomalyService
             ));
     }
 
+    /**
+     * @param  Collection<int, AttendanceLog>  $logs
+     * @return Collection<int, array<string, mixed>>
+     */
     private function missingCheckOuts(Collection $logs): Collection
     {
         return $logs
@@ -235,6 +243,10 @@ class AttendanceAnomalyService
             ));
     }
 
+    /**
+     * @param  Collection<int, AttendanceLog>  $logs
+     * @return Collection<int, array<string, mixed>>
+     */
     private function manualCorrections(Collection $logs): Collection
     {
         return $logs
@@ -247,6 +259,10 @@ class AttendanceAnomalyService
             ));
     }
 
+    /**
+     * @param  Collection<int, AttendanceLog>  $logs
+     * @return Collection<int, array<string, mixed>>
+     */
     private function excessiveOvertime(Collection $logs): Collection
     {
         return $logs
@@ -262,6 +278,10 @@ class AttendanceAnomalyService
             ));
     }
 
+    /**
+     * @param  Collection<int, AttendanceLog>  $logs
+     * @return Collection<int, array<string, mixed>>
+     */
     private function rapidDevicePunches(Collection $logs): Collection
     {
         // Un pointage sans date ne peut pas être groupé par jour : il est
@@ -349,6 +369,10 @@ class AttendanceAnomalyService
             });
     }
 
+    /**
+     * @param  Collection<int, AttendanceLog>  $logs
+     * @return Collection<int, non-empty-array<string, mixed>>
+     */
     private function outOfGeofencePunches(Collection $logs, ?Company $company): Collection
     {
         $geofence = $company?->metadata['attendance_geofence'] ?? null;
@@ -418,7 +442,7 @@ class AttendanceAnomalyService
             'employee_id' => $log->employee_id,
             'employee' => [
                 'id' => $log->employee?->id,
-                'name' => trim(($log->employee?->first_name ?? '').' '.($log->employee?->last_name ?? '')),
+                'name' => trim(($log->employee->first_name ?? '').' '.($log->employee->last_name ?? '')),
                 'matricule' => $log->employee?->matricule,
             ],
             'date' => $log->date?->format('Y-m-d'),
