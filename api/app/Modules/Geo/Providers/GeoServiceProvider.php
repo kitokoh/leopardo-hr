@@ -6,11 +6,14 @@ namespace App\Modules\Geo\Providers;
 
 use App\Modules\Geo\Console\Commands\CheckPostgisCommand;
 use App\Modules\Geo\Domain\Contracts\DistanceCalculatorInterface;
+use App\Modules\Geo\Domain\Contracts\GeocodingProviderInterface;
 use App\Modules\Geo\Domain\Contracts\NearestSearchInterface;
 use App\Modules\Geo\Infrastructure\Services\EloquentNearestSearch;
 use App\Modules\Geo\Infrastructure\Services\GeoCapabilities;
+use App\Modules\Geo\Infrastructure\Services\GeocodingService;
 use App\Modules\Geo\Infrastructure\Services\GeoService;
 use App\Modules\Geo\Infrastructure\Services\HaversineDistanceCalculator;
+use App\Modules\Geo\Infrastructure\Services\NullGeocodingProvider;
 use App\Modules\Geo\Infrastructure\Services\PostgisDistanceCalculator;
 use App\Modules\Geo\Infrastructure\Services\SearchableRegistry;
 use App\Shared\Contracts\Geo\GeoServiceContract;
@@ -51,6 +54,14 @@ class GeoServiceProvider extends ServiceProvider
 
         // GEO-03 (#8352) — façade transverse résolue par les verticales.
         $this->app->bind(GeoServiceContract::class, GeoService::class);
+
+        // GEO-08 (#8466) — géocodage optionnel, fail-closed : sans fournisseur
+        // réel configuré, `NullGeocodingProvider` refuse (503) au lieu
+        // d'inventer des coordonnées ou d'appeler un tiers implicitement.
+        $this->app->bind(GeocodingProviderInterface::class, function (): GeocodingProviderInterface {
+            return new NullGeocodingProvider;
+        });
+        $this->app->singleton(GeocodingService::class);
     }
 
     public function boot(): void
