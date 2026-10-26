@@ -21,6 +21,7 @@
 
 use App\Modules\Geo\Interfaces\Api\V1\Controllers\GeoCapabilitiesController;
 use App\Modules\Geo\Interfaces\Api\V1\Controllers\GeoDistanceController;
+use App\Modules\Geo\Interfaces\Api\V1\Controllers\GeoGeocodeController;
 use App\Modules\Geo\Interfaces\Api\V1\Controllers\GeoHealthController;
 use App\Modules\Geo\Interfaces\Api\V1\Controllers\GeoNearestController;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +35,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // GEO-05 (#8354) — API v1 du core géospatial.
         Route::post('/distance', GeoDistanceController::class);
         Route::get('/nearest', [GeoNearestController::class, 'index']);
+
+        // GEO-08 (#8466) — géocodage adresse → coordonnées (fail-closed :
+        // 503 tant qu'aucun fournisseur réel n'est configuré).
+        Route::post('/geocode', GeoGeocodeController::class);
 
         // Diagnostic réservé admin tenant (garde geo.admin, deny-by-default).
         Route::get('/capabilities', [GeoCapabilitiesController::class, 'show'])

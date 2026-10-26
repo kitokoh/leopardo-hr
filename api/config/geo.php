@@ -35,6 +35,16 @@ return [
     // config et le core ne connaît pas les rôles des verticales (#5584).
     'searchables' => [],
 
+    // Géocodage adresse → coordonnées (GEO-08/#8466). Désactivé par défaut :
+    // le core ne dépend d'aucun service tiers tant qu'un fournisseur réel
+    // n'est pas branché (fail-closed, décision D1).
+    'geocoding' => [
+        'enabled' => (bool) env('GEO_GEOCODING_ENABLED', false),
+        // TTL du cache de résolution (secondes) — le géocodage est un appel
+        // externe coûteux et rate-limité : une adresse n'est résolue qu'une fois.
+        'cache_ttl' => (int) env('GEO_GEOCODING_CACHE_TTL', 86400),
+    ],
+
     // Pilotes de migration des consommateurs legacy vers le core (kill
     // switch opérationnel — rollout progressif, spec §10).
     'pilots' => [
