@@ -30,6 +30,22 @@ use Illuminate\Support\Carbon;
  * @property int $gps_radius_m
  * @property string|null $timezone Fuseau de l'établissement (NULL = celui du tenant)
  * @property string|null $currency Devise de l'établissement (NULL = celle du tenant)
+ * @property string|null $country_code Code pays ISO-3166-1 alpha-2 (#8722)
+ * @property string|null $address_line1 Adresse structurée, ligne 1 (#8722)
+ * @property string|null $address_line2 Adresse structurée, ligne 2 (#8722)
+ * @property string|null $locality Ville / commune (#8722)
+ * @property string|null $region Région / état (#8722)
+ * @property string|null $postal_code Code postal — optionnel : absent de certains marchés (#8722)
+ * @property string|null $access_instructions Consignes d'accès (texte libre, #8722)
+ * @property string|null $gps_source manual|provider|verified — provenance de la coordonnée (#8722)
+ * @property Carbon|null $gps_verified_at (#8722)
+ * @property Carbon|null $gps_updated_at (#8722)
+ * @property string|null $public_phone (#8722)
+ * @property string|null $public_email (#8722)
+ * @property string|null $public_website (#8722)
+ * @property array<int, string>|null $media_ids Références de médias, jamais des clés de stockage (#8722)
+ * @property array<string, mixed>|null $opening_hours Horaires d'ouverture publics, par jour ISO (#8722)
+ * @property array<int, mixed>|null $opening_hours_exceptions (#8722)
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -265,12 +281,12 @@ class Site extends Model
 
         $hours = $this->opening_hours;
 
-        if (! is_array($hours) || ! array_key_exists((string) $isoWeekday, $hours)) {
+        if (! is_array($hours) || ! array_key_exists($isoWeekday, $hours)) {
             return null;
         }
 
         /** @var list<array{opens: string, closes: string}> $ranges */
-        $ranges = $hours[(string) $isoWeekday] ?? [];
+        $ranges = $hours[$isoWeekday];
 
         return $ranges;
     }
@@ -326,7 +342,7 @@ class Site extends Model
      * On renvoie la LISTE des problèmes au lieu de lever : un import doit
      * pouvoir rapporter toutes les lignes fautives, pas seulement la première.
      *
-     * @param  array<string, mixed>  $hours
+     * @param  array<array-key, mixed>  $hours  Jour ISO => liste de plages `{opens, closes}`
      * @return list<string>
      */
     public static function validateOpeningHours(array $hours): array

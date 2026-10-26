@@ -503,7 +503,9 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/billing.php';
     require __DIR__.'/modules/sso.php';
     require __DIR__.'/modules/integrations.php';
-    require __DIR__.'/modules/growth.php';
+    // BOS-026 (#8220) — le module `Growth` est absorbé par `Billing` : ses routes
+    // (programme partenaires + administration) sont désormais déclarées dans
+    // `modules/billing.php`, avec les mêmes chemins et les mêmes middlewares.
 
     // Phase 2 — New DDD modules
     require __DIR__.'/modules/absence.php';

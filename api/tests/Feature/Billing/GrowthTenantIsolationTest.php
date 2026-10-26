@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Growth;
+namespace Tests\Feature\Billing;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;

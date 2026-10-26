@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Growth;
+namespace Tests\Feature\Billing;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Billing\Domain\Models\Partner;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -43,11 +43,11 @@ class PartnerApplyTest extends TestCase
         Sanctum::actingAs($manager);
 
         $response = $this->postJson('/api/v1/growth/partner/apply', [
-            'type'            => 'individual',
-            'name'            => 'Kabyle Consulting',
-            'email'           => 'contact@kabyle.dz',
-            'phone'           => '+213550000000',
-            'website'         => 'https://kabyle.dz',
+            'type' => 'individual',
+            'name' => 'Kabyle Consulting',
+            'email' => 'contact@kabyle.dz',
+            'phone' => '+213550000000',
+            'website' => 'https://kabyle.dz',
             'commission_rate' => 0.15,
         ]);
 

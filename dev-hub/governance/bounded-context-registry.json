@@ -367,24 +367,18 @@
           "status": "active"
         },
         {
-          "path": "api/app/Modules/Growth",
-          "status": "active"
-        },
-        {
           "path": "api/app/Modules/SearchIntelligence",
           "status": "active"
         }
       ],
       "routes": [
-        "api/routes/modules/marketing.php",
-        "api/routes/modules/growth.php"
+        "api/routes/modules/marketing.php"
       ],
       "migrations": [
         "api/database/migrations/tenant"
       ],
       "events": [
-        "App\\Modules\\Marketing\\Domain\\Events",
-        "App\\Modules\\Growth\\Domain\\Events"
+        "App\\Modules\\Marketing\\Domain\\Events"
       ],
       "dependencies": [
         "BC-02",

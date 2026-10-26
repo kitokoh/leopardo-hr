@@ -553,17 +553,53 @@ class Company extends Model
 
     /**
      * Retourne une chaine search_path securisee pour PostgreSQL.
-     * Echappe le nom du schema (whitelist alphanumeric/underscore) pour eviter les injections SQL.
      *
-     * Tout tenant créé depuis le verrouillage partage `shared_tenants` ; un
-     * `schema_name` dédié ne peut plus appartenir qu'à d'éventuels tenants
+     * Tout tenant cree depuis le verrouillage partage `shared_tenants` ; un
+     * `schema_name` dedie ne peut plus appartenir qu'a d'eventuels tenants
      * historiques (ADR-0028, BOS-005/#8203).
+     *
+     * **Fail-closed (#8055).** L'ancienne version *supprimait* les caracteres
+     * non conformes puis retombait silencieusement sur `shared_tenants` : un
+     * `schema_name` corrompu (`tenant-42`, `tenant 42`, `tenant;DROP`) faisait
+     * pointer la session sur le schema PARTAGE sans que rien ne le signale —
+     * un fail-open qui pouvait faire lire/ecrire les donnees d'un autre tenant
+     * dans le mauvais schema. Desormais :
+     *   - `schema_name` vide  -> `shared_tenants` (cas nominal, inchange) ;
+     *   - `schema_name` non vide mais non conforme -> exception, jamais de
+     *     repli silencieux ;
+     *   - `tenancy_type = 'schema'` sans `schema_name` -> exception (etat
+     *     incoherent : le mode est mort, mais un vestige ne doit pas passer).
+     *
+     * @throws \RuntimeException si le schema declare est inexploitable.
      */
     public function getSafeSearchPath(): string
     {
-        $schema = preg_replace('/[^a-zA-Z0-9_]/', '', $this->schema_name ?: 'shared_tenants') ?: 'shared_tenants';
+        $declared = (string) ($this->schema_name ?? '');
 
-        return '"'.$schema.'",public';
+        if ($declared === '') {
+            if ((string) $this->tenancy_type === 'schema') {
+                throw new \RuntimeException(sprintf(
+                    'Tenant #%s declare tenancy_type=schema sans schema_name : etat incoherent, '
+                    .'refus de basculer le search_path (ADR-0028, #8055).',
+                    (string) ($this->getKey() ?? '?'),
+                ));
+            }
+
+            return '"shared_tenants",public';
+        }
+
+        // Whitelist stricte : identifiant PostgreSQL non quote, minuscules,
+        // chiffres et underscore, commencant par une lettre ou un underscore.
+        if (preg_match('/^[a-z_][a-z0-9_]*$/', $declared) !== 1) {
+            throw new \RuntimeException(sprintf(
+                'schema_name invalide pour le tenant #%s : %s. Refus de basculer le search_path '
+                .'plutot que de retomber silencieusement sur le schema partage (ADR-0028, #8055).',
+                (string) ($this->getKey() ?? '?'),
+                $declared,
+            ));
+        }
+
+        return '"'.$declared.'",public';
     }
 
     protected static function booted(): void

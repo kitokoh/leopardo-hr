@@ -27,9 +27,11 @@ use Symfony\Component\HttpFoundation\Response;
  * essai sur une connexion fraîche réussit.
  *
  * Ce middleware :
- *   1. **rejoue une fois** la requête quand l'erreur est transitoire — mais
- *      **uniquement pour les méthodes idempotentes** (GET/HEAD/OPTIONS), afin de
- *      ne jamais risquer un double écrit ;
+ *   1. **rejoue une fois** la requête quand l'erreur est transitoire — pour les
+ *      méthodes idempotentes (GET/HEAD/OPTIONS), et depuis #8056 aussi pour les
+ *      écritures **quand le SQLSTATE prouve que la requête n'a pas été
+ *      appliquée** (plan invalide, connexion morte) : les écritures touchées
+ *      par le pooler faisaient sinon des 500 systématiques ;
  *   2. si le second essai échoue aussi, renvoie une réponse **dégradée
  *      documentée** (503 + code stable) au lieu d'un 500 nu : le client peut
  *      dire « service momentanément indisponible » et non « vos identifiants
@@ -60,15 +62,51 @@ final class RetryTransientDatabaseErrors
         '57P03', // cannot_connect_now
     ];
 
+    /**
+     * Sous-ensemble des SQLSTATE ci-dessus pour lesquels un rejeu d'une requête
+     * **non idempotente** (POST/PUT/PATCH/DELETE) est sûr (#8056).
+     *
+     * Ces codes garantissent que la requête n'a **pas été appliquée** :
+     *   - `0A000` (cached plan) : l'échec est au *plan*, avant toute écriture ;
+     *   - `08000`/`08003`/`08006`/`08001`/`57P01`/`57P03` : la connexion est
+     *     morte ou refusée — le serveur n'a jamais exécuté la requête.
+     *
+     * `25P02` (in_failed_sql_transaction) est **exclu** : la transaction a déjà
+     * exécuté des instructions avant d'avorter, et rejouer la requête HTTP
+     * entière pourrait rejouer des effets de bord applicatifs (envoi d'e-mail,
+     * appel externe) déjà déclenchés. On préfère un 503 explicite.
+     */
+    private const WRITE_SAFE_SQLSTATES = [
+        '0A000',
+        '08000',
+        '08003',
+        '08006',
+        '08001',
+        '57P01',
+        '57P03',
+    ];
+
     public function handle(Request $request, Closure $next): Response
     {
         try {
             return $next($request);
         } catch (QueryException $exception) {
-            // Méthodes non idempotentes : rejouer risquerait un double écriture.
             // Erreurs non transitoires : ce n'est pas notre rôle de les masquer.
-            if (! $this->isIdempotent($request) || ! $this->isTransient($exception)) {
+            if (! $this->isTransient($exception)) {
                 throw $exception;
+            }
+
+            // Méthodes non idempotentes : rejouer risquerait un double écrit.
+            // On ne le fait que si le SQLSTATE prouve que la requête n'a pas
+            // été appliquée (#8056) — sinon 503 explicite, jamais de rejeu.
+            if (! $this->isIdempotent($request) && ! $this->isWriteSafe($exception)) {
+                Log::error('database.transient_error_write_not_retried', [
+                    'path' => $request->path(),
+                    'method' => $request->method(),
+                    'sqlstate' => $exception->getCode(),
+                ]);
+
+                return $this->unavailableResponse();
             }
 
             Log::warning('database.transient_error_retry', [
@@ -105,9 +143,41 @@ final class RetryTransientDatabaseErrors
         return in_array($request->method(), ['GET', 'HEAD', 'OPTIONS'], true);
     }
 
+    /**
+     * Le SQLSTATE prouve-t-il que la requête n'a pas été appliquée côté serveur ?
+     * Seul ce cas autorise le rejeu d'une méthode non idempotente (#8056).
+     */
+    private function isWriteSafe(QueryException $exception): bool
+    {
+        return in_array($this->sqlState($exception), self::WRITE_SAFE_SQLSTATES, true);
+    }
+
+    /**
+     * SQLSTATE de l'exception, normalisé en majuscules.
+     *
+     * Le driver PDO renseigne `getCode()` avec le SQLSTATE, mais ce n'est pas
+     * garanti pour toutes les constructions d'exception : on retombe sur le
+     * préfixe `SQLSTATE[XXXXX]` du message, qui est la forme stable émise par
+     * PostgreSQL (`SQLSTATE[0A000]: Feature not supported: …`).
+     */
+    private function sqlState(QueryException $exception): string
+    {
+        $code = strtoupper((string) $exception->getCode());
+
+        if ($code !== '' && $code !== '0') {
+            return $code;
+        }
+
+        if (preg_match('/SQLSTATE\[([0-9A-Z]{5})\]/i', $exception->getMessage(), $matches) === 1) {
+            return strtoupper($matches[1]);
+        }
+
+        return $code;
+    }
+
     private function isTransient(QueryException $exception): bool
     {
-        $sqlstate = strtoupper((string) $exception->getCode());
+        $sqlstate = $this->sqlState($exception);
         if (in_array($sqlstate, self::TRANSIENT_SQLSTATES, true)) {
             return true;
         }

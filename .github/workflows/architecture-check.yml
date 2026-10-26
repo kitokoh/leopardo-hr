@@ -213,6 +213,9 @@ jobs:
       - name: Tenant cache keys guard — helper central TenantCache ou exemption justifiée (issue #8058)
         run: bash dev-hub/tools/check-tenant-cache-keys.sh api
 
+      - name: Tenancy schema-mode guard — mode « schema-per-tenant » mort, inventaire gelé (ADR-0028, issue #8055)
+        run: bash dev-hub/tools/check-tenancy-schema-mode.sh
+
       - name: Attendance/Payroll boundary guard — presence events owned by Attendance (ATT-001, issue #6760)
         run: bash dev-hub/tools/check-attendance-boundary.sh api
 

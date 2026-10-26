@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Growth\Interfaces\Api\V1\Requests;
+namespace App\Modules\Billing\Interfaces\Api\V1\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 

@@ -2,7 +2,7 @@
 
 > Mis à jour le 2026-09-05 (audit vérité docs) | Phase 5 terminée — nettoyage legacy (PR #824)
 
-## 1. Tableau de l'état DDD — 39 modules actifs
+## 1. Tableau de l'état DDD — 38 modules actifs
 
 | Module          | Domain | Contracts | Exceptions | Application | DTOs | Infra | Interfaces | Providers | Tests |
 |-----------------|:------:|:---------:|:----------:|:-----------:|:----:|:-----:|:----------:|:---------:|:-----:|
@@ -24,7 +24,6 @@
 | **FuelStation** | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ | ✅ |
 | **Fundraising** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Geo** | ✅ | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ |
-| **Growth** | ✅ | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ |
 | **HealthManager** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **HospitalityManager** | ✅ | — | ✅ | — | — | — | ✅ | ✅ | ✅ |
 | **HR** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -74,7 +73,6 @@
 | `routes/modules/integrations.php` | 4 | **0** | ✅ Phase 3–4 |
 | `routes/modules/planning.php` | 1 | **0** | ✅ Phase 3–4 |
 | `routes/modules/hr_app.php` | 1 | **0** | ✅ Phase 3–4 |
-| `routes/modules/growth.php` | 2 | **0** | ✅ Phase 3–4 |
 | `routes/modules/sso.php` | 1 | **0** | ✅ Phase 3–4 |
 | `routes/modules/user.php` | 2 | **0** | ✅ Phase 3–4 |
 | `routes/api.php` | 25 | **0** | ✅ Phase 4 |

@@ -14,6 +14,8 @@ use App\Modules\Billing\Interfaces\Api\V1\Controllers\AiCreditController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\BillingCollectionController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\BillingController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\FeatureFlagController;
+use App\Modules\Billing\Interfaces\Api\V1\Controllers\GrowthAdminController;
+use App\Modules\Billing\Interfaces\Api\V1\Controllers\PartnerDashboardController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\TenantPaymentProfileController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingStateController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingStepController;
@@ -47,8 +49,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         ->middleware('api.manager');
     Route::patch('/onboarding-setup/{stepKey}/skip', [OnboardingStepController::class, 'skip'])
         ->middleware('api.manager');
-
-
 
     // Feature Flags — read for all (la mise à jour de la matrice est réservée à
     // l'administration plateforme ; l'endpoint PUT #3892 n'a jamais été implémenté
@@ -103,4 +103,35 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/billing/ai-credits', [AiCreditController::class, 'index']);
         Route::post('/billing/ai-credits/checkout', [AiCreditController::class, 'checkout']);
     });
+});
+
+// ── Programme partenaires (BOS-026 / #8220) ────────────────────────────────
+// Le module `Growth` est absorbé par `Billing` : il ne portait aucun modèle
+// propre, tous les `Partner*` vivent déjà dans `App\Modules\Billing\Domain\Models`.
+// Les routes sont reprises À L'IDENTIQUE (chemins, middlewares, contrôleurs)
+// pour ne casser aucun client : seule la propriété du module change.
+
+// Espace Partenaire (Web Client)
+// Access via the main dashboard requires the sanctum guard (Employee token).
+Route::prefix('growth')->group(function () {
+    // Issue #2622 + #2635 : isolation tenant obligatoire (cross-tenant = 404) +
+    // alignement sur le groupe standard (token.refresh + throttle:api-plan).
+    Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->prefix('partner')->group(function () {
+        Route::post('/apply', [PartnerDashboardController::class, 'apply']);
+        Route::post('/payout', [PartnerDashboardController::class, 'requestPayout']);
+        Route::get('/dashboard', [PartnerDashboardController::class, 'dashboard']);
+        Route::get('/stats', [PartnerDashboardController::class, 'stats']);
+        Route::get('/companies', [PartnerDashboardController::class, 'referredCompanies']);
+    });
+});
+
+// Espace Administration (Super Admin)
+// QA #3000 : throttle aligné sur les autres groupes plateforme (api.php:264).
+Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('platform/growth')->group(function () {
+    Route::get('/partners', [GrowthAdminController::class, 'partners']);
+    Route::patch('/partners/{partner}/rate', [GrowthAdminController::class, 'updateRate']);
+    Route::patch('/partners/{partner}/application', [GrowthAdminController::class, 'updateApplicationStatus']);
+    Route::get('/payouts', [GrowthAdminController::class, 'payouts']);
+    Route::patch('/payouts/{payout}', [GrowthAdminController::class, 'updatePayoutStatus']);
+    Route::get('/history', [GrowthAdminController::class, 'history']);
 });
