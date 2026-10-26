@@ -83,7 +83,11 @@ class FuelMaintenanceTask extends Model
     protected static function booted(): void
     {
         static::creating(static function (self $task): void {
-            if ($task->status === null || $task->status === '') {
+            // `status` est declaree NON nullable : PHPStan signale que la
+            // comparaison a `null` est morte (`identical.alwaysFalse`). Seule
+            // la chaine vide reste possible quand une ligne arrive par un
+            // chemin qui ne passe pas par le service (fixture, import).
+            if ($task->status === '') {
                 $task->status = self::DEFAULT_STATUS;
             }
         });
