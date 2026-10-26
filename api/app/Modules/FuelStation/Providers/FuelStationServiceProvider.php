@@ -6,11 +6,12 @@ namespace App\Modules\FuelStation\Providers;
 
 use App\Core\Solutions\SolutionCatalogue;
 use App\Modules\FuelStation\Domain\Solution\FuelStationManifest;
+use App\Modules\FuelStation\Infrastructure\Consumers\FuelAccountingContractConsumer;
 use App\Modules\FuelStation\Infrastructure\Consumers\FuelAccountingOutboxConsumer;
 use App\Modules\FuelStation\Infrastructure\Consumers\FuelNotificationOutboxConsumer;
 use App\Modules\FuelStation\Infrastructure\Services\FuelAlertService;
+use App\Modules\FuelStation\Infrastructure\Services\FuelEstablishmentProvider;
 use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxConsumerRegistry;
-use App\Modules\FuelStation\Infrastructure\Consumers\FuelAccountingContractConsumer;
 use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxPublisher;
 use Illuminate\Support\ServiceProvider;
 
@@ -34,6 +35,10 @@ class FuelStationServiceProvider extends ServiceProvider
 
         $this->app->singleton(FuelOutboxConsumerRegistry::class);
         $this->app->singleton(FuelAlertService::class);
+        // #7910 \u2014 hub \u00ab Mes \u00e9tablissements \u00bb : la verticale déclare ses
+        // stations au registre par module (aucune modification du socle
+        // n'est nécessaire pour ajouter une verticale).
+        $this->app->tag([FuelEstablishmentProvider::class], 'establishments.provider');
         // Outbox du contrat Accounting (FUEL-015) : publication après commit,
         // consommation asynchrone idempotente par `fuel:outbox-dispatch`.
         $this->app->singleton(FuelOutboxPublisher::class);
