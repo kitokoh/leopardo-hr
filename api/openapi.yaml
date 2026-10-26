@@ -50852,6 +50852,624 @@ paths:
           $ref: '#/components/responses/Error403'
         '409':
           description: Aucune cible de scan configuree
+  /v1/platform/search-intel/aeo/questions:
+    get:
+      operationId: api_get_v1_platform_search_intel_aeo_questions
+      tags: [Search Intelligence]
+      summary: Bibliotheque Q/R AEO (GSI-4, #8515)
+      description: |
+        Questions/réponses destinees aux moteurs de reponse. Une reponse n'est
+        publiable qu'apres **revision humaine** : le workflow est
+        `draft -> submitted -> approved -> published`, et `to-update` renvoie
+        une reponse publiee en revision quand la source a change.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, submitted, approved, published, to_update]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
+      responses:
+        '200':
+          description: Questions filtrees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+    post:
+      operationId: api_post_v1_platform_search_intel_aeo_questions
+      tags: [Search Intelligence]
+      summary: Creer une question AEO (GSI-4, #8515)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [question]
+              properties:
+                question:
+                  type: string
+                  maxLength: 500
+                answer:
+                  type: string
+                  maxLength: 5000
+                intent:
+                  type: string
+                  maxLength: 100
+      responses:
+        '201':
+          description: Question creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/platform/search-intel/aeo/questions/{question}:
+    patch:
+      operationId: api_patch_v1_platform_search_intel_aeo_questions
+      tags: [Search Intelligence]
+      summary: Modifier une question AEO (GSI-4, #8515)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: question
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  maxLength: 500
+                answer:
+                  type: string
+                  maxLength: 5000
+                intent:
+                  type: string
+                  maxLength: 100
+      responses:
+        '200':
+          description: Question mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/platform/search-intel/aeo/questions/{question}/submit:
+    post:
+      operationId: api_post_v1_platform_search_intel_aeo_questions_submit
+      tags: [Search Intelligence]
+      summary: Soumettre une question AEO a revision (GSI-4, #8515)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: question
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Question soumise
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition non autorisee depuis l'etat courant
+  /v1/platform/search-intel/aeo/questions/{question}/approve:
+    post:
+      operationId: api_post_v1_platform_search_intel_aeo_questions_approve
+      tags: [Search Intelligence]
+      summary: Valider une question AEO — fige la reponse (GSI-4, #8515)
+      description: |
+        La validation **fige** la reponse : c'est le point de revision humaine
+        obligatoire avant toute publication.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: question
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Question validee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition non autorisee depuis l'etat courant
+  /v1/platform/search-intel/aeo/questions/{question}/publish:
+    post:
+      operationId: api_post_v1_platform_search_intel_aeo_questions_publish
+      tags: [Search Intelligence]
+      summary: Publier une question AEO validee (GSI-4, #8515)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: question
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Question publiee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition non autorisee depuis l'etat courant
+  /v1/platform/search-intel/aeo/questions/{question}/to-update:
+    post:
+      operationId: api_post_v1_platform_search_intel_aeo_questions_to_update
+      tags: [Search Intelligence]
+      summary: Renvoyer une reponse publiee en revision (GSI-4, #8515)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: question
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Question renvoyee en revision
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition non autorisee depuis l'etat courant
+  /v1/platform/search-intel/geo/queries:
+    get:
+      operationId: api_get_v1_platform_search_intel_geo_queries
+      tags: [Search Intelligence]
+      summary: Requetes strategiques GEO (GSI-5, #8516)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
+      responses:
+        '200':
+          description: Requetes strategiques
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+    post:
+      operationId: api_post_v1_platform_search_intel_geo_queries
+      tags: [Search Intelligence]
+      summary: Declarer une requete strategique GEO (GSI-5, #8516)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [query]
+              properties:
+                query:
+                  type: string
+                  maxLength: 500
+                locale:
+                  type: string
+                  maxLength: 10
+      responses:
+        '201':
+          description: Requete creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/platform/search-intel/geo/queries/{geoQuery}/checks:
+    get:
+      operationId: api_get_v1_platform_search_intel_geo_queries_checks
+      tags: [Search Intelligence]
+      summary: Historique des checks de presence GEO (GSI-5, #8516)
+      description: |
+        Historique **immuable** : aucun PATCH ni DELETE n'est expose sur un
+        check — une mesure de presence ne se reecrit pas.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: geoQuery
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Checks de la requete
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      operationId: api_post_v1_platform_search_intel_geo_queries_checks
+      tags: [Search Intelligence]
+      summary: Enregistrer un check de presence GEO (GSI-5, #8516)
+      description: |
+        La **methode de preuve** est obligatoire : une presence annoncee sans
+        methode ni source datee est refusee (422).
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: geoQuery
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [method, checked_at]
+              properties:
+                method:
+                  type: string
+                  maxLength: 100
+                checked_at:
+                  type: string
+                  format: date-time
+                present:
+                  type: boolean
+                evidence_url:
+                  type: string
+                  maxLength: 2000
+      responses:
+        '201':
+          description: Check enregistre
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/platform/search-intel/content:
+    get:
+      operationId: api_get_v1_platform_search_intel_content
+      tags: [Search Intelligence]
+      summary: Contenus marketing (GSI-6, #8517)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [idea, drafting, review, scheduled, published, archived]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
+      responses:
+        '200':
+          description: Contenus filtres
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+    post:
+      operationId: api_post_v1_platform_search_intel_content
+      tags: [Search Intelligence]
+      summary: Creer un contenu marketing (GSI-6, #8517)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title:
+                  type: string
+                  maxLength: 500
+                channel:
+                  type: string
+                  maxLength: 100
+                body:
+                  type: string
+                  maxLength: 50000
+      responses:
+        '201':
+          description: Contenu cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/platform/search-intel/content/export:
+    get:
+      operationId: api_get_v1_platform_search_intel_content_export
+      tags: [Search Intelligence]
+      summary: Export CSV du plan editorial (GSI-6, #8517)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Export CSV
+          content:
+            text/csv:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /v1/platform/search-intel/content/{content}:
+    patch:
+      operationId: api_patch_v1_platform_search_intel_content
+      tags: [Search Intelligence]
+      summary: Modifier un contenu marketing (GSI-6, #8517)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: content
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  maxLength: 500
+                channel:
+                  type: string
+                  maxLength: 100
+                body:
+                  type: string
+                  maxLength: 50000
+      responses:
+        '200':
+          description: Contenu mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/platform/search-intel/content/{content}/transition:
+    post:
+      operationId: api_post_v1_platform_search_intel_content_transition
+      tags: [Search Intelligence]
+      summary: Transition de statut d'un contenu (GSI-6, #8517)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: content
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [idea, drafting, review, scheduled, published, archived]
+      responses:
+        '200':
+          description: Contenu mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition non autorisee depuis l'etat courant
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/platform/search-intel/competitors:
+    get:
+      operationId: api_get_v1_platform_search_intel_competitors
+      tags: [Search Intelligence]
+      summary: Veille concurrentielle (GSI-7, #8518)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
+      responses:
+        '200':
+          description: Concurrents suivis
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+    post:
+      operationId: api_post_v1_platform_search_intel_competitors
+      tags: [Search Intelligence]
+      summary: Ajouter un concurrent (GSI-7, #8518)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+                website:
+                  type: string
+                  maxLength: 2000
+      responses:
+        '201':
+          description: Concurrent cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/platform/search-intel/competitors/{competitor}:
+    patch:
+      operationId: api_patch_v1_platform_search_intel_competitors
+      tags: [Search Intelligence]
+      summary: Modifier un concurrent (GSI-7, #8518)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: competitor
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+                website:
+                  type: string
+                  maxLength: 2000
+      responses:
+        '200':
+          description: Concurrent mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/platform/search-intel/competitors/{competitor}/review:
+    post:
+      operationId: api_post_v1_platform_search_intel_competitors_review
+      tags: [Search Intelligence]
+      summary: Enregistrer une observation concurrentielle datee (GSI-7, #8518)
+      description: |
+        Une observation **sans source datee** est refusee (422) : la veille
+        concurrentielle ne doit pas produire d'affirmation non verifiable.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: competitor
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [observed_at, source_url]
+              properties:
+                observed_at:
+                  type: string
+                  format: date-time
+                source_url:
+                  type: string
+                  maxLength: 2000
+                note:
+                  type: string
+                  maxLength: 5000
+      responses:
+        '201':
+          description: Observation enregistree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /v1/platform/payments/provider-types:
     get:
       operationId: api_get_v1_platform_payments_provider_types
