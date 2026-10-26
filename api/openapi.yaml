@@ -6767,6 +6767,71 @@ paths:
           $ref: '#/components/responses/Error401'
         '422':
           $ref: '#/components/responses/Validation422'
+  /establishments:
+    get:
+      operationId: api_get_establishments
+      tags:
+      - Establishments
+      summary: Lister les etablissements du tenant, toutes verticales activees
+      description: |
+        Hub « Mes etablissements » (#7910). Liste unifiee, en LECTURE SEULE, des
+        etablissements de toutes les verticales activees du tenant courant
+        (restaurant -> succursales, fuel -> stations). Chaque verticale declare ses
+        propres etablissements via un registre par module : ajouter une verticale
+        n'exige aucune modification du socle.
+
+        Fail-closed : une verticale dont la feature n'est pas activee ne declare
+        RIEN, meme si ses tables contiennent encore des lignes. Isolation tenant
+        stricte : seuls les etablissements de la societe de l'acteur sont exposes.
+      responses:
+        '200':
+          description: Etablissements du tenant, groupes par verticale
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EstablishmentItem'
+                  meta:
+                    type: object
+                    required:
+                    - total
+                    - verticals
+                    - counts
+                    properties:
+                      total:
+                        type: integer
+                        minimum: 0
+                        description: Nombre total d'etablissements retournes
+                        example: 3
+                      verticals:
+                        type: array
+                        description: |
+                          Verticales REELLEMENT activees pour ce tenant, triees. Sert
+                          au frontend a afficher (ou masquer) l'entree de navigation.
+                        items:
+                          type: string
+                        example:
+                        - fuel
+                        - restaurant
+                      counts:
+                        type: object
+                        description: Nombre d'etablissements par verticale activee
+                        additionalProperties:
+                          type: integer
+                        example:
+                          restaurant: 2
+                          fuel: 1
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /launch-readiness:
     get:
       operationId: api_get_launch_readiness
@@ -62928,6 +62993,62 @@ components:
         updated_at:
           type: string
           format: date-time
+    EstablishmentItem:
+      type: object
+      description: |
+        Element de la liste unifiee du hub « Mes etablissements » (#7910). Le
+        contrat est FIGE : le frontend s'appuie dessus pour grouper par verticale
+        et construire les liens. Aucune donnee interne (`company_id`, metadonnees)
+        n'est exposee.
+      required:
+      - vertical
+      - id
+      - name
+      - code
+      - status
+      - href_stats
+      - href_team
+      - staff_count
+      properties:
+        vertical:
+          type: string
+          description: Identifiant canonique de la verticale porteuse
+          example: restaurant
+        id:
+          type: integer
+          description: Identifiant de l'etablissement DANS sa verticale
+          example: 42
+        name:
+          type: string
+          example: Succursale Bonapriso
+        code:
+          type: string
+          nullable: true
+          description: Code court de l'etablissement, si la verticale en tient un
+          example: BON
+        status:
+          type: string
+          description: Statut brut de la verticale (active, inactive, archived...)
+          example: active
+        href_stats:
+          type: string
+          nullable: true
+          description: |
+            Lien vers la page de statistiques de la verticale, etablissement
+            pre-selectionne. `null` si la verticale n'expose pas de rapports.
+          example: /restaurant/reports?branch=42
+        href_team:
+          type: string
+          nullable: true
+          description: |
+            Lien vers la page d'equipe de la verticale, etablissement
+            pre-selectionne. `null` si la verticale n'expose pas d'equipe.
+          example: /restaurant/team?branch=42
+        staff_count:
+          type: integer
+          minimum: 0
+          description: Nombre d'employes rattaches a cet etablissement
+          example: 12
     ErrorResponse:
       type: object
       required:
