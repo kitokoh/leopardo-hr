@@ -88,14 +88,9 @@ final class IntegrationTest extends TestCase
         $this->assertStringNotContainsString('credentials_encrypted', $body);
 
         // 2. Jamais de secret en clair en base — la colonne est chiffrée.
-        /** @var object|null $row */
-        $row = DB::table('integrations')->where('provider', 'gsc')->first();
-        $this->assertNotNull($row);
-        $this->assertIsString($row->credentials_encrypted);
-        $this->assertStringNotContainsString(
-            self::VALID_GSC['client_secret'],
-            $row->credentials_encrypted,
-        );
+        $stored = DB::table('integrations')->where('provider', 'gsc')->value('credentials_encrypted');
+        $this->assertIsString($stored);
+        $this->assertStringNotContainsString(self::VALID_GSC['client_secret'], $stored);
 
         // 3. Mais le secret est bien récupérable applicativement (chiffrement
         // réversible : un connecteur doit pouvoir s'authentifier).

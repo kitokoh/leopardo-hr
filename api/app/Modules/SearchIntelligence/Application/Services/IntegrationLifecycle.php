@@ -174,7 +174,7 @@ final class IntegrationLifecycle
 
             return [
                 'status' => IntegrationStatus::Error,
-                'message' => $integration->last_error,
+                'message' => (string) $integration->last_error,
             ];
         }
 
@@ -190,7 +190,7 @@ final class IntegrationLifecycle
 
         return [
             'status' => IntegrationStatus::NotConnected,
-            'message' => $integration->last_error,
+            'message' => (string) $integration->last_error,
         ];
     }
 
@@ -282,7 +282,10 @@ final class IntegrationLifecycle
 
     private function hasStoredCredentials(Integration $integration): bool
     {
-        $raw = $integration->getRawOriginal('credentials_encrypted');
+        // `getAttributes()` renvoie la valeur BRUTE (non déchiffrée) et non
+        // typée : c'est ce qu'il faut ici, puisqu'on veut savoir si une valeur
+        // est stockée sans la déchiffrer (et sans qu'un cast ne la décode).
+        $raw = $integration->getAttributes()['credentials_encrypted'] ?? null;
 
         return is_string($raw) && $raw !== '';
     }
