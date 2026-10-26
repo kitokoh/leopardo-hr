@@ -1740,7 +1740,8 @@
     "travelAgency": "وكالة السفر",
     "emailTemplates": "البريد الإلكتروني",
     "settings": "الإعدادات",
-    "messaging": "المراسلة"
+    "messaging": "المراسلة",
+    "provisioning": "التزويد"
   },
   "webhooks": {
     "confirm_delete": "حذف خطاف الويب هذا؟"
@@ -3818,7 +3819,8 @@
     "itemCrm": "إدارة علاقات العملاء (CRM)",
     "itemCrmDesc": "مسار CRM",
     "itemToggleDark": "التبديل إلى الوضع الداكن",
-    "itemToggleDarkDesc": "تغيير المظهر"
+    "itemToggleDarkDesc": "تغيير المظهر",
+    "itemProvisioningDesc": "تتبع تقدم إعداد المستأجرين ومعوقات التزويد"
   },
   "bankRecon": {
     "title": "التسوية المصرفية",
@@ -8735,5 +8737,37 @@
       "currency": "العملة",
       "createdAt": "التاريخ"
     }
+  },
+  "provisioning": {
+    "title": "التزويد",
+    "subtitle": "أين يقف كل مستأجر في الإعداد — وأيها متوقف.",
+    "refresh": "تحديث",
+    "loading": "جارٍ قراءة حالة التزويد…",
+    "empty": "لا يوجد مستأجر يطابق هذا التصفية.",
+    "loadError": "تعذر التحميل",
+    "noPermission": "دورك لا يتضمن «companies.view»: لا يمكن عرض هذه الشاشة.",
+    "forbidden": "تم رفض الوصول — إذن «companies.view» مطلوب.",
+    "listTitle": "التقدم حسب المستأجر",
+    "listSub": "حقائق التزويد فقط — لا بيانات أعمال للعميل.",
+    "statsTenants": "المستأجرون",
+    "statsWithoutSite": "بدون منشأة",
+    "statsIncomplete": "إعداد غير مكتمل",
+    "statsStalled": "عمليات تزويد متوقفة",
+    "failuresTitle": "إخفاقات وتوقفات الإعداد",
+    "failuresSub": "عمليات تزويد فشلت أو لم تتقدم لأكثر من 15 دقيقة.",
+    "filterAll": "الكل",
+    "filterNoSite": "بدون منشأة",
+    "filterBlocked": "متوقف",
+    "colTenant": "المستأجر",
+    "colStep": "آخر خطوة",
+    "colSites": "المنشآت",
+    "colModules": "الوحدات النشطة",
+    "colAge": "أُنشئ",
+    "colActions": "السجل",
+    "colEmail": "الحساب (مقنّع)",
+    "colStatus": "الحالة",
+    "colSince": "منذ",
+    "colError": "خطأ",
+    "openJournal": "عرض السجل"
   }
 }

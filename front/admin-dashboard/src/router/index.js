@@ -84,6 +84,17 @@ const routes = [
         }
       },
       {
+        path: '/provisioning',
+        name: 'provisioning',
+        component: () => import('@/views/companies/ProvisioningView.vue'),
+        meta: {
+          // #8630 (BOS-S-01) — vue de diagnostic : un tenant cree mais
+          // inutilisable doit etre visible, sans passer par la fiche client.
+          title: 'navigation.provisioning',
+          icon: 'ServerStackIcon'
+        }
+      },
+      {
         path: '/companies',
         name: 'companies',
         component: () => import('@/views/companies/CompaniesView.vue'),
