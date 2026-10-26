@@ -120,7 +120,7 @@
 | Variable | Used by | Purpose | Default if unset |
 |---|---|---|---|
 | `BACKEND_COVERAGE_MIN` | `tests.yml`, `coverage-gate.yml` | PHPUnit statement coverage threshold (%) | `65` (`DEFAULT_BACKEND_COVERAGE_MIN` in `tests.yml` — vérifié 2026-09-09) |
-| `CI_REPORT_TO` | `tests.yml` | Recipient address for the CI report email | `nouractu.com@gmail.com` |
+| `CI_REPORT_TO` | `tests.yml` | Recipient address for the CI report email | Aucun — à définir par le propriétaire (adresse d'équipe, pas personnelle : dépôt public, décision #7982) |
 | `CI_REPORT_FROM` | `tests.yml` | From address for the CI report email | `CI_SMTP_USERNAME` |
 | `ENABLE_CODEQL_PR` | `codeql.yml` | `"true"` runs the CodeQL (Actions) job on `pull_request` events too | Off (schedule/push only) |
 | `STAGING_API_URL` | *(orphelin — `deploy-staging.yml` supprimé #7846)* | Overrides the staging API base URL for health checks | Peut être supprimé ; à re-documenter si un staging est provisionné |
