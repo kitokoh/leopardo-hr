@@ -145,5 +145,4 @@ return new class extends Migration
 
         return $row !== null && (bool) $row->exists;
     }
-
 };

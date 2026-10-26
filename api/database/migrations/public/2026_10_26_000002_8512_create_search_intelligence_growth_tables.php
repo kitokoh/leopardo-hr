@@ -74,7 +74,7 @@ return new class extends Migration
             // n'existe pas dans cette version de Laravel (convention du dépôt,
             // cf. 2026_07_23_000002_create_platform_announcements_table.php).
             DB::statement(
-                "ALTER TABLE campaign_metrics ADD CONSTRAINT campaign_metrics_integration_source_requires_integration "
+                'ALTER TABLE campaign_metrics ADD CONSTRAINT campaign_metrics_integration_source_requires_integration '
                 ."CHECK (source <> 'integration' OR integration_id IS NOT NULL)"
             );
         }
@@ -100,7 +100,7 @@ return new class extends Migration
             // Matérialise en base « pas de publication sans révision humaine » :
             // même un INSERT SQL direct ne peut pas la contourner.
             DB::statement(
-                "ALTER TABLE aeo_questions ADD CONSTRAINT aeo_questions_publish_requires_human_review "
+                'ALTER TABLE aeo_questions ADD CONSTRAINT aeo_questions_publish_requires_human_review '
                 ."CHECK (status <> 'published' OR (reviewed_by IS NOT NULL AND reviewed_at IS NOT NULL AND answer IS NOT NULL))"
             );
         }
@@ -140,7 +140,7 @@ return new class extends Migration
             // La preuve est obligatoire pour un check MANUEL : sans elle, la
             // ligne est une affirmation non vérifiable.
             DB::statement(
-                "ALTER TABLE geo_checks ADD CONSTRAINT geo_checks_manual_requires_evidence "
+                'ALTER TABLE geo_checks ADD CONSTRAINT geo_checks_manual_requires_evidence '
                 ."CHECK (method <> 'manual' OR evidence IS NOT NULL)"
             );
         }
@@ -173,5 +173,4 @@ return new class extends Migration
 
         return $row !== null && (bool) $row->exists;
     }
-
 };

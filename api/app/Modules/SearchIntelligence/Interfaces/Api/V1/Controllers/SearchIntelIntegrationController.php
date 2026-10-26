@@ -36,7 +36,7 @@ final class SearchIntelIntegrationController
             $rows[] = [
                 'provider' => $provider,
                 'status' => $integration?->status->value ?? IntegrationStatus::NotConnected->value,
-                'status_label' => ($integration?->status ?? IntegrationStatus::NotConnected)->label(),
+                'status_label' => ($integration->status ?? IntegrationStatus::NotConnected)->label(),
                 'has_credentials' => $integration !== null
                     && is_string($integration->getRawOriginal('credentials_encrypted'))
                     && $integration->getRawOriginal('credentials_encrypted') !== '',

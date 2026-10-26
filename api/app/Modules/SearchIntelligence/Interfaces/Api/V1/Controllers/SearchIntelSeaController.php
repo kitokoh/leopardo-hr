@@ -297,7 +297,7 @@ final class SearchIntelSeaController
             ],
         );
 
-        $this->audit($campaign, 'metric_recorded', ['measured_on' => $metric->measured_on?->toDateString()]);
+        $this->audit($campaign, 'metric_recorded', ['measured_on' => $metric->measured_on->toDateString()]);
 
         return new JsonResponse([
             'data' => $this->presentMetric($metric),
@@ -472,7 +472,7 @@ final class SearchIntelSeaController
         return [
             'id' => $metric->id,
             'campaign_id' => $metric->campaign_id,
-            'measured_on' => $metric->measured_on?->toDateString(),
+            'measured_on' => $metric->measured_on->toDateString(),
             'source' => $metric->source->value,
             'integration_id' => $metric->integration_id,
             'spend_cents' => $metric->spend_cents,

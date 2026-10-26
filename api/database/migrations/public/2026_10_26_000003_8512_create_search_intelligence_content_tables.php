@@ -49,7 +49,7 @@ return new class extends Migration
             // Publier sans auteur ni date de publication rendrait l'état
             // « publié » indéterminable côté éditorial.
             DB::statement(
-                "ALTER TABLE content_items ADD CONSTRAINT content_items_publish_requires_author_and_date "
+                'ALTER TABLE content_items ADD CONSTRAINT content_items_publish_requires_author_and_date '
                 ."CHECK (status <> 'published' OR (published_at IS NOT NULL AND author_id IS NOT NULL))"
             );
         }
@@ -97,5 +97,4 @@ return new class extends Migration
 
         return $row !== null && (bool) $row->exists;
     }
-
 };

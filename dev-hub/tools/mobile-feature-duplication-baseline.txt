@@ -1,0 +1,37 @@
+# Features mobiles dupliquées core ↔ apps — gel de la dette #7652.
+#
+# Chaque ligne est un fork à réconcilier : la version canonique doit
+# retourner dans leopardo_core (paramétrable par rôle/app via config,
+# jamais par fork), puis la copie de l'app est supprimée.
+#
+# La garde check-mobile-feature-duplication.sh refuse toute NOUVELLE
+# ligne : cette liste ne peut que décroître.
+#
+# Régénérer : bash dev-hub/tools/check-mobile-feature-duplication.sh --update
+leopardo_accounting/lib/features/auth
+leopardo_cameras/lib/features/auth
+leopardo_employee/lib/features/absences
+leopardo_employee/lib/features/attendance
+leopardo_employee/lib/features/attendance_geo
+leopardo_employee/lib/features/auth
+leopardo_employee/lib/features/cabinet
+leopardo_employee/lib/features/company_branding
+leopardo_employee/lib/features/evaluations
+leopardo_employee/lib/features/home
+leopardo_employee/lib/features/notifications
+leopardo_employee/lib/features/onboarding
+leopardo_employee/lib/features/payrolls
+leopardo_employee/lib/features/salary_advances
+leopardo_employee/lib/features/settings
+leopardo_employee/lib/features/user_auth
+leopardo_hr/lib/features/home
+leopardo_hr/lib/features/payrolls
+leopardo_manager/lib/features/attendance
+leopardo_manager/lib/features/auth
+leopardo_manager/lib/features/company_branding
+leopardo_manager/lib/features/home
+leopardo_manager/lib/features/notifications
+leopardo_manager/lib/features/payrolls
+leopardo_manager/lib/features/restaurant
+leopardo_marketing/lib/features/auth
+leopardo_travel_agent/lib/features/auth

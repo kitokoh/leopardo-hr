@@ -40,14 +40,19 @@ final class GeocodingService
      * Résout une adresse en coordonnées.
      *
      * @return array{point: GeoPoint, cached: bool}|null null si l'adresse
-     *         n'est pas résolue (le fournisseur ne sait pas, ou est désactivé).
+     *                                                   n'est pas résolue (le fournisseur ne sait pas, ou est désactivé).
      */
     public function geocode(string $address, ?string $countryCode = null): ?array
     {
         $key = $this->cacheKey($address, $countryCode);
         $ttl = (int) config('geo.geocoding.cache_ttl', 86400);
 
-        /** @var array{lat: float|int|string, lng: float|int|string}|null $cached */
+        // Le cache est un stockage non typé : la valeur relue peut être
+        // n'importe quoi (entrée écrite par une version antérieure, purge
+        // partielle). On annonce donc `mixed` et on valide la forme à
+        // l'exécution — c'est le `isset()` ci-dessous qui fait foi.
+        /** @var mixed $cached */
+        // tenant-cache:shared — adresse publique -> coordonnees, independant du tenant (#8058).
         $cached = Cache::get($key);
 
         if (is_array($cached) && isset($cached['lat'], $cached['lng'])) {
@@ -63,6 +68,8 @@ final class GeocodingService
             return null;
         }
 
+        // tenant-cache:shared — meme raison que la lecture ci-dessus :
+        // coordonnees d'une adresse publique, independantes du tenant (#8058).
         Cache::put($key, ['lat' => $point->latitude, 'lng' => $point->longitude], $ttl);
 
         return ['point' => $point, 'cached' => false];

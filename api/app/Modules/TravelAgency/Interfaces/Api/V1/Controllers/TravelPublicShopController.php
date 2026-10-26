@@ -56,7 +56,7 @@ class TravelPublicShopController extends Controller
             ->where('status', TripStatus::PUBLISHED)
             ->when($request->query('origin_city_id'), fn ($q, $cityId) => $q->whereHas('route', fn ($route) => $route->where('origin_city_id', $cityId)))
             ->when($request->query('destination_city_id'), fn ($q, $cityId) => $q->whereHas('route', fn ($route) => $route->where('destination_city_id', $cityId)))
-            ->when($request->query('departure_date'), fn ($q, $date) => $q->whereDate('departure_date', (string) $date))
+            ->when($request->query('departure_date'), fn ($q, $date) => $q->whereDate('departure_date', is_array($date) ? (string) reset($date) : (string) $date))
             ->orderBy('departure_date')
             ->orderBy('departure_time')
             ->paginate($perPage);

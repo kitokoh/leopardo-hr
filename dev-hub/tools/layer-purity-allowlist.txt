@@ -82,6 +82,7 @@ api/app/Modules/RestaurantManager/Application/Actions/TransitionOrderAction.php:
 api/app/Modules/RestaurantManager/Application/Services/RestaurantReportService.php:17:use Illuminate\Support\Facades\DB;
 api/app/Modules/RestaurantManager/Application/Services/RestaurantStockService.php:13:use Illuminate\Support\Facades\DB;
 api/app/Modules/RestaurantManager/Application/Services/RestaurantStockService.php:14:use Illuminate\Support\Facades\Log;
+api/app/Modules/SearchIntelligence/Application/Services/SeoIssueWorkflow.php:12:use Illuminate\Support\Facades\DB;
 api/app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php:14:use Illuminate\Support\Facades\DB;
 api/app/Modules/TravelAgency/Application/Actions/CancelBookingAction.php:13:use Illuminate\Support\Facades\DB;
 api/app/Modules/TravelAgency/Application/Actions/CancelRentalBookingAction.php:11:use Illuminate\Support\Facades\DB;

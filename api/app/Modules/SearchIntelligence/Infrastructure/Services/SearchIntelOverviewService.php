@@ -264,7 +264,11 @@ final class SearchIntelOverviewService
             // vue existe pour éviter.
             'metrics' => $metrics,
             'leads_total' => $this->kpi(
-                is_array($metrics) ? ($metrics['leads'] ?? null) : null,
+                // Le contrat `LeadMetricsProviderInterface` expose `total`
+                // (nombre de leads de la fenetre), pas `leads` : lire une cle
+                // inexistante rendait ce KPI structurellement toujours `null`
+                // (#8520).
+                is_array($metrics) ? $metrics['total'] : null,
                 'marketing_leads',
                 $days.'d',
                 $available ? self::RELIABILITY_MEASURED : self::RELIABILITY_UNAVAILABLE,

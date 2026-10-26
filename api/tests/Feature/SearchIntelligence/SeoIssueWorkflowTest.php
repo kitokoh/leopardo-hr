@@ -94,10 +94,14 @@ final class SeoIssueWorkflowTest extends TestCase
             ->get();
 
         self::assertCount(2, $logs);
-        self::assertSame('search_intel.seo_issue.recommended', $logs[0]->action);
-        self::assertSame('search_intel.seo_issue.approved', $logs[1]->action);
-        self::assertSame(['status' => 'detected'], $logs[0]->old_values);
-        self::assertSame(7, $logs[0]->metadata['actor_super_admin_id']);
+        $first = $logs[0];
+        $second = $logs[1];
+        self::assertNotNull($first);
+        self::assertNotNull($second);
+        self::assertSame('search_intel.seo_issue.recommended', $first->action);
+        self::assertSame('search_intel.seo_issue.approved', $second->action);
+        self::assertSame(['status' => 'detected'], $first->old_values);
+        self::assertSame(7, $first->metadata['actor_super_admin_id']);
     }
 
     public function test_api_transition_returns_422_with_allowed_transitions(): void

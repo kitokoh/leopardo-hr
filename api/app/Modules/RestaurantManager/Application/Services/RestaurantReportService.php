@@ -87,7 +87,7 @@ final class RestaurantReportService
 
         foreach ($sessions as $session) {
             $totalCovers += (int) $session->covers;
-            $minutes = $session->opened_at->diffInMinutes($session->closed_at) ?? 0;
+            $minutes = $session->opened_at->diffInMinutes($session->closed_at);
             $totalMinutes += max(0, $minutes);
         }
 
@@ -437,12 +437,12 @@ final class RestaurantReportService
      */
     private function csv(array $rows): array
     {
-        return array_map(
+        return array_values(array_map(
             fn (array $row): string => implode(',', array_map(
                 fn ($value): string => sprintf('"%s"', str_replace('"', '""', (string) $value)),
                 $row,
             )),
             $rows,
-        );
+        ));
     }
 }

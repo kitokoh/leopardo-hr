@@ -57,7 +57,7 @@ final class SearchIntelSeoIssueController
 
         $sorted = $issues->sortBy([
             static fn (SeoIssue $a, SeoIssue $b): int => $a->severity->rank() <=> $b->severity->rank(),
-            static fn (SeoIssue $a, SeoIssue $b): int => ($b->detected_at?->timestamp ?? 0) <=> ($a->detected_at?->timestamp ?? 0),
+            static fn (SeoIssue $a, SeoIssue $b): int => ($b->detected_at->timestamp) <=> ($a->detected_at->timestamp),
         ])->values();
 
         return new JsonResponse([
@@ -70,7 +70,7 @@ final class SearchIntelSeoIssueController
                 'title' => $issue->title,
                 'recommendation' => $issue->recommendation,
                 'url' => $issue->page?->url,
-                'detected_at' => $issue->detected_at?->toIso8601String(),
+                'detected_at' => $issue->detected_at->toIso8601String(),
                 'allowed_transitions' => array_map(
                     static fn (SeoIssueStatus $s): string => $s->value,
                     $issue->status->allowedTransitions(),
