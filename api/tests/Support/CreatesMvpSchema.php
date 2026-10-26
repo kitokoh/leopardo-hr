@@ -2816,6 +2816,13 @@ trait CreatesMvpSchema
                 $table->decimal('working_days', 5, 2)->default(0);
                 $table->decimal('actual_days_worked', 5, 2)->default(0);
                 $table->decimal('overtime_hours', 6, 2)->default(0);
+                // #7934 — la fixture omettait les saisies de conges ajoutees
+                // par 2026_08_23_000006 alors que le modele les declare dans
+                // $fillable : tout test qui les ecrivait echouait en 42703, et
+                // silencieusement la fixture ne refletait pas la production.
+                $table->decimal('paid_leave_days', 6, 2)->default(0);
+                $table->decimal('unpaid_leave_days', 6, 2)->default(0);
+                $table->decimal('public_holiday_days', 6, 2)->default(0);
                 $table->string('status', 20)->default('draft');
                 $table->string('pdf_path', 500)->nullable();
                 $table->timestampTz('sent_at')->nullable();
