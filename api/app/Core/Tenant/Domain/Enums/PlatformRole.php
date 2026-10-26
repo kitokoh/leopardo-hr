@@ -86,6 +86,10 @@ enum PlatformRole: string
                 // journal des transactions et réconciliations.
                 PlatformPermission::PaymentsView,
                 PlatformPermission::PaymentsManage,
+                // GSI (#8512) — LECTURE seule : les dépenses SEA sont des
+                // dépenses réelles qui concernent finance ; la création de
+                // campagnes reste à marketing/admin.
+                PlatformPermission::SearchIntelView,
             ],
             self::Ops => [
                 PlatformPermission::CompaniesView,
@@ -100,6 +104,10 @@ enum PlatformRole: string
                 // #8673 — la bascule de stack est une opération d'exploitation :
                 // ops la porte avec les kill switches et l'observabilité.
                 PlatformPermission::InfraManage,
+                // GSI (#8512) — LECTURE seule : ops diagnostique un scanner SEO
+                // bloqué ou une intégration en erreur, sans toucher aux
+                // campagnes ni aux contenus.
+                PlatformPermission::SearchIntelView,
             ],
             self::Marketing => [
                 PlatformPermission::CompaniesView,
@@ -110,6 +118,15 @@ enum PlatformRole: string
                 // (stratégie, contenus, médiathèque, publications) ; l'écriture
                 // reste à admin/super_admin.
                 PlatformPermission::MarketingOsView,
+                // GSI (#8512) — le pilotage SEO/SEA/AEO/GEO est le métier du
+                // rôle marketing : il le porte en lecture ET en écriture
+                // (campagnes SEA, contenus, veille). C'est la seule exception
+                // à la règle « marketing lit, admin écrit » : ici l'écriture
+                // n'engage pas la marque publiquement de la même façon qu'une
+                // mise en ligne de vitrine, et un prestataire SEO doit pouvoir
+                // travailler sans compte admin.
+                PlatformPermission::SearchIntelView,
+                PlatformPermission::SearchIntelManage,
             ],
         };
     }
