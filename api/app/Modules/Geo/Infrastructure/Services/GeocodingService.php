@@ -52,6 +52,7 @@ final class GeocodingService
         // partielle). On annonce donc `mixed` et on valide la forme à
         // l'exécution — c'est le `isset()` ci-dessous qui fait foi.
         /** @var mixed $cached */
+        // tenant-cache:shared — adresse publique -> coordonnees, independant du tenant (#8058).
         $cached = Cache::get($key);
 
         if (is_array($cached) && isset($cached['lat'], $cached['lng'])) {
@@ -67,6 +68,8 @@ final class GeocodingService
             return null;
         }
 
+        // tenant-cache:shared — meme raison que la lecture ci-dessus :
+        // coordonnees d'une adresse publique, independantes du tenant (#8058).
         Cache::put($key, ['lat' => $point->latitude, 'lng' => $point->longitude], $ttl);
 
         return ['point' => $point, 'cached' => false];

@@ -59517,12 +59517,17 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Validation422'
-  /platform/search-intel/sea/campaigns/compare:
-    get:
-      operationId: api_get_platform_search_intel_sea_campaigns_compare
+    post:
+      operationId: api_post_platform_search_intel_sea_campaigns
       tags:
       - Search Intelligence
-      summary: Comparaison inter-campagnes sur une base de calcul commune
+      summary: Cree une campagne SEA (toujours en brouillon)
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
       responses:
         '200':
           description: Succes
@@ -59536,18 +59541,12 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Validation422'
-  /platform/search-intel/sea/campaigns:
-    post:
-      operationId: api_post_platform_search_intel_sea_campaigns
+  /platform/search-intel/sea/campaigns/compare:
+    get:
+      operationId: api_get_platform_search_intel_sea_campaigns_compare
       tags:
       - Search Intelligence
-      summary: Cree une campagne SEA (toujours en brouillon)
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
+      summary: Comparaison inter-campagnes sur une base de calcul commune
       responses:
         '200':
           description: Succes
@@ -59586,7 +59585,6 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Validation422'
-  /platform/search-intel/sea/campaigns/{campaign}:
     patch:
       operationId: api_patch_platform_search_intel_sea_campaign
       tags:
@@ -59723,7 +59721,6 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Validation422'
-  /platform/search-intel/aeo/questions:
     post:
       operationId: api_post_platform_search_intel_aeo_questions
       tags:
@@ -59898,7 +59895,6 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Validation422'
-  /platform/search-intel/geo/queries:
     post:
       operationId: api_post_platform_search_intel_geo_queries
       tags:
@@ -59948,7 +59944,6 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Validation422'
-  /platform/search-intel/geo/queries/{geoQuery}/checks:
     post:
       operationId: api_post_platform_search_intel_geo_checks
       tags:
@@ -59998,26 +59993,6 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Validation422'
-  /platform/search-intel/content/export:
-    get:
-      operationId: api_get_platform_search_intel_content_export
-      tags:
-      - Search Intelligence
-      summary: Export CSV des contenus marketing
-      responses:
-        '200':
-          description: Export CSV des contenus
-          content:
-            text/csv:
-              schema:
-                type: string
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '422':
-          $ref: '#/components/responses/Validation422'
-  /platform/search-intel/content:
     post:
       operationId: api_post_platform_search_intel_content
       tags:
@@ -60036,6 +60011,25 @@ paths:
             application/json:
               schema:
                 type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/content/export:
+    get:
+      operationId: api_get_platform_search_intel_content_export
+      tags:
+      - Search Intelligence
+      summary: Export CSV des contenus marketing
+      responses:
+        '200':
+          description: Export CSV des contenus
+          content:
+            text/csv:
+              schema:
+                type: string
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -60123,7 +60117,6 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Validation422'
-  /platform/search-intel/competitors:
     post:
       operationId: api_post_platform_search_intel_competitors
       tags:
@@ -60204,33 +60197,6 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Validation422'
-  /geo/geocode:
-    post:
-      operationId: api_post_geo_geocode
-      tags:
-      - Search Intelligence
-      summary: Geocode une adresse via le provider configure (fail-closed si absent)
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '422':
-          $ref: '#/components/responses/Validation422'
-  # <<< GSI-8522-END
-
 components:
   securitySchemes:
     BearerAuth:

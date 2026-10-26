@@ -39,6 +39,9 @@ final class SeaCampaignTest extends TestCase
         Sanctum::actingAs($admin->refresh(), ['*'], 'super_admin_api');
     }
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     private function makeCampaign(array $attributes = []): Campaign
     {
         $campaign = new Campaign;

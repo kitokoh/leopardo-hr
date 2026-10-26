@@ -61,7 +61,7 @@ return new class extends Migration
         // automatiquement la contrainte `campaigns_status_check`.
         DB::statement('ALTER TABLE campaigns DROP CONSTRAINT IF EXISTS campaigns_status_check');
         DB::statement(
-            "ALTER TABLE campaigns ADD CONSTRAINT campaigns_status_check "
+            'ALTER TABLE campaigns ADD CONSTRAINT campaigns_status_check '
             ."CHECK (status IN ('draft', 'awaiting_validation', 'active', 'paused', 'ended'))"
         );
 
@@ -69,7 +69,7 @@ return new class extends Migration
         // centrale de GSI-3. Le CHECK la rend impossible même en SQL direct.
         DB::statement('ALTER TABLE campaigns DROP CONSTRAINT IF EXISTS campaigns_active_requires_validation');
         DB::statement(
-            "ALTER TABLE campaigns ADD CONSTRAINT campaigns_active_requires_validation "
+            'ALTER TABLE campaigns ADD CONSTRAINT campaigns_active_requires_validation '
             ."CHECK (status <> 'active' OR validated_at IS NOT NULL)"
         );
     }
@@ -83,7 +83,7 @@ return new class extends Migration
         DB::statement("UPDATE campaigns SET status = 'draft' WHERE status = 'awaiting_validation'");
         DB::statement('ALTER TABLE campaigns DROP CONSTRAINT IF EXISTS campaigns_status_check');
         DB::statement(
-            "ALTER TABLE campaigns ADD CONSTRAINT campaigns_status_check "
+            'ALTER TABLE campaigns ADD CONSTRAINT campaigns_status_check '
             ."CHECK (status IN ('draft', 'active', 'paused', 'ended'))"
         );
 
@@ -147,5 +147,4 @@ return new class extends Migration
 
         return $row !== null && (bool) $row->exists;
     }
-
 };

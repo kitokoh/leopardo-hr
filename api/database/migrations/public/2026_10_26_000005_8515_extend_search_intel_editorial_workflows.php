@@ -71,7 +71,7 @@ return new class extends Migration
         // plus to_update (le contenu a vieilli) et rejected.
         DB::statement('ALTER TABLE aeo_questions DROP CONSTRAINT IF EXISTS aeo_questions_status_check');
         DB::statement(
-            "ALTER TABLE aeo_questions ADD CONSTRAINT aeo_questions_status_check "
+            'ALTER TABLE aeo_questions ADD CONSTRAINT aeo_questions_status_check '
             ."CHECK (status IN ('draft', 'in_review', 'approved', 'published', 'to_update', 'rejected'))"
         );
         DB::statement("ALTER TABLE aeo_questions ALTER COLUMN status SET DEFAULT 'draft'");
@@ -80,7 +80,7 @@ return new class extends Migration
         // figée : sans `answer_approved`, il n'y a rien de relu à publier.
         DB::statement('ALTER TABLE aeo_questions DROP CONSTRAINT IF EXISTS aeo_questions_publish_requires_human_review');
         DB::statement(
-            "ALTER TABLE aeo_questions ADD CONSTRAINT aeo_questions_publish_requires_human_review "
+            'ALTER TABLE aeo_questions ADD CONSTRAINT aeo_questions_publish_requires_human_review '
             ."CHECK (status <> 'published' OR (approved_by IS NOT NULL AND approved_at IS NOT NULL AND answer_approved IS NOT NULL))"
         );
     }
@@ -114,7 +114,7 @@ return new class extends Migration
         // interdit d'inventer un niveau hors de ces trois-là.
         DB::statement('ALTER TABLE geo_checks DROP CONSTRAINT IF EXISTS geo_checks_method_check');
         DB::statement(
-            "ALTER TABLE geo_checks ADD CONSTRAINT geo_checks_method_check "
+            'ALTER TABLE geo_checks ADD CONSTRAINT geo_checks_method_check '
             ."CHECK (method IN ('spot_test', 'observed_data', 'measured_indicator'))"
         );
         DB::statement("ALTER TABLE geo_checks ALTER COLUMN method SET DEFAULT 'spot_test'");
@@ -122,14 +122,14 @@ return new class extends Migration
         // Un check manuel doit porter sa preuve : `evidence` OU `observed_text`.
         DB::statement('ALTER TABLE geo_checks DROP CONSTRAINT IF EXISTS geo_checks_manual_requires_evidence');
         DB::statement(
-            "ALTER TABLE geo_checks ADD CONSTRAINT geo_checks_manual_requires_evidence "
+            'ALTER TABLE geo_checks ADD CONSTRAINT geo_checks_manual_requires_evidence '
             ."CHECK (method <> 'spot_test' OR evidence IS NOT NULL OR observed_text IS NOT NULL)"
         );
 
         // Le moteur « claude » est explicitement demandé par la spec.
         DB::statement('ALTER TABLE geo_checks DROP CONSTRAINT IF EXISTS geo_checks_engine_check');
         DB::statement(
-            "ALTER TABLE geo_checks ADD CONSTRAINT geo_checks_engine_check "
+            'ALTER TABLE geo_checks ADD CONSTRAINT geo_checks_engine_check '
             ."CHECK (engine IN ('chatgpt', 'claude', 'gemini', 'perplexity', 'copilot', 'other'))"
         );
     }
@@ -179,13 +179,13 @@ return new class extends Migration
         // Corpus de types demandé par la spec (le précédent était plus étroit).
         DB::statement('ALTER TABLE content_items DROP CONSTRAINT IF EXISTS content_items_kind_check');
         DB::statement(
-            "ALTER TABLE content_items ADD CONSTRAINT content_items_kind_check "
+            'ALTER TABLE content_items ADD CONSTRAINT content_items_kind_check '
             ."CHECK (kind IN ('landing', 'blog', 'guide', 'faq', 'comparison', 'social', 'video_script', 'cta'))"
         );
 
         DB::statement('ALTER TABLE content_items DROP CONSTRAINT IF EXISTS content_items_status_check');
         DB::statement(
-            "ALTER TABLE content_items ADD CONSTRAINT content_items_status_check "
+            'ALTER TABLE content_items ADD CONSTRAINT content_items_status_check '
             ."CHECK (status IN ('idea', 'draft', 'review', 'approved', 'published', 'to_update'))"
         );
 
@@ -193,7 +193,7 @@ return new class extends Migration
         // publier nulle part.
         DB::statement('ALTER TABLE content_items DROP CONSTRAINT IF EXISTS content_items_publish_requires_author_and_date');
         DB::statement(
-            "ALTER TABLE content_items ADD CONSTRAINT content_items_publish_requires_author_and_date "
+            'ALTER TABLE content_items ADD CONSTRAINT content_items_publish_requires_author_and_date '
             ."CHECK (status <> 'published' OR (approved_at IS NOT NULL AND target_url IS NOT NULL))"
         );
     }
@@ -232,8 +232,8 @@ return new class extends Migration
         // impossible d'enregistrer un prix sans dire d'où il vient.
         DB::statement('ALTER TABLE competitors DROP CONSTRAINT IF EXISTS competitors_pricing_requires_sources');
         DB::statement(
-            "ALTER TABLE competitors ADD CONSTRAINT competitors_pricing_requires_sources "
-            ."CHECK (pricing_notes IS NULL OR (pricing_sources IS NOT NULL AND jsonb_array_length(pricing_sources) > 0))"
+            'ALTER TABLE competitors ADD CONSTRAINT competitors_pricing_requires_sources '
+            .'CHECK (pricing_notes IS NULL OR (pricing_sources IS NOT NULL AND jsonb_array_length(pricing_sources) > 0))'
         );
     }
 
@@ -325,5 +325,4 @@ return new class extends Migration
 
         return $row !== null && (bool) $row->exists;
     }
-
 };
