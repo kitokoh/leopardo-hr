@@ -120,7 +120,7 @@
 | Variable | Used by | Purpose | Default if unset |
 |---|---|---|---|
 | `BACKEND_COVERAGE_MIN` | `tests.yml`, `coverage-gate.yml` | PHPUnit statement coverage threshold (%) | `65` (`DEFAULT_BACKEND_COVERAGE_MIN` in `tests.yml` — vérifié 2026-09-09) |
-| `CI_REPORT_TO` | `tests.yml` | Recipient address for the CI report email | `nouractu.com@gmail.com` |
+| `CI_REPORT_TO` | `tests.yml` | Recipient address for the CI report email | Aucun — à définir par le propriétaire (adresse d'équipe, pas personnelle : dépôt public, décision #7982) |
 | `CI_REPORT_FROM` | `tests.yml` | From address for the CI report email | `CI_SMTP_USERNAME` |
 | `ENABLE_CODEQL_PR` | `codeql.yml` | `"true"` runs the CodeQL (Actions) job on `pull_request` events too | Off (schedule/push only) |
 | `STAGING_API_URL` | *(orphelin — `deploy-staging.yml` supprimé #7846)* | Overrides the staging API base URL for health checks | Peut être supprimé ; à re-documenter si un staging est provisionné |
@@ -227,6 +227,7 @@ le retard de déploiement doit être visible. Runbook : `docs/ops/travel-web-ver
 | `QUEUE_MAX_PENDING` / `QUEUE_MAX_FAILED` / `QUEUE_MAX_STALE_MINUTES` | `queue-supervision.yml` | Seuils d'alerte de la queue (jobs en attente, jobs échoués, ancienneté) | `50` / `10` / `10` |
 | `PROD_CATCHUP_MAX_AGE_HOURS` | `deploy-main-catchup.yml` (job `prod-catch-up`, #8092) | Âge (heures) au-delà duquel un deploy prod live SANS commit lisible (`commit: null`, héritage pré-#8092) est considéré en retard et rattrapé | `6` |
 | `PROD_DRIFT_MAX_AGE_HOURS` | `deploy-drift-guard.yml` (rapport prod↔main, #8092) | Âge (heures) du premier commit non déployé au-delà duquel le rapport prod↔main passe de `::warning` à échec rouge | `24` |
+| `PROD_DRIFT_ALERT_HOURS` | `deploy-drift-guard.yml` (job `prod-drift-alert`, #8147) | Âge (heures) du plus vieux commit non déployé au-delà duquel l'alerte de réactivité prod↔main échoue. Distinct de `PROD_DRIFT_MAX_AGE_HOURS` : celui-ci est le seuil de *visibilité* (24 h, #8092), celui-là le seuil de *réactivité* de #8147 | `1` |
 
 ### Propriété et rotation
 
