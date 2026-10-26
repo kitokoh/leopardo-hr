@@ -66,7 +66,7 @@ final class DatabaseOutboxPublisher implements OutboxPublisher
         ?string $aggregateType = null,
         ?string $aggregateId = null,
         ?DateTimeInterface $availableAt = null,
-    ): object {
+    ): Model {
         /** @var Model $probe */
         $probe = new $modelClass;
         $qualified = $this->resolver->qualified($probe->getTable());
@@ -75,7 +75,7 @@ final class DatabaseOutboxPublisher implements OutboxPublisher
         // Savepoint englobant : meme en cas d'echec SQL (table absente,
         // colonne manquante, contrainte), la transaction de l'appelant reste
         // utilisable.
-        return DB::transaction(fn (): object => $this->insideSavepoint(
+        return DB::transaction(fn (): Model => $this->insideSavepoint(
             $qualified,
             $modelClass,
             $companyId,
@@ -102,7 +102,7 @@ final class DatabaseOutboxPublisher implements OutboxPublisher
         ?string $aggregateType,
         ?string $aggregateId,
         ?DateTimeInterface $availableAt,
-    ): object {
+    ): Model {
         $columns = $this->columnsOf($modelClass);
 
         $attributes = [
@@ -149,7 +149,7 @@ final class DatabaseOutboxPublisher implements OutboxPublisher
         }
 
         try {
-            return DB::transaction(function () use ($qualified, $modelClass, $attributes): object {
+            return DB::transaction(function () use ($qualified, $modelClass, $attributes): Model {
                 /** @var Model $event */
                 $event = new $modelClass;
                 $event->setTable($qualified);

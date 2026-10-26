@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Outbox\Contracts;
 
 use DateTimeInterface;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * #8209 — Contrat de publication d'evenements metier (outbox transactionnel).
@@ -48,5 +49,5 @@ interface OutboxPublisher
         ?string $aggregateType = null,
         ?string $aggregateId = null,
         ?DateTimeInterface $availableAt = null,
-    ): object;
+    ): Model;
 }
