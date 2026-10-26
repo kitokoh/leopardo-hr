@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\SearchIntelligence\Application\Services;
+namespace App\Modules\SearchIntelligence\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Modules\SearchIntelligence\Domain\Enums\IntegrationStatus;

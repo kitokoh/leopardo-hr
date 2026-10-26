@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\SearchIntelligence\Interfaces\Api\V1\Controllers;
 
 use App\Core\Tenant\Domain\Models\SuperAdmin;
-use App\Modules\SearchIntelligence\Application\Services\IntegrationLifecycle;
 use App\Modules\SearchIntelligence\Domain\Enums\IntegrationStatus;
 use App\Modules\SearchIntelligence\Domain\Models\Integration;
+use App\Modules\SearchIntelligence\Infrastructure\Services\IntegrationLifecycle;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
