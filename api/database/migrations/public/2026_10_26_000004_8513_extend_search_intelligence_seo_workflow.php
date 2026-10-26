@@ -34,18 +34,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('seo_issues')) {
+        if ($this->publicTableExists('seo_issues')) {
             Schema::table('seo_issues', function (Blueprint $table): void {
-                if (! Schema::hasColumn('seo_issues', 'recommendation')) {
+                if (! $this->publicColumnExists('seo_issues', 'recommendation')) {
                     $table->text('recommendation')->nullable();
                 }
-                if (! Schema::hasColumn('seo_issues', 'dismissed_reason')) {
+                if (! $this->publicColumnExists('seo_issues', 'dismissed_reason')) {
                     $table->text('dismissed_reason')->nullable();
                 }
-                if (! Schema::hasColumn('seo_issues', 'applied_at')) {
+                if (! $this->publicColumnExists('seo_issues', 'applied_at')) {
                     $table->timestamp('applied_at')->nullable();
                 }
-                if (! Schema::hasColumn('seo_issues', 'verified_at')) {
+                if (! $this->publicColumnExists('seo_issues', 'verified_at')) {
                     $table->timestamp('verified_at')->nullable();
                 }
             });
@@ -69,22 +69,22 @@ return new class extends Migration
             );
         }
 
-        if (Schema::hasTable('keywords')) {
+        if ($this->publicTableExists('keywords')) {
             Schema::table('keywords', function (Blueprint $table): void {
-                if (! Schema::hasColumn('keywords', 'target_page_id')) {
+                if (! $this->publicColumnExists('keywords', 'target_page_id')) {
                     $table->unsignedBigInteger('target_page_id')->nullable();
                 }
-                if (! Schema::hasColumn('keywords', 'impressions')) {
+                if (! $this->publicColumnExists('keywords', 'impressions')) {
                     $table->unsignedInteger('impressions')->nullable();
                 }
-                if (! Schema::hasColumn('keywords', 'clicks')) {
+                if (! $this->publicColumnExists('keywords', 'clicks')) {
                     $table->unsignedInteger('clicks')->nullable();
                 }
-                if (! Schema::hasColumn('keywords', 'data_source')) {
+                if (! $this->publicColumnExists('keywords', 'data_source')) {
                     // D'où vient le chiffre : relevé manuel, ou connecteur réel.
                     $table->enum('data_source', ['manual', 'integration'])->default('manual');
                 }
-                if (! Schema::hasColumn('keywords', 'last_measured_at')) {
+                if (! $this->publicColumnExists('keywords', 'last_measured_at')) {
                     $table->timestamp('last_measured_at')->nullable();
                 }
             });
@@ -93,27 +93,57 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (Schema::hasTable('keywords')) {
+        if ($this->publicTableExists('keywords')) {
             Schema::table('keywords', function (Blueprint $table): void {
                 foreach (['last_measured_at', 'data_source', 'clicks', 'impressions', 'target_page_id'] as $column) {
-                    if (Schema::hasColumn('keywords', $column)) {
+                    if ($this->publicColumnExists('keywords', $column)) {
                         $table->dropColumn($column);
                     }
                 }
             });
         }
 
-        if (Schema::hasTable('seo_issues')) {
+        if ($this->publicTableExists('seo_issues')) {
             DB::statement('ALTER TABLE seo_issues DROP CONSTRAINT IF EXISTS seo_issues_dismissed_requires_reason');
             DB::statement('ALTER TABLE seo_issues DROP CONSTRAINT IF EXISTS seo_issues_status_check');
 
             Schema::table('seo_issues', function (Blueprint $table): void {
                 foreach (['verified_at', 'applied_at', 'dismissed_reason', 'recommendation'] as $column) {
-                    if (Schema::hasColumn('seo_issues', $column)) {
+                    if ($this->publicColumnExists('seo_issues', $column)) {
                         $table->dropColumn($column);
                     }
                 }
             });
         }
     }
+
+    /**
+     * `Schema::hasTable()` / `hasColumn()` résolvent via `current_schema()`,
+     * qui vaut `shared_tenants` hors du harnais de test : un garde sur une
+     * table `public` renvoie alors systématiquement `false` et la migration
+     * saute ses ALTER sans rien signaler. On interroge `public` explicitement.
+     */
+    private function publicTableExists(string $table): bool
+    {
+        /** @var object{exists: bool}|null $row */
+        $row = DB::selectOne(
+            'select exists (select 1 from information_schema.tables where table_schema = ? and table_name = ?) as exists',
+            ['public', $table],
+        );
+
+        return $row !== null && (bool) $row->exists;
+    }
+
+    private function publicColumnExists(string $table, string $column): bool
+    {
+        /** @var object{exists: bool}|null $row */
+        $row = DB::selectOne(
+            'select exists (select 1 from information_schema.columns '
+            .'where table_schema = ? and table_name = ? and column_name = ?) as exists',
+            ['public', $table, $column],
+        );
+
+        return $row !== null && (bool) $row->exists;
+    }
+
 };

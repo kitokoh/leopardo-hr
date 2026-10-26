@@ -30,7 +30,7 @@ return new class extends Migration
         // `url_hash` (sha256 de l'URL absolue) sert de clé d'unicité : les URL
         // dépassent la taille d'un index btree et deux URLs ne diffèrent
         // parfois que par la casse ou un paramètre.
-        if (! Schema::hasTable('seo_pages')) {
+        if (! $this->publicTableExists('seo_pages')) {
             Schema::create('seo_pages', function (Blueprint $table) {
                 $table->id();
                 $table->text('url');
@@ -54,7 +54,7 @@ return new class extends Migration
         // Une anomalie est un FAIT daté rattaché à une page : elle garde son
         // historique (detected_at / resolved_at) au lieu d'être écrasée, pour
         // que le workflow de traitement reste auditable.
-        if (! Schema::hasTable('seo_issues')) {
+        if (! $this->publicTableExists('seo_issues')) {
             Schema::create('seo_issues', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('seo_page_id')->nullable()->constrained('seo_pages')->nullOnDelete();
@@ -75,7 +75,7 @@ return new class extends Migration
         // Registre des mots-clés cibles (GSI-2). L'unicité est portée par
         // (phrase, locale) : « plombier paris » en fr et en en sont deux
         // cibles distinctes, mais un doublon exact est un défaut de saisie.
-        if (! Schema::hasTable('keywords')) {
+        if (! $this->publicTableExists('keywords')) {
             Schema::create('keywords', function (Blueprint $table) {
                 $table->id();
                 $table->string('phrase');
@@ -97,7 +97,7 @@ return new class extends Migration
         // comme tel (« non connecté »), jamais simulé par des métriques
         // inventées. Les secrets sont chiffrés côté application et ne sont
         // jamais sérialisés en clair par l'API.
-        if (! Schema::hasTable('integrations')) {
+        if (! $this->publicTableExists('integrations')) {
             Schema::create('integrations', function (Blueprint $table) {
                 $table->id();
                 $table->enum('provider', ['gsc', 'ga4', 'google_ads', 'ms_ads'])->unique();
@@ -117,4 +117,24 @@ return new class extends Migration
         Schema::dropIfExists('seo_issues');
         Schema::dropIfExists('seo_pages');
     }
+
+    /**
+     * `Schema::hasTable()` resolve via `current_schema()`, qui vaut
+     * `shared_tenants` sous le search_path de l'application. Un garde écrit
+     * avec `Schema::hasTable()` sur une table `public` renvoie donc TOUJOURS
+     * `false` : la migration rejoue `CREATE TABLE` et, si la table existe
+     * déjà, échoue ou est silencieusement sautée selon l'état. On interroge
+     * explicitement `public`.
+     */
+    private function publicTableExists(string $table): bool
+    {
+        /** @var object{exists: bool}|null $row */
+        $row = DB::selectOne(
+            'select exists (select 1 from information_schema.tables where table_schema = ? and table_name = ?) as exists',
+            ['public', $table],
+        );
+
+        return $row !== null && (bool) $row->exists;
+    }
+
 };

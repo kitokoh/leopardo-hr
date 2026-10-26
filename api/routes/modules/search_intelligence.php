@@ -25,6 +25,7 @@ use App\Modules\SearchIntelligence\Interfaces\Api\V1\Controllers\SearchIntelGeoC
 use App\Modules\SearchIntelligence\Interfaces\Api\V1\Controllers\SearchIntelIntegrationController;
 use App\Modules\SearchIntelligence\Interfaces\Api\V1\Controllers\SearchIntelOverviewController;
 use App\Modules\SearchIntelligence\Interfaces\Api\V1\Controllers\SearchIntelScanController;
+use App\Modules\SearchIntelligence\Interfaces\Api\V1\Controllers\SearchIntelSeaController;
 use App\Modules\SearchIntelligence\Interfaces\Api\V1\Controllers\SearchIntelSeoIssueController;
 use Illuminate\Support\Facades\Route;
 
@@ -48,6 +49,37 @@ Route::prefix('search-intel')->group(function (): void {
         ->middleware('platform.permission:search_intel.manage');
 
     Route::post('/seo/scan', SearchIntelScanController::class)
+        ->middleware('platform.permission:search_intel.manage');
+
+    // ─── GSI-3 : SEA, campagnes et relevés de performance ───────────────────
+    Route::get('/sea/campaigns', [SearchIntelSeaController::class, 'index'])
+        ->middleware('platform.permission:search_intel.view');
+
+    Route::get('/sea/campaigns/compare', [SearchIntelSeaController::class, 'compare'])
+        ->middleware('platform.permission:search_intel.view');
+
+    Route::post('/sea/campaigns', [SearchIntelSeaController::class, 'store'])
+        ->middleware('platform.permission:search_intel.manage');
+
+    Route::get('/sea/campaigns/{campaign}', [SearchIntelSeaController::class, 'show'])
+        ->whereNumber('campaign')
+        ->middleware('platform.permission:search_intel.view');
+
+    Route::patch('/sea/campaigns/{campaign}', [SearchIntelSeaController::class, 'update'])
+        ->whereNumber('campaign')
+        ->middleware('platform.permission:search_intel.manage');
+
+    Route::post('/sea/campaigns/{campaign}/transition', [SearchIntelSeaController::class, 'transition'])
+        ->whereNumber('campaign')
+        ->middleware('platform.permission:search_intel.manage');
+
+    // Validation humaine : seule elle autorise l'activation.
+    Route::post('/sea/campaigns/{campaign}/validate', [SearchIntelSeaController::class, 'validateCampaign'])
+        ->whereNumber('campaign')
+        ->middleware('platform.permission:search_intel.manage');
+
+    Route::post('/sea/campaigns/{campaign}/metrics', [SearchIntelSeaController::class, 'storeMetric'])
+        ->whereNumber('campaign')
         ->middleware('platform.permission:search_intel.manage');
 
     // ─── GSI-4 : AEO, révision humaine obligatoire ──────────────────────────
