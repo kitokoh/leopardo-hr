@@ -5101,9 +5101,21 @@ trait CreatesMvpSchema
             Schema::create($this->moduleTable('travel_outbox_events'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->index();
+                // #8209 — aligne sur la migration de production
+                // (2026_08_29_000610_6024) : la colonne payload s'appelle
+                // `payload_redacted` (minimisation PII) et il n'y a pas
+                // d'agregats. Un stub a 4 colonnes masquait toute divergence.
+                $table->string('event_type', 80);
+                $table->jsonb('payload_redacted');
+                $table->string('status', 20)->default('pending');
+                $table->unsignedSmallInteger('attempts')->default(0);
+                $table->timestampTz('available_at')->useCurrent();
+                $table->text('last_error')->nullable();
+                $table->string('idempotency_key', 255);
                 $table->timestamps();
 
-                $table->index(['company_id', 'id']);
+                $table->unique(['company_id', 'idempotency_key'], 'travel_outbox_company_key_unique');
+                $table->index(['company_id', 'status', 'available_at'], 'travel_outbox_company_status_due_idx');
             });
         }
 
@@ -5874,11 +5886,75 @@ trait CreatesMvpSchema
         // `loadPostgresFixtureDrops()` et `preparePostgresSchemas()`.
         DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
 
+        // #7937 — tables de facturation : sans elles, FacturXGeneratorTest ne
+        // peut pas construire une facture reelle (et la fixture masquerait
+        // toute regression du generateur).
+        if (! Schema::hasTable($this->tenantTable('accounting_contacts'))) {
+            Schema::create($this->tenantTable('accounting_contacts'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('type', 20)->default('customer');
+                $table->string('name', 255);
+                $table->string('legal_name', 255)->nullable();
+                $table->text('tax_id')->nullable();
+                $table->string('email', 255)->nullable();
+                $table->string('phone', 50)->nullable();
+                $table->string('address', 500)->nullable();
+                $table->string('currency', 10)->nullable();
+                $table->string('payment_terms', 60)->nullable();
+                $table->string('language', 10)->nullable();
+                $table->string('source', 30)->default('manual');
+                $table->unsignedBigInteger('marketing_lead_id')->nullable()->index();
+                $table->text('metadata')->nullable();
+                $table->timestamps();
+                $table->index(['company_id', 'type']);
+            });
+        }
+
+        if (! Schema::hasTable($this->tenantTable('accounting_documents'))) {
+            Schema::create($this->tenantTable('accounting_documents'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('type', 30);
+                $table->string('number', 60);
+                $table->string('status', 30)->default('draft');
+                $table->unsignedBigInteger('contact_id')->nullable()->index();
+                $table->string('project_ref', 120)->nullable();
+                $table->date('issue_date');
+                $table->date('due_date')->nullable();
+                $table->date('delivery_date')->nullable();
+                $table->string('currency', 10)->nullable();
+                $table->decimal('exchange_rate', 15, 6)->nullable();
+                $table->decimal('subtotal_ht', 15, 2)->default(0);
+                $table->decimal('tax_amount', 15, 2)->default(0);
+                $table->decimal('total_ttc', 15, 2)->default(0);
+                $table->decimal('tva_rate', 8, 4)->nullable();
+                $table->text('notes')->nullable();
+                $table->text('footer_mentions')->nullable();
+                $table->text('metadata')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->tenantTable('accounting_document_lines'))) {
+            Schema::create($this->tenantTable('accounting_document_lines'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('document_id')->index();
+                $table->string('description', 500);
+                $table->decimal('quantity', 15, 4)->default(1);
+                $table->decimal('unit_price', 15, 2)->default(0);
+                $table->decimal('discount', 15, 2)->default(0);
+                $table->decimal('tva_rate', 8, 4)->nullable();
+                $table->unsignedInteger('sort_order')->default(0);
+                $table->timestamps();
+            });
+        }
+
         if (! Schema::hasTable($this->tenantTable('accounting_chart_accounts'))) {
             Schema::create($this->tenantTable('accounting_chart_accounts'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
-                // Code de compte (ex. 41100000) — normalisé, unique par entreprise.
                 $table->string('code', 20);
                 $table->string('label', 255);
                 // Nature comptable : asset|liability|equity|revenue|expense.

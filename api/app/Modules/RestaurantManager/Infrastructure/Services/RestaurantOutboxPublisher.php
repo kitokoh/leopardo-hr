@@ -4,25 +4,31 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Infrastructure\Services;
 
+use App\Core\Outbox\Infrastructure\DatabaseOutboxPublisher;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent;
 use DateTimeInterface;
-use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Support\Facades\DB;
 
 /**
- * RESTO-404 (#6191) — Publication d'événements dans l'outbox RestaurantManager
- * (pattern `restaurant_outbox_events`, #6178 — calqué sur CrmOutboxPublisher
- * #5741).
+ * RESTO-404 (#6191) / #8209 — Publication d'evenements dans l'outbox
+ * RestaurantManager.
  *
- * À appeler APRÈS le commit de la transaction métier (jamais dedans) : l'effet
- * est d'abord persisté, puis consommé de façon asynchrone et idempotente.
- * Idempotence : clé dérivée (event_type, payload) par défaut, ou fournie ;
- * la contrainte unique (company_id, idempotency_key) déduplique les rejets.
+ * A appeler au moment de l'evenement metier : l'effet est d'abord persiste,
+ * puis consomme de facon asynchrone et idempotente.
+ *
+ * #8209 — la mecanique (savepoint englobant, resolution de schema F-17) vit
+ * desormais dans `DatabaseOutboxPublisher` ; la signature publique est
+ * inchangee. Cette outbox nomme sa colonne de charge `payload_redacted` : le
+ * noyau ecrit les colonnes declarees par le modele, la minimisation PII est
+ * donc preservee.
  */
 final class RestaurantOutboxPublisher
 {
+    public function __construct(
+        private readonly DatabaseOutboxPublisher $outbox = new DatabaseOutboxPublisher,
+    ) {}
+
     /**
-     * @param  array<string, mixed>  $payload  payload redigé (aucune PII)
+     * @param  array<string, mixed>  $payload  payload redige (aucune PII)
      */
     public function publish(
         string $companyId,
@@ -31,38 +37,18 @@ final class RestaurantOutboxPublisher
         ?string $idempotencyKey = null,
         ?DateTimeInterface $availableAt = null,
     ): RestaurantOutboxEvent {
-        $key = $idempotencyKey ?? hash('sha256', $eventType.'|'.json_encode($payload, JSON_THROW_ON_ERROR));
+        /** @var RestaurantOutboxEvent $event */
+        $event = $this->outbox->publish(
+            RestaurantOutboxEvent::class,
+            $companyId,
+            $eventType,
+            $payload,
+            $idempotencyKey,
+            null,
+            null,
+            $availableAt,
+        );
 
-        // Dédup : pre-SELECT (cas nominal) PUIS INSERT en transaction
-        // imbriquée (savepoint). Une violation unique PostgreSQL ABORTE la
-        // transaction courante (25P02) : sans savepoint, le SELECT du catch
-        // échoue en cascade (observé en CI sur le test « double publish »).
-        $existing = RestaurantOutboxEvent::query()
-            ->where('company_id', $companyId)
-            ->where('idempotency_key', $key)
-            ->first();
-
-        if ($existing instanceof RestaurantOutboxEvent) {
-            return $existing;
-        }
-
-        try {
-            return DB::transaction(fn (): RestaurantOutboxEvent => RestaurantOutboxEvent::query()->create([
-                'company_id' => $companyId,
-                'event_type' => $eventType,
-                'payload_redacted' => $payload,
-                'status' => 'pending',
-                'idempotency_key' => $key,
-                'available_at' => $availableAt ?? now(),
-            ]));
-        } catch (UniqueConstraintViolationException) {
-            /** @var RestaurantOutboxEvent $existing */
-            $existing = RestaurantOutboxEvent::query()
-                ->where('company_id', $companyId)
-                ->where('idempotency_key', $key)
-                ->firstOrFail();
-
-            return $existing;
-        }
+        return $event;
     }
 }
