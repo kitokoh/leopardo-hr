@@ -58551,6 +58551,872 @@ paths:
         '422':
           $ref: '#/components/responses/Validation422'
 
+  # >>> GSI-8522-BEGIN — routes Search Intelligence et Geo
+  /platform/search-intel/overview:
+    get:
+      operationId: api_get_platform_search_intel_overview
+      tags:
+      - Search Intelligence
+      summary: Vue d'ensemble Growth & Search Intelligence (KPI traces)
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/integrations:
+    get:
+      operationId: api_get_platform_search_intel_integrations
+      tags:
+      - Search Intelligence
+      summary: Etats reels des connecteurs GSC / GA4 / Google Ads / MS Ads
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/seo/meta:
+    get:
+      operationId: api_get_platform_search_intel_seo_meta
+      tags:
+      - Search Intelligence
+      summary: Metadonnees SEO (statuts d'issue, compteurs)
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/seo/issues:
+    get:
+      operationId: api_get_platform_search_intel_seo_issues
+      tags:
+      - Search Intelligence
+      summary: Liste des issues SEO techniques
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/seo/issues/{issue}/transition:
+    patch:
+      operationId: api_patch_platform_search_intel_seo_issue_transition
+      tags:
+      - Search Intelligence
+      summary: Transition d'une issue SEO (recommended, applied, verified, dismissed)
+      parameters:
+      - name: issue
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/seo/scan:
+    post:
+      operationId: api_post_platform_search_intel_seo_scan
+      tags:
+      - Search Intelligence
+      summary: Lance un scan SEO reel du parc de pages
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/sea/campaigns:
+    get:
+      operationId: api_get_platform_search_intel_sea_campaigns
+      tags:
+      - Search Intelligence
+      summary: Liste des campagnes SEA
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/sea/campaigns/compare:
+    get:
+      operationId: api_get_platform_search_intel_sea_campaigns_compare
+      tags:
+      - Search Intelligence
+      summary: Comparaison inter-campagnes sur une base de calcul commune
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/sea/campaigns:
+    post:
+      operationId: api_post_platform_search_intel_sea_campaigns
+      tags:
+      - Search Intelligence
+      summary: Cree une campagne SEA (toujours en brouillon)
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/sea/campaigns/{campaign}:
+    get:
+      operationId: api_get_platform_search_intel_sea_campaign
+      tags:
+      - Search Intelligence
+      summary: Detail d'une campagne et de ses releves
+      parameters:
+      - name: campaign
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/sea/campaigns/{campaign}:
+    patch:
+      operationId: api_patch_platform_search_intel_sea_campaign
+      tags:
+      - Search Intelligence
+      summary: Modifie une campagne (brouillon uniquement)
+      parameters:
+      - name: campaign
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/sea/campaigns/{campaign}/transition:
+    post:
+      operationId: api_post_platform_search_intel_sea_campaign_transition
+      tags:
+      - Search Intelligence
+      summary: Transition de statut d'une campagne SEA
+      parameters:
+      - name: campaign
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/sea/campaigns/{campaign}/validate:
+    post:
+      operationId: api_post_platform_search_intel_sea_campaign_validate
+      tags:
+      - Search Intelligence
+      summary: Validation humaine d'une campagne (prerequis a l'activation)
+      parameters:
+      - name: campaign
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/sea/campaigns/{campaign}/metrics:
+    post:
+      operationId: api_post_platform_search_intel_sea_campaign_metrics
+      tags:
+      - Search Intelligence
+      summary: Enregistre ou corrige un releve de performance (upsert par date)
+      parameters:
+      - name: campaign
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/aeo/questions:
+    get:
+      operationId: api_get_platform_search_intel_aeo_questions
+      tags:
+      - Search Intelligence
+      summary: Liste des questions AEO
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/aeo/questions:
+    post:
+      operationId: api_post_platform_search_intel_aeo_questions
+      tags:
+      - Search Intelligence
+      summary: Cree une question AEO (toujours en brouillon)
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/aeo/questions/{question}:
+    patch:
+      operationId: api_patch_platform_search_intel_aeo_question
+      tags:
+      - Search Intelligence
+      summary: Modifie le brouillon d'une question AEO
+      parameters:
+      - name: question
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/aeo/questions/{question}/submit:
+    post:
+      operationId: api_post_platform_search_intel_aeo_question_submit
+      tags:
+      - Search Intelligence
+      summary: Soumet une question AEO a la revision
+      parameters:
+      - name: question
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/aeo/questions/{question}/approve:
+    post:
+      operationId: api_post_platform_search_intel_aeo_question_approve
+      tags:
+      - Search Intelligence
+      summary: Valide une question AEO et FIGE la reponse publiee
+      parameters:
+      - name: question
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/aeo/questions/{question}/publish:
+    post:
+      operationId: api_post_platform_search_intel_aeo_question_publish
+      tags:
+      - Search Intelligence
+      summary: Publie une question AEO validee
+      parameters:
+      - name: question
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/aeo/questions/{question}/to-update:
+    post:
+      operationId: api_post_platform_search_intel_aeo_question_to_update
+      tags:
+      - Search Intelligence
+      summary: Marque une question AEO a mettre a jour
+      parameters:
+      - name: question
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/geo/queries:
+    get:
+      operationId: api_get_platform_search_intel_geo_queries
+      tags:
+      - Search Intelligence
+      summary: Liste des requetes strategiques GEO
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/geo/queries:
+    post:
+      operationId: api_post_platform_search_intel_geo_queries
+      tags:
+      - Search Intelligence
+      summary: Cree une requete strategique GEO
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/geo/queries/{geoQuery}/checks:
+    get:
+      operationId: api_get_platform_search_intel_geo_checks
+      tags:
+      - Search Intelligence
+      summary: Historique des checks de presence (immuable, ordre decroissant)
+      parameters:
+      - name: geoQuery
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/geo/queries/{geoQuery}/checks:
+    post:
+      operationId: api_post_platform_search_intel_geo_checks
+      tags:
+      - Search Intelligence
+      summary: Ajoute une observation de presence avec methode de preuve explicite
+      parameters:
+      - name: geoQuery
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/content:
+    get:
+      operationId: api_get_platform_search_intel_content
+      tags:
+      - Search Intelligence
+      summary: Liste des contenus marketing
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/content/export:
+    get:
+      operationId: api_get_platform_search_intel_content_export
+      tags:
+      - Search Intelligence
+      summary: Export CSV des contenus marketing
+      responses:
+        '200':
+          description: Export CSV des contenus
+          content:
+            text/csv:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/content:
+    post:
+      operationId: api_post_platform_search_intel_content
+      tags:
+      - Search Intelligence
+      summary: Cree un contenu marketing
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/content/{content}:
+    patch:
+      operationId: api_patch_platform_search_intel_content
+      tags:
+      - Search Intelligence
+      summary: Modifie un contenu non publie
+      parameters:
+      - name: content
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/content/{content}/transition:
+    post:
+      operationId: api_post_platform_search_intel_content_transition
+      tags:
+      - Search Intelligence
+      summary: Transition de statut d'un contenu marketing
+      parameters:
+      - name: content
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/competitors:
+    get:
+      operationId: api_get_platform_search_intel_competitors
+      tags:
+      - Search Intelligence
+      summary: Liste des concurrents et fraicheur de la veille
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/competitors:
+    post:
+      operationId: api_post_platform_search_intel_competitors
+      tags:
+      - Search Intelligence
+      summary: Cree une fiche concurrent (sources datees obligatoires pour un prix)
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/competitors/{competitor}:
+    patch:
+      operationId: api_patch_platform_search_intel_competitor
+      tags:
+      - Search Intelligence
+      summary: Modifie une fiche concurrent
+      parameters:
+      - name: competitor
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/search-intel/competitors/{competitor}/review:
+    post:
+      operationId: api_post_platform_search_intel_competitor_review
+      tags:
+      - Search Intelligence
+      summary: Marque une fiche comme revue (ne rajeunit PAS l'observation)
+      parameters:
+      - name: competitor
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /geo/geocode:
+    post:
+      operationId: api_post_geo_geocode
+      tags:
+      - Search Intelligence
+      summary: Geocode une adresse via le provider configure (fail-closed si absent)
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  # <<< GSI-8522-END
+
 components:
   securitySchemes:
     BearerAuth:
