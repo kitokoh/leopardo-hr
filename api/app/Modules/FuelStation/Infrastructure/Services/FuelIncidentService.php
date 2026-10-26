@@ -32,17 +32,40 @@ final class FuelIncidentService
      */
     public function report(Employee $actor, array $data): FuelIncident
     {
+        $companyId = (string) $actor->company_id;
+
+        // #8578 — rejeu idempotent. `external_id` portait deja la cle
+        // d'idempotence de l'appelant mais n'etait jamais NI ECRIT NI LU par
+        // `report()` : un rejeu creait un doublon. On l'utilise comme cle
+        // naturelle (pas de colonne supplementaire) et on renvoie l'incident
+        // existant, que le controleur expose avec `replayed: true`.
+        $idempotencyKey = is_string($data['idempotency_key'] ?? null) ? trim($data['idempotency_key']) : '';
+
+        if ($idempotencyKey !== '') {
+            /** @var FuelIncident|null $existing */
+            $existing = FuelIncident::query()
+                ->where('company_id', $companyId)
+                ->where('external_id', $idempotencyKey)
+                ->first();
+
+            if ($existing instanceof FuelIncident) {
+                return $existing;
+            }
+        }
+
         $incident = FuelIncident::query()->create([
-            'company_id' => (string) $actor->company_id,
+            'company_id' => $companyId,
             'station_id' => $data['station_id'] ?? null,
             'equipment_type' => $data['equipment_type'] ?? FuelIncident::EQUIPMENT_OTHER,
             'equipment_id' => $data['equipment_id'] ?? null,
             'severity' => $data['severity'] ?? FuelIncident::SEVERITY_MEDIUM,
-            'status' => FuelIncident::STATUS_OPEN,
+            'status' => FuelIncident::DEFAULT_STATUS,
+            'category' => $data['category'] ?? FuelIncident::CATEGORY_EQUIPMENT,
             'title' => is_string($data['title'] ?? null) ? $data['title'] : '',
             'description' => $data['description'] ?? null,
             'reported_by' => $actor->id,
             'occurred_at' => $data['occurred_at'] ?? now(),
+            'external_id' => $idempotencyKey !== '' ? $idempotencyKey : null,
         ]);
 
         $this->outbox->publish(
@@ -66,47 +89,36 @@ final class FuelIncidentService
     {
         $this->assertTenant($actor, $incident);
 
-        $incident->forceFill([
+        // #8578 (D3) — les endpoints dedies `assign`/`resolve`/`close`
+        // contournaient PUREMENT ET SIMPLEMENT le graphe : `close()` posait
+        // `status = 'closed'` sans verifier la transition, ce qui rendait
+        // `reported -> closed` LEGAL en pratique et vidait D3 de son sens.
+        // Le graphe est l'autorite unique ; les endpoints dedies ne sont plus
+        // qu'un raccourci vers `transition()`.
+        return $this->transition($actor, $incident, FuelIncident::STATUS_ASSIGNED, [
             'assigned_to' => $assigneeId,
-            // CONTRADICTION DE TEST (non tranchee, issue #8578) : deux tests
-            // exigent des valeurs mutuellement exclusives pour CETTE operation.
-            //   - FuelIncidentApiTest:149 attend `in_progress` ;
-            //   - FuelIncidentApiTest:257 attend `assigned`.
-            // Aucune implementation ne peut satisfaire les deux. Le code
-            // conserve `in_progress` (etat metier expose dans STATUSES) ; le
-            // choix de `assigned` releve d'une decision produit.
-            'status' => FuelIncident::STATUS_IN_PROGRESS,
-        ])->save();
-
-        return $incident->refresh();
+        ]);
     }
 
     public function resolve(Employee $actor, FuelIncident $incident, string $notes): FuelIncident
     {
         $this->assertTenant($actor, $incident);
 
-        $incident->forceFill([
-            'status' => FuelIncident::STATUS_RESOLVED,
-            'resolved_by' => $actor->id,
-            'resolved_at' => now(),
-            'resolution_notes' => $notes,
-        ])->save();
-
-        return $incident->refresh();
+        // Les notes sont OPTIONNELLES sur l'endpoint dedie (contrat historique)
+        // : on fournit une note neutre pour satisfaire la regle du workflow
+        // plutot que de dupliquer la logique de resolution hors du graphe.
+        return $this->transition($actor, $incident, FuelIncident::STATUS_RESOLVED, [
+            'resolution_notes' => $notes !== '' ? $notes : 'Résolu via l’endpoint dédié',
+        ]);
     }
 
     public function close(Employee $actor, FuelIncident $incident, string $notes): FuelIncident
     {
         $this->assertTenant($actor, $incident);
 
-        $incident->forceFill([
-            'status' => FuelIncident::STATUS_CLOSED,
-            'closed_by' => $actor->id,
-            'closed_at' => now(),
-            'closure_notes' => $notes,
-        ])->save();
-
-        return $incident->refresh();
+        return $this->transition($actor, $incident, FuelIncident::STATUS_CLOSED, [
+            'resolution_notes' => $notes,
+        ]);
     }
 
     /**
@@ -149,7 +161,7 @@ final class FuelIncidentService
             'title' => is_string($data['title'] ?? null) ? $data['title'] : '',
             'description' => $data['description'] ?? null,
             'priority' => $data['priority'] ?? 'medium',
-            'status' => FuelMaintenanceTask::STATUS_TODO,
+            'status' => FuelMaintenanceTask::DEFAULT_STATUS,
             'assigned_to' => $data['assigned_to'] ?? null,
             'scheduled_for' => $data['scheduled_for'] ?? null,
         ]);
@@ -257,8 +269,14 @@ final class FuelIncidentService
             throw new FuelWorkflowTransitionException("Statut cible invalide: {$targetStatus}");
         }
 
+        // #8578 (D4) — le graphe part de `STATUS_TODO`, PAS de `STATUS_OPEN`.
+        // Le code precedent lisait `STATUS_OPEN`, or rien n'ecrit jamais cet
+        // etat (le defaut de colonne et le modele sont `todo`) : `$allowed`
+        // tombait donc toujours dans `default => []` et TOUTE transition
+        // depuis une tache reelle levait 422. Le workflow des taches etait
+        // mort en production, pas seulement dans les tests.
         $allowed = match ($task->status) {
-            FuelMaintenanceTask::STATUS_OPEN => [
+            FuelMaintenanceTask::STATUS_TODO => [
                 FuelMaintenanceTask::STATUS_IN_PROGRESS,
                 FuelMaintenanceTask::STATUS_CANCELLED,
             ],

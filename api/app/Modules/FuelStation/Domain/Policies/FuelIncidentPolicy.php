@@ -53,6 +53,13 @@ class FuelIncidentPolicy
 
     public function create(Employee $actor): bool
     {
+        // #8578 (D6) — SIGNALER un incident reste un droit de terrain : un
+        // pompiste qui voit une fuite doit pouvoir la declarer sans attendre un
+        // manager. Deux tests l'exigent explicitement (creation + allowlist de
+        // pieces jointes par un operateur). Le 403 « operator cannot manage »
+        // porte sur la GESTION (lister, assigner, faire avancer), pas sur le
+        // signalement. Restreindre `create` aux managers rendait le module
+        // inutilisable en station -- on ne l'a pas fait.
         return $this->canOperateScopedResource($actor, 'fuel_station', null, true);
     }
 
@@ -118,6 +125,29 @@ class FuelIncidentPolicy
 
     public function transitionTask(Employee $actor, FuelMaintenanceTask $task): bool
     {
-        return $this->viewTask($actor, $task);
+        // #8578 (D6) — `transitionTask` deleguait a `viewTask`, qui autorise
+        // AUSSI l'assigné non-manager (n'importe qui pouvait donc faire
+        // avancer un cycle de vie). Le geste est une decision de GESTION :
+        // manager du bon tenant.
+        //
+        // On n'exige PAS `canManageScopedResource` quand la tâche n'a pas de
+        // station : ce cas retombe sur « principal uniquement », ce qui
+        // refuserait à un manager légitime d'avancer une tâche preventive
+        // company-wide (aucune ressource à scoper). Le manager du tenant est
+        // l'autorité ; la restriction par ressource ne s'applique que s'il y a
+        // une ressource à restreindre.
+        if ($task->company_id !== (string) $actor->company_id) {
+            return false;
+        }
+
+        if (! $actor->isManager()) {
+            return false;
+        }
+
+        if ($task->station_id === null) {
+            return true;
+        }
+
+        return $this->canManageScopedResource($actor, 'fuel_station', $task->station_id, true);
     }
 }

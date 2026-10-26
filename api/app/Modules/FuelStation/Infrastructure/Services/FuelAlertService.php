@@ -237,7 +237,8 @@ final class FuelAlertService
         // 4. Tâches de maintenance en retard.
         $tasks = FuelMaintenanceTask::query()
             ->where('company_id', $companyId)
-            ->whereIn('status', [FuelMaintenanceTask::STATUS_OPEN, FuelMaintenanceTask::STATUS_IN_PROGRESS])
+            // #8578 (D4) — `open` n'existe plus, remplace par `todo`.
+            ->whereIn('status', [FuelMaintenanceTask::STATUS_TODO, FuelMaintenanceTask::STATUS_IN_PROGRESS])
             ->whereNotNull('due_at')
             ->where('due_at', '<', Carbon::now('UTC'))
             ->limit(20)

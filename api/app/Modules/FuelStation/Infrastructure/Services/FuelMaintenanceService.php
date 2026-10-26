@@ -124,7 +124,8 @@ final class FuelMaintenanceService
             'incident_id' => $data['incident_id'] ?? null,
             'task_type' => $data['task_type'],
             'priority' => $data['priority'],
-            'status' => FuelMaintenanceTask::STATUS_PENDING,
+            // #8578 (D4) — un seul etat de naissance : `todo`.
+            'status' => FuelMaintenanceTask::DEFAULT_STATUS,
             'title' => $data['title'],
             'description' => $data['description'] ?? null,
             'due_at' => $data['due_at'] ?? null,
