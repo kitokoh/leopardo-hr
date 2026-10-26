@@ -6,12 +6,12 @@ namespace App\Modules\FuelStation\Providers;
 
 use App\Core\Solutions\SolutionCatalogue;
 use App\Modules\FuelStation\Domain\Solution\FuelStationManifest;
+use App\Modules\FuelStation\Infrastructure\Consumers\FuelAccountingContractConsumer;
 use App\Modules\FuelStation\Infrastructure\Consumers\FuelAccountingOutboxConsumer;
 use App\Modules\FuelStation\Infrastructure\Consumers\FuelNotificationOutboxConsumer;
 use App\Modules\FuelStation\Infrastructure\Services\FuelAlertService;
 use App\Modules\FuelStation\Infrastructure\Services\FuelEstablishmentProvider;
 use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxConsumerRegistry;
-use App\Modules\FuelStation\Infrastructure\Consumers\FuelAccountingContractConsumer;
 use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxPublisher;
 use Illuminate\Support\ServiceProvider;
 
