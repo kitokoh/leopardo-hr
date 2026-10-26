@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Modules\Geo\Infrastructure\Services;
 
 use App\Modules\Geo\Domain\Contracts\NearestSearchInterface;
+use App\Shared\Contracts\Geo\GeoNativeLocatable;
 use App\Shared\Geo\Distance;
 use App\Shared\Geo\GeoPoint;
 use App\Shared\Geo\NearestResult;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use InvalidArgumentException;
 
 /**
@@ -58,7 +60,18 @@ final class EloquentNearestSearch implements NearestSearchInterface
         $query->whereNotNull($latitudeColumn)->whereNotNull($longitudeColumn);
 
         if ($this->capabilities->postgisAvailable()) {
-            $this->applyPostgis($query, $lat, $lng, $center, $radiusMeters);
+            // #8467 (déviation D2) : si la table porte une colonne
+            // `geography(Point,4326)` GÉNÉRÉE et indexée en GIST, on l'utilise
+            // telle quelle. C'est la seule façon dont `ST_DWithin` peut se
+            // servir de l'index — sur une expression calculée à la volée,
+            // PostgreSQL évalue la fonction sur CHAQUE ligne de la table.
+            $nativeColumn = $this->resolveNativeColumn($modelClass);
+
+            if ($nativeColumn !== null) {
+                $this->applyPostgisNative($query, $nativeColumn, $center, $radiusMeters);
+            } else {
+                $this->applyPostgis($query, $lat, $lng, $center, $radiusMeters);
+            }
         } else {
             $this->applyHaversine($query, $lat, $lng, $center, $radiusMeters);
         }
@@ -82,16 +95,18 @@ final class EloquentNearestSearch implements NearestSearchInterface
      */
     private function applyPostgis(Builder $query, string $lat, string $lng, GeoPoint $center, float $radiusMeters): void
     {
-        $point = 'ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography';
-        $column = "ST_SetSRID(ST_MakePoint({$lng}, {$lat}), 4326)::geography";
+        // `public.` OBLIGATOIRE : la recherche tourne dans le schéma tenant,
+        // PostGIS est installé dans `public` — voir migration #8467.
+        $point = 'public.ST_SetSRID(public.ST_MakePoint(?, ?), 4326)::public.geography';
+        $column = "public.ST_SetSRID(public.ST_MakePoint({$lng}, {$lat}), 4326)::public.geography";
 
         $query->whereRaw(
-            "ST_DWithin({$column}, {$point}, ?)",
+            "public.ST_DWithin({$column}, {$point}, ?)",
             [$center->longitude, $center->latitude, $radiusMeters]
         );
 
         $query->selectRaw(
-            "ST_Distance({$column}, {$point}) AS distance_m",
+            "public.ST_Distance({$column}, {$point}) AS distance_m",
             [$center->longitude, $center->latitude]
         );
 
@@ -99,6 +114,89 @@ final class EloquentNearestSearch implements NearestSearchInterface
             "{$column} <-> {$point}",
             [$center->longitude, $center->latitude]
         );
+    }
+
+    /**
+     * Requête native sur colonne `geography` générée + index GIST (#8467).
+     *
+     * Différences décisives avec `applyPostgis()` :
+     *  - **`ST_DWithin` sur une COLONNE**, pas sur `ST_SetSRID(ST_MakePoint(…))`.
+     *    C'est ce qui permet au planificateur de choisir l'index GIST ; sur
+     *    une expression il n'a d'autre choix que de calculer la fonction pour
+     *    chaque ligne avant de filtrer.
+     *  - **Tri KNN `colonne <-> point`** : avec un index GIST, PostgreSQL
+     *    remonte les lignes déjà ordonnées par distance et s'arrête au
+     *    `LIMIT` — il ne trie pas tout le jeu de résultats.
+     *
+     * On garde `ST_Distance` en SELECT : le tri KNN garantit l'ORDRE, pas
+     * l'exposition de la valeur, et l'appelant a besoin de `distance_m` pour
+     * peupler `NearestResult`.
+     *
+     * @param  Builder<Model>  $query
+     */
+    private function applyPostgisNative(Builder $query, string $column, GeoPoint $center, float $radiusMeters): void
+    {
+        $native = $this->wrapColumn($query, $column);
+        $point = 'public.ST_SetSRID(public.ST_MakePoint(?, ?), 4326)::public.geography';
+
+        $query->whereRaw("public.ST_DWithin({$native}, {$point}, ?)", [
+            $center->longitude,
+            $center->latitude,
+            $radiusMeters,
+        ]);
+
+        $query->selectRaw("public.ST_Distance({$native}, {$point}) AS distance_m", [
+            $center->longitude,
+            $center->latitude,
+        ]);
+
+        $query->orderByRaw("{$native} <-> {$point}", [
+            $center->longitude,
+            $center->latitude,
+        ]);
+    }
+
+    /**
+     * Nom de la colonne native si le modèle l'expose ET si elle existe
+     * réellement en base.
+     *
+     * La double vérification n'est pas de la paranoïa : le contrat
+     * `GeoNativeLocatable` est déclaré dans le code, la colonne dans une
+     * migration. Entre les deux il y a un déploiement — une application
+     * déployée AVANT sa migration renverrait un nom de colonne inexistante, et
+     * la requête échouerait en SQL au lieu de dégrader vers Haversine. On
+     * interroge donc le schéma, avec un cache par modèle pour ne pas le faire
+     * à chaque requête.
+     *
+     * @param  class-string<Model>  $modelClass
+     */
+    private function resolveNativeColumn(string $modelClass): ?string
+    {
+        if (! is_subclass_of($modelClass, GeoNativeLocatable::class)) {
+            return null;
+        }
+
+        $column = $modelClass::geoNativeColumn();
+
+        if (! is_string($column) || $column === '') {
+            return null;
+        }
+
+        /** @var array<string, bool> $cache */
+        static $cache = [];
+        $key = $modelClass.'::'.$column;
+
+        if (! array_key_exists($key, $cache)) {
+            try {
+                $cache[$key] = Schema::hasColumn((new $modelClass)->getTable(), $column);
+            } catch (\Throwable) {
+                // Schéma illisible (connexion absente, table pas encore
+                // créée) : on dégrade, on ne casse pas la recherche.
+                $cache[$key] = false;
+            }
+        }
+
+        return $cache[$key] ? $column : null;
     }
 
     /**
