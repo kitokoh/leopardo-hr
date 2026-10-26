@@ -93,7 +93,8 @@ final class SearchIntelOverviewService
             'questions_awaiting_review' => AeoQuestion::query()
                 ->whereIn('status', [
                     AeoQuestionStatus::Draft->value,
-                    AeoQuestionStatus::Reviewed->value,
+                    AeoQuestionStatus::InReview->value,
+                    AeoQuestionStatus::Approved->value,
                 ])
                 ->count(),
         ];
