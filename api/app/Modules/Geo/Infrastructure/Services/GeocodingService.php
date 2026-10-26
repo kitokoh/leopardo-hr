@@ -47,7 +47,11 @@ final class GeocodingService
         $key = $this->cacheKey($address, $countryCode);
         $ttl = (int) config('geo.geocoding.cache_ttl', 86400);
 
-        /** @var array{lat: float|int|string, lng: float|int|string}|null $cached */
+        // Le cache est un stockage non typé : la valeur relue peut être
+        // n'importe quoi (entrée écrite par une version antérieure, purge
+        // partielle). On annonce donc `mixed` et on valide la forme à
+        // l'exécution — c'est le `isset()` ci-dessous qui fait foi.
+        /** @var mixed $cached */
         $cached = Cache::get($key);
 
         if (is_array($cached) && isset($cached['lat'], $cached['lng'])) {

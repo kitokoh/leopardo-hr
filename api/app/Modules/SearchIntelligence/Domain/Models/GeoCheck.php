@@ -52,7 +52,7 @@ class GeoCheck extends Model
     }
 
     /** @return BelongsTo<GeoQuery, $this> */
-    public function query(): BelongsTo
+    public function geoQuery(): BelongsTo
     {
         return $this->belongsTo(GeoQuery::class, 'geo_query_id');
     }

@@ -48509,6 +48509,47 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /geo/geocode:
+    post:
+      operationId: api_post_geo_geocode
+      tags:
+      - Geo
+      summary: Geocodage adresse -> coordonnees (GEO-08 #8466)
+      description: >-
+        Resout une adresse en coordonnees via le fournisseur configure.
+        Fail-closed : sans fournisseur reel, 503 `geocoding_disabled` — le core
+        ne fabrique jamais de coordonnees. Adresse non resolue -> 404
+        `address_not_found` (distinct d'une erreur de validation, 422).
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [address]
+              properties:
+                address:
+                  type: string
+                  maxLength: 500
+                country_code:
+                  type: string
+                  description: ISO 3166-1 alpha-2 (optionnel).
+                  maxLength: 2
+      responses:
+        '200':
+          description: Coordonnees resolues
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Adresse non resolue (`address_not_found`)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '503':
+          description: Geocodage desactive sur cette instance (`geocoding_disabled`)
   /geo/distance:
     post:
       operationId: api_post_geo_distance
@@ -50656,6 +50697,161 @@ paths:
           $ref: '#/components/responses/Error401'
         '422':
           $ref: '#/components/responses/Error422'
+  /v1/platform/search-intel/overview:
+    get:
+      operationId: api_get_v1_platform_search_intel_overview
+      tags: [Search Intelligence]
+      summary: Vue d'ensemble Growth & Search Intelligence (GSI-9, #8520)
+      description: |
+        Compteurs reels par domaine (SEO, SEA, AEO, GEO, contenu, concurrence)
+        et etat des connecteurs. Les domaines non connectes sont annonces
+        `not_connected` — jamais un chiffre invente.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Compteurs et etats
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /v1/platform/search-intel/integrations:
+    get:
+      operationId: api_get_v1_platform_search_intel_integrations
+      tags: [Search Intelligence]
+      summary: Etat des connecteurs GSC / GA4 / Google Ads / MS Ads (GSI-8, #8519)
+      description: |
+        Etat de chaque connecteur (`connected`, `not_connected`, `error`).
+        Les secrets ne sont **jamais** exposes : seul un booleen
+        `has_credentials` indique qu'une configuration existe.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Etat des connecteurs
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /v1/platform/search-intel/seo/meta:
+    get:
+      operationId: api_get_v1_platform_search_intel_seo_meta
+      tags: [Search Intelligence]
+      summary: Metadonnees du workflow SEO (GSI-2, #8513)
+      description: |
+        Libelles et gravites des types d'anomalie et des statuts, pour que le
+        front n'ait pas a dupliquer les enums du backend.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Metadonnees du workflow
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /v1/platform/search-intel/seo/issues:
+    get:
+      operationId: api_get_v1_platform_search_intel_seo_issues
+      tags: [Search Intelligence]
+      summary: File des anomalies SEO, triee par gravite (GSI-2, #8513)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [open, acknowledged, in_progress, resolved, ignored]
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [critical, high, medium, low]
+        - name: actionable
+          in: query
+          description: Ne retourner que les anomalies encore actionnables.
+          schema:
+            type: boolean
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
+      responses:
+        '200':
+          description: Anomalies triees par gravite puis date de detection
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/platform/search-intel/seo/issues/{issue}/transition:
+    patch:
+      operationId: api_patch_v1_platform_search_intel_seo_issues_transition
+      tags: [Search Intelligence]
+      summary: Transition de workflow d'une anomalie SEO (GSI-2, #8513)
+      description: |
+        Transition auditee. Une transition non autorisee par l'etat courant est
+        refusee (409) — le workflow est la source de verite, pas le client.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: issue
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [open, acknowledged, in_progress, resolved, ignored]
+                note:
+                  type: string
+                  maxLength: 2000
+      responses:
+        '200':
+          description: Anomalie mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition non autorisee depuis l'etat courant
+        '422':
+          $ref: '#/components/responses/Error422'
+  /v1/platform/search-intel/seo/scan:
+    post:
+      operationId: api_post_v1_platform_search_intel_seo_scan
+      tags: [Search Intelligence]
+      summary: Declencher un scan SEO du parc (GSI-2, #8513)
+      description: |
+        Lecture seule cote site, ecriture cote base. Refuse de tourner tant
+        qu'aucune cible n'est declaree (`SEARCH_INTEL_SCAN_BASE_URL`) : jamais
+        d'URL devinee.
+      security:
+        - BearerAuth: []
+      responses:
+        '202':
+          description: Scan accepte et planifie
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '409':
+          description: Aucune cible de scan configuree
   /v1/platform/payments/provider-types:
     get:
       operationId: api_get_v1_platform_payments_provider_types
