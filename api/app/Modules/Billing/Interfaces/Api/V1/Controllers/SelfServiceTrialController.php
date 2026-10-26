@@ -220,6 +220,30 @@ class SelfServiceTrialController extends Controller
         /** @var array{email: string, company?: string|null, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solutions?: list<string>|null, solution?: string|null, company_type?: string|null, modules?: list<string>|null, locale?: string|null, market_type?: string|null, trade_profile?: string|null} $validated */
         $email = strtolower(trim($validated['email']));
 
+        // BOS-009 (#8227) — `solution` (singulier) etait valide puis JETE.
+        //
+        // Le wizard vitrine envoie `solution: "travelagency"` (singulier), et
+        // la regle de validation l'acceptait explicitement — mais seul
+        // `solutions` (pluriel) etait transmis au provisioning. Consequence :
+        // le signup repondait 200, le tenant etait cree, et la verticale
+        // n'etait JAMAIS activee — sans aucune erreur. Un proprietaire
+        // d'agence arrivait donc sur un workspace sans sa solution, et le
+        // diagnostic etait d'autant plus difficile que la validation, elle,
+        // avait bien accepte le code.
+        //
+        // On normalise ici, en un seul point, pour que les DEUX parcours
+        // (guided_trial et self-service) et le `signup_payload` persiste
+        // voient la meme liste. `solutions` reste prioritaire si les deux
+        // sont fournis ; les doublons sont ecartes.
+        $requestedSolutions = $validated['solutions'] ?? [];
+        if (($validated['solution'] ?? null) !== null) {
+            $requestedSolutions[] = $validated['solution'];
+        }
+        $validated['solutions'] = array_values(array_unique(array_map(
+            static fn (string $code): string => strtolower(trim($code)),
+            $requestedSolutions
+        )));
+
         // #7853 — nom d'entreprise résolu UNE fois pour les deux parcours
         // (guidé et self-service) : valeur fournie, sinon nom provisoire
         // dérivé de la partie locale de l'e-mail (jean.dupont → « Jean
@@ -340,7 +364,9 @@ class SelfServiceTrialController extends Controller
                 $companyName,
                 $validated['country'],
                 $provisioningToken,
-                $validated['solutions'] ?? [],
+                // BOS-009 (#8227) — normalise plus haut : la cle existe
+                // toujours (liste vide si aucune solution demandee).
+                $validated['solutions'],
                 // #7235 — profil + outils horizontaux choisis (null/[]
                 // = inscription rapide : aucun verrouillage rétroactif).
                 $validated['company_type'] ?? null,
