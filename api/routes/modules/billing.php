@@ -127,11 +127,24 @@ Route::prefix('growth')->group(function () {
 
 // Espace Administration (Super Admin)
 // QA #3000 : throttle aligné sur les autres groupes plateforme (api.php:264).
+//
+// #8523 (gotcha 7) — CE GROUPE N'AVAIT AUCUNE PERMISSION FINE : être
+// authentifié comme SuperAdmin suffisait pour changer un taux de commission,
+// approuver un partenariat ou marquer un versement comme payé. Tous les autres
+// groupes `platform/*` (plans, companies, webhooks…) passent par
+// `platform.permission:<perm>` (cf. api.php) ; growth était le trou.
+//
+// Matrice retenue (alignée sur PlatformRole::permissions()) :
+//   - lecture (`partners`, `payouts`, `history`) → `billing.view`
+//   - mutation (taux, dossier, statut de versement) → `billing.manage`
+// `billing.*` est portée par finance / admin / super_admin et par AUCUN des
+// rôles support / ops / marketing : c'est le bon périmètre, car un taux de
+// commission et un versement sont des actes financiers.
 Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('platform/growth')->group(function () {
-    Route::get('/partners', [GrowthAdminController::class, 'partners']);
-    Route::patch('/partners/{partner}/rate', [GrowthAdminController::class, 'updateRate']);
-    Route::patch('/partners/{partner}/application', [GrowthAdminController::class, 'updateApplicationStatus']);
-    Route::get('/payouts', [GrowthAdminController::class, 'payouts']);
-    Route::patch('/payouts/{payout}', [GrowthAdminController::class, 'updatePayoutStatus']);
-    Route::get('/history', [GrowthAdminController::class, 'history']);
+    Route::get('/partners', [GrowthAdminController::class, 'partners'])->middleware('platform.permission:billing.view');
+    Route::patch('/partners/{partner}/rate', [GrowthAdminController::class, 'updateRate'])->middleware('platform.permission:billing.manage');
+    Route::patch('/partners/{partner}/application', [GrowthAdminController::class, 'updateApplicationStatus'])->middleware('platform.permission:billing.manage');
+    Route::get('/payouts', [GrowthAdminController::class, 'payouts'])->middleware('platform.permission:billing.view');
+    Route::patch('/payouts/{payout}', [GrowthAdminController::class, 'updatePayoutStatus'])->middleware('platform.permission:billing.manage');
+    Route::get('/history', [GrowthAdminController::class, 'history'])->middleware('platform.permission:billing.view');
 });
