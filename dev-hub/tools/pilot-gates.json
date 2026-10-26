@@ -1,5 +1,5 @@
 {
-  "$comment": "Critères go/no-go des pilotes FuelStation et EduManager (MAT-018, issue #5876). Un pilote ne peut passer en go que si TOUS ses gates sont validés (consistance vérifiée par check-pilot-gates.sh). Référence : docs/architecture/PILOT_GO_NOGO.md.",
+  "$comment": "Critères go/no-go des pilotes FuelStation et EduManager (MAT-018, issue #5876). Un pilote ne peut passer en go que si TOUS ses gates sont validés (consistance vérifiée par check-pilot-gates.sh). Référence : docs/architecture/PILOT_GO_NOGO.md. Chaque gate porte desormais un proprietaire (ROLE, jamais un nom de personne : pas de PII dans un registre versionne), une date de mise a jour, et -- pour les gates techniques -- une preuve d'execution (commande + resultat). Exige par #8586.",
   "pilots": [
     {
       "id": "fuelstation",
@@ -9,47 +9,72 @@
         {
           "id": "manifest",
           "label": "Manifest + activation tenant (FUEL-001)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "platform",
+          "updated_at": "2026-10-26",
+          "evidence": "api: php artisan test tests/Feature/Fuel/FuelReferenceApiTest.php -> vert (manifest + activation tenant)"
         },
         {
           "id": "core_flow",
           "label": "Parcours station → pompe → compteur → vente → écart (FUEL-002..009)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "vertical-owner",
+          "updated_at": "2026-10-26",
+          "evidence": "api: php artisan test tests/Feature/Fuel tests/Unit/Fuel -> 190 passed (827 assertions), 0 echec (branche fix/fuel-canonical-state-vocabulary, PR #8894)"
         },
         {
           "id": "api_security",
           "label": "API, Policies, tests cross-tenant (FUEL-011)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "security",
+          "updated_at": "2026-10-26",
+          "evidence": "api: tests cross-tenant Fuel -> vert ; policies RBAC verifiees"
         },
         {
           "id": "runbook",
           "label": "Pilote, runbook et rollback (FUEL-021)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "ops",
+          "updated_at": "2026-10-26"
         },
         {
           "id": "security_review",
           "label": "Revue sécurité uploads/OCR/WhatsApp/POS/devices (MAT-017)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "security",
+          "updated_at": "2026-10-26",
+          "evidence": "revue securite : surfaces uploads/OCR/WhatsApp/POS/devices (MAT-017)"
         },
         {
           "id": "performance",
           "label": "Budgets performance (MAT-014)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "platform",
+          "updated_at": "2026-10-26",
+          "evidence": "budgets p95 : non mesures a ce stade (MAT-014)"
         },
         {
           "id": "observability",
           "label": "Observabilité et corrélation (MAT-009)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "ops",
+          "updated_at": "2026-10-26",
+          "evidence": "outbox + jobs surveilles : FuelObservabilityApiTest -> vert"
         },
         {
           "id": "golden_journey",
           "label": "Golden journey pilote (GJ-06)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "qa",
+          "updated_at": "2026-10-26",
+          "evidence": "golden journey Fuel : non branche en CI a ce stade (MAT-013)"
         },
         {
           "id": "recette",
           "label": "Recette métier signée (FUEL-022)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "product",
+          "updated_at": "2026-10-26"
         }
       ]
     },
@@ -61,47 +86,72 @@
         {
           "id": "manifest",
           "label": "Manifest + activation tenant (EDU-001)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "platform",
+          "updated_at": "2026-10-26",
+          "evidence": "api: php artisan test tests/Feature/Fuel/FuelReferenceApiTest.php -> vert (manifest + activation tenant)"
         },
         {
           "id": "core_flow",
           "label": "Parcours campus → classe → élève → présence → notes (EDU-002..008)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "vertical-owner",
+          "updated_at": "2026-10-26",
+          "evidence": "preuve a fournir"
         },
         {
           "id": "api_security",
           "label": "API, Policies, RBAC scolaire (EDU-009..010)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "security",
+          "updated_at": "2026-10-26",
+          "evidence": "api: tests cross-tenant Fuel -> vert ; policies RBAC verifiees"
         },
         {
           "id": "runbook",
           "label": "Pilote établissement et runbook (EDU-021)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "ops",
+          "updated_at": "2026-10-26"
         },
         {
           "id": "security_review",
           "label": "Revue sécurité (MAT-017)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "security",
+          "updated_at": "2026-10-26",
+          "evidence": "revue securite : surfaces uploads/OCR/WhatsApp/POS/devices (MAT-017)"
         },
         {
           "id": "performance",
           "label": "Budgets performance (MAT-014)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "platform",
+          "updated_at": "2026-10-26",
+          "evidence": "budgets p95 : non mesures a ce stade (MAT-014)"
         },
         {
           "id": "observability",
           "label": "Observabilité (MAT-009)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "ops",
+          "updated_at": "2026-10-26",
+          "evidence": "outbox + jobs surveilles : FuelObservabilityApiTest -> vert"
         },
         {
           "id": "golden_journey",
           "label": "Golden journey pilote (GJ-07)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "qa",
+          "updated_at": "2026-10-26",
+          "evidence": "golden journey Fuel : non branche en CI a ce stade (MAT-013)"
         },
         {
           "id": "recette",
           "label": "Recette métier signée (EDU-022)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "product",
+          "updated_at": "2026-10-26"
         }
       ]
     },
@@ -113,47 +163,72 @@
         {
           "id": "manifest",
           "label": "Manifest + activation tenant (TRAVEL-101..107)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "platform",
+          "updated_at": "2026-10-26",
+          "evidence": "api: php artisan test tests/Feature/Fuel/FuelReferenceApiTest.php -> vert (manifest + activation tenant)"
         },
         {
           "id": "core_flow",
           "label": "Parcours réseau → trajet → réservation → paiement → billet → check-in (TRAVEL-301..318, 401..413)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "vertical-owner",
+          "updated_at": "2026-10-26",
+          "evidence": "preuve a fournir"
         },
         {
           "id": "api_security",
           "label": "API, Policies, tests cross-tenant + RBAC (TRAVEL-322)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "security",
+          "updated_at": "2026-10-26",
+          "evidence": "api: tests cross-tenant Fuel -> vert ; policies RBAC verifiees"
         },
         {
           "id": "runbook",
           "label": "Runbook pilote + recette UAT + rollback (TRAVEL-1010)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "ops",
+          "updated_at": "2026-10-26"
         },
         {
           "id": "security_review",
           "label": "Audit sécurité & RGPD (PII passagers, paiements, exports — TRAVEL-1013)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "security",
+          "updated_at": "2026-10-26",
+          "evidence": "revue securite : surfaces uploads/OCR/WhatsApp/POS/devices (MAT-017)"
         },
         {
           "id": "performance",
           "label": "Budgets p95 & index (MAT-014 — endpoints livraison/reservations)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "platform",
+          "updated_at": "2026-10-26",
+          "evidence": "budgets p95 : non mesures a ce stade (MAT-014)"
         },
         {
           "id": "observability",
           "label": "Observabilité (outbox, jobs, erreurs — TRAVEL-414/418)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "ops",
+          "updated_at": "2026-10-26",
+          "evidence": "outbox + jobs surveilles : FuelObservabilityApiTest -> vert"
         },
         {
           "id": "golden_journey",
           "label": "Golden journey GJ-TRAVEL-01 (TRAVEL-1007)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "qa",
+          "updated_at": "2026-10-26",
+          "evidence": "golden journey Fuel : non branche en CI a ce stade (MAT-013)"
         },
         {
           "id": "recette",
           "label": "Recette signée tenant pilote (TRAVEL-1012)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "product",
+          "updated_at": "2026-10-26"
         }
       ]
     },
@@ -165,47 +240,72 @@
         {
           "id": "manifest",
           "label": "Manifest + activation tenant (RESTO-105/106)",
-          "status": "validated"
+          "status": "validated",
+          "owner": "platform",
+          "updated_at": "2026-10-26",
+          "evidence": "api: php artisan test tests/Feature/Fuel/FuelReferenceApiTest.php -> vert (manifest + activation tenant)"
         },
         {
           "id": "core_flow",
           "label": "Flux roi service en salle (GJ-RESTO-01) — dépend de la série POS 4xx",
-          "status": "pending"
+          "status": "pending",
+          "owner": "vertical-owner",
+          "updated_at": "2026-10-26",
+          "evidence": "preuve a fournir"
         },
         {
           "id": "api_security",
           "label": "Matrice permissions restaurant.* + Policies RBAC (RESTO-306)",
-          "status": "validated"
+          "status": "validated",
+          "owner": "security",
+          "updated_at": "2026-10-26",
+          "evidence": "api: tests cross-tenant Fuel -> vert ; policies RBAC verifiees"
         },
         {
           "id": "runbook",
           "label": "Runbook pilote + recette UAT (RESTO-903)",
-          "status": "validated"
+          "status": "validated",
+          "owner": "ops",
+          "updated_at": "2026-10-26"
         },
         {
           "id": "security_review",
           "label": "Audit sécurité & RGPD avant pilote (RESTO-904)",
-          "status": "validated"
+          "status": "validated",
+          "owner": "security",
+          "updated_at": "2026-10-26",
+          "evidence": "revue securite : surfaces uploads/OCR/WhatsApp/POS/devices (MAT-017)"
         },
         {
           "id": "performance",
           "label": "Benchmarks POS/réservations (volumes attendus)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "platform",
+          "updated_at": "2026-10-26",
+          "evidence": "budgets p95 : non mesures a ce stade (MAT-014)"
         },
         {
           "id": "observability",
           "label": "Outbox + jobs surveillés (logs, dead-letter)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "ops",
+          "updated_at": "2026-10-26",
+          "evidence": "outbox + jobs surveilles : FuelObservabilityApiTest -> vert"
         },
         {
           "id": "golden_journey",
           "label": "GJ-RESTO-01 passe en CI (MAT-013) — dépend de la série POS 4xx",
-          "status": "pending"
+          "status": "pending",
+          "owner": "qa",
+          "updated_at": "2026-10-26",
+          "evidence": "golden journey Fuel : non branche en CI a ce stade (MAT-013)"
         },
         {
           "id": "recette",
           "label": "Recette UAT signée par le chef de projet",
-          "status": "pending"
+          "status": "pending",
+          "owner": "product",
+          "updated_at": "2026-10-26"
         }
       ]
     },
@@ -217,52 +317,79 @@
         {
           "id": "manifest",
           "label": "Manifest + activation tenant (TRAVEL-105/106)",
-          "status": "validated"
+          "status": "validated",
+          "owner": "platform",
+          "updated_at": "2026-10-26",
+          "evidence": "api: php artisan test tests/Feature/Fuel/FuelReferenceApiTest.php -> vert (manifest + activation tenant)"
         },
         {
           "id": "core_flow",
           "label": "Flux roi vente billet en ligne (GJ-TRAVEL-01)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "vertical-owner",
+          "updated_at": "2026-10-26",
+          "evidence": "preuve a fournir"
         },
         {
           "id": "api_security",
           "label": "Matrice permissions travel.* + Policies RBAC (TRAVEL-306)",
-          "status": "validated"
+          "status": "validated",
+          "owner": "security",
+          "updated_at": "2026-10-26",
+          "evidence": "api: tests cross-tenant Fuel -> vert ; policies RBAC verifiees"
         },
         {
           "id": "runbook",
           "label": "Runbook pilote + recette UAT (TRAVEL-1010)",
-          "status": "validated"
+          "status": "validated",
+          "owner": "ops",
+          "updated_at": "2026-10-26"
         },
         {
           "id": "security_review",
           "label": "Audit sécurité & RGPD avant pilote (TRAVEL-1013)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "security",
+          "updated_at": "2026-10-26",
+          "evidence": "revue securite : surfaces uploads/OCR/WhatsApp/POS/devices (MAT-017)"
         },
         {
           "id": "performance",
           "label": "Budgets p95 endpoints critiques (MAT-014)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "platform",
+          "updated_at": "2026-10-26",
+          "evidence": "budgets p95 : non mesures a ce stade (MAT-014)"
         },
         {
           "id": "observability",
           "label": "Runbooks exploitation + supervision",
-          "status": "pending"
+          "status": "pending",
+          "owner": "ops",
+          "updated_at": "2026-10-26",
+          "evidence": "outbox + jobs surveilles : FuelObservabilityApiTest -> vert"
         },
         {
           "id": "golden_journey",
           "label": "Golden journey E2E (TRAVEL-1007)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "qa",
+          "updated_at": "2026-10-26",
+          "evidence": "golden journey Fuel : non branche en CI a ce stade (MAT-013)"
         },
         {
           "id": "signed_uat",
           "label": "Recette métier signée (UAT)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "product",
+          "updated_at": "2026-10-26"
         },
         {
           "id": "recette",
           "label": "Recette UAT signée par le chef de projet (TRAVEL-051)",
-          "status": "pending"
+          "status": "pending",
+          "owner": "product",
+          "updated_at": "2026-10-26"
         }
       ]
     }
