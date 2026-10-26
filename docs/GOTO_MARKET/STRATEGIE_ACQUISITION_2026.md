@@ -1,10 +1,9 @@
 # Stratégie d'acquisition & de visibilité — Leopardo (2026 T4)
 
-> ⚠️ **Contenu interne publié — décision propriétaire en attente (#7982).** La convention
-> [`docs/README.md` §3](../README.md) classe ce document « ne DOIT PAS être publié » (tactique
-> commerciale / mode opératoire interne) et le désigne candidat au dépôt privé. Il reste publié
-> en attendant la décision (transfert vers un dépôt privé vs transparence assumée). Aucune
-> donnée nominative (prospect, contact, pilote) ne doit y figurer.
+> ✅ **Décision propriétaire TRANCHÉE (2026-10-26, #7982) : transparence assumée.** Ce document
+> reste publié volontairement dans ce dépôt public — voir [`docs/README.md` §3](../README.md).
+> Règle inchangée et vérifiée en CI : aucune coordonnée personnelle, aucune ligne
+> nominative non marquée fictive (`dev-hub/tools/check-public-docs-no-pii.sh`).
 
 
 > **Cadre obligatoire** : tout contenu produit dans le cadre de cette stratégie respecte
