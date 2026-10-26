@@ -103,7 +103,17 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         }
 
         $this->app->resolving(SolutionCatalogue::class, function (SolutionCatalogue $catalogue): void {
-            $catalogue->register('restaurantmanager', static fn (): RestaurantManagerManifest => new RestaurantManagerManifest);
+            // BOS-C-02 (#8631, ADR-04) — `restaurantmanager` est le code
+            // CANONIQUE de la verticale restaurant ; `restaurant` (descripteur
+            // d'onboarding historique, porté par Modules/Restaurant) est
+            // déclaré ALIAS : le catalogue public n'expose qu'un code par
+            // verticale (`canonicalCodes()`) et les statistiques ne comptent
+            // plus deux codes pour une même offre.
+            $catalogue->register(
+                'restaurantmanager',
+                static fn (): RestaurantManagerManifest => new RestaurantManagerManifest,
+                aliases: ['restaurant'],
+            );
         });
 
         // #7865 — kit de données de démonstration de la verticale (code de
