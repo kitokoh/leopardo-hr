@@ -14,6 +14,11 @@ use Illuminate\Support\Carbon;
 /**
  * GSI-2 (#8513) — anomalie SEO détectée sur une page du parc.
  *
+ * Le statut suit le workflow `detected → recommended → approved → applied →
+ * verified` (+ `dismissed`). Aucune transition n'est faite directement sur ce
+ * modèle : `SeoIssueWorkflow` est le seul point d'écriture du statut, parce
+ * qu'il porte l'audit.
+ *
  * @property int $id
  * @property int|null $seo_page_id
  * @property string $type
@@ -21,7 +26,11 @@ use Illuminate\Support\Carbon;
  * @property SeoIssueStatus $status
  * @property string $title
  * @property string|null $detail
+ * @property string|null $recommendation
+ * @property string|null $dismissed_reason
  * @property Carbon $detected_at
+ * @property Carbon|null $applied_at
+ * @property Carbon|null $verified_at
  * @property Carbon|null $resolved_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -40,7 +49,11 @@ class SeoIssue extends Model
         'status',
         'title',
         'detail',
+        'recommendation',
+        'dismissed_reason',
         'detected_at',
+        'applied_at',
+        'verified_at',
         'resolved_at',
     ];
 
@@ -51,6 +64,8 @@ class SeoIssue extends Model
             'severity' => SeoIssueSeverity::class,
             'status' => SeoIssueStatus::class,
             'detected_at' => 'datetime',
+            'applied_at' => 'datetime',
+            'verified_at' => 'datetime',
             'resolved_at' => 'datetime',
         ];
     }
@@ -62,16 +77,18 @@ class SeoIssue extends Model
     }
 
     /**
-     * Anomalies encore actionnables : ni résolues, ni ignorées. C'est la seule
-     * population qui doit alimenter la file de traitement.
+     * Anomalies encore actionnables : c'est la seule population qui doit
+     * alimenter la file de traitement. `applied` en est exclu — l'action est
+     * faite, il reste à vérifier au prochain scan.
      *
      * @param  Builder<self>  $query
      */
     public function scopeActionable(Builder $query): void
     {
-        $query->whereNotIn('status', [
-            SeoIssueStatus::Resolved->value,
-            SeoIssueStatus::Ignored->value,
+        $query->whereIn('status', [
+            SeoIssueStatus::Detected->value,
+            SeoIssueStatus::Recommended->value,
+            SeoIssueStatus::Approved->value,
         ]);
     }
 }

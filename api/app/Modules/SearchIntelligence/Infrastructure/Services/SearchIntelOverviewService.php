@@ -65,8 +65,10 @@ final class SearchIntelOverviewService
             'pages_tracked' => SeoPage::query()->count(),
             'pages_healthy' => SeoPage::query()->healthy()->count(),
             'open_issues' => $actionable,
-            'resolved_issues' => SeoIssue::query()
-                ->where('status', SeoIssueStatus::Resolved->value)
+            // « Vérifiées » = correction confirmée par un re-scan. C'est la
+            // seule mesure honnête du travail réellement soldé.
+            'verified_issues' => SeoIssue::query()
+                ->where('status', SeoIssueStatus::Verified->value)
                 ->count(),
         ];
     }
