@@ -1740,7 +1740,8 @@
     "travelAgency": "Seyahat acentesi",
     "emailTemplates": "E-postalar",
     "settings": "Ayarlar",
-    "messaging": "Mesajlaşma"
+    "messaging": "Mesajlaşma",
+    "provisioning": "Sağlama"
   },
   "webhooks": {
     "confirm_delete": "Bu webhook silinsin mi?"
@@ -3818,7 +3819,8 @@
     "itemCrm": "CRM",
     "itemCrmDesc": "CRM hattı",
     "itemToggleDark": "Karanlık moda geç",
-    "itemToggleDarkDesc": "Temayı değiştir"
+    "itemToggleDarkDesc": "Temayı değiştir",
+    "itemProvisioningDesc": "Kiracı kurulum ilerlemesini ve sağlama engellerini izle"
   },
   "bankRecon": {
     "title": "Banka mutabakatı",
@@ -8735,5 +8737,37 @@
       "currency": "Para birimi",
       "createdAt": "Tarih"
     }
+  },
+  "provisioning": {
+    "title": "Sağlama",
+    "subtitle": "Her kiracının kurulumda nerede olduğu — ve hangilerinin takıldığı.",
+    "refresh": "Yenile",
+    "loading": "Sağlama durumu okunuyor…",
+    "empty": "Bu filtreyle eşleşen kiracı yok.",
+    "loadError": "Yüklenemedi",
+    "noPermission": "Rolünüzde “companies.view” yok: bu ekran gösterilemez.",
+    "forbidden": "Erişim reddedildi — “companies.view” izni gerekli.",
+    "listTitle": "Kiracı bazında ilerleme",
+    "listSub": "Yalnızca sağlama olguları — müşteri iş verisi yok.",
+    "statsTenants": "Kiracılar",
+    "statsWithoutSite": "Tesis yok",
+    "statsIncomplete": "Kurulum tamamlanmadı",
+    "statsStalled": "Takılı sağlamalar",
+    "failuresTitle": "Kurulum hataları ve tıkanmalar",
+    "failuresSub": "Başarısız olan veya 15 dakikadan uzun süredir ilerlemeyen sağlamalar.",
+    "filterAll": "Tümü",
+    "filterNoSite": "Tesis yok",
+    "filterBlocked": "Takılı",
+    "colTenant": "Kiracı",
+    "colStep": "Son adım",
+    "colSites": "Tesisler",
+    "colModules": "Etkin modüller",
+    "colAge": "Oluşturulma",
+    "colActions": "Günlük",
+    "colEmail": "Hesap (maskeli)",
+    "colStatus": "Durum",
+    "colSince": "Başlangıç",
+    "colError": "Hata",
+    "openJournal": "Geçmişi gör"
   }
 }

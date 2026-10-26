@@ -25,6 +25,7 @@ import {
   UsersIcon,
   UserGroupIcon,
   BuildingOfficeIcon,
+  ServerStackIcon,
   BuildingStorefrontIcon,
   CreditCardIcon,
   ChatBubbleLeftRightIcon,
@@ -188,6 +189,17 @@ export const NAV_ENTRIES = [
   },
 
   // ── Entreprises clientes ──────────────────────────────────────────────────
+  {
+    name: 'provisioning',
+    path: '/provisioning',
+    titleKey: 'navigation.provisioning',
+    icon: ServerStackIcon,
+    // Meme permission que la liste des entreprises : cette vue est une AUTRE
+    // LECTURE du meme perimetre, pas un privilege supplementaire (#8630).
+    permission: 'companies.view',
+    group: 'entreprise',
+    descKey: 'adminPalette.itemProvisioningDesc',
+  },
   {
     name: 'companies',
     path: '/companies',
