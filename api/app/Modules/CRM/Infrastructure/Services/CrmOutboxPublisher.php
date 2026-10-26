@@ -4,21 +4,29 @@ declare(strict_types=1);
 
 namespace App\Modules\CRM\Infrastructure\Services;
 
+use App\Core\Outbox\Infrastructure\DatabaseOutboxPublisher;
 use App\Modules\CRM\Domain\Models\CrmOutboxEvent;
 use DateTimeInterface;
-use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Support\Facades\DB;
 
 /**
- * #5741 — Publication d'événements dans l'outbox CRM.
+ * #5741 / #8209 — Publication d'evenements dans l'outbox CRM.
  *
- * À appeler APRÈS le commit de la transaction métier (jamais dedans) :
- * l'effet est d'abord persisté, puis consommé de façon asynchrone.
- * Idempotence : clé dérivée du (event_type, payload) par défaut, ou fournie ;
- * la contrainte unique (company_id, idempotency_key) déduplique les rejets.
+ * A appeler au moment de l'evenement metier : l'effet est d'abord persiste,
+ * puis consomme de facon asynchrone et idempotente.
+ *
+ * #8209 — la mecanique (savepoint englobant, resolution de schema F-17,
+ * dedoublonnage puis INSERT en savepoint) vit desormais dans
+ * `DatabaseOutboxPublisher` : cette classe n'en garde que la surface publique
+ * propre a la verticale. La signature est inchangee, donc aucun appelant ne
+ * bouge ; ce qui change est le comportement en cas d'echec — un echec SQL
+ * d'outbox n'avorte plus la transaction de l'appelant (25P02, #6958).
  */
 final class CrmOutboxPublisher
 {
+    public function __construct(
+        private readonly DatabaseOutboxPublisher $outbox = new DatabaseOutboxPublisher,
+    ) {}
+
     /**
      * @param  array<string, mixed>  $payload
      */
@@ -31,40 +39,18 @@ final class CrmOutboxPublisher
         ?string $aggregateId = null,
         ?DateTimeInterface $availableAt = null,
     ): CrmOutboxEvent {
-        $key = $idempotencyKey ?? hash('sha256', $eventType.'|'.json_encode($payload, JSON_THROW_ON_ERROR));
+        /** @var CrmOutboxEvent $event */
+        $event = $this->outbox->publish(
+            CrmOutboxEvent::class,
+            $companyId,
+            $eventType,
+            $payload,
+            $idempotencyKey,
+            $aggregateType,
+            $aggregateId,
+            $availableAt,
+        );
 
-        // Dédup : pre-SELECT (cas nominal) PUIS INSERT en transaction
-        // imbriquée (savepoint). Une violation unique PostgreSQL ABORTE la
-        // transaction courante (25P02) : sans savepoint, le SELECT du catch
-        // échoue en cascade (observé en CI sur le test « double publish »).
-        $existing = CrmOutboxEvent::query()
-            ->where('company_id', $companyId)
-            ->where('idempotency_key', $key)
-            ->first();
-
-        if ($existing instanceof CrmOutboxEvent) {
-            return $existing;
-        }
-
-        try {
-            return DB::transaction(fn (): CrmOutboxEvent => CrmOutboxEvent::query()->create([
-                'company_id' => $companyId,
-                'event_type' => $eventType,
-                'aggregate_type' => $aggregateType,
-                'aggregate_id' => $aggregateId,
-                'payload' => $payload,
-                'status' => CrmOutboxEvent::STATUS_PENDING,
-                'idempotency_key' => $key,
-                'available_at' => $availableAt ?? now(),
-            ]));
-        } catch (UniqueConstraintViolationException) {
-            /** @var CrmOutboxEvent $existing */
-            $existing = CrmOutboxEvent::query()
-                ->where('company_id', $companyId)
-                ->where('idempotency_key', $key)
-                ->firstOrFail();
-
-            return $existing;
-        }
+        return $event;
     }
 }
