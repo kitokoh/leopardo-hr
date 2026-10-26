@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Contracts\SmsCodeSenderContract;
 use App\Core\Auth\Infrastructure\Services\AuthService;
 use App\Core\Auth\Infrastructure\Services\TwoFactorAuthService;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Mail\LoginCodeMail;
+use App\Support\PhoneNumber;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -41,6 +43,7 @@ class LoginCodeController extends Controller
     public function __construct(
         private readonly AuthService $authService,
         private readonly TwoFactorAuthService $twoFactorService,
+        private readonly SmsCodeSenderContract $smsSender,
     ) {}
 
     /**
@@ -67,15 +70,48 @@ class LoginCodeController extends Controller
             return $genericResponse;
         }
 
-        $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $locale = $this->resolveLocale($row);
+
+        // #8738 : le code peut partir par SMS. On resout le numero AVANT de
+        // generer le code, parce qu'un canal qui ne peut pas delivrer ne doit
+        // pas consommer un code ni un quota : l'appelant replit sur l'e-mail.
+        $e164 = $this->resolveSmsRecipient($row);
+        $sentBySms = false;
+
+        if ($e164 !== null && $this->smsSender->isConfigured()) {
+            $probeCode = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+            $traceId = $this->smsSender->send($e164, $probeCode, $locale);
+
+            if ($traceId !== null) {
+                $code = $probeCode;
+                $sentBySms = true;
+            }
+            // Si `send()` rend `null`, RIEN n'est parti : on retombe sur
+            // l'e-mail ci-dessous. Pas de "code fantome".
+        }
+
+        if (! $sentBySms) {
+            $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        }
 
         Cache::put($this->cacheKey($email), [
             'hash' => Hash::make($code),
             'attempts' => 0,
         ], now()->addMinutes(self::CODE_TTL_MINUTES));
 
+        if ($sentBySms) {
+            // Canal SMS seul : on ne double pas l'envoi e-mail, sinon un code
+            // reste valable dans une boite mail que l'utilisateur ne consulte
+            // peut-etre plus. Un code, un canal.
+            Log::info('auth.login_code_sent_by_sms', [
+                'channel' => $this->smsSender->channel(),
+            ]);
+
+            return $genericResponse;
+        }
+
         try {
-            Mail::to($email)->send(new LoginCodeMail($code, $this->resolveLocale($row)));
+            Mail::to($email)->send(new LoginCodeMail($code, $locale));
         } catch (\Throwable $e) {
             // Best-effort assumé côté réponse (générique), mais tracé : un
             // mailer en panne est indiagnosticable sans ce log (#3057).
@@ -202,6 +238,42 @@ class LoginCodeController extends Controller
         }
 
         return $row;
+    }
+
+    /**
+     * Resout le destinataire SMS d'une demande de code (#8738).
+     *
+     * Ordre de priorite, du plus fiable au moins fiable :
+     *  1. `trial_provisionings.phone_e164` — le numero saisi au formulaire
+     *     d'essai, deja normalise a l'ecriture ;
+     *  2. `users.phone_e164` du compte rattache a cet e-mail (colonnes #8736).
+     *
+     * On rend `null` des qu'aucun numero E.164 valide n'existe : l'appelant
+     * replit alors sur l'e-mail. Aucune deduction a partir d'un numero brut,
+     * une re-normalisation ici ne ferait que masquer une donnee mal saisie.
+     */
+    private function resolveSmsRecipient(object $row): ?string
+    {
+        $candidate = $row->phone_e164 ?? null;
+
+        if (! is_string($candidate) || ! PhoneNumber::isValidE164($candidate)) {
+            try {
+                $candidate = DB::table('users')
+                    ->where('email', (string) ($row->email ?? ''))
+                    ->whereNotNull('phone_e164')
+                    ->value('phone_e164');
+            } catch (\Throwable $e) {
+                // Une colonne absente (base pas encore migree) ne doit pas
+                // casser la demande de code : on degrade sur l'e-mail.
+                Log::debug('auth.login_code_phone_lookup_failed', [
+                    'error' => $e->getMessage(),
+                ]);
+
+                return null;
+            }
+        }
+
+        return is_string($candidate) && PhoneNumber::isValidE164($candidate) ? $candidate : null;
     }
 
     private function resolveLocale(object $row): string

@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $station_id
  * @property string $equipment_type pump|tank|meter|other
  * @property int|null $equipment_id
+ * @property string $category equipment|power|pos|safety|other
  * @property string $severity low|medium|high|critical
  * @property string $status open|in_progress|resolved|closed
  * @property string $title
@@ -202,11 +203,17 @@ class FuelIncident extends Model
     protected static function booted(): void
     {
         static::creating(static function (self $incident): void {
-            if ($incident->status === null || $incident->status === '') {
+            if ($incident->status === '') {
                 $incident->status = self::DEFAULT_STATUS;
             }
 
-            if ($incident->category === null || $incident->category === '') {
+            // `category` est declaree NON nullable avec un defaut `equipment`.
+            // Depuis le docblock `@property string $category`, PHPStan sait que
+            // la valeur n'est jamais `null` : la comparaison a `null` etait du
+            // code mort (`identical.alwaysFalse`). On teste la chaine vide,
+            // seul cas possible quand une ligne arrive par un chemin qui ne
+            // passe pas par `report()` (fixture, import, restauration).
+            if ($incident->category === '') {
                 $incident->category = self::CATEGORY_EQUIPMENT;
             }
         });

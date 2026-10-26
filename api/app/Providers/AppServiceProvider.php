@@ -13,7 +13,9 @@ use App\AI\Support\LLMCircuitBreaker;
 use App\Core\AI\Domain\Contracts\SpeechToTextPort;
 use App\Core\AI\Infrastructure\Adapters\GroqWhisperAdapter;
 use App\Core\AI\Infrastructure\Adapters\UnavailableSpeechToTextAdapter;
+use App\Core\Auth\Domain\Contracts\SmsCodeSenderContract;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Sms\LogOnlySmsCodeSender;
 use App\Core\Notifications\Contracts\InAppNotifier;
 use App\Core\Privacy\Infrastructure\Services\PiiRegistry;
 use App\Core\Tenant\TenantManager;
@@ -80,6 +82,12 @@ class AppServiceProvider extends ServiceProvider
         // les modules métier type-hintent le contrat Core, l'implémentation vit
         // dans le module Notification (BC-13).
         $this->app->bind(InAppNotifier::class, InAppNotifierAdapter::class);
+
+        // #8738 — canal SMS du code OTP. Le contrat vit dans Core/Auth (pas dans
+        // un module), l'implementation par defaut est audit-only tant qu'aucun
+        // fournisseur de production n'est contractualise : brancher un vrai
+        // fournisseur ne demande que de re-lier cette interface.
+        $this->app->singleton(SmsCodeSenderContract::class, LogOnlySmsCodeSender::class);
 
         // Canonical singleton — tous les nouveaux usages
         $this->app->singleton(TenantManager::class);

@@ -213,4 +213,14 @@ return [
         'repository' => env('GITHUB_STACK_SWITCH_REPOSITORY', 'kitokoh/leopardo-hr'),
     ],
 
+    // #8738 — canal SMS du code de connexion a usage unique (OTP).
+    // `endpoint` + `api_key` vides = canal NON configure : le controleur
+    // replit alors sur l'e-mail au lieu de generer un code qui ne partirat
+    // jamais. Voir App\Core\Auth\Infrastructure\Sms\LogOnlySmsCodeSender.
+    'sms_otp' => [
+        'endpoint' => env('SMS_OTP_ENDPOINT', ''),
+        'api_key' => env('SMS_OTP_API_KEY', ''),
+        'from' => env('SMS_OTP_FROM', ''),
+    ],
+
 ];
