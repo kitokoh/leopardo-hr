@@ -253,7 +253,12 @@ final class IntegrationLifecycle
     /**
      * Ne garde que les clés connues, non vides, sous forme de chaînes.
      *
-     * @param  array<string, mixed>  $credentials
+     * `array-key` et non `string` : la charge utile vient d'un JSON décodé, où
+     * une clé numérique (`{"0": "x"}`) devient un entier PHP. Le contrôle
+     * `is_string($key)` ci-dessous est donc réel, pas décoratif — c'est lui qui
+     * garantit le `array<string, string>` en sortie.
+     *
+     * @param  array<array-key, mixed>  $credentials
      * @return array<string, string>
      */
     private function normalizeCredentials(string $provider, array $credentials): array
