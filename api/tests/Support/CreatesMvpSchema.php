@@ -1540,6 +1540,45 @@ trait CreatesMvpSchema
             });
         }
 
+        // REST-OS-3 (#8609) — registre des conflits de synchronisation hors-ligne
+        // du Restaurant OS : miroir de la migration tenant
+        // 2026_10_27_000100_8609_create_restaurant_offline_sync_tables (garde #5443).
+        //
+        // La migration a ete livree sans son miroir de fixture : tout test
+        // utilisant CreatesMvpSchema aurait echoue sur "relation ... does not
+        // exist", et la panne serait tombee sur l'auteur d'un fichier qu'il
+        // n'avait pas modifie (regression #5418).
+        if (! Schema::hasTable($this->moduleTable('restaurant_sync_conflicts'))) {
+            Schema::create($this->moduleTable('restaurant_sync_conflicts'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+
+                $table->unsignedBigInteger('restaurant_sync_operation_id');
+                $table->string('entity_type', 60);
+                $table->string('entity_id', 100)->nullable();
+                $table->string('strategy', 40);
+                $table->json('local_value')->nullable();
+                $table->json('server_value')->nullable();
+                $table->string('local_terminal_id', 100)->nullable();
+                $table->string('server_terminal_id', 100)->nullable();
+                $table->string('resolution', 40)->nullable();
+                $table->unsignedBigInteger('resolved_by')->nullable();
+                $table->timestampTz('resolved_at')->nullable();
+                $table->text('note')->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->index(
+                    ['company_id', 'restaurant_sync_operation_id'],
+                    'restaurant_sync_conflicts_operation_index'
+                );
+                $table->index(
+                    ['company_id', 'resolution'],
+                    'restaurant_sync_conflicts_resolution_index'
+                );
+            });
+        }
+
         // Issue #7641 (ménage garde #5443, régression amont mergee sur main) —
         // clés API distributeur travel : miroir migration 7641.
         if (! Schema::hasTable($this->moduleTable('travel_distributor_keys'))) {
