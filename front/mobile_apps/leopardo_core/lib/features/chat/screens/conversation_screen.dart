@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// `chatThreadControllerProvider` est un `StateNotifierProvider.family`
+// (`legacy.dart` en Riverpod 3) : sans cet import, `next`/`state` sont inférés
+// `Object?` et les accès `.messages`/`.offline` échouent (#8754).
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';

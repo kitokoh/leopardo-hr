@@ -35,4 +35,5 @@ return [
     'demo_data_kit_unavailable' => 'No demo dataset is available for the :code solution.',
     'resume_unknown_step' => 'This step is not part of your onboarding journey.',
     'resume_invalid_step' => 'Invalid step identifier.',
+    'lea_confirm_stale' => 'The plan you validated is out of date (your answers changed). Re-run the interpretation to confirm the current plan.',
 ];

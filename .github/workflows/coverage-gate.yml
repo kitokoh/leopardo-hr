@@ -167,6 +167,7 @@ jobs:
           coverage: pcov
 
       - name: Run tests with coverage
+        id: tests
         if: needs.detect-changes.outputs.api_changed == 'true'
         working-directory: ./api
         shell: bash
@@ -176,8 +177,6 @@ jobs:
           DB_DATABASE: leopardo_test
           DB_SEARCH_PATH: public,shared_tenants
         run: |
-          set -o pipefail
-          mkdir -p storage/coverage
           # Issue #4978 : `set -o pipefail` OBLIGATOIRE — sans lui, le pipe vers
           # `tee` avale le code de sortie de PHPUnit (tee sort en 0) et la gate
           # requise « Backend Coverage » reste verte même avec des centaines de
@@ -188,17 +187,36 @@ jobs:
           # en concurrence et provoque des collisions `already exists`, ce qui
           # empêche PHPUnit de produire Clover. Le timeout de 75 minutes garde
           # la suite séquentielle déterministe et conserve la gate de couverture.
-          php artisan test --coverage-clover=storage/coverage/clover.xml --coverage-text 2>&1 | tee storage/coverage/summary.txt
+          #
+          # Issue #8923 (décision D-8718-1) : UN SEUL passage de la suite.
+          #   1. Le clover n'est écrit par PHPUnit qu'en fin de run RÉUSSI : un
+          #      `exit` sur le premier test rouge supprimait la mesure, donc la
+          #      couverture n'était JAMAIS disponible quand on en avait besoin.
+          #      → on ne sort plus ici ; le rouge est exporté en `tests_failed`
+          #      et traité par l'étape « Evaluate coverage gate ».
+          #   2. `--log-junit` est produit par ce même passage : le second run
+          #      complet (2 × ~4 h 47 = ~9 h 30 de runner par PR touchant api/)
+          #      disparaît, la mesure JUnit est préservée.
+          set +e
+          php artisan test \
+            --coverage-clover=storage/coverage/clover.xml \
+            --coverage-text \
+            --log-junit=storage/test-results/coverage.xml \
+            2>&1 | tee storage/coverage/summary.txt
           test_exit=${PIPESTATUS[0]}
+          set -e
+          echo "tests_failed=$([[ "${test_exit}" -ne 0 ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "tests_exit_code=${test_exit}" >> "$GITHUB_OUTPUT"
           if [[ "${test_exit}" -ne 0 ]]; then
             {
               echo "Backend coverage test suite failed with exit code ${test_exit}."
               grep -E -m 1 'SQLSTATE\[[0-9A-Z]+\]|FAILURES!|ERRORS!|There were [0-9]+ errors' storage/coverage/summary.txt || true
             } | tee storage/coverage/causal-error.txt
-            exit "${test_exit}"
+            echo "::warning::Suite backend rouge (exit ${test_exit}) — la couverture est mesurée quand même (décision D-8718-1)."
           fi
-          php artisan test --coverage-clover=storage/coverage/clover.xml --coverage-text \
-            --log-junit=storage/test-results/coverage.xml 2>&1 | tee storage/coverage/summary.txt
+          if [[ ! -f storage/coverage/clover.xml ]]; then
+            echo "::error::clover.xml absent après la suite — aucune mesure de couverture possible."
+          fi
 
       - name: Extract first test failures (causal errors)
         if: needs.detect-changes.outputs.api_changed == 'true' && always()
@@ -255,18 +273,20 @@ jobs:
           set -euo pipefail
           CLOVER_FILE="storage/coverage/clover.xml"
           if [[ ! -f "${CLOVER_FILE}" ]]; then
-            # api non modifié ou suite sans clover : la gate est gardée par
-            # api_changed ; on sort 100 pour ne jamais faire échouer un check
-            # qui n'a pas de raison de mesurer la couverture.
-            echo "percentage=100" >> "$GITHUB_OUTPUT"
-            echo "Coverage clover file not found, defaulting to 0%."
+            # Issue #8923 : ne JAMAIS inventer un chiffre. L'ancien fallback
+            # (`percentage=100`) faisait passer une PR sans mesure comme une PR
+            # parfaitement couverte ; 0 l'aurait fait échouer à tort. On déclare
+            # la mesure absente (`measured=false`) et la gate reste neutre.
+            echo "measured=false" >> "$GITHUB_OUTPUT"
+            echo "percentage=" >> "$GITHUB_OUTPUT"
+            echo "::warning::clover.xml absent — aucune couverture mesurée (mesure absente, pas 100 %)."
             exit 0
           fi
           PERCENT=$(php <<'PHP'
           <?php
           $xml = simplexml_load_file('storage/coverage/clover.xml');
           if ($xml === false) {
-              echo '0';
+              echo '';
               exit;
           }
           $total = 0;
@@ -275,9 +295,16 @@ jobs:
               $total += (int) $metrics['statements'];
               $covered += (int) $metrics['coveredstatements'];
           }
-          echo $total > 0 ? number_format(($covered / $total) * 100, 2, '.', '') : '0';
+          echo $total > 0 ? number_format(($covered / $total) * 100, 2, '.', '') : '';
           PHP
           )
+          if [[ -z "${PERCENT}" ]]; then
+            echo "measured=false" >> "$GITHUB_OUTPUT"
+            echo "percentage=" >> "$GITHUB_OUTPUT"
+            echo "::warning::clover.xml illisible ou sans statement — aucune couverture mesurée."
+            exit 0
+          fi
+          echo "measured=true" >> "$GITHUB_OUTPUT"
           echo "percentage=${PERCENT}" >> "$GITHUB_OUTPUT"
           echo "Backend coverage: ${PERCENT}%"
 
@@ -346,15 +373,30 @@ jobs:
         env:
           COVERAGE_MIN: ${{ vars.BACKEND_COVERAGE_MIN || env.DEFAULT_BACKEND_COVERAGE_MIN }}
         run: |
+          # Issue #8923 : la gate doit rendre un VERDICT, pas tomber sur une
+          # erreur de script. Trois issues possibles, distinguées explicitement :
+          #   passed=true        -> couverture mesurée >= seuil
+          #   passed=false       -> couverture mesurée <  seuil  (échec réel)
+          #   inconclusive=true  -> mesure absente (jamais reprochée à une PR)
           set -euo pipefail
           ACTUAL="${{ steps.coverage.outputs.percentage }}"
+          MEASURED="${{ steps.coverage.outputs.measured }}"
           THRESHOLD="${COVERAGE_MIN}"
+          TESTS_FAILED="${{ steps.tests.outputs.tests_failed }}"
 
-          echo "Actual coverage: ${ACTUAL}%"
+          echo "Actual coverage: '${ACTUAL}' (measured=${MEASURED})"
           echo "Threshold: ${THRESHOLD}%"
+          echo "Tests failed: ${TESTS_FAILED}"
 
-          PASS=$(echo "${ACTUAL} >= ${THRESHOLD}" | bc -l)
-          if [[ "${PASS}" -eq 1 ]]; then
+          if [[ "${MEASURED}" != "true" || -z "${ACTUAL}" ]]; then
+            echo "passed=false" >> "$GITHUB_OUTPUT"
+            echo "inconclusive=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::Aucune couverture mesurée — gate INCONCLUSIVE (pas un échec de seuil)."
+            exit 0
+          fi
+
+          echo "inconclusive=false" >> "$GITHUB_OUTPUT"
+          if awk -v a="${ACTUAL}" -v t="${THRESHOLD}" 'BEGIN { exit !(a + 0 >= t + 0) }'; then
             echo "Coverage gate PASSED (${ACTUAL}% >= ${THRESHOLD}%)"
             echo "passed=true" >> "$GITHUB_OUTPUT"
           else
@@ -382,9 +424,15 @@ jobs:
         with:
           script: |
             const percentage = `${{ steps.coverage.outputs.percentage }}`;
+            const measured = `${{ steps.coverage.outputs.measured }}` === 'true';
             const threshold = `${{ vars.BACKEND_COVERAGE_MIN || '65' }}`; // keep in sync with env.DEFAULT_BACKEND_COVERAGE_MIN
+            const inconclusive = `${{ steps.gate.outputs.inconclusive }}` === 'true';
             const passed = `${{ steps.gate.outputs.passed }}` === 'true';
-            const icon = passed ? ':white_check_mark:' : ':x:';
+            const testsFailed = `${{ steps.tests.outputs.tests_failed }}` === 'true';
+            const icon = inconclusive ? ':warning:' : passed ? ':white_check_mark:' : ':x:';
+            const status = inconclusive
+              ? 'INCONCLUSIVE (aucune mesure)'
+              : `${passed ? 'PASSED' : 'FAILED'}${testsFailed ? ' — suite backend rouge' : ''}`;
             let modulesTable = ''
             try {
               modulesTable = fs.readFileSync('api/storage/coverage/modules.md', 'utf8')
@@ -397,9 +445,9 @@ jobs:
               '',
               `| Metric | Value |`,
               `|--------|-------|`,
-              `| **Lines covered** | ${percentage}% |`,
+              `| **Lines covered** | ${measured ? `${percentage}%` : '— (non mesuré)'} |`,
               `| **Threshold** | ${threshold}% |`,
-              `| **Status** | ${passed ? 'PASSED' : 'FAILED'} |`,
+              `| **Status** | ${status} |`,
               '',
               `### Par module (issue #1726)`,
               '',
@@ -431,7 +479,16 @@ jobs:
             }
 
       - name: Fail if coverage below threshold
-        if: needs.detect-changes.outputs.api_changed == 'true' && steps.gate.outputs.passed == 'false'
+        if: needs.detect-changes.outputs.api_changed == 'true' && steps.gate.outputs.passed == 'false' && steps.gate.outputs.inconclusive != 'true'
         run: |
           echo "Coverage gate failed (threshold: ${COVERAGE_MIN:-65}%). Increase test coverage or adjust BACKEND_COVERAGE_MIN variable."
+          exit 1
+
+      - name: Fail if backend test suite is red
+        # Issue #8923 : la suite rouge ne supprime plus la mesure — elle fait
+        # échouer le job ICI, après le verdict de couverture, pour que le
+        # pourcentage reste publié et lisible sur la PR.
+        if: needs.detect-changes.outputs.api_changed == 'true' && steps.tests.outputs.tests_failed == 'true'
+        run: |
+          echo "Suite backend rouge (exit ${{ steps.tests.outputs.tests_exit_code }}) — voir storage/coverage/summary.txt (artefact backend-coverage-report)."
           exit 1

@@ -28,6 +28,7 @@ use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\DemoDataController;
+use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\LeaOnboardingController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\SetupInterviewController;
@@ -42,6 +43,7 @@ use App\Modules\Payroll\Interfaces\Api\V1\Controllers\TaxSlabAdminController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\ClientEventController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\CommunicationAnalyticsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\DemoUserController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\EstablishmentsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\HealthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\LaunchReadinessController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\MetricsController;
@@ -387,6 +389,11 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/notification-preferences', [NotificationPreferenceController::class, 'update']);
         Route::get('/communication/analytics', CommunicationAnalyticsController::class)->middleware('throttle:platform-sensitive');
         Route::get('/launch-readiness', LaunchReadinessController::class);
+        // #7910 \u2014 hub \u00ab Mes \u00e9tablissements \u00bb : liste unifi\u00e9e LECTURE SEULE des
+        // \u00e9tablissements de toutes les verticales activ\u00e9es du tenant (registre
+        // par module, aucun switch central). Dans le groupe authentifi\u00e9 pour
+        // que l'isolation tenant soit port\u00e9e par `tenant` + la requ\u00eate.
+        Route::get('/establishments', [EstablishmentsController::class, 'index']);
         Route::get('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'myStatus']);
         Route::post('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'store']);
         Route::middleware(['throttle:privacy-sensitive'])->group(function (): void {
@@ -467,6 +474,18 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/setup-interview/answers', [SetupInterviewController::class, 'saveAnswers']);
         Route::post('/setup-interview/complete', [SetupInterviewController::class, 'complete']);
         Route::post('/setup-interview/dismiss', [SetupInterviewController::class, 'dismiss']);
+
+        // #8230 (BOS-042) — parcours Lea : description libre → plan →
+        // confirmation → execution par l'entretien EXISTANT. Deux routes et
+        // non une : un appel ne doit jamais interpreter ET activer, sinon
+        // l'utilisateur se retrouverait avec des modules actives qu'il n'a
+        // pas vus. `config('onboarding.lea.enabled')` rend la route 404 si le
+        // flag est OFF (interrupteur SERVEUR, pas seulement d'interface) ;
+        // le seau `ai-sensitive` borne le cout des appels LLM.
+        Route::middleware('throttle:ai-sensitive')->group(function (): void {
+            Route::post('/onboarding/lea/interpret', [LeaOnboardingController::class, 'interpret']);
+            Route::post('/onboarding/lea/confirm', [LeaOnboardingController::class, 'confirm']);
+        });
 
         // #7865 — jeu de données de démonstration à la demande du client :
         // une entrée par verticale ACTIVE du tenant (kits enregistrés par les
