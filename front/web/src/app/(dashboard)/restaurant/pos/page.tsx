@@ -4,6 +4,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Banknote, Loader2, Plus, RefreshCw, ShoppingCart, Trash2 } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { ConnectionIndicator } from '@/components/offline/ConnectionIndicator';
+import { useOfflineSync } from '@/lib/offline/use-offline-sync';
+import {
+  PosCatalogCache,
+  buildPaymentOperation,
+  createPosSender,
+  type KeyValueStorage,
+} from '@/lib/offline/pos-offline';
 import { t } from '@/lib/i18n/locale-catalog';
 import { getPreferredLocale } from '@/lib/i18n';
 
@@ -14,6 +22,11 @@ import { getPreferredLocale } from '@/lib/i18n';
  * d'articles → soumission → confirmation (cuisine) → addition → encaissement
  * espèces. Tous les montants sont recalculés SERVEUR (jamais acceptés du
  * client) ; les actions idempotentes passent par les endpoints RESTO-401..407.
+ *
+ * #8449 — offline-first : le catalogue est mis en cache localement (par
+ * succursale) et l'encaissement passe par la file hors-ligne partagée. Hors
+ * réseau, le catalogue reste encaissable et le règlement est mis en file avec
+ * une clé d'idempotence stable → zéro perte, zéro doublon au retour du réseau.
  */
 
 interface PosSession {
@@ -82,6 +95,33 @@ const ORDER_STATUS_LABELS: Record<string, string> = {
 
 export default function RestaurantPosPage() {
   const locale = getPreferredLocale();
+
+  // #8449 — cache catalogue local (localStorage en navigateur, mémoire sinon).
+  const catalogCache = useMemo(() => {
+    const storage: KeyValueStorage =
+      typeof window !== 'undefined' && window.localStorage
+        ? window.localStorage
+        : {
+            getItem: () => null,
+            setItem: () => undefined,
+            removeItem: () => undefined,
+          };
+    return new PosCatalogCache<{ categories: Category[]; products: Product[] }>(storage);
+  }, []);
+
+  // #8449 — envoi réel d'une opération POS (encaissement).
+  const sendPosOperation = useMemo(
+    () =>
+      createPosSender(async (path, body) => {
+        await apiFetch(path, {
+          method: 'POST',
+          _idempotent: true,
+          body: JSON.stringify(body),
+        });
+      }),
+    [],
+  );
+  const { connectionState, pendingCount, dispatch, flush } = useOfflineSync(sendPosOperation);
   const [branches, setBranches] = useState<RestaurantBranch[]>([]);
   const [branchId, setBranchId] = useState<number | null>(null);
   const [session, setSession] = useState<PosSession | null>(null);
@@ -101,16 +141,30 @@ export default function RestaurantPosPage() {
       ]);
       const cats = (await catRes.json()) as { data: Category[] };
       const prods = (await prodRes.json()) as { data: Product[] };
-      setCategories(Array.isArray(cats.data) ? cats.data : []);
-      setProducts(
-        (Array.isArray(prods.data) ? prods.data : []).filter(
-          (product) => product.is_available !== false,
-        ),
+      const nextCategories = Array.isArray(cats.data) ? cats.data : [];
+      const nextProducts = (Array.isArray(prods.data) ? prods.data : []).filter(
+        (product) => product.is_available !== false,
       );
+      setCategories(nextCategories);
+      setProducts(nextProducts);
+
+      // #8449 — le catalogue fraîchement chargé alimente le cache local, pour
+      // que le POS reste encaissable si le réseau tombe en plein service.
+      if (branchId !== null) {
+        catalogCache.save(branchId, { categories: nextCategories, products: nextProducts });
+      }
     } catch {
+      // #8449 — hors ligne : on sert le dernier catalogue connu au lieu d'un
+      // écran vide. On ne signale une erreur que s'il n'y a AUCUN cache.
+      const cached = branchId === null ? null : catalogCache.load(branchId);
+      if (cached !== null) {
+        setCategories(cached.data.categories);
+        setProducts(cached.data.products);
+        return;
+      }
       setError(t(locale, 'restaurant.pos.loadError'));
     }
-  }, [locale]);
+  }, [branchId, catalogCache, locale]);
 
   const loadSession = useCallback(async () => {
     if (branchId === null) {
@@ -272,14 +326,26 @@ export default function RestaurantPosPage() {
       return;
     }
     void runAction(async () => {
-      await apiFetch(`/restaurant/orders/${order.id}/pay`, {
-        method: 'POST',
-        _idempotent: true,
-        body: JSON.stringify({ provider_code: 'cash', amount_minor: bill.total_minor }),
+      // #8449 — l'encaissement passe par la file hors-ligne : en ligne il part
+      // immédiatement, hors ligne il est conservé et rejoué à la reconnexion.
+      // La clé d'idempotence (commande + montant + moyen) rend le rejeu sûr.
+      const operation = buildPaymentOperation({
+        orderId: order.id,
+        amountMinor: bill.total_minor,
+        providerCode: 'cash',
+        reference: order.reference,
       });
+
+      const result = await dispatch(operation.kind, operation.payload);
+
+      if (result === 'queued') {
+        setError(t(locale, 'offline.queued'));
+        return;
+      }
+
       await refreshOrder(order.id);
     });
-  }, [order, bill, refreshOrder, runAction]);
+  }, [order, bill, dispatch, refreshOrder, runAction, locale]);
 
   const groupedProducts = useMemo(() => {
     const grouped = new Map<number | null, Product[]>();
@@ -333,6 +399,15 @@ export default function RestaurantPosPage() {
           <RefreshCw className="h-3 w-3" />
           Refresh
         </button>
+
+        {/* #8449 — état de connexion et de synchronisation, visible en caisse. */}
+        <ConnectionIndicator
+          state={connectionState}
+          pendingCount={pendingCount}
+          onRetry={() => {
+            void flush();
+          }}
+        />
       </div>
 
       {error !== null && (
