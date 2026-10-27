@@ -101,6 +101,10 @@ final class FakeModelInferenceAdapter implements ModelInferencePort
             ModelType::FaceVerification => ['verified' => true, 'confidence' => 0.98],
             ModelType::Liveness => ['live' => true, 'confidence' => 0.99],
             ModelType::OcrReading => ['value' => '12345', 'unit' => 'L', 'confidence' => 0.95],
+            // #8229 — payload neutre : aucune reponse d'interview inventee.
+            // Un fake qui produirait des valeurs ferait passer les tests
+            // d'activation sans qu'aucune interpretation n'ait eu lieu.
+            ModelType::SetupInterviewExtraction => ['answers' => []],
         };
     }
 }

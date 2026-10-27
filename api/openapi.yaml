@@ -6380,6 +6380,167 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /onboarding/lea/interpret:
+    post:
+      operationId: api_post_onboarding_lea_interpret
+      tags:
+      - Onboarding
+      summary: Interpréter une description libre (parcours Léa, #8230 / BOS-042)
+      description: |
+        Traduit une description d'activité en réponses d'interview validées
+        contre l'allowlist de `SetupInterviewPlanner`, puis propose un plan
+        `{solutions, tools}` **sans rien activer**.
+
+        Trois issues : `plan_ready` (plan + `plan_token` à renvoyer sur
+        `/onboarding/lea/confirm`), `clarification` (valeurs hors allowlist :
+        on repose la question, jamais de correction silencieuse),
+        `fallback_required` (LLM indisponible, JSON invalide ou description
+        hostile : l'interview déterministe reste disponible, jamais bloquant).
+
+        Route 404 quand `onboarding.lea.enabled` est OFF (interrupteur
+        serveur). RBAC principal/rh. Throttle `ai-sensitive`.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - description
+              properties:
+                description:
+                  type: string
+                  minLength: 12
+                  maxLength: 2000
+                answers:
+                  type: object
+                  additionalProperties: true
+                  description: Réponses explicites à une clarification précédente.
+                extracted:
+                  type: object
+                  additionalProperties: true
+                  description: Réponses déjà interprétées, à fusionner avec `answers`.
+                correlation_id:
+                  type: string
+                  maxLength: 64
+      responses:
+        '200':
+          description: Plan proposé, clarification demandée, ou repli sur l'interview
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      outcome:
+                        type: string
+                        enum: [plan_ready, clarification, fallback_required]
+                      answers:
+                        type: object
+                        additionalProperties: true
+                      plan:
+                        type: object
+                        properties:
+                          solutions:
+                            type: array
+                            items:
+                              type: string
+                          tools:
+                            type: array
+                            items:
+                              type: string
+                      plan_token:
+                        type: string
+                      questions:
+                        type: array
+                        items:
+                          type: string
+                      reason_code:
+                        type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /onboarding/lea/confirm:
+    post:
+      operationId: api_post_onboarding_lea_confirm
+      tags:
+      - Onboarding
+      summary: Confirmer le plan Léa et exécuter l'activation (#8230 / BOS-042)
+      description: |
+        Exécute le plan **après confirmation explicite** de l'utilisateur, via
+        le chemin existant (`CompleteSetupInterview` → `SolutionActivator`) —
+        aucun nouveau chemin d'exécution.
+
+        Le `plan_token` est dérivé du contenu des réponses : un jeton périmé
+        (l'utilisateur a répondu à une clarification entre-temps) est refusé
+        en **409** plutôt qu'exécuté, car le plan validé ne serait plus celui
+        envoyé.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - answers
+              - plan_token
+              properties:
+                answers:
+                  type: object
+                  additionalProperties: true
+                plan_token:
+                  type: string
+                  minLength: 32
+                  maxLength: 32
+                correlation_id:
+                  type: string
+                  maxLength: 64
+      responses:
+        '200':
+          description: Plan confirmé et exécuté
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Jeton de plan périmé — le plan a changé depuis la validation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+                  message:
+                    type: string
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
   /demo-data:
     get:
       operationId: api_get_demo_data
