@@ -57,8 +57,16 @@ export function TestimonialsSection({
           </h2>
         </motion.div>
 
-        {/* Testimonials Grid */}
-        <div className={`grid grid-cols-1 ${gridColsClass} gap-8`}>
+        {/* Testimonials Container: smooth swipeable track on small screens, responsive grid on md+ */}
+        <div className="md:hidden flex gap-5 overflow-x-auto pb-6 pt-2 px-1 snap-x snap-mandatory scrollbar-none -mx-4 px-4">
+          {testimonials.map((testimonial, index) => (
+            <div key={index} className="min-w-[85vw] max-w-[85vw] shrink-0 snap-center">
+              <TestimonialCard {...testimonial} index={index} />
+            </div>
+          ))}
+        </div>
+
+        <div className={`hidden md:grid grid-cols-1 ${gridColsClass} gap-8`}>
           {testimonials.map((testimonial, index) => (
             <TestimonialCard key={index} {...testimonial} index={index} />
           ))}
