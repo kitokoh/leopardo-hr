@@ -33,6 +33,10 @@ class BuildKioskEmployeeInfo
         abort_if(! $employee, 404, 'EMPLOYEE_NOT_FOUND');
 
         $todayAttendance = $this->reader->todayAttendance($employee->id);
+        // `todayAttendance()` renvoie une ligne `DB::table()` (stdClass) : on la
+        // normalise en tableau pour que PHPStan (level 8) ne voie pas d'accès à
+        // une propriété non déclarée sur `object`.
+        $todayAttendanceRow = $todayAttendance !== null ? (array) $todayAttendance : null;
 
         return [
             'employee' => [
@@ -43,10 +47,10 @@ class BuildKioskEmployeeInfo
                 'position' => $employee->position?->name,
                 'photo_url' => $employee->photo_url ?? null,
             ],
-            'today_attendance' => $todayAttendance ? [
-                'check_in' => $todayAttendance->check_in,
-                'check_out' => $todayAttendance->check_out,
-                'status' => $todayAttendance->status,
+            'today_attendance' => $todayAttendanceRow !== null ? [
+                'check_in' => $todayAttendanceRow['check_in'] ?? null,
+                'check_out' => $todayAttendanceRow['check_out'] ?? null,
+                'status' => $todayAttendanceRow['status'] ?? null,
             ] : null,
             'leave_balances' => $this->reader->leaveBalances($employee->id),
             // PA2-KIO-004 : surface the employee's mobile-submitted biometric

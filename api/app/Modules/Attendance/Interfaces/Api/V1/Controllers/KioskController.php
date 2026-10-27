@@ -12,7 +12,6 @@ use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Application\Actions\BuildKioskEmployeeInfo;
 use App\Modules\Attendance\Application\Actions\BuildKioskRoster;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
-use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use App\Modules\Attendance\Infrastructure\Services\BiometricAuditLogger;
 use App\Modules\Attendance\Infrastructure\Services\KioskAttendanceService;
 use App\Modules\Attendance\Infrastructure\Services\KioskFaceVerificationService;

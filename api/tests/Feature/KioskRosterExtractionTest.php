@@ -39,7 +39,15 @@ class KioskRosterExtractionTest extends TestCase
         $this->assertNotContains('NB-001', $matricules, 'un employé sans biométrie ne doit pas apparaître');
         $this->assertNotContains('INACTIF-001', $matricules, 'un employé inactif ne doit pas apparaître');
 
-        $karim = collect($employees)->firstWhere('matricule', 'EMP-001');
+        $karim = null;
+        foreach ($employees as $employee) {
+            if (($employee['matricule'] ?? null) === 'EMP-001') {
+                $karim = $employee;
+                break;
+            }
+        }
+
+        $this->assertIsArray($karim, 'EMP-001 doit figurer dans le roster');
         $this->assertSame('Karim Employe', $karim['name']);
         $this->assertTrue($karim['fingerprint_enabled']);
         $this->assertFalse($karim['face_enabled']);
@@ -90,8 +98,8 @@ class KioskRosterExtractionTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
-            'subscription_start' => '2026-01-01',
-            'subscription_end' => '2027-01-01',
+            'subscription_start' => now()->subMonth()->toDateString(),
+            'subscription_end' => now()->addYear()->toDateString(),
             'language' => 'fr',
         ]);
 
@@ -106,8 +114,8 @@ class KioskRosterExtractionTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
-            'subscription_start' => '2026-01-01',
-            'subscription_end' => '2027-01-01',
+            'subscription_start' => now()->subMonth()->toDateString(),
+            'subscription_end' => now()->addYear()->toDateString(),
             'language' => 'fr',
         ]);
 
