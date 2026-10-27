@@ -143,7 +143,10 @@ class HospitalityRentalsTest extends TestCase
         return $lease;
     }
 
-    /** @param array<string, mixed> $overrides */
+    /**
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
     private function leasePayload(array $overrides = []): array
     {
         return array_merge([
@@ -323,7 +326,9 @@ class HospitalityRentalsTest extends TestCase
         // Février n'a pas de 31 : l'échéance tombe le 28, elle ne glisse JAMAIS
         // au 3 mars (sinon le locataire serait « en retard » sur un jour qui
         // n'a jamais existé).
-        $this->assertSame('2026-02-28', $february->due_on?->toDateString());
+        // `due_on` est non-nullable par contrat (cast `date` + NOT NULL) :
+        // le `?->` masquerait une colonne nulle, PHPStan le refuse.
+        $this->assertSame('2026-02-28', $february->due_on->toDateString());
     }
 
     // ── Critère 3 : encaissement partiel ──────────────────────────────────
