@@ -877,3 +877,11 @@ Vérifié : `node shared/i18n/sync/sync-web.js` → `I18N_SYNC_WEB_OK`, `node sh
 **Aucun changement de comportement.** Le diff sur `front/admin-dashboard/src/i18n/locales/{fr,en,ar,tr}.json` est uniquement la régénération mécanique (`shared/i18n/sync/sync-web.js`) des **6 clés partagées** `discovery.company*` introduites pour la **fiche publique web** `/commerce/[slug]` de la verticale Trade (P2-01, #8802) : `companyTitle`, `companyAboutTitle`, `companyImport`, `companyExport`, `companyDomestic`, `companyNotFoundTitle`. Aucun écran de la console ne consomme ces clés — elles sont servies par le catalogue partagé, comme les lots i18n précédents. Scénarios existants valides tels quels.
 
 Vérifié : `node shared/i18n/sync/sync-web.js` → `I18N_SYNC_WEB_OK`, `node shared/i18n/validators/validate.js` → `I18N_VALIDATION_OK (4 locales)`, et `git diff --exit-code` **propre** après les trois syncs (web, mobile, backend).
+
+## Note de conservation 2026-10-27 — clés i18n Fuel (parcours pompiste) propagées aux catalogues du back-office (PR #8935, issue #8585)
+
+**Aucun changement de comportement du back-office.** Le diff sur `front/admin-dashboard/src/i18n/locales/{fr,en,ar,tr}.json` est uniquement la régénération mécanique (`shared/i18n/sync/sync-web.js`) des **7 clés partagées** du parcours pompiste FuelStation (FUEL-013, #8585) : `fuelPumpistSelectRequired`, `fuelPumpistReadingRejected`, `fuelPumpistStationsError`, `fuelPumpistPumpsError`, `fuelPumpistMetersError`, `fuelTechnicalRef`, `fuelMeterLabelWithProduct`.
+
+Ces clés sont consommées par l'app mobile `leopardo_manager` ; **aucun écran de la console admin ne les utilise**. Le catalogue admin-dashboard est un catalogue **union** (clés partagées + clés admin-only) : la synchro y ajoute les clés partagées sans toucher aux clés propres à la console. Scénarios existants valides tels quels.
+
+Vérifié : `node shared/i18n/sync/sync-web.js` → `I18N_SYNC_WEB_OK`, `node shared/i18n/validators/validate.js` → `I18N_VALIDATION_OK (4 locales)`, et `git diff --exit-code` **propre** après les trois syncs (web, mobile, backend).

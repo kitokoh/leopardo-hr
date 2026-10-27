@@ -71,9 +71,8 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
       // Le message n'est PAS perdu silencieusement : on le dit et on rend le
       // texte à l'utilisateur pour qu'il puisse réessayer.
       _controller.text = text;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_sendErrorLabel(error))),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(_sendErrorLabel(error))));
     }
 
     _scrollToBottom();
@@ -97,8 +96,9 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(chatThreadControllerProvider(widget.threadId));
-    final controller =
-        ref.read(chatThreadControllerProvider(widget.threadId).notifier);
+    final controller = ref.read(
+      chatThreadControllerProvider(widget.threadId).notifier,
+    );
 
     // Suit l'arrivée de nouveaux messages (polling, envoi, rattrapage).
     ref.listen(chatThreadControllerProvider(widget.threadId), (previous, next) {
@@ -134,7 +134,11 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
-                  const Icon(Icons.cloud_off, size: 16, color: AppColors.warning),
+                  const Icon(
+                    Icons.cloud_off,
+                    size: 16,
+                    color: AppColors.warning,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -153,61 +157,57 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                     child: CircularProgressIndicator(color: AppColors.rh),
                   )
                 : state.error != null && state.messages.isEmpty
-                    ? _ErrorState(
-                        message: state.error == 'offline'
-                            ? 'Connexion indisponible.'
-                            : 'Impossible de charger les messages.',
-                        onRetry: controller.loadInitial,
-                      )
-                    : state.messages.isEmpty
-                        ? ListView(
-                            padding: const EdgeInsets.all(20),
-                            children: const [
-                              EmptyState(
-                                icon: Icons.chat_bubble_outline,
-                                title: 'Aucun message',
-                                description:
-                                    'Écrivez le premier message de cette conversation.',
-                              ),
-                            ],
-                          )
-                        : ListView.builder(
-                            controller: _scrollController,
-                            padding: const EdgeInsets.all(16),
-                            itemCount: state.messages.length + 1,
-                            itemBuilder: (context, index) {
-                              if (index == 0) {
-                                return state.hasMore
-                                    ? Center(
-                                        child: TextButton(
-                                          onPressed: state.loadingOlder
-                                              ? null
-                                              : controller.loadOlder,
-                                          child: Text(
-                                            state.loadingOlder
-                                                ? 'Chargement…'
-                                                : 'Charger les messages précédents',
-                                            style: AppTypography.caption,
-                                          ),
-                                        ),
-                                      )
-                                    : const SizedBox.shrink();
-                              }
+                ? _ErrorState(
+                    message: state.error == 'offline'
+                        ? 'Connexion indisponible.'
+                        : 'Impossible de charger les messages.',
+                    onRetry: controller.loadInitial,
+                  )
+                : state.messages.isEmpty
+                ? ListView(
+                    padding: const EdgeInsets.all(20),
+                    children: const [
+                      EmptyState(
+                        icon: Icons.chat_bubble_outline,
+                        title: 'Aucun message',
+                        description:
+                            'Écrivez le premier message de cette conversation.',
+                      ),
+                    ],
+                  )
+                : ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(16),
+                    itemCount: state.messages.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        return state.hasMore
+                            ? Center(
+                                child: TextButton(
+                                  onPressed: state.loadingOlder
+                                      ? null
+                                      : controller.loadOlder,
+                                  child: Text(
+                                    state.loadingOlder
+                                        ? 'Chargement…'
+                                        : 'Charger les messages précédents',
+                                    style: AppTypography.caption,
+                                  ),
+                                ),
+                              )
+                            : const SizedBox.shrink();
+                      }
 
-                              final message = state.messages[index - 1];
+                      final message = state.messages[index - 1];
 
-                              return _MessageBubble(
-                                key: ValueKey(message.id),
-                                message: message,
-                              );
-                            },
-                          ),
+                      return _MessageBubble(
+                        key: ValueKey(message.id),
+                        message: message,
+                      );
+                    },
+                  ),
           ),
-          _Composer(
-            controller: _controller,
-            sending: _sending,
-            onSend: _send,
-          ),
+          _Composer(controller: _controller, sending: _sending, onSend: _send),
         ],
       ),
     );
