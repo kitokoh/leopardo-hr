@@ -159,6 +159,25 @@ Schedule::command('sanctum:prune-expired --hours=24')->daily()->at('04:30');
 // Digest hebdomadaire manager (issue #5695) — chaque lundi à 07:00.
 Schedule::command('manager:weekly-digest')->weeklyOn(1, '07:00');
 Schedule::command('fuel:alerts-dispatch')->daily()->at('06:30');
+// GSI-12 (#8523) point 4 — scan SEO planifié. `withoutOverlapping` empêche
+// qu'un scan lent (réseau) se superpose au suivant, `onOneServer` évite que
+// deux instances scalées scannent le même parc en parallèle. La commande est
+// inerte tant que SEARCH_INTEL_SCAN_BASE_URL n'est pas déclarée : aucune cible
+// devinée, donc aucun trafic inattendu sur un domaine tiers.
+Schedule::command('search-intel:scan')
+    ->daily()
+    ->at('05:20')
+    ->withoutOverlapping()
+    ->onOneServer();
+// GSI-12 (#8523) point 5 — alerte Slack sur dépassement de budget. Horaire
+// (et non quotidien) pour qu'un dépassement soit signalé le jour où il
+// survient ; le silence par (campagne, périmètre, période) est porté par la
+// commande elle-même, pas par la fréquence — sans quoi un `hourly` spammerait
+// 24 fois la même alerte.
+Schedule::command('search-intel:budget-alerts')
+    ->hourly()
+    ->withoutOverlapping()
+    ->onOneServer();
 // BC-35 VTC (VTC-06/#8362) — purge RGPD quotidienne des positions
 // chauffeurs (rétention vtc.positions_retention_days, défaut 30 j) :
 // idempotente, auditée par log, withoutOverlapping + onOneServer.
