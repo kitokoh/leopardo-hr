@@ -8769,5 +8769,158 @@
     "colSince": "Since",
     "colError": "Error",
     "openJournal": "View history"
+  },
+  "hospitality": {
+    "hub": {
+      "title": "Hospitality",
+      "subtitle": "Hotels, residences and multi-site rental management.",
+      "active": "Hospitality solution is active.",
+      "loadError": "Unable to load the Hospitality module status.",
+      "inactive": {
+        "title": "Hospitality solution inactive",
+        "body": "Enable the Hospitality solution for your company to access properties, reservations and rentals."
+      },
+      "tiles": {
+        "properties": {
+          "title": "Properties",
+          "description": "Directory: creation, publication and settings for each property."
+        },
+        "inventory": {
+          "title": "Inventory",
+          "description": "Room types and physical units, attached to a property."
+        },
+        "reservations": {
+          "title": "Reservations",
+          "description": "Front-desk reservations and transitions (confirm, check-in, check-out)."
+        },
+        "team": {
+          "title": "Team",
+          "description": "Assign tenant employees to properties."
+        },
+        "rentals": {
+          "title": "Rentals",
+          "description": "Leases, instalments and rent collection."
+        }
+      }
+    },
+    "common": {
+      "property": "Property",
+      "noProperty": "No property"
+    },
+    "properties": {
+      "title": "Properties",
+      "subtitle": "Hotels, residences and buildings managed by your company.",
+      "create": "New property",
+      "submit": "Create",
+      "empty": "No property yet. Create the first one to get started.",
+      "nameRequired": "The property name is required.",
+      "createError": "Creation refused by the API.",
+      "loadError": "Unable to load properties.",
+      "publishError": "Publication refused: check that the property has a public identifier.",
+      "deleteError": "Deletion refused by the API.",
+      "confirmDelete": "Delete this property? Its rooms and units will no longer be accessible.",
+      "publish": "Publish",
+      "unpublish": "Unpublish",
+      "public": "Published",
+      "private": "Private",
+      "field": {
+        "name": "Name",
+        "city": "City",
+        "address": "Address"
+      },
+      "col": {
+        "name": "Name",
+        "city": "City",
+        "visibility": "Visibility"
+      }
+    },
+    "inventory": {
+      "title": "Inventory",
+      "subtitle": "Room types (what is sold) and physical units (what exists).",
+      "roomTypes": "Room types",
+      "units": "Physical units",
+      "emptyRoomTypes": "No room type.",
+      "emptyUnits": "No physical unit.",
+      "addRoomType": "Add a type",
+      "addUnit": "Add a unit",
+      "pax": "pax",
+      "loadError": "Unable to load the inventory.",
+      "createError": "Creation refused by the API.",
+      "nameRequired": "The room type name is required.",
+      "unitNameRequired": "The unit name is required.",
+      "noPropertyBody": "Create a property in the directory first.",
+      "field": {
+        "roomTypeName": "Name (e.g. Double)",
+        "capacity": "Capacity",
+        "price": "Rate",
+        "unitName": "Name (e.g. 101)",
+        "floor": "Floor"
+      }
+    },
+    "reservations": {
+      "title": "Reservations",
+      "subtitle": "Front-desk stays and status transitions.",
+      "empty": "No reservation recorded.",
+      "loadError": "Unable to load reservations.",
+      "transitionError": "Transition refused: the reservation may have changed state. List reloaded.",
+      "noAction": "No action",
+      "col": {
+        "reference": "Reference",
+        "guest": "Guest",
+        "dates": "Stay",
+        "status": "Status"
+      },
+      "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "checkedIn": "In-house",
+        "checkedOut": "Completed",
+        "cancelled": "Cancelled",
+        "noShow": "No-show"
+      },
+      "action": {
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "checkIn": "Check in",
+        "checkOut": "Check out",
+        "noShow": "No-show"
+      }
+    },
+    "team": {
+      "title": "Team",
+      "subtitle": "Employees assigned to each property.",
+      "assign": "Assign an employee",
+      "submit": "Assign",
+      "selectEmployee": "Select an employee",
+      "empty": "No employee assigned to this property.",
+      "loadError": "Unable to load the team.",
+      "employeeRequired": "Select an employee.",
+      "assignError": "Assignment refused: this employee may already be attached to this property.",
+      "updateError": "Update refused by the API.",
+      "removeError": "Removal refused by the API.",
+      "confirmRemove": "Remove this employee from the property?",
+      "remove": "Remove",
+      "col": {
+        "employee": "Employee",
+        "role": "Role"
+      },
+      "field": {
+        "role": "Role (e.g. Front desk)"
+      }
+    },
+    "rentals": {
+      "title": "Rentals",
+      "subtitle": "Leases, instalments and rent collection.",
+      "empty": "No lease for this property.",
+      "loadError": "Unable to load rentals.",
+      "generate": "Generate instalments",
+      "generateError": "Generation refused: instalments already exist or the lease has no end date.",
+      "terminate": "Terminate",
+      "terminateError": "Termination refused by the API.",
+      "confirmTerminate": "Terminate this lease? Outstanding instalments remain due.",
+      "payments": "Instalments",
+      "unpaid": "unpaid",
+      "noPayments": "No instalments: generate them to collect the rent."
+    }
   }
 }

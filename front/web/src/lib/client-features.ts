@@ -76,7 +76,9 @@ export type ClientModuleKey =
   | 'commerce'
   | 'vtc'
   // BC-36 TRADE (TRADE-009/#8484) — verticale International Trade OS.
-  | 'trade';
+  | 'trade'
+  // BC-32 HOSPITALITY (HOSP-007/#7949) — verticale hôtels, résidences & locatif.
+  | 'hospitality';
 export type FeatureState = 'available' | 'trial' | 'locked';
 
 /**
@@ -85,7 +87,7 @@ export type FeatureState = 'available' | 'trial' | 'locked';
  * (#7225 — audit 2026-09-10 : le menu listait « Restaurant » à une agence de
  * voyage car les modules métier étaient rangés dans les groupes transverses.)
  */
-export type BusinessVertical = 'restaurant' | 'travel' | 'education' | 'fuel' | 'health' | 'commerce' | 'mobility' | 'trade';
+export type BusinessVertical = 'restaurant' | 'travel' | 'education' | 'fuel' | 'health' | 'commerce' | 'mobility' | 'trade' | 'hospitality';
 
 /**
  * Portée d'un module :
@@ -609,6 +611,25 @@ export const CLIENT_MODULES: ClientModule[] = [
     scope: 'business',
     vertical: 'trade',
   },
+  // BC-32 HOSPITALITY (HOSP-007/#7949) — hub de la verticale hôtels,
+  // résidences & gestion locative. Le backend HospitalityManager était
+  // complet (HOSP-001 à HOSP-006) mais AUCUN écran ne l'exposait : un
+  // hôtelier qui activait la solution arrivait sur un portail sans porte
+  // d'entrée. Feature flag tenant `hospitality` ; gate serveur
+  // `module.hospitality` fail-closed sur /api/v1/hospitality/*.
+  {
+    key: 'hospitality',
+    href: '/hospitality',
+    label: 'Hospitality',
+    group: 'general',
+    icon: BedDouble,
+    capabilityKeys: ['hospitality', 'can_view_hospitality'],
+    featureKeys: ['hospitality'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Hospitality — hôtels, résidences & locatif',
+    scope: 'business',
+    vertical: 'hospitality',
+  },
   // BC-16 EDU — EduManager (EDU-011/012/013, #5827/#5828/#5829). Navigation
   // rôle-aware, portée par la feature flag `edumanager` (activation tenant
   // #5817). #7724 — c'est une VERTICALE métier (`vertical: 'education'`),
@@ -765,6 +786,13 @@ const MODULE_ROUTE_ALIASES: Record<string, ClientModuleKey> = {
   '/crm/leads': 'crm',
   '/crm/pipeline': 'crm',
   '/restaurant/pos': 'restaurant',
+  // BC-32 HOSPITALITY (HOSP-007/#7949) — sous-pages de l'espace Hospitality
+  // (la route principale `/hospitality` est derivée du catalogue).
+  '/hospitality/properties': 'hospitality',
+  '/hospitality/inventory': 'hospitality',
+  '/hospitality/reservations': 'hospitality',
+  '/hospitality/team': 'hospitality',
+  '/hospitality/rentals': 'hospitality',
   // BC-24 (#7633) — sous-routes de l'espace gérant travel (hub + pages A2–A5).
   '/travel/network': 'travel',
   '/travel/trips': 'travel',

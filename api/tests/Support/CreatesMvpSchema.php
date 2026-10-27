@@ -1470,6 +1470,35 @@ trait CreatesMvpSchema
 
     private function createPostSprintModuleTables(): void
     {
+        // #8609 [REST-OS-7] — mode hors ligne : la table des CONFLITS.
+        // `restaurant_sync_operations` est creee dans la fixture statique, mais
+        // `restaurant_sync_conflicts` avait ete oubliee lors du merge de #8609 :
+        // tout test exercant la resolution de conflit echouait en 42P01.
+        // Meme schema que la migration 2026_10_27_000100_8609.
+        if (! Schema::hasTable($this->moduleTable('restaurant_sync_conflicts'))) {
+            Schema::create($this->moduleTable('restaurant_sync_conflicts'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('restaurant_sync_operation_id');
+                $table->string('entity_type', 60);
+                $table->string('entity_id', 100)->nullable();
+                $table->string('strategy', 40);
+                $table->json('local_value')->nullable();
+                $table->json('server_value')->nullable();
+                $table->string('local_terminal_id', 100)->nullable();
+                $table->string('server_terminal_id', 100)->nullable();
+                $table->string('resolution', 40)->nullable();
+                $table->unsignedBigInteger('resolved_by')->nullable();
+                $table->timestampTz('resolved_at')->nullable();
+                $table->text('note')->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->index(['company_id', 'restaurant_sync_operation_id'], 'restaurant_sync_conflicts_operation_index');
+                $table->index(['company_id', 'resolution'], 'restaurant_sync_conflicts_resolution_index');
+            });
+        }
+
         // #8750 [BOS-CHAT] — modération du chat horizontal : blocages et
         // signalements. Placées ici et non dans la fixture statique : c'est le
         // seul point d'entrée exécuté après le DROP/recréation de

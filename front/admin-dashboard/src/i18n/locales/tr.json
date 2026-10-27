@@ -8769,5 +8769,158 @@
     "colSince": "Başlangıç",
     "colError": "Hata",
     "openJournal": "Geçmişi gör"
+  },
+  "hospitality": {
+    "hub": {
+      "title": "Konaklama",
+      "subtitle": "Oteller, rezidanslar ve çok lokasyonlu kiralama yönetimi.",
+      "active": "Konaklama çözümü etkin.",
+      "loadError": "Konaklama modülü durumu yüklenemedi.",
+      "inactive": {
+        "title": "Konaklama çözümü etkin değil",
+        "body": "Tesislere, rezervasyonlara ve kiralamaya erişmek için şirketiniz için Konaklama çözümünü etkinleştirin."
+      },
+      "tiles": {
+        "properties": {
+          "title": "Tesisler",
+          "description": "Kayıt: her tesis için oluşturma, yayınlama ve ayarlar."
+        },
+        "inventory": {
+          "title": "Envanter",
+          "description": "Bir tesise bağlı oda tipleri ve fiziksel birimler."
+        },
+        "reservations": {
+          "title": "Rezervasyonlar",
+          "description": "Resepsiyon rezervasyonları ve geçişler (onayla, giriş, çıkış)."
+        },
+        "team": {
+          "title": "Ekip",
+          "description": "Kiracı çalışanlarını tesislere atama."
+        },
+        "rentals": {
+          "title": "Kiralama",
+          "description": "Kira sözleşmeleri, taksitler ve tahsilat."
+        }
+      }
+    },
+    "common": {
+      "property": "Tesis",
+      "noProperty": "Tesis yok"
+    },
+    "properties": {
+      "title": "Tesisler",
+      "subtitle": "Şirketiniz tarafından yönetilen oteller, rezidanslar ve binalar.",
+      "create": "Yeni tesis",
+      "submit": "Oluştur",
+      "empty": "Henüz tesis yok. Başlamak için ilkini oluşturun.",
+      "nameRequired": "Tesis adı zorunludur.",
+      "createError": "Oluşturma API tarafından reddedildi.",
+      "loadError": "Tesisler yüklenemedi.",
+      "publishError": "Yayınlama reddedildi: tesisin genel bir tanımlayıcısı olduğunu kontrol edin.",
+      "deleteError": "Silme API tarafından reddedildi.",
+      "confirmDelete": "Bu tesis silinsin mi? Odaları ve birimleri erişilemez olacak.",
+      "publish": "Yayınla",
+      "unpublish": "Yayından kaldır",
+      "public": "Yayınlandı",
+      "private": "Özel",
+      "field": {
+        "name": "Ad",
+        "city": "Şehir",
+        "address": "Adres"
+      },
+      "col": {
+        "name": "Ad",
+        "city": "Şehir",
+        "visibility": "Görünürlük"
+      }
+    },
+    "inventory": {
+      "title": "Envanter",
+      "subtitle": "Oda tipleri (satılan) ve fiziksel birimler (var olan).",
+      "roomTypes": "Oda tipleri",
+      "units": "Fiziksel birimler",
+      "emptyRoomTypes": "Oda tipi yok.",
+      "emptyUnits": "Fiziksel birim yok.",
+      "addRoomType": "Tip ekle",
+      "addUnit": "Birim ekle",
+      "pax": "kişi",
+      "loadError": "Envanter yüklenemedi.",
+      "createError": "Oluşturma API tarafından reddedildi.",
+      "nameRequired": "Oda tipi adı zorunludur.",
+      "unitNameRequired": "Birim adı zorunludur.",
+      "noPropertyBody": "Önce kayıtta bir tesis oluşturun.",
+      "field": {
+        "roomTypeName": "Ad (örn. Çift kişilik)",
+        "capacity": "Kapasite",
+        "price": "Ücret",
+        "unitName": "Ad (örn. 101)",
+        "floor": "Kat"
+      }
+    },
+    "reservations": {
+      "title": "Rezervasyonlar",
+      "subtitle": "Resepsiyon konaklamaları ve durum geçişleri.",
+      "empty": "Kayıtlı rezervasyon yok.",
+      "loadError": "Rezervasyonlar yüklenemedi.",
+      "transitionError": "Geçiş reddedildi: rezervasyon durumu değişmiş olabilir. Liste yenilendi.",
+      "noAction": "İşlem yok",
+      "col": {
+        "reference": "Referans",
+        "guest": "Misafir",
+        "dates": "Konaklama",
+        "status": "Durum"
+      },
+      "status": {
+        "pending": "Beklemede",
+        "confirmed": "Onaylandı",
+        "checkedIn": "Konaklıyor",
+        "checkedOut": "Tamamlandı",
+        "cancelled": "İptal edildi",
+        "noShow": "Gelmedi"
+      },
+      "action": {
+        "confirm": "Onayla",
+        "cancel": "İptal",
+        "checkIn": "Giriş",
+        "checkOut": "Çıkış",
+        "noShow": "Gelmedi"
+      }
+    },
+    "team": {
+      "title": "Ekip",
+      "subtitle": "Her tesise atanmış çalışanlar.",
+      "assign": "Çalışan ata",
+      "submit": "Ata",
+      "selectEmployee": "Çalışan seçin",
+      "empty": "Bu tesise atanmış çalışan yok.",
+      "loadError": "Ekip yüklenemedi.",
+      "employeeRequired": "Bir çalışan seçin.",
+      "assignError": "Atama reddedildi: bu çalışan zaten bu tesise bağlı olabilir.",
+      "updateError": "Güncelleme API tarafından reddedildi.",
+      "removeError": "Kaldırma API tarafından reddedildi.",
+      "confirmRemove": "Bu çalışan tesisten kaldırılsın mı?",
+      "remove": "Kaldır",
+      "col": {
+        "employee": "Çalışan",
+        "role": "Rol"
+      },
+      "field": {
+        "role": "Rol (örn. Resepsiyon)"
+      }
+    },
+    "rentals": {
+      "title": "Kiralama",
+      "subtitle": "Kira sözleşmeleri, taksitler ve tahsilat.",
+      "empty": "Bu tesis için kira sözleşmesi yok.",
+      "loadError": "Kiralama yüklenemedi.",
+      "generate": "Taksitleri oluştur",
+      "generateError": "Oluşturma reddedildi: taksitler zaten var veya sözleşmenin bitiş tarihi yok.",
+      "terminate": "Feshet",
+      "terminateError": "Fesih API tarafından reddedildi.",
+      "confirmTerminate": "Bu sözleşme feshedilsin mi? Ödenmemiş taksitler borç olarak kalır.",
+      "payments": "Taksitler",
+      "unpaid": "ödenmemiş",
+      "noPayments": "Taksit yok: kirayı tahsil etmek için oluşturun."
+    }
   }
 }
