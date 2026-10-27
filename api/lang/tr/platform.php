@@ -33,4 +33,5 @@ return [
     'infra_dispatch_rejected' => 'GitHub tetiklemeyi reddetti (HTTP :status). Jeton kapsamını kontrol edin.',
     'infra_switch_dispatched' => 'Geçiş başlatıldı: GitHub iş akışı devraldı (Actions sekmesini izleyin).',
     'infra_token_missing' => 'Geçiş kullanılamıyor: butonun GitHub jetonu tanımlı değil (GITHUB_STACK_SWITCH_TOKEN).',
+    'search_intel_unsupported_provider' => 'Desteklenmeyen sağlayıcı: :provider.',
 ];
