@@ -21,6 +21,9 @@ class UpdateScheduleRequest extends FormRequest
     {
         return [
             'name' => ['sometimes', 'string', 'max:100'],
+            // #8450 — déplacer une rotation vers un autre établissement, ou la
+            // rendre tenant-wide en envoyant `site_id: null`.
+            'site_id' => ['sometimes', 'nullable', 'integer', 'min:1'],
             'start_time' => ['sometimes', 'date_format:H:i'],
             'end_time' => ['sometimes', 'date_format:H:i'],
             'break_minutes' => ['nullable', 'integer', 'min:0', 'max:480'],

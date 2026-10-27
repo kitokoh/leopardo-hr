@@ -252,6 +252,7 @@ CREATE TABLE public.languages (
 CREATE TABLE shared_tenants.schedules (
     id serial PRIMARY KEY,
     company_id uuid NULL,
+    site_id integer NULL,
     name varchar(100) NOT NULL,
     start_time time NOT NULL,
     end_time time NOT NULL,

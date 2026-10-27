@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Planning\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Site;
 use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ScheduleResource;
@@ -36,12 +37,20 @@ class ScheduleController extends Controller
             abort(403);
         }
 
+        // #8450 — filtre par établissement. Le cache tenant est indexé par
+        // société (pas par site) : on filtre APRÈS lecture du cache plutôt que
+        // de multiplier les clés, sinon une rotation créée pour le site A
+        // apparaîtrait dans la liste du site B jusqu'à expiration du TTL.
+        $siteId = $request->query('site_id');
+        $siteFilter = is_numeric($siteId) ? (int) $siteId : null;
+
         $schedules = $this->tenantCache->rememberSchedules(
             (string) $user->company_id,
             fn () => Schedule::query()
                 ->select([
                     'id',
                     'company_id',
+                    'site_id',
                     'name',
                     'start_time',
                     'end_time',
@@ -62,6 +71,14 @@ class ScheduleController extends Controller
                 ->get()
         );
 
+        if ($siteFilter !== null) {
+            // Une rotation tenant-wide (site_id NULL) reste visible depuis
+            // n'importe quel établissement : c'est le comportement historique.
+            $schedules = $schedules
+                ->filter(fn (Schedule $schedule): bool => $schedule->site_id === null || $schedule->site_id === $siteFilter)
+                ->values();
+        }
+
         return ScheduleResource::collection($schedules);
     }
 
@@ -72,6 +89,8 @@ class ScheduleController extends Controller
         // Sécurité #2217 : alignement sur index/show/destroy — l'écriture des
         // plannings est réservée aux managers.
         abort_unless($actor->isManager(), 403);
+
+        $this->assertSiteBelongsToTenant($actor, $request->validated('site_id'));
 
         $schedule = $this->createSchedule->execute($actor, $request->validated());
 
@@ -98,6 +117,8 @@ class ScheduleController extends Controller
         // Sécurité #2217 : alignement sur index/show/destroy — l'écriture des
         // plannings est réservée aux managers.
         abort_unless($actor->isManager(), 403);
+
+        $this->assertSiteBelongsToTenant($actor, $request->validated('site_id'));
 
         $schedule = $this->updateSchedule->execute($actor, $schedule, $request->validated());
 
@@ -173,5 +194,28 @@ class ScheduleController extends Controller
 
         // #4812 : littéral EN déplacé au catalogue errors.*
         return response()->json(['message' => __('errors.SCHEDULE_DELETED')]);
+    }
+
+    /**
+     * #8450 — un planning ne peut être rattaché qu'à un établissement DU MÊME
+     * tenant. Sans cette garde, un manager pourrait envoyer le `site_id` d'une
+     * autre société : la FK PostgreSQL l'accepterait (elle ne connaît pas le
+     * tenant) et la rotation deviendrait invisible/incohérente pour son
+     * propriétaire. Fail-closed : 422, jamais 404 silencieux.
+     */
+    private function assertSiteBelongsToTenant(Employee $actor, mixed $siteId): void
+    {
+        if ($siteId === null || $siteId === '') {
+            return;
+        }
+
+        $exists = Site::query()
+            ->where('company_id', $actor->company_id)
+            ->whereKey((int) $siteId)
+            ->exists();
+
+        if (! $exists) {
+            abort(422, 'SCHEDULE_SITE_NOT_IN_TENANT');
+        }
     }
 }

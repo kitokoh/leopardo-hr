@@ -21,6 +21,9 @@ class StoreScheduleRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:100'],
+            // #8450 — rotation rattachée à un établissement (optionnel : NULL =
+            // rotation valable pour tout le tenant, comportement historique).
+            'site_id' => ['nullable', 'integer', 'min:1'],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i'],
             'break_minutes' => ['nullable', 'integer', 'min:0', 'max:480'],
