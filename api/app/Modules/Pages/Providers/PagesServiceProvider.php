@@ -83,7 +83,7 @@ final class PagesServiceProvider extends ServiceProvider
             return new PageCustomDomainService(
                 $app->make(DnsResolver::class),
                 $app->make(CustomDomainProvider::class),
-                $app->make(\App\Modules\Billing\Domain\Services\EntitlementGuard::class),
+                $app->make(\App\Shared\Contracts\Entitlements\FeatureEntitlements::class),
             );
         });
     }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\Pages\Domain\Services;
 
 use App\Core\Auth\Domain\Models\AuditLog;
-use App\Modules\Billing\Domain\Services\EntitlementGuard;
 use App\Modules\Pages\Domain\CustomDomains\Contracts\CustomDomainProvider;
 use App\Modules\Pages\Domain\CustomDomains\Contracts\CustomDomainProviderResult;
 use App\Modules\Pages\Domain\CustomDomains\Dns\DnsResolver;
@@ -13,6 +12,7 @@ use App\Modules\Pages\Domain\CustomDomains\DomainName;
 use App\Modules\Pages\Domain\Exceptions\PageCustomDomainException;
 use App\Modules\Pages\Domain\Models\Page;
 use App\Modules\Pages\Domain\Models\PageCustomDomain;
+use App\Shared\Contracts\Entitlements\FeatureEntitlements;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -47,7 +47,7 @@ final class PageCustomDomainService
     public function __construct(
         private readonly DnsResolver $dns,
         private readonly CustomDomainProvider $provider,
-        private readonly EntitlementGuard $entitlements,
+        private readonly FeatureEntitlements $entitlements,
     ) {}
 
     /**

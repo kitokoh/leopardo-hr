@@ -6,7 +6,7 @@ namespace Tests\Feature\Pages;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\Site;
-use App\Modules\Billing\Domain\Services\EntitlementGuard;
+use App\Shared\Contracts\Entitlements\FeatureEntitlements;
 use App\Modules\Pages\Domain\CustomDomains\Contracts\CustomDomainProvider;
 use App\Modules\Pages\Domain\CustomDomains\Dns\DnsResolver;
 use App\Modules\Pages\Domain\CustomDomains\Dns\InMemoryDnsResolver;
@@ -86,7 +86,7 @@ class PageCustomDomainTest extends TestCase
         $this->provider = new InMemoryCustomDomainProvider;
 
         // Entitlement piloté par le test : on ne dépend pas de la vraie matrice.
-        $guard = \Mockery::mock(EntitlementGuard::class);
+        $guard = \Mockery::mock(FeatureEntitlements::class);
         $guard->shouldReceive('isFeatureEnabled')
             ->andReturnUsing(fn (string $companyId, string $feature): bool => $this->entitlements[$feature]['enabled'] ?? true);
         $guard->shouldReceive('featureLimit')
@@ -537,7 +537,7 @@ class PageCustomDomainTest extends TestCase
             }
         };
 
-        $service = new PageCustomDomainService($this->dns, $failingProvider, app(EntitlementGuard::class));
+        $service = new PageCustomDomainService($this->dns, $failingProvider, app(FeatureEntitlements::class));
         $removed = $service->remove($domain, 'owner@chez-lea.sn');
 
         $this->assertSame(PageCustomDomain::STATUS_REMOVED, $removed->status);
