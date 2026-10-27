@@ -229,6 +229,92 @@ class ShowcasePublishWorkflowTest extends TestCase
         $this->assertStringNotContainsString('/public/vitrine/sitemap-draft', $xml);
     }
 
+    /**
+     * #8731 — le sitemap doit être un XML CONFORME et absolu.
+     *
+     * Trois défauts étaient invisibles : `xmlns:xhtml` utilisé mais jamais
+     * déclaré (un parseur strict rejette le document entier), `<loc>` relatif
+     * (ignoré par les moteurs), et `limit(500)` qui tronquait l'index sans
+     * aucun signal. Ce test charge le XML réellement émis avec un parseur XML
+     * — pas une recherche de sous-chaîne, qui passerait sur un document
+     * malformé.
+     */
+    public function test_sitemap_is_well_formed_with_declared_namespaces_and_absolute_locations(): void
+    {
+        $company = $this->company('sitemap-xml');
+        $this->principal($company);
+        $showcase = $this->showcase($company);
+        $this->addHero($company, $showcase);
+        $this->postJson('/api/v1/showcase/publish')->assertOk();
+
+        Cache::forget('showcase:public:sitemap');
+
+        $xml = $this->get('/api/v1/public/vitrine/sitemap.xml')->assertOk()->getContent();
+        $this->assertIsString($xml);
+
+        $previous = libxml_use_internal_errors(true);
+        $doc = simplexml_load_string($xml);
+        $errors = array_map(static fn (\LibXMLError $e): string => trim($e->message), libxml_get_errors());
+        libxml_clear_errors();
+        libxml_use_internal_errors($previous);
+
+        // `assertNotFalse()` suffit à rétrécir le type : un `assertNotNull()`
+        // supplémentaire serait toujours vrai (PHPStan strict le signale).
+        $this->assertNotFalse($doc, 'Le sitemap doit être un XML bien formé : '.implode(' | ', $errors));
+
+        // Le namespace xhtml DOIT être déclaré sur l'élément racine : sans lui
+        // les `<xhtml:link>` sont dans un préfixe non lié et le document est
+        // non conforme au protocole sitemap.
+        $namespaces = $doc->getDocNamespaces();
+        $this->assertIsArray($namespaces, 'le sitemap doit déclarer ses namespaces');
+        $this->assertArrayHasKey('xhtml', $namespaces);
+        $this->assertSame('http://www.w3.org/1999/xhtml', $namespaces['xhtml']);
+
+        // `<loc>` exige une URL ABSOLUE : une valeur relative est ignorée.
+        $urls = $doc->xpath('//*[local-name()="loc"]');
+        $this->assertIsArray($urls, 'xpath doit renvoyer une liste');
+        $this->assertNotEmpty($urls, 'le sitemap doit contenir au moins une entrée');
+        foreach ($urls as $loc) {
+            $this->assertMatchesRegularExpression(
+                '#^https?://#',
+                (string) $loc,
+                'chaque <loc> doit être une URL absolue, reçu : '.(string) $loc
+            );
+        }
+
+        // Les alternates hreflang sont eux aussi absolus (même règle).
+        $alternates = $doc->xpath('//*[local-name()="link"]');
+        $this->assertIsArray($alternates, 'xpath doit renvoyer une liste');
+        $this->assertNotEmpty($alternates);
+        foreach ($alternates as $link) {
+            $this->assertMatchesRegularExpression('#^https?://#', (string) $link['href']);
+        }
+    }
+
+    /**
+     * #8731 — une société `expired` ne doit pas figurer au sitemap.
+     *
+     * Elle n'est plus servie en public (le resolver renvoie 404), donc l'y
+     * inscrire ne produit que des URL mortes — et un signal de qualité
+     * négatif pour le domaine.
+     */
+    public function test_sitemap_excludes_expired_companies(): void
+    {
+        $expired = $this->company('sitemap-expired');
+        $this->principal($expired);
+        $showcase = $this->showcase($expired);
+        $this->addHero($expired, $showcase);
+        $this->postJson('/api/v1/showcase/publish')->assertOk();
+
+        $expired->forceFill(['status' => 'expired'])->save();
+
+        Cache::forget('showcase:public:sitemap');
+
+        $xml = $this->get('/api/v1/public/vitrine/sitemap.xml')->assertOk()->getContent();
+        $this->assertIsString($xml);
+        $this->assertStringNotContainsString('/public/vitrine/sitemap-expired', $xml);
+    }
+
     public function test_robots_txt_allows_vitrine_and_excludes_preview_tokens(): void
     {
         $body = $this->get('/api/v1/public/vitrine/robots.txt')
