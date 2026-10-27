@@ -35,4 +35,5 @@ return [
     'demo_data_kit_unavailable' => ':code çözümü için demo veri seti mevcut değil.',
     'resume_unknown_step' => 'Bu adım katılım akışınızın bir parçası değil.',
     'resume_invalid_step' => 'Geçersiz adım tanımlayıcısı.',
+    'lea_confirm_stale' => 'Onayladığınız plan artık güncel değil (yanıtlarınız değişti). Güncel planı onaylamak için analizi yeniden çalıştırın.',
 ];

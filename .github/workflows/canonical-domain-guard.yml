@@ -1,0 +1,47 @@
+name: Canonical Domain Guard
+
+# #8062 — le domaine canonique `www.leopardo-rh.com` (déclaré par
+# `front/web/src/lib/site.ts` → `DEFAULT_SITE_URL`) ne résout pas (NXDOMAIN,
+# constaté 2026-09-22 puis re-vérifié 2026-10-26). Conséquence : metadata Open
+# Graph, sitemap, JSON-LD et liens partagés pointent vers un domaine mort, et le
+# seul accès fonctionnel est un nom de projet Vercel.
+#
+# La correction est une configuration DNS — action PROPRIÉTAIRE, hors de portée
+# d'un commit. Ce workflow ne répare rien : il rend la panne VISIBLE.
+#
+# Pourquoi PLANIFIÉ et non requis au merge : un check requis resterait rouge
+# jusqu'à l'action propriétaire et bloquerait TOUS les merges du dépôt — le
+# remède serait pire que le mal. Même arbitrage que `deploy-drift-guard.yml`.
+# Il tourne aussi à la demande (`workflow_dispatch`) pour servir de pré-vol
+# avant une bascule DNS.
+
+on:
+  schedule:
+    # Toutes les 6 heures, décalé des autres gardes (05:37, 13/43, 06:00…).
+    - cron: '23 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: canonical-domain-guard
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Domaine canonique joignable (#8062)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Garde domaine canonique (#8062)
+        run: bash dev-hub/tools/check-canonical-domain-live.sh
+
+      - name: Tests du garde
+        if: always()
+        run: bash dev-hub/tools/tests/check-canonical-domain-live.test.sh

@@ -84,6 +84,7 @@ return [
 
     'errors' => [
         'gateway_checkout_failed' => 'Ödeme sağlayıcısı geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.',
+        'fiscal_year_invalid' => 'Geçersiz mali yıl.',
         'payment_amount_positive' => 'Ödeme tutarı kesinlikle pozitif olmalıdır.',
         'wf_invalid_type' => 'Geçersiz belge türü.',
         'wf_requires_lines' => 'Bir belgenin en az bir satırı olmalıdır.',

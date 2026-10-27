@@ -8,7 +8,11 @@
 #   3. chaque gate a id unique par pilote, label, status ∈ {pending, validated} ;
 #   4. CONSISTANCE : go_decision=go interdit tant qu'un gate n'est pas validé ;
 #      go_decision=no_go requiert un gate bloqué documenté (status pending) ;
-#   5. les IDs de gates obligatoires (manifest, recette, golden_journey) existent.
+#   5. les IDs de gates obligatoires (manifest, recette, golden_journey) existent ;
+#   6. TRAÇABILITÉ (#8586) : chaque gate porte un `owner` (rôle) et un
+#      `updated_at` (date ISO), et chaque gate TECHNIQUE porte une `evidence`
+#      d'exécution non vide. Un gate sans propriétaire ni preuve n'est pas
+#      auditable : on ne peut ni savoir qui le porte, ni sur quoi il s'appuie.
 #
 # Usage : bash dev-hub/tools/check-pilot-gates.sh [registry] [repo_root]
 # Tests : bash dev-hub/tools/tests/check-pilot-gates.test.sh
@@ -41,6 +45,11 @@ for key in ("pilots", "decision_rules"):
 pilots = registry.get("pilots") or []
 pilot_ids = []
 MANDATORY_GATES = ("manifest", "recette", "golden_journey")
+# Gates techniques : adossés à une preuve d'exécution (#8586).
+TECHNICAL_GATES = ("manifest", "core_flow", "api_security", "security_review",
+                   "performance", "observability", "golden_journey")
+import re
+ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 for p in pilots:
     pid = p.get("id", "<sans id>")
@@ -66,6 +75,18 @@ for p in pilots:
         statuses.append(st)
         if st not in ("pending", "validated"):
             err(f"pilote {pid}/{gid} : status '{st}' invalide (pending/validated)")
+        # 6. traçabilité (#8586) : propriétaire + date sur CHAQUE gate.
+        owner = g.get("owner")
+        if not owner or not str(owner).strip():
+            err(f"pilote {pid}/{gid} : 'owner' absent ou vide — un gate sans propriétaire n'est pas auditable (#8586)")
+        updated = g.get("updated_at")
+        if not updated or not ISO_DATE.match(str(updated)):
+            err(f"pilote {pid}/{gid} : 'updated_at' absent ou non ISO (AAAA-MM-JJ) — gate non daté (#8586)")
+        # 6bis. preuve d'exécution sur les gates techniques.
+        if gid in TECHNICAL_GATES:
+            ev = g.get("evidence")
+            if not ev or not str(ev).strip():
+                err(f"pilote {pid}/{gid} : gate technique sans 'evidence' d'exécution (#8586)")
     if len(gate_ids) != len(set(gate_ids)):
         err(f"pilote {pid} : ids de gates dupliqués")
     for mg in MANDATORY_GATES:

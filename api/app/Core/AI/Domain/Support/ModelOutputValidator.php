@@ -51,6 +51,14 @@ final class ModelOutputValidator
             }
         }
 
+        // #8229 : le validateur ne controle que la FORME (la sortie doit etre
+        // un objet cle/valeur). La validation metier — allowlist des valeurs,
+        // rejet des cles inconnues — appartient a InterviewAnswerExtractor :
+        // la dupliquer ici ferait diverger deux sources de verite.
+        if ($type === ModelType::SetupInterviewExtraction && ! is_array($payload['answers'])) {
+            throw new ModelOutputValidationException("Model output for {$type->value}: 'answers' must be an object.");
+        }
+
         if (array_key_exists('confidence', $payload)) {
             $confidence = $payload['confidence'];
             if (! is_int($confidence) && ! is_float($confidence)) {
