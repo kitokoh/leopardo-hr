@@ -7,6 +7,11 @@ namespace App\Modules\Pages\Providers;
 use App\Modules\Pages\Domain\Blocks\PageBlockProvider;
 use App\Modules\Pages\Domain\Blocks\PageBlockRegistry;
 use App\Modules\Pages\Domain\Blocks\PageBlockSchemaValidator;
+use App\Modules\Pages\Domain\CustomDomains\Contracts\CustomDomainProvider;
+use App\Modules\Pages\Domain\CustomDomains\Dns\DnsResolver;
+use App\Modules\Pages\Domain\CustomDomains\Dns\NativeDnsResolver;
+use App\Modules\Pages\Domain\CustomDomains\Providers\InMemoryCustomDomainProvider;
+use App\Modules\Pages\Domain\Services\PageCustomDomainService;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -50,6 +55,36 @@ final class PagesServiceProvider extends ServiceProvider
             }
 
             return PageBlockRegistry::build($providers);
+        });
+
+        // ── Domaines personnalisés (#8726) ────────────────────────────────
+        //
+        // Le résolveur DNS et l'adaptateur fournisseur sont des singletons :
+        // les lier en `bind` créerait une instance par injection, donc un
+        // journal d'opérations fournisseur différent à chaque résolution —
+        // impossible à asserter en test.
+        $this->app->singleton(DnsResolver::class, static fn (): DnsResolver => new NativeDnsResolver);
+
+        $this->app->singleton(CustomDomainProvider::class, function ($app): CustomDomainProvider {
+            /** @var string $driver */
+            $driver = $app['config']->get('pages.custom_domains.provider', 'memory');
+
+            // Aucun adaptateur réseau n'est branché à ce stade : le choix
+            // Vercel/Cloudflare est une décision produit (cf. #8726). En
+            // attendant, tout nom de fournisseur inconnu retombe sur l'adaptateur
+            // mémoire, qui ne sert JAMAIS de trafic réel — fail-closed.
+            return match ($driver) {
+                'memory' => new InMemoryCustomDomainProvider,
+                default => new InMemoryCustomDomainProvider($driver, false),
+            };
+        });
+
+        $this->app->bind(PageCustomDomainService::class, function ($app): PageCustomDomainService {
+            return new PageCustomDomainService(
+                $app->make(DnsResolver::class),
+                $app->make(CustomDomainProvider::class),
+                $app->make(\App\Modules\Billing\Domain\Services\EntitlementGuard::class),
+            );
         });
     }
 }
