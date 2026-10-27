@@ -37,4 +37,5 @@ return [
     'demo_data_kit_unavailable' => "Aucun jeu de démonstration n'est disponible pour la solution :code.",
     'resume_unknown_step' => "Cette étape ne fait pas partie de votre parcours d'onboarding.",
     'resume_invalid_step' => "Identifiant d'étape invalide.",
+    'lea_confirm_stale' => "Le plan que vous avez validé n'est plus à jour (vos réponses ont changé). Relancez l'interprétation pour confirmer le plan actuel.",
 ];
