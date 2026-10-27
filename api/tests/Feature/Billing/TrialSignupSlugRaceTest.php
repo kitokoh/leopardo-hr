@@ -12,6 +12,7 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\Billing\Application\Actions\RequestTrialSignup;
 use App\Modules\Billing\Application\Actions\VerifyTrialSignup;
 use App\Modules\Billing\Application\Services\HorizontalToolSelection;
+use App\Modules\Billing\Application\Services\TrialAcquisitionAttribution;
 use App\Modules\Billing\Infrastructure\Services\PartnerService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -43,6 +44,7 @@ class TrialSignupSlugRaceTest extends TestCase
             app(SolutionActivator::class),
             app(SolutionCatalogue::class),
             app(HorizontalToolSelection::class),
+            app(TrialAcquisitionAttribution::class),
         );
     }
 
