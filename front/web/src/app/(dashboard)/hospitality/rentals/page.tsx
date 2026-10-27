@@ -56,7 +56,7 @@ export default function HospitalityRentalsPage() {
       setProperties(list);
       if (list.length > 0) setPropertyId((current) => current ?? list[0].id);
     } catch {
-      setError(t(locale, 'hospitality.properties.loadError', 'Impossible de charger les établissements.'));
+      setError(t(locale, 'hospitality.properties.loadError'));
     }
   }, [locale]);
 
@@ -74,7 +74,7 @@ export default function HospitalityRentalsPage() {
       setLeases(Array.isArray(leasePayload.data) ? leasePayload.data : []);
       setPayments(Array.isArray(paymentPayload.data) ? paymentPayload.data : []);
     } catch {
-      setError(t(locale, 'hospitality.rentals.loadError', 'Impossible de charger le locatif.'));
+      setError(t(locale, 'hospitality.rentals.loadError'));
     } finally {
       setLoading(false);
     }
@@ -97,17 +97,13 @@ export default function HospitalityRentalsPage() {
         // Cas usuel : echeances deja generees pour la periode, ou bail sans
         // date de fin. On dit lequel plutot qu'un « erreur » generique.
         setActionError(
-          t(
-            locale,
-            'hospitality.rentals.generateError',
-            'Génération refusée : les échéances existent déjà ou le bail n’a pas de date de fin.',
-          ),
+          t(locale, 'hospitality.rentals.generateError'),
         );
         return;
       }
       await load();
     } catch {
-      setActionError(t(locale, 'hospitality.rentals.generateError', 'Génération refusée.'));
+      setActionError(t(locale, 'hospitality.rentals.generateError'));
     } finally {
       setBusyId(null);
     }
@@ -115,7 +111,7 @@ export default function HospitalityRentalsPage() {
 
   async function terminate(lease: Lease) {
     const confirmed = window.confirm(
-      t(locale, 'hospitality.rentals.confirmTerminate', 'Résilier ce bail ? Les échéances non réglées restent dues.'),
+      t(locale, 'hospitality.rentals.confirmTerminate'),
     );
     if (!confirmed) return;
     setActionError('');
@@ -123,7 +119,7 @@ export default function HospitalityRentalsPage() {
     try {
       const res = await apiFetch(`/hospitality/leases/${lease.id}/terminate`, { method: 'POST' });
       if (!res.ok) {
-        setActionError(t(locale, 'hospitality.rentals.terminateError', 'Résiliation refusée par l’API.'));
+        setActionError(t(locale, 'hospitality.rentals.terminateError'));
         return;
       }
       await load();
@@ -136,12 +132,8 @@ export default function HospitalityRentalsPage() {
 
   return (
     <ModulePageShell
-      title={t(locale, 'hospitality.rentals.title', 'Locatif')}
-      subtitle={t(
-        locale,
-        'hospitality.rentals.subtitle',
-        'Baux, échéances et encaissements des logements en location.',
-      )}
+      title={t(locale, 'hospitality.rentals.title')}
+      subtitle={t(locale, 'hospitality.rentals.subtitle')}
       icon={KeyRound}
     >
       {error !== '' ? (
@@ -152,14 +144,14 @@ export default function HospitalityRentalsPage() {
       ) : null}
 
       <label className="flex flex-col gap-1 text-sm text-neutral-700">
-        {t(locale, 'hospitality.common.property', 'Établissement')}
+        {t(locale, 'hospitality.common.property')}
         <select
           value={propertyId ?? ''}
           onChange={(e) => setPropertyId(e.target.value === '' ? null : Number(e.target.value))}
           className="max-w-sm rounded-lg border border-neutral-300 px-3 py-2 text-sm"
         >
           {properties.length === 0 ? (
-            <option value="">{t(locale, 'hospitality.common.noProperty', 'Aucun établissement')}</option>
+            <option value="">{t(locale, 'hospitality.common.noProperty')}</option>
           ) : null}
           {properties.map((p) => (
             <option key={p.id} value={p.id}>
@@ -178,13 +170,13 @@ export default function HospitalityRentalsPage() {
       {loading ? (
         <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white p-4 text-sm text-neutral-600">
           <Loader2 className="h-4 w-4 animate-spin" />
-          {t(locale, 'common.loading', 'Chargement…')}
+          {t(locale, 'common.loading')}
         </div>
       ) : null}
 
       {propertyId !== null && !loading && leases.length === 0 ? (
         <div className="rounded-xl border border-neutral-200 bg-white p-6 text-sm text-neutral-600">
-          {t(locale, 'hospitality.rentals.empty', 'Aucun bail pour cet établissement.')}
+          {t(locale, 'hospitality.rentals.empty')}
         </div>
       ) : null}
 
@@ -215,7 +207,7 @@ export default function HospitalityRentalsPage() {
                       className="inline-flex items-center gap-1 rounded-lg border border-neutral-300 px-2 py-1 text-xs text-neutral-700 disabled:opacity-50"
                     >
                       <CalendarPlus className="h-3 w-3" />
-                      {t(locale, 'hospitality.rentals.generate', 'Générer les échéances')}
+                      {t(locale, 'hospitality.rentals.generate')}
                     </button>
                     <button
                       type="button"
@@ -224,7 +216,7 @@ export default function HospitalityRentalsPage() {
                       className="inline-flex items-center gap-1 rounded-lg border border-red-200 px-2 py-1 text-xs text-red-700 disabled:opacity-50"
                     >
                       <Ban className="h-3 w-3" />
-                      {t(locale, 'hospitality.rentals.terminate', 'Résilier')}
+                      {t(locale, 'hospitality.rentals.terminate')}
                     </button>
                   </div>
                 </div>
@@ -232,8 +224,8 @@ export default function HospitalityRentalsPage() {
                 {leasePayments.length > 0 ? (
                   <div className="mt-3 border-t border-neutral-100 pt-3">
                     <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
-                      {t(locale, 'hospitality.rentals.payments', 'Échéances')}
-                      {unpaid.length > 0 ? ` · ${unpaid.length} ${t(locale, 'hospitality.rentals.unpaid', 'impayée(s)')}` : ''}
+                      {t(locale, 'hospitality.rentals.payments')}
+                      {unpaid.length > 0 ? ` · ${unpaid.length} ${t(locale, 'hospitality.rentals.unpaid')}` : ''}
                     </p>
                     <ul className="mt-2 space-y-1 text-sm">
                       {leasePayments.map((payment) => (
@@ -248,11 +240,7 @@ export default function HospitalityRentalsPage() {
                   </div>
                 ) : (
                   <p className="mt-3 border-t border-neutral-100 pt-3 text-sm text-neutral-500">
-                    {t(
-                      locale,
-                      'hospitality.rentals.noPayments',
-                      'Aucune échéance : générez-les pour pouvoir encaisser le loyer.',
-                    )}
+                    {t(locale, 'hospitality.rentals.noPayments')}
                   </p>
                 )}
               </section>

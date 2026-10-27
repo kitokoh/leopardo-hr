@@ -51,7 +51,7 @@ export default function HospitalityTeamPage() {
       setProperties(list);
       if (list.length > 0) setPropertyId((current) => current ?? list[0].id);
     } catch {
-      setError(t(locale, 'hospitality.properties.loadError', 'Impossible de charger les établissements.'));
+      setError(t(locale, 'hospitality.properties.loadError'));
     }
   }, [locale]);
 
@@ -93,7 +93,7 @@ export default function HospitalityTeamPage() {
       const payload = res.ok ? ((await res.json()) as { data?: Assignment[] }) : {};
       setAssignments(Array.isArray(payload.data) ? payload.data : []);
     } catch {
-      setError(t(locale, 'hospitality.team.loadError', 'Impossible de charger l’équipe.'));
+      setError(t(locale, 'hospitality.team.loadError'));
     } finally {
       setLoading(false);
     }
@@ -112,7 +112,7 @@ export default function HospitalityTeamPage() {
     if (propertyId === null) return;
     setActionError('');
     if (formEmployeeId.trim() === '') {
-      setActionError(t(locale, 'hospitality.team.employeeRequired', 'Sélectionnez un employé.'));
+      setActionError(t(locale, 'hospitality.team.employeeRequired'));
       return;
     }
     setSaving(true);
@@ -126,11 +126,7 @@ export default function HospitalityTeamPage() {
       });
       if (!res.ok) {
         setActionError(
-          t(
-            locale,
-            'hospitality.team.assignError',
-            'Affectation refusée : cet employé est peut-être déjà rattaché à cet établissement.',
-          ),
+          t(locale, 'hospitality.team.assignError'),
         );
         return;
       }
@@ -152,7 +148,7 @@ export default function HospitalityTeamPage() {
         body: JSON.stringify({ role: editingRole.trim() === '' ? null : editingRole.trim() }),
       });
       if (!res.ok) {
-        setActionError(t(locale, 'hospitality.team.updateError', 'Modification refusée par l’API.'));
+        setActionError(t(locale, 'hospitality.team.updateError'));
         return;
       }
       setEditingId(null);
@@ -166,7 +162,7 @@ export default function HospitalityTeamPage() {
   async function remove(assignment: Assignment) {
     if (propertyId === null) return;
     const confirmed = window.confirm(
-      t(locale, 'hospitality.team.confirmRemove', 'Retirer cet employé de l’établissement ?'),
+      t(locale, 'hospitality.team.confirmRemove'),
     );
     if (!confirmed) return;
     setActionError('');
@@ -176,7 +172,7 @@ export default function HospitalityTeamPage() {
         method: 'DELETE',
       });
       if (!res.ok) {
-        setActionError(t(locale, 'hospitality.team.removeError', 'Retrait refusé par l’API.'));
+        setActionError(t(locale, 'hospitality.team.removeError'));
         return;
       }
       await loadAssignments();
@@ -193,12 +189,8 @@ export default function HospitalityTeamPage() {
 
   return (
     <ModulePageShell
-      title={t(locale, 'hospitality.team.title', 'Équipe')}
-      subtitle={t(
-        locale,
-        'hospitality.team.subtitle',
-        'Employés affectés à chaque établissement.',
-      )}
+      title={t(locale, 'hospitality.team.title')}
+      subtitle={t(locale, 'hospitality.team.subtitle')}
       icon={UsersRound}
     >
       {error !== '' ? (
@@ -209,14 +201,14 @@ export default function HospitalityTeamPage() {
       ) : null}
 
       <label className="flex flex-col gap-1 text-sm text-neutral-700">
-        {t(locale, 'hospitality.common.property', 'Établissement')}
+        {t(locale, 'hospitality.common.property')}
         <select
           value={propertyId ?? ''}
           onChange={(e) => setPropertyId(e.target.value === '' ? null : Number(e.target.value))}
           className="max-w-sm rounded-lg border border-neutral-300 px-3 py-2 text-sm"
         >
           {properties.length === 0 ? (
-            <option value="">{t(locale, 'hospitality.common.noProperty', 'Aucun établissement')}</option>
+            <option value="">{t(locale, 'hospitality.common.noProperty')}</option>
           ) : null}
           {properties.map((p) => (
             <option key={p.id} value={p.id}>
@@ -235,7 +227,7 @@ export default function HospitalityTeamPage() {
       {propertyId !== null ? (
         <form onSubmit={assign} className="rounded-xl border border-neutral-200 bg-white p-4">
           <p className="mb-3 text-sm font-medium text-neutral-900">
-            {t(locale, 'hospitality.team.assign', 'Affecter un employé')}
+            {t(locale, 'hospitality.team.assign')}
           </p>
           <div className="grid gap-3 sm:grid-cols-3">
             <select
@@ -244,7 +236,7 @@ export default function HospitalityTeamPage() {
               className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
               required
             >
-              <option value="">{t(locale, 'hospitality.team.selectEmployee', 'Choisir un employé')}</option>
+              <option value="">{t(locale, 'hospitality.team.selectEmployee')}</option>
               {employees.map((emp) => (
                 <option key={emp.id} value={emp.id}>
                   {emp.label}
@@ -254,7 +246,7 @@ export default function HospitalityTeamPage() {
             <input
               value={formRole}
               onChange={(e) => setFormRole(e.target.value)}
-              placeholder={t(locale, 'hospitality.team.field.role', 'Rôle (ex. Réception)')}
+              placeholder={t(locale, 'hospitality.team.field.role')}
               className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
             />
             <button
@@ -263,7 +255,7 @@ export default function HospitalityTeamPage() {
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
             >
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-              {t(locale, 'hospitality.team.submit', 'Affecter')}
+              {t(locale, 'hospitality.team.submit')}
             </button>
           </div>
         </form>
@@ -272,13 +264,13 @@ export default function HospitalityTeamPage() {
       {loading ? (
         <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white p-4 text-sm text-neutral-600">
           <Loader2 className="h-4 w-4 animate-spin" />
-          {t(locale, 'common.loading', 'Chargement…')}
+          {t(locale, 'common.loading')}
         </div>
       ) : null}
 
       {propertyId !== null && !loading && assignments.length === 0 ? (
         <div className="rounded-xl border border-neutral-200 bg-white p-6 text-sm text-neutral-600">
-          {t(locale, 'hospitality.team.empty', 'Aucun employé affecté à cet établissement.')}
+          {t(locale, 'hospitality.team.empty')}
         </div>
       ) : null}
 
@@ -287,8 +279,8 @@ export default function HospitalityTeamPage() {
           <table className="w-full text-sm">
             <thead className="bg-neutral-50 text-left text-neutral-600">
               <tr>
-                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.team.col.employee', 'Employé')}</th>
-                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.team.col.role', 'Rôle')}</th>
+                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.team.col.employee')}</th>
+                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.team.col.role')}</th>
                 <th className="px-4 py-2" />
               </tr>
             </thead>
@@ -317,7 +309,7 @@ export default function HospitalityTeamPage() {
                             disabled={busyId === assignment.id}
                             className="rounded-lg border border-emerald-300 px-2 py-1 text-xs text-emerald-700 disabled:opacity-50"
                           >
-                            {t(locale, 'common.save', 'Enregistrer')}
+                            {t(locale, 'common.save')}
                           </button>
                           <button
                             type="button"
@@ -327,7 +319,7 @@ export default function HospitalityTeamPage() {
                             }}
                             className="rounded-lg border border-neutral-300 px-2 py-1 text-xs text-neutral-700"
                           >
-                            {t(locale, 'common.cancel', 'Annuler')}
+                            {t(locale, 'common.cancel')}
                           </button>
                         </>
                       ) : (
@@ -340,7 +332,7 @@ export default function HospitalityTeamPage() {
                             }}
                             className="rounded-lg border border-neutral-300 px-2 py-1 text-xs text-neutral-700"
                           >
-                            {t(locale, 'common.edit', 'Modifier')}
+                            {t(locale, 'common.edit')}
                           </button>
                           <button
                             type="button"
@@ -349,7 +341,7 @@ export default function HospitalityTeamPage() {
                             className="inline-flex items-center gap-1 rounded-lg border border-red-200 px-2 py-1 text-xs text-red-700 disabled:opacity-50"
                           >
                             <Trash2 className="h-3 w-3" />
-                            {t(locale, 'hospitality.team.remove', 'Retirer')}
+                            {t(locale, 'hospitality.team.remove')}
                           </button>
                         </>
                       )}

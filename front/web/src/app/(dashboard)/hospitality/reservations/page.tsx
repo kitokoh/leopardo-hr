@@ -31,31 +31,31 @@ type Reservation = {
  * Transitions ouvertes depuis chaque etat — miroir exact de
  * `HospitalityReservation::ALLOWED_TRANSITIONS` cote API.
  */
-const TRANSITIONS: Record<string, { action: string; labelKey: string; fallback: string }[]> = {
+const TRANSITIONS: Record<string, { action: string; labelKey: string }[]> = {
   pending: [
-    { action: 'confirm', labelKey: 'hospitality.reservations.action.confirm', fallback: 'Confirmer' },
-    { action: 'cancel', labelKey: 'hospitality.reservations.action.cancel', fallback: 'Annuler' },
+    { action: 'confirm', labelKey: 'hospitality.reservations.action.confirm' },
+    { action: 'cancel', labelKey: 'hospitality.reservations.action.cancel' },
   ],
   confirmed: [
-    { action: 'check-in', labelKey: 'hospitality.reservations.action.checkIn', fallback: 'Arrivée' },
-    { action: 'no-show', labelKey: 'hospitality.reservations.action.noShow', fallback: 'Non présenté' },
-    { action: 'cancel', labelKey: 'hospitality.reservations.action.cancel', fallback: 'Annuler' },
+    { action: 'check-in', labelKey: 'hospitality.reservations.action.checkIn' },
+    { action: 'no-show', labelKey: 'hospitality.reservations.action.noShow' },
+    { action: 'cancel', labelKey: 'hospitality.reservations.action.cancel' },
   ],
   checked_in: [
-    { action: 'check-out', labelKey: 'hospitality.reservations.action.checkOut', fallback: 'Départ' },
+    { action: 'check-out', labelKey: 'hospitality.reservations.action.checkOut' },
   ],
   checked_out: [],
   cancelled: [],
   no_show: [],
 };
 
-const STATUS_LABELS: Record<string, { key: string; fallback: string }> = {
-  pending: { key: 'hospitality.reservations.status.pending', fallback: 'En attente' },
-  confirmed: { key: 'hospitality.reservations.status.confirmed', fallback: 'Confirmée' },
-  checked_in: { key: 'hospitality.reservations.status.checkedIn', fallback: 'En séjour' },
-  checked_out: { key: 'hospitality.reservations.status.checkedOut', fallback: 'Terminée' },
-  cancelled: { key: 'hospitality.reservations.status.cancelled', fallback: 'Annulée' },
-  no_show: { key: 'hospitality.reservations.status.noShow', fallback: 'Non présentée' },
+const STATUS_LABELS: Record<string, { key: string }> = {
+  pending: { key: 'hospitality.reservations.status.pending' },
+  confirmed: { key: 'hospitality.reservations.status.confirmed' },
+  checked_in: { key: 'hospitality.reservations.status.checkedIn' },
+  checked_out: { key: 'hospitality.reservations.status.checkedOut' },
+  cancelled: { key: 'hospitality.reservations.status.cancelled' },
+  no_show: { key: 'hospitality.reservations.status.noShow' },
 };
 
 export default function HospitalityReservationsPage() {
@@ -72,13 +72,13 @@ export default function HospitalityReservationsPage() {
     try {
       const res = await apiFetch('/hospitality/reservations');
       if (!res.ok) {
-        setError(t(locale, 'hospitality.reservations.loadError', 'Impossible de charger les réservations.'));
+        setError(t(locale, 'hospitality.reservations.loadError'));
         return;
       }
       const payload = (await res.json()) as { data?: Reservation[] };
       setReservations(Array.isArray(payload.data) ? payload.data : []);
     } catch {
-      setError(t(locale, 'hospitality.reservations.loadError', 'Impossible de charger les réservations.'));
+      setError(t(locale, 'hospitality.reservations.loadError'));
     } finally {
       setLoading(false);
     }
@@ -98,18 +98,14 @@ export default function HospitalityReservationsPage() {
         // (double clic, autre poste). On recharge pour resynchroniser au
         // lieu de laisser l'utilisateur devant un bouton mort.
         setActionError(
-          t(
-            locale,
-            'hospitality.reservations.transitionError',
-            'Transition refusée : la réservation a peut-être changé d’état. Liste rechargée.',
-          ),
+          t(locale, 'hospitality.reservations.transitionError'),
         );
         await load();
         return;
       }
       await load();
     } catch {
-      setActionError(t(locale, 'hospitality.reservations.transitionError', 'Transition refusée.'));
+      setActionError(t(locale, 'hospitality.reservations.transitionError'));
     } finally {
       setBusyId(null);
     }
@@ -117,12 +113,8 @@ export default function HospitalityReservationsPage() {
 
   return (
     <ModulePageShell
-      title={t(locale, 'hospitality.reservations.title', 'Réservations')}
-      subtitle={t(
-        locale,
-        'hospitality.reservations.subtitle',
-        'Séjours au guichet et transitions d’état.',
-      )}
+      title={t(locale, 'hospitality.reservations.title')}
+      subtitle={t(locale, 'hospitality.reservations.subtitle')}
       icon={CalendarCheck}
     >
       {error !== '' ? (
@@ -141,13 +133,13 @@ export default function HospitalityReservationsPage() {
       {loading ? (
         <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white p-4 text-sm text-neutral-600">
           <Loader2 className="h-4 w-4 animate-spin" />
-          {t(locale, 'common.loading', 'Chargement…')}
+          {t(locale, 'common.loading')}
         </div>
       ) : null}
 
       {!loading && reservations.length === 0 ? (
         <div className="rounded-xl border border-neutral-200 bg-white p-6 text-sm text-neutral-600">
-          {t(locale, 'hospitality.reservations.empty', 'Aucune réservation enregistrée.')}
+          {t(locale, 'hospitality.reservations.empty')}
         </div>
       ) : null}
 
@@ -156,16 +148,16 @@ export default function HospitalityReservationsPage() {
           <table className="w-full text-sm">
             <thead className="bg-neutral-50 text-left text-neutral-600">
               <tr>
-                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.reservations.col.reference', 'Référence')}</th>
-                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.reservations.col.guest', 'Client')}</th>
-                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.reservations.col.dates', 'Séjour')}</th>
-                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.reservations.col.status', 'État')}</th>
+                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.reservations.col.reference')}</th>
+                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.reservations.col.guest')}</th>
+                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.reservations.col.dates')}</th>
+                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.reservations.col.status')}</th>
                 <th className="px-4 py-2" />
               </tr>
             </thead>
             <tbody>
               {reservations.map((reservation) => {
-                const statusLabel = STATUS_LABELS[reservation.status];
+                const statusKey = STATUS_LABELS[reservation.status]?.key;
                 const available = TRANSITIONS[reservation.status] ?? [];
 
                 return (
@@ -177,7 +169,7 @@ export default function HospitalityReservationsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <span className="rounded-full bg-neutral-100 px-2 py-1 text-xs text-neutral-700">
-                        {statusLabel ? t(locale, statusLabel.key, statusLabel.fallback) : reservation.status}
+                        {statusKey ? t(locale, statusKey) : reservation.status}
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -190,12 +182,12 @@ export default function HospitalityReservationsPage() {
                             disabled={busyId === reservation.id}
                             className="rounded-lg border border-neutral-300 px-2 py-1 text-xs text-neutral-700 disabled:opacity-50"
                           >
-                            {t(locale, tr.labelKey, tr.fallback)}
+                            {t(locale, tr.labelKey)}
                           </button>
                         ))}
                         {available.length === 0 ? (
                           <span className="text-xs text-neutral-400">
-                            {t(locale, 'hospitality.reservations.noAction', 'Aucune action')}
+                            {t(locale, 'hospitality.reservations.noAction')}
                           </span>
                         ) : null}
                       </div>

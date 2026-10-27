@@ -43,8 +43,6 @@ type Tile = {
   href: string;
   titleKey: string;
   descKey: string;
-  fallbackTitle: string;
-  fallbackDesc: string;
   icon: typeof Building2;
 };
 
@@ -54,8 +52,6 @@ const TILES: Tile[] = [
     href: '/hospitality/properties',
     titleKey: 'hospitality.hub.tiles.properties.title',
     descKey: 'hospitality.hub.tiles.properties.description',
-    fallbackTitle: 'Établissements',
-    fallbackDesc: 'Référentiel : création, publication et paramètres de chaque établissement.',
     icon: Building2,
   },
   {
@@ -63,8 +59,6 @@ const TILES: Tile[] = [
     href: '/hospitality/inventory',
     titleKey: 'hospitality.hub.tiles.inventory.title',
     descKey: 'hospitality.hub.tiles.inventory.description',
-    fallbackTitle: 'Inventaire',
-    fallbackDesc: 'Types de chambres et unités physiques, rattachés à un établissement.',
     icon: Boxes,
   },
   {
@@ -72,8 +66,6 @@ const TILES: Tile[] = [
     href: '/hospitality/reservations',
     titleKey: 'hospitality.hub.tiles.reservations.title',
     descKey: 'hospitality.hub.tiles.reservations.description',
-    fallbackTitle: 'Réservations',
-    fallbackDesc: 'Réservations au guichet et transitions (confirmer, arrivée, départ).',
     icon: CalendarCheck,
   },
   {
@@ -81,8 +73,6 @@ const TILES: Tile[] = [
     href: '/hospitality/team',
     titleKey: 'hospitality.hub.tiles.team.title',
     descKey: 'hospitality.hub.tiles.team.description',
-    fallbackTitle: 'Équipe',
-    fallbackDesc: 'Affectation des employés du tenant aux établissements.',
     icon: UsersRound,
   },
   {
@@ -90,8 +80,6 @@ const TILES: Tile[] = [
     href: '/hospitality/rentals',
     titleKey: 'hospitality.hub.tiles.rentals.title',
     descKey: 'hospitality.hub.tiles.rentals.description',
-    fallbackTitle: 'Locatif',
-    fallbackDesc: 'Baux, échéances et encaissements des logements en location.',
     icon: KeyRound,
   },
 ];
@@ -116,7 +104,7 @@ export default function HospitalityHomePage() {
       const payload = (await res.json()) as { data?: ModuleStatus };
       setStatus(payload.data ?? { active: true });
     } catch {
-      setError(t(locale, 'hospitality.hub.loadError', 'Impossible de charger l’état du module Hospitality.'));
+      setError(t(locale, 'hospitality.hub.loadError'));
     } finally {
       setLoading(false);
     }
@@ -128,18 +116,14 @@ export default function HospitalityHomePage() {
 
   return (
     <ModulePageShell
-      title={t(locale, 'hospitality.hub.title', 'Hospitality')}
-      subtitle={t(
-        locale,
-        'hospitality.hub.subtitle',
-        'Hôtels, résidences et gestion locative multi-sites.',
-      )}
+      title={t(locale, 'hospitality.hub.title')}
+      subtitle={t(locale, 'hospitality.hub.subtitle')}
       icon={Building2}
     >
       {loading ? (
         <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white p-4 text-sm text-neutral-600">
           <Loader2 className="h-4 w-4 animate-spin" />
-          {t(locale, 'common.loading', 'Chargement…')}
+          {t(locale, 'common.loading')}
         </div>
       ) : null}
 
@@ -158,14 +142,10 @@ export default function HospitalityHomePage() {
       {!loading && status !== null && status.active === false ? (
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
           <p className="font-medium">
-            {t(locale, 'hospitality.hub.inactive.title', 'Solution Hospitality inactive')}
+            {t(locale, 'hospitality.hub.inactive.title')}
           </p>
           <p className="mt-1">
-            {t(
-              locale,
-              'hospitality.hub.inactive.body',
-              'Activez la solution Hospitality pour votre société afin d’accéder aux établissements, réservations et au locatif.',
-            )}
+            {t(locale, 'hospitality.hub.inactive.body')}
           </p>
         </div>
       ) : null}
@@ -174,7 +154,7 @@ export default function HospitalityHomePage() {
         <>
           <div className="flex items-center gap-2 text-sm text-emerald-700">
             <CheckCircle2 className="h-4 w-4" />
-            {t(locale, 'hospitality.hub.active', 'Solution Hospitality active.')}
+            {t(locale, 'hospitality.hub.active')}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -192,11 +172,11 @@ export default function HospitalityHomePage() {
                       <Icon className="h-5 w-5" />
                     </span>
                     <span className="font-medium text-neutral-900">
-                      {t(locale, tile.titleKey, tile.fallbackTitle)}
+                      {t(locale, tile.titleKey)}
                     </span>
                   </div>
                   <p className="mt-3 text-sm text-neutral-600">
-                    {t(locale, tile.descKey, tile.fallbackDesc)}
+                    {t(locale, tile.descKey)}
                   </p>
                 </Link>
               );

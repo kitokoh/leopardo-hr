@@ -44,7 +44,7 @@ export default function HospitalityInventoryPage() {
       setProperties(list);
       if (list.length > 0) setPropertyId((current) => current ?? list[0].id);
     } catch {
-      setError(t(locale, 'hospitality.properties.loadError', 'Impossible de charger les établissements.'));
+      setError(t(locale, 'hospitality.properties.loadError'));
     }
   }, [locale]);
 
@@ -62,7 +62,7 @@ export default function HospitalityInventoryPage() {
       setRoomTypes(Array.isArray(rtPayload.data) ? rtPayload.data : []);
       setUnits(Array.isArray(unitPayload.data) ? unitPayload.data : []);
     } catch {
-      setError(t(locale, 'hospitality.inventory.loadError', 'Impossible de charger l’inventaire.'));
+      setError(t(locale, 'hospitality.inventory.loadError'));
     } finally {
       setLoading(false);
     }
@@ -81,7 +81,7 @@ export default function HospitalityInventoryPage() {
     if (propertyId === null) return;
     setActionError('');
     if (rtName.trim() === '') {
-      setActionError(t(locale, 'hospitality.inventory.nameRequired', 'Le nom du type de chambre est obligatoire.'));
+      setActionError(t(locale, 'hospitality.inventory.nameRequired'));
       return;
     }
     setSaving(true);
@@ -95,7 +95,7 @@ export default function HospitalityInventoryPage() {
         }),
       });
       if (!res.ok) {
-        setActionError(t(locale, 'hospitality.inventory.createError', 'Création refusée par l’API.'));
+        setActionError(t(locale, 'hospitality.inventory.createError'));
         return;
       }
       setRtName('');
@@ -111,7 +111,7 @@ export default function HospitalityInventoryPage() {
     if (propertyId === null) return;
     setActionError('');
     if (unitName.trim() === '') {
-      setActionError(t(locale, 'hospitality.inventory.unitNameRequired', 'Le nom de l’unité est obligatoire.'));
+      setActionError(t(locale, 'hospitality.inventory.unitNameRequired'));
       return;
     }
     setSaving(true);
@@ -124,7 +124,7 @@ export default function HospitalityInventoryPage() {
         }),
       });
       if (!res.ok) {
-        setActionError(t(locale, 'hospitality.inventory.createError', 'Création refusée par l’API.'));
+        setActionError(t(locale, 'hospitality.inventory.createError'));
         return;
       }
       setUnitName('');
@@ -137,12 +137,8 @@ export default function HospitalityInventoryPage() {
 
   return (
     <ModulePageShell
-      title={t(locale, 'hospitality.inventory.title', 'Inventaire')}
-      subtitle={t(
-        locale,
-        'hospitality.inventory.subtitle',
-        'Types de chambres (ce qui est vendu) et unités physiques (ce qui existe).',
-      )}
+      title={t(locale, 'hospitality.inventory.title')}
+      subtitle={t(locale, 'hospitality.inventory.subtitle')}
       icon={Boxes}
     >
       {error !== '' ? (
@@ -153,14 +149,14 @@ export default function HospitalityInventoryPage() {
       ) : null}
 
       <label className="flex flex-col gap-1 text-sm text-neutral-700">
-        {t(locale, 'hospitality.common.property', 'Établissement')}
+        {t(locale, 'hospitality.common.property')}
         <select
           value={propertyId ?? ''}
           onChange={(e) => setPropertyId(e.target.value === '' ? null : Number(e.target.value))}
           className="max-w-sm rounded-lg border border-neutral-300 px-3 py-2 text-sm"
         >
           {properties.length === 0 ? (
-            <option value="">{t(locale, 'hospitality.common.noProperty', 'Aucun établissement')}</option>
+            <option value="">{t(locale, 'hospitality.common.noProperty')}</option>
           ) : null}
           {properties.map((p) => (
             <option key={p.id} value={p.id}>
@@ -172,11 +168,7 @@ export default function HospitalityInventoryPage() {
 
       {properties.length === 0 ? (
         <div className="rounded-xl border border-neutral-200 bg-white p-6 text-sm text-neutral-600">
-          {t(
-            locale,
-            'hospitality.inventory.noPropertyBody',
-            'Créez d’abord un établissement dans le référentiel.',
-          )}
+          {t(locale, 'hospitality.inventory.noPropertyBody')}
         </div>
       ) : null}
 
@@ -189,7 +181,7 @@ export default function HospitalityInventoryPage() {
       {loading ? (
         <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white p-4 text-sm text-neutral-600">
           <Loader2 className="h-4 w-4 animate-spin" />
-          {t(locale, 'common.loading', 'Chargement…')}
+          {t(locale, 'common.loading')}
         </div>
       ) : null}
 
@@ -197,19 +189,19 @@ export default function HospitalityInventoryPage() {
         <div className="grid gap-4 lg:grid-cols-2">
           <section className="rounded-xl border border-neutral-200 bg-white p-4">
             <h2 className="text-sm font-medium text-neutral-900">
-              {t(locale, 'hospitality.inventory.roomTypes', 'Types de chambres')}
+              {t(locale, 'hospitality.inventory.roomTypes')}
             </h2>
             <ul className="mt-3 space-y-2 text-sm">
               {roomTypes.length === 0 ? (
                 <li className="text-neutral-500">
-                  {t(locale, 'hospitality.inventory.emptyRoomTypes', 'Aucun type de chambre.')}
+                  {t(locale, 'hospitality.inventory.emptyRoomTypes')}
                 </li>
               ) : null}
               {roomTypes.map((rt) => (
                 <li key={rt.id} className="flex items-center justify-between border-b border-neutral-100 pb-2">
                   <span className="text-neutral-900">{rt.name}</span>
                   <span className="text-neutral-500">
-                    {rt.capacity !== null ? `${rt.capacity} ${t(locale, 'hospitality.inventory.pax', 'pers.')}` : '—'}
+                    {rt.capacity !== null ? `${rt.capacity} ${t(locale, 'hospitality.inventory.pax')}` : '—'}
                     {rt.base_price_minor !== null ? ` · ${(rt.base_price_minor / 100).toFixed(2)}` : ''}
                   </span>
                 </li>
@@ -219,7 +211,7 @@ export default function HospitalityInventoryPage() {
               <input
                 value={rtName}
                 onChange={(e) => setRtName(e.target.value)}
-                placeholder={t(locale, 'hospitality.inventory.field.roomTypeName', 'Nom (ex. Double)')}
+                placeholder={t(locale, 'hospitality.inventory.field.roomTypeName')}
                 className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
                 required
               />
@@ -228,7 +220,7 @@ export default function HospitalityInventoryPage() {
                 onChange={(e) => setRtCapacity(e.target.value)}
                 type="number"
                 min={1}
-                placeholder={t(locale, 'hospitality.inventory.field.capacity', 'Capacité')}
+                placeholder={t(locale, 'hospitality.inventory.field.capacity')}
                 className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
               />
               <input
@@ -237,7 +229,7 @@ export default function HospitalityInventoryPage() {
                 type="number"
                 min={0}
                 step="0.01"
-                placeholder={t(locale, 'hospitality.inventory.field.price', 'Tarif')}
+                placeholder={t(locale, 'hospitality.inventory.field.price')}
                 className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
               />
               <button
@@ -246,19 +238,19 @@ export default function HospitalityInventoryPage() {
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60 sm:col-span-3"
               >
                 <Plus className="h-4 w-4" />
-                {t(locale, 'hospitality.inventory.addRoomType', 'Ajouter un type')}
+                {t(locale, 'hospitality.inventory.addRoomType')}
               </button>
             </form>
           </section>
 
           <section className="rounded-xl border border-neutral-200 bg-white p-4">
             <h2 className="text-sm font-medium text-neutral-900">
-              {t(locale, 'hospitality.inventory.units', 'Unités physiques')}
+              {t(locale, 'hospitality.inventory.units')}
             </h2>
             <ul className="mt-3 space-y-2 text-sm">
               {units.length === 0 ? (
                 <li className="text-neutral-500">
-                  {t(locale, 'hospitality.inventory.emptyUnits', 'Aucune unité physique.')}
+                  {t(locale, 'hospitality.inventory.emptyUnits')}
                 </li>
               ) : null}
               {units.map((unit) => (
@@ -272,14 +264,14 @@ export default function HospitalityInventoryPage() {
               <input
                 value={unitName}
                 onChange={(e) => setUnitName(e.target.value)}
-                placeholder={t(locale, 'hospitality.inventory.field.unitName', 'Nom (ex. 101)')}
+                placeholder={t(locale, 'hospitality.inventory.field.unitName')}
                 className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
                 required
               />
               <input
                 value={unitFloor}
                 onChange={(e) => setUnitFloor(e.target.value)}
-                placeholder={t(locale, 'hospitality.inventory.field.floor', 'Étage')}
+                placeholder={t(locale, 'hospitality.inventory.field.floor')}
                 className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
               />
               <button
@@ -288,7 +280,7 @@ export default function HospitalityInventoryPage() {
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60 sm:col-span-2"
               >
                 <Plus className="h-4 w-4" />
-                {t(locale, 'hospitality.inventory.addUnit', 'Ajouter une unité')}
+                {t(locale, 'hospitality.inventory.addUnit')}
               </button>
             </form>
           </section>
