@@ -30,9 +30,11 @@ use App\Policies\CrmTaskPolicy;
 use App\Policies\ExportPolicy;
 use App\Shared\Contracts\Discovery\PublicDiscoverableProvider;
 use App\Shared\Contracts\Discovery\PublicProfileResolver;
+use App\Shared\Contracts\Establishments\EstablishmentProvider;
 use App\Shared\Contracts\Geo\GeoServiceContract;
 use App\Shared\Discovery\PublicDiscoveryService;
 use App\Shared\Discovery\PublicProfileLocator;
+use App\Shared\Establishments\EstablishmentAggregationService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Foundation\Application;
@@ -77,6 +79,18 @@ class AppServiceProvider extends ServiceProvider
             $resolvers = $app->tagged('public.profile_resolver');
 
             return new PublicProfileLocator($resolvers);
+        });
+        // Hub \u00ab Mes \u00e9tablissements \u00bb (#7910) \u2014 agr\u00e9gateur de LECTURE des
+        // \u00e9tablissements cross-verticale. Registre PAR MODULE (d\u00e9cision
+        // propri\u00e9taire) : chaque verticale tague son `EstablishmentProvider`
+        // sous `establishments.provider` depuis son propre ServiceProvider, ce
+        // service n'importe aucune classe `App\Modules\*` (garde #5584).
+        // Ajouter une verticale au hub ne demande donc aucune modification ici.
+        $this->app->singleton(EstablishmentAggregationService::class, function (Application $app): EstablishmentAggregationService {
+            /** @var iterable<EstablishmentProvider> $providers */
+            $providers = $app->tagged('establishments.provider');
+
+            return new EstablishmentAggregationService($providers);
         });
         // Contrat transversal de notification in-app (garde cross-module #5584) :
         // les modules métier type-hintent le contrat Core, l'implémentation vit

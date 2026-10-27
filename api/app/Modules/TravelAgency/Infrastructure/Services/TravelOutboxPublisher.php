@@ -4,21 +4,29 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Infrastructure\Services;
 
+use App\Core\Outbox\Infrastructure\DatabaseOutboxPublisher;
 use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;
 use DateTimeInterface;
-use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Support\Facades\DB;
 
 /**
- * TRAVEL-310 (#6040) — Publication d'événements dans l'outbox TravelAgency.
+ * TRAVEL-310 (#6040) / #8209 — Publication d'evenements dans l'outbox
+ * TravelAgency.
  *
- * Miroir du pattern `CrmOutboxPublisher` (#5741) : à appeler APRÈS le
- * commit de la transaction métier (jamais dedans). Idempotence : clé
- * dérivée de (event_type, payload), contrainte unique (company_id,
- * idempotency_key) → rejeu sans doublon.
+ * A appeler au moment de l'evenement metier : l'effet est d'abord persiste,
+ * puis consomme de facon asynchrone et idempotente.
+ *
+ * #8209 — la mecanique vit desormais dans `DatabaseOutboxPublisher` ; la
+ * signature publique est inchangee. Particularite conservee : cette outbox
+ * nomme sa colonne de charge `payload_redacted` (minimisation PII) et ne
+ * porte pas d'agregats — le noyau ecrit les colonnes declarees par le modele,
+ * il n'impose donc pas `payload` et ne perd pas la garantie de minimisation.
  */
 final class TravelOutboxPublisher
 {
+    public function __construct(
+        private readonly DatabaseOutboxPublisher $outbox = new DatabaseOutboxPublisher,
+    ) {}
+
     /**
      * @param  array<string, mixed>  $payload
      */
@@ -29,34 +37,18 @@ final class TravelOutboxPublisher
         ?string $idempotencyKey = null,
         ?DateTimeInterface $availableAt = null,
     ): TravelOutboxEvent {
-        $key = $idempotencyKey ?? hash('sha256', $eventType.'|'.json_encode($payload, JSON_THROW_ON_ERROR));
+        /** @var TravelOutboxEvent $event */
+        $event = $this->outbox->publish(
+            TravelOutboxEvent::class,
+            $companyId,
+            $eventType,
+            $payload,
+            $idempotencyKey,
+            null,
+            null,
+            $availableAt,
+        );
 
-        $existing = TravelOutboxEvent::query()
-            ->where('company_id', $companyId)
-            ->where('idempotency_key', $key)
-            ->first();
-
-        if ($existing instanceof TravelOutboxEvent) {
-            return $existing;
-        }
-
-        try {
-            return DB::transaction(fn (): TravelOutboxEvent => TravelOutboxEvent::query()->create([
-                'company_id' => $companyId,
-                'event_type' => $eventType,
-                'payload_redacted' => $payload,
-                'status' => TravelOutboxEvent::STATUS_PENDING,
-                'idempotency_key' => $key,
-                'available_at' => $availableAt ?? now(),
-            ]));
-        } catch (UniqueConstraintViolationException) {
-            /** @var TravelOutboxEvent $existing */
-            $existing = TravelOutboxEvent::query()
-                ->where('company_id', $companyId)
-                ->where('idempotency_key', $key)
-                ->firstOrFail();
-
-            return $existing;
-        }
+        return $event;
     }
 }

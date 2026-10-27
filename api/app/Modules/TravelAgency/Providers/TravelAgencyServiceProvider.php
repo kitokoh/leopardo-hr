@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Solutions\Contracts\DemoDataKit;
 use App\Core\Solutions\DemoDataRegistry;
 use App\Core\Solutions\SolutionCatalogue;
+use App\Core\Solutions\Survey\SolutionSurveyRegistry;
 use App\Events\SolutionActivated;
 use App\Modules\TravelAgency\Application\Actions\ActivateTravelAgencyAction;
 use App\Modules\TravelAgency\Console\Commands\RecalculateTravelReadModelsCommand;
@@ -20,6 +21,7 @@ use App\Modules\TravelAgency\Console\Commands\TravelSettleSalesCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelWebhookDispatchCommand;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
 use App\Modules\TravelAgency\Domain\Models\TravelCustomerAccount;
+use App\Modules\TravelAgency\Domain\Survey\TravelSurvey;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\CashPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PvitPaymentGateway;
@@ -72,6 +74,22 @@ class TravelAgencyServiceProvider extends ServiceProvider
 
         $this->app->resolving(SolutionCatalogue::class, function (SolutionCatalogue $catalogue): void {
             $catalogue->register(TravelAgencyManifest::CODE, static fn (): TravelAgencyManifest => new TravelAgencyManifest);
+        });
+
+        // BOS-009 (#8227) — survey vitrine de la verticale. Sans cet
+        // enregistrement, `GET /api/v1/solutions/travelagency/survey`
+        // repondait 404 `SOLUTION_SURVEY_NOT_FOUND` : le parcours
+        // « je decris mon activite -> workspace pret » ne pouvait pas
+        // demarrer pour une agence, alors que TravelAgency est le vertical
+        // PILOTE de l'onboarding intelligent. Meme pattern de registre
+        // partage que le catalogue ci-dessus (garde `bound()` +
+        // `resolving()`, factory paresseuse).
+        if (! $this->app->bound(SolutionSurveyRegistry::class)) {
+            $this->app->singleton(SolutionSurveyRegistry::class, static fn (): SolutionSurveyRegistry => new SolutionSurveyRegistry);
+        }
+
+        $this->app->resolving(SolutionSurveyRegistry::class, function (SolutionSurveyRegistry $registry): void {
+            $registry->register(TravelAgencyManifest::CODE, static fn (): TravelSurvey => new TravelSurvey);
         });
 
         // #7865 — kit de données de démonstration de la verticale

@@ -1,3 +1,22 @@
+> **MAJ 2026-10-27 — HospitalityManager, HOSP-005 (#7947, BC-32) : gestion locative.**
+> Surface **API** (`api/routes/modules/hospitality_manager.php`, module HospitalityManager) : **8 routes** ajoutees et
+> documentees dans `api/openapi.yaml` — `GET|POST /hospitality/properties/{property}/leases`,
+> `GET|PATCH /hospitality/leases/{lease}`, `POST /hospitality/leases/{lease}/terminate`,
+> `POST /hospitality/leases/{lease}/generate-periods`, `GET /hospitality/rent-payments`,
+> `POST /hospitality/rent-payments/{payment}/record`. Tenant re-verifie sur chaque route (404 fail-closed).
+> Comportements reels documentes plutot que lisses : **`billing_day` ramene au dernier jour du mois** (un bail « au 31 »
+> echu en fevrier tombe le 28, jamais reporte en mars) ; **`late` est DERIVE et recalcule a la lecture** — aucune
+> commande planifiee ne conditionne la justesse du statut ; **un encaissement qui depasse le du est REFUSE (422)**, jamais
+> tronque ; **un bail se resilie, il ne se supprime pas** (aucune route DELETE) et devient immuable une fois terminal ;
+> **la generation d'echeances est idempotente** par `UNIQUE(lease_id, period)` et s'arrete a `ends_on`.
+> Codes d'erreur verifiables : `INVALID_LEASE_TRANSITION` (409), `RENT_AMOUNT_EXCEEDS_OUTSTANDING` (422),
+> `RENT_ALREADY_SETTLED` (422), `RENT_AMOUNT_INVALID` (422).
+> Scenarios automatises : `php artisan test tests/Feature/Hospitality` (**106 tests / 408 assertions**),
+> `dev-hub/tools/check-openapi-route-coverage.py --strict-staleness` (exit 0) et
+> `dev-hub/tools/check-i18n-catalog-parity.sh` (4 langues). Gouvernance : `pint --test` PASS, PHPStan niveau 8 `No errors`.
+> **Limite assumee** : la flotte Flutter n'est pas concernee (module backend) ; aucune verification manuelle de l'UI
+> metier n'a ete faite — l'ecran locatif n'existe pas encore.
+
 > **MAJ 2026-10-26 — Growth & Search Intelligence (GSI) : contrat OpenAPI des 26 routes du module (issues #8512, #8513, #8515, #8516, #8517, #8518, #8522).**
 > Surface **API (`api/routes/modules/search_intelligence.php`, module SearchIntelligence, BC GROWTH)** : les **26 routes**
 > du module sont desormais **documentees** dans `api/openapi.yaml` (elles etaient mergees sans contrat, ce qui faisait
@@ -2143,3 +2162,41 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
   d'execution) ; E2E navigateur de reconnexion ; scenario `growth` (120 VU) ecrit
   mais non execute ; `CHAT_ATTACHMENT_DISK` toujours **non positionne** en
   production, donc **R1 reste ouvert** (`docs/mission-business-os/17_chat_attachments_runbook.md`).
+
+---
+
+### S-Léa-01 — Parcours Léa : description libre → plan → confirmation (#8229, #8230)
+
+- **Surface API** : `POST /api/v1/onboarding/lea/interpret` et
+  `POST /api/v1/onboarding/lea/confirm` (throttle `ai-sensitive`,
+  RBAC `principal`/`rh`, 404 si `onboarding.lea.enabled` est OFF).
+- **Objectif** : prouver que le parcours Léa **n'active jamais rien sans
+  confirmation**, et qu'il dégrade proprement quand le LLM est coupé.
+- **Tests automatisés** : `tests/Feature/Onboarding/InterviewAnswerExtractorTest.php`
+  (**14 tests / 35 assertions**) et
+  `tests/Feature/Onboarding/LeaOnboardingControllerTest.php`
+  (**10 tests / 33 assertions**).
+- **Cas couverts** :
+  1. `interpret` propose un plan et **n'active aucune solution** (vérifié en
+     base) ;
+  2. `confirm` avec un jeton invalide → **409**, zéro activation ;
+  3. `confirm` avec le jeton retourné → activation par `CompleteSetupInterview`
+     (chemin existant, aucun nouveau chemin) ;
+  4. **parité de plan** entre Léa et l'entretien déterministe pour les mêmes
+     réponses ;
+  5. LLM indisponible → `fallback_required` / `llm_unavailable` ;
+  6. description hostile → `fallback_required` / `injection_detected` avec
+     **0 appel LLM** ;
+  7. valeur hors allowlist → `clarification`, jamais de correction silencieuse ;
+  8. flag OFF → **404** ; employé → **403** ; anonyme → **401**.
+- **Résultats réels exécutés** (`CI=true`, PHP 8.4 + PostgreSQL 15) :
+  `--filter=InterviewAnswerExtractorTest` **14 passed / 35 assertions** ;
+  `--filter=LeaOnboardingControllerTest` **10 passed / 33 assertions** ;
+  PHPStan niveau 8 (`phpstan-strict.neon`, la config CI) **0 erreur** ;
+  `pint --test` **OK** sur tous les fichiers du lot.
+- **Non couvert** : pilotage du taux de réussite par secteur sur du **trafic
+  réel** (relève de BOS-044, pilote mesuré) ; appels à un fournisseur LLM
+  réel (les tests substituent `ModelInferencePort` par un double scripté).
+- **Note de décision** : le flag `ONBOARDING_LEA_ENABLED` est **OFF par
+  défaut** — le parcours introduit un appel LLM payant dans le funnel
+  d'inscription, son activation relève d'une décision d'exploitation.

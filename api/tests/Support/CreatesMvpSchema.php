@@ -44,6 +44,7 @@ trait CreatesMvpSchema
                 $this->loadPostgresFixtureCreates();
                 $this->createPostSprintModuleTables();
                 $this->createVerticalParityTables();
+                $this->ensurePasRateRangeConstraint();
                 $this->markMvpFixtureReady($preBuildTables);
             } else {
                 // Isolation : purge les lignes laissées par le test précédent
@@ -1425,6 +1426,43 @@ trait CreatesMvpSchema
         return $table;
     }
 
+    /**
+     * Pose le CHECK `employees_pas_rate_range` comme le fait la migration
+     * tenant #7936, de façon idempotente.
+     *
+     * La borne doit être appliquée par le serveur : une validation applicative
+     * seule laisserait un taux à 250 % déclarable à l'administration fiscale.
+     * On interroge `pg_constraint` (source de vérité) plutôt que d'attraper
+     * l'erreur de l'ALTER, pour ne pas avaler une erreur de nature différente.
+     */
+    private function ensurePasRateRangeConstraint(): void
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return;
+        }
+
+        if (! Schema::hasColumn('employees', 'pas_rate')) {
+            return;
+        }
+
+        $exists = DB::selectOne(
+            'SELECT 1 AS present FROM pg_constraint c '
+            .'JOIN pg_class t ON t.oid = c.conrelid '
+            .'JOIN pg_namespace n ON n.oid = t.relnamespace '
+            ."WHERE c.conname = 'employees_pas_rate_range' AND t.relname = 'employees' "
+            .'AND n.nspname = current_schema() LIMIT 1'
+        );
+
+        if ($exists !== null) {
+            return;
+        }
+
+        DB::statement(
+            'ALTER TABLE employees ADD CONSTRAINT employees_pas_rate_range '
+            .'CHECK (pas_rate IS NULL OR (pas_rate >= 0 AND pas_rate <= 100))'
+        );
+    }
+
     private function moduleTable(string $table): string
     {
         return DB::getDriverName() === 'pgsql' ? 'shared_tenants.'.$table : $table;
@@ -1718,6 +1756,63 @@ trait CreatesMvpSchema
                 $table->timestamps();
 
                 $table->unique(['company_id', 'period'], 'ai_usage_counters_company_period_unique');
+            });
+        }
+
+        // HOSP-005 (#7947, BC-32) — locatif : miroir de la migration tenant
+        // 2026_09_20_000017_7947 (garde de parité #5443). Sans cette fixture,
+        // les tests utilisant CreatesMvpSchema échouent en CI sur
+        // « relation does not exist » (régression #5418).
+        if (! Schema::hasTable($this->moduleTable('hospitality_leases'))) {
+            Schema::create($this->moduleTable('hospitality_leases'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('property_id');
+                $table->unsignedBigInteger('unit_id');
+                $table->string('tenant_name', 150);
+                $table->string('contact_email', 190)->nullable();
+                $table->string('contact_phone', 40)->nullable();
+                $table->date('starts_on');
+                $table->date('ends_on')->nullable();
+                $table->unsignedBigInteger('monthly_rent_minor');
+                $table->string('currency', 3);
+                $table->unsignedTinyInteger('billing_day')->default(1);
+                $table->unsignedBigInteger('deposit_minor')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->date('terminated_on')->nullable();
+                $table->text('notes')->nullable();
+                $table->unsignedInteger('version')->default(0);
+                $table->timestamps();
+
+                $table->index(['company_id', 'property_id'], 'hospitality_leases_company_property_idx');
+                $table->index(['company_id', 'unit_id'], 'hospitality_leases_company_unit_idx');
+                $table->index(['company_id', 'status'], 'hospitality_leases_company_status_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('hospitality_rent_payments'))) {
+            Schema::create($this->moduleTable('hospitality_rent_payments'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('lease_id');
+                $table->unsignedBigInteger('property_id');
+                $table->unsignedBigInteger('unit_id');
+                $table->string('period', 7);
+                $table->date('due_on');
+                $table->unsignedBigInteger('amount_minor');
+                $table->unsignedBigInteger('paid_amount_minor')->default(0);
+                $table->string('currency', 3);
+                $table->string('status', 20)->default('due');
+                $table->timestamp('paid_at')->nullable();
+                $table->string('payment_method', 30)->nullable();
+                $table->string('reference', 60)->nullable();
+                $table->text('notes')->nullable();
+                $table->timestamps();
+
+                $table->unique(['lease_id', 'period'], 'hospitality_rent_payments_lease_period_unique');
+                $table->index(['company_id', 'status'], 'hospitality_rent_payments_company_status_idx');
+                $table->index(['company_id', 'due_on'], 'hospitality_rent_payments_company_due_idx');
+                $table->index(['company_id', 'property_id'], 'hospitality_rent_payments_company_property_idx');
             });
         }
 
@@ -2816,6 +2911,13 @@ trait CreatesMvpSchema
                 $table->decimal('working_days', 5, 2)->default(0);
                 $table->decimal('actual_days_worked', 5, 2)->default(0);
                 $table->decimal('overtime_hours', 6, 2)->default(0);
+                // #7934 — la fixture omettait les saisies de conges ajoutees
+                // par 2026_08_23_000006 alors que le modele les declare dans
+                // $fillable : tout test qui les ecrivait echouait en 42703, et
+                // silencieusement la fixture ne refletait pas la production.
+                $table->decimal('paid_leave_days', 6, 2)->default(0);
+                $table->decimal('unpaid_leave_days', 6, 2)->default(0);
+                $table->decimal('public_holiday_days', 6, 2)->default(0);
                 $table->string('status', 20)->default('draft');
                 $table->string('pdf_path', 500)->nullable();
                 $table->timestampTz('sent_at')->nullable();
@@ -2947,6 +3049,34 @@ trait CreatesMvpSchema
                 $table->string('document_hash', 64)->nullable();
                 $table->text('metadata')->nullable();
                 $table->timestamps();
+            });
+        }
+
+        // #7935 — `salary_components` etait creee par la migration tenant
+        // `2026_05_10_100001_create_payroll_engine_tables` mais absente de la
+        // fixture : `pay_slip_lines.salary_component_id` pointait donc vers
+        // une table inexistante et tout test qui rattachait une ligne a son
+        // composant echouait en SQLSTATE 42P01. Meme famille d'ecart
+        // fixture <-> migration que #7975/#8004.
+        if (! Schema::hasTable($this->moduleTable('salary_components'))) {
+            Schema::create($this->moduleTable('salary_components'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('salary_structure_id')->nullable();
+                $table->string('name', 150);
+                $table->string('code', 50);
+                $table->string('type', 30);
+                $table->string('calculation_type', 30)->default('fixed');
+                $table->decimal('amount', 14, 2)->nullable();
+                $table->decimal('percentage', 8, 4)->nullable();
+                $table->string('formula', 500)->nullable();
+                $table->boolean('is_taxable')->default(true);
+                $table->boolean('is_recurring')->default(true);
+                $table->unsignedSmallInteger('order')->default(0);
+                $table->boolean('active')->default(true);
+                $table->timestampsTz();
+
+                $table->index(['company_id', 'type', 'active']);
             });
         }
 
@@ -5101,9 +5231,21 @@ trait CreatesMvpSchema
             Schema::create($this->moduleTable('travel_outbox_events'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->index();
+                // #8209 — aligne sur la migration de production
+                // (2026_08_29_000610_6024) : la colonne payload s'appelle
+                // `payload_redacted` (minimisation PII) et il n'y a pas
+                // d'agregats. Un stub a 4 colonnes masquait toute divergence.
+                $table->string('event_type', 80);
+                $table->jsonb('payload_redacted');
+                $table->string('status', 20)->default('pending');
+                $table->unsignedSmallInteger('attempts')->default(0);
+                $table->timestampTz('available_at')->useCurrent();
+                $table->text('last_error')->nullable();
+                $table->string('idempotency_key', 255);
                 $table->timestamps();
 
-                $table->index(['company_id', 'id']);
+                $table->unique(['company_id', 'idempotency_key'], 'travel_outbox_company_key_unique');
+                $table->index(['company_id', 'status', 'available_at'], 'travel_outbox_company_status_due_idx');
             });
         }
 
@@ -5874,11 +6016,75 @@ trait CreatesMvpSchema
         // `loadPostgresFixtureDrops()` et `preparePostgresSchemas()`.
         DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
 
+        // #7937 — tables de facturation : sans elles, FacturXGeneratorTest ne
+        // peut pas construire une facture reelle (et la fixture masquerait
+        // toute regression du generateur).
+        if (! Schema::hasTable($this->tenantTable('accounting_contacts'))) {
+            Schema::create($this->tenantTable('accounting_contacts'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('type', 20)->default('customer');
+                $table->string('name', 255);
+                $table->string('legal_name', 255)->nullable();
+                $table->text('tax_id')->nullable();
+                $table->string('email', 255)->nullable();
+                $table->string('phone', 50)->nullable();
+                $table->string('address', 500)->nullable();
+                $table->string('currency', 10)->nullable();
+                $table->string('payment_terms', 60)->nullable();
+                $table->string('language', 10)->nullable();
+                $table->string('source', 30)->default('manual');
+                $table->unsignedBigInteger('marketing_lead_id')->nullable()->index();
+                $table->text('metadata')->nullable();
+                $table->timestamps();
+                $table->index(['company_id', 'type']);
+            });
+        }
+
+        if (! Schema::hasTable($this->tenantTable('accounting_documents'))) {
+            Schema::create($this->tenantTable('accounting_documents'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('type', 30);
+                $table->string('number', 60);
+                $table->string('status', 30)->default('draft');
+                $table->unsignedBigInteger('contact_id')->nullable()->index();
+                $table->string('project_ref', 120)->nullable();
+                $table->date('issue_date');
+                $table->date('due_date')->nullable();
+                $table->date('delivery_date')->nullable();
+                $table->string('currency', 10)->nullable();
+                $table->decimal('exchange_rate', 15, 6)->nullable();
+                $table->decimal('subtotal_ht', 15, 2)->default(0);
+                $table->decimal('tax_amount', 15, 2)->default(0);
+                $table->decimal('total_ttc', 15, 2)->default(0);
+                $table->decimal('tva_rate', 8, 4)->nullable();
+                $table->text('notes')->nullable();
+                $table->text('footer_mentions')->nullable();
+                $table->text('metadata')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->tenantTable('accounting_document_lines'))) {
+            Schema::create($this->tenantTable('accounting_document_lines'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('document_id')->index();
+                $table->string('description', 500);
+                $table->decimal('quantity', 15, 4)->default(1);
+                $table->decimal('unit_price', 15, 2)->default(0);
+                $table->decimal('discount', 15, 2)->default(0);
+                $table->decimal('tva_rate', 8, 4)->nullable();
+                $table->unsignedInteger('sort_order')->default(0);
+                $table->timestamps();
+            });
+        }
+
         if (! Schema::hasTable($this->tenantTable('accounting_chart_accounts'))) {
             Schema::create($this->tenantTable('accounting_chart_accounts'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
-                // Code de compte (ex. 41100000) — normalisé, unique par entreprise.
                 $table->string('code', 20);
                 $table->string('label', 255);
                 // Nature comptable : asset|liability|equity|revenue|expense.
