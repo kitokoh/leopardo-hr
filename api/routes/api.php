@@ -28,6 +28,7 @@ use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\DemoDataController;
+use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\LeaOnboardingController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\SetupInterviewController;
@@ -473,6 +474,18 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/setup-interview/answers', [SetupInterviewController::class, 'saveAnswers']);
         Route::post('/setup-interview/complete', [SetupInterviewController::class, 'complete']);
         Route::post('/setup-interview/dismiss', [SetupInterviewController::class, 'dismiss']);
+
+        // #8230 (BOS-042) — parcours Lea : description libre → plan →
+        // confirmation → execution par l'entretien EXISTANT. Deux routes et
+        // non une : un appel ne doit jamais interpreter ET activer, sinon
+        // l'utilisateur se retrouverait avec des modules actives qu'il n'a
+        // pas vus. `config('onboarding.lea.enabled')` rend la route 404 si le
+        // flag est OFF (interrupteur SERVEUR, pas seulement d'interface) ;
+        // le seau `ai-sensitive` borne le cout des appels LLM.
+        Route::middleware('throttle:ai-sensitive')->group(function (): void {
+            Route::post('/onboarding/lea/interpret', [LeaOnboardingController::class, 'interpret']);
+            Route::post('/onboarding/lea/confirm', [LeaOnboardingController::class, 'confirm']);
+        });
 
         // #7865 — jeu de données de démonstration à la demande du client :
         // une entrée par verticale ACTIVE du tenant (kits enregistrés par les

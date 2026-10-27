@@ -2143,3 +2143,41 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
   d'execution) ; E2E navigateur de reconnexion ; scenario `growth` (120 VU) ecrit
   mais non execute ; `CHAT_ATTACHMENT_DISK` toujours **non positionne** en
   production, donc **R1 reste ouvert** (`docs/mission-business-os/17_chat_attachments_runbook.md`).
+
+---
+
+### S-Léa-01 — Parcours Léa : description libre → plan → confirmation (#8229, #8230)
+
+- **Surface API** : `POST /api/v1/onboarding/lea/interpret` et
+  `POST /api/v1/onboarding/lea/confirm` (throttle `ai-sensitive`,
+  RBAC `principal`/`rh`, 404 si `onboarding.lea.enabled` est OFF).
+- **Objectif** : prouver que le parcours Léa **n'active jamais rien sans
+  confirmation**, et qu'il dégrade proprement quand le LLM est coupé.
+- **Tests automatisés** : `tests/Feature/Onboarding/InterviewAnswerExtractorTest.php`
+  (**14 tests / 35 assertions**) et
+  `tests/Feature/Onboarding/LeaOnboardingControllerTest.php`
+  (**10 tests / 33 assertions**).
+- **Cas couverts** :
+  1. `interpret` propose un plan et **n'active aucune solution** (vérifié en
+     base) ;
+  2. `confirm` avec un jeton invalide → **409**, zéro activation ;
+  3. `confirm` avec le jeton retourné → activation par `CompleteSetupInterview`
+     (chemin existant, aucun nouveau chemin) ;
+  4. **parité de plan** entre Léa et l'entretien déterministe pour les mêmes
+     réponses ;
+  5. LLM indisponible → `fallback_required` / `llm_unavailable` ;
+  6. description hostile → `fallback_required` / `injection_detected` avec
+     **0 appel LLM** ;
+  7. valeur hors allowlist → `clarification`, jamais de correction silencieuse ;
+  8. flag OFF → **404** ; employé → **403** ; anonyme → **401**.
+- **Résultats réels exécutés** (`CI=true`, PHP 8.4 + PostgreSQL 15) :
+  `--filter=InterviewAnswerExtractorTest` **14 passed / 35 assertions** ;
+  `--filter=LeaOnboardingControllerTest` **10 passed / 33 assertions** ;
+  PHPStan niveau 8 (`phpstan-strict.neon`, la config CI) **0 erreur** ;
+  `pint --test` **OK** sur tous les fichiers du lot.
+- **Non couvert** : pilotage du taux de réussite par secteur sur du **trafic
+  réel** (relève de BOS-044, pilote mesuré) ; appels à un fournisseur LLM
+  réel (les tests substituent `ModelInferencePort` par un double scripté).
+- **Note de décision** : le flag `ONBOARDING_LEA_ENABLED` est **OFF par
+  défaut** — le parcours introduit un appel LLM payant dans le funnel
+  d'inscription, son activation relève d'une décision d'exploitation.
