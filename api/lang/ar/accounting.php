@@ -84,6 +84,7 @@ return [
 
     'errors' => [
         'gateway_checkout_failed' => 'بوابة الدفع غير متاحة مؤقتًا. يرجى المحاولة لاحقًا.',
+        'fiscal_year_invalid' => 'السنة المالية غير صالحة.',
         'payment_amount_positive' => 'يجب أن يكون مبلغ الدفع موجباً تماماً.',
         'wf_invalid_type' => 'نوع مستند غير صالح.',
         'wf_requires_lines' => 'يجب أن يحتوي المستند على سطر واحد على الأقل.',

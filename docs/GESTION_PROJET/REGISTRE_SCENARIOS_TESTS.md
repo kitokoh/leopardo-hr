@@ -24,6 +24,24 @@
 > `pint` → **OK** ; `check-openapi-route-coverage.py` → **exit 0**, y compris `--strict-staleness`.
 > **Limite assumée** : les écrans Vue de la vue groupe relèvent d'un périmètre front séparé (comme #8521) et ne
 > sont pas inclus dans ce lot backend.
+> **MAJ 2026-10-27 — HospitalityManager, HOSP-005 (#7947, BC-32) : gestion locative.**
+> Surface **API** (`api/routes/modules/hospitality_manager.php`, module HospitalityManager) : **8 routes** ajoutees et
+> documentees dans `api/openapi.yaml` — `GET|POST /hospitality/properties/{property}/leases`,
+> `GET|PATCH /hospitality/leases/{lease}`, `POST /hospitality/leases/{lease}/terminate`,
+> `POST /hospitality/leases/{lease}/generate-periods`, `GET /hospitality/rent-payments`,
+> `POST /hospitality/rent-payments/{payment}/record`. Tenant re-verifie sur chaque route (404 fail-closed).
+> Comportements reels documentes plutot que lisses : **`billing_day` ramene au dernier jour du mois** (un bail « au 31 »
+> echu en fevrier tombe le 28, jamais reporte en mars) ; **`late` est DERIVE et recalcule a la lecture** — aucune
+> commande planifiee ne conditionne la justesse du statut ; **un encaissement qui depasse le du est REFUSE (422)**, jamais
+> tronque ; **un bail se resilie, il ne se supprime pas** (aucune route DELETE) et devient immuable une fois terminal ;
+> **la generation d'echeances est idempotente** par `UNIQUE(lease_id, period)` et s'arrete a `ends_on`.
+> Codes d'erreur verifiables : `INVALID_LEASE_TRANSITION` (409), `RENT_AMOUNT_EXCEEDS_OUTSTANDING` (422),
+> `RENT_ALREADY_SETTLED` (422), `RENT_AMOUNT_INVALID` (422).
+> Scenarios automatises : `php artisan test tests/Feature/Hospitality` (**106 tests / 408 assertions**),
+> `dev-hub/tools/check-openapi-route-coverage.py --strict-staleness` (exit 0) et
+> `dev-hub/tools/check-i18n-catalog-parity.sh` (4 langues). Gouvernance : `pint --test` PASS, PHPStan niveau 8 `No errors`.
+> **Limite assumee** : la flotte Flutter n'est pas concernee (module backend) ; aucune verification manuelle de l'UI
+> metier n'a ete faite — l'ecran locatif n'existe pas encore.
 
 > **MAJ 2026-10-26 — Growth & Search Intelligence (GSI) : contrat OpenAPI des 26 routes du module (issues #8512, #8513, #8515, #8516, #8517, #8518, #8522).**
 > Surface **API (`api/routes/modules/search_intelligence.php`, module SearchIntelligence, BC GROWTH)** : les **26 routes**

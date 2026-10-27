@@ -17,4 +17,9 @@ return [
         'expire_pending_tenant_summary' => 'Kiracı :company : :count hospitality rezervasyonu düşürüldü.',
         'expire_pending_total' => 'Toplam : :count hospitality rezervasyonu düşürüldü.',
     ],
+    'invalid_lease_transition' => 'Geçersiz kira sözleşmesi geçişi (:from → :target).',
+    'lease_terminal_immutable' => 'Sonlanmış bir sözleşme artık değiştirilemez: koşulları düzenlenmiş taksitlerle sabitlenmiştir.',
+    'rent_already_settled' => 'Bu taksit zaten ödendi: ek tahsilat yapılamaz.',
+    'rent_amount_must_be_positive' => 'Tahsil edilen tutar sıfırdan büyük olmalıdır.',
+    'rent_amount_exceeds_outstanding' => 'Tahsil edilen tutar (:amount) kalan borcu (:outstanding) aşıyor.',
 ];

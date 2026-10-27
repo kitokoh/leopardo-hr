@@ -7,6 +7,7 @@ import { SeatMap } from "@/components/seat-map";
 import { ApiError, createBooking, fetchTripDetail } from "@/lib/api";
 import { useAccount } from "@/lib/account-provider";
 import { resolveSeatLayout, selectableSeatNumbers } from "@/lib/seat-layout";
+import { reconcileSeatSelection } from "@/lib/seat-selection";
 import {
   cityLabel,
   formatDate,
@@ -183,24 +184,21 @@ export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
 
         setLiveSeats(fresh.seats);
 
-        const unavailable = new Set(
-          fresh.seats.filter((seat) => seat.status !== "free").map((seat) => seat.seat_number),
-        );
-
+        // #8676 — réconciliation extraite dans `seat-selection.ts` : elle est
+        // pure, testable sans navigateur (Vitest) et réutilisable par le
+        // back-office. Un siège devenu indisponible est remis à `null` : il
+        // n'est plus transmis à la commande.
         setPassengers((current) => {
-          const lost = current.filter(
-            (p) => p.seat_number !== null && unavailable.has(p.seat_number),
+          const { passengers: reconciled, changed } = reconcileSeatSelection(
+            current,
+            fresh.seats,
           );
 
-          if (lost.length === 0) return current;
+          if (!changed) return current;
 
           setSeatNotice(dict.seats.seatTakenDuringSelection);
 
-          return current.map((p) =>
-            p.seat_number !== null && unavailable.has(p.seat_number)
-              ? { ...p, seat_number: null }
-              : p,
-          );
+          return reconciled;
         });
       } catch {
         // Rafraîchissement best-effort : un échec réseau ne doit jamais casser
