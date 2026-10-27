@@ -6,7 +6,6 @@ namespace Tests\Feature\Pages;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\Site;
-use App\Shared\Contracts\Entitlements\FeatureEntitlements;
 use App\Modules\Pages\Domain\CustomDomains\Contracts\CustomDomainProvider;
 use App\Modules\Pages\Domain\CustomDomains\Dns\DnsResolver;
 use App\Modules\Pages\Domain\CustomDomains\Dns\InMemoryDnsResolver;
@@ -18,6 +17,7 @@ use App\Modules\Pages\Domain\Exceptions\PageCustomDomainException;
 use App\Modules\Pages\Domain\Models\Page;
 use App\Modules\Pages\Domain\Models\PageCustomDomain;
 use App\Modules\Pages\Domain\Services\PageCustomDomainService;
+use App\Shared\Contracts\Entitlements\FeatureEntitlements;
 use Illuminate\Support\Carbon;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -95,7 +95,7 @@ class PageCustomDomainTest extends TestCase
         $this->app->instance(DnsResolver::class, $this->dns);
         $this->app->instance(CustomDomainProvider::class, $this->provider);
 
-        $this->service = new PageCustomDomainService($this->dns, $this->provider, $guard);
+        $this->service = new PageCustomDomainService($this->dns, $this->provider, $guard, app(\App\Shared\Contracts\Persistence\TransactionRunner::class));
     }
 
     /** Pose les records DNS que le service attend pour un host donné. */
@@ -537,7 +537,7 @@ class PageCustomDomainTest extends TestCase
             }
         };
 
-        $service = new PageCustomDomainService($this->dns, $failingProvider, app(FeatureEntitlements::class));
+        $service = new PageCustomDomainService($this->dns, $failingProvider, app(FeatureEntitlements::class), app(\App\Shared\Contracts\Persistence\TransactionRunner::class));
         $removed = $service->remove($domain, 'owner@chez-lea.sn');
 
         $this->assertSame(PageCustomDomain::STATUS_REMOVED, $removed->status);

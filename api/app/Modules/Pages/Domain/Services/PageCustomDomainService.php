@@ -13,8 +13,8 @@ use App\Modules\Pages\Domain\Exceptions\PageCustomDomainException;
 use App\Modules\Pages\Domain\Models\Page;
 use App\Modules\Pages\Domain\Models\PageCustomDomain;
 use App\Shared\Contracts\Entitlements\FeatureEntitlements;
+use App\Shared\Contracts\Persistence\TransactionRunner;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Flux complet des domaines personnalisés (BC PAGES, #8726).
@@ -48,6 +48,7 @@ final class PageCustomDomainService
         private readonly DnsResolver $dns,
         private readonly CustomDomainProvider $provider,
         private readonly FeatureEntitlements $entitlements,
+        private readonly TransactionRunner $transactions,
     ) {}
 
     /**
@@ -87,7 +88,7 @@ final class PageCustomDomainService
         $cnameTarget = DomainName::cnameTarget($host);
 
         /** @var PageCustomDomain $domain */
-        $domain = DB::transaction(function () use ($page, $host, $inspection, $txtName, $txtValue, $cnameTarget): PageCustomDomain {
+        $domain = $this->transactions->run(function () use ($page, $host, $inspection, $txtName, $txtValue, $cnameTarget): PageCustomDomain {
             /** @var PageCustomDomain $domain */
             $domain = PageCustomDomain::create([
                 'company_id' => $page->company_id,

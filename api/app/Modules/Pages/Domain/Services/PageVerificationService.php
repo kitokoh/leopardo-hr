@@ -12,8 +12,8 @@ use App\Modules\Pages\Domain\Models\Page;
 use App\Modules\Pages\Domain\Models\PageVerificationCode;
 use App\Modules\Pages\Domain\Models\PageVerificationEvidence;
 use App\Modules\Pages\Domain\Models\PageVerificationRequest;
+use App\Shared\Contracts\Persistence\TransactionRunner;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Orchestration du dossier de vérification (BC PAGES, #8725).
@@ -47,6 +47,12 @@ final class PageVerificationService
     public const MAX_OPEN_REQUESTS_PER_PAGE = 1;
 
     /**
+     * @param  TransactionRunner  $transactions  port de transaction — le Domain
+     *                                           n'importe pas la facade `DB` (#6568)
+     */
+    public function __construct(private readonly TransactionRunner $transactions) {}
+
+    /**
      * Ouvre un dossier de vérification.
      *
      * @param  string  $actor  Identifiant de l'acteur (email ou `user:{id}`) pour l'audit
@@ -74,7 +80,7 @@ final class PageVerificationService
             throw PageVerificationException::requestAlreadyOpen();
         }
 
-        return DB::transaction(function () use ($page, $method, $actor, $now): PageVerificationRequest {
+        return $this->transactions->run(function () use ($page, $method, $actor, $now): PageVerificationRequest {
             /** @var PageVerificationRequest $request */
             $request = PageVerificationRequest::create([
                 'company_id' => $page->company_id,
@@ -184,7 +190,7 @@ final class PageVerificationService
         // bruteforçaient donc sans limite. On incrémente dans sa PROPRE
         // transaction, courte et committée, avant toute comparaison.
         /** @var PageVerificationCode $code */
-        $code = DB::transaction(function () use ($request, $phoneE164, $now): PageVerificationCode {
+        $code = $this->transactions->run(function () use ($request, $phoneE164, $now): PageVerificationCode {
             /** @var PageVerificationCode|null $locked */
             $locked = PageVerificationCode::query()
                 ->where('request_id', $request->id)
@@ -213,7 +219,7 @@ final class PageVerificationService
             throw PageVerificationException::codeMismatch($code->max_attempts - $code->attempts);
         }
 
-        return DB::transaction(function () use ($request, $code, $actor, $now): PageVerificationRequest {
+        return $this->transactions->run(function () use ($request, $code, $actor, $now): PageVerificationRequest {
             $code->consumed_at = $now;
             $code->save();
 

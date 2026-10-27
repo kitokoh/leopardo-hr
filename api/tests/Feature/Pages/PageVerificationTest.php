@@ -69,7 +69,7 @@ class PageVerificationTest extends TestCase
         ]);
         $this->page = $page;
 
-        $this->service = new PageVerificationService;
+        $this->service = new PageVerificationService(app(\App\Shared\Contracts\Persistence\TransactionRunner::class));
 
         // Configuration par défaut pour les tests : les trois méthodes actives.
         config()->set('pages.verification.methods', ['sms', 'document', 'superadmin']);

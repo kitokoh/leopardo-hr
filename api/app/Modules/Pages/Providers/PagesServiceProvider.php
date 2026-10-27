@@ -79,11 +79,16 @@ final class PagesServiceProvider extends ServiceProvider
             };
         });
 
+        // #6568 — le Domain n'importe pas la facade `DB` : la transaction
+        // passe par un port, cet adaptateur est le seul a connaitre Eloquent.
+        $this->app->singleton(\App\Shared\Contracts\Persistence\TransactionRunner::class, \App\Shared\Support\Persistence\LaravelTransactionRunner::class);
+
         $this->app->bind(PageCustomDomainService::class, function ($app): PageCustomDomainService {
             return new PageCustomDomainService(
                 $app->make(DnsResolver::class),
                 $app->make(CustomDomainProvider::class),
                 $app->make(\App\Shared\Contracts\Entitlements\FeatureEntitlements::class),
+                $app->make(\App\Shared\Contracts\Persistence\TransactionRunner::class),
             );
         });
     }
