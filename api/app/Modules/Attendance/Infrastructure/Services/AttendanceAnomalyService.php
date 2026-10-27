@@ -7,11 +7,23 @@ namespace App\Modules\Attendance\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Shared\Contracts\HR\EmployeeReadContract;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class AttendanceAnomalyService
 {
+    /**
+     * #8061 tranche 1 : le perimetre d'equipe passe par le contrat partage
+     * plutot que par `Employee::query()->visibleToManager()`. Le service ne
+     * depend plus du modele HR pour cette lecture ; `Employee` reste importe
+     * uniquement pour le type du parametre `$scopeActor` (contrat d'entree du
+     * service, hors perimetre de cette tranche).
+     */
+    public function __construct(
+        private readonly EmployeeReadContract $employees,
+    ) {}
+
     /**
      * @param  array{employee_id?: int|null, date_from?: string|null, date_to?: string|null, per_page?: int|null}  $filters
      * @return array<string, mixed>
@@ -26,10 +38,7 @@ class AttendanceAnomalyService
         // manager_role=dept is scoped to their own department only (PA2-SEC-002);
         // manager_role=superviseur is scoped to their own assigned team (PA2-SEC-003).
         $departmentEmployeeIds = $scopeActor !== null && $scopeActor->isTeamScoped()
-            ? Employee::query()
-                ->where('company_id', $companyId)
-                ->visibleToManager($scopeActor)
-                ->pluck('id')
+            ? $this->employees->idsVisibleTo($companyId, (int) $scopeActor->id)
             : null;
 
         $logs = AttendanceLog::query()

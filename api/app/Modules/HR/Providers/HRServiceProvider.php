@@ -8,8 +8,10 @@ use App\AI\Support\AIToolDefinitionRegistry;
 use App\Modules\HR\Domain\Contracts\ApplicantPipelineReaderInterface;
 use App\Modules\HR\Domain\Support\HrReadToolCatalog;
 use App\Modules\HR\Infrastructure\Services\DepartmentDirectoryAdapter;
+use App\Modules\HR\Infrastructure\Services\EmployeeReadAdapter;
 use App\Modules\Recruitment\Infrastructure\Services\ApplicantPipelineReader;
 use App\Shared\Contracts\HR\DepartmentDirectory;
+use App\Shared\Contracts\HR\EmployeeReadContract;
 use Illuminate\Support\ServiceProvider;
 
 class HRServiceProvider extends ServiceProvider
@@ -25,6 +27,11 @@ class HRServiceProvider extends ServiceProvider
         // BOS-023 cycle 3 (#8211) : HR expose l'annuaire des départements via
         // le contrat partagé — Attendance ne l'importe plus directement.
         $this->app->bind(DepartmentDirectory::class, DepartmentDirectoryAdapter::class);
+
+        // #8061 tranche 1 : lecture seule des employes pour les modules
+        // consommateurs (Attendance, Planning, Payroll) — ils ne dependent plus
+        // du modele HR pour resoudre un perimetre ou une identite.
+        $this->app->bind(EmployeeReadContract::class, EmployeeReadAdapter::class);
     }
 
     public function boot(): void
