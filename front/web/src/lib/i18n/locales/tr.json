@@ -6065,7 +6065,14 @@
       "empty": "Kayıtlı satış yok.",
       "quantity": "Miktar",
       "amount": "Tutar"
-    }
+    },
+    "fuelPumpistSelectRequired": "Bir istasyon, pompa ve sayaç seçin.",
+    "fuelPumpistReadingRejected": "Okuma sunucu tarafından reddedildi",
+    "fuelPumpistStationsError": "İstasyonlar kullanılamıyor",
+    "fuelPumpistPumpsError": "Pompalar kullanılamıyor",
+    "fuelPumpistMetersError": "Sayaçlar kullanılamıyor",
+    "fuelTechnicalRef": "Ref. {id}",
+    "fuelMeterLabelWithProduct": "{meter} — {product}"
   },
   "trial": {
     "trialBadge": "Deneme",
@@ -8591,6 +8598,7 @@
     "unauthenticated": "Oturumunuz sona erdi. Devam etmek için tekrar giriş yapın.",
     "overloaded": "Çok fazla mesaj gönderildi. Kısa bir süre bekleyip tekrar deneyin."
   },
+<<<<<<< HEAD
   "hospitality": {
     "hub": {
       "title": "Konaklama",
@@ -8744,4 +8752,13 @@
       "noPayments": "Taksit yok: kirayı tahsil etmek için oluşturun."
     }
   }
+=======
+  "fuelPumpistSelectRequired": "Bir istasyon, pompa ve sayaç seçin.",
+  "fuelPumpistReadingRejected": "Okuma sunucu tarafından reddedildi",
+  "fuelPumpistStationsError": "İstasyonlar kullanılamıyor",
+  "fuelPumpistPumpsError": "Pompalar kullanılamıyor",
+  "fuelPumpistMetersError": "Sayaçlar kullanılamıyor",
+  "fuelTechnicalRef": "Ref. {id}",
+  "fuelMeterLabelWithProduct": "{meter} — {product}"
+>>>>>>> 0929dc4c2 (chore(i18n): cles Fuel a la source canonique + resync (#4805))
 }

@@ -6830,6 +6830,7 @@
   "publicinboxToolong": "Le message ne peut pas dépasser {max} caractères.",
   "publicinboxUnauthenticated": "Votre session a expiré. Reconnectez-vous pour continuer.",
   "publicinboxOverloaded": "Trop de messages envoyés. Patientez un instant puis réessayez.",
+<<<<<<< HEAD
   "hospitalityHubTitle": "Hospitality",
   "hospitalityHubSubtitle": "Hôtels, résidences et gestion locative multi-sites.",
   "hospitalityHubActive": "Solution Hospitality active.",
@@ -6937,4 +6938,13 @@
   "hospitalityRentalsPayments": "Échéances",
   "hospitalityRentalsUnpaid": "impayée(s)",
   "hospitalityRentalsNopayments": "Aucune échéance : générez-les pour pouvoir encaisser le loyer."
+=======
+  "fuelPumpistSelectRequired": "Sélectionnez une station, une pompe et un compteur.",
+  "fuelPumpistReadingRejected": "Relevé refusé par le serveur",
+  "fuelPumpistStationsError": "Stations indisponibles",
+  "fuelPumpistPumpsError": "Pompes indisponibles",
+  "fuelPumpistMetersError": "Compteurs indisponibles",
+  "fuelTechnicalRef": "Réf. {id}",
+  "fuelMeterLabelWithProduct": "{meter} — {product}"
+>>>>>>> 0929dc4c2 (chore(i18n): cles Fuel a la source canonique + resync (#4805))
 }
