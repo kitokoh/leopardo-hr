@@ -127,6 +127,7 @@ return [
     'fec_siren_missing' => 'Missing SIREN: set the company SIREN (9 digits) to name the FEC file per the DGFiP standard (SIRENFECAAAAMMJJ).',
     'fec_siren_invalid' => 'Invalid SIREN: the SIREN must be exactly 9 digits (DGFiP standard).',
     'fiscal_year_already_closed' => 'This fiscal year is already closed or does not exist.',
+    'fiscal_year_invalid' => 'Invalid fiscal year.',
     'lettering_unbalanced' => 'Lettering must be balanced: total debits must equal total credits.',
     'lettering_invalid' => 'Invalid lettering: entries must target the same account.',
     'lettering_already_used' => 'One or more entries are already lettered with another code.',

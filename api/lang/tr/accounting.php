@@ -127,6 +127,7 @@ return [
     'fec_siren_missing' => 'SIREN eksik: FEC dosyasını DGFiP standardına (SIRENFECAAAAMMJJ) göre adlandırmak için şirketin SIREN numarasını (9 hane) girin.',
     'fec_siren_invalid' => 'Geçersiz SIREN: SIREN tam olarak 9 haneli olmalıdır (DGFiP standardı).',
     'fiscal_year_already_closed' => 'Bu mali yıl zaten kapatıldı veya mevcut değil.',
+    'fiscal_year_invalid' => 'Geçersiz mali yıl.',
     'lettering_unbalanced' => 'Mutabakat dengeli olmalıdır: toplam borçlar toplam alacaklara eşit olmalıdır.',
     'lettering_invalid' => 'Geçersiz mutabakat: kayıtlar aynı hesabı hedeflemelidir.',
     'lettering_already_used' => 'Bir veya daha fazla kayıt başka bir kodla mutabık kılınmış.',
