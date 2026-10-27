@@ -38,6 +38,33 @@
 > **Limite assumee** : aucun PHP ni `vendor` dans l'environnement d'execution — `phpunit`/`pint` non lances localement ;
 > l'execution reelle est laissee aux checks CI requis.
 
+> **MAJ 2026-10-27 — Restaurant OS, REST-OS-7 : mode hors ligne — idempotence, conflits, reprise (issue #8609).**
+> Surface **API** (`api/routes/modules/restaurantmanager.php`, module RestaurantManager) : 5 nouvelles routes —
+> `POST /api/v1/restaurant/sync/operations` (pousser un lot d'opérations hors réseau), `GET /api/v1/restaurant/sync/status`,
+> `GET /api/v1/restaurant/sync/errors`, `GET /api/v1/restaurant/sync/conflicts`,
+> `POST /api/v1/restaurant/sync/conflicts/{conflict}/resolve`. Permissions : `restaurant.server` en écriture,
+> `restaurant.reports` pour lire/arbitrer les conflits (arbitrer engage la responsabilité du restaurateur).
+> Le périmètre hors ligne est un **registre fermé** (`RestaurantOfflineOperationType`) : toute opération absente est
+> **refusée** (`rejected`) et **conservée** avec un code stable, jamais appliquée « au mieux ». `client_operation_id`
+> est unique par entreprise (index unique) : le rejeu est **idempotent**. `terminal_id` + `target_entity_type`/
+> `target_entity_id` permettent la détection de **conflit inter-terminaux** : deux postes déconnectés ne peuvent pas
+> confirmer silencieusement des opérations incompatibles sur la même entité. Encaissements et mouvements de stock
+> partent en `manual_review` (aucun écrasement silencieux) ; les opérations additives sont tranchées localement.
+> Scénarios automatisés : `tests/Feature/Modules/RestaurantManager/RestaurantOfflineSyncTest.php` (**16 tests**).
+> Cas couverts : nouvelle opération en `pending` ; rejeu identique → `replayed: true` et **une seule** ligne en base ;
+> même identifiant + contenu différent → conflit d'identifiant ; **deux terminaux déconnectés avec des contenus
+> incompatibles sur la même entité → conflit, les deux valeurs conservées, aucun écrasement** ; deux terminaux
+> confirmant le **même** contenu → pas de conflit (convergence) ; le **même** terminal peut corriger sa séquence ;
+> encaissement divergent → `manual_review` ; mouvement de stock divergent → `manual_review` ; opération additive →
+> résolution locale ; opération visant une entité sans la nommer → refusée (fail-closed) ; opération hors registre →
+> `rejected` + visible dans l'historique des erreurs ; conflits visibles puis résolus explicitement ; conflit déjà
+> résolu → jamais re-résolu ; opération en échec → reste visible et cesse d'être rejouée après 5 tentatives ;
+> isolation par entreprise (une opération d'un autre tenant n'est ni visible ni modifiable) ; résumé d'état de la file.
+> **Preuve d'exécution** : `CI=true php artisan test` → **16 passed / 48 assertions** ; PHPStan strict niveau 8 →
+> **0 erreur** ; `pint` → **OK** ; `check-openapi-route-coverage.py` → **exit 0**, y compris `--strict-staleness`.
+> **Limite assumée** : le client local (file d'attente sur le poste, écran des opérations en attente) relève du front
+> et n'est pas inclus dans ce lot backend.
+
 > **MAJ 2026-10-24 — Restaurant OS, REST-OS-5 : UI impression de l'écran cuisine (issue #8607).**
 > Surface **front/web** (`src/app/(dashboard)/restaurant/kitchen/page.tsx`) : l'écran cuisine affiche désormais un **bandeau d'état
 > d'imprimante** (prête / hors ligne / non configurée) et permet la **réimpression** d'un ticket.

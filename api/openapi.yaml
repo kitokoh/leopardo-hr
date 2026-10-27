@@ -41810,6 +41810,305 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+  /restaurant/sync/operations:
+    post:
+      operationId: api_post_restaurant_sync_operations
+      tags:
+      - Restaurant
+      summary: Pousser un lot d'operations saisies hors reseau (REST-OS-7, #8609)
+      description: >-
+        REST-OS-7 - reprise d'operations saisies hors reseau par un terminal de
+        salle. Le resultat est renvoye PAR operation : le terminal ne marque
+        `synced` que ce qui a ete reellement accepte et conserve le reste pour
+        rejeu. `operation_type` est un registre FERME : une operation non prevue
+        est REFUSEE (`rejected`) et conservee, jamais appliquee au mieux. Le
+        rejeu d'un meme `client_operation_id` avec le meme contenu est idempotent
+        (`replayed: true`, rien n'est re-applique) ; avec un contenu DIFFERENT
+        c'est un conflit d'identifiant. Deux terminaux deconnectes ne peuvent pas
+        confirmer silencieusement des operations incompatibles sur la meme entite
+        ciblee : la seconde part en `conflict` au lieu d'ecraser la premiere.
+        Permission `restaurant.server` requise.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - operations
+              properties:
+                operations:
+                  type: array
+                  minItems: 1
+                  maxItems: 200
+                  items:
+                    type: object
+                    required:
+                    - client_operation_id
+                    - operation_type
+                    - payload
+                    - occurred_at
+                    properties:
+                      client_operation_id:
+                        type: string
+                        maxLength: 100
+                        description: Identifiant genere par le TERMINAL (rend le rejeu idempotent).
+                      operation_type:
+                        type: string
+                        maxLength: 60
+                        description: Registre ferme (record_order, record_payment, close_table_session, ...).
+                      payload:
+                        type: object
+                        additionalProperties: true
+                      occurred_at:
+                        type: string
+                        format: date-time
+                        description: Horodatage du terminal (peut preceder la reception).
+                      terminal_id:
+                        type: string
+                        maxLength: 100
+                        nullable: true
+                        description: Poste emetteur (detection de conflit inter-terminaux).
+                      target_entity_type:
+                        type: string
+                        maxLength: 60
+                        nullable: true
+                      target_entity_id:
+                        type: string
+                        maxLength: 100
+                        nullable: true
+      responses:
+        '200':
+          description: Resultat par operation (queued | duplicate | conflict | rejected)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        client_operation_id:
+                          type: string
+                        status:
+                          type: string
+                        replayed:
+                          type: boolean
+                        conflict_id:
+                          type: integer
+                          nullable: true
+                        error_code:
+                          type: string
+                          nullable: true
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /restaurant/sync/status:
+    get:
+      operationId: api_get_restaurant_sync_status
+      tags:
+      - Restaurant
+      summary: Etat de la file de synchronisation hors ligne (REST-OS-7, #8609)
+      description: >-
+        REST-OS-7 - etat de la file tel qu'affiche sur le tableau de bord :
+        operations en attente, appliquees, en conflit, refusees, en echec, et
+        nombre de conflits non resolus. Permission `restaurant.server` requise.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Resume de la file
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      pending:
+                        type: integer
+                      applied:
+                        type: integer
+                      conflict:
+                        type: integer
+                      rejected:
+                        type: integer
+                      failed:
+                        type: integer
+                      unresolved_conflicts:
+                        type: integer
+        '403':
+          $ref: '#/components/responses/Error403'
+
+  /restaurant/sync/errors:
+    get:
+      operationId: api_get_restaurant_sync_errors
+      tags:
+      - Restaurant
+      summary: Historique des erreurs de synchronisation (REST-OS-7, #8609)
+      description: >-
+        REST-OS-7 - operations refusees ou en echec, avec leur code d'erreur
+        stable. Une operation en echec reste VISIBLE : elle n'est jamais
+        silencieusement perdue. Permission `restaurant.server` requise.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Operations refusees ou en echec
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        client_operation_id:
+                          type: string
+                        operation_type:
+                          type: string
+                        status:
+                          type: string
+                        attempt_count:
+                          type: integer
+                        error_code:
+                          type: string
+                          nullable: true
+                        terminal_id:
+                          type: string
+                          nullable: true
+                        occurred_at:
+                          type: string
+        '403':
+          $ref: '#/components/responses/Error403'
+
+  /restaurant/sync/conflicts:
+    get:
+      operationId: api_get_restaurant_sync_conflicts
+      tags:
+      - Restaurant
+      summary: Conflits de synchronisation en attente d'arbitrage (REST-OS-7, #8609)
+      description: >-
+        REST-OS-7 - conflits NON RESOLUS, avec les deux valeurs en presence
+        (locale et serveur) et les terminaux emetteurs. Aucun ecrasement
+        silencieux : un conflit non resolu reste visible jusqu'a arbitrage
+        humain. Permission `restaurant.reports` requise (arbitrer engage la
+        responsabilite du restaurateur).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Conflits non resolus
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        restaurant_sync_operation_id:
+                          type: integer
+                        entity_type:
+                          type: string
+                        entity_id:
+                          type: string
+                          nullable: true
+                        strategy:
+                          type: string
+                        local_value:
+                          type: object
+                          nullable: true
+                        server_value:
+                          type: object
+                          nullable: true
+                        local_terminal_id:
+                          type: string
+                          nullable: true
+                        server_terminal_id:
+                          type: string
+                          nullable: true
+                        resolution:
+                          type: string
+                          nullable: true
+        '403':
+          $ref: '#/components/responses/Error403'
+
+  /restaurant/sync/conflicts/{conflict}/resolve:
+    post:
+      operationId: api_post_restaurant_sync_conflict_resolve
+      tags:
+      - Restaurant
+      summary: Resoudre explicitement un conflit de synchronisation (REST-OS-7, #8609)
+      description: >-
+        REST-OS-7 - resolution EXPLICITE d'un conflit par un humain. Un conflit
+        deja resolu n'est jamais re-resolu : la decision initiale reste
+        auditable. Permission `restaurant.reports` requise.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: conflict
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - resolution
+              properties:
+                resolution:
+                  type: string
+                  enum:
+                  - local_wins
+                  - server_wins
+                  - manual_review
+                note:
+                  type: string
+                  maxLength: 1000
+                  nullable: true
+      responses:
+        '200':
+          description: Conflit resolu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      resolution:
+                        type: string
+                      resolved_at:
+                        type: string
+                        nullable: true
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+
   /catalog/inquiries:
     get:
       operationId: api_get_catalog_inquiries
