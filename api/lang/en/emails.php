@@ -195,7 +195,6 @@ return [
     'login_code_intro' => 'Here is your single-use login code. Enter it on the login page to access your workspace:',
     'login_code_validity' => 'This code is valid for 10 minutes and single-use. If you did not request this, you can safely ignore this email.',
 
-
     // #7760 — support ticket email notifications (client ↔ platform).
     'support_ticket_opened_subject' => '[Ticket #:ticket] New support ticket — :subject',
     'support_ticket_opened_title' => 'New support ticket',

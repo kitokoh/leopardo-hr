@@ -109,3 +109,7 @@
 /api/app/Modules/Paiements/ @kitokoh
 /api/routes/modules/paiements.php @kitokoh
 /api/config/paiements.php @kitokoh
+
+# BC-39 PAGES (#8723+) — presence publique par etablissement : agregat Page lie a
+# un Site, contrat de blocs extensible fourni par les BC verticaux (#8724).
+/api/app/Modules/Pages/ @kitokoh
