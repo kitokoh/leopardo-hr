@@ -1544,10 +1544,10 @@ trait CreatesMvpSchema
         // du Restaurant OS : miroir de la migration tenant
         // 2026_10_27_000100_8609_create_restaurant_offline_sync_tables (garde #5443).
         //
-        // Sans ce miroir, tout test utilisant CreatesMvpSchema échoue sur
-        // « relation restaurant_sync_conflicts does not exist » — la panne est
-        // silencieuse tant qu'aucun test ne touche la table, puis casse un
-        // fichier que son auteur n'a jamais modifié (régression #5418).
+        // La migration a ete livree sans son miroir de fixture : tout test
+        // utilisant CreatesMvpSchema aurait echoue sur "relation ... does not
+        // exist", et la panne serait tombee sur l'auteur d'un fichier qu'il
+        // n'avait pas modifie (regression #5418).
         if (! Schema::hasTable($this->moduleTable('restaurant_sync_conflicts'))) {
             Schema::create($this->moduleTable('restaurant_sync_conflicts'), function (Blueprint $table): void {
                 $table->id();
@@ -1556,15 +1556,11 @@ trait CreatesMvpSchema
                 $table->unsignedBigInteger('restaurant_sync_operation_id');
                 $table->string('entity_type', 60);
                 $table->string('entity_id', 100)->nullable();
-                // Registre FERMÉ côté application (RestaurantConflictStrategy).
                 $table->string('strategy', 40);
-                // Valeurs en présence : conservées pour audit et arbitrage.
                 $table->json('local_value')->nullable();
                 $table->json('server_value')->nullable();
-                // Terminaux en présence : rend le conflit explicable à l'écran.
                 $table->string('local_terminal_id', 100)->nullable();
                 $table->string('server_terminal_id', 100)->nullable();
-                // Résolution retenue + qui a tranché (null = automatique).
                 $table->string('resolution', 40)->nullable();
                 $table->unsignedBigInteger('resolved_by')->nullable();
                 $table->timestampTz('resolved_at')->nullable();
