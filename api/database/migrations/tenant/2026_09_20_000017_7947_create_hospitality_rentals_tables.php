@@ -66,7 +66,7 @@ return new class extends Migration
                 // PARTIEL — il ne contraint que les lignes actives, donc un
                 // historique de baux terminés reste possible sur la même unité.
                 DB::statement(
-                    "CREATE UNIQUE INDEX IF NOT EXISTS hospitality_leases_one_active_per_unit_unique "
+                    'CREATE UNIQUE INDEX IF NOT EXISTS hospitality_leases_one_active_per_unit_unique '
                     ."ON \"{$schema}\".\"hospitality_leases\" (company_id, unit_id) WHERE status = 'active'"
                 );
                 DB::statement(
@@ -77,17 +77,17 @@ return new class extends Migration
                 DB::statement(
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'hospitality_leases_dates_check') "
                     ."THEN ALTER TABLE \"{$schema}\".\"hospitality_leases\" ADD CONSTRAINT hospitality_leases_dates_check "
-                    ."CHECK (ends_on IS NULL OR ends_on > starts_on); END IF; END $$"
+                    .'CHECK (ends_on IS NULL OR ends_on > starts_on); END IF; END $$'
                 );
                 DB::statement(
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'hospitality_leases_billing_day_check') "
                     ."THEN ALTER TABLE \"{$schema}\".\"hospitality_leases\" ADD CONSTRAINT hospitality_leases_billing_day_check "
-                    ."CHECK (billing_day BETWEEN 1 AND 31); END IF; END $$"
+                    .'CHECK (billing_day BETWEEN 1 AND 31); END IF; END $$'
                 );
                 DB::statement(
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'hospitality_leases_rent_check') "
                     ."THEN ALTER TABLE \"{$schema}\".\"hospitality_leases\" ADD CONSTRAINT hospitality_leases_rent_check "
-                    ."CHECK (monthly_rent_minor >= 0 AND (deposit_minor IS NULL OR deposit_minor >= 0)); END IF; END $$"
+                    .'CHECK (monthly_rent_minor >= 0 AND (deposit_minor IS NULL OR deposit_minor >= 0)); END IF; END $$'
                 );
             }
         }
@@ -134,7 +134,7 @@ return new class extends Migration
                 DB::statement(
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'hospitality_rent_payments_amount_check') "
                     ."THEN ALTER TABLE \"{$schema}\".\"hospitality_rent_payments\" ADD CONSTRAINT hospitality_rent_payments_amount_check "
-                    ."CHECK (amount_minor > 0 AND paid_amount_minor >= 0 AND paid_amount_minor <= amount_minor); END IF; END $$"
+                    .'CHECK (amount_minor > 0 AND paid_amount_minor >= 0 AND paid_amount_minor <= amount_minor); END IF; END $$'
                 );
             }
         }
