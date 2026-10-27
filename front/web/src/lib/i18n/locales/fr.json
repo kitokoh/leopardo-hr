@@ -6065,14 +6065,7 @@
       "empty": "Aucune vente enregistrée.",
       "quantity": "Quantité",
       "amount": "Montant"
-    },
-    "fuelPumpistSelectRequired": "Sélectionnez une station, une pompe et un compteur.",
-    "fuelPumpistReadingRejected": "Relevé refusé par le serveur",
-    "fuelPumpistStationsError": "Stations indisponibles",
-    "fuelPumpistPumpsError": "Pompes indisponibles",
-    "fuelPumpistMetersError": "Compteurs indisponibles",
-    "fuelTechnicalRef": "Réf. {id}",
-    "fuelMeterLabelWithProduct": "{meter} — {product}"
+    }
   },
   "trial": {
     "trialBadge": "Essai",

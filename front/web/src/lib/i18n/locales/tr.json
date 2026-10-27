@@ -6065,14 +6065,7 @@
       "empty": "Kayıtlı satış yok.",
       "quantity": "Miktar",
       "amount": "Tutar"
-    },
-    "fuelPumpistSelectRequired": "Bir istasyon, pompa ve sayaç seçin.",
-    "fuelPumpistReadingRejected": "Okuma sunucu tarafından reddedildi",
-    "fuelPumpistStationsError": "İstasyonlar kullanılamıyor",
-    "fuelPumpistPumpsError": "Pompalar kullanılamıyor",
-    "fuelPumpistMetersError": "Sayaçlar kullanılamıyor",
-    "fuelTechnicalRef": "Ref. {id}",
-    "fuelMeterLabelWithProduct": "{meter} — {product}"
+    }
   },
   "trial": {
     "trialBadge": "Deneme",
