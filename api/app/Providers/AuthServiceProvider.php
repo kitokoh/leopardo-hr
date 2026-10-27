@@ -20,7 +20,9 @@ use App\Modules\Catalog\Domain\Models\CatalogProduct;
 use App\Modules\Catalog\Domain\Policies\CatalogCategoryPolicy;
 use App\Modules\Catalog\Domain\Policies\CatalogProductPolicy;
 use App\Modules\Pages\Domain\Models\Page;
+use App\Modules\Pages\Domain\Models\PageVerificationRequest;
 use App\Modules\Pages\Domain\Policies\PagePolicy;
+use App\Modules\Pages\Domain\Policies\PageVerificationPolicy;
 use App\Modules\Communication\Domain\Models\CommunicationCategory;
 use App\Modules\Communication\Domain\Models\CommunicationContactProposal;
 use App\Modules\Communication\Domain\Models\CommunicationFollowUp;
@@ -517,6 +519,7 @@ class AuthServiceProvider extends ServiceProvider
         //   édition tenant d'un côté, vérification de propriété plateforme de
         //   l'autre — les deux axes ne partagent JAMAIS une policy)
         Gate::policy(Page::class, PagePolicy::class);
+        Gate::policy(PageVerificationRequest::class, PageVerificationPolicy::class);
         // — Retail (BC-17 #7672 : socle domaine — catégories & produits du vendeur générique)
         Gate::policy(RetailCategory::class, RetailCategoryPolicy::class);
         Gate::policy(RetailProduct::class, RetailProductPolicy::class);
