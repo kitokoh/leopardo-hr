@@ -11,6 +11,11 @@ return [
     'invalid_transition' => 'Invalid reservation transition (:from → :target).',
     'checkout_before_checkin' => 'Check-out date must be after the check-in date.',
     'unit_room_type_mismatch' => 'The assigned unit must belong to the same room type as the reservation.',
+    'invalid_lease_transition' => 'Invalid lease transition (:from → :target).',
+    'lease_terminal_immutable' => 'A terminated lease can no longer be modified: its terms are frozen by the rent payments already issued.',
+    'rent_amount_must_be_positive' => 'The recorded amount must be strictly positive.',
+    'rent_already_settled' => 'This rent payment is already settled: no further payment can be recorded.',
+    'rent_amount_exceeds_outstanding' => 'The recorded amount (:amount) exceeds the outstanding balance (:outstanding).',
     'console' => [
         'expire_pending_description' => 'Expire overdue pending hospitality reservations: cancellation + inventory release (HOSP-004/#7946).',
         'expire_pending_no_tenant' => 'No active tenant — nothing to expire.',

@@ -1759,6 +1759,63 @@ trait CreatesMvpSchema
             });
         }
 
+        // HOSP-005 (#7947, BC-32) — locatif : miroir de la migration tenant
+        // 2026_09_20_000017_7947 (garde de parité #5443). Sans cette fixture,
+        // les tests utilisant CreatesMvpSchema échouent en CI sur
+        // « relation does not exist » (régression #5418).
+        if (! Schema::hasTable($this->moduleTable('hospitality_leases'))) {
+            Schema::create($this->moduleTable('hospitality_leases'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('property_id');
+                $table->unsignedBigInteger('unit_id');
+                $table->string('tenant_name', 150);
+                $table->string('contact_email', 190)->nullable();
+                $table->string('contact_phone', 40)->nullable();
+                $table->date('starts_on');
+                $table->date('ends_on')->nullable();
+                $table->unsignedBigInteger('monthly_rent_minor');
+                $table->string('currency', 3);
+                $table->unsignedTinyInteger('billing_day')->default(1);
+                $table->unsignedBigInteger('deposit_minor')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->date('terminated_on')->nullable();
+                $table->text('notes')->nullable();
+                $table->unsignedInteger('version')->default(0);
+                $table->timestamps();
+
+                $table->index(['company_id', 'property_id'], 'hospitality_leases_company_property_idx');
+                $table->index(['company_id', 'unit_id'], 'hospitality_leases_company_unit_idx');
+                $table->index(['company_id', 'status'], 'hospitality_leases_company_status_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('hospitality_rent_payments'))) {
+            Schema::create($this->moduleTable('hospitality_rent_payments'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('lease_id');
+                $table->unsignedBigInteger('property_id');
+                $table->unsignedBigInteger('unit_id');
+                $table->string('period', 7);
+                $table->date('due_on');
+                $table->unsignedBigInteger('amount_minor');
+                $table->unsignedBigInteger('paid_amount_minor')->default(0);
+                $table->string('currency', 3);
+                $table->string('status', 20)->default('due');
+                $table->timestamp('paid_at')->nullable();
+                $table->string('payment_method', 30)->nullable();
+                $table->string('reference', 60)->nullable();
+                $table->text('notes')->nullable();
+                $table->timestamps();
+
+                $table->unique(['lease_id', 'period'], 'hospitality_rent_payments_lease_period_unique');
+                $table->index(['company_id', 'status'], 'hospitality_rent_payments_company_status_idx');
+                $table->index(['company_id', 'due_on'], 'hospitality_rent_payments_company_due_idx');
+                $table->index(['company_id', 'property_id'], 'hospitality_rent_payments_company_property_idx');
+            });
+        }
+
         if (DB::getDriverName() === 'pgsql') {
             $this->setPostgresSearchPath('shared_tenants,public');
         }
