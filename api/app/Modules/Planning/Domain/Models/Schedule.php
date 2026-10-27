@@ -12,6 +12,7 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int|null $company_id
+ * @property int|null $site_id Établissement de la rotation (#8450) — NULL = tout le tenant
  * @property string $name
  * @property string|null $start_time
  * @property string|null $end_time
@@ -55,6 +56,7 @@ class Schedule extends Model
 
     protected $fillable = [
         'company_id',
+        'site_id',
         'name',
         'start_time',
         'end_time',
@@ -71,6 +73,7 @@ class Schedule extends Model
     ];
 
     protected $casts = [
+        'site_id' => 'integer',
         'break_minutes' => 'integer',
         'work_days' => 'array',
         'rest_days' => 'array',
