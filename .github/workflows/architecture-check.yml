@@ -242,6 +242,10 @@ jobs:
         run: bash dev-hub/tools/check-security-threat-models.sh
       - name: Pilot go/no-go gates guard (issue #5876, MAT-018)
         run: bash dev-hub/tools/check-pilot-gates.sh
+      - name: Freeze exit-gate guard — aucune expiration silencieuse (issue #8585)
+        run: bash dev-hub/tools/check-freeze-gate.sh
+      - name: Riverpod legacy import guard — build mobile non cassable (issue #8754)
+        run: bash dev-hub/tools/check-mobile-riverpod-legacy-imports.sh
       - name: Release Train compat matrix guard (issue #5874, MAT-016)
         run: bash dev-hub/tools/check-release-compat.sh api
 

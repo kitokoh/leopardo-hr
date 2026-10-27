@@ -42,6 +42,7 @@ use App\Modules\Payroll\Interfaces\Api\V1\Controllers\TaxSlabAdminController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\ClientEventController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\CommunicationAnalyticsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\DemoUserController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\EstablishmentsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\HealthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\LaunchReadinessController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\MetricsController;
@@ -387,6 +388,11 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/notification-preferences', [NotificationPreferenceController::class, 'update']);
         Route::get('/communication/analytics', CommunicationAnalyticsController::class)->middleware('throttle:platform-sensitive');
         Route::get('/launch-readiness', LaunchReadinessController::class);
+        // #7910 \u2014 hub \u00ab Mes \u00e9tablissements \u00bb : liste unifi\u00e9e LECTURE SEULE des
+        // \u00e9tablissements de toutes les verticales activ\u00e9es du tenant (registre
+        // par module, aucun switch central). Dans le groupe authentifi\u00e9 pour
+        // que l'isolation tenant soit port\u00e9e par `tenant` + la requ\u00eate.
+        Route::get('/establishments', [EstablishmentsController::class, 'index']);
         Route::get('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'myStatus']);
         Route::post('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'store']);
         Route::middleware(['throttle:privacy-sensitive'])->group(function (): void {

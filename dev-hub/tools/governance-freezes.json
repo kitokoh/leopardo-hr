@@ -1,0 +1,22 @@
+{
+  "$comment": "Registre des gels de gouvernance (freezes) et de leur gate de sortie. Un gel a une fenetre de validite et un gate de revision a sa date de fin. Le garde check-freeze-gate.sh echoue si un gel est EXPIRE sans decision de gate enregistree : un gel qui expire en silence laisse des interdictions en vigueur que plus personne n'a validees, et des chantiers geles que personne n'a rouverts. Reference : docs/GOUVERNANCE/FREEZE_SCOPE_60J.md (issue #5147).",
+  "freezes": [
+    {
+      "id": "freeze-60j",
+      "label": "Freeze Scope 60 jours (plan J1-J60)",
+      "doc": "docs/GOUVERNANCE/FREEZE_SCOPE_60J.md",
+      "issue": 5147,
+      "starts_on": "2026-08-19",
+      "ends_on": "2026-10-17",
+      "gate": {
+        "id": "j60",
+        "label": "Gate J60 — revision du perimetre du gel",
+        "status": "held",
+        "owner": "founder",
+        "updated_at": "2026-10-26",
+        "decision": "Fenetre close le 2026-10-17. Un gel a duree determinee EXPIRE par ses propres termes : ne pas le reconduire est le defaut, le reconduire demanderait une decision explicite. Les restrictions de FREEZE_SCOPE_60J.md cessent donc de s'appliquer comme regle de revue. AUCUNE reconduction n'est prononcee ici : les priorites produit restent celles du plan en cours, et un gel ulterieur doit faire l'objet d'un nouveau document date. Decision prise en posture fondateur/PM (mission d'implementation des issues ouvertes) et signalee pour confirmation.",
+        "evidence": "docs/GOUVERNANCE/FREEZE_SCOPE_60J.md : 'Validite : J1-J60 du plan (19/08 -> 17/10/2026) - a reviser au gate J60'. Le gate n'avait jamais ete tenu : le gel a expire 9 jours avant cette revision, sans decision enregistree."
+      }
+    }
+  ]
+}
