@@ -8590,5 +8590,158 @@
     "tooLong": "Le message ne peut pas dépasser {max} caractères.",
     "unauthenticated": "Votre session a expiré. Reconnectez-vous pour continuer.",
     "overloaded": "Trop de messages envoyés. Patientez un instant puis réessayez."
+  },
+  "hospitality": {
+    "hub": {
+      "title": "Hospitality",
+      "subtitle": "Hôtels, résidences et gestion locative multi-sites.",
+      "active": "Solution Hospitality active.",
+      "loadError": "Impossible de charger l’état du module Hospitality.",
+      "inactive": {
+        "title": "Solution Hospitality inactive",
+        "body": "Activez la solution Hospitality pour votre société afin d’accéder aux établissements, réservations et au locatif."
+      },
+      "tiles": {
+        "properties": {
+          "title": "Établissements",
+          "description": "Référentiel : création, publication et paramètres de chaque établissement."
+        },
+        "inventory": {
+          "title": "Inventaire",
+          "description": "Types de chambres et unités physiques, rattachés à un établissement."
+        },
+        "reservations": {
+          "title": "Réservations",
+          "description": "Réservations au guichet et transitions (confirmer, arrivée, départ)."
+        },
+        "team": {
+          "title": "Équipe",
+          "description": "Affectation des employés du tenant aux établissements."
+        },
+        "rentals": {
+          "title": "Locatif",
+          "description": "Baux, échéances et encaissements des logements en location."
+        }
+      }
+    },
+    "common": {
+      "property": "Établissement",
+      "noProperty": "Aucun établissement"
+    },
+    "properties": {
+      "title": "Établissements",
+      "subtitle": "Hôtels, résidences et immeubles gérés par votre société.",
+      "create": "Nouvel établissement",
+      "submit": "Créer",
+      "empty": "Aucun établissement pour le moment. Créez le premier pour démarrer.",
+      "nameRequired": "Le nom de l’établissement est obligatoire.",
+      "createError": "Création refusée par l’API.",
+      "loadError": "Impossible de charger les établissements.",
+      "publishError": "Publication refusée : vérifiez que l’établissement possède un identifiant public.",
+      "deleteError": "Suppression refusée par l’API.",
+      "confirmDelete": "Supprimer cet établissement ? Ses chambres et unités deviennent inaccessibles.",
+      "publish": "Publier",
+      "unpublish": "Dépublier",
+      "public": "Publié",
+      "private": "Privé",
+      "field": {
+        "name": "Nom",
+        "city": "Ville",
+        "address": "Adresse"
+      },
+      "col": {
+        "name": "Nom",
+        "city": "Ville",
+        "visibility": "Visibilité"
+      }
+    },
+    "inventory": {
+      "title": "Inventaire",
+      "subtitle": "Types de chambres (ce qui est vendu) et unités physiques (ce qui existe).",
+      "roomTypes": "Types de chambres",
+      "units": "Unités physiques",
+      "emptyRoomTypes": "Aucun type de chambre.",
+      "emptyUnits": "Aucune unité physique.",
+      "addRoomType": "Ajouter un type",
+      "addUnit": "Ajouter une unité",
+      "pax": "pers.",
+      "loadError": "Impossible de charger l’inventaire.",
+      "createError": "Création refusée par l’API.",
+      "nameRequired": "Le nom du type de chambre est obligatoire.",
+      "unitNameRequired": "Le nom de l’unité est obligatoire.",
+      "noPropertyBody": "Créez d’abord un établissement dans le référentiel.",
+      "field": {
+        "roomTypeName": "Nom (ex. Double)",
+        "capacity": "Capacité",
+        "price": "Tarif",
+        "unitName": "Nom (ex. 101)",
+        "floor": "Étage"
+      }
+    },
+    "reservations": {
+      "title": "Réservations",
+      "subtitle": "Séjours au guichet et transitions d’état.",
+      "empty": "Aucune réservation enregistrée.",
+      "loadError": "Impossible de charger les réservations.",
+      "transitionError": "Transition refusée : la réservation a peut-être changé d’état. Liste rechargée.",
+      "noAction": "Aucune action",
+      "col": {
+        "reference": "Référence",
+        "guest": "Client",
+        "dates": "Séjour",
+        "status": "État"
+      },
+      "status": {
+        "pending": "En attente",
+        "confirmed": "Confirmée",
+        "checkedIn": "En séjour",
+        "checkedOut": "Terminée",
+        "cancelled": "Annulée",
+        "noShow": "Non présentée"
+      },
+      "action": {
+        "confirm": "Confirmer",
+        "cancel": "Annuler",
+        "checkIn": "Arrivée",
+        "checkOut": "Départ",
+        "noShow": "Non présenté"
+      }
+    },
+    "team": {
+      "title": "Équipe",
+      "subtitle": "Employés affectés à chaque établissement.",
+      "assign": "Affecter un employé",
+      "submit": "Affecter",
+      "selectEmployee": "Choisir un employé",
+      "empty": "Aucun employé affecté à cet établissement.",
+      "loadError": "Impossible de charger l’équipe.",
+      "employeeRequired": "Sélectionnez un employé.",
+      "assignError": "Affectation refusée : cet employé est peut-être déjà rattaché à cet établissement.",
+      "updateError": "Modification refusée par l’API.",
+      "removeError": "Retrait refusé par l’API.",
+      "confirmRemove": "Retirer cet employé de l’établissement ?",
+      "remove": "Retirer",
+      "col": {
+        "employee": "Employé",
+        "role": "Rôle"
+      },
+      "field": {
+        "role": "Rôle (ex. Réception)"
+      }
+    },
+    "rentals": {
+      "title": "Locatif",
+      "subtitle": "Baux, échéances et encaissements des logements en location.",
+      "empty": "Aucun bail pour cet établissement.",
+      "loadError": "Impossible de charger le locatif.",
+      "generate": "Générer les échéances",
+      "generateError": "Génération refusée : les échéances existent déjà ou le bail n’a pas de date de fin.",
+      "terminate": "Résilier",
+      "terminateError": "Résiliation refusée par l’API.",
+      "confirmTerminate": "Résilier ce bail ? Les échéances non réglées restent dues.",
+      "payments": "Échéances",
+      "unpaid": "impayée(s)",
+      "noPayments": "Aucune échéance : générez-les pour pouvoir encaisser le loyer."
+    }
   }
 }
