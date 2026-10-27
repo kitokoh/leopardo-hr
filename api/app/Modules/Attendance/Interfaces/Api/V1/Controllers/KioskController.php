@@ -9,6 +9,8 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
+use App\Modules\Attendance\Application\Actions\BuildKioskEmployeeInfo;
+use App\Modules\Attendance\Application\Actions\BuildKioskRoster;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use App\Modules\Attendance\Infrastructure\Services\BiometricAuditLogger;
@@ -39,6 +41,8 @@ class KioskController extends Controller
         private readonly BiometricAuditLogger $biometricAudit,
         private readonly KioskFaceVerificationService $faceVerification,
         private readonly TenantManager $tenantManager,
+        private readonly BuildKioskRoster $buildKioskRoster,
+        private readonly BuildKioskEmployeeInfo $buildKioskEmployeeInfo,
     ) {}
 
     public function register(Request $request): JsonResponse
@@ -166,27 +170,9 @@ class KioskController extends Controller
 
     private function doRoster(Company $company, string $deviceCode): JsonResponse
     {
-        $hasFaceColumn = Schema::hasColumn('employees', 'biometric_face_enabled');
-        $hasFingerprintColumn = Schema::hasColumn('employees', 'biometric_fingerprint_enabled');
-
-        $items = Employee::query()
-            ->where('company_id', $company->id)
-            ->where('status', 'active')
-            ->when($hasFaceColumn || $hasFingerprintColumn, function ($query) use ($hasFaceColumn, $hasFingerprintColumn): void {
-                $query->where(function ($biometricQuery) use ($hasFaceColumn, $hasFingerprintColumn): void {
-                    if ($hasFaceColumn) {
-                        $biometricQuery->orWhere('biometric_face_enabled', true);
-                    }
-
-                    if ($hasFingerprintColumn) {
-                        $biometricQuery->orWhere('biometric_fingerprint_enabled', true);
-                    }
-                });
-            })
-            ->orderBy('id')
-            ->get()
-            ->map(fn (Employee $employee) => $this->serializeRosterEmployee($employee, $hasFaceColumn, $hasFingerprintColumn))
-            ->values();
+        // #7962 — la requête et la sérialisation vivent dans l'Action ; le
+        // contrôleur ne garde que l'orchestration HTTP.
+        $items = $this->buildKioskRoster->execute($company);
 
         return new JsonResponse([
             'data' => [
@@ -272,51 +258,10 @@ class KioskController extends Controller
      */
     private function doEmployeeInfo(Company $company, array $validated): JsonResponse
     {
-        $employee = Employee::query()
-            ->where('company_id', $company->id)
-            ->where(function ($query) use ($validated): void {
-                $query->where('matricule', $validated['identifier'])
-                    ->orWhere('email', $validated['identifier'])
-                    ->orWhere('zkteco_id', $validated['identifier']);
-            })
-            ->first();
-
-        abort_if(! $employee, 404, 'EMPLOYEE_NOT_FOUND');
-
-        $today = now()->toDateString();
-        $todayAttendance = DB::table('attendance_logs')
-            ->where('employee_id', $employee->id)
-            ->where('date', $today)
-            ->first();
-
-        $leaveBalance = DB::table('leave_balances')
-            ->where('employee_id', $employee->id)
-            ->where('year', now()->year)
-            ->get()
-            ->map(fn ($b) => $this->serializeLeaveBalance($b));
-
+        // #7962 — résolution employé + présence du jour + soldes de congés
+        // déplacés dans l'Action ; le contrôleur ne garde que l'enveloppe HTTP.
         return new JsonResponse([
-            'data' => [
-                'employee' => [
-                    'id' => $employee->id,
-                    'name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
-                    'matricule' => $employee->matricule,
-                    'department' => $employee->department?->name,
-                    'position' => $employee->position?->name,
-                    'photo_url' => $employee->photo_url ?? null,
-                ],
-                'today_attendance' => $todayAttendance ? [
-                    'check_in' => $todayAttendance->check_in,
-                    'check_out' => $todayAttendance->check_out,
-                    'status' => $todayAttendance->status,
-                ] : null,
-                'leave_balances' => $leaveBalance,
-                // PA2-KIO-004: surface the employee's mobile-submitted biometric
-                // enrollment consent/status on the kiosk so field staff can see
-                // at a glance whether biometric punch is enabled/pending/rejected
-                // for this employee, without leaving the kiosk screen.
-                'biometric_enrollment' => $this->serializeBiometricEnrollmentStatus($employee),
-            ],
+            'data' => $this->buildKioskEmployeeInfo->execute($company, $validated),
         ]);
     }
 
@@ -408,20 +353,17 @@ class KioskController extends Controller
      */
     private function doLeaveBalance(Company $company, array $validated): JsonResponse
     {
-        $employee = Employee::query()
-            ->where('company_id', $company->id)
-            ->where(function ($query) use ($validated): void {
-                $query->where('matricule', $validated['identifier'])
-                    ->orWhere('email', $validated['identifier'])
-                    ->orWhere('zkteco_id', $validated['identifier']);
-            })
-            ->firstOrFail();
+        // #7962 — même résolution tenant-scopée que la fiche employé : une
+        // seule implémentation, pas deux copies de la requête.
+        $employee = $this->buildKioskEmployeeInfo->resolveEmployee($company, (string) $validated['identifier']);
+
+        abort_if(! $employee, 404, 'EMPLOYEE_NOT_FOUND');
 
         $balances = DB::table('leave_balances')
             ->where('employee_id', $employee->id)
             ->where('year', now()->year)
             ->get()
-            ->map(fn ($b) => $this->serializeLeaveBalance($b));
+            ->map(fn ($b) => $this->buildKioskEmployeeInfo->serializeLeaveBalance($b));
 
         return new JsonResponse([
             'data' => [
@@ -891,22 +833,6 @@ class KioskController extends Controller
         ];
     }
 
-    private function serializeLeaveBalance(object $balance): array
-    {
-        $remaining = (float) ($balance->remaining ?? $balance->balance ?? 0);
-        $used = (float) ($balance->used_days ?? $balance->used ?? 0);
-        $pending = (float) ($balance->pending ?? 0);
-        $total = (float) ($balance->total_days ?? $balance->entitled_days ?? ($remaining + $used + $pending));
-
-        return [
-            'leave_type' => (string) ($balance->leave_type ?? $balance->absence_type_id ?? 'annual'),
-            'total' => $total,
-            'used' => $used,
-            'pending' => $pending,
-            'remaining' => $remaining,
-        ];
-    }
-
     private function nullableIsoString(mixed $value): ?string
     {
         if ($value === null || $value === '') {
@@ -918,23 +844,6 @@ class KioskController extends Controller
         } catch (Throwable) {
             return (string) $value;
         }
-    }
-
-    private function serializeRosterEmployee(Employee $employee, bool $hasFaceColumn, bool $hasFingerprintColumn): array
-    {
-        return [
-            'employee_id' => $employee->id,
-            'name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
-            'email' => $employee->email,
-            'matricule' => $employee->matricule,
-            'zkteco_id' => $employee->zkteco_id,
-            // ATT-004 (#6769) : badge exposé au kiosque (badge/PIN/validation
-            // manager) — l'identifiant de pointage par carte est déjà accepté
-            // par punch (BIO-006). L'appareil est authentifié (X-Kiosk-Token).
-            'badge_number' => $employee->badge_number,
-            'face_enabled' => $hasFaceColumn ? (bool) ($employee->biometric_face_enabled ?? false) : false,
-            'fingerprint_enabled' => $hasFingerprintColumn ? (bool) ($employee->biometric_fingerprint_enabled ?? false) : false,
-        ];
     }
 
     /**
