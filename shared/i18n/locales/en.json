@@ -8743,5 +8743,12 @@
       "unpaid": "unpaid",
       "noPayments": "No instalments: generate them to collect the rent."
     }
-  }
+  },
+  "fuelPumpistSelectRequired": "Select a station, a pump and a meter.",
+  "fuelPumpistReadingRejected": "Reading rejected by the server",
+  "fuelPumpistStationsError": "Stations unavailable",
+  "fuelPumpistPumpsError": "Pumps unavailable",
+  "fuelPumpistMetersError": "Meters unavailable",
+  "fuelTechnicalRef": "Ref. {id}",
+  "fuelMeterLabelWithProduct": "{meter} — {product}"
 }
