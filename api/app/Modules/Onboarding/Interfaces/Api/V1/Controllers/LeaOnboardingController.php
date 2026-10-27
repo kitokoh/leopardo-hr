@@ -7,7 +7,7 @@ namespace App\Modules\Onboarding\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
-use App\Modules\Onboarding\Application\Actions\InterpretLeaOnboarding;
+use App\Modules\Onboarding\Domain\Services\LeaOnboardingOrchestrator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -32,7 +32,7 @@ use Illuminate\Http\Request;
 class LeaOnboardingController extends Controller
 {
     public function __construct(
-        private readonly InterpretLeaOnboarding $lea,
+        private readonly LeaOnboardingOrchestrator $lea,
     ) {}
 
     public function interpret(Request $request): JsonResponse
@@ -98,7 +98,7 @@ class LeaOnboardingController extends Controller
         // plan qu'il a vu n'est plus celui des reponses envoyees. 409 plutot
         // que 200 pour que le client redemande une confirmation sur le plan
         // a jour au lieu de croire l'activation faite.
-        if ($result['outcome'] === InterpretLeaOnboarding::OUTCOME_FALLBACK) {
+        if ($result['outcome'] === LeaOnboardingOrchestrator::OUTCOME_FALLBACK) {
             return response()->json([
                 'data' => $result,
                 'message' => __('onboarding.lea_confirm_stale'),

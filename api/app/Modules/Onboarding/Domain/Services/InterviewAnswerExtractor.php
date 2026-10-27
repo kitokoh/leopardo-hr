@@ -9,7 +9,7 @@ use App\Core\AI\Domain\Enums\ModelType;
 use App\Core\AI\Domain\ValueObjects\ModelRequest;
 use App\Core\AI\Domain\ValueObjects\ModelVersion;
 use App\Modules\Onboarding\Domain\Exceptions\LeaInterpretationUnavailableException;
-use Illuminate\Support\Facades\Log;
+use Psr\Log\LoggerInterface;
 use Throwable;
 
 /**
@@ -91,6 +91,7 @@ final class InterviewAnswerExtractor
 
     public function __construct(
         private readonly ModelInferencePort $inference,
+        private readonly LoggerInterface $logger,
     ) {}
 
     /**
@@ -117,7 +118,7 @@ final class InterviewAnswerExtractor
         if ($this->containsInjection($description)) {
             // Rejet AVANT l'appel : le texte hostile n'atteint jamais le
             // modele, donc aucune valeur ne peut en sortir.
-            Log::warning('lea.interpret.injection_rejected', [
+            $this->logger->warning('lea.interpret.injection_rejected', [
                 'correlation_id' => $correlationId,
             ]);
 
@@ -160,7 +161,7 @@ final class InterviewAnswerExtractor
                 // comme une indisponibilite : le parcours ne doit jamais
                 // remonter une exception fournisseur a l'utilisateur.
                 report($exception);
-                Log::warning('lea.interpret.provider_error', [
+                $this->logger->warning('lea.interpret.provider_error', [
                     'correlation_id' => $correlationId,
                     'attempt' => $attempts,
                 ]);
@@ -169,7 +170,7 @@ final class InterviewAnswerExtractor
             }
 
             if (! $result->isUsable()) {
-                Log::info('lea.interpret.unusable_result', [
+                $this->logger->info('lea.interpret.unusable_result', [
                     'correlation_id' => $correlationId,
                     'status' => $result->status->value,
                     'attempt' => $attempts,
@@ -182,7 +183,7 @@ final class InterviewAnswerExtractor
             $answers = $payload['answers'] ?? null;
 
             if (! is_array($answers)) {
-                Log::info('lea.interpret.malformed_payload', [
+                $this->logger->info('lea.interpret.malformed_payload', [
                     'correlation_id' => $correlationId,
                     'attempt' => $attempts,
                 ]);
@@ -280,7 +281,7 @@ final class InterviewAnswerExtractor
         }
 
         if ($clarification !== []) {
-            Log::info('lea.interpret.clarification_required', [
+            $this->logger->info('lea.interpret.clarification_required', [
                 'correlation_id' => $correlationId,
                 'rejected_count' => count($unknownValues),
             ]);

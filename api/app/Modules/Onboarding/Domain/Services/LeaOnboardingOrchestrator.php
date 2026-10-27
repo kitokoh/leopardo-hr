@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Onboarding\Application\Actions;
+namespace App\Modules\Onboarding\Domain\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Onboarding\Application\Actions\CompleteSetupInterview;
 use App\Modules\Onboarding\Domain\Exceptions\LeaInterpretationUnavailableException;
-use App\Modules\Onboarding\Domain\Services\InterviewAnswerExtractor;
-use App\Modules\Onboarding\Domain\Services\SetupInterviewPlanner;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
@@ -39,8 +38,19 @@ use Throwable;
  * cas produisent `fallback_required` avec un code stable, jamais une erreur
  * qui laisserait l'utilisateur sans parcours. L'entretien deterministe reste
  * toujours disponible.
+ *
+ * ## Pourquoi un service et non une Application Action
+ *
+ * La convention du depot est stricte : `*Actions*` = **une** methode
+ * `execute()` (#6570), verifiee par `check-actions-convention.sh`. Cet
+ * orchestrateur expose trois etapes distinctes (`interpret`, `clarify`,
+ * `confirm`) parce qu'elles correspondent a trois appels HTTP et que les
+ * fusionner rendrait impossible de garantir qu'aucune activation n'a lieu
+ * avant confirmation. C'est donc un service de domaine, pas une action —
+ * et il delegue l'unique effet de bord a `CompleteSetupInterview`, qui reste
+ * la seule action.
  */
-final class InterpretLeaOnboarding
+final class LeaOnboardingOrchestrator
 {
     public const OUTCOME_PLAN_READY = 'plan_ready';
 

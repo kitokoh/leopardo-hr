@@ -13,6 +13,7 @@ use App\Core\AI\Domain\ValueObjects\ModelVersion;
 use App\Modules\Onboarding\Domain\Exceptions\LeaInterpretationUnavailableException;
 use App\Modules\Onboarding\Domain\Services\InterviewAnswerExtractor;
 use App\Modules\Onboarding\Domain\Services\SetupInterviewPlanner;
+use Psr\Log\NullLogger;
 use Tests\TestCase;
 
 /**
@@ -128,7 +129,7 @@ class InterviewAnswerExtractorTest extends TestCase
     public function test_hostile_description_is_rejected_before_any_model_call(): void
     {
         $port = new ScriptedInferencePort([]);
-        $extractor = new InterviewAnswerExtractor($port);
+        $extractor = new InterviewAnswerExtractor($port, new NullLogger);
 
         try {
             $extractor->extract(
@@ -188,7 +189,7 @@ class InterviewAnswerExtractorTest extends TestCase
             ['attempt' => 'malformed'],
             ['attempt' => 'malformed'],
         ]);
-        $extractor = new InterviewAnswerExtractor($port);
+        $extractor = new InterviewAnswerExtractor($port, new NullLogger);
 
         $result = $extractor->extract(
             'Une association qui collecte des fonds pour des projets locaux, 5 benevoles.',
@@ -206,7 +207,7 @@ class InterviewAnswerExtractorTest extends TestCase
             ['attempt' => 'malformed'],
             ['answers' => ['sector' => 'services', 'team_size' => '1-10']],
         ]);
-        $extractor = new InterviewAnswerExtractor($port);
+        $extractor = new InterviewAnswerExtractor($port, new NullLogger);
 
         $result = $extractor->extract(
             'Un cabinet de conseil avec 4 consultants, clients principalement des PME locales.',
@@ -224,7 +225,7 @@ class InterviewAnswerExtractorTest extends TestCase
             ['attempt' => 'unavailable'],
             ['attempt' => 'unavailable'],
         ]);
-        $extractor = new InterviewAnswerExtractor($port);
+        $extractor = new InterviewAnswerExtractor($port, new NullLogger);
 
         $result = $extractor->extract(
             'Une boutique de vetements avec 6 vendeuses dans un centre commercial.',
@@ -290,7 +291,7 @@ class InterviewAnswerExtractorTest extends TestCase
         return new InterviewAnswerExtractor(new ScriptedInferencePort([
             ['answers' => $answers],
             ['answers' => $answers],
-        ]));
+        ]), new NullLogger);
     }
 }
 
