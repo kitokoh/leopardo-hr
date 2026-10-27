@@ -181,8 +181,7 @@ class Page extends Model
      */
     public function isPubliclyVisible(): bool
     {
-        return $this->status instanceof PageStatus
-            && $this->status->isPubliclyVisible()
+        return $this->status->isPubliclyVisible()
             && $this->suspended_at === null;
     }
 
@@ -319,9 +318,7 @@ class Page extends Model
         ?string $method = null,
         ?Carbon $at = null,
     ): void {
-        $current = $this->verification_status instanceof PageVerificationStatus
-            ? $this->verification_status
-            : PageVerificationStatus::Unverified;
+        $current = $this->verification_status;
 
         $current->assertCanTransitionTo($target);
 
