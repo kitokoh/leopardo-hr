@@ -198,7 +198,13 @@ class Page extends Model
      */
     public function assertSameTenantAsSite(): void
     {
-        $site = $this->site()->withoutGlobalScopes()->first();
+        // #7960 — le scope tenant est délibérément contourné : c'est justement
+        // le cas inter-tenant qu'on veut DÉTECTER. Passer par le wrapper
+        // documenté (plutôt qu'un contournement brut) rend l'exception
+        // auditable et nomme sa raison.
+        $site = $this->site()
+            ->crossTenantForSystemTask('intégrité tenant Page↔Site (#8723)')
+            ->first();
 
         if (! $site instanceof Site) {
             throw PageTenantMismatchException::missingSite($this->site_id);

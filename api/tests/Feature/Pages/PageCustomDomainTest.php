@@ -32,8 +32,6 @@ class PageCustomDomainTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private Company $company;
-
     private Site $site;
 
     private Page $page;
@@ -58,7 +56,6 @@ class PageCustomDomainTest extends TestCase
         config()->set('pages.custom_domains.txt_secret', $this->secret);
 
         $company = Company::factory()->create(['country' => 'SN', 'currency' => 'XOF']);
-        $this->company = $company;
 
         $this->site = Site::create([
             'company_id' => $company->id,
@@ -90,12 +87,15 @@ class PageCustomDomainTest extends TestCase
         $guard->shouldReceive('isFeatureEnabled')
             ->andReturnUsing(fn (string $companyId, string $feature): bool => $this->entitlements[$feature]['enabled'] ?? true);
         $guard->shouldReceive('featureLimit')
-            ->andReturnUsing(fn (string $companyId, string $feature): ?int => $this->entitlements[$feature]['limit'] ?? 1);
+            ->andReturnUsing(fn (string $companyId, string $feature): int => $this->entitlements[$feature]['limit'] ?? 1);
+
+        /** @var FeatureEntitlements $entitlements */
+        $entitlements = $guard;
 
         $this->app->instance(DnsResolver::class, $this->dns);
         $this->app->instance(CustomDomainProvider::class, $this->provider);
 
-        $this->service = new PageCustomDomainService($this->dns, $this->provider, $guard, app(\App\Shared\Contracts\Persistence\TransactionRunner::class));
+        $this->service = new PageCustomDomainService($this->dns, $this->provider, $entitlements, app(\App\Shared\Contracts\Persistence\TransactionRunner::class));
     }
 
     /** Pose les records DNS que le service attend pour un host donné. */
@@ -420,7 +420,7 @@ class PageCustomDomainTest extends TestCase
         // dépassée — exactement le cas d'un webhook perdu. On ne sert PAS.
         $this->assertFalse($domain->fresh()?->canServe() ?? true);
 
-        $refreshed = $this->service->refreshCertificate($domain->fresh() ?? $domain);
+        $refreshed = $this->service->refreshCertificate($domain->fresh());
 
         // Le rafraîchissement redemande un certificat ; l'adaptateur de test en
         // émet un nouveau, donc le domaine resservira — mais avec une échéance

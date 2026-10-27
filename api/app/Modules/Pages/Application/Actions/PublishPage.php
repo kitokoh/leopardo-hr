@@ -26,7 +26,12 @@ use App\Modules\Pages\Domain\Models\Page;
  */
 final class PublishPage
 {
-    public function handle(Page $page): Page
+    /**
+     * Convention #6570 : « 1 action = 1 execute() ». Le nom `handle()` venait
+     * du patron des jobs ; la garde `check-actions-convention.sh` refuse une
+     * Action sans `execute()`, et c'est elle qui fait foi.
+     */
+    public function execute(Page $page): Page
     {
         $page->assertSameTenantAsSite();
 

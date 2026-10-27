@@ -318,7 +318,7 @@ class PageBlockContractTest extends TestCase
             $payload = ['n' => $payload];
         }
 
-        $errors = $this->validator->validate($definition, is_array($payload) ? $payload : []);
+        $errors = $this->validator->validate($definition, $payload);
 
         $this->assertNotEmpty($errors);
         $this->assertStringContainsString('profondeur maximale', implode(' ', $errors));

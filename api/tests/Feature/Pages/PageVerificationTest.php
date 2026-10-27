@@ -36,8 +36,6 @@ class PageVerificationTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private Company $company;
-
     private Page $page;
 
     private PageVerificationService $service;
@@ -48,7 +46,6 @@ class PageVerificationTest extends TestCase
 
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'SN', 'currency' => 'XOF']);
-        $this->company = $company;
 
         /** @var Site $site */
         $site = Site::create([
@@ -321,7 +318,6 @@ class PageVerificationTest extends TestCase
 
         $this->assertSame('lease', $evidence->kind);
         $this->assertSame('s3-private', $evidence->storage_disc);
-        $this->assertNotNull($evidence->retention_until);
         $this->assertTrue($evidence->retention_until->isFuture(), 'La conservation doit être datée et dans le futur.');
 
         // La réponse du service ne contient AUCUNE URL de fichier.
@@ -609,7 +605,7 @@ class PageVerificationTest extends TestCase
         // est qu'aucune route ne pointe vers les pièces. On inspecte la table
         // de routage : toute route dont l'URI contient `evidence` et qui n'est
         // pas authentifiée serait une fuite.
-        $routes = app('router')->getRoutes();
+        $routes = app('router')->getRoutes()->getRoutes();
         $inspected = 0;
         foreach ($routes as $route) {
             $inspected++;
