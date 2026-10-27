@@ -14,7 +14,7 @@ namespace App\Modules\Pages\Domain\CustomDomains;
 final readonly class DomainInspection
 {
     /**
-     * @param list<string> $errors
+     * @param  list<string>  $errors
      */
     public function __construct(
         public string $host,
@@ -22,8 +22,7 @@ final readonly class DomainInspection
         public bool $isApex,
         public bool $isWildcard,
         public array $errors,
-    ) {
-    }
+    ) {}
 
     /**
      * Méthode ET propriété auraient le même nom en PHP (`$o->valid()` vs

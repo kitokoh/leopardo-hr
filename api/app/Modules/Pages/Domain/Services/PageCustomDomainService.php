@@ -9,7 +9,6 @@ use App\Modules\Billing\Domain\Services\EntitlementGuard;
 use App\Modules\Pages\Domain\CustomDomains\Contracts\CustomDomainProvider;
 use App\Modules\Pages\Domain\CustomDomains\Contracts\CustomDomainProviderResult;
 use App\Modules\Pages\Domain\CustomDomains\Dns\DnsResolver;
-use App\Modules\Pages\Domain\CustomDomains\DomainInspection;
 use App\Modules\Pages\Domain\CustomDomains\DomainName;
 use App\Modules\Pages\Domain\Exceptions\PageCustomDomainException;
 use App\Modules\Pages\Domain\Models\Page;
@@ -49,8 +48,7 @@ final class PageCustomDomainService
         private readonly DnsResolver $dns,
         private readonly CustomDomainProvider $provider,
         private readonly EntitlementGuard $entitlements,
-    ) {
-    }
+    ) {}
 
     /**
      * Déclare un domaine et rend les instructions DNS au tenant.
@@ -396,7 +394,7 @@ final class PageCustomDomainService
     }
 
     /**
-     * @param array<string, mixed> $metadata
+     * @param  array<string, mixed>  $metadata
      */
     private function audit(?Page $page, string $action, string $actor, array $metadata): void
     {

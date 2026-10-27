@@ -37,8 +37,6 @@ interface CustomDomainProvider
      * Crée (ou confirme) le rattachement du host au renderer.
      *
      * Doit être idempotent : rappeler avec le même host ne crée pas de doublon.
-     *
-     * @return CustomDomainProviderResult
      */
     public function provision(string $host): CustomDomainProviderResult;
 

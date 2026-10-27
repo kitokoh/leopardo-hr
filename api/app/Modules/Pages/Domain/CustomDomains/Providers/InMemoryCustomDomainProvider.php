@@ -31,8 +31,7 @@ final class InMemoryCustomDomainProvider implements CustomDomainProvider
     public function __construct(
         private readonly string $providerName = 'memory',
         private readonly bool $certificateReadyOnSecondCall = true,
-    ) {
-    }
+    ) {}
 
     public function name(): string
     {

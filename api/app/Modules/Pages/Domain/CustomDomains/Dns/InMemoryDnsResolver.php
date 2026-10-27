@@ -23,7 +23,7 @@ final class InMemoryDnsResolver implements DnsResolver
     private array $resolves = [];
 
     /**
-     * @param list<string>|string $value
+     * @param  list<string>|string  $value
      */
     public function setTxt(string $host, array|string $value): self
     {
@@ -33,7 +33,7 @@ final class InMemoryDnsResolver implements DnsResolver
     }
 
     /**
-     * @param list<string>|string $target
+     * @param  list<string>|string  $target
      */
     public function setCname(string $host, array|string $target): self
     {

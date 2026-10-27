@@ -23,15 +23,14 @@ final readonly class CustomDomainProviderResult
     public const STATE_ABSENT = 'absent';
 
     /**
-     * @param array<string, mixed> $raw
+     * @param  array<string, mixed>  $raw
      */
     public function __construct(
         public string $state,
         public bool $certificateActive = false,
         public ?string $detail = null,
         public array $raw = [],
-    ) {
-    }
+    ) {}
 
     public static function active(bool $certificateActive = true): self
     {

@@ -19,8 +19,7 @@ final class NativeDnsResolver implements DnsResolver
 {
     public function __construct(
         private readonly int $timeoutSeconds = 5,
-    ) {
-    }
+    ) {}
 
     public function txt(string $host): array
     {

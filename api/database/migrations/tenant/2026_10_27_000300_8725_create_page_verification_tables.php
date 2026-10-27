@@ -102,13 +102,13 @@ return new class extends Migration
         // en base par INSERT direct.
         DB::statement('ALTER TABLE page_verification_requests DROP CONSTRAINT IF EXISTS pvr_status_allowed');
         DB::statement(
-            "ALTER TABLE page_verification_requests ADD CONSTRAINT pvr_status_allowed "
+            'ALTER TABLE page_verification_requests ADD CONSTRAINT pvr_status_allowed '
             ."CHECK (status IN ('open', 'pending_review', 'approved', 'rejected', 'disputed', 'revoked'))"
         );
 
         DB::statement('ALTER TABLE page_verification_requests DROP CONSTRAINT IF EXISTS pvr_method_allowed');
         DB::statement(
-            "ALTER TABLE page_verification_requests ADD CONSTRAINT pvr_method_allowed "
+            'ALTER TABLE page_verification_requests ADD CONSTRAINT pvr_method_allowed '
             ."CHECK (method IN ('sms', 'document', 'superadmin'))"
         );
 
@@ -117,13 +117,13 @@ return new class extends Migration
         // « état, preuves, décision, acteur et motif » le soient.
         DB::statement('ALTER TABLE page_verification_requests DROP CONSTRAINT IF EXISTS pvr_decision_complete');
         DB::statement(
-            "ALTER TABLE page_verification_requests ADD CONSTRAINT pvr_decision_complete "
+            'ALTER TABLE page_verification_requests ADD CONSTRAINT pvr_decision_complete '
             ."CHECK (status IN ('open', 'pending_review') OR (decided_by IS NOT NULL AND decided_at IS NOT NULL AND decision_reason IS NOT NULL))"
         );
 
         DB::statement('ALTER TABLE page_verification_evidence DROP CONSTRAINT IF EXISTS pve_kind_allowed');
         DB::statement(
-            "ALTER TABLE page_verification_evidence ADD CONSTRAINT pve_kind_allowed "
+            'ALTER TABLE page_verification_evidence ADD CONSTRAINT pve_kind_allowed '
             ."CHECK (kind IN ('lease', 'utility_bill', 'business_registration', 'tax_certificate', 'ownership_title', 'photo_signage'))"
         );
 
@@ -131,7 +131,7 @@ return new class extends Migration
         // balise `<script>` ou un data-URI ne peut pas être une pièce.
         DB::statement('ALTER TABLE page_verification_evidence DROP CONSTRAINT IF EXISTS pve_mime_allowed');
         DB::statement(
-            "ALTER TABLE page_verification_evidence ADD CONSTRAINT pve_mime_allowed "
+            'ALTER TABLE page_verification_evidence ADD CONSTRAINT pve_mime_allowed '
             ."CHECK (mime_type IN ('application/pdf', 'image/jpeg', 'image/png', 'image/webp'))"
         );
 
@@ -145,7 +145,7 @@ return new class extends Migration
         // rend la fuite impossible même par erreur de développement.
         DB::statement('ALTER TABLE page_verification_evidence DROP CONSTRAINT IF EXISTS pve_private_path');
         DB::statement(
-            "ALTER TABLE page_verification_evidence ADD CONSTRAINT pve_private_path "
+            'ALTER TABLE page_verification_evidence ADD CONSTRAINT pve_private_path '
             ."CHECK (storage_path NOT LIKE 'http://%' AND storage_path NOT LIKE 'https://%' AND storage_path NOT LIKE '//%')"
         );
 

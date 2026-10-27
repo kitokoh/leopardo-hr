@@ -113,20 +113,20 @@ return new class extends Migration
         // même par INSERT direct (même doctrine que #8722).
         DB::statement('ALTER TABLE pages DROP CONSTRAINT IF EXISTS pages_status_allowed');
         DB::statement(
-            "ALTER TABLE pages ADD CONSTRAINT pages_status_allowed "
+            'ALTER TABLE pages ADD CONSTRAINT pages_status_allowed '
             ."CHECK (status IN ('draft', 'published'))"
         );
 
         DB::statement('ALTER TABLE pages DROP CONSTRAINT IF EXISTS pages_verification_status_allowed');
         DB::statement(
-            "ALTER TABLE pages ADD CONSTRAINT pages_verification_status_allowed "
+            'ALTER TABLE pages ADD CONSTRAINT pages_verification_status_allowed '
             ."CHECK (verification_status IN ('unverified', 'pending', 'verified', 'rejected', 'disputed', 'revoked'))"
         );
 
         // Une Page publiée a forcément une date de publication.
         DB::statement('ALTER TABLE pages DROP CONSTRAINT IF EXISTS pages_published_requires_date');
         DB::statement(
-            "ALTER TABLE pages ADD CONSTRAINT pages_published_requires_date "
+            'ALTER TABLE pages ADD CONSTRAINT pages_published_requires_date '
             ."CHECK (status <> 'published' OR published_at IS NOT NULL)"
         );
 
@@ -134,22 +134,22 @@ return new class extends Migration
         // bug d'écriture.
         DB::statement('ALTER TABLE pages DROP CONSTRAINT IF EXISTS pages_draft_has_no_published_date');
         DB::statement(
-            "ALTER TABLE pages ADD CONSTRAINT pages_draft_has_no_published_date "
+            'ALTER TABLE pages ADD CONSTRAINT pages_draft_has_no_published_date '
             ."CHECK (status <> 'draft' OR published_at IS NULL)"
         );
 
         // « vérifiée » sans date ni méthode n'est pas vérifiable (#8024).
         DB::statement('ALTER TABLE pages DROP CONSTRAINT IF EXISTS pages_verified_requires_proof');
         DB::statement(
-            "ALTER TABLE pages ADD CONSTRAINT pages_verified_requires_proof "
+            'ALTER TABLE pages ADD CONSTRAINT pages_verified_requires_proof '
             ."CHECK (verification_status <> 'verified' OR (verified_at IS NOT NULL AND verification_method IS NOT NULL))"
         );
 
         // Une suspension sans motif n'est pas auditable.
         DB::statement('ALTER TABLE pages DROP CONSTRAINT IF EXISTS pages_suspension_requires_reason');
         DB::statement(
-            "ALTER TABLE pages ADD CONSTRAINT pages_suspension_requires_reason "
-            ."CHECK (suspended_at IS NULL OR suspension_reason IS NOT NULL)"
+            'ALTER TABLE pages ADD CONSTRAINT pages_suspension_requires_reason '
+            .'CHECK (suspended_at IS NULL OR suspension_reason IS NOT NULL)'
         );
     }
 
