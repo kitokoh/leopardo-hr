@@ -335,6 +335,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/reports/cogs', [RestaurantReportController::class, 'cogs']);
         Route::get('/reports/pos', [RestaurantReportController::class, 'pos']);
         Route::get('/reports/kpis', [RestaurantReportController::class, 'kpis']);
+        // REST-OS-8 (#8610) — vue consolidée groupe (lecture seule, périmètre
+        // dérivé des assignations de ressources de l'acteur).
+        Route::get('/reports/group', [RestaurantReportController::class, 'group']);
 
         // ── REST-OS-7 (#8609) — Mode hors ligne : idempotence, conflits, reprise ──
         // Registre FERME d'operations : tout le reste est refuse et conserve.

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Application\Actions;
 
+use App\Modules\RestaurantManager\Domain\Contracts\CustomerReceiptRendererInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\OrderTicketRendererInterface;
+use App\Modules\RestaurantManager\Domain\Enums\PrintTicketKind;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPrintJob;
 
 /**
@@ -14,12 +16,27 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantPrintJob;
  * Le rendu reste PUR (aucune I/O) : le bridge récupère les octets et les remet
  * lui-même à l'imprimante thermique (USB / réseau 9100 / CUPS) — c'est le seul
  * composant qui peut réellement confirmer l'impression.
+ *
+ * **Défaut corrigé (#8610, REST-OS-8)** — cette action construisait TOUJOURS un
+ * ticket cuisine, quel que soit le `ticket_kind` du travail. Un travail
+ * `CUSTOMER_RECEIPT` imprimait donc un ticket CUISINE : en-tête « CUISINE »,
+ * quantités sans prix, aucune mention légale, aucun total. Le `kind` était
+ * pourtant stocké, indexé et affiché dans l'UI — il était simplement ignoré au
+ * moment du rendu, c'est-à-dire au seul endroit qui compte.
+ *
+ * Le dispatch est désormais EXPLICITE et **fail-closed** : un `kind` sans
+ * renderer associé lève une exception plutôt que de retomber silencieusement
+ * sur le ticket cuisine. Un repli par défaut reproduirait exactement le bug
+ * qu'on corrige — mieux vaut un travail en échec visible qu'un document faux
+ * remis au client.
  */
 final class RenderPrintJobPayloadAction
 {
     public function __construct(
-        private readonly BuildKitchenTicketAction $buildTicket,
-        private readonly OrderTicketRendererInterface $renderer,
+        private readonly BuildKitchenTicketAction $buildKitchenTicket,
+        private readonly BuildCustomerReceiptAction $buildCustomerReceipt,
+        private readonly OrderTicketRendererInterface $kitchenRenderer,
+        private readonly CustomerReceiptRendererInterface $receiptRenderer,
     ) {}
 
     /**
@@ -34,16 +51,31 @@ final class RenderPrintJobPayloadAction
             return ['payload' => '', 'hash' => ''];
         }
 
-        $ticket = $this->buildTicket->execute($order, (int) $job->revision);
+        $width = $this->paperWidth($paperWidth);
+        $revision = (int) $job->revision;
 
-        $configuredWidth = config('restaurantmanager.printing.paper_width', 80);
-
-        $width = $paperWidth !== null && is_numeric($paperWidth)
-            ? (int) $paperWidth
-            : (is_numeric($configuredWidth) ? (int) $configuredWidth : 80);
-
-        $payload = $this->renderer->render($ticket, $width);
+        $payload = match ($job->ticket_kind) {
+            PrintTicketKind::KITCHEN => $this->kitchenRenderer->render(
+                $this->buildKitchenTicket->execute($order, $revision),
+                $width,
+            ),
+            PrintTicketKind::CUSTOMER_RECEIPT => $this->receiptRenderer->render(
+                $this->buildCustomerReceipt->execute($order, $revision),
+                $width,
+            ),
+        };
 
         return ['payload' => $payload, 'hash' => hash('sha256', $payload)];
+    }
+
+    private function paperWidth(?string $override): int
+    {
+        if ($override !== null && is_numeric($override)) {
+            return (int) $override;
+        }
+
+        $configured = config('restaurantmanager.printing.paper_width', 80);
+
+        return is_numeric($configured) ? (int) $configured : 80;
     }
 }
