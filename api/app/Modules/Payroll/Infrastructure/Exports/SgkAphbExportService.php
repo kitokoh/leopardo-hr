@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Infrastructure\Exports;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Payroll\Domain\Exceptions\DsnConformityException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
-use App\Modules\Payroll\Domain\Exceptions\DsnConformityException;
 use DOMDocument;
 use DOMElement;
 

@@ -44,6 +44,7 @@ trait CreatesMvpSchema
                 $this->loadPostgresFixtureCreates();
                 $this->createPostSprintModuleTables();
                 $this->createVerticalParityTables();
+                $this->ensurePasRateRangeConstraint();
                 $this->markMvpFixtureReady($preBuildTables);
             } else {
                 // Isolation : purge les lignes laissées par le test précédent
@@ -1423,6 +1424,43 @@ trait CreatesMvpSchema
     private function tenantTable(string $table): string
     {
         return $table;
+    }
+
+    /**
+     * Pose le CHECK `employees_pas_rate_range` comme le fait la migration
+     * tenant #7936, de façon idempotente.
+     *
+     * La borne doit être appliquée par le serveur : une validation applicative
+     * seule laisserait un taux à 250 % déclarable à l'administration fiscale.
+     * On interroge `pg_constraint` (source de vérité) plutôt que d'attraper
+     * l'erreur de l'ALTER, pour ne pas avaler une erreur de nature différente.
+     */
+    private function ensurePasRateRangeConstraint(): void
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return;
+        }
+
+        if (! Schema::hasColumn('employees', 'pas_rate')) {
+            return;
+        }
+
+        $exists = DB::selectOne(
+            'SELECT 1 AS present FROM pg_constraint c '
+            .'JOIN pg_class t ON t.oid = c.conrelid '
+            .'JOIN pg_namespace n ON n.oid = t.relnamespace '
+            ."WHERE c.conname = 'employees_pas_rate_range' AND t.relname = 'employees' "
+            .'AND n.nspname = current_schema() LIMIT 1'
+        );
+
+        if ($exists !== null) {
+            return;
+        }
+
+        DB::statement(
+            'ALTER TABLE employees ADD CONSTRAINT employees_pas_rate_range '
+            .'CHECK (pas_rate IS NULL OR (pas_rate >= 0 AND pas_rate <= 100))'
+        );
     }
 
     private function moduleTable(string $table): string
