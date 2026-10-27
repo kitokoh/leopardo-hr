@@ -877,3 +877,21 @@ Vérifié : `node shared/i18n/sync/sync-web.js` → `I18N_SYNC_WEB_OK`, `node sh
 **Aucun changement de comportement.** Le diff sur `front/admin-dashboard/src/i18n/locales/{fr,en,ar,tr}.json` est uniquement la régénération mécanique (`shared/i18n/sync/sync-web.js`) des **6 clés partagées** `discovery.company*` introduites pour la **fiche publique web** `/commerce/[slug]` de la verticale Trade (P2-01, #8802) : `companyTitle`, `companyAboutTitle`, `companyImport`, `companyExport`, `companyDomestic`, `companyNotFoundTitle`. Aucun écran de la console ne consomme ces clés — elles sont servies par le catalogue partagé, comme les lots i18n précédents. Scénarios existants valides tels quels.
 
 Vérifié : `node shared/i18n/sync/sync-web.js` → `I18N_SYNC_WEB_OK`, `node shared/i18n/validators/validate.js` → `I18N_VALIDATION_OK (4 locales)`, et `git diff --exit-code` **propre** après les trois syncs (web, mobile, backend).
+
+## Note de conservation 2026-10-27 — section « Growth & Search Intelligence » (GSI-10, #8521)
+
+**Nouvelle surface de back-office, aucun scénario existant modifié.** La console gagne une section `search-intel` (7 vues : `Overview`, `Seo`, `Sea`, `Aeo`, `Geo`, `Content`, `Competitors`, `Integrations`) alimentée par les endpoints `/platform/search-intel/*` déjà livrés (GSI-8 #8519, GSI-12 #8523). Les scénarios de recette ci-dessus restent valides : ils portent sur le build, le proxy, la CSP et le préflight, que cette section ne touche pas.
+
+### Scénarios de recette de la nouvelle section
+
+1. **Navigation** : la section n'apparaît dans le menu que pour un rôle portant `search_intel.view` ; un rôle `support` ne la voit pas (et un accès direct par URL renvoie 403, pas un écran vide).
+2. **État vide honnête** : sans connecteur configuré, chaque vue affiche un état vide actionnable (« connecter un fournisseur ») et **aucun chiffre inventé** — pas de `0` présenté comme une mesure.
+3. **Connecteur non vérifié** : un connecteur configuré mais non testé reste affiché « non connecté » ; l'écran ne revendique jamais une connexion que `/test` n'a pas prouvée.
+4. **Pagination** : les listes (`useSearchIntelList`) chargent par page et n'affichent pas un total tronqué comme s'il était complet.
+5. **i18n** : les 4 locales (fr/en/ar/tr) portent les mêmes clés ; `check-i18n-catalog-parity.sh` et `validate.js` verts.
+
+### Vérification automatique
+
+- `node shared/i18n/validators/validate.js` → `I18N_VALIDATION_OK (4 locales)`.
+- `bash dev-hub/tools/check-i18n-catalog-parity.sh` → parité ×4.
+- `npx eslint src/views/search-intel src/composables/useSearchIntelList.js` → 0 erreur.

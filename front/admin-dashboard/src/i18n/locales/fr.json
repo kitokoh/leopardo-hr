@@ -1741,7 +1741,16 @@
     "emailTemplates": "E-mails",
     "settings": "Paramètres",
     "messaging": "Messagerie",
-    "provisioning": "Provisionnement"
+    "provisioning": "Provisionnement",
+    "searchIntel": "Growth & Search Intelligence",
+    "searchIntelOverview": "Vue d'ensemble",
+    "searchIntelSeo": "SEO",
+    "searchIntelSea": "SEA",
+    "searchIntelAeo": "AEO",
+    "searchIntelGeo": "GEO",
+    "searchIntelContent": "Contenu",
+    "searchIntelCompetitors": "Concurrents",
+    "searchIntelIntegrations": "Integrations"
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?"
@@ -3820,7 +3829,8 @@
     "itemCrmDesc": "Pipeline CRM",
     "itemToggleDark": "Basculer mode sombre",
     "itemToggleDarkDesc": "Changer le thème",
-    "itemProvisioningDesc": "Suivre l'onboarding et les blocages de provisionnement des tenants"
+    "itemProvisioningDesc": "Suivre l'onboarding et les blocages de provisionnement des tenants",
+    "itemSearchIntelDesc": "Pilotez le SEO, le SEA, l'AEO, le GEO et la production de contenu."
   },
   "bankRecon": {
     "title": "Rapprochement bancaire",
@@ -8921,6 +8931,185 @@
       "payments": "Échéances",
       "unpaid": "impayée(s)",
       "noPayments": "Aucune échéance : générez-les pour pouvoir encaisser le loyer."
+    }
+  },
+  "searchIntel": {
+    "common": {
+      "refresh": "Rafraichir",
+      "retry": "Reessayer",
+      "loading": "Chargement...",
+      "search": "Rechercher...",
+      "actions": "Actions",
+      "close": "Fermer",
+      "connected": "Connecte",
+      "notConnected": "Non connecte",
+      "unavailable": "Indisponible",
+      "forbidden": "Vous n'avez pas la permission search_intel.view.",
+      "loadError": "Impossible de charger les donnees."
+    },
+    "reliability": {
+      "measured": "Mesure",
+      "declared": "Declare",
+      "unavailable": "Non branche",
+      "measuredHint": "Compteur direct sur nos tables : exact par construction.",
+      "declaredHint": "Saisi ou valide par un humain : exact sur ce qui a ete saisi.",
+      "unavailableHint": "Aucune source branchee : la valeur est inconnue, pas nulle."
+    },
+    "overview": {
+      "title": "Growth & Search Intelligence",
+      "subtitle": "Vue consolidee SEO, SEA, AEO, GEO, contenu et leads.",
+      "window": "Fenetre leads",
+      "generatedAt": "Genere le",
+      "seo": "SEO",
+      "sea": "SEA",
+      "aeo": "AEO",
+      "geo": "GEO",
+      "integrations": "Integrations",
+      "pagesTracked": "Pages suivies",
+      "pagesHealthy": "Pages saines",
+      "openIssues": "Problemes ouverts",
+      "verifiedIssues": "Problemes verifies",
+      "verifiedHint": "Correction confirmee par un re-scan.",
+      "campaignsTotal": "Campagnes",
+      "campaignsRunning": "Campagnes actives",
+      "spendMonth": "Depense du mois",
+      "questionsTotal": "Questions",
+      "questionsPublished": "Publiees",
+      "questionsAwaiting": "En attente de revue",
+      "geoQueriesActive": "Requetes actives",
+      "noIntegrations": "Aucune integration declaree."
+    },
+    "seo": {
+      "title": "SEO — problemes detectes",
+      "subtitle": "Problemes issus du dernier scan, avec leur transition possible.",
+      "empty": "Aucun probleme detecte.",
+      "colTitle": "Probleme",
+      "colType": "Type",
+      "colSeverity": "Gravite",
+      "colStatus": "Statut",
+      "colUrl": "Page",
+      "colDetected": "Detecte le"
+    },
+    "sea": {
+      "title": "SEA — campagnes payantes",
+      "subtitle": "Campagnes, budgets et consommation reelle.",
+      "empty": "Aucune campagne.",
+      "manualTracking": "Suivi manuel : les depenses proviennent de releves saisis, pas d'une API regie.",
+      "colName": "Campagne",
+      "colChannel": "Canal",
+      "colStatus": "Statut",
+      "colBudget": "Depense / budget",
+      "colMeasured": "Jours mesures",
+      "days": "j"
+    },
+    "aeo": {
+      "title": "AEO — questions & reponses",
+      "subtitle": "Questions ciblees, brouillons et publication.",
+      "empty": "Aucune question.",
+      "colQuestion": "Question",
+      "colLocale": "Langue",
+      "colSector": "Secteur",
+      "colStatus": "Statut"
+    },
+    "geo": {
+      "title": "GEO — visibilite dans les moteurs generatifs",
+      "subtitle": "Requetes suivies et preuves d'apparition, avec leur niveau de preuve.",
+      "empty": "Aucune requete suivie.",
+      "colQuery": "Requete",
+      "colPriority": "Priorite",
+      "colChecks": "Verifications",
+      "checks": "verifications",
+      "viewChecks": "Voir les preuves",
+      "checksFor": "Preuves pour",
+      "checksHint": "Chaque ligne indique la methode d'observation et sa portee.",
+      "noChecks": "Aucune verification enregistree pour cette requete.",
+      "present": "Present",
+      "absent": "Absent",
+      "noQuantifiedClaim": "ne permet pas une affirmation chiffree"
+    },
+    "content": {
+      "title": "Contenu — production editoriale",
+      "subtitle": "Pieces planifiees, publiees et leur cycle de vie.",
+      "empty": "Aucun contenu.",
+      "export": "Exporter CSV",
+      "colTitle": "Titre",
+      "colKind": "Type",
+      "colLocale": "Langue",
+      "colStatus": "Statut",
+      "colScheduled": "Planifie le"
+    },
+    "competitors": {
+      "title": "Concurrents",
+      "subtitle": "Positionnement observe, sources et fraicheur de l'information.",
+      "empty": "Aucun concurrent suivi.",
+      "colName": "Concurrent",
+      "colMarket": "Marche",
+      "colPositioning": "Positionnement",
+      "colFreshness": "Fraicheur",
+      "colSource": "Source",
+      "stale": "A revoir (> 90 j)",
+      "fresh": "A jour"
+    },
+    "integrations": {
+      "title": "Integrations",
+      "subtitle": "Connecteurs GSC, GA4, Google Ads et Microsoft Ads.",
+      "empty": "Aucun connecteur declare.",
+      "lastSync": "Derniere synchro",
+      "lastError": "Derniere erreur",
+      "test": "Tester",
+      "revoke": "Revoquer",
+      "testOk": "Connexion verifiee.",
+      "testKo": "Connexion refusee par le fournisseur.",
+      "testFailed": "Le test a echoue."
+    },
+    "severity": {
+      "critical": "Critique",
+      "high": "Haute",
+      "medium": "Moyenne",
+      "low": "Basse"
+    },
+    "priority": {
+      "high": "Haute",
+      "medium": "Moyenne",
+      "low": "Basse"
+    },
+    "seoStatus": {
+      "open": "Ouvert",
+      "in_progress": "En cours",
+      "applied": "Applique",
+      "verified": "Verifie",
+      "ignored": "Ignore"
+    },
+    "seaStatus": {
+      "draft": "Brouillon",
+      "pending_validation": "A valider",
+      "active": "Active",
+      "paused": "En pause",
+      "completed": "Terminee",
+      "cancelled": "Annulee"
+    },
+    "aeoStatus": {
+      "draft": "Brouillon",
+      "in_review": "En revue",
+      "approved": "Approuvee",
+      "published": "Publiee",
+      "to_update": "A mettre a jour",
+      "archived": "Archivee"
+    },
+    "contentStatus": {
+      "idea": "Idee",
+      "draft": "Brouillon",
+      "in_review": "En revue",
+      "approved": "Approuve",
+      "scheduled": "Planifie",
+      "published": "Publie",
+      "archived": "Archive"
+    },
+    "integrationStatus": {
+      "connected": "Connecte",
+      "pending": "En attente",
+      "error": "En erreur",
+      "revoked": "Revoque"
     }
   },
   "fuelPumpistSelectRequired": "Sélectionnez une station, une pompe et un compteur.",

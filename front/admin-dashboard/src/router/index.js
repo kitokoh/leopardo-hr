@@ -414,6 +414,89 @@ const routes = [
           icon: 'ArrowTrendingUpIcon'
         }
       },
+      // GSI-10 (#8521) — section « Growth & Search Intelligence ».
+      // Sept vues, toutes en import paresseux : le bundle initial ne paie pas
+      // un module que la majorite des administrateurs n'ouvre jamais.
+      {
+        path: '/search-intel',
+        name: 'search-intel',
+        component: () => import('@/views/search-intel/OverviewView.vue'),
+        meta: {
+          title: 'navigation.searchIntel',
+          icon: 'MagnifyingGlassIcon',
+          permission: 'search_intel.view'
+        }
+      },
+      {
+        path: '/search-intel/seo',
+        name: 'search-intel-seo',
+        component: () => import('@/views/search-intel/SeoView.vue'),
+        meta: {
+          title: 'navigation.searchIntelSeo',
+          icon: 'MagnifyingGlassIcon',
+          permission: 'search_intel.view'
+        }
+      },
+      {
+        path: '/search-intel/sea',
+        name: 'search-intel-sea',
+        component: () => import('@/views/search-intel/SeaView.vue'),
+        meta: {
+          title: 'navigation.searchIntelSea',
+          icon: 'MegaphoneIcon',
+          permission: 'search_intel.view'
+        }
+      },
+      {
+        path: '/search-intel/aeo',
+        name: 'search-intel-aeo',
+        component: () => import('@/views/search-intel/AeoView.vue'),
+        meta: {
+          title: 'navigation.searchIntelAeo',
+          icon: 'ChatBubbleLeftRightIcon',
+          permission: 'search_intel.view'
+        }
+      },
+      {
+        path: '/search-intel/geo',
+        name: 'search-intel-geo',
+        component: () => import('@/views/search-intel/GeoView.vue'),
+        meta: {
+          title: 'navigation.searchIntelGeo',
+          icon: 'GlobeAltIcon',
+          permission: 'search_intel.view'
+        }
+      },
+      {
+        path: '/search-intel/content',
+        name: 'search-intel-content',
+        component: () => import('@/views/search-intel/ContentView.vue'),
+        meta: {
+          title: 'navigation.searchIntelContent',
+          icon: 'DocumentTextIcon',
+          permission: 'search_intel.view'
+        }
+      },
+      {
+        path: '/search-intel/competitors',
+        name: 'search-intel-competitors',
+        component: () => import('@/views/search-intel/CompetitorsView.vue'),
+        meta: {
+          title: 'navigation.searchIntelCompetitors',
+          icon: 'UserGroupIcon',
+          permission: 'search_intel.view'
+        }
+      },
+      {
+        path: '/search-intel/integrations',
+        name: 'search-intel-integrations',
+        component: () => import('@/views/search-intel/IntegrationsView.vue'),
+        meta: {
+          title: 'navigation.searchIntelIntegrations',
+          icon: 'LinkIcon',
+          permission: 'search_intel.view'
+        }
+      },
       {
         path: '/edge',
         name: 'edge',

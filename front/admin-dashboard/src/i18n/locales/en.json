@@ -1741,7 +1741,16 @@
     "emailTemplates": "Emails",
     "settings": "Settings",
     "messaging": "Messaging",
-    "provisioning": "Provisioning"
+    "provisioning": "Provisioning",
+    "searchIntel": "Growth & Search Intelligence",
+    "searchIntelOverview": "Overview",
+    "searchIntelSeo": "SEO",
+    "searchIntelSea": "SEA",
+    "searchIntelAeo": "AEO",
+    "searchIntelGeo": "GEO",
+    "searchIntelContent": "Content",
+    "searchIntelCompetitors": "Competitors",
+    "searchIntelIntegrations": "Integrations"
   },
   "webhooks": {
     "confirm_delete": "Delete this webhook?"
@@ -3820,7 +3829,8 @@
     "itemCrmDesc": "CRM pipeline",
     "itemToggleDark": "Toggle dark mode",
     "itemToggleDarkDesc": "Change theme",
-    "itemProvisioningDesc": "Track tenant onboarding progress and provisioning blockers"
+    "itemProvisioningDesc": "Track tenant onboarding progress and provisioning blockers",
+    "itemSearchIntelDesc": "Drive SEO, SEA, AEO, GEO and content production."
   },
   "bankRecon": {
     "title": "Bank reconciliation",
@@ -8921,6 +8931,185 @@
       "payments": "Instalments",
       "unpaid": "unpaid",
       "noPayments": "No instalments: generate them to collect the rent."
+    }
+  },
+  "searchIntel": {
+    "common": {
+      "refresh": "Refresh",
+      "retry": "Retry",
+      "loading": "Loading...",
+      "search": "Search...",
+      "actions": "Actions",
+      "close": "Close",
+      "connected": "Connected",
+      "notConnected": "Not connected",
+      "unavailable": "Unavailable",
+      "forbidden": "You lack the search_intel.view permission.",
+      "loadError": "Unable to load data."
+    },
+    "reliability": {
+      "measured": "Measured",
+      "declared": "Declared",
+      "unavailable": "Not wired",
+      "measuredHint": "Direct count on our tables: exact by construction.",
+      "declaredHint": "Entered or validated by a human: exact for what was entered.",
+      "unavailableHint": "No source wired: the value is unknown, not zero."
+    },
+    "overview": {
+      "title": "Growth & Search Intelligence",
+      "subtitle": "Consolidated SEO, SEA, AEO, GEO, content and leads.",
+      "window": "Lead window",
+      "generatedAt": "Generated at",
+      "seo": "SEO",
+      "sea": "SEA",
+      "aeo": "AEO",
+      "geo": "GEO",
+      "integrations": "Integrations",
+      "pagesTracked": "Tracked pages",
+      "pagesHealthy": "Healthy pages",
+      "openIssues": "Open issues",
+      "verifiedIssues": "Verified issues",
+      "verifiedHint": "Fix confirmed by a re-scan.",
+      "campaignsTotal": "Campaigns",
+      "campaignsRunning": "Active campaigns",
+      "spendMonth": "Spend this month",
+      "questionsTotal": "Questions",
+      "questionsPublished": "Published",
+      "questionsAwaiting": "Awaiting review",
+      "geoQueriesActive": "Active queries",
+      "noIntegrations": "No integration declared."
+    },
+    "seo": {
+      "title": "SEO — detected issues",
+      "subtitle": "Issues from the last scan, with their allowed transition.",
+      "empty": "No issue detected.",
+      "colTitle": "Issue",
+      "colType": "Type",
+      "colSeverity": "Severity",
+      "colStatus": "Status",
+      "colUrl": "Page",
+      "colDetected": "Detected on"
+    },
+    "sea": {
+      "title": "SEA — paid campaigns",
+      "subtitle": "Campaigns, budgets and actual consumption.",
+      "empty": "No campaign.",
+      "manualTracking": "Manual tracking: spend comes from entered readings, not an ad API.",
+      "colName": "Campaign",
+      "colChannel": "Channel",
+      "colStatus": "Status",
+      "colBudget": "Spend / budget",
+      "colMeasured": "Measured days",
+      "days": "d"
+    },
+    "aeo": {
+      "title": "AEO — questions & answers",
+      "subtitle": "Targeted questions, drafts and publication.",
+      "empty": "No question.",
+      "colQuestion": "Question",
+      "colLocale": "Language",
+      "colSector": "Sector",
+      "colStatus": "Status"
+    },
+    "geo": {
+      "title": "GEO — visibility in generative engines",
+      "subtitle": "Tracked queries and appearance evidence, with its proof level.",
+      "empty": "No tracked query.",
+      "colQuery": "Query",
+      "colPriority": "Priority",
+      "colChecks": "Checks",
+      "checks": "checks",
+      "viewChecks": "View evidence",
+      "checksFor": "Evidence for",
+      "checksHint": "Each row states the observation method and its scope.",
+      "noChecks": "No check recorded for this query.",
+      "present": "Present",
+      "absent": "Absent",
+      "noQuantifiedClaim": "does not support a quantified claim"
+    },
+    "content": {
+      "title": "Content — editorial production",
+      "subtitle": "Scheduled and published pieces and their lifecycle.",
+      "empty": "No content.",
+      "export": "Export CSV",
+      "colTitle": "Title",
+      "colKind": "Type",
+      "colLocale": "Language",
+      "colStatus": "Status",
+      "colScheduled": "Scheduled on"
+    },
+    "competitors": {
+      "title": "Competitors",
+      "subtitle": "Observed positioning, sources and information freshness.",
+      "empty": "No competitor tracked.",
+      "colName": "Competitor",
+      "colMarket": "Market",
+      "colPositioning": "Positioning",
+      "colFreshness": "Freshness",
+      "colSource": "Source",
+      "stale": "Review (> 90 d)",
+      "fresh": "Up to date"
+    },
+    "integrations": {
+      "title": "Integrations",
+      "subtitle": "GSC, GA4, Google Ads and Microsoft Ads connectors.",
+      "empty": "No connector declared.",
+      "lastSync": "Last sync",
+      "lastError": "Last error",
+      "test": "Test",
+      "revoke": "Revoke",
+      "testOk": "Connection verified.",
+      "testKo": "Connection refused by the provider.",
+      "testFailed": "The test failed."
+    },
+    "severity": {
+      "critical": "Critical",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "seoStatus": {
+      "open": "Open",
+      "in_progress": "In progress",
+      "applied": "Applied",
+      "verified": "Verified",
+      "ignored": "Ignored"
+    },
+    "seaStatus": {
+      "draft": "Draft",
+      "pending_validation": "Pending validation",
+      "active": "Active",
+      "paused": "Paused",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "aeoStatus": {
+      "draft": "Draft",
+      "in_review": "In review",
+      "approved": "Approved",
+      "published": "Published",
+      "to_update": "To update",
+      "archived": "Archived"
+    },
+    "contentStatus": {
+      "idea": "Idea",
+      "draft": "Draft",
+      "in_review": "In review",
+      "approved": "Approved",
+      "scheduled": "Scheduled",
+      "published": "Published",
+      "archived": "Archived"
+    },
+    "integrationStatus": {
+      "connected": "Connected",
+      "pending": "Pending",
+      "error": "Error",
+      "revoked": "Revoked"
     }
   },
   "fuelPumpistSelectRequired": "Select a station, a pump and a meter.",
