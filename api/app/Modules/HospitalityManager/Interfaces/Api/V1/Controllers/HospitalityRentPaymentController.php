@@ -57,15 +57,15 @@ class HospitalityRentPaymentController extends Controller
         }
 
         if ($request->filled('lease_id')) {
-            $query->where('lease_id', (int) $request->input('lease_id'));
+            $query->where('lease_id', $request->integer('lease_id'));
         }
 
         if ($request->filled('status')) {
-            $query->where('status', $request->input('status'));
+            $query->where('status', $request->string('status')->toString());
         }
 
         if ($request->filled('period')) {
-            $query->where('period', $request->input('period'));
+            $query->where('period', $request->string('period')->toString());
         }
 
         $payments = $query->orderByDesc('due_on')->paginate($this->boundedPerPage($request, 15));
@@ -91,15 +91,13 @@ class HospitalityRentPaymentController extends Controller
         $this->assertSameTenant($payment, $actor->company_id);
         $this->authorize('record', $payment);
 
-        $validated = $request->validated();
-
         $payment = $this->rents->recordPayment(
             $payment,
-            (int) $validated['amount_minor'],
-            $validated['paid_at'] ?? null,
-            $validated['payment_method'] ?? null,
-            $validated['reference'] ?? null,
-            $validated['notes'] ?? null,
+            $request->amountMinor(),
+            $request->paidAt(),
+            $request->paymentMethod(),
+            $request->reference(),
+            $request->notes(),
         );
 
         return response()->json(['data' => $this->payload($payment)]);
@@ -137,11 +135,17 @@ class HospitalityRentPaymentController extends Controller
      */
     private function payload(HospitalityRentPayment $payment): array
     {
+        // `getAttribute()` rend `mixed` : la conversion est explicite.
+        $id = $payment->getKey();
+        $leaseId = $payment->getAttribute('lease_id');
+        $propertyId = $payment->getAttribute('property_id');
+        $unitId = $payment->getAttribute('unit_id');
+
         return [
-            'id' => (int) $payment->getAttribute('id'),
-            'lease_id' => (int) $payment->getAttribute('lease_id'),
-            'property_id' => (int) $payment->getAttribute('property_id'),
-            'unit_id' => (int) $payment->getAttribute('unit_id'),
+            'id' => is_numeric($id) ? (int) $id : 0,
+            'lease_id' => is_numeric($leaseId) ? (int) $leaseId : 0,
+            'property_id' => is_numeric($propertyId) ? (int) $propertyId : 0,
+            'unit_id' => is_numeric($unitId) ? (int) $unitId : 0,
             'period' => $payment->period,
             'due_on' => $payment->due_on->toDateString(),
             'amount_minor' => $payment->amount_minor,

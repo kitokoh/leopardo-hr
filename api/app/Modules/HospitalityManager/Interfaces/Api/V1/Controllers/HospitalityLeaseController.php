@@ -47,7 +47,7 @@ class HospitalityLeaseController extends Controller
             ->where('property_id', $property->getKey());
 
         if ($request->filled('status')) {
-            $query->where('status', $request->input('status'));
+            $query->where('status', $request->string('status')->toString());
         }
 
         $leases = $query->orderByDesc('starts_on')->paginate($this->boundedPerPage($request, 15));
@@ -76,7 +76,7 @@ class HospitalityLeaseController extends Controller
             'company_id' => $actor->company_id,
             'property_id' => $property->getKey(),
             'status' => HospitalityLease::STATUS_ACTIVE,
-            'billing_day' => (int) $request->input('billing_day', 1),
+            'billing_day' => $request->integer('billing_day', 1),
             'version' => 0,
         ]));
 
@@ -130,16 +130,23 @@ class HospitalityLeaseController extends Controller
         $this->assertSameTenant($lease, $actor->company_id);
         $this->authorize('terminate', $lease);
 
-        $validated = $request->validate([
+        $request->validate([
             'status' => ['nullable', 'string', 'in:ended,terminated'],
             'terminated_on' => ['nullable', 'date'],
         ]);
 
-        $lease = $this->rents->terminate(
-            $lease,
-            (string) ($validated['status'] ?? HospitalityLease::STATUS_TERMINATED),
-            $validated['terminated_on'] ?? null,
-        );
+        // `validate()` rend `mixed` : on relit par les accesseurs typés du
+        // FormRequest-like (`string()`), la regle ci-dessus garantissant la
+        // forme. Le defaut `terminated` est explicite, pas implicite.
+        $status = $request->filled('status')
+            ? $request->string('status')->toString()
+            : HospitalityLease::STATUS_TERMINATED;
+
+        $terminatedOn = $request->filled('terminated_on')
+            ? $request->string('terminated_on')->toString()
+            : null;
+
+        $lease = $this->rents->terminate($lease, $status, $terminatedOn);
 
         return response()->json(['data' => $this->payload($lease)]);
     }
@@ -160,12 +167,16 @@ class HospitalityLeaseController extends Controller
             'until' => ['required', 'string', 'regex:/^\d{4}-(0[1-9]|1[0-2])$/'],
         ]);
 
-        $result = $this->rents->generatePeriods($lease, (string) $validated['until']);
+        // `validate()` rend `mixed` : la regle garantit la forme AAAA-MM, on
+        // la lit par `input()` typé plutot que par un offset non verifiable.
+        $until = $request->string('until')->toString();
+
+        $result = $this->rents->generatePeriods($lease, $until);
 
         return response()->json([
             'data' => [
-                'lease_id' => (int) $lease->getKey(),
-                'until' => $validated['until'],
+                'lease_id' => is_numeric($lease->getKey()) ? (int) $lease->getKey() : 0,
+                'until' => $until,
                 'created' => $result['created'],
                 'skipped' => $result['skipped'],
             ],
@@ -177,10 +188,16 @@ class HospitalityLeaseController extends Controller
      */
     private function payload(HospitalityLease $lease): array
     {
+        // `getKey()` / `getAttribute()` rendent `mixed` sur un modele Eloquent :
+        // la conversion est explicite au lieu d'un cast aveugle.
+        $id = $lease->getKey();
+        $propertyId = $lease->getAttribute('property_id');
+        $unitId = $lease->getAttribute('unit_id');
+
         return [
-            'id' => (int) $lease->getAttribute('id'),
-            'property_id' => (int) $lease->getAttribute('property_id'),
-            'unit_id' => (int) $lease->getAttribute('unit_id'),
+            'id' => is_numeric($id) ? (int) $id : 0,
+            'property_id' => is_numeric($propertyId) ? (int) $propertyId : 0,
+            'unit_id' => is_numeric($unitId) ? (int) $unitId : 0,
             'tenant_name' => $lease->tenant_name,
             'contact_email' => $lease->contact_email,
             'contact_phone' => $lease->contact_phone,
