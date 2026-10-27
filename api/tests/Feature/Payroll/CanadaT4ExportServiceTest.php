@@ -49,8 +49,10 @@ class CanadaT4ExportServiceTest extends TestCase
 
         $dom = new \DOMDocument;
         $this->assertTrue($dom->loadXML($xml), 'Le XML T4 doit etre bien forme.');
-        $this->assertSame('T4Declarations', $dom->documentElement?->nodeName);
-        $this->assertSame('2026', $dom->documentElement?->getAttribute('annee'));
+        $root = $dom->documentElement;
+        $this->assertNotNull($root, 'Le document T4 doit avoir un element racine.');
+        $this->assertSame('T4Declarations', $root->nodeName);
+        $this->assertSame('2026', $root->getAttribute('annee'));
 
         // Deux bulletins de 5 000,00 => case 14 = 10 000,00 (le NET, 7 000,
         // serait faux : le fisc attend le revenu avant retenues).
@@ -79,7 +81,10 @@ class CanadaT4ExportServiceTest extends TestCase
         $slips = $this->makeYear();
 
         // Un bulletin de 2025 dans le lot : agreger le corromprait 2026.
-        $slips[] = $this->makeSlip($slips[0]->employee, $slips[0]->company_id ?? 1, '2025-12-01', 99_000.00);
+        $existing = $slips[0];
+        $employee = $existing->employee;
+        $this->assertNotNull($employee, 'Le bulletin de reference doit porter son employe.');
+        $slips[] = $this->makeSlip($employee, $existing->company_id ?? 1, '2025-12-01', 99_000.00);
 
         $xml = (new CanadaT4ExportService)->buildT4($slips, 2026);
 
@@ -96,7 +101,9 @@ class CanadaT4ExportServiceTest extends TestCase
 
         $dom = new \DOMDocument;
         $this->assertTrue($dom->loadXML($xml));
-        $this->assertSame('RL1Declarations', $dom->documentElement?->nodeName);
+        $root = $dom->documentElement;
+        $this->assertNotNull($root, 'Le document RL-1 doit avoir un element racine.');
+        $this->assertSame('RL1Declarations', $root->nodeName);
         $this->assertStringContainsString('<CaseA_RevenuEmploi>10000.00</CaseA_RevenuEmploi>', $xml);
 
         // Un salarie de l'Ontario ne produit AUCUN RL-1 : c'est une
