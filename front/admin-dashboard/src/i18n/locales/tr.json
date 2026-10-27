@@ -1741,7 +1741,16 @@
     "emailTemplates": "E-postalar",
     "settings": "Ayarlar",
     "messaging": "Mesajlaşma",
-    "provisioning": "Sağlama"
+    "provisioning": "Sağlama",
+    "searchIntel": "Buyume ve Arama Zekasi",
+    "searchIntelOverview": "Genel bakis",
+    "searchIntelSeo": "SEO",
+    "searchIntelSea": "SEA",
+    "searchIntelAeo": "AEO",
+    "searchIntelGeo": "GEO",
+    "searchIntelContent": "Icerik",
+    "searchIntelCompetitors": "Rakipler",
+    "searchIntelIntegrations": "Entegrasyonlar"
   },
   "webhooks": {
     "confirm_delete": "Bu webhook silinsin mi?"
@@ -3820,7 +3829,8 @@
     "itemCrmDesc": "CRM hattı",
     "itemToggleDark": "Karanlık moda geç",
     "itemToggleDarkDesc": "Temayı değiştir",
-    "itemProvisioningDesc": "Kiracı kurulum ilerlemesini ve sağlama engellerini izle"
+    "itemProvisioningDesc": "Kiracı kurulum ilerlemesini ve sağlama engellerini izle",
+    "itemSearchIntelDesc": "SEO, SEA, AEO, GEO ve icerik uretimini yonetin."
   },
   "bankRecon": {
     "title": "Banka mutabakatı",
@@ -8921,6 +8931,185 @@
       "payments": "Taksitler",
       "unpaid": "ödenmemiş",
       "noPayments": "Taksit yok: kirayı tahsil etmek için oluşturun."
+    }
+  },
+  "searchIntel": {
+    "common": {
+      "refresh": "Yenile",
+      "retry": "Tekrar dene",
+      "loading": "Yukleniyor...",
+      "search": "Ara...",
+      "actions": "Islemler",
+      "close": "Kapat",
+      "connected": "Bagli",
+      "notConnected": "Bagli degil",
+      "unavailable": "Kullanilamiyor",
+      "forbidden": "search_intel.view izniniz yok.",
+      "loadError": "Veriler yuklenemedi."
+    },
+    "reliability": {
+      "measured": "Olculdu",
+      "declared": "Bildirildi",
+      "unavailable": "Bagli degil",
+      "measuredHint": "Kendi tablolarimizda dogrudan sayim: yapisi geregi kesin.",
+      "declaredHint": "Bir insan tarafindan girildi veya dogrulandi.",
+      "unavailableHint": "Kaynak bagli degil: deger bilinmiyor, sifir degil."
+    },
+    "overview": {
+      "title": "Buyume ve Arama Zekasi",
+      "subtitle": "SEO, SEA, AEO, GEO, icerik ve lead konsolide gorunumu.",
+      "window": "Lead penceresi",
+      "generatedAt": "Olusturulma",
+      "seo": "SEO",
+      "sea": "SEA",
+      "aeo": "AEO",
+      "geo": "GEO",
+      "integrations": "Entegrasyonlar",
+      "pagesTracked": "Izlenen sayfalar",
+      "pagesHealthy": "Saglikli sayfalar",
+      "openIssues": "Acik sorunlar",
+      "verifiedIssues": "Dogrulanan sorunlar",
+      "verifiedHint": "Yeniden tarama ile onaylandi.",
+      "campaignsTotal": "Kampanyalar",
+      "campaignsRunning": "Aktif kampanyalar",
+      "spendMonth": "Bu ay harcama",
+      "questionsTotal": "Sorular",
+      "questionsPublished": "Yayinlanan",
+      "questionsAwaiting": "Inceleme bekleyen",
+      "geoQueriesActive": "Aktif sorgular",
+      "noIntegrations": "Tanimli entegrasyon yok."
+    },
+    "seo": {
+      "title": "SEO — tespit edilen sorunlar",
+      "subtitle": "Son taramadan gelen sorunlar ve izin verilen gecisler.",
+      "empty": "Sorun tespit edilmedi.",
+      "colTitle": "Sorun",
+      "colType": "Tur",
+      "colSeverity": "Onem",
+      "colStatus": "Durum",
+      "colUrl": "Sayfa",
+      "colDetected": "Tespit tarihi"
+    },
+    "sea": {
+      "title": "SEA — ucretli kampanyalar",
+      "subtitle": "Kampanyalar, butceler ve gercek tuketim.",
+      "empty": "Kampanya yok.",
+      "manualTracking": "Manuel takip: harcamalar reklam API'sinden degil, girilen kayitlardan gelir.",
+      "colName": "Kampanya",
+      "colChannel": "Kanal",
+      "colStatus": "Durum",
+      "colBudget": "Harcama / butce",
+      "colMeasured": "Olculen gun",
+      "days": "g"
+    },
+    "aeo": {
+      "title": "AEO — sorular ve yanitlar",
+      "subtitle": "Hedef sorular, taslaklar ve yayin.",
+      "empty": "Soru yok.",
+      "colQuestion": "Soru",
+      "colLocale": "Dil",
+      "colSector": "Sektor",
+      "colStatus": "Durum"
+    },
+    "geo": {
+      "title": "GEO — uretken motorlarda gorunurluk",
+      "subtitle": "Izlenen sorgular ve kanit duzeyiyle birlikte gorunme kanitlari.",
+      "empty": "Izlenen sorgu yok.",
+      "colQuery": "Sorgu",
+      "colPriority": "Oncelik",
+      "colChecks": "Kontroller",
+      "checks": "kontrol",
+      "viewChecks": "Kanitlari gor",
+      "checksFor": "Kanitlar",
+      "checksHint": "Her satir gozlem yontemini ve kapsamini belirtir.",
+      "noChecks": "Bu sorgu icin kayitli kontrol yok.",
+      "present": "Mevcut",
+      "absent": "Yok",
+      "noQuantifiedClaim": "sayisal iddiayi desteklemez"
+    },
+    "content": {
+      "title": "Icerik — editoryal uretim",
+      "subtitle": "Planlanan ve yayinlanan icerikler ve yasam donguleri.",
+      "empty": "Icerik yok.",
+      "export": "CSV disa aktar",
+      "colTitle": "Baslik",
+      "colKind": "Tur",
+      "colLocale": "Dil",
+      "colStatus": "Durum",
+      "colScheduled": "Planlanan tarih"
+    },
+    "competitors": {
+      "title": "Rakipler",
+      "subtitle": "Gozlenen konumlandirma, kaynaklar ve bilgi tazeligi.",
+      "empty": "Izlenen rakip yok.",
+      "colName": "Rakip",
+      "colMarket": "Pazar",
+      "colPositioning": "Konumlandirma",
+      "colFreshness": "Tazelik",
+      "colSource": "Kaynak",
+      "stale": "Gozden gecir (> 90 g)",
+      "fresh": "Guncel"
+    },
+    "integrations": {
+      "title": "Entegrasyonlar",
+      "subtitle": "GSC, GA4, Google Ads ve Microsoft Ads baglayicilari.",
+      "empty": "Tanimli baglayici yok.",
+      "lastSync": "Son esitleme",
+      "lastError": "Son hata",
+      "test": "Test et",
+      "revoke": "Iptal et",
+      "testOk": "Baglanti dogrulandi.",
+      "testKo": "Saglayici baglantiyi reddetti.",
+      "testFailed": "Test basarisiz oldu."
+    },
+    "severity": {
+      "critical": "Kritik",
+      "high": "Yuksek",
+      "medium": "Orta",
+      "low": "Dusuk"
+    },
+    "priority": {
+      "high": "Yuksek",
+      "medium": "Orta",
+      "low": "Dusuk"
+    },
+    "seoStatus": {
+      "open": "Acik",
+      "in_progress": "Devam ediyor",
+      "applied": "Uygulandi",
+      "verified": "Dogrulandi",
+      "ignored": "Yoksayildi"
+    },
+    "seaStatus": {
+      "draft": "Taslak",
+      "pending_validation": "Onay bekliyor",
+      "active": "Aktif",
+      "paused": "Duraklatildi",
+      "completed": "Tamamlandi",
+      "cancelled": "Iptal edildi"
+    },
+    "aeoStatus": {
+      "draft": "Taslak",
+      "in_review": "Incelemede",
+      "approved": "Onaylandi",
+      "published": "Yayinlandi",
+      "to_update": "Guncellenecek",
+      "archived": "Arsivlendi"
+    },
+    "contentStatus": {
+      "idea": "Fikir",
+      "draft": "Taslak",
+      "in_review": "Incelemede",
+      "approved": "Onaylandi",
+      "scheduled": "Planlandi",
+      "published": "Yayinlandi",
+      "archived": "Arsivlendi"
+    },
+    "integrationStatus": {
+      "connected": "Bagli",
+      "pending": "Bekliyor",
+      "error": "Hata",
+      "revoked": "Iptal edildi"
     }
   },
   "fuelPumpistSelectRequired": "Bir istasyon, pompa ve sayaç seçin.",
