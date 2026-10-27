@@ -84,6 +84,7 @@ return [
 
     'errors' => [
         'gateway_checkout_failed' => 'The payment gateway is temporarily unavailable. Please try again later.',
+        'fiscal_year_invalid' => 'Invalid fiscal year.',
         'payment_amount_positive' => 'The payment amount must be strictly positive.',
         'wf_invalid_type' => 'Invalid document type.',
         'wf_requires_lines' => 'A document must have at least one line.',
