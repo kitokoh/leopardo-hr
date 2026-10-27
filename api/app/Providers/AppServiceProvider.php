@@ -10,6 +10,7 @@ use App\AI\Providers\GroqClient;
 use App\AI\Providers\OpenAIClient;
 use App\AI\ResilientLLMClient;
 use App\AI\Support\LLMCircuitBreaker;
+use App\Contracts\Queue\OutboundWebhookSigner;
 use App\Core\AI\Domain\Contracts\SpeechToTextPort;
 use App\Core\AI\Infrastructure\Adapters\GroqWhisperAdapter;
 use App\Core\AI\Infrastructure\Adapters\UnavailableSpeechToTextAdapter;
@@ -19,6 +20,7 @@ use App\Core\Auth\Infrastructure\Sms\LogOnlySmsCodeSender;
 use App\Core\Notifications\Contracts\InAppNotifier;
 use App\Core\Privacy\Infrastructure\Services\PiiRegistry;
 use App\Core\Tenant\TenantManager;
+use App\Jobs\Services\HmacWebhookSigner;
 use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\HR\Infrastructure\Services\PiiLifecycleService;
 use App\Modules\Notification\Infrastructure\Services\InAppNotifierAdapter;
@@ -56,6 +58,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // BOS-021 (#8210) — primitive unique de signature des webhooks
+        // SORTANTS (BC-14 INTEGRATION). Les producteurs (Billing, Travel)
+        // dépendent du contrat, pas de l'implémentation : une rotation de
+        // secret ou un passage à un KMS se fait ici, sans toucher aux
+        // verticales.
+        $this->app->bind(OutboundWebhookSigner::class, HmacWebhookSigner::class);
+
         // SUPERAPP-P0 — decouverte publique cross-verticale : agregateur de
         // lecture seule (aucune table, aucune migration). Chaque verticale
         // fournit son provider tague `public.discoverable` depuis son propre

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Infrastructure\Services;
 
+use App\Contracts\Queue\OutboundWebhookSigner;
+use App\Jobs\Services\HmacWebhookSigner;
+
 /**
  * TRAVEL-806 (#6097) — Signature HMAC des webhooks transporteurs.
  *
@@ -14,12 +17,19 @@ namespace App\Modules\TravelAgency\Infrastructure\Services;
  */
 final class TravelWebhookSigner
 {
+    public function __construct(
+        private readonly OutboundWebhookSigner $signer = new HmacWebhookSigner,
+    ) {}
+
     /**
      * @param  array<string, mixed>  $payload
      */
     public function sign(array $payload, string $secret): string
     {
-        return hash_hmac('sha256', $this->canonicalPayload($payload), $secret);
+        // BOS-021 (#8210) : primitive HMAC mutualisée (BC-14). La
+        // canonicalisation reste propre à Travel — c'est elle qui définit
+        // le contrat public `X-Travel-Signature`.
+        return $this->signer->sign($secret, $this->canonicalPayload($payload));
     }
 
     /**
@@ -34,8 +44,6 @@ final class TravelWebhookSigner
 
     public function verify(string $signature, string $canonicalPayload, string $secret): bool
     {
-        $expected = hash_hmac('sha256', $canonicalPayload, $secret);
-
-        return hash_equals($expected, $signature);
+        return $this->signer->verify($secret, $canonicalPayload, $signature);
     }
 }
