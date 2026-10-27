@@ -2995,6 +2995,34 @@ trait CreatesMvpSchema
             });
         }
 
+        // #7935 — `salary_components` etait creee par la migration tenant
+        // `2026_05_10_100001_create_payroll_engine_tables` mais absente de la
+        // fixture : `pay_slip_lines.salary_component_id` pointait donc vers
+        // une table inexistante et tout test qui rattachait une ligne a son
+        // composant echouait en SQLSTATE 42P01. Meme famille d'ecart
+        // fixture <-> migration que #7975/#8004.
+        if (! Schema::hasTable($this->moduleTable('salary_components'))) {
+            Schema::create($this->moduleTable('salary_components'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('salary_structure_id')->nullable();
+                $table->string('name', 150);
+                $table->string('code', 50);
+                $table->string('type', 30);
+                $table->string('calculation_type', 30)->default('fixed');
+                $table->decimal('amount', 14, 2)->nullable();
+                $table->decimal('percentage', 8, 4)->nullable();
+                $table->string('formula', 500)->nullable();
+                $table->boolean('is_taxable')->default(true);
+                $table->boolean('is_recurring')->default(true);
+                $table->unsignedSmallInteger('order')->default(0);
+                $table->boolean('active')->default(true);
+                $table->timestampsTz();
+
+                $table->index(['company_id', 'type', 'active']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('pay_slip_lines'))) {
             Schema::create($this->moduleTable('pay_slip_lines'), function (Blueprint $table): void {
                 $table->id();
