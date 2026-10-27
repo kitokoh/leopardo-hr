@@ -96,7 +96,15 @@ class RestaurantCustomerReceiptTest extends TestCase
                 'line_index' => 1,
             ]);
 
-            return [$branch, $order->fresh()];
+            $fresh = $order->fresh();
+
+            // `fresh()` est type `Model|null` : on affirme l'invariant ici plutot
+            // que de propager un `?RestaurantOrder` dans tout le fichier de test.
+            if (! $fresh instanceof RestaurantOrder) {
+                throw new \RuntimeException('RESTAURANT_TEST_ORDER_NOT_PERSISTED');
+            }
+
+            return [$branch, $fresh];
         });
     }
 
@@ -124,7 +132,24 @@ class RestaurantCustomerReceiptTest extends TestCase
     }
 
     /**
-     * LE test du défaut : un travail CUSTOMER_RECEIPT ne doit PAS produire un
+     * Recharge une commande depuis la base.
+     *
+     * `fresh()` est type `Model|null` : on affirme l'invariant ici plutot que de
+     * propager un `?RestaurantOrder` dans tout le fichier de test.
+     */
+    private function reload(RestaurantOrder $order): RestaurantOrder
+    {
+        $fresh = $order->fresh();
+
+        if (! $fresh instanceof RestaurantOrder) {
+            throw new \RuntimeException('RESTAURANT_TEST_ORDER_NOT_PERSISTED');
+        }
+
+        return $fresh;
+    }
+
+    /**
+     * LE test du defaut : un travail CUSTOMER_RECEIPT ne doit PAS produire un
      * ticket cuisine.
      */
     public function test_a_customer_receipt_job_does_not_render_a_kitchen_ticket(): void
@@ -192,7 +217,7 @@ class RestaurantCustomerReceiptTest extends TestCase
         [, $order] = $this->order($company);
         $this->pay($company, $order, 1000, PaymentStatus::PENDING);
 
-        $job = $this->job($company, $order->fresh(), PrintTicketKind::CUSTOMER_RECEIPT);
+        $job = $this->job($company, $this->reload($order), PrintTicketKind::CUSTOMER_RECEIPT);
         $text = $this->plain(app(RenderPrintJobPayloadAction::class)->execute($job)['payload']);
 
         $this->assertStringContainsString('NON ACQUITTE', $text);
@@ -204,7 +229,7 @@ class RestaurantCustomerReceiptTest extends TestCase
         [, $order] = $this->order($company);
         $this->pay($company, $order, 1000, PaymentStatus::CONFIRMED);
 
-        $job = $this->job($company, $order->fresh(), PrintTicketKind::CUSTOMER_RECEIPT);
+        $job = $this->job($company, $this->reload($order), PrintTicketKind::CUSTOMER_RECEIPT);
         $text = $this->plain(app(RenderPrintJobPayloadAction::class)->execute($job)['payload']);
 
         $this->assertStringNotContainsString('NON ACQUITTE', $text);

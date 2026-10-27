@@ -72,6 +72,23 @@ class RestaurantGroupConsolidationTest extends TestCase
     }
 
     /**
+     * Recharge l'acteur depuis la base.
+     *
+     * `fresh()` est type `Model|null` : on affirme l'invariant ici plutot que de
+     * propager un `?Employee` dans tout le fichier de test.
+     */
+    private function freshActor(Employee $actor): Employee
+    {
+        $fresh = $actor->fresh();
+
+        if (! $fresh instanceof Employee) {
+            throw new \RuntimeException('RESTAURANT_TEST_ACTOR_NOT_PERSISTED');
+        }
+
+        return $fresh;
+    }
+
+    /**
      * Le total groupe est la SOMME EXACTE des lignes par établissement — c'est
      * la définition de « sans mélange d'opérations ».
      */
@@ -124,7 +141,7 @@ class RestaurantGroupConsolidationTest extends TestCase
 
         $actor = $this->actor($company);
 
-        $rows = collect($this->actingAs($actor)
+        $rows = collect((array) $this->actingAs($actor)
             ->getJson('/api/v1/restaurant/reports/group')
             ->assertStatus(200)
             ->json('data.branches'))
@@ -179,7 +196,7 @@ class RestaurantGroupConsolidationTest extends TestCase
 
         $actor = $this->actor($company);
 
-        $rows = collect($this->actingAs($actor)
+        $rows = collect((array) $this->actingAs($actor)
             ->getJson('/api/v1/restaurant/reports/group')
             ->assertStatus(200)
             ->json('data.branches'))
@@ -215,7 +232,7 @@ class RestaurantGroupConsolidationTest extends TestCase
             ]);
         });
 
-        $data = $this->actingAs($actor->fresh())
+        $data = $this->actingAs($this->freshActor($actor))
             ->getJson('/api/v1/restaurant/reports/group')
             ->assertStatus(200)
             ->json('data');
@@ -252,7 +269,7 @@ class RestaurantGroupConsolidationTest extends TestCase
         });
 
         // Tentative d'élargissement explicite : ignorée.
-        $data = $this->actingAs($actor->fresh())
+        $data = $this->actingAs($this->freshActor($actor))
             ->getJson('/api/v1/restaurant/reports/group?branch_ids[]='.$a->id.'&branch_ids[]='.$b->id)
             ->assertStatus(200)
             ->json('data');
