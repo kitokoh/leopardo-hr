@@ -33,4 +33,5 @@ return [
     'infra_dispatch_rejected' => 'GitHub a refusé le déclenchement (HTTP :status). Vérifiez la portée du jeton.',
     'infra_switch_dispatched' => 'Bascule déclenchée : le workflow GitHub la prend en charge (suivez l’onglet Actions).',
     'infra_token_missing' => 'Bascule indisponible : le jeton GitHub du bouton n’est pas configuré (GITHUB_STACK_SWITCH_TOKEN).',
+    'search_intel_unsupported_provider' => 'Fournisseur non supporté : :provider.',
 ];

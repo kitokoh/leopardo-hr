@@ -60,7 +60,7 @@ final class SearchIntelIntegrationController
         if (! IntegrationLifecycle::isSupportedProvider($provider)) {
             return new JsonResponse([
                 'error' => 'UNSUPPORTED_PROVIDER',
-                'message' => "Fournisseur non supporté : {$provider}.",
+                'message' => __('platform.search_intel_unsupported_provider', ['provider' => $provider]),
                 'supported' => IntegrationLifecycle::PROVIDERS,
             ], 404);
         }
@@ -100,7 +100,7 @@ final class SearchIntelIntegrationController
         if (! IntegrationLifecycle::isSupportedProvider($provider)) {
             return new JsonResponse([
                 'error' => 'UNSUPPORTED_PROVIDER',
-                'message' => "Fournisseur non supporté : {$provider}.",
+                'message' => __('platform.search_intel_unsupported_provider', ['provider' => $provider]),
                 'supported' => IntegrationLifecycle::PROVIDERS,
             ], 404);
         }
@@ -131,7 +131,7 @@ final class SearchIntelIntegrationController
         if (! IntegrationLifecycle::isSupportedProvider($provider)) {
             return new JsonResponse([
                 'error' => 'UNSUPPORTED_PROVIDER',
-                'message' => "Fournisseur non supporté : {$provider}.",
+                'message' => __('platform.search_intel_unsupported_provider', ['provider' => $provider]),
                 'supported' => IntegrationLifecycle::PROVIDERS,
             ], 404);
         }
