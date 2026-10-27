@@ -71,6 +71,7 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReview
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantStockAlertController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantStockLevelController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantSupplierController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantSyncController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTableController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTableSessionController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTaxRateController;
@@ -334,6 +335,16 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/reports/cogs', [RestaurantReportController::class, 'cogs']);
         Route::get('/reports/pos', [RestaurantReportController::class, 'pos']);
         Route::get('/reports/kpis', [RestaurantReportController::class, 'kpis']);
+
+        // ── REST-OS-7 (#8609) — Mode hors ligne : idempotence, conflits, reprise ──
+        // Registre FERME d'operations : tout le reste est refuse et conserve.
+        // Le resultat est renvoye PAR operation, pour que le terminal ne marque
+        // `synced` que ce qui a ete reellement accepte.
+        Route::post('/sync/operations', [RestaurantSyncController::class, 'submitOperations']);
+        Route::get('/sync/status', [RestaurantSyncController::class, 'syncStatus']);
+        Route::get('/sync/errors', [RestaurantSyncController::class, 'syncErrors']);
+        Route::get('/sync/conflicts', [RestaurantSyncController::class, 'syncConflicts']);
+        Route::post('/sync/conflicts/{conflict}/resolve', [RestaurantSyncController::class, 'resolveConflict']);
         Route::put('/inventory-counts/{restaurantInventoryCount}/items/{restaurantInventoryCountItem}', [RestaurantInventoryCountController::class, 'updateItem']);
         // --- Routes ajoutées (union PM) ---
         Route::post('/stock-levels', [RestaurantStockLevelController::class, 'store']);
