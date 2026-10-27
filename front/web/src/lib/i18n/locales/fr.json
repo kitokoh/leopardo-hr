@@ -8743,5 +8743,12 @@
       "unpaid": "impayée(s)",
       "noPayments": "Aucune échéance : générez-les pour pouvoir encaisser le loyer."
     }
-  }
+  },
+  "fuelPumpistSelectRequired": "Sélectionnez une station, une pompe et un compteur.",
+  "fuelPumpistReadingRejected": "Relevé refusé par le serveur",
+  "fuelPumpistStationsError": "Stations indisponibles",
+  "fuelPumpistPumpsError": "Pompes indisponibles",
+  "fuelPumpistMetersError": "Compteurs indisponibles",
+  "fuelTechnicalRef": "Réf. {id}",
+  "fuelMeterLabelWithProduct": "{meter} — {product}"
 }
