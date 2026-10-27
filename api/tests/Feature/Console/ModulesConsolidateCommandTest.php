@@ -20,7 +20,7 @@ class ModulesConsolidateCommandTest extends TestCase
 {
     /**
      * @param  array<string, bool>  $features
-     * @param  array<string, mixed>  $modules
+     * @param  array<string, bool>  $modules
      */
     private function companyWith(array $features, array $modules): Company
     {
