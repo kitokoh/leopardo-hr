@@ -23,6 +23,14 @@ enum ModelType: string
     case OcrReading = 'ocr_reading';
 
     /**
+     * Extraction des reponses d'interview depuis une description libre
+     * (#8229, BOS-041). Le payload porte `answers`, un objet cle/valeur
+     * dont la validation metier (allowlist) reste du ressort du domaine
+     * Onboarding — le validateur generique ne verifie que la forme.
+     */
+    case SetupInterviewExtraction = 'setup_interview_extraction';
+
+    /**
      * Clés de payload requises (schéma de sortie) pour ce type.
      *
      * @return list<string>
@@ -33,6 +41,7 @@ enum ModelType: string
             self::FaceVerification => ['verified'],
             self::Liveness => ['live'],
             self::OcrReading => ['value', 'unit'],
+            self::SetupInterviewExtraction => ['answers'],
         };
     }
 }

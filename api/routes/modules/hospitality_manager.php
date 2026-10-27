@@ -24,10 +24,12 @@ declare(strict_types=1);
 
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityAvailabilityController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityDashboardController;
+use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityLeaseController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityModuleStatusController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityPropertyController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityPropertyStaffController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityPublicStayController;
+use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityRentPaymentController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityReservationController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityRoomTypeController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityUnitController;
@@ -82,6 +84,20 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
         // ── Tableau de bord (HOSP-004 #7946) ──────────────────────────
         Route::get('/dashboard/kpis', [HospitalityDashboardController::class, 'kpis']);
+
+        // ── Locatif : baux (HOSP-005 #7947) ────────────────────────────
+        // Aucune route DELETE : un bail se RÉSILIE (`terminate`), l'historique
+        // locatif et les échéances déjà émises doivent rester lisibles.
+        Route::get('/properties/{property}/leases', [HospitalityLeaseController::class, 'index'])->whereNumber('property');
+        Route::post('/properties/{property}/leases', [HospitalityLeaseController::class, 'store'])->whereNumber('property');
+        Route::get('/leases/{lease}', [HospitalityLeaseController::class, 'show'])->whereNumber('lease');
+        Route::patch('/leases/{lease}', [HospitalityLeaseController::class, 'update'])->whereNumber('lease');
+        Route::post('/leases/{lease}/terminate', [HospitalityLeaseController::class, 'terminate'])->whereNumber('lease');
+        Route::post('/leases/{lease}/generate-periods', [HospitalityLeaseController::class, 'generatePeriods'])->whereNumber('lease');
+
+        // ── Locatif : échéances & encaissements (HOSP-005 #7947) ───────
+        Route::get('/rent-payments', [HospitalityRentPaymentController::class, 'index']);
+        Route::post('/rent-payments/{payment}/record', [HospitalityRentPaymentController::class, 'record'])->whereNumber('payment');
     });
 
 // ── HOSP-006 (#7948, spec §6) — vitrine publique /stay ─────────────────

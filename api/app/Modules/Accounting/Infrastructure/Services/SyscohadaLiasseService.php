@@ -86,7 +86,7 @@ final class SyscohadaLiasseService
     public function bilan(string $companyId, int $year): array
     {
         if ($year < 2000 || $year > 2100) {
-            throw new InvalidArgumentException('Exercice comptable invalide.');
+            throw new InvalidArgumentException(__('accounting.errors.fiscal_year_invalid'));
         }
 
         $from = sprintf('%04d-01-01', $year);

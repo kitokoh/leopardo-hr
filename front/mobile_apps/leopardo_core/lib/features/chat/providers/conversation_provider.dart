@@ -1,6 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// Riverpod 3 a sorti `StateNotifier`/`StateNotifierProvider` du point d'entrée
+// principal : ils vivent désormais dans `legacy.dart`. Sans cet import, le
+// build échoue sur « Type 'StateNotifier' not found » (#8754 — le smoke build
+// mobile était rouge sur toutes les PR, y compris docs-only).
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:leopardo_core/core/providers/core_providers.dart';
 import 'package:leopardo_core/features/chat/data/conversation_repository.dart';
 import 'package:leopardo_core/models/chat_thread.dart';
