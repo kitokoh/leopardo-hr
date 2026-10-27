@@ -123,8 +123,10 @@ final class RestaurantOfflineSyncTest extends TestCase
 
         // Les DEUX valeurs sont conservees : rien n'a ete ecrase.
         $conflict = $second['conflict'];
-        $this->assertSame(5000, $conflict->server_value['total_minor']);
-        $this->assertSame(7300, $conflict->local_value['total_minor']);
+        $serverValue = (array) $conflict->server_value;
+        $localValue = (array) $conflict->local_value;
+        $this->assertSame(5000, $serverValue['total_minor']);
+        $this->assertSame(7300, $localValue['total_minor']);
         $this->assertSame('terminal-1', $conflict->server_terminal_id);
         $this->assertSame('terminal-2', $conflict->local_terminal_id);
     }

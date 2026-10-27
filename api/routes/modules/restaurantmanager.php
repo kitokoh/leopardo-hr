@@ -71,6 +71,7 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReview
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantStockAlertController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantStockLevelController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantSupplierController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantSyncController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTableController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTableSessionController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTaxRateController;
