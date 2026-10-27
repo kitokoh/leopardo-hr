@@ -30,24 +30,24 @@ final class IntegrationSyncException extends RuntimeException
     /** Un jeton expiré n'est pas réessayable : il faut reconnecter le compte. */
     public static function unauthorized(string $provider): self
     {
-        return new self($provider, 'identifiants refusés par le fournisseur (reconnexion requise)', false);
+        return new self($provider, (string) __('searchintel.unauthorized'), false);
     }
 
     /** Quota dépassé : la reprise planifiée suffira. */
     public static function quotaExceeded(string $provider): self
     {
-        return new self($provider, 'quota du fournisseur dépassé', true);
+        return new self($provider, (string) __('searchintel.quota'), true);
     }
 
     /** Réponse illisible : le fournisseur a changé son contrat. */
     public static function malformed(string $provider, string $detail): self
     {
-        return new self($provider, 'réponse illisible : '.$detail, false);
+        return new self($provider, (string) __('searchintel.malformed', ['detail' => $detail]), false);
     }
 
     /** Panne réseau / 5xx. */
     public static function transport(string $provider, string $detail): self
     {
-        return new self($provider, 'erreur de transport : '.$detail, true);
+        return new self($provider, (string) __('searchintel.transport', ['detail' => $detail]), true);
     }
 }
