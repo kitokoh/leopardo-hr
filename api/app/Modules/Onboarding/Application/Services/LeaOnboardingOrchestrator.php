@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Onboarding\Domain\Services;
+namespace App\Modules\Onboarding\Application\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Onboarding\Application\Actions\CompleteSetupInterview;
 use App\Modules\Onboarding\Domain\Exceptions\LeaInterpretationUnavailableException;
+use App\Modules\Onboarding\Domain\Services\InterviewAnswerExtractor;
+use App\Modules\Onboarding\Domain\Services\SetupInterviewPlanner;
 use Psr\Log\LoggerInterface;
 use Throwable;
 

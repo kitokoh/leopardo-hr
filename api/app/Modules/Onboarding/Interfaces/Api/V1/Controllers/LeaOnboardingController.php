@@ -7,7 +7,7 @@ namespace App\Modules\Onboarding\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
-use App\Modules\Onboarding\Domain\Services\LeaOnboardingOrchestrator;
+use App\Modules\Onboarding\Application\Services\LeaOnboardingOrchestrator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
