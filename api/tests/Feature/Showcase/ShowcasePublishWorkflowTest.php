@@ -254,23 +254,25 @@ class ShowcasePublishWorkflowTest extends TestCase
 
         $previous = libxml_use_internal_errors(true);
         $doc = simplexml_load_string($xml);
-        $this->assertNotFalse($doc, 'Le sitemap doit être un XML bien formé : '.implode(' | ', array_map(
-            static fn ($e): string => trim($e->message), libxml_get_errors()
-        )));
+        $errors = array_map(static fn (\LibXMLError $e): string => trim($e->message), libxml_get_errors());
         libxml_clear_errors();
         libxml_use_internal_errors($previous);
 
-        $this->assertNotNull($doc, 'sitemap non parseable');
+        // `assertNotFalse()` suffit à rétrécir le type : un `assertNotNull()`
+        // supplémentaire serait toujours vrai (PHPStan strict le signale).
+        $this->assertNotFalse($doc, 'Le sitemap doit être un XML bien formé : '.implode(' | ', $errors));
 
         // Le namespace xhtml DOIT être déclaré sur l'élément racine : sans lui
         // les `<xhtml:link>` sont dans un préfixe non lié et le document est
         // non conforme au protocole sitemap.
         $namespaces = $doc->getDocNamespaces();
+        $this->assertIsArray($namespaces, 'le sitemap doit déclarer ses namespaces');
         $this->assertArrayHasKey('xhtml', $namespaces);
         $this->assertSame('http://www.w3.org/1999/xhtml', $namespaces['xhtml']);
 
         // `<loc>` exige une URL ABSOLUE : une valeur relative est ignorée.
         $urls = $doc->xpath('//*[local-name()="loc"]');
+        $this->assertIsArray($urls, 'xpath doit renvoyer une liste');
         $this->assertNotEmpty($urls, 'le sitemap doit contenir au moins une entrée');
         foreach ($urls as $loc) {
             $this->assertMatchesRegularExpression(
@@ -282,6 +284,7 @@ class ShowcasePublishWorkflowTest extends TestCase
 
         // Les alternates hreflang sont eux aussi absolus (même règle).
         $alternates = $doc->xpath('//*[local-name()="link"]');
+        $this->assertIsArray($alternates, 'xpath doit renvoyer une liste');
         $this->assertNotEmpty($alternates);
         foreach ($alternates as $link) {
             $this->assertMatchesRegularExpression('#^https?://#', (string) $link['href']);
