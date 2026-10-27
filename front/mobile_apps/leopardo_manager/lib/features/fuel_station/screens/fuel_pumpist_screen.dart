@@ -100,8 +100,8 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
         _lastResult = result.replayed
             ? 'Relevé déjà enregistré (rejeu) — aucun doublon.'
             : result.isAnomaly
-                ? 'Anomalie détectée (delta ${result.deltaMinor}) — signalée au manager.'
-                : 'Relevé enregistré (delta ${result.deltaMinor}).';
+            ? 'Anomalie détectée (delta ${result.deltaMinor}) — signalée au manager.'
+            : 'Relevé enregistré (delta ${result.deltaMinor}).';
       });
       _readingController.clear();
     } catch (e) {
@@ -145,8 +145,15 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await ref.refresh(fuelMyShiftsProvider.future);
-          await ref.refresh(fuelStationsProvider.future);
+          // `refresh` est annoté `@useResult` : même `await`-é, sa valeur est
+          // considérée comme ignorée (`unused_result`). On invalide puis on lit
+          // le Future, ce qui attend réellement les deux rechargements avant de
+          // rendre la main à l'indicateur — sinon le spinner disparaît avant
+          // que les données soient arrivées.
+          ref.invalidate(fuelMyShiftsProvider);
+          ref.invalidate(fuelStationsProvider);
+          await ref.read(fuelMyShiftsProvider.future);
+          await ref.read(fuelStationsProvider.future);
         },
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -155,7 +162,9 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
             // ── Shift actif ────────────────────────────────────────────────
             Text(
               l10n.fuelPumpistActiveShift,
-              style: AppTypography.bodySmall.copyWith(color: AppColors.textDark),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textDark,
+              ),
             ),
             const SizedBox(height: 8),
             shiftsAsync.when(
@@ -190,10 +199,11 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
                                           ),
                                           Text(
                                             s.assignmentDate ?? '',
-                                            style:
-                                                AppTypography.caption.copyWith(
-                                              color: AppColors.textMutedDark,
-                                            ),
+                                            style: AppTypography.caption
+                                                .copyWith(
+                                                  color:
+                                                      AppColors.textMutedDark,
+                                                ),
                                           ),
                                         ],
                                       ),
@@ -222,7 +232,9 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
             // ── Sélection station → pompe → compteur ───────────────────────
             Text(
               l10n.fuelPumpSelectstation,
-              style: AppTypography.bodySmall.copyWith(color: AppColors.textDark),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textDark,
+              ),
             ),
             const SizedBox(height: 8),
             stationsAsync.when(
@@ -246,7 +258,9 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
             const SizedBox(height: 16),
             Text(
               l10n.fuelPumpSelectpump,
-              style: AppTypography.bodySmall.copyWith(color: AppColors.textDark),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textDark,
+              ),
             ),
             const SizedBox(height: 8),
             pumpsAsync.when(
@@ -268,7 +282,9 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
             const SizedBox(height: 16),
             Text(
               l10n.fuelPumpSelectmeter,
-              style: AppTypography.bodySmall.copyWith(color: AppColors.textDark),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textDark,
+              ),
             ),
             const SizedBox(height: 8),
             metersAsync.when(

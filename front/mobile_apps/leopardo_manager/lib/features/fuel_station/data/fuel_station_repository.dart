@@ -47,7 +47,7 @@ class FuelStationDto {
   }
 }
 
-/// Pompe rattachee a une station. Liste : GET .../stations/<stationId>/pumps.
+/// Pompe rattachee a une station. Liste : GET `.../stations/<stationId>/pumps`.
 class FuelPumpDto {
   final int id;
   final int stationId;
@@ -71,7 +71,7 @@ class FuelPumpDto {
   }
 }
 
-/// Compteur monte sur une pompe. Liste : GET .../stations/<stationId>/meters, filtre pump_id.
+/// Compteur monte sur une pompe. Liste : GET `.../stations/<stationId>/meters`, filtre pump_id.
 class FuelMeterDto {
   final int id;
   final int stationId;
@@ -110,7 +110,11 @@ class FuelSaleResultDto {
   final int? totalMinor;
   final bool replayed;
 
-  FuelSaleResultDto({required this.saleId, this.totalMinor, required this.replayed});
+  FuelSaleResultDto({
+    required this.saleId,
+    this.totalMinor,
+    required this.replayed,
+  });
 
   factory FuelSaleResultDto.fromJson(Map<String, dynamic> json) {
     final sale = json['sale'] as Map<String, dynamic>?;
@@ -201,7 +205,10 @@ class FuelStationRepository {
   /// Le backend expose les compteurs au niveau station ; on filtre côté client
   /// sur `pump_id` pour ne proposer que les compteurs réellement montés sur la
   /// pompe, et on écarte les compteurs retirés (`retired`).
-  Future<List<FuelMeterDto>> meters(int stationId, {required int pumpId}) async {
+  Future<List<FuelMeterDto>> meters(
+    int stationId, {
+    required int pumpId,
+  }) async {
     final response = await apiClient.requestWithRetry(
       '/fuel-station/stations/$stationId/meters',
       maxRetriesOverride: 0,
