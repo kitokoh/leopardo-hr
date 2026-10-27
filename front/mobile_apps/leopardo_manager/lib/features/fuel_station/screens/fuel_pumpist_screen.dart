@@ -145,8 +145,13 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await ref.refresh(fuelMyShiftsProvider.future);
-          await ref.refresh(fuelStationsProvider.future);
+          // `refresh()` renvoie la nouvelle valeur ; on ne la consomme pas ici,
+          // donc on invalide puis on attend la reconstruction — meme effet,
+          // sans `unused_result` (analyzer CI).
+          ref.invalidate(fuelMyShiftsProvider);
+          ref.invalidate(fuelStationsProvider);
+          await ref.read(fuelMyShiftsProvider.future);
+          await ref.read(fuelStationsProvider.future);
         },
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
