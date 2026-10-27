@@ -179,12 +179,165 @@ class ContractCountryTemplates
                     ],
                 ],
             ],
+            // ── Cameroun — Loi n° 92-007 du 14/08/1992 (code du travail) ─────
+            // CEMAC. Le Cameroun est la reference du bloc : c'est le seul pays
+            // CEMAC ou le code du travail a ete refondu apres 1992, et les
+            // autres membres (Gabon, Congo, Tchad, RCA) s'en inspirent.
+            'CM' => [
+                'legal_references' => [
+                    'code' => 'Code du travail camerounais — loi n° 92-007 du 14 août 1992',
+                    'articles' => ['34' => 'Période d’essai', '36' => 'CDD (durée et renouvellement)', '45' => 'Préavis', '60' => 'Congé annuel', '80' => 'Heures supplémentaires'],
+                ],
+                'probation' => 'Période d’essai : CDI ≤ 3 mois (6 mois pour les cadres) ; CDD ≤ 1 mois par tranche de 6 mois, plafonnée à 3 mois (art. 34).',
+                'notice_period' => 'Préavis : 15 jours (ancienneté < 6 mois), 1 mois (6 mois - 3 ans), 2 mois (3-10 ans), 3 mois (≥ 10 ans ou cadre) — art. 45.',
+                'annual_leave' => 'Congé annuel payé : 1,5 jour ouvrable par mois de travail effectif pour les travailleurs de 18-50 ans, 2,5 jours au-delà (18 à 30 jours/an — art. 60).',
+                'overtime' => 'Heures supplémentaires majorées : +20 % (de la 41e à la 48e heure), +30 % (49e-56e), +40 % (au-delà) ; +50 % de nuit, +60 % les jours fériés — art. 80.',
+                'minimum_wage' => 'SMIG en vigueur (décret annuel) — base de référence pour le salaire de base.',
+                'social_security' => 'Cotisations CNPS : salarié 4,2 % (pension), employeur 11,2 % (pension + prestations familiales) ; redevance communale additionnelle — règles paye CameroonPayrollRules.',
+                'clauses' => [
+                    'cdi' => [
+                        ['title' => 'Nature du contrat', 'body' => 'Le présent contrat est conclu pour une durée indéterminée (CDI) à compter de la date d’effet, conformément à la loi n° 92-007 du 14 août 1992.'],
+                        ['title' => 'Période d’essai', 'body' => 'Une période d’essai de X mois est prévue (maximum 3 mois, 6 mois pour les cadres — art. 34), au terme de laquelle l’embauche devient définitive.'],
+                        ['title' => 'Rémunération', 'body' => 'Le salaire de base mensuel est fixé à X FCFA, auquel s’ajoutent les majorations légales (heures supplémentaires, travail de nuit et jours fériés — art. 80).'],
+                        ['title' => 'Congés', 'body' => 'Le salarié bénéficie d’un congé annuel payé de 1,5 jour ouvrable par mois de travail effectif (art. 60).'],
+                        ['title' => 'Préavis', 'body' => 'La rupture du contrat est soumise à un préavis de 15 jours à 3 mois selon l’ancienneté et la catégorie (art. 45).'],
+                    ],
+                    'cdd' => [
+                        ['title' => 'Nature du contrat', 'body' => 'Le présent contrat est conclu pour une durée déterminée (CDD) du X au Y, pour un motif légalement autorisé par la loi 92-007 (art. 36).'],
+                        ['title' => 'Période d’essai', 'body' => 'La période d’essai est fixée à 1 mois par tranche de 6 mois de contrat, dans la limite de 3 mois (art. 34).'],
+                        ['title' => 'Rémunération', 'body' => 'Le salaire de base est fixé à X FCFA, assorti des majorations légales applicables (art. 80).'],
+                        ['title' => 'Congés', 'body' => 'Le salarié acquiert 1,5 jour ouvrable de congé par mois de travail effectif (art. 60).'],
+                    ],
+                ],
+            ],
+            // ── Côte d’Ivoire — Loi n° 2015-532 du 20/07/2015 (code du travail) ──
+            // CEDEAO. Refonte recente (2015) : c'est la reference du bloc
+            // UEMOA avec le Senegal, et la seule a avoir supprime la
+            // distinction de duree de preavis par categorie professionnelle.
+            'CI' => [
+                'legal_references' => [
+                    'code' => 'Code du travail ivoirien — loi n° 2015-532 du 20 juillet 2015',
+                    'articles' => ['16.6' => 'Période d’essai', '16.2' => 'CDD (durée et renouvellement)', '16.10' => 'Préavis', '25.1' => 'Congé annuel', '22.3' => 'Heures supplémentaires'],
+                ],
+                'probation' => 'Période d’essai : CDI ≤ 1 mois (2 mois pour les agents de maîtrise, 3 mois pour les cadres) ; CDD ≤ 1 mois par année de contrat, renouvelable une fois (art. 16.6).',
+                'notice_period' => 'Préavis : 1 mois pour les travailleurs payés à l’heure/jour/mois, 3 mois pour les cadres et agents de maîtrise (art. 16.10).',
+                'annual_leave' => 'Congé annuel payé : 2,2 jours ouvrables par mois de travail effectif (26,4 jours/an — art. 25.1), majoré selon l’ancienneté.',
+                'overtime' => 'Heures supplémentaires majorées : +15 % (de la 41e à la 46e heure), +50 % (47e-54e), +75 % au-delà ; +50 % de nuit, +100 % les jours fériés et le dimanche — art. 22.3.',
+                'minimum_wage' => 'SMIG en vigueur (75 000 FCFA/mois depuis 2023) — base de référence pour le salaire de base.',
+                'social_security' => 'Cotisations CNPS : salarié 3,2 % (pension) + 1 % (prestations familiales) ; employeur 7,7 % (pension) + 5,75 % (prestations familiales) + 2 % (accidents du travail) — règles paye IvoryCoastPayrollRules.',
+                'clauses' => [
+                    'cdi' => [
+                        ['title' => 'Nature du contrat', 'body' => 'Le présent contrat est conclu pour une durée indéterminée (CDI) à compter de la date d’effet, conformément à la loi n° 2015-532 du 20 juillet 2015.'],
+                        ['title' => 'Période d’essai', 'body' => 'Une période d’essai de X mois est prévue (1 mois maximum pour les employés, 3 mois pour les cadres — art. 16.6), au terme de laquelle l’embauche devient définitive.'],
+                        ['title' => 'Rémunération', 'body' => 'Le salaire de base mensuel est fixé à X FCFA, auquel s’ajoutent les majorations légales (heures supplémentaires, travail de nuit, dimanches et jours fériés — art. 22.3).'],
+                        ['title' => 'Congés', 'body' => 'Le salarié bénéficie d’un congé annuel payé de 2,2 jours ouvrables par mois de travail effectif (art. 25.1).'],
+                        ['title' => 'Préavis', 'body' => 'La rupture du contrat est soumise à un préavis de 1 à 3 mois selon la catégorie professionnelle (art. 16.10).'],
+                    ],
+                    'cdd' => [
+                        ['title' => 'Nature du contrat', 'body' => 'Le présent contrat est conclu pour une durée déterminée (CDD) du X au Y, pour un motif légalement autorisé par la loi 2015-532 (art. 16.2).'],
+                        ['title' => 'Période d’essai', 'body' => 'La période d’essai est fixée à 1 mois par année de contrat, renouvelable une fois (art. 16.6).'],
+                        ['title' => 'Rémunération', 'body' => 'Le salaire de base est fixé à X FCFA, assorti des majorations légales applicables (art. 22.3).'],
+                        ['title' => 'Congés', 'body' => 'Le salarié acquiert 2,2 jours ouvrables de congé par mois de travail effectif (art. 25.1).'],
+                    ],
+                ],
+            ],
+            // ── France — Code du travail (ord. 2017-1387, loi 2018-217) ──────
+            'FR' => [
+                'legal_references' => [
+                    'code' => 'Code du travail français (partie législative, ordonnance n° 2017-1387 du 22/09/2017)',
+                    'articles' => ['L1221-19' => 'Période d’essai', 'L1242-1' => 'CDD (motifs légaux)', 'L1234-1' => 'Préavis', 'L3141-3' => 'Congé annuel', 'L3121-28' => 'Heures supplémentaires'],
+                ],
+                'probation' => 'Période d’essai : 2 mois (employés), 3 mois (techniciens et agents de maîtrise), 4 mois (cadres), renouvelable une fois par accord de branche étendu (art. L1221-19).',
+                'notice_period' => 'Préavis (CDI) : 1 mois en principe, 3 mois pour les cadres (usage et conventions collectives — art. L1234-1) ; préavis de licenciement réduit d’un tiers en cas d’ancienneté ≥ 2 ans dans le cadre d’un PSE.',
+                'annual_leave' => 'Congé annuel payé : 2,5 jours ouvrables par mois de travail effectif (30 jours ouvrables/an — art. L3141-3), soit 5 semaines.',
+                'overtime' => 'Heures supplémentaires majorées : +25 % de la 36e à la 43e heure, +50 % au-delà (accords de branche pouvant prévoir un contingent différent) — art. L3121-28.',
+                'minimum_wage' => 'SMIC en vigueur (revalorisé au 1er janvier, indexé sur l’inflation et le salaire moyen ouvrier) — base de référence pour le salaire de base.',
+                'social_security' => 'Cotisations URSSAF : salarié ≈ 22 % (maladie, vieillesse, chômage, retraite complémentaire, CSG/CRDS) ; employeur ≈ 42 % (allocations familiales, maladie, vieillesse, AT/MP, chômage, formation) — règles paye FrancePayrollRules.',
+                'clauses' => [
+                    'cdi' => [
+                        ['title' => 'Nature du contrat', 'body' => 'Le présent contrat est conclu pour une durée indéterminée (CDI) à compter de la date d’effet, régi par le code du travail et la convention collective applicable.'],
+                        ['title' => 'Période d’essai', 'body' => 'Une période d’essai de X mois est prévue (2 à 4 mois selon la catégorie — art. L1221-19), renouvelable une fois si un accord de branche étendu le prévoit.'],
+                        ['title' => 'Rémunération', 'body' => 'Le salaire de base mensuel brut est fixé à X EUR, auquel s’ajoutent les majorations légales des heures supplémentaires (art. L3121-28).'],
+                        ['title' => 'Congés', 'body' => 'Le salarié bénéficie d’un congé annuel payé de 2,5 jours ouvrables par mois de travail effectif, soit 30 jours ouvrables par an (art. L3141-3).'],
+                        ['title' => 'Préavis', 'body' => 'La rupture du contrat est soumise à un préavis de 1 à 3 mois selon la catégorie professionnelle (art. L1234-1).'],
+                    ],
+                    'cdd' => [
+                        ['title' => 'Nature du contrat', 'body' => 'Le présent contrat est conclu pour une durée déterminée (CDD) du X au Y, pour l’un des motifs limitativement énumérés à l’article L1242-1 du code du travail.'],
+                        ['title' => 'Période d’essai', 'body' => 'La période d’essai est calculée à raison de 1 jour par semaine de contrat, dans la limite de 2 semaines (contrat ≤ 6 mois), 1 mois (contrat > 6 mois) — art. L1242-10.'],
+                        ['title' => 'Rémunération', 'body' => 'Le salaire de base brut est fixé à X EUR, assorti des majorations légales applicables (art. L3121-28).'],
+                        ['title' => 'Congés', 'body' => 'Le salarié acquiert 2,5 jours ouvrables de congé par mois de travail effectif (art. L3141-3).'],
+                    ],
+                ],
+            ],
+            // ── Turquie — İş Kanunu n° 4857 du 22/05/2003 ────────────────────
+            // Attention : `annual_leave` n'est PAS proportionnel au mois mais
+            // indexé sur l'ANCIENNETE (14/20/26 jours), ce qui interdit de le
+            // calculer avec la formule 2,5 j/mois des pays du Maghreb.
+            'TR' => [
+                'legal_references' => [
+                    'code' => 'İş Kanunu (loi sur le travail) n° 4857 du 22 mai 2003',
+                    'articles' => ['15' => 'Période d’essai', '11' => 'CDD (durée et renouvellement)', '17' => 'Préavis', '53' => 'Congé annuel (barème par ancienneté)', '41' => 'Heures supplémentaires'],
+                ],
+                'probation' => 'Période d’essai : 2 mois maximum, renouvelable une fois par accord collectif (4 mois au total) — art. 15. La rupture pendant l’essai dispense de préavis mais ouvre droit aux salaires dus.',
+                'notice_period' => 'Préavis : 2 semaines (ancienneté < 6 mois), 4 semaines (6 mois - 1,5 an), 6 semaines (1,5-3 ans), 8 semaines (> 3 ans) — art. 17.',
+                'annual_leave' => 'Congé annuel payé INDEXÉ SUR L’ANCIENNETÉ, non proratisable à 2,5 j/mois : 14 jours (1-5 ans), 20 jours (5-15 ans), 26 jours (≥ 15 ans) ; +2 à +6 jours selon l’âge (≥ 50 ans, 18 ans et moins) — art. 53.',
+                'overtime' => 'Heures supplémentaires majorées : +25 % (heures normales), +50 % (au-delà de 45 h/sem, jours fériés et repos hebdomadaire) ; plafond annuel 270 heures — art. 41.',
+                'minimum_wage' => 'Asgari ücret en vigueur (revalorisé au 1er janvier, ajustement possible en cours d’année) — base de référence pour le salaire de base.',
+                'social_security' => 'Cotisations SGK : salarié 14 % (maladie + pension) + 1 % (chômage) ; employeur 20,5 % (maladie, pension, AT/MP) + 2 % (chômage) — règles paye TurkeyPayrollRules.',
+                'clauses' => [
+                    'cdi' => [
+                        ['title' => 'Nature du contrat', 'body' => 'Le présent contrat est conclu pour une durée indéterminée (belirsiz süreli iş sözleşmesi) à compter de la date d’effet, conformément à la loi n° 4857.'],
+                        ['title' => 'Période d’essai', 'body' => 'Une période d’essai de X mois est prévue (2 mois maximum, renouvelable une fois par accord collectif — art. 15).'],
+                        ['title' => 'Rémunération', 'body' => 'Le salaire de base mensuel brut est fixé à X TRY, auquel s’ajoutent les majorations légales des heures supplémentaires (art. 41).'],
+                        ['title' => 'Congés', 'body' => 'Le salarié bénéficie d’un congé annuel payé de 14 jours après 1 an d’ancienneté, 20 jours après 5 ans et 26 jours après 15 ans (art. 53). Ce barème est indexé sur l’ancienneté et ne se proratise pas mensuellement.'],
+                        ['title' => 'Préavis', 'body' => 'La rupture du contrat est soumise à un préavis de 2 à 8 semaines selon l’ancienneté (art. 17).'],
+                    ],
+                    'cdd' => [
+                        ['title' => 'Nature du contrat', 'body' => 'Le présent contrat est conclu pour une durée déterminée (belirli süreli iş sözleşmesi) du X au Y, pour un motif objectif tel qu’un travail déterminé ou une durée déterminée (art. 11).'],
+                        ['title' => 'Période d’essai', 'body' => 'La période d’essai est de 2 mois maximum (art. 15) ; un CDD ne peut être renouvelé de manière répétée sans motif objectif, sous peine de requalification en CDI.'],
+                        ['title' => 'Rémunération', 'body' => 'Le salaire de base brut est fixé à X TRY, assorti des majorations légales applicables (art. 41).'],
+                        ['title' => 'Congés', 'body' => 'Le congé annuel est calculé selon le barème d’ancienneté de l’article 53 (14/20/26 jours).'],
+                    ],
+                ],
+            ],
+            // ── Canada — Code canadien du travail (L.R.C. 1985, ch. L-2) ─────
+            // Le Canada est un état FEDERAL : les normes du travail varient par
+            // province. Ce bundle couvre le regime FEDERAL (entreprises de
+            // competence federale) et le socle commun ; le Quebec a ses propres
+            // normes (LNT, RLRQ c. N-1.1) et un preavis civil distinct.
+            'CA' => [
+                'legal_references' => [
+                    'code' => 'Code canadien du travail (L.R.C. 1985, ch. L-2), partie III — normes du travail ; Quebec : Loi sur les normes du travail (RLRQ c. N-1.1)',
+                    'articles' => ['241' => 'Période d’essai (3 mois)', '230' => 'Préavis de licenciement', '184' => 'Congé annuel', '174' => 'Durée du travail', '251' => 'Congé parental'],
+                ],
+                'probation' => 'Période d’essai : 3 mois en pratique (le Code fédéral ne fixe pas de durée légale ; l’admissibilité à la plainte pour licenciement injustifié exige 12 mois de service continu — art. 240). Au Québec, la LNT prévoit 3 mois.',
+                'notice_period' => 'Préavis de licenciement (fédéral) : 2 semaines (3 mois-1 an de service), 2 semaines + 1 semaine par année complète au-delà de la 1re année (maximum 8 semaines) — art. 230. Au Québec : 1 semaine (3 mois-1 an), 2 semaines (1-5 ans), 4 semaines (5-10 ans), 8 semaines (≥ 10 ans).',
+                'annual_leave' => 'Congé annuel : 2 semaines après 1 an de service continu, 3 semaines après 6 ans (fédéral — art. 184). Au Québec : 2 semaines (1-3 ans), 3 semaines (≥ 3 ans). Indemnité de vacances : 4 %, puis 6 % (fédéral) / 4 %, puis 6 % (Québec).',
+                'overtime' => 'Heures supplémentaires : heures normales 8 h/jour et 40 h/semaine (fédéral) ; majoration d’au moins 1,5 × le salaire horaire normal — art. 174. Au Québec : 40 h/semaine, majoration de 50 %.',
+                'minimum_wage' => 'Salaire minimum FÉDÉRAL en vigueur (revisé annuellement au 1er avril) ; les provinces fixent leur propre taux (Québec, Ontario, etc.) — base de référence pour le salaire de base.',
+                'social_security' => 'Cotisations : RPC/RRQ (retraite, salarié + employeur), AE (assurance-emploi), RQAP au Québec ; impôts fédéral et provincial retenus à la source — règles paye CanadaPayrollRules.',
+                'clauses' => [
+                    'cdi' => [
+                        ['title' => 'Nature du contrat', 'body' => 'Le présent contrat est conclu pour une durée indéterminée à compter de la date d’effet, régi par le Code canadien du travail (partie III) ou, au Québec, par la Loi sur les normes du travail.'],
+                        ['title' => 'Période d’essai', 'body' => 'Une période d’essai de 3 mois est prévue, au terme de laquelle l’embauche devient définitive. L’admissibilité à une plainte pour licenciement injustifié exige 12 mois de service continu (art. 240).'],
+                        ['title' => 'Rémunération', 'body' => 'Le salaire de base annuel est fixé à X CAD, versé selon la périodicité convenue, auquel s’ajoutent les majorations légales des heures supplémentaires (art. 174).'],
+                        ['title' => 'Congés', 'body' => 'Le salarié bénéficie d’un congé annuel payé de 2 semaines après 1 an de service continu, porté à 3 semaines après 6 ans (art. 184), avec indemnité de vacances de 4 % puis 6 %.'],
+                        ['title' => 'Préavis', 'body' => 'La rupture du contrat est soumise à un préavis de 2 semaines majoré d’une semaine par année de service au-delà de la première, dans la limite de 8 semaines (art. 230).'],
+                    ],
+                    'cdd' => [
+                        ['title' => 'Nature du contrat', 'body' => 'Le présent contrat est conclu pour une durée déterminée du X au Y, pour un travail dont la fin est prévisible (remplacement, projet déterminé, saison).'],
+                        ['title' => 'Période d’essai', 'body' => 'La période d’essai est de 3 mois, sauf durée moindre prévue au contrat.'],
+                        ['title' => 'Rémunération', 'body' => 'Le salaire de base est fixé à X CAD, assorti des majorations légales applicables (art. 174).'],
+                        ['title' => 'Congés', 'body' => 'Le salarié acquiert une indemnité de vacances de 4 % du salaire brut (art. 184).'],
+                    ],
+                ],
+            ],
         ];
     }
 
     /**
-     * Bundle générique (pays hors DZ/MA/TN/SN) : clauses neutres sans
-     * référence légale — le contrat reste rédigé par l'entreprise.
+     * Bundle générique (pays hors DZ/MA/TN/SN/CM/CI/FR/TR/CA) : clauses
+     * neutres sans référence légale — le contrat reste rédigé par l'entreprise.
      *
      * @return array<string, mixed>
      */
