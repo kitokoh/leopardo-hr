@@ -24,7 +24,7 @@ final class InvalidPageVerificationTransitionException extends DomainException
     public static function between(string $from, string $to): self
     {
         return new self(
-            sprintf('Transition de vérification interdite : %s -> %s.', $from, $to),
+            __('pages.verification_transition_invalid', ['from' => $from, 'to' => $to]),
             422,
             self::CODE,
         );

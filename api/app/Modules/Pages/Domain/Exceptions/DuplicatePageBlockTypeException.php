@@ -24,12 +24,7 @@ final class DuplicatePageBlockTypeException extends DomainException
     public static function between(string $typeId, string $existingOwner, string $newOwner): self
     {
         return new self(
-            sprintf(
-                'Le type de bloc « %s » est déjà fourni par le BC « %s » : « %s » ne peut pas l\'enregistrer à nouveau.',
-                $typeId,
-                $existingOwner,
-                $newOwner,
-            ),
+            __('pages.block_type_duplicate', ['type' => $typeId, 'owner' => $existingOwner, 'new' => $newOwner]),
             500,
             self::CODE,
         );

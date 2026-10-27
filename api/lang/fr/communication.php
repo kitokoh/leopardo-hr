@@ -34,7 +34,7 @@ return [
     'reply_compose_scope_required' => "Reconnectez votre boîte Gmail avec l'autorisation de composition pour activer les brouillons Gmail.",
     'pending_reply_not_pending' => 'Cette proposition de réponse a déjà été traitée.',
     'reply_blocked' => "Cette réponse ne peut pas être envoyée : un garde-fou l'a bloquée.",
-    'reply_rate_limited' => "Gmail limite les envois pour le moment. Réessayez dans quelques instants.",
+    'reply_rate_limited' => 'Gmail limite les envois pour le moment. Réessayez dans quelques instants.',
     'reply_auth_failed' => 'La connexion à votre boîte Gmail a expiré. Veuillez la reconnecter.',
     'reply_send_failed' => "La réponse n'a pas pu être envoyée. Veuillez réessayer.",
 ];

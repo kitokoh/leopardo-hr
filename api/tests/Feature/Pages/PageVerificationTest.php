@@ -186,16 +186,21 @@ class PageVerificationTest extends TestCase
         $request = $this->service->open($this->page, PageVerificationMethod::Sms, 'owner@chez-lea.sn', $t0);
         $plain = $this->service->issueSmsCode($request, '+221771234567', $t0);
 
-        $this->expectException(PageVerificationException::class);
-        $this->expectExceptionMessageMatches('/expiré/i');
-
-        $this->service->confirmSmsCode(
-            $request,
-            '+221771234567',
-            $plain,
-            'system:sms',
-            $t0->copy()->addMinutes(PageVerificationCode::TTL_MINUTES + 1),
-        );
+        // Le message est traduit par le catalogue i18n : il depend de la locale
+        // active du process. On asserte donc le CODE d'erreur, qui est le
+        // contrat stable de l'API.
+        try {
+            $this->service->confirmSmsCode(
+                $request,
+                '+221771234567',
+                $plain,
+                'system:sms',
+                $t0->copy()->addMinutes(PageVerificationCode::TTL_MINUTES + 1),
+            );
+            $this->fail('Un code expire aurait du etre refuse.');
+        } catch (PageVerificationException $e) {
+            $this->assertSame('PAGE_VERIFICATION_CODE_EXPIRED', $e->errorCode());
+        }
     }
 
     public function test_code_is_single_use(): void
@@ -263,11 +268,15 @@ class PageVerificationTest extends TestCase
         $request = $this->service->open($this->page, PageVerificationMethod::Sms, 'owner@chez-lea.sn', $t0);
         $this->service->issueSmsCode($request, '+221771234567', $t0);
 
-        $this->expectException(PageVerificationException::class);
-        $this->expectExceptionMessageMatches('/réessayez/i');
-
-        // 10 s après : toujours dans le cooldown de 60 s.
-        $this->service->issueSmsCode($request, '+221771234567', $t0->copy()->addSeconds(10));
+        // Le message est résolu par le catalogue i18n et dépend donc de la
+        // locale active du process (fr en développement, en en CI). Le CODE
+        // d'erreur, lui, est stable — c'est le contrat que l'API promet.
+        try {
+            $this->service->issueSmsCode($request, '+221771234567', $t0->copy()->addSeconds(10));
+            $this->fail('Le cooldown aurait dû refuser une réémission immédiate.');
+        } catch (PageVerificationException $e) {
+            $this->assertSame('PAGE_VERIFICATION_COOLDOWN', $e->errorCode());
+        }
     }
 
     public function test_cooldown_expires_after_the_window(): void

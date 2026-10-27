@@ -31,7 +31,7 @@ final class PageTenantMismatchException extends DomainException
     public static function missingSite(int $siteId): self
     {
         return new self(
-            sprintf('Établissement introuvable pour la Page (site_id=%d).', $siteId),
+            __('pages.site_not_found', ['site' => $siteId]),
             422,
             self::CODE_MISSING_SITE,
         );
@@ -40,11 +40,7 @@ final class PageTenantMismatchException extends DomainException
     public static function crossTenant(string $companyId, int $siteId): self
     {
         return new self(
-            sprintf(
-                'L\'établissement %d n\'appartient pas à la société %s : une Page ne peut pas être rattachée au lieu d\'un autre tenant.',
-                $siteId,
-                $companyId,
-            ),
+            __('pages.site_cross_tenant', ['site' => $siteId, 'company' => $companyId]),
             403,
             self::CODE_CROSS_TENANT,
         );

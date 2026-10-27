@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Pages\Domain\Models;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -50,6 +51,8 @@ use Illuminate\Support\Carbon;
  */
 class PageCustomDomain extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'page_custom_domains';
 
     public const STATUS_PENDING_DNS = 'pending_dns';

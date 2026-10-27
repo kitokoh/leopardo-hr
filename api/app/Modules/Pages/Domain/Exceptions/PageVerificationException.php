@@ -20,7 +20,7 @@ final class PageVerificationException extends DomainException
     public static function methodDisabled(string $method): self
     {
         return new self(
-            sprintf('La méthode de vérification « %s » n\'est pas activée sur cette plateforme.', $method),
+            __('pages.verification_method_disabled', ['method' => $method]),
             422,
             'PAGE_VERIFICATION_METHOD_DISABLED',
         );
@@ -29,7 +29,7 @@ final class PageVerificationException extends DomainException
     public static function requestAlreadyOpen(): self
     {
         return new self(
-            'Un dossier de vérification est déjà ouvert pour cette Page.',
+            __('pages.verification_already_open'),
             409,
             'PAGE_VERIFICATION_ALREADY_OPEN',
         );
@@ -38,7 +38,7 @@ final class PageVerificationException extends DomainException
     public static function requestClosed(): self
     {
         return new self(
-            'Ce dossier de vérification est clos : ouvrez-en un nouveau pour redemander une vérification.',
+            __('pages.verification_closed'),
             409,
             'PAGE_VERIFICATION_CLOSED',
         );
@@ -47,7 +47,7 @@ final class PageVerificationException extends DomainException
     public static function suspendedPage(): self
     {
         return new self(
-            'Une Page suspendue ne peut pas faire l\'objet d\'une demande de vérification.',
+            __('pages.verification_suspended'),
             422,
             'PAGE_VERIFICATION_SUSPENDED',
         );
@@ -56,7 +56,7 @@ final class PageVerificationException extends DomainException
     public static function wrongMethod(string $expected, string $actual): self
     {
         return new self(
-            sprintf('Cette opération exige la méthode « %s » (dossier en « %s »).', $expected, $actual),
+            __('pages.verification_wrong_method', ['expected' => $expected, 'actual' => $actual]),
             422,
             'PAGE_VERIFICATION_WRONG_METHOD',
         );
@@ -65,7 +65,7 @@ final class PageVerificationException extends DomainException
     public static function cooldown(int $seconds): self
     {
         return new self(
-            sprintf('Un code vient d\'être envoyé : réessayez dans %d seconde(s).', max(1, $seconds)),
+            __('pages.verification_cooldown', ['seconds' => max(1, $seconds)]),
             429,
             'PAGE_VERIFICATION_COOLDOWN',
         );
@@ -74,7 +74,7 @@ final class PageVerificationException extends DomainException
     public static function codeNotFound(): self
     {
         return new self(
-            'Aucun code n\'a été émis pour ce numéro sur ce dossier.',
+            __('pages.verification_code_not_found'),
             422,
             'PAGE_VERIFICATION_CODE_NOT_FOUND',
         );
@@ -86,9 +86,9 @@ final class PageVerificationException extends DomainException
     public static function codeUnusable(string $state): self
     {
         $message = match ($state) {
-            'expired' => 'Ce code a expiré : demandez-en un nouveau.',
-            'consumed' => 'Ce code a déjà été utilisé.',
-            default => 'Trop de tentatives : demandez un nouveau code.',
+            'expired' => __('pages.verification_code_expired'),
+            'consumed' => __('pages.verification_code_consumed'),
+            default => __('pages.verification_code_locked'),
         };
 
         return new self($message, 422, 'PAGE_VERIFICATION_CODE_'.strtoupper($state));
@@ -97,7 +97,7 @@ final class PageVerificationException extends DomainException
     public static function codeMismatch(int $remaining): self
     {
         return new self(
-            sprintf('Code incorrect (%d tentative(s) restante(s)).', max(0, $remaining)),
+            __('pages.verification_code_mismatch', ['remaining' => max(0, $remaining)]),
             422,
             'PAGE_VERIFICATION_CODE_MISMATCH',
         );
@@ -106,7 +106,7 @@ final class PageVerificationException extends DomainException
     public static function noEvidence(): self
     {
         return new self(
-            'Un dossier documentaire ne peut pas être approuvé sans aucune pièce justificative.',
+            __('pages.verification_no_evidence'),
             422,
             'PAGE_VERIFICATION_NO_EVIDENCE',
         );
@@ -118,7 +118,7 @@ final class PageVerificationException extends DomainException
     public static function invalidEvidence(array $errors): self
     {
         return new self(
-            'Pièce justificative refusée : '.implode(' ', $errors),
+            __('pages.verification_evidence_invalid', ['errors' => implode(' ', $errors)]),
             422,
             'PAGE_VERIFICATION_EVIDENCE_INVALID',
         );
@@ -127,7 +127,7 @@ final class PageVerificationException extends DomainException
     public static function publicPath(): self
     {
         return new self(
-            'Le chemin de stockage d\'une pièce ne peut pas être une URL publique ou un chemin absolu.',
+            __('pages.verification_evidence_path_public'),
             422,
             'PAGE_VERIFICATION_EVIDENCE_PATH_PUBLIC',
         );
@@ -136,7 +136,7 @@ final class PageVerificationException extends DomainException
     public static function invalidReason(string $reason): self
     {
         return new self(
-            sprintf('Motif de décision inconnu : « %s ».', $reason),
+            __('pages.verification_reason_invalid', ['reason' => $reason]),
             422,
             'PAGE_VERIFICATION_REASON_INVALID',
         );
@@ -145,7 +145,7 @@ final class PageVerificationException extends DomainException
     public static function invalidTransition(string $from, string $to): self
     {
         return new self(
-            sprintf('Transition de vérification impossible : %s -> %s.', $from, $to),
+            __('pages.verification_transition_invalid', ['from' => $from, 'to' => $to]),
             409,
             'PAGE_VERIFICATION_TRANSITION_INVALID',
         );

@@ -196,7 +196,6 @@ return [
     'login_code_intro' => 'Voici votre code de connexion à usage unique. Saisissez-le sur la page de connexion pour accéder à votre espace :',
     'login_code_validity' => "Ce code est valide pendant 10 minutes et à usage unique. Si vous n'avez pas fait cette demande, vous pouvez ignorer cet email.",
 
-
     // #7760 — notifications e-mail des tickets support client ↔ plateforme.
     // Le CONTENU du message n'est volontairement jamais recopié dans
     // l'e-mail : la conversation se lit dans l'espace client / la console

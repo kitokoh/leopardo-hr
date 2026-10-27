@@ -18,7 +18,7 @@ final class PageCustomDomainException extends DomainException
     public static function invalidHost(string $reason): self
     {
         return new self(
-            sprintf('Ce domaine n’est pas valide : %s', $reason),
+            __('pages.domain_invalid', ['reason' => $reason]),
             422,
             'CUSTOM_DOMAIN_INVALID',
         );
@@ -28,7 +28,7 @@ final class PageCustomDomainException extends DomainException
     {
         // Volontairement vague : ne pas révéler à quel tenant appartient le host.
         return new self(
-            'Ce domaine est déjà rattaché à une Page. Si vous en êtes propriétaire, contactez le support.',
+            __('pages.domain_taken'),
             409,
             'CUSTOM_DOMAIN_TAKEN',
         );
@@ -37,7 +37,7 @@ final class PageCustomDomainException extends DomainException
     public static function alreadyLinked(): self
     {
         return new self(
-            'Ce domaine est déjà rattaché à cette Page.',
+            __('pages.domain_already_linked'),
             409,
             'CUSTOM_DOMAIN_ALREADY_LINKED',
         );
@@ -46,7 +46,7 @@ final class PageCustomDomainException extends DomainException
     public static function entitlementMissing(): self
     {
         return new self(
-            'Les domaines personnalisés ne sont pas inclus dans votre offre actuelle.',
+            __('pages.domain_entitlement_missing'),
             402,
             'CUSTOM_DOMAIN_ENTITLEMENT_MISSING',
         );
@@ -55,7 +55,7 @@ final class PageCustomDomainException extends DomainException
     public static function quotaExceeded(int $limit): self
     {
         return new self(
-            sprintf('Votre offre autorise %d domaine(s) personnalisé(s).', $limit),
+            __('pages.domain_quota_exceeded', ['limit' => $limit]),
             402,
             'CUSTOM_DOMAIN_QUOTA_EXCEEDED',
         );
@@ -64,7 +64,7 @@ final class PageCustomDomainException extends DomainException
     public static function removed(): self
     {
         return new self(
-            'Ce domaine a été supprimé et ne peut plus être vérifié.',
+            __('pages.domain_removed'),
             410,
             'CUSTOM_DOMAIN_REMOVED',
         );
@@ -73,7 +73,7 @@ final class PageCustomDomainException extends DomainException
     public static function planExpired(): self
     {
         return new self(
-            'Votre abonnement a expiré : les domaines personnalisés sont désactivés jusqu’au renouvellement.',
+            __('pages.domain_plan_expired'),
             402,
             'CUSTOM_DOMAIN_PLAN_EXPIRED',
         );

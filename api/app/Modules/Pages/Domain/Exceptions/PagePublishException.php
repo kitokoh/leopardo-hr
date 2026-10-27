@@ -18,7 +18,7 @@ final class PagePublishException extends DomainException
     public static function missingSeoTitle(): self
     {
         return new self(
-            'Une Page sans titre SEO ne peut pas être publiée : elle produirait une URL indexable sans intitulé.',
+            __('pages.publish_seo_title_required'),
             422,
             'PAGE_SEO_TITLE_REQUIRED',
         );
