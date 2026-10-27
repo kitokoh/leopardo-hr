@@ -45,11 +45,9 @@ class FuelStationDto {
       code: json['code'] as String?,
     );
   }
-
-  String get label => name ?? code ?? '#$id';
 }
 
-/// Pompe d'une station (endpoint /fuel-station/stations/{id}/pumps).
+/// Pompe rattachee a une station. Liste : GET .../stations/<stationId>/pumps.
 class FuelPumpDto {
   final int id;
   final int stationId;
@@ -71,11 +69,9 @@ class FuelPumpDto {
       status: json['status'] as String?,
     );
   }
-
-  String get label => code ?? '#$id';
 }
 
-/// Compteur d'une pompe (endpoint /fuel-station/stations/{id}/meters).
+/// Compteur monte sur une pompe. Liste : GET .../stations/<stationId>/meters, filtre pump_id.
 class FuelMeterDto {
   final int id;
   final int stationId;
@@ -105,11 +101,6 @@ class FuelMeterDto {
       productCode: json['product_code'] as String?,
       unitCode: json['unit_code'] as String?,
     );
-  }
-
-  String get label {
-    final code = meterCode ?? '#$id';
-    return productCode == null ? code : '$code — $productCode';
   }
 }
 

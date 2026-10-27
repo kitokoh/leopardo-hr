@@ -9,6 +9,7 @@ import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_manager/features/fuel_station/data/fuel_station_repository.dart';
 import 'package:leopardo_manager/features/fuel_station/providers/fuel_pumpist_selection_provider.dart';
 import 'package:leopardo_manager/features/fuel_station/providers/fuel_station_provider.dart';
+import 'package:leopardo_manager/features/fuel_station/widgets/fuel_labels.dart';
 
 /// Parcours pompiste FuelStation (FUEL-013, #5807 / #8585) : shift actif →
 /// choix station → pompe → compteur → saisie de relevé → confirmation.
@@ -361,7 +362,10 @@ class _StationDropdown extends StatelessWidget {
           .map(
             (s) => DropdownMenuItem<int>(
               value: s.id,
-              child: Text(s.label, overflow: TextOverflow.ellipsis),
+              child: Text(
+                context.fuelStationLabel(s),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           )
           .toList(),
@@ -395,7 +399,10 @@ class _PumpDropdown extends StatelessWidget {
           .map(
             (p) => DropdownMenuItem<int>(
               value: p.id,
-              child: Text(p.label, overflow: TextOverflow.ellipsis),
+              child: Text(
+                context.fuelPumpLabel(p),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           )
           .toList(),
@@ -429,7 +436,10 @@ class _MeterDropdown extends StatelessWidget {
           .map(
             (m) => DropdownMenuItem<int>(
               value: m.id,
-              child: Text(m.label, overflow: TextOverflow.ellipsis),
+              child: Text(
+                context.fuelMeterLabel(m),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           )
           .toList(),
