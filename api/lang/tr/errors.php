@@ -349,4 +349,6 @@ return [
     'FUNDRAISING_VERTICAL_NOT_ENABLED' => 'Bağış toplama dikeyi bu şirket için etkinleştirilmemiş.',
     'MARKETING_LEAD_NO_CHANGES' => 'Değişiklik istenmedi.',
     'MARKETING_LEAD_NOT_FOUND' => 'Potansiyel müşteri bulunamadı.',
+    // #8521-annexe — validation du numero fiscal turc (UblTrInvoiceGenerator)
+    'VKN_TCKN' => 'Gecersiz vergi numarasi (VKN/TCKN): VKN icin 10, TCKN icin 11 hane.',
 ];

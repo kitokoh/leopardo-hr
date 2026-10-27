@@ -1,3 +1,19 @@
+> **MAJ 2026-10-27 — i18n : cles Fuel a la source canonique (issue #4805, PR #8940).**
+> Surface **mobile** (`mobile_apps/leopardo_core/lib/l10n/app_*.arb`) : les 7 cles Fuel
+> (`fuelPumpistSelectRequired`, `fuelPumpistReadingRejected`, `fuelPumpistStationsError`,
+> `fuelPumpistPumpsError`, `fuelPumpistMetersError`, `fuelTechnicalRef`,
+> `fuelMeterLabelWithProduct`) n'existaient que dans les `.arb` **generes**. La source canonique
+> (`shared/i18n/locales/*.json`) les ignorait, donc `sync-mobile.js` les effacait et
+> `versions.json` conservait des checksums perimes — `validate-and-sync` etait rouge sur `main`.
+> Correctif : les 7 cles sont posees dans les **4 locales canoniques** (fr/en/ar/tr), puis les
+> catalogues derives (mobile ARB, web, admin-dashboard, backend) sont regeneres par les scripts
+> officiels. **Aucun ecran mobile n'est modifie** : la surface fonctionnelle est identique, seule
+> la chaine de generation est reparee.
+> Scenarios verifies : `node shared/i18n/validators/validate.js` -> `I18N_VALIDATION_OK (4 locales)` ;
+> `dev-hub/tools/check-i18n-catalog-parity.sh` -> parite OK ; `check-i18n-diff.js` -> aucune cle
+> ajoutee/retiree hors des 7 cles Fuel. **Non couvert** : rendu visuel des libelles Fuel sur un
+> appareil reel (verification de chaine uniquement).
+
 > **MAJ 2026-10-27 — Restaurant OS, REST-OS-8 : reçu client conforme + vue consolidée groupe (issue #8610).**
 > Surface **API** (`api/routes/modules/restaurantmanager.php`, module RestaurantManager) : nouvelle route
 > `GET /api/v1/restaurant/reports/group` — vue consolidée **groupe** en **lecture seule**, permission

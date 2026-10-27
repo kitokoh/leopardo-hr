@@ -353,4 +353,6 @@ return [
     'FUNDRAISING_VERTICAL_NOT_ENABLED' => 'La verticale cagnottes n\'est pas activée pour cette entreprise.',
     'MARKETING_LEAD_NO_CHANGES' => 'Aucune modification demandée.',
     'MARKETING_LEAD_NOT_FOUND' => 'Lead introuvable.',
+    // #8521-annexe — validation du numero fiscal turc (UblTrInvoiceGenerator)
+    'VKN_TCKN' => 'Numero fiscal (VKN/TCKN) invalide : 10 chiffres pour un VKN, 11 pour un TCKN.',
 ];

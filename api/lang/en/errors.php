@@ -357,4 +357,6 @@ return [
     'FUNDRAISING_VERTICAL_NOT_ENABLED' => 'The fundraising vertical is not enabled for this company.',
     'MARKETING_LEAD_NO_CHANGES' => 'No changes requested.',
     'MARKETING_LEAD_NOT_FOUND' => 'Lead not found.',
+    // #8521-annexe — validation du numero fiscal turc (UblTrInvoiceGenerator)
+    'VKN_TCKN' => 'Invalid tax number (VKN/TCKN): 10 digits for a VKN, 11 for a TCKN.',
 ];

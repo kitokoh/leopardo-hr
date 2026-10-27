@@ -349,4 +349,6 @@ return [
     'FUNDRAISING_VERTICAL_NOT_ENABLED' => 'ميزة حملات التبرعات غير مفعّلة لهذه الشركة.',
     'MARKETING_LEAD_NO_CHANGES' => 'لم يتم طلب أي تعديل.',
     'MARKETING_LEAD_NOT_FOUND' => 'العميل المحتمل غير موجود.',
+    // #8521-annexe — validation du numero fiscal turc (UblTrInvoiceGenerator)
+    'VKN_TCKN' => 'رقم ضريبي غير صالح (VKN/TCKN): 10 أرقام لـ VKN و11 لـ TCKN.',
 ];
