@@ -169,6 +169,15 @@ Schedule::command('search-intel:scan')
     ->at('05:20')
     ->withoutOverlapping()
     ->onOneServer();
+// GSI-12 (#8523) point 5 — alerte Slack sur dépassement de budget. Horaire
+// (et non quotidien) pour qu'un dépassement soit signalé le jour où il
+// survient ; le silence par (campagne, périmètre, période) est porté par la
+// commande elle-même, pas par la fréquence — sans quoi un `hourly` spammerait
+// 24 fois la même alerte.
+Schedule::command('search-intel:budget-alerts')
+    ->hourly()
+    ->withoutOverlapping()
+    ->onOneServer();
 // BC-35 VTC (VTC-06/#8362) — purge RGPD quotidienne des positions
 // chauffeurs (rétention vtc.positions_retention_days, défaut 30 j) :
 // idempotente, auditée par log, withoutOverlapping + onOneServer.
