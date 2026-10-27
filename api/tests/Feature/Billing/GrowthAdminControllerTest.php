@@ -132,6 +132,85 @@ class GrowthAdminControllerTest extends TestCase
         $this->getJson('/api/v1/platform/growth/partners')->assertStatus(401);
     }
 
+    /**
+     * #8523 (gotcha 7) — la garde `platform.permission` doit RÉELLEMENT
+     * s'appliquer au groupe `/platform/growth`.
+     *
+     * Avant ce correctif, être authentifié sur le guard `super_admin_api`
+     * suffisait : un compte plateforme de rôle `support` ou `marketing` — qui
+     * ne porte pas `billing.*` — pouvait lire les partenaires, changer un taux
+     * de commission et marquer un versement comme payé.
+     */
+    public function test_platform_role_without_billing_permission_is_forbidden(): void
+    {
+        $superAdmin = $this->makeSuperAdmin();
+        $superAdmin->forceFill(['platform_role' => 'support'])->save();
+
+        Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
+
+        $this->getJson('/api/v1/platform/growth/partners')
+            ->assertStatus(403)
+            ->assertJsonPath('error', 'PLATFORM_PERMISSION_REQUIRED');
+
+        $this->getJson('/api/v1/platform/growth/payouts')
+            ->assertStatus(403)
+            ->assertJsonPath('error', 'PLATFORM_PERMISSION_REQUIRED');
+    }
+
+    /**
+     * #8523 (gotcha 7) — le rôle `finance` porte `billing.view` ET
+     * `billing.manage` : la garde ne doit pas lui fermer la porte.
+     */
+    public function test_finance_platform_role_keeps_billing_access(): void
+    {
+        $superAdmin = $this->makeSuperAdmin();
+        $superAdmin->forceFill(['platform_role' => 'finance'])->save();
+
+        Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
+
+        $this->getJson('/api/v1/platform/growth/partners')->assertOk();
+    }
+
+    /**
+     * #8523 (gotcha 7) — la décision DOIT laisser une trace d'audit attribuée
+     * au compte plateforme appelant.
+     *
+     * Avant le correctif, `Auth::id()` interrogeait le guard par défaut
+     * (`sanctum`, donc `users`) alors que la requête est authentifiée sur
+     * `super_admin_api` : l'identifiant était `null`, le service était appelé
+     * ZÉRO fois et l'endpoint répondait quand même `200 {"success":true}`.
+     * Aucun audit n'était écrit — la décision financière était invisible.
+     */
+    public function test_rate_change_is_audited_against_the_platform_admin(): void
+    {
+        $superAdmin = $this->makeSuperAdmin();
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+        $partner = Partner::create([
+            'user_id' => $employee->id,
+            'referral_code' => 'P-AUDIT1',
+            'application_status' => 'approved',
+            'status' => 'active',
+            'type' => 'individual',
+            'payout_threshold' => 0,
+        ]);
+
+        Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
+
+        $this->patchJson("/api/v1/platform/growth/partners/{$partner->id}/rate", [
+            'rate' => 750,
+            'reason' => 'Performance exceptionnelle constatée.',
+        ])->assertOk()->assertJsonPath('success', true);
+
+        $this->assertDatabaseHas('partner_audit_logs', [
+            'admin_id' => $superAdmin->id,
+            'event' => 'rate_adjustment',
+            'auditable_id' => (string) $partner->id,
+        ]);
+    }
+
     public function test_unauthenticated_is_rejected(): void
     {
         $this->getJson('/api/v1/platform/growth/partners')->assertStatus(401);

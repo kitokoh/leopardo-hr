@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS public.webhook_events CASCADE;
 DROP TABLE IF EXISTS public.personal_access_tokens CASCADE;
 DROP TABLE IF EXISTS public.languages CASCADE;
 DROP TABLE IF EXISTS public.partner_referrals CASCADE;
+DROP TABLE IF EXISTS public.partner_audit_logs CASCADE;
 DROP TABLE IF EXISTS public.commissions CASCADE;
 DROP TABLE IF EXISTS public.partner_payout_requests CASCADE;
 DROP TABLE IF EXISTS public.partners CASCADE;
@@ -214,6 +215,28 @@ CREATE TABLE public.partner_referrals (
     created_at timestamptz NULL,
     updated_at timestamptz NULL
 );
+
+-- #8523 (gotcha 7) \u2014 piste d'audit des d\u00e9cisions plateforme sur les partenaires.
+-- La table \u00e9tait cr\u00e9\u00e9e UNIQUEMENT dans la branche sqlite de
+-- CreatesMvpSchema (code mort en CI, qui tourne en pgsql) : tout test
+-- v\u00e9rifiant qu'une d\u00e9cision de commission/versement est audit\u00e9e \u00e9chouait en
+-- `relation "partner_audit_logs" does not exist`. Le trou masquait un bug
+-- r\u00e9el : l'audit n'\u00e9tait jamais \u00e9crit (voir GrowthAdminController).
+CREATE TABLE public.partner_audit_logs (
+    id bigserial PRIMARY KEY,
+    admin_id bigint NOT NULL,
+    auditable_type varchar(255) NOT NULL,
+    auditable_id varchar(255) NOT NULL,
+    event varchar(255) NOT NULL,
+    old_values jsonb NULL,
+    new_values jsonb NULL,
+    reason text NULL,
+    ip_address varchar(45) NULL,
+    created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX partner_audit_logs_auditable_index
+    ON public.partner_audit_logs (auditable_type, auditable_id);
 
 
 CREATE TABLE public.languages (

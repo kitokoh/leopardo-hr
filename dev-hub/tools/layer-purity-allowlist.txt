@@ -20,10 +20,10 @@ api/app/Modules/Billing/Application/Actions/ProvisionGuidedTrial.php:16:use Illu
 api/app/Modules/Billing/Application/Actions/RequestTrialSignup.php:11:use Illuminate\Support\Facades\DB;
 api/app/Modules/Billing/Application/Actions/RequestTrialSignup.php:12:use Illuminate\Support\Facades\Log;
 api/app/Modules/Billing/Application/Actions/RequestTrialSignup.php:13:use Illuminate\Support\Facades\Mail;
-api/app/Modules/Billing/Application/Actions/VerifyTrialSignup.php:20:use Illuminate\Support\Facades\DB;
-api/app/Modules/Billing/Application/Actions/VerifyTrialSignup.php:21:use Illuminate\Support\Facades\Hash;
-api/app/Modules/Billing/Application/Actions/VerifyTrialSignup.php:22:use Illuminate\Support\Facades\Log;
-api/app/Modules/Billing/Application/Actions/VerifyTrialSignup.php:23:use Illuminate\Support\Facades\Mail;
+api/app/Modules/Billing/Application/Actions/VerifyTrialSignup.php:21:use Illuminate\Support\Facades\DB;
+api/app/Modules/Billing/Application/Actions/VerifyTrialSignup.php:22:use Illuminate\Support\Facades\Hash;
+api/app/Modules/Billing/Application/Actions/VerifyTrialSignup.php:23:use Illuminate\Support\Facades\Log;
+api/app/Modules/Billing/Application/Actions/VerifyTrialSignup.php:24:use Illuminate\Support\Facades\Mail;
 api/app/Modules/CRM/Application/Actions/AutomationActions/CreateTaskAction.php:10:use Illuminate\Support\Facades\Log;
 api/app/Modules/CRM/Application/Actions/AutomationActions/CreateTaskAction.php:11:use Illuminate\Support\Facades\Schema;
 api/app/Modules/CRM/Application/Actions/AutomationActions/CreateTaskAction.php:9:use Illuminate\Support\Facades\DB;

@@ -14,6 +14,7 @@ use App\Events\CompanyCreated;
 use App\Jobs\SendTrialDripEmailJob;
 use App\Mail\TrialWelcomeMail;
 use App\Modules\Billing\Application\Services\HorizontalToolSelection;
+use App\Modules\Billing\Application\Services\TrialAcquisitionAttribution;
 use App\Modules\Billing\Infrastructure\Services\PartnerService;
 use App\Support\CountryDefaults;
 use Illuminate\Database\QueryException;
@@ -36,6 +37,7 @@ class VerifyTrialSignup
         private readonly SolutionActivator $solutionActivator,
         private readonly SolutionCatalogue $solutionCatalogue,
         private readonly HorizontalToolSelection $toolSelection,
+        private readonly TrialAcquisitionAttribution $acquisitionAttribution,
     ) {}
 
     /**
@@ -520,12 +522,23 @@ class VerifyTrialSignup
                         // #7235 — `modules` reste ABSENT quand aucune
                         // sélection n'a été déclarée (aucun verrouillage
                         // rétroactif du comportement historique).
+                        //
+                        // #8523 (point 2) — ATTRIBUTION D'ACQUISITION.
+                        // `source` n'était jusqu'ici écrit que dans un
+                        // `Log::info()` : la provenance d'un essai (campagne,
+                        // partenaire, referral, import) était donc perdue dès
+                        // que les logs tournaient. Aucune analyse d'acquisition
+                        // n'était possible. On la persiste sur la company, dans
+                        // `metadata` (jsonb déjà indexé en GIN, aucun schéma
+                        // nouveau), sous une clé namespacée pour ne pas
+                        // collisionner avec les autres champs d'extension.
                         'metadata' => array_filter(
                             [
                                 'provisioned_by' => 'self_service_trial',
                                 'employees_range' => $payload['employees_range'],
                                 'company_type' => $payload['company_type'] ?? null,
                                 'modules' => $moduleSelection,
+                                'acquisition' => $this->acquisitionAttribution->fromPayload($payload),
                             ],
                             static fn (mixed $value): bool => $value !== null,
                         ),
