@@ -11,6 +11,11 @@ return [
     'invalid_transition' => 'انتقال حجز غير صالح (:from → :target).',
     'checkout_before_checkin' => 'يجب أن يكون تاريخ المغادرة بعد تاريخ الوصول.',
     'unit_room_type_mismatch' => 'يجب أن تنتمي الوحدة المخصصة إلى نفس نوع الغرفة الخاص بالحجز.',
+    'invalid_lease_transition' => 'انتقال عقد إيجار غير صالح (:from → :target).',
+    'lease_terminal_immutable' => 'لا يمكن تعديل عقد إيجار منتهٍ: شروطه مثبتة بالأقساط الصادرة بالفعل.',
+    'rent_amount_must_be_positive' => 'يجب أن يكون المبلغ المحصل أكبر من صفر.',
+    'rent_already_settled' => 'هذا القسط مسدد بالكامل: لا يمكن تسجيل أي دفعة إضافية.',
+    'rent_amount_exceeds_outstanding' => 'المبلغ المحصل (:amount) يتجاوز المتبقي (:outstanding).',
     'console' => [
         'expire_pending_description' => 'إنهاء حجوزات الضيافة المعلّقة المتجاوزة: إلغاء + تحرير المخزون (HOSP-004/#7946).',
         'expire_pending_no_tenant' => 'لا يوجد مستأجر نشط — لا شيء لإنهائه.',

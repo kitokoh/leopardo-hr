@@ -161,13 +161,17 @@ use App\Modules\HealthManager\Domain\Policies\HealthPrescriptionPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthRoomPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthSpecialtyPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthStaffRolePolicy;
+use App\Modules\HospitalityManager\Domain\Models\HospitalityLease;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityProperty;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityPropertyStaff;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityReservation;
+use App\Modules\HospitalityManager\Domain\Models\HospitalityRentPayment;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityRoomType;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityUnit;
+use App\Modules\HospitalityManager\Domain\Policies\HospitalityLeasePolicy;
 use App\Modules\HospitalityManager\Domain\Policies\HospitalityPropertyPolicy;
 use App\Modules\HospitalityManager\Domain\Policies\HospitalityPropertyStaffPolicy;
+use App\Modules\HospitalityManager\Domain\Policies\HospitalityRentPaymentPolicy;
 use App\Modules\HospitalityManager\Domain\Policies\HospitalityReservationPolicy;
 use App\Modules\HospitalityManager\Domain\Policies\HospitalityRoomTypePolicy;
 use App\Modules\HospitalityManager\Domain\Policies\HospitalityUnitPolicy;
@@ -449,6 +453,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(HospitalityPropertyStaff::class, HospitalityPropertyStaffPolicy::class);
         // HOSP-004 (#7946) : réservations.
         Gate::policy(HospitalityReservation::class, HospitalityReservationPolicy::class);
+        // HOSP-005 (#7947) : locatif — baux et échéances de loyer.
+        Gate::policy(HospitalityLease::class, HospitalityLeasePolicy::class);
+        Gate::policy(HospitalityRentPayment::class, HospitalityRentPaymentPolicy::class);
         // — FuelStation batch A (FUEL-009 #5803, FUEL-010 #5804, FUEL-011 #5805,
         //   FUEL-016 #5810) : policies deny-by-default.
         //
