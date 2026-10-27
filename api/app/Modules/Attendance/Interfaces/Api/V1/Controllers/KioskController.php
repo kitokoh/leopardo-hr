@@ -804,35 +804,6 @@ class KioskController extends Controller
      * or rejected) so kiosk operators know why biometric punch may not be
      * available yet for a given employee.
      */
-    /**
-     * @return array{face_enabled: bool, fingerprint_enabled: bool, consented_at: string|null, pending_request: bool, latest_request_status: string|null, latest_request_submitted_at: string|null}
-     */
-    private function serializeBiometricEnrollmentStatus(Employee $employee): array
-    {
-        $hasFaceColumn = Schema::hasColumn('employees', 'biometric_face_enabled');
-        $hasFingerprintColumn = Schema::hasColumn('employees', 'biometric_fingerprint_enabled');
-
-        $faceEnabled = $hasFaceColumn ? (bool) ($employee->biometric_face_enabled ?? false) : false;
-        $fingerprintEnabled = $hasFingerprintColumn ? (bool) ($employee->biometric_fingerprint_enabled ?? false) : false;
-
-        $latestRequest = null;
-        if (Schema::hasTable('biometric_enrollment_requests')) {
-            $latestRequest = BiometricEnrollmentRequest::query()
-                ->where('employee_id', $employee->id)
-                ->latest('id')
-                ->first();
-        }
-
-        return [
-            'face_enabled' => $faceEnabled,
-            'fingerprint_enabled' => $fingerprintEnabled,
-            'consented_at' => $this->nullableIsoString($employee->biometric_consent_at ?? null),
-            'pending_request' => $latestRequest && $latestRequest->status === 'pending',
-            'latest_request_status' => $latestRequest?->status,
-            'latest_request_submitted_at' => $latestRequest ? $this->nullableIsoString($latestRequest->submitted_at) : null,
-        ];
-    }
-
     private function nullableIsoString(mixed $value): ?string
     {
         if ($value === null || $value === '') {

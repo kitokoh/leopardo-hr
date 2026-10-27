@@ -13,7 +13,7 @@ api/app/Core/Tenant/Domain/Models/Company.php:580:            if ((string) $this
 api/app/Core/Tenant/Domain/Models/Company.php:612:            if ($company->tenancy_type === 'schema') {
 api/app/Http/Controllers/Web/BiometricAdminController.php:132:        if ($company->tenancy_type === 'schema' && $company->schema_name) {
 api/app/Http/Controllers/Web/KioskController.php:119:        if ($company->tenancy_type === 'schema' && $company->schema_name) {
-api/app/Modules/Attendance/Interfaces/Api/V1/Controllers/KioskController.php:665:            && $company->tenancy_type === 'schema'
+api/app/Modules/Attendance/Interfaces/Api/V1/Controllers/KioskController.php:607:            && $company->tenancy_type === 'schema'
 api/app/Modules/HR/Interfaces/Api/V1/Requests/StoreEmployeeRequest.php:191:        if ($company->tenancy_type === 'schema' && $schemaName !== '') {
 api/app/Modules/HR/Interfaces/Api/V1/Requests/UpdateEmployeeRequest.php:187:        if ($company->tenancy_type === 'schema' && $schemaName !== '') {
 api/app/Modules/Platform/Infrastructure/Services/TenantDeletionService.php:198:        // (`tenancy_type = 'schema'`) porte ses données hors de
