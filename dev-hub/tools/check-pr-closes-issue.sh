@@ -41,6 +41,25 @@ if [[ -n "$CLOSES_REF" ]]; then
   exit 0
 fi
 
+# #8061 — une PR de TRANCHE ne doit pas mentir en annoncant une fermeture.
+#
+# Les chantiers structurants (#8061 Employee god-model, #7959 isolation DDD,
+# #7655 dette PHPStan) sont livres par tranches successives : la premiere
+# tranche ne resout pas l'issue, donc ecrire « Closes #8061 » fermerait le
+# suivi alors que 90 % du travail reste. La garde exigeait pourtant ce mot-cle
+# et bloquait donc TOUTE PR de tranche — elle poussait a la fausse declaration.
+# `Part of #N` / `Refs #N` / `Contribue a #N` sont desormais acceptes comme
+# rattachement valide : l'issue reste ouverte (comportement correct) et la PR
+# est tracee dans le backlog (ce que la garde veut vraiment garantir).
+PARTIAL_REF=$(printf '%s\n%s' "$PR_TITLE" "$PR_BODY" \
+  | grep -oiE '(part[[:space:]]+of|refs?|references?|contribue[[:space:]]+a)[[:space:]]*:?[[:space:]]*#[0-9]+' \
+  | head -n1 || true)
+
+if [[ -n "$PARTIAL_REF" ]]; then
+  echo "OK: PR #${PR_NUMBER} is a partial delivery tracked by '${PARTIAL_REF}' (issue stays open)."
+  exit 0
+fi
+
 # Same conventional-type exemption as PA2-AUTO-004 (CONVENTIONS.md §4.2):
 # feat/fix/refactor/perf/test/ci touching product code should always trace
 # a backlog issue; docs:/chore: (dependency bumps, doc-only changes) do not

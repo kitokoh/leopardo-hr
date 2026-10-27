@@ -141,50 +141,74 @@ final class ShowcasePublicController extends Controller
 
     /**
      * V-SEO #6873 — sitemap des vitrines PUBLIÉES (jamais de brouillon).
-     * Liste cross-tenant bornée et mise en cache court (15 min).
+     * Liste cross-tenant mise en cache court (15 min).
+     *
+     * #8731 — trois défauts corrigés sur cette surface :
+     *  (1) `xmlns:xhtml` n'était pas déclaré alors que chaque `<url>` émet un
+     *      `<xhtml:link rel="alternate">`. Un préfixe non déclaré rend le
+     *      document non conforme : les parseurs stricts rejettent le sitemap
+     *      entier. Le namespace est désormais déclaré sur `<urlset>`.
+     *  (2) `<loc>` était relatif. Le protocole sitemap exige des URL absolues.
+     *      Les entrées sont construites depuis `app.url` et jamais depuis
+     *      l'en-tête `Host`, qui est contrôlé par le client et permettrait
+     *      d'empoisonner le sitemap mis en cache avec un domaine tiers.
+     *  (3) `limit(500)` tronquait l'index silencieusement : au-delà de 500
+     *      sociétés les vitrines suivantes disparaissaient sans aucun signal.
+     *      La lecture est paginée par clé (`chunk`), sans borne arbitraire.
+     *
+     * Les sociétés `expired` sont exclues comme `suspended` : une société
+     * expirée n'est plus servie (`PublicTenantResolver` renvoie 404), donc
+     * l'inscrire ne produirait que des URL mortes.
      */
     public function sitemap(): HttpResponse
     {
         /** @var string $xml */
         // tenant-cache:shared — sitemap vitrines GLOBAL (agrégat cross-tenant voulu) (#8058)
         $xml = Cache::remember(self::SITEMAP_CACHE_KEY, now()->addSeconds(ShowcasePublicCache::TTL_SECONDS), function (): string {
+            $base = rtrim((string) config('app.url'), '/');
+
             $lines = [
                 '<?xml version="1.0" encoding="UTF-8"?>',
-                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
+                    .' xmlns:xhtml="http://www.w3.org/1999/xhtml">',
             ];
 
-            /** @var list<Company> $companies */
-            $companies = Company::query()
-                ->where('status', '!=', 'suspended')
-                ->limit(500)
-                ->get()
-                ->all();
+            // #8731 — pagination par clé au lieu de `limit(500)` : aucune
+            // vitrine n'est écartée de l'index sans que personne ne le sache.
+            Company::query()
+                ->whereNotIn('status', ['suspended', 'expired'])
+                ->orderBy('id')
+                ->chunk(200, function ($companies) use ($base, &$lines): void {
+                    /** @var Company $company */
+                    foreach ($companies as $company) {
+                        $this->tenantManager->withinTenant($company, function () use ($company, $base, &$lines): void {
+                            /** @var CompanyShowcase|null $showcase */
+                            $showcase = CompanyShowcase::query()
+                                ->where('company_id', $company->id)
+                                ->where('status', CompanyShowcaseStatus::Published)
+                                ->first();
 
-            foreach ($companies as $company) {
-                $this->tenantManager->withinTenant($company, function () use ($company, &$lines): void {
-                    /** @var CompanyShowcase|null $showcase */
-                    $showcase = CompanyShowcase::query()
-                        ->where('company_id', $company->id)
-                        ->where('status', CompanyShowcaseStatus::Published)
-                        ->first();
+                            if (! $showcase instanceof CompanyShowcase) {
+                                return;
+                            }
 
-                    if (! $showcase instanceof CompanyShowcase) {
-                        return;
+                            $lastmod = ($showcase->published_at ?? $showcase->updated_at)?->toAtomString();
+                            $loc = $base.'/public/vitrine/'.$showcase->slug;
+
+                            $lines[] = '  <url>';
+                            $lines[] = '    <loc>'.htmlspecialchars($loc, ENT_XML1 | ENT_QUOTES).'</loc>';
+                            if ($lastmod !== null) {
+                                $lines[] = '    <lastmod>'.$lastmod.'</lastmod>';
+                            }
+                            foreach (ShowcaseLocales::supported() as $locale) {
+                                $alternate = $base.'/public/vitrine/'.$showcase->slug.'?lang='.$locale;
+                                $lines[] = '    <xhtml:link rel="alternate" hreflang="'.$locale.'" href="'
+                                    .htmlspecialchars($alternate, ENT_XML1 | ENT_QUOTES).'"/>';
+                            }
+                            $lines[] = '  </url>';
+                        });
                     }
-
-                    $lastmod = ($showcase->published_at ?? $showcase->updated_at)?->toAtomString();
-
-                    $lines[] = '  <url>';
-                    $lines[] = '    <loc>'.htmlspecialchars('/public/vitrine/'.$showcase->slug, ENT_XML1 | ENT_QUOTES).'</loc>';
-                    if ($lastmod !== null) {
-                        $lines[] = '    <lastmod>'.$lastmod.'</lastmod>';
-                    }
-                    foreach (ShowcaseLocales::supported() as $locale) {
-                        $lines[] = '    <xhtml:link rel="alternate" hreflang="'.$locale.'" href="'.htmlspecialchars('/public/vitrine/'.$showcase->slug.'?lang='.$locale, ENT_XML1 | ENT_QUOTES).'"/>';
-                    }
-                    $lines[] = '  </url>';
                 });
-            }
 
             $lines[] = '</urlset>';
 

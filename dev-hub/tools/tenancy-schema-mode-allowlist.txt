@@ -8,15 +8,15 @@
 # cette liste ne peut que decroitre.
 #
 # Regenerer : bash dev-hub/tools/check-tenancy-schema-mode.sh --update
-api/app/Core/Tenant/Domain/Models/Company.php:570:     *   - `tenancy_type = 'schema'` sans `schema_name` -> exception (etat
-api/app/Core/Tenant/Domain/Models/Company.php:580:            if ((string) $this->tenancy_type === 'schema') {
-api/app/Core/Tenant/Domain/Models/Company.php:612:            if ($company->tenancy_type === 'schema') {
-api/app/Http/Controllers/Web/BiometricAdminController.php:132:        if ($company->tenancy_type === 'schema' && $company->schema_name) {
-api/app/Http/Controllers/Web/KioskController.php:119:        if ($company->tenancy_type === 'schema' && $company->schema_name) {
-api/app/Modules/Attendance/Interfaces/Api/V1/Controllers/KioskController.php:665:            && $company->tenancy_type === 'schema'
-api/app/Modules/HR/Interfaces/Api/V1/Requests/StoreEmployeeRequest.php:191:        if ($company->tenancy_type === 'schema' && $schemaName !== '') {
-api/app/Modules/HR/Interfaces/Api/V1/Requests/UpdateEmployeeRequest.php:187:        if ($company->tenancy_type === 'schema' && $schemaName !== '') {
-api/app/Modules/Platform/Infrastructure/Services/TenantDeletionService.php:198:        // (`tenancy_type = 'schema'`) porte ses données hors de
-api/app/Modules/Platform/Infrastructure/Services/TenantDeletionService.php:202:        if ((string) $company->tenancy_type === 'schema') {
-api/database/seeders/DemoCompanySeeder.php:242:    WHERE tenancy_type = 'schema';
-api/tests/Feature/PasswordResetTest.php:299:        // Le mode tenancy_type='schema' est gelé par le modèle (Enterprise),
+api/app/Core/Tenant/Domain/Models/Company.php:            if ($company->tenancy_type === 'schema') {
+api/app/Core/Tenant/Domain/Models/Company.php:            if ((string) $this->tenancy_type === 'schema') {
+api/app/Core/Tenant/Domain/Models/Company.php:     *   - `tenancy_type = 'schema'` sans `schema_name` -> exception (etat
+api/app/Http/Controllers/Web/BiometricAdminController.php:        if ($company->tenancy_type === 'schema' && $company->schema_name) {
+api/app/Http/Controllers/Web/KioskController.php:        if ($company->tenancy_type === 'schema' && $company->schema_name) {
+api/app/Modules/Attendance/Interfaces/Api/V1/Controllers/KioskController.php:            && $company->tenancy_type === 'schema'
+api/app/Modules/HR/Interfaces/Api/V1/Requests/StoreEmployeeRequest.php:        if ($company->tenancy_type === 'schema' && $schemaName !== '') {
+api/app/Modules/HR/Interfaces/Api/V1/Requests/UpdateEmployeeRequest.php:        if ($company->tenancy_type === 'schema' && $schemaName !== '') {
+api/app/Modules/Platform/Infrastructure/Services/TenantDeletionService.php:        // (`tenancy_type = 'schema'`) porte ses données hors de
+api/app/Modules/Platform/Infrastructure/Services/TenantDeletionService.php:        if ((string) $company->tenancy_type === 'schema') {
+api/database/seeders/DemoCompanySeeder.php:    WHERE tenancy_type = 'schema';
+api/tests/Feature/PasswordResetTest.php:        // Le mode tenancy_type='schema' est gelé par le modèle (Enterprise),

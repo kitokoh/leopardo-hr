@@ -120,11 +120,32 @@ def error_codes(path: pathlib.Path) -> set[str]:
 
 error_catalogs = {loc: error_codes(REPO / "api" / "lang" / loc / "errors.php") for loc in LANGS}
 required_codes = set()
+# Seul `App\Exceptions\DomainException` est rendu via `__('errors.'.$code)`
+# (api/bootstrap/app.php, renderer #4171). Un `\InvalidArgumentException('CODE')`
+# n'est jamais traduit : exiger sa présence au catalogue serait un faux positif.
+# On ne retient donc que les `throw` dont la classe est un DomainException.
+_THROW_DOMAIN_CODE = re.compile(
+    r"throw\s+new\s+(?:\\?[A-Za-z_][A-Za-z0-9_\\]*\\)?DomainException\([^;]*?'([A-Z][A-Z0-9_]{5,})'"
+)
 for php in ACCOUNTING.rglob("*.php"):
-    required_codes |= set(re.findall(r"errorCode\(\)|,\s*'([A-Z][A-Z0-9_]{5,})'\s*\)", php.read_text(encoding="utf-8")))
-# Codes explicitement portés par les DomainException du module (constructeurs).
+    text = php.read_text(encoding="utf-8")
+    for m in _THROW_DOMAIN_CODE.finditer(text):
+        required_codes.add(m.group(1))
+
+# Codes portés par les sous-classes de DomainException du module : le code est
+# alors le 3e argument du constructeur parent, ou la valeur par défaut d'un
+# paramètre `$errorCode`. On ne scanne que les lignes qui lèvent réellement une
+# exception — une constante MAJUSCULE présente dans un fichier d'exception n'est
+# pas forcément un code d'erreur (le générateur UBL-TR écrit 'VKN_TCKN' comme
+# nom de schéma XML `cbc:Name`, ce qui déclenchait un faux positif, #8396).
+_THROW_CODE = re.compile(
+    r"throw\s+(?:new\s+)?[A-Za-z_\\]+\([^;]*?'([A-Z][A-Z0-9_]{5,})'"
+)
 for php in (ACCOUNTING / "Domain" / "Exceptions").glob("*.php"):
-    required_codes |= set(re.findall(r"'([A-Z][A-Z0-9_]{5,})'", php.read_text(encoding="utf-8")))
+    for line in php.read_text(encoding="utf-8").splitlines():
+        code = _THROW_CODE.search(line)
+        if code:
+            required_codes.add(code.group(1))
 for code in sorted(required_codes):
     for loc in LANGS:
         if code not in error_catalogs[loc]:

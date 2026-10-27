@@ -29,6 +29,21 @@ PATTERN="tenancy_type[[:space:]]*[=!]==?[[:space:]]*'schema'|tenancy_type[[:spac
 
 current="$(grep -rnP "${PATTERN}" "${SCAN_DIR}" --include='*.php' 2>/dev/null | sort || true)"
 
+# #8944 — la comparaison est insensible au NUMERO DE LIGNE.
+#
+# L'inventaire etait indexe sur `fichier:ligne:contenu` : le moindre deplacement
+# de code (extraction d'une action, ajout d'un import) changeait le numero et
+# faisait apparaitre une « nouvelle » reference alors que le vestige etait
+# exactement le meme. La garde bloquait donc des PR qui RETIRAIENT du code —
+# l'inverse de son but. On compare desormais `fichier:contenu`, ce qui garde la
+# propriete utile (aucune nouvelle occurrence textuelle) sans punir le
+# deplacement de lignes.
+normalize() {
+  sed -E 's/^([^:]+):[0-9]+:/\1:/' | sort
+}
+
+current_norm="$(printf '%s\n' "${current}" | grep -v '^$' | normalize || true)"
+
 if [[ "${1:-}" == "--update" ]]; then
   {
     echo "# References au mode « schema-per-tenant » mort — inventaire gele (ADR-0028, #8055)."
@@ -41,9 +56,9 @@ if [[ "${1:-}" == "--update" ]]; then
     echo "# cette liste ne peut que decroitre."
     echo "#"
     echo "# Regenerer : bash dev-hub/tools/check-tenancy-schema-mode.sh --update"
-    echo "${current}"
+    echo "${current_norm}"
   } > "${ALLOWLIST}"
-  echo "Inventaire regenere : ${ALLOWLIST} ($(printf '%s\n' "${current}" | grep -c . || true) entrees)."
+  echo "Inventaire regenere : ${ALLOWLIST} ($(printf '%s\n' "${current_norm}" | grep -c . || true) entrees)."
   exit 0
 fi
 
@@ -53,9 +68,9 @@ if [[ ! -f "${ALLOWLIST}" ]]; then
   exit 1
 fi
 
-allowed="$(grep -v '^#' "${ALLOWLIST}" | grep -v '^[[:space:]]*$' | sort || true)"
+allowed="$(grep -v '^#' "${ALLOWLIST}" | grep -v '^[[:space:]]*$' | normalize || true)"
 
-new_refs="$(comm -23 <(printf '%s\n' "${current}" | grep -v '^$' | sort) <(printf '%s\n' "${allowed}" | grep -v '^$' | sort) || true)"
+new_refs="$(comm -23 <(printf '%s\n' "${current_norm}" | grep -v '^$' | sort) <(printf '%s\n' "${allowed}" | grep -v '^$' | sort) || true)"
 
 if [[ -n "${new_refs}" ]]; then
   echo "ERREUR — nouvelle reference au mode « schema-per-tenant » mort (ADR-0028, #8055) :" >&2
@@ -67,7 +82,7 @@ if [[ -n "${new_refs}" ]]; then
   exit 1
 fi
 
-resolved="$(comm -13 <(printf '%s\n' "${current}" | grep -v '^$' | sort) <(printf '%s\n' "${allowed}" | grep -v '^$' | sort) || true)"
+resolved="$(comm -13 <(printf '%s\n' "${current_norm}" | grep -v '^$' | sort) <(printf '%s\n' "${allowed}" | grep -v '^$' | sort) || true)"
 if [[ -n "${resolved}" ]]; then
   echo "INFO — reference(s) disparue(s), retirer ces lignes de ${ALLOWLIST} :"
   echo "${resolved}" | sed 's/^/  - /'

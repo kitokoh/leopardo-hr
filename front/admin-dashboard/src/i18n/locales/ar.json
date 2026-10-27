@@ -1741,7 +1741,16 @@
     "emailTemplates": "البريد الإلكتروني",
     "settings": "الإعدادات",
     "messaging": "المراسلة",
-    "provisioning": "التزويد"
+    "provisioning": "التزويد",
+    "searchIntel": "النمو وذكاء البحث",
+    "searchIntelOverview": "نظرة عامة",
+    "searchIntelSeo": "SEO",
+    "searchIntelSea": "SEA",
+    "searchIntelAeo": "AEO",
+    "searchIntelGeo": "GEO",
+    "searchIntelContent": "المحتوى",
+    "searchIntelCompetitors": "المنافسون",
+    "searchIntelIntegrations": "التكاملات"
   },
   "webhooks": {
     "confirm_delete": "حذف خطاف الويب هذا؟"
@@ -3820,7 +3829,8 @@
     "itemCrmDesc": "مسار CRM",
     "itemToggleDark": "التبديل إلى الوضع الداكن",
     "itemToggleDarkDesc": "تغيير المظهر",
-    "itemProvisioningDesc": "تتبع تقدم إعداد المستأجرين ومعوقات التزويد"
+    "itemProvisioningDesc": "تتبع تقدم إعداد المستأجرين ومعوقات التزويد",
+    "itemSearchIntelDesc": "أدر SEO وSEA وAEO وGEO وإنتاج المحتوى."
   },
   "bankRecon": {
     "title": "التسوية المصرفية",
@@ -8922,5 +8932,191 @@
       "unpaid": "غير مسددة",
       "noPayments": "لا توجد أقساط: ولّدها لتحصيل الإيجار."
     }
-  }
+  },
+  "searchIntel": {
+    "common": {
+      "refresh": "تحديث",
+      "retry": "إعادة المحاولة",
+      "loading": "جار التحميل...",
+      "search": "بحث...",
+      "actions": "إجراءات",
+      "close": "إغلاق",
+      "connected": "متصل",
+      "notConnected": "غير متصل",
+      "unavailable": "غير متاح",
+      "forbidden": "ليست لديك صلاحية search_intel.view.",
+      "loadError": "تعذر تحميل البيانات."
+    },
+    "reliability": {
+      "measured": "مقاس",
+      "declared": "مصرح",
+      "unavailable": "غير موصول",
+      "measuredHint": "عد مباشر على جداولنا: دقيق بطبيعته.",
+      "declaredHint": "أدخله أو تحقق منه إنسان: دقيق لما تم إدخاله.",
+      "unavailableHint": "لا يوجد مصدر موصول: القيمة مجهولة وليست صفرا."
+    },
+    "overview": {
+      "title": "النمو وذكاء البحث",
+      "subtitle": "نظرة موحدة على SEO وSEA وAEO وGEO والمحتوى والعملاء المحتملين.",
+      "window": "نافذة العملاء",
+      "generatedAt": "تم الإنشاء في",
+      "seo": "SEO",
+      "sea": "SEA",
+      "aeo": "AEO",
+      "geo": "GEO",
+      "integrations": "التكاملات",
+      "pagesTracked": "الصفحات المتابعة",
+      "pagesHealthy": "الصفحات السليمة",
+      "openIssues": "المشكلات المفتوحة",
+      "verifiedIssues": "المشكلات المتحقق منها",
+      "verifiedHint": "تم تأكيد الإصلاح بإعادة الفحص.",
+      "campaignsTotal": "الحملات",
+      "campaignsRunning": "الحملات النشطة",
+      "spendMonth": "إنفاق هذا الشهر",
+      "questionsTotal": "الأسئلة",
+      "questionsPublished": "المنشورة",
+      "questionsAwaiting": "بانتظار المراجعة",
+      "geoQueriesActive": "الاستعلامات النشطة",
+      "noIntegrations": "لا يوجد تكامل معلن."
+    },
+    "seo": {
+      "title": "SEO — المشكلات المكتشفة",
+      "subtitle": "المشكلات من آخر فحص مع الانتقالات المسموحة.",
+      "empty": "لم يتم اكتشاف أي مشكلة.",
+      "colTitle": "المشكلة",
+      "colType": "النوع",
+      "colSeverity": "الخطورة",
+      "colStatus": "الحالة",
+      "colUrl": "الصفحة",
+      "colDetected": "تاريخ الاكتشاف"
+    },
+    "sea": {
+      "title": "SEA — الحملات المدفوعة",
+      "subtitle": "الحملات والميزانيات والاستهلاك الفعلي.",
+      "empty": "لا توجد حملات.",
+      "manualTracking": "تتبع يدوي: الإنفاق يأتي من قراءات مدخلة وليس من واجهة إعلانية.",
+      "colName": "الحملة",
+      "colChannel": "القناة",
+      "colStatus": "الحالة",
+      "colBudget": "الإنفاق / الميزانية",
+      "colMeasured": "أيام مقاسة",
+      "days": "ي"
+    },
+    "aeo": {
+      "title": "AEO — الأسئلة والأجوبة",
+      "subtitle": "أسئلة مستهدفة ومسودات ونشر.",
+      "empty": "لا توجد أسئلة.",
+      "colQuestion": "السؤال",
+      "colLocale": "اللغة",
+      "colSector": "القطاع",
+      "colStatus": "الحالة"
+    },
+    "geo": {
+      "title": "GEO — الظهور في المحركات التوليدية",
+      "subtitle": "الاستعلامات المتابعة وأدلة الظهور مع مستوى الدليل.",
+      "empty": "لا توجد استعلامات متابعة.",
+      "colQuery": "الاستعلام",
+      "colPriority": "الأولوية",
+      "colChecks": "الفحوص",
+      "checks": "فحوص",
+      "viewChecks": "عرض الأدلة",
+      "checksFor": "أدلة",
+      "checksHint": "كل سطر يوضح طريقة الملاحظة ونطاقها.",
+      "noChecks": "لا يوجد فحص مسجل لهذا الاستعلام.",
+      "present": "موجود",
+      "absent": "غائب",
+      "noQuantifiedClaim": "لا يدعم ادعاء رقميا"
+    },
+    "content": {
+      "title": "المحتوى — الإنتاج التحريري",
+      "subtitle": "القطع المجدولة والمنشورة ودورة حياتها.",
+      "empty": "لا يوجد محتوى.",
+      "export": "تصدير CSV",
+      "colTitle": "العنوان",
+      "colKind": "النوع",
+      "colLocale": "اللغة",
+      "colStatus": "الحالة",
+      "colScheduled": "مجدول في"
+    },
+    "competitors": {
+      "title": "المنافسون",
+      "subtitle": "التموضع الملاحظ والمصادر وحداثة المعلومات.",
+      "empty": "لا يوجد منافسون متابعون.",
+      "colName": "المنافس",
+      "colMarket": "السوق",
+      "colPositioning": "التموضع",
+      "colFreshness": "الحداثة",
+      "colSource": "المصدر",
+      "stale": "يحتاج مراجعة (> 90 ي)",
+      "fresh": "محدث"
+    },
+    "integrations": {
+      "title": "التكاملات",
+      "subtitle": "موصلات GSC وGA4 وGoogle Ads وMicrosoft Ads.",
+      "empty": "لا يوجد موصل معلن.",
+      "lastSync": "آخر مزامنة",
+      "lastError": "آخر خطأ",
+      "test": "اختبار",
+      "revoke": "إلغاء",
+      "testOk": "تم التحقق من الاتصال.",
+      "testKo": "رفض المزود الاتصال.",
+      "testFailed": "فشل الاختبار."
+    },
+    "severity": {
+      "critical": "حرج",
+      "high": "عال",
+      "medium": "متوسط",
+      "low": "منخفض"
+    },
+    "priority": {
+      "high": "عالية",
+      "medium": "متوسطة",
+      "low": "منخفضة"
+    },
+    "seoStatus": {
+      "open": "مفتوح",
+      "in_progress": "قيد التنفيذ",
+      "applied": "مطبق",
+      "verified": "متحقق",
+      "ignored": "متجاهل"
+    },
+    "seaStatus": {
+      "draft": "مسودة",
+      "pending_validation": "بانتظار التحقق",
+      "active": "نشطة",
+      "paused": "متوقفة",
+      "completed": "مكتملة",
+      "cancelled": "ملغاة"
+    },
+    "aeoStatus": {
+      "draft": "مسودة",
+      "in_review": "قيد المراجعة",
+      "approved": "معتمد",
+      "published": "منشور",
+      "to_update": "للتحديث",
+      "archived": "مؤرشف"
+    },
+    "contentStatus": {
+      "idea": "فكرة",
+      "draft": "مسودة",
+      "in_review": "قيد المراجعة",
+      "approved": "معتمد",
+      "scheduled": "مجدول",
+      "published": "منشور",
+      "archived": "مؤرشف"
+    },
+    "integrationStatus": {
+      "connected": "متصل",
+      "pending": "معلق",
+      "error": "خطأ",
+      "revoked": "ملغى"
+    }
+  },
+  "fuelPumpistSelectRequired": "اختر محطة والمضخة والعداد.",
+  "fuelPumpistReadingRejected": "تم رفض القراءة من قبل الخادم",
+  "fuelPumpistStationsError": "المحطات غير متاحة",
+  "fuelPumpistPumpsError": "المضخات غير متاحة",
+  "fuelPumpistMetersError": "العدادات غير متاحة",
+  "fuelTechnicalRef": "مرجع {id}",
+  "fuelMeterLabelWithProduct": "{meter} — المنتج {product}"
 }

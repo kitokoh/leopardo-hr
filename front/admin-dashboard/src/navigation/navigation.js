@@ -62,6 +62,7 @@ import {
   CalendarDaysIcon,
   BuildingLibraryIcon,
   ChartPieIcon,
+  MagnifyingGlassIcon,
 } from '@heroicons/vue/24/outline'
 
 /**
@@ -271,6 +272,84 @@ export const NAV_ENTRIES = [
     permission: 'companies.manage',
     group: 'entreprise',
     descKey: 'adminPalette.itemGrowthDesc',
+  },
+  // GSI-10 (#8521) — « Growth & Search Intelligence » : UNE entree de premier
+  // niveau avec sous-menu, comme Comptabilite (#7725). Sept entrees plates
+  // noieraient le reste de la navigation.
+  {
+    name: 'search-intel',
+    titleKey: 'navigation.searchIntel',
+    icon: MagnifyingGlassIcon,
+    permission: 'search_intel.view',
+    group: 'entreprise',
+    descKey: 'adminPalette.itemSearchIntelDesc',
+    children: [
+      {
+        name: 'search-intel-overview',
+        path: '/search-intel',
+        titleKey: 'navigation.searchIntelOverview',
+        menuTitleKey: 'navigation.searchIntelOverview',
+        icon: ChartBarIcon,
+        permission: 'search_intel.view',
+        group: 'entreprise',
+      },
+      {
+        name: 'search-intel-seo',
+        path: '/search-intel/seo',
+        titleKey: 'navigation.searchIntelSeo',
+        icon: MagnifyingGlassIcon,
+        permission: 'search_intel.view',
+        group: 'entreprise',
+      },
+      {
+        name: 'search-intel-sea',
+        path: '/search-intel/sea',
+        titleKey: 'navigation.searchIntelSea',
+        icon: MegaphoneIcon,
+        permission: 'search_intel.view',
+        group: 'entreprise',
+      },
+      {
+        name: 'search-intel-aeo',
+        path: '/search-intel/aeo',
+        titleKey: 'navigation.searchIntelAeo',
+        icon: ChatBubbleLeftRightIcon,
+        permission: 'search_intel.view',
+        group: 'entreprise',
+      },
+      {
+        name: 'search-intel-geo',
+        path: '/search-intel/geo',
+        titleKey: 'navigation.searchIntelGeo',
+        icon: GlobeAltIcon,
+        permission: 'search_intel.view',
+        group: 'entreprise',
+      },
+      {
+        name: 'search-intel-content',
+        path: '/search-intel/content',
+        titleKey: 'navigation.searchIntelContent',
+        icon: DocumentTextIcon,
+        permission: 'search_intel.view',
+        group: 'entreprise',
+      },
+      {
+        name: 'search-intel-competitors',
+        path: '/search-intel/competitors',
+        titleKey: 'navigation.searchIntelCompetitors',
+        icon: UserGroupIcon,
+        permission: 'search_intel.view',
+        group: 'entreprise',
+      },
+      {
+        name: 'search-intel-integrations',
+        path: '/search-intel/integrations',
+        titleKey: 'navigation.searchIntelIntegrations',
+        icon: LinkIcon,
+        permission: 'search_intel.view',
+        group: 'entreprise',
+      },
+    ],
   },
 
   // ── Modules des entreprises clientes (#7329) ───────────────────────────────

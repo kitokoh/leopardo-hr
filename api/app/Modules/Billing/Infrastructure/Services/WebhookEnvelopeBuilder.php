@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Billing\Infrastructure\Services;
 
+use App\Jobs\Services\HmacWebhookSigner;
 use Illuminate\Support\Str;
 
 /**
@@ -74,7 +75,11 @@ final class WebhookEnvelopeBuilder
      */
     public static function sign(string $secret, string $rawJsonBody, int $timestamp): string
     {
-        return hash_hmac('sha256', "{$timestamp}.{$rawJsonBody}", $secret);
+        // BOS-021 (#8210) : la primitive HMAC vit désormais dans le socle
+        // Integration (BC-14). La chaîne signée reste PROPRE à Billing —
+        // schéma Svix `{timestamp}.{body}` — pour que les signatures
+        // émises restent identiques octet pour octet.
+        return (new HmacWebhookSigner)->sign($secret, "{$timestamp}.{$rawJsonBody}");
     }
 
     /**

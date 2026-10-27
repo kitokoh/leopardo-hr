@@ -258,6 +258,8 @@ trait CreatesMvpSchema
         Schema::create($this->tenantTable('schedules'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
+            // #8450 — axe établissement du socle Rotations (NULL = tout le tenant).
+            $table->unsignedInteger('site_id')->nullable();
             $table->string('name', 100);
             $table->time('start_time');
             $table->time('end_time');
