@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Billing\Interfaces\Api\V1\Controllers;
 
+use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Modules\Billing\Domain\Models\Partner;
 use App\Modules\Billing\Domain\Models\PartnerAuditLog;
@@ -15,11 +16,38 @@ use App\Modules\Billing\Interfaces\Api\V1\Requests\UpdatePayoutStatusRequest;
 use App\Modules\Payroll\Domain\Models\Commission;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class GrowthAdminController extends Controller
 {
     public function __construct(private PartnerService $partnerService) {}
+
+    /**
+     * #8523 (gotcha 7) — identifiant du compte PLATEFORME appelant.
+     *
+     * Les routes `/platform/growth/*` sont derrière `auth:super_admin_api` :
+     * l'utilisateur authentifié est un `SuperAdmin`, PAS un `User` tenant.
+     * `Auth::id()` interroge le guard par défaut (`sanctum`, donc `users`) et
+     * renvoyait donc `null` (ou, pire, l'id d'un utilisateur tenant homonyme) :
+     * `PartnerAuditLog.admin_id` — clé étrangère vers `users.id` — recevait
+     * alors l'id d'un `super_admins.id`, ce qui écrivait une trace d'audit
+     * attribuée à la MAUVAISE personne (ou échouait en violation de FK).
+     *
+     * On résout explicitement le guard plateforme. Retour `null` = pas de
+     * compte plateforme sur la requête : l'appelant doit refuser l'écriture
+     * (fail-closed), jamais fabriquer un acteur.
+     */
+    private function platformAdminId(Request $request): ?int
+    {
+        $admin = $request->user('super_admin_api');
+
+        if (! $admin instanceof SuperAdmin) {
+            return null;
+        }
+
+        $id = $admin->getKey();
+
+        return is_int($id) ? $id : (is_numeric($id) ? (int) $id : null);
+    }
 
     /**
      * List all partners for the platform.
@@ -52,15 +80,17 @@ class GrowthAdminController extends Controller
     {
         $validated = $request->validated();
 
-        $adminId = Auth::id();
-        if (is_int($adminId)) {
-            $this->partnerService->updatePartnerRate(
-                $partner,
-                $validated['rate'],
-                $adminId,
-                $validated['reason']
-            );
+        $adminId = $this->platformAdminId($request);
+        if ($adminId === null) {
+            return new JsonResponse(['error' => 'PLATFORM_ACCOUNT_REQUIRED'], 403);
         }
+
+        $this->partnerService->updatePartnerRate(
+            $partner,
+            $validated['rate'],
+            $adminId,
+            $validated['reason']
+        );
 
         return new JsonResponse(['success' => true]);
     }
@@ -84,15 +114,17 @@ class GrowthAdminController extends Controller
     {
         $validated = $request->validated();
 
-        $adminId = Auth::id();
-        if (is_int($adminId)) {
-            $this->partnerService->updatePayoutStatus(
-                $payout,
-                $validated['status'],
-                $adminId,
-                $validated['notes'] ?? 'Status updated by admin.'
-            );
+        $adminId = $this->platformAdminId($request);
+        if ($adminId === null) {
+            return new JsonResponse(['error' => 'PLATFORM_ACCOUNT_REQUIRED'], 403);
         }
+
+        $this->partnerService->updatePayoutStatus(
+            $payout,
+            $validated['status'],
+            $adminId,
+            $validated['notes'] ?? 'Status updated by admin.'
+        );
 
         return new JsonResponse(['success' => true]);
     }
@@ -104,10 +136,10 @@ class GrowthAdminController extends Controller
     {
         $validated = $request->validated();
 
-        $adminId = Auth::id();
+        $adminId = $this->platformAdminId($request);
 
-        if ($adminId === null || ! is_int($adminId)) {
-            return new JsonResponse(['error' => 'UNAUTHENTICATED'], 401);
+        if ($adminId === null) {
+            return new JsonResponse(['error' => 'PLATFORM_ACCOUNT_REQUIRED'], 403);
         }
 
         if ($validated['status'] === 'approved') {

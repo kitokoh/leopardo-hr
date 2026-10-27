@@ -6,10 +6,8 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Application\Actions\AckPrintJobAction;
-use App\Modules\RestaurantManager\Application\Actions\BuildKitchenTicketAction;
 use App\Modules\RestaurantManager\Application\Actions\ClaimPrintJobAction;
 use App\Modules\RestaurantManager\Application\Actions\RenderPrintJobPayloadAction;
-use App\Modules\RestaurantManager\Domain\Contracts\OrderTicketRendererInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantPrintJobRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Enums\PrintJobStatus;
 use App\Modules\RestaurantManager\Domain\Enums\PrintTicketKind;
@@ -51,8 +49,6 @@ class RestaurantPrintBridgeController extends Controller
         private readonly ClaimPrintJobAction $claim,
         private readonly AckPrintJobAction $ack,
         private readonly RenderPrintJobPayloadAction $render,
-        private readonly BuildKitchenTicketAction $buildTicket,
-        private readonly OrderTicketRendererInterface $renderer,
     ) {}
 
     public function jobs(Request $request): JsonResponse
@@ -175,11 +171,10 @@ class RestaurantPrintBridgeController extends Controller
             abort(404);
         }
 
-        $ticket = $this->buildTicket->execute($order, (int) $job->revision);
-        $bytes = $this->renderer->render($ticket, 80);
+        $rendered = $this->render->execute($job);
 
         // Retrait des séquences de contrôle pour l'affichage humain.
-        $text = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $bytes) ?? '';
+        $text = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $rendered['payload']) ?? '';
 
         return new JsonResponse([
             'job_id' => $job->id,

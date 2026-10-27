@@ -11,6 +11,7 @@ use App\Core\Solutions\SolutionCatalogue;
 use App\Events\SolutionActivated;
 use App\Modules\RestaurantManager\Application\Actions\AckPrintJobAction;
 use App\Modules\RestaurantManager\Application\Actions\ActivateRestaurantManagerAction;
+use App\Modules\RestaurantManager\Application\Actions\BuildCustomerReceiptAction;
 use App\Modules\RestaurantManager\Application\Actions\BuildKitchenTicketAction;
 use App\Modules\RestaurantManager\Application\Actions\ClaimPrintJobAction;
 use App\Modules\RestaurantManager\Application\Actions\EnqueueKitchenTicketPrintAction;
@@ -19,6 +20,7 @@ use App\Modules\RestaurantManager\Application\Consumers\KitchenOrderNotification
 use App\Modules\RestaurantManager\Application\Consumers\ServiceOrderNotificationConsumer;
 use App\Modules\RestaurantManager\Application\Observers\RestaurantOrderObserver;
 use App\Modules\RestaurantManager\Application\Services\CogsCalculator;
+use App\Modules\RestaurantManager\Application\Services\ReceiptMentionsResolver;
 use App\Modules\RestaurantManager\Application\Services\StockAlertService;
 use App\Modules\RestaurantManager\Application\Services\StockDecrementer;
 use App\Modules\RestaurantManager\Console\Commands\ActivateRestaurantManagerCommand;
@@ -28,6 +30,7 @@ use App\Modules\RestaurantManager\Console\Commands\RestaurantReservationJobsComm
 use App\Modules\RestaurantManager\Console\Commands\RestaurantSendRemindersCommand;
 use App\Modules\RestaurantManager\Console\Commands\SeedRestaurantDemoCommand;
 use App\Modules\RestaurantManager\Console\Commands\StockAlertsCommand;
+use App\Modules\RestaurantManager\Domain\Contracts\CustomerReceiptRendererInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\OrderTicketRendererInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantBranchRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantOrderRepositoryInterface;
@@ -38,6 +41,7 @@ use App\Modules\RestaurantManager\Domain\Contracts\RestaurantStockLevelRepositor
 use App\Modules\RestaurantManager\Domain\Manifests\RestaurantManagerManifest;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPrintJob;
+use App\Modules\RestaurantManager\Infrastructure\Printing\EscPosCustomerReceiptRenderer;
 use App\Modules\RestaurantManager\Infrastructure\Printing\EscPosOrderTicketRenderer;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantBranchRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantOrderRepository;
@@ -168,7 +172,10 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         // metier (mise en file idempotente, reclamation atomique, accuse
         // d'impression reelle, rendu du flux pour le bridge local).
         $this->app->bind(OrderTicketRendererInterface::class, EscPosOrderTicketRenderer::class);
+        $this->app->bind(CustomerReceiptRendererInterface::class, EscPosCustomerReceiptRenderer::class);
         $this->app->singleton(BuildKitchenTicketAction::class);
+        $this->app->singleton(BuildCustomerReceiptAction::class);
+        $this->app->singleton(ReceiptMentionsResolver::class);
         $this->app->singleton(EnqueueKitchenTicketPrintAction::class);
         $this->app->singleton(ClaimPrintJobAction::class);
         $this->app->singleton(AckPrintJobAction::class);

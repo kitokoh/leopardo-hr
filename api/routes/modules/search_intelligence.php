@@ -37,6 +37,22 @@ Route::prefix('search-intel')->group(function (): void {
     Route::get('/integrations', [SearchIntelIntegrationController::class, 'index'])
         ->middleware('platform.permission:search_intel.view');
 
+    // GSI-8 (#8519) — cycle de vie des connecteurs. `GET` seul ne permettait
+    // pas de configurer un connecteur : l'écran affichait quatre cartes
+    // « non connectées » sans aucun moyen d'en sortir. Mutations réservées à
+    // `search_intel.manage` (les identifiants sont des secrets).
+    Route::put('/integrations/{provider}', [SearchIntelIntegrationController::class, 'configure'])
+        ->whereIn('provider', ['gsc', 'ga4', 'google_ads', 'ms_ads'])
+        ->middleware('platform.permission:search_intel.manage');
+
+    Route::post('/integrations/{provider}/test', [SearchIntelIntegrationController::class, 'test'])
+        ->whereIn('provider', ['gsc', 'ga4', 'google_ads', 'ms_ads'])
+        ->middleware('platform.permission:search_intel.manage');
+
+    Route::delete('/integrations/{provider}', [SearchIntelIntegrationController::class, 'revoke'])
+        ->whereIn('provider', ['gsc', 'ga4', 'google_ads', 'ms_ads'])
+        ->middleware('platform.permission:search_intel.manage');
+
     // ─── GSI-2 : SEO technique et workflow de traitement ────────────────────
     Route::get('/seo/meta', [SearchIntelSeoIssueController::class, 'meta'])
         ->middleware('platform.permission:search_intel.view');

@@ -1,3 +1,29 @@
+> **MAJ 2026-10-27 — Restaurant OS, REST-OS-8 : reçu client conforme + vue consolidée groupe (issue #8610).**
+> Surface **API** (`api/routes/modules/restaurantmanager.php`, module RestaurantManager) : nouvelle route
+> `GET /api/v1/restaurant/reports/group` — vue consolidée **groupe** en **lecture seule**, permission
+> `restaurant.reports` (niveau `manage` sur au moins une succursale assignée lorsque le scoping est actif).
+> Le périmètre est dérivé des **assignations de ressources** `restaurant_branch` de l'acteur, **jamais** d'un
+> paramètre de requête : un responsable ne peut pas élargir son périmètre en modifiant l'appel. Chaque agrégat est
+> calculé **par établissement** puis additionné, donc le total groupe est par construction égal à la somme des
+> lignes — aucun mélange d'opérations entre succursales. Les établissements sans activité sont **listés à zéro**,
+> jamais omis ; le panier moyen du groupe est recalculé sur les totaux (pas une moyenne de moyennes).
+> Second volet, **sans nouvelle route** : le rendu d'impression dispatche désormais sur le `ticket_kind`
+> (`RenderPrintJobPayloadAction`), qui était **stocké mais ignoré** — un travail `CUSTOMER_RECEIPT` imprimait un
+> ticket **CUISINE**. Le dispatch est explicite et **fail-closed** (aucun repli par défaut, qui reproduirait le bug).
+> Scénarios automatisés : `tests/Feature/Restaurant/RestaurantCustomerReceiptTest.php` (**11 tests**) et
+> `tests/Feature/Restaurant/RestaurantGroupConsolidationTest.php` (**9 tests**) — **30 passed / 81 assertions** avec
+> la suite bridge. Cas couverts : un reçu client ne produit **pas** un ticket cuisine (et réciproquement) ; un
+> paiement `pending`/`failed` n'est **jamais** compté comme encaissé (`*** NON ACQUITTE ***` + reste à payer) ;
+> mentions légales par juridiction (FR → TVA intracommunautaire, TR → VKN, CEMAC/CEDEAO → N° contribuable) et
+> **aucune mention inventée** sans identifiant fiscal configuré ; total groupe = somme des lignes ; chaque ligne ne
+> contient que ses propres opérations ; panier moyen pondéré par le volume ; succursale sans activité listée à zéro ;
+> responsable scopé ne voit que ses succursales ; un paramètre de requête ne peut pas élargir le périmètre ;
+> employé sans permission → **403** ; consolidation **sans effet de bord** (données identiques avant/après) ;
+> isolation cross-tenant. **Preuve d'exécution** : `CI=true php artisan test` → **30 passed / 81 assertions** ;
+> sur le code d'avant correctif, **5 des 11 tests de reçu échouent** ; PHPStan strict niveau 8 → **0 erreur** ;
+> `pint` → **OK** ; `check-openapi-route-coverage.py` → **exit 0**, y compris `--strict-staleness`.
+> **Limite assumée** : les écrans Vue de la vue groupe relèvent d'un périmètre front séparé (comme #8521) et ne
+> sont pas inclus dans ce lot backend.
 > **MAJ 2026-10-27 — HospitalityManager, HOSP-005 (#7947, BC-32) : gestion locative.**
 > Surface **API** (`api/routes/modules/hospitality_manager.php`, module HospitalityManager) : **8 routes** ajoutees et
 > documentees dans `api/openapi.yaml` — `GET|POST /hospitality/properties/{property}/leases`,
