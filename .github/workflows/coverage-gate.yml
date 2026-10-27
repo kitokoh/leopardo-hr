@@ -58,7 +58,24 @@ concurrency:
   # n'est plus remplace que par un push sur la MEME ref, ce qui garde
   # l'objectif #6928 (un seul slot pcov a la fois par branche, pas de famine
   # des runners) tout en laissant le run de `main` atteindre un verdict.
-  group: coverage-gate-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  #
+  # Issue #8396 (constat 2026-10-28) — le correctif #8718 ci-dessus etait
+  # INCOMPLET : sur `main`, `github.ref` vaut `refs/heads/main` pour TOUS les
+  # pushes, donc le groupe restait constant et le defaut persistait a
+  # l'identique. Mesure API : run `40591442714` (`push`/`main`, sha 1bdf90fa)
+  # `pending` avec **0 job**, et une file de runs `cancelled`/0 job
+  # (40590522918, 40565850891, 40563882558, 40560993002, 40559602982,
+  # 40559039943, 40550757594, 40548488374, 40548263364). Aucun verdict de
+  # couverture n'a donc jamais ete rendu sur `main`.
+  #
+  # Correctif : sur `push`, le SHA est ajoute au groupe. Un push ne peut plus
+  # remplacer le run pending d'un AUTRE commit — chaque commit de `main`
+  # obtient son verdict. La serialisation par ref reste en place pour les
+  # `pull_request` (une PR = un slot, pas de famine #6928), et la famine sur
+  # `main` est evitee autrement : le fast-path `detect-changes` diff desormais
+  # les pushes contre `github.event.before`, donc un push docs/mobile ne
+  # lance plus 5 h de pcov (voir le job `detect-changes`).
+  group: coverage-gate-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}${{ github.event_name == 'push' && format('-{0}', github.sha) || '' }}
   cancel-in-progress: false
 
 # Pour activer comme required check :
@@ -87,8 +104,23 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Issue #8396 : le fast-path ne couvrait que les PR. Sur `push`, la
+          # base etait vide -> `api_changed=true` systematiquement, donc
+          # CHAQUE push de `main` (docs, mobile, gouvernance) relancait la
+          # suite pcov complete (~5 h). Combine au groupe de concurrence
+          # desormais unique par SHA, cela aurait sature les runners (#6928).
+          # On diff donc les pushes contre `github.event.before`.
           BASE="${{ github.event.pull_request.base.sha }}"
           if [[ -z "${BASE}" || "${BASE}" == "null" ]]; then
+            BASE="${{ github.event.before }}"
+          fi
+          # Force-push / nouveau ref / merge_group : `before` est nul ou
+          # inexploitable -> on ne peut rien prouver, on verifie tout.
+          if [[ -z "${BASE}" || "${BASE}" == "null" || "${BASE}" =~ ^0+$ ]]; then
+            echo "api_changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if ! git cat-file -e "${BASE}^{commit}" 2>/dev/null; then
             echo "api_changed=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
