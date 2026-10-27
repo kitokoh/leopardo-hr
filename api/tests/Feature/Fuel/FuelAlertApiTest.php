@@ -197,7 +197,7 @@ class FuelAlertApiTest extends TestCase
             'station_id' => (int) $station->getAttribute('id'),
             'task_type' => FuelMaintenanceTask::TYPE_PREVENTIVE,
             'priority' => FuelMaintenanceTask::PRIORITY_HIGH,
-            'status' => FuelMaintenanceTask::STATUS_PENDING,
+            'status' => FuelMaintenanceTask::STATUS_TODO,
             'title' => 'Contrôle cuve C1',
             'due_at' => now()->addHours(12),
             'created_by' => $this->manager($this->companyA)->id,

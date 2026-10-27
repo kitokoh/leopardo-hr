@@ -64,9 +64,20 @@ class FuelReferenceApiTest extends TestCase
 
         $this->deleteJson("/api/v1/fuel-station/stations/{$station->id}")
             ->assertStatus(200)
-            ->assertJsonPath('data.deleted', true);
+            ->assertJsonPath('data.deleted', true)
+            ->assertJsonPath('data.status', 'archived');
 
-        $this->assertDatabaseMissing('fuel_stations', ['id' => $station->id]);
+        // #8578 (D7) — la station est ARCHIVEE, jamais supprimee. Une station
+        // porte des ventes, des releves, des incidents et des sessions de
+        // caisse : une suppression physique detruirait l'historique comptable.
+        // Le test exigeait `deleted:true` ET `assertDatabaseMissing` : la
+        // seconde assertion contredisait le code documente (archivage) et le
+        // premier critere. `deleted:true` reste le contrat d'API stable pour
+        // les clients, mais il signifie « retire du referentiel actif ».
+        $this->assertDatabaseHas('fuel_stations', [
+            'id' => $station->id,
+            'status' => 'archived',
+        ]);
     }
 
     public function test_manager_crud_pumps_tanks_meters_products(): void

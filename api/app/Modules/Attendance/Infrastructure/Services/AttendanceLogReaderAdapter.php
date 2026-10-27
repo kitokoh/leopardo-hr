@@ -86,12 +86,21 @@ final class AttendanceLogReaderAdapter implements AttendanceLogReader
             ->when(Schema::hasColumn('attendance_logs', 'check_in'), fn (Builder $query) => $query->orderByDesc('check_in'))
             ->get()
             ->groupBy('employee_id')
-            ->map(fn ($logs): ?AttendanceLog => $logs->first())
-            // Un groupe issu de `groupBy` est toujours non vide : le filtre ne
-            // retire rien en pratique, il prouve au typage qu'aucun `null` ne
-            // sort de l'adapter (contrat `array<int, AttendanceLogView>`).
-            ->filter(fn (?AttendanceLog $log): bool => $log !== null)
-            ->values()
+            // Re-clé EXPLICITE en int (`mapWithKeys`) : le contrat est
+            // « indexé par employee_id », et une clé `int` est aussi ce que
+            // la signature `array<int, AttendanceLogView>` exige à l'analyse
+            // statique. Un simple `->values()` aurait remplacé les clés
+            // employee_id par 0,1,2… : `$latest[$employee->id]` tombait alors
+            // sur une AUTRE entrée du tableau — test
+            // `latest_logs_per_employee_on_date_groups_and_orders` en échec
+            // (session 1 lue à la place de la session 2).
+            ->mapWithKeys(function ($logs): array {
+                $first = $logs->first();
+
+                // Groupe toujours non vide après `groupBy` : la garde ne retire
+                // rien en pratique, elle prouve qu'aucun `null` ne sort.
+                return $first instanceof AttendanceLog ? [(int) $first->getAttribute('employee_id') => $first] : [];
+            })
             ->all();
     }
 

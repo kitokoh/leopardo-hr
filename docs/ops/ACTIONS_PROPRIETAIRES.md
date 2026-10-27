@@ -45,6 +45,23 @@
   fail-loud** (#7270), **un check requis ne peut plus être vert sans verdict du gate** (#7269).
 - Divers : message d'erreur localisé (#7268), staging ne se déclenche plus dans le vide (#7256).
 
+## Actions restantes au 2026-10-26 — reprise de la mission d'implémentation
+
+Les issues qui portaient ces actions ont été **clôturées** (leur périmètre technique était soldé) :
+c'est **ce document**, et non le tracker, qui reste la source de vérité. Une action clôturée dans
+GitHub mais non exécutée ici est une action **perdue**. Les 4 lignes ci-dessous sont donc les
+seules qui comptent encore, avec leur état réel vérifié.
+
+| # | Action | État | Preuve / procédure | Pourquoi c'est resté humain |
+|---|---|---|---|---|
+| 10 | **`RENDER_PROD_API_KEY` + `RENDER_PROD_SERVICE_ID`** | ⛔ **NON FAIT** | `docs/ops/RENDER_SECRETS_CHECKLIST.md` (147 lignes, étape par étape) | Exige le dashboard Render + les secrets GitHub. Tant que c'est absent, **la prod ne peut pas rattraper `main`** (#8397). |
+| 11 | **DNS `leopardo-rh.com` / `www`** | ⛔ **NON FAIT** | `docs/ops/DECISIONS_OPS_2026-10-26.md` | Exige le registrar + le compte Vercel. Le domaine canonique du code reste **NXDOMAIN** (#8062). Le garde `canonical-domain-guard.yml` passera au vert tout seul. |
+| 12 | **Worker + scheduler Render dédiés** | ⛔ **DÉCISION BUDGET** | `docs/ops/RENDER_WORKER_DECISION.md` (coût chiffré, rollback) | Dépense récurrente = décision de fondateur. Le **signal** de dérive, lui, est livré (`deploy-drift-guard.yml`) (#8147). |
+| 13 | **Décision GO/NO-GO pilote Fuel** | ⛔ **SIGNATURE REQUISE** | `dev-hub/tools/pilot-gates.json` + `docs/ops/DECISION_8586_FUEL_PILOT_GATES.md` | Les 9 gates ont `owner` + date + preuve ; le registre rend le GO auditable. Prononcer le GO est un acte humain (#8586). |
+
+Les actions 1 à 9 ci-dessus restent valables telles quelles ; les actions 2 (`BRANCH_PROTECTION_TOKEN`)
+et 7 (plan Render) recoupent respectivement #7657 et #8147.
+
 ## Suivi
 
 Ce document doit être mis à jour quand une action est réalisée (cocher / retirer la ligne) — et il

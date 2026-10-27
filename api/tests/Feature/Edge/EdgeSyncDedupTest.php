@@ -11,7 +11,7 @@ use App\Modules\EdgeSync\Domain\Models\SyncQueue;
 use App\Modules\EdgeSync\Infrastructure\Services\EdgeDaemonSyncClient;
 use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Schema;
+use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 /**
@@ -25,62 +25,47 @@ use Tests\TestCase;
  */
 class EdgeSyncDedupTest extends TestCase
 {
+    use CreatesMvpSchema;
+
     protected function setUp(): void
     {
         parent::setUp();
-        $this->createEdgeTables();
+        $this->setUpMvpSchema();
     }
 
     protected function tearDown(): void
     {
-        // #7452 — ne PAS dropper sync_queue/edge_nodes ici : ce sont désormais
-        // les tables canoniques des migrations tenant (dedup_key inclus via
-        // #6554). Les dropper détruisait le schéma pour toutes les classes
-        // suivantes du worker (canonicalSchemaReady ne les surveille pas).
-        // L'isolation des données est assurée par la transaction par test.
+        // #8396 — la fixture canonique (CreatesMvpSchema) est PARTAGÉE par
+        // toutes les classes du worker : on ne droppe ni ne recrée
+        // `edge_nodes` / `sync_queue` ici. La version précédente créait une
+        // table `edge_nodes` RÉDUITE (10 colonnes, sans `edge_version`) dès
+        // que la canonique était absente, puis la laissait en place — les
+        // classes `EdgeSync\*` suivantes du même worker inséraient alors un
+        // `EdgeNode` avec `edge_version` et échouaient en `SQLSTATE[42703]`.
+        // On rend la main à tearDownMvpSchema() (restaure le search_path et
+        // invalide le marqueur de fixture) ; l'isolation des données est
+        // assurée par le TRUNCATE de la fixture.
+        $this->tearDownMvpSchema();
         parent::tearDown();
     }
 
-    private function createEdgeTables(): void
+    /**
+     * #8396 — garde de non-régression : la table `edge_nodes` construite pour
+     * ce test doit porter le schéma CANONIQUE de la migration tenant, et non
+     * un sous-ensemble. Sans cette assertion, une fixture réduite peut être
+     * réintroduite et casser silencieusement les classes suivantes du worker.
+     */
+    public function test_edge_nodes_fixture_matches_canonical_schema(): void
     {
-        if (! Schema::hasTable('edge_nodes')) {
-            Schema::create('edge_nodes', function ($table): void {
-                $table->uuid('id')->primary();
-                $table->uuid('company_id')->index();
-                $table->string('name');
-                $table->string('slug')->unique();
-                $table->string('status')->default('active');
-                $table->string('mode')->default('hybrid');
-                $table->timestamp('last_seen_at')->nullable();
-                $table->json('metadata')->default('{}');
-                $table->timestamps();
-            });
+        foreach (['edge_version', 'capabilities', 'license_expires_at', 'site_address', 'license_key'] as $column) {
+            $this->assertTrue(
+                schemaHasColumn('edge_nodes', $column),
+                "La fixture `edge_nodes` doit porter la colonne canonique `{$column}` (#8396).",
+            );
         }
 
-        if (! Schema::hasTable('sync_queue')) {
-            Schema::create('sync_queue', function ($table): void {
-                $table->uuid('id')->primary();
-                $table->uuid('edge_node_id')->index();
-                $table->string('entity_type');
-                $table->string('entity_id');
-                $table->string('operation');
-                $table->json('payload')->nullable();
-                $table->string('dedup_key', 64)->nullable();
-                // #8629 — parité avec la migration tenant (clé de rejeu + diagnostic).
-                $table->string('idempotency_key', 128)->nullable();
-                $table->string('status')->default('pending');
-                $table->integer('attempt_count')->default(0);
-                $table->string('conflict_resolution')->nullable();
-                $table->string('conflict_note')->nullable();
-                $table->text('last_error')->nullable();
-                $table->timestamp('last_attempt_at')->nullable();
-                $table->timestamp('conflict_at')->nullable();
-                $table->timestamp('synced_at')->nullable();
-                $table->unique(['edge_node_id', 'dedup_key'], 'sync_queue_dedup_unique');
-                $table->index(['edge_node_id', 'idempotency_key'], 'sync_queue_idempotency_index');
-                $table->timestamps();
-            });
-        }
+        $node = $this->makeNode();
+        $this->assertSame('1.0.0', $node->fresh()?->edge_version, '`edge_version` doit faire l\'aller-retour en base.');
     }
 
     private function makeNode(): EdgeNode

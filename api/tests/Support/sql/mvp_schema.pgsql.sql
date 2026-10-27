@@ -337,6 +337,8 @@ CREATE TABLE shared_tenants.employees (
     iban varchar(255) NULL,
     bank_account varchar(255) NULL,
     national_id varchar(255) NULL,
+    pas_rate numeric(5,2) NULL,
+    pas_identifier varchar(64) NULL,
     biometric_face_enabled boolean NOT NULL DEFAULT false,
     biometric_fingerprint_enabled boolean NOT NULL DEFAULT false,
     biometric_face_reference_path varchar(255) NULL,

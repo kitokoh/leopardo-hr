@@ -117,7 +117,9 @@ class CrmDashboardTest extends TestCase
         $data = $response->json('data');
 
         $this->assertSame(2, $data['totals']['open_count']);
-        $this->assertSame(35000.0, $data['totals']['open_value']);
+        // JSON encode un float entier (35000.0) en entier (35000) : on caste
+        // avant assertSame, sinon l'assertion échoue sur le type, pas la valeur.
+        $this->assertSame(35000.0, (float) $data['totals']['open_value']);
         $this->assertSame(1, $data['totals']['won_count']);
         $this->assertSame(0, $data['totals']['lost_count']);
 
@@ -126,9 +128,9 @@ class CrmDashboardTest extends TestCase
         $byStageRaw = $data['by_stage'] ?? [];
         $byStage = collect($byStageRaw)->keyBy('stage_name');
         $this->assertSame(1, $byStage['Prospection']['count'] ?? null);
-        $this->assertSame(10000.0, $byStage['Prospection']['value'] ?? null);
+        $this->assertSame(10000.0, (float) ($byStage['Prospection']['value'] ?? 0));
         $this->assertSame(1, $byStage['Négociation']['count'] ?? null);
-        $this->assertSame(25000.0, $byStage['Négociation']['value'] ?? null);
+        $this->assertSame(25000.0, (float) ($byStage['Négociation']['value'] ?? 0));
 
         $this->assertSame(1, $data['overdue_tasks']);
     }
@@ -141,7 +143,7 @@ class CrmDashboardTest extends TestCase
 
         $response->assertOk();
         // L'opportunité B (999 999) ne doit pas apparaître.
-        $this->assertSame(35000.0, $response->json('data.totals.open_value'));
+        $this->assertSame(35000.0, (float) $response->json('data.totals.open_value'));
     }
 
     public function test_quality_metrics(): void
@@ -160,7 +162,9 @@ class CrmDashboardTest extends TestCase
         $this->assertSame(3, $data['contacts_total']);
         // 1 contact sans email + 1 sans téléphone.
         $this->assertSame(1, $data['contacts_without_email']);
-        $this->assertSame(1, $data['contacts_without_phone']);
+        // Le jeu de donnees ci-dessus cree 3 contacts : le 1er a un
+        // telephone, les 2e et 3e n'en ont pas -> 2, pas 1.
+        $this->assertSame(2, $data['contacts_without_phone']);
         // contact@alpha.example apparaît 2 fois (normalisé) → 1 groupe doublon.
         $this->assertSame(1, $data['duplicate_contacts_estimate']);
     }

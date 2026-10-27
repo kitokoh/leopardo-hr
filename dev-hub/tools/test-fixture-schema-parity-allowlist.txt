@@ -1,0 +1,17 @@
+# Baseline #8396 — fixtures laissant une table canonique REDUITE.
+#
+# Chaque ligne : <chemin relatif au depot> :: <table>
+#
+# Ces cas sont ANTERIEURS a la garde et documentes comme dette assumee.
+# La garde `check-test-fixture-schema-parity.py` echoue sur tout NOUVEAU cas.
+#
+# Pourquoi ils ne sont pas corriges ici : ils appartiennent a des lots
+# distincts de la campagne #8396 (Billing, Audit) et leur correction exige
+# une preuve avant/apres propre a leur module. Les corriger « au passage »
+# melangerait deux perimetres dans une meme PR.
+#
+# Le cluster `edge_version` (EdgeSync) a ete corrige dans le lot L1 : les
+# fichiers `tests/Feature/Edge/*` ne figurent donc PAS ici.
+
+api/tests/Feature/Billing/PlatformPlanAdminApiTest.php :: subscriptions
+api/tests/Unit/PurgeAuditLogsCommandTest.php :: audit_logs

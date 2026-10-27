@@ -23,6 +23,16 @@ class CrmTimelineController extends Controller
 
     public function index(Request $request, CrmAccount $account): JsonResponse
     {
+        // #5720 — garde d'isolation tenant explicite : le binding implicite
+        // résout l'account AVANT le middleware `tenant`, donc le scope global
+        // `BelongsToCompany` ne filtre pas encore et l'account d'un autre
+        // tenant est chargé. Sans cette garde, la timeline d'un autre tenant
+        // répond 200 (fuite de données) au lieu du 404 attendu.
+        $companyId = $request->user()?->getAttribute('company_id');
+        if (is_string($companyId) && (string) $account->company_id !== $companyId) {
+            abort(404);
+        }
+
         $this->authorize('crm.timeline');
 
         $limit = (int) $request->query('limit', 25);

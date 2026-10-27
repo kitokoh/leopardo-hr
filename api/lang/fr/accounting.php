@@ -85,6 +85,7 @@ return [
     // Erreurs métier (issue #5227)
     'errors' => [
         'gateway_checkout_failed' => 'La passerelle de paiement est temporairement indisponible. Réessayez plus tard.',
+        'fiscal_year_invalid' => 'Exercice comptable invalide.',
         'payment_amount_positive' => 'Le montant du paiement doit être strictement positif.',
         'wf_invalid_type' => 'Type de document invalide.',
         'wf_requires_lines' => 'Un document doit avoir au moins une ligne.',

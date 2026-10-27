@@ -28,14 +28,26 @@ class CrmActivitiesTasksTest extends TestCase
     {
         $company = $this->company('DZ');
 
-        $this->expectException(QueryException::class);
+        // Le CHECK doit rejeter le type inconnu. L'insert est isolé dans un
+        // savepoint (DB::transaction imbriquée) : sans lui, la violation
+        // avorte la transaction de test et le tearDown (SET search_path)
+        // échoue en 25P02, empoisonnant tous les tests suivants du worker.
+        $rejected = false;
 
-        DB::table('crm_activities')->insert([
-            'company_id' => $company->id,
-            'type' => 'ping',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        try {
+            DB::transaction(function () use ($company): void {
+                DB::table('crm_activities')->insert([
+                    'company_id' => $company->id,
+                    'type' => 'ping',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            });
+        } catch (QueryException) {
+            $rejected = true;
+        }
+
+        $this->assertTrue($rejected, 'Le CHECK sur crm_activities.type doit rejeter « ping ».');
     }
 
     public function test_activity_append_with_allowed_type(): void

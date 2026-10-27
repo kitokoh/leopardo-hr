@@ -37,6 +37,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Restaurant` | Solutions restaurant publiques BC-25 (enquêtes) |
 | `RestaurantManager` | Verticale restauration BC-25 : commandes, menus, livraisons, fidélité, promotions, kiosque |
 | `Retail` | Module vendeur générique BC-17 : produits, catégories, publication (fondations #7672) |
+| `SearchIntelligence` | Growth & Search Intelligence BC-33 : SEO technique, SEA, AEO, GEO, contenu marketing, veille concurrentielle, connecteurs GSC/GA4/Ads (GSI-1..GSI-12, #8512→#8523) |
 | `EdgeSync` | Synchronisation offline/mobile (structure spécialisée, hors squelette DDD standard) |
 | `Expense` | Notes de frais employés |
 | `Fleet` | Véhicules, trajets, affectations |

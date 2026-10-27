@@ -78,7 +78,7 @@ class FuelAlertServiceTest extends TestCase
             'station_id' => $station->id,
             'title' => 'Pompe 1 révision',
             'task_type' => FuelMaintenanceTask::TYPE_PREVENTIVE,
-            'status' => FuelMaintenanceTask::STATUS_OPEN,
+            'status' => FuelMaintenanceTask::STATUS_TODO,
             'due_at' => now()->subDay(),
             'created_by' => $manager->id,
         ]);

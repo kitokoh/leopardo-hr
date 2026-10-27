@@ -61,8 +61,10 @@ trait CreatesCrmSchema
                 $table->unsignedBigInteger('account_id')->nullable();
                 $table->string('first_name', 80)->nullable();
                 $table->string('last_name', 80)->nullable();
-                $table->string('email', 191)->nullable();
-                $table->string('phone', 40)->nullable();
+                // PII chiffrée au repos (#5713) : le cast `encrypted` produit un
+                // payload de 228 caractères — `text` est requis (cf. #8866).
+                $table->text('email')->nullable();
+                $table->text('phone')->nullable();
                 $table->string('job_title', 120)->nullable();
                 $table->boolean('is_primary')->default(false);
                 $table->string('status', 20)->default('active');
@@ -197,7 +199,6 @@ trait CreatesCrmSchema
      * Insère une ligne crm_accounts de test (schéma canonique, cf. #5708).
      *
      * @param  array<string, mixed>  $overrides
-     * @return int
      */
     private function createCrmAccount(array $overrides = []): int
     {
@@ -226,11 +227,16 @@ trait CreatesCrmSchema
      * Insère une ligne crm_contacts de test (schéma canonique, cf. #5708).
      *
      * @param  array<string, mixed>  $overrides
-     * @return int
      */
     private function createCrmContact(array $overrides = []): int
     {
-        return DB::table('crm_contacts')->insertGetId(array_merge([
+        // PII chiffrée au repos (#5713) : le modèle `CrmContact` caste `email`
+        // et `phone` en `encrypted`. Un insert brut en clair via le query
+        // builder contourne le cast → toute lecture par le modèle lève
+        // `DecryptException: The payload is invalid` (HTTP 500 sur
+        // /api/v1/crm/search). La fixture doit donc écrire ce que le modèle
+        // écrirait : la même enveloppe que le cast `encrypted` (serialize=false).
+        $defaults = [
             'company_id' => '00000000-0000-0000-0000-000000000000',
             'account_id' => null,
             'first_name' => 'Jean',
@@ -244,14 +250,25 @@ trait CreatesCrmSchema
             'metadata' => null,
             'created_at' => now(),
             'updated_at' => now(),
-        ], $overrides));
+        ];
+
+        $row = array_merge($defaults, $overrides);
+
+        foreach (['email', 'phone'] as $piiColumn) {
+            $value = $row[$piiColumn] ?? null;
+
+            if (is_string($value) && $value !== '') {
+                $row[$piiColumn] = app('encrypter')->encrypt($value, false);
+            }
+        }
+
+        return DB::table('crm_contacts')->insertGetId($row);
     }
 
     /**
      * Insère une ligne crm_tasks de test (schéma canonique, cf. #5710).
      *
      * @param  array<string, mixed>  $overrides
-     * @return int
      */
     private function createCrmTask(array $overrides = []): int
     {
@@ -279,7 +296,6 @@ trait CreatesCrmSchema
      * Insère une ligne crm_activities de test (schéma canonique, cf. #5710).
      *
      * @param  array<string, mixed>  $overrides
-     * @return int
      */
     private function createCrmActivity(array $overrides = []): int
     {
@@ -298,11 +314,11 @@ trait CreatesCrmSchema
             'updated_at' => now(),
         ], $overrides));
     }
+
     /**
      * Insère une ligne crm_pipelines de test (schéma canonique, cf. #5709).
      *
      * @param  array<string, mixed>  $overrides
-     * @return int
      */
     private function createCrmPipeline(array $overrides = []): int
     {
@@ -319,7 +335,6 @@ trait CreatesCrmSchema
      * Insère une ligne crm_stages de test (schéma canonique, cf. #5709).
      *
      * @param  array<string, mixed>  $overrides
-     * @return int
      */
     private function createCrmStage(array $overrides = []): int
     {
@@ -341,7 +356,6 @@ trait CreatesCrmSchema
      * Insère une ligne crm_opportunities de test (schéma canonique, cf. #5709).
      *
      * @param  array<string, mixed>  $overrides
-     * @return int
      */
     private function createCrmOpportunity(array $overrides = []): int
     {
@@ -365,6 +379,4 @@ trait CreatesCrmSchema
             'updated_at' => now(),
         ], $overrides));
     }
-
 }
-

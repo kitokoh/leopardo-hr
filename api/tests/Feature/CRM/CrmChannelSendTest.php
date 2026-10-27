@@ -8,6 +8,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\CRM\Domain\Models\CrmChannel;
 use App\Modules\CRM\Domain\Models\CrmChannelMessage;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -27,6 +28,14 @@ class CrmChannelSendTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // #5725 — le token système WhatsApp est un prérequis d'environnement
+        // (secret manager). Sans lui, `WhatsAppCloudApiClient::request()`
+        // lève `CrmChannelNotConfiguredException` (503) AVANT tout appel
+        // provider : les tests d'envoi (Http::fake) ne peuvent pas passer.
+        // On le pose explicitement, comme les autres secrets de test
+        // (STRIPE_WEBHOOK_SECRET, TRAVEL_PAYMENT_CALLBACK_SECRET…).
+        config()->set('services.whatsapp.token', 'test-whatsapp-cloud-token');
 
         /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
@@ -186,6 +195,14 @@ class CrmChannelSendTest extends TestCase
 
         $channel = $this->whatsappChannel();
 
+        // `RetryCrmMessageJob` est pousse par handleProviderFailure(). En
+        // `QUEUE_CONNECTION=sync` (phpunit.xml) il s'execute DANS la requete et
+        // consomme immediatement la 2e tentative (max_attempts=2) : le message
+        // est deja `dead_lettered` au retour du POST et l'etat intermediaire
+        // « failed retryable » n'est plus observable. On neutralise la file
+        // pour isoler le 1er echec ; le retry est ensuite pilote explicitement.
+        Queue::fake();
+
         Http::fake([
             'graph.facebook.com/*' => Http::response(['error' => ['message' => 'rate limited', 'code' => 130429]], 429),
         ]);
@@ -205,6 +222,11 @@ class CrmChannelSendTest extends TestCase
 
         // Retry via le service : second échec → dead-letter (tentatives épuisées).
         $service = app(\App\Modules\CRM\Infrastructure\Services\CrmChannelService::class);
+
+        // handleProviderFailure a bien programme le retry (verifie avant de le
+        // declencher a la main).
+        Queue::assertPushed(\App\Modules\CRM\Infrastructure\Jobs\RetryCrmMessageJob::class);
+
         $service->retry((string) $message->id);
 
         $this->assertDatabaseHas('crm_channel_messages', [

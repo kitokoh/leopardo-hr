@@ -1740,7 +1740,8 @@
     "travelAgency": "Travel agency",
     "emailTemplates": "Emails",
     "settings": "Settings",
-    "messaging": "Messaging"
+    "messaging": "Messaging",
+    "provisioning": "Provisioning"
   },
   "webhooks": {
     "confirm_delete": "Delete this webhook?"
@@ -3818,7 +3819,8 @@
     "itemCrm": "CRM",
     "itemCrmDesc": "CRM pipeline",
     "itemToggleDark": "Toggle dark mode",
-    "itemToggleDarkDesc": "Change theme"
+    "itemToggleDarkDesc": "Change theme",
+    "itemProvisioningDesc": "Track tenant onboarding progress and provisioning blockers"
   },
   "bankRecon": {
     "title": "Bank reconciliation",
@@ -8735,5 +8737,37 @@
       "currency": "Currency",
       "createdAt": "Date"
     }
+  },
+  "provisioning": {
+    "title": "Provisioning",
+    "subtitle": "Where each tenant stands in onboarding — and which ones are stuck.",
+    "refresh": "Refresh",
+    "loading": "Reading provisioning state…",
+    "empty": "No tenant matches this filter.",
+    "loadError": "Could not load",
+    "noPermission": "Your role lacks “companies.view”: this screen cannot be displayed.",
+    "forbidden": "Access denied — “companies.view” permission required.",
+    "listTitle": "Progress per tenant",
+    "listSub": "Provisioning facts only — no client business data.",
+    "statsTenants": "Tenants",
+    "statsWithoutSite": "Without site",
+    "statsIncomplete": "Onboarding incomplete",
+    "statsStalled": "Stalled provisionings",
+    "failuresTitle": "Onboarding failures and stalls",
+    "failuresSub": "Provisionings that failed or made no progress for over 15 minutes.",
+    "filterAll": "All",
+    "filterNoSite": "Without site",
+    "filterBlocked": "Blocked",
+    "colTenant": "Tenant",
+    "colStep": "Last step",
+    "colSites": "Sites",
+    "colModules": "Active modules",
+    "colAge": "Created",
+    "colActions": "Journal",
+    "colEmail": "Account (masked)",
+    "colStatus": "Status",
+    "colSince": "Since",
+    "colError": "Error",
+    "openJournal": "View history"
   }
 }

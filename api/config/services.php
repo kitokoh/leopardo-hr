@@ -73,13 +73,23 @@ return [
         'mode' => env('CHARGILY_MODE', 'live'), // 'test' | 'live'
     ],
 
+    // #5725/#1208 — Meta WhatsApp Business Cloud API. UN SEUL bloc : deux
+    // clés `'whatsapp'` de premier niveau se seraient écrasées (la seconde
+    // gagne) et `phone_number_id`/`access_token` auraient disparu de la
+    // config résolue — le canal CRM répondait alors 503
+    // (CRM_CHANNEL_NOT_CONFIGURED) et le provider Notification retombait
+    // silencieusement sur l'audit-only.
     'whatsapp' => [
-        // Meta WhatsApp Business Cloud API. When either secret is missing,
-        // `CommunicationService::providerFor('whatsapp')` falls back to the
-        // audit-only provider (PA2-COMM-008) instead of failing dispatch.
+        // PA2-COMM-008 : si l'un des deux secrets manque,
+        // `CommunicationService::providerFor('whatsapp')` retombe sur le
+        // provider audit-only au lieu d'échouer à l'envoi.
         'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
         'access_token' => env('WHATSAPP_ACCESS_TOKEN'),
         'api_base_url' => env('WHATSAPP_API_BASE_URL', 'https://graph.facebook.com/v19.0'),
+        // #5725 — Token système WhatsApp Business Cloud API (Meta Graph API),
+        // lu par `WhatsAppAdapter::accessToken()`. Secret manager uniquement :
+        // jamais en frontend, DB ou logs.
+        'token' => env('WHATSAPP_CLOUD_API_TOKEN', ''),
     ],
 
     'saml' => [
@@ -190,12 +200,6 @@ return [
         'ios' => json_decode((string) env('LEOPARDO_IOS_APP_LINKS', '{}'), true) ?: [],
     ],
 
-    'whatsapp' => [
-        // #5725 — Token système WhatsApp Business Cloud API (Meta Graph API).
-        // Secret manager uniquement : jamais en frontend, DB ou logs.
-        'token' => env('WHATSAPP_CLOUD_API_TOKEN', ''),
-    ],
-
     'github_stack_switch' => [
         // #8673 (épic #8670) — jeton GitHub utilisé par le bouton superadmin de
         // bascule de stack : il déclenche un `repository_dispatch` (événement
@@ -207,6 +211,16 @@ return [
         // (fail-closed explicite, cf. PlatformStackSwitchAction).
         'token' => env('GITHUB_STACK_SWITCH_TOKEN', ''),
         'repository' => env('GITHUB_STACK_SWITCH_REPOSITORY', 'kitokoh/leopardo-hr'),
+    ],
+
+    // #8738 — canal SMS du code de connexion a usage unique (OTP).
+    // `endpoint` + `api_key` vides = canal NON configure : le controleur
+    // replit alors sur l'e-mail au lieu de generer un code qui ne partirat
+    // jamais. Voir App\Core\Auth\Infrastructure\Sms\LogOnlySmsCodeSender.
+    'sms_otp' => [
+        'endpoint' => env('SMS_OTP_ENDPOINT', ''),
+        'api_key' => env('SMS_OTP_API_KEY', ''),
+        'from' => env('SMS_OTP_FROM', ''),
     ],
 
 ];

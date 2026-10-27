@@ -17,6 +17,27 @@ enum CrmImportEntityType: string
     case Leads = 'leads';
 
     /**
+     * Résolution tolérante (singulier ou pluriel) — #8930.
+     *
+     * La Request accepte `lead` comme `leads` (les deux formes circulent
+     * dans les clients et les tests), mais l'enum n'a que le pluriel : un
+     * `CrmImportEntityType::from('lead')` lançait `ValueError` → HTTP 500 sur
+     * une simple faute de forme. On normalise ici, et l'appelant rejette
+     * proprement (422) ce qui n'est ni l'un ni l'autre.
+     */
+    public static function fromLoose(string $value): ?self
+    {
+        $normalised = match ($value) {
+            'account' => 'accounts',
+            'contact' => 'contacts',
+            'lead' => 'leads',
+            default => $value,
+        };
+
+        return self::tryFrom($normalised);
+    }
+
+    /**
      * Colonnes autorisées par entité (whitelist — toute colonne inconnue
      * dans le CSV produit une erreur par ligne, jamais un élargissement de
      * périmètre).

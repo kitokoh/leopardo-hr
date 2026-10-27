@@ -37,7 +37,7 @@ class CrmOverdueReminderService
             ->crossTenantForSystemTask('scheduler rappels taches CRM en retard, itere tous les tenants (#7960)')
             ->whereIn('status', ['todo', 'in_progress'])
             ->where('due_at', '<', $now)
-            ->get(['id', 'company_id', 'assigned_to', 'title', 'due_at']);
+            ->get(['id', 'company_id', 'assignee_id', 'title', 'due_at']);
 
         $emitted = 0;
 
@@ -55,8 +55,11 @@ class CrmOverdueReminderService
                 continue; // déjà relancée aujourd'hui — idempotent.
             }
 
+            // #8930 — `company_id` est un UUID : `(int)` le ramenait à 0.
+            // `assignee_id` est la colonne canonique (`assigned_to` n'est que
+            // la dérive historique consolidée en #7452).
             CrmTaskOverdue::dispatch(
-                (int) $task->company_id,
+                (string) $task->company_id,
                 (int) $task->id,
                 $task->assignee_id !== null ? (int) $task->assignee_id : null,
                 (string) $task->title,

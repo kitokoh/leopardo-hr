@@ -49,6 +49,16 @@ class FuelMaintenanceTask extends Model
 
     public const TYPES = [self::TYPE_PREVENTIVE, self::TYPE_CORRECTIVE];
 
+    /**
+     * #8578 (D4) — un seul état de naissance : `todo`.
+     *
+     * `open` et `pending` décrivaient le MÊME fait avec deux autres mots. Le
+     * plus grave n'était pas le doublon mais son effet : `transitionTask()`
+     * lisait `STATUS_OPEN` comme état de départ, or rien n'écrit jamais
+     * `open` — le graphe de transition des tâches était donc MORT, toute
+     * transition depuis une tâche réelle levant 422. Supprimer les synonymes
+     * supprime la possibilité de cette divergence.
+     */
     public const STATUS_TODO = 'todo';
 
     public const STATUS_IN_PROGRESS = 'in_progress';
@@ -59,9 +69,29 @@ class FuelMaintenanceTask extends Model
 
     public const STATUSES = [self::STATUS_TODO, self::STATUS_IN_PROGRESS, self::STATUS_DONE, self::STATUS_CANCELLED];
 
-    public const STATUS_OPEN = 'open';
+    /** État de naissance d'une tâche (aligné sur le défaut SQL). */
+    public const DEFAULT_STATUS = self::STATUS_TODO;
 
-    public const STATUS_PENDING = 'pending';
+    /**
+     * #8578 (D4) — le modèle pose lui-même l'état de naissance.
+     *
+     * Même raison que sur `FuelIncident` : une tâche créée par un chemin qui ne
+     * passe pas par le service (fixture, import) doit naître dans un état qui a
+     * des transitions sortantes. Un défaut uniquement SQL laisse ce choix au
+     * schéma physique, qui peut diverger du domaine.
+     */
+    protected static function booted(): void
+    {
+        static::creating(static function (self $task): void {
+            // `status` est declaree NON nullable : PHPStan signale que la
+            // comparaison a `null` est morte (`identical.alwaysFalse`). Seule
+            // la chaine vide reste possible quand une ligne arrive par un
+            // chemin qui ne passe pas par le service (fixture, import).
+            if ($task->status === '') {
+                $task->status = self::DEFAULT_STATUS;
+            }
+        });
+    }
 
     public const PRIORITY_LOW = 'low';
 

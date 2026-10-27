@@ -37,12 +37,14 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
- *
  * EXCEPTION TENANT-SCOPE (#7999) : `company_id` est NULLABLE par conception —
- * NULL = evenement d'une instance GLOBALE (meme convention que `payment_webhook_endpoints`).
- * Le routage d'un webhook entrant se fait hors contexte tenant prealable (l'appelant
- * est un fournisseur, pas un utilisateur) : un scope fail-closed exclurait les
- * evenements des fournisseurs globaux.
+ * NULL = evenement recu sur un endpoint d'instance GLOBALE. L'evenement est
+ * ecrit par le processing d'un webhook entrant, hors contexte tenant (l'appelant
+ * est un fournisseur de paiement, pas un utilisateur) et `company_id` y est
+ * denormalise depuis l'endpoint, pas resolu depuis le tenant courant. Un scope
+ * fail-closed rendrait les evenements globaux invisibles a la lecture
+ * d'idempotence et rejouerait des webhooks deja traites. Meme regime que
+ * `PaymentWebhookEndpoint` et `FundraisingPaymentEvent`.
  */
 class PaymentWebhookEvent extends Model
 {

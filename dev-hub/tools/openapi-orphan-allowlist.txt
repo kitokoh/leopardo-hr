@@ -1,0 +1,128 @@
+# Entrées de openapi-coverage-allowlist.txt connues comme ORPHELINES (#8719).
+#
+# Une entrée est orpheline quand AUCUNE route déclarée ne correspond à son
+# couple méthode + chemin — la route a été supprimée, renommée, ou n'a jamais
+# existé. Ces entrées gonflent artificiellement le décompte des gaps « connus »
+# et survivent indéfiniment : la garde de staleness (#3596) ne regarde que les
+# entrées devenues DOCUMENTÉES, jamais celles devenues SANS OBJET.
+#
+# Ce fichier gèle UNIQUEMENT la dette pré-existante constatée le 2026-10-25.
+# Le garde (check-openapi-route-coverage.py) échoue si :
+#   - une entrée de l'allowlist devient orpheline et n'est pas listée ici ;
+#   - une entrée listée ici redevient valide (à purger de ce fichier).
+#
+# Format identique à l'allowlist : « METHODE /chemin/normalisé ».
+
+DELETE /v1/v1/travel/partner/advert-positions/{param}
+DELETE /v1/v1/travel/partner/advert-prices/{param}
+DELETE /v1/v1/travel/partner/advert-types/{param}
+DELETE /v1/v1/travel/partner/adverts/{param}
+DELETE /v1/v1/travel/partner/articles/{param}
+DELETE /v1/v1/travel/partner/categories/{param}
+DELETE /v1/v1/travel/partner/comments/{param}
+DELETE /v1/v1/travel/partner/quiz-questions/{param}
+DELETE /v1/v1/travel/partner/quizzes/{param}
+DELETE /v1/v1/travel/partner/quizzes/{param}/questions/{param}
+DELETE /v1/v1/travel/partner/tourist-sites/{param}
+DELETE /v1/v1/travel/partner/webhook-subscriptions/{param}
+GET /v1/restaurant/reports/exports/{param}/download
+GET /v1/v1/travel/partner/advert-positions
+GET /v1/v1/travel/partner/advert-prices
+GET /v1/v1/travel/partner/advert-types
+GET /v1/v1/travel/partner/adverts
+GET /v1/v1/travel/partner/adverts/manage
+GET /v1/v1/travel/partner/adverts/{param}
+GET /v1/v1/travel/partner/article-categories
+GET /v1/v1/travel/partner/articles
+GET /v1/v1/travel/partner/articles/{param}
+GET /v1/v1/travel/partner/articles/{param}/comments
+GET /v1/v1/travel/partner/articles/{param}/engagement
+GET /v1/v1/travel/partner/cancellation-policies/{param}
+GET /v1/v1/travel/partner/categories
+GET /v1/v1/travel/partner/comments
+GET /v1/v1/travel/partner/contacts
+GET /v1/v1/travel/partner/corporate-accounts
+GET /v1/v1/travel/partner/corporate-quotes
+GET /v1/v1/travel/partner/loyalty/account
+GET /v1/v1/travel/partner/loyalty/entries
+GET /v1/v1/travel/partner/loyalty/rewards
+GET /v1/v1/travel/partner/payments/{param}
+GET /v1/v1/travel/partner/pdv/receipts/{param}
+GET /v1/v1/travel/partner/pdv/session/current
+GET /v1/v1/travel/partner/public-shop-token
+GET /v1/v1/travel/partner/quizzes
+GET /v1/v1/travel/partner/quizzes/{param}
+GET /v1/v1/travel/partner/quizzes/{param}/participations
+GET /v1/v1/travel/partner/quizzes/{param}/results
+GET /v1/v1/travel/partner/reports/cancellations
+GET /v1/v1/travel/partner/reports/dashboard
+GET /v1/v1/travel/partner/reports/export/{param}
+GET /v1/v1/travel/partner/reports/occupancy
+GET /v1/v1/travel/partner/reports/revenue
+GET /v1/v1/travel/partner/reports/sales
+GET /v1/v1/travel/partner/shop/bookings/{param}
+GET /v1/v1/travel/partner/shop/connections
+GET /v1/v1/travel/partner/shop/trips
+GET /v1/v1/travel/partner/shop/trips/{param}
+GET /v1/v1/travel/partner/tickets/{param}/pdf
+GET /v1/v1/travel/partner/tourist-sites
+GET /v1/v1/travel/partner/tourist-sites/search
+GET /v1/v1/travel/partner/tourist-sites/{param}
+GET /v1/v1/travel/partner/webhook-subscriptions
+POST /v1/v1/travel/partner/advert-positions
+POST /v1/v1/travel/partner/advert-prices
+POST /v1/v1/travel/partner/advert-types
+POST /v1/v1/travel/partner/adverts
+POST /v1/v1/travel/partner/adverts/{param}/pay
+POST /v1/v1/travel/partner/adverts/{param}/reject
+POST /v1/v1/travel/partner/adverts/{param}/renew
+POST /v1/v1/travel/partner/adverts/{param}/validate
+POST /v1/v1/travel/partner/article-categories
+POST /v1/v1/travel/partner/articles
+POST /v1/v1/travel/partner/articles/{param}/comments
+POST /v1/v1/travel/partner/articles/{param}/like
+POST /v1/v1/travel/partner/articles/{param}/moderate
+POST /v1/v1/travel/partner/articles/{param}/publish
+POST /v1/v1/travel/partner/articles/{param}/rate
+POST /v1/v1/travel/partner/articles/{param}/share
+POST /v1/v1/travel/partner/articles/{param}/unlike
+POST /v1/v1/travel/partner/categories
+POST /v1/v1/travel/partner/comments
+POST /v1/v1/travel/partner/comments/{param}/approve
+POST /v1/v1/travel/partner/comments/{param}/moderate
+POST /v1/v1/travel/partner/comments/{param}/reject
+POST /v1/v1/travel/partner/comments/{param}/report
+POST /v1/v1/travel/partner/contacts/{param}/notify
+POST /v1/v1/travel/partner/corporate-accounts
+POST /v1/v1/travel/partner/corporate-quotes
+POST /v1/v1/travel/partner/corporate-quotes/{param}/accept
+POST /v1/v1/travel/partner/corporate-quotes/{param}/cancel
+POST /v1/v1/travel/partner/loyalty/redeem
+POST /v1/v1/travel/partner/loyalty/rewards
+POST /v1/v1/travel/partner/mobile/sync
+POST /v1/v1/travel/partner/payments/initiate
+POST /v1/v1/travel/partner/payments/{param}/refund
+POST /v1/v1/travel/partner/payments/{param}/verify
+POST /v1/v1/travel/partner/pdv/session/close
+POST /v1/v1/travel/partner/pdv/session/open
+POST /v1/v1/travel/partner/public-shop-token/rotate
+POST /v1/v1/travel/partner/quizzes
+POST /v1/v1/travel/partner/quizzes/{param}/participate
+POST /v1/v1/travel/partner/quizzes/{param}/publish
+POST /v1/v1/travel/partner/quizzes/{param}/questions
+POST /v1/v1/travel/partner/reports/export
+POST /v1/v1/travel/partner/shop/bookings
+POST /v1/v1/travel/partner/shop/bookings/{param}/cancel
+POST /v1/v1/travel/partner/shop/connections/book
+POST /v1/v1/travel/partner/tickets/{param}/revoke
+POST /v1/v1/travel/partner/tourist-sites
+POST /v1/v1/travel/partner/webhook-subscriptions
+PUT /v1/v1/travel/partner/advert-positions/{param}
+PUT /v1/v1/travel/partner/advert-prices/{param}
+PUT /v1/v1/travel/partner/advert-types/{param}
+PUT /v1/v1/travel/partner/articles/{param}
+PUT /v1/v1/travel/partner/categories/{param}
+PUT /v1/v1/travel/partner/corporate-accounts/{param}
+PUT /v1/v1/travel/partner/quizzes/{param}
+PUT /v1/v1/travel/partner/quizzes/{param}/questions/{param}
+PUT /v1/v1/travel/partner/tourist-sites/{param}

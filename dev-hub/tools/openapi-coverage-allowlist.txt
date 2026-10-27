@@ -245,8 +245,6 @@ DELETE /v1/edu-manager/course-slots/{param}
 DELETE /v1/edu-manager/students/{param}
 DELETE /v1/edu-manager/subjects/{param}
 DELETE /v1/edu-manager/teacher-subjects/{param}
-DELETE /v1/fuel-station/{param}/{param}
-DELETE /v1/fuel-station/stations/{param}
 DELETE /v1/platform/feature-kill-switches/{param}
 DELETE /v1/restaurant/branches/{param}
 DELETE /v1/restaurant/categories/{param}
@@ -365,52 +363,6 @@ GET /v1/edu-manager/teacher/classes
 GET /v1/edu-manager/teacher/classes/{param}/assessments
 GET /v1/edu-manager/teacher/classes/{param}/students
 GET /v1/edu-manager/teacher/workspace
-GET /v1/fuel-station/accounts
-GET /v1/fuel-station/accounts/{param}
-GET /v1/fuel-station/accounts/{param}/visits
-GET /v1/fuel-station/alerts
-GET /v1/fuel-station/customers
-GET /v1/fuel-station/customers/{param}
-GET /v1/fuel-station/deliveries
-GET /v1/fuel-station/equipment
-GET /v1/fuel-station/exports/readings
-GET /v1/fuel-station/exports/sales
-GET /v1/fuel-station/health/metrics
-GET /v1/fuel-station/imports
-GET /v1/fuel-station/imports/{param}
-GET /v1/fuel-station/incidents
-GET /v1/fuel-station/incidents/{param}
-GET /v1/fuel-station/maintenance-tasks
-GET /v1/fuel-station/maintenance-tasks/{param}
-GET /v1/fuel-station/meter-ocr-requests/{param}
-GET /v1/fuel-station/notifications/preferences
-GET /v1/fuel-station/outbox/events
-GET /v1/fuel-station/products
-GET /v1/fuel-station/products/{param}
-GET /v1/fuel-station/reconciliations
-GET /v1/fuel-station/reports/anomalies
-GET /v1/fuel-station/reports/daily-sales
-GET /v1/fuel-station/reports/daily-volumes
-GET /v1/fuel-station/reports/exports
-GET /v1/fuel-station/reports/exports/{param}/download
-GET /v1/fuel-station/reports/sales
-GET /v1/fuel-station/reports/shifts
-GET /v1/fuel-station/reports/shift-summary
-GET /v1/fuel-station/reports/stock
-GET /v1/fuel-station/reports/variances
-GET /v1/fuel-station/sites
-GET /v1/fuel-station/sites/{param}
-GET /v1/fuel-station/stations
-GET /v1/fuel-station/stations/{param}
-GET /v1/fuel-station/stations/{param}/meters
-GET /v1/fuel-station/stations/{param}/pumps
-GET /v1/fuel-station/stations/{param}/sites
-GET /v1/fuel-station/stations/{param}/tanks
-GET /v1/fuel-station/stock-entries
-GET /v1/fuel-station/stock/level
-GET /v1/fuel-station/stock/reconciliations
-GET /v1/fuel-station/stocks/movements
-GET /v1/fuel-station/sync/outbox
 GET /v1/kiosks/{param}/enrollments/status
 GET /v1/kiosks/{param}/sync-status
 GET /v1/platform/feature-kill-switches
@@ -592,7 +544,6 @@ GET /v1/v1/travel/vehicles/{param}
 # openapi-coverage-allowlist.txt — gaps documentés (exclusions volontaires)
 PATCH /v1/crm/channels/{param}
 PATCH /v1/crm/tasks/{param}
-PATCH /v1/fuel-station/maintenance-tasks/{param}
 # (Périmètre CRM V0-08 « Publier les contrats API et OpenAPI du CRM client »).
 POST /v1/crm/automations
 POST /v1/crm/automations/emergency-stop
@@ -653,40 +604,6 @@ POST /v1/edu-manager/students
 POST /v1/edu-manager/students/{param}/anonymize
 POST /v1/edu-manager/subjects
 POST /v1/edu-manager/teacher/grades/{param}/submit
-POST /v1/fuel-station/accounts
-POST /v1/fuel-station/accounts/{param}/visits
-POST /v1/fuel-station/alerts/{param}/acknowledge
-POST /v1/fuel-station/alerts/{param}/resolve
-POST /v1/fuel-station/customers
-POST /v1/fuel-station/customers/{param}/redeem
-POST /v1/fuel-station/deliveries
-POST /v1/fuel-station/deliveries/{param}/verify
-POST /v1/fuel-station/equipment
-POST /v1/fuel-station/imports
-POST /v1/fuel-station/incidents
-POST /v1/fuel-station/incidents/{param}/assign
-POST /v1/fuel-station/incidents/{param}/attachments
-POST /v1/fuel-station/incidents/{param}/close
-POST /v1/fuel-station/incidents/{param}/resolve
-POST /v1/fuel-station/incidents/{param}/transition
-POST /v1/fuel-station/maintenance-tasks
-POST /v1/fuel-station/meter-ocr-requests/{param}/review
-POST /v1/fuel-station/outbox/events/{param}/retry
-POST /v1/fuel-station/products
-POST /v1/fuel-station/reconciliations
-POST /v1/fuel-station/reports/exports
-POST /v1/fuel-station/sites
-POST /v1/fuel-station/stations
-POST /v1/fuel-station/stations/{param}/meters
-POST /v1/fuel-station/stations/{param}/pumps
-POST /v1/fuel-station/stations/{param}/pumps/{param}/meters/{param}/readings/ocr
-POST /v1/fuel-station/stations/{param}/sites
-POST /v1/fuel-station/stations/{param}/tanks
-POST /v1/fuel-station/stock-entries
-POST /v1/fuel-station/stock/reconcile
-POST /v1/fuel-station/stocks/adjustments
-POST /v1/fuel-station/sync/readings
-POST /v1/fuel-station/sync/sales
 POST /v1/kiosks/{param}/enrollments
 POST /v1/kiosks/{param}/enrollments/{param}/activate
 POST /v1/kiosks/{param}/enrollments/{param}/revoke
@@ -868,16 +785,6 @@ PUT /v1/edu-manager/classes/{param}
 PUT /v1/edu-manager/course-slots/{param}
 PUT /v1/edu-manager/students/{param}
 PUT /v1/edu-manager/subjects/{param}
-PUT /v1/fuel-station/accounts/{param}/consents
-PUT /v1/fuel-station/customers/{param}/consent
-PUT /v1/fuel-station/equipment/{param}/{param}
-PUT /v1/fuel-station/maintenance-tasks/{param}
-PUT /v1/fuel-station/meters/{param}
-PUT /v1/fuel-station/notifications/preferences
-PUT /v1/fuel-station/products/{param}
-PUT /v1/fuel-station/pumps/{param}
-PUT /v1/fuel-station/stations/{param}
-PUT /v1/fuel-station/tanks/{param}
 PUT /v1/restaurant/branches/{param}
 PUT /v1/restaurant/branches/{param}/cancellation-policy
 PUT /v1/restaurant/categories/{param}
@@ -932,39 +839,11 @@ POST /v1/showcase/media
 DELETE /v1/showcase/media/{param}
 GET /v1/public/vitrine/{param}/media/{param}
 
-# Drift pré-existant constaté le 2026-10-10 (#8381) : 48 routes mergées sur
-# main sans documentation OpenAPI entre le 2026-09-29 (dernier run vert,
-# e1be891e) et le 2026-10-08 — travel/community (36), crm leads/accounts/
-# contacts/imports (9, via 147faf1b #5731/#8195), fuel-station imports/reports
-# (4), rh kiosk verify-face (1). Exclusion TEMPORAIRE le temps de la
-# remédiation tracée dans #8381 : documenter ces routes dans api/openapi.yaml
-# puis purger cette section. Détecté pendant l'épic #8349 — hors scope GEO+VTC.
-GET /v1/crm/accounts/{param}
-GET /v1/crm/contacts/{param}
-GET /v1/crm/duplicates/suggestions
-GET /v1/crm/leads/{param}
-POST /v1/crm/accounts
-POST /v1/crm/contacts
-POST /v1/crm/imports/preview
-POST /v1/crm/leads
-PUT /v1/crm/leads/{param}
+# #8381 — remédiation close le 2026-10-25 (lot 4) : les 9 routes CRM de ce
+# drift (leads/accounts/contacts/imports/duplicates) sont documentées dans
+# imports/exports (4), rh kiosk verify-face (1).
 
 # Règle (issue #1473) : toute route absente d'openapi.yaml ET de ce fichier
-# Drift pré-existant main (#8345, restauration routes suite Feature #8127) :
-# routes CRM (imports/duplicates/leads/accounts/contacts), fuel-station
-# (exports/imports), RH (verify-face) et travel community restaurées sans
-# contrat OpenAPI. Gap connu ajouté ici selon la règle #1473 (même régime
-# que les gaps historiques) — documentation OpenAPI à fournir par les
-# verticales concernées (suivi EPIC #6528 côté travel).
-POST /v1/crm/imports/preview
-GET /v1/crm/duplicates/suggestions
-POST /v1/crm/leads
-GET /v1/crm/leads/{param}
-PUT /v1/crm/leads/{param}
-POST /v1/crm/accounts
-GET /v1/crm/accounts/{param}
-POST /v1/crm/contacts
-GET /v1/crm/contacts/{param}
 
 # BC-12 GROWTH/Marketing — Marketing OS (#8528) : espace Super Admin de
 # pilotage marketing (stratégie, médiathèque, publications). Contrat documenté

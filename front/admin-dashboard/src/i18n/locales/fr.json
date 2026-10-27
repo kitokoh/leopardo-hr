@@ -1740,7 +1740,8 @@
     "travelAgency": "Agence de voyage",
     "emailTemplates": "E-mails",
     "settings": "Paramètres",
-    "messaging": "Messagerie"
+    "messaging": "Messagerie",
+    "provisioning": "Provisionnement"
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?"
@@ -3818,7 +3819,8 @@
     "itemCrm": "CRM",
     "itemCrmDesc": "Pipeline CRM",
     "itemToggleDark": "Basculer mode sombre",
-    "itemToggleDarkDesc": "Changer le thème"
+    "itemToggleDarkDesc": "Changer le thème",
+    "itemProvisioningDesc": "Suivre l'onboarding et les blocages de provisionnement des tenants"
   },
   "bankRecon": {
     "title": "Rapprochement bancaire",
@@ -8735,5 +8737,37 @@
       "currency": "Devise",
       "createdAt": "Date"
     }
+  },
+  "provisioning": {
+    "title": "Provisionnement",
+    "subtitle": "Où chaque tenant en est de son onboarding — et lesquels sont bloqués.",
+    "refresh": "Actualiser",
+    "loading": "Lecture du provisionnement…",
+    "empty": "Aucun tenant ne correspond à ce filtre.",
+    "loadError": "Chargement impossible",
+    "noPermission": "Votre rôle ne porte pas « companies.view » : cet écran ne peut pas être affiché.",
+    "forbidden": "Accès refusé — permission « companies.view » requise.",
+    "listTitle": "Progression par tenant",
+    "listSub": "Faits de provisionnement uniquement — aucune donnée métier client.",
+    "statsTenants": "Tenants",
+    "statsWithoutSite": "Sans établissement",
+    "statsIncomplete": "Onboarding incomplet",
+    "statsStalled": "Provisionnements bloqués",
+    "failuresTitle": "Échecs et blocages d'onboarding",
+    "failuresSub": "Provisionnements échoués ou sans progression depuis plus de 15 minutes.",
+    "filterAll": "Tous",
+    "filterNoSite": "Sans établissement",
+    "filterBlocked": "Bloqués",
+    "colTenant": "Tenant",
+    "colStep": "Dernière étape",
+    "colSites": "Établissements",
+    "colModules": "Modules actifs",
+    "colAge": "Créé il y a",
+    "colActions": "Journal",
+    "colEmail": "Compte (masqué)",
+    "colStatus": "Statut",
+    "colSince": "Depuis",
+    "colError": "Erreur",
+    "openJournal": "Voir l'historique"
   }
 }

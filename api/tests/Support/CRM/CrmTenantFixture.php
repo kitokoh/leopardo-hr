@@ -127,6 +127,22 @@ final class CrmTenantFixture
         $columns = Schema::getColumnListing($table);
         $payload = ['company_id' => $company->id];
 
+        // Les FK de rattachement doivent pointer sur une ligne REELLE du
+        // tenant : `contact_id = 1` etait code en dur et violait
+        // `crm_tasks_contact_id_foreign` (23503) des que les tables V0
+        // existaient. On reutilise l'identifiant du contact cree plus tot
+        // dans la passe (crm_contacts precede crm_tasks dans CRM_TABLES).
+        if (in_array('contact_id', $columns, true)) {
+            $contactId = DB::table('crm_contacts')
+                ->where('company_id', $company->id)
+                ->orderBy('id')
+                ->value('id');
+
+            if ($contactId !== null) {
+                $payload['contact_id'] = (int) $contactId;
+            }
+        }
+
         // #7452 — schéma canonique V0 : certaines tables imposent des colonnes
         // NOT NULL sans défaut (crm_accounts.name, crm_tasks.title, …). Le
         // seed reste synthétique : une valeur de fixture par colonne connue,
@@ -137,7 +153,9 @@ final class CrmTenantFixture
             'last_name' => 'Fixture',
             'title' => 'Fixture CRM',
             'type' => 'call',
-            'contact_id' => 1,
+            'channels' => 'email',
+            'status' => 'granted',
+            'consented_at' => now()->toDateTimeString(),
             'channel' => 'email',
             'purpose' => 'marketing',
             'source' => 'manual',

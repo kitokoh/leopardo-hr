@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $station_id
  * @property string $equipment_type pump|tank|meter|other
  * @property int|null $equipment_id
+ * @property string $category equipment|power|pos|safety|other
  * @property string $severity low|medium|high|critical
  * @property string $status open|in_progress|resolved|closed
  * @property string $title
@@ -47,7 +48,16 @@ class FuelIncident extends Model
 
     protected $table = 'fuel_incidents';
 
-    public const STATUS_OPEN = 'open';
+    /**
+     * #8578 (D1) — l'état de naissance canonique est `reported` : un incident
+     * est SIGNALÉ, puis assigné, puis en cours. L'ancien `open` ne disait rien
+     * de plus que « pas encore fermé » et dupliquait `reported` ; deux états
+     * pour un seul fait métier obligent chaque rapport et chaque filtre à
+     * traiter deux cas, et produisent des statistiques fausses.
+     */
+    public const STATUS_REPORTED = 'reported';
+
+    public const STATUS_ASSIGNED = 'assigned';
 
     public const STATUS_IN_PROGRESS = 'in_progress';
 
@@ -55,7 +65,33 @@ class FuelIncident extends Model
 
     public const STATUS_CLOSED = 'closed';
 
-    public const STATUSES = [self::STATUS_OPEN, self::STATUS_IN_PROGRESS, self::STATUS_RESOLVED, self::STATUS_CLOSED];
+    public const STATUS_SUSPENDED = 'suspended';
+
+    /** États exposés en lecture — un seul état de naissance. */
+    public const STATUSES = [
+        self::STATUS_REPORTED,
+        self::STATUS_ASSIGNED,
+        self::STATUS_IN_PROGRESS,
+        self::STATUS_RESOLVED,
+        self::STATUS_CLOSED,
+        self::STATUS_SUSPENDED,
+    ];
+
+    /** Catégories d'incident (allowlist fermée, #8578 D5). */
+    public const CATEGORY_EQUIPMENT = 'equipment';
+
+    public const CATEGORY_SAFETY = 'safety';
+
+    public const CATEGORY_ENVIRONMENT = 'environment';
+
+    public const CATEGORY_OTHER = 'other';
+
+    public const CATEGORIES = [
+        self::CATEGORY_EQUIPMENT,
+        self::CATEGORY_SAFETY,
+        self::CATEGORY_ENVIRONMENT,
+        self::CATEGORY_OTHER,
+    ];
 
     public const SEVERITY_LOW = 'low';
 
@@ -77,34 +113,48 @@ class FuelIncident extends Model
 
     public const EQUIPMENT_TYPES = [self::EQUIPMENT_PUMP, self::EQUIPMENT_TANK, self::EQUIPMENT_METER, self::EQUIPMENT_OTHER];
 
-    public const STATUS_ASSIGNED = 'assigned';
-
-    public const STATUS_REPORTED = 'reported';
-
+    /**
+     * Graphe de workflow — #8578 (D3).
+     *
+     * Chemin canonique : `reported → assigned → in_progress → resolved → closed`.
+     *
+     * On ne clôture JAMAIS sans être passé par `resolved`. Clôturer sans
+     * résolution vide la clôture de son sens : on ne sait plus si le problème a
+     * été réglé ni comment. `closed` doit signifier « réglé et classé », pas
+     * « abandonné » — l'abandon a son propre état (`suspended`). C'est un
+     * durcissement volontaire : la traçabilité d'audit prime sur la commodité
+     * de clôturer vite, sur un module qui alimente la maintenance d'équipement.
+     */
     public const TRANSITIONS = [
-        // Etat de naissance REEL d'un incident = `STATUS_OPEN` (defaut de la
-        // colonne et du modele). Sans cette cle, un incident naissait `open`
-        // puis n'avait AUCUNE transition sortante : il restait bloque a vie
-        // dans le workflow (`TRANSITIONS[$status] ?? []` -> liste vide).
-        self::STATUS_OPEN => [self::STATUS_ASSIGNED, self::STATUS_IN_PROGRESS, self::STATUS_CLOSED],
-        self::STATUS_REPORTED => [self::STATUS_ASSIGNED, self::STATUS_IN_PROGRESS, self::STATUS_CLOSED],
-        self::STATUS_ASSIGNED => [self::STATUS_IN_PROGRESS, self::STATUS_CLOSED],
-        self::STATUS_IN_PROGRESS => [self::STATUS_RESOLVED],
+        self::STATUS_REPORTED => [self::STATUS_ASSIGNED, self::STATUS_IN_PROGRESS, self::STATUS_SUSPENDED],
+        self::STATUS_ASSIGNED => [self::STATUS_IN_PROGRESS, self::STATUS_RESOLVED, self::STATUS_SUSPENDED],
+        self::STATUS_IN_PROGRESS => [self::STATUS_RESOLVED, self::STATUS_SUSPENDED],
         self::STATUS_RESOLVED => [self::STATUS_CLOSED],
+        self::STATUS_SUSPENDED => [self::STATUS_REPORTED, self::STATUS_CLOSED],
         self::STATUS_CLOSED => [],
     ];
 
     /**
-     * Statuts cibles légitimes d'une transition (issue #7398) : union des
-     * cibles de `TRANSITIONS`. `STATUSES` ne décrit que les états « métier »
-     * exposés en lecture — `assigned` en est volontairement absent — mais
-     * l'endpoint de transition doit l'accepter comme cible.
+     * Statuts cibles légitimes d'une transition (issue #7398).
+     *
+     * Doit être exactement l'union des cibles de `TRANSITIONS` — une constante
+     * PHP ne peut pas être calculée, donc la cohérence est verrouillée par
+     * `FuelStateVocabularyTest::test_transition_targets_match_the_graph()`.
+     * Sans ce test, la liste se désynchronise silencieusement du graphe : c'est
+     * précisément ce qui s'était produit (`assigned` en était absent).
+     *
+     * @var list<string>
      */
     public const TRANSITION_TARGETS = [
         self::STATUS_ASSIGNED,
         self::STATUS_IN_PROGRESS,
         self::STATUS_RESOLVED,
         self::STATUS_CLOSED,
+        self::STATUS_SUSPENDED,
+        // `reported` est une cible légitime : `suspended → reported` rouvre un
+        // incident suspendu (constaté par le garde de cohérence, qui a détecté
+        // l'écart entre cette liste et le graphe).
+        self::STATUS_REPORTED,
     ];
 
     protected $fillable = [
@@ -114,6 +164,7 @@ class FuelIncident extends Model
         'equipment_id',
         'severity',
         'status',
+        'category',
         'title',
         'description',
         'reported_by',
@@ -125,7 +176,48 @@ class FuelIncident extends Model
         'closed_at',
         'closed_by',
         'closure_notes',
+        'external_id',
     ];
+
+    /**
+     * État de naissance d'un incident.
+     *
+     * Exposé comme constante pour que le service, la migration et les tests
+     * partagent UNE valeur : c'est la divergence entre le défaut SQL (`open`),
+     * le défaut du modèle et le graphe qui a produit le blocage de workflow de
+     * l'issue #8578.
+     */
+    public const DEFAULT_STATUS = self::STATUS_REPORTED;
+
+    /**
+     * État de naissance posé par le MODÈLE, pas seulement par la colonne.
+     *
+     * Le défaut SQL seul ne suffit pas : dès qu'une ligne arrive par un chemin
+     * qui ne passe pas par `report()` (fixture de test, import, restauration),
+     * elle héritait du défaut de colonne — historiquement `open`, un état qui
+     * n'existe plus dans le graphe. L'incident naissait alors dans un état
+     * SANS transition sortante et devenait immuable (`Transition open →
+     * assigned interdite`). Poser le défaut au niveau du modèle rend la
+     * naissance canonique indépendante du schéma physique.
+     */
+    protected static function booted(): void
+    {
+        static::creating(static function (self $incident): void {
+            if ($incident->status === '') {
+                $incident->status = self::DEFAULT_STATUS;
+            }
+
+            // `category` est declaree NON nullable avec un defaut `equipment`.
+            // Depuis le docblock `@property string $category`, PHPStan sait que
+            // la valeur n'est jamais `null` : la comparaison a `null` etait du
+            // code mort (`identical.alwaysFalse`). On teste la chaine vide,
+            // seul cas possible quand une ligne arrive par un chemin qui ne
+            // passe pas par `report()` (fixture, import, restauration).
+            if ($incident->category === '') {
+                $incident->category = self::CATEGORY_EQUIPMENT;
+            }
+        });
+    }
 
     /** @return array<string, string> */
     protected function casts(): array

@@ -124,6 +124,26 @@ jobs:
       - name: Migration root orphans guard (issue #7975)
         run: bash dev-hub/tools/check-migration-root-orphans.sh
 
+      # #8862 — une migration d'ALTER dont la sequence precede le fichier qui
+      # CREE la table ne s'execute jamais : sa garde `schemaTableExists()` rend
+      # `false`, elle sort en silence, et elle est enregistree comme appliquee.
+      # Detection mecanique (aucune connaissance du domaine requise) : trois
+      # migrations Restaurant avaient ainsi perdu 4 colonnes (rappel de
+      # reservation J-1, politique d'annulation, opt-in RGPD fidelite).
+      # Baseline historique documentee :
+      # dev-hub/tools/migrations-alter-before-create-allowlist.txt
+      - name: Migration alter-before-create guard (issue #8862)
+        run: python3 dev-hub/tools/check-migration-alter-before-create.py --root .
+
+      # #8396 (lot L1) — une fixture de test ne peut pas laisser une table
+      # canonique REDUITE : `EdgeSyncDedupTest` creait `edge_nodes` avec 10
+      # colonnes sur 18 (sans `edge_version`) et la laissait en place, ce qui
+      # cassait les classes `EdgeSync\*` suivantes du worker en
+      # `SQLSTATE[42703]`. Detection mecanique, baseline documentee :
+      # dev-hub/tools/test-fixture-schema-parity-allowlist.txt
+      - name: Test fixture schema parity guard (issue #8396)
+        run: python3 dev-hub/tools/check-test-fixture-schema-parity.py --root .
+
       # #7961 — cliquet BRANCHE vs main : le total d'occurrences (somme des
       # count:) des 3 baselines PHPStan ne peut pas croître par rapport à
       # origin/main. Complémentaire aux gardes diff-scopées #5448/#7655 et
@@ -145,6 +165,9 @@ jobs:
 
       - name: Canonical domains guard (issue #3706)
         run: bash dev-hub/tools/check-canonical-domains.sh
+
+      - name: Public docs — no PII guard (issue #7982)
+        run: bash dev-hub/tools/check-public-docs-no-pii.sh origin/main
 
       - name: Mobile Firebase stubs guard (issue #3152)
         run: bash dev-hub/tools/check-mobile-firebase-configs.sh
@@ -193,6 +216,9 @@ jobs:
       - name: Tenant cache keys guard — helper central TenantCache ou exemption justifiée (issue #8058)
         run: bash dev-hub/tools/check-tenant-cache-keys.sh api
 
+      - name: Tenancy schema-mode guard — mode « schema-per-tenant » mort, inventaire gelé (ADR-0028, issue #8055)
+        run: bash dev-hub/tools/check-tenancy-schema-mode.sh
+
       - name: Attendance/Payroll boundary guard — presence events owned by Attendance (ATT-001, issue #6760)
         run: bash dev-hub/tools/check-attendance-boundary.sh api
 
@@ -216,6 +242,10 @@ jobs:
         run: bash dev-hub/tools/check-security-threat-models.sh
       - name: Pilot go/no-go gates guard (issue #5876, MAT-018)
         run: bash dev-hub/tools/check-pilot-gates.sh
+      - name: Freeze exit-gate guard — aucune expiration silencieuse (issue #8585)
+        run: bash dev-hub/tools/check-freeze-gate.sh
+      - name: Riverpod legacy import guard — build mobile non cassable (issue #8754)
+        run: bash dev-hub/tools/check-mobile-riverpod-legacy-imports.sh
       - name: Release Train compat matrix guard (issue #5874, MAT-016)
         run: bash dev-hub/tools/check-release-compat.sh api
 
@@ -230,6 +260,12 @@ jobs:
           GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
           GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: bash dev-hub/tools/check-tests-deterministic.sh
+
+      - name: Frozen dates guard — no past calendar dates in tests (issue #8396)
+        env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: bash dev-hub/tools/check-tests-no-frozen-dates.sh
 
 
   phpstan-modules:
@@ -488,6 +524,14 @@ jobs:
       - name: Check for orphan (unrouted) controllers
         if: needs.detect-changes.outputs.api_changed == 'true'
         run: dev-hub/tools/check-unrouted-controllers.sh api
+
+      - name: Mobile feature duplication guard (issue #7652)
+        # Une feature partagée vit dans leopardo_core/lib/features/<X>/ : une app
+        # qui recrée le même chemin fork la feature (correctifs et fixes de
+        # sécurité non propagés). La dette existante est gelée dans
+        # dev-hub/tools/mobile-feature-duplication-baseline.txt et ne peut que
+        # décroître — toute NOUVELLE duplication fait échouer ce check.
+        run: bash dev-hub/tools/check-mobile-feature-duplication.sh
 
       - name: Architecture docs parity guard — modules réels ↔ docs (issue #5589)
         if: needs.detect-changes.outputs.api_changed == 'true'

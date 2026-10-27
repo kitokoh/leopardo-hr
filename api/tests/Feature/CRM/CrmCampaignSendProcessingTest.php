@@ -13,10 +13,10 @@ use App\Modules\CRM\Domain\Models\CrmCampaign;
 use App\Modules\CRM\Domain\Models\CrmCampaignSend;
 use App\Modules\CRM\Infrastructure\Jobs\ProcessCampaignSendsJob;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Testing\PendingCommand;
 use Illuminate\Validation\ValidationException;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -304,9 +304,14 @@ class CrmCampaignSendProcessingTest extends TestCase
             'status' => 'pending',
         ]);
 
-        $command = $this->artisan('crm:process-campaign-sends');
-        assert($command instanceof PendingCommand);
-        $command->assertSuccessful();
+        // `Artisan::call()` et non `$this->artisan()` : cette derniere passe par
+        // `PendingCommand`, qui re-resout le noyau console dans un contexte ou
+        // les pushes du `QueueFake` ne sont plus enregistres (0 job observe
+        // alors que la commande en pousse bien 2). `Artisan::call()` execute la
+        // meme commande sans ce detour.
+        $exitCode = Artisan::call('crm:process-campaign-sends');
+
+        self::assertSame(0, $exitCode, 'la commande planifiee doit reussir');
 
         Queue::assertPushed(ProcessCampaignSendsJob::class, 2);
         Queue::assertPushed(ProcessCampaignSendsJob::class, fn (ProcessCampaignSendsJob $job): bool => $job->campaignId === $scheduled->id);

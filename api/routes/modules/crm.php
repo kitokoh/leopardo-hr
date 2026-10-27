@@ -164,14 +164,22 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/dashboard/quality', [CrmDashboardController::class, 'quality']);
 
     // ── Tâches, timeline (#5720) ──────────────────────────────────────────────
-    Route::get('/tasks', [CrmTaskController::class, 'index']);
-    Route::post('/tasks', [CrmTaskController::class, 'store']);
-    Route::get('/tasks/{task}', [CrmTaskController::class, 'show'])->whereNumber('task');
-    Route::patch('/tasks/{task}', [CrmTaskController::class, 'update'])->whereNumber('task');
-    Route::post('/tasks/{task}/complete', [CrmTaskController::class, 'complete'])->whereNumber('task');
-    Route::post('/tasks/{task}/reopen', [CrmTaskController::class, 'reopen'])->whereNumber('task');
-    Route::delete('/tasks/{task}', [CrmTaskController::class, 'destroy'])->whereNumber('task');
-    Route::get('/accounts/{account}/timeline', [CrmTimelineController::class, 'index'])->whereNumber('account');
+    Route::middleware('api.manager:principal,rh,marketing,module:crm')->group(function (): void {
+        // RBAC de ROUTE (#8930) : ces huit routes étaient déclarées dans le
+        // groupe sans `api.manager`, donc sans contrôle de rôle — un employé
+        // ordinaire atteignait le CRUD des tâches et recevait 200 au lieu de
+        // 403. La Policy reste la seconde barrière (elle autorise l'assigné
+        // sur SA tâche, et réserve la suppression aux rôles CRM) ; le
+        // middleware applique la première, comme sur consents/segments.
+        Route::get('/tasks', [CrmTaskController::class, 'index']);
+        Route::post('/tasks', [CrmTaskController::class, 'store']);
+        Route::get('/tasks/{task}', [CrmTaskController::class, 'show'])->whereNumber('task');
+        Route::patch('/tasks/{task}', [CrmTaskController::class, 'update'])->whereNumber('task');
+        Route::post('/tasks/{task}/complete', [CrmTaskController::class, 'complete'])->whereNumber('task');
+        Route::post('/tasks/{task}/reopen', [CrmTaskController::class, 'reopen'])->whereNumber('task');
+        Route::delete('/tasks/{task}', [CrmTaskController::class, 'destroy'])->whereNumber('task');
+        Route::get('/accounts/{account}/timeline', [CrmTimelineController::class, 'index'])->whereNumber('account');
+    });
 
 });
 

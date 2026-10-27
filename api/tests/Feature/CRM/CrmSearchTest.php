@@ -136,7 +136,15 @@ class CrmSearchTest extends TestCase
         $types = collect($searchData)->pluck('type')->unique()->values();
 
         $this->assertContains('account', $types);
-        $this->assertContains('contact', $types);
+
+        // #5719 — la recherche couvre AUSSI les contacts. Le terme « alpha »
+        // ne matche qu'un compte dans le jeu de données ; on interroge donc
+        // un terme de contact (« jean ») pour prouver la seconde branche.
+        $contacts = $this->getJson('/api/v1/crm/search?q=jean&type=contact');
+        $contacts->assertOk();
+        /** @var array<int, array<string, mixed>> $contactData */
+        $contactData = $contacts->json('data') ?? [];
+        $this->assertContains('contact', collect($contactData)->pluck('type')->unique()->values());
     }
 
     public function test_search_filters_by_type_contact(): void
@@ -198,11 +206,20 @@ class CrmSearchTest extends TestCase
     {
         Sanctum::actingAs($this->manager($this->companyA));
 
-        $response = $this->getJson('/api/v1/crm/search?q=transports&type=account&status=inactive');
+        // #5719 — « transports » ne matche que « Transports Alpha SARL »
+        // (active) dans le jeu de données ; le filtre de statut doit donc
+        // être prouvé sur un terme qui matche le compte inactif.
+        $response = $this->getJson('/api/v1/crm/search?q=logistique&type=account&status=inactive');
 
         $response->assertOk();
         $this->assertCount(1, $response->json('data'));
         $response->assertJsonPath('data.0.name', 'Beta Logistique');
+
+        // Contre-épreuve : le même terme avec status=active ne doit rien
+        // retourner — c'est ce qui prouve que le filtre est réellement appliqué.
+        $this->getJson('/api/v1/crm/search?q=logistique&type=account&status=active')
+            ->assertOk()
+            ->assertJsonCount(0, 'data');
 
         $this->getJson('/api/v1/crm/search?q=transports&status=churned')
             ->assertStatus(422);
@@ -262,12 +279,12 @@ class CrmSearchTest extends TestCase
     {
         Sanctum::actingAs($this->manager($this->companyA));
 
-        $response = $this->getJson('/api/v1/crm/search?q=dupond&per_page=1');
+        $response = $this->getJson('/api/v1/crm/search?q=dupont&per_page=1');
 
         $response->assertOk();
         $this->assertCount(1, $response->json('data'));
         $this->assertEquals(1, $response->json('meta')['last_page'] ?? $response->json('meta.last_page'));
 
-        $this->getJson('/api/v1/crm/search?q=dupond&per_page=500')->assertStatus(422);
+        $this->getJson('/api/v1/crm/search?q=dupont&per_page=500')->assertStatus(422);
     }
 }

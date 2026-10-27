@@ -56,6 +56,7 @@ use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\Mobile
 use App\Modules\RestaurantManager\Infrastructure\Services\ReceivingService;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDemoSeederService;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDiscoverableProvider;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantEstablishmentProvider;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsumerRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantProfileResolver;
@@ -89,6 +90,10 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         // SUPERAPP-P0 — la verticale expose ses etablissements PUBLICS a la
         // decouverte unifiee (`/public/discover`) via le contrat partage.
         $this->app->tag([RestaurantDiscoverableProvider::class], 'public.discoverable');
+        // #7910 \u2014 hub \u00ab Mes \u00e9tablissements \u00bb : la verticale DÉCLARE ses
+        // propres établissements (succursales) au registre par module. Le
+        // socle (App\Shared\Establishments) n'importe rien d'ici.
+        $this->app->tag([RestaurantEstablishmentProvider::class], 'establishments.provider');
         // SUPERAPP-P1 (#8760) — resolution fail-closed du profil pour le
         // contact public (memes gardes que la decouverte, aucune duplication).
         $this->app->tag([RestaurantProfileResolver::class], 'public.profile_resolver');
@@ -103,7 +108,17 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         }
 
         $this->app->resolving(SolutionCatalogue::class, function (SolutionCatalogue $catalogue): void {
-            $catalogue->register('restaurantmanager', static fn (): RestaurantManagerManifest => new RestaurantManagerManifest);
+            // BOS-C-02 (#8631, ADR-04) — `restaurantmanager` est le code
+            // CANONIQUE de la verticale restaurant ; `restaurant` (descripteur
+            // d'onboarding historique, porté par Modules/Restaurant) est
+            // déclaré ALIAS : le catalogue public n'expose qu'un code par
+            // verticale (`canonicalCodes()`) et les statistiques ne comptent
+            // plus deux codes pour une même offre.
+            $catalogue->register(
+                'restaurantmanager',
+                static fn (): RestaurantManagerManifest => new RestaurantManagerManifest,
+                aliases: ['restaurant'],
+            );
         });
 
         // #7865 — kit de données de démonstration de la verticale (code de

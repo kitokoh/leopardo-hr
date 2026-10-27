@@ -9,7 +9,6 @@ use App\Core\Tenant\TenantManager;
 use Illuminate\Support\Facades\Schema;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use Illuminate\Support\Facades\DB;
 
 /**
  * RESTO-108 (#6165) — Harness de test BC-25 : schéma tenant complet.
@@ -109,5 +108,50 @@ class RestaurantSchemaTest extends TestCase
         $this->assertSame([], $unscoped, 'Tables restaurant sans colonne company_id (violation tenant-safe).');
     }
 
+    /**
+     * #8862 — trois migrations Restaurant altèrent une table creee PLUS TARD
+     * dans l'ordre des noms de fichier (000714/000715/000716 contre 001519/
+     * 001529/001531). Leur garde `schemaTableExists()` rendait `false` et elles
+     * sortaient en silence : les colonnes n'ont jamais existe, alors que du
+     * code de production les lit et les ecrit.
+     *
+     * Ce test verifie la PRESENCE STRUCTURELLE des quatre colonnes — pas leur
+     * comportement — pour que le no-op silencieux ne puisse pas revenir sans
+     * qu'un test rougisse. Il est volontairement independant de la migration
+     * de rattrapage : il echoue aussi si quelqu'un la supprime.
+     */
+    public function test_columns_delivered_by_renumbered_migrations_actually_exist(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
 
+        $missing = app(TenantManager::class)->withinTenant($company, function () {
+            $expected = [
+                'restaurant_reservations' => ['reminder_sent_at'],
+                'restaurant_branches' => ['cancel_free_hours', 'cancel_fee_bps'],
+                'restaurant_loyalty_customers' => ['opted_in_at'],
+            ];
+
+            $missing = [];
+
+            foreach ($expected as $table => $columns) {
+                $present = Schema::getColumnListing($table);
+
+                foreach ($columns as $column) {
+                    if (! in_array($column, $present, true)) {
+                        $missing[] = "{$table}.{$column}";
+                    }
+                }
+            }
+
+            return $missing;
+        });
+
+        $this->assertSame(
+            [],
+            $missing,
+            'Colonnes livrees par #6208/#6211/#6213 absentes du schema tenant : '
+            .'la migration d\'ALTER correspondante est un no-op silencieux (#8862).'
+        );
+    }
 }

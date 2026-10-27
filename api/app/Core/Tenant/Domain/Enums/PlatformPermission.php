@@ -107,6 +107,25 @@ enum PlatformPermission: string
     case TeamManage = 'team.manage';
 
     /**
+     * GSI-1 (#8512) — module « Growth & Search Intelligence » : SEO, SEA,
+     * AEO, GEO, contenu marketing et veille concurrentielle.
+     *
+     * Ces deux permissions sont volontairement SÉPARÉES de `marketing_os.*` :
+     * la recherche organique et payante engage des budgets publicitaires réels
+     * et publie des contenus publics, alors que le Marketing OS pilote la
+     * vitrine et la médiathèque. Un accès distinct permet de confier la
+     * recherche à un prestataire SEO sans lui ouvrir la vitrine, et
+     * inversement.
+     *
+     * Portées par : `marketing` (les deux — c'est son métier), `admin` et
+     * `super_admin` (les deux, par la matrice `allExcept`), `ops`/`finance`/
+     * `support` : lecture seule pour finance (les dépenses SEA la concernent)
+     * … voir `PlatformRole::permissions()` pour la matrice exacte.
+     */
+    case SearchIntelView = 'search_intel.view';
+    case SearchIntelManage = 'search_intel.manage';
+
+    /**
      * @return list<string>
      */
     public static function values(): array
@@ -147,6 +166,8 @@ enum PlatformPermission: string
             self::SettingsManage => 'Administrer les réglages plateforme (e-mails, IA, barèmes, fériés)',
             self::PayrollView => 'Consulter l’audit des calculs de paie (cross-tenant)',
             self::TeamManage => 'Gérer l’équipe plateforme et distribuer les rôles',
+            self::SearchIntelView => 'Consulter le pilotage Growth & Search Intelligence (SEO, SEA, AEO, GEO)',
+            self::SearchIntelManage => 'Administrer le pilotage Growth & Search Intelligence (campagnes, contenus, intégrations)',
         };
     }
 }

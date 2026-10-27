@@ -24,7 +24,6 @@
 | **FuelStation** | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ | ✅ |
 | **Fundraising** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Geo** | ✅ | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ |
-| **Growth** | ✅ | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ |
 | **HealthManager** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **HospitalityManager** | ✅ | — | ✅ | — | — | — | ✅ | ✅ | ✅ |
 | **HR** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -39,6 +38,7 @@
 | **Restaurant** | ✅ | — | — | — | — | — | — | ✅ | ✅ |
 | **RestaurantManager** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ⚠️ |
 | **Retail** | ✅ | — | — | — | — | — | ✅ | ✅ | ✅ |
+| **SearchIntelligence** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ⚠️ |
 | **Showcase** | ✅ | — | — | — | — | — | — | ✅ | ✅ |
 | **Trade** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **TravelAgency** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
@@ -73,7 +73,6 @@
 | `routes/modules/integrations.php` | 4 | **0** | ✅ Phase 3–4 |
 | `routes/modules/planning.php` | 1 | **0** | ✅ Phase 3–4 |
 | `routes/modules/hr_app.php` | 1 | **0** | ✅ Phase 3–4 |
-| `routes/modules/growth.php` | 2 | **0** | ✅ Phase 3–4 |
 | `routes/modules/sso.php` | 1 | **0** | ✅ Phase 3–4 |
 | `routes/modules/user.php` | 2 | **0** | ✅ Phase 3–4 |
 | `routes/api.php` | 25 | **0** | ✅ Phase 4 |

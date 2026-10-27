@@ -1,0 +1,195 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Billing\Interfaces\Api\V1\Controllers;
+
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Domain\Models\User;
+use App\Exceptions\DomainException;
+use App\Http\Controllers\Controller;
+use App\Modules\Billing\Domain\Models\Partner;
+use App\Modules\Billing\Infrastructure\Services\PartnerService;
+use App\Modules\Billing\Interfaces\Api\V1\Requests\ApplyPartnerRequest;
+use App\Modules\Billing\Interfaces\Api\V1\Requests\PartnerPayoutCreateRequest;
+use App\Modules\Payroll\Domain\Models\Commission;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
+class PartnerDashboardController extends Controller
+{
+    public function __construct(private PartnerService $partnerService) {}
+
+    /**
+     * Résout l'utilisateur global (User) depuis un Employee Sanctum ou un User direct.
+     * Nécessaire car le module Growth stocke les partenaires dans public.partners
+     * liés à public.users, alors que l'auth Sanctum identifie un Employee tenant.
+     */
+    private function resolveGlobalUser(?Authenticatable $authUser): User
+    {
+        if ($authUser instanceof User) {
+            return $authUser;
+        }
+
+        if ($authUser instanceof Employee) {
+            $user = User::firstOrCreate(
+                ['email' => $authUser->email],
+                [
+                    'first_name' => $authUser->first_name,
+                    'last_name' => $authUser->last_name,
+                ]
+            );
+            // Issue #3597/#4151 : status non mass-assignable — assignation explicite.
+            if ($user->wasRecentlyCreated) {
+                $user->status = 'active';
+                $user->save();
+            }
+
+            return $user;
+        }
+
+        abort(401, 'UNAUTHORIZED_USER_TYPE');
+    }
+
+    /**
+     * Appliquer pour devenir partenaire.
+     */
+    public function apply(ApplyPartnerRequest $request): JsonResponse
+    {
+        $globalUser = $this->resolveGlobalUser(Auth::user());
+        if (Partner::where('user_id', $globalUser->id)->exists()) {
+            return new JsonResponse(['error' => 'ALREADY_EXISTS'], 400);
+        }
+
+        $validated = $request->validated();
+
+        try {
+            $partner = $this->partnerService->apply($globalUser->id, $validated);
+        } catch (DomainException $e) {
+            return new JsonResponse([
+                'error' => $e->errorCode(),
+                'message' => __('errors.PARTNER_APPLICATION_ALREADY_SUBMITTED'),
+                'localized_message' => __('errors.PARTNER_APPLICATION_ALREADY_SUBMITTED'),
+            ], 400);
+        }
+
+        return new JsonResponse(['data' => $partner], 201);
+    }
+
+    /**
+     * Demander un paiement.
+     */
+    public function requestPayout(PartnerPayoutCreateRequest $request): JsonResponse
+    {
+        $globalUser = $this->resolveGlobalUser(Auth::user());
+        $partner = Partner::where('user_id', $globalUser->id)->first();
+
+        if (! $partner) {
+            return new JsonResponse(['error' => 'NOT_A_PARTNER'], 403);
+        }
+
+        $validated = $request->validated();
+
+        try {
+            $payout = $this->partnerService->requestPayout($partner, $validated['amount'], $validated['currency']);
+
+            return new JsonResponse(['data' => $payout], 201);
+        } catch (DomainException $e) {
+            // Erreur métier propre : code d'erreur générique, jamais de message brut.
+            return new JsonResponse([
+                'error' => $e->errorCode(),
+                'message' => $e->errorCode(),
+                'localized_message' => __('errors.PAYOUT_REQUEST_REFUSED'),
+            ], $e->statusCode());
+        } catch (\Throwable $e) {
+            Log::error('partner.payout.request_failed', [
+                'partner_id' => $partner->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return new JsonResponse([
+                'error' => 'PAYOUT_REQUEST_FAILED',
+                'message' => 'PAYOUT_REQUEST_FAILED',
+                'localized_message' => __('errors.PAYOUT_REQUEST_FAILED'),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get the authenticated partner's dashboard summary.
+     */
+    public function dashboard(): JsonResponse
+    {
+        $globalUser = $this->resolveGlobalUser(Auth::user());
+        $partner = Partner::where('user_id', $globalUser->id)->first();
+
+        if (! $partner) {
+            return new JsonResponse(['error' => 'NOT_A_PARTNER'], 404);
+        }
+
+        return $this->stats();
+    }
+
+    /**
+     * Get statistics for the authenticated partner.
+     */
+    public function stats(): JsonResponse
+    {
+        $globalUser = $this->resolveGlobalUser(Auth::user());
+        $partner = Partner::where('user_id', $globalUser->id)->first();
+
+        if (! $partner) {
+            return new JsonResponse([
+                'error' => 'NOT_A_PARTNER',
+                'message' => __('errors.NOT_A_PARTNER'),
+                'localized_message' => __('errors.NOT_A_PARTNER'),
+            ], 403);
+        }
+
+        // Optimized with SQL aggregations instead of memory loading
+        $stats = Commission::where('partner_id', $partner->id)
+            ->selectRaw("
+                SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) as total_earned,
+                SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) as pending_approval,
+                SUM(CASE WHEN status = 'approved' THEN amount ELSE 0 END) as approved_upcoming
+            ")
+            ->first();
+
+        $recentCommissions = Commission::where('partner_id', $partner->id)
+            ->latest()
+            ->take(10)
+            ->get();
+
+        return new JsonResponse([
+            'referral_code' => $partner->referral_code,
+            'stats' => [
+                'total_conversions' => $partner->referredCompanies()->count(),
+                'total_earned' => (int) ($stats->total_earned ?? 0),
+                'pending_approval' => (int) ($stats->pending_approval ?? 0),
+                'approved_upcoming' => (int) ($stats->approved_upcoming ?? 0),
+            ],
+            'recent_commissions' => $recentCommissions,
+        ]);
+    }
+
+    /**
+     * List all companies referred by the partner.
+     */
+    public function referredCompanies(): JsonResponse
+    {
+        $globalUser = $this->resolveGlobalUser(Auth::user());
+        $partner = Partner::where('user_id', $globalUser->id)->first();
+
+        if (! $partner) {
+            return new JsonResponse(['error' => 'NOT_A_PARTNER'], 403);
+        }
+
+        $companies = $partner->referredCompanies()
+            ->select('id', 'name', 'status', 'created_at')
+            ->get();
+
+        return new JsonResponse(['data' => $companies]);
+    }
+}
