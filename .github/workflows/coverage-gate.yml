@@ -188,8 +188,27 @@ jobs:
           # en concurrence et provoque des collisions `already exists`, ce qui
           # empêche PHPUnit de produire Clover. Le timeout de 75 minutes garde
           # la suite séquentielle déterministe et conserve la gate de couverture.
-          php artisan test --coverage-clover=storage/coverage/clover.xml --coverage-text 2>&1 | tee storage/coverage/summary.txt
+          #
+          # Issue #8396 — UN SEUL passage. Ce bloc lançait la suite COMPLÈTE deux
+          # fois de suite : d'abord sans `--log-junit`, puis à nouveau avec, pour
+          # obtenir le JUnit consommé par l'étape « Extract first test failures ».
+          # Sur la suite réelle (9063 tests) un passage dure ~4 h 47 ; le job en
+          # faisait donc deux. Conséquences mesurées :
+          #   - `coverage-gate` dépassait le timeout de 300 min (run 40370012093 :
+          #     échec à 01:30 après démarrage à 20:43) → AUCUN verdict de
+          #     couverture n'était jamais produit ;
+          #   - sur une PR, le run était remplacé/cancelé avant la fin → le check
+          #     restait indéterminé, d'où la reconstruction manuelle de la dette
+          #     de test à chaque campagne (#8396).
+          # `--log-junit` est produit en MÊME TEMPS que le clover par le même
+          # passage : le JUnit n'a jamais eu besoin d'un second run.
+          php artisan test --coverage-clover=storage/coverage/clover.xml --coverage-text \
+            --log-junit=storage/test-results/coverage.xml 2>&1 | tee storage/coverage/summary.txt
           test_exit=${PIPESTATUS[0]}
+          # Issue #4978 : un échec de suite doit rester VISIBLE. On écrit la cause
+          # dans causal-error.txt puis on sort en échec — le JUnit et le clover
+          # sont déjà sur disque (écrits au fil de l'eau), donc l'étape
+          # « Extract first test failures » (`always()`) les exploitera quand même.
           if [[ "${test_exit}" -ne 0 ]]; then
             {
               echo "Backend coverage test suite failed with exit code ${test_exit}."
@@ -197,8 +216,6 @@ jobs:
             } | tee storage/coverage/causal-error.txt
             exit "${test_exit}"
           fi
-          php artisan test --coverage-clover=storage/coverage/clover.xml --coverage-text \
-            --log-junit=storage/test-results/coverage.xml 2>&1 | tee storage/coverage/summary.txt
 
       - name: Extract first test failures (causal errors)
         if: needs.detect-changes.outputs.api_changed == 'true' && always()
