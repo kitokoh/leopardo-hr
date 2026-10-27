@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\RestaurantManager\Application\Services\RestaurantGroupConsolidationService;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantReportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,6 +23,7 @@ class RestaurantReportController extends Controller
 {
     public function __construct(
         private readonly RestaurantReportService $reports,
+        private readonly RestaurantGroupConsolidationService $group,
     ) {}
 
     public function sales(Request $request): JsonResponse
@@ -81,6 +83,41 @@ class RestaurantReportController extends Controller
                 'top_products' => $topProducts,
             ],
         ]);
+    }
+
+    /**
+     * REST-OS-8 (#8610) — Vue consolidée GROUPE, en LECTURE SEULE.
+     *
+     * Le périmètre est dérivé des assignations de ressources de l'acteur, pas
+     * d'un paramètre de requête : un responsable ne peut pas élargir son
+     * périmètre en modifiant l'appel. Chaque agrégat est calculé par
+     * établissement puis additionné — aucun mélange d'opérations entre
+     * succursales.
+     */
+    public function group(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('restaurant.reports')) {
+            abort(403);
+        }
+
+        $request->validate([
+            'from' => ['nullable', 'date'],
+            'to' => ['nullable', 'date', 'after_or_equal:from'],
+        ]);
+
+        $from = $request->query('from') !== null
+            ? Carbon::parse((string) $request->query('from'))->startOfDay()
+            : Carbon::today();
+        $to = $request->query('to') !== null
+            ? Carbon::parse((string) $request->query('to'))->endOfDay()
+            : Carbon::today()->endOfDay();
+
+        return response()->json([
+            'data' => $this->group->consolidate($actor, $from, $to),
+        ], 200, [], JSON_PRESERVE_ZERO_FRACTION);
     }
 
     /**

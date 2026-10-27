@@ -41810,6 +41810,98 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+  /restaurant/reports/group:
+    get:
+      operationId: api_get_restaurant_reports_group
+      tags:
+      - Restaurant
+      summary: Vue consolidee GROUPE des rapports (REST-OS-8, #8610)
+      description: >-
+        REST-OS-8 - consolidation LECTURE SEULE des rapports du perimetre de
+        l'acteur (proprietaire / responsable multi-etablissements). Chaque
+        agregat est calcule PAR ETABLISSEMENT puis additionne : le total groupe
+        est, par construction, egal a la somme des lignes, donc aucune operation
+        n'est attribuee a la mauvaise succursale. Le perimetre est derive des
+        assignations de ressources `restaurant_branch` de l'acteur et JAMAIS
+        d'un parametre de requete : un responsable ne peut pas elargir son
+        perimetre en modifiant l'appel. Les etablissements sans activite sont
+        listes a zero (jamais omis). Permission `restaurant.reports` requise
+        (niveau `manage` sur au moins une succursale assignee lorsque le
+        scoping est actif).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+        description: Debut de periode (defaut - aujourd'hui).
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+        description: Fin de periode (defaut - aujourd'hui).
+      responses:
+        '200':
+          description: Consolidation groupe (lignes par etablissement + totaux)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      branches:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            branch_id:
+                              type: integer
+                            branch_name:
+                              type: string
+                            revenue_minor:
+                              type: integer
+                            orders_count:
+                              type: integer
+                            avg_basket_minor:
+                              type: integer
+                            tax_minor:
+                              type: integer
+                            discount_minor:
+                              type: integer
+                      totals:
+                        type: object
+                        properties:
+                          revenue_minor:
+                            type: integer
+                          orders_count:
+                            type: integer
+                          avg_basket_minor:
+                            type: integer
+                          tax_minor:
+                            type: integer
+                          discount_minor:
+                            type: integer
+                          branches_count:
+                            type: integer
+                      period:
+                        type: object
+                        properties:
+                          from:
+                            type: string
+                          to:
+                            type: string
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+
   /catalog/inquiries:
     get:
       operationId: api_get_catalog_inquiries
