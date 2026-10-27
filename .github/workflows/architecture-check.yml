@@ -261,6 +261,12 @@ jobs:
           GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: bash dev-hub/tools/check-tests-deterministic.sh
 
+      - name: Frozen dates guard — no past calendar dates in tests (issue #8396)
+        env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: bash dev-hub/tools/check-tests-no-frozen-dates.sh
+
 
   phpstan-modules:
     timeout-minutes: 45
