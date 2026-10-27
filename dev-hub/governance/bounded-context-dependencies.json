@@ -5,7 +5,7 @@
     "policy": "deny-by-default",
     "registry": "dev-hub/governance/bounded-context-registry.json",
     "guard": "dev-hub/tools/check-bounded-context-dependencies.sh",
-    "updated": "2026-10-18"
+    "updated": "2026-10-27"
   },
   "edges": [
     {
@@ -900,6 +900,18 @@
       "to": "BC-03",
       "baseline": false,
       "note": "PAIEMENTS -> AUTH : les policies du BC-38 (#8711) typent leur acteur en `App\\Core\\Auth\\Domain\\Models\\Employee` pour lire le role metier (`isPrincipal()`, `isHr()`). C'est l'acteur d'autorisation, pas une dependance metier : la policy ne lit aucune donnee RH, seulement l'identite portee par le token. Alternative ecartee : dupliquer la notion de role dans Paiements, qui divergerait au premier role ajoute."
+    },
+    {
+      "from": "BC-39",
+      "to": "BC-02",
+      "baseline": false,
+      "note": "PAGES → TENANT — Page porte un `site_id` (l'établissement est le propriétaire légitime de la page publique) et `PageCustomDomain` porte un `company_id` : les deux modèles lisent Company/Site pour vérifier l'appartenance au MÊME tenant avant toute écriture (assertSameTenantAsSite, #8723/#8726). Aucun contenu commercial n'est exposé à la lecture — même arête que BC-27 (Showcase) qui fait la même chose pour la vitrine."
+    },
+    {
+      "from": "BC-39",
+      "to": "BC-03",
+      "baseline": false,
+      "note": "PAGES → IDENTITY — les policies (PagePolicy, PageVerificationPolicy) s'appuient sur l'Employé comme acteur RBAC et PageVerificationService écrit l'AuditLog immuable de chaque décision de vérification/suspension (#8725). Arête identique à BC-27 → BC-03, et nécessaire pour que la modération soit traçable."
     }
   ]
 }
