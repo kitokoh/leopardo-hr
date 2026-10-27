@@ -24,6 +24,7 @@ use App\Modules\HR\Providers\HRServiceProvider;
 use App\Modules\Marketing\Providers\MarketingServiceProvider;
 use App\Modules\Notification\Providers\NotificationServiceProvider;
 use App\Modules\Onboarding\Providers\OnboardingServiceProvider;
+use App\Modules\Pages\Providers\PagesServiceProvider;
 use App\Modules\Paiements\Providers\PaiementsServiceProvider;
 // BC-38 PAIEMENTS (#8680) — socle de paiement interne + registre de fournisseurs.
 use App\Modules\Payroll\Providers\PayrollServiceProvider;
@@ -89,6 +90,7 @@ return [
     CatalogServiceProvider::class,
     RetailServiceProvider::class,
     ShowcaseServiceProvider::class,
+    PagesServiceProvider::class,
     CommunicationServiceProvider::class,
     // HOSP-001 (#7943) — verticale HospitalityManager (BC-32, hôtels &
     // résidences) : enregistre le manifest `hospitality` au catalogue.

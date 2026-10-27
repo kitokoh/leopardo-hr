@@ -1,0 +1,55 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Pages\Providers;
+
+use App\Modules\Pages\Domain\Blocks\PageBlockProvider;
+use App\Modules\Pages\Domain\Blocks\PageBlockRegistry;
+use App\Modules\Pages\Domain\Blocks\PageBlockSchemaValidator;
+use Illuminate\Support\ServiceProvider;
+
+/**
+ * Service provider du BC PAGES (BC PAGES, #8723-#8731).
+ *
+ * ## Pourquoi le registre de blocs est un singleton paresseux
+ *
+ * Construire le registre coûte peu, mais le construire **à chaque injection**
+ * serait une faute de conception : un fournisseur pourrait alors enregistrer
+ * deux fois, et deux résolutions dans la même requête pourraient voir deux
+ * catalogues différents. En `singleton`, il est construit une fois par requête
+ * et figé — ce qui est l'invariant dont dépend la validation (#8724).
+ *
+ * ## Le tag `pages.block_providers`
+ *
+ * C'est le point d'extension : un BC vertical enregistre son fournisseur dans
+ * SON propre service provider avec
+ * `$this->app->tag([RestaurantBlocks::class], 'pages.block_providers')`, sans
+ * que Pages ne connaisse sa classe. Pages ne fait que résoudre le tag. Si un
+ * vertical n'est pas installé, le tag est vide et le registre ne contient que
+ * `core.*` — aucun `class_exists`, aucune dépendance dure.
+ *
+ * Le registre n'est résolu par le conteneur que lorsque quelque chose en a
+ * besoin : une requête qui ne touche pas aux Pages ne paie pas la construction
+ * du catalogue.
+ */
+final class PagesServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        $this->app->singleton(PageBlockSchemaValidator::class, static fn (): PageBlockSchemaValidator => new PageBlockSchemaValidator);
+
+        $this->app->singleton(PageBlockRegistry::class, function ($app): PageBlockRegistry {
+            /** @var iterable<PageBlockProvider> $tagged */
+            $tagged = $app->tagged('pages.block_providers');
+
+            /** @var list<PageBlockProvider> $providers */
+            $providers = [];
+            foreach ($tagged as $provider) {
+                $providers[] = $provider;
+            }
+
+            return PageBlockRegistry::build($providers);
+        });
+    }
+}
