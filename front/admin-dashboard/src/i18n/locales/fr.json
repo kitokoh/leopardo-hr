@@ -6067,14 +6067,7 @@
       "empty": "Aucune vente enregistrée.",
       "quantity": "Quantité",
       "amount": "Montant"
-    },
-    "fuelPumpistSelectRequired": "Sélectionnez une station, une pompe et un compteur.",
-    "fuelPumpistReadingRejected": "Relevé refusé par le serveur",
-    "fuelPumpistStationsError": "Stations indisponibles",
-    "fuelPumpistPumpsError": "Pompes indisponibles",
-    "fuelPumpistMetersError": "Compteurs indisponibles",
-    "fuelTechnicalRef": "Réf. {id}",
-    "fuelMeterLabelWithProduct": "{meter} — {product}"
+    }
   },
   "trial": {
     "trialBadge": "Essai",
@@ -8777,7 +8770,6 @@
     "colError": "Erreur",
     "openJournal": "Voir l'historique"
   },
-<<<<<<< HEAD
   "hospitality": {
     "hub": {
       "title": "Hospitality",
@@ -8931,13 +8923,4 @@
       "noPayments": "Aucune échéance : générez-les pour pouvoir encaisser le loyer."
     }
   }
-=======
-  "fuelPumpistSelectRequired": "Sélectionnez une station, une pompe et un compteur.",
-  "fuelPumpistReadingRejected": "Relevé refusé par le serveur",
-  "fuelPumpistStationsError": "Stations indisponibles",
-  "fuelPumpistPumpsError": "Pompes indisponibles",
-  "fuelPumpistMetersError": "Compteurs indisponibles",
-  "fuelTechnicalRef": "Réf. {id}",
-  "fuelMeterLabelWithProduct": "{meter} — {product}"
->>>>>>> 0929dc4c2 (chore(i18n): cles Fuel a la source canonique + resync (#4805))
 }

@@ -8591,7 +8591,6 @@
     "unauthenticated": "Your session has expired. Sign in again to continue.",
     "overloaded": "Too many messages sent. Wait a moment and try again."
   },
-<<<<<<< HEAD
   "hospitality": {
     "hub": {
       "title": "Hospitality",
@@ -8745,13 +8744,4 @@
       "noPayments": "No instalments: generate them to collect the rent."
     }
   }
-=======
-  "fuelPumpistSelectRequired": "Select a station, a pump and a meter.",
-  "fuelPumpistReadingRejected": "Reading rejected by the server",
-  "fuelPumpistStationsError": "Stations unavailable",
-  "fuelPumpistPumpsError": "Pumps unavailable",
-  "fuelPumpistMetersError": "Meters unavailable",
-  "fuelTechnicalRef": "Ref. {id}",
-  "fuelMeterLabelWithProduct": "{meter} — {product}"
->>>>>>> 0929dc4c2 (chore(i18n): cles Fuel a la source canonique + resync (#4805))
 }
