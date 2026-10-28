@@ -62,6 +62,21 @@ class PlatformCompanyFeatureController extends Controller
         }
 
         $company->features = $features;
+
+        // BOS-012 (#8199) — **écrivain unifié**. La console plateforme écrivait
+        // `features` sans jamais aligner `metadata.modules`. Or le client lit
+        // `metadata.modules` EN PREMIER (`client-features.ts` →
+        // `explicitToolValue`, qui « fait AUTORITÉ sur les replis
+        // historiques ») : un kill switch posé ici restait donc **invisible
+        // dans l'interface**, qui continuait d'afficher la sélection client
+        // périmée. C'est exactement le moteur de désynchronisation décrit par
+        // #8199, et c'est ce que cette ligne supprime.
+        //
+        // ⚠️ Sens de la dérivation : `features` est la source, `metadata.modules`
+        // la vue. On ne fait donc que DÉRIVER — jamais relire la vue pour
+        // écrire la source, ce qui inverserait la cible de #8199.
+        $company->syncHorizontalToolMirror();
+
         $company->save();
 
         // MAT-010 (#5868) — audit des bascules (avant/après par flag), dans le
