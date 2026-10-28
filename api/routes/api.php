@@ -285,6 +285,12 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/public/travel/marketplace/account/bookings', [TravelCustomerAccountController::class, 'bookings']);
     });
 
+    // #8730 — rendu public SSR des Pages d'établissement. Groupe ISOLÉ :
+    // aucun middleware auth/tenant, throttling `shop-public` comme les autres
+    // surfaces publiques. Le tenant est résolu par slug ou par `Host` dans le
+    // contrôleur, fail-closed 404.
+    require __DIR__.'/modules/pages_public.php';
+
     Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {
         // TRAVEL-409 (#6061) — callback provider paiements TravelAgency
         // (signé HMAC, idempotent — public, vérifié dans le contrôleur).

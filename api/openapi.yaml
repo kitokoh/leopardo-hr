@@ -37,6 +37,8 @@ servers:
 security:
 - BearerAuth: []
 tags:
+- name: Pages
+  description: 'BC PAGES (#8728/#8729/#8730) — pages d''etablissement : CRUD et blocs (tenant), moderation plateforme, rendu public SSR par slug et domaine personnalise.'
 - name: Farm OS
   description: 'BC-37@@FARM@@ (mission Farm OS) — verticale agricole : exploitations et parcelles, cycles culturaux, interventions, outils activables par capacités.'
 - name: Fundraising
@@ -61634,6 +61636,68 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Validation422'
+  /v1/p/{slug}:
+    get:
+      operationId: api_get_pages_public_by_slug
+      tags:
+      - Pages
+      summary: Rendu HTML d'une Page publiee, resolue par slug (#8730)
+      description: 'Surface PUBLIQUE : aucun middleware auth ni tenant. Le tenant est resolu depuis l''en-tete `Host` puis le slug est cherche dans ce tenant uniquement. Rend du HTML (SSR) et non du JSON : la reponse est destinee a un navigateur anonyme. 404 fail-closed si le slug est inconnu, si la Page n''est pas publiee ou si elle est suspendue — jamais 403, qui confirmerait l''existence de la Page d''un autre tenant. La locale est negociee via `Accept-Language` parmi les locales REELLEMENT publiees par la Page (`publishedLocales`), avec repli sur `default_locale`.'
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Slug de la Page, normalise en minuscules (`[a-z0-9][a-z0-9-]*`).
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]*$'
+      - name: Accept-Language
+        in: header
+        required: false
+        description: Locale preferee du visiteur (`fr-FR`, `ar`, `tr-TR`...). Ignoree si elle n'est pas publiee par la Page.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Page rendue en HTML
+          content:
+            text/html:
+              schema:
+                type: string
+        '404':
+          description: Slug inconnu, Page non publiee ou suspendue (fail-closed)
+        '429':
+          description: Limite de debit `shop-public` depassee
+  /v1/pages/by-host:
+    get:
+      operationId: api_get_pages_public_by_host
+      tags:
+      - Pages
+      summary: Rendu HTML d'une Page publiee, resolue par domaine personnalise (#8730)
+      description: 'Surface PUBLIQUE : aucun middleware auth ni tenant. La Page est resolue par l''en-tete `Host` (domaine personnalise verifie, cf. moderation #8729). Le port est retire avant comparaison et l''hote est normalise en minuscules. Cette surface AJOUTE un point d''acces : le rendu par slug reste disponible. Meme semantique d''erreur que `/v1/p/{slug}` — 404 fail-closed, jamais 403.'
+      parameters:
+      - name: Host
+        in: header
+        required: true
+        description: Domaine du tenant (`chez-lea.sn`). Le port eventuel est ignore.
+        schema:
+          type: string
+      - name: Accept-Language
+        in: header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Page rendue en HTML
+          content:
+            text/html:
+              schema:
+                type: string
+        '404':
+          description: Domaine inconnu, non verifie, ou Page non publiee (fail-closed)
+        '429':
+          description: Limite de debit `shop-public` depassee
 components:
   securitySchemes:
     BearerAuth:

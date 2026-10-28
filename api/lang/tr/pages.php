@@ -40,4 +40,15 @@ return [
     'domain_quota_exceeded' => 'Planiniz :limit ozel alan adina izin veriyor.',
     'domain_removed' => 'Bu alan adi kaldirildi ve artik dogrulanamaz.',
     'domain_plan_expired' => 'Aboneligiiz sona erdi: ozel alan adlari yenilenene kadar devre disi.',
+
+    // #8730 — public SSR rendering
+    'public' => [
+        'verified' => 'Dogrulanmis isletme',
+        'contact' => 'Iletisim',
+        'map' => 'Haritada gor',
+        'actions' => [
+            'directions' => 'Yol tarifi',
+            'contact' => 'Yaz',
+        ],
+    ],
 ];
