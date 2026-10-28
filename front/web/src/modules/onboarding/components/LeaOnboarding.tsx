@@ -323,13 +323,10 @@ export function LeaOnboarding({
           {state.step === 'describe' && (
             <motion.div key="describe" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <p className="mb-3 text-sm text-slate-600">
-                {t(
-                  'subtitle',
-                  'En quelques phrases : votre metier, votre taille, ce qui compte le plus.',
-                )}
+                {t('subtitle')}
               </p>
               <label htmlFor="lea-description" className="sr-only">
-                {t('title', 'Decrivez votre activite')}
+                {t('title')}
               </label>
               <textarea
                 id="lea-description"
@@ -339,14 +336,11 @@ export function LeaOnboarding({
                 }
                 rows={5}
                 maxLength={MAX_DESCRIPTION}
-                placeholder={t(
-                  'placeholder',
-                  "Ex. : agence de voyages avec 2 bureaux, 12 personnes, je veux suivre les dossiers clients.",
-                )}
+                placeholder={t('placeholder')}
                 className="w-full resize-none rounded-xl border border-slate-300 p-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
               <div className="mt-1 flex items-center justify-between text-xs text-slate-400">
-                <span>{t('hint.min', 'Au moins 12 caracteres')}</span>
+                <span>{t('hint.min')}</span>
                 <span>
                   {state.description.length}/{MAX_DESCRIPTION}
                 </span>
@@ -437,15 +431,12 @@ export function LeaOnboarding({
           {state.step === 'review' && (
             <motion.div key="review" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <p className="mb-3 text-sm text-slate-600">
-                {t('review.title', "Voici ce que j'ai compris. Corrigez si besoin, puis confirmez.")}
+                {t('review.title')}
               </p>
 
               {summaryRows.length === 0 ? (
                 <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-800">
-                  {t(
-                    'review.empty',
-                    "Je n'ai identifie aucune solution a activer. Utilisez le formulaire pour preciser votre activite.",
-                  )}
+                  {t('review.empty')}
                 </p>
               ) : (
                 <ul className="space-y-2">
@@ -471,10 +462,7 @@ export function LeaOnboarding({
 
               {editing ? (
                 <p className="mt-3 text-xs text-slate-500">
-                  {t(
-                    'review.editHint',
-                    "Modifiez votre description puis reanalysez : le resume se reconstruit a partir de vos reponses.",
-                  )}
+                  {t('review.editHint')}
                 </p>
               ) : null}
 
