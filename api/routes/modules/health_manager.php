@@ -19,6 +19,7 @@ declare(strict_types=1);
  * de la réception (Policies HealthManager + HealthAccess).
  */
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthAdmissionController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthAppointmentController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthBedController;
@@ -34,7 +35,6 @@ use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthRoomController
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthSpecialtyController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthStaffRoleController;
 use Illuminate\Support\Facades\Route;
-use App\Support\Routing\ModuleRoutes;
 
 ModuleRoutes::tenantModule('health-manager', function (): void {
         // ── Tableau de bord (HC-008 #7792) ─────────────────────────────

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\Absence\Interfaces\Api\V1\Controllers\AbsenceController;
 use Illuminate\Support\Facades\Route;
-use App\Support\Routing\ModuleRoutes;
 
 /*
 |--------------------------------------------------------------------------

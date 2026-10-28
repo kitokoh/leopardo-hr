@@ -4,12 +4,12 @@
  * Routes Integrations: push notifications, calendar sync, ZKTeco and kiosks.
  */
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\CalendarSyncController;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\KioskController;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\ZktecoController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\DeviceTokenController;
 use Illuminate\Support\Facades\Route;
-use App\Support\Routing\ModuleRoutes;
 
 ModuleRoutes::tenantModule('', function (): void {
     Route::post('/device-tokens', [DeviceTokenController::class, 'register']);

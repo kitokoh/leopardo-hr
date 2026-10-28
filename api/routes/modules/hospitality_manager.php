@@ -22,6 +22,7 @@ declare(strict_types=1);
  * docs/specifications/SOLUTION_HOSPITALITY.md.
  */
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityAvailabilityController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityDashboardController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityLeaseController;
@@ -34,7 +35,6 @@ use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityRese
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityRoomTypeController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityUnitController;
 use Illuminate\Support\Facades\Route;
-use App\Support\Routing\ModuleRoutes;
 
 ModuleRoutes::tenantModule('hospitality', function (): void {
         // État/santé du module pour le tenant courant (sonde d'activation).

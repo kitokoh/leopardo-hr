@@ -7,11 +7,11 @@
  * d'un placard personnel pour stocker, organiser et partager leurs documents.
  */
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\Cabinet\Interfaces\Api\V1\Controllers\CabinetDocumentController;
 use App\Modules\Cabinet\Interfaces\Api\V1\Controllers\CabinetFolderController;
 use App\Modules\Cabinet\Interfaces\Api\V1\Controllers\CabinetShareController;
 use Illuminate\Support\Facades\Route;
-use App\Support\Routing\ModuleRoutes;
 
 // Public: access shared resources via token (no auth required)
 Route::get('/cabinet/shared/{token}', [CabinetShareController::class, 'accessByToken'])

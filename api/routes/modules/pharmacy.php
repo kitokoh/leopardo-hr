@@ -12,6 +12,7 @@
  * PII santé (patients/ordonnances) jamais exposées hors tenant.
  */
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyAlertController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyControlledRegisterController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyDashboardController;
@@ -23,7 +24,6 @@ use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacySaleController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyStockController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacySupplierController;
 use Illuminate\Support\Facades\Route;
-use App\Support\Routing\ModuleRoutes;
 
 ModuleRoutes::tenantModule('pharmacy', function (): void {
 

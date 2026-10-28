@@ -10,6 +10,7 @@
  *   - Feature flags write: principal only
  */
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\AiCreditController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\BillingCollectionController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\BillingController;
@@ -20,7 +21,6 @@ use App\Modules\Billing\Interfaces\Api\V1\Controllers\TenantPaymentProfileContro
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingStateController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingStepController;
 use Illuminate\Support\Facades\Route;
-use App\Support\Routing\ModuleRoutes;
 
 // ── Authenticated routes ──────────────────────────────────────────────────────
 ModuleRoutes::tenantModule('', function (): void {

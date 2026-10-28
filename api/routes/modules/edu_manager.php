@@ -15,6 +15,7 @@ declare(strict_types=1);
  * lambda = 403. PII scolaires jamais exposées hors tenant.
  */
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAcademicYearController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAccountingEntryController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAdmissionCampaignController;
@@ -43,7 +44,6 @@ use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduSubjectController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduTeacherInterfaceController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduTeacherWorkspaceController;
 use Illuminate\Support\Facades\Route;
-use App\Support\Routing\ModuleRoutes;
 
 /*
 |--------------------------------------------------------------------------

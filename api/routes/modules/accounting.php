@@ -13,6 +13,7 @@ declare(strict_types=1);
  * BelongsToCompany (scope global fail-closed #3727).
  */
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingActivationController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingAuditController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingChartController;
@@ -147,7 +148,6 @@ ModuleRoutes::tenantModule('accounting', function (): void {
 
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingPaymentController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\BankStatementController;
-use App\Support\Routing\ModuleRoutes;
 
 Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable,module:accounting'])->group(function (): void {
     Route::get('accounting/payments', [AccountingPaymentController::class, 'index']);

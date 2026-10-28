@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\Expense\Interfaces\Api\V1\Controllers\ExpenseClaimController;
 use App\Modules\Expense\Interfaces\Api\V1\Controllers\ExpenseAccountingController;
 use Illuminate\Support\Facades\Route;
-use App\Support\Routing\ModuleRoutes;
 
 ModuleRoutes::tenantModule('', function (): void {
     Route::get('/expense-claims', [ExpenseClaimController::class, 'index']);

@@ -7,13 +7,13 @@
  * Notifications are available to all authenticated employees.
  */
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\AttendanceExportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DashboardController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\ExportController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\RoleAssignmentController;
 use Illuminate\Support\Facades\Route;
-use App\Support\Routing\ModuleRoutes;
 
 ModuleRoutes::tenantModule('', function (): void {
 
