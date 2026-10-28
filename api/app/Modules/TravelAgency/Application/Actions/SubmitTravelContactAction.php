@@ -32,6 +32,8 @@ class SubmitTravelContactAction
     public function execute(string $companyId, array $data): void
     {
         $email = strtolower(trim((string) ($data['email'] ?? '')));
+        $phone = trim((string) ($data['phone'] ?? ''));
+        $phone = $phone === '' ? null : $phone;
         $message = trim((string) ($data['message'] ?? ''));
 
         /** @var Company|null $company */
@@ -49,16 +51,24 @@ class SubmitTravelContactAction
             abort(404, 'Company introuvable.');
         }
 
-        app(TenantManager::class)->withinTenant($company, function () use ($company, $data, $email): void {
-            DB::transaction(function () use ($company, $data, $email): void {
+        // #8396 — l'upsert ne cherchait que par `email`. Une soumission
+        // téléphone-seule (email absent) partait donc sur `where('email', '')`,
+        // créait une ligne à email vide une fois sur deux et cassait l'unicité
+        // (company_id, phone). La clé de rapprochement est désormais la seule
+        // identité réellement disponible : email si présent, sinon téléphone.
+        app(TenantManager::class)->withinTenant($company, function () use ($company, $data, $email, $phone): void {
+            DB::transaction(function () use ($company, $data, $email, $phone): void {
                 /** @var TravelCustomerContact|null $contact */
-                $contact = TravelCustomerContact::query()->where('email', $email)->first();
+                $contact = $email !== ''
+                    ? TravelCustomerContact::query()->where('email', $email)->first()
+                    : ($phone !== null ? TravelCustomerContact::query()->where('phone', $phone)->first() : null);
 
                 if ($contact instanceof TravelCustomerContact) {
                     $contact->forceFill([
                         'first_name' => $data['first_name'] ?? $contact->first_name,
                         'last_name' => $data['last_name'] ?? $contact->last_name,
-                        'phone' => $data['phone'] ?? $contact->phone,
+                        'email' => $email !== '' ? $email : $contact->email,
+                        'phone' => $phone ?? $contact->phone,
                         'email_consent_given' => true,
                         'email_consent_at' => $contact->email_consent_at ?? now(),
                     ])->save();
@@ -70,8 +80,8 @@ class SubmitTravelContactAction
                     'company_id' => $company->id,
                     'first_name' => $data['first_name'] ?? null,
                     'last_name' => $data['last_name'] ?? null,
-                    'email' => $email,
-                    'phone' => $data['phone'] ?? null,
+                    'email' => $email !== '' ? $email : null,
+                    'phone' => $phone,
                     'email_consent_given' => true,
                     'email_consent_at' => now(),
                     'metadata_json' => null,
@@ -79,14 +89,24 @@ class SubmitTravelContactAction
             });
         });
 
-        $this->outbox->publish($companyId, 'travel.contact.submitted.v1', [
-            'email' => $email,
-            'first_name' => $data['first_name'] ?? null,
-            'last_name' => $data['last_name'] ?? null,
-            'phone' => $data['phone'] ?? null,
-            'message' => $message,
-            'submitted_at' => now()->toIso8601String(),
-            'consent_email' => true,
-        ]);
+        // #8396 — `idempotency_key` est validé par la requête mais n'était
+        // jamais transmis à l'outbox : un rejeu réseau (double clic, retry
+        // mobile) produisait deux leads CRM pour une seule intention. La clé
+        // client est propagée telle quelle, la contrainte unique
+        // (company_id, idempotency_key) de l'outbox déduplique.
+        $this->outbox->publish(
+            $companyId,
+            'travel.contact.submitted.v1',
+            [
+                'email' => $email !== '' ? $email : null,
+                'first_name' => $data['first_name'] ?? null,
+                'last_name' => $data['last_name'] ?? null,
+                'phone' => $phone,
+                'message' => $message,
+                'submitted_at' => now()->toIso8601String(),
+                'consent_email' => true,
+            ],
+            $data['idempotency_key'] ?? null,
+        );
     }
 }
