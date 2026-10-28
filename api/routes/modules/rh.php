@@ -10,7 +10,6 @@ declare(strict_types=1);
  */
 
 // ── Modules migrés ─────────────────────────────────────────────────────────────
-use App\Support\Routing\ModuleRoutes;
 use App\Core\Tenant\Interfaces\Api\V1\Controllers\ResourceCatalogController;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\AttendanceController;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\BiometricEnrollmentController;
@@ -44,6 +43,7 @@ use App\Modules\Payroll\Interfaces\Api\V1\Controllers\SalaryAdvanceController;
 use App\Modules\Planning\Interfaces\Api\V1\Controllers\ProjectController;
 use App\Modules\Planning\Interfaces\Api\V1\Controllers\ScheduleController;
 use App\Modules\Planning\Interfaces\Api\V1\Controllers\TaskController;
+use App\Support\Routing\ModuleRoutes;
 use Illuminate\Support\Facades\Route;
 
 ModuleRoutes::tenantModule('', function (): void {

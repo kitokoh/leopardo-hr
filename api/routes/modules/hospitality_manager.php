@@ -22,7 +22,6 @@ declare(strict_types=1);
  * docs/specifications/SOLUTION_HOSPITALITY.md.
  */
 
-use App\Support\Routing\ModuleRoutes;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityAvailabilityController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityDashboardController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityLeaseController;
@@ -34,70 +33,71 @@ use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityRent
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityReservationController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityRoomTypeController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityUnitController;
+use App\Support\Routing\ModuleRoutes;
 use Illuminate\Support\Facades\Route;
 
 ModuleRoutes::tenantModule('hospitality', function (): void {
-        // État/santé du module pour le tenant courant (sonde d'activation).
-        Route::get('/status', [HospitalityModuleStatusController::class, 'show']);
+    // État/santé du module pour le tenant courant (sonde d'activation).
+    Route::get('/status', [HospitalityModuleStatusController::class, 'show']);
 
-        // ── Référentiel établissements (HOSP-002 #7944) ───────────────
-        Route::get('/properties', [HospitalityPropertyController::class, 'index']);
-        Route::post('/properties', [HospitalityPropertyController::class, 'store']);
-        Route::get('/properties/{property}', [HospitalityPropertyController::class, 'show'])->whereNumber('property');
-        Route::patch('/properties/{property}', [HospitalityPropertyController::class, 'update'])->whereNumber('property');
-        Route::delete('/properties/{property}', [HospitalityPropertyController::class, 'destroy'])->whereNumber('property');
-        Route::post('/properties/{property}/publish', [HospitalityPropertyController::class, 'publish'])->whereNumber('property');
-        Route::post('/properties/{property}/unpublish', [HospitalityPropertyController::class, 'unpublish'])->whereNumber('property');
+    // ── Référentiel établissements (HOSP-002 #7944) ───────────────
+    Route::get('/properties', [HospitalityPropertyController::class, 'index']);
+    Route::post('/properties', [HospitalityPropertyController::class, 'store']);
+    Route::get('/properties/{property}', [HospitalityPropertyController::class, 'show'])->whereNumber('property');
+    Route::patch('/properties/{property}', [HospitalityPropertyController::class, 'update'])->whereNumber('property');
+    Route::delete('/properties/{property}', [HospitalityPropertyController::class, 'destroy'])->whereNumber('property');
+    Route::post('/properties/{property}/publish', [HospitalityPropertyController::class, 'publish'])->whereNumber('property');
+    Route::post('/properties/{property}/unpublish', [HospitalityPropertyController::class, 'unpublish'])->whereNumber('property');
 
-        // ── Inventaire : types de chambres (HOSP-002 #7944) ───────────
-        Route::get('/properties/{property}/room-types', [HospitalityRoomTypeController::class, 'index'])->whereNumber('property');
-        Route::post('/properties/{property}/room-types', [HospitalityRoomTypeController::class, 'store'])->whereNumber('property');
-        Route::patch('/room-types/{roomType}', [HospitalityRoomTypeController::class, 'update'])->whereNumber('roomType');
-        Route::delete('/room-types/{roomType}', [HospitalityRoomTypeController::class, 'destroy'])->whereNumber('roomType');
+    // ── Inventaire : types de chambres (HOSP-002 #7944) ───────────
+    Route::get('/properties/{property}/room-types', [HospitalityRoomTypeController::class, 'index'])->whereNumber('property');
+    Route::post('/properties/{property}/room-types', [HospitalityRoomTypeController::class, 'store'])->whereNumber('property');
+    Route::patch('/room-types/{roomType}', [HospitalityRoomTypeController::class, 'update'])->whereNumber('roomType');
+    Route::delete('/room-types/{roomType}', [HospitalityRoomTypeController::class, 'destroy'])->whereNumber('roomType');
 
-        // ── Inventaire : unités physiques (HOSP-002 #7944) ────────────
-        Route::get('/properties/{property}/units', [HospitalityUnitController::class, 'index'])->whereNumber('property');
-        Route::post('/properties/{property}/units', [HospitalityUnitController::class, 'store'])->whereNumber('property');
-        Route::patch('/units/{unit}', [HospitalityUnitController::class, 'update'])->whereNumber('unit');
-        Route::delete('/units/{unit}', [HospitalityUnitController::class, 'destroy'])->whereNumber('unit');
+    // ── Inventaire : unités physiques (HOSP-002 #7944) ────────────
+    Route::get('/properties/{property}/units', [HospitalityUnitController::class, 'index'])->whereNumber('property');
+    Route::post('/properties/{property}/units', [HospitalityUnitController::class, 'store'])->whereNumber('property');
+    Route::patch('/units/{unit}', [HospitalityUnitController::class, 'update'])->whereNumber('unit');
+    Route::delete('/units/{unit}', [HospitalityUnitController::class, 'destroy'])->whereNumber('unit');
 
-        // ── Équipe par établissement (HOSP-003 #7945) ─────────────────
-        Route::get('/properties/{property}/staff', [HospitalityPropertyStaffController::class, 'index'])->whereNumber('property');
-        Route::post('/properties/{property}/staff', [HospitalityPropertyStaffController::class, 'store'])->whereNumber('property');
-        Route::patch('/properties/{property}/staff/{assignment}', [HospitalityPropertyStaffController::class, 'update'])->whereNumber('property')->whereNumber('assignment');
-        Route::delete('/properties/{property}/staff/{assignment}', [HospitalityPropertyStaffController::class, 'destroy'])->whereNumber('property')->whereNumber('assignment');
+    // ── Équipe par établissement (HOSP-003 #7945) ─────────────────
+    Route::get('/properties/{property}/staff', [HospitalityPropertyStaffController::class, 'index'])->whereNumber('property');
+    Route::post('/properties/{property}/staff', [HospitalityPropertyStaffController::class, 'store'])->whereNumber('property');
+    Route::patch('/properties/{property}/staff/{assignment}', [HospitalityPropertyStaffController::class, 'update'])->whereNumber('property')->whereNumber('assignment');
+    Route::delete('/properties/{property}/staff/{assignment}', [HospitalityPropertyStaffController::class, 'destroy'])->whereNumber('property')->whereNumber('assignment');
 
-        // ── Disponibilités (HOSP-004 #7946) ───────────────────────────
-        Route::get('/properties/{property}/availability', [HospitalityAvailabilityController::class, 'show'])->whereNumber('property');
+    // ── Disponibilités (HOSP-004 #7946) ───────────────────────────
+    Route::get('/properties/{property}/availability', [HospitalityAvailabilityController::class, 'show'])->whereNumber('property');
 
-        // ── Réservations au guichet (HOSP-004 #7946) ──────────────────
-        Route::get('/reservations', [HospitalityReservationController::class, 'index']);
-        Route::post('/reservations', [HospitalityReservationController::class, 'store']);
-        Route::get('/reservations/{reservation}', [HospitalityReservationController::class, 'show'])->whereNumber('reservation');
-        Route::patch('/reservations/{reservation}', [HospitalityReservationController::class, 'update'])->whereNumber('reservation');
-        Route::post('/reservations/{reservation}/confirm', [HospitalityReservationController::class, 'confirm'])->whereNumber('reservation');
-        Route::post('/reservations/{reservation}/check-in', [HospitalityReservationController::class, 'checkIn'])->whereNumber('reservation');
-        Route::post('/reservations/{reservation}/check-out', [HospitalityReservationController::class, 'checkOut'])->whereNumber('reservation');
-        Route::post('/reservations/{reservation}/cancel', [HospitalityReservationController::class, 'cancel'])->whereNumber('reservation');
-        Route::post('/reservations/{reservation}/no-show', [HospitalityReservationController::class, 'noShow'])->whereNumber('reservation');
+    // ── Réservations au guichet (HOSP-004 #7946) ──────────────────
+    Route::get('/reservations', [HospitalityReservationController::class, 'index']);
+    Route::post('/reservations', [HospitalityReservationController::class, 'store']);
+    Route::get('/reservations/{reservation}', [HospitalityReservationController::class, 'show'])->whereNumber('reservation');
+    Route::patch('/reservations/{reservation}', [HospitalityReservationController::class, 'update'])->whereNumber('reservation');
+    Route::post('/reservations/{reservation}/confirm', [HospitalityReservationController::class, 'confirm'])->whereNumber('reservation');
+    Route::post('/reservations/{reservation}/check-in', [HospitalityReservationController::class, 'checkIn'])->whereNumber('reservation');
+    Route::post('/reservations/{reservation}/check-out', [HospitalityReservationController::class, 'checkOut'])->whereNumber('reservation');
+    Route::post('/reservations/{reservation}/cancel', [HospitalityReservationController::class, 'cancel'])->whereNumber('reservation');
+    Route::post('/reservations/{reservation}/no-show', [HospitalityReservationController::class, 'noShow'])->whereNumber('reservation');
 
-        // ── Tableau de bord (HOSP-004 #7946) ──────────────────────────
-        Route::get('/dashboard/kpis', [HospitalityDashboardController::class, 'kpis']);
+    // ── Tableau de bord (HOSP-004 #7946) ──────────────────────────
+    Route::get('/dashboard/kpis', [HospitalityDashboardController::class, 'kpis']);
 
-        // ── Locatif : baux (HOSP-005 #7947) ────────────────────────────
-        // Aucune route DELETE : un bail se RÉSILIE (`terminate`), l'historique
-        // locatif et les échéances déjà émises doivent rester lisibles.
-        Route::get('/properties/{property}/leases', [HospitalityLeaseController::class, 'index'])->whereNumber('property');
-        Route::post('/properties/{property}/leases', [HospitalityLeaseController::class, 'store'])->whereNumber('property');
-        Route::get('/leases/{lease}', [HospitalityLeaseController::class, 'show'])->whereNumber('lease');
-        Route::patch('/leases/{lease}', [HospitalityLeaseController::class, 'update'])->whereNumber('lease');
-        Route::post('/leases/{lease}/terminate', [HospitalityLeaseController::class, 'terminate'])->whereNumber('lease');
-        Route::post('/leases/{lease}/generate-periods', [HospitalityLeaseController::class, 'generatePeriods'])->whereNumber('lease');
+    // ── Locatif : baux (HOSP-005 #7947) ────────────────────────────
+    // Aucune route DELETE : un bail se RÉSILIE (`terminate`), l'historique
+    // locatif et les échéances déjà émises doivent rester lisibles.
+    Route::get('/properties/{property}/leases', [HospitalityLeaseController::class, 'index'])->whereNumber('property');
+    Route::post('/properties/{property}/leases', [HospitalityLeaseController::class, 'store'])->whereNumber('property');
+    Route::get('/leases/{lease}', [HospitalityLeaseController::class, 'show'])->whereNumber('lease');
+    Route::patch('/leases/{lease}', [HospitalityLeaseController::class, 'update'])->whereNumber('lease');
+    Route::post('/leases/{lease}/terminate', [HospitalityLeaseController::class, 'terminate'])->whereNumber('lease');
+    Route::post('/leases/{lease}/generate-periods', [HospitalityLeaseController::class, 'generatePeriods'])->whereNumber('lease');
 
-        // ── Locatif : échéances & encaissements (HOSP-005 #7947) ───────
-        Route::get('/rent-payments', [HospitalityRentPaymentController::class, 'index']);
-        Route::post('/rent-payments/{payment}/record', [HospitalityRentPaymentController::class, 'record'])->whereNumber('payment');
-    });
+    // ── Locatif : échéances & encaissements (HOSP-005 #7947) ───────
+    Route::get('/rent-payments', [HospitalityRentPaymentController::class, 'index']);
+    Route::post('/rent-payments/{payment}/record', [HospitalityRentPaymentController::class, 'record'])->whereNumber('payment');
+});
 
 // ── HOSP-006 (#7948, spec §6) — vitrine publique /stay ─────────────────
 // Routes isolées SANS auth ni middleware tenant (pattern RESTO-901/902) :

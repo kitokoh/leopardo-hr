@@ -1472,6 +1472,31 @@ trait CreatesMvpSchema
 
     private function createPostSprintModuleTables(): void
     {
+        // #8728 (BC PAGES) — blocs de contenu d'une Page.
+        // La garde #5443 (check-mvp-schema-parity.sh) exige que toute migration
+        // tenant récente soit reflétée ici : sans cette table, tout test qui
+        // touche un bloc échoue en `relation "page_blocks" does not exist`
+        // (régression #5418). Schéma identique à la migration
+        // 2026_10_28_000100_8728_create_page_blocks_table.
+        if (! Schema::hasTable($this->moduleTable('page_blocks'))) {
+            Schema::create($this->moduleTable('page_blocks'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedBigInteger('page_id');
+                $table->string('block_uid', 64);
+                $table->string('type', 80);
+                $table->unsignedSmallInteger('schema_version')->default(1);
+                $table->unsignedInteger('position')->default(0);
+                $table->jsonb('content');
+                $table->jsonb('locales')->nullable();
+                $table->timestamps();
+
+                $table->unique(['page_id', 'block_uid'], 'page_blocks_page_uid_unique');
+                $table->unique(['page_id', 'position'], 'page_blocks_page_position_unique');
+                $table->index('company_id', 'page_blocks_company_index');
+            });
+        }
+
         // #8609 [REST-OS-7] — mode hors ligne : la table des CONFLITS.
         // `restaurant_sync_operations` est creee dans la fixture statique, mais
         // `restaurant_sync_conflicts` avait ete oubliee lors du merge de #8609 :

@@ -36,6 +36,23 @@ class RestaurantTable extends Model
         'status',
     ];
 
+    /**
+     * Valeurs par defaut alignees sur le schema SQL.
+     *
+     * Eloquent ne lit JAMAIS les `default()` SQL : juste apres `save()`,
+     * l'attribut vaut `null` en memoire tant que la ligne n'a pas ete
+     * relue. Les Resources faisaient `$this->status->value` sur ce `null`
+     * et repondaient 500 sur toute creation (cf. #8396, meme classe de
+     * bug que MarketingAsset).
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'capacity' => 2,
+        'is_mergeable' => false,
+        'status' => 'active',
+    ];
+
     protected $casts = [
         'capacity' => 'integer',
         'min_covers' => 'integer',

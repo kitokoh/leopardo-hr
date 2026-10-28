@@ -45,4 +45,15 @@ return [
     'slug_unusable' => 'The name provided cannot produce a public address. Use letters and digits.',
     'slug_reserved' => 'The address ":slug" is reserved by the platform. Choose another one.',
     'slug_taken' => 'The address ":slug" is already in use.',
+
+    // #8730 — public SSR rendering
+    'public' => [
+        'verified' => 'Verified establishment',
+        'contact' => 'Contact',
+        'map' => 'View on map',
+        'actions' => [
+            'directions' => 'Get directions',
+            'contact' => 'Write',
+        ],
+    ],
 ];
