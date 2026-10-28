@@ -170,16 +170,30 @@ class TravelQuizController extends Controller
             abort(403);
         }
 
-        $travelQuiz->forceFill([
-            'title' => trim((string) $request->validated('title')),
+        $status = $request->validated('status') ?? $travelQuiz->status->value;
+
+        $attributes = [
             'description_redacted' => $request->validated('description'),
             'starts_at' => $request->validated('starts_at'),
             'ends_at' => $request->validated('ends_at'),
             'max_participations_per_contact' => (int) ($request->validated('max_participations_per_contact') ?? $travelQuiz->max_participations_per_contact),
-            'status' => $request->validated('status') ?? $travelQuiz->status->value,
-        ])->save();
+            'status' => $status,
+        ];
 
-        return response()->json(['data' => ['id' => $travelQuiz->id, 'status' => $travelQuiz->status->value]]);
+        // Mise a jour partielle : un PUT ne portant que `status` ne doit pas
+        // effacer le titre existant (le formulaire de publication ne le renvoie pas).
+        if ($request->has('title')) {
+            $attributes['title'] = trim((string) $request->validated('title'));
+        }
+
+        // Transition vers `published` : horodatage unique, jamais ecrase si deja pose.
+        if ($status === QuizStatus::PUBLISHED->value && $travelQuiz->published_at === null) {
+            $attributes['published_at'] = now();
+        }
+
+        $travelQuiz->forceFill($attributes)->save();
+
+        return response()->json(['data' => $this->quizPayload($travelQuiz->refresh())]);
     }
 
     /**
@@ -348,6 +362,7 @@ class TravelQuizController extends Controller
             'status' => $quiz->status,
             'max_participations_per_contact' => $quiz->max_participations_per_contact,
             'bonus_points' => $quiz->bonus_points,
+            'published_at' => $quiz->published_at?->toIso8601String(),
             'questions_count' => $quiz->questions_count ?? $quiz->questions()->count(),
             'questions' => $withQuestions
                 ? $quiz->questions->map(fn (TravelQuizQuestion $q): array => $this->questionPayload($q))

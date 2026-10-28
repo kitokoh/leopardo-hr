@@ -15,6 +15,7 @@ declare(strict_types=1);
  * #3727).
  */
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmAutomationController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmCampaignController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmChannelController;
@@ -66,7 +67,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/automations/events/{event}', [CrmAutomationController::class, 'dispatch']);
     });
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->prefix('crm')->group(function (): void {
+ModuleRoutes::tenantModule('crm', function (): void {
     // ── Exports asynchrones + read models (#5729) ─────────────────────────────
     Route::get('/exports', [CrmExportController::class, 'index']);
     Route::post('/exports', [CrmExportController::class, 'store']);
