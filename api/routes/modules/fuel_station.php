@@ -28,7 +28,6 @@ declare(strict_types=1);
  *   ventes = policy par propriétaire (opened_by/employee_id).
  */
 
-use App\Support\Routing\ModuleRoutes;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelAlertController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCashSessionController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCrmController;
@@ -52,6 +51,7 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSiteController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStationController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStockController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSyncController;
+use App\Support\Routing\ModuleRoutes;
 use Illuminate\Support\Facades\Route;
 
 ModuleRoutes::tenantModule('', function (): void {

@@ -16,7 +16,6 @@ declare(strict_types=1);
  */
 
 // ── Modules migrés ─────────────────────────────────────────────────────────────
-use App\Support\Routing\ModuleRoutes;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\ApprovalController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\WebhookController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\AdvancedReportController;
@@ -32,6 +31,7 @@ use App\Modules\Payroll\Interfaces\Api\V1\Controllers\EmployeeLoanController;
 use App\Modules\Planning\Interfaces\Api\V1\Controllers\LeavePolicyController;
 use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\JobPostingActionController;
 use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\RecruitmentController;
+use App\Support\Routing\ModuleRoutes;
 use Illuminate\Support\Facades\Route;
 
 ModuleRoutes::tenantModule('', function (): void {
