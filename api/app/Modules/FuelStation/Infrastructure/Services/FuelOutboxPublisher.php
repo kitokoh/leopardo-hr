@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\FuelStation\Infrastructure\Services;
 
-use App\Core\Outbox\Infrastructure\DatabaseOutboxPublisher;
+use App\Core\Outbox\Contracts\OutboxPublisher;
 use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
 use Illuminate\Support\Str;
 
@@ -31,7 +31,7 @@ use Illuminate\Support\Str;
 final class FuelOutboxPublisher
 {
     public function __construct(
-        private readonly DatabaseOutboxPublisher $outbox = new DatabaseOutboxPublisher,
+        private readonly OutboxPublisher $outbox,
     ) {}
 
     /**
