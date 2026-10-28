@@ -227,7 +227,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     },
     problem: {
       badge: 'Le constat',
-      title: 'La gestion RH traditionnelle vous freine ?',
+      title: "Le morcellement de vos outils vous freine ?",
       subtitle: 'Les feuilles de présence papier, les erreurs de paie et le manque de visibilité sur le terrain ralentissent votre croissance.',
       items: [
         { title: 'Pointage manuel et erreurs', description: 'Les oublis et les saisies manuelles coûtent des heures précieuses chaque semaine.' },
@@ -252,7 +252,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       badge: 'Fonctionnalités',
       title: 'Tout ce dont vous avez',
       titleHighlight: 'besoin',
-      subtitle: "Une suite complète d'outils RH conçue pour simplifier chaque aspect de votre quotidien.",
+      subtitle: "Une suite complète d'outils de gestion conçue pour simplifier chaque aspect de votre quotidien.",
     },
     pricing: {
       badge: 'Tarifs',
@@ -278,7 +278,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     cta: {
       badge: 'Prêt pour les pilotes terrain',
       title: 'Prêt à transformer',
-      titleHighlight: 'votre gestion RH ?',
+      titleHighlight: 'votre entreprise ?',
       subtitle: 'Commencez votre essai gratuit de 14 jours. Aucune carte de crédit requise. Configuration en moins de 5 minutes.',
       primary: 'Essayer gratuitement',
       secondary: 'Découvrir les packs offerts',
@@ -301,7 +301,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       rights: 'Tous droits réservés.',
       newsletter: {
         title: 'Newsletter',
-        description: 'Recevez nos conseils RH et mises à jour produit.',
+        description: 'Recevez nos conseils de gestion et mises à jour produit.',
         placeholder: 'votre@email.com',
         button: 'S\'abonner',
         success: 'Inscription réussie !',
@@ -313,7 +313,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       catalogTitle: 'Études de cas par métier',
       catalogSubtitle: "Douze cas d'usage détaillés : pointage, paie, documents et marketing, secteur par secteur.",
       heroTitle: 'Études de cas clients',
-      heroSubtitle: 'Comment nos clients ont transformé leur gestion RH avec Leopardo',
+      heroSubtitle: 'Comment nos clients ont transformé leur entreprise avec Leopardo',
       heroPrimary: 'Démarrer gratuitement',
       heroSecondary: 'Voir les témoignages',
       demoBadge: 'Étude illustrative',
@@ -450,8 +450,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       sections: [
         { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows', 'About', 'Videos', 'Employees', 'Accounting', 'Marketing', 'Find a pro'] },
         { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Community', 'Case studies', 'Testimonials', 'Compare', 'Packs', 'Careers', 'Brand assets'] },
-        { title: 'Mobile Apps', links: ['Employé (Android)', 'Employé (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Admin plateforme (Android)'] },
-        { title: 'Légal', links: ['Privacy (GDPR)', 'Terms', 'Legal notice', 'Become a shareholder'] },
+        { title: 'Mobile Apps', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
+        { title: 'Legal', links: ['Privacy (GDPR)', 'Terms', 'Legal notice', 'Become a shareholder'] },
       ],
       rights: 'All rights reserved.',
       newsletter: {
@@ -603,10 +603,10 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Saha, ofis ve uzaktan calisanlarinizi yonetmek icin Mobile-First Company OS. Employee, Manager ve Platform Admin mobilde kullanilabilir.',
       sections: [
-        { title: 'Urun', links: ['Ozellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Degisiklikler', 'Windows icin Leopardo', 'Hakkında', 'Videolar', 'Calisanlar', 'Muhasebe', 'Pazarlama', 'Profesyonel bul'] },
-        { title: 'Kaynaklar', links: ['Dokumantasyon', 'Rehberler', 'Blog', 'Iletisim', 'Topluluk', 'Vaka calismalari', 'Referanslar', 'Karsilastir', 'Ucretsiz paketler', 'Kariyer', 'Marka'] },
-        { title: 'Mobil Uygulamalar', links: ['Employé (Android)', 'Employé (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Admin plateforme (Android)'] },
-        { title: 'Yasal', links: ['Gizlilik (KVKK/GDPR)', 'Kullanim Kosullari', 'Yasal bildirim', 'Ortak olun'] },
+        { title: 'Ürün', links: ['Özellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Değişiklikler', 'Windows için Leopardo', 'Hakkımızda', 'Videolar', 'Çalışanlar', 'Muhasebe', 'Pazarlama', 'Profesyonel bul'] },
+        { title: 'Kaynaklar', links: ['Dokümantasyon', 'Rehberler', 'Blog', 'İletişim', 'Topluluk', 'Vaka çalışmaları', 'Referanslar', 'Karşılaştır', 'Ücretsiz paketler', 'Kariyer', 'Marka'] },
+        { title: 'Mobil Uygulamalar', links: ['Çalışan (Android)', 'Çalışan (iOS)', 'Yönetici (Android)', 'Yönetici (iOS)', 'Platform Yöneticisi (Android)'] },
+        { title: 'Yasal', links: ['Gizlilik (KVKK/GDPR)', 'Kullanım Koşulları', 'Yasal bildirim', 'Ortak olun'] },
       ],
       rights: 'Tum haklari saklidir.',
       newsletter: {
@@ -760,7 +760,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       sections: [
         { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'ليوباردو لويندوز', 'من نحن', 'فيديوهات', 'الموظفون', 'المحاسبة', 'التسويق', 'ابحث عن مهني'] },
         { title: 'الموارد', links: ['التوثيق', 'أدلة', 'المدونة', 'اتصل بنا', 'المجتمع', 'دراسات الحالة', 'الشهادات', 'قارن', 'حزم مجانية', 'الوظائف', 'الهوية'] },
-        { title: 'تطبيقات الجوال', links: ['Employé (Android)', 'Employé (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Admin plateforme (Android)'] },
+        { title: 'تطبيقات الجوال', links: ['الموظف (Android)', 'الموظف (iOS)', 'المدير (Android)', 'المدير (iOS)', 'مشرف المنصة (Android)'] },
         { title: 'قانوني', links: ['الخصوصية (GDPR)', 'الشروط', 'الإشعارات القانونية', 'كن مساهماً'] },
       ],
       rights: 'جميع الحقوق محفوظة.',

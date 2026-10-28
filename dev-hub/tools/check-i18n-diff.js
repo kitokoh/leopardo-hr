@@ -92,6 +92,11 @@ const ignorePathFragments = [
   // fichier EST le catalogue, pas des chaînes hardcodées hors i18n. La
   // complétude des 4 langues reste couverte par validate-and-sync.
   '/vitrine/components/sections/VerticalsSection.tsx',
+  // Sections vitrine avec catalogues inline x4 (issues #8392, #8070) :
+  // TrustedBrands.tsx et SocialProofMetrics.tsx portent leur catalogue localise x4
+  // en inline (copyByLocale, metricsByLocale) — meme mecanique que VerticalsSection.tsx.
+  '/vitrine/components/sections/TrustedBrands.tsx',
+  '/vitrine/components/sections/SocialProofMetrics.tsx',
   // Chargement des traceurs (consentement, #7593) : ce fichier ne rend AUCUN
   // texte — il injecte les scripts de mesure, dont le bootstrap tiers de
   // Mixpanel (« (stub) », liste des méthodes de l'API, URL du CDN) et celui de
