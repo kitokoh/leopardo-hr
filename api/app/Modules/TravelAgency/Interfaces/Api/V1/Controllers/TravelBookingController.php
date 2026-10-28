@@ -141,7 +141,7 @@ class TravelBookingController extends Controller
      * seconde puisse porter le lien, et la réponse expose la jambe ALLER (celle
      * que le client vient de saisir) enrichie de `return_booking_id`.
      */
-    private function respondWithRoundTrip(Employee $actor, Request $request, TravelBooking $outbound): JsonResponse
+    private function respondWithRoundTrip(Employee $actor, StoreTravelBookingRequest $request, TravelBooking $outbound): JsonResponse
     {
         $returnTripId = $request->validated('return_trip_id');
         $returnPassengers = $request->validated('return_passengers');
@@ -155,6 +155,11 @@ class TravelBookingController extends Controller
         if ($returnTrip->company_id !== $actor->company_id) {
             abort(404);
         }
+
+        // `validated()` renvoie une forme large ; l'action attend la forme
+        // exacte de `PassengerInput` (déjà garantie par la validation).
+        /** @var list<array{full_name: string, birth_date?: string|null, document_type?: string|null, document_number?: string|null, age_category: string, class_id: int, seat_number?: int|null}> $returnPassengers */
+        $returnPassengers = array_values($returnPassengers);
 
         $groupId = (string) Str::uuid();
         $discount = (int) config('travel.pricing.round_trip_discount_percent', 0);
