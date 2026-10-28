@@ -13,6 +13,12 @@ use Illuminate\Validation\Rule;
  *
  * Le secret est optionnel : s'il est absent, un secret aléatoire est généré
  * et renvoyé UNE fois à la création (jamais ré-exposé ensuite).
+ *
+ * `name` est optionnel : le contrat documenté et les clients existants
+ * n'envoient que `carrier_id`, `url`, `secret` et `events`. Il est alors
+ * **dérivé côté serveur** depuis l'hôte de l'URL (même principe que le `slug`
+ * dérivé du `title` pour les articles communautaires, #8396) ; un client qui
+ * l'envoie explicitement garde la main.
  */
 class StoreTravelWebhookSubscriptionRequest extends FormRequest
 {
@@ -27,7 +33,7 @@ class StoreTravelWebhookSubscriptionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'min:1', 'max:120'],
+            'name' => ['nullable', 'string', 'min:1', 'max:120'],
             'url' => ['required', 'string', 'url', 'max:500'],
             'carrier_id' => ['nullable', 'integer'],
             'events' => ['required', 'array', 'min:1', 'max:10'],
