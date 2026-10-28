@@ -40,4 +40,15 @@ return [
     'domain_quota_exceeded' => 'يتيح عرضك :limit نطاقًا مخصصًا.',
     'domain_removed' => 'تم حذف هذا النطاق ولم يعد ممكنًا التحقق منه.',
     'domain_plan_expired' => 'انتهى اشتراكك: النطاقات المخصصة معطّلة حتى التجديد.',
+
+    // #8730 — rendu public SSR
+    'public' => [
+        'verified' => 'منشأة موثّقة',
+        'contact' => 'اتصال',
+        'map' => 'عرض على الخريطة',
+        'actions' => [
+            'directions' => 'الذهاب',
+            'contact' => 'مراسلة',
+        ],
+    ],
 ];
