@@ -718,7 +718,7 @@ const copy: Record<AppLocale, CopyTree> = {
       trustPoints: [
         'Session liée à votre tenant',
         'Permissions appliquées par rôle',
-        'Interface prête pour manager, RH et employé',
+        'Interface prête pour direction, managers et équipes',
       ],
       back: 'Retour au site',
       email: 'Adresse email',
@@ -2179,7 +2179,7 @@ const copy: Record<AppLocale, CopyTree> = {
       trustPoints: [
         'Tenant bazli oturum',
         'Rol bazli izinler',
-        'Yonetici, IK ve calisan icin hazir arayuz',
+        'Yönetici, ekip ve çalışanlar için hazır arayüz',
       ],
       back: 'Siteye don',
       email: 'E-posta',
@@ -2906,7 +2906,7 @@ const copy: Record<AppLocale, CopyTree> = {
       trustPoints: [
         'Session bound to your tenant',
         'Permissions applied by role',
-        'Ready for managers, HR and employees',
+        'Ready for leadership, managers and teams',
       ],
       back: 'Back to site',
       email: 'Email address',

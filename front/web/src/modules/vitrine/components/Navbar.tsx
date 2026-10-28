@@ -8,12 +8,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowRight,
   ChevronDown,
-  Download,
   Fuel,
   Gift,
   Globe,
   GraduationCap,
-  Mail,
   Menu,
   Monitor,
   Plane,

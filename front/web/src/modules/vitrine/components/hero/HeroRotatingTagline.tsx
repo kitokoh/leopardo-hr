@@ -60,7 +60,7 @@ export function HeroRotatingTagline({ phrases, intervalMs = 3800 }: HeroRotating
   return (
     <div
       data-testid="hero-rotating-tagline"
-      className="relative mt-5 flex justify-center"
+      className="relative mt-3 sm:mt-4 flex justify-center"
     >
       <div className="relative inline-grid place-items-center rounded-full border border-amber-400/25 bg-slate-900/70 px-5 py-2 text-center shadow-lg shadow-amber-950/30 backdrop-blur-xl ring-1 ring-white/10">
         {/* Version lecteur d'écran : la première phrase, une fois. La rotation
