@@ -2488,3 +2488,21 @@ Les routes passent sous `api.manager:principal,rh,marketing,module:crm`. La **Po
 - Scénarios à vérifier : **agrégation réelle** — un tenant restaurant+fuel voit `restaurant` ET `fuel` dans `meta.verticals` et les items des deux modules dans `data` (le registre ne rend pas qu'une verticale) ; **module désactivé** — `fuel_station=false` alors que des stations existent en base : aucun item `fuel`, `meta.total` inchangé ; **isolation cross-tenant** — deux tenants de même feature activée, la société A ne voit jamais un établissement de B, y compris en énumérant `data` ; **aucune verticale** — `200` + `data: []` (et non une erreur), ce qui permet au frontend de distinguer « rien à afficher » d'une panne ; **contrat d'item figé** — exactement `vertical`, `id`, `name`, `code`, `status`, `href_stats`, `href_team`, `staff_count`, sans `company_id`, et `href_*` pointant vers des pages **réelles** de la verticale avec l'établissement présélectionné (`/restaurant/reports?branch=…`, `/fuel/sales?station=…`) — un lien vers une page inexistante serait un bouton inopérant.
 - Couverture : `api/tests/Feature/Platform/EstablishmentsHubTest.php` — **5 tests, 33 assertions**. Contre-épreuve effectuée : route retirée → **5 échecs (404)** ; route remise → **vert**, ce qui établit que les tests décrivent le comportement et non l'implémentation. `phpstan` niveau 8 : 0 erreur ; `check-module-isolation.sh` et `check-bounded-context-dependencies.sh` : exit 0.
 - **Hors périmètre de ce lot** : la page frontend `/establishments` (grille de cartes par verticale, entrée de navigation, 4 locales) consomme cet endpoint et est livrée séparément — mêler un contrat d'API et une refonte d'UI dans une même revue rendrait les deux plus difficiles à relire.
+
+## Note de conservation 2026-10-28 — remise au format Pint des 16 fichiers de routes (refs #7959)
+
+**Aucun scenario API modifie ; aucun contrat ne change.**
+
+Le merge de #8973 a introduit `App\Support\Routing\ModuleRoutes` au-dessus des imports `App\Modules\*` dans 16 fichiers `api/routes/modules/*.php`, et laisse l'indentation des corps de closure a leur ancien niveau dans 5 d'entre eux. `pint --test` signalait **17 fichiers, 16 style issues**, donc `Backend Quality` — check requis au merge — echouait sur tout commit de `main`.
+
+Correction **purement mecanique**, verifiee plutot que supposee : `git diff -w` ne montre que des deplacements de `use` et de l'indentation (18 insertions / 18 suppressions, toutes sur des lignes `use`). Aucun ordre de route, de middleware ou de prefixe n'a bouge : `php artisan route:list --path=api/v1` charge **2 400 routes** sans erreur, et `pint --test routes/modules/` passe sur **41 fichiers**.
+
+### Verification automatique
+
+- `php -l` sur les 16 fichiers → OK
+- `php artisan route:list --path=api/v1` → 2 400 routes, 0 erreur
+- `./vendor/bin/pint --test routes/modules/` → **PASS** (41 fichiers)
+
+### Scenarios de recette
+
+Les scenarios existants restent valides tels quels : le perimetre des routes, les piles de middlewares et les prefixes sont identiques. Un appel `GET /api/v1/absences` avec un jeton valide se comporte exactement comme avant ce lot.

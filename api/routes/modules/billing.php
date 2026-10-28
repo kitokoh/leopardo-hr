@@ -10,7 +10,6 @@
  *   - Feature flags write: principal only
  */
 
-use App\Support\Routing\ModuleRoutes;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\AiCreditController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\BillingCollectionController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\BillingController;
@@ -20,6 +19,7 @@ use App\Modules\Billing\Interfaces\Api\V1\Controllers\PartnerDashboardController
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\TenantPaymentProfileController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingStateController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingStepController;
+use App\Support\Routing\ModuleRoutes;
 use Illuminate\Support\Facades\Route;
 
 // ── Authenticated routes ──────────────────────────────────────────────────────
