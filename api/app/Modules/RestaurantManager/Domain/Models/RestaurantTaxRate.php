@@ -32,6 +32,23 @@ class RestaurantTaxRate extends Model
         'status',
     ];
 
+    /**
+     * Valeurs par defaut alignees sur le schema SQL.
+     *
+     * Eloquent ne lit JAMAIS les `default()` SQL : juste apres `save()`,
+     * l'attribut vaut `null` en memoire tant que la ligne n'a pas ete
+     * relue. Les Resources faisaient `$this->status->value` sur ce `null`
+     * et repondaient 500 sur toute creation (cf. #8396, meme classe de
+     * bug que MarketingAsset).
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'rate_bps' => 0,
+        'is_default' => false,
+        'status' => 'active',
+    ];
+
     protected $casts = [
         'rate_bps' => 'integer',
         'is_default' => 'boolean',
