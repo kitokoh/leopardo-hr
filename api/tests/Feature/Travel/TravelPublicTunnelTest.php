@@ -8,8 +8,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
-use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;
-use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelPublicShopToken;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;

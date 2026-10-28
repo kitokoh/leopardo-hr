@@ -151,7 +151,6 @@ class TravelSalesSettlementTest extends TestCase
         $this->assertSame(4000, $settlement->confirmed_amount_minor);
     }
 
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -164,7 +163,6 @@ class TravelSalesSettlementTest extends TestCase
         ]);
         $this->companyA = $companyA;
     }
-
 
     public function test_settle_publishes_totals_for_period(): void
     {
@@ -212,7 +210,6 @@ class TravelSalesSettlementTest extends TestCase
         return $payment;
     }
 
-
     public function test_settle_is_idempotent_per_period(): void
     {
         app(TenantManager::class)->withinTenant($this->companyA, function (): void {
@@ -232,7 +229,6 @@ class TravelSalesSettlementTest extends TestCase
                 ->count());
         });
     }
-
 
     public function test_settle_returns_null_without_payments(): void
     {

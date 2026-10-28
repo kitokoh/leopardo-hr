@@ -9,7 +9,6 @@ use Database\Factories\TravelAdvertTypeFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 
 /**
  * Type d'annonce payante (TRAVEL-905, issue #6108).
@@ -37,6 +36,4 @@ class TravelAdvertType extends Model
     ];
 
     protected $casts = [];
-
-
 }

@@ -40,6 +40,4 @@ class TravelCommentResource extends JsonResource
             'updated_at' => $this->updated_at,
         ];
     }
-
-
 }
