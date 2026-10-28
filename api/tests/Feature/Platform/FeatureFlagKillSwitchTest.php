@@ -166,4 +166,75 @@ class FeatureFlagKillSwitchTest extends TestCase
         self::assertSame(['cameras', 'finance'], $audits->pluck('flag_key')->all());
         self::assertTrue($audits->every(fn ($a) => $a->new_value === true));
     }
+
+    /**
+     * #8954 — le kill switch plateforme doit être VISIBLE côté client.
+     *
+     * `client-features.ts` lit `metadata.modules` en premier et le traite comme
+     * autorité. Un PATCH plateforme qui n'écrivait que `features` laissait donc
+     * le module affiché et accessible dans l'UI alors que le serveur le
+     * refusait : client et serveur divergeaient sur l'état d'un module.
+     */
+    public function test_platform_update_aligns_metadata_modules_mirror(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create([
+            'features' => ['cameras' => true, 'training' => true, 'crm' => true],
+            'metadata' => [
+                'modules' => [
+                    'cameras' => true,
+                    'training' => true,
+                    'crm' => true,
+                    // Outil horizontal SANS flag plateforme : ne doit jamais
+                    // être touché par l'alignement (il n'a pas de dérivée).
+                    'employees' => true,
+                ],
+            ],
+        ]);
+
+        $superAdmin = new SuperAdmin([
+            'name' => 'Platform Admin',
+            'email' => 'admin@leopardo.test',
+        ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
+        Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
+
+        // Kill switch : on coupe cameras et training depuis la console.
+        $this->patchJson("/api/v1/platform/companies/{$company->id}/features", [
+            'features' => ['cameras' => false, 'training' => false, 'crm' => true],
+        ])->assertOk();
+
+        $fresh = $company->fresh();
+        self::assertNotNull($fresh);
+
+        $modules = $fresh->metadata['modules'] ?? [];
+        $features = $fresh->features ?? [];
+
+        // Parité clé à clé sur TOUTES les clés miroir du registre.
+        $mirrors = app(\App\Core\Feature\Infrastructure\Services\ModuleRegistryGateway::class)
+            ->horizontalMirrors();
+
+        foreach ($mirrors as $clientKey => $flagKey) {
+            if (! array_key_exists($flagKey, $features)) {
+                continue;
+            }
+
+            self::assertSame(
+                (bool) $features[$flagKey],
+                $modules[$clientKey] ?? null,
+                "metadata.modules.{$clientKey} doit refléter features.{$flagKey}",
+            );
+        }
+
+        // La coupure est bien visible côté client.
+        self::assertFalse($modules['cameras']);
+        self::assertFalse($modules['training']);
+
+        // Les clés non-miroir ne sont pas touchées.
+        self::assertTrue($modules['employees']);
+
+        // `features` reste la source : il n'est pas réécrit par l'alignement.
+        self::assertFalse($features['cameras']);
+        self::assertFalse($features['training']);
+    }
 }

@@ -6,6 +6,7 @@ namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Core\Feature\Infrastructure\Services\FeatureFlagAuditRecorder;
+use App\Core\Feature\Infrastructure\Services\ModuleMirrorWriter;
 use App\Core\Feature\Infrastructure\Services\ModuleRegistryGateway;
 use App\Core\Solutions\SolutionActivator;
 use App\Events\SolutionActivated;
@@ -21,6 +22,7 @@ class PlatformCompanyFeatureController extends Controller
         private readonly FeatureFlagAuditRecorder $auditRecorder,
         private readonly ModuleRegistryGateway $moduleRegistry,
         private readonly SolutionActivator $solutionActivator,
+        private readonly ModuleMirrorWriter $mirrorWriter,
     ) {}
 
     public function show(string $companyId): JsonResponse
@@ -62,6 +64,15 @@ class PlatformCompanyFeatureController extends Controller
         }
 
         $company->features = $features;
+
+        // #8954 — `metadata.modules` est la vue DERIVEE de `features`, et c'est
+        // elle que `client-features.ts` lit en premier. Sans cet alignement, un
+        // kill switch pose ici restait invisible cote client : le serveur
+        // refusait le module (`hasFeature()` lit `features`) pendant que l'UI
+        // continuait de l'afficher. On aligne AVANT le `save()` pour que les
+        // deux cartes soient persistees dans la meme ecriture.
+        $this->mirrorWriter->align($company);
+
         $company->save();
 
         // MAT-010 (#5868) — audit des bascules (avant/après par flag), dans le
