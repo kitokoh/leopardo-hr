@@ -11,6 +11,7 @@ use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProvisionDemoTenantJob;
+use App\Modules\Billing\Application\Actions\ReportTrialProvisioningStatus;
 use App\Modules\Billing\Application\Actions\RequestTrialSignup;
 use App\Modules\Billing\Application\Actions\VerifyTrialSignup;
 use App\Rules\SupportedCountry;
@@ -44,6 +45,7 @@ class SelfServiceTrialController extends Controller
         private readonly SolutionCatalogue $solutionCatalogue,
         private readonly AuthService $authService,
         private readonly IdempotencyStore $idempotencyStore,
+        private readonly ReportTrialProvisioningStatus $reportTrialProvisioningStatus,
     ) {}
 
     /**
@@ -507,66 +509,41 @@ class SelfServiceTrialController extends Controller
     public function status(Request $request): JsonResponse
     {
         // #4931 : le provisioning_token ne doit plus voyager en query string.
-        // Header X-Token privilégié (la vitrine passe par le proxy same-origin
-        // /api/forms/trial-status qui le positionne) ; ?token= reste accepté
-        // en fallback pour les clients déjà déployés (dépréciation).
+        // Header X-Token privilegie (la vitrine passe par le proxy same-origin
+        // /api/forms/trial-status qui le positionne) ; ?token= reste accepte
+        // en fallback pour les clients deja deployes (depreciation).
         $token = trim((string) $request->header('X-Token', ''));
         if ($token === '') {
             $token = trim((string) $request->query('token', ''));
         }
 
-        if ($token === '' || strlen($token) !== 64) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'PROVISIONING_TOKEN_INVALID',
-                'message' => __('billing.trial_status_token_invalid'),
-            ], 404);
+        $invalid = new JsonResponse([
+            'success' => false,
+            'error' => 'PROVISIONING_TOKEN_INVALID',
+            'message' => __('billing.trial_status_token_invalid'),
+        ], 404);
+
+        if ($token === '' || ! $this->reportTrialProvisioningStatus->isWellFormed($token)) {
+            return $invalid;
         }
 
-        $row = DB::table('trial_provisionings')
-            ->where('provisioning_token', $token)
-            ->first();
+        // #7962 : la lecture de l'etat de provisioning (et ses deux invariants :
+        // lien d'acces uniquement si `ready`, provisioned_at parse depuis une
+        // chaine) vit dans l'Action, pas dans le controleur.
+        $data = $this->reportTrialProvisioningStatus->execute($token);
 
-        if ($row === null) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'PROVISIONING_TOKEN_INVALID',
-                'message' => __('billing.trial_status_token_invalid'),
-            ], 404);
+        if ($data === null) {
+            return $invalid;
         }
 
-        // #2903 : provisioned_at est stocké en string (insert DB::table) —
-        // ne JAMAIS appeler ->toIso8601String() sur une string (500).
-        $provisionedAt = is_scalar($row->provisioned_at) && (string) $row->provisioned_at !== ''
-            ? Carbon::parse((string) $row->provisioned_at)->toIso8601String()
-            : null;
+        if ($data['status'] === 'failed') {
+            $data['message'] = __('billing.trial_status_failed');
+        }
 
-        $payload = [
+        return new JsonResponse([
             'success' => true,
-            'data' => [
-                'status' => $row->status,
-                'provisioned_at' => $provisionedAt,
-            ],
-        ];
-
-        // Le lien d'accès n'est exposé qu'une fois le sandbox prêt (jamais
-        // dans l'état pending — le prospect n'a rien à ouvrir avant).
-        if ($row->status === 'ready' && is_string($row->login_url) && $row->login_url !== '') {
-            $payload['data']['login_url'] = $row->login_url;
-        }
-        if ($row->status === 'failed') {
-            $payload['data']['message'] = __('billing.trial_status_failed');
-        }
-
-        // Onboarding sans mailer : le front doit savoir si un mot de passe a
-        // déjà été choisi (sinon il propose le formulaire) et si l'email
-        // d'accès est réellement parti (sinon il ne promet pas un lien).
-        $payload['data']['password_set'] = is_scalar($row->password_set_at)
-            && (string) $row->password_set_at !== '';
-        $payload['data']['access_sent'] = is_scalar($row->access_sent_at ?? null)
-            && (string) ($row->access_sent_at ?? '') !== '';
-
-        return new JsonResponse($payload, 200);
+            'data' => $data,
+        ], 200);
     }
 
     /**
