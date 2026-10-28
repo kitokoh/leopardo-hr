@@ -45,7 +45,7 @@ class TravelTouristSiteTest extends TestCase
 
     private function makeCity(Company $company, string $name = 'Yaoundé'): TravelCity
     {
-        return app(TenantManager::class)->withinTenant($company, function () use ($name): TravelCity {
+        return app(TenantManager::class)->withinTenant($company, function () use ($company, $name): TravelCity {
             TravelCountry::query()->create([
                 'company_id' => $company->id,
                 'iso2' => 'CM',
