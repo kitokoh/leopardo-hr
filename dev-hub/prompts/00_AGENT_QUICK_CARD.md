@@ -37,6 +37,7 @@
 | Mettre un `await` avant `runApp()` dans `main.dart` | Cause page noire/grise |
 | Utiliser `.withOpacity()` dans Flutter | Déprécié → `.withValues(alpha: X)` |
 | Utiliser `dd()` ou `dump()` dans le code PHP | Debug oublié en production |
+| Modifier les fichiers vitrine (`front/web/src/modules/vitrine/` ou `front/web/src/app/(landing)/`) | Zone strictement réservée à l'Agent Vitrine Dédié (verrou opposable 2026-10-28) |
 | Mettre un mot de passe dans `/signup` vitrine | C'est un essai guidé, pas une inscription |
 | Utiliser les anciennes cartes `rounded-lg bg-white shadow` dans l'admin | Utilise les tokens `glass-*` |
 | Accéder à `FirebaseMessaging.instance` sans `Firebase.initializeApp()` protégé | Crash assuré |

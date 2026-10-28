@@ -55,6 +55,9 @@
 
 # Frontend web (Next.js)
 /front/web/                 @kitokoh
+# Zone reservee Vitrine -- seul l'Agent Vitrine Dedie (@kitokoh) est habilite
+/front/web/src/modules/vitrine/ @kitokoh
+/front/web/src/app/(landing)/   @kitokoh
 
 # Admin dashboard (Vue.js)
 /front/admin-dashboard/     @kitokoh
