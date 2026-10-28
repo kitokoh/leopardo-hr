@@ -122,6 +122,130 @@ class PlatformCompanyFeatureApiTest extends TestCase
     }
 
     /**
+     * BOS-012 (#8199) — le moteur de désynchronisation, testé là où il vivait.
+     *
+     * La console plateforme écrivait `features` sans aligner
+     * `metadata.modules`. Or le client (`client-features.ts` →
+     * `explicitToolValue`) lit `metadata.modules` **en premier** et « fait
+     * AUTORITÉ sur les replis historiques » : un kill switch posé ici restait
+     * donc invisible dans l'interface, qui affichait encore la sélection
+     * client périmée.
+     *
+     * Ce test décrit le symptôme observable (l'UI voit encore le module actif
+     * après la coupure) et exige la cohérence des deux cartes.
+     */
+    public function test_updating_features_keeps_the_client_module_view_coherent(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create([
+            'features' => ['rh' => true, 'crm' => true],
+        ]);
+
+        // État de départ : le client avait activé CRM (sélection d'inscription).
+        $metadata = $company->metadata ?? [];
+        $metadata['modules'] = ['crm' => true, 'employees' => true];
+        $company->forceFill(['metadata' => $metadata])->save();
+
+        $superAdmin = new SuperAdmin([
+            'name' => 'Platform Admin',
+            'email' => 'admin-bos012@leopardo.test',
+        ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
+
+        Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
+
+        // L'opérateur coupe CRM depuis la console (kill switch d'entitlement).
+        $this->patchJson("/api/v1/platform/companies/{$company->id}/features", [
+            'features' => ['crm' => false],
+        ])->assertOk();
+
+        $company->refresh();
+
+        // La SOURCE est bien coupée…
+        $this->assertFalse($company->hasFeature('crm'));
+
+        // …et la VUE que lit l'interface doit suivre. Sans l'écrivain unifié,
+        // `metadata.modules.crm` restait `true` et le client continuait
+        // d'afficher le module actif.
+        $this->assertFalse(
+            $company->metadata['modules']['crm'] ?? null,
+            'La vue client doit suivre le flag plateforme (#8199).'
+        );
+
+        // Les clés non-miroir ne sont pas touchées par la dérivation.
+        $this->assertTrue(
+            $company->metadata['modules']['employees'] ?? null,
+            'Les outils sans flag plateforme ne sont pas des dérivations.'
+        );
+    }
+
+    /**
+     * BOS-012 (#8199) — l'invariant central, vérifié sur **toutes** les clés
+     * miroir du registre et pas seulement sur celle du payload.
+     *
+     * ⚠️ Le contrôleur matérialise **tous** les modules connus dans `features`
+     * (repli #7432 : une clé absente du payload conserve sa valeur effective).
+     * Une fois `features` entièrement déclaré, la vue dérivée doit lui
+     * correspondre **clé à clé** — c'est exactement la fin de la
+     * désynchronisation que #8199 poursuit. Vérifier une seule clé laisserait
+     * passer une dérive sur les douze autres.
+     */
+    public function test_every_mirror_key_agrees_with_features_after_an_update(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create(['features' => ['rh' => true, 'crm' => true]]);
+
+        $metadata = $company->metadata ?? [];
+        $metadata['modules'] = ['crm' => true, 'employees' => true];
+        $company->forceFill(['metadata' => $metadata])->save();
+
+        $superAdmin = new SuperAdmin([
+            'name' => 'Platform Admin',
+            'email' => 'admin-bos012b@leopardo.test',
+        ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
+
+        Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
+
+        $this->patchJson("/api/v1/platform/companies/{$company->id}/features", [
+            'features' => ['cameras' => true],
+        ])->assertOk();
+
+        $company->refresh();
+
+        $mirrors = app(\App\Core\Feature\Infrastructure\Services\ModuleRegistryGateway::class)
+            ->horizontalMirrors();
+
+        $this->assertNotSame([], $mirrors);
+
+        foreach ($mirrors as $clientKey => $flagKey) {
+            // La clé n'est dérivée que si la SOURCE la déclare ; sinon elle doit
+            // rester absente (cf. ModuleMirror::derived — on n'invente pas de
+            // déclaration pour un tenant qui n'a jamais fait de choix).
+            if (! array_key_exists($flagKey, $company->features)) {
+                $this->assertArrayNotHasKey(
+                    $clientKey,
+                    $company->metadata['modules'],
+                    "{$clientKey} n'est pas déclaré côté plateforme : la vue ne doit pas l'inventer."
+                );
+
+                continue;
+            }
+
+            $this->assertSame(
+                (bool) $company->features[$flagKey],
+                $company->metadata['modules'][$clientKey] ?? null,
+                "La vue client de {$clientKey} doit correspondre au flag plateforme {$flagKey}."
+            );
+        }
+
+        // Le module activé par le payload est bien projeté, et la clé non-miroir
+        // n'est pas touchée par la dérivation.
+        $this->assertTrue($company->metadata['modules']['cameras'] ?? null);
+        $this->assertTrue($company->metadata['modules']['employees'] ?? null);
+    }
+
+    /**
      * #7432 — non-régression : une clé ABSENTE du payload conserve la valeur
      * effective du tenant. Sans cette garantie, l'ajout d'un module à
      * `KNOWN_MODULES` éteindrait les features de tout client dont le

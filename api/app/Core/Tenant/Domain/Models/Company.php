@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Tenant\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Feature\Domain\ModuleMirror;
 use App\Core\Feature\Infrastructure\Services\FeatureKillSwitchService;
 use App\Core\Feature\Infrastructure\Services\ModuleRegistryGateway;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
@@ -410,6 +411,67 @@ class Company extends Model
         }
 
         return ! $alreadyActive;
+    }
+
+    /**
+     * BOS-012 (#8199) — **écrivain unifié** : aligne la vue dérivée
+     * `metadata.modules` sur les flags plateforme (`features`).
+     *
+     * Contexte : `features` et `metadata.modules` étaient écrits par des chemins
+     * distincts, d'où des désynchronisations historiques (#7235, #7432). Le
+     * désaccord est **visible par le client** : `client-features.ts` lit
+     * `metadata.modules` (`explicitToolValue`) **avant** `features`, donc un
+     * kill switch posé par la console plateforme — qui n'écrivait que
+     * `features` — n'atteignait jamais l'interface, restée sur la sélection
+     * client périmée. C'est ce que cette méthode supprime : tout écrivain de
+     * `features` aligne désormais la vue dérivée.
+     *
+     * ⚠️ **Elle n'écrit JAMAIS `features`.** C'est la garantie structurelle du
+     * critère d'acceptation 2 de #8199 (« `hasFeature` avant/après identique ») :
+     * `hasFeature()` ne lit que `features` (+ kill switch + défaut du registre),
+     * donc une écriture qui ne touche pas `features` ne peut pas changer le
+     * verdict serveur — la parité est structurelle, pas constatée.
+     *
+     * Les clés **non-miroir** (`employees`, `attendance`…) sont recopiées telles
+     * quelles : elles ne vivent que dans `metadata.modules` et ne sont pas des
+     * dérivations (cf. {@see ModuleMirror::derived()}).
+     *
+     * ⚠️ N'appelle PAS `save()` : contrat partagé avec
+     * {@see activateHorizontalTool()} — l'appelant persiste, et il est le seul à
+     * savoir par quelle requête qualifiée (`public.companies` vs piège
+     * search_path).
+     *
+     * @return bool `true` si la vue dérivée a été modifiée (donc à persister)
+     */
+    public function syncHorizontalToolMirror(): bool
+    {
+        $gateway = app(ModuleRegistryGateway::class);
+
+        // `?? []` — et non `is_array(...) ? ... : []` : le cast `array` rend
+        // `null` sur une colonne `NULL` (jamais un scalaire), et le docblock du
+        // modèle type déjà les deux propriétés en `array<mixed>`. La garde
+        // `is_array` serait donc une branche morte que PHPStan Strict signale
+        // (`function.alreadyNarrowedType`) — c'est le patron déjà employé par
+        // `activateHorizontalTool()` et `hasFeature()` dans ce fichier.
+        $metadata = $this->metadata ?? [];
+        $modules = is_array($metadata['modules'] ?? null) ? $metadata['modules'] : [];
+        $features = $this->features ?? [];
+
+        $derived = ModuleMirror::derived(
+            $modules,
+            $features,
+            $gateway->horizontalMirrors(),
+            fn (string $key): bool => $gateway->defaultFor($key, $this),
+        );
+
+        if (ModuleMirror::isConverged($modules, $derived)) {
+            return false;
+        }
+
+        $metadata['modules'] = $derived;
+        $this->metadata = $metadata;
+
+        return true;
     }
 
     /**
