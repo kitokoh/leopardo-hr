@@ -57,3 +57,49 @@ moment du merge). Les runs post-merge étaient encore `queued` à la clôture.
 
 Ce constat est exactement la situation décrite par **#7657** et **#8285**, qui
 restent donc ouvertes : elles ne se ferment pas avec du code.
+
+---
+
+## Correction de code apportée après analyse des checks requis
+
+La protection de `main` n'exige que **4 checks** (aucune revue obligatoire, `strict = false`,
+`enforce_admins = true`) :
+
+1. `PHPStan — Strict (Core/Modules/Shared, level 8)`
+2. `Module Structure Validator`
+3. `Frontend — ESLint + TypeScript`
+4. `actionlint (+ shellcheck)`
+
+**Vercel n'est pas un check requis.** Les `Vercel = FAILURE` observés
+(`build-rate-limit`) ne bloquent donc pas le merge : ils sont du bruit. Trois PR
+mergées dans cette session (#8981, #8984, #8985) affichent d'ailleurs
+`Vercel = SUCCESS`, ce qui confirme qu'il s'agit d'une saturation temporaire du
+quota et non d'un défaut de code.
+
+En revanche, l'analyse des 4 checks requis a révélé **un vrai défaut** :
+
+### #8988 — `Module Structure Validator` rouge (corrigé)
+
+```
+api/app/Modules/Billing/Application/Actions/ReportTrialProvisioningStatus.php:8:
+use Illuminate\Support\Facades\DB;
+```
+
+Le validateur (#6568) réserve les façades Laravel à `Interfaces/` et
+`Infrastructure/`. La règle est juste : une Action `Application` qui interroge la
+base mélange deux couches, même quand la requête tient en trois lignes.
+
+Correction **par contrat, pas par dérogation** :
+
+| Couche | Fichier | Rôle |
+|---|---|---|
+| Application | `Contracts/TrialProvisioningReader` | port : `findByToken(string): ?object` |
+| Infrastructure | `Repositories/DatabaseTrialProvisioningReader` | adaptateur — seule couche qui connaît `DB` |
+| Providers | `BillingServiceProvider` | liaison contrat → adaptateur |
+
+Vérifications : validateur rejoué localement (**39 modules, exit 0**), Pint
+(74 fichiers), PHPStan level 6 (4 fichiers, aucun défaut), 8 tests passés.
+
+Le réflexe inverse — ajouter le fichier à l'allowlist du validateur — aurait
+fait passer le check en gardant la violation. C'est exactement ce que D9
+interdit pour la dette d'isolation : on corrige, on ne déclare pas.
