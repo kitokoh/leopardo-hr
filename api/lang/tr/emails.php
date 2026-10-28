@@ -195,7 +195,6 @@ return [
     'login_code_intro' => 'İşte tek kullanımlık giriş kodunuz. Alanınıza erişmek için giriş sayfasında bu kodu girin:',
     'login_code_validity' => 'Bu kod 10 dakika geçerlidir ve tek kullanımlıktır. Bunu talep etmediyseniz, bu e-postayı güvenle yok sayabilirsiniz.',
 
-
     // #7760 — destek bileti e-posta bildirimleri (müşteri ↔ platform).
     'support_ticket_opened_subject' => '[Bilet #:ticket] Yeni destek bileti — :subject',
     'support_ticket_opened_title' => 'Yeni destek bileti',

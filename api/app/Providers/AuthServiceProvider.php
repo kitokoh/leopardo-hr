@@ -183,6 +183,10 @@ use App\Modules\HR\Domain\Models\Position;
 use App\Modules\HR\Domain\Models\TrainingCourse;
 use App\Modules\Marketing\Domain\Models\SocialAccount;
 use App\Modules\Marketing\Domain\Models\SocialPost;
+use App\Modules\Pages\Domain\Models\Page;
+use App\Modules\Pages\Domain\Models\PageVerificationRequest;
+use App\Modules\Pages\Domain\Policies\PagePolicy;
+use App\Modules\Pages\Domain\Policies\PageVerificationPolicy;
 use App\Modules\Paiements\Domain\Models\PaymentProviderInstance;
 use App\Modules\Paiements\Domain\Models\PaymentTransaction;
 use App\Modules\Paiements\Domain\Models\PaymentWebhookEndpoint;
@@ -511,6 +515,11 @@ class AuthServiceProvider extends ServiceProvider
         // — Catalog (BC-28 #6880 : socle domaine — catégories & produits B2B)
         Gate::policy(CatalogCategory::class, CatalogCategoryPolicy::class);
         Gate::policy(CatalogProduct::class, CatalogProductPolicy::class);
+        // — Pages (BC PAGES #8723/#8725 : présence publique par établissement,
+        //   édition tenant d'un côté, vérification de propriété plateforme de
+        //   l'autre — les deux axes ne partagent JAMAIS une policy)
+        Gate::policy(Page::class, PagePolicy::class);
+        Gate::policy(PageVerificationRequest::class, PageVerificationPolicy::class);
         // — Retail (BC-17 #7672 : socle domaine — catégories & produits du vendeur générique)
         Gate::policy(RetailCategory::class, RetailCategoryPolicy::class);
         Gate::policy(RetailProduct::class, RetailProductPolicy::class);

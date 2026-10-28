@@ -22,6 +22,7 @@ use App\Core\Privacy\Infrastructure\Services\PiiRegistry;
 use App\Core\Tenant\TenantManager;
 use App\Jobs\Services\HmacWebhookSigner;
 use App\Modules\Billing\Domain\Enums\PlanCode;
+use App\Modules\Billing\Domain\Services\EntitlementGuard;
 use App\Modules\HR\Infrastructure\Services\PiiLifecycleService;
 use App\Modules\Notification\Infrastructure\Services\InAppNotifierAdapter;
 use App\Modules\Payroll\Infrastructure\Services\IslamicCalendarService;
@@ -32,11 +33,13 @@ use App\Policies\CrmTaskPolicy;
 use App\Policies\ExportPolicy;
 use App\Shared\Contracts\Discovery\PublicDiscoverableProvider;
 use App\Shared\Contracts\Discovery\PublicProfileResolver;
+use App\Shared\Contracts\Entitlements\FeatureEntitlements;
 use App\Shared\Contracts\Establishments\EstablishmentProvider;
 use App\Shared\Contracts\Geo\GeoServiceContract;
 use App\Shared\Discovery\PublicDiscoveryService;
 use App\Shared\Discovery\PublicProfileLocator;
 use App\Shared\Establishments\EstablishmentAggregationService;
+use App\Shared\Support\Entitlements\ContainerFeatureEntitlements;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Foundation\Application;
@@ -64,6 +67,18 @@ class AppServiceProvider extends ServiceProvider
         // secret ou un passage à un KMS se fait ici, sans toucher aux
         // verticales.
         $this->app->bind(OutboundWebhookSigner::class, HmacWebhookSigner::class);
+
+        // #8726 — pont d'inversion de dépendance : le BC PAGES a besoin de
+        // lire les entitlements, mais un module ne peut pas importer un autre
+        // module (garde d'isolation #5584). Le module dépend du contrat
+        // `FeatureEntitlements`, cet adaptateur — qui vit dans Shared — est le
+        // seul endroit qui connaît à la fois le contrat et `EntitlementGuard`.
+        $this->app->singleton(FeatureEntitlements::class, static function (Application $app): FeatureEntitlements {
+            /** @var EntitlementGuard $guard */
+            $guard = $app->make(EntitlementGuard::class);
+
+            return new ContainerFeatureEntitlements($guard);
+        });
 
         // SUPERAPP-P0 — decouverte publique cross-verticale : agregateur de
         // lecture seule (aucune table, aucune migration). Chaque verticale

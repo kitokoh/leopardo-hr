@@ -1174,6 +1174,34 @@
       "dependencies": [
         "BC-02"
       ]
+    },
+    {
+      "code": "BC-39",
+      "name": "PAGES",
+      "context": "Pages",
+      "responsibility": "Presence publique d'un etablissement (site) : agregat Page lie a un Site, publication et verification de propriete independantes, contrat de blocs extensible fourni par les BC verticaux (schema strict, allowlist d'URL, renderer absent => omission avec telemetrie), domaines personnalises et rendu SSR public.",
+      "owner": "Agent BC-PAGES",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Pages",
+          "status": "active"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [],
+      "dependencies": [
+        "BC-01",
+        "BC-02",
+        "BC-03",
+        "BC-13",
+        "BC-20",
+        "BC-27"
+      ]
     }
   ]
 }
