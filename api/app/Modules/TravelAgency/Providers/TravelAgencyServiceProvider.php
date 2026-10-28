@@ -25,8 +25,12 @@ use App\Modules\TravelAgency\Domain\Survey\TravelSurvey;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\CashPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PvitPaymentGateway;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelAgentPushConsumer;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelDemoSeederService;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelEventPublisherConsumer;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelNotificationConsumer;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookConsumer;
 use App\Modules\TravelAgency\Policies\TravelReportPolicy;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Support\Facades\Auth;
@@ -113,8 +117,28 @@ class TravelAgencyServiceProvider extends ServiceProvider
         });
 
         // Outbox (TRAVEL-414) : registre des consommateurs d'événements.
-        $this->app->singleton(TravelOutboxConsumerRegistry::class, function (): TravelOutboxConsumerRegistry {
-            return new TravelOutboxConsumerRegistry;
+        //
+        // Le registre etait instancie VIDE : les quatre consommateurs
+        // (notifications voyageur TRAVEL-415, push agent, webhooks, republication
+        // d'evenements tenant) existaient et passaient leurs tests unitaires,
+        // mais `travel:outbox-dispatch` ne trouvait aucun consommateur — tout
+        // evenement de reservation etait consomme sans effet (aucun mail, aucun
+        // push, aucun webhook livre). Bug silencieux : le dispatch reussissait
+        // avec `consumers=0`.
+        //
+        // Ordre d'enregistrement = ordre de priorite du registre
+        // (`consumersFor()` preserve l'ordre) : notifications d'abord (effet
+        // metier attendu par l'utilisateur), puis push agent, webhooks et
+        // republication interne.
+        $this->app->singleton(TravelOutboxConsumerRegistry::class, function ($app): TravelOutboxConsumerRegistry {
+            $registry = new TravelOutboxConsumerRegistry;
+
+            $registry->register($app->make(TravelNotificationConsumer::class));
+            $registry->register($app->make(TravelAgentPushConsumer::class));
+            $registry->register($app->make(TravelWebhookConsumer::class));
+            $registry->register($app->make(TravelEventPublisherConsumer::class));
+
+            return $registry;
         });
 
         // Commandes artisan du module (hors app/Console/Commands → enregistrement
