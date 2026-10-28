@@ -31,16 +31,29 @@ class ProvisionKiosk
     ) {}
 
     /**
+     * `punch_methods` est declare `array<array-key, mixed>|null` a l'entree :
+     * l'action recoit des donnees de requete NON validees (l'interface peut
+     * envoyer n'importe quoi), c'est la normalisation qui garantit le type de
+     * sortie. Declarer ici une `list<string>` reviendrait a faire confiance a
+     * l'appelant et a masquer les charges malformees.
+     *
      * @param  array{name: string, location_label?: string|null, biometric_mode?: string|null, trusted_device_label?: string|null, punch_methods?: array<array-key, mixed>|null, site_id?: int|null}  $attributes
      * @return array{kiosk: AttendanceKiosk, device_code: string, sync_token: string}
      */
     public function execute(Company $company, array $attributes): array
     {
+        // #7962 \u2014 `normalizePunchMethods()` rend une `list<string>` (BIO-006 :
+        // `card` devient `badge`). On reconstruit l'entree sous une forme
+        // NOUVELLE et explicitement typee, plutot que de reecrire une cle d'un
+        // tableau dont le type reste `mixed` aux yeux de l'analyse.
+        /** @var array{name: string, location_label?: string|null, biometric_mode?: string|null, trusted_device_label?: string|null, punch_methods?: list<string>|null, site_id?: int|null} $normalized */
+        $normalized = $attributes;
+
         if (isset($attributes['punch_methods'])) {
-            $attributes['punch_methods'] = $this->normalizePunchMethods($attributes['punch_methods']);
+            $normalized['punch_methods'] = $this->normalizePunchMethods($attributes['punch_methods']);
         }
 
-        $provisioned = $this->writer->create($company, $attributes);
+        $provisioned = $this->writer->create($company, $normalized);
 
         // #6678 — garde fail-closed de provisioning (repro prod 2026-09-01) :
         // ne rendre des credentials QUE si la ligne est resolvable par les
