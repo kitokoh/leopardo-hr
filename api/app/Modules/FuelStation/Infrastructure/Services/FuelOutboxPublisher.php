@@ -6,7 +6,6 @@ namespace App\Modules\FuelStation\Infrastructure\Services;
 
 use App\Core\Outbox\Contracts\OutboxPublisher;
 use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
-use Illuminate\Support\Str;
 
 /**
  * Publication d'evenements FuelStation dans l'outbox (FUEL-015/019) / #8209.
