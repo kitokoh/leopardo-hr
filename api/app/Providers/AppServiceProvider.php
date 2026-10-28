@@ -18,6 +18,8 @@ use App\Core\Auth\Domain\Contracts\SmsCodeSenderContract;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Sms\LogOnlySmsCodeSender;
 use App\Core\Notifications\Contracts\InAppNotifier;
+use App\Core\Outbox\Contracts\OutboxPublisher;
+use App\Core\Outbox\Infrastructure\DatabaseOutboxPublisher;
 use App\Core\Privacy\Infrastructure\Services\PiiRegistry;
 use App\Core\Tenant\TenantManager;
 use App\Jobs\Services\HmacWebhookSigner;
@@ -79,6 +81,15 @@ class AppServiceProvider extends ServiceProvider
 
             return new ContainerFeatureEntitlements($guard);
         });
+
+        // #8209 / #8396 — les six verticales (CRM, EduManager, FuelStation,
+        // Platform, RestaurantManager, TravelAgency) publient dans leur outbox
+        // via le CONTRAT `OutboxPublisher`, jamais via l'implementation
+        // concrete. Sans cette liaison, chaque module devait instancier
+        // `DatabaseOutboxPublisher` lui-meme : c'etait une arete
+        // Modules -> Core concrete, refusee par
+        // IdentityLayerBoundariesArchitectureTest (#8717, ecart I-3).
+        $this->app->bind(OutboxPublisher::class, DatabaseOutboxPublisher::class);
 
         // SUPERAPP-P0 — decouverte publique cross-verticale : agregateur de
         // lecture seule (aucune table, aucune migration). Chaque verticale
