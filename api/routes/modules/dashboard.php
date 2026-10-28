@@ -7,12 +7,12 @@
  * Notifications are available to all authenticated employees.
  */
 
-use App\Support\Routing\ModuleRoutes;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\AttendanceExportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DashboardController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\ExportController;
-use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\RoleAssignmentController;
+use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;
+use App\Support\Routing\ModuleRoutes;
 use Illuminate\Support\Facades\Route;
 
 ModuleRoutes::tenantModule('', function (): void {
@@ -23,7 +23,7 @@ ModuleRoutes::tenantModule('', function (): void {
         Route::get('/dashboard/recent-activity', [DashboardController::class, 'recentActivity']);
         Route::get('/dashboard/kpi', [DashboardController::class, 'kpi']);
         Route::get('/dashboard/manager-digest', [DashboardController::class, 'managerDigest']);
-        
+
         // Developer API Tokens
         Route::get('/api-tokens', [\App\Modules\HR\Interfaces\Api\V1\Controllers\ApiTokenController::class, 'index']);
         Route::post('/api-tokens', [\App\Modules\HR\Interfaces\Api\V1\Controllers\ApiTokenController::class, 'store']);
@@ -56,7 +56,7 @@ ModuleRoutes::tenantModule('', function (): void {
         Route::get('/export/contracts', [ExportController::class, 'contracts']);
         Route::get('/export/vehicles', [ExportController::class, 'vehicles']);
         Route::get('/export/history', [ExportController::class, 'history']);
-        
+
         // Accounting specific exports
         Route::get('/export/payroll-journal', [ExportController::class, 'accountingJournal']);
         Route::get('/export/payroll-ledger', [ExportController::class, 'accountingLedger']);
