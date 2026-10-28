@@ -1750,7 +1750,37 @@
     "searchIntelGeo": "GEO",
     "searchIntelContent": "Icerik",
     "searchIntelCompetitors": "Rakipler",
-    "searchIntelIntegrations": "Entegrasyonlar"
+    "searchIntelIntegrations": "Entegrasyonlar",
+    "accounting": "Muhasebe",
+    "accountingActivation": "Muhasebe — Başla",
+    "accountingBank": "Banka ve mutabakat",
+    "accountingChart": "Hesap planı",
+    "accountingDashboard": "Muhasebe — Gösterge paneli",
+    "accountingDocuments": "Belgeler ve faturalar",
+    "accountingFiscalYears": "Mali yıllar ve kapanış",
+    "accountingLedger": "Defter-i kebir ve günlük",
+    "accountingLettering": "Mutabakat",
+    "accountingSettings": "Muhasebe — Ayarlar",
+    "accountingStatements": "KDV ve mali tablolar",
+    "acquisitionFunnel": "Edinme hunisi",
+    "aiAssistant": "Yapay zekâ asistanı",
+    "equityInterests": "Hisse edinme",
+    "fuelStation": "Akaryakıt istasyonları",
+    "fuelStationOperations": "Akaryakıt istasyonu operasyonları",
+    "marketingOs": "Pazarlama OS",
+    "showcase": "Vitrin sitesi",
+    "surveyStats": "Çözüm anketleri",
+    "team": "Platform ekibi",
+    "trade": "Uluslararası ticaret",
+    "groups": {
+      "entreprise": "Müşteri şirketler",
+      "facturationOffres": "Faturalama ve teklifler",
+      "pilotage": "Yönetim",
+      "plateforme": "Platform",
+      "referentielsPaie": "Bordro referansları",
+      "rhPaie": "İK ve bordro",
+      "systeme": "Sistem"
+    }
   },
   "webhooks": {
     "confirm_delete": "Bu webhook silinsin mi?"

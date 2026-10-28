@@ -1750,7 +1750,37 @@
     "searchIntelGeo": "GEO",
     "searchIntelContent": "Contenu",
     "searchIntelCompetitors": "Concurrents",
-    "searchIntelIntegrations": "Integrations"
+    "searchIntelIntegrations": "Integrations",
+    "accounting": "Comptabilité",
+    "accountingActivation": "Comptabilité — Démarrer",
+    "accountingBank": "Banque & rapprochement",
+    "accountingChart": "Plan comptable",
+    "accountingDashboard": "Comptabilité — Tableau de bord",
+    "accountingDocuments": "Documents & factures",
+    "accountingFiscalYears": "Exercices & clôture",
+    "accountingLedger": "Grand livre & journal",
+    "accountingLettering": "Lettrage",
+    "accountingSettings": "Comptabilité — Paramétrage",
+    "accountingStatements": "TVA & états financiers",
+    "acquisitionFunnel": "Funnel d'acquisition",
+    "aiAssistant": "Assistant IA",
+    "equityInterests": "Prendre des parts",
+    "fuelStation": "Stations-service",
+    "fuelStationOperations": "Opérations stations-service",
+    "marketingOs": "Marketing OS",
+    "showcase": "Site vitrine",
+    "surveyStats": "Surveys de solutions",
+    "team": "Équipe plateforme",
+    "trade": "Commerce international",
+    "groups": {
+      "entreprise": "Entreprises clientes",
+      "facturationOffres": "Facturation & offres",
+      "pilotage": "Pilotage",
+      "plateforme": "Plateforme",
+      "referentielsPaie": "Référentiels paie",
+      "rhPaie": "RH & Paie",
+      "systeme": "Système"
+    }
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?"

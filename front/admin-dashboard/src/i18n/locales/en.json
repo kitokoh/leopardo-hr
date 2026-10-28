@@ -1750,7 +1750,37 @@
     "searchIntelGeo": "GEO",
     "searchIntelContent": "Content",
     "searchIntelCompetitors": "Competitors",
-    "searchIntelIntegrations": "Integrations"
+    "searchIntelIntegrations": "Integrations",
+    "accounting": "Accounting",
+    "accountingActivation": "Accounting — Get started",
+    "accountingBank": "Bank & reconciliation",
+    "accountingChart": "Chart of accounts",
+    "accountingDashboard": "Accounting — Dashboard",
+    "accountingDocuments": "Documents & invoices",
+    "accountingFiscalYears": "Fiscal years & closing",
+    "accountingLedger": "Ledger & journal",
+    "accountingLettering": "Reconciliation",
+    "accountingSettings": "Accounting — Settings",
+    "accountingStatements": "VAT & financial statements",
+    "acquisitionFunnel": "Acquisition funnel",
+    "aiAssistant": "AI assistant",
+    "equityInterests": "Equity interests",
+    "fuelStation": "Fuel stations",
+    "fuelStationOperations": "Fuel station operations",
+    "marketingOs": "Marketing OS",
+    "showcase": "Showcase site",
+    "surveyStats": "Solution surveys",
+    "team": "Platform team",
+    "trade": "International trade",
+    "groups": {
+      "entreprise": "Client companies",
+      "facturationOffres": "Billing & plans",
+      "pilotage": "Steering",
+      "plateforme": "Platform",
+      "referentielsPaie": "Payroll reference data",
+      "rhPaie": "HR & payroll",
+      "systeme": "System"
+    }
   },
   "webhooks": {
     "confirm_delete": "Delete this webhook?"

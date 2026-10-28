@@ -1750,7 +1750,37 @@
     "searchIntelGeo": "GEO",
     "searchIntelContent": "المحتوى",
     "searchIntelCompetitors": "المنافسون",
-    "searchIntelIntegrations": "التكاملات"
+    "searchIntelIntegrations": "التكاملات",
+    "accounting": "المحاسبة",
+    "accountingActivation": "المحاسبة — البدء",
+    "accountingBank": "البنك والمطابقة",
+    "accountingChart": "دليل الحسابات",
+    "accountingDashboard": "المحاسبة — لوحة التحكم",
+    "accountingDocuments": "المستندات والفواتير",
+    "accountingFiscalYears": "السنوات المالية والإقفال",
+    "accountingLedger": "دفتر الأستاذ واليومية",
+    "accountingLettering": "المطابقة",
+    "accountingSettings": "المحاسبة — الإعدادات",
+    "accountingStatements": "ضريبة القيمة المضافة والقوائم المالية",
+    "acquisitionFunnel": "قمع الاستحواذ",
+    "aiAssistant": "المساعد الذكي",
+    "equityInterests": "حصص في رأس المال",
+    "fuelStation": "محطات الوقود",
+    "fuelStationOperations": "عمليات محطات الوقود",
+    "marketingOs": "نظام التسويق",
+    "showcase": "موقع العرض",
+    "surveyStats": "استبيانات الحلول",
+    "team": "فريق المنصة",
+    "trade": "التجارة الدولية",
+    "groups": {
+      "entreprise": "الشركات العميلة",
+      "facturationOffres": "الفوترة والعروض",
+      "pilotage": "القيادة",
+      "plateforme": "المنصة",
+      "referentielsPaie": "المراجع المحاسبية للأجور",
+      "rhPaie": "الموارد البشرية والأجور",
+      "systeme": "النظام"
+    }
   },
   "webhooks": {
     "confirm_delete": "حذف خطاف الويب هذا؟"
