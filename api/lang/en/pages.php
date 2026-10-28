@@ -40,4 +40,15 @@ return [
     'domain_quota_exceeded' => 'Your plan allows :limit custom domain(s).',
     'domain_removed' => 'This domain has been removed and can no longer be verified.',
     'domain_plan_expired' => 'Your subscription has expired: custom domains are disabled until renewal.',
+
+    // #8730 — public SSR rendering
+    'public' => [
+        'verified' => 'Verified establishment',
+        'contact' => 'Contact',
+        'map' => 'View on map',
+        'actions' => [
+            'directions' => 'Get directions',
+            'contact' => 'Write',
+        ],
+    ],
 ];
