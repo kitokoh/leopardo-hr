@@ -103,6 +103,28 @@ class TravelQuizTest extends TestCase
         $this->deleteJson("/api/v1/travel/quizzes/{$quizId}")->assertStatus(204);
     }
 
+    /**
+     * Construit la liste `answers` du contrat public ({question_id, selected_option}).
+     *
+     * @param  array<int, int>  $selectedByPosition
+     * @return array<int, array{question_id: int, selected_option: int}>
+     */
+    private function answers(TravelQuiz $quiz, array $selectedByPosition, string $email = 'joueur@example.com'): array
+    {
+        $questions = $quiz->questions()->orderBy('position')->get();
+        $answers = [];
+
+        foreach ($selectedByPosition as $index => $selected) {
+            if (! isset($questions[$index])) {
+                continue;
+            }
+
+            $answers[] = ['question_id' => $questions[$index]->id, 'selected_option' => $selected];
+        }
+
+        return ['participant_email' => $email, 'answers' => $answers];
+    }
+
     public function test_participation_is_unique_and_score_is_server_side(): void
     {
         /** @var Company $company */
@@ -111,18 +133,18 @@ class TravelQuizTest extends TestCase
         $this->login($company);
         $quiz = $this->makePublishedQuiz($company);
 
-        // Bonnes réponses : 10 + 5 = 15.
-        $this->postJson("/api/v1/travel/quizzes/{$quiz->id}/participate", ['answers' => [1, 0]])
+        // Bonnes reponses : 10 + 5 = 15.
+        $this->postJson("/api/v1/travel/quizzes/{$quiz->id}/participate", $this->answers($quiz, [1, 0]))
             ->assertStatus(201)
             ->assertJsonPath('data.score', 15);
 
-        // Participation unique : seconde tentative → 422.
-        $this->postJson("/api/v1/travel/quizzes/{$quiz->id}/participate", ['answers' => [0, 0]])
-            ->assertStatus(422);
+        // Participation unique : seconde tentative avec le MEME email -> 409.
+        $this->postJson("/api/v1/travel/quizzes/{$quiz->id}/participate", $this->answers($quiz, [0, 0]))
+            ->assertStatus(409);
 
-        // Mauvaises réponses : score 0 (calcul serveur, pas client).
+        // Mauvaises reponses, autre participant : score 0 (calcul serveur).
         $this->login($company, role: 'employee', managerRole: null);
-        $this->postJson("/api/v1/travel/quizzes/{$quiz->id}/participate", ['answers' => [0, 1]])
+        $this->postJson("/api/v1/travel/quizzes/{$quiz->id}/participate", $this->answers($quiz, [0, 1], 'autre@example.com'))
             ->assertStatus(201)
             ->assertJsonPath('data.score', 0);
 
@@ -143,17 +165,18 @@ class TravelQuizTest extends TestCase
             'max_attempts' => 1,
         ]));
 
-        $this->postJson("/api/v1/travel/quizzes/{$draft->id}/participate", ['answers' => [0]])
+        $this->postJson("/api/v1/travel/quizzes/{$draft->id}/participate", $this->answers($draft, [0]))
             ->assertStatus(422);
 
         $quiz = $this->makePublishedQuiz($company);
 
-        // Nombre de réponses ≠ nombre de questions → 422.
-        $this->postJson("/api/v1/travel/quizzes/{$quiz->id}/participate", ['answers' => [0]])
-            ->assertStatus(422);
+        // Reponse partielle : licite (la question omise compte 0), pas une erreur.
+        $this->postJson("/api/v1/travel/quizzes/{$quiz->id}/participate", $this->answers($quiz, [0], 'partiel@example.com'))
+            ->assertStatus(201)
+            ->assertJsonPath('data.score', 0);
 
-        // Réponse hors bornes → 422.
-        $this->postJson("/api/v1/travel/quizzes/{$quiz->id}/participate", ['answers' => [0, 9]])
+        // Reponse hors bornes -> 422.
+        $this->postJson("/api/v1/travel/quizzes/{$quiz->id}/participate", $this->answers($quiz, [0, 9]))
             ->assertStatus(422);
     }
 
@@ -164,10 +187,10 @@ class TravelQuizTest extends TestCase
         $this->activateTravel($company);
         $this->login($company);
         $quiz = $this->makePublishedQuiz($company);
-        $this->postJson("/api/v1/travel/quizzes/{$quiz->id}/participate", ['answers' => [1, 0]])->assertStatus(201);
+        $this->postJson("/api/v1/travel/quizzes/{$quiz->id}/participate", $this->answers($quiz, [1, 0]))->assertStatus(201);
 
-        // Agent → 403.
-        $this->login($company, role: 'manager', managerRole: 'agent');
+        // Manager sans droit gestion (role metier valide, hors principal/rh) -> 403.
+        $this->login($company, role: 'manager', managerRole: 'dept');
         $this->getJson("/api/v1/travel/quizzes/{$quiz->id}/participations")->assertStatus(403);
 
         // Principal → 200 avec les résultats.
@@ -192,6 +215,6 @@ class TravelQuizTest extends TestCase
 
         $this->login($companyB);
         $this->getJson("/api/v1/travel/quizzes/{$quizA->id}")->assertStatus(404);
-        $this->postJson("/api/v1/travel/quizzes/{$quizA->id}/participate", ['answers' => [0, 0]])->assertStatus(404);
+        $this->postJson("/api/v1/travel/quizzes/{$quizA->id}/participate", $this->answers($quizA, [0, 0]))->assertStatus(404);
     }
 }

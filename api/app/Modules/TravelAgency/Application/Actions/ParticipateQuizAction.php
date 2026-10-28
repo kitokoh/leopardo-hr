@@ -43,6 +43,26 @@ final class ParticipateQuizAction
         }
 
         $questions = $quiz->questions()->get();
+
+        // Bornes du contrat : une reponse partielle est licite (le participant
+        // peut passer une question, elle compte alors 0), mais elle doit viser
+        // une question DE CE quiz et une option REELLEMENT proposee. Sans ce
+        // garde-fou, un `question_id` etranger ou un index hors bornes etait
+        // ignore silencieusement et produisait un score trompeur.
+        foreach ($answers as $answer) {
+            $question = $questions->firstWhere('id', (int) ($answer['question_id'] ?? 0));
+
+            if ($question === null) {
+                abort(422, 'Une reponse vise une question qui n\'appartient pas a ce quiz.');
+            }
+
+            $options = is_array($question->options) ? $question->options : [];
+
+            if ($options !== [] && (int) ($answer['selected_option'] ?? -1) >= count($options)) {
+                abort(422, 'Une reponse sort des options proposees.');
+            }
+        }
+
         $score = 0;
         $totalPoints = 0;
 
@@ -71,6 +91,11 @@ final class ParticipateQuizAction
                 'quiz_id' => $quiz->id,
                 'participant_contact_id' => null,
                 'participant_email' => $email,
+                // L'unicite est portee par la contrainte
+                // (company_id, quiz_id, participant_identifier). La laisser a
+                // NULL desactivait la garde : en Postgres `NULL <> NULL`, donc
+                // chaque tentative creait une ligne au lieu de lever 409.
+                'participant_identifier' => $email,
                 'participant_name' => $participantName,
                 'answers' => $answers,
                 'score' => $score,

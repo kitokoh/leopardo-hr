@@ -340,6 +340,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/quizzes/{travelQuiz}', [TravelQuizController::class, 'show']);
         Route::put('/quizzes/{travelQuiz}', [TravelQuizController::class, 'update']);
         Route::delete('/quizzes/{travelQuiz}', [TravelQuizController::class, 'destroy']);
+        Route::get('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'questionsIndex']);
         Route::post('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'storeQuestion']);
         Route::put('/quizzes/{travelQuiz}/questions/{travelQuizQuestion}', [TravelQuizController::class, 'updateQuestion']);
         Route::delete('/quizzes/{travelQuiz}/questions/{travelQuizQuestion}', [TravelQuizController::class, 'destroyQuestion']);
@@ -455,12 +456,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/articles/{article}/share', [TravelEngagementController::class, 'share']);
         Route::post('/articles/{article}/rate', [TravelEngagementController::class, 'rate']);
         Route::get('/articles/{article}/engagement', [TravelEngagementController::class, 'summary']);
-        Route::get('/quizzes/{quiz}', [TravelQuizController::class, 'show']);
-        Route::post('/quizzes/{quiz}/publish', [TravelQuizController::class, 'publish']);
-        Route::post('/quizzes/{quiz}/questions', [TravelQuizController::class, 'storeQuestion']);
-        Route::delete('/quiz-questions/{question}', [TravelQuizController::class, 'destroyQuestion']);
-        Route::post('/quizzes/{quiz}/participate', [TravelQuizController::class, 'participate']);
-        Route::get('/quizzes/{quiz}/results', [TravelQuizController::class, 'results']);
+        Route::get('/quizzes/{travelQuiz}', [TravelQuizController::class, 'show']);
+        Route::post('/quizzes/{travelQuiz}/publish', [TravelQuizController::class, 'publish']);
+        Route::post('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'storeQuestion']);
+        Route::delete('/quiz-questions/{travelQuizQuestion}', [TravelQuizController::class, 'destroyQuestion']);
+        Route::post('/quizzes/{travelQuiz}/participate', [TravelQuizController::class, 'participate']);
+        Route::get('/quizzes/{travelQuiz}/results', [TravelQuizController::class, 'results']);
         Route::get('/tourist-sites/search', [TravelTouristSiteController::class, 'search']);
         Route::put('/tourist-sites/{site}', [TravelTouristSiteController::class, 'update']);
         Route::delete('/tourist-sites/{site}', [TravelTouristSiteController::class, 'destroy']);
@@ -494,12 +495,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/articles/{article}/rate', [TravelEngagementController::class, 'rate']);
             Route::get('/articles/{article}/engagement', [TravelEngagementController::class, 'summary']);
 
-            Route::get('/quizzes/{quiz}', [TravelQuizController::class, 'show']);
-            Route::post('/quizzes/{quiz}/publish', [TravelQuizController::class, 'publish']);
-            Route::post('/quizzes/{quiz}/questions', [TravelQuizController::class, 'storeQuestion']);
-            Route::delete('/quiz-questions/{question}', [TravelQuizController::class, 'destroyQuestion']);
-            Route::post('/quizzes/{quiz}/participate', [TravelQuizController::class, 'participate']);
-            Route::get('/quizzes/{quiz}/results', [TravelQuizController::class, 'results']);
+            Route::get('/quizzes/{travelQuiz}', [TravelQuizController::class, 'show']);
+            Route::post('/quizzes/{travelQuiz}/publish', [TravelQuizController::class, 'publish']);
+            Route::get('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'questionsIndex']);
+            Route::post('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'storeQuestion']);
+            Route::delete('/quiz-questions/{travelQuizQuestion}', [TravelQuizController::class, 'destroyQuestion']);
+            Route::post('/quizzes/{travelQuiz}/participate', [TravelQuizController::class, 'participate']);
+            Route::get('/quizzes/{travelQuiz}/results', [TravelQuizController::class, 'results']);
 
             Route::post('/tourist-sites', [TravelTouristSiteController::class, 'store']);
             Route::get('/tourist-sites/search', [TravelTouristSiteController::class, 'search']);
