@@ -112,6 +112,16 @@ class TravelPublicContactApiTest extends TestCase
     {
         /** @var Company $other */
         $other = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        // Garde de verticale (#8128) : la route publique signee est hors du
+        // groupe `module.travelagency`, donc elle verifie `hasFeature()`
+        // elle-meme et renvoie 404 sur un tenant sans la feature. Le sujet de
+        // CE test est l'isolation multi-tenant a l'ecriture, pas l'activation
+        // de la verticale : sans cet opt-in le test mesurerait le garde #8128
+        // (couvert par test_public_contact_unknown_company_is_404 / le test
+        // dedie du garde) au lieu de ce qu'il annonce.
+        $other->setFeature('travelagency', true);
+        $other->save();
+
         $this->tenants->withinTenant($other, function (): void {
             TravelCustomerContact::factory()->create(['email' => 'existante.autre@example.com']);
         });
