@@ -76,11 +76,7 @@ class KioskController extends Controller
 
         // #7962 — la création, la normalisation de la matrice de méthodes et la
         // garde fail-closed de provisioning vivent dans l'Action ; le
-        // contrôleur ne fait plus que l'orchestration HTTP. Comme avant, le
-        // kiosque appartient à la company ACTIVE : on ne lit pas `$company`
-        // autrement que pour ce contrôle.
-        abort_unless($company->id !== null, 403, 'FORBIDDEN');
-
+        // contrôleur ne fait plus que l'orchestration HTTP.
         $provisioned = $this->provisionKiosk->execute($company, $validated);
 
         return new JsonResponse([
