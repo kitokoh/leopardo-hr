@@ -154,8 +154,11 @@ final class ProvisionKioskActionTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
-            'subscription_start' => '2026-01-01',
-            'subscription_end' => '2027-01-01',
+            // Dates relatives a `now` : une date calendaire figee devient
+            // « dans le passe » au fil du temps et fait echouer la garde
+            // d'hygiene (meme famille de defaut que le test #8396).
+            'subscription_start' => now()->subDays(7)->toDateString(),
+            'subscription_end' => now()->addDays(365)->toDateString(),
             'language' => 'fr',
         ]);
 
