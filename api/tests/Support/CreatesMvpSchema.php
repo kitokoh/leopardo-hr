@@ -4610,6 +4610,108 @@ trait CreatesMvpSchema
             });
         }
 
+        // #8725 (BC-17 PAGES) — dossiers de verification, pieces privees, codes
+        // SMS. Miroir des migrations 2026_10_27_000600_8725 (garde #5443) :
+        // livrees par #8725/#8726 sans mise a jour de la fixture, ce qui faisait
+        // echouer `Hygiene Guards` sur TOUTES les PR et renvoyait
+        // `relation "page_verification_requests" does not exist` aux tests qui
+        // passent par CreatesMvpSchema.
+        if (! Schema::hasTable($this->moduleTable('page_verification_requests'))) {
+            Schema::create($this->moduleTable('page_verification_requests'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedBigInteger('page_id');
+                $table->string('method', 20);
+                $table->string('status', 20)->default('open');
+                $table->string('submitted_by', 190)->nullable();
+                $table->timestampTz('submitted_at')->nullable();
+                $table->string('decided_by', 190)->nullable();
+                $table->timestampTz('decided_at')->nullable();
+                $table->string('decision_reason', 40)->nullable();
+                $table->unsignedSmallInteger('evidence_count')->default(0);
+                $table->timestamps();
+
+                $table->index('company_id', 'pvr_company_index');
+                $table->index(['page_id', 'status'], 'pvr_page_status_index');
+                $table->index(['page_id', 'created_at'], 'pvr_page_created_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('page_verification_evidence'))) {
+            Schema::create($this->moduleTable('page_verification_evidence'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedBigInteger('request_id');
+                $table->string('kind', 40);
+                $table->string('storage_disc', 40)->default('local');
+                $table->string('storage_path', 500);
+                $table->string('content_hash', 64);
+                $table->string('mime_type', 100);
+                $table->unsignedBigInteger('size_bytes');
+                $table->timestampTz('retention_until');
+                $table->timestampTz('created_at')->useCurrent();
+
+                $table->index('company_id', 'pve_company_index');
+                $table->index('request_id', 'pve_request_index');
+                $table->index('retention_until', 'pve_retention_index');
+                $table->unique(['request_id', 'content_hash'], 'pve_request_hash_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('page_verification_codes'))) {
+            Schema::create($this->moduleTable('page_verification_codes'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedBigInteger('request_id');
+                $table->string('phone_e164', 20);
+                $table->string('code_hash', 64);
+                $table->unsignedSmallInteger('attempts')->default(0);
+                $table->unsignedSmallInteger('max_attempts')->default(5);
+                $table->timestampTz('expires_at');
+                $table->timestampTz('cooldown_until')->nullable();
+                $table->timestampTz('consumed_at')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+
+                $table->index('company_id', 'pvc_company_index');
+                $table->index(['request_id', 'created_at'], 'pvc_request_created_index');
+                $table->index('phone_e164', 'pvc_phone_index');
+            });
+        }
+
+        // #8726 (BC-17 PAGES) — domaines personnalises des Pages. Miroir de la
+        // migration 2026_10_27_000700_8726 (garde #5443). `host` est unique
+        // GLOBALEMENT : la contrainte est en base, pas dans un chemin applicatif.
+        // La cle etrangere vers `pages` est volontairement omise ici : la fixture
+        // ne garantit pas l'ordre de creation des tables du module Pages, et une
+        // FK non satisfaite ferait echouer la construction du schema de test.
+        if (! Schema::hasTable($this->moduleTable('page_custom_domains'))) {
+            Schema::create($this->moduleTable('page_custom_domains'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedBigInteger('page_id');
+                $table->string('host', 253);
+                $table->string('status', 24)->default('pending_dns');
+                $table->string('provider', 40)->default('vercel');
+                $table->string('provider_reference', 190)->nullable();
+                $table->string('certificate_status', 24)->nullable();
+                $table->timestampTz('certificate_expires_at')->nullable();
+                $table->timestampTz('verified_at')->nullable();
+                $table->timestampTz('last_checked_at')->nullable();
+                $table->timestampTz('removed_at')->nullable();
+                $table->unsignedInteger('check_attempts')->default(0);
+                $table->string('last_error', 500)->nullable();
+                $table->jsonb('dns_instructions')->nullable();
+                $table->boolean('is_apex')->default(false);
+                $table->boolean('is_wildcard')->default(false);
+                $table->timestampsTz();
+
+                $table->unique('host', 'page_custom_domains_host_unique');
+                $table->unique(['page_id', 'host'], 'page_custom_domains_page_host_unique');
+                $table->index(['company_id', 'status'], 'page_custom_domains_company_status_index');
+                $table->index(['status', 'certificate_expires_at'], 'page_custom_domains_serving_index');
+            });
+        }
+
     }
 
     private function createVerticalParityTables(): void
