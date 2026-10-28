@@ -228,6 +228,15 @@ jobs:
       - name: Routes tenant/platform separation guard (MAT-003, issue #5861)
         run: bash dev-hub/tools/check-routes-tenant-platform.sh
 
+      # #7959 (point 4) — « unifier le mécanisme de chargement des routes
+      # modules avec middleware de groupe imposé ». 16 fichiers
+      # `routes/modules/*.php` recopiaient la pile tenant complète ; elle vit
+      # désormais dans `App\Support\Routing\ModuleRoutes`. Cette garde empêche
+      # la réintroduction de la liste littérale, sinon l'unification se
+      # re-défait au prochain module ajouté.
+      - name: Module route middleware not duplicated (#7959)
+        run: bash dev-hub/tools/check-module-route-middleware.sh api
+
       - name: Routes tenant/platform guard self-test (MAT-003, issue #5861)
         run: bash dev-hub/tools/check-routes-tenant-platform-test.sh
 

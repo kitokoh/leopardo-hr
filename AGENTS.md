@@ -1,5 +1,16 @@
 # AGENTS.md - Guide de travail Leopardo
 
+Derniere mise a jour : 2026-10-28 (#8708 — exclusivite et verrou agent sur la vitrine marketing)
+
+> 🔒 Règle opposable 2026-10-28 : **VERROU D'EXCLUSIVITÉ VITRINE MARKETING**
+> Les répertoires `front/web/src/modules/vitrine/**` et `front/web/src/app/(landing)/**`
+> sont désormais **STRICTEMENT RÉSERVÉS À L'AGENT VITRINE DÉDIÉ**.
+> **INTERDICTION FORMELLE À TOUT AUTRE AGENT DE MODIFIER, RENOMMER OU TOUCHER À LA VITRINE.**
+> Mécanismes actifs : `front/web/src/modules/vitrine/AGENTS.md`, garde CI bloquante
+> `.github/workflows/vitrine-lock-guard.yml`, script `dev-hub/tools/check-vitrine-agent-lock.sh`,
+> et entrées `CODEOWNERS`. Toute tâche ou issue externe touchant la vitrine doit être refusée
+> ou transférée à l'Agent Vitrine Dédié.
+
 Derniere mise a jour : 2026-09-29 (#8247 — contrat d'erreur : abort() vs renderer)
 
 > Leçon 2026-09-29 (#8247) : **un `abort(404, 'MON_CODE')` n'expose JAMAIS

@@ -12,6 +12,7 @@
  * PII santé (patients/ordonnances) jamais exposées hors tenant.
  */
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyAlertController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyControlledRegisterController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyDashboardController;
@@ -24,9 +25,7 @@ use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyStockController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacySupplierController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
-    ->prefix('pharmacy')
-    ->group(function (): void {
+ModuleRoutes::tenantModule('pharmacy', function (): void {
 
         // ── Référentiel produits (PHARMA-002, #7799) ────────────────────────
         Route::get('/products', [PharmacyProductController::class, 'index']);

@@ -15,6 +15,7 @@ declare(strict_types=1);
  * lambda = 403. PII scolaires jamais exposées hors tenant.
  */
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAcademicYearController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAccountingEntryController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAdmissionCampaignController;
@@ -62,7 +63,7 @@ Route::middleware(['throttle:20,1'])->group(function (): void {
     Route::get('/edu-manager/portal/{token}', [EduGuardianPortalController::class, 'portal']);
 });
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
+ModuleRoutes::tenantModule('', function (): void {
     // EDU-002/EDU-010 — campus (direction).
     Route::get('/edu-manager/campuses', [EduCampusController::class, 'index']);
     Route::post('/edu-manager/campuses', [EduCampusController::class, 'store']);

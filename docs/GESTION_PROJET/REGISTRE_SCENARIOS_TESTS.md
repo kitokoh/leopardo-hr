@@ -21,6 +21,25 @@ verrouillent donc les transitions, pas le rendu :
 **Automatise** : `front/web/src/modules/onboarding/components/__tests__/LeaOnboarding.test.tsx`
 (7 tests), `api/tests/Feature/Onboarding/LeaFlagExposureTest.php` (3 tests, dont le **defaut ferme**).
 
+> **MAJ 2026-10-28 — Architecture backend, ARK-02 (#7959, point 4) : pile de middlewares tenant unique.** 
+> Surface **API** : **aucune route ajoutee, retiree ni renommee** — les 16 fichiers `api/routes/modules/*.php` 
+> (`absence`, `accounting`, `billing`, `cabinet`, `crm`, `dashboard`, `edu_manager`, `expense`, `fuel_station`, 
+> `health_manager`, `hospitality_manager`, `hr_extended`, `integrations`, `pharmacy`, `rh`, `tracking`) remplacent la 
+> pile litterale `Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])` 
+> par `ModuleRoutes::tenantModule()`. 
+> **Pourquoi c'est un scenario de test** : la pile de middlewares **est** la surface d'autorisation. Une route dont un 
+> middleware a ete omis reste joignable mais **moins protegee** que ses voisines, sans aucun changement d'URL — un 
+> scenario qui n'exerce que les chemins ne peut pas le voir. La pile est donc desormais **unique** 
+> (`ModuleRoutes::TENANT_MIDDLEWARES`), et la garde `dev-hub/tools/check-module-route-middleware.sh` **refuse** la 
+> reintroduction de la pile litterale dans `routes/modules/` : la 42e recopie ne peut plus arriver.
+> Scenarios automatises : garde `check-module-route-middleware.sh` (**exit 0** sur les 16 fichiers convertis), 
+> `check-openapi-route-coverage.py` (**exit 0**, y compris `--strict-staleness`, apres avoir appris au parseur a lire 
+> `ModuleRoutes::tenantModule()` — sans quoi les 16 modules disparaissaient du coverage et la garde devenait 
+> faussement verte), `ModuleRoutes` preserve **exactement** la pile historique (aucune autorisation modifiee, 
+> `billing` et `dashboard` conservent une racine `v1` sans prefixe). 
+> **Limite assumee** : la conversion ne couvre que 16 des 41 fichiers de routes ; les 25 restants gardent la pile 
+> litterale et restent donc hors de la garde — conversion a poursuivre fichier par fichier (chacun est un diff 
+> mecanique de 1 ligne, sans effet fonctionnel).
 > **MAJ 2026-10-27 — Restaurant OS, REST-OS-8 : reçu client conforme + vue consolidée groupe (issue #8610).**
 > Surface **API** (`api/routes/modules/restaurantmanager.php`, module RestaurantManager) : nouvelle route
 > `GET /api/v1/restaurant/reports/group` — vue consolidée **groupe** en **lecture seule**, permission

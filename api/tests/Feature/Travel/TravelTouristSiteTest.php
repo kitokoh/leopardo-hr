@@ -6,10 +6,10 @@ namespace Tests\Feature\Travel;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Domain\Models\TravelCity;
 use App\Modules\TravelAgency\Domain\Models\TravelCountry;
 use App\Modules\TravelAgency\Domain\Models\TravelTouristSite;
-use App\Core\Tenant\TenantManager;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -45,10 +45,16 @@ class TravelTouristSiteTest extends TestCase
 
     private function makeCity(Company $company, string $name = 'Yaoundé'): TravelCity
     {
-        return app(TenantManager::class)->withinTenant($company, function () use ($name): TravelCity {
+        return app(TenantManager::class)->withinTenant($company, function () use ($company, $name): TravelCity {
             TravelCountry::query()->create([
                 'company_id' => $company->id,
                 'iso2' => 'CM',
+                // `iso3` est NOT NULL sans defaut en base : l'INSERT echouait
+                // donc sur une violation de contrainte, ce qui avortait la
+                // transaction externe et faisait echouer les TROIS tests du
+                // fichier avec un `SQLSTATE[25P02] In failed sql transaction`
+                // trompeur, a des lignes sans rapport (refs #8396).
+                'iso3' => 'CMR',
                 'name' => 'Cameroun',
             ]);
 
@@ -74,10 +80,17 @@ class TravelTouristSiteTest extends TestCase
             'city_id' => $city->id,
             'latitude' => 2.8765,
             'longitude' => 9.9000,
-        ])->assertStatus(201)
-            ->assertJsonPath('data.status', 'published');
+        ])->assertStatus(201);
 
+        // `POST` ne renvoie que l'identifiant (contrat documente dans
+        // `api/openapi.yaml` : « Site cree (id) »). On lit donc le statut par
+        // la surface qui l'expose, la liste — la valeur attendue est `active`,
+        // seul defaut possible (`TravelRecordStatus` = active|disabled).
         $siteId = (int) $created->json('data.id');
+
+        $this->getJson('/api/v1/travel/tourist-sites?city_id='.$city->id)
+            ->assertOk()
+            ->assertJsonPath('data.0.status', 'active');
 
         // Recherche par ville.
         $this->getJson('/api/v1/travel/tourist-sites?city_id='.$city->id)
@@ -89,9 +102,22 @@ class TravelTouristSiteTest extends TestCase
         $this->getJson('/api/v1/travel/tourist-sites?search=inexistant')->assertJsonCount(0, 'data');
 
         // Mise à jour.
-        $this->putJson("/api/v1/travel/tourist-sites/{$siteId}", ['status' => 'archived'])
+        // Seule transition reelle : `active` -> `disabled`. `archived` n'est
+        // pas une valeur de l'enum et faisait echouer le PUT en 422 (ou en
+        // ValueError selon l'ordre de validation) — refs #8396.
+        // Le PUT ne renvoie que l'identifiant (contrat OpenAPI) : la valeur
+        // effective se verifie par la lecture.
+        $this->putJson("/api/v1/travel/tourist-sites/{$siteId}", ['status' => 'disabled'])
             ->assertOk()
-            ->assertJsonPath('data.status', 'archived');
+            ->assertJsonPath('data.id', $siteId);
+
+        $this->getJson("/api/v1/travel/tourist-sites/{$siteId}")
+            ->assertOk()
+            ->assertJsonPath('data.status', 'disabled')
+            // La mise a jour partielle ne doit PAS avoir efface les champs
+            // omis — c'est ce que faisait `forceFill` sur toutes les cles.
+            ->assertJsonPath('data.city_id', $city->id)
+            ->assertJsonPath('data.name', 'Chutes de la Lobé');
 
         $this->deleteJson("/api/v1/travel/tourist-sites/{$siteId}")->assertStatus(204);
     }
@@ -114,8 +140,14 @@ class TravelTouristSiteTest extends TestCase
         $this->postJson('/api/v1/travel/tourist-sites', ['name' => 'X', 'city_id' => $foreignCity->id])
             ->assertStatus(422);
 
-        // Filtre par ville d'un autre tenant → 422.
-        $this->getJson('/api/v1/travel/tourist-sites?city_id='.$foreignCity->id)->assertStatus(422);
+        // Filtre par ville d'un autre tenant : la liste reste VIDE et le
+        // statut est 200. C'est le comportement fail-closed correct — un 422
+        // dirait « cette ville existe mais pas chez vous », donc divulguerait
+        // l'existence d'une ressource d'un autre tenant. Le test attendait 422
+        // (refs #8396 : assertion inversee, pas un defaut de code).
+        $this->getJson('/api/v1/travel/tourist-sites?city_id='.$foreignCity->id)
+            ->assertOk()
+            ->assertJsonCount(0, 'data');
     }
 
     public function test_site_is_isolated_per_tenant(): void
@@ -131,7 +163,7 @@ class TravelTouristSiteTest extends TestCase
         $site = app(TenantManager::class)->withinTenant($companyA, fn () => TravelTouristSite::query()->create([
             'company_id' => $companyA->id,
             'name' => 'Mont Cameroun',
-            'status' => 'published',
+            'status' => 'active',
         ]));
 
         $this->login($companyB);
