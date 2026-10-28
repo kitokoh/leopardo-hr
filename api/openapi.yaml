@@ -56003,7 +56003,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56032,7 +56032,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56082,7 +56082,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56113,7 +56113,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56144,7 +56144,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56554,7 +56554,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: quiz
+      - name: travelQuiz
         in: path
         required: true
         schema:
@@ -56581,7 +56581,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: quiz
+      - name: travelQuiz
         in: path
         required: true
         schema:
@@ -56610,7 +56610,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: quiz
+      - name: travelQuiz
         in: path
         required: true
         schema:
@@ -56659,7 +56659,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: question
+      - name: travelQuizQuestion
         in: path
         required: true
         schema:
@@ -56689,7 +56689,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: quiz
+      - name: travelQuiz
         in: path
         required: true
         schema:
@@ -56716,7 +56716,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: quiz
+      - name: travelQuiz
         in: path
         required: true
         schema:
