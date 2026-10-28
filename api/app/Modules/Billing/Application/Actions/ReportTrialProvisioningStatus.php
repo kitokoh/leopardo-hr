@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Billing\Application\Actions;
 
+use App\Modules\Billing\Application\Contracts\TrialProvisioningReader;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Cas d'usage : restituer l'état d'un provisioning d'essai à un visiteur
@@ -25,14 +25,16 @@ use Illuminate\Support\Facades\DB;
  */
 class ReportTrialProvisioningStatus
 {
+    public function __construct(
+        private readonly TrialProvisioningReader $provisionings,
+    ) {}
+
     /**
      * @return array{status: string, provisioned_at: string|null, password_set: bool, access_sent: bool, login_url?: string}|null
      */
     public function execute(string $token): ?array
     {
-        $row = DB::table('trial_provisionings')
-            ->where('provisioning_token', $token)
-            ->first();
+        $row = $this->provisionings->findByToken($token);
 
         if ($row === null) {
             return null;
