@@ -655,6 +655,11 @@ Route::prefix('v1')->group(function (): void {
         // avec ses propres gardes `search_intel.view` / `search_intel.manage`.
         // Aucune seconde console : ce sont de nouveaux écrans de celle-ci.
         require __DIR__.'/modules/search_intelligence.php';
+
+        // BC PAGES (#8729) — modération plateforme : recherche cross-tenant,
+        // fiche, décisions de vérification, suspension/levée, accès tracé aux
+        // pièces. Sous le groupe `platform` déjà authentifié.
+        require __DIR__.'/modules/pages_platform.php';
         Route::delete('/companies/{company}', [PlatformCompanyDeletionController::class, 'destroy'])->middleware('platform.permission:companies.manage');
 
         // #8441 — paramétrage de la verticale cagnottes DANS le contexte de

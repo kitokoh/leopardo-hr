@@ -70,6 +70,9 @@ enum PlatformRole: string
                 PlatformPermission::Impersonate,
                 PlatformPermission::ObservabilityView,
                 PlatformPermission::MetricsView,
+                // BC PAGES (#8729) — le support instruit les litiges de
+                // propriété : il LIT la fiche et les pièces, il ne suspend pas.
+                PlatformPermission::PagesView,
             ],
             self::Finance => [
                 PlatformPermission::CompaniesView,
@@ -108,6 +111,9 @@ enum PlatformRole: string
                 // bloqué ou une intégration en erreur, sans toucher aux
                 // campagnes ni aux contenus.
                 PlatformPermission::SearchIntelView,
+                // BC PAGES (#8729) — ops diagnostique une Page cassée ou un
+                // domaine en échec : lecture seule, comme pour GSI.
+                PlatformPermission::PagesView,
             ],
             self::Marketing => [
                 PlatformPermission::CompaniesView,
