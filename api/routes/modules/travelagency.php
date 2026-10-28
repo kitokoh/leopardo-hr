@@ -335,6 +335,15 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/reports/offices', [TravelReportController::class, 'offices']);
         Route::post('/reports/export', [TravelExportController::class, 'store']);
         Route::get('/reports/export/{travelExportAsset}', [TravelExportController::class, 'show']);
+
+        // Webhooks sortants (TRAVEL-7xx). Le controller et les FormRequests
+        // existaient mais AUCUNE route ne les exposait : la surface entiere
+        // repondait 405 alors que les tests et la doc la decrivent (#8396).
+        Route::get('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'index']);
+        Route::post('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'store']);
+        Route::get('/webhook-subscriptions/{travelWebhookSubscription}', [TravelWebhookSubscriptionController::class, 'show']);
+        Route::put('/webhook-subscriptions/{travelWebhookSubscription}', [TravelWebhookSubscriptionController::class, 'update']);
+        Route::delete('/webhook-subscriptions/{travelWebhookSubscription}', [TravelWebhookSubscriptionController::class, 'destroy']);
         Route::get('/quizzes', [TravelQuizController::class, 'index']);
         Route::post('/quizzes', [TravelQuizController::class, 'store']);
         Route::get('/quizzes/{travelQuiz}', [TravelQuizController::class, 'show']);
