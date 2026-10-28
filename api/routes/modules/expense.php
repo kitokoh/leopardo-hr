@@ -5,8 +5,9 @@ declare(strict_types=1);
 use App\Modules\Expense\Interfaces\Api\V1\Controllers\ExpenseClaimController;
 use App\Modules\Expense\Interfaces\Api\V1\Controllers\ExpenseAccountingController;
 use Illuminate\Support\Facades\Route;
+use App\Support\Routing\ModuleRoutes;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
+ModuleRoutes::tenantModule('', function (): void {
     Route::get('/expense-claims', [ExpenseClaimController::class, 'index']);
     Route::post('/expense-claims', [ExpenseClaimController::class, 'store']);
     Route::get('/expense-claims/{expenseClaim}', [ExpenseClaimController::class, 'show']);

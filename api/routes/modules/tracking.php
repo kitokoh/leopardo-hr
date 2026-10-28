@@ -7,6 +7,7 @@ use App\Modules\Fleet\Interfaces\Api\V1\Controllers\VehicleController;
 use App\Modules\Fleet\Interfaces\Api\V1\Controllers\VehicleMaintenanceController;
 use App\Modules\Fleet\Interfaces\Api\V1\Controllers\VehicleTripController;
 use Illuminate\Support\Facades\Route;
+use App\Support\Routing\ModuleRoutes;
 
 // Sécurité #2217 : le module Fleet est un outil de GESTION.
 // Toutes les routes (lecture et écriture) sont réservées aux managers SAUF :
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 //    pas manager (employé = son propre véhicule assigné uniquement)
 //  - GET /me/vehicles             → véhicules assignés à l'employé connecté
 //  (consommés par l'app mobile employé leopardo_employee)
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
+ModuleRoutes::tenantModule('', function (): void {
     // Employee self-service (véhicule assigné uniquement)
     Route::get('/me/vehicles', [VehicleController::class, 'myVehicles']);
     Route::get('/vehicles/{id}/position', [VehicleController::class, 'position'])->whereNumber('id');

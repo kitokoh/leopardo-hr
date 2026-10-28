@@ -34,6 +34,7 @@ use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmTaskController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmTimelineController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmWhatsAppWebhookController;
 use Illuminate\Support\Facades\Route;
+use App\Support\Routing\ModuleRoutes;
 
 // ── Webhooks fournisseur (publics, signature HMAC, fail-closed) ─────────────
 Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {
@@ -66,7 +67,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/automations/events/{event}', [CrmAutomationController::class, 'dispatch']);
     });
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->prefix('crm')->group(function (): void {
+ModuleRoutes::tenantModule('crm', function (): void {
     // ── Exports asynchrones + read models (#5729) ─────────────────────────────
     Route::get('/exports', [CrmExportController::class, 'index']);
     Route::post('/exports', [CrmExportController::class, 'store']);

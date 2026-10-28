@@ -34,10 +34,9 @@ use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthRoomController
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthSpecialtyController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthStaffRoleController;
 use Illuminate\Support\Facades\Route;
+use App\Support\Routing\ModuleRoutes;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
-    ->prefix('health-manager')
-    ->group(function (): void {
+ModuleRoutes::tenantModule('health-manager', function (): void {
         // ── Tableau de bord (HC-008 #7792) ─────────────────────────────
         Route::get('/dashboard', [HealthDashboardController::class, 'index']);
 

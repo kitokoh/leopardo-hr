@@ -11,12 +11,13 @@ use App\Modules\Cabinet\Interfaces\Api\V1\Controllers\CabinetDocumentController;
 use App\Modules\Cabinet\Interfaces\Api\V1\Controllers\CabinetFolderController;
 use App\Modules\Cabinet\Interfaces\Api\V1\Controllers\CabinetShareController;
 use Illuminate\Support\Facades\Route;
+use App\Support\Routing\ModuleRoutes;
 
 // Public: access shared resources via token (no auth required)
 Route::get('/cabinet/shared/{token}', [CabinetShareController::class, 'accessByToken'])
     ->middleware('throttle:60,1');
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->prefix('cabinet')->group(function (): void {
+ModuleRoutes::tenantModule('cabinet', function (): void {
 
     // ── Stats ────────────────────────────────────────────────────────────────
     Route::get('/stats', [CabinetShareController::class, 'stats']);

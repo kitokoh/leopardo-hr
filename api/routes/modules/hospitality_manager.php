@@ -34,10 +34,9 @@ use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityRese
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityRoomTypeController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityUnitController;
 use Illuminate\Support\Facades\Route;
+use App\Support\Routing\ModuleRoutes;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
-    ->prefix('hospitality')
-    ->group(function (): void {
+ModuleRoutes::tenantModule('hospitality', function (): void {
         // État/santé du module pour le tenant courant (sonde d'activation).
         Route::get('/status', [HospitalityModuleStatusController::class, 'show']);
 

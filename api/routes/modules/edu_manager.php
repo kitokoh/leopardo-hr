@@ -43,6 +43,7 @@ use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduSubjectController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduTeacherInterfaceController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduTeacherWorkspaceController;
 use Illuminate\Support\Facades\Route;
+use App\Support\Routing\ModuleRoutes;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,7 +63,7 @@ Route::middleware(['throttle:20,1'])->group(function (): void {
     Route::get('/edu-manager/portal/{token}', [EduGuardianPortalController::class, 'portal']);
 });
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
+ModuleRoutes::tenantModule('', function (): void {
     // EDU-002/EDU-010 — campus (direction).
     Route::get('/edu-manager/campuses', [EduCampusController::class, 'index']);
     Route::post('/edu-manager/campuses', [EduCampusController::class, 'store']);

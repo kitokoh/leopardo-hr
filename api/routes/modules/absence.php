@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Modules\Absence\Interfaces\Api\V1\Controllers\AbsenceController;
 use Illuminate\Support\Facades\Route;
+use App\Support\Routing\ModuleRoutes;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,9 +14,7 @@ use Illuminate\Support\Facades\Route;
 | Full paths: /api/v1/absences/...
 */
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
-    ->prefix('absences')
-    ->group(function (): void {
+ModuleRoutes::tenantModule('absences', function (): void {
         Route::get('/', [AbsenceController::class, 'index']);
         Route::post('/', [AbsenceController::class, 'store']);
         Route::get('/{absence}', [AbsenceController::class, 'show'])->whereNumber('absence');

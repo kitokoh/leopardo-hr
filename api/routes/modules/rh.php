@@ -44,8 +44,9 @@ use App\Modules\Planning\Interfaces\Api\V1\Controllers\ProjectController;
 use App\Modules\Planning\Interfaces\Api\V1\Controllers\ScheduleController;
 use App\Modules\Planning\Interfaces\Api\V1\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
+use App\Support\Routing\ModuleRoutes;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
+ModuleRoutes::tenantModule('', function (): void {
 
     // ── Employees ─────────────────────────────────────────────────────────────
     Route::get('/employees', [EmployeeController::class, 'index']);

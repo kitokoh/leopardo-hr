@@ -32,8 +32,9 @@ use App\Modules\Planning\Interfaces\Api\V1\Controllers\LeavePolicyController;
 use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\JobPostingActionController;
 use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\RecruitmentController;
 use Illuminate\Support\Facades\Route;
+use App\Support\Routing\ModuleRoutes;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
+ModuleRoutes::tenantModule('', function (): void {
 
     // ── Self-Service (all employees) ─────────────────────────────────────
     Route::get('/me/leave-balances', [LeavePolicyController::class, 'myBalances']);

@@ -52,8 +52,9 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStationController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStockController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSyncController;
 use Illuminate\Support\Facades\Route;
+use App\Support\Routing\ModuleRoutes;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
+ModuleRoutes::tenantModule('', function (): void {
     // FUEL-004 — relevés de compteur par pompe (spec §13.4).
     Route::post('/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings', [FuelMeterReadingController::class, 'record'])
         ->whereNumber('station')

@@ -33,9 +33,7 @@ use App\Modules\Accounting\Interfaces\Api\V1\Controllers\PublicDocumentShareCont
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\ShareAccessController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
-    ->prefix('accounting')
-    ->group(function (): void {
+ModuleRoutes::tenantModule('accounting', function (): void {
 
         // ── Contacts client/fournisseur (RBAC comptable + principal) ────────
         Route::middleware('api.manager:comptable,principal,module:accounting')->group(function (): void {
@@ -149,6 +147,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingPaymentController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\BankStatementController;
+use App\Support\Routing\ModuleRoutes;
 
 Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable,module:accounting'])->group(function (): void {
     Route::get('accounting/payments', [AccountingPaymentController::class, 'index']);
