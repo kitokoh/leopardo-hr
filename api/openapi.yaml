@@ -85,6 +85,8 @@ tags:
   description: Groupe d'opérations Privacy
 - name: Kiosks
   description: Groupe d'opérations Kiosks
+- name: Pages
+  description: BC PAGES — Pages par établissement (surface tenant, #8728)
 - name: Cameras
   description: Groupe d'opérations Cameras
 - name: Vehicle Tracking
@@ -4911,6 +4913,242 @@ paths:
           description: Déjà lié
         '422':
           $ref: '#/components/responses/Validation422'
+  /pages:
+    get:
+      operationId: api_get_pages
+      tags:
+      - Pages
+      summary: Liste des Pages du tenant (BC PAGES, #8728)
+      description: 'Pages du tenant courant, les plus recentes d''abord. Filtres optionnels : site_id, status, verification_status, q (recherche sur le slug). Pagination via per_page (1 a 100, defaut 15). Reserve aux roles de gestion porteurs du module pages.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: site_id
+        in: query
+        required: false
+        description: Restreint aux Pages d'un etablissement.
+        schema:
+          type: integer
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - draft
+          - published
+          - archived
+      - name: verification_status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - unverified
+          - pending
+          - verified
+          - rejected
+      - name: q
+        in: query
+        required: false
+        description: Recherche insensible a la casse sur le slug.
+        schema:
+          type: string
+          maxLength: 120
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 15
+      responses:
+        '200':
+          description: Pages paginees (data, meta.current_page, meta.last_page, meta.total)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Role insuffisant ou module pages non accorde
+    post:
+      operationId: api_post_pages
+      tags:
+      - Pages
+      summary: Cree une Page pour un etablissement
+      description: 'Une Page appartient a un seul etablissement (invariant d''index UNIQUE) : un second create pour le meme site_id est refuse. Le slug est derive du nom et translittere ; un slug inutilisable ou reserve renvoie 422 (PAGE_SLUG_UNUSABLE, PAGE_SLUG_RESERVED, PAGE_SLUG_TAKEN).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageWriteRequest'
+      responses:
+        '201':
+          description: Page creee (PageResource)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Role insuffisant ou module pages non accorde
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pages/{page}:
+    get:
+      operationId: api_get_page
+      tags:
+      - Pages
+      summary: Detail d'une Page (blocs inclus)
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/PageId'
+      responses:
+        '200':
+          description: Page (PageResource, blocs charges)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Page inexistante ou appartenant a un autre tenant (reponse uniforme)
+    put:
+      operationId: api_put_page
+      tags:
+      - Pages
+      summary: Met a jour les attributs d'une Page
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/PageId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageWriteRequest'
+      responses:
+        '200':
+          description: Page mise a jour (PageResource)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Role insuffisant ou module pages non accorde
+        '404':
+          description: Page inexistante ou appartenant a un autre tenant (reponse uniforme)
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pages/{page}/publish:
+    post:
+      operationId: api_post_page_publish
+      tags:
+      - Pages
+      summary: Publie une Page
+      description: 'Passe la Page en published et pose published_at. Sans titre SEO, la publication est refusee (422 PAGE_SEO_TITLE_REQUIRED) : elle produirait une URL indexable sans intitule.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/PageId'
+      responses:
+        '200':
+          description: Page publiee (PageResource)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Role insuffisant ou module pages non accorde
+        '404':
+          description: Page inexistante ou appartenant a un autre tenant (reponse uniforme)
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pages/{page}/unpublish:
+    post:
+      operationId: api_post_page_unpublish
+      tags:
+      - Pages
+      summary: Depublie une Page
+      description: Repasse la Page en brouillon et remet published_at a null.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/PageId'
+      responses:
+        '200':
+          description: Page depubliee (PageResource)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Role insuffisant ou module pages non accorde
+        '404':
+          description: Page inexistante ou appartenant a un autre tenant (reponse uniforme)
+  /pages/{page}/blocks:
+    put:
+      operationId: api_put_page_blocks
+      tags:
+      - Pages
+      summary: Remplace l'integralite des blocs d'une Page
+      description: 'Remplacement atomique de la liste ordonnee de blocs : le payload fait foi, aucun bloc n''est conserve implicitement. Les erreurs de validation sont renvoyees ensemble, indexees par position de bloc, afin que l''editeur les affiche a cote du bloc concerne (PAGE_BLOCKS_INVALID).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/PageId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - blocks
+              properties:
+                blocks:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/PageBlockInput'
+      responses:
+        '200':
+          description: Blocs remplaces (PageResource, blocs charges)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Role insuffisant ou module pages non accorde
+        '404':
+          description: Page inexistante ou appartenant a un autre tenant (reponse uniforme)
+        '422':
+          description: Contenu de blocs invalide (PAGE_BLOCKS_INVALID, erreurs indexees par position)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: PAGE_BLOCKS_INVALID
+                  message:
+                    type: string
+                  errors:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
+  /pages/{page}/preview:
+    get:
+      operationId: api_get_page_preview
+      tags:
+      - Pages
+      summary: Apercu prive d'une Page (brouillon inclus)
+      description: 'Renvoie la Page avec ses blocs pour l''editeur. Reponse en `X-Robots-Tag noindex, nofollow` et `Cache-Control no-store, private` : un apercu ne doit jamais etre indexe ni servi depuis un cache partage, sinon un brouillon deviendrait public par un intermediaire.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/PageId'
+      responses:
+        '200':
+          description: Apercu de la Page (PageResource, blocs charges)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Role insuffisant ou module pages non accorde
+        '404':
+          description: Page inexistante ou appartenant a un autre tenant (reponse uniforme)
   /payrolls:
     get:
       operationId: api_get_payrolls
@@ -61654,6 +61892,13 @@ components:
       scheme: bearer
       bearerFormat: Sanctum
   parameters:
+    PageId:
+      name: page
+      in: path
+      required: true
+      description: Identifiant de la Page (BC PAGES, #8728).
+      schema:
+        type: integer
     ProjectId:
       name: project
       in: path
@@ -61836,6 +62081,65 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    PageWriteRequest:
+      type: object
+      description: Attributs modifiables d'une Page (BC PAGES, #8728).
+      properties:
+        site_id:
+          type: integer
+          description: Etablissement de rattachement. Obligatoire a la creation ; l'unicite par site est un invariant de schema.
+        name:
+          type: string
+          maxLength: 160
+          description: Nom affiche ; sert de base a la derivation du slug.
+        slug:
+          type: string
+          maxLength: 120
+          description: Adresse publique. Omise, elle est derivee du nom et translitteree.
+        theme:
+          type: object
+          additionalProperties: true
+          description: Jetons de theme de la Page.
+        settings:
+          type: object
+          additionalProperties: true
+        legal:
+          type: object
+          additionalProperties: true
+          description: Mentions legales affichees sur la Page.
+        seo:
+          type: object
+          additionalProperties: true
+          description: Metadonnees SEO ; un titre est requis pour publier.
+        locales:
+          type: array
+          items:
+            type: string
+          description: Locales servies par la Page.
+        default_locale:
+          type: string
+          maxLength: 10
+    PageBlockInput:
+      type: object
+      description: Bloc de contenu pousse par l'editeur ; la position est donnee par l'ordre du tableau.
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          description: Identifiant du type de bloc, tel que declare au registre de blocs (#8724).
+        id:
+          type: string
+          description: Identifiant stable du bloc (block_uid) ; genere s'il est omis.
+        content:
+          type: object
+          additionalProperties: true
+          description: Contenu du bloc, valide contre le schema du type.
+        locales:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties: true
     PublicConversationSummary:
       type: object
       description: >

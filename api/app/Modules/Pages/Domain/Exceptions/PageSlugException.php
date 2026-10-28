@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Pages\Domain\Exceptions;
 
-use App\Exceptions\DomainException;
+use App\Shared\Exceptions\DomainException;
 
 /**
  * Slug de Page inutilisable ou réservé (BC PAGES, #8728).
@@ -25,7 +25,7 @@ final class PageSlugException extends DomainException
     {
         return new self(
             'PAGE_SLUG_UNUSABLE',
-            'Le nom fourni ne permet pas de construire une adresse publique. Utilisez des lettres et des chiffres.',
+            __('pages.slug_unusable'),
         );
     }
 
@@ -33,7 +33,7 @@ final class PageSlugException extends DomainException
     {
         return new self(
             'PAGE_SLUG_RESERVED',
-            sprintf('L\'adresse « %s » est réservée par la plateforme. Choisissez-en une autre.', $slug),
+            __('pages.slug_reserved', ['slug' => $slug]),
         );
     }
 
@@ -41,7 +41,7 @@ final class PageSlugException extends DomainException
     {
         return new self(
             'PAGE_SLUG_TAKEN',
-            sprintf('L\'adresse « %s » est déjà utilisée.', $slug),
+            __('pages.slug_taken', ['slug' => $slug]),
         );
     }
 }

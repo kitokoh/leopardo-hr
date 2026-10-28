@@ -155,6 +155,7 @@ class PageTenantApiTest extends TestCase
         // applicative : on vérifie l'index lui-même. Provoquer la violation
         // pour l'attraper avorterait la transaction du test (PostgreSQL refuse
         // toute commande suivante) et masquerait les assertions suivantes.
+        /** @var list<object{indexdef: string}> $indexes */
         $indexes = DB::select(
             "SELECT indexdef FROM pg_indexes WHERE tablename = 'pages' AND indexdef LIKE '%UNIQUE%'"
         );

@@ -40,4 +40,9 @@ return [
     'domain_quota_exceeded' => 'Your plan allows :limit custom domain(s).',
     'domain_removed' => 'This domain has been removed and can no longer be verified.',
     'domain_plan_expired' => 'Your subscription has expired: custom domains are disabled until renewal.',
+
+    // #8728 - unusable or reserved Page slug
+    'slug_unusable' => 'The name provided cannot produce a public address. Use letters and digits.',
+    'slug_reserved' => 'The address ":slug" is reserved by the platform. Choose another one.',
+    'slug_taken' => 'The address ":slug" is already in use.',
 ];
