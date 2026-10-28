@@ -55991,7 +55991,7 @@ paths:
           description: 'Permission manquante pour l''acteur.'
         '422':
           description: Charge utile invalide.
-  /travel/community/articles/{article}:
+  /travel/community/articles/{travelArticle}:
     get:
       operationId: api_get_travel_community_articles_by_article
       tags:
@@ -56005,7 +56005,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56034,7 +56034,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56084,7 +56084,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56099,7 +56099,7 @@ paths:
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
         '204':
           description: Suppression effectuee (aucun corps).
-  /travel/community/articles/{article}/publish:
+  /travel/community/articles/{travelArticle}/publish:
     post:
       operationId: api_post_travel_community_articles_by_article_publish
       tags:
@@ -56115,7 +56115,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56130,7 +56130,7 @@ paths:
           description: 'Permission manquante pour l''acteur.'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/articles/{article}/moderate:
+  /travel/community/articles/{travelArticle}/moderate:
     post:
       operationId: api_post_travel_community_articles_by_article_moderate
       tags:
@@ -56146,7 +56146,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56542,7 +56542,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/quizzes/{quiz}:
+  /travel/community/quizzes/{travelQuiz}:
     get:
       operationId: api_get_travel_community_quizzes_by_quiz
       tags:
@@ -56556,7 +56556,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: quiz
+      - name: travelQuiz
         in: path
         required: true
         schema:
@@ -56569,7 +56569,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/quizzes/{quiz}/publish:
+  /travel/community/quizzes/{travelQuiz}/publish:
     post:
       operationId: api_post_travel_community_quizzes_by_quiz_publish
       tags:
@@ -56583,7 +56583,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: quiz
+      - name: travelQuiz
         in: path
         required: true
         schema:
@@ -56598,7 +56598,136 @@ paths:
           description: 'Permission manquante pour l''acteur.'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/quizzes/{quiz}/questions:
+  /travel/webhook-subscriptions/{travelWebhookSubscription}:
+    parameters:
+    - name: travelWebhookSubscription
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Identifiant de la souscription de webhook.
+    get:
+      operationId: api_get_travel_webhook_subscriptions_by_travel_webhook_subscription
+      tags:
+      - Travel
+      summary: Detail d'une souscription de webhook
+      description: |-
+        Tenant-scoped strict (cross-tenant -> 404 sur, jamais 403).
+        Le secret de signature n'est JAMAIS renvoye en clair : seul
+        `secret_prefix` (4 premiers caracteres) permet a l'admin de
+        reconnaitre la cle configuree.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Souscription.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+    put:
+      operationId: api_put_travel_webhook_subscriptions_by_travel_webhook_subscription
+      tags:
+      - Travel
+      summary: Modifier une souscription de webhook
+      description: |-
+        Tenant-scoped strict (cross-tenant -> 404 sur, jamais 403).
+        Une rotation de secret remplace `secret` et invalide l'ancienne cle
+        pour les livraisons suivantes (pas de rejeu retroactif).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  maxLength: 2048
+                events:
+                  type: array
+                  items:
+                    type: string
+                active:
+                  type: boolean
+                enabled:
+                  type: boolean
+                secret:
+                  type: string
+                  maxLength: 255
+                  description: Nouveau secret de signature (rotation).
+      responses:
+        '200':
+          description: Souscription mise a jour.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+        '422':
+          description: Charge utile invalide.
+  /travel/quizzes/{travelQuiz}/questions:
+    parameters:
+    - name: travelQuiz
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Identifiant du quiz.
+    get:
+      operationId: api_get_travel_quizzes_by_travel_quiz_questions
+      tags:
+      - Travel
+      summary: Lister les questions d'un quiz
+      description: |-
+        Reserve aux roles manager (`principal`, `rh`). Tenant-scoped strict
+        (cross-tenant -> 404 sur, jamais 403).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste ordonnee des questions (`position`).
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+  /travel/community/quizzes/{travelQuiz}/questions:
+    parameters:
+    - name: travelQuiz
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Identifiant du quiz (alias retro-compatible #8127).
+    get:
+      operationId: api_get_travel_community_quizzes_by_quiz_questions
+      tags:
+      - Travel
+      summary: Lister les questions d'un quiz (alias community)
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Reserve aux roles manager (`principal`, `rh`).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste ordonnee des questions (`position`).
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
     post:
       operationId: api_post_travel_community_quizzes_by_quiz_questions
       tags:
@@ -56612,7 +56741,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: quiz
+      - name: travelQuiz
         in: path
         required: true
         schema:
@@ -56647,7 +56776,7 @@ paths:
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
         '422':
           description: Charge utile invalide.
-  /travel/community/quiz-questions/{question}:
+  /travel/community/quiz-questions/{travelQuizQuestion}:
     delete:
       operationId: api_delete_travel_community_quiz_questions_by_question
       tags:
@@ -56661,7 +56790,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: question
+      - name: travelQuizQuestion
         in: path
         required: true
         schema:
@@ -56676,7 +56805,7 @@ paths:
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
         '204':
           description: Suppression effectuee (aucun corps).
-  /travel/community/quizzes/{quiz}/participate:
+  /travel/community/quizzes/{travelQuiz}/participate:
     post:
       operationId: api_post_travel_community_quizzes_by_quiz_participate
       tags:
@@ -56691,7 +56820,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: quiz
+      - name: travelQuiz
         in: path
         required: true
         schema:
@@ -56704,7 +56833,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/quizzes/{quiz}/results:
+  /travel/community/quizzes/{travelQuiz}/results:
     get:
       operationId: api_get_travel_community_quizzes_by_quiz_results
       tags:
@@ -56718,7 +56847,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: quiz
+      - name: travelQuiz
         in: path
         required: true
         schema:
