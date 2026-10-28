@@ -50,7 +50,7 @@ use Illuminate\Support\Carbon;
  * @property array<string, mixed>|null $settings
  * @property array<string, mixed>|null $legal
  * @property array<string, mixed>|null $seo
- * @property list<string>|null $locales
+ * @property array<array-key, mixed>|null $locales
  * @property string $default_locale
  * @property string|null $custom_domain
  * @property int $schema_version
@@ -183,6 +183,52 @@ class Page extends Model
     {
         return $this->status->isPubliclyVisible()
             && $this->suspended_at === null;
+    }
+
+    /**
+     * Locales que CETTE Page publie réellement (#8730).
+     *
+     * `locales` absent (NULL) signifie « toutes les locales supportées » : une
+     * Page qui ne restreint rien ne doit pas se voir privée de la version
+     * arabe qu'un bloc fournit déjà. Un tableau explicite RESTREINT cet
+     * ensemble — c'est le seul cas où la locale par défaut n'est pas suffisante
+     * à elle seule, elle s'y ajoute toujours puisque c'est le repli du rendu.
+     *
+     * Les entrées inconnues sont écartées : annoncer `<html lang="xx">` pour
+     * une locale que le produit ne sait pas rendre produirait un `lang` qui
+     * ment, ce qui trompe les lecteurs d'écran et les moteurs.
+     *
+     * @return list<string>
+     */
+    public function publishedLocales(): array
+    {
+        $default = in_array($this->default_locale, self::SUPPORTED_LOCALES, true)
+            ? $this->default_locale
+            : 'fr';
+
+        // Pas de restriction déclarée : la Page publie tout ce que le produit
+        // sait rendre. La locale par défaut passe en tête — c'est l'ordre de
+        // repli si l'en-tête du visiteur ne correspond à rien.
+        if (! is_array($this->locales) || $this->locales === []) {
+            /** @var list<string> $all */
+            $all = array_values(array_unique(array_merge([$default], self::SUPPORTED_LOCALES)));
+
+            return $all;
+        }
+
+        $locales = [$default];
+
+        foreach ($this->locales as $candidate) {
+            if (is_string($candidate)
+                && in_array($candidate, self::SUPPORTED_LOCALES, true)
+                && ! in_array($candidate, $locales, true)
+            ) {
+                $locales[] = $candidate;
+            }
+        }
+
+        /** @var non-empty-list<'ar'|'en'|'fr'|'tr'> $locales */
+        return $locales;
     }
 
     // ── Invariants ───────────────────────────────────────────────────────────
