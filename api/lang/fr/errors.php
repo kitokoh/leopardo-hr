@@ -353,4 +353,10 @@ return [
     'FUNDRAISING_VERTICAL_NOT_ENABLED' => 'La verticale cagnottes n\'est pas activée pour cette entreprise.',
     'MARKETING_LEAD_NO_CHANGES' => 'Aucune modification demandée.',
     'MARKETING_LEAD_NOT_FOUND' => 'Lead introuvable.',
+
+    // #8728 (BC PAGES) — surface tenant : slug et contenu de blocs.
+    'PAGE_SLUG_UNUSABLE' => 'Le nom fourni ne permet pas de construire une adresse publique. Utilisez des lettres et des chiffres.',
+    'PAGE_SLUG_RESERVED' => 'Cette adresse est réservée par la plateforme. Choisissez-en une autre.',
+    'PAGE_SLUG_TAKEN' => 'Cette adresse est déjà utilisée.',
+    'PAGE_BLOCKS_INVALID' => 'Le contenu de la page contient des blocs invalides.',
 ];
