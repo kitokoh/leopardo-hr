@@ -32687,6 +32687,207 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           description: Permission plateforme `metrics.view` absente
+  /admin/vitrine/analytics:
+    get:
+      operationId: api_get_admin_vitrine_analytics
+      tags:
+      - Admin
+      summary: "Analytique de la vitrine (visites, sources, conversions, leads)"
+      description: "#7595 — mesure first-party de la vitrine publique : vues agregees par jour, pages les plus vues, sources d'acquisition (le groupe `direct` regroupe les vues sans referrer ni utm_source — c'est un groupe reel, pas une donnee manquante), taux de passage par etape du tunnel (#7496) et derniers leads vitrine devenus consultables. Aucune donnee personnelle : la collecte ne conserve ni IP, ni empreinte d'appareil, ni identifiant de session — les 'visiteurs uniques' ne peuvent donc pas etre calcules et ne sont pas exposes. Un taux dont l'etape amont est vide vaut `null`, jamais `0`. Reserve a la permission plateforme `metrics.view`."
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        description: Fenetre d'agregation en jours (1..90, defaut 30 ; toute valeur superieure est bornee a 90 et la reponse renvoie la borne appliquee).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 90
+          default: 30
+      responses:
+        '200':
+          description: Agregats de la vitrine
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      period:
+                        type: object
+                        properties:
+                          days:
+                            type: integer
+                          from:
+                            type: string
+                            format: date-time
+                          to:
+                            type: string
+                            format: date-time
+                      traffic:
+                        type: object
+                        properties:
+                          views:
+                            type: integer
+                          pages:
+                            type: integer
+                            description: Nombre de chemins distincts vus.
+                          days_tracked:
+                            type: integer
+                            description: Nombre de jours ayant au moins une vue.
+                      top_pages:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            path:
+                              type: string
+                            views:
+                              type: integer
+                      sources:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            source:
+                              type: string
+                              description: Hote du referrer externe, ou utm_source ; `direct` si aucune attribution.
+                            views:
+                              type: integer
+                      conversion:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            step:
+                              type: string
+                            events:
+                              type: integer
+                              description: Nombre de parcours distincts ayant atteint l'etape.
+                            rate_from_previous:
+                              type: number
+                              nullable: true
+                              description: Taux par rapport a l'etape precedente ; `null` si le denominateur est nul.
+                            rate_from_start:
+                              type: number
+                              nullable: true
+                      recent_leads:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            type:
+                              type: string
+                            status:
+                              type: string
+                            email:
+                              type: string
+                            name:
+                              type: string
+                              nullable: true
+                            company_name:
+                              type: string
+                              nullable: true
+                            source:
+                              type: string
+                              nullable: true
+                            campaign:
+                              type: string
+                              nullable: true
+                            page:
+                              type: string
+                              nullable: true
+                            created_at:
+                              type: string
+                              format: date-time
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Permission plateforme `metrics.view` absente
+  /vitrine/analytics/page-views:
+    post:
+      operationId: api_post_vitrine_analytics_page_views
+      tags:
+      - Public
+      summary: "Ingestion des pages vues de la vitrine (analytique first-party)"
+      description: "#7595 — appele serveur-a-serveur par la vitrine avec le secret partage des webhooks marketing (`X-Marketing-Lead-Token` ou `Authorization: Bearer`), borne par `throttle:webhooks-inbound`. Le consentement est une CONDITION D'ECRITURE : `consent=false` renvoie 202 et n'ecrit aucune ligne, sans meme journaliser les chemins refuses. Les chemins sont normalises (query string et fragment retires, slash final neutralise, minuscules) ; un referrer externe est reduit a son hote, un referrer interne est ignore. Reponse 202 dans tous les cas d'acceptation pour que l'appelant ne reessaie pas un refus utilisateur."
+      security: []
+      parameters:
+      - name: X-Marketing-Lead-Token
+        in: header
+        required: false
+        description: "Secret partage des webhooks marketing (repli `Authorization: Bearer`)."
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - consent
+              - events
+              properties:
+                consent:
+                  type: boolean
+                  description: Consentement explicite de la personne visitee. `false` => aucune ecriture.
+                events:
+                  type: array
+                  minItems: 1
+                  maxItems: 25
+                  items:
+                    type: object
+                    required:
+                    - path
+                    properties:
+                      path:
+                        type: string
+                        maxLength: 300
+                      source:
+                        type: string
+                        maxLength: 120
+                        nullable: true
+                      referrer:
+                        type: string
+                        maxLength: 500
+                        nullable: true
+                      utm_medium:
+                        type: string
+                        maxLength: 120
+                        nullable: true
+                      utm_campaign:
+                        type: string
+                        maxLength: 120
+                        nullable: true
+                      occurred_at:
+                        type: string
+                        format: date-time
+                        nullable: true
+      responses:
+        '202':
+          description: Lot accepte (qu'il ait ete stocke ou non — voir `stored` et `consent`)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  received:
+                    type: boolean
+                  stored:
+                    type: integer
+                  consent:
+                    type: boolean
+        '400':
+          description: Secret partage invalide (uniquement si le secret est configure)
+        '422':
+          description: Payload invalide (dont `consent` absent)
   /marketing/social-account:
     get:
       operationId: api_get_marketing_social_account
