@@ -89,31 +89,31 @@ class ApproveGeoSession
 
             // Créer le attendance_log officiel
             $log = AttendanceLog::query()->create([
-                'company_id'     => $employee->company_id,
-                'employee_id'    => $employee->id,
-                'schedule_id'    => $schedule?->id,
-                'date'           => $today,
+                'company_id' => $employee->company_id,
+                'employee_id' => $employee->id,
+                'schedule_id' => $schedule?->id,
+                'date' => $today,
                 'session_number' => $sessionNumber,
-                'check_in'       => $session->started_at,
-                'check_out'      => $session->ended_at,
-                'method'         => 'geo_auto',
-                'status'         => $status,
-                'hours_worked'   => $worked->hours_worked,
+                'check_in' => $session->started_at,
+                'check_out' => $session->ended_at,
+                'method' => 'geo_auto',
+                'status' => $status,
+                'hours_worked' => $worked->hours_worked,
                 'overtime_hours' => $worked->overtime_hours,
-                'late_minutes'   => $lateMinutes,
-                'gps_lat'        => $session->check_in_lat,
-                'gps_lng'        => $session->check_in_lng,
-                'corrected_by'   => $validator->id,
+                'late_minutes' => $lateMinutes,
+                'gps_lat' => $session->check_in_lat,
+                'gps_lng' => $session->check_in_lng,
+                'corrected_by' => $validator->id,
                 'correction_note' => $note,
             ]);
 
             // Mettre à jour la session GPS
             $session->update([
-                'status'            => GeoAttendanceSession::STATUS_APPROVED,
+                'status' => GeoAttendanceSession::STATUS_APPROVED,
                 'attendance_log_id' => $log->id,
-                'validated_by'      => $validator->id,
-                'validated_at'      => now(),
-                'validation_note'   => $note,
+                'validated_by' => $validator->id,
+                'validated_at' => now(),
+                'validation_note' => $note,
             ]);
 
             return $session->refresh();

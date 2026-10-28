@@ -7,7 +7,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Application\Actions\AssessVehicleReplacementAction;
-use App\Modules\TravelAgency\Application\Actions\CancelTripAction;
+use App\Modules\TravelAgency\Application\Actions\CancelTripWithRefundsAction;
 use App\Modules\TravelAgency\Application\Actions\ConnectionSearchAction;
 use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
 use App\Modules\TravelAgency\Application\Actions\PublishTripAction;
@@ -304,7 +304,15 @@ class TravelTripController extends Controller
             abort(403);
         }
 
-        app(CancelTripAction::class)->execute($travelTrip, $actor, $request->validated('reason'));
+        // TRAVEL-812 (#6102) — l'annulation par l'agence doit traiter les
+        // réservations : `CancelTripAction` ne changeait QUE le statut du
+        // trajet. Les voyageurs déjà payés n'étaient ni remboursés, ni
+        // notifiés, ni libérés ; leurs billets restaient valides sur un trajet
+        // annulé et l'argent restait encaissé. Sur un incident matériel —
+        // exactement le cas d'usage de cette route — c'est un contentieux
+        // garanti. `CancelTripWithRefundsAction` existe pour ça et n'était
+        // appelée par personne.
+        app(CancelTripWithRefundsAction::class)->execute($travelTrip, $actor, $request->validated('reason'));
 
         return (new TravelTripResource($travelTrip->refresh()->load('prices')))->response();
     }

@@ -86,6 +86,4 @@ final class TravelManualNotificationAction
 
         return ['channels' => $sent];
     }
-
-
 }

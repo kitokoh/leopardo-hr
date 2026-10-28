@@ -77,6 +77,11 @@ final class CreateBookingAction
         bool $notifyConsent = false,
         ?string $connectionGroupId = null,
         ?int $officeId = null,
+        // TRAVEL-802 (#6093) — jambe d'un aller-retour : groupe partagé,
+        // qualification de la jambe et remise combinée appliquée au retour.
+        ?string $roundTripGroupId = null,
+        ?string $leg = null,
+        ?int $discountPercent = null,
     ): TravelBooking {
         $replay = $this->idempotentGuestWrite->replay(
             function () use ($trip, $idempotencyKey): ?TravelBooking {
@@ -88,13 +93,13 @@ final class CreateBookingAction
 
                 return $existing?->load('passengers');
             },
-            function () use ($trip, $passengers, $source, $actor, $idempotencyKey, $customerContactId, $corporateAccountId, $quoteId, $billingDeferred, $contactEmail, $contactPhone, $notifyConsent, $connectionGroupId, $officeId): TravelBooking {
+            function () use ($trip, $passengers, $source, $actor, $idempotencyKey, $customerContactId, $corporateAccountId, $quoteId, $billingDeferred, $contactEmail, $contactPhone, $notifyConsent, $connectionGroupId, $officeId, $roundTripGroupId, $leg, $discountPercent): TravelBooking {
                 if ($trip->status->value !== 'published') {
                     abort(409, 'Ce trajet n\'est pas ouvert a la reservation.');
                 }
 
                 /** @var TravelBooking $booking */
-                $booking = $this->db->transaction(function () use ($trip, $passengers, $source, $actor, $idempotencyKey, $customerContactId, $corporateAccountId, $quoteId, $billingDeferred, $contactEmail, $contactPhone, $notifyConsent, $connectionGroupId, $officeId): TravelBooking {
+                $booking = $this->db->transaction(function () use ($trip, $passengers, $source, $actor, $idempotencyKey, $customerContactId, $corporateAccountId, $quoteId, $billingDeferred, $contactEmail, $contactPhone, $notifyConsent, $connectionGroupId, $officeId, $roundTripGroupId, $leg, $discountPercent): TravelBooking {
                     // Verrouille le trajet : empeche deux reservations concurrentes
                     // de lire le meme inventaire.
                     /** @var TravelTrip $lockedTrip */
@@ -107,6 +112,15 @@ final class CreateBookingAction
                     $seats = $this->resolveSeats($lockedTrip, $passengers);
 
                     $total = $this->computeTotal($lockedTrip, $passengers);
+
+                    // TRAVEL-802 (#6093) — remise combinée aller-retour. Elle
+                    // s'applique à la jambe RETOUR (la remise récompense le
+                    // fait d'avoir pris l'aller chez nous), jamais aux deux,
+                    // sinon le tarif promo serait compté deux fois.
+                    if ($discountPercent !== null && $discountPercent > 0) {
+                        $percent = min(100, $discountPercent);
+                        $total = intdiv($total * (100 - $percent), 100);
+                    }
 
                     $booking = TravelBooking::query()->create([
                         'trip_id' => $lockedTrip->id,
@@ -128,6 +142,8 @@ final class CreateBookingAction
                         'notify_consent' => $notifyConsent,
                         'consent_recorded_at' => $notifyConsent ? now() : null,
                         'connection_group_id' => $connectionGroupId,
+                        'round_trip_group_id' => $roundTripGroupId,
+                        'leg' => $leg,
                         // #8545 — agence de vente : renseignée pour une vente
                         // guichet, NULL pour une vente en ligne.
                         'office_id' => $officeId,
@@ -144,7 +160,12 @@ final class CreateBookingAction
                             'age_category' => AgeCategory::from($passengerData['age_category']),
                             'class_id' => $passengerData['class_id'],
                             'seat_number' => $seat->seat_number,
-                            'unit_price_minor' => $this->unitPriceFor($lockedTrip, $passengerData),
+                            // Le prix unitaire porte la même remise que le total,
+                            // sinon la somme des lignes ne réconcilie pas le
+                            // `total_amount_minor` du dossier (contrôle comptable).
+                            'unit_price_minor' => $discountPercent !== null && $discountPercent > 0
+                                ? intdiv($this->unitPriceFor($lockedTrip, $passengerData) * (100 - min(100, $discountPercent)), 100)
+                                : $this->unitPriceFor($lockedTrip, $passengerData),
                         ]);
 
                         if (! empty($passengerData['document_number'])) {

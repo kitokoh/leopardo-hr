@@ -18,7 +18,9 @@ use App\Modules\TravelAgency\Domain\Models\TravelCorporateAccount;
 use App\Modules\TravelAgency\Domain\Models\TravelPassenger;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Infrastructure\Services\CorporateBookingService;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelRefundPolicyResolver;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelBookingRequest;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RefundTravelBookingRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RefundTravelPassengerRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelBookingRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelBookingResource;
@@ -26,6 +28,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelRefundResource;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelTicketResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 /**
  * TRAVEL-312..316 (#6042..#6046) — Réservations & billetterie guichet.
@@ -122,7 +125,73 @@ class TravelBookingController extends Controller
             officeId: is_numeric($request->validated('office_id')) ? (int) $request->validated('office_id') : null,
         );
 
-        return (new TravelBookingResource($booking))->response()->setStatusCode(201);
+        return $this->respondWithRoundTrip($actor, $request, $booking);
+    }
+
+    /**
+     * Finalise une réservation guichet, y compris sa jambe retour éventuelle.
+     *
+     * TRAVEL-802 (#6093) — `return_trip_id` / `return_passengers` étaient
+     * **validés puis ignorés** : le client croyait avoir réservé un aller-retour,
+     * recevait 201, et seul l'aller existait. Aucune des trois propriétés du
+     * contrat (`round_trip_group_id`, `return_booking_id`, `leg`) n'était
+     * renseignée et la remise combinée n'était jamais appliquée.
+     *
+     * Les deux jambes sont créées dans l'ordre aller → retour pour que la
+     * seconde puisse porter le lien, et la réponse expose la jambe ALLER (celle
+     * que le client vient de saisir) enrichie de `return_booking_id`.
+     */
+    private function respondWithRoundTrip(Employee $actor, Request $request, TravelBooking $outbound): JsonResponse
+    {
+        $returnTripId = $request->validated('return_trip_id');
+        $returnPassengers = $request->validated('return_passengers');
+
+        if ($returnTripId === null || ! is_array($returnPassengers) || $returnPassengers === []) {
+            return (new TravelBookingResource($outbound))->response()->setStatusCode(201);
+        }
+
+        $returnTrip = TravelTrip::query()->findOrFail((int) $returnTripId);
+
+        if ($returnTrip->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        $groupId = (string) Str::uuid();
+        $discount = (int) config('travel.pricing.round_trip_discount_percent', 0);
+
+        $outbound->forceFill([
+            'round_trip_group_id' => $groupId,
+            'leg' => 'outbound',
+        ])->save();
+
+        $return = app(CreateBookingAction::class)->execute(
+            trip: $returnTrip,
+            passengers: $returnPassengers,
+            source: BookingSource::from($request->validated('booking_source')),
+            actor: $actor,
+            // Clé distincte : deux réservations distinctes, l'idempotence du
+            // rejeu client reste assurée par la clé d'origine côté aller.
+            idempotencyKey: $request->validated('idempotency_key').'-return',
+            customerContactId: $request->validated('customer_contact_id'),
+            billingDeferred: (bool) $request->validated('billing_deferred', false),
+            contactEmail: $request->validated('contact_email'),
+            contactPhone: $request->validated('contact_phone'),
+            notifyConsent: (bool) $request->validated('notify_consent', false),
+            officeId: is_numeric($request->validated('office_id')) ? (int) $request->validated('office_id') : null,
+            roundTripGroupId: $groupId,
+            leg: 'return',
+            // La remise récompense le retour : jamais appliquée deux fois.
+            discountPercent: $discount > 0 ? $discount : null,
+        );
+
+        $return->forceFill(['round_trip_group_id' => $groupId, 'leg' => 'return'])->save();
+
+        $outbound->forceFill(['return_booking_id' => $return->id])->save();
+        $return->forceFill(['return_booking_id' => $outbound->id])->save();
+
+        return (new TravelBookingResource($outbound->load('passengers')))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, TravelBooking $travelBooking): JsonResponse
@@ -179,7 +248,30 @@ class TravelBookingController extends Controller
         return (new TravelBookingResource($booking))->response();
     }
 
-    public function refund(CancelTravelBookingRequest $request, TravelBooking $travelBooking): JsonResponse
+    /**
+     * Remboursement d'une réservation — total, ou partiel par passager.
+     *
+     * TRAVEL-315 (#6045) + TRAVEL-808 (#6098). `passenger_ids` vide ⇒ total.
+     *
+     * #8396 — trois garanties manquaient sur le chemin partiel :
+     *
+     *  1. **Aucun contrôle d'appartenance du passager à la réservation.** Une
+     *     requête pouvait rembourser `passenger_id = 42` sur la réservation 7 :
+     *     les colonnes de la réservation 7 étaient écrites (sièges, statut,
+     *     pistes d'audit), pour un passager d'une AUTRE réservation — ou d'un
+     *     autre tenant. Désormais 404 si le passager n'est pas celui de cette
+     *     réservation.
+     *  2. **Politique non remboursable ignorée.** `penaltyPercent()` renvoie 100
+     *     pour une politique `refundable = false` ; l'action calculait
+     *     `montant = prix − 100 % = 0` et **validait** le remboursement : le
+     *     passager était libéré, le siège remis en vente et la réservation
+     *     clôturée sans qu'un centime ne soit rendu. Un refus explicite (422)
+     *     est la seule réponse correcte.
+     *  3. Le replay d'un même remboursement se faisait sur `refund_key` — clé
+     *     fournie par le client, donc jamais stable sur deux appels. Un passager
+     *     déjà remboursé est maintenant reconnu par son propre état.
+     */
+    public function refund(RefundTravelBookingRequest $request, TravelBooking $travelBooking): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -192,13 +284,52 @@ class TravelBookingController extends Controller
             abort(403);
         }
 
-        $booking = app(RefundBookingAction::class)->execute(
-            $travelBooking,
-            $actor,
-            $request->validated('reason'),
-        );
+        $reason = (string) $request->validated('reason');
+        $passengerIds = $request->validated('passenger_ids') ?? [];
 
-        return (new TravelBookingResource($booking))->response();
+        if (! is_array($passengerIds) || $passengerIds === []) {
+            $booking = app(RefundBookingAction::class)->execute($travelBooking, $actor, $reason);
+
+            return (new TravelBookingResource($booking))->response();
+        }
+
+        foreach ($passengerIds as $passengerId) {
+            /** @var TravelPassenger|null $passenger */
+            $passenger = TravelPassenger::query()
+                ->where('company_id', $travelBooking->company_id)
+                ->where('booking_id', $travelBooking->id)
+                ->find((int) $passengerId);
+
+            // 404 : l'existence d'un passager dans un autre dossier ne se
+            // divulgue pas.
+            if (! $passenger instanceof TravelPassenger) {
+                abort(404);
+            }
+
+            if ($passenger->refunded_at !== null) {
+                // Rejeu : déjà remboursé, on n'encaisse pas deux fois.
+                continue;
+            }
+
+            $penalty = app(TravelRefundPolicyResolver::class)
+                ->penaltyPercent($travelBooking, (int) $passenger->class_id);
+
+            if ($penalty >= 100) {
+                abort(422, 'Ce billet n\'est pas remboursable selon la politique d\'annulation.');
+            }
+
+            app(RefundPassengerAction::class)->execute(
+                booking: $travelBooking,
+                passenger: $passenger,
+                actor: $actor,
+                reason: $reason,
+                // Clé déterministe : le rejeu réseau du même passager sur la
+                // même réservation ne crée pas une seconde piste de remboursement.
+                refundKey: 'booking-'.$travelBooking->id.'-passenger-'.$passenger->id,
+            );
+        }
+
+        return (new TravelBookingResource($travelBooking->refresh()->load('passengers')))->response();
     }
 
     /**

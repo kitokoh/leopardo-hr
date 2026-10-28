@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
 class CalendarConnection extends Model
 {
     use BelongsToCompany;
+
     protected $fillable = [
         'company_id',
         'employee_id',
@@ -54,4 +55,3 @@ class CalendarConnection extends Model
         return $this->token_expires_at !== null && $this->token_expires_at->isPast();
     }
 }
-

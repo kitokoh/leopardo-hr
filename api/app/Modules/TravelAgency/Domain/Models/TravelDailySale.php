@@ -49,6 +49,4 @@ class TravelDailySale extends Model
         'passengers_count' => 'integer',
         'revenue_minor' => 'integer',
     ];
-
-
 }

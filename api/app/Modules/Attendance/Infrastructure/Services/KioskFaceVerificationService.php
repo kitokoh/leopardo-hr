@@ -210,7 +210,6 @@ final class KioskFaceVerificationService
     }
 
     /**
-     * @param  AttendanceLog|null  $log
      * @param  list<string>  $fallbackMethods
      * @return array{status: FaceVerificationStatus, log: AttendanceLog|null, correlation_id: string, reason_code: string|null, fallback_methods: list<string>}
      */

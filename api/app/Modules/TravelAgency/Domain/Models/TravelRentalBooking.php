@@ -123,6 +123,4 @@ class TravelRentalBooking extends Model
     {
         return $this->belongsTo(TravelRentalVehicle::class, 'vehicle_id');
     }
-
-
 }

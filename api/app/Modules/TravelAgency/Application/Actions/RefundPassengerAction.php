@@ -86,15 +86,34 @@ final class RefundPassengerAction
                 ->update(['status' => TicketStatus::VOID->value]);
 
             // Siège libéré (retour au stock libre).
+            //
+            // #8396 — `booking_id` et `passenger_id` étaient remis à `null` :
+            // le lien entre le siège et le passager remboursé disparaissait, donc
+            // impossible de répondre à « quel siège ce remboursement a-t-il
+            // libéré ? » — la question de base d'un contrôle comptable ou d'une
+            // réclamation client. Le siège reste rattaché (traçabilité) et seule
+            // `reserved_until` est purgée : le statut FREE le rend de nouveau
+            // réservable, ce que vérifie le moteur d'inventaire.
             TravelTripSeat::query()
                 ->where('trip_id', $booking->trip_id)
                 ->where('passenger_id', $passenger->id)
                 ->update([
                     'status' => SeatStatus::FREE->value,
-                    'booking_id' => null,
-                    'passenger_id' => null,
                     'reserved_until' => null,
                 ]);
+
+            // #8396 — le passager n'était jamais marqué remboursé :
+            // `refunded_at`/`refunded_amount_minor`/`refund_reason` (colonnes de
+            // la migration 6098, exposées par l'API) restaient `null`. Un
+            // remboursement exécuté devenait donc invisible sur le dossier
+            // passager, et la même personne pouvait être remboursée deux fois
+            // par deux chemins différents (le garde-fou d'idempotence ne couvre
+            // que `refund_key`).
+            $passenger->forceFill([
+                'refunded_at' => now(),
+                'refunded_amount_minor' => $net,
+                'refund_reason' => $reason,
+            ])->save();
 
             // Si tous les passagers sont remboursés → réservation refunded.
             $refundedPassengerIds = TravelRefund::query()
@@ -123,6 +142,25 @@ final class RefundPassengerAction
             'amount_minor' => $refund->amount_minor,
             'penalty_minor' => $refund->penalty_minor,
             'currency' => $refund->currency,
+        ]);
+
+        // #8396 — un remboursement PARTIEL doit être visible par les décideurs
+        // de paiement : seul `travel.refund.recorded.v1` (événement interne) était
+        // publié, jamais `travel.payment.refunded.v1`. La comptabilité et les
+        // notifications ne voyaient donc pas les remboursements partiels, alors
+        // qu'ils voient les remboursements totaux. `partial: true` distingue les
+        // deux cas côté consommateur (montant ≠ total du dossier).
+        $this->outbox->publish($booking->company_id, 'travel.payment.refunded.v1', [
+            'booking_reference' => $booking->reference,
+            'amount_minor' => $refund->amount_minor,
+            'penalty_minor' => $refund->penalty_minor,
+            'currency' => $refund->currency,
+            'passenger_id' => $passenger->id,
+            'partial' => true,
+            'refunded_by' => $actor->id,
+            'refunded_at' => now()->toIso8601String(),
+            'notification_intent' => 'travel.payment.refunded',
+            'consent' => false,
         ]);
 
         return $refund;

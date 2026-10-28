@@ -135,7 +135,16 @@ class TravelRefundPassengerTest extends TestCase
             ->assertJsonPath('data.penalty_minor', 0);
 
         // La réservation reste confirmée (remboursement partiel) ; siège libéré.
-        $this->assertSame(BookingStatus::CONFIRMED->value, $setup['booking']['status']);
+        //
+        // #8396 — l'assertion lisait `$setup['booking']['status']`, c'est-à-dire
+        // la charge utile renvoyée à la CRÉATION (`pending`), jamais l'état après
+        // la confirmation qui suit dans le helper. Le test ne pouvait donc
+        // passer qu'en échouant sur un statut périmé. L'état est relu en base.
+        $this->assertSame(BookingStatus::CONFIRMED->value, app(TenantManager::class)
+            ->withinTenant($company, fn (): string => (string) TravelBooking::query()
+                ->findOrFail($setup['booking']['id'])
+                ->status
+                ->value));
         $this->assertSame(1, app(TenantManager::class)->withinTenant($company, function (): int {
             return TravelRefund::query()->count();
         }));

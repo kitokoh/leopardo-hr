@@ -40,11 +40,18 @@ class TravelCancellationPolicyFactory extends Factory
 
     public function global(int $penaltyPercent, ?int $cancelBeforeHours = null): static
     {
+        // #8396 — `global(X)` veut dire « pénalité X % pour tout le tenant ».
+        // La fabrique ne renseignait que la colonne héritée
+        // `hours_before_departure`, avec une sémantique de seuil, alors que le
+        // service canonique lit `cancel_before_hours` (null = toujours
+        // applicable). Les deux colonnes sont donc alignées : une politique
+        // globale sans fenêtre s'applique réellement.
         return $this->state([
             'trip_id' => null,
             'class_id' => null,
             'penalty_percent' => $penaltyPercent,
             'cancel_before_hours' => $cancelBeforeHours,
+            'hours_before_departure' => $cancelBeforeHours ?? 0,
             'refundable' => $penaltyPercent < 100,
         ]);
     }

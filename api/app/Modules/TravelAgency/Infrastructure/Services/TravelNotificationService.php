@@ -33,9 +33,7 @@ final class TravelNotificationService
         'travel.ticket.issued.v1',
     ];
 
-    public function __construct(private readonly ?TravelCustomerContactResolver $contacts = null)
-    {
-    }
+    public function __construct(private readonly ?TravelCustomerContactResolver $contacts = null) {}
 
     /**
      * @param  array<mixed>  $payload

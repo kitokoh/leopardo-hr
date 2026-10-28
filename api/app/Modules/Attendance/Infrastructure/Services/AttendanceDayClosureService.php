@@ -51,7 +51,7 @@ final class AttendanceDayClosureService
     public function assertDayOpen(int $employeeId, string $date): void
     {
         if ($this->isDayClosed($employeeId, $date)) {
-            throw new AttendanceDayClosedException();
+            throw new AttendanceDayClosedException;
         }
     }
 
