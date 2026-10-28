@@ -6713,7 +6713,8 @@
     "hero3d": {
       "demo": "عرض توضيحي",
       "cagnottes": "حملات التبرع",
-      "freeTrial": "تجربة مجانية"
+      "freeTrial": "تجربة مجانية",
+      "hint": "انقر على وحدة للاستكشاف"
     },
     "trade": {
       "badge": "ليوباردو Trade",
@@ -7691,14 +7692,24 @@
       "quotes": "العروض المعلّقة",
       "orders": "الطلبات الجارية",
       "integrations": "التكاملات",
-      "integrationsDegraded": "بعض الوظائف تعتمد على محوّلات غير مهيّأة وتبقى غير متاحة."
+      "integrationsDegraded": "بعض الوظائف تعتمد على محوّلات غير مهيّأة وتبقى غير متاحة.",
+      "scopeNotice": "عدّادات فقط: لا تُعرض أسعار العملاء وعروضهم ورسائلهم ومستنداتهم على إدارة المنصة.",
+      "loadError": "تعذّر تحميل متابعة القطاع.",
+      "companiesScanned": "الشركات التي تم فحصها",
+      "companiesWithTrade": "لديها قطاع التجارة",
+      "companiesWithActivity": "لديها نشاط تجاري",
+      "integrationsUnconfigured": "تكاملات غير مهيّأة"
     },
     "integrations": {
       "title": "التكاملات الخارجية",
       "notice": "يُعرض التكامل غير المهيّأ كغير متاح: لا تُحاكى أي بيانات.",
       "stateOperational": "تعمل",
       "stateUnconfigured": "غير مهيّأة",
-      "configured": "مهيّأة"
+      "configured": "مهيّأة",
+      "colKey": "التكامل",
+      "colMode": "الوضع",
+      "colState": "الحالة",
+      "colReason": "التفاصيل"
     },
     "sourcing": {
       "title": "التوريد وطلبات الأسعار",
@@ -7736,6 +7747,19 @@
       "createdAt": "تاريخ الإنشاء",
       "destination": "الوجهة",
       "incoterm": "إنكوترمز"
+    },
+    "common": {
+      "retry": "إعادة المحاولة",
+      "noData": "لا توجد بيانات"
+    },
+    "counts": {
+      "deals": "الملفات (deals)",
+      "rfqs": "طلبات الأسعار (RFQ)",
+      "quotes": "العروض التجارية",
+      "orders": "الطلبات"
+    },
+    "roles": {
+      "title": "أدوار التجارة"
     }
   },
   "vtc": {

@@ -6713,7 +6713,8 @@
     "hero3d": {
       "demo": "Demo",
       "cagnottes": "Kampanyalar",
-      "freeTrial": "Ücretsiz deneme"
+      "freeTrial": "Ücretsiz deneme",
+      "hint": "Keşfetmek için bir modüle tıklayın"
     },
     "trade": {
       "badge": "Leopardo Trade",
@@ -7691,14 +7692,24 @@
       "quotes": "Bekleyen teklifler",
       "orders": "Devam eden siparişler",
       "integrations": "Entegrasyonlar",
-      "integrationsDegraded": "Bazı işlevler yapılandırılmamış adaptörlere bağlıdır ve kullanılamaz durumdadır."
+      "integrationsDegraded": "Bazı işlevler yapılandırılmamış adaptörlere bağlıdır ve kullanılamaz durumdadır.",
+      "scopeNotice": "Yalnızca sayaçlar: müşterilerin fiyatları, teklifleri, mesajları ve belgeleri platform yönetimine açılmaz.",
+      "loadError": "Dikey takibi yüklenemedi.",
+      "companiesScanned": "İncelenen şirketler",
+      "companiesWithTrade": "Trade dikeyine sahip",
+      "companiesWithActivity": "Ticari faaliyeti olan",
+      "integrationsUnconfigured": "Yapılandırılmamış entegrasyonlar"
     },
     "integrations": {
       "title": "Harici entegrasyonlar",
       "notice": "Yapılandırılmamış bir entegrasyon kullanılamaz olarak gösterilir: hiçbir veri simüle edilmez.",
       "stateOperational": "Çalışıyor",
       "stateUnconfigured": "Yapılandırılmadı",
-      "configured": "yapılandırıldı"
+      "configured": "yapılandırıldı",
+      "colKey": "Entegrasyon",
+      "colMode": "Mod",
+      "colState": "Durum",
+      "colReason": "Ayrıntı"
     },
     "sourcing": {
       "title": "Tedarik ve fiyat talepleri",
@@ -7736,6 +7747,19 @@
       "createdAt": "Oluşturulma",
       "destination": "Varış",
       "incoterm": "Incoterm"
+    },
+    "common": {
+      "retry": "Yeniden dene",
+      "noData": "Veri yok"
+    },
+    "counts": {
+      "deals": "Dosyalar (deals)",
+      "rfqs": "Fiyat talepleri (RFQ)",
+      "quotes": "Ticari teklifler",
+      "orders": "Siparişler"
+    },
+    "roles": {
+      "title": "Trade iş rolleri"
     }
   },
   "vtc": {
