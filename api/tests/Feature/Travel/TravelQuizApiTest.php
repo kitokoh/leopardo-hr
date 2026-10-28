@@ -318,6 +318,35 @@ class TravelQuizApiTest extends TestCase
         return $employee;
     }
 
+    /**
+     * Les deux premieres questions d'un quiz publie, garanties non nulles.
+     *
+     * `$quiz->questions()->get()` renvoie une `Collection` dont l'acces par
+     * indice est type `TravelQuizQuestion|null` : sur un quiz fraichement cree
+     * les questions existent par construction, mais PHPStan (level 8) ne peut
+     * pas le savoir. Les deux tests ajoutes par #8396 empilaient donc deux
+     * nouvelles entrees dans `phpstan-strict-baseline.neon` (l'entree existante
+     * en compte deja 5, elle a ete atteinte). Plutot que d'ajouter une
+     * exception de plus, on resout ici avec une garde explicite : si les
+     * questions manquent, le test doit echouer avec un message clair plutot
+     * que sur un `null` dereference.
+     *
+     * @return array{0: TravelQuizQuestion, 1: TravelQuizQuestion}
+     */
+    private function publishedQuizQuestions(TravelQuiz $quiz): array
+    {
+        $all = array_values($quiz->questions()->orderBy('position')->get()->all());
+
+        $first = $all[0] ?? null;
+        $second = $all[1] ?? null;
+
+        if (! $first instanceof TravelQuizQuestion || ! $second instanceof TravelQuizQuestion) {
+            $this->fail('Le quiz de test doit porter au moins deux questions.');
+        }
+
+        return [$first, $second];
+    }
+
     private function activateTravel(Company $company): void
     {
         $company->setFeature('travelagency', true);
@@ -382,10 +411,10 @@ class TravelQuizApiTest extends TestCase
 
         $quiz = $this->publishedQuiz($company);
 
-        $questions = $quiz->questions()->orderBy('position')->get();
+        [$firstQuestion, $secondQuestion] = $this->publishedQuizQuestions($quiz);
         $answers = [
-            ['question_id' => $questions[0]->id, 'selected_option' => 1],
-            ['question_id' => $questions[1]->id, 'selected_option' => 1],
+            ['question_id' => $firstQuestion->id, 'selected_option' => 1],
+            ['question_id' => $secondQuestion->id, 'selected_option' => 1],
         ];
 
         // Premiere participation : score 3/3.
@@ -411,10 +440,10 @@ class TravelQuizApiTest extends TestCase
 
         $quiz = $this->publishedQuiz($company);
 
-        $questions = $quiz->questions()->orderBy('position')->get();
+        [$firstQuestion, $secondQuestion] = $this->publishedQuizQuestions($quiz);
         $answers = [
-            ['question_id' => $questions[0]->id, 'selected_option' => 0],
-            ['question_id' => $questions[1]->id, 'selected_option' => 1],
+            ['question_id' => $firstQuestion->id, 'selected_option' => 0],
+            ['question_id' => $secondQuestion->id, 'selected_option' => 1],
         ];
 
         // 0/1 + 2/2 = score 2 <= total 3.

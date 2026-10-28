@@ -6,9 +6,9 @@ namespace Tests\Feature\Travel;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Domain\Models\TravelQuiz;
 use App\Modules\TravelAgency\Domain\Models\TravelQuizParticipation;
-use App\Core\Tenant\TenantManager;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -104,10 +104,15 @@ class TravelQuizTest extends TestCase
     }
 
     /**
-     * Construit la liste `answers` du contrat public ({question_id, selected_option}).
+     * Construit le corps de participation du contrat public.
+     *
+     * La methode renvoie l'enveloppe COMPLETE (`participant_email` + `answers`)
+     * et non la seule liste `answers` : c'est ce corps que `postJson()` envoie.
+     * Le docblock precedent annoncait `array<int, ...>` alors que la valeur
+     * retournee est une carte — PHPStan level 8 le signalait (refs #8396).
      *
      * @param  array<int, int>  $selectedByPosition
-     * @return array<int, array{question_id: int, selected_option: int}>
+     * @return array{participant_email: string, answers: list<array{question_id: int, selected_option: int}>}
      */
     private function answers(TravelQuiz $quiz, array $selectedByPosition, string $email = 'joueur@example.com'): array
     {

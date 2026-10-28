@@ -56,7 +56,14 @@ final class ParticipateQuizAction
                 abort(422, 'Une reponse vise une question qui n\'appartient pas a ce quiz.');
             }
 
-            $options = is_array($question->options) ? $question->options : [];
+            // Le cast Eloquent `array` peut valoir `null` sur une ligne
+            // historique anterieure a l'introduction de la colonne : on lit
+            // l'attribut BRUT (`mixed`) plutot que la propriete typee, sinon
+            // `count(null)` leverait un TypeError en production. PHPStan
+            // signalait le `is_array()` comme toujours vrai parce qu'il se fie
+            // au docblock `@property array<int, string>` (refs #8396).
+            $rawOptions = $question->getAttribute('options');
+            $options = is_array($rawOptions) ? $rawOptions : [];
 
             if ($options !== [] && (int) ($answer['selected_option'] ?? -1) >= count($options)) {
                 abort(422, 'Une reponse sort des options proposees.');
