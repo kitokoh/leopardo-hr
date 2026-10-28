@@ -88,14 +88,14 @@ final class PublicPagePresenter
             ->get();
 
         $collection = PageBlockCollection::fromArray(
-            $rows->map(static fn (PageBlockModel $row): array => [
+            array_values($rows->map(static fn (PageBlockModel $row): array => [
                 'id' => $row->block_uid,
                 'type' => $row->type,
                 'schema_version' => $row->schema_version,
                 'position' => $row->position,
                 'content' => $row->content,
                 'locales' => $row->locales ?? [],
-            ])->all()
+            ])->all())
         );
 
         $renderable = $collection->renderableBlocks($this->registry);
@@ -173,7 +173,7 @@ final class PublicPagePresenter
         }
 
         /** @var array<string, mixed> $content */
-        $content = is_array($row->content) ? $row->content : [];
+        $content = $row->content;
 
         $hasPhone = is_string($content['phone'] ?? null) && trim((string) $content['phone']) !== '';
         $hasEmail = is_string($content['email'] ?? null) && trim((string) $content['email']) !== '';

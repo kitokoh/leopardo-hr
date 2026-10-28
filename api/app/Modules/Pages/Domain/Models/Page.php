@@ -50,7 +50,7 @@ use Illuminate\Support\Carbon;
  * @property array<string, mixed>|null $settings
  * @property array<string, mixed>|null $legal
  * @property array<string, mixed>|null $seo
- * @property list<string>|null $locales
+ * @property array<array-key, mixed>|null $locales
  * @property string $default_locale
  * @property string|null $custom_domain
  * @property int $schema_version
@@ -198,7 +198,7 @@ class Page extends Model
      * une locale que le produit ne sait pas rendre produirait un `lang` qui
      * ment, ce qui trompe les lecteurs d'écran et les moteurs.
      *
-     * @return non-empty-list<string>
+     * @return list<string>
      */
     public function publishedLocales(): array
     {
@@ -210,7 +210,7 @@ class Page extends Model
         // sait rendre. La locale par défaut passe en tête — c'est l'ordre de
         // repli si l'en-tête du visiteur ne correspond à rien.
         if (! is_array($this->locales) || $this->locales === []) {
-            /** @var non-empty-list<string> $all */
+            /** @var list<string> $all */
             $all = array_values(array_unique(array_merge([$default], self::SUPPORTED_LOCALES)));
 
             return $all;
@@ -227,7 +227,7 @@ class Page extends Model
             }
         }
 
-        /** @var non-empty-list<string> $locales */
+        /** @var non-empty-list<'ar'|'en'|'fr'|'tr'> $locales */
         return $locales;
     }
 

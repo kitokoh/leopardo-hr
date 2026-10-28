@@ -265,7 +265,7 @@ final class PublicPageController extends Controller
             }
         }
 
-        return in_array($default, $published, true) ? $default : ($published[0] ?? 'fr');
+        return in_array($default, $published, true) ? $default : $published[0];
     }
 
     private function normalizeHost(string $host): ?string
