@@ -55989,7 +55989,7 @@ paths:
           description: 'Permission manquante pour l''acteur.'
         '422':
           description: Charge utile invalide.
-  /travel/community/articles/{article}:
+  /travel/community/articles/{travelArticle}:
     get:
       operationId: api_get_travel_community_articles_by_article
       tags:
@@ -56097,7 +56097,7 @@ paths:
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
         '204':
           description: Suppression effectuee (aucun corps).
-  /travel/community/articles/{article}/publish:
+  /travel/community/articles/{travelArticle}/publish:
     post:
       operationId: api_post_travel_community_articles_by_article_publish
       tags:
@@ -56128,7 +56128,7 @@ paths:
           description: 'Permission manquante pour l''acteur.'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/articles/{article}/moderate:
+  /travel/community/articles/{travelArticle}/moderate:
     post:
       operationId: api_post_travel_community_articles_by_article_moderate
       tags:
@@ -56540,7 +56540,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/quizzes/{quiz}:
+  /travel/community/quizzes/{travelQuiz}:
     get:
       operationId: api_get_travel_community_quizzes_by_quiz
       tags:
@@ -56567,7 +56567,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/quizzes/{quiz}/publish:
+  /travel/community/quizzes/{travelQuiz}/publish:
     post:
       operationId: api_post_travel_community_quizzes_by_quiz_publish
       tags:
@@ -56596,7 +56596,7 @@ paths:
           description: 'Permission manquante pour l''acteur.'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/quizzes/{quiz}/questions:
+  /travel/community/quizzes/{travelQuiz}/questions:
     post:
       operationId: api_post_travel_community_quizzes_by_quiz_questions
       tags:
@@ -56645,7 +56645,7 @@ paths:
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
         '422':
           description: Charge utile invalide.
-  /travel/community/quiz-questions/{question}:
+  /travel/community/quiz-questions/{travelQuizQuestion}:
     delete:
       operationId: api_delete_travel_community_quiz_questions_by_question
       tags:
@@ -56674,7 +56674,7 @@ paths:
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
         '204':
           description: Suppression effectuee (aucun corps).
-  /travel/community/quizzes/{quiz}/participate:
+  /travel/community/quizzes/{travelQuiz}/participate:
     post:
       operationId: api_post_travel_community_quizzes_by_quiz_participate
       tags:
@@ -56702,7 +56702,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/quizzes/{quiz}/results:
+  /travel/community/quizzes/{travelQuiz}/results:
     get:
       operationId: api_get_travel_community_quizzes_by_quiz_results
       tags:

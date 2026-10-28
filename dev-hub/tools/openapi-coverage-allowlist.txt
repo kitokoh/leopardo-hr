@@ -885,3 +885,25 @@ GET /v1/admin/companies/{param}/marketing-os/visibility-objectives
 POST /v1/admin/companies/{param}/marketing-os/visibility-objectives
 GET /v1/admin/companies/{param}/marketing-os/publishing-capabilities
 POST /v1/marketing/ai/suggest-production-brief
+
+#
+# 2026-10-28 — REMISE AU VERT DE MAIN : 4 routes rendues par le merge de #8975
+# (`fix(travel): quiz — contrat de mise a jour, participation unique et routes
+# admin`, commit f78f1f39b) sans entree OpenAPI, ce qui faisait echouer
+# `Route -> OpenAPI coverage guard` — un check REQUIS AU MERGE — sur main et
+# donc sur toutes les PR ouvertes.
+#
+# Le merge a bien expose les controllers/FormRequests qui existaient deja
+# (c'est le correctif attendu de #8396 : la surface repondait 405 faute de
+# route), mais n'a pas mis a jour le contrat OpenAPI associe. Ces entrees
+# documentent le gap comme les 633 autres gaps historiques toleres, en
+# attendant la passe de documentation OpenAPI du module Travel (EPIC #6528).
+#
+# Les 3 premieres etaient partiellement couvertes (le parent
+# `/webhook-subscriptions` et `/quizzes/{param}` y figuraient deja, mais pas
+# ces sous-ressources). La quatrieme, `/travel/community/quizzes/{param}/questions`,
+# est une surface publique distincte.
+GET /v1/travel/webhook-subscriptions/{param}
+PUT /v1/travel/webhook-subscriptions/{param}
+GET /v1/travel/quizzes/{param}/questions
+GET /v1/travel/community/quizzes/{param}/questions
