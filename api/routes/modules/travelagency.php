@@ -449,11 +449,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/categories', [TravelArticleController::class, 'storeCategory']);
         Route::put('/categories/{category}', [TravelArticleController::class, 'updateCategory']);
         Route::delete('/categories/{category}', [TravelArticleController::class, 'destroyCategory']);
-        Route::get('/articles/{article}', [TravelArticleController::class, 'show']);
-        Route::put('/articles/{article}', [TravelArticleController::class, 'update']);
-        Route::delete('/articles/{article}', [TravelArticleController::class, 'destroy']);
-        Route::post('/articles/{article}/publish', [TravelArticleController::class, 'publish']);
-        Route::post('/articles/{article}/moderate', [TravelArticleController::class, 'moderate']);
+        Route::get('/articles/{travelArticle}', [TravelArticleController::class, 'show']);
+        Route::put('/articles/{travelArticle}', [TravelArticleController::class, 'update']);
+        Route::delete('/articles/{travelArticle}', [TravelArticleController::class, 'destroy']);
+        Route::post('/articles/{travelArticle}/publish', [TravelArticleController::class, 'publish']);
+        Route::post('/articles/{travelArticle}/moderate', [TravelArticleController::class, 'moderate']);
         Route::get('/articles/{article}/comments', [TravelCommentController::class, 'index']);
         Route::post('/articles/{article}/comments', [TravelCommentController::class, 'store']);
         Route::delete('/comments/{comment}', [TravelCommentController::class, 'destroy']);
@@ -485,11 +485,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
             Route::get('/articles', [TravelArticleController::class, 'index']);
             Route::post('/articles', [TravelArticleController::class, 'store']);
-            Route::get('/articles/{article}', [TravelArticleController::class, 'show']);
-            Route::put('/articles/{article}', [TravelArticleController::class, 'update']);
-            Route::delete('/articles/{article}', [TravelArticleController::class, 'destroy']);
-            Route::post('/articles/{article}/publish', [TravelArticleController::class, 'publish']);
-            Route::post('/articles/{article}/moderate', [TravelArticleController::class, 'moderate']);
+            Route::get('/articles/{travelArticle}', [TravelArticleController::class, 'show']);
+            Route::put('/articles/{travelArticle}', [TravelArticleController::class, 'update']);
+            Route::delete('/articles/{travelArticle}', [TravelArticleController::class, 'destroy']);
+            Route::post('/articles/{travelArticle}/publish', [TravelArticleController::class, 'publish']);
+            Route::post('/articles/{travelArticle}/moderate', [TravelArticleController::class, 'moderate']);
 
             Route::get('/articles/{article}/comments', [TravelCommentController::class, 'index']);
             Route::post('/articles/{article}/comments', [TravelCommentController::class, 'store']);
