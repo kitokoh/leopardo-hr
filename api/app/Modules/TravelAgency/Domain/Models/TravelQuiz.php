@@ -24,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $ends_at
  * @property int $max_participations_per_contact
  * @property QuizStatus $status
+ * @property Carbon|null $published_at
  *
  * @mixin Builder<static>
  *
@@ -38,6 +39,15 @@ class TravelQuiz extends Model
 
     protected $table = 'travel_quizzes';
 
+    /** Statut d'un quiz encore en brouillon. */
+    public const STATUS_DRAFT = 'draft';
+
+    /** Statut d'un quiz ouvert aux participations. */
+    public const STATUS_PUBLISHED = 'published';
+
+    /** Statut d'un quiz clôturé (plus de participation acceptée). */
+    public const STATUS_CLOSED = 'closed';
+
     protected $fillable = [
         'company_id',
         'title',
@@ -46,6 +56,7 @@ class TravelQuiz extends Model
         'ends_at',
         'max_participations_per_contact',
         'status',
+        'published_at',
     ];
 
     protected $casts = [
@@ -53,6 +64,7 @@ class TravelQuiz extends Model
         'ends_at' => 'datetime',
         'max_participations_per_contact' => 'integer',
         'status' => QuizStatus::class,
+        'published_at' => 'datetime',
     ];
 
     /**
