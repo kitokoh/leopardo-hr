@@ -143,6 +143,15 @@ class EmployeeResource extends JsonResource
                 // chaque connexion. On expose les métadonnées du tenant (les
                 // siennes, aucun risque cross-tenant).
                 'metadata' => $company->metadata ?? [],
+                // #8231 (BOS-043) — le flag du parcours Lea est un
+                // interrupteur SERVEUR (`config('onboarding.lea.enabled')`),
+                // pas une préférence d'affichage : quand il est OFF, les deux
+                // routes `POST /onboarding/lea/*` répondent 404. Le front ne
+                // peut donc pas le déduire de son propre build — il doit
+                // recevoir l'état réel, sinon il affiche une entrée qui
+                // échouera au clic (ou, à l'inverse, cache une fonctionnalité
+                // que l'exploitation vient d'activer).
+                'lea_enabled' => (bool) config('onboarding.lea.enabled', false),
                 // #7235 — essai : l'application affiche les jours restants et
                 // propose le passage au plan supérieur (les CTA « testez
                 // 14 jours » de la vitrine disparaissent, l'inscription est

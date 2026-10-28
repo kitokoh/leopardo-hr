@@ -28,6 +28,11 @@ import { usePanelDismiss } from '@/components/layout/panel-dismiss';
 // en route : l'entretien (#7493) puis la carte « Prochaines étapes » du
 // dashboard la remplacent.
 import { SetupInterview, hasKnownVertical, shouldShowSetupInterview, type SetupInterviewCloseReason } from '@/modules/onboarding/components/SetupInterview';
+// #8231 (BOS-043) — entree du parcours Lea : description libre -> resume
+// editable -> confirmation. Ne s'affiche QUE si l'interrupteur SERVEUR est
+// actif (`company.lea_enabled`, expose par /auth/me) : les deux routes
+// `POST /onboarding/lea/*` repondent 404 quand il est OFF.
+import { LeaOnboarding } from '@/modules/onboarding/components/LeaOnboarding';
 import { WelcomeScreen, shouldShowFirstLoginWelcome, type WelcomeScreenAction } from '@/modules/onboarding/components/WelcomeScreen';
 // #7866 — invite d'import du jeu de données de démonstration (API #7865),
 // séquencée APRÈS l'écran de bienvenue et l'entretien de préparation.
@@ -292,6 +297,11 @@ export default function DashboardLayout({
   usePanelDismiss(notificationsOpen, () => setNotificationsOpen(false));
 
   const [showInterview, setShowInterview] = useState(false);
+  // #8231 — parcours Lea propose en AMONT de l'entretien deterministe (il
+  // est plus rapide pour qui sait decrire son activite), avec bascule
+  // permanente vers l'entretien (`onUseForm`) : Lea ne doit jamais etre un
+  // entonnoir sans sortie.
+  const [leaOpen, setLeaOpen] = useState(false);
   // #7493 — relance douce : tant que l'entretien n'est pas complété (report
   // compris) et que l'onboarding n'est pas terminé, la pastille de la barre
   // « Terminer la configuration de mon espace » permet de le reprendre.
@@ -308,7 +318,13 @@ export default function DashboardLayout({
     // pleine page (après l'écran de bienvenue #7490). Un entretien reporté
     // (`dismissed`) ne se rouvre pas tout seul : relance douce uniquement.
     if (user && shouldShowSetupInterview(user)) {
-      setShowInterview(true);
+      // #8231 — Lea d'abord si le flag serveur est actif ; sinon l'entretien
+      // deterministe, qui reste toujours disponible.
+      if (user.company?.lea_enabled === true) {
+        setLeaOpen(true);
+      } else {
+        setShowInterview(true);
+      }
     }
   }, [user]);
 
@@ -711,6 +727,25 @@ export default function DashboardLayout({
         )}
         {/* #7493 — l'entretien de préparation remplace la modale à 10 étapes
             (#7494) : pleine page, une question à la fois, jamais bloquant. */}
+        {leaOpen && user && !welcomePending && (
+          <LeaOnboarding
+            locale={locale}
+            onConfirmed={() => {
+              setLeaOpen(false);
+              handleInterviewClose('completed');
+            }}
+            onUseForm={() => {
+              // Bascule permanente : Lea se ferme, l'entretien deterministe
+              // prend la suite avec les memes donnees serveur.
+              setLeaOpen(false);
+              setShowInterview(true);
+            }}
+            onDismiss={() => {
+              setLeaOpen(false);
+              setShowInterview(true);
+            }}
+          />
+        )}
         {showInterview && user && !welcomePending && (
           <SetupInterview locale={locale} onClose={handleInterviewClose} sectorKnown={hasKnownVertical(user)} />
         )}

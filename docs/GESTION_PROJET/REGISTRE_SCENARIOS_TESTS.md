@@ -1,3 +1,26 @@
+## 2026-10-28 — #8231 (BOS-043) : ecran Lea, description libre -> resume -> confirmation
+
+**Surface** : front uniquement pour le parcours (aucune route nouvelle), plus **un champ ajoute**
+a `GET /auth/me` (`data.company.lea_enabled`).
+
+**Pourquoi c'est un scenario de test et pas un simple ecran** : les trois etats du parcours n'ont pas
+la meme consequence serveur. `interpret` **propose** (aucune activation), `confirm` **active**.
+Confondre les deux, c'est activer un perimetre que l'utilisateur n'a jamais valide. Les scenarios
+verrouillent donc les transitions, pas le rendu :
+
+| Scenario | Ce qui serait casse sans lui |
+|---|---|
+| jeton transmis **tel quel** a `confirm` | on activerait un plan different de celui affiche |
+| `outcome: fallback` -> formulaire | l'utilisateur resterait bloque sur un ecran inerte |
+| **404** -> formulaire | on afficherait une erreur pour un interrupteur volontairement OFF |
+| clarification **bornee a 2 tours** | la meme question serait reposee indefiniment |
+| **409** -> re-verification | on pretendrait avoir active un plan perime |
+| sortie formulaire a **chaque** etape | un modele qui se trompe enfermerait l'utilisateur |
+| `lea_enabled` absent -> `false` | un parcours IA s'activerait par omission de configuration |
+
+**Automatise** : `front/web/src/modules/onboarding/components/__tests__/LeaOnboarding.test.tsx`
+(7 tests), `api/tests/Feature/Onboarding/LeaFlagExposureTest.php` (3 tests, dont le **defaut ferme**).
+
 > **MAJ 2026-10-28 — Architecture backend, ARK-02 (#7959, point 4) : pile de middlewares tenant unique.** 
 > Surface **API** : **aucune route ajoutee, retiree ni renommee** — les 16 fichiers `api/routes/modules/*.php` 
 > (`absence`, `accounting`, `billing`, `cabinet`, `crm`, `dashboard`, `edu_manager`, `expense`, `fuel_station`, 
