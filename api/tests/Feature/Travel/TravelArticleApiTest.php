@@ -50,7 +50,7 @@ class TravelArticleApiTest extends TestCase
         $this->principal($company);
 
         $category = $this->postJson('/api/v1/travel/community/categories', [
-            'code' => 'ACTUALITES',
+            'slug' => 'actualites',
             'name' => 'Actualités',
         ])->assertStatus(201)->json('data');
 
@@ -71,11 +71,11 @@ class TravelArticleApiTest extends TestCase
         $this->activateTravel($company);
         $this->principal($company);
 
-        $this->postJson('/api/v1/travel/community/categories', ['code' => 'ACTU', 'name' => 'A'])
+        $this->postJson('/api/v1/travel/community/categories', ['slug' => 'actu', 'name' => 'A'])
             ->assertStatus(201);
 
         // Unicité applicative du code par tenant → 500 ? Non : 422 attendu.
-        $this->postJson('/api/v1/travel/community/categories', ['code' => 'ACTU', 'name' => 'B'])
+        $this->postJson('/api/v1/travel/community/categories', ['slug' => 'actu', 'name' => 'B'])
             ->assertStatus(422);
     }
 

@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelTouristSite;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelTouristSiteRequest;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelTouristSiteRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -86,7 +87,7 @@ class TravelTouristSiteController extends Controller
         return response()->json(['data' => ['id' => $site->id]], 201);
     }
 
-    public function update(StoreTravelTouristSiteRequest $request, TravelTouristSite $travelTouristSite): JsonResponse
+    public function update(UpdateTravelTouristSiteRequest $request, TravelTouristSite $travelTouristSite): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -95,15 +96,46 @@ class TravelTouristSiteController extends Controller
             abort(404);
         }
 
-        $travelTouristSite->forceFill([
-            'name' => trim((string) $request->validated('name')),
-            'description_redacted' => $request->validated('description'),
-            'city_id' => $request->validated('city_id'),
-            'latitude' => $request->validated('latitude'),
-            'longitude' => $request->validated('longitude'),
-            'image_asset_id' => $request->validated('image_asset_id'),
-            'status' => $request->validated('status') ?? $travelTouristSite->status->value,
-        ])->save();
+        // Mise a jour PARTIELLE : on n'ecrit que les champs reellement envoyes.
+        // L'ancienne version utilisait `StoreTravelTouristSiteRequest` (ou
+        // `name` est obligatoire) puis `forceFill` sur TOUTES les cles : un PUT
+        // ne portant que `status` etait rejete en 422, et s'il avait passe, il
+        // aurait ecrase `city_id`/`latitude`/`longitude` par `null`. Les deux
+        // defauts sont corriges ensemble parce qu'ils sont la meme erreur —
+        // traiter une mise a jour partielle comme un remplacement (refs #8396).
+        $attributes = [];
+
+        if ($request->has('name')) {
+            $attributes['name'] = trim((string) $request->validated('name'));
+        }
+
+        if ($request->has('description')) {
+            $attributes['description_redacted'] = $request->validated('description');
+        }
+
+        if ($request->has('city_id')) {
+            $attributes['city_id'] = $request->validated('city_id');
+        }
+
+        if ($request->has('latitude')) {
+            $attributes['latitude'] = $request->validated('latitude');
+        }
+
+        if ($request->has('longitude')) {
+            $attributes['longitude'] = $request->validated('longitude');
+        }
+
+        if ($request->has('image_asset_id')) {
+            $attributes['image_asset_id'] = $request->validated('image_asset_id');
+        }
+
+        if ($request->has('status')) {
+            $attributes['status'] = $request->validated('status') ?? $travelTouristSite->status->value;
+        }
+
+        if ($attributes !== []) {
+            $travelTouristSite->forceFill($attributes)->save();
+        }
 
         return response()->json(['data' => ['id' => $travelTouristSite->id]]);
     }
