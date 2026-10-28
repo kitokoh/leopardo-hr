@@ -148,7 +148,7 @@ class RestaurantStockCrudTest extends TestCase
         $this->principal($company);
 
         $result = app(TenantManager::class)->withinTenant($company, function () {
-            [$branch, $ingredient] = $this->branchAndIngredient();
+            ['branch' => $branch, 'ingredient' => $ingredient] = $this->branchAndIngredient();
             $level = RestaurantStockLevel::factory()->create([
                 'branch_id' => $branch->id,
                 'ingredient_id' => $ingredient->id,
@@ -182,7 +182,7 @@ class RestaurantStockCrudTest extends TestCase
         $this->principal($company);
 
         app(TenantManager::class)->withinTenant($company, function (): void {
-            [$branch, $ingredient] = $this->branchAndIngredient();
+            ['branch' => $branch, 'ingredient' => $ingredient] = $this->branchAndIngredient();
 
             $this->postJson('/api/v1/restaurant/inventory-movements', [
                 'branch_id' => $branch->id,
@@ -201,7 +201,7 @@ class RestaurantStockCrudTest extends TestCase
         $this->principal($company);
 
         app(TenantManager::class)->withinTenant($company, function (): void {
-            [$branch, $ingredient] = $this->branchAndIngredient();
+            ['branch' => $branch, 'ingredient' => $ingredient] = $this->branchAndIngredient();
 
             $this->postJson('/api/v1/restaurant/inventory-movements', [
                 'branch_id' => $branch->id,
@@ -220,7 +220,7 @@ class RestaurantStockCrudTest extends TestCase
         $this->principal($company);
 
         app(TenantManager::class)->withinTenant($company, function (): void {
-            [$branch, $ingredient] = $this->branchAndIngredient();
+            ['branch' => $branch, 'ingredient' => $ingredient] = $this->branchAndIngredient();
 
             $this->postJson('/api/v1/restaurant/inventory-movements', [
                 'branch_id' => $branch->id,

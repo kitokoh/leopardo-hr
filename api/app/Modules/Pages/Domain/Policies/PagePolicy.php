@@ -35,6 +35,19 @@ final class PagePolicy
         return true;
     }
 
+    /**
+     * Créer la Page d'un établissement (#8728).
+     *
+     * Réservé aux rôles de gestion : créer une Page, c'est ouvrir une prise de
+     * parole publique de la société. Un collaborateur qui n'a pas le droit
+     * d'éditer ne doit pas pouvoir créer la surface qu'il ne pourra pas
+     * corriger.
+     */
+    public function create(Employee $actor): bool
+    {
+        return $actor->hasManagerRole('principal', 'rh');
+    }
+
     public function view(Employee $actor, Page $page): bool
     {
         return $this->sameTenant($actor, $page);
