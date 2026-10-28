@@ -10576,5 +10576,35 @@
     "provisionedColumn": "Espaces prêts",
     "conversionColumn": "Conversion",
     "sourceColumn": "Source"
+  },
+  "lea": {
+    "title": "Décrivez votre activité",
+    "subtitle": "En quelques phrases : votre métier, votre taille, ce qui compte le plus.",
+    "placeholder": "Ex. : agence de voyages avec 2 bureaux, 12 personnes, je veux suivre les dossiers clients.",
+    "analyse": "Analyser",
+    "useForm": "Utiliser le formulaire",
+    "back": "Retour",
+    "later": "Plus tard",
+    "hint": {
+      "min": "Au moins 12 caractères"
+    },
+    "clarify": {
+      "title": "Deux précisions et je prépare le résumé.",
+      "submit": "Continuer"
+    },
+    "review": {
+      "title": "Voici ce que j'ai compris. Corrigez si besoin, puis confirmez.",
+      "solutions": "Solutions",
+      "tools": "Outils",
+      "empty": "Je n'ai identifié aucune solution à activer. Utilisez le formulaire pour préciser votre activité.",
+      "edit": "Corriger",
+      "editHint": "Modifiez votre description puis réanalysez : le résumé se reconstruit à partir de vos réponses.",
+      "confirm": "Confirmer et activer"
+    },
+    "error": {
+      "network": "Connexion impossible.",
+      "confirm": "L'activation a échoué.",
+      "stale": "Le résumé a changé. Vérifiez-le à nouveau."
+    }
   }
 }

@@ -9172,5 +9172,35 @@
   "fuelPumpistPumpsError": "Pumps unavailable",
   "fuelPumpistMetersError": "Meters unavailable",
   "fuelTechnicalRef": "Ref. {id}",
-  "fuelMeterLabelWithProduct": "{meter} — {product}"
+  "fuelMeterLabelWithProduct": "{meter} — {product}",
+  "lea": {
+    "title": "Tell us about your business",
+    "subtitle": "A few sentences: what you do, how big you are, what matters most.",
+    "placeholder": "E.g. travel agency with 2 offices, 12 people, I want to track customer files.",
+    "analyse": "Analyse",
+    "useForm": "Use the form instead",
+    "back": "Back",
+    "later": "Later",
+    "hint": {
+      "min": "At least 12 characters"
+    },
+    "clarify": {
+      "title": "Two details and I will prepare the summary.",
+      "submit": "Continue"
+    },
+    "review": {
+      "title": "Here is what I understood. Edit if needed, then confirm.",
+      "solutions": "Solutions",
+      "tools": "Tools",
+      "empty": "I could not identify any solution to activate. Use the form to describe your business.",
+      "edit": "Edit",
+      "editHint": "Change your description and analyse again: the summary is rebuilt from your answers.",
+      "confirm": "Confirm and activate"
+    },
+    "error": {
+      "network": "Connection failed.",
+      "confirm": "Activation failed.",
+      "stale": "The summary changed. Please review it again."
+    }
+  }
 }
