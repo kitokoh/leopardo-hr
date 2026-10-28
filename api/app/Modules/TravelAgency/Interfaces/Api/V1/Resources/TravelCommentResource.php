@@ -17,6 +17,8 @@ use Illuminate\Support\Carbon;
  * @property-read int $article_id
  * @property-read string|null $author_type
  * @property-read int|null $author_id
+ * @property-read string|null $report_reason
+ * @property-read Carbon|null $reported_at
  * @property-read string $content_redacted
  * @property-read string $status
  * @property-read Carbon|null $moderated_at
@@ -34,12 +36,16 @@ class TravelCommentResource extends JsonResource
             'author_type' => $this->author_type,
             'author_id' => $this->author_id,
             'content' => $this->content_redacted,
+            // #8396 — la resource n'exposait que `content` alors que les
+            // clients et le contrat de lecture utilisent `body`. Les deux
+            // sont servis pour ne pas casser les consommateurs existants.
+            'body' => $this->content_redacted,
             'status' => $this->status,
+            'report_reason' => $this->report_reason,
+            'reported_at' => $this->reported_at,
             'moderated_at' => $this->moderated_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
     }
-
-
 }
