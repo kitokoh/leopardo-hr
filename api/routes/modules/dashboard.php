@@ -7,6 +7,7 @@
  * Notifications are available to all authenticated employees.
  */
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\AttendanceExportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DashboardController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\ExportController;
@@ -14,7 +15,7 @@ use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationControlle
 use App\Modules\HR\Interfaces\Api\V1\Controllers\RoleAssignmentController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
+ModuleRoutes::tenantModule('', function (): void {
 
     // Dashboard — managers only
     Route::middleware('api.manager')->group(function (): void {

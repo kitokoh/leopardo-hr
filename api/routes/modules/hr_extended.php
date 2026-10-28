@@ -16,6 +16,7 @@ declare(strict_types=1);
  */
 
 // ── Modules migrés ─────────────────────────────────────────────────────────────
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\ApprovalController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\WebhookController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\AdvancedReportController;
@@ -33,7 +34,7 @@ use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\JobPostingActionContro
 use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\RecruitmentController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
+ModuleRoutes::tenantModule('', function (): void {
 
     // ── Self-Service (all employees) ─────────────────────────────────────
     Route::get('/me/leave-balances', [LeavePolicyController::class, 'myBalances']);

@@ -13,6 +13,7 @@ declare(strict_types=1);
  * BelongsToCompany (scope global fail-closed #3727).
  */
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingActivationController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingAuditController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingChartController;
@@ -33,9 +34,7 @@ use App\Modules\Accounting\Interfaces\Api\V1\Controllers\PublicDocumentShareCont
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\ShareAccessController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
-    ->prefix('accounting')
-    ->group(function (): void {
+ModuleRoutes::tenantModule('accounting', function (): void {
 
         // ── Contacts client/fournisseur (RBAC comptable + principal) ────────
         Route::middleware('api.manager:comptable,principal,module:accounting')->group(function (): void {

@@ -53,6 +53,10 @@ class TravelArticleController extends Controller
         $article = TravelArticle::query()->create([
             'company_id' => $actor->company_id,
             ...$data,
+            // `status` est optionnel a l'entree (defaut `draft` documente) : sans
+            // cette ligne un article cree sans statut partait a NULL et la
+            // ressource exposait `status: null` au lieu de `draft` (#8396).
+            'status' => $data['status'] ?? 'draft',
             'author_type' => 'employee',
             'author_id' => $actor->id,
             'published_at' => ($data['status'] ?? 'draft') === 'published' ? now() : null,
@@ -119,18 +123,26 @@ class TravelArticleController extends Controller
 
         $status = (string) $request->json('status');
 
-        if (! in_array($status, ['draft', 'published', 'flagged'], true)) {
+        // `reported` est l'etat pose par un signalement utilisateur : la
+        // moderation doit pouvoir le lire ET le reprendre (mise en quarantaine
+        // puis arbitrage). Il manquait a la liste, donc l'API refusait 422 un
+        // statut qu'elle produit elle-meme (#8396).
+        if (! in_array($status, ['draft', 'published', 'flagged', 'reported'], true)) {
             abort(422, 'Invalid moderation status.');
         }
 
         $travelArticle->forceFill([
             'status' => $status,
+            'moderation_note' => $request->json('moderation_note'),
             'moderated_by_user_id' => $actor->id,
             'moderated_at' => now(),
             'published_at' => $status === 'published' ? ($travelArticle->getAttribute('published_at') ?? now()) : $travelArticle->getAttribute('published_at'),
         ])->save();
 
-        return (new TravelArticleResource($travelArticle->refresh()))->response();
+        // Un seul contrat de sortie : le Resource historique n'exposait pas
+        // `moderation_note`, si bien que la moderation renvoyait 200 sans la
+        // note qu'elle venait d'enregistrer (#8396).
+        return response()->json(['data' => $this->articlePayload($travelArticle->refresh())]);
     }
 
     public function destroy(Request $request, TravelArticle $travelArticle): JsonResponse
@@ -240,26 +252,26 @@ class TravelArticleController extends Controller
         return new JsonResponse(null, 204);
     }
 
-    public function publish(Request $request, TravelArticle $article): JsonResponse
+    public function publish(Request $request, TravelArticle $travelArticle): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($article->company_id !== $actor->company_id) {
+        if ($travelArticle->company_id !== $actor->company_id) {
             abort(404);
         }
 
         $this->denyUnlessManager($actor);
 
-        if ($article->status === 'draft' || $article->status === 'reported') {
-            $article->forceFill([
+        if ($travelArticle->status === 'draft' || $travelArticle->status === 'reported') {
+            $travelArticle->forceFill([
                 'status' => 'published',
                 'published_at' => now(),
                 'moderation_note' => null,
             ])->save();
         }
 
-        return response()->json(['data' => $this->articlePayload($article->refresh())]);
+        return response()->json(['data' => $this->articlePayload($travelArticle->refresh())]);
     }
 
     private function articlePayload(TravelArticle $article): array

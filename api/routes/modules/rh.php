@@ -10,6 +10,7 @@ declare(strict_types=1);
  */
 
 // ── Modules migrés ─────────────────────────────────────────────────────────────
+use App\Support\Routing\ModuleRoutes;
 use App\Core\Tenant\Interfaces\Api\V1\Controllers\ResourceCatalogController;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\AttendanceController;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\BiometricEnrollmentController;
@@ -45,7 +46,7 @@ use App\Modules\Planning\Interfaces\Api\V1\Controllers\ScheduleController;
 use App\Modules\Planning\Interfaces\Api\V1\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
+ModuleRoutes::tenantModule('', function (): void {
 
     // ── Employees ─────────────────────────────────────────────────────────────
     Route::get('/employees', [EmployeeController::class, 'index']);
