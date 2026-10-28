@@ -49,6 +49,13 @@ journeys = registry.get("journeys") or []
 RE_MIDDLEWARE = re.compile(r"(?:->|::)middleware\(([^)]*)\)")
 RE_PREFIX = re.compile(r"(?:->|::)prefix\(\s*'([^']+)'\s*\)")
 RE_ROUTE = re.compile(r"Route::(get|post|put|patch|delete|options|any)\(\s*'([^']+)'")
+# #7959 — la pile de middlewares est desormais portee par un helper
+# (`ModuleRoutes::tenantModule('absences', function () { ... })`). Sans le
+# reconnaitre, ses routes disparaissent de l'analyse et la garde signale des
+# endpoints inexistants — un faux rouge qui pousse a « corriger » le registre
+# alors que le code est bon. Le premier argument du helper est un prefixe de
+# groupe, exactement comme `Route::prefix(...)`.
+RE_MODULE_GROUP = re.compile(r"ModuleRoutes::tenantModule\(\s*'([^']+)'\s*,")
 
 def logical_lines(lines):
     merged = []
@@ -84,6 +91,11 @@ def collect_routes(api_dir: Path) -> set:
             if not stmt or stmt.startswith("//") or stmt.startswith("#"):
                 continue
             prefixes = [m.group(1) for m in RE_PREFIX.finditer(stmt)]
+            # #7959 — un helper de module compte comme un prefixe de groupe :
+            # il monte ses routes sous `/v1/<module>/`. Le traiter separement
+            # garderait `Route::get('/')` en racine et produirait des URIs
+            # fausses (`/` au lieu de `/absences/`).
+            prefixes += [m.group(1) for m in RE_MODULE_GROUP.finditer(stmt)]
             rrs = RE_ROUTE.findall(stmt)
             opens = stmt.count("{") - stmt.count("}")
             ctx = stack[depth]

@@ -47,6 +47,10 @@ class TravelQuizParticipation extends Model
         'participant_contact_id',
         'participant_email',
         'participant_name',
+        // Porte la contrainte d'unicite (company_id, quiz_id,
+        // participant_identifier) : hors `$fillable`, l'attribut etait ignore
+        // silencieusement et la garde « une participation par contact » tombait.
+        'participant_identifier',
         'answers',
         'score',
         'bonus',

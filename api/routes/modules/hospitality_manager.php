@@ -22,6 +22,7 @@ declare(strict_types=1);
  * docs/specifications/SOLUTION_HOSPITALITY.md.
  */
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityAvailabilityController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityDashboardController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityLeaseController;
@@ -35,9 +36,7 @@ use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityRoom
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityUnitController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
-    ->prefix('hospitality')
-    ->group(function (): void {
+ModuleRoutes::tenantModule('hospitality', function (): void {
         // État/santé du module pour le tenant courant (sonde d'activation).
         Route::get('/status', [HospitalityModuleStatusController::class, 'show']);
 

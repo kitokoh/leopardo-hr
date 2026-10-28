@@ -11,6 +11,7 @@ use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Application\Actions\BuildKioskEmployeeInfo;
 use App\Modules\Attendance\Application\Actions\BuildKioskRoster;
+use App\Modules\Attendance\Application\Actions\ProvisionKiosk;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Infrastructure\Services\BiometricAuditLogger;
 use App\Modules\Attendance\Infrastructure\Services\KioskAttendanceService;
@@ -42,6 +43,7 @@ class KioskController extends Controller
         private readonly TenantManager $tenantManager,
         private readonly BuildKioskRoster $buildKioskRoster,
         private readonly BuildKioskEmployeeInfo $buildKioskEmployeeInfo,
+        private readonly ProvisionKiosk $provisionKiosk,
     ) {}
 
     public function register(Request $request): JsonResponse
@@ -72,35 +74,15 @@ class KioskController extends Controller
             'site_id' => ['nullable', 'integer'],
         ]);
 
-        $plainDeviceCode = strtoupper(Str::random(10));
-
-        $kiosk = AttendanceKiosk::query()->create([
-            'company_id' => $company->id,
-            'name' => $validated['name'],
-            'location_label' => $validated['location_label'] ?? null,
-            'biometric_mode' => $validated['biometric_mode'] ?? 'fingerprint',
-            'trusted_device_label' => $validated['trusted_device_label'] ?? null,
-            'site_id' => $validated['site_id'] ?? null,
-            'punch_methods' => isset($validated['punch_methods'])
-                ? $this->normalizePunchMethods($validated['punch_methods'])
-                : null,
-            // Issue #5588 : le device_code n'est plus stocké en clair (hash
-            // déterministe sha256, lookup par égalité). Le code en clair
-            // n'est retourné qu'à la création (provisioning du kiosque).
-            'device_code' => AttendanceKiosk::hashDeviceCode($plainDeviceCode),
-            'sync_token_hash' => Hash::make($plainToken = Str::random(48)),
-            'status' => 'active',
-        ]);
-
-        // #6678 — garde fail-closed de provisioning (repro prod 2026-09-01) :
-        // ne rendre des credentials QUE si la ligne est résolvable par les
-        // routes publiques kiosque (roster/punch/sync). Sinon 500 + audit.
-        $this->assertKioskProvisionedInPublicContext($kiosk);
+        // #7962 — la création, la normalisation de la matrice de méthodes et la
+        // garde fail-closed de provisioning vivent dans l'Action ; le
+        // contrôleur ne fait plus que l'orchestration HTTP.
+        $provisioned = $this->provisionKiosk->execute($company, $validated);
 
         return new JsonResponse([
-            'data' => array_replace($this->serializeKiosk($kiosk), [
-                'device_code' => $plainDeviceCode,
-                'sync_token' => $plainToken,
+            'data' => array_replace($this->serializeKiosk($provisioned['kiosk']), [
+                'device_code' => $provisioned['device_code'],
+                'sync_token' => $provisioned['sync_token'],
             ]),
         ], 201);
     }
@@ -770,29 +752,6 @@ class KioskController extends Controller
     }
 
     /**
-     * Normalise la matrice envoyée au provisioning (BIO-006) : `card`
-     * (vocabulaire ZKTeco) est stocké `badge` (domaine ATT-002).
-     *
-     * @param  array<array-key, mixed>  $methods
-     * @return list<string>
-     */
-    private function normalizePunchMethods(array $methods): array
-    {
-        $normalized = [];
-        foreach ($methods as $method) {
-            if (! is_string($method)) {
-                continue;
-            }
-            $normalized[] = $method === 'card' ? 'badge' : $method;
-        }
-
-        return array_values(array_unique(array_filter(
-            $normalized,
-            static fn (string $method): bool => in_array($method, AttendanceKiosk::KIOSK_PUNCH_METHODS_ALL, true)
-        )));
-    }
-
-    /**
      * PA2-KIO-004: build a compact biometric consent/enrollment status block
      * for the kiosk employee-info screen.
      *
@@ -814,46 +773,5 @@ class KioskController extends Controller
         } catch (Throwable) {
             return (string) $value;
         }
-    }
-
-    /**
-     * #6678 — garde fail-closed de provisioning kiosque (repro prod
-     * 2026-09-01 : 1 kiosque sur 3 créé via POST /kiosks devenait
-     * introuvable — 404 permanent sur roster malgré device_code +
-     * sync_token valides).
-     *
-     * Les routes publiques kiosque (roster/punch/sync, middleware
-     * `kiosk.search_path`) résolvent le device dans `shared_tenants`
-     * (resolveAuthorizedKiosk). Si la ligne vient d'être écrite ailleurs
-     * (fuite de search_path sur worker partagé — famille #4787/#4798/#4852 —
-     * ou tenant en mode schema-par-tenant), les credentials rendus seraient
-     * inutilisables : on supprime la ligne orpheline, on trace l'audit et on
-     * échoue (500) au lieu de livrer un kiosque introuvable sur site.
-     */
-    private function assertKioskProvisionedInPublicContext(AttendanceKiosk $kiosk): void
-    {
-        // Contexte EXACT des routes publiques (resolveAuthorizedKiosk) —
-        // bascule déléguée à TenantManager::withinSearchPath (BOS-019/#8204) :
-        // restauration garantie même si la sonde lève une exception.
-        $resolvable = $this->tenantManager->withinSearchPath(
-            'shared_tenants,public',
-            fn (): bool => AttendanceKiosk::query()
-                ->where('device_code', $kiosk->device_code)
-                ->where('status', 'active')
-                ->exists(),
-        );
-
-        if ($resolvable) {
-            return;
-        }
-
-        // Fail-closed : ne jamais rendre des credentials inutilisables.
-        $kiosk->delete();
-        Log::channel('audit')->error('kiosk.provisioning.mismatch', [
-            'kiosk_id' => $kiosk->id,
-            'company_id' => $kiosk->company_id,
-            'device_code_hash' => $kiosk->device_code,
-        ]);
-        abort(500, 'KIOSK_PROVISIONING_FAILED');
     }
 }
