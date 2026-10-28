@@ -265,7 +265,7 @@ describe('LeaOnboarding', () => {
 
     // 409 = le plan affiche n'est plus celui des reponses : on ne pretend pas
     // avoir active, on revient a la saisie avec un message explicite.
-    expect(await screen.findByRole('alert')).toHaveTextContent(/le resume a change/i);
+    expect(await screen.findByRole('alert')).toHaveTextContent(/r[ée]sum[ée] a chang[ée]/i);
     expect(p.onConfirmed).not.toHaveBeenCalled();
   });
 });
