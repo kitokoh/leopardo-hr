@@ -45,6 +45,15 @@ class TravelCustomerContactController extends Controller
         $search = $request->query('search');
         $search = is_string($search) ? trim($search) : '';
 
+        // TRAVEL-913 (#6421) : filtre par canal de consentement — `?consent=email`
+        // ne doit remonter que les contacts ayant donne leur accord sur ce canal.
+        $consent = $request->query('consent');
+        $consent = is_string($consent) && in_array($consent, ['email', 'sms', 'whatsapp'], true)
+            ? $consent
+            : null;
+
+        $perPage = max(1, min(200, (int) $request->query('per_page', 20)));
+
         $contacts = TravelCustomerContact::query()
             ->where('company_id', $actor->company_id)
             ->when($search !== '', function ($query) use ($search): void {
@@ -55,24 +64,32 @@ class TravelCustomerContactController extends Controller
                         ->orWhere('phone', 'ilike', '%'.$search.'%');
                 });
             })
-            ->orderByDesc('id')
-            ->limit(200)
-            ->get();
+            ->when($consent !== null, fn ($query) => $query->where("{$consent}_consent_given", true))
+            ->orderByDesc('id');
 
-        return response()->json(['data' => $contacts->map(fn (TravelCustomerContact $contact) => [
-            'id' => $contact->id,
-            'first_name' => $contact->first_name,
-            'last_name' => $contact->last_name,
-            'email' => $contact->email,
-            'phone' => $contact->phone,
-            'email_consent_given' => $contact->email_consent_given,
-            'email_consent_at' => $contact->email_consent_at?->toIso8601String(),
-            'sms_consent_given' => $contact->sms_consent_given,
-            'sms_consent_at' => $contact->sms_consent_at?->toIso8601String(),
-            'whatsapp_consent_given' => $contact->whatsapp_consent_given,
-            'whatsapp_consent_at' => $contact->whatsapp_consent_at?->toIso8601String(),
-            'created_at' => $contact->created_at?->toIso8601String(),
-        ])]);
+        $paginator = $contacts->paginate($perPage);
+
+        return response()->json([
+            'data' => $paginator->getCollection()->map(fn (TravelCustomerContact $contact) => [
+                'id' => $contact->id,
+                'first_name' => $contact->first_name,
+                'last_name' => $contact->last_name,
+                'email' => $contact->email,
+                'phone' => $contact->phone,
+                'email_consent_given' => $contact->email_consent_given,
+                'email_consent_at' => $contact->email_consent_at?->toIso8601String(),
+                'sms_consent_given' => $contact->sms_consent_given,
+                'sms_consent_at' => $contact->sms_consent_at?->toIso8601String(),
+                'whatsapp_consent_given' => $contact->whatsapp_consent_given,
+                'whatsapp_consent_at' => $contact->whatsapp_consent_at?->toIso8601String(),
+                'created_at' => $contact->created_at?->toIso8601String(),
+            ])->values(),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+            ],
+        ]);
     }
 
     /**
@@ -93,11 +110,7 @@ class TravelCustomerContactController extends Controller
             abort(404);
         }
 
-        $changes = [
-            'email_consent_given' => $request->validated('email_consent_given'),
-            'sms_consent_given' => $request->validated('sms_consent_given'),
-            'whatsapp_consent_given' => $request->validated('whatsapp_consent_given'),
-        ];
+        $changes = $request->normalizedConsent();
 
         $fill = [];
         foreach ($changes as $channel => $value) {

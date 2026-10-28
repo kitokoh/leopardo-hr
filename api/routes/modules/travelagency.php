@@ -519,7 +519,16 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         });
 
         Route::get('/contacts', [TravelCustomerContactController::class, 'index']);
-        Route::patch('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent'])->whereNumber('travelCustomerContact');
+        // TRAVEL-913 (#6425) : PATCH = variante PAR CANAL (`{channel, given}`),
+        // PUT = variante bulk historique. Le PATCH pointait sur `updateConsent`
+        // (bulk) alors que `updateConsentChannel` et son FormRequest existaient
+        // sans route : le contrat documente `{channel, given}` repondait 200 en
+        // ignorant le canal demande (voire « pigeon » accepte silencieusement).
+        Route::patch('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsentChannel'])->whereNumber('travelCustomerContact');
         Route::put('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent'])->whereNumber('travelCustomerContact');
+        // Variante bulk historique (`{email_consent, sms_consent, ...}`), conservee
+        // pour les clients existants : elle etait documentee et testee mais
+        // n'avait AUCUNE route (405).
+        Route::post('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent'])->whereNumber('travelCustomerContact');
         Route::post('/contacts/{travelCustomerContact}/notify', [TravelCustomerContactController::class, 'notify']);
     });
