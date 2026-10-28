@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
+use App\Core\Feature\Infrastructure\Services\CompanyFeatureMirror;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Core\Feature\Infrastructure\Services\FeatureFlagAuditRecorder;
 use App\Core\Feature\Infrastructure\Services\ModuleRegistryGateway;
@@ -21,6 +22,7 @@ class PlatformCompanyFeatureController extends Controller
         private readonly FeatureFlagAuditRecorder $auditRecorder,
         private readonly ModuleRegistryGateway $moduleRegistry,
         private readonly SolutionActivator $solutionActivator,
+        private readonly CompanyFeatureMirror $featureMirror,
     ) {}
 
     public function show(string $companyId): JsonResponse
@@ -62,6 +64,19 @@ class PlatformCompanyFeatureController extends Controller
         }
 
         $company->features = $features;
+
+        // #8954 — `metadata.modules` est une vue DÉRIVÉE de `features`.
+        //
+        // Sans cette double écriture, couper une verticale depuis cette console
+        // ne changeait RIEN côté client : `client-features.ts` lit
+        // `metadata.modules` en premier et fait autorité sur les replis. Le
+        // serveur voyait la coupure, le navigateur affichait toujours le module
+        // — deux vérités pour un même état.
+        //
+        // Posé avant le `save()` unique pour que la bascule ne soit jamais
+        // visible à moitié appliquée (`features` à jour, miroir périmé).
+        $this->featureMirror->apply($company, $features);
+
         $company->save();
 
         // MAT-010 (#5868) — audit des bascules (avant/après par flag), dans le
