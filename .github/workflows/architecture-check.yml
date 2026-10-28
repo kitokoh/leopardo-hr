@@ -213,6 +213,13 @@ jobs:
       - name: Module isolation guard — no new cross-module imports (issue #5584)
         run: bash dev-hub/tools/check-module-isolation.sh api
 
+      - name: Module isolation BUDGET guard — la dette tolérée ne peut que baisser (issue #7959)
+        # #5584 bloque les NOUVELLES arêtes. Ce garde-ci ajoute le flux : le
+        # nombre d'arêtes de l'allowlist ne peut jamais dépasser le budget, et
+        # une arête résorbée oblige à abaisser le budget dans le même commit.
+        # Une allowlist sans plafond est un stock qui ne descend jamais.
+        run: bash dev-hub/tools/check-module-isolation-budget.sh
+
       - name: Tenant cache keys guard — helper central TenantCache ou exemption justifiée (issue #8058)
         run: bash dev-hub/tools/check-tenant-cache-keys.sh api
 
