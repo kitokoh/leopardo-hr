@@ -44,10 +44,10 @@ const metricsByLocale: Record<AppLocale, MetricItem[]> = {
     { icon: <ShieldCheck className="w-6 h-6" />, value: '1000+', label: 'Backend test files' },
   ],
   tr: [
-    { icon: <Globe2 className="w-6 h-6" />, value: '21', label: 'Bordro katalogundaki ulke' },
-    { icon: <Layers className="w-6 h-6" />, value: '4', label: 'Urun dili (FR/EN/TR/AR)' },
-    { icon: <Building2 className="w-6 h-6" />, value: '7', label: 'Urun yuzeyi (web, mobil, kiosk)' },
-    { icon: <ShieldCheck className="w-6 h-6" />, value: '1000+', label: 'Backend test dosyasi' },
+    { icon: <Globe2 className="w-6 h-6" />, value: '21', label: 'Bordro kataloğundaki ülke' },
+    { icon: <Layers className="w-6 h-6" />, value: '4', label: 'Ürün dili (FR/EN/TR/AR)' },
+    { icon: <Building2 className="w-6 h-6" />, value: '7', label: 'Ürün yüzeyi (web, mobil, kiosk)' },
+    { icon: <ShieldCheck className="w-6 h-6" />, value: '1000+', label: 'Backend test dosyası' },
   ],
   ar: [
     { icon: <Globe2 className="w-6 h-6" />, value: '21', label: 'دولة في كتالوج الرواتب' },
