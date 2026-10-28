@@ -9,12 +9,19 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
+use App\Modules\Attendance\Application\Actions\BuildKioskAnnouncements;
 use App\Modules\Attendance\Application\Actions\BuildKioskEmployeeInfo;
+use App\Modules\Attendance\Application\Actions\BuildKioskLeaveBalance;
 use App\Modules\Attendance\Application\Actions\BuildKioskRoster;
+use App\Modules\Attendance\Application\Actions\RegisterKiosk;
+use App\Modules\Attendance\Application\Actions\RevokeKiosk;
+use App\Modules\Attendance\Application\Actions\RotateKioskToken;
+use App\Modules\Attendance\Domain\Exceptions\KioskProvisioningMismatchException;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
-use App\Modules\Attendance\Infrastructure\Services\BiometricAuditLogger;
 use App\Modules\Attendance\Infrastructure\Services\KioskAttendanceService;
 use App\Modules\Attendance\Infrastructure\Services\KioskFaceVerificationService;
+use App\Modules\Attendance\Infrastructure\Services\KioskProvisioningGuard;
+use App\Modules\Attendance\Infrastructure\Services\KioskViewBuilder;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\KioskPunchRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\KioskSyncRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\KioskVerifyFaceRequest;
@@ -23,26 +30,64 @@ use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Throwable;
 
+/**
+ * Kiosque de pointage — surface terminal (public authentifié par appareil) et
+ * surface gestionnaire (BIO-004..BIO-009, PA2-KIO-004).
+ *
+ * ## Ce que ce contrôleur fait, et ce qu'il ne fait plus (#7962)
+ *
+ * L'audit structurel du 2026-09-20 relevait 993 lignes dans ce fichier : la
+ * logique métier (provisioning, cycle de vie, projections, requêtes de lecture)
+ * y cohabitait avec l'orchestration HTTP. Depuis, chaque cas d'usage a été
+ * extrait dans une Action (`Application/Actions`) et chaque accès base dans un
+ * lecteur d'Infrastructure :
+ *
+ * | Cas d'usage              | Action / service                    |
+ * |--------------------------|-------------------------------------|
+ * | roster biométrique       | `BuildKioskRoster` (PR #8943)       |
+ * | fiche employé            | `BuildKioskEmployeeInfo` (PR #8943) |
+ * | annonces                 | `BuildKioskAnnouncements`           |
+ * | soldes de congés         | `BuildKioskLeaveBalance`            |
+ * | provisioning             | `RegisterKiosk`                     |
+ * | révocation               | `RevokeKiosk`                       |
+ * | rotation de token        | `RotateKioskToken`                  |
+ * | garde de provisioning    | `KioskProvisioningGuard`            |
+ * | projections              | `KioskViewBuilder`                  |
+ *
+ * Il reste ici ce qui EST de l'orchestration HTTP : permission de l'acteur,
+ * bascule/restauration du `search_path`, résolution du terminal par en-tête,
+ * et choix du code de statut.
+ *
+ * ## Ce qui n'a volontairement pas bougé
+ *
+ * `resolveAuthorizedKiosk()` (authentification par appareil) et
+ * `withTenantSearchPath()` (bascule de schéma) restent dans le contrôleur :
+ * les déplacer dans une Action déguiserait un middleware en cas d'usage, et
+ * ferait perdre le point unique où le `search_path` est restauré.
+ */
 class KioskController extends Controller
 {
     public function __construct(
         private readonly KioskAttendanceService $kioskAttendanceService,
         private readonly OnboardingQrInterface $onboardingQr,
-        private readonly BiometricAuditLogger $biometricAudit,
         private readonly KioskFaceVerificationService $faceVerification,
         private readonly TenantManager $tenantManager,
         private readonly BuildKioskRoster $buildKioskRoster,
         private readonly BuildKioskEmployeeInfo $buildKioskEmployeeInfo,
+        private readonly BuildKioskAnnouncements $buildKioskAnnouncements,
+        private readonly BuildKioskLeaveBalance $buildKioskLeaveBalance,
+        private readonly RegisterKiosk $registerKiosk,
+        private readonly RevokeKiosk $revokeKiosk,
+        private readonly RotateKioskToken $rotateKioskToken,
+        private readonly KioskProvisioningGuard $provisioningGuard,
+        private readonly KioskViewBuilder $viewBuilder,
     ) {}
+
+    // ── Surface gestionnaire : provisioning et cycle de vie ──────────────────
 
     public function register(Request $request): JsonResponse
     {
@@ -50,60 +95,78 @@ class KioskController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        abort_unless($actor?->isManager(), 403, 'FORBIDDEN');
+        abort_unless($actor->isManager(), 403, 'FORBIDDEN');
 
         return $this->withTenantSearchPath(
             $company,
-            fn (): JsonResponse => $this->doRegister($request, $company, $actor),
+            function () use ($request, $company): JsonResponse {
+                $validated = $request->validate([
+                    'name' => ['required', 'string', 'max:100'],
+                    'location_label' => ['nullable', 'string', 'max:120'],
+                    'biometric_mode' => ['nullable', 'in:fingerprint,face,mixed'],
+                    'trusted_device_label' => ['nullable', 'string', 'max:120'],
+                    // BIO-006 (#6767) : matrice de méthodes du kiosque (optionnelle).
+                    'punch_methods' => ['nullable', 'array', 'min:1'],
+                    'punch_methods.*' => ['required', 'in:fingerprint,face,badge,pin,manager,card'],
+                    // BIO-005 (#6766) : site d'affectation (fixé au provisioning).
+                    'site_id' => ['nullable', 'integer'],
+                ]);
+
+                $created = $this->registerKiosk->execute($company, $validated);
+
+                // #6678 — garde fail-closed : ne rendre des credentials QUE si
+                // la ligne est résolvable par les routes publiques kiosque.
+                try {
+                    $this->provisioningGuard->assertResolvable($created['kiosk']);
+                } catch (KioskProvisioningMismatchException $exception) {
+                    abort(500, $exception->getMessage());
+                }
+
+                return new JsonResponse([
+                    'data' => $this->registerKiosk->responsePayload(
+                        $created['kiosk'],
+                        $created['device_code'],
+                        $created['sync_token'],
+                    ),
+                ], 201);
+            },
         );
     }
 
-    private function doRegister(Request $request, Company $company, Employee $actor): JsonResponse
+    public function revoke(Request $request, int $kiosk): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'location_label' => ['nullable', 'string', 'max:120'],
-            'biometric_mode' => ['nullable', 'in:fingerprint,face,mixed'],
-            'trusted_device_label' => ['nullable', 'string', 'max:120'],
-            // BIO-006 (#6767) : matrice de méthodes du kiosque (optionnelle).
-            'punch_methods' => ['nullable', 'array', 'min:1'],
-            'punch_methods.*' => ['required', 'in:fingerprint,face,badge,pin,manager,card'],
-            // BIO-005 (#6766) : site d'affectation (fixé au provisioning).
-            'site_id' => ['nullable', 'integer'],
-        ]);
+        /** @var Employee $actor */
+        $actor = $request->user();
+        abort_unless($actor->isManager(), 403, 'FORBIDDEN');
 
-        $plainDeviceCode = strtoupper(Str::random(10));
+        $kioskModel = $this->resolveManagerKiosk($kiosk);
 
-        $kiosk = AttendanceKiosk::query()->create([
-            'company_id' => $company->id,
-            'name' => $validated['name'],
-            'location_label' => $validated['location_label'] ?? null,
-            'biometric_mode' => $validated['biometric_mode'] ?? 'fingerprint',
-            'trusted_device_label' => $validated['trusted_device_label'] ?? null,
-            'site_id' => $validated['site_id'] ?? null,
-            'punch_methods' => isset($validated['punch_methods'])
-                ? $this->normalizePunchMethods($validated['punch_methods'])
-                : null,
-            // Issue #5588 : le device_code n'est plus stocké en clair (hash
-            // déterministe sha256, lookup par égalité). Le code en clair
-            // n'est retourné qu'à la création (provisioning du kiosque).
-            'device_code' => AttendanceKiosk::hashDeviceCode($plainDeviceCode),
-            'sync_token_hash' => Hash::make($plainToken = Str::random(48)),
-            'status' => 'active',
-        ]);
-
-        // #6678 — garde fail-closed de provisioning (repro prod 2026-09-01) :
-        // ne rendre des credentials QUE si la ligne est résolvable par les
-        // routes publiques kiosque (roster/punch/sync). Sinon 500 + audit.
-        $this->assertKioskProvisionedInPublicContext($kiosk);
+        $this->revokeKiosk->execute($kioskModel, $actor);
 
         return new JsonResponse([
-            'data' => array_replace($this->serializeKiosk($kiosk), [
-                'device_code' => $plainDeviceCode,
+            'data' => $this->viewBuilder->serialize($kioskModel->fresh() ?? $kioskModel),
+        ]);
+    }
+
+    public function rotateToken(Request $request, int $kiosk): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        abort_unless($actor->isManager(), 403, 'FORBIDDEN');
+
+        $kioskModel = $this->resolveManagerKiosk($kiosk);
+
+        $plainToken = $this->rotateKioskToken->execute($kioskModel, $actor);
+
+        return new JsonResponse([
+            'data' => array_replace($this->viewBuilder->serialize($kioskModel), [
+                // Le token en clair n'est retourné qu'à la rotation.
                 'sync_token' => $plainToken,
             ]),
-        ], 201);
+        ]);
     }
+
+    // ── Surface terminal : pointage ──────────────────────────────────────────
 
     public function punch(KioskPunchRequest $request, string $deviceCode): JsonResponse
     {
@@ -155,224 +218,6 @@ class KioskController extends Controller
         ], $statusCode);
     }
 
-    public function roster(Request $request, string $deviceCode): JsonResponse
-    {
-        $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
-        $company = $kiosk->company;
-        app()->instance('current_company', $company);
-
-        return $this->withTenantSearchPath(
-            $company,
-            fn (): JsonResponse => $this->doRoster($company, $deviceCode),
-        );
-    }
-
-    private function doRoster(Company $company, string $deviceCode): JsonResponse
-    {
-        // #7962 — la requête et la sérialisation vivent dans l'Action ; le
-        // contrôleur ne garde que l'orchestration HTTP.
-        $items = $this->buildKioskRoster->execute($company);
-
-        return new JsonResponse([
-            'data' => [
-                'device_code' => $deviceCode,
-                'company_id' => $company->id,
-                'company_name' => $company->name,
-                'employees' => $items,
-            ],
-        ]);
-    }
-
-    public function sync(KioskSyncRequest $request, string $deviceCode): JsonResponse
-    {
-        $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
-        app()->instance('current_company', $kiosk->company);
-
-        return $this->withTenantSearchPath(
-            $kiosk->company,
-            // #5588 (follow-up) : transmettre le device_code EN CLAIR (celui de
-            // l'URL) — le modèle ne porte plus que la dérivation (64 hex).
-            fn (): JsonResponse => $this->doSync(
-                $kiosk,
-                $request->validated(),
-                $deviceCode,
-                // BIO-007 (#6772) : le token en clair (header) sert de clé de
-                // vérification HMAC du batch offline signé.
-                (string) $request->header('X-Kiosk-Token', ''),
-            ),
-        );
-    }
-
-    /**
-     * @param  array<string, mixed>  $validated
-     */
-    private function doSync(AttendanceKiosk $kiosk, array $validated, string $deviceCode, string $plainSyncToken): JsonResponse
-    {
-        $result = $this->kioskAttendanceService->syncPunches(
-            $kiosk,
-            $validated['events'],
-            $deviceCode,
-            deviceState: isset($validated['device_state']) && is_array($validated['device_state']) ? $validated['device_state'] : null,
-            plainSyncToken: $plainSyncToken,
-        );
-
-        // #3587 — le bridge isole les événements refusés en dead-letter au
-        // lieu de les marquer synced : la réponse détaille désormais chaque
-        // skip (external_event_id + raison). Contrat additif :
-        // processed_count/processed_log_ids inchangés.
-        return new JsonResponse([
-            'data' => [
-                'processed_count' => count($result['processed']),
-                'processed_log_ids' => $result['processed'],
-                'skipped_count' => count($result['skipped']),
-                'skipped' => $result['skipped'],
-                'last_sync_at' => $kiosk->fresh()?->last_sync_at?->toIso8601String(),
-                // BIO-007 (#6772) : état de synchronisation visible (compteur
-                // acquitté, heure serveur, politique offline appliquée).
-                'server_time' => now()->toIso8601String(),
-                'acked_event_counter' => (int) $kiosk->fresh()?->acked_event_counter,
-                'offline_policy' => $this->offlinePolicy(),
-            ],
-        ]);
-    }
-
-    public function employeeInfo(Request $request, string $deviceCode): JsonResponse
-    {
-        $validated = $request->validate([
-            'identifier' => ['required', 'string', 'max:150'],
-        ]);
-
-        $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
-        $company = $kiosk->company;
-        app()->instance('current_company', $company);
-
-        return $this->withTenantSearchPath(
-            $company,
-            fn (): JsonResponse => $this->doEmployeeInfo($company, $validated),
-        );
-    }
-
-    /**
-     * @param  array<string, mixed>  $validated
-     */
-    private function doEmployeeInfo(Company $company, array $validated): JsonResponse
-    {
-        // #7962 — résolution employé + présence du jour + soldes de congés
-        // déplacés dans l'Action ; le contrôleur ne garde que l'enveloppe HTTP.
-        return new JsonResponse([
-            'data' => $this->buildKioskEmployeeInfo->execute($company, $validated),
-        ]);
-    }
-
-    public function announcements(Request $request, string $deviceCode): JsonResponse
-    {
-        $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
-        $company = $kiosk->company;
-
-        return $this->withTenantSearchPath(
-            $company,
-            fn (): JsonResponse => $this->doAnnouncements($kiosk, $company, $deviceCode),
-        );
-    }
-
-    private function doAnnouncements(AttendanceKiosk $kiosk, Company $company, string $deviceCode): JsonResponse
-    {
-        if (! Schema::hasTable('kiosk_announcements')) {
-            return new JsonResponse(['data' => []]);
-        }
-
-        try {
-            $columns = Schema::getColumnListing('kiosk_announcements');
-            $hasColumn = fn (string $column): bool => in_array($column, $columns, true);
-
-            if (! $hasColumn('company_id')) {
-                return new JsonResponse(['data' => []]);
-            }
-
-            $announcements = DB::table('kiosk_announcements')
-                ->where('company_id', $company->id)
-                ->when($hasColumn('is_active'), fn ($query) => $query->where('is_active', true))
-                ->when($hasColumn('starts_at'), function ($query): void {
-                    $query->where(function ($windowQuery): void {
-                        $windowQuery->whereNull('starts_at')->orWhere('starts_at', '<=', now());
-                    });
-                })
-                ->when($hasColumn('expires_at'), function ($query): void {
-                    $query->where(function ($windowQuery): void {
-                        $windowQuery->whereNull('expires_at')->orWhere('expires_at', '>=', now());
-                    });
-                })
-                ->when($hasColumn('priority'), fn ($query) => $query->orderByDesc('priority'))
-                ->when(
-                    $hasColumn('created_at'),
-                    fn ($query) => $query->orderByDesc('created_at'),
-                    fn ($query) => $hasColumn('id') ? $query->orderByDesc('id') : $query
-                )
-                ->limit(10)
-                ->get()
-                ->map(fn ($announcement) => [
-                    'id' => $announcement->id ?? null,
-                    'title' => $announcement->title ?? '',
-                    'body' => $announcement->body ?? '',
-                    'priority' => $announcement->priority ?? 'normal',
-                    'starts_at' => $this->nullableIsoString($announcement->starts_at ?? null),
-                    'expires_at' => $this->nullableIsoString($announcement->expires_at ?? null),
-                ]);
-        } catch (Throwable $exception) {
-            Log::warning('Kiosk announcements skipped because the tenant table is not queryable.', [
-                'company_id' => $company->id,
-                'device_code' => $deviceCode,
-                'error' => $exception->getMessage(),
-            ]);
-
-            return new JsonResponse(['data' => []]);
-        }
-
-        return new JsonResponse(['data' => $announcements]);
-    }
-
-    public function leaveBalance(Request $request, string $deviceCode): JsonResponse
-    {
-        $validated = $request->validate([
-            'identifier' => ['required', 'string', 'max:150'],
-        ]);
-
-        $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
-        $company = $kiosk->company;
-        app()->instance('current_company', $company);
-
-        return $this->withTenantSearchPath(
-            $company,
-            fn (): JsonResponse => $this->doLeaveBalance($company, $validated),
-        );
-    }
-
-    /**
-     * @param  array<string, mixed>  $validated
-     */
-    private function doLeaveBalance(Company $company, array $validated): JsonResponse
-    {
-        // #7962 — même résolution tenant-scopée que la fiche employé : une
-        // seule implémentation, pas deux copies de la requête.
-        $employee = $this->buildKioskEmployeeInfo->resolveEmployee($company, (string) $validated['identifier']);
-
-        abort_if(! $employee, 404, 'EMPLOYEE_NOT_FOUND');
-
-        $balances = DB::table('leave_balances')
-            ->where('employee_id', $employee->id)
-            ->where('year', now()->year)
-            ->get()
-            ->map(fn ($b) => $this->buildKioskEmployeeInfo->serializeLeaveBalance($b));
-
-        return new JsonResponse([
-            'data' => [
-                'employee_name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
-                'year' => now()->year,
-                'balances' => $balances,
-            ],
-        ]);
-    }
-
     public function qrPunch(Request $request, string $deviceCode): JsonResponse
     {
         $validated = $request->validate([
@@ -391,67 +236,6 @@ class KioskController extends Controller
             $company,
             fn (): JsonResponse => $this->doQrPunch($kiosk, $company, $validated),
         );
-    }
-
-    /**
-     * @param  array<string, mixed>  $validated
-     */
-    private function doQrPunch(AttendanceKiosk $kiosk, Company $company, array $validated): JsonResponse
-    {
-        // #3365 : le QR punch n'accepte QUE le jeton signé+expirant émis par
-        // /me/qr-profile (OnboardingQrService, type employee_profile) — les
-        // payloads JSON base64 nus (forgeables) sont rejetés.
-        try {
-            $qrPayload = $this->onboardingQr->decodeEmployeeProfile($validated['qr_data']);
-        } catch (ValidationException) {
-            return new JsonResponse([
-                'error' => 'INVALID_QR_TOKEN',
-                'message' => 'INVALID_QR_TOKEN',
-            ], 422);
-        }
-
-        $employeeId = $qrPayload['employee']['id'] ?? null;
-        $employee = $employeeId !== null
-            ? Employee::query()->where('company_id', $company->id)->whereKey($employeeId)->first()
-            : null;
-
-        if (! $employee) {
-            return new JsonResponse([
-                'error' => 'EMPLOYEE_NOT_FOUND',
-                'message' => 'EMPLOYEE_NOT_FOUND',
-            ], 404);
-        }
-
-        // Le service punch résout par email/matricule/zkteco_id — on lui passe
-        // l'identifiant le plus fiable de l'employé déjà résolu (scopé tenant).
-        $identifier = $employee->email ?? $employee->matricule ?? (string) $employee->id;
-
-        $allowedWorkTypes = ['normal', 'overtime', 'break', 'resume', 'mission', 'travel', 'training', 'other'];
-        $qrWorkType = $qrPayload['work_type'] ?? null;
-        $qrWorkType = in_array($qrWorkType, $allowedWorkTypes, true) ? $qrWorkType : null;
-
-        $log = $this->kioskAttendanceService->punch(
-            kiosk: $kiosk,
-            identifier: (string) $identifier,
-            action: $validated['action'] ?? 'check_in',
-            workType: $validated['work_type'] ?? $qrWorkType ?? 'normal',
-        );
-
-        $action = $validated['action'] ?? 'check_in';
-        $statusCode = $action === 'check_in' ? 201 : 200;
-
-        return new JsonResponse([
-            'data' => [
-                'employee_id' => $log->employee_id,
-                'date' => $log->date?->format('Y-m-d'),
-                'check_in' => optional($log->check_in)->toIso8601String(),
-                'check_out' => optional($log->check_out)->toIso8601String(),
-                'method' => 'qr_code',
-                'work_type' => $log->work_type,
-                'session_number' => $log->session_number,
-                'status' => $log->status,
-            ],
-        ], $statusCode);
     }
 
     /**
@@ -522,6 +306,231 @@ class KioskController extends Controller
         ], $httpStatus);
     }
 
+    // ── Surface terminal : lectures ──────────────────────────────────────────
+
+    public function roster(Request $request, string $deviceCode): JsonResponse
+    {
+        $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
+        $company = $kiosk->company;
+        app()->instance('current_company', $company);
+
+        return $this->withTenantSearchPath(
+            $company,
+            fn (): JsonResponse => new JsonResponse([
+                'data' => [
+                    'device_code' => $deviceCode,
+                    'company_id' => $company->id,
+                    'company_name' => $company->name,
+                    'employees' => $this->buildKioskRoster->execute($company),
+                ],
+            ]),
+        );
+    }
+
+    public function employeeInfo(Request $request, string $deviceCode): JsonResponse
+    {
+        $validated = $request->validate([
+            'identifier' => ['required', 'string', 'max:150'],
+        ]);
+
+        $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
+        $company = $kiosk->company;
+        app()->instance('current_company', $company);
+
+        return $this->withTenantSearchPath(
+            $company,
+            fn (): JsonResponse => new JsonResponse([
+                'data' => $this->buildKioskEmployeeInfo->execute($company, $validated),
+            ]),
+        );
+    }
+
+    public function announcements(Request $request, string $deviceCode): JsonResponse
+    {
+        $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
+        $company = $kiosk->company;
+
+        return $this->withTenantSearchPath(
+            $company,
+            fn (): JsonResponse => new JsonResponse([
+                'data' => $this->buildKioskAnnouncements->execute($company),
+            ]),
+        );
+    }
+
+    public function leaveBalance(Request $request, string $deviceCode): JsonResponse
+    {
+        $validated = $request->validate([
+            'identifier' => ['required', 'string', 'max:150'],
+        ]);
+
+        $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
+        $company = $kiosk->company;
+        app()->instance('current_company', $company);
+
+        return $this->withTenantSearchPath(
+            $company,
+            function () use ($company, $validated): JsonResponse {
+                $payload = $this->buildKioskLeaveBalance->execute(
+                    $company,
+                    (string) $validated['identifier'],
+                    (int) now()->year,
+                );
+
+                abort_if($payload === null, 404, 'EMPLOYEE_NOT_FOUND');
+
+                return new JsonResponse(['data' => $payload]);
+            },
+        );
+    }
+
+    public function config(Request $request, string $deviceCode): JsonResponse
+    {
+        $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
+
+        return new JsonResponse(['data' => $this->viewBuilder->config($kiosk, $deviceCode)]);
+    }
+
+    /**
+     * BIO-007 (#6772) — état de synchronisation du kiosque (l'appareil a été
+     * authentifié par le middleware `kiosk.device`).
+     */
+    public function syncStatus(Request $request, string $deviceCode): JsonResponse
+    {
+        /** @var AttendanceKiosk|null $kiosk */
+        $kiosk = $request->attributes->get('kiosk_device');
+
+        if (! $kiosk instanceof AttendanceKiosk) {
+            abort(401, 'INVALID_KIOSK_TOKEN');
+        }
+
+        return new JsonResponse([
+            'data' => array_replace(
+                ['device_code' => $deviceCode, 'status' => $kiosk->status, 'company_id' => $kiosk->company_id],
+                $this->viewBuilder->syncStatus($kiosk),
+                ['server_time' => now()->toIso8601String(), 'offline_policy' => $this->viewBuilder->offlinePolicy()],
+            ),
+        ]);
+    }
+
+    // ── Surface terminal : synchronisation offline ───────────────────────────
+
+    public function sync(KioskSyncRequest $request, string $deviceCode): JsonResponse
+    {
+        $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
+        app()->instance('current_company', $kiosk->company);
+
+        return $this->withTenantSearchPath(
+            $kiosk->company,
+            // #5588 (follow-up) : transmettre le device_code EN CLAIR (celui de
+            // l'URL) — le modèle ne porte plus que la dérivation (64 hex).
+            fn (): JsonResponse => $this->doSync(
+                $kiosk,
+                $request->validated(),
+                $deviceCode,
+                // BIO-007 (#6772) : le token en clair (header) sert de clé de
+                // vérification HMAC du batch offline signé.
+                (string) $request->header('X-Kiosk-Token', ''),
+            ),
+        );
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     */
+    private function doSync(AttendanceKiosk $kiosk, array $validated, string $deviceCode, string $plainSyncToken): JsonResponse
+    {
+        $result = $this->kioskAttendanceService->syncPunches(
+            $kiosk,
+            $validated['events'],
+            $deviceCode,
+            deviceState: isset($validated['device_state']) && is_array($validated['device_state']) ? $validated['device_state'] : null,
+            plainSyncToken: $plainSyncToken,
+        );
+
+        // #3587 — le bridge isole les événements refusés en dead-letter au
+        // lieu de les marquer synced : la réponse détaille désormais chaque
+        // skip (external_event_id + raison). Contrat additif :
+        // processed_count/processed_log_ids inchangés.
+        return new JsonResponse([
+            'data' => [
+                'processed_count' => count($result['processed']),
+                'processed_log_ids' => $result['processed'],
+                'skipped_count' => count($result['skipped']),
+                'skipped' => $result['skipped'],
+                'last_sync_at' => $kiosk->fresh()?->last_sync_at?->toIso8601String(),
+                // BIO-007 (#6772) : état de synchronisation visible (compteur
+                // acquitté, heure serveur, politique offline appliquée).
+                'server_time' => now()->toIso8601String(),
+                'acked_event_counter' => (int) $kiosk->fresh()?->acked_event_counter,
+                'offline_policy' => $this->viewBuilder->offlinePolicy(),
+            ],
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     */
+    private function doQrPunch(AttendanceKiosk $kiosk, Company $company, array $validated): JsonResponse
+    {
+        // #3365 : le QR punch n'accepte QUE le jeton signé+expirant émis par
+        // /me/qr-profile (OnboardingQrService, type employee_profile) — les
+        // payloads JSON base64 nus (forgeables) sont rejetés.
+        try {
+            $qrPayload = $this->onboardingQr->decodeEmployeeProfile($validated['qr_data']);
+        } catch (ValidationException) {
+            return new JsonResponse([
+                'error' => 'INVALID_QR_TOKEN',
+                'message' => 'INVALID_QR_TOKEN',
+            ], 422);
+        }
+
+        $employeeId = $qrPayload['employee']['id'] ?? null;
+        $employee = $employeeId !== null
+            ? Employee::query()->where('company_id', $company->id)->whereKey($employeeId)->first()
+            : null;
+
+        if (! $employee) {
+            return new JsonResponse([
+                'error' => 'EMPLOYEE_NOT_FOUND',
+                'message' => 'EMPLOYEE_NOT_FOUND',
+            ], 404);
+        }
+
+        // Le service punch résout par email/matricule/zkteco_id — on lui passe
+        // l'identifiant le plus fiable de l'employé déjà résolu (scopé tenant).
+        $identifier = $employee->email ?? $employee->matricule ?? (string) $employee->id;
+
+        $allowedWorkTypes = ['normal', 'overtime', 'break', 'resume', 'mission', 'travel', 'training', 'other'];
+        $qrWorkType = $qrPayload['work_type'] ?? null;
+        $qrWorkType = in_array($qrWorkType, $allowedWorkTypes, true) ? $qrWorkType : null;
+
+        $log = $this->kioskAttendanceService->punch(
+            kiosk: $kiosk,
+            identifier: (string) $identifier,
+            action: $validated['action'] ?? 'check_in',
+            workType: $validated['work_type'] ?? $qrWorkType ?? 'normal',
+        );
+
+        $action = $validated['action'] ?? 'check_in';
+        $statusCode = $action === 'check_in' ? 201 : 200;
+
+        return new JsonResponse([
+            'data' => [
+                'employee_id' => $log->employee_id,
+                'date' => $log->date?->format('Y-m-d'),
+                'check_in' => optional($log->check_in)->toIso8601String(),
+                'check_out' => optional($log->check_out)->toIso8601String(),
+                'method' => 'qr_code',
+                'work_type' => $log->work_type,
+                'session_number' => $log->session_number,
+                'status' => $log->status,
+            ],
+        ], $statusCode);
+    }
+
+    // ── Authentification appareil & contexte tenant ──────────────────────────
+
     private function resolveAuthorizedKiosk(Request $request, string $deviceCode): AttendanceKiosk
     {
         // Issue #2689 (QA 2026-08-15) — la bascule search_path est confiée à
@@ -587,176 +596,9 @@ class KioskController extends Controller
     private function withTenantSearchPath(?Company $company, \Closure $callback): JsonResponse
     {
         return $this->tenantManager->withinSearchPath(
-            $this->resolveKioskSearchPath($company),
+            $this->provisioningGuard->searchPathFor($company),
             $callback,
         );
-    }
-
-    /**
-     * Chemin de recherche appliqué aux handlers kiosque.
-     *
-     * Tout tenant récent partage `shared_tenants` (ADR-0028, BOS-005/#8203).
-     * La branche « schema » ne sert que d'éventuels tenants historiques en
-     * schéma dédié — inventaire borné de l'ADR-0028, à retirer avec la
-     * migration additive de nettoyage du mode mort.
-     */
-    private function resolveKioskSearchPath(?Company $company): string
-    {
-        if ($company instanceof Company
-            && $company->tenancy_type === 'schema'
-            && trim((string) $company->schema_name) !== ''
-        ) {
-            return $company->getSafeSearchPath();
-        }
-
-        return 'shared_tenants,public';
-    }
-
-    private function serializeKiosk(AttendanceKiosk $kiosk): array
-    {
-        return [
-            'id' => $kiosk->id,
-            'name' => $kiosk->name,
-            'location_label' => $kiosk->location_label,
-            'device_code' => $kiosk->device_code,
-            'status' => $kiosk->status,
-            'biometric_mode' => $kiosk->biometric_mode,
-            'site_id' => $kiosk->site_id,
-            'punch_methods' => $kiosk->resolvedPunchMethods(),
-            'trusted_device_label' => $kiosk->trusted_device_label,
-            'revoked_at' => $kiosk->revoked_at?->toIso8601String(),
-        ];
-    }
-
-    // ── BIO-005 (#6766) : gestion manager du cycle de vie des kiosques ────
-
-    public function revoke(Request $request, int $kiosk): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        abort_unless($actor->isManager(), 403, 'FORBIDDEN');
-
-        $kioskModel = $this->resolveManagerKiosk($kiosk);
-
-        if (! $kioskModel->isRevoked()) {
-            $kioskModel->forceFill([
-                'status' => 'revoked',
-                'revoked_at' => now(),
-                'revoked_by_employee_id' => $actor->id,
-            ])->save();
-
-            $this->biometricAudit->log(
-                companyId: (string) $kioskModel->company_id,
-                event: 'device.revoked',
-                kioskId: (int) $kioskModel->id,
-                siteId: $kioskModel->site_id !== null ? (int) $kioskModel->site_id : null,
-                actorEmployeeId: (int) $actor->id,
-                correlationId: (string) $kioskModel->device_code,
-                deviceCodeHash: (string) $kioskModel->device_code,
-            );
-        }
-
-        return new JsonResponse(['data' => $this->serializeKiosk($kioskModel->fresh() ?? $kioskModel)]);
-    }
-
-    public function rotateToken(Request $request, int $kiosk): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        abort_unless($actor->isManager(), 403, 'FORBIDDEN');
-
-        $kioskModel = $this->resolveManagerKiosk($kiosk);
-
-        $plainToken = Str::random(48);
-        $kioskModel->forceFill([
-            'sync_token_hash' => Hash::make($plainToken),
-        ])->save();
-
-        $this->biometricAudit->log(
-            companyId: (string) $kioskModel->company_id,
-            event: 'device.token_rotated',
-            kioskId: (int) $kioskModel->id,
-            siteId: $kioskModel->site_id !== null ? (int) $kioskModel->site_id : null,
-            actorEmployeeId: (int) $actor->id,
-            deviceCodeHash: (string) $kioskModel->device_code,
-        );
-
-        return new JsonResponse([
-            'data' => array_replace($this->serializeKiosk($kioskModel), [
-                // Le token en clair n'est retourné qu'à la rotation.
-                'sync_token' => $plainToken,
-            ]),
-        ]);
-    }
-
-    public function config(Request $request, string $deviceCode): JsonResponse
-    {
-        $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
-
-        return new JsonResponse([
-            'data' => [
-                'device_code' => $deviceCode,
-                'company_id' => $kiosk->company_id,
-                'name' => $kiosk->name,
-                'status' => $kiosk->status,
-                'biometric_mode' => $kiosk->biometric_mode,
-                'site_id' => $kiosk->site_id,
-                // BIO-006 (#6767) : matrice serveur — l'interface ne propose
-                // que les méthodes réellement activées (BIO-009 #6774).
-                'punch_methods' => $kiosk->resolvedPunchMethods(),
-                'server_time' => now()->toIso8601String(),
-                // BIO-007 (#6772) : politique offline serveur (mode offline
-                // borné — jamais illimité) + état de synchro visible.
-                'offline_policy' => $this->offlinePolicy(),
-                'sync_status' => [
-                    'last_seen_at' => $kiosk->last_seen_at?->toIso8601String(),
-                    'last_sync_at' => $kiosk->last_sync_at?->toIso8601String(),
-                    'acked_event_counter' => (int) $kiosk->acked_event_counter,
-                ],
-            ],
-        ]);
-    }
-
-    /**
-     * BIO-007 (#6772) — politique offline publiée au kiosque (borne
-     * d'ancienneté et de volume ; le client borne sa file locale et le
-     * serveur rejette les événements hors fenêtre).
-     *
-     * @return array{max_age_days: int, max_events_per_batch: int}
-     */
-    private function offlinePolicy(): array
-    {
-        return [
-            'max_age_days' => (int) config('attendance.kiosk.offline.max_age_days', 14),
-            'max_events_per_batch' => (int) config('attendance.kiosk.offline.max_events_per_batch', 500),
-        ];
-    }
-
-    /**
-     * BIO-007 (#6772) — état de synchronisation du kiosque (l'appareil a été
-     * authentifié par le middleware `kiosk.device`).
-     */
-    public function syncStatus(Request $request, string $deviceCode): JsonResponse
-    {
-        /** @var AttendanceKiosk|null $kiosk */
-        $kiosk = $request->attributes->get('kiosk_device');
-
-        if (! $kiosk instanceof AttendanceKiosk) {
-            abort(401, 'INVALID_KIOSK_TOKEN');
-        }
-
-        return new JsonResponse([
-            'data' => [
-                'device_code' => $deviceCode,
-                'status' => $kiosk->status,
-                'company_id' => $kiosk->company_id,
-                'server_time' => now()->toIso8601String(),
-                'last_seen_at' => $kiosk->last_seen_at?->toIso8601String(),
-                'last_sync_at' => $kiosk->last_sync_at?->toIso8601String(),
-                'acked_event_counter' => (int) $kiosk->acked_event_counter,
-                'offline_policy' => $this->offlinePolicy(),
-            ],
-        ]);
     }
 
     private function resolveManagerKiosk(int $kioskId): AttendanceKiosk
@@ -767,93 +609,5 @@ class KioskController extends Controller
             ->where('company_id', $company->id)
             ->whereKey($kioskId)
             ->firstOrFail();
-    }
-
-    /**
-     * Normalise la matrice envoyée au provisioning (BIO-006) : `card`
-     * (vocabulaire ZKTeco) est stocké `badge` (domaine ATT-002).
-     *
-     * @param  array<array-key, mixed>  $methods
-     * @return list<string>
-     */
-    private function normalizePunchMethods(array $methods): array
-    {
-        $normalized = [];
-        foreach ($methods as $method) {
-            if (! is_string($method)) {
-                continue;
-            }
-            $normalized[] = $method === 'card' ? 'badge' : $method;
-        }
-
-        return array_values(array_unique(array_filter(
-            $normalized,
-            static fn (string $method): bool => in_array($method, AttendanceKiosk::KIOSK_PUNCH_METHODS_ALL, true)
-        )));
-    }
-
-    /**
-     * PA2-KIO-004: build a compact biometric consent/enrollment status block
-     * for the kiosk employee-info screen.
-     *
-     * Reports whether face/fingerprint biometrics are already enabled for
-     * punch (with the consent timestamp collected via the mobile enrollment
-     * flow), and the state of the most recent enrollment request submitted
-     * from the employee's mobile app (pending manager approval, approved,
-     * or rejected) so kiosk operators know why biometric punch may not be
-     * available yet for a given employee.
-     */
-    private function nullableIsoString(mixed $value): ?string
-    {
-        if ($value === null || $value === '') {
-            return null;
-        }
-
-        try {
-            return Carbon::parse($value)->toIso8601String();
-        } catch (Throwable) {
-            return (string) $value;
-        }
-    }
-
-    /**
-     * #6678 — garde fail-closed de provisioning kiosque (repro prod
-     * 2026-09-01 : 1 kiosque sur 3 créé via POST /kiosks devenait
-     * introuvable — 404 permanent sur roster malgré device_code +
-     * sync_token valides).
-     *
-     * Les routes publiques kiosque (roster/punch/sync, middleware
-     * `kiosk.search_path`) résolvent le device dans `shared_tenants`
-     * (resolveAuthorizedKiosk). Si la ligne vient d'être écrite ailleurs
-     * (fuite de search_path sur worker partagé — famille #4787/#4798/#4852 —
-     * ou tenant en mode schema-par-tenant), les credentials rendus seraient
-     * inutilisables : on supprime la ligne orpheline, on trace l'audit et on
-     * échoue (500) au lieu de livrer un kiosque introuvable sur site.
-     */
-    private function assertKioskProvisionedInPublicContext(AttendanceKiosk $kiosk): void
-    {
-        // Contexte EXACT des routes publiques (resolveAuthorizedKiosk) —
-        // bascule déléguée à TenantManager::withinSearchPath (BOS-019/#8204) :
-        // restauration garantie même si la sonde lève une exception.
-        $resolvable = $this->tenantManager->withinSearchPath(
-            'shared_tenants,public',
-            fn (): bool => AttendanceKiosk::query()
-                ->where('device_code', $kiosk->device_code)
-                ->where('status', 'active')
-                ->exists(),
-        );
-
-        if ($resolvable) {
-            return;
-        }
-
-        // Fail-closed : ne jamais rendre des credentials inutilisables.
-        $kiosk->delete();
-        Log::channel('audit')->error('kiosk.provisioning.mismatch', [
-            'kiosk_id' => $kiosk->id,
-            'company_id' => $kiosk->company_id,
-            'device_code_hash' => $kiosk->device_code,
-        ]);
-        abort(500, 'KIOSK_PROVISIONING_FAILED');
     }
 }
