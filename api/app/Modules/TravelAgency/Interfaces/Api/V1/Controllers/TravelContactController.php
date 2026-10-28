@@ -36,6 +36,13 @@ class TravelContactController extends Controller
 
         $this->submit->execute($company->id, $request->validated());
 
-        return response()->json(['status' => 'received'], 202);
+        // Contrat TRAVEL-416 : 202 + message utilisateur affiche par le front.
+        // `data.accepted` est conserve pour les clients deja branches sur la
+        // forme JSON:API (`assertJsonPath('data.accepted', true)`).
+        return response()->json([
+            'status' => 'received',
+            'message' => 'Demande envoyee.',
+            'data' => ['accepted' => true],
+        ], 202);
     }
 }

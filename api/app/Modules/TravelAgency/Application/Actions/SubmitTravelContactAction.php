@@ -31,8 +31,26 @@ class SubmitTravelContactAction
      */
     public function execute(string $companyId, array $data): void
     {
-        $email = strtolower(trim((string) ($data['email'] ?? '')));
+        $email = isset($data['email']) && $data['email'] !== null
+            ? strtolower(trim((string) $data['email']))
+            : null;
         $message = trim((string) ($data['message'] ?? ''));
+
+        // TRAVEL-416 (#6068) : le formulaire expose un `name` unique cote
+        // authentifie ; le formulaire public (TRAVEL-913) expose first/last.
+        // Le payload d'evenement conserve `name` pour le BC CRM, qui l'attend.
+        $firstName = isset($data['first_name']) ? trim((string) $data['first_name']) : '';
+        $lastName = isset($data['last_name']) ? trim((string) $data['last_name']) : '';
+        $name = trim((string) ($data['name'] ?? trim($firstName.' '.$lastName)));
+
+        // `source` distingue les deux surfaces (formulaire authentifie vs
+        // formulaire public signe) : sans elle, le CRM ne peut pas router ni
+        // mesurer les leads. Defaut aligne sur le contrat TRAVEL-416.
+        $source = (string) ($data['source'] ?? 'api.v1.contact');
+
+        // `consent` (TRAVEL-416) et `consent_email` (TRAVEL-913) portent le
+        // meme engagement : la soumission vaut opt-in email explicite.
+        $consentGiven = (bool) ($data['consent_email'] ?? $data['consent'] ?? false);
 
         /** @var Company|null $company */
         $company = Company::query()->find($companyId);
@@ -49,17 +67,25 @@ class SubmitTravelContactAction
             abort(404, 'Company introuvable.');
         }
 
-        app(TenantManager::class)->withinTenant($company, function () use ($company, $data, $email): void {
-            DB::transaction(function () use ($company, $data, $email): void {
+        app(TenantManager::class)->withinTenant($company, function () use ($company, $data, $email, $firstName, $lastName, $consentGiven): void {
+            DB::transaction(function () use ($company, $data, $email, $firstName, $lastName, $consentGiven): void {
+                // Sans email, il n'y a pas de cle de registre de consentement
+                // (contrainte unique (company_id, email)) : un contact
+                // « telephone seul » produit un lead CRM sans ecriture RGPD,
+                // ce qui est le comportement attendu (TRAVEL-416).
+                if ($email === null || $email === '') {
+                    return;
+                }
+
                 /** @var TravelCustomerContact|null $contact */
                 $contact = TravelCustomerContact::query()->where('email', $email)->first();
 
                 if ($contact instanceof TravelCustomerContact) {
                     $contact->forceFill([
-                        'first_name' => $data['first_name'] ?? $contact->first_name,
-                        'last_name' => $data['last_name'] ?? $contact->last_name,
+                        'first_name' => $firstName !== '' ? $firstName : ($data['name'] ?? $contact->first_name),
+                        'last_name' => $lastName !== '' ? $lastName : $contact->last_name,
                         'phone' => $data['phone'] ?? $contact->phone,
-                        'email_consent_given' => true,
+                        'email_consent_given' => $consentGiven,
                         'email_consent_at' => $contact->email_consent_at ?? now(),
                     ])->save();
 
@@ -68,25 +94,34 @@ class SubmitTravelContactAction
 
                 TravelCustomerContact::query()->create([
                     'company_id' => $company->id,
-                    'first_name' => $data['first_name'] ?? null,
-                    'last_name' => $data['last_name'] ?? null,
+                    'first_name' => $firstName !== '' ? $firstName : ($data['name'] ?? null),
+                    'last_name' => $lastName !== '' ? $lastName : null,
                     'email' => $email,
                     'phone' => $data['phone'] ?? null,
-                    'email_consent_given' => true,
+                    'email_consent_given' => $consentGiven,
                     'email_consent_at' => now(),
                     'metadata_json' => null,
                 ]);
             });
         });
 
+        // Idempotence de rejeu : un client qui retente (ou double-clique)
+        // envoie le meme `idempotency_key` ; la contrainte unique
+        // (company_id, idempotency_key) garantit un seul evenement.
+        $idempotencyKey = isset($data['idempotency_key']) && $data['idempotency_key'] !== null
+            ? (string) $data['idempotency_key']
+            : null;
+
         $this->outbox->publish($companyId, 'travel.contact.submitted.v1', [
+            'name' => $name !== '' ? $name : null,
+            'first_name' => $firstName !== '' ? $firstName : null,
+            'last_name' => $lastName !== '' ? $lastName : null,
             'email' => $email,
-            'first_name' => $data['first_name'] ?? null,
-            'last_name' => $data['last_name'] ?? null,
             'phone' => $data['phone'] ?? null,
             'message' => $message,
             'submitted_at' => now()->toIso8601String(),
-            'consent_email' => true,
-        ]);
+            'consent_given' => $consentGiven,
+            'source' => $source,
+        ], $idempotencyKey);
     }
 }

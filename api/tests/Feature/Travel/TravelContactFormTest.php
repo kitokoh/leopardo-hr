@@ -70,7 +70,7 @@ class TravelContactFormTest extends TestCase
         $this->tenants->withinTenant($this->company, function (): void {
             $this->postJson('/api/v1/travel/contact', $this->payload())
                 ->assertStatus(202)
-                ->assertJson(['message' => 'Demande envoyée.']);
+                ->assertJson(['message' => 'Demande envoyee.']);
 
             $event = TravelOutboxEvent::query()
                 ->where('event_type', 'travel.contact.submitted.v1')
@@ -100,7 +100,10 @@ class TravelContactFormTest extends TestCase
     public function test_message_is_bounded(): void
     {
         $this->tenants->withinTenant($this->company, function (): void {
-            $this->postJson('/api/v1/travel/contact', $this->payload(['message' => 'trop court']))
+            // Contrat TRAVEL-416 : message borne a 10..1000 caracteres.
+            // « trop court » fait exactement 11 caracteres : on utilise une
+            // chaine de 9 pour vraiment franchir la borne basse.
+            $this->postJson('/api/v1/travel/contact', $this->payload(['message' => 'trop bref']))
                 ->assertStatus(422);
 
             $this->postJson('/api/v1/travel/contact', $this->payload(['message' => str_repeat('a', 1001)]))
@@ -163,6 +166,13 @@ class TravelContactFormTest extends TestCase
     {
         /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        // La feature doit etre activee AVANT la requete : le middleware
+        // `module.travelagency` lit la company resolue par `tenant`, et une
+        // activation dans le callback `withinTenant` ne serait pas encore
+        // persistee au moment du POST (le test mesurerait un 403 de kill switch
+        // au lieu de l'isolation d'ecriture).
+        $otherCompany->setFeature('travelagency', true);
+        $otherCompany->save();
 
         /** @var Employee $otherEmployee */
         $otherEmployee = Employee::factory()->create([
@@ -172,10 +182,7 @@ class TravelContactFormTest extends TestCase
 
         Sanctum::actingAs($otherEmployee);
 
-        $this->tenants->withinTenant($otherCompany, function () use ($otherCompany): void {
-            $otherCompany->setFeature('travelagency', true);
-            $otherCompany->save();
-
+        $this->tenants->withinTenant($otherCompany, function (): void {
             $this->postJson('/api/v1/travel/contact', $this->payload())->assertStatus(202);
         });
 
@@ -184,7 +191,7 @@ class TravelContactFormTest extends TestCase
             $this->assertSame(0, TravelOutboxEvent::query()->count());
         });
 
-        $this->tenants->withinTenant($otherCompany, function (): void {
+        $this->tenants->withinTenant($otherCompany, function () use ($otherCompany): void {
             $event = TravelOutboxEvent::query()
                 ->where('event_type', 'travel.contact.submitted.v1')
                 ->firstOrFail();
