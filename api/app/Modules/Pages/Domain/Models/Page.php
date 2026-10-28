@@ -13,6 +13,7 @@ use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -146,6 +147,20 @@ class Page extends Model
     public function site(): BelongsTo
     {
         return $this->belongsTo(Site::class, 'site_id');
+    }
+
+    /**
+     * Blocs de contenu, dans l'ordre d'affichage (#8728).
+     *
+     * L'ordre est porté par `position` et non par l'ordre d'insertion : un
+     * `UPDATE` qui réordonne les lignes ne préserve aucun ordre physique, et
+     * deux réponses API pourraient sinon présenter les blocs différemment.
+     *
+     * @return HasMany<PageBlockModel, $this>
+     */
+    public function blocks(): HasMany
+    {
+        return $this->hasMany(PageBlockModel::class, 'page_id')->orderBy('position');
     }
 
     // ── Scopes ───────────────────────────────────────────────────────────────

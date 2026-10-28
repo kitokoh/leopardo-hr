@@ -349,4 +349,10 @@ return [
     'FUNDRAISING_VERTICAL_NOT_ENABLED' => 'Bağış toplama dikeyi bu şirket için etkinleştirilmemiş.',
     'MARKETING_LEAD_NO_CHANGES' => 'Değişiklik istenmedi.',
     'MARKETING_LEAD_NOT_FOUND' => 'Potansiyel müşteri bulunamadı.',
+
+    // #8728 (BC PAGES) — kiracı yüzeyi: adres ve blok içeriği.
+    'PAGE_SLUG_UNUSABLE' => 'Verilen ad herkese açık bir adres oluşturmaya uygun değil. Harf ve rakam kullanın.',
+    'PAGE_SLUG_RESERVED' => 'Bu adres platform tarafından ayrılmıştır. Başka bir adres seçin.',
+    'PAGE_SLUG_TAKEN' => 'Bu adres zaten kullanılıyor.',
+    'PAGE_BLOCKS_INVALID' => 'Sayfa içeriği geçersiz bloklar içeriyor.',
 ];
