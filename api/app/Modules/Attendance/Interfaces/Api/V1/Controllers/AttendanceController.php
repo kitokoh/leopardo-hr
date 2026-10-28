@@ -9,6 +9,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\AttendanceLogResource;
 use App\Http\Resources\Api\V1\AttendanceTodayResource;
+use App\Modules\Attendance\Application\Actions\RequestAttendanceCorrection;
 use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Modules\Attendance\Domain\Models\AttendanceCorrectionRequest;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
@@ -40,6 +41,7 @@ class AttendanceController extends Controller
 {
     public function __construct(
         private readonly AttendanceService $attendanceService,
+        private readonly RequestAttendanceCorrection $requestCorrection,
         private readonly AttendancePeriodClosureService $periodClosures,
     ) {}
 
@@ -320,78 +322,19 @@ class AttendanceController extends Controller
             'requested_check_in' => ['required', 'date'],
             'requested_check_out' => ['nullable', 'date'],
             'reason' => ['required', 'string', 'max:500'],
-            // Issue #5267 : justificatif optionnel (mêmes règles que les absences).
+            // Issue #5267 : justificatif optionnel (memes regles que les absences).
             'proof' => ['nullable', 'file', 'max:5120', 'mimes:jpg,jpeg,png,pdf,heic'],
         ]);
 
-        // Issue #5267 : une période clôturée verrouille les corrections.
-        $this->periodClosures->assertPeriodOpen((string) $actor->company_id, Carbon::parse($validated['date']));
-
-        $company = currentCompany();
-        $timezone = $company->timezone;
-        $requestedCheckIn = Carbon::parse($validated['requested_check_in'])->setTimezone($timezone);
-        $requestedCheckOut = isset($validated['requested_check_out'])
-            ? Carbon::parse($validated['requested_check_out'])->setTimezone($timezone)
-            : null;
-
-        $errors = [];
-        if ($requestedCheckIn->isFuture()) {
-            $errors['requested_check_in'] = [__('attendance.correction_future_check_in')];
-        }
-        if ($requestedCheckOut !== null && $requestedCheckOut->isFuture()) {
-            $errors['requested_check_out'] = [__('attendance.correction_future_check_out')];
-        }
-        if ($errors !== []) {
-            throw ValidationException::withMessages($errors);
-        }
-
-        if ($requestedCheckOut !== null && $requestedCheckOut->lessThanOrEqualTo($requestedCheckIn)) {
-            throw ValidationException::withMessages([
-                'requested_check_out' => [__('errors.ATTENDANCE_CHECK_OUT_AFTER_CHECK_IN')],
-            ]);
-        }
-
-        $log = null;
-        if (! empty($validated['attendance_log_id'])) {
-            $log = AttendanceLog::query()
-                ->where('id', $validated['attendance_log_id'])
-                ->where('employee_id', $actor->id)
-                ->firstOrFail();
-        }
-
-        // Issue #5267 : stockage du justificatif sous un chemin scopé entreprise
-        // (même pattern que les absences, PA2-MOB-006).
         $proof = $request->file('proof');
-        $proofPath = $proof instanceof UploadedFile
-            ? $proof->store('attendance-corrections/proofs/'.$actor->company_id, 'local')
-            : null;
 
-        $correction = AttendanceCorrectionRequest::query()->create([
-            // #7711 : company_id délégué au trait BelongsToCompany (tenant actif).
-            'employee_id' => $actor->id,
-            'attendance_log_id' => $log?->id,
-            'date' => $validated['date'],
-            'requested_check_in' => $requestedCheckIn,
-            'requested_check_out' => $requestedCheckOut,
-            'reason' => $validated['reason'],
-            'proof_path' => $proofPath,
-            'status' => 'pending',
-        ]);
-
-        AuditLog::create([
-            'company_id' => $actor->company_id,
-            'user_id' => $actor->id,
-            'action' => 'attendance_correction_requested',
-            'auditable_type' => $correction->getMorphClass(),
-            'auditable_id' => $correction->id,
-            'old_values' => [],
-            'new_values' => [
-                'date' => $correction->date->format('Y-m-d'),
-                'requested_check_in' => $requestedCheckIn->toIso8601String(),
-                'requested_check_out' => $requestedCheckOut?->toIso8601String(),
-                'has_proof' => $proofPath !== null,
-            ],
-        ]);
+        // #7962 : le metier (verrou de periode, coherence des dates, stockage du
+        // justificatif, journal d'audit) vit dans l'Action, pas dans le controleur.
+        $correction = $this->requestCorrection->execute(
+            $actor,
+            $validated,
+            $proof instanceof UploadedFile ? $proof : null,
+        );
 
         return response()->json([
             'data' => [
