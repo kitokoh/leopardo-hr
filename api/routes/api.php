@@ -544,6 +544,10 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/pharmacy.php';
     require __DIR__.'/modules/catalog.php';
 
+    // BC PAGES (#8728) — surface tenant : CRUD établissements/Pages, blocs,
+    // publication et aperçu privé. La surface publique est #8730.
+    require __DIR__.'/modules/pages.php';
+
     // BC-17 RETAIL #7672 — module vendeur générique (produits & catégories)
     require __DIR__.'/modules/retail.php';
     // BC-29 COMMUNICATION — boîte mail connectée + IA, squelette R0 (#7685)
