@@ -35,6 +35,7 @@ Ce dossier capture les decisions structurantes qui doivent rester stables pour L
 | [0028](0028-shared-schema-definitif.md) | Proposée — validation owner requise | Schéma partagé définitif : le mode « un schéma par tenant » est acté mort — garde de création conservée, inventaire borné des références legacy, nettoyage physique différé (audit prod puis migration additive) — issue #8203 (BOS-005), amende ADR-0001 |
 | [0029](0029-multi-org-comptes-entreprises.md) | Proposee — validation owner requise | Multi-org : go-limite — un compte, plusieurs entreprises via `user_employee_links` + switch explicite post-auth (`POST /auth/switch-company`) ; unicite email et `user_lookups` inchanges ; cas H (cabinet comptable) en acces sequentiel ; holding G-multi-entites reporte (F2) — issue #8225 (BOS-036) |
 | [0030](0030-surfaces-publiques-web-vs-marketplace.md) | Proposee — validation owner requise | Surfaces publiques : `front/web` = mono-tenant (vitrine, fiches SEO, commande a jeton), `front/marketplace` = agregation cross-tenant ; regle futures verticales + plumbing BOS-050 obligatoire ; aucun mouvement immediat — issue #8226 (BOS-051) |
+| [0031](0031-absence-module-is-a-facade.md) | Acceptee | Module `Absence` : facade HTTP assumee, domaine absence/conge propriete de Planning ; aucun domaine ajoute dans `Absence/`, nouvelle regle metier -> `Planning` ; couplage unidirectionnel interface->domaine, declare au registre — issue #7959 point 2 |
 
 ## Format
 

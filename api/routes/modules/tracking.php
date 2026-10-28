@@ -1,5 +1,6 @@
 <?php
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\TrackingSyncController;
 use App\Modules\Fleet\Interfaces\Api\V1\Controllers\FleetController;
 use App\Modules\Fleet\Interfaces\Api\V1\Controllers\VehicleAlertController;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 //    pas manager (employé = son propre véhicule assigné uniquement)
 //  - GET /me/vehicles             → véhicules assignés à l'employé connecté
 //  (consommés par l'app mobile employé leopardo_employee)
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
+ModuleRoutes::tenantModule('', function (): void {
     // Employee self-service (véhicule assigné uniquement)
     Route::get('/me/vehicles', [VehicleController::class, 'myVehicles']);
     Route::get('/vehicles/{id}/position', [VehicleController::class, 'position'])->whereNumber('id');

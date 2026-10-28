@@ -19,6 +19,7 @@ declare(strict_types=1);
  * de la réception (Policies HealthManager + HealthAccess).
  */
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthAdmissionController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthAppointmentController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthBedController;
@@ -35,9 +36,7 @@ use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthSpecialtyContr
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthStaffRoleController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
-    ->prefix('health-manager')
-    ->group(function (): void {
+ModuleRoutes::tenantModule('health-manager', function (): void {
         // ── Tableau de bord (HC-008 #7792) ─────────────────────────────
         Route::get('/dashboard', [HealthDashboardController::class, 'index']);
 
