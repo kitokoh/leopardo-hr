@@ -38,6 +38,7 @@
     "api/routes/modules/market_public.php": "public",
     "api/routes/modules/marketing.php": "tenant",
     "api/routes/modules/paiements.php": "mixed",
+    "api/routes/modules/pages_platform.php": "mixed",
     "api/routes/modules/pages_public.php": "public",
     "api/routes/modules/payroll_engine.php": "tenant",
     "api/routes/modules/pharmacy.php": "tenant",
