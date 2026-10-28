@@ -318,6 +318,35 @@ class TravelQuizApiTest extends TestCase
         return $employee;
     }
 
+    /**
+     * Les deux premieres questions d'un quiz publie, garanties non nulles.
+     *
+     * `$quiz->questions()->get()` renvoie une `Collection` dont l'acces par
+     * indice est type `TravelQuizQuestion|null` : sur un quiz fraichement cree
+     * les questions existent par construction, mais PHPStan (level 8) ne peut
+     * pas le savoir. Les deux tests ajoutes par #8396 empilaient donc deux
+     * nouvelles entrees dans `phpstan-strict-baseline.neon` (l'entree existante
+     * en compte deja 5, elle a ete atteinte). Plutot que d'ajouter une
+     * exception de plus, on resout ici avec une garde explicite : si les
+     * questions manquent, le test doit echouer avec un message clair plutot
+     * que sur un `null` dereference.
+     *
+     * @return array{0: TravelQuizQuestion, 1: TravelQuizQuestion}
+     */
+    private function publishedQuizQuestions(TravelQuiz $quiz): array
+    {
+        $all = array_values($quiz->questions()->orderBy('position')->get()->all());
+
+        $first = $all[0] ?? null;
+        $second = $all[1] ?? null;
+
+        if (! $first instanceof TravelQuizQuestion || ! $second instanceof TravelQuizQuestion) {
+            $this->fail('Le quiz de test doit porter au moins deux questions.');
+        }
+
+        return [$first, $second];
+    }
+
     private function activateTravel(Company $company): void
     {
         $company->setFeature('travelagency', true);
@@ -329,24 +358,27 @@ class TravelQuizApiTest extends TestCase
         return app(TenantManager::class)->withinTenant($company, function (): TravelQuiz {
             $quiz = TravelQuiz::query()->create([
                 'company_id' => app('current_company')->id,
-                'title' => 'Quiz découverte',
+                'title' => 'Quiz decouverte',
                 'status' => 'published',
                 'max_participations_per_contact' => 1,
                 'bonus_points' => 50,
             ]);
 
+            // Contrat actuel : `question` + `options` + `correct_option_index`.
+            // Les colonnes legacy (`label`/`choices`/`correct_answer_hash`)
+            // ne sont plus lues par le scoring serveur.
             foreach ([
-                ['label' => 'Capitale de la France ?', 'choices' => ['Londres', 'Paris', 'Berlin'], 'answer' => 'Paris', 'points' => 1],
-                ['label' => '6 × 7 ?', 'choices' => ['40', '42', '44'], 'answer' => '42', 'points' => 2],
+                ['question' => 'Capitale de la France ?', 'options' => ['Londres', 'Paris', 'Berlin'], 'correct_option_index' => 1, 'points' => 1],
+                ['question' => '6 x 7 ?', 'options' => ['40', '42', '44'], 'correct_option_index' => 1, 'points' => 2],
             ] as $i => $q) {
                 TravelQuizQuestion::query()->create([
                     'company_id' => $quiz->company_id,
                     'quiz_id' => $quiz->id,
-                    'rank' => $i + 1,
-                    'label' => $q['label'],
-                    'choices' => $q['choices'],
-                    'correct_answer_hash' => hash('sha256', $q['answer']),
+                    'question' => $q['question'],
+                    'options' => $q['options'],
+                    'correct_option_index' => $q['correct_option_index'],
                     'points' => $q['points'],
+                    'position' => $i,
                 ]);
             }
 
@@ -363,14 +395,11 @@ class TravelQuizApiTest extends TestCase
 
         $quiz = $this->publishedQuiz($company);
 
-        $question = $quiz->questions()->first();
-        $this->assertStringStartsNotWith('Paris', (string) $question->correct_answer_hash);
-
-        // L'API n'expose jamais la bonne réponse.
+        // L'API n'expose jamais la bonne reponse en clair.
         $this->getJson("/api/v1/travel/community/quizzes/{$quiz->id}")
             ->assertOk()
-            ->assertJsonPath('data.questions.0.has_correct_answer', true)
-            ->assertJsonMissingPath('data.questions.0.correct_answer');
+            ->assertJsonPath('data.questions.0.question', 'Capitale de la France ?')
+            ->assertJsonMissingPath('data.questions.0.correct_option_index');
     }
 
     public function test_participation_is_unique_per_contact(): void
@@ -382,25 +411,24 @@ class TravelQuizApiTest extends TestCase
 
         $quiz = $this->publishedQuiz($company);
 
-        $questions = $quiz->questions()->orderBy('rank')->get();
-        $answers = [];
-        foreach ($questions as $i => $question) {
-            $answers[(string) $question->id] = $i === 0 ? 'Paris' : '42';
-        }
+        [$firstQuestion, $secondQuestion] = $this->publishedQuizQuestions($quiz);
+        $answers = [
+            ['question_id' => $firstQuestion->id, 'selected_option' => 1],
+            ['question_id' => $secondQuestion->id, 'selected_option' => 1],
+        ];
 
-        // Première participation : score 3/3.
+        // Premiere participation : score 3/3.
         $this->postJson("/api/v1/travel/community/quizzes/{$quiz->id}/participate", [
-            'participant_identifier' => 'client@example.com',
+            'participant_email' => 'client@example.com',
             'answers' => $answers,
         ])->assertStatus(201)
-            ->assertJsonPath('data.score', 3)
-            ->assertJsonPath('data.total_points', 3);
+            ->assertJsonPath('data.score', 3);
 
-        // Participation unique : 422 au second essai.
+        // Participation unique : 409 au second essai (meme email).
         $this->postJson("/api/v1/travel/community/quizzes/{$quiz->id}/participate", [
-            'participant_identifier' => 'client@example.com',
+            'participant_email' => 'client@example.com',
             'answers' => $answers,
-        ])->assertStatus(422);
+        ])->assertStatus(409);
     }
 
     public function test_score_is_consistent_with_wrong_answers(): void
@@ -412,18 +440,17 @@ class TravelQuizApiTest extends TestCase
 
         $quiz = $this->publishedQuiz($company);
 
-        $questions = $quiz->questions()->orderBy('rank')->get();
-        $answers = [];
-        foreach ($questions as $i => $question) {
-            $answers[(string) $question->id] = $i === 0 ? 'Londres' : '42';
-        }
+        [$firstQuestion, $secondQuestion] = $this->publishedQuizQuestions($quiz);
+        $answers = [
+            ['question_id' => $firstQuestion->id, 'selected_option' => 0],
+            ['question_id' => $secondQuestion->id, 'selected_option' => 1],
+        ];
 
-        // 0/1 + 2/2 = score 2 ≤ total 3.
+        // 0/1 + 2/2 = score 2 <= total 3.
         $this->postJson("/api/v1/travel/community/quizzes/{$quiz->id}/participate", [
-            'participant_identifier' => 'autre@example.com',
+            'participant_email' => 'autre@example.com',
             'answers' => $answers,
         ])->assertStatus(201)
-            ->assertJsonPath('data.score', 2)
-            ->assertJsonPath('data.total_points', 3);
+            ->assertJsonPath('data.score', 2);
     }
 }

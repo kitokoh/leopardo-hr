@@ -335,11 +335,21 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/reports/offices', [TravelReportController::class, 'offices']);
         Route::post('/reports/export', [TravelExportController::class, 'store']);
         Route::get('/reports/export/{travelExportAsset}', [TravelExportController::class, 'show']);
+
+        // Webhooks sortants (TRAVEL-7xx). Le controller et les FormRequests
+        // existaient mais AUCUNE route ne les exposait : la surface entiere
+        // repondait 405 alors que les tests et la doc la decrivent (#8396).
+        Route::get('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'index']);
+        Route::post('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'store']);
+        Route::get('/webhook-subscriptions/{travelWebhookSubscription}', [TravelWebhookSubscriptionController::class, 'show']);
+        Route::put('/webhook-subscriptions/{travelWebhookSubscription}', [TravelWebhookSubscriptionController::class, 'update']);
+        Route::delete('/webhook-subscriptions/{travelWebhookSubscription}', [TravelWebhookSubscriptionController::class, 'destroy']);
         Route::get('/quizzes', [TravelQuizController::class, 'index']);
         Route::post('/quizzes', [TravelQuizController::class, 'store']);
         Route::get('/quizzes/{travelQuiz}', [TravelQuizController::class, 'show']);
         Route::put('/quizzes/{travelQuiz}', [TravelQuizController::class, 'update']);
         Route::delete('/quizzes/{travelQuiz}', [TravelQuizController::class, 'destroy']);
+        Route::get('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'questionsIndex']);
         Route::post('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'storeQuestion']);
         Route::put('/quizzes/{travelQuiz}/questions/{travelQuizQuestion}', [TravelQuizController::class, 'updateQuestion']);
         Route::delete('/quizzes/{travelQuiz}/questions/{travelQuizQuestion}', [TravelQuizController::class, 'destroyQuestion']);
@@ -439,11 +449,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/categories', [TravelArticleController::class, 'storeCategory']);
         Route::put('/categories/{category}', [TravelArticleController::class, 'updateCategory']);
         Route::delete('/categories/{category}', [TravelArticleController::class, 'destroyCategory']);
-        Route::get('/articles/{article}', [TravelArticleController::class, 'show']);
-        Route::put('/articles/{article}', [TravelArticleController::class, 'update']);
-        Route::delete('/articles/{article}', [TravelArticleController::class, 'destroy']);
-        Route::post('/articles/{article}/publish', [TravelArticleController::class, 'publish']);
-        Route::post('/articles/{article}/moderate', [TravelArticleController::class, 'moderate']);
+        Route::get('/articles/{travelArticle}', [TravelArticleController::class, 'show']);
+        Route::put('/articles/{travelArticle}', [TravelArticleController::class, 'update']);
+        Route::delete('/articles/{travelArticle}', [TravelArticleController::class, 'destroy']);
+        Route::post('/articles/{travelArticle}/publish', [TravelArticleController::class, 'publish']);
+        Route::post('/articles/{travelArticle}/moderate', [TravelArticleController::class, 'moderate']);
         Route::get('/articles/{article}/comments', [TravelCommentController::class, 'index']);
         Route::post('/articles/{article}/comments', [TravelCommentController::class, 'store']);
         Route::delete('/comments/{comment}', [TravelCommentController::class, 'destroy']);
@@ -455,12 +465,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/articles/{article}/share', [TravelEngagementController::class, 'share']);
         Route::post('/articles/{article}/rate', [TravelEngagementController::class, 'rate']);
         Route::get('/articles/{article}/engagement', [TravelEngagementController::class, 'summary']);
-        Route::get('/quizzes/{quiz}', [TravelQuizController::class, 'show']);
-        Route::post('/quizzes/{quiz}/publish', [TravelQuizController::class, 'publish']);
-        Route::post('/quizzes/{quiz}/questions', [TravelQuizController::class, 'storeQuestion']);
-        Route::delete('/quiz-questions/{question}', [TravelQuizController::class, 'destroyQuestion']);
-        Route::post('/quizzes/{quiz}/participate', [TravelQuizController::class, 'participate']);
-        Route::get('/quizzes/{quiz}/results', [TravelQuizController::class, 'results']);
+        Route::get('/quizzes/{travelQuiz}', [TravelQuizController::class, 'show']);
+        Route::post('/quizzes/{travelQuiz}/publish', [TravelQuizController::class, 'publish']);
+        Route::post('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'storeQuestion']);
+        Route::delete('/quiz-questions/{travelQuizQuestion}', [TravelQuizController::class, 'destroyQuestion']);
+        Route::post('/quizzes/{travelQuiz}/participate', [TravelQuizController::class, 'participate']);
+        Route::get('/quizzes/{travelQuiz}/results', [TravelQuizController::class, 'results']);
         Route::get('/tourist-sites/search', [TravelTouristSiteController::class, 'search']);
         Route::put('/tourist-sites/{site}', [TravelTouristSiteController::class, 'update']);
         Route::delete('/tourist-sites/{site}', [TravelTouristSiteController::class, 'destroy']);
@@ -475,11 +485,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
             Route::get('/articles', [TravelArticleController::class, 'index']);
             Route::post('/articles', [TravelArticleController::class, 'store']);
-            Route::get('/articles/{article}', [TravelArticleController::class, 'show']);
-            Route::put('/articles/{article}', [TravelArticleController::class, 'update']);
-            Route::delete('/articles/{article}', [TravelArticleController::class, 'destroy']);
-            Route::post('/articles/{article}/publish', [TravelArticleController::class, 'publish']);
-            Route::post('/articles/{article}/moderate', [TravelArticleController::class, 'moderate']);
+            Route::get('/articles/{travelArticle}', [TravelArticleController::class, 'show']);
+            Route::put('/articles/{travelArticle}', [TravelArticleController::class, 'update']);
+            Route::delete('/articles/{travelArticle}', [TravelArticleController::class, 'destroy']);
+            Route::post('/articles/{travelArticle}/publish', [TravelArticleController::class, 'publish']);
+            Route::post('/articles/{travelArticle}/moderate', [TravelArticleController::class, 'moderate']);
 
             Route::get('/articles/{article}/comments', [TravelCommentController::class, 'index']);
             Route::post('/articles/{article}/comments', [TravelCommentController::class, 'store']);
@@ -494,12 +504,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/articles/{article}/rate', [TravelEngagementController::class, 'rate']);
             Route::get('/articles/{article}/engagement', [TravelEngagementController::class, 'summary']);
 
-            Route::get('/quizzes/{quiz}', [TravelQuizController::class, 'show']);
-            Route::post('/quizzes/{quiz}/publish', [TravelQuizController::class, 'publish']);
-            Route::post('/quizzes/{quiz}/questions', [TravelQuizController::class, 'storeQuestion']);
-            Route::delete('/quiz-questions/{question}', [TravelQuizController::class, 'destroyQuestion']);
-            Route::post('/quizzes/{quiz}/participate', [TravelQuizController::class, 'participate']);
-            Route::get('/quizzes/{quiz}/results', [TravelQuizController::class, 'results']);
+            Route::get('/quizzes/{travelQuiz}', [TravelQuizController::class, 'show']);
+            Route::post('/quizzes/{travelQuiz}/publish', [TravelQuizController::class, 'publish']);
+            Route::get('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'questionsIndex']);
+            Route::post('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'storeQuestion']);
+            Route::delete('/quiz-questions/{travelQuizQuestion}', [TravelQuizController::class, 'destroyQuestion']);
+            Route::post('/quizzes/{travelQuiz}/participate', [TravelQuizController::class, 'participate']);
+            Route::get('/quizzes/{travelQuiz}/results', [TravelQuizController::class, 'results']);
 
             Route::post('/tourist-sites', [TravelTouristSiteController::class, 'store']);
             Route::get('/tourist-sites/search', [TravelTouristSiteController::class, 'search']);

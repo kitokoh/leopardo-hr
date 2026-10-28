@@ -10,6 +10,7 @@
  *   - Feature flags write: principal only
  */
 
+use App\Support\Routing\ModuleRoutes;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\AiCreditController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\BillingCollectionController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\BillingController;
@@ -22,7 +23,7 @@ use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingStepControlle
 use Illuminate\Support\Facades\Route;
 
 // ── Authenticated routes ──────────────────────────────────────────────────────
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
+ModuleRoutes::tenantModule('', function (): void {
 
     // Onboarding Steps — tous les utilisateurs authentifiés du tenant
     // (l'app Employee complète son onboarding : T118 — plus de 403
@@ -116,7 +117,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 Route::prefix('growth')->group(function () {
     // Issue #2622 + #2635 : isolation tenant obligatoire (cross-tenant = 404) +
     // alignement sur le groupe standard (token.refresh + throttle:api-plan).
-    Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->prefix('partner')->group(function () {
+    ModuleRoutes::tenantModule('partner', function (): void {
         Route::post('/apply', [PartnerDashboardController::class, 'apply']);
         Route::post('/payout', [PartnerDashboardController::class, 'requestPayout']);
         Route::get('/dashboard', [PartnerDashboardController::class, 'dashboard']);
