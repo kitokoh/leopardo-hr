@@ -1,0 +1,55 @@
+name: Vitrine Lock Guard
+
+on:
+  pull_request:
+    paths:
+      - 'front/web/src/modules/vitrine/**'
+      - 'front/web/src/app/(landing)/**'
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: vitrine-lock-guard-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-vitrine-lock:
+    name: Check Vitrine Agent Exclusivity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Verify Vitrine Exclusivity
+        env:
+          PR_BRANCH: ${{ github.head_ref }}
+          PR_AUTHOR: ${{ github.actor }}
+          PR_LABELS: ${{ toJson(github.event.pull_request.labels) }}
+        run: |
+          echo "Vérification du verrou vitrine pour la branche: $PR_BRANCH (auteur: $PR_AUTHOR)"
+
+          # 1. Branche préfixée vitrine
+          if echo "$PR_BRANCH" | grep -qE '^(feat|fix|chore|mkt|agent)/vitrine-'; then
+            echo "✅ Branche vitrine reconnue ($PR_BRANCH). Accès autorisé."
+            exit 0
+          fi
+
+          # 2. Auteur autorisé (kitokoh)
+          if [ "$PR_AUTHOR" = "kitokoh" ]; then
+            echo "✅ Auteur autorisé ($PR_AUTHOR). Accès autorisé."
+            exit 0
+          fi
+
+          # 3. Label vitrine-authorized sur la PR
+          if echo "$PR_LABELS" | grep -qi "vitrine-authorized"; then
+            echo "✅ Label 'vitrine-authorized' présent sur la PR. Accès autorisé."
+            exit 0
+          fi
+
+          echo "::error::⛔ VIOLATION DU VERROU VITRINE : Seul l'Agent Vitrine Dédié est autorisé à modifier front/web/src/modules/vitrine/** et front/web/src/app/(landing)/**."
+          echo "La PR doit soit provenir d'une branche préfixée 'feat/vitrine-*', soit être soumise par l'agent autorisé, soit porter le label 'vitrine-authorized'."
+          exit 1
