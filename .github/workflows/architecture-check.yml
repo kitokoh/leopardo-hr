@@ -520,6 +520,14 @@ jobs:
         # « pour passer » sans justification (même règle que l'allowlist #5584).
         run: dev-hub/tools/check-bounded-context-dependencies.sh .
 
+      - name: Absence facade guard (ARCH-003 / issue #7959)
+        if: needs.detect-changes.outputs.api_changed == 'true'
+        # Le module Absence est une FAÇADE de presentation (BC-06 LEAVE) dont le
+        # domaine vit dans Planning (BC-05) : voir
+        # docs/adr/ARCH-003-module-absence-facade.md. Ce garde interdit
+        # l'apparition d'un domaine parallele sous Modules/Absence.
+        run: bash dev-hub/tools/check-absence-facade.sh .
+
       - name: CRM boundary imports guard (issue #5745, ADR 0018)
         if: needs.detect-changes.outputs.api_changed == 'true'
         # HARD BLOCK : aucun import Modules/{Platform,Marketing,Payroll,Accounting}
