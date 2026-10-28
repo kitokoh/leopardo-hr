@@ -42,18 +42,22 @@ class ProvisionKiosk
      */
     public function execute(Company $company, array $attributes): array
     {
-        // #7962 \u2014 `normalizePunchMethods()` rend une `list<string>` (BIO-006 :
-        // `card` devient `badge`). On reconstruit l'entree sous une forme
-        // NOUVELLE et explicitement typee, plutot que de reecrire une cle d'un
-        // tableau dont le type reste `mixed` aux yeux de l'analyse.
-        /** @var array{name: string, location_label?: string|null, biometric_mode?: string|null, trusted_device_label?: string|null, punch_methods?: list<string>|null, site_id?: int|null} $normalized */
-        $normalized = $attributes;
-
-        if (isset($attributes['punch_methods'])) {
-            $normalized['punch_methods'] = $this->normalizePunchMethods($attributes['punch_methods']);
-        }
-
-        $provisioned = $this->writer->create($company, $normalized);
+        // Le parametre ci-dessus declare `punch_methods` en
+        // `array<array-key, mixed>|null` (ce que le controleur recoit du JSON).
+        // Affecter un `list<string>` dans cette cle ne RETRECIT pas le type :
+        // la cle garde son type declare, et l'appel a `create()` — qui exige
+        // `list<string>|null` — echouait en PHPStan 8. On reconstruit donc un
+        // tableau au type exact plutot que de muter l'entree.
+        $provisioned = $this->writer->create($company, [
+            'name' => $attributes['name'],
+            'location_label' => $attributes['location_label'] ?? null,
+            'biometric_mode' => $attributes['biometric_mode'] ?? null,
+            'trusted_device_label' => $attributes['trusted_device_label'] ?? null,
+            'punch_methods' => isset($attributes['punch_methods'])
+                ? $this->normalizePunchMethods($attributes['punch_methods'])
+                : null,
+            'site_id' => $attributes['site_id'] ?? null,
+        ]);
 
         // #6678 — garde fail-closed de provisioning (repro prod 2026-09-01) :
         // ne rendre des credentials QUE si la ligne est resolvable par les

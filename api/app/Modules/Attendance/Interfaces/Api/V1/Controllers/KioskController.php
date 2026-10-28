@@ -774,5 +774,4 @@ class KioskController extends Controller
             return (string) $value;
         }
     }
-
 }
