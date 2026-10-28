@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\EduManager\Infrastructure\Services;
 
-use App\Core\Outbox\Infrastructure\DatabaseOutboxPublisher;
+use App\Core\Outbox\Contracts\OutboxPublisher;
 use App\Modules\EduManager\Domain\Models\EduOutboxEvent;
 use DateTimeInterface;
 
@@ -23,7 +23,7 @@ use DateTimeInterface;
 final class EduOutboxPublisher
 {
     public function __construct(
-        private readonly DatabaseOutboxPublisher $outbox = new DatabaseOutboxPublisher,
+        private readonly OutboxPublisher $outbox,
     ) {}
 
     /**

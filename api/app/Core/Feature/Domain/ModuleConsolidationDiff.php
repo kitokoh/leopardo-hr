@@ -21,6 +21,12 @@ namespace App\Core\Feature\Domain;
  * valeur cible que l'écriture unifiée posera. C'est ce qui rend le `--dry-run`
  * de `modules:consolidate` démontrable et testable sans base de données.
  *
+ * ⚠️ **La règle de résolution n'est pas définie ici.** Elle vit dans
+ * {@see ModuleMirror}, partagée avec l'écriture unifiée : si le diagnostic et
+ * l'écriture avaient chacun la leur, un rapport pourrait annoncer un écart que
+ * l'écriture ne corrige pas — le `--apply` bouclerait sans converger. Une seule
+ * règle, deux appelants.
+ *
  * Périmètre : uniquement les clés **miroir** (`metadata_mirror` non nul dans
  * {@see ModuleRegistry}), c'est-à-dire les outils horizontaux qui ont à la fois
  * une clé client et un flag plateforme. Les outils sans flag (`employees`,
@@ -85,11 +91,26 @@ final class ModuleConsolidationDiff
                 continue;
             }
 
-            $target = $flagValue ?? $defaultFor($flagKey);
+            $target = ModuleMirror::targetValue($flagValue, $defaultFor($flagKey));
 
             if ($clientValue === null) {
                 $kind = self::KIND_MISSING_CLIENT_KEY;
             } elseif ($flagValue === null) {
+                // Le flag plateforme n'est pas DÉCLARÉ : la valeur EFFECTIVE de
+                // la source est le défaut versionné du registre (`$target`), car
+                // `Company::hasFeature()` rend `(bool) ($features[$key] ?? $default)`.
+                //
+                // ⚠️ Si le client s'accorde DÉJÀ avec cette valeur effective, il
+                // n'y a rien à consolider — et le dire est indispensable :
+                // l'écriture ne pose que la VUE (`metadata.modules`), jamais la
+                // source. Signaler l'écart quand même ferait rapporter à
+                // `--apply` un écart qu'il ne peut pas résoudre, donc un
+                // `--apply` qui ne converge jamais et une commande non
+                // idempotente.
+                if ($clientValue === $target) {
+                    continue;
+                }
+
                 $kind = self::KIND_MISSING_MIRROR;
             } elseif ($clientValue !== $flagValue) {
                 $kind = self::KIND_DIVERGENCE;
@@ -113,14 +134,12 @@ final class ModuleConsolidationDiff
     }
 
     /**
-     * Une carte JSON peut porter autre chose qu'un booléen (legacy : `1`,
-     * `"true"`, `null`). Seul un booléen PHP est une déclaration ; tout le
-     * reste est traité comme « non déclaré » plutôt que converti — une
-     * conversion silencieuse (`(bool) "false"` vaut `true`) fabriquerait un
-     * écart fantôme et ferait écrire une valeur fausse en mode apply.
+     * Délégué à {@see ModuleMirror} : la règle « seul un booléen PHP est une
+     * déclaration » doit être IDENTIQUE des deux côtés (diagnostic et
+     * écriture), sinon les deux ne s'accordent plus sur ce qu'est un écart.
      */
     private static function boolOrNull(mixed $value): ?bool
     {
-        return is_bool($value) ? $value : null;
+        return ModuleMirror::boolOrNull($value);
     }
 }
