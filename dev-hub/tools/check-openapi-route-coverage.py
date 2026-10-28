@@ -74,6 +74,17 @@ ROUTE_RE = re.compile(
     r"(?:Route::|->)(get|post|put|patch|delete)\(\s*['\"]([^'\"]+)['\"]"
 )
 PREFIX_RE = re.compile(r"prefix\(\s*['\"]([^'\"]+)['\"]\)")
+# Issue #7959 (point 4) : la pile de middlewares tenant et le préfixe de module
+# vivent désormais dans `App\Support\Routing\ModuleRoutes::tenantModule('x', fn)`.
+# Cette forme est l'équivalent exact de
+#   Route::middleware([...])->prefix('x')->group(function () {
+# Il faut donc l'enseigner au parseur : sans cela, le préfixe du module est
+# invisible et toutes ses routes apparaissent à `/v1/<path>` au lieu de
+# `/v1/<prefix>/<path>` — le rapport produit alors des centaines de faux
+# « nouvelles routes sans documentation OpenAPI » (constaté sur #8973).
+# On réutilise `pending_prefix` : la valeur est mémorisée puis poussée quand la
+# parenthèse/le groupe s'ouvre, exactement comme pour `->prefix(...)`.
+MODULE_GROUP_RE = re.compile(r"ModuleRoutes::tenantModule(?:With)?\(\s*['\"]([^'\"]*)['\"]")
 GROUP_OPEN_RE = re.compile(r"->group\(function")
 GROUP_CLOSE_RE = re.compile(r"^\s*\}\);")
 RESOURCE_RE = re.compile(
@@ -158,6 +169,23 @@ def parse_routes() -> list[dict]:
             m = PREFIX_RE.search(line)
             if m and "prefix(" in line:
                 pending_prefix = m.group(1)
+
+            # Issue #7959 : `ModuleRoutes::tenantModule('x', function (): void {`
+            # — même sémantique que `->prefix('x')->group(function ...`, mais
+            # sur une seule ligne. Le préfixe peut être vide (billing,
+            # dashboard déclarent leurs routes à la racine) : on pousse alors
+            # "" pour ne pas hériter d'un préfixe précédent.
+            mg = MODULE_GROUP_RE.search(line)
+            if mg:
+                pending_prefix = mg.group(1)
+                # La forme helper ouvre le groupe elle-même (pas de
+                # `->group(function` à chercher) : on pousse le préfixe ici,
+                # faute de quoi les routes du module seraient lues au niveau
+                # racine et la garde signalerait des centaines de faux positifs.
+                prefix_stack.append((indent, pending_prefix))
+                pending_prefix = None
+                current_prefixes = [p for _, p in prefix_stack]
+                continue
 
             if GROUP_OPEN_RE.search(line):
                 prefix_stack.append((indent, pending_prefix or ""))
