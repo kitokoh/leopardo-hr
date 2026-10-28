@@ -1750,7 +1750,37 @@
     "searchIntelGeo": "GEO",
     "searchIntelContent": "المحتوى",
     "searchIntelCompetitors": "المنافسون",
-    "searchIntelIntegrations": "التكاملات"
+    "searchIntelIntegrations": "التكاملات",
+    "accounting": "المحاسبة",
+    "accountingActivation": "المحاسبة — البدء",
+    "accountingBank": "البنك والمطابقة",
+    "accountingChart": "دليل الحسابات",
+    "accountingDashboard": "المحاسبة — لوحة التحكم",
+    "accountingDocuments": "المستندات والفواتير",
+    "accountingFiscalYears": "السنوات المالية والإقفال",
+    "accountingLedger": "دفتر الأستاذ واليومية",
+    "accountingLettering": "المطابقة",
+    "accountingSettings": "المحاسبة — الإعدادات",
+    "accountingStatements": "ضريبة القيمة المضافة والقوائم المالية",
+    "acquisitionFunnel": "قمع الاستحواذ",
+    "aiAssistant": "المساعد الذكي",
+    "equityInterests": "حصص في رأس المال",
+    "fuelStation": "محطات الوقود",
+    "fuelStationOperations": "عمليات محطات الوقود",
+    "marketingOs": "نظام التسويق",
+    "showcase": "موقع العرض",
+    "surveyStats": "استبيانات الحلول",
+    "team": "فريق المنصة",
+    "trade": "التجارة الدولية",
+    "groups": {
+      "entreprise": "الشركات العميلة",
+      "facturationOffres": "الفوترة والعروض",
+      "pilotage": "القيادة",
+      "plateforme": "المنصة",
+      "referentielsPaie": "المراجع المحاسبية للأجور",
+      "rhPaie": "الموارد البشرية والأجور",
+      "systeme": "النظام"
+    }
   },
   "webhooks": {
     "confirm_delete": "حذف خطاف الويب هذا؟"
@@ -6683,7 +6713,8 @@
     "hero3d": {
       "demo": "عرض توضيحي",
       "cagnottes": "حملات التبرع",
-      "freeTrial": "تجربة مجانية"
+      "freeTrial": "تجربة مجانية",
+      "hint": "انقر على وحدة للاستكشاف"
     },
     "trade": {
       "badge": "ليوباردو Trade",
@@ -7661,14 +7692,24 @@
       "quotes": "العروض المعلّقة",
       "orders": "الطلبات الجارية",
       "integrations": "التكاملات",
-      "integrationsDegraded": "بعض الوظائف تعتمد على محوّلات غير مهيّأة وتبقى غير متاحة."
+      "integrationsDegraded": "بعض الوظائف تعتمد على محوّلات غير مهيّأة وتبقى غير متاحة.",
+      "scopeNotice": "عدّادات فقط: لا تُعرض أسعار العملاء وعروضهم ورسائلهم ومستنداتهم على إدارة المنصة.",
+      "loadError": "تعذّر تحميل متابعة القطاع.",
+      "companiesScanned": "الشركات التي تم فحصها",
+      "companiesWithTrade": "لديها قطاع التجارة",
+      "companiesWithActivity": "لديها نشاط تجاري",
+      "integrationsUnconfigured": "تكاملات غير مهيّأة"
     },
     "integrations": {
       "title": "التكاملات الخارجية",
       "notice": "يُعرض التكامل غير المهيّأ كغير متاح: لا تُحاكى أي بيانات.",
       "stateOperational": "تعمل",
       "stateUnconfigured": "غير مهيّأة",
-      "configured": "مهيّأة"
+      "configured": "مهيّأة",
+      "colKey": "التكامل",
+      "colMode": "الوضع",
+      "colState": "الحالة",
+      "colReason": "التفاصيل"
     },
     "sourcing": {
       "title": "التوريد وطلبات الأسعار",
@@ -7706,6 +7747,19 @@
       "createdAt": "تاريخ الإنشاء",
       "destination": "الوجهة",
       "incoterm": "إنكوترمز"
+    },
+    "common": {
+      "retry": "إعادة المحاولة",
+      "noData": "لا توجد بيانات"
+    },
+    "counts": {
+      "deals": "الملفات (deals)",
+      "rfqs": "طلبات الأسعار (RFQ)",
+      "quotes": "العروض التجارية",
+      "orders": "الطلبات"
+    },
+    "roles": {
+      "title": "أدوار التجارة"
     }
   },
   "vtc": {
@@ -9118,5 +9172,35 @@
   "fuelPumpistPumpsError": "المضخات غير متاحة",
   "fuelPumpistMetersError": "العدادات غير متاحة",
   "fuelTechnicalRef": "مرجع {id}",
-  "fuelMeterLabelWithProduct": "{meter} — المنتج {product}"
+  "fuelMeterLabelWithProduct": "{meter} — المنتج {product}",
+  "lea": {
+    "title": "صف نشاطك",
+    "subtitle": "بضع جمل: مهنتك، حجمك، وما يهمك أكثر.",
+    "placeholder": "مثال: وكالة أسفار بمكتبين، 12 شخصا، وأريد متابعة ملفات العملاء.",
+    "analyse": "تحليل",
+    "useForm": "استخدم الاستمارة",
+    "back": "رجوع",
+    "later": "لاحقا",
+    "hint": {
+      "min": "12 حرفا على الأقل"
+    },
+    "clarify": {
+      "title": "توضيحان وسأعد الملخص.",
+      "submit": "متابعة"
+    },
+    "review": {
+      "title": "هذا ما فهمته. صحح إن لزم ثم أكد.",
+      "solutions": "الحلول",
+      "tools": "الأدوات",
+      "empty": "لم أتمكن من تحديد أي حل لتنشيطه. استخدم الاستمارة لتوضيح نشاطك.",
+      "edit": "تصحيح",
+      "editHint": "عدل وصفك ثم أعد التحليل: يعاد بناء الملخص من إجاباتك.",
+      "confirm": "تأكيد وتنشيط"
+    },
+    "error": {
+      "network": "تعذر الاتصال.",
+      "confirm": "فشل التنشيط.",
+      "stale": "تغير الملخص. يرجى مراجعته من جديد."
+    }
+  }
 }
