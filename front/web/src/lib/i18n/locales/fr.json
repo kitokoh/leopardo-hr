@@ -8750,5 +8750,35 @@
   "fuelPumpistPumpsError": "Pompes indisponibles",
   "fuelPumpistMetersError": "Compteurs indisponibles",
   "fuelTechnicalRef": "Réf. {id}",
-  "fuelMeterLabelWithProduct": "{meter} — {product}"
+  "fuelMeterLabelWithProduct": "{meter} — {product}",
+  "lea": {
+    "title": "Decrivez votre activite",
+    "subtitle": "En quelques phrases : votre metier, votre taille, ce qui compte le plus.",
+    "placeholder": "Ex. : agence de voyages avec 2 bureaux, 12 personnes, je veux suivre les dossiers clients.",
+    "analyse": "Analyser",
+    "useForm": "Utiliser le formulaire",
+    "back": "Retour",
+    "later": "Plus tard",
+    "hint": {
+      "min": "Au moins 12 caracteres"
+    },
+    "clarify": {
+      "title": "Deux precisions et je prepare le resume.",
+      "submit": "Continuer"
+    },
+    "review": {
+      "title": "Voici ce que j'ai compris. Corrigez si besoin, puis confirmez.",
+      "solutions": "Solutions",
+      "tools": "Outils",
+      "empty": "Je n'ai identifie aucune solution a activer. Utilisez le formulaire pour preciser votre activite.",
+      "edit": "Corriger",
+      "editHint": "Modifiez votre description puis reanalysez : le resume se reconstruit a partir de vos reponses.",
+      "confirm": "Confirmer et activer"
+    },
+    "error": {
+      "network": "Connexion impossible.",
+      "confirm": "L'activation a echoue.",
+      "stale": "Le resume a change. Verifiez-le a nouveau."
+    }
+  }
 }
