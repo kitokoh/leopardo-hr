@@ -895,3 +895,33 @@ Vérifié : `node shared/i18n/sync/sync-web.js` → `I18N_SYNC_WEB_OK`, `node sh
 - `node shared/i18n/validators/validate.js` → `I18N_VALIDATION_OK (4 locales)`.
 - `bash dev-hub/tools/check-i18n-catalog-parity.sh` → parité ×4.
 - `npx eslint src/views/search-intel src/composables/useSearchIntelList.js` → 0 erreur.
+
+## Note de conservation 2026-10-28 — restauration du catalogue i18n admin (1 272 clés perdues, refs #8980)
+
+**Aucun scénario existant invalidé ; la surface ne change pas, elle retrouve ses libellés.**
+
+Le merge `8890f8ba3` a écrasé `front/admin-dashboard/src/i18n/locales/*.json` : le catalogue admin est passé de **8 202 à 7 502 clés en `fr`**, soit **1 272 libellés perdus** — dont `accounting.dashboard.title` (« Tableau de bord comptable »), `companies.totalCount` (`:count sociétés`), l'ensemble de `accounting.activation.*` (31 clés), `accounting.settings.*` (31), `team.platform.*` (52), `travel.common.*` (38), `travel.network.*` (35), `sa.settings.*` (31), `fundraising.settings.*` (30), `travel.reports.*` (27), `travel.catalog.*` (26). À l'écran, `translate()` rendait une chaîne vide : titres de page, libellés de boutons et intitulés de colonnes disparaissaient **sans erreur ni trace**.
+
+**Cause, et pourquoi les gardes existantes ne l'ont pas vu.** `sync-web.js` écrit `deepMerge(adminCurrent, sharedData)` : la valeur **partagée gagne** sur la valeur locale. Toute clé absente de `shared` mais présente côté admin survit à un merge récursif — sauf si un merge de branche remplace le fichier entier, ce qui est exactement ce qui s'est produit. `validate.js` et `check-i18n-catalog-parity.sh` sont restés **verts tout du long** : ils vérifient la parité entre locales et la cohérence des checksums, pas la conservation d'un catalogue dans le temps. Le défaut a donc passé les 4 gardes i18n sans être vu, et n'a été révélé que par l'E2E Playwright (locator introuvable).
+
+**Décision — restauration côté admin uniquement, jamais côté `shared`.** Les 1 272 clés sont **admin-only** : vérifié, aucune n'existe dans `shared/i18n/locales/*`, ni avant ni après le merge. Les remonter dans la source canonique les aurait diffusées au portail client (`front/web`) et au mobile par les syncs dérivés — une fuite de surface pour un correctif de surface.
+
+**Décision — complétude vérifiée par diff de clés, pas par relecture.** La restauration est un merge récursif dont l'état courant gagne et l'état pré-merge ne remplit que les manques, appliqué aux **4 locales**, puis `sync-web.js` officiel pour régénérer `versions.json`. Elle est **idempotente** : `sync-web.js` rejoué deux fois laisse les fichiers identiques (hash SHA-256 stable), ce qui garantit qu'aucun run ultérieur ne re-supprimera ces clés.
+
+### Vérification automatique
+
+- `node shared/i18n/validators/validate.js` → **`I18N_VALIDATION_OK (4 locales)`**
+- `bash dev-hub/tools/check-i18n-catalog-parity.sh` → **parité OK** (backend, shared, ARB mobile — 4 langues)
+- `python3 dev-hub/tools/check-i18n-locale-parity.py` → 7 168 clés, **0 manquante** sur en/ar/tr
+- `node shared/i18n/sync/sync-web.js` rejoué → **idempotent** (aucun diff)
+- E2E `accounting-dashboard-golden.spec.js` → le locator `Tableau de bord comptable` est de nouveau rendu
+- E2E `companies-list-quick-actions.spec.js` → le locator `/26 sociétés/` est de nouveau rendu
+
+### Scénarios de recette rétablis
+
+1. **Titre du dashboard comptable** : `/accounting/dashboard` affiche « Tableau de bord comptable », plus de zone vide en en-tête.
+2. **Compteur de sociétés** : la liste des sociétés affiche « 26 sociétés », plus de compteur vide.
+3. **Tunnel d'activation comptable** : les 31 libellés `accounting.activation.*` (étapes, CTA, messages d'erreur) sont rendus.
+4. **Réglages comptables** : les 31 libellés `accounting.settings.*` sont rendus, y compris les intitulés de champs.
+5. **Équipe plateforme** : les 52 libellés `team.platform.*` sont rendus.
+6. **Aucune régression de surface** : les clés déjà présentes n'ont pas été réécrites (l'état courant gagne) ; `git diff` ne contient que des additions.
