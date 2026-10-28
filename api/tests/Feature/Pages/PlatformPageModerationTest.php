@@ -12,6 +12,7 @@ use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Pages\Domain\Enums\PageStatus;
 use App\Modules\Pages\Domain\Models\Page;
 use App\Modules\Pages\Domain\Models\PageModerationAudit;
+use Closure;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -34,8 +35,6 @@ class PlatformPageModerationTest extends TestCase
 
     private Company $company;
 
-    private Site $site;
-
     private Page $page;
 
     private SuperAdmin $admin;
@@ -56,7 +55,6 @@ class PlatformPageModerationTest extends TestCase
             'site_type' => 'store',
             'status' => Site::STATUS_ACTIVE,
         ]);
-        $this->site = $site;
 
         /** @var Page $page */
         $page = Page::create([
@@ -170,10 +168,10 @@ class PlatformPageModerationTest extends TestCase
      *
      * @template T
      *
-     * @param  callable(): T  $callback
+     * @param  Closure(): T  $callback
      * @return T
      */
-    private function inTenant(callable $callback): mixed
+    private function inTenant(Closure $callback): mixed
     {
         return app(\App\Core\Tenant\TenantManager::class)->withinTenant($this->company, $callback);
     }
@@ -208,8 +206,8 @@ class PlatformPageModerationTest extends TestCase
         $this->assertSame('page.suspended', $audit->action);
         $this->assertSame('fraud', $audit->reason);
         $this->assertSame('platform:'.$this->admin->id, $audit->actor_id);
-        $this->assertSame('published', $audit->before['status']);
-        $this->assertSame('draft', $audit->after['status']);
+        $this->assertSame('published', $audit->before['status'] ?? null);
+        $this->assertSame('draft', $audit->after['status'] ?? null);
     }
 
     public function test_unsuspension_returns_the_page_to_draft_without_republishing(): void

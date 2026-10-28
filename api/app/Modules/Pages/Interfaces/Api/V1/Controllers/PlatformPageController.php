@@ -7,7 +7,9 @@ namespace App\Modules\Pages\Interfaces\Api\V1\Controllers;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
-use App\Modules\Pages\Application\Actions\ModeratePage;
+use App\Modules\Pages\Application\Actions\RecordPageEvidenceAccessAction;
+use App\Modules\Pages\Application\Actions\SuspendPageAction;
+use App\Modules\Pages\Application\Actions\UnsuspendPageAction;
 use App\Modules\Pages\Domain\Models\Page;
 use App\Modules\Pages\Domain\Models\PageCustomDomain;
 use App\Modules\Pages\Domain\Models\PageModerationAudit;
@@ -53,7 +55,9 @@ final class PlatformPageController extends Controller
 {
     public function __construct(
         private readonly TenantManager $tenantManager,
-        private readonly ModeratePage $moderatePage,
+        private readonly SuspendPageAction $suspendPage,
+        private readonly UnsuspendPageAction $unsuspendPage,
+        private readonly RecordPageEvidenceAccessAction $recordEvidenceAccess,
         private readonly PageVerificationService $verification,
     ) {}
 
@@ -161,7 +165,7 @@ final class PlatformPageController extends Controller
                             'actor_role' => $a->actor_role,
                             'before' => $a->before,
                             'after' => $a->after,
-                            'created_at' => $a->created_at?->toIso8601String(),
+                            'created_at' => $a->created_at->toIso8601String(),
                         ])
                         ->all(),
                 ],
@@ -185,7 +189,7 @@ final class PlatformPageController extends Controller
             /** @var Page $model */
             $model = Page::query()->findOrFail($page);
 
-            $this->moderatePage->suspend($model, $actor['id'], $actor['role'], $validated['reason'], $request);
+            $this->suspendPage->execute($model, $actor['id'], $actor['role'], (string) $validated['reason'], $request);
 
             return response()->json(['data' => $this->summarize($model->refresh(), $company)]);
         });
@@ -207,7 +211,7 @@ final class PlatformPageController extends Controller
             /** @var Page $model */
             $model = Page::query()->findOrFail($page);
 
-            $this->moderatePage->unsuspend($model, $actor['id'], $actor['role'], $validated['reason'], $request);
+            $this->unsuspendPage->execute($model, $actor['id'], $actor['role'], (string) $validated['reason'], $request);
 
             return response()->json(['data' => $this->summarize($model->refresh(), $company)]);
         });
@@ -235,18 +239,28 @@ final class PlatformPageController extends Controller
                 ->where('page_id', $page)
                 ->findOrFail($requestId);
 
-            $decided = match ($validated['decision']) {
-                'approve' => $this->verification->approve($verificationRequest, $actor['id'], $validated['reason']),
-                'reject' => $this->verification->reject($verificationRequest, $actor['id'], $validated['reason']),
-                'dispute' => $this->verification->dispute($verificationRequest, $actor['id'], $validated['reason']),
-                'revoke' => $this->verification->revoke($verificationRequest, $actor['id'], $validated['reason']),
+            $decision = (string) $validated['decision'];
+
+            $decided = match ($decision) {
+                'approve' => $this->verification->approve($verificationRequest, $actor['id'], (string) $validated['reason']),
+                'reject' => $this->verification->reject($verificationRequest, $actor['id'], (string) $validated['reason']),
+                'dispute' => $this->verification->dispute($verificationRequest, $actor['id'], (string) $validated['reason']),
+                'revoke' => $this->verification->revoke($verificationRequest, $actor['id'], (string) $validated['reason']),
+                default => throw new \LogicException('Decision hors allowlist acceptee par la validation : '.$decision),
             };
+
+            // `recordEvidenceAccess()` exige une Page non nullable, or
+            // `$decided->page` est une relation nullable (Page supprimee
+            // entre-temps). On relit la Page par sa cle : une garantie
+            // verifiable plutot qu'un `?->` qui sauterait l'audit en silence.
+
+            $auditedPage = Page::query()->findOrFail($decided->page_id);
 
             // Le service de domaine écrit déjà son audit métier ; on ajoute la
             // ligne de modération pour que la fiche plateforme montre la
             // décision au même endroit que les suspensions.
-            $this->moderatePage->recordEvidenceAccess(
-                $decided->page,
+            $this->recordEvidenceAccess->execute(
+                $auditedPage,
                 $actor['id'],
                 $actor['role'],
                 (int) $decided->id,
@@ -279,7 +293,7 @@ final class PlatformPageController extends Controller
                 ->whereIn('request_id', PageVerificationRequest::query()->where('page_id', $page)->select('id'))
                 ->findOrFail($evidenceId);
 
-            $this->moderatePage->recordEvidenceAccess(
+            $this->recordEvidenceAccess->execute(
                 Page::query()->findOrFail($page),
                 $actor['id'],
                 $actor['role'],
@@ -301,7 +315,7 @@ final class PlatformPageController extends Controller
                     'mime_type' => $evidence->mime_type,
                     'size_bytes' => $evidence->size_bytes,
                     'content_hash' => $evidence->content_hash,
-                    'retention_until' => $evidence->retention_until?->toIso8601String(),
+                    'retention_until' => $evidence->retention_until->toIso8601String(),
                     'signed_url' => $url,
                     'expires_in_seconds' => 300,
                 ],
@@ -390,6 +404,7 @@ final class PlatformPageController extends Controller
      */
     private function tenantIdsWithPages(): array
     {
+        /** @var list<object{id: string}> $rows */
         $rows = DB::select(
             'SELECT id FROM public.companies ORDER BY created_at DESC LIMIT 200'
         );
