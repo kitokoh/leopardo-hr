@@ -145,12 +145,36 @@ def parse_routes() -> list[dict]:
         prefix_stack: list[tuple[int, str]] = [(-1, p) for _, p in (inherited or [])]
         current_prefixes = [p for _, p in prefix_stack]
         pending_prefix: str | None = None
+        # Issue #7959 : la pile fermait les groupes par INDENTATION. Le passage a
+        # `ModuleRoutes::tenantModule(...)` a change l'indentation du corps des
+        # fichiers de routes, donc le `});` de fermeture ne popait plus l'entree
+        # du module : le prefixe restait actif pour tout le RESTE du fichier et
+        # les blocs posterieurs, qui portent deja leur segment en dur
+        # (`accounting/bank-statements`), etaient prefixes une seconde fois.
+        # D'ou les fausses routes `/v1/accountingaccounting/...` et
+        # `/v1/hospitality/public/hospitality/...`. Pour cette forme-la on suit
+        # la PROFONDEUR D'ACCOLES : la region se ferme quand la profondeur
+        # redescend sous celle de son ouverture, quelle que soit l'indentation.
+        module_region_depth: int | None = None
+        module_frame = -2
+        brace_depth = 0
+        strip_param_braces = re.compile(r"\{[^}]*\}")
 
         for raw in file.read_text(encoding="utf-8", errors="replace").splitlines():
             line = raw.strip()
             if not line or line.startswith("//") or line.startswith("*"):
                 continue
             indent = len(raw) - len(raw.lstrip())
+
+            # Profondeur d'accolades, en neutralisant les `{param}` des chemins
+            # (`{statement}` ne doit pas compter comme un bloc ouvert).
+            delta = strip_param_braces.sub("", line).count("{") - strip_param_braces.sub("", line).count("}")
+            if module_region_depth is not None and brace_depth + delta < module_region_depth:
+                while prefix_stack and prefix_stack[-1][0] == module_frame:
+                    prefix_stack.pop()
+                current_prefixes = [p for _, p in prefix_stack]
+                module_region_depth = None
+            brace_depth += delta
 
             # Fermeture de groupe(s) par indentation.
             if GROUP_CLOSE_RE.match(raw):
@@ -178,11 +202,14 @@ def parse_routes() -> list[dict]:
             mg = MODULE_GROUP_RE.search(line)
             if mg:
                 pending_prefix = mg.group(1)
-                # La forme helper ouvre le groupe elle-même (pas de
-                # `->group(function` à chercher) : on pousse le préfixe ici,
+                # La forme helper ouvre le groupe elle-meme (pas de
+                # `->group(function` a chercher) : on pousse le prefixe ici,
                 # faute de quoi les routes du module seraient lues au niveau
                 # racine et la garde signalerait des centaines de faux positifs.
-                prefix_stack.append((indent, pending_prefix))
+                # Sentinelle -2 : aucune fermeture par indentation ne doit la
+                # poper, c'est `module_region_depth` qui la retire.
+                prefix_stack.append((module_frame, pending_prefix))
+                module_region_depth = brace_depth
                 pending_prefix = None
                 current_prefixes = [p for _, p in prefix_stack]
                 continue
