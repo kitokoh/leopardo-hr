@@ -54,10 +54,15 @@ final class ModuleRoutes
      * `v1` ; leur passer `''` plutôt que d'inventer un segment garde leur
      * arborescence d'URL identique.
      *
+     * Le paramètre est typé `\Closure` et non `callable` : `RouteRegistrar::group()`
+     * n'accepte que `array|Closure|string`. Un `callable` quelconque (nom de
+     * fonction, `[$obj, 'method']`) serait accepté par la signature puis refusé
+     * à l'exécution ; typer `\Closure` transforme cette erreur en échec statique.
+     *
      * @param  string  $prefix  préfixe d'URL (ex. `absences`), vide si aucun
-     * @param  callable():void  $routes  déclaration des routes
+     * @param  \Closure():void  $routes  déclaration des routes
      */
-    public static function tenantModule(string $prefix, callable $routes): void
+    public static function tenantModule(string $prefix, \Closure $routes): void
     {
         $pending = Route::middleware(self::TENANT_MIDDLEWARES);
 
@@ -75,9 +80,9 @@ final class ModuleRoutes
      * l'authentification ou le contexte tenant en croyant personnaliser.
      *
      * @param  list<string>  $extra
-     * @param  callable():void  $routes
+     * @param  \Closure():void  $routes
      */
-    public static function tenantModuleWith(string $prefix, array $extra, callable $routes): void
+    public static function tenantModuleWith(string $prefix, array $extra, \Closure $routes): void
     {
         Route::middleware([...self::TENANT_MIDDLEWARES, ...$extra])
             ->prefix($prefix)
