@@ -24,10 +24,19 @@ class UpdateTravelContactConsentRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'email_consent_given' => ['sometimes', 'boolean'],
-            'sms_consent_given' => ['sometimes', 'boolean'],
-            'whatsapp_consent_given' => ['sometimes', 'boolean'],
-        ];
+        // #8396 — le contrat documenté (TRAVEL-913) et le client envoient
+        // `{email_consent, sms_consent, whatsapp_consent}` ; la validation ne
+        // connaissait que la forme interne `*_consent_given`. Le corps passait
+        // donc sans être validé, `validated()` renvoyait `null` partout et
+        // aucun consentement n'était enregistré — en 200, silencieusement.
+        // Les deux formes sont acceptées ; la forme courte est la canonique.
+        $rules = [];
+
+        foreach (['email', 'sms', 'whatsapp'] as $channel) {
+            $rules["{$channel}_consent"] = ['sometimes', 'boolean'];
+            $rules["{$channel}_consent_given"] = ['sometimes', 'boolean'];
+        }
+
+        return $rules;
     }
 }

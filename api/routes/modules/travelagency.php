@@ -519,7 +519,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         });
 
         Route::get('/contacts', [TravelCustomerContactController::class, 'index']);
-        Route::patch('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent'])->whereNumber('travelCustomerContact');
-        Route::put('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent'])->whereNumber('travelCustomerContact');
+        // #8396 — PATCH/PUT `/consent` (contrat `{channel, given}`, un canal)
+        // étaient branchés sur `updateConsent` (le bulk `{*_consent_given}`) :
+        // le corps était ignoré, la réponse renvoyait `channel: null` et un
+        // canal inconnu passait en 200 au lieu de 422. Le POST documenté du
+        // bulk n'existait pas du tout (405).
+        Route::patch('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsentChannel'])->whereNumber('travelCustomerContact');
+        Route::put('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsentChannel'])->whereNumber('travelCustomerContact');
+        Route::post('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent'])->whereNumber('travelCustomerContact');
         Route::post('/contacts/{travelCustomerContact}/notify', [TravelCustomerContactController::class, 'notify']);
     });
