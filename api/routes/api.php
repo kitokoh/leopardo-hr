@@ -24,6 +24,7 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBrandingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyModuleController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PrivacyController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\AcquisitionFunnelEventController;
+use App\Modules\Marketing\Interfaces\Api\V1\Controllers\VitrineAnalyticsController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
@@ -48,6 +49,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\HealthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\LaunchReadinessController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\MetricsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAcquisitionFunnelController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformVitrineAnalyticsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminAiConversationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminDashboardController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminFleetAlertController;
@@ -228,6 +230,12 @@ Route::prefix('v1')->group(function (): void {
     // server via la route Next /api/forms/funnel-event, même secret partagé
     // que /marketing/leads). Aucune PII : liste fermée d'étapes + corrélation.
     Route::middleware(['throttle:webhooks-inbound'])->post('/funnel/events', [AcquisitionFunnelEventController::class, 'store']);
+
+    // #7595 — pages vues de la vitrine (analytique first-party). Même secret
+    // partagé et même seau que le funnel ; l'écriture est conditionnée au
+    // consentement porté par le payload (aucune collecte sans accord).
+    Route::middleware(['throttle:webhooks-inbound'])
+        ->post('/vitrine/analytics/page-views', [VitrineAnalyticsController::class, 'store']);
 
     // Stripe/Chargily webhooks (public, verified by provider signature inside
     // the controller). PA2-API-005: dedicated 'webhooks-inbound' throttle since
@@ -911,6 +919,12 @@ Route::prefix('v1')->group(function (): void {
         // #7496 — conversions du funnel d'acquisition par étape/jour/source
         // (dashboard admin CRM commercial, données acquisition_funnel_events).
         Route::get('/funnel/stats', [PlatformAcquisitionFunnelController::class, 'index'])->middleware('platform.permission:metrics.view');
+
+        // #7595 — analytique de la vitrine (visites, top pages, sources,
+        // taux de passage par étape, derniers leads). Écran distinct de
+        // `/analytics` (KPI plateforme) — voir la SPA, route
+        // `/vitrine-analytics`. Lecture seule, agrégats publics.
+        Route::get('/vitrine/analytics', [PlatformVitrineAnalyticsController::class, 'index'])->middleware('platform.permission:metrics.view');
 
         // #8020 — alertes flotte de TOUS les tenants (messages véhicule +
         // raison sociale) : données tenant cross-tenant → `companies.manage`.

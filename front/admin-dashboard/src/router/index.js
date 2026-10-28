@@ -159,6 +159,18 @@ const routes = [
         }
       },
       {
+        // #7595 — analytique de la VITRINE (visites, pages vues, sources,
+        // conversions, derniers leads). Écran distinct de `/analytics`
+        // (KPI plateforme) : ne pas consulter AnalyticsView pour ces données.
+        path: '/vitrine-analytics',
+        name: 'vitrine-analytics',
+        component: () => import('@/views/analytics/VitrineAnalyticsView.vue'),
+        meta: {
+          title: 'navigation.vitrineAnalytics',
+          icon: 'GlobeAltIcon'
+        }
+      },
+      {
         // #8440 — suivi des manifestations d'intérêt « prendre des parts »
         // (page vitrine /investir, entrée footer). Leads equity_interest.
         path: '/equity-interests',
