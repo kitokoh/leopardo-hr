@@ -144,9 +144,19 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
         ),
       ),
       body: RefreshIndicator(
+        // Invalidation explicite plutot que `ref.refresh(...)` : `refresh` est
+        // annote `@useResult`, donc jeter sa valeur declenche `unused_result`
+        // (flutter analyze rouge depuis #8754). On invalide puis on relit —
+        // le contrat observable est identique : le spinner de
+        // `RefreshIndicator` reste affiche jusqu'a ce que les deux providers
+        // aient termine leur rechargement.
         onRefresh: () async {
-          await ref.refresh(fuelMyShiftsProvider.future);
-          await ref.refresh(fuelStationsProvider.future);
+          ref.invalidate(fuelMyShiftsProvider);
+          ref.invalidate(fuelStationsProvider);
+          await Future.wait([
+            ref.read(fuelMyShiftsProvider.future),
+            ref.read(fuelStationsProvider.future),
+          ]);
         },
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),

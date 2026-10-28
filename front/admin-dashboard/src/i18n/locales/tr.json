@@ -9118,5 +9118,35 @@
   "fuelPumpistPumpsError": "Pompalar kullanılamıyor",
   "fuelPumpistMetersError": "Sayaçlar kullanılamıyor",
   "fuelTechnicalRef": "Ref. {id}",
-  "fuelMeterLabelWithProduct": "{meter} — {product}"
+  "fuelMeterLabelWithProduct": "{meter} — {product}",
+  "lea": {
+    "title": "İşinizi anlatın",
+    "subtitle": "Birkaç cümle: ne yapıyorsunuz, büyüklüğünüz, en çok ne önemli.",
+    "placeholder": "Ör. 2 şubeli seyahat acentası, 12 kişi, müşteri dosyalarını takip etmek istiyorum.",
+    "analyse": "Analiz et",
+    "useForm": "Formu kullan",
+    "back": "Geri",
+    "later": "Daha sonra",
+    "hint": {
+      "min": "En az 12 karakter"
+    },
+    "clarify": {
+      "title": "İki ayrıntı, sonra özeti hazırlayacağım.",
+      "submit": "Devam"
+    },
+    "review": {
+      "title": "Anladığım bu. Gerekirse düzeltin, sonra onaylayın.",
+      "solutions": "Çözümler",
+      "tools": "Araçlar",
+      "empty": "Etkinleştirilecek bir çözüm bulamadım. İşinizi anlatmak için formu kullanın.",
+      "edit": "Düzelt",
+      "editHint": "Açıklamanızı değiştirip yeniden analiz edin: özet yanıtlarınızdan yeniden oluşturulur.",
+      "confirm": "Onayla ve etkinleştir"
+    },
+    "error": {
+      "network": "Bağlantı kurulamadı.",
+      "confirm": "Etkinleştirme başarısız.",
+      "stale": "Özet değişti. Lütfen yeniden inceleyin."
+    }
+  }
 }

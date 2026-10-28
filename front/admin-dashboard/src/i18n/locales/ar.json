@@ -9118,5 +9118,35 @@
   "fuelPumpistPumpsError": "المضخات غير متاحة",
   "fuelPumpistMetersError": "العدادات غير متاحة",
   "fuelTechnicalRef": "مرجع {id}",
-  "fuelMeterLabelWithProduct": "{meter} — المنتج {product}"
+  "fuelMeterLabelWithProduct": "{meter} — المنتج {product}",
+  "lea": {
+    "title": "صف نشاطك",
+    "subtitle": "بضع جمل: مهنتك، حجمك، وما يهمك أكثر.",
+    "placeholder": "مثال: وكالة أسفار بمكتبين، 12 شخصا، وأريد متابعة ملفات العملاء.",
+    "analyse": "تحليل",
+    "useForm": "استخدم الاستمارة",
+    "back": "رجوع",
+    "later": "لاحقا",
+    "hint": {
+      "min": "12 حرفا على الأقل"
+    },
+    "clarify": {
+      "title": "توضيحان وسأعد الملخص.",
+      "submit": "متابعة"
+    },
+    "review": {
+      "title": "هذا ما فهمته. صحح إن لزم ثم أكد.",
+      "solutions": "الحلول",
+      "tools": "الأدوات",
+      "empty": "لم أتمكن من تحديد أي حل لتنشيطه. استخدم الاستمارة لتوضيح نشاطك.",
+      "edit": "تصحيح",
+      "editHint": "عدل وصفك ثم أعد التحليل: يعاد بناء الملخص من إجاباتك.",
+      "confirm": "تأكيد وتنشيط"
+    },
+    "error": {
+      "network": "تعذر الاتصال.",
+      "confirm": "فشل التنشيط.",
+      "stale": "تغير الملخص. يرجى مراجعته من جديد."
+    }
+  }
 }
