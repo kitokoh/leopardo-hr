@@ -59,6 +59,12 @@ export type StoredAuthUser = {
     // disparaissent, l'inscription est directe).
     status?: string | null;
     subscription_end?: string | null;
+    // #8231 (BOS-043) — état RÉEL de l'interrupteur serveur du parcours Léa
+    // (`config('onboarding.lea.enabled')`). Quand il est absent ou `false`,
+    // les routes `POST /onboarding/lea/*` répondent 404 : l'entrée ne doit
+    // donc pas être proposée. Le front ne peut pas déduire ce flag de son
+    // build — d'où son exposition par `/auth/me`.
+    lea_enabled?: boolean | null;
   } | null;
   plan?: {
     name?: string | null;

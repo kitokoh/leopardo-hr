@@ -47,7 +47,7 @@ class FuelStationDto {
   }
 }
 
-/// Pompe rattachee a une station. Liste : GET .../stations/<stationId>/pumps.
+/// Pompe rattachee a une station. Liste : GET .../stations/`<stationId>`/pumps.
 class FuelPumpDto {
   final int id;
   final int stationId;
@@ -71,7 +71,7 @@ class FuelPumpDto {
   }
 }
 
-/// Compteur monte sur une pompe. Liste : GET .../stations/<stationId>/meters, filtre pump_id.
+/// Compteur monte sur une pompe. Liste : GET .../stations/`<stationId>`/meters, filtre pump_id.
 class FuelMeterDto {
   final int id;
   final int stationId;
