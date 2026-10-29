@@ -88,3 +88,56 @@
 4. `confidenceLevel` = `pilot` pour tout nouveau référentiel ; `production` seulement après fiche expert signée.
 5. Aucune promesse marketing de « conformité » côté front/site (garde anti-over-promise #7922) — formulation « couverture en cours de validation selon le pays ».
 6. Lots par BC (`BC_BATCH_BRANCH_PROTOCOL.md`) : 1 commit par issue, 1 PR par lot, `Closes #N` répétés.
+
+## 5. Traçabilité — issues filles créées le 2026-10-29
+
+L'épique #7924 décrivait 17 lots **qu'aucune issue ne portait** : le backlog
+comptait donc un contenant vide, planifiable par personne. Les issues filles
+sont désormais matérialisées, rattachées à cet épique par `Part of #7924`.
+
+### Vague 1 — V1 (branches `bc/<code>-…`)
+
+| Lot | Issue | Branche | Statut |
+|---|---|---|---|
+| A1 seed du plan comptable par référentiel | #9038 | `bc/BC-08-legal-multimarches` | à implémenter |
+| A2 fiscalité indirecte TR & CA | #9039 | `bc/BC-08-legal-multimarches` | à implémenter |
+| A3 FEC France conforme | #9040 | `bc/BC-08-legal-multimarches` | à implémenter |
+| A4 mentions légales de facture | #9041 | `bc/BC-08-legal-multimarches` | à implémenter |
+| A5 rétention comptable par pays | #9042 | `bc/BC-08-legal-multimarches` | à implémenter |
+| L1 congés CEMAC + CEDEAO | #9043 | `bc/BC-06-conges-legaux-multimarches` | à implémenter |
+| L2 congés FR, TR, CA | #9044 | `bc/BC-06-conges-legaux-multimarches` | à implémenter |
+| P1 mentions de bulletin | #9045 | `bc/BC-07-legal-multimarches` | à implémenter |
+| P2 Canada impôt provincial + RRQ | #9046 | `bc/BC-07-legal-multimarches` | à implémenter |
+
+### Vague 2 — non planifiée (aucune date d'engagement)
+
+| Lot | Issue | Dépendance |
+|---|---|---|
+| V2-1 export SGK APHB (TR) | #9047 | clé / certificat GİB (action propriétaire) |
+| V2-2 exports T4 / RL-1 (CA) | #9048 | — |
+| V2-3 DSN enrichie + PAS (FR) | #9049 | convention DGFiP |
+| V2-4 Factur-X / PDP (FR) | #9050 | **échéance 09/2026 — priorité P1** |
+| V2-5 e-fatura / e-arşiv (TR) | #9051 | signature qualifiée (action propriétaire) |
+| V2-6 liasse SYSCOHADA | #9052 | — |
+| V2-7 modèles de contrats | #9053 | validation experte (#7941) |
+| V2-8 campagne de validation experte | #9054 | **process humain, non automatisable** |
+
+### Arbre de décision — peut-on déclarer un pays « conforme » ?
+
+```
+Le pays a-t-il un référentiel de paie seedé (taux sourcés, article cité) ?
+├── non  → ne pas ouvrir la commercialisation ; le front doit afficher
+│          « couverture en cours de validation » (garde #7922).
+└── oui  → la fiche docs/payroll/VALIDATION_EXPERTE.md est-elle signée
+           par un expert-comptable / gestionnaire de paie local ?
+           ├── non  → confidenceLevel = pilot. Utilisable en pilote, jamais
+           │          présenté comme conforme. C'est l'état par défaut.
+           └── oui  → confidenceLevel = production. La promesse commerciale
+                      devient licite pour ce pays, et pour lui seul.
+```
+
+Conséquence de gestion : **la Vague 2 ne peut pas être planifiée avant que la
+Vague 1 soit mergée**, et #7941 (signature experte) est sur le chemin critique
+de tout passage en `production`. Aucun lot d'ingénierie ne remplace cette
+signature — le code peut seulement *refuser* de promettre ce qui n'est pas
+validé.
