@@ -291,3 +291,60 @@ protection de `main`) **avec l'accord du fondateur**. Je n'ai pas cet accord, et
 `AGENTS.md` interdit de merger une PR dont les checks requis ne sont pas verts.
 Les trois PR restent donc ouvertes, vérifiées localement et prêtes : c'est le
 seul état honnête, pas un abandon.
+
+## Blocage racine identifié : `runners: 0`
+
+En attendant les checks, la mesure a donné la cause exacte — ce n'est pas la
+saturation, c'est l'**absence de runner** :
+
+```
+$ gh api repos/Kitokoh/leopardo-hr/actions/runners
+runners: 0
+
+$ gh api repos/Kitokoh/leopardo-hr/actions/runs?status=queued
+queued runs: 192
+
+$ gh api repos/Kitokoh/leopardo-hr/commits/main/check-runs
+main: total 20 | success 0 | failed 0 | pending 18
+```
+
+**`main` lui-même n'a aucun check vert : 0 succès, 0 échec, 18 en attente.** Le
+runner auto-hébergé est hors ligne, donc **aucun check requis ne peut se
+terminer**, sur aucune branche. Les 192 runs en file ne sont pas un embouteillage
+qui se résorbe : ils n'ont pas de machine pour s'exécuter.
+
+### Conséquence, sans détour
+
+`AGENTS.md` interdit de merger une PR dont les checks requis ne sont pas verts, et
+`enforce_admins: true` le fait respecter par GitHub. **#9024, #9025 et #9027 ne
+peuvent donc pas être mergées**, quel que soit leur état de code — et elles sont
+toutes les trois `mergeable: true`, `blocked` uniquement par les checks en file.
+
+Ce n'est pas un défaut des PR. C'est une panne d'infrastructure qui demande une
+action propriétaire : redémarrer le runner auto-hébergé (ou basculer les
+workflows sur `ubuntu-latest`). Je ne peux pas enregistrer un runner sans les
+identifiants du propriétaire.
+
+### Ce qui a été fait à la place
+
+Plutôt que d'attendre indéfiniment ou de contourner la protection :
+
+1. **#9017 mergée** quand ses 4 checks requis étaient encore verts (avant la
+   panne) — c'est la seule PR qui a pu passer, et #8210 est fermée sur preuve.
+2. **#9024 et #9025 rebasées** sur `main` après ce merge (`dirty` → `mergeable`),
+   tests re-exécutés après rebase : 30 tests front, 23 tests Payroll.
+3. **#9019 auditée par mesure** : elle absorbe Attendance/Kiosk/SelfServiceTrial
+   mais **pas** les 4 Actions de flux Google — commentaire posté sur la PR avec
+   la sortie de `git diff --name-only`, pour que #7962 ne soit pas fermée à tort.
+4. **#9022 corrigée publiquement** : ma justification de fermeture était fausse,
+   `check-pr-subset-of-lot.sh` l'a prouvé, correction postée avec la mesure.
+
+### Ce qu'il reste à faire, dans l'ordre
+
+| # | Action | Qui |
+|---|---|---|
+| 1 | Redémarrer le runner auto-hébergé | **propriétaire** |
+| 2 | Les checks se vident (192 runs), #9024/#9025/#9027 passent au vert | automatique |
+| 3 | Merger #9024, #9025, #9027 | agent, dès checks verts |
+| 4 | Reprendre la tranche « flux Google » de #7962 par-dessus #9019 | agent, après fusion |
+| 5 | Les 9 issues propriétaire (secrets, paiement, données prod) | **propriétaire** |
