@@ -200,13 +200,47 @@ pour la revue de #9019 (tronc commun des six gardes Google ; les deux 503
 C'est la règle « une PR empilée se remplace, elle ne se rebase pas
 indéfiniment » appliquée à une collision entre agents, pas à un empilement.
 
+### Correction : la tranche Auth n'est PAS livrée par #9019
+
+J'avais d'abord justifié la fermeture en écrivant que `AuthController` était
+« couvert par #9019 ». **C'était faux**, et `PROTOCOLE_LOTS_MULTI_AGENTS.md`
+§4bis (#7581) interdit exactement ça : une clôture « couvert par le lot » est une
+**affirmation de contenu**, et quand elle est fausse le correctif disparaît
+pendant que le backlog devient vert à tort.
+
+Mesure, pas supposition :
+
+```
+$ bash dev-hub/tools/check-pr-subset-of-lot.sh \
+    --lot origin/refactor/7962-auth-google-sso \
+    --pr refactor/7962-payroll-auth-actions
+
+NON PROUVE : n'est PAS un sous-ensemble du lot.
+Fichiers absents du lot (10) : les 4 Actions Google, les 3 services
+d'infrastructure, le DTO GoogleSsoResult, PayrollRunAccess et son test.
+```
+
+#9019 livre **une seule** action (`AuthenticateGoogleIdentityAction`) et réécrit
+`AuthController`. Elle ne contient **ni** les 4 Actions de flux, **ni** les 3
+services, **ni** le DTO.
+
+| Élément | État réel |
+|---|---|
+| `PayrollRunController` + `PayrollRunAccess` + test | **livré en #9025** |
+| `AuthController` (le fichier) | **traité par #9019** — bonne PR pour ce fichier |
+| 4 Actions Google + 3 services + DTO | **NON livrés** — préservés sur `refactor/7962-payroll-auth-actions` |
+
+**Conséquence : #7962 reste ouverte.** Fermer cette PR reste la bonne décision
+(une PR par fichier), mais la tranche Auth doit être reprise **après** fusion de
+#9019, par-dessus `AuthController` déjà refactorisé.
+
 ## État des issues à la fin de la session 2
 
 | Issue | État | Preuve / blocage |
 |---|---|---|
 | #8210 | **PR #9017** | transport unique + 5 tests anti-SSRF/TLS |
 | #8448 | **PR #9024** | 30 tests front + 5 tests d'idempotence |
-| #7962 | **PR #9025** (Payroll) + #9019/#9021/#9016 (autres tranches) | 23 tests Payroll |
+| #7962 | **PR #9025** (Payroll) — **reste ouverte** : tranche Auth non livrée | 23 tests Payroll ; mesure §4bis ci-dessus |
 | #7994 | **propriétaire** | §3/§4/§5 livrés ; reste les secrets Vercel |
 | #7967 | **propriétaire** | §2 livré ; reste le moyen de paiement Render |
 | #8191 | **propriétaire** | outillage livré ; reste la copie de prod |
