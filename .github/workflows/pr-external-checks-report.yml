@@ -17,9 +17,20 @@ name: PR External Checks Report
 #
 # Conduite à tenir : `docs/ops/EXTERNAL_CHECKS_TRIAGE.md`.
 
+# Issue #9035 — ce workflow était le plus gros consommateur du dépôt :
+# 61 runs / 2,5 h, **70 % annulés**. Il ne produit qu'un commentaire de
+# synthèse, mais se re-déclenchait à chaque `synchronize` d'une PR active :
+# chaque push annulait le run précédent pour en recréer un identique.
+#
+# Le rapport est déjà rafraîchi par le déclencheur `workflow_run` ci-dessous,
+# qui couvre exactement le cas utile (les checks du dépôt viennent de
+# terminer). Le `synchronize` faisait donc doublon avec lui, en payant un
+# runner à chaque commit. On le retire : `opened` / `reopened` /
+# `ready_for_review` suffisent pour le premier rapport, et `workflow_run`
+# assure la mise à jour ensuite.
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, reopened, ready_for_review]
   workflow_run:
     # Rafraîchit le rapport quand les checks du dépôt terminent (un run
     # `pull_request` seul afficherait « N checks en cours »).
