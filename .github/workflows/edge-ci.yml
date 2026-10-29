@@ -1,7 +1,23 @@
 name: Edge stack guards
 
 on:
+  # Issue #9078 — les trois gardes de ce workflow ne lisent QUE `edge/**`
+  # (check-edge-migrations-path.sh, install-manifest-parse.sh,
+  # install-manifest-signature.sh). Le `push` était déjà filtré, mais le
+  # `pull_request` ne l'était pas : chaque PR du dépôt — y compris une PR
+  # `docs/**` qui ne touche pas une ligne de `edge/` — payait ~18 min de
+  # runner pour rejouer exactement les mêmes gardes sur un code identique à
+  # `main`. Le filtre est aligné sur celui du `push` : même couverture, coût
+  # supprimé. `api/database/migrations/**` reste déclencheur (la garde #6604
+  # vérifie le placement des migrations edge) et `front/web-offline/**` aussi
+  # (contrat de synchronisation offline).
   pull_request:
+    branches: [main]
+    paths:
+      - "edge/**"
+      - "api/database/migrations/**"
+      - "front/web-offline/**"
+      - ".github/workflows/edge-ci.yml"
   push:
     branches: [main]
     paths:
