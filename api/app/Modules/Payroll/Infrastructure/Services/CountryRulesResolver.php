@@ -138,6 +138,11 @@ class CountryRulesResolver
             $rules = $rules->asOf(Carbon::instance($asOf));
         }
 
+        // #9054 (BOS-006V2-8) — garde de validation experte : un référentiel
+        // qui revendique `production` doit être adossé à une fiche signée
+        // (docs/payroll/VALIDATION_EXPERTE.md). Fail-closed, aucun fallback.
+        (new ExpertValidationRegistry)->assertClaimIsBacked($rules);
+
         return $rules;
     }
 }
