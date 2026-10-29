@@ -9,7 +9,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
-use App\Modules\Attendance\Application\Actions\BuildKioskDeviceConfig;
+use App\Modules\Attendance\Infrastructure\Services\KioskDeviceConfigBuilder;
 use App\Modules\Attendance\Application\Actions\BuildKioskEmployeeInfo;
 use App\Modules\Attendance\Application\Actions\BuildKioskRoster;
 use App\Modules\Attendance\Application\Actions\ProvisionKiosk;
@@ -46,7 +46,7 @@ class KioskController extends Controller
         private readonly ProvisionKiosk $provisionKiosk,
         private readonly RevokeKiosk $revokeKiosk,
         private readonly RotateKioskToken $rotateKioskToken,
-        private readonly BuildKioskDeviceConfig $buildKioskDeviceConfig,
+        private readonly KioskDeviceConfigBuilder $kioskDeviceConfigBuilder,
     ) {}
 
     public function register(Request $request): JsonResponse
@@ -216,7 +216,7 @@ class KioskController extends Controller
                 // acquitté, heure serveur, politique offline appliquée).
                 'server_time' => now()->toIso8601String(),
                 'acked_event_counter' => (int) $kiosk->fresh()?->acked_event_counter,
-                'offline_policy' => $this->buildKioskDeviceConfig->offlinePolicy(),
+                'offline_policy' => $this->kioskDeviceConfigBuilder->offlinePolicy(),
             ],
         ]);
     }
@@ -657,10 +657,10 @@ class KioskController extends Controller
         $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
 
         // #7962 — le payload (matrice de methodes BIO-006, politique offline
-        // BIO-007, etat de synchro) est construit par `BuildKioskDeviceConfig` :
+        // BIO-007, etat de synchro) est construit par `KioskDeviceConfigBuilder` :
         // la politique offline n'existe plus qu'a un seul endroit.
         return new JsonResponse([
-            'data' => $this->buildKioskDeviceConfig->forKiosk($kiosk, $deviceCode),
+            'data' => $this->kioskDeviceConfigBuilder->forKiosk($kiosk, $deviceCode),
         ]);
     }
 
@@ -669,7 +669,7 @@ class KioskController extends Controller
      * authentifié par le middleware `kiosk.device`).
      *
      * #7962 — le payload (dont la politique offline, auparavant dupliquée ici)
-     * est construit par `BuildKioskDeviceConfig`.
+     * est construit par `KioskDeviceConfigBuilder`.
      */
     public function syncStatus(Request $request, string $deviceCode): JsonResponse
     {
@@ -681,7 +681,7 @@ class KioskController extends Controller
         }
 
         return new JsonResponse([
-            'data' => $this->buildKioskDeviceConfig->syncStatusPayload($kiosk, $deviceCode),
+            'data' => $this->kioskDeviceConfigBuilder->syncStatusPayload($kiosk, $deviceCode),
         ]);
     }
 

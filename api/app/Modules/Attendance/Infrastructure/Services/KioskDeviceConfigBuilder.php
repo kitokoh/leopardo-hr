@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Attendance\Application\Actions;
+namespace App\Modules\Attendance\Infrastructure\Services;
 
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 
@@ -20,8 +20,17 @@ use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
  * Cette classe ne lit pas la requete et n'ecrit pas de reponse : elle rend
  * des tableaux serialisables. Le controleur reste seul juge du code HTTP et
  * de l'enveloppe `{data: ...}`.
+ *
+ * #6570 — placee sous `Infrastructure/Services/` et non sous
+ * `Application/Actions/` : ce n'est pas un cas d'usage (elle ne porte aucune
+ * decision metier, aucun effet de bord, aucune transaction) mais un
+ * assembleur de payload. La garde `check-actions-convention.sh` exige
+ * « 1 action = 1 execute() » ; plutot que d'inventer un `execute()` qui ne
+ * ferait que deleguer a trois methodes de lecture, la classe est rangee la ou
+ * sa nature la place. Le nom suit la convention des autres builders du
+ * module (`*Builder`).
  */
-class BuildKioskDeviceConfig
+class KioskDeviceConfigBuilder
 {
     /**
      * Politique offline publiee au kiosque (BIO-007 #6772).
