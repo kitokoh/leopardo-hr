@@ -83,11 +83,22 @@ class FuelStationReferentialTest extends TestCase
             'updated_at' => now(),
         ]);
 
-        DB::table('fuel_pumps')->insert([
+        // #8396 — l'endpoint lit la VRAIE table `fuel_incidents` (FUEL-010,
+        // #5804), pas une vue derivee de `fuel_pumps`. L'ancien test inserait
+        // une pompe `retired` et attendait un incident « derive » : ce
+        // comportement n'existe plus, et le test passait a cote du contrat
+        // reel. On insere l'incident lui-meme, avec la severite qui porte la
+        // priorite.
+        DB::table('fuel_incidents')->insert([
             'company_id' => $this->company->id,
             'station_id' => $stationId,
-            'code' => 'P-01',
-            'status' => 'retired',
+            'equipment_type' => 'pump',
+            'equipment_id' => null,
+            'category' => 'equipment',
+            'severity' => 'high',
+            'status' => 'open',
+            'title' => 'Pompe P-01 hors service',
+            'occurred_at' => now(),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -97,7 +108,7 @@ class FuelStationReferentialTest extends TestCase
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.equipment_type', 'pump')
-            ->assertJsonPath('data.0.priority', 'high');
+            ->assertJsonPath('data.0.severity', 'high');
     }
 
     public function test_reconciliations_endpoint_maps_pending_review(): void
@@ -112,27 +123,29 @@ class FuelStationReferentialTest extends TestCase
             'updated_at' => now(),
         ]);
 
-        DB::table('fuel_cash_sessions')->insert([
+        // #8396 — l'endpoint lit `fuel_reconciliation_runs` (FUEL-009, #5803),
+        // pas `fuel_cash_sessions`. Les statuts reels sont
+        // pending|running|completed|failed : `pending_review` n'existe pas et
+        // filtrait donc a vide. On insere un run `completed` et on verifie le
+        // contrat reellement servi.
+        DB::table('fuel_reconciliation_runs')->insert([
             'company_id' => $this->company->id,
             'station_id' => $stationId,
-            'opened_by' => $this->manager->id,
-            'opened_at' => now()->subDay(),
-            'closed_at' => now(),
-            'opening_balance' => 1000,
-            'closing_balance' => 1500,
-            'expected_balance' => 1490,
-            'variance' => 10,
-            'status' => 'closed',
-            'created_at' => now()->subDay(),
+            'run_date' => now()->toDateString(),
+            'status' => 'completed',
+            'summary' => json_encode(['variance' => '10.00']),
+            'started_at' => now()->subHour(),
+            'finished_at' => now(),
+            'created_at' => now(),
             'updated_at' => now(),
         ]);
 
         $this->actingAs($this->manager)
-            ->getJson('/api/v1/fuel-station/reconciliations?status=pending_review&per_page=100')
+            ->getJson('/api/v1/fuel-station/reconciliations?status=completed&per_page=100')
             ->assertOk()
             ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.status', 'closed')
-            ->assertJsonPath('data.0.variance', '10.00');
+            ->assertJsonPath('data.0.status', 'completed')
+            ->assertJsonPath('data.0.summary.variance', '10.00');
     }
 
     /**
