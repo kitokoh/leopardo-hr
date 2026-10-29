@@ -110,6 +110,10 @@ final class SetTrialPasswordActionTest extends TestCase
         self::assertArrayNotHasKey('demo_access_token_expires_at', $manager->extra_data ?? []);
 
         $provisioning = DB::table('trial_provisionings')->where('id', $row->id)->first();
+        self::assertNotNull($provisioning);
+        // PHPStan niveau 8 : `first()` rend `stdClass|null`. L'assertion
+        // ci-dessus restreint le type pour l'analyseur, ce qui rend la
+        // lecture de la propriete sure.
         self::assertNotNull($provisioning->password_set_at);
     }
 

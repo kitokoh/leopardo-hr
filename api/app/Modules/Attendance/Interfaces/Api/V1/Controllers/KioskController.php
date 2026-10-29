@@ -9,12 +9,14 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
+use App\Modules\Attendance\Application\Actions\BuildKioskDeviceConfig;
 use App\Modules\Attendance\Application\Actions\BuildKioskEmployeeInfo;
 use App\Modules\Attendance\Application\Actions\BuildKioskRoster;
 use App\Modules\Attendance\Application\Actions\ProvisionKiosk;
+use App\Modules\Attendance\Application\Actions\RevokeKiosk;
+use App\Modules\Attendance\Application\Actions\RotateKioskToken;
 use App\Modules\Attendance\Application\Support\KioskPunchPresenter;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
-use App\Modules\Attendance\Infrastructure\Services\BiometricAuditLogger;
 use App\Modules\Attendance\Infrastructure\Services\KioskAttendanceService;
 use App\Modules\Attendance\Infrastructure\Services\KioskFaceVerificationService;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\KioskPunchRequest;
@@ -30,7 +32,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -39,12 +40,14 @@ class KioskController extends Controller
     public function __construct(
         private readonly KioskAttendanceService $kioskAttendanceService,
         private readonly OnboardingQrInterface $onboardingQr,
-        private readonly BiometricAuditLogger $biometricAudit,
         private readonly KioskFaceVerificationService $faceVerification,
         private readonly TenantManager $tenantManager,
         private readonly BuildKioskRoster $buildKioskRoster,
         private readonly BuildKioskEmployeeInfo $buildKioskEmployeeInfo,
         private readonly ProvisionKiosk $provisionKiosk,
+        private readonly RevokeKiosk $revokeKiosk,
+        private readonly RotateKioskToken $rotateKioskToken,
+        private readonly BuildKioskDeviceConfig $buildKioskDeviceConfig,
     ) {}
 
     public function register(Request $request): JsonResponse
@@ -206,7 +209,7 @@ class KioskController extends Controller
                 // acquitté, heure serveur, politique offline appliquée).
                 'server_time' => now()->toIso8601String(),
                 'acked_event_counter' => (int) $kiosk->fresh()?->acked_event_counter,
-                'offline_policy' => $this->offlinePolicy(),
+                'offline_policy' => $this->buildKioskDeviceConfig->execute(BuildKioskDeviceConfig::VIEW_OFFLINE_POLICY)['offline_policy'],
             ],
         ]);
     }
@@ -605,25 +608,12 @@ class KioskController extends Controller
 
         $kioskModel = $this->resolveManagerKiosk($kiosk);
 
-        if (! $kioskModel->isRevoked()) {
-            $kioskModel->forceFill([
-                'status' => 'revoked',
-                'revoked_at' => now(),
-                'revoked_by_employee_id' => $actor->id,
-            ])->save();
+        // #7962 — la transition d'etat et l'audit `device.revoked` vivent dans
+        // l'Action ; l'idempotence (pas de double audit sur un kiosque deja
+        // revoque) y est garantie et testee.
+        $kioskModel = $this->revokeKiosk->execute($kioskModel, (int) $actor->id);
 
-            $this->biometricAudit->log(
-                companyId: (string) $kioskModel->company_id,
-                event: 'device.revoked',
-                kioskId: (int) $kioskModel->id,
-                siteId: $kioskModel->site_id !== null ? (int) $kioskModel->site_id : null,
-                actorEmployeeId: (int) $actor->id,
-                correlationId: (string) $kioskModel->device_code,
-                deviceCodeHash: (string) $kioskModel->device_code,
-            );
-        }
-
-        return new JsonResponse(['data' => $this->serializeKiosk($kioskModel->fresh() ?? $kioskModel)]);
+        return new JsonResponse(['data' => $this->serializeKiosk($kioskModel)]);
     }
 
     public function rotateToken(Request $request, int $kiosk): JsonResponse
@@ -634,24 +624,15 @@ class KioskController extends Controller
 
         $kioskModel = $this->resolveManagerKiosk($kiosk);
 
-        $plainToken = Str::random(48);
-        $kioskModel->forceFill([
-            'sync_token_hash' => Hash::make($plainToken),
-        ])->save();
-
-        $this->biometricAudit->log(
-            companyId: (string) $kioskModel->company_id,
-            event: 'device.token_rotated',
-            kioskId: (int) $kioskModel->id,
-            siteId: $kioskModel->site_id !== null ? (int) $kioskModel->site_id : null,
-            actorEmployeeId: (int) $actor->id,
-            deviceCodeHash: (string) $kioskModel->device_code,
-        );
+        // #7962 — generation, empreinte et audit `device.token_rotated` dans
+        // l'Action. Le token en clair ne circule que par ce retour, et n'est
+        // expose que dans la reponse de rotation.
+        $rotation = $this->rotateKioskToken->execute($kioskModel, (int) $actor->id);
 
         return new JsonResponse([
-            'data' => array_replace($this->serializeKiosk($kioskModel), [
+            'data' => array_replace($this->serializeKiosk($rotation['kiosk']), [
                 // Le token en clair n'est retourné qu'à la rotation.
-                'sync_token' => $plainToken,
+                'sync_token' => $rotation['plain_token'],
             ]),
         ]);
     }
@@ -660,48 +641,20 @@ class KioskController extends Controller
     {
         $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
 
+        // #7962 — le payload (matrice de methodes BIO-006, politique offline
+        // BIO-007, etat de synchro) est construit par `BuildKioskDeviceConfig` :
+        // la politique offline n'existe plus qu'a un seul endroit.
         return new JsonResponse([
-            'data' => [
-                'device_code' => $deviceCode,
-                'company_id' => $kiosk->company_id,
-                'name' => $kiosk->name,
-                'status' => $kiosk->status,
-                'biometric_mode' => $kiosk->biometric_mode,
-                'site_id' => $kiosk->site_id,
-                // BIO-006 (#6767) : matrice serveur — l'interface ne propose
-                // que les méthodes réellement activées (BIO-009 #6774).
-                'punch_methods' => $kiosk->resolvedPunchMethods(),
-                'server_time' => now()->toIso8601String(),
-                // BIO-007 (#6772) : politique offline serveur (mode offline
-                // borné — jamais illimité) + état de synchro visible.
-                'offline_policy' => $this->offlinePolicy(),
-                'sync_status' => [
-                    'last_seen_at' => $kiosk->last_seen_at?->toIso8601String(),
-                    'last_sync_at' => $kiosk->last_sync_at?->toIso8601String(),
-                    'acked_event_counter' => (int) $kiosk->acked_event_counter,
-                ],
-            ],
+            'data' => $this->buildKioskDeviceConfig->execute(BuildKioskDeviceConfig::VIEW_CONFIG, $kiosk, $deviceCode),
         ]);
-    }
-
-    /**
-     * BIO-007 (#6772) — politique offline publiée au kiosque (borne
-     * d'ancienneté et de volume ; le client borne sa file locale et le
-     * serveur rejette les événements hors fenêtre).
-     *
-     * @return array{max_age_days: int, max_events_per_batch: int}
-     */
-    private function offlinePolicy(): array
-    {
-        return [
-            'max_age_days' => (int) config('attendance.kiosk.offline.max_age_days', 14),
-            'max_events_per_batch' => (int) config('attendance.kiosk.offline.max_events_per_batch', 500),
-        ];
     }
 
     /**
      * BIO-007 (#6772) — état de synchronisation du kiosque (l'appareil a été
      * authentifié par le middleware `kiosk.device`).
+     *
+     * #7962 — le payload (dont la politique offline, auparavant dupliquée ici)
+     * est construit par `BuildKioskDeviceConfig`.
      */
     public function syncStatus(Request $request, string $deviceCode): JsonResponse
     {
@@ -713,16 +666,7 @@ class KioskController extends Controller
         }
 
         return new JsonResponse([
-            'data' => [
-                'device_code' => $deviceCode,
-                'status' => $kiosk->status,
-                'company_id' => $kiosk->company_id,
-                'server_time' => now()->toIso8601String(),
-                'last_seen_at' => $kiosk->last_seen_at?->toIso8601String(),
-                'last_sync_at' => $kiosk->last_sync_at?->toIso8601String(),
-                'acked_event_counter' => (int) $kiosk->acked_event_counter,
-                'offline_policy' => $this->offlinePolicy(),
-            ],
+            'data' => $this->buildKioskDeviceConfig->execute(BuildKioskDeviceConfig::VIEW_SYNC_STATUS, $kiosk, $deviceCode),
         ]);
     }
 
