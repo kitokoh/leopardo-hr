@@ -8344,7 +8344,8 @@
     "retry": "Réessayer",
     "queued": "Enregistré hors ligne — sera synchronisé",
     "synced": "Synchronisé",
-    "syncFailed": "Synchronisation impossible — réessayez"
+    "syncFailed": "Synchronisation impossible — réessayez",
+    "notDurable": "File non persistée sur cet appareil — un rafraîchissement perdrait les opérations en attente"
   },
   "devices": {
     "title": "Appareils et terminaux",
