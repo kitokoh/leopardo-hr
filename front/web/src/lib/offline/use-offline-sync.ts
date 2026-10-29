@@ -26,7 +26,13 @@ import {
   OfflineQueue,
   makeOperationId,
   type OfflineOperation,
+  type OfflineStorage,
 } from '@/lib/offline/offline-queue';
+import {
+  PersistentOfflineStorage,
+  browserStorage,
+  storageKey,
+} from '@/lib/offline/persistent-offline-storage';
 import {
   canSync,
   deriveConnectionState,
@@ -49,12 +55,48 @@ export interface UseOfflineSyncResult {
   dispatch: (kind: string, payload: unknown) => Promise<'sent' | 'queued' | 'duplicate'>;
   /** Force une tentative de rejeu (bouton « Réessayer »). */
   flush: () => Promise<void>;
+  /**
+   * #8448 — `false` si la file n'est PAS persistée (stockage indisponible ou
+   * plein). L'écran doit le dire : une file en mémoire ne survit pas à un
+   * rafraîchissement, contrairement à ce que le cuisinier suppose.
+   */
+  isDurable: boolean;
 }
 
-export function useOfflineSync(sender: OfflineSender): UseOfflineSyncResult {
+/**
+ * Options du hook.
+ *
+ * `storage` est injectable : cela permet de tester la durabilité (rechargement
+ * simulé) sans dépendre d'un vrai navigateur, et de choisir la station
+ * (`station`) pour qu'un second écran cuisine ne vole pas les opérations du
+ * premier sur le même navigateur.
+ */
+export interface UseOfflineSyncOptions {
+  storage?: OfflineStorage;
+  station?: string;
+}
+
+export function useOfflineSync(
+  sender: OfflineSender,
+  options: UseOfflineSyncOptions = {},
+): UseOfflineSyncResult {
+  // #8448 — la file est persistée dès qu'un stockage est disponible. Sans
+  // persistance, un rafraîchissement pendant la coupure perdrait les gestes
+  // déjà saisis : le critère « resync sans perte » ne serait pas tenu.
+  const durableRef = useRef<PersistentOfflineStorage | null>(null);
   const queueRef = useRef<OfflineQueue | null>(null);
   if (queueRef.current === null) {
-    queueRef.current = new OfflineQueue();
+    let storage: OfflineStorage;
+    if (options.storage !== undefined) {
+      storage = options.storage;
+    } else {
+      durableRef.current = new PersistentOfflineStorage(
+        browserStorage(),
+        storageKey(undefined, options.station ?? 'default'),
+      );
+      storage = durableRef.current;
+    }
+    queueRef.current = new OfflineQueue(storage);
   }
   const queue = queueRef.current;
 
@@ -160,5 +202,14 @@ export function useOfflineSync(sender: OfflineSender): UseOfflineSyncResult {
     [navigatorOnline, lastSyncFailed, pending.length],
   );
 
-  return { connectionState, pending, pendingCount: pending.length, dispatch, flush };
+  return {
+    connectionState,
+    pending,
+    pendingCount: pending.length,
+    dispatch,
+    flush,
+    isDurable: durableRef.current === null
+      ? options.storage !== undefined
+      : durableRef.current.lastStorageIssue === null || durableRef.current.lastStorageIssue === 'corrupt',
+  };
 }
