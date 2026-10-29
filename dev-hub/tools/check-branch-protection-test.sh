@@ -93,4 +93,28 @@ api_shape "$CANONICAL" \
 run_guard "$TMP/derive.json"
 expect_fail 4 "check requis ajouté sans canonique" "DEVIE du canonique"
 
+# ── Cas 5 : mode PARTIEL (issue #7657) — la forme renvoyée par
+# `GET /repos/{repo}/branches/{branch}` (sans droit administration) doit être
+# acceptée quand les contexts correspondent au canonique. Sans ce cas, le
+# repli pourrait casser silencieusement et la garde redeviendrait rouge en
+# permanence sur main — exactement le défaut que #7657 corrige.
+jq '{protected: true, protection: {required_status_checks: {contexts: .required_status_checks.contexts}}}' \
+  "$CANONICAL" > "$TMP/branch-partiel.json"
+run_guard "$TMP/branch-partiel.json"
+expect_pass 5 "mode partiel — contexts conformes (branche protégée)"
+
+# ── Cas 6 : mode PARTIEL avec la protection vidée → ROUGE (#2011) ────────────
+# C'est la panne réelle que la garde existe pour détecter : plus aucun check
+# requis. Le mode partiel doit la voir, sinon il ne sert à rien.
+jq '{protected: true, protection: {required_status_checks: {contexts: []}}}' \
+  "$CANONICAL" > "$TMP/branch-videe.json"
+run_guard "$TMP/branch-videe.json"
+expect_fail 6 "mode partiel — protection vidée" "DÉVIE du canonique sur les checks requis"
+
+# ── Cas 7 : mode PARTIEL sur une branche NON protégée → ROUGE (#2011) ────────
+jq '{protected: false, protection: {required_status_checks: {contexts: []}}}' \
+  "$CANONICAL" > "$TMP/branch-non-protegee.json"
+run_guard "$TMP/branch-non-protegee.json"
+expect_fail 7 "mode partiel — branche non protégée" "n'est PAS protégée"
+
 echo "PASS : check-branch-protection-test.sh"
