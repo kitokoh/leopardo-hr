@@ -24,8 +24,12 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 concurrency:
-  group: merge-quota-guard
-  cancel-in-progress: false
+  # #9035 : le groupe etait GLOBAL (`merge-quota-guard`), donc toutes les PR du
+  # depot se serialisaient derriere un seul run — 87 % d'annulation mesuree.
+  # Le compteur est global par nature, mais le job d'une PR n'a pas besoin
+  # d'attendre le job d'une autre : le groupe est donc par branche.
+  group: merge-quota-guard-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   quota:
