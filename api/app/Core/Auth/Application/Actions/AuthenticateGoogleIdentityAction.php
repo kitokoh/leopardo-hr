@@ -8,7 +8,7 @@ use App\Core\Auth\Domain\Exceptions\TwoFactorException;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\TwoFactorAuthService;
 use App\Exceptions\AccountSuspendedException;
-use Illuminate\Support\Facades\Log;
+use Psr\Log\LoggerInterface;
 
 /**
  * Use Case : Authentifier une identité Google DÉJÀ résolue vers un employé.
@@ -44,6 +44,7 @@ final class AuthenticateGoogleIdentityAction
 {
     public function __construct(
         private readonly TwoFactorAuthService $twoFactorService,
+        private readonly LoggerInterface $logger,
     ) {}
 
     /**
@@ -79,12 +80,12 @@ final class AuthenticateGoogleIdentityAction
         // connexion suivante avec un sub différent : REFUS.
         if ($employee->google_id === null || $employee->google_id === '') {
             $employee->forceFill(['google_id' => $googleSub])->save();
-            Log::channel('audit')->info('auth.google.linked', [
+            $this->logger->info('auth.google.linked', [
                 'employee_id' => $employee->id,
                 'email' => $employee->email,
             ]);
         } elseif (! hash_equals($employee->google_id, $googleSub)) {
-            Log::channel('audit')->warning('auth.google.identity_mismatch', [
+            $this->logger->warning('auth.google.identity_mismatch', [
                 'employee_id' => $employee->id,
                 'email' => $employee->email,
             ]);

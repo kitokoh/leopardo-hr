@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
+use Illuminate\Contracts\Hashing\Hasher;
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
+use Psr\Log\LoggerInterface;
 
 /**
  * #7962 — cas d'usage « choisir son mot de passe d'essai » extrait du
@@ -51,6 +51,19 @@ final class SetTrialPassword
     public const LINK_TTL_HOURS = 72;
 
     /**
+     * Dependances injectees plutot que resolues par facade : la garde de
+     * purete de couches (#6568) reserve les facades Laravel a
+     * Interfaces/Infrastructure. `ConnectionInterface`, `Hasher` et
+     * `LoggerInterface` sont les contrats equivalents — meme comportement,
+     * mais la dependance est visible dans la signature et substituable en test.
+     */
+    public function __construct(
+        private readonly ConnectionInterface $db,
+        private readonly Hasher $hasher,
+        private readonly LoggerInterface $logger,
+    ) {}
+
+    /**
      * @return array{success: true, message: string, data: array{login_url: string}}
      *                                                                               |array{success: false, error: string, message: string, status: int}
      */
@@ -60,7 +73,7 @@ final class SetTrialPassword
             return $this->failure('PROVISIONING_TOKEN_INVALID', 'billing.trial_status_token_invalid', 404);
         }
 
-        $row = DB::table('trial_provisionings')
+        $row = $this->db->table('trial_provisionings')
             ->where('provisioning_token', $token)
             ->first();
 
@@ -81,14 +94,14 @@ final class SetTrialPassword
         $manager = $this->findTrialManager((string) $row->email, (string) $row->company_id);
 
         if ($manager === null) {
-            Log::error('trial.set_password_manager_not_found', [
+            $this->logger->error('trial.set_password_manager_not_found', [
                 'company_id' => $row->company_id,
             ]);
 
             return $this->failure('TRIAL_MANAGER_NOT_FOUND', 'billing.trial_password_manager_missing', 404);
         }
 
-        $manager->forceFill(['password_hash' => Hash::make($password)])->save();
+        $manager->forceFill(['password_hash' => $this->hasher->make($password)])->save();
 
         // Le magic link d'accès n'a plus lieu d'être : on révoque son hash pour
         // qu'un email égaré ne puisse plus ouvrir de session.
@@ -96,11 +109,11 @@ final class SetTrialPassword
         unset($extraData['demo_access_token_hash'], $extraData['demo_access_token_expires_at']);
         $manager->forceFill(['extra_data' => $extraData])->save();
 
-        DB::table('trial_provisionings')
+        $this->db->table('trial_provisionings')
             ->where('id', $row->id)
             ->update(['password_set_at' => now(), 'updated_at' => now()]);
 
-        Log::info('trial.set_password_success', ['company_id' => $row->company_id]);
+        $this->logger->info('trial.set_password_success', ['company_id' => $row->company_id]);
 
         return [
             'success' => true,
