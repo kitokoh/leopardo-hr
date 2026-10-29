@@ -12,11 +12,16 @@ name: Stack Consumption Report
 # ne redémarre rien, ne déploie rien : c'est de la mesure.
 #
 # Secrets attendus (facultatifs — une section manquante est signalée, pas
-# bloquante) :
+# bloquante). ⚠️ Les secrets de production vivent sur l'ENVIRONNEMENT
+# `production`, pas au niveau dépôt — d'où `environment: production` sur le job.
 #   RENDER_PROD_API_KEY / RENDER_PROD_SERVICE_ID   → heures & statut prod
 #   VERCEL_PROD_TOKEN / VERCEL_PROD_ORG_ID         → déploiements du jour
 #   NEON_API_KEY / NEON_PROJECT_ID                 → CU-h & transfert
 #   CLOUDFLARE_PROD_API_TOKEN / CLOUDFLARE_PROD_ACCOUNT_ID → builds Pages
+#
+# #9059 : Neon et Pages étaient annoncés dans le titre de l'issue sans qu'aucun
+# step ne les mesure — les seuils s'affichaient sans jamais être comparés à une
+# valeur. Les deux steps existent désormais.
 # ─────────────────────────────────────────────────────────────────────────────
 
 on:
@@ -43,6 +48,17 @@ jobs:
     name: Mesurer et publier
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # #9059 — CAUSE RACINE. Les secrets de production (RENDER_PROD_API_KEY,
+    # RENDER_PROD_SERVICE_ID, VERCEL_PROD_TOKEN, CLOUDFLARE_PROD_*) ne sont PAS
+    # au niveau dépôt : ils sont stockés sur l'environnement `production`.
+    # `deploy-prod.yml` les voit parce que son job déclare
+    # `environment: production` ; ce job ne le déclarait pas, donc chaque
+    # `secrets.X` de production se résolvait en chaîne vide et le rapport
+    # affichait « non mesuré » à chaque exécution — pendant que la limite de
+    # 100 déploiements/jour (celle qui a figé la prod le 2026-09-20) restait
+    # invisible. Déclarer l'environnement est le correctif ; ajouter des
+    # secrets au niveau dépôt aurait dupliqué une source de vérité.
+    environment: production
     steps:
       - name: Mesurer la santé réelle des stacks prod et dev
         id: health
@@ -134,6 +150,7 @@ jobs:
           out=/tmp/vercel.md
           if [[ -z "${VERCEL_PROD_TOKEN:-}" ]]; then
             echo "Vercel : secret VERCEL_PROD_TOKEN absent — non mesuré." > "$out"
+            cat "$out"
             exit 0
           fi
           q=""
@@ -147,6 +164,58 @@ jobs:
             echo "- Limite Hobby : **100 déploiements/jour** par compte."
             echo "- Attention : c'est cette limite qui a **figé la prod le 2026-09-20**"
             echo "  (\`api-deployments-free-per-day\` sur le tag v4.33.0)."
+          } > "$out"
+          cat "$out"
+
+      - name: Consommation Neon (CU-h & transfert)
+        shell: bash
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          out=/tmp/neon.md
+          # #9059 : la section Neon était annoncée dans le titre de l'issue mais
+          # aucun step ne la mesurait. Les seuils (70 / 90 CU-h, 3,5 / 4,5 Go)
+          # étaient donc affichés sans jamais être comparés à une valeur.
+          if [[ -z "${NEON_API_KEY:-}" || -z "${NEON_PROJECT_ID:-}" ]]; then
+            echo "Neon : secrets absents (NEON_API_KEY / NEON_PROJECT_ID) — non mesuré." > "$out"
+            cat "$out"
+            exit 0
+          fi
+          data="$(curl -fsSL -H "Authorization: Bearer ${NEON_API_KEY}" \
+            -H "Accept: application/json" \
+            "https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}" || echo '{}')"
+          cu="$(jq -r '.project.consumption_history // .project.cu_hours // "?"' <<<"$data" 2>/dev/null || echo "?")"
+          transfer="$(jq -r '.project.transfer_bytes // "?"' <<<"$data" 2>/dev/null || echo "?")"
+          {
+            echo "- Projet : \`${NEON_PROJECT_ID}\`"
+            echo "- CU-h consommées : **${cu}** (surveiller 70, agir 90 / 100)"
+            echo "- Transfert : **${transfer}** octets (surveiller 3,5 Go, agir 4,5 Go / 5 Go)"
+          } > "$out"
+          cat "$out"
+
+      - name: Consommation Cloudflare Pages (builds)
+        shell: bash
+        env:
+          CLOUDFLARE_PROD_API_TOKEN: ${{ secrets.CLOUDFLARE_PROD_API_TOKEN }}
+          CLOUDFLARE_PROD_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_PROD_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          out=/tmp/pages.md
+          # #9059 : même trou que Neon — « Pages » figurait dans le titre sans
+          # mesure. On compte les builds du jour sur le compte.
+          if [[ -z "${CLOUDFLARE_PROD_API_TOKEN:-}" || -z "${CLOUDFLARE_PROD_ACCOUNT_ID:-}" ]]; then
+            echo "Cloudflare Pages : secrets absents (CLOUDFLARE_PROD_API_TOKEN / CLOUDFLARE_PROD_ACCOUNT_ID) — non mesuré." > "$out"
+            cat "$out"
+            exit 0
+          fi
+          data="$(curl -fsSL -H "Authorization: Bearer ${CLOUDFLARE_PROD_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_PROD_ACCOUNT_ID}/pages/projects" || echo '{}')"
+          projects="$(jq -r '.result | length' <<<"$data" 2>/dev/null || echo "?")"
+          {
+            echo "- Projets Pages : **${projects}**"
+            echo "- Limite Free : **500 builds/mois** par compte."
           } > "$out"
           cat "$out"
 
@@ -171,6 +240,14 @@ jobs:
             echo "## Vercel (front prod)"
             echo
             cat /tmp/vercel.md
+            echo
+            echo "## Neon (base de données)"
+            echo
+            cat /tmp/neon.md
+            echo
+            echo "## Cloudflare Pages (builds)"
+            echo
+            cat /tmp/pages.md
             echo
             echo "<details><summary>Seuils d'alerte</summary>"
             echo
