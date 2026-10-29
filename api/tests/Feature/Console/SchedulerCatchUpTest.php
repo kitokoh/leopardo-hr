@@ -211,6 +211,7 @@ class SchedulerCatchUpTest extends TestCase
             Carbon::parse('2026-10-29 09:15:00'),
         );
 
+        // @phpstan-ignore-next-line method.nonObject (artisan() → PendingCommand|int)
         $this->artisan('scheduler:catch-up')->assertExitCode(0);
 
         $catchUpSlots = $this->catchUpSlots('announcements:publish-scheduled');
@@ -224,6 +225,7 @@ class SchedulerCatchUpTest extends TestCase
         // Deuxième passage : plus rien à réserver — la contrainte UNIQUE a
         // couvert les créneaux au premier rejeu. C'est CE point qui garantit
         // qu'une facture ou un débit ne peut pas partir deux fois.
+        // @phpstan-ignore-next-line method.nonObject (artisan() → PendingCommand|int)
         $this->artisan('scheduler:catch-up')->assertExitCode(0);
 
         $this->assertSame(
@@ -246,6 +248,7 @@ class SchedulerCatchUpTest extends TestCase
             $this->ledger->record($event, Carbon::parse("2026-10-29 {$time}:00"));
         }
 
+        // @phpstan-ignore-next-line method.nonObject (artisan() → PendingCommand|int)
         $this->artisan('scheduler:catch-up')->assertExitCode(0);
 
         $this->assertSame(
@@ -266,6 +269,7 @@ class SchedulerCatchUpTest extends TestCase
         $this->markObserved('announcements:publish-scheduled', '2026-10-29 09:15:00');
 
         $this->artisan('scheduler:catch-up --dry-run')
+            // @phpstan-ignore-next-line method.nonObject (artisan() → PendingCommand|int)
             ->expectsOutputToContain('rattrapables')
             ->assertExitCode(0);
 
@@ -290,9 +294,11 @@ class SchedulerCatchUpTest extends TestCase
         $this->markObserved('payroll:precalculate', '2026-10-28 02:00:00');
 
         $this->artisan('scheduler:catch-up')
+            // @phpstan-ignore-next-line method.nonObject (artisan() → PendingCommand|int)
             ->expectsOutputToContain('NON rattrapables')
             ->assertExitCode(1);
 
+        // @phpstan-ignore-next-line method.nonObject (artisan() → PendingCommand|int)
         $this->artisan('scheduler:catch-up --report')->assertExitCode(0);
 
         $this->assertSame(
@@ -375,13 +381,16 @@ class SchedulerCatchUpTest extends TestCase
     {
         $key = $this->ledger->keyFor($this->currentEvent($name));
 
-        return DB::table('scheduler_slot_runs')
+        /** @var list<string> $slots */
+        $slots = DB::table('scheduler_slot_runs')
             ->where('key', $key)
             ->where('trigger', 'catch_up')
             ->orderBy('due_at')
             ->pluck('due_at')
             ->map(static fn ($value): string => Carbon::parse($value)->format('Y-m-d H:i:s'))
             ->all();
+
+        return $slots;
     }
 
     private function currentEvent(string $name): Event
