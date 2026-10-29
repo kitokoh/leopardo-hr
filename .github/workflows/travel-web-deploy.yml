@@ -58,7 +58,9 @@ env:
 
 concurrency:
   group: travel-web-deploy-${{ github.ref }}
-  cancel-in-progress: false
+  # #9035 : annulation PR-only (un deploy sur main ne doit jamais être coupé
+  # à mi-chemin).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   # ──────────────────────────────────────────────────────────────────────────
