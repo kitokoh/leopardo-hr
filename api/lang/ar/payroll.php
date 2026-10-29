@@ -83,4 +83,5 @@ return [
     'line_income_tax' => 'ضريبة الدخل',
     'line_employer_contributions' => 'مساهمات صاحب العمل',
     'line_flat_tax' => 'الضريبة المالية الدنيا',
+    'unvalidated_confidence_level' => 'يشير المرجع القانوني للأجور الخاص بـ ":country" إلى المستوى ":level" دون تحقق من خبير: :reason. قدّم ورقة موقعة في docs/payroll/VALIDATION_EXPERTE.md (انظر #7941) أو أعد المرجع إلى "pilot".',
 ];
