@@ -17,9 +17,17 @@ name: PR External Checks Report
 #
 # Conduite à tenir : `docs/ops/EXTERNAL_CHECKS_TRIAGE.md`.
 
+# Issue #9035 — saturation des runners. Ce workflow ne produit qu'un
+# commentaire de synthese : le relancer a chaque `synchronize` coutait 61 runs
+# pour 43 annulations (70 %) sur une fenetre de 2,5 h, sans jamais changer le
+# resultat affiche. Il ne se declenche donc plus sur `synchronize` : le
+# rafraichissement apres un nouveau commit est deja assure par le declencheur
+# `workflow_run` ci-dessous, qui se produit quand les checks du depot
+# terminent — c'est-a-dire au bon moment, une fois, et sans annuler le run
+# precedent.
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, reopened, ready_for_review]
   workflow_run:
     # Rafraîchit le rapport quand les checks du dépôt terminent (un run
     # `pull_request` seul afficherait « N checks en cours »).

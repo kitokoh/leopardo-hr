@@ -21,7 +21,15 @@ concurrency:
   # Frontend ESLint+TS) — sur main, un push ne doit jamais annuler le run du
   # commit précédent (sinon le dernier commit de main reste pending 20+ min).
   # Les runs PR gardent l'annulation (feedback rapide sur une même branche).
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}  # #5629 : annuler les runs PR obsolètes pour libérer les runners
+  #
+  # Issue #9035 : l'annulation sur PR est désormais DÉSACTIVÉE elle aussi.
+  # Mesure : 23 runs, 13 annulés (57 %) sur 2,5 h, et sur les 6 PR prêtes à
+  # merger les 3 checks requis sortaient `absent` — un run annulé ne crée
+  # aucun check-run, donc `enforce_admins: true` rendait ces PR
+  # structurellement non mergeables. Un run annulé a déjà consommé ses
+  # minutes de setup sans produire de verdict : le laisser finir coûte moins
+  # cher que de le relancer, et c'est la seule façon d'obtenir le verdict.
+  cancel-in-progress: false
 
 jobs:
   # Fast-path CI (#5629/#2131) : ce workflow porte 3 checks REQUIS (PHPStan
