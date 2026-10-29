@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Travel;
 
+use App\Contracts\Queue\OutboundWebhookSigner;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Domain\Enums\TravelWebhookDeliveryStatus;
@@ -49,7 +50,7 @@ class TravelWebhookDispatchTest extends TestCase
 
         Http::assertSent(function ($request) use ($subscription): bool {
             $body = $request->body();
-            $expectedSignature = (new TravelWebhookDispatcher)->signature($body, app(TravelWebhookSecretService::class)->get($subscription));
+            $expectedSignature = app(TravelWebhookDispatcher::class)->signature($body, app(TravelWebhookSecretService::class)->get($subscription));
 
             return $request->url() === 'https://carrier.example.test/hooks/travel'
                 && $request->hasHeader('X-Leopardo-Signature', $expectedSignature)
@@ -148,5 +149,74 @@ class TravelWebhookDispatchTest extends TestCase
 
             self::assertSame(0, TravelWebhookDelivery::query()->where('subscription_id', $subscription->id)->count());
         });
+    }
+
+    /**
+     * BOS-021 (#8210) — le dispatcher Travel doit signer via le contrat
+     * partagé `OutboundWebhookSigner`, pas via un `hash_hmac` recopié.
+     *
+     * Le test remplace l'implémentation liée dans le container par un espion :
+     * si le dispatcher court-circuite encore le contrat, l'espion n'est jamais
+     * appelé et l'assertion tombe. C'est la seule façon de prouver la
+     * migration — comparer les octets signés ne la prouverait pas, puisque
+     * deux implémentations identiques produisent la même signature.
+     */
+    public function test_dispatcher_signs_through_the_shared_contract(): void
+    {
+        $spy = new class implements OutboundWebhookSigner
+        {
+            /** @var list<string> */
+            public array $signedPayloads = [];
+
+            public function sign(string $secret, string $signedPayload): string
+            {
+                $this->signedPayloads[] = $signedPayload;
+
+                return hash_hmac('sha256', $signedPayload, $secret);
+            }
+
+            public function verify(string $secret, string $signedPayload, string $providedSignature): bool
+            {
+                return hash_equals($this->sign($secret, $signedPayload), $providedSignature);
+            }
+        };
+
+        $this->app->instance(OutboundWebhookSigner::class, $spy);
+
+        $signature = app(TravelWebhookDispatcher::class)->signature('{"a":1}', 'whsec_test');
+
+        self::assertSame(['{"a":1}'], $spy->signedPayloads);
+        self::assertSame('sha256='.hash_hmac('sha256', '{"a":1}', 'whsec_test'), $signature);
+    }
+
+    /**
+     * #8210 — une URL d'abonnement qui résout vers un hôte privé ne doit
+     * JAMAIS être appelée. La garde anti-SSRF de `DispatchWebhook` (Billing)
+     * existait déjà ; Travel, qui livre vers des URLs fournies par des
+     * transporteurs tiers, n'en avait aucune au moment de l'envoi.
+     */
+    public function test_delivery_to_a_private_host_is_blocked_and_dead_lettered(): void
+    {
+        Http::fake();
+
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+
+        $subscription = app(TenantManager::class)->withinTenant($company, fn () => TravelWebhookSubscription::factory()->create([
+            'url' => 'https://127.0.0.1/hooks/travel',
+        ]));
+
+        $delivery = app(TenantManager::class)->withinTenant($company, fn () => TravelWebhookDelivery::factory()->create([
+            'subscription_id' => $subscription->id,
+            'event_type' => 'travel.booking.confirmed.v1',
+        ]));
+
+        self::assertFalse(app(TravelWebhookDispatcher::class)->deliver($delivery));
+
+        Http::assertNothingSent();
+
+        $delivery->refresh();
+        self::assertSame(TravelWebhookDeliveryStatus::DEAD, $delivery->status);
+        self::assertStringContainsString('refusée', (string) $delivery->last_error);
     }
 }
