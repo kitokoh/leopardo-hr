@@ -216,7 +216,7 @@ class KioskController extends Controller
                 // acquitté, heure serveur, politique offline appliquée).
                 'server_time' => now()->toIso8601String(),
                 'acked_event_counter' => (int) $kiosk->fresh()?->acked_event_counter,
-                'offline_policy' => $this->buildKioskDeviceConfig->offlinePolicy(),
+                'offline_policy' => $this->buildKioskDeviceConfig->execute(BuildKioskDeviceConfig::VIEW_OFFLINE_POLICY)['offline_policy'],
             ],
         ]);
     }
@@ -660,7 +660,7 @@ class KioskController extends Controller
         // BIO-007, etat de synchro) est construit par `BuildKioskDeviceConfig` :
         // la politique offline n'existe plus qu'a un seul endroit.
         return new JsonResponse([
-            'data' => $this->buildKioskDeviceConfig->forKiosk($kiosk, $deviceCode),
+            'data' => $this->buildKioskDeviceConfig->execute(BuildKioskDeviceConfig::VIEW_CONFIG, $kiosk, $deviceCode),
         ]);
     }
 
@@ -681,7 +681,7 @@ class KioskController extends Controller
         }
 
         return new JsonResponse([
-            'data' => $this->buildKioskDeviceConfig->syncStatusPayload($kiosk, $deviceCode),
+            'data' => $this->buildKioskDeviceConfig->execute(BuildKioskDeviceConfig::VIEW_SYNC_STATUS, $kiosk, $deviceCode),
         ]);
     }
 
