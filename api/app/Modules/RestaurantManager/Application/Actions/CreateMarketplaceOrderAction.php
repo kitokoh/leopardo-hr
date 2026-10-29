@@ -35,15 +35,26 @@ final class CreateMarketplaceOrderAction
     public function __construct(
         private readonly BillCalculator $calculator,
         private readonly RestaurantOutboxPublisher $outbox,
-    ) {
-    }
+    ) {}
 
     public function execute(string $companyId, MarketplaceInboundOrder $inbound): RestaurantOrder
     {
         /** @var RestaurantBranch $branch */
         $branch = $this->resolveBranch($companyId, $inbound->branchCode);
 
-        $order = DB::transaction(function () use ($companyId, $branch, $inbound): RestaurantOrder {
+        // La devise du payload marketplace est CONTRACTUELLE : le client a payé
+        // dans cette devise. La remplacer silencieusement par celle de la
+        // succursale (repli `?: 'DZD'`) enregistrait une commande XAF comme
+        // DZD — montants faux d'un facteur ~650, et aucune erreur. On refuse
+        // plutôt que de deviner : une commande non créée est récupérable, une
+        // commande au mauvais montant ne l'est pas.
+        $branchCurrency = $branch->currency ?: 'DZD';
+
+        if (mb_strtoupper($inbound->currency) !== mb_strtoupper($branchCurrency)) {
+            abort(422, __('restaurant.marketplace.currency_mismatch'));
+        }
+
+        $order = DB::transaction(function () use ($companyId, $branch, $inbound, $branchCurrency): RestaurantOrder {
             /** @var RestaurantOrder $order */
             $order = RestaurantOrder::query()->create([
                 'company_id' => $companyId,
@@ -55,7 +66,7 @@ final class CreateMarketplaceOrderAction
                 'covers' => null,
                 'customer_contact_id' => null,
                 'status' => OrderStatus::DRAFT->value,
-                'currency' => $branch->currency ?: 'DZD',
+                'currency' => $branchCurrency,
                 'source' => OrderSource::DELIVERY_APP->value,
                 'note_redacted' => $inbound->note !== null ? mb_substr($inbound->note, 0, 1000) : null,
                 'idempotency_key' => null,

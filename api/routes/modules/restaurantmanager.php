@@ -430,7 +430,7 @@ Route::post('/restaurant/public/orders/{order}/pay', [RestaurantPublicOrderContr
 // (`?token=`, middleware restaurant.public.shop), confiance portée par la
 // signature HMAC provider + idempotence par event_id.
 Route::post('/restaurant/marketplace/{provider}/webhooks', [RestaurantMarketplaceWebhookController::class, 'handle'])
-    ->middleware('throttle:webhooks-inbound');
+    ->middleware(['throttle:webhooks-inbound', 'restaurant.public.shop']);
 
 /**
  * RESTO-901 (#7746) — annuaire PUBLIC des restaurants + profil public par

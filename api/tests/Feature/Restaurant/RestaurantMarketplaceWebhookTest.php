@@ -8,7 +8,6 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantCategory;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantMarketplaceEvent;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPublicShopToken;
 use Tests\RefreshTenantDatabase;
@@ -47,7 +46,10 @@ class RestaurantMarketplaceWebhookTest extends TestCase
                 'active' => true,
             ]);
 
-            $branch = RestaurantBranch::factory()->create(['code' => 'MAIN']);
+            // Devise cohérente avec la société (XAF) : la factory de branche
+            // vaut DZD par défaut, ce qui rendait la fixture incohérente avec
+            // le payload (`currency_code` = XAF) et l'assertion finale.
+            $branch = RestaurantBranch::factory()->create(['code' => 'MAIN', 'currency' => 'XAF']);
             $category = RestaurantCategory::factory()->create(['name' => 'Plats']);
             $product = RestaurantProduct::factory()->create([
                 'branch_id' => null,
