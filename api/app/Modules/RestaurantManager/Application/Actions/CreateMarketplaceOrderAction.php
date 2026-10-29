@@ -35,8 +35,7 @@ final class CreateMarketplaceOrderAction
     public function __construct(
         private readonly BillCalculator $calculator,
         private readonly RestaurantOutboxPublisher $outbox,
-    ) {
-    }
+    ) {}
 
     public function execute(string $companyId, MarketplaceInboundOrder $inbound): RestaurantOrder
     {

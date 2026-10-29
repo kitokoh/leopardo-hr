@@ -8,7 +8,6 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantCategory;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantMarketplaceEvent;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPublicShopToken;
 use Tests\RefreshTenantDatabase;
