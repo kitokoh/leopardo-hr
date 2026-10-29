@@ -20,9 +20,47 @@ use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
  * Cette classe ne lit pas la requete et n'ecrit pas de reponse : elle rend
  * des tableaux serialisables. Le controleur reste seul juge du code HTTP et
  * de l'enveloppe `{data: ...}`.
+ *
+ * Convention #6570 — « 1 action = 1 execute() ». Les trois payloads publies
+ * au kiosque etaient trois methodes publiques de la meme classe, ce qui est
+ * exactement la forme que la garde `check-actions-convention.sh` refuse : une
+ * Action porte un cas d'usage, pas un catalogue de reponses. Ils deviennent
+ * les trois variantes de `execute()` via `KioskConfigView`, qui rend en plus
+ * explicite ce que le controleur decidait implicitement en choisissant la
+ * methode. Les variantes partagent la meme politique offline : c'est
+ * justement cette unicite que l'extraction devait garantir, et trois classes
+ * separees l'auraient re-dupliquee.
  */
 class BuildKioskDeviceConfig
 {
+    /** Configuration complete d'un kiosque authentifie. */
+    public const VIEW_CONFIG = 'config';
+
+    /**
+     * Etat de synchro seul : l'appareil a deja ete authentifie par le
+     * middleware `kiosk.device`, il n'a pas besoin de relire sa configuration.
+     */
+    public const VIEW_SYNC_STATUS = 'sync_status';
+
+    /**
+     * Politique offline seule (reponse de `announcements`, qui n'a pas de
+     * kiosque a decrire).
+     */
+    public const VIEW_OFFLINE_POLICY = 'offline_policy';
+
+    /**
+     * @param  self::VIEW_*  $view
+     * @return array<string, mixed>
+     */
+    public function execute(string $view, ?AttendanceKiosk $kiosk = null, ?string $deviceCode = null): array
+    {
+        return match ($view) {
+            self::VIEW_OFFLINE_POLICY => ['offline_policy' => $this->offlinePolicy()],
+            self::VIEW_SYNC_STATUS => $this->syncStatusPayload($this->requireKiosk($kiosk), $this->requireDeviceCode($deviceCode)),
+            default => $this->forKiosk($this->requireKiosk($kiosk), $this->requireDeviceCode($deviceCode)),
+        };
+    }
+
     /**
      * Politique offline publiee au kiosque (BIO-007 #6772).
      *
@@ -43,20 +81,6 @@ class BuildKioskDeviceConfig
     }
 
     /**
-     * Bloc d'etat de synchronisation expose au kiosque.
-     *
-     * @return array{last_seen_at: string|null, last_sync_at: string|null, acked_event_counter: int}
-     */
-    public function syncStatus(AttendanceKiosk $kiosk): array
-    {
-        return [
-            'last_seen_at' => $kiosk->last_seen_at?->toIso8601String(),
-            'last_sync_at' => $kiosk->last_sync_at?->toIso8601String(),
-            'acked_event_counter' => (int) $kiosk->acked_event_counter,
-        ];
-    }
-
-    /**
      * Payload complet de configuration d'un kiosque authentifie.
      *
      * `punch_methods` est resolu cote serveur (BIO-006, #6767) : l'interface
@@ -64,7 +88,7 @@ class BuildKioskDeviceConfig
      *
      * @return array<string, mixed>
      */
-    public function forKiosk(AttendanceKiosk $kiosk, string $deviceCode): array
+    private function forKiosk(AttendanceKiosk $kiosk, string $deviceCode): array
     {
         return [
             'device_code' => $deviceCode,
@@ -81,13 +105,23 @@ class BuildKioskDeviceConfig
     }
 
     /**
-     * Payload de `sync-status` : configuration reduite a l'etat de synchro
-     * (l'appareil a deja ete authentifie par le middleware `kiosk.device`,
-     * il n'a pas besoin de re-lire toute sa configuration).
+     * Bloc d'etat de synchronisation expose au kiosque.
      *
+     * @return array{last_seen_at: string|null, last_sync_at: string|null, acked_event_counter: int}
+     */
+    private function syncStatus(AttendanceKiosk $kiosk): array
+    {
+        return [
+            'last_seen_at' => $kiosk->last_seen_at?->toIso8601String(),
+            'last_sync_at' => $kiosk->last_sync_at?->toIso8601String(),
+            'acked_event_counter' => (int) $kiosk->acked_event_counter,
+        ];
+    }
+
+    /**
      * @return array<string, mixed>
      */
-    public function syncStatusPayload(AttendanceKiosk $kiosk, string $deviceCode): array
+    private function syncStatusPayload(AttendanceKiosk $kiosk, string $deviceCode): array
     {
         return [
             'device_code' => $deviceCode,
@@ -96,5 +130,28 @@ class BuildKioskDeviceConfig
             'server_time' => now()->toIso8601String(),
             'offline_policy' => $this->offlinePolicy(),
         ] + $this->syncStatus($kiosk);
+    }
+
+    /**
+     * Les variantes `config` et `sync_status` n'ont pas de sens sans kiosque.
+     * Echouer explicitement vaut mieux que rendre un payload incomplet que le
+     * kiosque appliquerait silencieusement.
+     */
+    private function requireKiosk(?AttendanceKiosk $kiosk): AttendanceKiosk
+    {
+        if ($kiosk === null) {
+            throw new \InvalidArgumentException('BuildKioskDeviceConfig: une vue kiosque exige le kiosque.');
+        }
+
+        return $kiosk;
+    }
+
+    private function requireDeviceCode(?string $deviceCode): string
+    {
+        if ($deviceCode === null || $deviceCode === '') {
+            throw new \InvalidArgumentException('BuildKioskDeviceConfig: une vue kiosque exige le device code.');
+        }
+
+        return $deviceCode;
     }
 }
