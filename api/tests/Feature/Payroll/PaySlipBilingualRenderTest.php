@@ -143,6 +143,17 @@ class PaySlipBilingualRenderTest extends TestCase
                 if ($decoded === false) {
                     continue;
                 }
+                // Un PDF embarque aussi des flux qui ne sont PAS du contenu
+                // textuel : tables ToUnicode (`begincmap`/`beginbfchar`) et
+                // programmes de police. Les decoder comme du texte produisait
+                // une chaine binaire (0x01000100...) qui faisait echouer
+                // l'assertion de facon intermittente selon l'ordre des flux.
+                if (str_contains($decoded, 'begincmap') || str_contains($decoded, 'beginbfchar')) {
+                    continue;
+                }
+                if (! str_contains($decoded, 'BT') && ! str_contains($decoded, 'Tj') && ! str_contains($decoded, 'TJ')) {
+                    continue;
+                }
                 $text .= $this->extractParenthesized($decoded).' ';
             }
         }
