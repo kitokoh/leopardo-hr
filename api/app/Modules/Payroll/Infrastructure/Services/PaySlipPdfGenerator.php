@@ -16,16 +16,20 @@ use Illuminate\Support\Facades\File;
 
 class PaySlipPdfGenerator
 {
+    /**
+     * Mentions légales de pied de bulletin par pays.
+     *
+     * Issue #9045 : la table locale a été remplacée par le référentiel
+     * `PaySlipLegalMentions`, qui porte aussi les identifiants employeur et
+     * salarié par juridiction. Les pays hors référentiel n'impriment AUCUNE
+     * mention (pas de fallback silencieux) — voir la règle 2 de la classe.
+     */
     private const COUNTRY_LEGAL = [
         'DZ' => 'Conformément au Code du travail algérien (Loi 90-11). CNAS employeur incluse.',
         'MA' => 'Conformément au Code du travail marocain (Loi 65-99). CNSS/AMO incluses.',
         'TN' => 'Conformément au Code du travail tunisien. CNSS incluse.',
-        'FR' => 'En application du Code du travail français. Cotisations CSG/CRDS incluses. Net imposable disponible.',
-        'TR' => 'İş Kanunu uyarınca düzenlenmiştir. SGK primleri dahildir.',
-        'SN' => 'Conformément au Code du travail sénégalais. IPRES/CSS incluses.',
         'GB' => 'Issued in accordance with UK employment law. PAYE and National Insurance Class 1 included. Statutory minimum notice under the Employment Rights Act 1996.',
         'US' => 'Issued in accordance with US federal payroll rules. FICA (Social Security and Medicare), FUTA and federal income tax withholding included. FLSA overtime rules apply.',
-        'CA' => 'Issued under the Canada Labour Code / Émis conformément au Code canadien du travail. CPP/RPC, CPP2 and EI/AE included.',
     ];
 
     public function generate(PaySlip $paySlip): string
@@ -59,10 +63,23 @@ class PaySlipPdfGenerator
             // (which only covered 6 of the ~20 countries CountryDefaults
             // already supports, e.g. CEMAC/CEDEAO members, GB, US, CA).
             'currency' => CountryDefaults::for($countryCode)['currency'],
-            'legalMentions' => self::COUNTRY_LEGAL[$countryCode] ?? '',
+            // Issue #9045 : mention légale du pays résolue par le référentiel
+            // `PaySlipLegalMentions` (FR/TR/CA/CM/CI/SN/DZ), avec repli sur la
+            // table historique pour MA/TN/GB/US. Un pays non couvert n'imprime
+            // rien — jamais de mention devinée.
+            'legalMentions' => PaySlipLegalMentions::notice($countryCode)
+                ?? (self::COUNTRY_LEGAL[$countryCode] ?? ''),
             // F-09 (#1539) : mentions légales DZ (NIF, RC, n° CNAS employeur,
             // ID.Nat) portées par company.metadata — affichées si présentes.
-            'companyLegal' => $this->companyLegalIdentifiers($company),
+            // Issue #9045 : les libellés sont désormais résolus par pays
+            // (FR SIRET/APE/URSSAF, TR SGK/vergi, CA BN/TPS, CM NIU/RCCM/CNPS,
+            // CI NCC/RCCM/CNPS, SN NINEA/RCCM/IPRES) au lieu des seuls
+            // libellés algériens appliqués à tous les bulletins.
+            'companyLegal' => PaySlipLegalMentions::employerIdentifiers($company, $countryCode),
+            // Issue #9045 : identifiants légaux du salarié (matricule, n° CNPS /
+            // CNSS / IPRES / sécurité sociale) — critère d'acceptation
+            // « un bulletin par pays contient toutes ses mentions obligatoires ».
+            'employeeLegal' => PaySlipLegalMentions::employeeIdentifiers($employee, $countryCode),
             // F-09 (#1539) : cumuls annuels (brut, retenues, net) des
             // bulletins validés de l'employé jusqu'à la période du bulletin.
             'annualCumuls' => $this->annualCumuls($paySlip),
@@ -78,37 +95,6 @@ class PaySlipPdfGenerator
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->output();
-    }
-
-    /**
-     * F-09 (#1539) — identifiants légaux de l'employeur (DZ) portés par
-     * `company.metadata` : legal_nif, legal_rc, legal_cnas_employer,
-     * legal_idnat. Retourne uniquement les clés présentes.
-     *
-     * @return array<string, string>
-     */
-    private function companyLegalIdentifiers(?Company $company): array
-    {
-        if ($company === null) {
-            return [];
-        }
-
-        $keys = [
-            'legal_nif' => 'NIF',
-            'legal_rc' => 'RC',
-            'legal_cnas_employer' => 'N° CNAS employeur',
-            'legal_idnat' => 'ID.Nat',
-        ];
-
-        $out = [];
-        foreach ($keys as $key => $label) {
-            $value = $company->metadata[$key] ?? null;
-            if (is_string($value) && trim($value) !== '') {
-                $out[$label] = $value;
-            }
-        }
-
-        return $out;
     }
 
     /**
