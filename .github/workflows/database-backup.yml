@@ -161,8 +161,16 @@ jobs:
           # 897 h de RPO non tenu, alors que la base LIVE était parfaitement
           # joignable. On résout donc la cible comme le fait le watchdog.
           host_of() { sed -E 's#^[a-zA-Z+]+://([^@]*@)?([^/:]+).*#\2#' <<<"$1"; }
+          # Sonde de joignabilité : c'est la SEULE preuve qui compte. L'API
+          # Render peut être indisponible (503 constaté le 2026-10-30) sans que
+          # la base le soit — et inversement. On choisit donc la cible en
+          # testant réellement la connexion, pas en croyant une API.
+          probe() { PGCONNECT_TIMEOUT=10 PGSSLMODE=require psql "$1" -AtXc 'select 1' >/dev/null 2>&1; }
 
-          DUMP_URL="${DATABASE_URL}"
+          DUMP_URL=""
+          DUMP_KIND=""
+
+          # 1) Candidat déclaré par Render (source de vérité de la bascule).
           if [[ -n "${RENDER_API_KEY:-}" && -n "${RENDER_SERVICE_ID:-}" ]]; then
             api="${RENDER_API_BASE:-https://api.render.com/v1}"
             api="${api%/}"
@@ -176,17 +184,40 @@ jobs:
               primary_host="$(host_of "${DATABASE_URL}")"
               standby_host="$(host_of "${STANDBY_DATABASE_URL:-}")"
               if [[ "${live_host}" == "${primary_host}" || "${live_host}" == "${standby_host}" ]]; then
-                DUMP_URL="${live_url}"
-                echo "Cible de sauvegarde : base LIVE (${live_host}) — résolue via Render."
+                if probe "${live_url}"; then
+                  DUMP_URL="${live_url}"; DUMP_KIND="LIVE déclarée par Render (${live_host})"
+                else
+                  echo "::warning::DB_URL de Render (${live_host}) injoignable — on sonde les autres candidats."
+                fi
               else
-                echo "::warning::DB_URL de Render (${live_host}) n'est ni la primaire ni le secours connus — repli sur DATABASE_URL."
+                echo "::warning::DB_URL de Render (${live_host}) n'est ni la primaire ni le secours connus — ignoré."
               fi
             else
-              echo "::warning::DB_URL de Render illisible — repli sur DATABASE_URL."
+              echo "::warning::DB_URL de Render illisible (API indisponible ?) — on sonde les candidats connus."
             fi
           else
-            echo "::notice::RENDER_PROD_API_KEY/SERVICE_ID absents — sauvegarde de DATABASE_URL (pas de résolution LIVE)."
+            echo "::notice::RENDER_PROD_API_KEY/SERVICE_ID absents — on sonde les candidats connus."
           fi
+
+          # 2) Repli : primaire puis secours, testés réellement. C'est ce repli
+          #    qui sauve la sauvegarde quand l'API Render est en panne.
+          if [[ -z "${DUMP_URL}" ]]; then
+            for cand in "primaire:${DATABASE_URL}" "secours:${STANDBY_DATABASE_URL:-}"; do
+              kind="${cand%%:*}"; url="${cand#*:}"
+              [[ -z "${url}" ]] && continue
+              if probe "${url}"; then
+                DUMP_URL="${url}"; DUMP_KIND="${kind} (${kind} joignable, sondée)"
+                break
+              fi
+              echo "::warning::Base ${kind} injoignable (quota épuisé ou panne)."
+            done
+          fi
+
+          if [[ -z "${DUMP_URL}" ]]; then
+            echo "::error::AUCUNE base joignable (primaire, secours, DB_URL Render) — sauvegarde impossible. Intervention humaine requise."
+            exit 1
+          fi
+          echo "Cible de sauvegarde : ${DUMP_KIND}"
 
           pg_dump --format=custom --no-owner --no-privileges --file="${dump_file}" "${DUMP_URL}"
 
