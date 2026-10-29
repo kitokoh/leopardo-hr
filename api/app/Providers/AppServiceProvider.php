@@ -11,6 +11,7 @@ use App\AI\Providers\OpenAIClient;
 use App\AI\ResilientLLMClient;
 use App\AI\Support\LLMCircuitBreaker;
 use App\Contracts\Queue\OutboundWebhookSigner;
+use App\Contracts\Queue\OutboundWebhookTransport;
 use App\Core\AI\Domain\Contracts\SpeechToTextPort;
 use App\Core\AI\Infrastructure\Adapters\GroqWhisperAdapter;
 use App\Core\AI\Infrastructure\Adapters\UnavailableSpeechToTextAdapter;
@@ -23,6 +24,7 @@ use App\Core\Outbox\Infrastructure\DatabaseOutboxPublisher;
 use App\Core\Privacy\Infrastructure\Services\PiiRegistry;
 use App\Core\Tenant\TenantManager;
 use App\Jobs\Services\HmacWebhookSigner;
+use App\Jobs\Services\HttpOutboundWebhookTransport;
 use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Billing\Domain\Services\EntitlementGuard;
 use App\Modules\HR\Infrastructure\Services\PiiLifecycleService;
@@ -69,6 +71,14 @@ class AppServiceProvider extends ServiceProvider
         // secret ou un passage à un KMS se fait ici, sans toucher aux
         // verticales.
         $this->app->bind(OutboundWebhookSigner::class, HmacWebhookSigner::class);
+
+        // BOS-021 (#8210) — transport unique de LIVRAISON des webhooks
+        // sortants. Même raison d'être que la primitive ci-dessus : deux
+        // producteurs frappaient un endpoint tiers avec deux politiques
+        // différentes, et l'une des deux (`Http::withoutVerifying()`) ne
+        // vérifiait ni le certificat TLS ni l'hôte. Un seul transport = une
+        // seule garde anti-SSRF, appliquée à tout le monde.
+        $this->app->bind(OutboundWebhookTransport::class, HttpOutboundWebhookTransport::class);
 
         // #8726 — pont d'inversion de dépendance : le BC PAGES a besoin de
         // lire les entitlements, mais un module ne peut pas importer un autre
