@@ -5,21 +5,26 @@ declare(strict_types=1);
 namespace App\Modules\Showcase\Interfaces\Api\V1\Controllers;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\Site;
 use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
 use App\Modules\Showcase\Domain\Enums\CompanyShowcaseStatus;
 use App\Modules\Showcase\Domain\Models\CompanyShowcase;
 use App\Modules\Showcase\Domain\Models\CompanyShowcaseSection;
+use App\Modules\Showcase\Domain\Support\ShowcaseDoubleReadPolicy;
 use App\Modules\Showcase\Domain\Support\ShowcaseLocales;
 use App\Modules\Showcase\Infrastructure\Services\ShowcasePublicCache;
 use App\Modules\Showcase\Interfaces\Api\V1\Resources\VitrinePublicResource;
 use App\Shared\Contracts\Catalog\PublishedProductsProvider;
+use App\Shared\Contracts\Pages\PageProjectionReader;
 use App\Shared\Services\PublicCommerce\PublicTenantResolver;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
  * BC-27 SHOWCASE — API publique d'une vitrine (V-PUBLIC-API #6867, étendue
@@ -60,6 +65,7 @@ final class ShowcasePublicController extends Controller
         private readonly PublicTenantResolver $publicTenantResolver,
         private readonly ShowcasePublicCache $cache,
         private readonly PublishedProductsProvider $productsProvider,
+        private readonly PageProjectionReader $pageProjectionReader,
     ) {}
 
     public function show(Request $request, string $slug): JsonResponse
@@ -115,6 +121,13 @@ final class ShowcasePublicController extends Controller
 
                 $resource = new VitrinePublicResource($showcase, $sections, $company->name, $locale, $this->productsProvider);
 
+                // #8727 — double lecture : OBSERVATION uniquement. Le payload
+                // servi reste celui du legacy (source de vérité) ; on relit la
+                // Page projetée pour mesurer l'écart avant la bascule. Aucune
+                // exception n'est propagée : une divergence ne doit jamais
+                // dégrader une surface publique.
+                $this->observeDoubleRead($showcase, \count($sections));
+
                 return $resource->resolve($request);
             });
         };
@@ -137,6 +150,85 @@ final class ShowcasePublicController extends Controller
         }
 
         return $response;
+    }
+
+    /**
+     * #8727 — double lecture best-effort : ne lève jamais, ne modifie jamais
+     * la réponse. Les erreurs de lecture Pages sont absorbées : une vitrine
+     * doit rester servie même si la projection est illisible.
+     */
+    private function observeDoubleRead(CompanyShowcase $showcase, int $legacySections): void
+    {
+        if (! (bool) config('pages.double_read.enabled', false)) {
+            return;
+        }
+
+        $rollout = (int) config('pages.double_read.rollout_percent', 0);
+
+        if (! ShowcaseDoubleReadPolicy::shouldSample((string) $showcase->slug, $rollout)) {
+            return;
+        }
+
+        try {
+            $siteId = $this->resolveCandidateSiteId($showcase);
+
+            if ($siteId === null) {
+                return;
+            }
+
+            $projection = $this->pageProjectionReader->forSite($siteId);
+
+            if ($projection === null) {
+                // Vitrine pas encore backfillée : cas normal, pas une divergence.
+                return;
+            }
+
+            $divergences = ShowcaseDoubleReadPolicy::compare(
+                [
+                    'status' => $showcase->status->value,
+                    'slug' => (string) $showcase->slug,
+                    'sections' => $legacySections,
+                ],
+                $projection,
+            );
+
+            if ($divergences !== [] && (bool) config('pages.double_read.log_divergences', true)) {
+                Log::warning(ShowcaseDoubleReadPolicy::summary((string) $showcase->slug, $divergences), [
+                    'showcase_id' => $showcase->id,
+                ]);
+            }
+        } catch (Throwable) {
+            // Volontairement silencieux : l'observation ne doit jamais devenir
+            // un point de panne de la surface publique.
+        }
+    }
+
+    /**
+     * #8727 — résout l'établissement candidat d'une vitrine, ou `null` si la
+     * correspondance n'est pas univoque.
+     *
+     * `company_showcases` ne porte AUCUNE colonne `site_id` : le rattachement
+     * vitrine → établissement se déduit de `sites.company_id` (même tenant),
+     * exactement comme `showcase:pages-inventory`. La spec
+     * (`docs/design/etablissements-pages.md`, `ShowcasePageProjection`) interdit
+     * de choisir arbitrairement un Site : `pages.site_id` est UNIQUE (une Page
+     * par établissement en V1), donc un tenant à 0 ou plusieurs établissements
+     * est une décision produit, pas une heuristique. On ne devine pas : on
+     * saute la mesure et l'inventaire remonte le cas comme bloquant.
+     */
+    private function resolveCandidateSiteId(CompanyShowcase $showcase): ?int
+    {
+        $siteIds = Site::query()
+            ->where('company_id', $showcase->company_id)
+            ->orderBy('id')
+            ->limit(2)
+            ->pluck('id');
+
+        if ($siteIds->count() !== 1) {
+            return null;
+        }
+
+        return (int) $siteIds->first();
     }
 
     /**
