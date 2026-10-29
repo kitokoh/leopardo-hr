@@ -85,6 +85,10 @@ class PaySlipLegalMentionsByCountryTest extends TestCase
         ];
     }
 
+    /**
+     * @param  array<string, mixed>  $metadata
+     * @param  array<string, mixed>  $employeeAttributes
+     */
     private function makeSlip(string $country, array $metadata, array $employeeAttributes): PaySlip
     {
         /** @var Company $company */

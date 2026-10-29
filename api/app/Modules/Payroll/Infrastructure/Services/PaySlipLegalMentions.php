@@ -209,7 +209,7 @@ final class PaySlipLegalMentions
 
         $code = self::normalize($country);
         $labels = self::COUNTRIES[$code]['employer'] ?? [];
-        $metadata = is_array($company->metadata) ? $company->metadata : [];
+        $metadata = $company->metadata;
 
         $out = [];
         foreach ($labels as $key => $label) {
