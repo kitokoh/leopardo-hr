@@ -8344,7 +8344,8 @@
     "retry": "Yeniden dene",
     "queued": "Çevrimdışı kaydedildi — eşitlenecek",
     "synced": "Eşitlendi",
-    "syncFailed": "Eşitleme başarısız — yeniden deneyin"
+    "syncFailed": "Eşitleme başarısız — yeniden deneyin",
+    "notDurable": "Bekleyen işlemler bu cihazda kalıcı değil — sayfa yenilenirse kaybolur"
   },
   "devices": {
     "title": "Cihazlar ve terminaller",
