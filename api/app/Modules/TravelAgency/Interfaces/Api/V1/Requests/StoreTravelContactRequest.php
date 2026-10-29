@@ -56,7 +56,7 @@ class StoreTravelContactRequest extends FormRequest
      * valoir vrai. Sans ce garde, un formulaire sans case cochee creerait un
      * contact sans base legale RGPD.
      */
-    public function withValidator($validator): void
+    public function withValidator(\Illuminate\Validation\Validator $validator): void
     {
         $validator->after(function ($validator): void {
             if (! ($this->boolean('consent_email') || $this->boolean('consent'))) {

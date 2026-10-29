@@ -93,7 +93,7 @@ final class TravelNotificationConsumer implements TravelOutboxConsumer
         // Notification in-app/push à l'employé du tenant (BC-13, préférences
         // respectées par CommunicationService). Best-effort : un échec de
         // notification ne doit pas faire rejouer l'événement.
-        $this->notifyBooker($booking);
+        $this->notifyBooker($booking, $eventType, $payload);
 
         // Email externe : uniquement si consentement explicite (registre
         // travel_customer_contacts). Échec → transitoire (retry backoff).
@@ -168,7 +168,10 @@ final class TravelNotificationConsumer implements TravelOutboxConsumer
         }
     }
 
-    private function notifyBooker(TravelBooking $booking): void
+    /**
+     * @param  array<string, mixed>  $payload
+     */
+    private function notifyBooker(TravelBooking $booking, string $eventType, array $payload = []): void
     {
         if ($booking->booked_by_user_id === null) {
             return;
@@ -197,6 +200,9 @@ final class TravelNotificationConsumer implements TravelOutboxConsumer
         }
     }
 
+    /**
+     * @param  array<string, mixed>  $payload
+     */
     private function notifyExternalContact(TravelBooking $booking, string $eventType, ?int $eventId, array $payload = []): void
     {
         // Source de verite du consentement : le registre dedie
