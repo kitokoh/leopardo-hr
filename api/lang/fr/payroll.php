@@ -84,4 +84,5 @@ return [
     'line_income_tax' => 'Impôt sur le revenu',
     'line_employer_contributions' => 'Cotisations patronales',
     'line_flat_tax' => 'Taxe de minimum fiscal',
+    'unvalidated_confidence_level' => 'Le référentiel de paie « :country » revendique le niveau « :level » sans validation experte : :reason. Renseignez une fiche signée dans docs/payroll/VALIDATION_EXPERTE.md (voir #7941) ou repassez le référentiel en « pilot ».',
 ];
