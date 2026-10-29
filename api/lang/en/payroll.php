@@ -83,4 +83,5 @@ return [
     'line_income_tax' => 'Income tax',
     'line_employer_contributions' => 'Employer contributions',
     'line_flat_tax' => 'Minimum fiscal tax',
+    'unvalidated_confidence_level' => 'The payroll reference for ":country" claims level ":level" without expert validation: :reason. Provide a signed sheet in docs/payroll/VALIDATION_EXPERTE.md (see #7941) or set the reference back to "pilot".',
 ];

@@ -31,6 +31,7 @@ use App\Modules\Payroll\Infrastructure\Services\PayrollBordereauGenerator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollJournalGenerator;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
+use App\Modules\Payroll\Interfaces\Api\V1\Support\PayrollRunAccess;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -49,6 +50,7 @@ class PayrollRunController extends Controller
         private readonly LockPayrollRun $lockRun,
         private readonly UnlockPayrollRun $unlockRun,
         private readonly CreatePayrollRegularization $createRegularization,
+        private readonly PayrollRunAccess $access,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -169,12 +171,7 @@ class PayrollRunController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if ($actor->isManager() === false) {
-            abort(403);
-        }
+        $this->access->authorizeManager($payrollRun, $actor);
 
         $payrollRun->loadCount('paySlips');
 
@@ -185,12 +182,7 @@ class PayrollRunController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if ($actor->isManager() === false) {
-            abort(403);
-        }
+        $this->access->authorizeManager($payrollRun, $actor);
 
         // #6529 : un run laisse en `error` ou orphelin en `processing` (worker
         // mort entre le claim et le calcul) doit rester recalculable ;
@@ -256,16 +248,11 @@ class PayrollRunController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
         // Issue #5246 - workflow de validation RBAC : la validation (verification
         // / vise) est reservee aux managers principal/comptable (contrat
         // documente RBAC_ROUTE_MATRIX.md F-11/#1541). Un `rh` peut PREPARER
         // (calculer) mais pas auto-valider sa propre preparation.
-        if ($actor->hasManagerRole('principal', 'comptable') === false) {
-            abort(403, 'INSUFFICIENT_ROLE');
-        }
+        $this->access->authorizeApprover($payrollRun, $actor);
 
         // Issue #5623 - baremes 'placeholder' : la validation RH exige une
         // confirmation explicite (les chiffres peuvent etre incorrects).
@@ -287,19 +274,9 @@ class PayrollRunController extends Controller
         } catch (PayrollAlreadyValidatedException|PayrollRunLockedException|PayrollRunNoSlipsException $e) {
             // #3810 / #4310 : codes stables + message localise via catalogue,
             // jamais le message d'exception brut (FR codé en dur, non traduit).
-            return response()->json([
-                'error' => $e->errorCode(),
-                'message' => $e->errorCode(),
-                'localized_message' => __('errors.'.$e->errorCode()),
-            ], $e->statusCode());
+            return $this->access->businessError($e);
         } catch (\RuntimeException $e) {
-            Log::error('payroll.run.validation_failed', ['run_id' => $payrollRun->id, 'error' => $e->getMessage()]);
-
-            return response()->json([
-                'error' => 'PAYROLL_RUN_VALIDATION_FAILED',
-                'message' => 'PAYROLL_RUN_VALIDATION_FAILED',
-                'localized_message' => __('errors.PAYROLL_RUN_VALIDATION_FAILED'),
-            ], 422);
+            return $this->access->unexpectedError('payroll.run.validation_failed', $payrollRun, $e, 'PAYROLL_RUN_VALIDATION_FAILED');
         }
 
         if (config('performance.payroll.queue_pdf_warmup', true)) {
@@ -313,12 +290,7 @@ class PayrollRunController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if ($actor->isManager() === false) {
-            abort(403);
-        }
+        $this->access->authorizeManager($payrollRun, $actor);
 
         if (in_array($payrollRun->status, ['paid', 'cancelled', 'locked'], true)) {
             return response()->json(['message' => __('errors.PAYROLL_RUN_CANCEL_NOT_ALLOWED')], 422);
@@ -339,15 +311,10 @@ class PayrollRunController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
         // Issue #5246 — l'approbation finale (cloture comptable / verrouillage)
         // est reservee aux managers principal/comptable : un `rh` ne peut pas
         // cloturer ce qu'il a préparé (séparation des tâches).
-        if ($actor->hasManagerRole('principal', 'comptable') === false) {
-            abort(403, 'INSUFFICIENT_ROLE');
-        }
+        $this->access->authorizeApprover($payrollRun, $actor);
 
         try {
             // Etape 2 du workflow F-11 - cas d'usage nommable (ADR-0020, #6896).
@@ -355,20 +322,10 @@ class PayrollRunController extends Controller
         } catch (PayrollAlreadyValidatedException|PayrollRunLockedException|PayrollRunNoSlipsException $e) {
             // #3810 / #4310 : codes stables + message localisé via catalogue,
             // jamais le message d'exception brut (FR code en dur, non traduit).
-            return response()->json([
-                'error' => $e->errorCode(),
-                'message' => $e->errorCode(),
-                'localized_message' => __('errors.'.$e->errorCode()),
-            ], $e->statusCode());
+            return $this->access->businessError($e);
             // assertHasPaySlips() (lock) peut jeter une RuntimeException metier.
         } catch (\RuntimeException $e) {
-            Log::error('payroll.run.lock_failed', ['run_id' => $payrollRun->id, 'error' => $e->getMessage()]);
-
-            return response()->json([
-                'error' => 'PAYROLL_RUN_LOCK_FAILED',
-                'message' => 'PAYROLL_RUN_LOCK_FAILED',
-                'localized_message' => __('errors.PAYROLL_RUN_LOCK_FAILED'),
-            ], 422);
+            return $this->access->unexpectedError('payroll.run.lock_failed', $payrollRun, $e, 'PAYROLL_RUN_LOCK_FAILED');
         }
 
         return (new PayrollRunResource($payrollRun->refresh()->loadCount('paySlips')))->response();
@@ -382,14 +339,9 @@ class PayrollRunController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
         // Issue #5246 — la réversion d'une cloture est une decision sensible :
         // reservee aux managers principal/comptable (meme regle que lock).
-        if ($actor->hasManagerRole('principal', 'comptable') === false) {
-            abort(403, 'INSUFFICIENT_ROLE');
-        }
+        $this->access->authorizeApprover($payrollRun, $actor);
 
         $validated = $request->validate([
             'reason' => ['required', 'string', 'max:1000'],
@@ -400,21 +352,11 @@ class PayrollRunController extends Controller
             $this->unlockRun->execute($payrollRun, $actor, $validated['reason']);
         } catch (PayrollRunLockedException $e) {
             // #3810 / #4310 : codes stables + message localise via catalogue.
-            return response()->json([
-                'error' => $e->errorCode(),
-                'message' => $e->errorCode(),
-                'localized_message' => __('errors.'.$e->errorCode()),
-            ], $e->statusCode());
+            return $this->access->businessError($e);
             // unlock() jette des RuntimeException metier (run non verrouille,
             // raison manquante).
         } catch (\RuntimeException $e) {
-            Log::error('payroll.run.unlock_failed', ['run_id' => $payrollRun->id, 'error' => $e->getMessage()]);
-
-            return response()->json([
-                'error' => 'PAYROLL_RUN_UNLOCK_FAILED',
-                'message' => 'PAYROLL_RUN_UNLOCK_FAILED',
-                'localized_message' => __('errors.PAYROLL_RUN_UNLOCK_FAILED'),
-            ], 422);
+            return $this->access->unexpectedError('payroll.run.unlock_failed', $payrollRun, $e, 'PAYROLL_RUN_UNLOCK_FAILED');
         }
 
         return (new PayrollRunResource($payrollRun->refresh()->loadCount('paySlips')))->response();
@@ -428,12 +370,7 @@ class PayrollRunController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if ($actor->isManager() === false) {
-            abort(403);
-        }
+        $this->access->authorizeManager($payrollRun, $actor);
 
         $validated = $request->validate([
             'reason' => ['required', 'string', 'min:5', 'max:2000'],
@@ -449,19 +386,9 @@ class PayrollRunController extends Controller
             );
         } catch (PayrollRunNotLockedException $e) {
             // #3810 / #4310 : codes stables + message localise via catalogue.
-            return response()->json([
-                'error' => $e->errorCode(),
-                'message' => $e->errorCode(),
-                'localized_message' => __('errors.'.$e->errorCode()),
-            ], $e->statusCode());
+            return $this->access->businessError($e);
         } catch (\RuntimeException $e) {
-            Log::error('payroll.run.regularization_failed', ['run_id' => $payrollRun->id, 'error' => $e->getMessage()]);
-
-            return response()->json([
-                'error' => 'PAYROLL_REGULARIZATION_FAILED',
-                'message' => 'PAYROLL_REGULARIZATION_FAILED',
-                'localized_message' => __('errors.PAYROLL_REGULARIZATION_FAILED'),
-            ], 422);
+            return $this->access->unexpectedError('payroll.run.regularization_failed', $payrollRun, $e, 'PAYROLL_REGULARIZATION_FAILED');
         }
 
         return (new PayrollRunResource($regularization->loadCount('paySlips')))
@@ -476,12 +403,7 @@ class PayrollRunController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if ($actor->isManager() === false) {
-            abort(403);
-        }
+        $this->access->authorizeManager($payrollRun, $actor);
 
         $runs = $this->regularization->regularizations($payrollRun);
 
@@ -492,12 +414,7 @@ class PayrollRunController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if ($actor->isManager() === false) {
-            abort(403);
-        }
+        $this->access->authorizeManager($payrollRun, $actor);
 
         $slips = $payrollRun->paySlips()->with('employee:id,first_name,last_name')->get();
 
@@ -534,12 +451,7 @@ class PayrollRunController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if ($actor->isManager() === false) {
-            abort(403);
-        }
+        $this->access->authorizeManager($payrollRun, $actor);
 
         $this->auditLogger->recordSensitive($request, $actor, 'payroll.journal', $payrollRun);
 
@@ -561,12 +473,7 @@ class PayrollRunController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if ($actor->isManager() === false) {
-            abort(403);
-        }
+        $this->access->authorizeManager($payrollRun, $actor);
 
         if ($payrollRun->country_code !== 'DZ') {
             return response()->json([
@@ -594,12 +501,7 @@ class PayrollRunController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if ($actor->isManager() === false) {
-            abort(403);
-        }
+        $this->access->authorizeManager($payrollRun, $actor);
 
         $anomalies = (new PayrollAnomalyService)->detectForRun($payrollRun->load('paySlips'));
 
@@ -616,12 +518,7 @@ class PayrollRunController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if ($actor->isManager() === false) {
-            abort(403);
-        }
+        $this->access->authorizeManager($payrollRun, $actor);
 
         $headers = [
             'Content-Type' => 'text/csv',

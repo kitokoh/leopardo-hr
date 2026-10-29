@@ -60,6 +60,50 @@ bloquantes ouvertes.
 - `complianceWarning()` dérive automatiquement de `confidenceLevel()`
   (PA2-COUNTRY-006) — aucune autre source de vérité.
 
+## Registre machine-lisible (#9054)
+
+> **Issue #9054 (BOS-006V2-8)** — la règle « aucun pays en `production` sans
+> fiche signée » était jusqu'ici une **convention documentaire** : rien dans le
+> code ne l'appliquait. Elle est désormais **opposable**.
+>
+> `App\Modules\Payroll\Infrastructure\Services\ExpertValidationRegistry` lit le
+> tableau ci-dessous à chaque résolution de règles pays
+> (`CountryRulesResolver::resolve()`) et **refuse** (`UNVALIDATED_CONFIDENCE_LEVEL`,
+> HTTP 422) tout référentiel qui revendique `production` sans ligne signée,
+> valide et non expirée. `pilot` et `placeholder` ne sont jamais bloqués.
+
+**Format machine** : `| PAYS | AAAA-MM-JJ | Expert | Périmètre |`.
+Les lignes d'en-tête et de séparation sont ignorées par le parseur ; une ligne
+dont la première cellule n'est pas un code pays à 2 lettres est ignorée.
+
+**Durée de validité : 12 mois.** Les taux légaux bougent chaque année (lois de
+finances, revalorisations) ; une fiche périmée ne prouve plus rien et la
+revendication `production` redevient refusée jusqu'à re-signature.
+
+| Pays | Signée le | Expert | Périmètre |
+|---|---|---|---|
+| SN | 2026-08-18 | Validation experte Sénégal (#1912, `docs/payroll/SN_VALIDATION.md`) | Paie (cœur) |
+
+> **Note d'honnêteté** : la ligne SN reprend la validation déjà documentée dans
+> le dépôt (#1912) — elle ne constitue pas une nouvelle campagne. La campagne
+> experte externe reste #7941, à mener marché par marché. Aucun autre pays n'a
+> de fiche signée : tous restent en `pilot`, ce qui est l'état attendu.
+
+### Procédure d'ajout d'une fiche
+
+1. L'expert local relit `docs/payroll/<PAYS>_COMPLIANCE.md` et les golden tests.
+2. Il signe une fiche (nom, qualité, date, périmètre) transmise au propriétaire.
+3. Le propriétaire ajoute **une ligne** au tableau ci-dessus dans une PR dédiée.
+4. La CI (`ExpertValidationRegistryTest`) vérifie que le parseur lit la ligne et
+   que la garde l'accepte.
+5. Le `confidenceLevel()` du pays peut alors passer à `production` dans la même PR.
+
+### Vérification
+
+```bash
+cd api && ./vendor/bin/pest tests/Feature/Payroll/ExpertValidationRegistryTest.php
+```
+
 ## Liens
 
 - #1904 (validation experte multi-pays), #1912 (Sénégal — prioritaire P1),

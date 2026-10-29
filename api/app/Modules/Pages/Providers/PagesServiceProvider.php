@@ -12,6 +12,8 @@ use App\Modules\Pages\Domain\CustomDomains\Dns\DnsResolver;
 use App\Modules\Pages\Domain\CustomDomains\Dns\NativeDnsResolver;
 use App\Modules\Pages\Domain\CustomDomains\Providers\InMemoryCustomDomainProvider;
 use App\Modules\Pages\Domain\Services\PageCustomDomainService;
+use App\Modules\Pages\Infrastructure\Services\PageProjectionReader;
+use App\Shared\Contracts\Pages\PageProjectionReader as PageProjectionReaderContract;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -43,6 +45,11 @@ final class PagesServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(PageBlockSchemaValidator::class, static fn (): PageBlockSchemaValidator => new PageBlockSchemaValidator);
+
+        // #8727 — lecture de la projection Page consommée par Showcase (double
+        // lecture). Le contrat est dans `Shared` pour que Showcase n'importe
+        // jamais `Modules\Pages` (garde #5584).
+        $this->app->bind(PageProjectionReaderContract::class, PageProjectionReader::class);
 
         $this->app->singleton(PageBlockRegistry::class, function ($app): PageBlockRegistry {
             /** @var iterable<PageBlockProvider> $tagged */

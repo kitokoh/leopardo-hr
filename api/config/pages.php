@@ -46,4 +46,35 @@ return [
         // Sitemap : nombre maximal d'URL par fichier (protocole sitemap : 50 000).
         'sitemap_max_urls' => (int) env('PAGES_SITEMAP_MAX_URLS', 50000),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Double lecture Showcase -> Pages (#8727)
+    |--------------------------------------------------------------------------
+    |
+    | Le backfill (`showcase:pages-backfill`) recopie les vitrines vers Pages,
+    | mais tant que la source maître n'est pas basculée, `company_showcases`
+    | reste la source de vérité. Cette section règle la période de DOUBLE
+    | LECTURE : chaque requête publique lit le legacy, puis relit la Page
+    | correspondante et compare les deux. Aucune réponse n'est modifiée — la
+    | double lecture n'est qu'une observation, et c'est délibéré : une lecture
+    | qui changerait la réponse rendrait impossible d'attribuer une divergence
+    | au legacy ou à la projection.
+    |
+    | `rollout_percent` est un pourcentage déterministe par slug : un visiteur
+    | qui retombe sur la même vitrine voit toujours le même verdict, et monter
+    | le pourcentage ne fait qu'ajouter des vitrines au panel (jamais en
+    | retirer). Monté sans réglage explicite, le rollout vaut 0 : rien n'est
+    | doublé.
+    |
+    */
+    'double_read' => [
+        'enabled' => (bool) env('PAGES_DOUBLE_READ_ENABLED', false),
+        'rollout_percent' => (int) env('PAGES_DOUBLE_READ_ROLLOUT_PERCENT', 0),
+
+        // Une divergence est-elle journalisée en `warning` (true) ou
+        // seulement comptée (false) ? Une divergence n'est pas une erreur :
+        // elle signale un écart de projection à arbitrer avant bascule.
+        'log_divergences' => (bool) env('PAGES_DOUBLE_READ_LOG_DIVERGENCES', true),
+    ],
 ];

@@ -83,4 +83,5 @@ return [
     'line_income_tax' => 'Gelir vergisi',
     'line_employer_contributions' => 'İşveren katkıları',
     'line_flat_tax' => 'Asgari mali vergi',
+    'unvalidated_confidence_level' => '":country" için bordro referansı, uzman doğrulaması olmadan ":level" düzeyini iddia ediyor: :reason. docs/payroll/VALIDATION_EXPERTE.md dosyasına imzalı bir form ekleyin (bkz. #7941) veya referansı "pilot" olarak geri alın.',
 ];
