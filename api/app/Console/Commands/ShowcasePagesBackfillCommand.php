@@ -10,6 +10,7 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\Pages\Domain\Enums\PageStatus;
 use App\Modules\Pages\Domain\Models\Page;
 use App\Modules\Pages\Domain\Models\PageBlockModel;
+use App\Modules\Showcase\Domain\Enums\PageProjectionStatus;
 use App\Modules\Showcase\Domain\Models\CompanyShowcase;
 use App\Modules\Showcase\Domain\Models\CompanyShowcaseSection;
 use App\Modules\Showcase\Domain\Support\ShowcasePageProjection;
@@ -269,8 +270,11 @@ class ShowcasePagesBackfillCommand extends Command
                 // Contrainte `pages_published_requires_date` : une Page publiée
                 // sans date est rejetée par la base, donc on recopie celle de
                 // la vitrine pour ne pas antidater la mise en ligne.
+                // La projection raisonne sur SON enum (Domain Showcase, sans
+                // dépendance à Pages) : la traduction vers `PageStatus` se fait
+                // ici, en Infrastructure, où le module Pages est légitime.
                 'published_at' => ShowcasePageProjection::effectivePublishedAt(
-                    PageStatus::from((string) $row['status']),
+                    PageProjectionStatus::from((string) $row['status']),
                     is_string($row['published_at'] ?? null)
                         ? \Carbon\CarbonImmutable::parse((string) $row['published_at'])
                         : null,

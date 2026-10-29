@@ -7,6 +7,7 @@ namespace App\Console\Commands;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\Site;
 use App\Core\Tenant\TenantManager;
+use App\Modules\Pages\Domain\Enums\PageStatus;
 use App\Modules\Pages\Domain\Models\Page;
 use App\Modules\Pages\Domain\Models\PageBlockModel;
 use App\Modules\Showcase\Domain\Models\CompanyShowcase;
@@ -189,7 +190,12 @@ class ShowcasePagesParityCommand extends Command
                 $reasons[] = sprintf('slug « %s » ≠ « %s »', $page->slug, $showcase->slug);
             }
 
-            $expectedStatus = ShowcasePageProjection::pageStatus($showcase->status);
+            // La projection (Domain Showcase) rend un enum LOCAL à Showcase :
+            // la traduction vers `PageStatus` appartient à cette couche, seule
+            // autorisée à connaître le module Pages (règle d'isolation #5584).
+            $expectedStatus = PageStatus::from(
+                ShowcasePageProjection::pageStatus($showcase->status)->value
+            );
             if ($page->status !== $expectedStatus) {
                 $reasons[] = sprintf('statut %s ≠ attendu %s', $page->status->value, $expectedStatus->value);
             }

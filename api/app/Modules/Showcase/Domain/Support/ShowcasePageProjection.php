@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Showcase\Domain\Support;
 
-use App\Modules\Pages\Domain\Enums\PageStatus;
 use App\Modules\Showcase\Domain\Enums\CompanyShowcaseStatus;
+use App\Modules\Showcase\Domain\Enums\PageProjectionStatus;
 use App\Modules\Showcase\Domain\Enums\ShowcaseSectionType;
 
 /**
@@ -49,11 +49,11 @@ final class ShowcasePageProjection
      * → `draft`. Une vitrine `suspended` (ou tout statut futur) ne doit jamais
      * devenir publiquement visible par accident — en cas de doute, on ferme.
      */
-    public static function pageStatus(CompanyShowcaseStatus $status): PageStatus
+    public static function pageStatus(CompanyShowcaseStatus $status): PageProjectionStatus
     {
         return match ($status) {
-            CompanyShowcaseStatus::Published => PageStatus::Published,
-            default => PageStatus::Draft,
+            CompanyShowcaseStatus::Published => PageProjectionStatus::Published,
+            default => PageProjectionStatus::Draft,
         };
     }
 
@@ -131,10 +131,10 @@ final class ShowcasePageProjection
      * vérifiable dans le rapport, plutôt que de refuser la migration.
      */
     public static function effectivePublishedAt(
-        PageStatus $status,
+        PageProjectionStatus $status,
         ?\DateTimeInterface $showcasePublishedAt,
     ): ?\DateTimeInterface {
-        if ($status !== PageStatus::Published) {
+        if ($status !== PageProjectionStatus::Published) {
             return null;
         }
 
