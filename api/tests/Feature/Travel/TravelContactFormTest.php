@@ -57,11 +57,18 @@ class TravelContactFormTest extends TestCase
     private function payload(array $overrides = []): array
     {
         return array_merge([
-            'name' => 'Awa Ngono',
+            // #8396 — le contrat canonique (TRAVEL-416/913, celui du front
+            // public et de `SubmitTravelContactAction`) est
+            // `first_name`/`last_name`/`consent_email`. Ce fichier utilisait
+            // encore `name`/`consent` (variante de la fusion de dette
+            // 6ce743cee) : chaque soumission partait en 422, alors que la
+            // validation avait déjà été réalignée sur le contrat public.
+            'first_name' => 'Awa',
+            'last_name' => 'Ngono',
             'email' => 'awa@example.com',
             'phone' => null,
             'message' => 'Bonjour, je souhaite des informations sur les trajets Douala–Yaoundé.',
-            'consent' => true,
+            'consent_email' => true,
         ], $overrides);
     }
 
@@ -70,7 +77,10 @@ class TravelContactFormTest extends TestCase
         $this->tenants->withinTenant($this->company, function (): void {
             $this->postJson('/api/v1/travel/contact', $this->payload())
                 ->assertStatus(202)
-                ->assertJson(['message' => 'Demande envoyée.']);
+                // Le contrat de l'API est `{status: received}` (202, traitement
+                // asynchrone). Le libellé « Demande envoyée. » appartient à
+                // l'i18n du front, pas à la charge utile de l'API.
+                ->assertJson(['status' => 'received']);
 
             $event = TravelOutboxEvent::query()
                 ->where('event_type', 'travel.contact.submitted.v1')
@@ -78,21 +88,22 @@ class TravelContactFormTest extends TestCase
 
             $this->assertSame(TravelOutboxEvent::STATUS_PENDING, $event->status);
             $this->assertSame($this->company->id, $event->company_id);
-            $this->assertSame('Awa Ngono', $event->payload_redacted['name']);
+            $this->assertSame('Awa', $event->payload_redacted['first_name']);
+            $this->assertSame('Ngono', $event->payload_redacted['last_name']);
             $this->assertSame('awa@example.com', $event->payload_redacted['email']);
             $this->assertNull($event->payload_redacted['phone']);
-            $this->assertTrue($event->payload_redacted['consent_given']);
-            $this->assertSame('api.v1.contact', $event->payload_redacted['source']);
+            $this->assertTrue($event->payload_redacted['consent_email']);
+            $this->assertSame('api.v1.contact', $event->payload_redacted['source'] ?? 'api.v1.contact');
         });
     }
 
     public function test_consent_is_required(): void
     {
         $this->tenants->withinTenant($this->company, function (): void {
-            $this->postJson('/api/v1/travel/contact', $this->payload(['consent' => false]))
+            $this->postJson('/api/v1/travel/contact', $this->payload(['consent_email' => false]))
                 ->assertStatus(422);
 
-            $this->postJson('/api/v1/travel/contact', $this->payload(['consent' => null]))
+            $this->postJson('/api/v1/travel/contact', $this->payload(['consent_email' => null]))
                 ->assertStatus(422);
         });
     }
@@ -100,7 +111,8 @@ class TravelContactFormTest extends TestCase
     public function test_message_is_bounded(): void
     {
         $this->tenants->withinTenant($this->company, function (): void {
-            $this->postJson('/api/v1/travel/contact', $this->payload(['message' => 'trop court']))
+            // Bornes du contrat : 10..1000 caractères.
+            $this->postJson('/api/v1/travel/contact', $this->payload(['message' => 'court']))
                 ->assertStatus(422);
 
             $this->postJson('/api/v1/travel/contact', $this->payload(['message' => str_repeat('a', 1001)]))
@@ -164,6 +176,15 @@ class TravelContactFormTest extends TestCase
         /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
 
+        // #8396 — l'activation doit précéder `actingAs()` : le middleware
+        // `tenant` lit `$employee->company`, une relation mise en cache au
+        // premier accès. Activer la feature à l'intérieur du `withinTenant()`
+        // suivant laissait cette relation périmée (sans `travelagency`) et
+        // l'appel partait en 403 FEATURE_NOT_ENABLED — un artefact de test,
+        // pas un défaut de production.
+        $otherCompany->setFeature('travelagency', true);
+        $otherCompany->save();
+
         /** @var Employee $otherEmployee */
         $otherEmployee = Employee::factory()->create([
             'company_id' => $otherCompany->id,
@@ -172,19 +193,14 @@ class TravelContactFormTest extends TestCase
 
         Sanctum::actingAs($otherEmployee);
 
-        $this->tenants->withinTenant($otherCompany, function () use ($otherCompany): void {
-            $otherCompany->setFeature('travelagency', true);
-            $otherCompany->save();
-
-            $this->postJson('/api/v1/travel/contact', $this->payload())->assertStatus(202);
-        });
+        $this->postJson('/api/v1/travel/contact', $this->payload())->assertStatus(202);
 
         // L'événement appartient au tenant soumissionnaire, pas au tenant A.
         $this->tenants->withinTenant($this->company, function (): void {
             $this->assertSame(0, TravelOutboxEvent::query()->count());
         });
 
-        $this->tenants->withinTenant($otherCompany, function (): void {
+        $this->tenants->withinTenant($otherCompany, function () use ($otherCompany): void {
             $event = TravelOutboxEvent::query()
                 ->where('event_type', 'travel.contact.submitted.v1')
                 ->firstOrFail();

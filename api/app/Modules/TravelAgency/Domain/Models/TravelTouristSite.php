@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 /**
  * Site touristique de l'annuaire (TRAVEL-909, issue #6112).
@@ -59,6 +58,4 @@ class TravelTouristSite extends Model
     {
         return $this->belongsTo(TravelCity::class, 'city_id');
     }
-
-
 }

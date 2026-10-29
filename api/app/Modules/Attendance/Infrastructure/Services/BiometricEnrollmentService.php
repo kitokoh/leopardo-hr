@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Infrastructure\Services;
 
-use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 
@@ -84,4 +84,3 @@ class BiometricEnrollmentService
         return $request->fresh();
     }
 }
-

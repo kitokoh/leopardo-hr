@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
 class CalendarEvent extends Model
 {
     use BelongsToCompany;
+
     protected $fillable = [
         'company_id',
         'employee_id',
@@ -43,4 +44,3 @@ class CalendarEvent extends Model
         'all_day' => 'boolean',
     ];
 }
-

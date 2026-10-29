@@ -95,7 +95,12 @@ class TravelEngagementController extends Controller
             'actor_id' => $actor->id,
         ]);
 
-        return new JsonResponse(['data' => ['shared' => true, 'share_id' => $share->id]], 201);
+        // #8396 — le partage répondait 201. `POST /share` n'altère pas
+        // l'identité de la ressource : il trace un évènement d'engagement et
+        // renvoie l'agrégat, comme `like`/`rate` qui répondent 200. Un 201
+        // fait en outre échouer tout client qui n'accepte que les statuts de
+        // succès « lecture » sur cette surface.
+        return new JsonResponse(['data' => ['shared' => true, 'share_id' => $share->id]]);
     }
 
     public function rate(Request $request, TravelArticle $travelArticle): JsonResponse
@@ -111,7 +116,12 @@ class TravelEngagementController extends Controller
             abort(403);
         }
 
-        $rating = (int) $request->json('rating');
+        // #8396 — la note se lisait uniquement dans `rating` (contrat OpenAPI).
+        // Les clients éditoriaux envoient `stars` : ils recevaient un 422 alors
+        // que leur note était valide. Les deux clés sont acceptées, `rating`
+        // restant la canonique du contrat documenté.
+        $raw = $request->json('rating') ?? $request->json('stars');
+        $rating = is_numeric($raw) ? (int) $raw : 0;
 
         if ($rating < 1 || $rating > 5) {
             abort(422, 'Rating must be between 1 and 5.');
@@ -179,23 +189,31 @@ class TravelEngagementController extends Controller
         ];
     }
 
-    public function summary(Request $request, TravelArticle $article): JsonResponse
+    /**
+     * Agrégats d'engagement d'un article (likes, partages, note moyenne).
+     *
+     * #8396 — le paramètre s'appelait `$article` alors que la route expose
+     * `{travelArticle}`. La liaison implicite de Laravel se fait par NOM de
+     * paramètre : `$article` n'était jamais résolu et la route répondait 404
+     * pour tout identifiant valide. Aligné sur le nom de la route.
+     */
+    public function summary(Request $request, TravelArticle $travelArticle): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($article->company_id !== $actor->company_id) {
+        if ($travelArticle->company_id !== $actor->company_id) {
             abort(404);
         }
 
         return response()->json(['data' => [
-            'likes_count' => $this->likesCount($article),
+            'likes_count' => $this->likesCount($travelArticle),
             'shares_count' => TravelShare::query()
-                ->where('company_id', $article->company_id)
-                ->where('article_id', $article->id)
+                ->where('company_id', $travelArticle->company_id)
+                ->where('article_id', $travelArticle->id)
                 ->count(),
-            'rating_avg' => $this->ratingAverage($article),
-            'ratings_count' => $this->ratingsCount($article),
+            'rating_avg' => $this->ratingAverage($travelArticle),
+            'ratings_count' => $this->ratingsCount($travelArticle),
         ]]);
     }
 
@@ -209,10 +227,15 @@ class TravelEngagementController extends Controller
 
     private function ratingAverage(TravelArticle $article): ?float
     {
+        // #8396 — `avg('stars')` visait une colonne inexistante : la table
+        // `travel_ratings` stocke `rating` (voir migration 6106 et le modèle).
+        // PostgreSQL laissait passer la requête et renvoyait `null` : la note
+        // moyenne n'a JAMAIS été exposée, même avec des notes en base — le
+        // client affichait donc « 0 avis » sur des articles notés.
         $avg = TravelRating::query()
             ->where('company_id', $article->company_id)
             ->where('article_id', $article->id)
-            ->avg('stars');
+            ->avg('rating');
 
         return $avg === null ? null : round((float) $avg, 2);
     }

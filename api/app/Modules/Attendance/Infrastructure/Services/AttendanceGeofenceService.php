@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Infrastructure\Services;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\Site;
 use App\Modules\Attendance\Domain\Contracts\GeofenceValidatorInterface;
 
@@ -117,4 +117,3 @@ class AttendanceGeofenceService implements GeofenceValidatorInterface
         ];
     }
 }
-

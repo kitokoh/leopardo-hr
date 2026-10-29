@@ -286,7 +286,13 @@ class TravelWebhookTest extends TestCase
             return TravelWebhookDelivery::query()->create([
                 'company_id' => $trip->company_id,
                 'subscription_id' => $subscription->id,
-                'outbox_event_id' => 42,
+                // #8396 — l'ancienne valeur `42` était un ID d'outbox codé en
+                // dur qui n'existe dans aucune base : la clé étrangère
+                // `travel_webhook_deliveries_outbox_event_id_foreign` rejetait
+                // l'INSERT en `23503` avant même que la logique de retry ne
+                // s'exécute. La colonne est nullable — la livraison à tester
+                // n'a pas besoin d'un événement d'outbox pour exister.
+                'outbox_event_id' => null,
                 'event_type' => 'travel.booking.confirmed.v1',
                 'payload_redacted' => ['trip_id' => $trip->id],
                 'status' => TravelWebhookDelivery::STATUS_PENDING,

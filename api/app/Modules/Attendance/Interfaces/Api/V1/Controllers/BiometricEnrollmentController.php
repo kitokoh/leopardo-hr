@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Infrastructure\Services\BiometricEnrollmentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -140,4 +140,3 @@ class BiometricEnrollmentController extends Controller
         ];
     }
 }
-

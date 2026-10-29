@@ -49,6 +49,4 @@ class TravelTripOccupancy extends Model
         'total_seats' => 'integer',
         'occupancy_rate' => 'float',
     ];
-
-
 }

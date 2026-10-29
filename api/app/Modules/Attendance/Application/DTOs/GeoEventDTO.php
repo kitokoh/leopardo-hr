@@ -20,8 +20,7 @@ final class GeoEventDTO
         public readonly ?int $accuracyMeters,
         public readonly ?Carbon $deviceTimestamp,
         public readonly array $metadata = [],
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array<string, mixed>  $data

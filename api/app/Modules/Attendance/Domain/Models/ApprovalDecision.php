@@ -49,4 +49,3 @@ class ApprovalDecision extends Model
         return $this->belongsTo(Employee::class, 'approver_id');
     }
 }
-

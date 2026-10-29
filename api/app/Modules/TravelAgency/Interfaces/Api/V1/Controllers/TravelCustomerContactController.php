@@ -23,6 +23,13 @@ use Illuminate\Http\Request;
  */
 class TravelCustomerContactController extends Controller
 {
+    /**
+     * Canaux de consentement gérés (RGPD §8.5).
+     *
+     * @var list<string>
+     */
+    private const CONSENT_CHANNELS = ['email', 'sms', 'whatsapp'];
+
     public function __construct(private readonly TravelManualNotificationAction $notify) {}
 
     /**
@@ -45,7 +52,17 @@ class TravelCustomerContactController extends Controller
         $search = $request->query('search');
         $search = is_string($search) ? trim($search) : '';
 
-        $contacts = TravelCustomerContact::query()
+        // #8396 — l'enveloppe de liste ne portait pas de `meta` : le client ne
+        // pouvait afficher ni total ni page, et le filtre `?consent=` documenté
+        // (TRAVEL-913) n'existait pas. Les deux sont désormais servis.
+        $consent = $request->query('consent');
+        $consent = is_string($consent) ? strtolower(trim($consent)) : '';
+
+        if (! in_array($consent, self::CONSENT_CHANNELS, true)) {
+            $consent = '';
+        }
+
+        $query = TravelCustomerContact::query()
             ->where('company_id', $actor->company_id)
             ->when($search !== '', function ($query) use ($search): void {
                 $query->where(function ($sub) use ($search): void {
@@ -55,24 +72,39 @@ class TravelCustomerContactController extends Controller
                         ->orWhere('phone', 'ilike', '%'.$search.'%');
                 });
             })
+            ->when($consent !== '', fn ($query) => $query->where("{$consent}_consent_given", true));
+
+        $total = (clone $query)->count();
+
+        $contacts = $query
             ->orderByDesc('id')
             ->limit(200)
             ->get();
 
-        return response()->json(['data' => $contacts->map(fn (TravelCustomerContact $contact) => [
-            'id' => $contact->id,
-            'first_name' => $contact->first_name,
-            'last_name' => $contact->last_name,
-            'email' => $contact->email,
-            'phone' => $contact->phone,
-            'email_consent_given' => $contact->email_consent_given,
-            'email_consent_at' => $contact->email_consent_at?->toIso8601String(),
-            'sms_consent_given' => $contact->sms_consent_given,
-            'sms_consent_at' => $contact->sms_consent_at?->toIso8601String(),
-            'whatsapp_consent_given' => $contact->whatsapp_consent_given,
-            'whatsapp_consent_at' => $contact->whatsapp_consent_at?->toIso8601String(),
-            'created_at' => $contact->created_at?->toIso8601String(),
-        ])]);
+        return response()->json([
+            'data' => $contacts->map(fn (TravelCustomerContact $contact) => [
+                'id' => $contact->id,
+                'first_name' => $contact->first_name,
+                'last_name' => $contact->last_name,
+                'email' => $contact->email,
+                'phone' => $contact->phone,
+                'email_consent_given' => $contact->email_consent_given,
+                'email_consent_at' => $contact->email_consent_at?->toIso8601String(),
+                'sms_consent_given' => $contact->sms_consent_given,
+                'sms_consent_at' => $contact->sms_consent_at?->toIso8601String(),
+                'whatsapp_consent_given' => $contact->whatsapp_consent_given,
+                'whatsapp_consent_at' => $contact->whatsapp_consent_at?->toIso8601String(),
+                'created_at' => $contact->created_at?->toIso8601String(),
+            ])->values(),
+            'meta' => [
+                'total' => $total,
+                'count' => $contacts->count(),
+                'filters' => [
+                    'search' => $search,
+                    'consent' => $consent === '' ? null : $consent,
+                ],
+            ],
+        ]);
     }
 
     /**
@@ -94,9 +126,9 @@ class TravelCustomerContactController extends Controller
         }
 
         $changes = [
-            'email_consent_given' => $request->validated('email_consent_given'),
-            'sms_consent_given' => $request->validated('sms_consent_given'),
-            'whatsapp_consent_given' => $request->validated('whatsapp_consent_given'),
+            'email_consent_given' => $request->validated('email_consent') ?? $request->validated('email_consent_given'),
+            'sms_consent_given' => $request->validated('sms_consent') ?? $request->validated('sms_consent_given'),
+            'whatsapp_consent_given' => $request->validated('whatsapp_consent') ?? $request->validated('whatsapp_consent_given'),
         ];
 
         $fill = [];

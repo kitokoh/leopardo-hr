@@ -454,17 +454,20 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::delete('/articles/{travelArticle}', [TravelArticleController::class, 'destroy']);
         Route::post('/articles/{travelArticle}/publish', [TravelArticleController::class, 'publish']);
         Route::post('/articles/{travelArticle}/moderate', [TravelArticleController::class, 'moderate']);
-        Route::get('/articles/{article}/comments', [TravelCommentController::class, 'index']);
-        Route::post('/articles/{article}/comments', [TravelCommentController::class, 'store']);
-        Route::delete('/comments/{comment}', [TravelCommentController::class, 'destroy']);
-        Route::post('/comments/{comment}/approve', [TravelCommentController::class, 'approve']);
-        Route::post('/comments/{comment}/reject', [TravelCommentController::class, 'reject']);
-        Route::post('/comments/{comment}/report', [TravelCommentController::class, 'report']);
-        Route::post('/articles/{article}/like', [TravelEngagementController::class, 'like']);
-        Route::post('/articles/{article}/unlike', [TravelEngagementController::class, 'unlike']);
-        Route::post('/articles/{article}/share', [TravelEngagementController::class, 'share']);
-        Route::post('/articles/{article}/rate', [TravelEngagementController::class, 'rate']);
-        Route::get('/articles/{article}/engagement', [TravelEngagementController::class, 'summary']);
+        // #8396 — même défaut que dans le groupe `community` : `{article}`
+        // côté route, `$travelArticle`/`$travelComment` côté contrôleur. Les
+        // noms de paramètres doivent coïncider pour la liaison implicite.
+        Route::get('/articles/{travelArticle}/comments', [TravelCommentController::class, 'index']);
+        Route::post('/articles/{travelArticle}/comments', [TravelCommentController::class, 'store']);
+        Route::delete('/comments/{travelComment}', [TravelCommentController::class, 'destroy']);
+        Route::post('/comments/{travelComment}/approve', [TravelCommentController::class, 'approve']);
+        Route::post('/comments/{travelComment}/reject', [TravelCommentController::class, 'reject']);
+        Route::post('/comments/{travelComment}/report', [TravelCommentController::class, 'report']);
+        Route::post('/articles/{travelArticle}/like', [TravelEngagementController::class, 'like']);
+        Route::post('/articles/{travelArticle}/unlike', [TravelEngagementController::class, 'unlike']);
+        Route::post('/articles/{travelArticle}/share', [TravelEngagementController::class, 'share']);
+        Route::post('/articles/{travelArticle}/rate', [TravelEngagementController::class, 'rate']);
+        Route::get('/articles/{travelArticle}/engagement', [TravelEngagementController::class, 'summary']);
         Route::get('/quizzes/{travelQuiz}', [TravelQuizController::class, 'show']);
         Route::post('/quizzes/{travelQuiz}/publish', [TravelQuizController::class, 'publish']);
         Route::post('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'storeQuestion']);
@@ -491,18 +494,23 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/articles/{travelArticle}/publish', [TravelArticleController::class, 'publish']);
             Route::post('/articles/{travelArticle}/moderate', [TravelArticleController::class, 'moderate']);
 
-            Route::get('/articles/{article}/comments', [TravelCommentController::class, 'index']);
-            Route::post('/articles/{article}/comments', [TravelCommentController::class, 'store']);
-            Route::delete('/comments/{comment}', [TravelCommentController::class, 'destroy']);
-            Route::post('/comments/{comment}/approve', [TravelCommentController::class, 'approve']);
-            Route::post('/comments/{comment}/reject', [TravelCommentController::class, 'reject']);
-            Route::post('/comments/{comment}/report', [TravelCommentController::class, 'report']);
+            // #8396 — le paramètre de route était `{article}` alors que le
+            // contrôleur injecte `TravelArticle $travelArticle`. La liaison
+            // implicite se fait par NOM de paramètre : `$travelArticle` restait
+            // vide et Laravel renvoyait 404 pour tout identifiant valide. Le
+            // nom doit correspondre à celui du contrôleur.
+            Route::get('/articles/{travelArticle}/comments', [TravelCommentController::class, 'index']);
+            Route::post('/articles/{travelArticle}/comments', [TravelCommentController::class, 'store']);
+            Route::delete('/comments/{travelComment}', [TravelCommentController::class, 'destroy']);
+            Route::post('/comments/{travelComment}/approve', [TravelCommentController::class, 'approve']);
+            Route::post('/comments/{travelComment}/reject', [TravelCommentController::class, 'reject']);
+            Route::post('/comments/{travelComment}/report', [TravelCommentController::class, 'report']);
 
-            Route::post('/articles/{article}/like', [TravelEngagementController::class, 'like']);
-            Route::post('/articles/{article}/unlike', [TravelEngagementController::class, 'unlike']);
-            Route::post('/articles/{article}/share', [TravelEngagementController::class, 'share']);
-            Route::post('/articles/{article}/rate', [TravelEngagementController::class, 'rate']);
-            Route::get('/articles/{article}/engagement', [TravelEngagementController::class, 'summary']);
+            Route::post('/articles/{travelArticle}/like', [TravelEngagementController::class, 'like']);
+            Route::post('/articles/{travelArticle}/unlike', [TravelEngagementController::class, 'unlike']);
+            Route::post('/articles/{travelArticle}/share', [TravelEngagementController::class, 'share']);
+            Route::post('/articles/{travelArticle}/rate', [TravelEngagementController::class, 'rate']);
+            Route::get('/articles/{travelArticle}/engagement', [TravelEngagementController::class, 'summary']);
 
             Route::get('/quizzes/{travelQuiz}', [TravelQuizController::class, 'show']);
             Route::post('/quizzes/{travelQuiz}/publish', [TravelQuizController::class, 'publish']);
@@ -519,7 +527,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         });
 
         Route::get('/contacts', [TravelCustomerContactController::class, 'index']);
-        Route::patch('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent'])->whereNumber('travelCustomerContact');
-        Route::put('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent'])->whereNumber('travelCustomerContact');
+        // #8396 — PATCH/PUT `/consent` (contrat `{channel, given}`, un canal)
+        // étaient branchés sur `updateConsent` (le bulk `{*_consent_given}`) :
+        // le corps était ignoré, la réponse renvoyait `channel: null` et un
+        // canal inconnu passait en 200 au lieu de 422. Le POST documenté du
+        // bulk n'existait pas du tout (405).
+        Route::patch('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsentChannel'])->whereNumber('travelCustomerContact');
+        Route::put('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsentChannel'])->whereNumber('travelCustomerContact');
+        Route::post('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent'])->whereNumber('travelCustomerContact');
         Route::post('/contacts/{travelCustomerContact}/notify', [TravelCustomerContactController::class, 'notify']);
     });

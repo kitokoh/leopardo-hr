@@ -52,13 +52,21 @@ class TravelRoundTripTest extends TestCase
     /**
      * @return array{trip: TravelTrip, class: TravelClass}
      */
-    private function publishedTripWithPrice(Company $company): array
+    private function publishedTripWithPrice(Company $company, ?TravelClass $class = null): array
     {
-        return app(TenantManager::class)->withinTenant($company, function (): array {
+        return app(TenantManager::class)->withinTenant($company, function () use ($class): array {
             $trip = TravelTrip::factory()->create(['status' => 'published', 'total_seats' => 40]);
             app(GenerateTripSeatsAction::class)->execute($trip);
 
-            $class = TravelClass::factory()->create();
+            // #8396 — `TravelClass` est un RÉFÉRENTIEL tenant (code unique par
+            // tenant), pas une propriété du trajet : un passager choisit « Éco »
+            // et cette classe est tarifée trajet par trajet. Le helper créait
+            // une classe neuve à chaque trajet, donc le retour n'était tarifé
+            // que sur SA classe : passer la classe de l'aller au retour n'avait
+            // aucun prix, d'où le 422. La classe est désormais partagée entre
+            // les deux sens, comme dans le modèle réel.
+            $class ??= TravelClass::factory()->create();
+
             TravelTripPrice::factory()->create([
                 'trip_id' => $trip->id,
                 'class_id' => $class->id,
@@ -76,7 +84,7 @@ class TravelRoundTripTest extends TestCase
     private function roundTripSetup(Company $company): array
     {
         ['trip' => $outbound, 'class' => $class] = $this->publishedTripWithPrice($company);
-        ['trip' => $return] = $this->publishedTripWithPrice($company);
+        ['trip' => $return] = $this->publishedTripWithPrice($company, $class);
 
         return ['outbound' => $outbound, 'return' => $return, 'class' => $class];
     }
@@ -221,7 +229,6 @@ class TravelRoundTripTest extends TestCase
         });
     }
 
-
     public function test_round_trip_creates_two_linked_bookings(): void
     {
         /** @var Company $company */
@@ -258,7 +265,6 @@ class TravelRoundTripTest extends TestCase
         $this->assertSame(2, TravelBooking::query()->count());
     }
 
-
     public function test_round_trip_applies_combined_tariff_discount_on_return_leg(): void
     {
         config()->set('travel.pricing.round_trip_discount_percent', 10);
@@ -287,7 +293,6 @@ class TravelRoundTripTest extends TestCase
         $this->assertSame(10000, $outbound['total_amount_minor']);
         $this->assertSame(9000, $returnBooking->total_amount_minor);
     }
-
 
     public function test_round_trip_can_be_cancelled_per_leg(): void
     {

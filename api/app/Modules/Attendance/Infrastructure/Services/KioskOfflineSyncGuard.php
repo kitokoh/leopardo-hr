@@ -35,8 +35,8 @@ final class KioskOfflineSyncGuard
      * Valide l'enveloppe signée d'un batch offline.
      *
      * @param  array<string, mixed>|null  $deviceState
-     * @return int|null  compteur validé du batch, ou null en mode hérité
-     *                   (pas d'enveloppe → pas d'exigence d'intégrité)
+     * @return int|null compteur validé du batch, ou null en mode hérité
+     *                  (pas d'enveloppe → pas d'exigence d'intégrité)
      */
     public function validateBatch(AttendanceKiosk $kiosk, ?array $deviceState, string $plainSyncToken, string $plainDeviceCode): ?int
     {

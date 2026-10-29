@@ -24,9 +24,7 @@ final class TravelSalesSettlementService
 {
     public const EVENT_SALES_SETTLED = 'travel.sales.settled.v1';
 
-    public function __construct(private readonly TravelOutboxPublisher $outbox)
-    {
-    }
+    public function __construct(private readonly TravelOutboxPublisher $outbox) {}
 
     /**
      * Calcule et publie la synthèse des ventes confirmées d'une période.

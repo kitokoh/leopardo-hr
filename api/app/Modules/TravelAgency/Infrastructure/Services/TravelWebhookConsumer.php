@@ -68,11 +68,21 @@ final class TravelWebhookConsumer implements TravelOutboxConsumer
             ->filter(fn (TravelWebhookSubscription $s): bool => $s->subscribesTo((string) $payload['event_type']));
 
         foreach ($subscriptions as $subscription) {
-            DB::transaction(function () use ($subscription, $companyId, $payload): void {
+            // #8396 — `outbox_event_id` valait `0` quand l'enveloppe ne portait
+            // ni `outbox_event_id` ni `event_id` : `0` n'existe pas dans
+            // `travel_outbox_events`, donc la clé étrangère rejetait l'INSERT
+            // (`23503`), la transaction était avortée (`25P02`) et l'événement
+            // n'était JAMAIS livré — silencieusement, après épuisement des
+            // retries. La colonne est nullable et sa FK est `nullOnDelete` :
+            // l'absence d'ID d'outbox est un état légitime, pas un zéro.
+            $outboxEventId = $payload['outbox_event_id'] ?? $payload['event_id'] ?? null;
+            $outboxEventId = is_numeric($outboxEventId) ? (int) $outboxEventId : null;
+
+            DB::transaction(function () use ($subscription, $companyId, $payload, $outboxEventId): void {
                 $created = TravelWebhookDelivery::query()->firstOrCreate(
                     [
                         'subscription_id' => $subscription->id,
-                        'outbox_event_id' => (int) ($payload['outbox_event_id'] ?? $payload['event_id'] ?? 0),
+                        'outbox_event_id' => $outboxEventId,
                     ],
                     [
                         'company_id' => $companyId,
