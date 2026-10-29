@@ -5,20 +5,22 @@ declare(strict_types=1);
 namespace App\Core\Auth\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Application\Actions\ChangePasswordAction;
+use App\Core\Auth\Application\Actions\HandleGoogleCallbackAction;
+use App\Core\Auth\Application\Actions\HandleGoogleTokenAction;
 use App\Core\Auth\Application\Actions\LoginAction;
 use App\Core\Auth\Application\Actions\LogoutAction;
 use App\Core\Auth\Application\Actions\RefreshTokenAction;
 use App\Core\Auth\Application\Actions\RegisterAction;
+use App\Core\Auth\Application\Actions\StartGoogleRedirectAction;
 use App\Core\Auth\Application\Actions\UpdateProfileAction;
+use App\Core\Auth\Application\DTOs\GoogleSsoResult;
 use App\Core\Auth\Domain\Exceptions\TwoFactorException;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Auth\Infrastructure\Services\AuthService;
 use App\Core\Auth\Infrastructure\Services\TwoFactorAuthService;
 use App\Core\Auth\Interfaces\Api\V1\Requests\ChangePasswordRequest;
 use App\Core\Auth\Interfaces\Api\V1\Requests\LoginRequest;
 use App\Core\Auth\Interfaces\Api\V1\Requests\StoreRegistrationRequest;
 use App\Core\Auth\Interfaces\Api\V1\Requests\UpdateProfileRequest;
-use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
@@ -26,11 +28,8 @@ use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use App\Shared\Models\Language;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Laravel\Socialite\Facades\Socialite;
-use Laravel\Socialite\Two\GoogleProvider;
 
 class AuthController extends Controller
 {
@@ -42,7 +41,9 @@ class AuthController extends Controller
         private readonly UpdateProfileAction $updateProfileAction,
         private readonly ChangePasswordAction $changePasswordAction,
         private readonly TwoFactorAuthService $twoFactorService,
-        private readonly AuthService $authService,
+        private readonly StartGoogleRedirectAction $startGoogleRedirectAction,
+        private readonly HandleGoogleCallbackAction $handleGoogleCallbackAction,
+        private readonly HandleGoogleTokenAction $handleGoogleTokenAction,
     ) {}
 
     public function login(LoginRequest $request): JsonResponse
@@ -232,27 +233,13 @@ class AuthController extends Controller
         return new JsonResponse(['message' => 'LOGGED_OUT']);
     }
 
+    /**
+     * #7962 — le contrôleur ne garde que le transport : générer le `state`
+     * anti-CSRF (#2619), le poser en session avec l'intention du parcours, et
+     * traduire le résultat de l'Action en réponse HTTP.
+     */
     public function redirectToGoogle(Request $request): mixed
     {
-        // Issue #5170 : garde de configuration. En prod (Render), des
-        // GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET/GOOGLE_REDIRECT_URL absents
-        // faisaient planter Socialite au moment de construire l'URL →
-        // exception non gérée → 500 INTERNAL_ERROR (page JSON brute côté
-        // vitrine). On échoue rapidement avec un 503 explicite + log
-        // opérationnel (quelles variables manquent) au lieu d'un 500 générique.
-        if (! $this->googleOauthConfigured()) {
-            Log::error('auth.google.not_configured', [
-                'client_id' => filled(config('services.google.client_id')),
-                'client_secret' => filled(config('services.google.client_secret')),
-                'redirect' => filled(config('services.google.redirect')),
-            ]);
-
-            return new JsonResponse([
-                'error' => 'GOOGLE_OAUTH_NOT_CONFIGURED',
-                'message' => __('errors.GOOGLE_OAUTH_NOT_CONFIGURED'),
-            ], 503);
-        }
-
         // Issue #2619 : état aléatoire en session (anti-CSRF login) — validé
         // au callback. Plus de Socialite stateless sans protection.
         $state = Str::random(40);
@@ -274,38 +261,13 @@ class AuthController extends Controller
             'google_oauth_plan' => is_string($plan) ? mb_substr($plan, 0, 80) : null,
         ]);
 
-        try {
-            /** @var GoogleProvider $google */
-            $google = Socialite::driver('google');
+        $result = $this->startGoogleRedirectAction->execute($state);
 
-            return $google->with(['state' => $state])->redirect();
-        } catch (\Throwable $exception) {
-            // Issue #6670 : même avec la config renseignée, Socialite peut
-            // échouer (URL de redirect invalide, provider injoignable, …) —
-            // le 500 INTERNAL_ERROR prod est opaque. On répond 503
-            // actionnable + trace serveur (classe + message, jamais exposés).
-            Log::error('auth.google.redirect_failed', [
-                'exception' => get_class($exception),
-                'message' => $exception->getMessage(),
-            ]);
-
-            return new JsonResponse([
-                'error' => 'GOOGLE_OAUTH_UNAVAILABLE',
-                'message' => __('errors.SERVICE_UNAVAILABLE'),
-            ], 503);
+        if ($result->outcome === 'redirect') {
+            return redirect()->away((string) $result->redirectUrl);
         }
-    }
 
-    /**
-     * Issue #5170 : la redirection Google nécessite les trois variables de
-     * configuration (client_id, client_secret, redirect). Absentes → 503
-     * explicite au lieu d'un 500 générique (constat prod 2026-08-20).
-     */
-    private function googleOauthConfigured(): bool
-    {
-        return filled(config('services.google.client_id'))
-            && filled(config('services.google.client_secret'))
-            && filled(config('services.google.redirect'));
+        return $this->errorResponse($result);
     }
 
     public function handleGoogleCallback(Request $request): JsonResponse
@@ -326,171 +288,13 @@ class AuthController extends Controller
         $googlePlan = session('google_oauth_plan');
         session()->forget(['google_oauth_intent', 'google_oauth_plan']);
 
-        try {
-            /** @var GoogleProvider $google */
-            $google = Socialite::driver('google');
-            /** @var \Laravel\Socialite\Two\User $googleUser */
-            $googleUser = $google->stateless()->user();
-        } catch (\Exception $e) {
-            Log::error('auth.google.callback_failed', ['error' => $e->getMessage()]);
+        $result = $this->handleGoogleCallbackAction->execute(
+            intent: is_string($googleIntent) ? $googleIntent : 'login',
+            plan: is_string($googlePlan) ? $googlePlan : null,
+            rememberCookies: $this->rememberCookieValues($request),
+        );
 
-            return new JsonResponse([
-                'error' => 'GOOGLE_AUTH_FAILED',
-                'message' => __('errors.GOOGLE_AUTH_FAILED'),
-            ], 422);
-        }
-
-        // Issue #5580 : exiger email_verified=true — un compte Google non vérifié
-        // (ou un IdP qui n'atteste pas la possession) pourrait usurper n'importe
-        // quel employé partageant le même email.
-        $rawGoogleUser = $googleUser->getRaw();
-        if (empty($rawGoogleUser['email_verified'])) {
-            Log::warning('auth.google.callback_email_not_verified', ['email' => $googleUser->getEmail()]);
-
-            return new JsonResponse([
-                'error' => 'EMAIL_NOT_VERIFIED',
-                'message' => __('errors.EMAIL_NOT_VERIFIED'),
-            ], 401);
-        }
-
-        // audit(securite) #6531 : résolution BORNÉE au tenant (user_lookups →
-        // schéma → employé) au lieu d'une recherche cross-tenant par email seul.
-        $resolved = $this->authService->resolveEmployeeByEmail((string) $googleUser->getEmail());
-        /** @var Employee|null $employee */
-        $employee = $resolved['employee'] ?? null;
-
-        if (! $employee) {
-            // QA onboarding 2026-09-14 — parcours « créer mon compte avec
-            // Google ». On ne provisionne RIEN ici (l'auto-création d'un tenant
-            // depuis un callback OAuth reste interdite — #3724, et un nom de
-            // société déduit d'un compte Google n'est pas une donnée fiable) :
-            // on renvoie l'identité VÉRIFIÉE par Google (email_verified est
-            // contrôlé plus haut) pour pré-remplir le tunnel d'inscription.
-            // Le tenant est ensuite créé par le tunnel d'essai, comme pour une
-            // inscription classique.
-            if ($googleIntent === 'signup') {
-                Log::channel('audit')->info('auth.google.signup_intent', [
-                    'email' => $googleUser->getEmail(),
-                    'plan' => $googlePlan,
-                ]);
-
-                return new JsonResponse([
-                    'success' => true,
-                    'data' => [
-                        'signup' => true,
-                        'email' => (string) $googleUser->getEmail(),
-                        'first_name' => (string) ($googleUser->offsetGet('given_name') ?? ''),
-                        'last_name' => (string) ($googleUser->offsetGet('family_name') ?? ''),
-                        'plan' => is_string($googlePlan) ? $googlePlan : null,
-                    ],
-                ]);
-            }
-
-            // Issue #3724 : pas d'auto-provisionnement silencieux en production.
-            // Le flux d'invitation (#2617) crée toujours la ligne employé en
-            // amont — un email totalement inconnu n'a donc aucun chemin légitime
-            // ici. L'auto-création reste possible uniquement sur les environnements
-            // de démo explicitement configurés (DEMO_MODE_ENABLED=true), en
-            // parité avec le 401 de handleGoogleToken.
-            if (! config('app.demo_mode_enabled')) {
-                // Issue #5171 : message localisé ×4 (parité i18n) — le parcours
-                // invitation-first (#2617) crée toujours la ligne employé en
-                // amont ; le 401 guide le nouvel utilisateur vers son admin.
-                return new JsonResponse([
-                    'error' => 'UNKNOWN_ACCOUNT',
-                    'message' => __('errors.UNKNOWN_ACCOUNT'),
-                ], 401);
-            }
-
-            /** @var Employee $employee */
-            $employee = Employee::forceCreate([
-                'first_name' => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
-                'last_name' => $googleUser->offsetGet('family_name') ?? '',
-                'email' => $googleUser->getEmail(),
-                'password_hash' => Hash::make(str()->random(24)),
-                'google_id' => (string) $googleUser->getId(),
-            ]);
-
-            // Sensitive fields set explicitly (not mass-assignable, #3597)
-            $employee->role = 'ordinary';
-            $employee->status = 'active';
-            $employee->save();
-        }
-
-        // audit(securite) #6531 : liaison google_id (sub) — première connexion :
-        // liaison ; connexion suivante avec un sub ≠ google_id stocké : REFUS
-        // (réattribution d'email Google Workspace / compte Google compromis).
-        $googleSub = (string) $googleUser->getId();
-        if ($employee->google_id === null || $employee->google_id === '') {
-            $employee->forceFill(['google_id' => $googleSub])->save();
-            Log::channel('audit')->info('auth.google.linked', [
-                'employee_id' => $employee->id,
-                'email' => $employee->email,
-            ]);
-        } elseif (! hash_equals($employee->google_id, $googleSub)) {
-            Log::channel('audit')->warning('auth.google.identity_mismatch', [
-                'employee_id' => $employee->id,
-                'email' => $employee->email,
-            ]);
-
-            return new JsonResponse([
-                'error' => 'GOOGLE_IDENTITY_MISMATCH',
-                'message' => __('errors.GOOGLE_IDENTITY_MISMATCH'),
-            ], 401);
-        }
-
-        // Sécurité #2630 : un employé suspendu (ou société suspendue/expirée)
-        // ne peut pas s'authentifier, y compris via Google.
-        if ($employee->status !== 'active') {
-            throw new AccountSuspendedException;
-        }
-        if ($employee->company_id) {
-            $company = $employee->company;
-            if ($company && in_array($company->status, ['suspended', 'expired'], true)) {
-                throw new AccountSuspendedException;
-            }
-        }
-
-        // Issue #5579 : garde 2FA sur les flux SSO — sans cette vérification un
-        // employé ayant activé la TOTP pouvait contourner le challenge via Google.
-        if ($employee->two_fa_enabled_at !== null) {
-            // Appareil de confiance (cookie signé) : pas de challenge.
-            $expected = $this->twoFactorService->rememberCookieValue($employee);
-            $provided = $request->cookie('mfa_remember_'.$employee->id);
-            if (! is_string($provided) || ! hash_equals($expected, $provided)) {
-                $challenge = $this->twoFactorService->issueChallenge([
-                    'employee_id' => $employee->id,
-                    'company_id' => (string) $employee->company_id,
-                    // audit(securite) #6540 : tenant_schema résolu (user_lookups)
-                    // — en mode schéma-par-tenant, un challenge avec null ne peut
-                    // pas re-poser search_path à la vérification (2FA cassée).
-                    'tenant_schema' => $resolved['tenant_schema'] ?? null,
-                    'email' => (string) $employee->email,
-                    'device_name' => null,
-                ]);
-
-                return new JsonResponse([
-                    'mfa_challenge' => true,
-                    'mfa_challenge_token' => $challenge['token'],
-                    'mfa_challenge_expires_in' => $challenge['expires_in'],
-                ]);
-            }
-        }
-
-        // Politique tenant : rôle sensible + 2FA non activée → blocage.
-        if ($this->twoFactorService->requiresMfa($employee)) {
-            throw TwoFactorException::required();
-        }
-
-        $token = $employee->createToken('google-auth');
-
-        return (new EmployeeResource($employee))
-            ->additional([
-                'token' => $token->plainTextToken,
-                'token_type' => 'Bearer',
-            ])
-            ->response()
-            ->setStatusCode($employee->wasRecentlyCreated ? 201 : 200);
+        return $this->ssoResponse($result);
     }
 
     public function handleGoogleToken(Request $request): JsonResponse
@@ -500,106 +304,76 @@ class AuthController extends Controller
             'device_name' => 'nullable|string|max:255',
         ]);
 
-        try {
-            /** @var GoogleProvider $google */
-            $google = Socialite::driver('google');
-            /** @var \Laravel\Socialite\Two\User $googleUser */
-            $googleUser = $google->stateless()->userFromToken($validated['access_token']);
-        } catch (\Exception $e) {
-            Log::error('auth.google.token_exchange_failed', ['error' => $e->getMessage()]);
+        $result = $this->handleGoogleTokenAction->execute(
+            accessToken: (string) $validated['access_token'],
+            deviceName: isset($validated['device_name']) ? (string) $validated['device_name'] : null,
+        );
 
-            return new JsonResponse([
-                'error' => 'GOOGLE_TOKEN_INVALID',
-                'message' => __('errors.GOOGLE_TOKEN_INVALID'),
-            ], 422);
-        }
+        return $this->ssoResponse($result);
+    }
 
-        // Issue #5580 : exiger email_verified=true (parité avec handleGoogleCallback).
-        $rawGoogleUser = $googleUser->getRaw();
-        if (empty($rawGoogleUser['email_verified'])) {
-            Log::warning('auth.google.token_email_not_verified', ['email' => $googleUser->getEmail()]);
+    /**
+     * Le cookie « appareil de confiance » est nommé `mfa_remember_<employee_id>`,
+     * donc son nom dépend de l'employé — inconnu avant résolution de l'identité
+     * Google. Le contrôleur ne peut donc pas lire « le » cookie de l'employé ;
+     * il transmet la valeur de chaque cookie `mfa_remember_*` présentée, indexée
+     * par id, et l'Action décide (hash_equals) si l'un d'eux correspond.
+     *
+     * @return array<int, string>
+     */
+    private function rememberCookieValues(Request $request): array
+    {
+        $cookies = [];
 
-            return new JsonResponse([
-                'error' => 'EMAIL_NOT_VERIFIED',
-                'message' => __('errors.EMAIL_NOT_VERIFIED'),
-            ], 401);
-        }
+        foreach ($request->cookies->all() as $name => $value) {
+            $name = (string) $name;
 
-        // audit(securite) #6531 : résolution BORNÉE au tenant (parité avec
-        // handleGoogleCallback) — jamais de recherche cross-tenant par email seul.
-        $resolved = $this->authService->resolveEmployeeByEmail((string) $googleUser->getEmail());
-        /** @var Employee|null $employee */
-        $employee = $resolved['employee'] ?? null;
+            if (! is_string($value) || ! str_starts_with($name, 'mfa_remember_')) {
+                continue;
+            }
 
-        if (! $employee) {
-            return new JsonResponse(['error' => 'EMPLOYEE_NOT_FOUND', 'message' => __('errors.GOOGLE_ACCOUNT_NOT_FOUND')], 401);
-        }
-
-        // audit(securite) #6531 : liaison google_id + refus en cas de mismatch
-        // (parité avec handleGoogleCallback).
-        $googleSub = (string) $googleUser->getId();
-        if ($employee->google_id === null || $employee->google_id === '') {
-            $employee->forceFill(['google_id' => $googleSub])->save();
-            Log::channel('audit')->info('auth.google.linked', [
-                'employee_id' => $employee->id,
-                'email' => $employee->email,
-            ]);
-        } elseif (! hash_equals($employee->google_id, $googleSub)) {
-            Log::channel('audit')->warning('auth.google.identity_mismatch', [
-                'employee_id' => $employee->id,
-                'email' => $employee->email,
-            ]);
-
-            return new JsonResponse([
-                'error' => 'GOOGLE_IDENTITY_MISMATCH',
-                'message' => __('errors.GOOGLE_IDENTITY_MISMATCH'),
-            ], 401);
-        }
-
-        // Sécurité #2630 : statut employé + société (mêmes gardes que le login classique).
-        if ($employee->status !== 'active') {
-            throw new AccountSuspendedException;
-        }
-        if ($employee->company_id) {
-            $company = $employee->company;
-            if ($company && in_array($company->status, ['suspended', 'expired'], true)) {
-                throw new AccountSuspendedException;
+            $employeeId = substr($name, strlen('mfa_remember_'));
+            if ($employeeId !== '' && ctype_digit($employeeId)) {
+                $cookies[] = $value;
             }
         }
 
-        // Issue #5579 : garde 2FA (parité avec handleGoogleCallback).
-        // Note : le flux mobile ne dispose pas du cookie remember ; le challenge
-        // TOTP est systématique si la 2FA est activée.
-        if ($employee->two_fa_enabled_at !== null) {
-            $challenge = $this->twoFactorService->issueChallenge([
-                'employee_id' => $employee->id,
-                'company_id' => (string) $employee->company_id,
-                // audit(securite) #6540 : tenant_schema résolu (parité callback).
-                'tenant_schema' => $resolved['tenant_schema'] ?? null,
-                'email' => (string) $employee->email,
-                'device_name' => $validated['device_name'] ?? null,
-            ]);
+        return $cookies;
+    }
 
-            return new JsonResponse([
+    private function ssoResponse(GoogleSsoResult $result): JsonResponse
+    {
+        return match ($result->outcome) {
+            'authenticated' => (new EmployeeResource($result->employee))
+                ->additional([
+                    'token' => $result->token,
+                    'token_type' => $result->tokenType,
+                ])
+                ->response(),
+            'mfa_challenge' => new JsonResponse([
                 'mfa_challenge' => true,
-                'mfa_challenge_token' => $challenge['token'],
-                'mfa_challenge_expires_in' => $challenge['expires_in'],
-            ]);
-        }
+                'mfa_challenge_token' => $result->mfaChallengeToken,
+                'mfa_challenge_expires_in' => $result->mfaChallengeExpiresIn,
+            ]),
+            'signup' => new JsonResponse([
+                'success' => true,
+                'data' => [
+                    'signup' => true,
+                    'email' => $result->signupEmail,
+                    'first_name' => $result->signupFirstName,
+                    'last_name' => $result->signupLastName,
+                    'plan' => $result->signupPlan,
+                ],
+            ]),
+            default => $this->errorResponse($result),
+        };
+    }
 
-        // Politique tenant : rôle sensible + 2FA non activée → blocage.
-        if ($this->twoFactorService->requiresMfa($employee)) {
-            throw TwoFactorException::required();
-        }
-
-        $tokenName = $validated['device_name'] ?? 'google-mobile';
-        $token = $employee->createToken($tokenName);
-
-        return (new EmployeeResource($employee))
-            ->additional([
-                'token' => $token->plainTextToken,
-                'token_type' => 'Bearer',
-            ])
-            ->response();
+    private function errorResponse(GoogleSsoResult $result): JsonResponse
+    {
+        return new JsonResponse([
+            'error' => $result->errorCode,
+            'message' => $result->errorMessage,
+        ], $result->errorStatus > 0 ? $result->errorStatus : 500);
     }
 }
