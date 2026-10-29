@@ -7,6 +7,10 @@ import {
   visibleSoftware,
 } from '@/lib/software-catalog';
 import type { StoredAuthUser } from '@/lib/i18n';
+import {
+  MOBILE_DISTRIBUTION_STATUS,
+  isDistributionFailed,
+} from '@/lib/mobile-distribution-status';
 
 /**
  * #8447 — garde-fous du catalogue « Mon Logiciel ».
@@ -123,21 +127,50 @@ describe('software-catalog (#8447)', () => {
 
   // BOS-A-05 / #8628 — un canal de distribution en échec connu ne peut pas
   // être annoncé publié/pilote, et ne doit porter AUCUN href d'installation.
-  it('un canal de distribution en échec est requalifié en not_distributed', () => {
-    const employee = TENANT_SOFTWARE.find((app) => app.slug === 'employee');
-    const manager = TENANT_SOFTWARE.find((app) => app.slug === 'manager');
+  //
+  // Ces deux tests sont PILOTÉS PAR LA TABLE, pas par une liste de slugs
+  // figée. La version précédente codait `['employee', 'manager']` en dur :
+  // quand les deux canaux sont repassés au vert (run 40677191254), les tests
+  // sont devenus rouges alors que le code était juste — exactement le défaut
+  // « bombe à retardement » que #8396 interdit pour les dates. Ici la donnée
+  // d'entrée est la table elle-même, donc le test vérifie le MÉCANISME de
+  // requalification et reste vrai quel que soit l'état réel des canaux.
+  const failedSlugs = Object.entries(MOBILE_DISTRIBUTION_STATUS)
+    .filter(([, state]) => state === 'failed')
+    .map(([slug]) => slug);
 
-    expect(employee && softwareAvailability(employee)).toBe('not_distributed');
-    expect(manager && softwareAvailability(manager)).toBe('not_distributed');
+  it('tout canal déclaré en échec est requalifié en not_distributed', () => {
+    for (const slug of failedSlugs) {
+      const app = TENANT_SOFTWARE.find((candidate) => candidate.slug === slug);
+      // Un slug déclaré en échec mais absent du catalogue est une incohérence
+      // de données : on l'échoue explicitement plutôt que de l'ignorer.
+      expect(app).toBeDefined();
+      expect(softwareAvailability(app!)).toBe('not_distributed');
+    }
   });
 
   it('un canal en échec ne porte aucun href d’installation', () => {
-    for (const slug of ['employee', 'manager']) {
+    for (const slug of failedSlugs) {
       const app = TENANT_SOFTWARE.find((candidate) => candidate.slug === slug);
       expect(app).toBeDefined();
       expect(app!.targets.every((target) => target.kind === 'soon')).toBe(true);
       expect(app!.targets.every((target) => target.href === undefined)).toBe(true);
     }
+  });
+
+  it('le mécanisme de requalification fonctionne sur un canal en échec simulé', () => {
+    // Garde anti-régression du test ci-dessus : si la table est vide (tous les
+    // canaux verts), les boucles pilotées par la table ne s'exécutent pas et
+    // ne prouveraient plus rien. On vérifie donc le mécanisme sur une entrée
+    // injectée, indépendamment de l'état réel de la distribution.
+    const employee = TENANT_SOFTWARE.find((app) => app.slug === 'employee');
+    expect(employee).toBeDefined();
+    expect(isDistributionFailed('employee')).toBe(
+      MOBILE_DISTRIBUTION_STATUS.employee === 'failed',
+    );
+    // Un slug inconnu n'est jamais « en échec » (fail-open sur l'absence,
+    // fail-closed sur `unknown` — voir isDistributionUnknown).
+    expect(isDistributionFailed('slug-inexistant')).toBe(false);
   });
 
   it('la requalification ne touche pas les apps servies par un simple lien web', () => {

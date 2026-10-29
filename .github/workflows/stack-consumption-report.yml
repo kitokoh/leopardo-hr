@@ -184,6 +184,18 @@ jobs:
             echo "</details>"
           } > /tmp/body.md
 
+          # Le label est une commodité de tri, pas une condition de succès : un
+          # label absent faisait échouer `gh issue create` (exit 1) et rendait
+          # le rapport rouge alors que la mesure avait réussi. On le crée s'il
+          # manque, et on retombe sur une création SANS label plutôt que de
+          # perdre le rapport.
+          if ! gh label list --repo "${{ github.repository }}" --limit 200 --json name --jq '.[].name' 2>/dev/null | grep -qx "ops:consumption"; then
+            gh label create "ops:consumption" --repo "${{ github.repository }}" \
+              --color "0e8a16" \
+              --description "Suivi quotidien des quotas Render / Vercel / Neon / Pages" 2>/dev/null \
+              || echo "::warning::label ops:consumption non créable — rapport publié sans label"
+          fi
+
           existing="$(gh issue list --repo "${{ github.repository }}" --label "ops:consumption" --state open --json number --jq '.[0].number // ""' 2>/dev/null || echo "")"
           if [[ -n "$existing" ]]; then
             gh issue comment "$existing" --repo "${{ github.repository }}" --body-file /tmp/body.md
@@ -192,5 +204,8 @@ jobs:
             gh issue create --repo "${{ github.repository }}" \
               --title "[consommation] Suivi quotidien des quotas (Render / Vercel / Neon / Pages)" \
               --label "ops:consumption" \
-              --body-file /tmp/body.md
+              --body-file /tmp/body.md \
+              || gh issue create --repo "${{ github.repository }}" \
+                   --title "[consommation] Suivi quotidien des quotas (Render / Vercel / Neon / Pages)" \
+                   --body-file /tmp/body.md
           fi

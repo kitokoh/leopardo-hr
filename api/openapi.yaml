@@ -37,6 +37,8 @@ servers:
 security:
 - BearerAuth: []
 tags:
+- name: Pages
+  description: 'BC PAGES (#8728/#8729/#8730) — pages d''etablissement : CRUD et blocs (tenant), moderation plateforme, rendu public SSR par slug et domaine personnalise.'
 - name: Farm OS
   description: 'BC-37@@FARM@@ (mission Farm OS) — verticale agricole : exploitations et parcelles, cycles culturaux, interventions, outils activables par capacités.'
 - name: Fundraising
@@ -85,6 +87,8 @@ tags:
   description: Groupe d'opérations Privacy
 - name: Kiosks
   description: Groupe d'opérations Kiosks
+- name: Pages
+  description: BC PAGES — Pages par établissement (surface tenant, #8728)
 - name: Cameras
   description: Groupe d'opérations Cameras
 - name: Vehicle Tracking
@@ -4911,6 +4915,503 @@ paths:
           description: Déjà lié
         '422':
           $ref: '#/components/responses/Validation422'
+  /pages:
+    get:
+      operationId: api_get_pages
+      tags:
+      - Pages
+      summary: Liste des Pages du tenant (BC PAGES, #8728)
+      description: 'Pages du tenant courant, les plus recentes d''abord. Filtres optionnels : site_id, status, verification_status, q (recherche sur le slug). Pagination via per_page (1 a 100, defaut 15). Reserve aux roles de gestion porteurs du module pages.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: site_id
+        in: query
+        required: false
+        description: Restreint aux Pages d'un etablissement.
+        schema:
+          type: integer
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - draft
+          - published
+          - archived
+      - name: verification_status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - unverified
+          - pending
+          - verified
+          - rejected
+      - name: q
+        in: query
+        required: false
+        description: Recherche insensible a la casse sur le slug.
+        schema:
+          type: string
+          maxLength: 120
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 15
+      responses:
+        '200':
+          description: Pages paginees (data, meta.current_page, meta.last_page, meta.total)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Role insuffisant ou module pages non accorde
+    post:
+      operationId: api_post_pages
+      tags:
+      - Pages
+      summary: Cree une Page pour un etablissement
+      description: 'Une Page appartient a un seul etablissement (invariant d''index UNIQUE) : un second create pour le meme site_id est refuse. Le slug est derive du nom et translittere ; un slug inutilisable ou reserve renvoie 422 (PAGE_SLUG_UNUSABLE, PAGE_SLUG_RESERVED, PAGE_SLUG_TAKEN).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageWriteRequest'
+      responses:
+        '201':
+          description: Page creee (PageResource)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Role insuffisant ou module pages non accorde
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pages/{page}:
+    get:
+      operationId: api_get_page
+      tags:
+      - Pages
+      summary: Detail d'une Page (blocs inclus)
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/PageId'
+      responses:
+        '200':
+          description: Page (PageResource, blocs charges)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Page inexistante ou appartenant a un autre tenant (reponse uniforme)
+    put:
+      operationId: api_put_page
+      tags:
+      - Pages
+      summary: Met a jour les attributs d'une Page
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/PageId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageWriteRequest'
+      responses:
+        '200':
+          description: Page mise a jour (PageResource)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Role insuffisant ou module pages non accorde
+        '404':
+          description: Page inexistante ou appartenant a un autre tenant (reponse uniforme)
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pages/{page}/publish:
+    post:
+      operationId: api_post_page_publish
+      tags:
+      - Pages
+      summary: Publie une Page
+      description: 'Passe la Page en published et pose published_at. Sans titre SEO, la publication est refusee (422 PAGE_SEO_TITLE_REQUIRED) : elle produirait une URL indexable sans intitule.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/PageId'
+      responses:
+        '200':
+          description: Page publiee (PageResource)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Role insuffisant ou module pages non accorde
+        '404':
+          description: Page inexistante ou appartenant a un autre tenant (reponse uniforme)
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pages/{page}/unpublish:
+    post:
+      operationId: api_post_page_unpublish
+      tags:
+      - Pages
+      summary: Depublie une Page
+      description: Repasse la Page en brouillon et remet published_at a null.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/PageId'
+      responses:
+        '200':
+          description: Page depubliee (PageResource)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Role insuffisant ou module pages non accorde
+        '404':
+          description: Page inexistante ou appartenant a un autre tenant (reponse uniforme)
+  /pages/{page}/blocks:
+    put:
+      operationId: api_put_page_blocks
+      tags:
+      - Pages
+      summary: Remplace l'integralite des blocs d'une Page
+      description: 'Remplacement atomique de la liste ordonnee de blocs : le payload fait foi, aucun bloc n''est conserve implicitement. Les erreurs de validation sont renvoyees ensemble, indexees par position de bloc, afin que l''editeur les affiche a cote du bloc concerne (PAGE_BLOCKS_INVALID).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/PageId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - blocks
+              properties:
+                blocks:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/PageBlockInput'
+      responses:
+        '200':
+          description: Blocs remplaces (PageResource, blocs charges)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Role insuffisant ou module pages non accorde
+        '404':
+          description: Page inexistante ou appartenant a un autre tenant (reponse uniforme)
+        '422':
+          description: Contenu de blocs invalide (PAGE_BLOCKS_INVALID, erreurs indexees par position)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: PAGE_BLOCKS_INVALID
+                  message:
+                    type: string
+                  errors:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
+  /pages/{page}/preview:
+    get:
+      operationId: api_get_page_preview
+      tags:
+      - Pages
+      summary: Apercu prive d'une Page (brouillon inclus)
+      description: 'Renvoie la Page avec ses blocs pour l''editeur. Reponse en `X-Robots-Tag noindex, nofollow` et `Cache-Control no-store, private` : un apercu ne doit jamais etre indexe ni servi depuis un cache partage, sinon un brouillon deviendrait public par un intermediaire.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/PageId'
+      responses:
+        '200':
+          description: Apercu de la Page (PageResource, blocs charges)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Role insuffisant ou module pages non accorde
+        '404':
+          description: Page inexistante ou appartenant a un autre tenant (reponse uniforme)
+  /platform/pages:
+    get:
+      operationId: api_get_platform_pages
+      tags:
+      - Pages
+      summary: Recherche cross-tenant des Pages (console plateforme, #8729)
+      description: 'Recherche des Pages de TOUTES les entreprises. La recherche est volontairement cross-tenant : un operateur qui ne peut chercher que par entreprise doit deja connaitre l''entreprise, ce qui rend l''ecran inutile pour traiter un signalement. Filtres optionnels : q (slug ou nom), company_id, status, verification_status, suspended. Pagination via per_page (1 a 100, defaut 25). Permission engine `pages.view` — un role support doit pouvoir instruire un litige (lire) sans pouvoir suspendre (ecrire).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: q
+        in: query
+        required: false
+        description: Recherche insensible a la casse sur le slug et le nom de l''entreprise.
+        schema:
+          type: string
+          maxLength: 120
+      - name: company_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - draft
+          - published
+          - archived
+      - name: verification_status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - unverified
+          - pending
+          - verified
+          - rejected
+      - name: suspended
+        in: query
+        required: false
+        description: Restreint aux Pages suspendues (true) ou non suspendues (false).
+        schema:
+          type: boolean
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 25
+      responses:
+        '200':
+          description: Pages paginees, toutes entreprises confondues
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Permission `pages.view` absente
+  /platform/pages/{company}/{page}:
+    get:
+      operationId: api_get_platform_page
+      tags:
+      - Pages
+      summary: Fiche de moderation d'une Page (console plateforme, #8729)
+      description: 'Fiche complete : etat, code et raison de suspension, demandes de verification, journal de moderation. Afficher `suspension_reason` a l''operateur est necessaire — moderer sans connaitre le motif revient a trancher a l''aveugle ; ce champ n''est jamais expose sur la surface publique.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: page
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Fiche de moderation (Page + verification + journal)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Permission `pages.view` absente
+        '404':
+          description: Page inexistante pour cette entreprise (reponse uniforme)
+  /platform/pages/{company}/{page}/suspend:
+    post:
+      operationId: api_post_platform_page_suspend
+      tags:
+      - Pages
+      summary: Suspendre une Page (console plateforme, #8729)
+      description: 'Retire la Page du public immediatement. La raison est obligatoire et journalisee : une suspension sans motif ecrit est indefendable devant le client qui la conteste. Requiert `pages.manage`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: page
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  type: string
+                  maxLength: 500
+                  description: Motif de la suspension, journalise tel quel.
+      responses:
+        '200':
+          description: Page suspendue
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Permission `pages.manage` absente
+        '404':
+          description: Page inexistante pour cette entreprise (reponse uniforme)
+        '422':
+          description: Raison absente ou invalide
+  /platform/pages/{company}/{page}/unsuspend:
+    post:
+      operationId: api_post_platform_page_unsuspend
+      tags:
+      - Pages
+      summary: Lever la suspension d'une Page (console plateforme, #8729)
+      description: 'La Page repasse en BROUILLON, jamais en publie : republier a la place du tenant remettrait en ligne un contenu que la plateforme vient de juger problematique sans que le tenant l''ait corrige. Requiert `pages.manage`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: page
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  maxLength: 500
+      responses:
+        '200':
+          description: Suspension levee, Page en brouillon
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Permission `pages.manage` absente
+        '404':
+          description: Page inexistante pour cette entreprise (reponse uniforme)
+  /platform/pages/{company}/{page}/verification/{requestId}/decide:
+    post:
+      operationId: api_post_platform_page_verification_decide
+      tags:
+      - Pages
+      summary: Trancher une demande de verification (console plateforme, #8729)
+      description: 'Accorder ou refuser la verification d''une Page. La decision est journalisee avec son auteur : c''est la piece que la plateforme produira si la verification est contestee. Requiert `pages.manage`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: page
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: requestId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - decision
+              properties:
+                decision:
+                  type: string
+                  enum:
+                  - approve
+                  - reject
+                reason:
+                  type: string
+                  maxLength: 500
+      responses:
+        '200':
+          description: Decision enregistree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Permission `pages.manage` absente
+        '404':
+          description: Demande inexistante pour cette Page (reponse uniforme)
+        '422':
+          description: Decision invalide
+  /platform/pages/{company}/{page}/evidence/{evidenceId}:
+    get:
+      operationId: api_get_platform_page_evidence
+      tags:
+      - Pages
+      summary: Lire une piece justificative (console plateforme, #8729)
+      description: 'Renvoie les metadonnees de la piece et une URL SIGNEE de courte duree. Chaque acces est journalise : une piece d''identite d''entreprise est une donnee sensible, et savoir qui l''a consultee fait partie de la preuve. Requiert `pages.view`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: page
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: evidenceId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Metadonnees de la piece + URL signee temporaire
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Permission `pages.view` absente
+        '404':
+          description: Piece inexistante pour cette Page (reponse uniforme)
   /payrolls:
     get:
       operationId: api_get_payrolls
@@ -55989,7 +56490,7 @@ paths:
           description: 'Permission manquante pour l''acteur.'
         '422':
           description: Charge utile invalide.
-  /travel/community/articles/{article}:
+  /travel/community/articles/{travelArticle}:
     get:
       operationId: api_get_travel_community_articles_by_article
       tags:
@@ -56003,7 +56504,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56032,7 +56533,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56082,7 +56583,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56097,7 +56598,7 @@ paths:
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
         '204':
           description: Suppression effectuee (aucun corps).
-  /travel/community/articles/{article}/publish:
+  /travel/community/articles/{travelArticle}/publish:
     post:
       operationId: api_post_travel_community_articles_by_article_publish
       tags:
@@ -56113,7 +56614,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56128,7 +56629,7 @@ paths:
           description: 'Permission manquante pour l''acteur.'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/articles/{article}/moderate:
+  /travel/community/articles/{travelArticle}/moderate:
     post:
       operationId: api_post_travel_community_articles_by_article_moderate
       tags:
@@ -56144,7 +56645,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56540,7 +57041,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/quizzes/{quiz}:
+  /travel/community/quizzes/{travelQuiz}:
     get:
       operationId: api_get_travel_community_quizzes_by_quiz
       tags:
@@ -56554,7 +57055,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: quiz
+      - name: travelQuiz
         in: path
         required: true
         schema:
@@ -56567,7 +57068,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/quizzes/{quiz}/publish:
+  /travel/community/quizzes/{travelQuiz}/publish:
     post:
       operationId: api_post_travel_community_quizzes_by_quiz_publish
       tags:
@@ -56581,7 +57082,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: quiz
+      - name: travelQuiz
         in: path
         required: true
         schema:
@@ -56596,7 +57097,136 @@ paths:
           description: 'Permission manquante pour l''acteur.'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/quizzes/{quiz}/questions:
+  /travel/webhook-subscriptions/{travelWebhookSubscription}:
+    parameters:
+    - name: travelWebhookSubscription
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Identifiant de la souscription de webhook.
+    get:
+      operationId: api_get_travel_webhook_subscriptions_by_travel_webhook_subscription
+      tags:
+      - Travel
+      summary: Detail d'une souscription de webhook
+      description: |-
+        Tenant-scoped strict (cross-tenant -> 404 sur, jamais 403).
+        Le secret de signature n'est JAMAIS renvoye en clair : seul
+        `secret_prefix` (4 premiers caracteres) permet a l'admin de
+        reconnaitre la cle configuree.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Souscription.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+    put:
+      operationId: api_put_travel_webhook_subscriptions_by_travel_webhook_subscription
+      tags:
+      - Travel
+      summary: Modifier une souscription de webhook
+      description: |-
+        Tenant-scoped strict (cross-tenant -> 404 sur, jamais 403).
+        Une rotation de secret remplace `secret` et invalide l'ancienne cle
+        pour les livraisons suivantes (pas de rejeu retroactif).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  maxLength: 2048
+                events:
+                  type: array
+                  items:
+                    type: string
+                active:
+                  type: boolean
+                enabled:
+                  type: boolean
+                secret:
+                  type: string
+                  maxLength: 255
+                  description: Nouveau secret de signature (rotation).
+      responses:
+        '200':
+          description: Souscription mise a jour.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+        '422':
+          description: Charge utile invalide.
+  /travel/quizzes/{travelQuiz}/questions:
+    parameters:
+    - name: travelQuiz
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Identifiant du quiz.
+    get:
+      operationId: api_get_travel_quizzes_by_travel_quiz_questions
+      tags:
+      - Travel
+      summary: Lister les questions d'un quiz
+      description: |-
+        Reserve aux roles manager (`principal`, `rh`). Tenant-scoped strict
+        (cross-tenant -> 404 sur, jamais 403).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste ordonnee des questions (`position`).
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
+  /travel/community/quizzes/{travelQuiz}/questions:
+    parameters:
+    - name: travelQuiz
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Identifiant du quiz (alias retro-compatible #8127).
+    get:
+      operationId: api_get_travel_community_quizzes_by_quiz_questions
+      tags:
+      - Travel
+      summary: Lister les questions d'un quiz (alias community)
+      description: |-
+        Alias retro-compatible `/travel/community/*` (#8127) de la surface
+        editoriale `/travel/*` : meme controller, meme contrat. Tenant-scoped
+        strict (cross-tenant -> 404 sur, jamais 403).
+        Reserve aux roles manager (`principal`, `rh`).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste ordonnee des questions (`position`).
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: 'Permission manquante pour l''acteur.'
+        '404':
+          description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
     post:
       operationId: api_post_travel_community_quizzes_by_quiz_questions
       tags:
@@ -56610,7 +57240,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: quiz
+      - name: travelQuiz
         in: path
         required: true
         schema:
@@ -56645,7 +57275,7 @@ paths:
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
         '422':
           description: Charge utile invalide.
-  /travel/community/quiz-questions/{question}:
+  /travel/community/quiz-questions/{travelQuizQuestion}:
     delete:
       operationId: api_delete_travel_community_quiz_questions_by_question
       tags:
@@ -56659,7 +57289,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: question
+      - name: travelQuizQuestion
         in: path
         required: true
         schema:
@@ -56674,7 +57304,7 @@ paths:
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
         '204':
           description: Suppression effectuee (aucun corps).
-  /travel/community/quizzes/{quiz}/participate:
+  /travel/community/quizzes/{travelQuiz}/participate:
     post:
       operationId: api_post_travel_community_quizzes_by_quiz_participate
       tags:
@@ -56689,7 +57319,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: quiz
+      - name: travelQuiz
         in: path
         required: true
         schema:
@@ -56702,7 +57332,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/quizzes/{quiz}/results:
+  /travel/community/quizzes/{travelQuiz}/results:
     get:
       operationId: api_get_travel_community_quizzes_by_quiz_results
       tags:
@@ -56716,7 +57346,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: quiz
+      - name: travelQuiz
         in: path
         required: true
         schema:
@@ -61634,6 +62264,68 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Validation422'
+  /v1/p/{slug}:
+    get:
+      operationId: api_get_pages_public_by_slug
+      tags:
+      - Pages
+      summary: Rendu HTML d'une Page publiee, resolue par slug (#8730)
+      description: 'Surface PUBLIQUE : aucun middleware auth ni tenant. Le tenant est resolu depuis l''en-tete `Host` puis le slug est cherche dans ce tenant uniquement. Rend du HTML (SSR) et non du JSON : la reponse est destinee a un navigateur anonyme. 404 fail-closed si le slug est inconnu, si la Page n''est pas publiee ou si elle est suspendue — jamais 403, qui confirmerait l''existence de la Page d''un autre tenant. La locale est negociee via `Accept-Language` parmi les locales REELLEMENT publiees par la Page (`publishedLocales`), avec repli sur `default_locale`.'
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Slug de la Page, normalise en minuscules (`[a-z0-9][a-z0-9-]*`).
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]*$'
+      - name: Accept-Language
+        in: header
+        required: false
+        description: Locale preferee du visiteur (`fr-FR`, `ar`, `tr-TR`...). Ignoree si elle n'est pas publiee par la Page.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Page rendue en HTML
+          content:
+            text/html:
+              schema:
+                type: string
+        '404':
+          description: Slug inconnu, Page non publiee ou suspendue (fail-closed)
+        '429':
+          description: Limite de debit `shop-public` depassee
+  /v1/pages/by-host:
+    get:
+      operationId: api_get_pages_public_by_host
+      tags:
+      - Pages
+      summary: Rendu HTML d'une Page publiee, resolue par domaine personnalise (#8730)
+      description: 'Surface PUBLIQUE : aucun middleware auth ni tenant. La Page est resolue par l''en-tete `Host` (domaine personnalise verifie, cf. moderation #8729). Le port est retire avant comparaison et l''hote est normalise en minuscules. Cette surface AJOUTE un point d''acces : le rendu par slug reste disponible. Meme semantique d''erreur que `/v1/p/{slug}` — 404 fail-closed, jamais 403.'
+      parameters:
+      - name: Host
+        in: header
+        required: true
+        description: Domaine du tenant (`chez-lea.sn`). Le port eventuel est ignore.
+        schema:
+          type: string
+      - name: Accept-Language
+        in: header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Page rendue en HTML
+          content:
+            text/html:
+              schema:
+                type: string
+        '404':
+          description: Domaine inconnu, non verifie, ou Page non publiee (fail-closed)
+        '429':
+          description: Limite de debit `shop-public` depassee
 components:
   securitySchemes:
     BearerAuth:
@@ -61654,6 +62346,13 @@ components:
       scheme: bearer
       bearerFormat: Sanctum
   parameters:
+    PageId:
+      name: page
+      in: path
+      required: true
+      description: Identifiant de la Page (BC PAGES, #8728).
+      schema:
+        type: integer
     ProjectId:
       name: project
       in: path
@@ -61836,6 +62535,65 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    PageWriteRequest:
+      type: object
+      description: Attributs modifiables d'une Page (BC PAGES, #8728).
+      properties:
+        site_id:
+          type: integer
+          description: Etablissement de rattachement. Obligatoire a la creation ; l'unicite par site est un invariant de schema.
+        name:
+          type: string
+          maxLength: 160
+          description: Nom affiche ; sert de base a la derivation du slug.
+        slug:
+          type: string
+          maxLength: 120
+          description: Adresse publique. Omise, elle est derivee du nom et translitteree.
+        theme:
+          type: object
+          additionalProperties: true
+          description: Jetons de theme de la Page.
+        settings:
+          type: object
+          additionalProperties: true
+        legal:
+          type: object
+          additionalProperties: true
+          description: Mentions legales affichees sur la Page.
+        seo:
+          type: object
+          additionalProperties: true
+          description: Metadonnees SEO ; un titre est requis pour publier.
+        locales:
+          type: array
+          items:
+            type: string
+          description: Locales servies par la Page.
+        default_locale:
+          type: string
+          maxLength: 10
+    PageBlockInput:
+      type: object
+      description: Bloc de contenu pousse par l'editeur ; la position est donnee par l'ordre du tableau.
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          description: Identifiant du type de bloc, tel que declare au registre de blocs (#8724).
+        id:
+          type: string
+          description: Identifiant stable du bloc (block_uid) ; genere s'il est omis.
+        content:
+          type: object
+          additionalProperties: true
+          description: Contenu du bloc, valide contre le schema du type.
+        locales:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties: true
     PublicConversationSummary:
       type: object
       description: >

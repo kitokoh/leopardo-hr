@@ -72,10 +72,22 @@ class RestaurantReceivingController extends Controller
             }
         }
 
+        // `lines` est le nom historique du contrat, `items` celui du schema
+        // valide : les deux sont acceptes (cf. StoreRestaurantReceivingRequest).
+        /** @var list<array{ingredient_id: int, quantity: float, unit_price_minor: int}> $lines */
+        $lines = array_map(
+            static fn (array $line): array => [
+                'ingredient_id' => (int) $line['ingredient_id'],
+                'quantity' => (float) $line['quantity'],
+                'unit_price_minor' => (int) $line['unit_price_minor'],
+            ],
+            $data['lines'] ?? $data['items'],
+        );
+
         $receiving = $this->receiving->receive(
             companyId: (string) $actor->company_id,
             branchId: (int) $data['branch_id'],
-            lines: $data['lines'],
+            lines: $lines,
             purchaseOrderId: $data['purchase_order_id'] ?? null,
             supplierId: $data['supplier_id'] ?? null,
             note: $data['note_redacted'] ?? null,

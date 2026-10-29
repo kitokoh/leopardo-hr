@@ -118,6 +118,12 @@ jobs:
       - name: Render worker env parity guard (issue #7977)
         run: bash dev-hub/tools/check-render-worker-env-parity.sh
 
+      - name: Render APP_KEY pinned guard (issue #7967)
+        # generateValue: true regenere APP_KEY a chaque re-sync de blueprint et
+        # invalide sessions + valeurs chiffrees en base. La cle doit rester
+        # epinglee (sync: false) dans tous les blueprints.
+        run: bash dev-hub/tools/check-render-app-key-pinned.sh .
+
       - name: Migration basename collision guard (issue #1962)
         run: bash dev-hub/tools/check-migration-basename-collisions.sh
 
@@ -212,6 +218,13 @@ jobs:
 
       - name: Module isolation guard — no new cross-module imports (issue #5584)
         run: bash dev-hub/tools/check-module-isolation.sh api
+
+      - name: Module isolation BUDGET guard — la dette tolérée ne peut que baisser (issue #7959)
+        # #5584 bloque les NOUVELLES arêtes. Ce garde-ci ajoute le flux : le
+        # nombre d'arêtes de l'allowlist ne peut jamais dépasser le budget, et
+        # une arête résorbée oblige à abaisser le budget dans le même commit.
+        # Une allowlist sans plafond est un stock qui ne descend jamais.
+        run: bash dev-hub/tools/check-module-isolation-budget.sh
 
       - name: Tenant cache keys guard — helper central TenantCache ou exemption justifiée (issue #8058)
         run: bash dev-hub/tools/check-tenant-cache-keys.sh api
@@ -512,6 +525,14 @@ jobs:
         # Baseline v2 régénérée le 2026-09-05 (audit PM) — ne pas ajouter d'arête
         # « pour passer » sans justification (même règle que l'allowlist #5584).
         run: dev-hub/tools/check-bounded-context-dependencies.sh .
+
+      - name: Absence facade guard (ARCH-003 / issue #7959)
+        if: needs.detect-changes.outputs.api_changed == 'true'
+        # Le module Absence est une FAÇADE de presentation (BC-06 LEAVE) dont le
+        # domaine vit dans Planning (BC-05) : voir
+        # docs/adr/ARCH-003-module-absence-facade.md. Ce garde interdit
+        # l'apparition d'un domaine parallele sous Modules/Absence.
+        run: bash dev-hub/tools/check-absence-facade.sh .
 
       - name: CRM boundary imports guard (issue #5745, ADR 0018)
         if: needs.detect-changes.outputs.api_changed == 'true'

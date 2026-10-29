@@ -42,4 +42,20 @@ return [
     'domain_quota_exceeded' => 'Votre offre autorise :limit domaine(s) personnalise(s).',
     'domain_removed' => 'Ce domaine a ete supprime et ne peut plus etre verifie.',
     'domain_plan_expired' => 'Votre abonnement a expire : les domaines personnalises sont desactives jusqu\'au renouvellement.',
+
+    // #8728 - slug de Page inutilisable ou reserve
+    'slug_unusable' => 'Le nom fourni ne permet pas de construire une adresse publique. Utilisez des lettres et des chiffres.',
+    'slug_reserved' => 'L\'adresse « :slug » est reservee par la plateforme. Choisissez-en une autre.',
+    'slug_taken' => 'L\'adresse « :slug » est deja utilisee.',
+
+    // #8730 — rendu public SSR
+    'public' => [
+        'verified' => 'Etablissement verifie',
+        'contact' => 'Contact',
+        'map' => 'Voir sur la carte',
+        'actions' => [
+            'directions' => 'Y aller',
+            'contact' => 'Ecrire',
+        ],
+    ],
 ];
