@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Pages\Domain\Models;
 
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -18,6 +19,19 @@ use Illuminate\Support\Carbon;
  * une ressource éditable : il n'y a **aucune** méthode de mise à jour, et
  * `$timestamps = false` empêche Eloquent d'écrire un `updated_at` qui
  * n'existe pas.
+ *
+ * ## Isolation tenant (#7999)
+ *
+ * Ce modèle porte `BelongsToCompany` comme les six autres modèles du module
+ * Pages (`Page`, `PageBlockModel`, `PageCustomDomain`, `PageVerificationCode`,
+ * `PageVerificationEvidence`, `PageVerificationRequest`). Le journal est lu
+ * depuis la surface **plateforme** (`PlatformPageController`), donc hors
+ * contexte tenant : le scope global n'y filtre rien (`current_company` absent,
+ * et `tenant_scope_required` non posé), mais il reste **fail-closed** dès
+ * qu'un contexte tenant est actif. C'est exactement le contrat des six autres
+ * modèles du module ; une exception aurait créé un trou d'isolation propre à
+ * l'audit — c'est-à-dire précisément la table qu'un contestataire voudrait
+ * lire en travers d'un tenant.
  *
  * ## Pourquoi ne pas réutiliser `audit_logs`
  *
@@ -54,6 +68,8 @@ use Illuminate\Support\Carbon;
  */
 class PageModerationAudit extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'page_moderation_audits';
 
     /** Une ligne immuable n'a pas d'état « après ». */
