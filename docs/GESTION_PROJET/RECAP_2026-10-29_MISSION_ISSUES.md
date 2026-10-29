@@ -115,3 +115,124 @@ décision nominatif avec l'action attendue et le risque associé.
 Validator, Frontend ESLint+TS, actionlint) sont la référence de vert ; aucun échec
 introduit par cette session n'a été observé. Les gardes d'architecture exécutées
 localement sont vertes (isolation modules, budget d'isolation).
+
+---
+
+# Session 2 (même journée) — reprise après la première vague
+
+## Point de départ vérifié, pas supposé
+
+`git fetch` + lecture de l'état réel : **12 issues ouvertes**, dont **9 actions
+propriétaire** déjà documentées nominativement en session 1. Le travail restant
+était donc **3 issues de fond** (#7962, #8210, #8448) plus la vérification que
+les volets code de #7994 / #7967 / #8191 étaient bien sur `main`.
+
+Vérification faite : **#7994 §3/§4/§5 et #7967 §2 sont déjà livrés** sur `main`
+(`marketplace-deploy.yml` existe, le skip prod pousse un `::error`, la garde
+`fronts-vercel` de `deploy-drift-guard.yml` lit les GitHub Deployments,
+`APP_KEY: sync: false` dans les deux blueprints). Ce qui reste sur ces deux
+issues est **strictement propriétaire** (secrets Vercel, moyen de paiement
+Render). #8191 est intégralement propriétaire : l'outillage
+`audit:scheduler-duplicates` est livré, il faut une copie des données de prod.
+
+## Ce qui a été livré
+
+| PR | Issue | Contenu |
+|---|---|---|
+| **#9017** | #8210 | Transport unique des webhooks sortants (BC-14) |
+| **#9024** | #8448 | KDS Edge offline-first + endpoint idempotent |
+| **#9025** | #7962 | Gardes d'accès nommées dans `PayrollRunController` |
+
+### #8210 — le transport, pas seulement la signature
+
+La session 1 avait unifié la **primitive de signature**. Restait la **livraison
+HTTP**, recopiée dans deux producteurs — et les deux copies n'étaient pas
+équivalentes :
+
+- `DispatchWebhook` (Billing) : garde anti-SSRF inline, TLS vérifié ;
+- `TravelWebhookDispatcher` (Travel) : **`Http::withoutVerifying()`**, aucune
+  garde d'hôte.
+
+La seconde est le vrai défaut que ce lot corrige. `withoutVerifying()` désactive
+la vérification du certificat : un abonné Travel pouvait enregistrer une URL
+`https://` vers un hôte interne (le `StoreTravelWebhookSubscriptionRequest` ne
+validait que `url`, pas `NotPrivateUrl`) et recevoir le payload signé — avec, en
+prime, un certificat non vérifié, donc un serveur imposteur accepté.
+
+`OutboundWebhookTransport` impose désormais, pour **tous** les producteurs :
+`https://` obligatoire, re-résolution DNS juste avant l'appel (TOCTOU), TLS
+vérifié, timeout borné. Ce qui reste chez le producteur est ce qui fait partie
+de son contrat public : la chaîne signée (Svix vs payload canonique), les
+en-têtes de signature, le journal de livraison et la politique de retry.
+
+### #8448 — la propriété qui rend l'offline sûr
+
+Le KDS hors ligne rejoue ses gestes. Un rejeu est inévitable (réponse perdue,
+retry, deux tablettes) et ne doit jamais faire avancer une commande deux fois.
+L'idempotence est portée par la **contrainte d'unicité** de
+`restaurant_kitchen_actions` (`company_id` + `client_action_id`), **pas** par un
+`SELECT` préalable : deux rejeux concurrents liraient tous les deux « absent »
+avant que l'un des deux n'écrive. Un rejeu répond **200**, pas 409 — c'est le
+fonctionnement normal d'un client hors ligne, pas une erreur à montrer au
+cuisinier.
+
+### #7962 — la tranche qui ne collisionne pas
+
+`PayrollRunController` recopiait un préambule tenant+manager dans 11 méthodes et
+un `catch` métier dans 5. La répétition cachait une incohérence réelle :
+`lock`/`unlock` exigeaient `principal`/`comptable` alors que
+`cancel`/`regularize` se contentaient de `isManager()`. Deux noms disent
+maintenant deux règles (`authorizeManager` / `authorizeApprover`).
+
+## Décision de coordination — la plus importante de cette session
+
+En poussant la tranche #7962, j'ai constaté que **#9019 (autre agent) travaille
+déjà sur `AuthController` et `KioskController`**, #9021 sur
+`AttendanceController`, #9016 sur `SelfServiceTrialController`.
+
+Ma PR initiale (#9022) embarquait `AuthController` **et** `PayrollRunController`.
+**Deux PR qui réécrivent le même fichier ne peuvent pas être relues.** Elle a
+donc été **fermée**, avec un commentaire qui conserve les deux constats utiles
+pour la revue de #9019 (tronc commun des six gardes Google ; les deux 503
+`GOOGLE_OAUTH_NOT_CONFIGURED` / `GOOGLE_OAUTH_UNAVAILABLE` restent distincts,
+#5170). La tranche Payroll, sans recouvrement, est repartie seule en **#9025**.
+
+C'est la règle « une PR empilée se remplace, elle ne se rebase pas
+indéfiniment » appliquée à une collision entre agents, pas à un empilement.
+
+## État des issues à la fin de la session 2
+
+| Issue | État | Preuve / blocage |
+|---|---|---|
+| #8210 | **PR #9017** | transport unique + 5 tests anti-SSRF/TLS |
+| #8448 | **PR #9024** | 30 tests front + 5 tests d'idempotence |
+| #7962 | **PR #9025** (Payroll) + #9019/#9021/#9016 (autres tranches) | 23 tests Payroll |
+| #7994 | **propriétaire** | §3/§4/§5 livrés ; reste les secrets Vercel |
+| #7967 | **propriétaire** | §2 livré ; reste le moyen de paiement Render |
+| #8191 | **propriétaire** | outillage livré ; reste la copie de prod |
+| #8285, #8232, #7924, #7941, #8880, #8727 | **propriétaire / produit** | hors dépôt |
+
+## Ce que cette session n'a pas fait, et pourquoi
+
+Aucune issue n'a été fermée par cette session. Trois raisons, dans l'ordre :
+
+1. **Une PR ouverte n'est pas une issue livrée.** Les trois PR attendent la
+   revue et la fusion ; fermer l'issue maintenant rendrait le suivi faux.
+2. **Les 9 issues restantes sont propriétaire par nature.** Elles demandent un
+   secret, un paiement, une signature ou une donnée de production. Les fermer
+   sans l'action reviendrait à effacer le rappel du risque.
+3. **#8727 est un brouillon produit** bloqué sur un inventaire de données de
+   production, pas sur du code.
+
+## Vérifications exécutées localement
+
+`phpstan-strict.neon` 0 erreur · `pint --test` PASS · `check-layer-purity.sh`
+0 violation nouvelle · `check-bounded-context-dependencies.sh` 151 arêtes /
+0 import hors contrat · gardes migrations (tenant-schema, basenames,
+destructive-down, alter-before-create, sql-quotes) toutes OK · `vitest run`
+46 passed · `tsc --noEmit` 0 erreur · `eslint` 0 erreur · `next build` OK.
+
+**Échecs préexistants, vérifiés par `git stash` + `git checkout main`, jamais
+par supposition** : `GoogleSsoTwoFactorSchemaTest` (2, fixtures périmées),
+`TravelWebhookTest` (4, `name` requis absent des fixtures),
+`tests/page.test.tsx` (Node 20 vs `undici` Node 22).
