@@ -332,6 +332,229 @@ class ContractCountryTemplates
                     ],
                 ],
             ],
+            // ══════════════════════════════════════════════════════════════
+            // Issue #9053 — extension CEMAC / CEDEAO.
+            //
+            // Les 9 pays ci-dessous étaient supportés par le moteur de paie
+            // (CemacPayrollRules / CedeaoPayrollRules) et par les règles de
+            // congés (lot BC-06), mais retombaient sur le bundle GÉNÉRIQUE
+            // « Règles locales à préciser » : un contrat généré pour un
+            // salarié gabonais ou béninois ne citait donc aucun texte.
+            //
+            // Les clauses sont produites par `ohadaBundle()` : la famille
+            // OHADA partage la même contexture de contrat, seules les
+            // références et les paramètres légaux changent. Les valeurs
+            // proviennent des règles de congés déjà livrées (BC-06) et des
+            // règles de paie du pays — pas d'invention.
+            // ══════════════════════════════════════════════════════════════
+
+            // ── Gabon — loi n° 022/2021 du 19/11/2021 (CEMAC) ─────────────
+            'GA' => $this->ohadaBundle([
+                'code' => 'Code du travail gabonais — loi n° 022/2021 du 19 novembre 2021',
+                'articles' => ['185' => 'Congé annuel', '170' => 'Période d\'essai', '180' => 'Préavis', '190' => 'Heures supplémentaires'],
+                'probation' => 'Période d\'essai : CDI ≤ 3 mois (6 mois pour les cadres) ; CDD ≤ 1 mois par tranche de 6 mois (art. 170).',
+                'probation_short' => 'maximum 3 mois, 6 mois pour les cadres — art. 170',
+                'notice_period' => 'Préavis : 8 jours (ancienneté < 1 an), 1 mois (1-5 ans), 2 mois (≥ 5 ans) — art. 180.',
+                'notice_short' => '8 jours à 2 mois selon l\'ancienneté — art. 180',
+                'annual_leave' => 'Congé annuel payé : 2 jours ouvrables par mois de service effectif (24 jours ouvrables/an ; 2,5 j/mois pour les moins de 18 ans — art. 185).',
+                'leave_short' => '2 jours ouvrables',
+                'leave_article' => 'art. 185',
+                'overtime' => 'Heures supplémentaires majorées : +20 % (41e-48e heure), +30 % (49e-56e), +40 % au-delà ; +50 % de nuit, +60 % les jours fériés — art. 190.',
+                'overtime_short' => 'heures supplémentaires, travail de nuit et jours fériés — art. 190',
+                'minimum_wage' => 'SMIG en vigueur (décret annuel) — base de référence pour le salaire de base.',
+                'social_security' => 'Cotisations CNSS gabonaise (pension, prestations familiales, risques professionnels) — règles paye CemacPayrollRules.',
+                'currency' => 'FCFA',
+            ]),
+
+            // ── Congo — loi n° 45-75 du 15/03/1975 (CEMAC) ────────────────
+            'CG' => $this->ohadaBundle([
+                'code' => 'Code du travail congolais — loi n° 45-75 du 15 mars 1975',
+                'articles' => ['16' => 'Période d\'essai', '26' => 'Préavis', '141' => 'Congé annuel', '89' => 'Heures supplémentaires'],
+                'probation' => 'Période d\'essai : CDI ≤ 3 mois (6 mois pour les cadres) ; CDD ≤ 1 mois par tranche de 6 mois (art. 16).',
+                'probation_short' => 'maximum 3 mois, 6 mois pour les cadres — art. 16',
+                'notice_period' => 'Préavis : 8 jours (ancienneté < 1 an), 1 mois (1-5 ans), 2 mois (≥ 5 ans) — art. 26.',
+                'notice_short' => '8 jours à 2 mois selon l\'ancienneté — art. 26',
+                'annual_leave' => 'Congé annuel payé : 2,17 jours ouvrables par mois de travail effectif (26 jours ouvrables/an — art. 141).',
+                'leave_short' => '2,17 jours ouvrables',
+                'leave_article' => 'art. 141',
+                'overtime' => 'Heures supplémentaires majorées : +20 % (41e-48e heure), +30 % (49e-56e), +40 % au-delà ; +50 % de nuit, +60 % les jours fériés — art. 89.',
+                'overtime_short' => 'heures supplémentaires, travail de nuit et jours fériés — art. 89',
+                'minimum_wage' => 'SMIG en vigueur (décret annuel) — base de référence pour le salaire de base.',
+                'social_security' => 'Cotisations CNSS congolaise (pension, prestations familiales, risques professionnels) — règles paye CemacPayrollRules.',
+                'currency' => 'FCFA',
+            ]),
+
+            // ── Tchad — loi n° 038/PR/96 du 11/12/1996 (CEMAC) ────────────
+            'TD' => $this->ohadaBundle([
+                'code' => 'Code du travail tchadien — loi n° 038/PR/96 du 11 décembre 1996',
+                'articles' => ['25' => 'Période d\'essai', '35' => 'Préavis', '212' => 'Congé annuel', '160' => 'Heures supplémentaires'],
+                'probation' => 'Période d\'essai : CDI ≤ 3 mois (6 mois pour les cadres) ; CDD ≤ 1 mois par tranche de 6 mois (art. 25).',
+                'probation_short' => 'maximum 3 mois, 6 mois pour les cadres — art. 25',
+                'notice_period' => 'Préavis : 8 jours (ancienneté < 1 an), 1 mois (1-5 ans), 2 mois (≥ 5 ans) — art. 35.',
+                'notice_short' => '8 jours à 2 mois selon l\'ancienneté — art. 35',
+                'annual_leave' => 'Congé annuel payé : 2 jours ouvrables par mois de travail effectif (24 jours ouvrables/an — art. 212).',
+                'leave_short' => '2 jours ouvrables',
+                'leave_article' => 'art. 212',
+                'overtime' => 'Heures supplémentaires majorées : +20 % (41e-48e heure), +30 % (49e-56e), +40 % au-delà ; +50 % de nuit, +60 % les jours fériés — art. 160.',
+                'overtime_short' => 'heures supplémentaires, travail de nuit et jours fériés — art. 160',
+                'minimum_wage' => 'SMIG en vigueur (décret annuel) — base de référence pour le salaire de base.',
+                'social_security' => 'Cotisations CNPS tchadienne (pension, prestations familiales, risques professionnels) — règles paye CemacPayrollRules.',
+                'currency' => 'FCFA',
+            ]),
+
+            // ── République centrafricaine — loi n° 09.004 du 29/01/2009 ────
+            'CF' => $this->ohadaBundle([
+                'code' => 'Code du travail centrafricain — loi n° 09.004 du 29 janvier 2009',
+                'articles' => ['20' => 'Période d\'essai', '30' => 'Préavis', '280' => 'Congé annuel', '150' => 'Heures supplémentaires'],
+                'probation' => 'Période d\'essai : CDI ≤ 3 mois (6 mois pour les cadres) ; CDD ≤ 1 mois par tranche de 6 mois (art. 20).',
+                'probation_short' => 'maximum 3 mois, 6 mois pour les cadres — art. 20',
+                'notice_period' => 'Préavis : 8 jours (ancienneté < 1 an), 1 mois (1-5 ans), 2 mois (≥ 5 ans) — art. 30.',
+                'notice_short' => '8 jours à 2 mois selon l\'ancienneté — art. 30',
+                'annual_leave' => 'Congé annuel payé : 2 jours ouvrables par mois de travail effectif (24 jours ouvrables/an, plafond 30 jours — art. 280 s.).',
+                'leave_short' => '2 jours ouvrables',
+                'leave_article' => 'art. 280 s.',
+                'overtime' => 'Heures supplémentaires majorées : +20 % (41e-48e heure), +30 % (49e-56e), +40 % au-delà ; +50 % de nuit, +60 % les jours fériés — art. 150.',
+                'overtime_short' => 'heures supplémentaires, travail de nuit et jours fériés — art. 150',
+                'minimum_wage' => 'SMIG en vigueur (décret annuel) — base de référence pour le salaire de base.',
+                'social_security' => 'Cotisations CNSS centrafricaine (pension, prestations familiales, risques professionnels) — règles paye CemacPayrollRules.',
+                'currency' => 'FCFA',
+            ]),
+
+            // ── Guinée équatoriale — loi n° 2/1990 (CEMAC) ────────────────
+            'GQ' => $this->ohadaBundle([
+                'code' => 'Code du travail équato-guinéen — loi n° 2/1990 du 4 janvier 1990',
+                'articles' => ['14' => 'Période d\'essai', '24' => 'Préavis', '60' => 'Congé annuel', '45' => 'Heures supplémentaires'],
+                'probation' => 'Période d\'essai : CDI ≤ 3 mois (6 mois pour les cadres) ; CDD ≤ 1 mois par tranche de 6 mois (art. 14).',
+                'probation_short' => 'maximum 3 mois, 6 mois pour les cadres — art. 14',
+                'notice_period' => 'Préavis : 8 jours (ancienneté < 1 an), 1 mois (1-5 ans), 2 mois (≥ 5 ans) — art. 24.',
+                'notice_short' => '8 jours à 2 mois selon l\'ancienneté — art. 24',
+                'annual_leave' => 'Congé annuel payé : 2 jours ouvrables par mois de travail effectif (24 jours ouvrables/an — art. 60).',
+                'leave_short' => '2 jours ouvrables',
+                'leave_article' => 'art. 60',
+                'overtime' => 'Heures supplémentaires majorées : +20 % (41e-48e heure), +30 % (49e-56e), +40 % au-delà ; +50 % de nuit, +60 % les jours fériés — art. 45.',
+                'overtime_short' => 'heures supplémentaires, travail de nuit et jours fériés — art. 45',
+                'minimum_wage' => 'SMIG en vigueur (décret annuel) — base de référence pour le salaire de base.',
+                'social_security' => 'Cotisations INSESO (pension, prestations familiales, risques professionnels) — règles paye CemacPayrollRules.',
+                'currency' => 'FCFA',
+            ]),
+
+            // ── Bénin — loi n° 98-004 du 27/01/1998 (CEDEAO) ──────────────
+            'BJ' => $this->ohadaBundle([
+                'code' => 'Code du travail béninois — loi n° 98-004 du 27 janvier 1998',
+                'articles' => ['12' => 'Période d\'essai', '22' => 'Préavis', '158' => 'Congé annuel', '100' => 'Heures supplémentaires'],
+                'probation' => 'Période d\'essai : CDI ≤ 3 mois (6 mois pour les cadres) ; CDD ≤ 1 mois par tranche de 6 mois (art. 12).',
+                'probation_short' => 'maximum 3 mois, 6 mois pour les cadres — art. 12',
+                'notice_period' => 'Préavis : 8 jours (ancienneté < 1 an), 1 mois (1-5 ans), 2 mois (≥ 5 ans) — art. 22.',
+                'notice_short' => '8 jours à 2 mois selon l\'ancienneté — art. 22',
+                'annual_leave' => 'Congé annuel payé : 2 jours ouvrables par mois de travail effectif (24 jours ouvrables/an — art. 158).',
+                'leave_short' => '2 jours ouvrables',
+                'leave_article' => 'art. 158',
+                'overtime' => 'Heures supplémentaires majorées : +12 % (41e-48e heure), +35 % (49e-56e), +50 % au-delà ; +50 % de nuit, +100 % les jours fériés — art. 100.',
+                'overtime_short' => 'heures supplémentaires, travail de nuit et jours fériés — art. 100',
+                'minimum_wage' => 'SMIG en vigueur (52 000 XOF/mois — règles paye CedeaoPayrollRules).',
+                'social_security' => 'Cotisations CNSS béninoise (pension, prestations familiales, risques professionnels) — règles paye CedeaoPayrollRules.',
+                'currency' => 'FCFA',
+            ]),
+
+            // ── Mali — loi n° 92-020 du 23/09/1992 (CEDEAO) ───────────────
+            'ML' => $this->ohadaBundle([
+                'code' => 'Code du travail malien — loi n° 92-020 du 23 septembre 1992',
+                'articles' => ['12' => 'Période d\'essai', '22' => 'Préavis', '148' => 'Congé annuel', '100' => 'Heures supplémentaires'],
+                'probation' => 'Période d\'essai : CDI ≤ 3 mois (6 mois pour les cadres) ; CDD ≤ 1 mois par tranche de 6 mois (art. 12).',
+                'probation_short' => 'maximum 3 mois, 6 mois pour les cadres — art. 12',
+                'notice_period' => 'Préavis : 8 jours (ancienneté < 1 an), 1 mois (1-5 ans), 2 mois (≥ 5 ans) — art. 22.',
+                'notice_short' => '8 jours à 2 mois selon l\'ancienneté — art. 22',
+                'annual_leave' => 'Congé annuel payé : 2,5 jours par mois de travail effectif, jours non ouvrables compris (30 jours/an — art. L.148 s.).',
+                'leave_short' => '2,5 jours',
+                'leave_article' => 'art. L.148 s.',
+                'overtime' => 'Heures supplémentaires majorées : +10 % (41e-48e heure), +35 % (49e-56e), +50 % au-delà ; +50 % de nuit, +100 % les jours fériés — art. 100.',
+                'overtime_short' => 'heures supplémentaires, travail de nuit et jours fériés — art. 100',
+                'minimum_wage' => 'SMIG en vigueur (40 000 XOF/mois — règles paye CedeaoPayrollRules).',
+                'social_security' => 'Cotisations INPS malienne (pension, prestations familiales, risques professionnels) — règles paye CedeaoPayrollRules.',
+                'currency' => 'FCFA',
+            ]),
+
+            // ── Togo — loi n° 2021-012 du 18/06/2021 (CEDEAO) ─────────────
+            'TG' => $this->ohadaBundle([
+                'code' => 'Code du travail togolais — loi n° 2021-012 du 18 juin 2021',
+                'articles' => ['12' => 'Période d\'essai', '22' => 'Préavis', '160' => 'Congé annuel', '100' => 'Heures supplémentaires'],
+                'probation' => 'Période d\'essai : CDI ≤ 3 mois (6 mois pour les cadres) ; CDD ≤ 1 mois par tranche de 6 mois (art. 12).',
+                'probation_short' => 'maximum 3 mois, 6 mois pour les cadres — art. 12',
+                'notice_period' => 'Préavis : 8 jours (ancienneté < 1 an), 1 mois (1-5 ans), 2 mois (≥ 5 ans) — art. 22.',
+                'notice_short' => '8 jours à 2 mois selon l\'ancienneté — art. 22',
+                'annual_leave' => 'Congé annuel payé : 2,5 jours ouvrables par mois de travail effectif (30 jours ouvrables/an — art. 160).',
+                'leave_short' => '2,5 jours ouvrables',
+                'leave_article' => 'art. 160',
+                'overtime' => 'Heures supplémentaires majorées : +20 % (41e-48e heure), +35 % (49e-56e), +50 % au-delà ; +50 % de nuit, +100 % les jours fériés — art. 100.',
+                'overtime_short' => 'heures supplémentaires, travail de nuit et jours fériés — art. 100',
+                'minimum_wage' => 'SMIG en vigueur (52 500 XOF/mois depuis le 01/01/2023 — règles paye CedeaoPayrollRules).',
+                'social_security' => 'Cotisations CNSS togolaise (pension, prestations familiales, risques professionnels) — règles paye CedeaoPayrollRules.',
+                'currency' => 'FCFA',
+            ]),
+
+            // ── Niger — loi n° 2012-45 du 25/09/2012 (CEDEAO) ─────────────
+            'NE' => $this->ohadaBundle([
+                'code' => 'Code du travail nigérien — loi n° 2012-45 du 25 septembre 2012',
+                'articles' => ['12' => 'Période d\'essai', '22' => 'Préavis', '116' => 'Congé annuel', '100' => 'Heures supplémentaires'],
+                'probation' => 'Période d\'essai : CDI ≤ 3 mois (6 mois pour les cadres) ; CDD ≤ 1 mois par tranche de 6 mois (art. 12).',
+                'probation_short' => 'maximum 3 mois, 6 mois pour les cadres — art. 12',
+                'notice_period' => 'Préavis : 8 jours (ancienneté < 1 an), 1 mois (1-5 ans), 2 mois (≥ 5 ans) — art. 22.',
+                'notice_short' => '8 jours à 2 mois selon l\'ancienneté — art. 22',
+                'annual_leave' => 'Congé annuel payé : 2,5 jours calendaires par mois de travail effectif (30 jours calendaires/an — art. 116 s.).',
+                'leave_short' => '2,5 jours calendaires',
+                'leave_article' => 'art. 116 s.',
+                'overtime' => 'Heures supplémentaires majorées : +10 % (41e-48e heure), +35 % (49e-56e), +50 % au-delà ; +50 % de nuit, +100 % les jours fériés — art. 100.',
+                'overtime_short' => 'heures supplémentaires, travail de nuit et jours fériés — art. 100',
+                'minimum_wage' => 'SMIG en vigueur (30 047 XOF/mois — règles paye CedeaoPayrollRules).',
+                'social_security' => 'Cotisations CNSS nigérienne (pension, prestations familiales, risques professionnels) — règles paye CedeaoPayrollRules.',
+                'currency' => 'FCFA',
+            ]),
+        ];
+    }
+
+    /**
+     * Issue #9053 — gabarit de bundle pour la famille OHADA (CEMAC + CEDEAO).
+     *
+     * Les contrats de cette famille partagent la même contexture : seules les
+     * références légales et les paramètres (essai, préavis, congés, heures
+     * supplémentaires, devise) changent. Factoriser évite de recopier 9 fois
+     * les mêmes clauses — et donc de les voir diverger à la première
+     * correction.
+     *
+     * @param  array<string, mixed>  $meta
+     * @return array<string, mixed>
+     */
+    private function ohadaBundle(array $meta): array
+    {
+        $currency = $meta['currency'];
+        $law = $meta['code'];
+
+        return [
+            'legal_references' => [
+                'code' => $law,
+                'articles' => $meta['articles'],
+            ],
+            'probation' => $meta['probation'],
+            'notice_period' => $meta['notice_period'],
+            'annual_leave' => $meta['annual_leave'],
+            'overtime' => $meta['overtime'],
+            'minimum_wage' => $meta['minimum_wage'],
+            'social_security' => $meta['social_security'],
+            'clauses' => [
+                'cdi' => [
+                    ['title' => 'Nature du contrat', 'body' => 'Le présent contrat est conclu pour une durée indéterminée (CDI) à compter de la date d\'effet, conformément au '.$law.'.'],
+                    ['title' => 'Période d\'essai', 'body' => 'Une période d\'essai de X mois est prévue ('.$meta['probation_short'].'), au terme de laquelle l\'embauche devient définitive.'],
+                    ['title' => 'Rémunération', 'body' => 'Le salaire de base mensuel est fixé à X '.$currency.', auquel s\'ajoutent les majorations légales ('.$meta['overtime_short'].').'],
+                    ['title' => 'Congés', 'body' => 'Le salarié bénéficie d\'un congé annuel payé de '.$meta['leave_short'].' par mois de travail effectif ('.$meta['leave_article'].').'],
+                    ['title' => 'Préavis', 'body' => 'La rupture du contrat est soumise au préavis légal de '.$meta['notice_short'].'.'],
+                ],
+                'cdd' => [
+                    ['title' => 'Nature du contrat', 'body' => 'Le présent contrat est conclu pour une durée déterminée (CDD) du X au Y, pour un motif légalement autorisé par le '.$law.'.'],
+                    ['title' => 'Période d\'essai', 'body' => 'La période d\'essai est fixée à 1 mois par tranche de 6 mois de contrat, dans la limite de 3 mois ('.$meta['probation_short'].').'],
+                    ['title' => 'Rémunération', 'body' => 'Le salaire de base est fixé à X '.$currency.', assorti des majorations légales applicables ('.$meta['overtime_short'].').'],
+                    ['title' => 'Congés', 'body' => 'Le salarié acquiert '.$meta['leave_short'].' de congé par mois de travail effectif ('.$meta['leave_article'].').'],
+                ],
+            ],
         ];
     }
 
