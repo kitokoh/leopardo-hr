@@ -56673,7 +56673,7 @@ paths:
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
         '422':
           description: Charge utile invalide.
-  /travel/community/articles/{article}/comments:
+  /travel/community/articles/{travelArticle}/comments:
     get:
       operationId: api_get_travel_community_articles_by_article_comments
       tags:
@@ -56687,7 +56687,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56723,7 +56723,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56751,7 +56751,7 @@ paths:
           description: 'Permission manquante pour l''acteur.'
         '422':
           description: Charge utile invalide.
-  /travel/community/comments/{comment}:
+  /travel/community/comments/{travelComment}:
     delete:
       operationId: api_delete_travel_community_comments_by_comment
       tags:
@@ -56765,7 +56765,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: comment
+      - name: travelComment
         in: path
         required: true
         schema:
@@ -56780,7 +56780,7 @@ paths:
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
         '204':
           description: Suppression effectuee (aucun corps).
-  /travel/community/comments/{comment}/approve:
+  /travel/community/comments/{travelComment}/approve:
     post:
       operationId: api_post_travel_community_comments_by_comment_approve
       tags:
@@ -56795,7 +56795,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: comment
+      - name: travelComment
         in: path
         required: true
         schema:
@@ -56810,7 +56810,7 @@ paths:
           description: 'Permission manquante pour l''acteur.'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/comments/{comment}/reject:
+  /travel/community/comments/{travelComment}/reject:
     post:
       operationId: api_post_travel_community_comments_by_comment_reject
       tags:
@@ -56825,7 +56825,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: comment
+      - name: travelComment
         in: path
         required: true
         schema:
@@ -56840,7 +56840,7 @@ paths:
           description: 'Permission manquante pour l''acteur.'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/comments/{comment}/report:
+  /travel/community/comments/{travelComment}/report:
     post:
       operationId: api_post_travel_community_comments_by_comment_report
       tags:
@@ -56855,7 +56855,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: comment
+      - name: travelComment
         in: path
         required: true
         schema:
@@ -56868,7 +56868,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/articles/{article}/like:
+  /travel/community/articles/{travelArticle}/like:
     post:
       operationId: api_post_travel_community_articles_by_article_like
       tags:
@@ -56883,7 +56883,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56898,7 +56898,7 @@ paths:
           description: 'Permission manquante pour l''acteur.'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/articles/{article}/unlike:
+  /travel/community/articles/{travelArticle}/unlike:
     post:
       operationId: api_post_travel_community_articles_by_article_unlike
       tags:
@@ -56912,7 +56912,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56927,7 +56927,7 @@ paths:
           description: 'Permission manquante pour l''acteur.'
         '404':
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
-  /travel/community/articles/{article}/share:
+  /travel/community/articles/{travelArticle}/share:
     post:
       operationId: api_post_travel_community_articles_by_article_share
       tags:
@@ -56942,7 +56942,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -56970,7 +56970,7 @@ paths:
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
         '422':
           description: Charge utile invalide.
-  /travel/community/articles/{article}/rate:
+  /travel/community/articles/{travelArticle}/rate:
     post:
       operationId: api_post_travel_community_articles_by_article_rate
       tags:
@@ -56985,7 +56985,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -57014,7 +57014,7 @@ paths:
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
         '422':
           description: Charge utile invalide.
-  /travel/community/articles/{article}/engagement:
+  /travel/community/articles/{travelArticle}/engagement:
     get:
       operationId: api_get_travel_community_articles_by_article_engagement
       tags:
@@ -57028,7 +57028,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: article
+      - name: travelArticle
         in: path
         required: true
         schema:
