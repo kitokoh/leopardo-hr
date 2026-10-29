@@ -11,9 +11,20 @@ name: Merge Quota Guard
 # NB : le gate est un signal fort, pas un verrou : il n'est pas dans la liste
 # des checks requis (le PM décide de l'y ajouter une fois la cadence maîtrisée).
 
+# Issue #9035 — saturation des runners. Ce gate recalculait un compteur
+# identique a chaque push : 23 runs pour 20 annulations (87 %, le pire taux du
+# depot) sur une fenetre de 2,5 h. Un compteur de merges sur 24 h n'a aucune
+# raison de dependre d'un `synchronize` : il ne change pas parce qu'une PR a
+# recu un commit. Il tourne donc a l'ouverture d'une PR (le moment ou le
+# signal est utile au contributeur) et sur un rythme horaire, qui suffit
+# largement a detecter l'approche du quota.
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, ready_for_review]
+  schedule:
+    # Toutes les heures : le quota est journalier, une granularite horaire
+    # suffit a alerter avant la rafale.
+    - cron: '17 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -34,6 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
       (github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main')
 
     steps:
