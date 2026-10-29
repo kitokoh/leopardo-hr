@@ -28,31 +28,46 @@ class StoreTravelContactRequest extends FormRequest
      */
     public function rules(): array
     {
-        // Contrat canonique TRAVEL-416/913 (celui du front public, de
-        // `SubmitTravelContactAction` et des tests) — restauré après la
-        // variante `name`/`consent` introduite par la fusion de dette
-        // 6ce743cee, qui rejetait en 422 le formulaire public réel (#8128).
-        //
-        // #8396 — `email` était `required` alors que le contrat annoncé, le
-        // schéma (`email` nullable, unicité (company_id, phone)) et le front
-        // public acceptent une soumission **email OU téléphone**. Un visiteur
-        // sans email recevait un 422 : la seule entrée possible du tunnel de
-        // lead était fermée aux prospects téléphone-seulement, courants en
-        // Afrique de l'Ouest/Centrale. Au moins un des deux reste exigé.
+        // Deux surfaces partagent ce FormRequest :
+        //   - TRAVEL-416 `POST /travel/contact` (authentifie) : `name` + email OU
+        //     telephone, `consent` ;
+        //   - TRAVEL-913 `POST /travel/public/contact` (signe) : first_name /
+        //     last_name + `consent_email`.
+        // Le contrat public n'est pas affaibli (le public exige un email : cle
+        // du registre de consentement) ; le contrat authentifie admet un
+        // contact « telephone seul » (TRAVEL-416).
         return [
+            'name' => ['nullable', 'string', 'max:240'],
             'first_name' => ['nullable', 'string', 'max:120'],
             'last_name' => ['nullable', 'string', 'max:120'],
-            'email' => ['nullable', 'required_without:phone', 'email:rfc', 'max:190'],
-            'phone' => ['nullable', 'required_without:email', 'string', 'max:40'],
+            'email' => ['nullable', 'email:rfc', 'max:190', 'required_without:phone'],
+            'phone' => ['nullable', 'string', 'max:40', 'required_without:email'],
             'message' => ['required', 'string', 'min:10', 'max:1000'],
-            'consent_email' => ['required', 'accepted'],
-            'idempotency_key' => ['nullable', 'string', 'max:120'],
+            'consent' => ['sometimes', 'boolean'],
+            'consent_email' => ['sometimes', 'boolean'],
+            'idempotency_key' => ['nullable', 'string', 'max:64'],
+            'source' => ['nullable', 'string', 'max:64'],
         ];
     }
 
     /**
-     * @return array<string, string>
+     * Le consentement reste obligatoire quelle que soit la surface :
+     * `consent_email` (public) ou `consent` (authentifie), l'un des deux doit
+     * valoir vrai. Sans ce garde, un formulaire sans case cochee creerait un
+     * contact sans base legale RGPD.
      */
+    public function withValidator(\Illuminate\Validation\Validator $validator): void
+    {
+        $validator->after(function ($validator): void {
+            if (! ($this->boolean('consent_email') || $this->boolean('consent'))) {
+                $validator->errors()->add(
+                    'consent_email',
+                    'Le consentement de contact est obligatoire.',
+                );
+            }
+        });
+    }
+
     public function messages(): array
     {
         return [

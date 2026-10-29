@@ -94,9 +94,20 @@ class TravelNotificationApiTest extends TestCase
         $consumers = app(TravelOutboxConsumerRegistry::class)->consumersFor($eventType);
         $this->assertNotEmpty($consumers);
 
-        foreach ($consumers as $consumer) {
-            $consumer->handle($payload);
-        }
+        // En production, `travel:outbox-dispatch` enveloppe chaque appel dans
+        // `withinTenant($company)` avant de deleguer au consommateur. Le test
+        // doit reproduire ce contexte, sinon les consommateurs fail-closed
+        // (`TravelEventPublisherConsumer` : « Aucun contexte tenant resolu »)
+        // levent une exception qui n'a rien a voir avec ce qu'on mesure.
+        /** @var Company $company */
+        $company = Company::query()->findOrFail((string) $payload['company_id']);
+
+        app(TenantManager::class)->withinTenant($company, function () use ($consumers, $eventType, $payload): void {
+            foreach ($consumers as $consumer) {
+                // Contrat TravelOutboxConsumer : handle(string $eventType, array $payload).
+                $consumer->handle($eventType, $payload);
+            }
+        });
     }
 
     public function test_no_notification_without_consent(): void
