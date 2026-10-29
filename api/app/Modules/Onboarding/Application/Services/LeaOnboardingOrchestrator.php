@@ -65,6 +65,10 @@ final class LeaOnboardingOrchestrator
         private readonly SetupInterviewPlanner $planner,
         private readonly CompleteSetupInterview $completeInterview,
         private readonly LoggerInterface $logger,
+        // #8232 (BOS-044) — mesure du pilote. Les logs `lea.intent.*` restent
+        // la trace de debogage ; ce recorder ecrit les MEMES enumerations dans
+        // une table interrogeable en SQL, sans jamais stocker de texte libre.
+        private readonly LeaPilotMetricsRecorder $metrics,
     ) {}
 
     /**
@@ -91,6 +95,14 @@ final class LeaOnboardingOrchestrator
                 'reason_code' => $exception->reasonCode,
             ]);
 
+            $this->metrics->record(
+                (string) $company->id,
+                LeaPilotMetricsRecorder::STAGE_INTERPRET,
+                self::OUTCOME_FALLBACK,
+                $exception->reasonCode,
+                $correlationId,
+            );
+
             return $this->fallback($exception->reasonCode);
         }
 
@@ -101,6 +113,14 @@ final class LeaOnboardingOrchestrator
                 'reason_code' => $interpretation->reasonCode,
             ]);
 
+            $this->metrics->record(
+                (string) $company->id,
+                LeaPilotMetricsRecorder::STAGE_INTERPRET,
+                self::OUTCOME_FALLBACK,
+                $interpretation->reasonCode ?? 'llm_unavailable',
+                $correlationId,
+            );
+
             return $this->fallback($interpretation->reasonCode ?? 'llm_unavailable');
         }
 
@@ -110,6 +130,15 @@ final class LeaOnboardingOrchestrator
                 'company_id' => $company->id,
                 'questions' => $interpretation->clarificationQuestions,
             ]);
+
+            $this->metrics->record(
+                (string) $company->id,
+                LeaPilotMetricsRecorder::STAGE_INTERPRET,
+                self::OUTCOME_CLARIFICATION,
+                null,
+                $correlationId,
+                ['clarification_rounds' => 1],
+            );
 
             return [
                 'outcome' => self::OUTCOME_CLARIFICATION,
@@ -129,6 +158,14 @@ final class LeaOnboardingOrchestrator
             'tools_count' => count($plan['tools']),
             'rejected_count' => count($interpretation->rejected),
         ]);
+
+        $this->metrics->record(
+            (string) $company->id,
+            LeaPilotMetricsRecorder::STAGE_INTERPRET,
+            self::OUTCOME_PLAN_READY,
+            null,
+            $correlationId,
+        );
 
         return [
             'outcome' => self::OUTCOME_PLAN_READY,
@@ -181,6 +218,15 @@ final class LeaOnboardingOrchestrator
             'solutions_count' => count($plan['solutions']),
         ]);
 
+        $this->metrics->record(
+            (string) $company->id,
+            LeaPilotMetricsRecorder::STAGE_CLARIFY,
+            self::OUTCOME_PLAN_READY,
+            null,
+            $correlationId,
+            ['clarification_rounds' => 1],
+        );
+
         return [
             'outcome' => self::OUTCOME_PLAN_READY,
             'answers' => $answers,
@@ -208,6 +254,14 @@ final class LeaOnboardingOrchestrator
                 'company_id' => $company->id,
             ]);
 
+            $this->metrics->record(
+                (string) $company->id,
+                LeaPilotMetricsRecorder::STAGE_CONFIRM,
+                'stale_confirmation',
+                'plan_token_mismatch',
+                $correlationId,
+            );
+
             return [
                 'outcome' => self::OUTCOME_FALLBACK,
                 'reason_code' => 'plan_token_mismatch',
@@ -227,6 +281,20 @@ final class LeaOnboardingOrchestrator
             'company_id' => $company->id,
             'already_completed' => $result['already_completed'],
         ]);
+
+        // #8232 — `answers_modified` mesure le « taux de modification du
+        // resume » : on compare les reponses confirmees a celles que le plan
+        // proposait. Un ecart signale que Lea a mal compris, pas que
+        // l'utilisateur a change d'avis — c'est exactement le signal produit
+        // que le pilote doit remonter.
+        $this->metrics->record(
+            (string) $company->id,
+            LeaPilotMetricsRecorder::STAGE_CONFIRM,
+            'completed',
+            null,
+            $correlationId,
+            ['answers_modified' => $this->answersDifferFromDraft($company, $answers)],
+        );
 
         return [
             'outcome' => 'completed',
@@ -278,6 +346,52 @@ final class LeaOnboardingOrchestrator
         ksort($answers);
 
         return substr(hash('sha256', json_encode($answers, JSON_THROW_ON_ERROR)), 0, 32);
+    }
+
+    /**
+     * #8232 — les reponses confirmees different-elles du brouillon propose ?
+     *
+     * Mesure le « taux de modification du resume » du pilote. On compare aux
+     * reponses DEJA persistees (celles que le plan proposait), pas a une
+     * copie en memoire : c'est ce que l'utilisateur a reellement vu a l'ecran.
+     *
+     * Tolerant par construction : un entretien absent ou illisible renvoie
+     * `false` (pas de modification constatee) plutot que de faire echouer la
+     * confirmation pour une mesure.
+     *
+     * @param  array<string, mixed>  $answers
+     */
+    private function answersDifferFromDraft(Company $company, array $answers): bool
+    {
+        try {
+            $fresh = Company::query()->find($company->id);
+            $source = $fresh instanceof Company ? $fresh : $company;
+
+            $metadata = $source->metadata ?? [];
+            $interview = is_array($metadata['setup_interview'] ?? null) ? $metadata['setup_interview'] : [];
+            $draft = is_array($interview['answers'] ?? null) ? $interview['answers'] : [];
+
+            if ($draft === []) {
+                return false;
+            }
+
+            // Comparaison sur les cles du brouillon : une reponse ajoutee par
+            // l'utilisateur compte comme une modification, une cle absente du
+            // brouillon ne peut pas en etre une.
+            foreach ($draft as $question => $value) {
+                if (! array_key_exists($question, $answers)) {
+                    return true;
+                }
+
+                if ($answers[$question] !== $value) {
+                    return true;
+                }
+            }
+
+            return false;
+        } catch (Throwable) {
+            return false;
+        }
     }
 
     /**
