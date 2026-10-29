@@ -41,6 +41,11 @@ return [
     'domain_removed' => 'Bu alan adi kaldirildi ve artik dogrulanamaz.',
     'domain_plan_expired' => 'Aboneligiiz sona erdi: ozel alan adlari yenilenene kadar devre disi.',
 
+    // #8728 - kullanilamaz veya ayrilmis Sayfa adresi
+    'slug_unusable' => 'Verilen ad herkese acik bir adres olusturmaya uygun degil. Harf ve rakam kullanin.',
+    'slug_reserved' => '":slug" adresi platform tarafindan ayrilmis. Baska bir ad secin.',
+    'slug_taken' => '":slug" adresi zaten kullaniliyor.',
+
     // #8730 — public SSR rendering
     'public' => [
         'verified' => 'Dogrulanmis isletme',

@@ -200,6 +200,12 @@
           "status": "active"
         }
       ],
+      "facade": {
+        "reason": "Modules/Absence est une facade de presentation (HTTP + FormRequests + catalogue de decision). Le domaine (Domain/Models/Absence, AbsenceType), les Actions et les evenements vivent dans Modules/Planning (BC-05).",
+        "domain_owner": "BC-05",
+        "adr": "docs/adr/ARCH-003-module-absence-facade.md",
+        "guard": "dev-hub/tools/check-absence-facade.sh"
+      },
       "routes": [
         "api/routes/modules/absence.php"
       ],

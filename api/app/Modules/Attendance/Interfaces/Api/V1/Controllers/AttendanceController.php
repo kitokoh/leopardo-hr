@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Interfaces\Api\V1\Controllers;
 
-use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\AttendanceLogResource;
 use App\Http\Resources\Api\V1\AttendanceTodayResource;
+use App\Modules\Attendance\Application\Actions\ApproveCorrectionRequest;
+use App\Modules\Attendance\Application\Actions\RejectCorrectionRequest;
+use App\Modules\Attendance\Application\Actions\SubmitCorrectionRequest;
+use App\Modules\Attendance\Application\Actions\UpdateAttendanceLog;
 use App\Modules\Attendance\Application\DTOs\CheckInDTO;
+use App\Modules\Attendance\Application\Support\AttendanceCorrectionPresenter;
 use App\Modules\Attendance\Domain\Models\AttendanceCorrectionRequest;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalyService;
 use App\Modules\Attendance\Infrastructure\Services\AttendancePeriodClosureService;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceRegularityService;
@@ -41,6 +44,11 @@ class AttendanceController extends Controller
     public function __construct(
         private readonly AttendanceService $attendanceService,
         private readonly AttendancePeriodClosureService $periodClosures,
+        private readonly SubmitCorrectionRequest $submitCorrectionAction,
+        private readonly ApproveCorrectionRequest $approveCorrectionAction,
+        private readonly RejectCorrectionRequest $rejectCorrectionAction,
+        private readonly UpdateAttendanceLog $updateAttendanceLogAction,
+        private readonly AttendanceCorrectionPresenter $presenter,
     ) {}
 
     public function checkIn(CheckInRequest $request): JsonResponse
@@ -324,74 +332,13 @@ class AttendanceController extends Controller
             'proof' => ['nullable', 'file', 'max:5120', 'mimes:jpg,jpeg,png,pdf,heic'],
         ]);
 
-        // Issue #5267 : une période clôturée verrouille les corrections.
-        $this->periodClosures->assertPeriodOpen((string) $actor->company_id, Carbon::parse($validated['date']));
-
-        $company = currentCompany();
-        $timezone = $company->timezone;
-        $requestedCheckIn = Carbon::parse($validated['requested_check_in'])->setTimezone($timezone);
-        $requestedCheckOut = isset($validated['requested_check_out'])
-            ? Carbon::parse($validated['requested_check_out'])->setTimezone($timezone)
-            : null;
-
-        $errors = [];
-        if ($requestedCheckIn->isFuture()) {
-            $errors['requested_check_in'] = [__('attendance.correction_future_check_in')];
-        }
-        if ($requestedCheckOut !== null && $requestedCheckOut->isFuture()) {
-            $errors['requested_check_out'] = [__('attendance.correction_future_check_out')];
-        }
-        if ($errors !== []) {
-            throw ValidationException::withMessages($errors);
-        }
-
-        if ($requestedCheckOut !== null && $requestedCheckOut->lessThanOrEqualTo($requestedCheckIn)) {
-            throw ValidationException::withMessages([
-                'requested_check_out' => [__('errors.ATTENDANCE_CHECK_OUT_AFTER_CHECK_IN')],
-            ]);
-        }
-
-        $log = null;
-        if (! empty($validated['attendance_log_id'])) {
-            $log = AttendanceLog::query()
-                ->where('id', $validated['attendance_log_id'])
-                ->where('employee_id', $actor->id)
-                ->firstOrFail();
-        }
-
-        // Issue #5267 : stockage du justificatif sous un chemin scopé entreprise
-        // (même pattern que les absences, PA2-MOB-006).
         $proof = $request->file('proof');
-        $proofPath = $proof instanceof UploadedFile
-            ? $proof->store('attendance-corrections/proofs/'.$actor->company_id, 'local')
-            : null;
 
-        $correction = AttendanceCorrectionRequest::query()->create([
-            // #7711 : company_id délégué au trait BelongsToCompany (tenant actif).
-            'employee_id' => $actor->id,
-            'attendance_log_id' => $log?->id,
-            'date' => $validated['date'],
-            'requested_check_in' => $requestedCheckIn,
-            'requested_check_out' => $requestedCheckOut,
-            'reason' => $validated['reason'],
-            'proof_path' => $proofPath,
-            'status' => 'pending',
-        ]);
-
-        AuditLog::create([
-            'company_id' => $actor->company_id,
-            'user_id' => $actor->id,
-            'action' => 'attendance_correction_requested',
-            'auditable_type' => $correction->getMorphClass(),
-            'auditable_id' => $correction->id,
-            'old_values' => [],
-            'new_values' => [
-                'date' => $correction->date->format('Y-m-d'),
-                'requested_check_in' => $requestedCheckIn->toIso8601String(),
-                'requested_check_out' => $requestedCheckOut?->toIso8601String(),
-                'has_proof' => $proofPath !== null,
-            ],
-        ]);
+        $correction = $this->submitCorrectionAction->execute(
+            $actor,
+            $validated,
+            $proof instanceof UploadedFile ? $proof : null,
+        );
 
         return response()->json([
             'data' => [
@@ -461,62 +408,7 @@ class AttendanceController extends Controller
             ]);
         }
 
-        $employee = Employee::query()
-            ->where('company_id', $actor->company_id)
-            ->findOrFail($correction->employee_id);
-
-        $log = $correction->attendanceLog;
-        if (! $log) {
-            $sessionNumber = ((int) AttendanceLog::query()
-                ->where('employee_id', $employee->id)
-                ->whereDate('date', $correction->date)
-                ->max('session_number')) + 1;
-
-            $log = new AttendanceLog([
-                'company_id' => $actor->company_id,
-                'employee_id' => $employee->id,
-                'schedule_id' => $employee->schedule_id,
-                'date' => $correction->date,
-                'session_number' => $sessionNumber,
-                'method' => 'manual',
-                'work_type' => 'normal',
-            ]);
-        }
-
-        $log->fill([
-            'check_in' => $correction->requested_check_in,
-            'check_out' => $correction->requested_check_out,
-            'method' => 'manual',
-            'corrected_by' => $actor->id,
-            'correction_note' => $correction->reason,
-        ]);
-
-        $log = $this->attendanceService->recalculateLog($log);
-
-        $correction->forceFill([
-            'attendance_log_id' => $log->id,
-            'status' => 'applied',
-            'reviewed_by' => $actor->id,
-            'reviewed_at' => now(),
-        ])->save();
-
-        // Issue #5267 : décision tracée (audit trail).
-        AuditLog::create([
-            'company_id' => $actor->company_id,
-            'user_id' => $actor->id,
-            'action' => 'attendance_correction_approved',
-            'auditable_type' => $correction->getMorphClass(),
-            'auditable_id' => $correction->id,
-            'old_values' => ['status' => 'pending'],
-            'new_values' => [
-                'status' => 'applied',
-                'attendance_log_id' => $log->id,
-                'check_in' => $log->check_in?->toIso8601String(),
-                'check_out' => $log->check_out?->toIso8601String(),
-            ],
-        ]);
-
-        $correction->load(['employee', 'attendanceLog']);
+        $log = $this->approveCorrectionAction->execute($correction, $actor);
 
         return response()->json([
             'data' => $this->correctionPayload($correction),
@@ -542,24 +434,7 @@ class AttendanceController extends Controller
             ]);
         }
 
-        $correction->forceFill([
-            'status' => 'rejected',
-            'reviewed_by' => $actor->id,
-            'reviewed_at' => now(),
-        ])->save();
-
-        // Issue #5267 : décision tracée (audit trail).
-        AuditLog::create([
-            'company_id' => $actor->company_id,
-            'user_id' => $actor->id,
-            'action' => 'attendance_correction_rejected',
-            'auditable_type' => $correction->getMorphClass(),
-            'auditable_id' => $correction->id,
-            'old_values' => ['status' => 'pending'],
-            'new_values' => ['status' => 'rejected'],
-        ]);
-
-        $correction->load(['employee', 'attendanceLog']);
+        $this->rejectCorrectionAction->execute($correction, $actor);
 
         return response()->json([
             'data' => $this->correctionPayload($correction),
@@ -588,38 +463,7 @@ class AttendanceController extends Controller
             'work_type' => ['nullable', 'string', 'in:normal,overtime,break,resume,mission,travel,training,other'],
         ]);
 
-        $effectiveCheckIn = array_key_exists('check_in', $validated)
-            ? $validated['check_in']
-            : $attendanceLog->check_in;
-        $effectiveCheckOut = array_key_exists('check_out', $validated)
-            ? $validated['check_out']
-            : $attendanceLog->check_out;
-
-        if ($effectiveCheckOut !== null && $effectiveCheckIn === null) {
-            throw ValidationException::withMessages([
-                'check_out' => [__('attendance.manual_checkout_requires_check_in')],
-            ]);
-        }
-
-        if ($effectiveCheckIn !== null && $effectiveCheckOut !== null && $effectiveCheckOut <= $effectiveCheckIn) {
-            throw ValidationException::withMessages([
-                'check_out' => [__('attendance.checkout_after_checkin')],
-            ]);
-        }
-
-        /** @var Employee $user */
-        $user = $request->user();
-
-        $attendanceLog->fill([
-            'check_in' => $effectiveCheckIn,
-            'check_out' => $effectiveCheckOut,
-            'method' => 'manual',
-            'work_type' => $validated['work_type'] ?? $attendanceLog->work_type ?? 'normal',
-            'corrected_by' => $user->id,
-            'correction_note' => $validated['notes'] ?? $attendanceLog->correction_note,
-        ]);
-
-        $attendanceLog = $this->attendanceService->recalculateLog($attendanceLog);
+        $attendanceLog = $this->updateAttendanceLogAction->execute($attendanceLog, $actor, $validated);
 
         return (new AttendanceLogResource($attendanceLog))->response();
     }
@@ -662,74 +506,7 @@ class AttendanceController extends Controller
      */
     private function correctionPayload(AttendanceCorrectionRequest $correction): array
     {
-        return [
-            'id' => $correction->id,
-            'company_id' => $correction->company_id,
-            'employee_id' => $correction->employee_id,
-            'attendance_log_id' => $correction->attendance_log_id,
-            'employee' => $correction->relationLoaded('employee') && $correction->employee ? [
-                'id' => $correction->employee->id,
-                'name' => trim(($correction->employee->first_name ?? '').' '.($correction->employee->last_name ?? '')),
-                'matricule' => $correction->employee->matricule,
-            ] : null,
-            'date' => $correction->date->format('Y-m-d'),
-            'requested_check_in' => $correction->requested_check_in->toIso8601String(),
-            'requested_check_out' => $correction->requested_check_out?->toIso8601String(),
-            'reason' => $correction->reason,
-            // Issue #5267 : justificatif + signalement anti-fraude.
-            'proof_url' => $correction->proof_path !== null
-                ? route('attendance.corrections.proof', ['correction' => $correction->id])
-                : null,
-            'anomaly' => $this->correctionAnomaly($correction),
-            'status' => $correction->status,
-            'reviewed_by' => $correction->reviewed_by,
-            'reviewed_at' => $correction->reviewed_at?->toIso8601String(),
-        ];
-    }
-
-    /**
-     * Issue #5267 — anti-fraude : signale une correction dont les horaires
-     * demandés contredisent une session géo VALIDÉE (écart > 15 min).
-     *
-     * @return array{flagged: bool, reason: string|null, session: array<string, mixed>|null}|null
-     */
-    private function correctionAnomaly(AttendanceCorrectionRequest $correction): ?array
-    {
-        $session = GeoAttendanceSession::query()
-            ->where('company_id', $correction->company_id)
-            ->where('employee_id', $correction->employee_id)
-            ->where('status', 'approved')
-            ->whereDate('started_at', $correction->date->toDateString())
-            ->first();
-
-        if ($session === null) {
-            return null;
-        }
-
-        $thresholdMinutes = 15;
-        $conflicts = [];
-
-        if (abs($correction->requested_check_in->diffInMinutes($session->started_at)) > $thresholdMinutes) {
-            $conflicts[] = 'check_in';
-        }
-        if ($session->ended_at !== null && $correction->requested_check_out !== null
-            && abs($correction->requested_check_out->diffInMinutes($session->ended_at)) > $thresholdMinutes) {
-            $conflicts[] = 'check_out';
-        }
-
-        if ($conflicts === []) {
-            return null;
-        }
-
-        return [
-            'flagged' => true,
-            'reason' => 'geo_session_conflict',
-            'session' => [
-                'id' => $session->id,
-                'started_at' => $session->started_at->toIso8601String(),
-                'ended_at' => $session->ended_at?->toIso8601String(),
-            ],
-        ];
+        return $this->presenter->payload($correction);
     }
 
     /**
