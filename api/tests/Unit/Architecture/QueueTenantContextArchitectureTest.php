@@ -67,6 +67,20 @@ class QueueTenantContextArchitectureTest extends TestCase
         \App\Listeners\NotifyTaxRateValidation::class => 'listener queued (#8206) : le handler établit déjà le contexte tenant via TenantManager::withinTenant() + PlatformCompanyLookup (#1994)',
         \App\Listeners\ProcessCommissionOnPayment::class => 'listener queued (#8206) : écritures commission filtrées par company_id du paiement (dette mode schema)',
         \App\Listeners\SendInvoicePaymentReceipt::class => 'listener queued (#8206) : lecture facture filtrée par company_id + envoi email, aucune écriture tenant (dette mode schema)',
+
+        // Job PLATEFORME (#7649) : `integrations` n'a PAS de colonne
+        // `company_id` (migration 2026_10_26_000001_8512, ligne 101) — la
+        // table est globale au déploiement, une intégration GSC/GA4/Ads est
+        // configurée une fois pour l'installation, pas par société. Le job
+        // n'a donc aucun tenant à établir : `tenantCompanyId()` n'aurait
+        // rien à retourner. Les tables qu'il écrit (`campaigns`,
+        // `campaign_metrics`) sont, elles, tenant — mais il les atteint
+        // toujours via une campagne déjà résolue, et le scoping y est porté
+        // par `company_id` explicite (dette mode schema, comme les listeners
+        // ci-dessus). Lui imposer EnsureTenantContext établirait un
+        // `search_path` sans société, ce qui serait pire que l'absence de
+        // contexte : une erreur silencieuse au lieu d'une erreur franche.
+        \App\Modules\SearchIntelligence\Infrastructure\Jobs\SyncIntegrationMetrics::class => 'job plateforme (#7649) : `integrations` est globale (aucune colonne company_id), aucun tenant à établir',
     ];
 
     public function test_every_queued_job_touching_tenant_data_uses_ensure_tenant_context(): void
