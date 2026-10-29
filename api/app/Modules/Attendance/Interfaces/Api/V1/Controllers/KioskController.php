@@ -15,6 +15,7 @@ use App\Modules\Attendance\Application\Actions\BuildKioskRoster;
 use App\Modules\Attendance\Application\Actions\ProvisionKiosk;
 use App\Modules\Attendance\Application\Actions\RevokeKiosk;
 use App\Modules\Attendance\Application\Actions\RotateKioskToken;
+use App\Modules\Attendance\Application\Support\KioskPunchPresenter;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Infrastructure\Services\KioskAttendanceService;
 use App\Modules\Attendance\Infrastructure\Services\KioskFaceVerificationService;
@@ -120,15 +121,7 @@ class KioskController extends Controller
         $statusCode = $action === 'check_in' ? 201 : 200;
 
         return new JsonResponse([
-            'data' => [
-                'employee_id' => $log->employee_id,
-                'date' => $log->date?->format('Y-m-d'),
-                'check_in' => optional($log->check_in)->toIso8601String(),
-                'check_out' => optional($log->check_out)->toIso8601String(),
-                'method' => $log->method,
-                'work_type' => $log->work_type,
-                'session_number' => $log->session_number,
-                'status' => $log->status,
+            'data' => array_merge(KioskPunchPresenter::present($log), [
                 // #7958 : true quand la méthode réclamée (fingerprint/face)
                 // a été dégradée en `manual` faute de preuve device.
                 'unverified' => $unverified,
@@ -136,7 +129,7 @@ class KioskController extends Controller
                 'replayed' => $log->external_event_id !== null
                     && $request->validated('device_event_id') !== null
                     && $log->external_event_id === $request->validated('device_event_id'),
-            ],
+            ]),
         ], $statusCode);
     }
 
@@ -473,18 +466,10 @@ class KioskController extends Controller
             $statusCode = $log->check_out !== null ? 200 : 201;
 
             return new JsonResponse([
-                'data' => [
+                'data' => array_merge(KioskPunchPresenter::present($log), [
                     'verified' => true,
-                    'employee_id' => $log->employee_id,
-                    'date' => $log->date?->format('Y-m-d'),
-                    'check_in' => optional($log->check_in)->toIso8601String(),
-                    'check_out' => optional($log->check_out)->toIso8601String(),
-                    'method' => $log->method,
-                    'work_type' => $log->work_type,
-                    'session_number' => $log->session_number,
-                    'status' => $log->status,
                     'correlation_id' => $result['correlation_id'],
-                ],
+                ]),
             ], $statusCode);
         }
 

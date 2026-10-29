@@ -13,6 +13,7 @@ use App\Modules\Platform\Infrastructure\Services\PlatformAiSettingsApplier;
 use App\Modules\Platform\Infrastructure\Services\PlatformAiSettingsRepository;
 use App\Modules\Platform\Infrastructure\Services\PlatformOutboxConsumerRegistry;
 use App\Modules\Platform\Infrastructure\Services\PlatformOutboxPublisher;
+use App\Modules\Platform\Infrastructure\Services\RecordSchedulerRun;
 use App\Modules\Platform\Infrastructure\Services\ScheduledTaskRunRecorder;
 use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
@@ -53,6 +54,20 @@ class PlatformServiceProvider extends ServiceProvider
         Event::listen(ScheduledTaskStarting::class, [ScheduledTaskRunRecorder::class, 'onStarting']);
         Event::listen(ScheduledTaskFinished::class, [ScheduledTaskRunRecorder::class, 'onFinished']);
         Event::listen(ScheduledTaskFailed::class, [ScheduledTaskRunRecorder::class, 'onFailed']);
+
+        // #7967 — le plan free Render endort le conteneur web, et le scheduler
+        // tourne DEDANS : toute échéance due pendant le spin-down était perdue
+        // sans trace, et `schedule:run` ne rattrape rien.
+        //
+        // On branche l'enregistrement du CRÉNEAU THÉORIQUE sur le MÊME événement
+        // que le recorder ci-dessus, plutôt que d'ajouter un `->before()` sur
+        // chacune des 46 entrées de planning : un seul point d'accroche, et la
+        // première entrée oubliée ne peut pas rouvrir le trou. La distinction
+        // avec `scheduled_task_runs` est volontaire — celui-ci garde la
+        // DERNIÈRE exécution par tâche (écrasée à chaque run), alors que
+        // `scheduler_slot_runs` conserve l'HISTORIQUE des échéances, seule
+        // information qui permette de prouver qu'un créneau n'a jamais tourné.
+        Event::listen(ScheduledTaskStarting::class, [RecordSchedulerRun::class, 'onStarting']);
 
         // MAT-008 (#5866) — outbox plateforme : les consommateurs de
         // production sont enregistrés ici ; la publication se fait au moment
