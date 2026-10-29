@@ -164,6 +164,14 @@ Ils ne sont donc pas nécessaires pour contribuer.
 | `VERCEL_PROD_PROJECT_ID` | `deploy-prod.yml` | Projet Vercel cible (`front/web`) | Required for production web deploys |
 | `CLOUDFLARE_PROD_API_TOKEN` | `deploy-prod.yml` | Token Cloudflare Pages pour déployer l'admin plateforme de production | Required for production admin deploys |
 | `CLOUDFLARE_PROD_ACCOUNT_ID` | `deploy-prod.yml` | Compte Cloudflare cible | Required for production admin deploys |
+| `NEON_API_KEY` | `stack-consumption-report.yml` | Clé API Neon : lecture des CU-h et du transfert du projet de production (rapport de quotas #9059) | Optional (section « non mesuré » si absent) |
+| `NEON_PROJECT_ID` | `stack-consumption-report.yml` | Identifiant du projet Neon de production mesuré par le rapport de quotas | Optional (idem) |
+
+> ⚠️ **Ces secrets vivent sur l'environnement `production`, pas au niveau dépôt.**
+> Un job qui les référence **doit** déclarer `environment: production`, sinon
+> chaque `secrets.X` se résout en chaîne vide — c'est exactement ce qui a rendu
+> le rapport de quotas #9059 aveugle pendant des semaines (il affichait
+> « non mesuré » alors que les secrets existaient).
 
 ### Secrets de déploiement Travel Web (`travel-web-deploy.yml`, issue #7740)
 
