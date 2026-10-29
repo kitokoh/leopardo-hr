@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Contracts\Queue\OutboundWebhookTransport;
 use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Billing\Domain\Models\WebhookDelivery;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\Billing\Infrastructure\Services\WebhookEnvelopeBuilder;
-use App\Rules\NotPrivateUrl;
+use App\Shared\Exceptions\OutboundWebhookBlockedException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
@@ -101,24 +101,6 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
 
     public function handle(): void
     {
-        // Anti-SSRF, defence-in-depth: the URL was already validated against
-        // private/reserved IP ranges when the endpoint was created/updated
-        // (see StoreWebhookEndpointRequest/UpdateWebhookEndpointRequest), but
-        // DNS can be rebound between then and now. Re-resolve and re-check
-        // right before making the outbound request instead of trusting the
-        // stored value blindly. See docs/security/AUDIT_API_2026-07-19.md.
-        $host = parse_url($this->endpoint->url, PHP_URL_HOST);
-        if (! str_starts_with($this->endpoint->url, 'https://') || ! is_string($host) || ! NotPrivateUrl::isPublicHost($host)) {
-            Log::warning('Webhook delivery blocked: URL resolves to a disallowed host', [
-                'endpoint_id' => $this->endpoint->id,
-                'event' => $this->event,
-            ]);
-
-            $this->endpoint->update(['active' => false]);
-
-            return;
-        }
-
         // Issue #5744 : enveloppe canonique versionnée (additive) — voir
         // WebhookEnvelopeBuilder et docs/api/VERSIONING.md § 5.
         $body = WebhookEnvelopeBuilder::build(
@@ -132,28 +114,48 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
 
         $timestamp = time();
 
-        $start = microtime(true);
+        // BOS-021 (#8210) — la livraison HTTP et la garde anti-SSRF viennent
+        // du transport partagé (BC-14) au lieu d'être recopiées ici. La garde
+        // reste appliquée AVANT l'appel (re-résolution DNS, TOCTOU) : elle a
+        // simplement déménagé dans le socle, avec le même comportement.
+        //
+        // Le corps est sérialisé UNE fois et la même chaîne sert à signer et à
+        // envoyer : deux `json_encode` successifs produiraient le même octet
+        // aujourd'hui, mais un seul point de sérialisation rend la propriété
+        // structurelle plutôt que dépendante de l'ordre des clés.
+        $rawBody = json_encode($body, JSON_THROW_ON_ERROR);
 
         try {
-            $response = Http::timeout(10)
-                ->withHeaders(WebhookEnvelopeBuilder::headers(
+            $response = app(OutboundWebhookTransport::class)->send(
+                (string) $this->endpoint->url,
+                $rawBody,
+                WebhookEnvelopeBuilder::headers(
                     $this->event,
                     (string) $this->eventVersion,
                     (string) $this->endpoint->secret,
                     $body,
                     $timestamp,
-                ))
-                ->post($this->endpoint->url, $body);
-        } catch (Throwable $e) {
-            $durationMs = (int) ((microtime(true) - $start) * 1000);
+                ),
+            );
+        } catch (OutboundWebhookBlockedException $e) {
+            // Décision, pas incident : l'endpoint ne redeviendra pas public
+            // tout seul, on le désactive et on n'insiste pas.
+            Log::warning('Webhook delivery blocked: URL resolves to a disallowed host', [
+                'endpoint_id' => $this->endpoint->id,
+                'event' => $this->event,
+            ]);
 
+            $this->endpoint->update(['active' => false]);
+
+            return;
+        } catch (Throwable $e) {
             WebhookDelivery::create([
                 'webhook_endpoint_id' => $this->endpoint->id,
                 'event' => $this->event,
                 'payload' => $body,
                 'response_code' => 0,
                 'response_body' => mb_substr($e->getMessage(), 0, 2000),
-                'duration_ms' => $durationMs,
+                'duration_ms' => 0,
             ]);
 
             $this->endpoint->increment('failure_count');
@@ -167,15 +169,13 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
             throw $e;
         }
 
-        $durationMs = (int) ((microtime(true) - $start) * 1000);
-
         WebhookDelivery::create([
             'webhook_endpoint_id' => $this->endpoint->id,
             'event' => $this->event,
             'payload' => $body,
-            'response_code' => $response->status(),
-            'response_body' => mb_substr($response->body(), 0, 2000),
-            'duration_ms' => $durationMs,
+            'response_code' => $response->status,
+            'response_body' => $response->body,
+            'duration_ms' => $response->durationMs,
         ]);
 
         if ($response->successful()) {
@@ -203,7 +203,7 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
         }
 
         throw new \RuntimeException(
-            sprintf('Webhook delivery failed with status %d: %s', $response->status(), mb_substr($response->body(), 0, 500))
+            sprintf('Webhook delivery failed with status %d: %s', $response->status, mb_substr($response->body, 0, 500))
         );
     }
 }
