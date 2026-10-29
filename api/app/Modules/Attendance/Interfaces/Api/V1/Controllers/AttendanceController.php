@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\AttendanceLogResource;
 use App\Http\Resources\Api\V1\AttendanceTodayResource;
 use App\Modules\Attendance\Application\Actions\ApproveCorrectionRequest;
+use App\Modules\Attendance\Application\Actions\GetAttendanceToday;
 use App\Modules\Attendance\Application\Actions\RejectCorrectionRequest;
 use App\Modules\Attendance\Application\Actions\SubmitCorrectionRequest;
 use App\Modules\Attendance\Application\Actions\UpdateAttendanceLog;
@@ -28,8 +29,6 @@ use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceReportRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceTodayRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\CheckInRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\CheckOutRequest;
-use App\Modules\Planning\Infrastructure\Services\EstimationService;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -48,6 +47,7 @@ class AttendanceController extends Controller
         private readonly ApproveCorrectionRequest $approveCorrectionAction,
         private readonly RejectCorrectionRequest $rejectCorrectionAction,
         private readonly UpdateAttendanceLog $updateAttendanceLogAction,
+        private readonly GetAttendanceToday $getAttendanceToday,
         private readonly AttendanceCorrectionPresenter $presenter,
     ) {}
 
@@ -94,97 +94,51 @@ class AttendanceController extends Controller
         $employeeId = $request->validated('employee_id');
 
         if ($employeeId) {
+            /** @var Employee $target */
             $target = Employee::query()->findOrFail($employeeId);
             $this->authorize('viewForEmployee', [AttendanceLog::class, $target]);
 
-            $log = AttendanceLog::query()
-                ->where('employee_id', $target->id)
-                ->where('date', $today)
-                ->orderByRaw('CASE WHEN check_out IS NULL THEN 1 ELSE 0 END DESC')
-                ->orderByDesc('session_number')
-                ->first();
-            $sessions = $this->dailySessions($target, $today);
-            $estimatedSummary = app(EstimationService::class)->dailySummaryFromLogs($target, $sessions, $today);
+            $result = $this->getAttendanceToday->forEmployee($target, $today);
 
             return new JsonResponse([
                 'data' => [
                     'mode' => 'single',
-                    'item' => new AttendanceTodayResource($target, $log, $company->timezone, $estimatedSummary),
-                    'sessions' => AttendanceLogResource::collection($sessions)->resolve($request),
-                    'summary' => $this->dailySessionSummary($sessions),
+                    'item' => new AttendanceTodayResource($target, $result['log'], $company->timezone, $result['estimation']),
+                    'sessions' => AttendanceLogResource::collection($result['sessions'])->resolve($request),
+                    'summary' => $result['summary'],
                 ],
             ]);
         }
 
         if ($actor->isManager()) {
             $this->authorize('viewAny', AttendanceLog::class);
+
             $perPage = max(1, min(100, $request->integer('per_page', 50)));
+            $result = $this->getAttendanceToday->forManagerScope($actor, $today, $perPage);
 
-            $paginator = Employee::query()
-                ->select(['id', 'company_id', 'department_id', 'first_name', 'last_name', 'email', 'role', 'status'])
-                ->where('company_id', $actor->company_id)
-                ->where('status', 'active')
-                ->when(
-                    $actor->isTeamScoped(),
-                    fn ($query) => $query->visibleToManager($actor)
-                )
-                ->orderBy('id')
-                ->paginate(max(1, min(100, $perPage)));
-
-            $employees = collect($paginator->items());
-            $employeeIds = $employees->pluck('id')->all();
-
-            $logsByEmployee = AttendanceLog::query()
-                ->select(['id', 'employee_id', 'date', 'session_number', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status', 'method', 'work_type', 'punch_note', 'punch_meta', 'late_minutes'])
-                ->where('date', $today)
-                ->whereIn('employee_id', $employeeIds)
-                ->get()
-                ->groupBy('employee_id');
-
-            $timezone = $company->timezone;
-
-            $estimationService = app(EstimationService::class);
-
-            $data = $employees->map(function (Employee $employee) use ($logsByEmployee, $timezone, $today, $estimationService) {
-                $logs = $logsByEmployee->get($employee->id, collect());
-                $log = $logs
-                    ->sortByDesc(fn (AttendanceLog $log) => ($log->check_out === null ? 100000 : 0) + (int) $log->session_number)
-                    ->first();
-                $summary = $estimationService->dailySummaryFromLogs($employee, $logs, $today);
-
-                return new AttendanceTodayResource($employee, $log, $timezone, $summary);
-            })->values();
+            $items = collect($result['items'])->map(
+                fn (array $row) => new AttendanceTodayResource($row['employee'], $row['log'], $company->timezone, $row['summary'])
+            )->values();
 
             return new JsonResponse([
                 'data' => [
                     'mode' => 'collection',
-                    'items' => $data,
-                    'meta' => [
-                        'current_page' => $paginator->currentPage(),
-                        'per_page' => $paginator->perPage(),
-                        'total' => $paginator->total(),
-                    ],
+                    'items' => $items,
+                    'meta' => $result['meta'],
                 ],
             ]);
         }
 
         $this->authorize('viewForEmployee', [AttendanceLog::class, $actor]);
 
-        $log = AttendanceLog::query()
-            ->where('employee_id', $actor->id)
-            ->where('date', $today)
-            ->orderByRaw('CASE WHEN check_out IS NULL THEN 1 ELSE 0 END DESC')
-            ->orderByDesc('session_number')
-            ->first();
-        $sessions = $this->dailySessions($actor, $today);
-        $estimatedSummary = app(EstimationService::class)->dailySummaryFromLogs($actor, $sessions, $today);
+        $result = $this->getAttendanceToday->forEmployee($actor, $today);
 
         return new JsonResponse([
             'data' => [
                 'mode' => 'single',
-                'item' => new AttendanceTodayResource($actor, $log, $company->timezone, $estimatedSummary),
-                'sessions' => AttendanceLogResource::collection($sessions)->resolve($request),
-                'summary' => $this->dailySessionSummary($sessions),
+                'item' => new AttendanceTodayResource($actor, $result['log'], $company->timezone, $result['estimation']),
+                'sessions' => AttendanceLogResource::collection($result['sessions'])->resolve($request),
+                'summary' => $result['summary'],
             ],
         ]);
     }
@@ -536,60 +490,5 @@ class AttendanceController extends Controller
         }
 
         return $disk->download($correction->proof_path);
-    }
-
-    /**
-     * @return EloquentCollection<int, AttendanceLog>
-     */
-    private function dailySessions(Employee $employee, string $date): EloquentCollection
-    {
-        return AttendanceLog::query()
-            ->where('employee_id', $employee->id)
-            ->where('date', $date)
-            ->orderBy('session_number')
-            ->get();
-    }
-
-    /**
-     * @param  iterable<int, AttendanceLog>  $sessions
-     * @return array<string, mixed>
-     */
-    private function dailySessionSummary(iterable $sessions): array
-    {
-        $totalHours = 0.0;
-        $overtimeHours = 0.0;
-        $lateMinutes = 0;
-        $breakMinutes = 0;
-        $previousCheckout = null;
-        $openSession = null;
-        $count = 0;
-
-        foreach ($sessions as $session) {
-            $count++;
-            $totalHours += (float) ($session->hours_worked ?? 0);
-            $overtimeHours += (float) ($session->overtime_hours ?? 0);
-            $lateMinutes += (int) ($session->late_minutes ?? 0);
-
-            if ($previousCheckout !== null && $session->check_in !== null) {
-                $breakMinutes += max(0, $previousCheckout->diffInMinutes($session->check_in, false));
-            }
-
-            if ($session->check_out !== null) {
-                $previousCheckout = $session->check_out;
-            } else {
-                $openSession = $session;
-            }
-        }
-
-        return [
-            'sessions_count' => $count,
-            'is_working' => $openSession !== null,
-            'current_session_id' => $openSession?->id,
-            'current_work_type' => $openSession?->work_type,
-            'total_hours_worked' => round($totalHours, 2),
-            'total_overtime_hours' => round($overtimeHours, 2),
-            'break_minutes' => $breakMinutes,
-            'late_minutes' => $lateMinutes,
-        ];
     }
 }
