@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\RestaurantManager\Application\Actions\ApplyKitchenActionAction;
 use App\Modules\RestaurantManager\Application\Actions\TransitionOrderAction;
 use App\Modules\RestaurantManager\Domain\Enums\OrderStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
@@ -29,7 +30,10 @@ class RestaurantKitchenController extends Controller
 {
     use ChecksRestaurantBranchAccess;
 
-    public function __construct(private readonly TransitionOrderAction $transitionAction) {}
+    public function __construct(
+        private readonly TransitionOrderAction $transitionAction,
+        private readonly ApplyKitchenActionAction $applyKitchenAction,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -100,5 +104,52 @@ class RestaurantKitchenController extends Controller
         $order = $this->transitionAction->execute($actor, $restaurantOrder, OrderStatus::READY);
 
         return (new RestaurantKitchenOrderResource($order->load('items.product')))->response();
+    }
+
+    /**
+     * #8448 — geste cuisine venu du KDS Edge hors ligne, IDEMPOTENT.
+     *
+     * Le client rejoue ses gestes au retour du réseau ; un rejeu ne doit jamais
+     * faire avancer la commande deux fois. L'idempotence est portée par la
+     * contrainte d'unicité de `restaurant_kitchen_actions` (voir
+     * `ApplyKitchenActionAction`), pas par un `SELECT` préalable qui laisserait
+     * passer deux rejeux concurrents.
+     *
+     * Un rejeu répond **200** et non 409 : c'est le fonctionnement normal d'un
+     * client hors ligne, pas une erreur à afficher au cuisinier.
+     */
+    public function applyAction(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $validated = $request->validate([
+            'client_action_id' => ['required', 'string', 'max:64'],
+            'order_id' => ['required', 'integer'],
+            'action' => ['required', 'string', 'in:start,ready,serve'],
+        ]);
+
+        $order = RestaurantOrder::query()
+            ->where('company_id', $actor->company_id)
+            ->find((int) $validated['order_id']);
+
+        if (! $order instanceof RestaurantOrder) {
+            abort(404);
+        }
+
+        if (! $this->canOperateBranchResource($actor, $order->branch_id)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
+        }
+
+        $result = $this->applyKitchenAction->execute(
+            $actor,
+            $order,
+            (string) $validated['client_action_id'],
+            (string) $validated['action'],
+        );
+
+        return (new RestaurantKitchenOrderResource($result['order']->load('items.product')))
+            ->additional(['meta' => ['replayed' => $result['replayed']]])
+            ->response();
     }
 }

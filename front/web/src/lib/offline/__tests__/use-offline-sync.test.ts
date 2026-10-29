@@ -15,6 +15,11 @@ function setOnline(value: boolean) {
 
 describe('useOfflineSync (#8493/#8494)', () => {
   beforeEach(() => {
+    // #8448 — la file est désormais PERSISTÉE (localStorage), donc partagée
+    // entre deux montages. Sans purge, le cas précédent fuiterait dans le
+    // suivant : c'est précisément la durabilité qu'on veut en production, et
+    // précisément ce qu'il faut isoler en test.
+    window.localStorage.clear();
     setOnline(true);
   });
 

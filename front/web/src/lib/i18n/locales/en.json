@@ -8344,7 +8344,8 @@
     "retry": "Retry",
     "queued": "Saved offline — will sync",
     "synced": "Synced",
-    "syncFailed": "Sync failed — please retry"
+    "syncFailed": "Sync failed — please retry",
+    "notDurable": "Queue not persisted on this device — reloading the page would drop pending operations"
   },
   "devices": {
     "title": "Devices and terminals",
