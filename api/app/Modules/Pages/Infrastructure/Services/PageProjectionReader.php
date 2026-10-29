@@ -31,9 +31,10 @@ final class PageProjectionReader implements PageProjectionReaderContract
             return null;
         }
 
-        $status = $page->status instanceof \BackedEnum
-            ? (string) $page->status->value
-            : (string) $page->status;
+        // `Page::$status` est casté en `PageStatus` (enum) par le modèle : le
+        // test d'instanceof précédent était toujours vrai et PHPStan level 8
+        // le rejette. La valeur brute suffit pour la comparaison de parité.
+        $status = $page->status->value;
 
         return [
             'status' => $status,

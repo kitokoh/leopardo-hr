@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Showcase\Interfaces\Api\V1\Controllers;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\Site;
 use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
 use App\Modules\Showcase\Domain\Enums\CompanyShowcaseStatus;
@@ -169,7 +170,13 @@ final class ShowcasePublicController extends Controller
         }
 
         try {
-            $projection = $this->pageProjectionReader->forSite((int) $showcase->site_id);
+            $siteId = $this->resolveCandidateSiteId($showcase);
+
+            if ($siteId === null) {
+                return;
+            }
+
+            $projection = $this->pageProjectionReader->forSite($siteId);
 
             if ($projection === null) {
                 // Vitrine pas encore backfillée : cas normal, pas une divergence.
@@ -194,6 +201,34 @@ final class ShowcasePublicController extends Controller
             // Volontairement silencieux : l'observation ne doit jamais devenir
             // un point de panne de la surface publique.
         }
+    }
+
+    /**
+     * #8727 — résout l'établissement candidat d'une vitrine, ou `null` si la
+     * correspondance n'est pas univoque.
+     *
+     * `company_showcases` ne porte AUCUNE colonne `site_id` : le rattachement
+     * vitrine → établissement se déduit de `sites.company_id` (même tenant),
+     * exactement comme `showcase:pages-inventory`. La spec
+     * (`docs/design/etablissements-pages.md`, `ShowcasePageProjection`) interdit
+     * de choisir arbitrairement un Site : `pages.site_id` est UNIQUE (une Page
+     * par établissement en V1), donc un tenant à 0 ou plusieurs établissements
+     * est une décision produit, pas une heuristique. On ne devine pas : on
+     * saute la mesure et l'inventaire remonte le cas comme bloquant.
+     */
+    private function resolveCandidateSiteId(CompanyShowcase $showcase): ?int
+    {
+        $siteIds = Site::query()
+            ->where('company_id', $showcase->company_id)
+            ->orderBy('id')
+            ->limit(2)
+            ->pluck('id');
+
+        if ($siteIds->count() !== 1) {
+            return null;
+        }
+
+        return (int) $siteIds->first();
     }
 
     /**
