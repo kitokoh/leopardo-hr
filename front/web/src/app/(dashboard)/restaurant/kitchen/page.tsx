@@ -85,7 +85,7 @@ export default function RestaurantKitchenPage() {
       _idempotent: true,
     });
   }, []);
-  const { connectionState, pendingCount, dispatch, flush } = useOfflineSync(sendTransition);
+  const { connectionState, pendingCount, dispatch, flush, isDurable } = useOfflineSync(sendTransition);
 
   const loadBranches = useCallback(async () => {
     try {
@@ -336,6 +336,19 @@ export default function RestaurantKitchenPage() {
         {/* #8493 — état de connexion + opérations en attente (Partie 7). */}
         <ConnectionIndicator state={connectionState} pendingCount={pendingCount} onRetry={() => void flush()} />
       </div>
+
+      {/* #8448 — honnêteté du hors-ligne. Si la file n'est PAS persistée
+          (stockage indisponible/plein), un rafraîchissement effacerait les
+          gestes en attente. On le dit, plutôt que de laisser le cuisinier
+          croire à une durabilité qui n'existe pas. */}
+      {!isDurable ? (
+        <div
+          role="status"
+          className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900"
+        >
+          {t(locale, 'offline.notDurable')}
+        </div>
+      ) : null}
 
       {/* REST-OS-5 (#8607) — bandeau d'état de l'imprimante. Trois états
           visuels, jamais un quatrième « optimiste » : prête / hors ligne /
