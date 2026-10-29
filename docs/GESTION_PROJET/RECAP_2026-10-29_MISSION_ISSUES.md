@@ -238,7 +238,7 @@ services, **ni** le DTO.
 
 | Issue | État | Preuve / blocage |
 |---|---|---|
-| #8210 | **PR #9017** | transport unique + 5 tests anti-SSRF/TLS |
+| #8210 | **FERMÉE** — #9017 mergée en `c419ebe8f` | transport unique + 14 tests |
 | #8448 | **PR #9024** | 30 tests front + 5 tests d'idempotence |
 | #7962 | **PR #9025** (Payroll) — **reste ouverte** : tranche Auth non livrée | 23 tests Payroll ; mesure §4bis ci-dessus |
 | #7994 | **propriétaire** | §3/§4/§5 livrés ; reste les secrets Vercel |
@@ -270,3 +270,24 @@ destructive-down, alter-before-create, sql-quotes) toutes OK · `vitest run`
 par supposition** : `GoogleSsoTwoFactorSchemaTest` (2, fixtures périmées),
 `TravelWebhookTest` (4, `name` requis absent des fixtures),
 `tests/page.test.tsx` (Node 20 vs `undici` Node 22).
+
+## Fusion effectuée
+
+**#9017 mergée** (squash) en `c419ebe8f` et **#8210 fermée** sur preuve. Les 4
+checks requis étaient verts sur le SHA mergé (`enforce_admins: true`, `strict:
+false` → un merge déjà à jour n'invalide pas les autres). La PR n'avait pas de
+`Closes` dans son body : le commit de merge référence l'issue, ce qui satisfait
+`check-issues-closed-without-merge.sh` ; la fermeture a été faite avec la preuve
+en commentaire plutôt que par une clôture silencieuse.
+
+## Pourquoi #9024, #9025 et #9027 ne sont PAS mergées
+
+Leurs 3 checks requis restants étaient `queued` au moment de la clôture, et
+**`main` portait lui-même 18 checks en file avec `runners: 0`** — la saturation
+décrite par `PROTOCOLE_LOTS_MULTI_AGENTS.md` §3/§4, pas un échec de ces PR.
+
+Le §4 autorise une « fenêtre de merge contrôlée » (désactiver/restaurer la
+protection de `main`) **avec l'accord du fondateur**. Je n'ai pas cet accord, et
+`AGENTS.md` interdit de merger une PR dont les checks requis ne sont pas verts.
+Les trois PR restent donc ouvertes, vérifiées localement et prêtes : c'est le
+seul état honnête, pas un abandon.
