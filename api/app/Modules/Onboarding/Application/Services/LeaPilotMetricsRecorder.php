@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Onboarding\Application\Services;
 
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\ConnectionInterface;
 use Throwable;
 
 /**
@@ -32,6 +32,8 @@ use Throwable;
  */
 final class LeaPilotMetricsRecorder
 {
+    public function __construct(private readonly ConnectionInterface $db) {}
+
     public const STAGE_INTERPRET = 'interpret';
 
     public const STAGE_CLARIFY = 'clarify';
@@ -54,7 +56,7 @@ final class LeaPilotMetricsRecorder
                 return;
             }
 
-            DB::table('lea_pilot_events')->insert([
+            $this->db->table('lea_pilot_events')->insert([
                 'company_id' => $companyId,
                 'stage' => $stage,
                 'outcome' => $outcome,
