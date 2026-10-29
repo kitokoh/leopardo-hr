@@ -30,6 +30,21 @@ name: Mobile Smoke Build
 on:
   pull_request:
     branches: [main]
+    # #9035 (saturation CI) — ce workflow était le DERNIER gros job non filtré
+    # du dépôt : ~23 min de runner sur CHAQUE PR, y compris une PR de docs ou
+    # de gouvernance qui ne peut pas casser la chaîne Flutter. Le trou qu'il
+    # comble (une régression mobile introduite par un changement d'API
+    # partagée) ne peut venir que des chemins ci-dessous — les mêmes que
+    # `mobile-apps-ci.yml` surveille, plus le contrat backend partagé.
+    # Un build de fumée sur une PR `docs/**` ne prouvait rien : il recompilait
+    # un code mobile identique à celui de `main`.
+    paths:
+      - 'front/mobile_apps/**'
+      - 'api/app/Modules/HR/Infrastructure/Services/MobileExperienceService.php'
+      - 'api/app/Modules/**/Domain/DTOs/**'
+      - 'api/routes/**'
+      - '.github/actions/setup-flutter-android/**'
+      - '.github/workflows/mobile-smoke.yml'
   workflow_dispatch:
 
 permissions:

@@ -1,22 +1,35 @@
 name: Backend Coverage Gate
 
-# PA2-OPS-003: `pull_request.paths` intentionally removed (same fix as
-# actionlint.yml). This job is a required status check on `main` (branch
-# protection, "Backend Coverage (PHP 8.4 + PostgreSQL 16)"), and a required
-# check gated behind a `paths:` filter never posts a status on PRs that
-# don't touch those paths — GitHub then treats the check as permanently
-# pending and blocks merging that PR indefinitely (discovered in practice
-# on PR #1125 / PR #1126, both blocked despite every other check passing).
+# PA2-OPS-003 (historique) : `pull_request.paths` avait été retiré parce que
+# ce job était alors un check REQUIS — un check requis derrière un filtre
+# `paths:` ne poste jamais de statut sur les PR hors périmètre, et GitHub le
+# traite comme « pending » à vie (PR #1125 / #1126 bloquées).
+#
+# ⚠️ Ce n'est PLUS un check requis au merge. Vérifié via l'API le 2026-10-30 :
+# les 4 contexts requis de `main` sont PHPStan Strict, Module Structure
+# Validator, Frontend ESLint+TS et actionlint (+ shellcheck). `Backend
+# Coverage` en est absent depuis #7096, et `.github/BRANCH_PROTECTION_REQUIRED.md`
+# le documente : « PAS requis au merge, exigé à la release » (release.yml).
+# Le commentaire d'en-tête qui affirmait le contraire était périmé.
+#
+# Le filtre `paths` est donc rétabli : ce job coûte ~54 min de runner par PR
+# (mesure sur 20 runs `pull_request`), soit le 2e poste le plus lourd du dépôt,
+# pour un verdict informatif. Il ne tourne plus que sur les PR qui peuvent
+# réellement changer la couverture backend. `push` sur main et `merge_group`
+# restent NON filtrés : la release exige ce check sur le commit taggé, et un
+# push main doit toujours produire le verdict.
 on:
   workflow_dispatch:
   pull_request:
     branches: [main]
-  # Issue #2032 : check requis « Backend Coverage » — doit tourner sur le
-  # ref de merge de la merge queue.
-  # Push main : ce check est REQUIS par la protection de branche — sans ce
-  # trigger, les pushes directs sur main (pattern admin merge lead) ne font
-  # jamais tourner « Backend Coverage (PHP 8.4 + PostgreSQL 16) » → GitHub
-  # traite le check requis comme pending à vie et main n'est jamais « vert ».
+    paths:
+      - 'api/**'
+      - '.github/workflows/coverage-gate.yml'
+      - '.github/actions/setup-backend-db/**'
+  # Issue #2032 : doit tourner sur le ref de merge de la merge queue.
+  # Push main : la release exige « Backend Coverage » sur le commit taggé
+  # (release.yml) — sans ce trigger, un push direct sur main ne produirait
+  # jamais le verdict et la release resterait bloquée. Non filtré à dessein.
   push:
     branches: [main]
   merge_group:
