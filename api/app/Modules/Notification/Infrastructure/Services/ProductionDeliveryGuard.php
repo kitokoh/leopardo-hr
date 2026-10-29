@@ -40,9 +40,24 @@ class ProductionDeliveryGuard
 
     /**
      * Whether the guard applies to the current environment.
+     *
+     * The environment is read from `app.env` configuration rather than from
+     * `app()->environment()`: the latter returns the value cached on the
+     * application instance at bootstrap, so it ignores a configuration change
+     * (`config(['app.env' => 'production'])`) made at runtime. This guard is a
+     * *configuration* guard — it reports on the configuration it is given, and
+     * an operator (or a test) overriding that configuration must see the
+     * verdict change. In a real deployment both values come from the same
+     * `APP_ENV` variable, so the behaviour is unchanged in production.
      */
     public function isApplicable(): bool
     {
+        $configured = config('app.env');
+
+        if (is_string($configured) && $configured !== '') {
+            return $configured === 'production';
+        }
+
         return app()->environment('production');
     }
 

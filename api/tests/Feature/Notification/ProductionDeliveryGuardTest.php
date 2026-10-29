@@ -5,6 +5,7 @@ namespace Tests\Feature\Notification;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Notification\Infrastructure\Services\ProductionDeliveryGuard;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -168,9 +169,12 @@ class ProductionDeliveryGuardTest extends TestCase
      */
     private function actingAsSuperAdmin(): void
     {
+        // The `super_admins` table lives in the shared `public` schema, which
+        // `RefreshTenantDatabase` does not reset between tests: a fixed email
+        // hits `super_admins_email_unique` on the second test of the run.
         $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
-            'email' => 'admin-health@leopardo.test',
+            'email' => 'admin-health-'.Str::random(12).'@leopardo.test',
         ]);
         $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
 
@@ -232,6 +236,16 @@ class ProductionDeliveryGuardTest extends TestCase
     private function simulateProduction(array $config): void
     {
         config(['app.env' => 'production']);
+
+        // Baseline: a production deployment that is *correctly* configured.
+        // Without it, a test asserting "no issue" would still inherit the
+        // testing environment's `mail.default = log` and be flagged for a
+        // reason it never intended to exercise.
+        config([
+            'mail.default' => 'smtp',
+            'mail.mailers.smtp.host' => 'smtp-relay.brevo.com',
+            'communication.providers.whatsapp' => 'audit',
+        ]);
 
         foreach ($config as $key => $value) {
             config([$key => $value]);
