@@ -61,22 +61,37 @@ jobs:
 
       # Le contexte `secrets` n'est pas disponible dans les `if` de job
       # (actionlint) : la présence du token est testée au niveau step via env.
+      #
+      # Issue #7657 — le PAT admin n'est PLUS une condition de succès. La garde
+      # se rabat sur `GET /branches/{branch}` avec le GITHUB_TOKEN par défaut
+      # (mode partiel : branche protégée + liste des checks requis + invariant
+      # #7480) et annonce explicitement les champs qu'elle ne peut pas voir.
+      # Avant ce correctif, l'absence du secret rendait le job ROUGE CHAQUE
+      # JOUR sur main : un check rouge permanent ne signale plus rien (#3545).
       - name: Verify main protection matches canonical
-        if: ${{ env.BRANCH_PROTECTION_TOKEN != '' }}
         env:
-          GITHUB_TOKEN: ${{ env.BRANCH_PROTECTION_TOKEN }}
+          # Le PAT admin (si posé) débloque le mode COMPLET ; sinon le token
+          # par défaut suffit au mode PARTIEL.
+          GITHUB_TOKEN: ${{ secrets.BRANCH_PROTECTION_TOKEN || github.token }}
         run: dev-hub/tools/check-branch-protection.sh kitokoh/leopardo-hr main
 
-      - name: Fail when the branch protection token is not configured
-        if: ${{ env.BRANCH_PROTECTION_TOKEN == '' }}
+      - name: Report the verification mode (issue #7657)
+        if: always()
+        env:
+          # Jamais d'interpolation `${{ secrets.* }}` dans un `run:` : le secret
+          # finirait dans le script (et dans les logs en cas d'erreur).
+          HAS_ADMIN_TOKEN: ${{ secrets.BRANCH_PROTECTION_TOKEN != '' }}
         run: |
           set -euo pipefail
           {
-            echo "::error::Protection de branche NON vérifiée : le secret BRANCH_PROTECTION_TOKEN est absent (issue #7270)."
-            echo "::error::Ce job échoue volontairement : sans ce token, la protection de main n'est contrôlée par personne — un skip silencieux ressemblerait à une vérification réussie (leçon #3545)."
-            echo "## Protection de branche non vérifiée — FAIL-LOUD (#7270)"
+            echo "## Protection de branche — mode de vérification"
             echo ""
-            echo "Configurez le secret \`BRANCH_PROTECTION_TOKEN\` (fine-grained PAT, permission **administration: read** sur ce dépôt),"
-            echo "puis relancez ce workflow. Le contrôle planifié quotidien reprendra ensuite automatiquement."
+            if [[ "${HAS_ADMIN_TOKEN}" == "true" ]]; then
+              echo "**Mode COMPLET** — \`BRANCH_PROTECTION_TOKEN\` présent : strict, contexts, enforce_admins, reviews, force-push et deletions sont tous comparés au canonique."
+            else
+              echo "**Mode PARTIEL** — \`BRANCH_PROTECTION_TOKEN\` absent : vérifiés = branche protégée, liste des checks requis, invariant « aucun check tiers requis » (#7480)."
+              echo ""
+              echo "NON vérifiés dans ce mode : \`strict\`, \`enforce_admins\`, reviews, force-push, deletions."
+              echo "Pour le mode complet : fine-grained PAT limité à ce dépôt, permission **Administration : Read-only**, secret \`BRANCH_PROTECTION_TOKEN\`."
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
-          exit 1
