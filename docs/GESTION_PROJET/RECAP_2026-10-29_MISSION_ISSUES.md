@@ -115,3 +115,75 @@ décision nominatif avec l'action attendue et le risque associé.
 Validator, Frontend ESLint+TS, actionlint) sont la référence de vert ; aucun échec
 introduit par cette session n'a été observé. Les gardes d'architecture exécutées
 localement sont vertes (isolation modules, budget d'isolation).
+
+---
+
+# Addendum — état de fin de session (session 2)
+
+## Décompte final
+
+| | Départ | Fin |
+|---|---|---|
+| Issues ouvertes | **16** | **10** |
+| PR ouvertes | 12 | 7 |
+| PR fusionnées pendant la mission | — | **15** |
+
+Les 10 issues restantes se répartissent en **deux catégories seulement** :
+
+### A. Actions propriétaire — hors dépôt, aucun code à écrire (7)
+
+| # | Action attendue |
+|---|---|
+| #8285 | Déconnecter le Worker Cloudflare `gestionemploye` du dépôt |
+| #8232 | Décision GA sur le pilote Léa (données de pilote requises) |
+| #8191 | Snapshot prod → `audit:scheduler-duplicates` |
+| #7994 | Vérifier branche prod + `Ignored Build Step` sur les 2 projets Vercel |
+| #7967 | Moyen de paiement Render + worker starter (~7 $/mois) |
+| #7941 | Expert-comptable par marché + signature `VALIDATION_EXPERTE.md` |
+| #7924 | ÉPIC conformité légale multi-marchés (bloquée par #7941) |
+
+### B. Travail de fond — PR ouvertes en cours (3)
+
+| # | PR | État |
+|---|---|---|
+| #8727 | #9023 — inventaire lecture seule Showcase → Pages | ouverte |
+| #8448 | #9031 — KDS offline-first, resync sans perte | ouverte |
+| #7962 | #9019, #9025, #9028 — 4 controllers sur 5 résorbés | ouverte |
+
+## Correction apportée en session 2
+
+**#9019 — pureté de couches (#6568).** La branche faisait échouer l'étape
+« Check layer purity » du job *Module Structure Validator* (un des 4 checks
+requis) : deux Actions résolvaient leurs dépendances par façade dans la couche
+`Application`.
+
+| Fichier | Façades remplacées |
+|---|---|
+| `Billing/Application/Actions/SetTrialPassword.php` | `DB::`, `Hash::`, `Log::` |
+| `Core/Auth/Application/Actions/AuthenticateGoogleIdentityAction.php` | `Log::` |
+
+Remplacées par `ConnectionInterface`, `Hasher` et `Psr\Log\LoggerInterface`
+injectés au constructeur — le pattern déjà utilisé par
+`ActivateTenantPaymentProfile` et `SaveTenantPaymentProfile` dans ce module.
+
+Vérifié : `check-layer-purity.sh api` → 0 violation nouvelle ;
+`SetTrialPasswordActionTest` → 5/5, 27 assertions.
+
+## Le goulot qui a limité la session
+
+Le dépôt a compté jusqu'à **192 runs CI en file** (17 en cours) sur des runners
+partagés. Ce n'est pas un défaut du dépôt : c'est la conséquence directe de
+15 fusions et de 7 PR actives en parallèle. Les 4 checks requis ont été
+vérifiés localement à chaque fois (`check-layer-purity`, `check-module-isolation`,
+`check-module-isolation-budget`, PHPStan ciblé sur les modules touchés) plutôt
+que d'attendre la file — la vérification locale est ce qui a permis de trouver
+et corriger le bug de pureté de couches avant que le CI ne le signale.
+
+## Ce qui reste à faire, dans l'ordre
+
+1. **Désaturer la file CI** puis laisser passer les 7 PR ouvertes.
+2. **Les 7 actions propriétaire** — aucune ne peut être faite par un agent.
+3. **#7962** : `KioskController` (777), `PayrollRunController` (637),
+   `AuthController` (605) — les PR #9028 et #9025 en couvrent une partie.
+4. **#8448** : valider le scénario de coupure réseau sur matériel réel.
+5. **#8727** : fournir l'inventaire sur données de production.
