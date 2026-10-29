@@ -49,6 +49,103 @@ class ContractCountryTemplatesTest extends TestCase
         }
     }
 
+    /**
+     * Issue #9053 — les 9 pays CEMAC/CEDEAO du moteur de paie ne doivent plus
+     * retomber sur le bundle generique « Regles locales a preciser ».
+     */
+    public function test_cemac_and_cedeao_countries_are_supported(): void
+    {
+        $templates = new ContractCountryTemplates;
+
+        foreach (['GA', 'CG', 'TD', 'CF', 'GQ', 'BJ', 'ML', 'TG', 'NE'] as $country) {
+            $this->assertTrue(
+                $templates->supports($country),
+                sprintf('%s doit etre supporte (avant #9053, il retombait sur le bundle generique).', $country),
+            );
+        }
+    }
+
+    /**
+     * Issue #9053 — chaque bundle CEMAC/CEDEAO cite son propre texte de loi et
+     * porte ses parametres reels : ni le texte algerien, ni le placeholder
+     * generique ne doivent subsister.
+     */
+    public function test_cemac_and_cedeao_bundles_cite_their_own_law(): void
+    {
+        $templates = new ContractCountryTemplates;
+
+        $expected = [
+            'GA' => 'loi n° 022/2021',
+            'CG' => 'loi n° 45-75',
+            'TD' => 'loi n° 038/PR/96',
+            'CF' => 'loi n° 09.004',
+            'GQ' => 'loi n° 2/1990',
+            'BJ' => 'loi n° 98-004',
+            'ML' => 'loi n° 92-020',
+            'TG' => 'loi n° 2021-012',
+            'NE' => 'loi n° 2012-45',
+        ];
+
+        foreach ($expected as $country => $law) {
+            $bundle = $templates->forCountry($country);
+
+            $this->assertStringContainsString(
+                $law,
+                $bundle['legal_references']['code'],
+                $country.' doit citer son propre texte de loi',
+            );
+            $this->assertStringNotContainsString(
+                'Règles locales à préciser',
+                $bundle['legal_references']['code'],
+                $country.' ne doit plus retomber sur le bundle generique',
+            );
+            $this->assertStringNotContainsString(
+                'loi 90-11',
+                $bundle['legal_references']['code'],
+                $country.' ne doit pas heriter du texte algerien',
+            );
+            // `forCountry()` retourne le jeu de clauses DEJA resolu pour le
+            // type de contrat demande (cdi par defaut), pas la carte cdi/cdd.
+            $this->assertNotEmpty($bundle['clauses'], $country.' doit avoir des clauses CDI');
+            $this->assertNotEmpty(
+                $templates->forCountry($country, 'cdd')['clauses'],
+                $country.' doit avoir des clauses CDD',
+            );
+        }
+    }
+
+    /**
+     * Issue #9053 — les conges annuels des bundles CEMAC/CEDEAO reprennent les
+     * valeurs deja livrees par le lot BC-06 (regles de conges), pas une valeur
+     * generique : 24 j pour GA/TD/CF/GQ/BJ, 26 j pour CG, 30 j pour ML/TG/NE.
+     */
+    public function test_cemac_and_cedeao_leave_matches_the_leave_rules(): void
+    {
+        $templates = new ContractCountryTemplates;
+
+        $expectedDays = [
+            'GA' => '24 jours',
+            'CG' => '26 jours',
+            'TD' => '24 jours',
+            'CF' => '24 jours',
+            'GQ' => '24 jours',
+            'BJ' => '24 jours',
+            'ML' => '30 jours',
+            'TG' => '30 jours',
+            'NE' => '30 jours',
+        ];
+
+        foreach ($expectedDays as $country => $days) {
+            $bundle = $templates->forCountry($country);
+
+            $this->assertStringContainsString(
+                $days,
+                $bundle['annual_leave'],
+                $country.' doit reprendre le volume de conges du lot BC-06',
+            );
+        }
+    }
+
     public function test_turkey_leave_is_seniority_based_not_monthly_prorated(): void
     {
         // Le piege decisif : en Turquie le conge est un bareme d'anciennete.
