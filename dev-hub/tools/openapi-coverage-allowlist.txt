@@ -40,6 +40,10 @@ DELETE /v1/travel/trips/{param}
 DELETE /v1/travel/trips/{param}/prices/{param}
 DELETE /v1/travel/vehicles/{param}
 DELETE /v1/travel/webhook-subscriptions/{param}
+#   #8396 — `POST /travel/contacts/{travelCustomerContact}/consent` (le bulk
+#   `{*_consent_given}`, documente sous PATCH/PUT) n'a pas de contrat publie :
+#   il reste un gap interne tenant, comme les 633 entrees historiques issues de
+#   BC-24 (#6818). Publication du contrat suivie par l'EPIC #6528.
 GET /v1/travel/advert-positions
 GET /v1/travel/advert-prices
 GET /v1/travel/advert-types
@@ -209,6 +213,7 @@ POST /v1/travel/trips/{param}/prices
 POST /v1/travel/trips/{param}/publish
 POST /v1/travel/vehicles
 POST /v1/travel/webhook-subscriptions
+POST /v1/travel/contacts/{param}/consent
 PUT /v1/travel/advert-positions/{param}
 PUT /v1/travel/advert-prices/{param}
 PUT /v1/travel/advert-types/{param}
