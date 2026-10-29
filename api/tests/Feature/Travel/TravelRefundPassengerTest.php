@@ -142,7 +142,8 @@ class TravelRefundPassengerTest extends TestCase
         // passer qu'en échouant sur un statut périmé. L'état est relu en base.
         $this->assertSame(BookingStatus::CONFIRMED->value, app(TenantManager::class)
             ->withinTenant($company, fn (): string => (string) TravelBooking::query()
-                ->findOrFail($setup['booking']['id'])
+                ->where('id', $setup['booking']['id'])
+                ->firstOrFail()
                 ->status
                 ->value));
         $this->assertSame(1, app(TenantManager::class)->withinTenant($company, function (): int {
@@ -242,7 +243,11 @@ class TravelRefundPassengerTest extends TestCase
         ])->assertStatus(201);
 
         $status = app(TenantManager::class)->withinTenant($company, function () use ($setup): string {
-            return TravelBooking::query()->findOrFail($setup['booking']['id'])->status->value;
+            return TravelBooking::query()
+                ->where('id', $setup['booking']['id'])
+                ->firstOrFail()
+                ->status
+                ->value;
         });
 
         $this->assertSame(BookingStatus::REFUNDED->value, $status);
