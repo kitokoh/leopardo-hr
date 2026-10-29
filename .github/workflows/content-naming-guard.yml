@@ -50,7 +50,9 @@ env:
 
 concurrency:
   group: content-naming-${{ github.ref }}
-  cancel-in-progress: false
+  # #9035 : sur PR, un push ulterieur rend le run precedent obsolete (meme
+  # arbre, meme verdict) — l'annuler libere un runner sans perdre d'information.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   guard:
