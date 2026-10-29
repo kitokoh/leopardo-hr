@@ -1472,6 +1472,33 @@ trait CreatesMvpSchema
 
     private function createPostSprintModuleTables(): void
     {
+        // #8729 (BC PAGES) — journal de modération APPEND-ONLY.
+        // La garde #5443 exige toute migration tenant récente ici : sans cette
+        // table, chaque décision de modération échoue en
+        // `relation "page_moderation_audits" does not exist` (42P01).
+        // Le trigger d'immuabilité n'est PAS recréé ici : il est exercé par
+        // PlatformPageModerationTest sur la migration réelle. Schéma identique
+        // à 2026_10_28_000200_8729_create_page_moderation_audits_table.
+        if (! Schema::hasTable($this->moduleTable('page_moderation_audits'))) {
+            Schema::create($this->moduleTable('page_moderation_audits'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('page_id')->index();
+                $table->string('actor_id', 120);
+                $table->string('actor_role', 40)->nullable();
+                $table->string('action', 80);
+                $table->string('reason', 80);
+                $table->jsonb('before')->nullable();
+                $table->jsonb('after')->nullable();
+                $table->string('request_id', 80)->nullable();
+                $table->string('ip_address', 45)->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+
+                $table->index(['page_id', 'created_at'], 'page_moderation_audits_page_time_index');
+                $table->index(['action', 'created_at'], 'page_moderation_audits_action_time_index');
+            });
+        }
+
         // #8728 (BC PAGES) — blocs de contenu d'une Page.
         // La garde #5443 (check-mvp-schema-parity.sh) exige que toute migration
         // tenant récente soit reflétée ici : sans cette table, tout test qui

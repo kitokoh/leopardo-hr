@@ -27,23 +27,27 @@ export type MobileChannelState = 'ok' | 'failed' | 'unknown';
  * État observé du canal de distribution, par slug d'application du catalogue.
  *
  * Provenance : dernier run de `mobile-distribute-main.yml` sur `main`.
- * Dernière observation — run `39940427393` (2026-10-23) :
- *   - `Distribute employee to Firebase`  → failure
- *   - `Distribute manager to Firebase`   → failure
+ * Dernière observation — run `40677191254` (2026-10-28) :
+ *   - `Distribute employee to Firebase`  → success
+ *   - `Distribute manager to Firebase`   → success
  *   - `Distribute platform_admin to Firebase` → success
  *   - `Distribute hr to Firebase`        → success
+ *
+ * Les quatre canaux sont verts : la table est donc VIDE. Un slug absent n'est
+ * pas « en échec » (voir `isDistributionFailed`) — c'est exactement la
+ * sémantique voulue ici. La garde `mobile-distribution-status-guard.yml`
+ * échouait sur une déclaration périmée (`employee`/`manager` encore `failed`
+ * alors que le run du 2026-10-28 est vert) : c'est cette déclaration qui était
+ * fausse, pas le canal.
  *
  * Seules les apps dont le canal est un build natif distribué (Firebase/store)
  * figurent ici. Les apps servies par un simple lien web ne sont JAMAIS
  * concernées (critère d'acceptation #8628).
  */
-export const MOBILE_DISTRIBUTION_STATUS: Record<string, MobileChannelState> = {
-  employee: 'failed',
-  manager: 'failed',
-};
+export const MOBILE_DISTRIBUTION_STATUS: Record<string, MobileChannelState> = {};
 
 /** Référence du run CI qui a produit l'état ci-dessus (traçabilité). */
-export const MOBILE_DISTRIBUTION_STATUS_SOURCE = 'mobile-distribute-main.yml@39940427393';
+export const MOBILE_DISTRIBUTION_STATUS_SOURCE = 'mobile-distribute-main.yml@40677191254';
 
 /**
  * Le canal de distribution de cette application est-il en échec connu ?

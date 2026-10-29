@@ -357,4 +357,10 @@ return [
     'FUNDRAISING_VERTICAL_NOT_ENABLED' => 'The fundraising vertical is not enabled for this company.',
     'MARKETING_LEAD_NO_CHANGES' => 'No changes requested.',
     'MARKETING_LEAD_NOT_FOUND' => 'Lead not found.',
+
+    // #8728 (BC PAGES) — tenant surface: slug and block content.
+    'PAGE_SLUG_UNUSABLE' => 'The provided name cannot produce a public address. Use letters and digits.',
+    'PAGE_SLUG_RESERVED' => 'This address is reserved by the platform. Choose another one.',
+    'PAGE_SLUG_TAKEN' => 'This address is already in use.',
+    'PAGE_BLOCKS_INVALID' => 'The page content contains invalid blocks.',
 ];
