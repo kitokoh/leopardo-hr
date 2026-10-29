@@ -50,7 +50,10 @@ use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantPrintJob
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantReservationRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantStockLevelRepository;
 use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppAdapterRegistry;
+use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry;
+use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\GlovoAdapter;
 use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\GlovoDeliveryAppAdapter;
+use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\UberEatsAdapter;
 use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\UberEatsDeliveryAppAdapter;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGatewayRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CardOnlinePaymentGateway;
@@ -211,6 +214,21 @@ class RestaurantManagerServiceProvider extends ServiceProvider
                 new UberEatsDeliveryAppAdapter,
                 new GlovoDeliveryAppAdapter,
             ]);
+        });
+
+        // RESTO-806 (#6227) — registre des adaptateurs MARKETPLACE (webhooks
+        // entrants). Sans ce binding, le conteneur construisait un
+        // `DeliveryAppRegistry` VIDE (aucun `register()` nulle part) : le
+        // contrôleur répondait 404 « unknown_provider » pour TOUS les
+        // fournisseurs, y compris uber_eats et glovo. Les webhooks
+        // marketplace étaient donc morts en production, silencieusement —
+        // un 404 est indiscernable d'un provider réellement inconnu.
+        $this->app->singleton(DeliveryAppRegistry::class, function (): DeliveryAppRegistry {
+            $registry = new DeliveryAppRegistry;
+            $registry->register(new UberEatsAdapter);
+            $registry->register(new GlovoAdapter);
+
+            return $registry;
         });
 
         // RESTO-105 (#6162) — activation tenant (flag + référentiel) ;

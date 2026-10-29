@@ -57,7 +57,16 @@ class EnsureRestaurantPublicShopAccess
             }
         }
 
+        // Le jeton peut arriver en en-tête (navigateur, app) OU en query
+        // (`?token=`) : les webhooks entrants des marketplaces (RESTO-806,
+        // #6227) ne peuvent pas poser d'en-tête personnalisé — le contrat
+        // documenté sur la route est `?token=`. Sans ce repli, le webhook
+        // répondait 401 « jeton manquant » alors que le jeton était fourni.
         $token = (string) $request->header('X-Restaurant-Shop-Token', '');
+
+        if ($token === '') {
+            $token = (string) $request->query('token', '');
+        }
 
         if ($token === '') {
             abort(401, 'Jeton boutique manquant (X-Restaurant-Shop-Token).');
