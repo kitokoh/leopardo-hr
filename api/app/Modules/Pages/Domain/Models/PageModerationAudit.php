@@ -39,6 +39,21 @@ use Illuminate\Support\Carbon;
  * #8729 est un audit **immuable** : c'est la trace qu'un contestataire
  * voudrait effacer. Un journal qu'un opérateur peut réécrire ne prouve rien.
  *
+ * ## EXCEPTION TENANT-SCOPE (#7999)
+ *
+ * `company_id` est NULLABLE et n'est **jamais un critère de lecture** : la
+ * seule lecture applicative filtre par `page_id` (déjà résolu dans le schéma
+ * tenant), et l'écriture dénormalise `$page->company_id` pour que la trace
+ * reste interprétable hors contexte tenant (export d'audit, réclamation).
+ *
+ * Le trait `BelongsToCompany` est inapplicable ici, et pas seulement
+ * inutile : son scope global fail-closed ajouterait un `WHERE company_id = ?`
+ * à une table dont l'immuabilité est garantie par trigger. Une ligne écrite
+ * avec `company_id` NULL (Page plateforme, ou acteur super-admin hors tenant)
+ * deviendrait alors invisible à la lecture — c'est-à-dire exactement la trace
+ * qu'un contestataire voudrait faire disparaître. Même régime que
+ * `FundraisingPaymentEvent` et `PaymentWebhookEvent`.
+ *
  * @property int $id
  * @property string|null $company_id
  * @property int $page_id

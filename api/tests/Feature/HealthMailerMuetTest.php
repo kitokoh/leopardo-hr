@@ -89,6 +89,18 @@ class HealthMailerMuetTest extends TestCase
     {
         config(['queue.default' => 'sync']);
 
+        // #8125 — la matrice `checks` (dont `mail`) n'est renvoyée qu'aux
+        // super admins plateforme ; sans ce garde la réponse publique est
+        // minimale et ne porte aucun `checks`.
+        $superAdmin = new \App\Core\Tenant\Domain\Models\SuperAdmin([
+            'name' => 'Platform Admin',
+            'email' => 'admin-mailer-'.\Illuminate\Support\Str::random(12).'@leopardo.test',
+        ]);
+        $superAdmin->forceFill([
+            'password_hash' => \Illuminate\Support\Facades\Hash::make('password123'),
+        ])->save();
+        \Laravel\Sanctum\Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
+
         $response = $this->getJson('/api/v1/health');
 
         $response->assertJsonStructure(['checks' => ['mail']]);

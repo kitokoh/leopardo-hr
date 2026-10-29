@@ -2,12 +2,41 @@
 
 namespace Tests\Feature;
 
+use App\Core\Tenant\Domain\Models\SuperAdmin;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class HealthEndpointTest extends TestCase
 {
+    /**
+     * #8125 — la matrice `checks` est réservée aux super admins plateforme.
+     *
+     * Ces tests datent d'avant #8125 : ils appelaient `/health` sans
+     * authentification et attendaient `checks`, ce que le contrôleur ne renvoie
+     * plus volontairement (la matrice cartographierait la stack pour un
+     * attaquant). Le comportement minimal non authentifié est couvert par
+     * `ProductionDeliveryGuardTest::test_health_public_response_is_minimal`.
+     */
+    private function actingAsSuperAdmin(): void
+    {
+        // `super_admins` vit dans le schéma partagé `public`, que
+        // `RefreshTenantDatabase` ne réinitialise pas : un e-mail fixe heurte
+        // `super_admins_email_unique` dès le deuxième test du run.
+        $superAdmin = new SuperAdmin([
+            'name' => 'Platform Admin',
+            'email' => 'admin-health-'.Str::random(12).'@leopardo.test',
+        ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
+
+        Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
+    }
+
     public function test_health_returns_ok_with_checks_matrix(): void
     {
+        $this->actingAsSuperAdmin();
+
         $response = $this->getJson('/api/v1/health');
 
         $response->assertOk();
@@ -41,6 +70,8 @@ class HealthEndpointTest extends TestCase
         // convention (vérifié 404 en prod le 2026-09-19 — elles concluaient
         // « API morte » alors qu'elle était up). L'alias non versionné doit
         // servir la MÊME sonde que la route canonique `/api/v1/health`.
+        $this->actingAsSuperAdmin();
+
         $response = $this->getJson('/api/health');
 
         $response->assertOk();
@@ -58,6 +89,8 @@ class HealthEndpointTest extends TestCase
         config(['app.key' => null]);
 
         try {
+            $this->actingAsSuperAdmin();
+
             $response = $this->getJson('/api/v1/health');
 
             $response->assertOk();
