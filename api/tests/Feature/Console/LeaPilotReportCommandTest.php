@@ -29,6 +29,9 @@ class LeaPilotReportCommandTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    /**
+     * @param  array{clarification_rounds?: int, answers_modified?: bool}  $context
+     */
     private function record(Company $company, string $stage, string $outcome, array $context = []): void
     {
         DB::table('lea_pilot_events')->insert([
@@ -44,6 +47,10 @@ class LeaPilotReportCommandTest extends TestCase
         ]);
     }
 
+    /**
+     * @param  array<string, mixed>  $options
+     * @return array<string, mixed>
+     */
     private function report(array $options = []): array
     {
         Artisan::call('lea:pilot-report', $options + ['--json' => true]);
@@ -233,7 +240,9 @@ class LeaPilotReportCommandTest extends TestCase
                 'plan_ready',
             );
 
-            $this->assertTrue(true, 'Aucune exception ne doit remonter.');
+            // Le simple fait d'arriver ici prouve que l'appel est un no-op
+            // silencieux : aucune exception n'a remonte.
+            $this->addToAssertionCount(1);
         } finally {
             DB::statement('ALTER TABLE lea_pilot_events_tmp RENAME TO lea_pilot_events');
         }
