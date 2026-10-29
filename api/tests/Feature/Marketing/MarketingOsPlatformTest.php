@@ -639,7 +639,9 @@ class MarketingOsPlatformTest extends TestCase
         $company = $this->company();
         $this->actingAsPlatform();
 
-        $expiredId = $this->postJson($this->url($company, '/assets'), [
+        // Les types BINAIRES exigent un fichier (`MarketingAssetKind::requiresFile()`),
+        // sinon le controleur repond 422 : on televerse donc de vrais faux fichiers.
+        $expiredId = $this->call('POST', $this->url($company, '/assets'), [
             'name' => 'Visuel sous licence expirée',
             // Kind TEXTE : ces deux tests portent sur l'expiration des droits et
             // sur l'échappement de la recherche, pas sur le dépôt de fichier.
@@ -650,12 +652,16 @@ class MarketingOsPlatformTest extends TestCase
             'kind' => 'copy',
             'rights' => 'Licence stock limitée',
             'rights_expires_at' => '2020-01-01',
-        ])->assertCreated()->json('data.id');
+        ], [], [], ['Accept' => 'application/json'])
+            ->assertCreated()
+            ->json('data.id');
 
-        $freeId = $this->postJson($this->url($company, '/assets'), [
+        $freeId = $this->call('POST', $this->url($company, '/assets'), [
             'name' => 'Création interne',
-            'kind' => 'script',
-        ])->assertCreated()->json('data.id');
+            'kind' => 'video',
+        ], [], ['file' => UploadedFile::fake()->create('interne.mp4', 10, 'video/mp4')], ['Accept' => 'application/json'])
+            ->assertCreated()
+            ->json('data.id');
 
         $this->getJson($this->url($company, "/assets/{$expiredId}/publications"))
             ->assertOk()
@@ -714,19 +720,19 @@ class MarketingOsPlatformTest extends TestCase
         $company = $this->company();
         $this->actingAsPlatform();
 
-        $this->postJson($this->url($company, '/assets'), [
+        // `kind: image` exige un fichier (garde du controleur) : sans binaire,
+        // ces creations repondraient 422 et le test ne testerait plus l'echappement.
+        $this->call('POST', $this->url($company, '/assets'), [
             'name' => 'Remise 100% restaurant',
-            // Kind texte : le test porte sur l'échappement des jokers SQL dans la
-            // recherche, pas sur le dépôt de fichier. `image` exigerait un
-            // fichier (garde `requiresFile()`), ce qui ferait échouer le POST
-            // en 422 avant même d'exercer la recherche.
-            'kind' => 'copy',
-        ])->assertCreated();
+            'kind' => 'image',
+        ], [], ['file' => UploadedFile::fake()->image('remise.jpg', 100, 100)], ['Accept' => 'application/json'])
+            ->assertCreated();
 
-        $this->postJson($this->url($company, '/assets'), [
+        $this->call('POST', $this->url($company, '/assets'), [
             'name' => 'Visuel sans rapport',
-            'kind' => 'copy',
-        ])->assertCreated();
+            'kind' => 'image',
+        ], [], ['file' => UploadedFile::fake()->image('sans-rapport.jpg', 100, 100)], ['Accept' => 'application/json'])
+            ->assertCreated();
 
         // « 100% » ne doit ramener QUE la ressource qui contient litteralement
         // cette chaine — pas les deux.

@@ -65,6 +65,23 @@ class MarketingCampaign extends Model
         'status',
     ];
 
+    /**
+     * Valeurs par defaut alignees sur le schema SQL.
+     *
+     * Eloquent ne lit JAMAIS les `default()` SQL : sans ces valeurs, une
+     * campagne creee sans statut explicite expose `null` a tout appelant qui
+     * lit le modele juste apres `save()` (meme classe de bug que
+     * MarketingAsset, #8396).
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'objective' => 'notoriete',
+        'locale' => 'fr',
+        'budget_currency' => 'EUR',
+        'status' => 'draft',
+    ];
+
     /** @return array<string, string> */
     protected function casts(): array
     {
