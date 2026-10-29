@@ -229,7 +229,6 @@ class TravelRoundTripTest extends TestCase
         });
     }
 
-
     public function test_round_trip_creates_two_linked_bookings(): void
     {
         /** @var Company $company */
@@ -266,7 +265,6 @@ class TravelRoundTripTest extends TestCase
         $this->assertSame(2, TravelBooking::query()->count());
     }
 
-
     public function test_round_trip_applies_combined_tariff_discount_on_return_leg(): void
     {
         config()->set('travel.pricing.round_trip_discount_percent', 10);
@@ -295,7 +293,6 @@ class TravelRoundTripTest extends TestCase
         $this->assertSame(10000, $outbound['total_amount_minor']);
         $this->assertSame(9000, $returnBooking->total_amount_minor);
     }
-
 
     public function test_round_trip_can_be_cancelled_per_leg(): void
     {
