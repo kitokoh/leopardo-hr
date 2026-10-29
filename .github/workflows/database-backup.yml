@@ -41,6 +41,13 @@ jobs:
     timeout-minutes: 60
     name: Daily PostgreSQL backup
     runs-on: ubuntu-latest
+    # #7967/#8191 — les secrets de sauvegarde (BACKUP_AGE_RECIPIENT,
+    # BACKUP_AGE_IDENTITY, DATABASE_URL, B2_*) sont posés au niveau de
+    # l'ENVIRONNEMENT `production`, pas du dépôt. Sans cette déclaration,
+    # chaque `secrets.X` se résout en chaîne vide et le job échoue en
+    # « secrets manquants » alors que les secrets existent — exactement le
+    # bug de portée déjà corrigé sur le rapport de quotas (#9059).
+    environment: production
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'backup' || github.event_name == 'schedule' && github.event.schedule == '15 2 * * *'
 
     steps:
@@ -128,6 +135,10 @@ jobs:
         shell: bash
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          STANDBY_DATABASE_URL: ${{ secrets.STANDBY_DATABASE_URL }}
+          RENDER_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
+          RENDER_API_BASE: ${{ secrets.PROD_RENDER_API_BASE_URL }}
           BACKUP_AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
           BACKUP_S3_BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -141,7 +152,43 @@ jobs:
           timestamp="$(date -u +%Y%m%d-%H%M%S)"
           dump_file="${BACKUP_DIR}/leopardo-${timestamp}.dump"
 
-          pg_dump --format=custom --no-owner --no-privileges --file="${dump_file}" "${DATABASE_URL}"
+          # #8191/#7967 — SAUVEGARDER LA BASE VIVANTE, PAS LA PRIMAIRE.
+          # `DATABASE_URL` désigne la primaire Neon. Quand elle épuise son quota
+          # mensuel, le watchdog `db-standby-failover` bascule l'API sur le
+          # secours (`DB_URL` de Render) — mais ce job continuait de dumper la
+          # primaire morte et échouait chaque nuit. Résultat constaté le
+          # 2026-10-30 : dernière sauvegarde exploitable le 2026-09-22, soit
+          # 897 h de RPO non tenu, alors que la base LIVE était parfaitement
+          # joignable. On résout donc la cible comme le fait le watchdog.
+          host_of() { sed -E 's#^[a-zA-Z+]+://([^@]*@)?([^/:]+).*#\2#' <<<"$1"; }
+
+          DUMP_URL="${DATABASE_URL}"
+          if [[ -n "${RENDER_API_KEY:-}" && -n "${RENDER_SERVICE_ID:-}" ]]; then
+            api="${RENDER_API_BASE:-https://api.render.com/v1}"
+            api="${api%/}"
+            case "${api}" in */v1) ;; *) api="${api}/v1" ;; esac
+            live_url="$(curl -fsS -H "Authorization: Bearer ${RENDER_API_KEY}" \
+              "${api}/services/${RENDER_SERVICE_ID}/env-vars?limit=100" \
+              | jq -r '.[].envVar | select(.key=="DB_URL") | .value' 2>/dev/null || true)"
+            if [[ -n "${live_url}" && "${live_url}" != "null" ]]; then
+              echo "::add-mask::${live_url}"
+              live_host="$(host_of "${live_url}")"
+              primary_host="$(host_of "${DATABASE_URL}")"
+              standby_host="$(host_of "${STANDBY_DATABASE_URL:-}")"
+              if [[ "${live_host}" == "${primary_host}" || "${live_host}" == "${standby_host}" ]]; then
+                DUMP_URL="${live_url}"
+                echo "Cible de sauvegarde : base LIVE (${live_host}) — résolue via Render."
+              else
+                echo "::warning::DB_URL de Render (${live_host}) n'est ni la primaire ni le secours connus — repli sur DATABASE_URL."
+              fi
+            else
+              echo "::warning::DB_URL de Render illisible — repli sur DATABASE_URL."
+            fi
+          else
+            echo "::notice::RENDER_PROD_API_KEY/SERVICE_ID absents — sauvegarde de DATABASE_URL (pas de résolution LIVE)."
+          fi
+
+          pg_dump --format=custom --no-owner --no-privileges --file="${dump_file}" "${DUMP_URL}"
 
           # #7253 — chiffrement non optionnel (présence garantie par l'étape
           # de validation des secrets ci-dessus).
@@ -159,6 +206,9 @@ jobs:
     timeout-minutes: 15
     name: Backup freshness check
     runs-on: ubuntu-latest
+    # Même portée que `daily-backup` : le contrôle de fraîcheur interroge le
+    # stockage objet avec les secrets de l'environnement `production`.
+    environment: production
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'freshness' || github.event_name == 'schedule' && github.event.schedule == '30 4 * * *'
 
     steps:
