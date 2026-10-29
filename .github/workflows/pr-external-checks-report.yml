@@ -19,7 +19,11 @@ name: PR External Checks Report
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    # #9035 : `synchronize` retire. Ce workflow ne produit qu'un COMMENTAIRE de
+    # synthese (aucun verdict) ; il se re-declenchait a chaque push pour
+    # recalculer un etat identique, et se faisait annuler 70 % du temps. Le
+    # rafraichissement apres un push est deja assure par `workflow_run` ci-dessous.
+    types: [opened, reopened, ready_for_review]
   workflow_run:
     # Rafraîchit le rapport quand les checks du dépôt terminent (un run
     # `pull_request` seul afficherait « N checks en cours »).
