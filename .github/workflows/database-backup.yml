@@ -79,41 +79,62 @@ jobs:
         shell: bash
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BACKUP_AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
+          # #7657 — deux fournisseurs acceptés : AWS S3 (historique) ou
+          # Backblaze B2 (identifiants DÉJÀ posés sur ce dépôt, utilisés par
+          # db-standby-failover.yml). Exiger S3 alors que B2 est disponible
+          # revenait à préférer une panne bruyante à une sauvegarde réelle.
           BACKUP_S3_BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          BACKUP_AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
+          B2_BUCKET_NAME: ${{ secrets.B2_BUCKET_NAME }}
+          B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+          B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
         run: |
           set -euo pipefail
           missing=()
           # #7253 — BACKUP_AGE_RECIPIENT est désormais OBLIGATOIRE : la base
           # contient des données RH et de paie, un dump en clair dans S3 n'est
           # pas acceptable, même chiffré au repos par SSE-S3.
-          for name in DATABASE_URL BACKUP_S3_BUCKET AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY BACKUP_AGE_RECIPIENT; do
+          for name in DATABASE_URL BACKUP_AGE_RECIPIENT; do
             if [[ -z "${!name:-}" ]]; then
               missing+=("${name}")
             fi
           done
 
+          # Le fournisseur de stockage est résolu par le script partagé : une
+          # seule règle, testée (dev-hub/tools/test_backup_store.py), jamais
+          # dupliquée dans le YAML.
+          provider="$(dev-hub/scripts/backup-store.sh provider 2>&1)" || {
+            echo "::error::Database backup IMPOSSIBLE — aucun fournisseur de stockage configuré (issue #7657)."
+            echo "::error::Poser soit BACKUP_S3_BUCKET + AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY, soit B2_BUCKET_NAME + B2_KEY_ID + B2_APP_KEY."
+            exit 1
+          }
+          echo "provider=${provider}" >> "$GITHUB_OUTPUT"
+
           if [[ ${#missing[@]} -gt 0 ]]; then
             # #6836 (P1 data-loss) : no-op silencieux interdit — aucune sauvegarde
             # n'existe tant que les secrets ne sont pas posés (Neon gratuit, pas de PITR).
-            # Échec volontaire et sonore : l'alerte doit déclencher l'action du fondateur
-            # (Settings → Secrets → Actions : DATABASE_URL, BACKUP_S3_BUCKET,
-            # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY).
+            # Échec volontaire et sonore : l'alerte doit déclencher l'action du fondateur.
             echo "::error::Database backup IMPOSSIBLE — secrets manquants (issue #6836) : ${missing[*]}"
             exit 1
           fi
 
           echo "configured=true" >> "$GITHUB_OUTPUT"
+          echo "Fournisseur de stockage retenu : ${provider}"
 
-      - name: Run pg_dump and upload to S3
+      - name: Run pg_dump and upload to the object store
         if: steps.secrets.outputs.configured == 'true'
         shell: bash
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          BACKUP_S3_BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
           BACKUP_AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
+          BACKUP_S3_BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          B2_BUCKET_NAME: ${{ secrets.B2_BUCKET_NAME }}
+          B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+          B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
         run: |
           set -euo pipefail
           mkdir -p "${BACKUP_DIR}"
@@ -130,35 +151,9 @@ jobs:
 
           object_key="postgres/daily/$(date -u +%Y/%m/%d)/$(basename "${dump_file}")"
 
-          # #7676 — fournisseur S3-compatible : endpoint explicite, et pas de
-          # classe de stockage AWS-spécifique (Backblaze B2 ne connaît que
-          # STANDARD — STANDARD_IA ferait échouer l'upload). `--sse AES256`
-          # est conservé dans les deux cas (SSE-S3 côté AWS, SSE-B2 côté B2).
-          s3_args=(--region "${AWS_REGION}")
-          if [[ -n "${BACKUP_S3_ENDPOINT:-}" ]]; then
-            s3_args+=(--endpoint-url "${BACKUP_S3_ENDPOINT}")
-          else
-            s3_args+=(--storage-class STANDARD_IA)
-          fi
-
-          aws s3 cp "${dump_file}" "s3://${BACKUP_S3_BUCKET}/${object_key}" \
-            --sse AES256 \
-            "${s3_args[@]}"
-
-          # #7253 — vérifier que l'objet est réellement présent et complet :
-          # un `aws s3 cp` peut sortir 0 sans que l'objet soit exploitable.
-          head_args=(--region "${AWS_REGION}")
-          if [[ -n "${BACKUP_S3_ENDPOINT:-}" ]]; then
-            head_args+=(--endpoint-url "${BACKUP_S3_ENDPOINT}")
-          fi
-          remote_size="$(aws s3api head-object --bucket "${BACKUP_S3_BUCKET}" --key "${object_key}" "${head_args[@]}" --query 'ContentLength' --output text)"
-          local_size="$(stat -c %s "${dump_file}")"
-          if [[ "${remote_size}" != "${local_size}" ]]; then
-            echo "::error::Sauvegarde incohérente (issue #7253) : taille distante=${remote_size} octets, taille locale=${local_size} octets."
-            exit 1
-          fi
-
-          echo "Backup verified: s3://${BACKUP_S3_BUCKET}/${object_key} (${local_size} octets)"
+          # #7657 — téléversement + vérification de taille délégués au script
+          # partagé (S3 ou B2 natif, cf. dev-hub/scripts/backup-store.sh).
+          dev-hub/scripts/backup-store.sh put "${dump_file}" "${object_key}"
 
   backup-freshness:
     timeout-minutes: 15
@@ -191,52 +186,52 @@ jobs:
           BACKUP_S3_BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          B2_BUCKET_NAME: ${{ secrets.B2_BUCKET_NAME }}
+          B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+          B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
         run: |
           set -euo pipefail
-          missing=()
-          for name in BACKUP_S3_BUCKET AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY; do
-            if [[ -z "${!name:-}" ]]; then
-              missing+=("${name}")
-            fi
-          done
-
-          if [[ ${#missing[@]} -gt 0 ]]; then
-            echo "::error::Contrôle de fraîcheur IMPOSSIBLE — secrets manquants (issue #7253) : ${missing[*]}"
+          # #7657 — le contrôle de fraîcheur doit interroger LE MÊME stockage
+          # que la sauvegarde, sinon il déclare « aucune sauvegarde » alors que
+          # les dumps existent (faux rouge permanent).
+          provider="$(dev-hub/scripts/backup-store.sh provider 2>&1)" || {
+            echo "::error::Contrôle de fraîcheur IMPOSSIBLE — aucun fournisseur de stockage configuré (issue #7657)."
             exit 1
-          fi
-
+          }
+          echo "provider=${provider}" >> "$GITHUB_OUTPUT"
           echo "configured=true" >> "$GITHUB_OUTPUT"
+          echo "Fournisseur de stockage retenu : ${provider}"
 
       - name: Fail when the latest backup is older than the RPO
         if: steps.secrets.outputs.configured == 'true'
         shell: bash
         env:
           BACKUP_S3_BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          B2_BUCKET_NAME: ${{ secrets.B2_BUCKET_NAME }}
+          B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+          B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
           BACKUP_MAX_AGE_HOURS: "25"
         run: |
           set -euo pipefail
           export TZ=UTC
 
-          # #7676 — même règle que l'upload : endpoint explicite si fournisseur
-          # S3-compatible (le fallback awscli v1 ignore AWS_ENDPOINT_URL).
-          ls_args=(--region "${AWS_REGION}")
-          if [[ -n "${BACKUP_S3_ENDPOINT:-}" ]]; then
-            ls_args+=(--endpoint-url "${BACKUP_S3_ENDPOINT}")
-          fi
-
-          # La clé contient la date (postgres/daily/YYYY/MM/DD/...) : un tri
-          # lexicographique suffit à isoler la sauvegarde la plus récente.
-          latest="$(aws s3 ls "s3://${BACKUP_S3_BUCKET}/postgres/daily/" --recursive "${ls_args[@]}" | sort | tail -1 || true)"
+          # #7657 — `latest` rend « <ISO 8601 UTC> <clé> <taille> » quel que
+          # soit le fournisseur (S3 ou B2 natif). Le parsing de la sortie
+          # d'`aws s3 ls` vivait ici et ne connaissait que S3.
+          latest="$(dev-hub/scripts/backup-store.sh latest postgres/daily/)"
 
           if [[ -z "${latest}" ]]; then
-            echo "::error::Aucune sauvegarde trouvée sous s3://${BACKUP_S3_BUCKET}/postgres/daily/ (issue #7253) — RPO non tenu."
+            echo "::error::Aucune sauvegarde trouvée sous postgres/daily/ (issue #7253) — RPO non tenu."
             exit 1
           fi
 
-          latest_ts="$(echo "${latest}" | awk '{print $1" "$2}')"
+          latest_ts="$(awk '{print $1}' <<<"${latest}")"
+          latest_key="$(awk '{print $2}' <<<"${latest}")"
           latest_age_h=$(( ( $(date -u +%s) - $(date -u -d "${latest_ts}" +%s) ) / 3600 ))
 
-          echo "Dernière sauvegarde : ${latest_ts} UTC (il y a ${latest_age_h} h)"
+          echo "Dernière sauvegarde : ${latest_key} (${latest_ts}, il y a ${latest_age_h} h)"
           echo "Seuil RPO configuré : ${BACKUP_MAX_AGE_HOURS} h"
 
           if [[ "${latest_age_h}" -gt "${BACKUP_MAX_AGE_HOURS}" ]]; then
