@@ -1,5 +1,24 @@
 # AGENTS.md - Guide de travail Leopardo
 
+Derniere mise a jour : 2026-10-29 (#8396 — triage des echecs par cause, `triage-junit.py`)
+
+> Leçon 2026-10-29 (#8396) : **un triage se fait sur la pile d'appel, pas sur le message** —
+> « 264 échecs » n'est pas « 264 bugs », et l'outil `dev-hub/tools/triage-junit.py`
+> (branché dans le job Backend, sortie dans `$GITHUB_STEP_SUMMARY`) regroupe chaque échec par
+> `(module, exception, message normalisé, première frame du dépôt)`. Trois pièges mesurés, tous
+> verrouillés par `dev-hub/tools/tests/triage-junit.test.sh` : **(1)** les `<testsuite>` PHPUnit
+> sont **imbriqués** et chaque niveau redéclare `tests` — additionner ces attributs gonflait le
+> total à **21 349 au lieu de 9 693** : compter les `<testcase>`. **(2)** le module se déduit du
+> **dossier** de test (`tests/Feature/<Module>/…`), jamais du nom de fichier : sans `/` final dans
+> la regex, `tests/Feature/HealthEndpointTest.php` devient un module nommé « HealthEndpointTest ».
+> **(3)** sans normalisation (UUID, hash, chemins CI), chaque échec d'une même cause est unique et
+> **aucun regroupement** n'a lieu — l'outil devient un `grep` décoré. **Un triage est un rapport,
+> pas une garde** : ne jamais le brancher avec `--fail-over` dans un job requis, le rouge d'un
+> outil de diagnostic masquerait le verdict réel des suites. Corollaire de méthode : l'outil
+> **localise**, il ne qualifie pas — affirmer « préexistant » exige le stash du diff et le rejeu
+> (#8035) ; un outil qui devinerait produirait des « préexistant » faux, plus coûteux qu'aucune
+> réponse.
+
 Derniere mise a jour : 2026-10-29 (#8396 — defauts SQL non hydrates cote Eloquent)
 
 > Leçon 2026-10-29 (#8396, suite de #8987) : **Eloquent ne lit JAMAIS les `default()` SQL.**
