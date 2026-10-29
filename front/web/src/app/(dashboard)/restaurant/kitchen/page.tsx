@@ -15,6 +15,13 @@ import {
   type PrintJobLike,
   type PrinterStatus,
 } from '@/lib/restaurant/printer-status';
+import {
+  clearSnapshot,
+  describeSnapshotAge,
+  loadSnapshot,
+  saveSnapshot,
+  shouldDisplaySnapshot,
+} from '@/lib/restaurant/kitchen-snapshot';
 
 /**
  * RESTO-707 (#6220) — Écran cuisine : file de commandes temps réel.
@@ -31,6 +38,14 @@ import {
  * clé d'idempotence stable (`makeOperationId`) garantit qu'un rejeu ne
  * duplique pas la transition. L'état de connexion et le nombre d'opérations en
  * attente sont affichés (Partie 7 : « état de connexion clair »).
+ *
+ * #8448 (KDS offline-first) — la FILE elle-même survit à une coupure :
+ * chaque réponse serveur est photographiée dans `localStorage` par branche, et
+ * l'instantané est réaffiché si le serveur ne répond pas (rechargement de
+ * page pendant la coupure, ou coupure avant le premier chargement). Sans lui,
+ * un simple rechargement vidait l'écran au pire moment du service. L'âge de
+ * l'instantané est TOUJOURS affiché : un cuisinier ne doit jamais croire voir
+ * le service en direct alors qu'il regarde une photo.
  */
 
 interface KitchenOrderItem {
@@ -72,6 +87,9 @@ export default function RestaurantKitchenPage() {
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
+  // #8448 — instantané local : âge de la photo affichée (null = données live).
+  const [snapshotCapturedAt, setSnapshotCapturedAt] = useState<number | null>(null);
+
   // REST-OS-5 (#8607) — état d'impression de la branche.
   const [printJobs, setPrintJobs] = useState<PrintJobLike[]>([]);
   const [printError, setPrintError] = useState<string | null>(null);
@@ -85,7 +103,7 @@ export default function RestaurantKitchenPage() {
       _idempotent: true,
     });
   }, []);
-  const { connectionState, pendingCount, dispatch, flush } = useOfflineSync(sendTransition);
+  const { connectionState, pendingCount, dispatch, flush, isDurable } = useOfflineSync(sendTransition);
 
   const loadBranches = useCallback(async () => {
     try {
@@ -111,9 +129,25 @@ export default function RestaurantKitchenPage() {
         _cacheBust: true,
       });
       const json = (await res.json()) as { data: KitchenOrder[] };
-      setOrders(Array.isArray(json?.data) ? json.data : []);
+      const list = Array.isArray(json?.data) ? json.data : [];
+      setOrders(list);
       setError(null);
+      // #8448 — le serveur a répondu : la photo est remplacée par du live.
+      setSnapshotCapturedAt(null);
+      // On ne photographie QUE des réponses non vides : écraser un instantané
+      // utile par une file vide rendrait la coupure suivante aveugle.
+      if (list.length > 0) {
+        saveSnapshot(window.localStorage, branchId, list);
+      }
     } catch {
+      // #8448 — serveur injoignable : on réaffiche la dernière photo de CETTE
+      // branche plutôt qu'un écran vide. `shouldDisplaySnapshot` garantit
+      // qu'on ne recouvre jamais une réponse serveur.
+      const snapshot = loadSnapshot<KitchenOrder>(window.localStorage, branchId);
+      if (shouldDisplaySnapshot(0, snapshot) && snapshot !== null) {
+        setOrders(snapshot.orders);
+        setSnapshotCapturedAt(snapshot.capturedAt);
+      }
       setError(t(locale, 'restaurant.loadError'));
     } finally {
       setLoading(false);
@@ -336,6 +370,36 @@ export default function RestaurantKitchenPage() {
         {/* #8493 — état de connexion + opérations en attente (Partie 7). */}
         <ConnectionIndicator state={connectionState} pendingCount={pendingCount} onRetry={() => void flush()} />
       </div>
+
+      {/* #8448 — honnêteté du hors-ligne. Si la file n'est PAS persistée
+          (stockage indisponible/plein), un rafraîchissement effacerait les
+          gestes en attente. On le dit, plutôt que de laisser le cuisinier
+          croire à une durabilité qui n'existe pas. */}
+      {!isDurable ? (
+        <div
+          role="status"
+          className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900"
+        >
+          {t(locale, 'offline.notDurable')}
+        </div>
+      ) : null}
+
+      {/* #8448 — bandeau d'instantané. Afficher une photo sans dire son âge
+          ferait croire au cuisinier qu'il voit le service en direct : c'est
+          le vrai danger du hors-ligne, pas l'absence d'affichage. */}
+      {snapshotCapturedAt !== null && (
+        <section
+          className="flex flex-wrap items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800"
+          role="status"
+          aria-live="polite"
+          data-testid="kitchen-snapshot-banner"
+        >
+          <span className="font-bold">{describeSnapshotAge(snapshotCapturedAt)}</span>
+          <span className="text-xs">
+            File affichée depuis la dernière synchronisation — les transitions restent enregistrées et seront rejouées.
+          </span>
+        </section>
+      )}
 
       {/* REST-OS-5 (#8607) — bandeau d'état de l'imprimante. Trois états
           visuels, jamais un quatrième « optimiste » : prête / hors ligne /

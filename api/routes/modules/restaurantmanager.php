@@ -225,6 +225,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/kitchen/orders', [RestaurantKitchenController::class, 'index']);
         Route::post('/kitchen/orders/{restaurantOrder}/start', [RestaurantKitchenController::class, 'start']);
         Route::post('/kitchen/orders/{restaurantOrder}/ready', [RestaurantKitchenController::class, 'ready']);
+        // #8448 — geste cuisine IDEMPOTENT venu du KDS Edge hors ligne. Le
+        // client rejoue ses gestes au retour du réseau ; `client_action_id`
+        // garantit qu'un rejeu n'avance pas la commande deux fois.
+        Route::post('/kitchen/actions', [RestaurantKitchenController::class, 'applyAction']);
 
         // ── Impression thermique — surface authentifiée (REST-OS-3) ──────
         // Mise en file idempotente du ticket cuisine, suivi et réimpression
