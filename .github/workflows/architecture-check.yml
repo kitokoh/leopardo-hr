@@ -219,6 +219,13 @@ jobs:
       - name: Module isolation guard — no new cross-module imports (issue #5584)
         run: bash dev-hub/tools/check-module-isolation.sh api
 
+      - name: Outbound webhook signer guard — un seul signeur HMAC (BOS-021, issue #8210)
+        # Empêche une 4e copie de la primitive HMAC de webhook sortant. Le coût
+        # de la duplication n'est pas le code, c'est la divergence : une copie
+        # peut oublier `hash_equals` (comparaison non constante) ou changer
+        # d'algorithme sans versionner le contrat public.
+        run: bash dev-hub/tools/check-outbound-webhook-signer.sh api
+
       - name: Module isolation BUDGET guard — la dette tolérée ne peut que baisser (issue #7959)
         # #5584 bloque les NOUVELLES arêtes. Ce garde-ci ajoute le flux : le
         # nombre d'arêtes de l'allowlist ne peut jamais dépasser le budget, et
