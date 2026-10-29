@@ -18,8 +18,10 @@ permissions:
 
 concurrency:
   group: merge-health-${{ github.ref }}
-  # #5536 : ne jamais annuler le run en cours (file saturée)
-  cancel-in-progress: false
+  # #5536 : sur main, ne jamais annuler le run en cours (file saturée).
+  # #9035 : sur PR, le run d'un commit dépassé n'informe plus — l'annuler rend
+  # le runner au run courant.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   check-merge-health:

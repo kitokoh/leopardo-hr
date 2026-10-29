@@ -33,7 +33,8 @@ env:
 
 concurrency:
   group: mobile-core-duplication-${{ github.ref }}
-  cancel-in-progress: false
+  # #9035 : annulation PR-only (sur main, jamais annuler).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   guard:
