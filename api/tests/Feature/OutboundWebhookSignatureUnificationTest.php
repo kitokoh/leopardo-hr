@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Contracts\Queue\OutboundWebhookSigner;
 use App\Jobs\Services\HmacWebhookSigner;
 use App\Modules\Billing\Infrastructure\Services\WebhookEnvelopeBuilder;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookDispatcher;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookSigner;
 use Tests\TestCase;
 
@@ -128,5 +129,42 @@ final class OutboundWebhookSignatureUnificationTest extends TestCase
 
         $this->assertTrue($signer->verify($signature, $canonical, self::SECRET));
         $this->assertFalse($signer->verify($signature, $canonical.' ', self::SECRET));
+    }
+
+    /**
+     * Le DISPATCHER de livraison Travel signait de son côté
+     * (`'sha256='.hash_hmac(...)`) alors que le signer du même module passait
+     * déjà par le socle : deux endroits où se tromper sur la comparaison, et
+     * deux primitives à faire évoluer lors d'une rotation de secret.
+     *
+     * Il doit désormais produire exactement les mêmes octets que la formule
+     * historique que les transporteurs vérifient — préfixe `sha256=` inclus,
+     * puisque ce préfixe fait partie du contrat public.
+     */
+    public function test_travel_dispatcher_signature_is_byte_identical_to_the_historical_formula(): void
+    {
+        $body = json_encode(['event_type' => 'booking.confirmed', 'booking_id' => 'b-9'], JSON_THROW_ON_ERROR);
+
+        $expected = 'sha256='.hash_hmac('sha256', $body, self::SECRET);
+        $actual = (new TravelWebhookDispatcher)->signature($body, self::SECRET);
+
+        $this->assertSame($expected, $actual);
+    }
+
+    /**
+     * Le dispatcher doit consommer le CONTRAT, pas la classe concrète : un
+     * remplacement d'implémentation (rotation de secret, KMS) doit se faire
+     * par binding sans toucher au dispatcher.
+     */
+    public function test_travel_dispatcher_signs_through_the_shared_contract(): void
+    {
+        $signer = new HmacWebhookSigner;
+        $dispatcher = new TravelWebhookDispatcher($signer);
+        $body = '{"a":1}';
+
+        $this->assertSame(
+            'sha256='.$signer->sign(self::SECRET, $body),
+            $dispatcher->signature($body, self::SECRET),
+        );
     }
 }

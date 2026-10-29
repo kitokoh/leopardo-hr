@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Infrastructure\Services;
 
+use App\Contracts\Queue\OutboundWebhookSigner;
+use App\Contracts\Queue\OutboundWebhookTransport;
+use App\Jobs\Services\HmacWebhookSigner;
 use App\Modules\TravelAgency\Domain\Enums\TravelWebhookDeliveryStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelWebhookDelivery;
 use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Support\Facades\Http;
+use App\Shared\Exceptions\OutboundWebhookBlockedException;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -26,9 +28,24 @@ final class TravelWebhookDispatcher
 
     public const SIGNATURE_HEADER = 'X-Leopardo-Signature';
 
+    public function __construct(
+        private readonly OutboundWebhookSigner $signer = new HmacWebhookSigner,
+        private readonly ?OutboundWebhookTransport $transport = null,
+    ) {}
+
+    /**
+     * BOS-021 (#8210) — la primitive HMAC vient désormais du socle Integration
+     * (BC-14) au lieu d'être recopiée ici.
+     *
+     * Le préfixe `sha256=` fait partie du contrat public `X-Leopardo-Signature`
+     * consommé par les transporteurs : il reste produit ici, et la chaîne
+     * signée reste le body brut. Seule la primitive est mutualisée, ce qui
+     * garantit des signatures identiques octet pour octet (prouvé par
+     * `OutboundWebhookSignatureUnificationTest`).
+     */
     public function signature(string $payload, string $secret): string
     {
-        return 'sha256='.hash_hmac('sha256', $payload, $secret);
+        return 'sha256='.$this->signer->sign($secret, $payload);
     }
 
     /** Envoie une livraison et met à jour son statut. Retourne true si livrée. */
@@ -52,22 +69,30 @@ final class TravelWebhookDispatcher
         $body = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{}';
 
         try {
-            $response = $this->client($subscription)->send('POST', $subscription->url, [
-                'body' => $body,
-                'headers' => [
+            // BOS-021 (#8210) — livraison via le transport partagé (BC-14).
+            //
+            // Ce changement ferme un trou réel : le dispatcher utilisait
+            // `Http::withoutVerifying()`, donc (a) aucun certificat TLS n'était
+            // vérifié — un serveur imposteur était accepté — et (b) aucune
+            // garde anti-SSRF n'était appliquée, alors que l'URL vient d'un
+            // abonné. Le transport impose `https://`, re-résout l'hôte juste
+            // avant l'appel et vérifie le certificat.
+            $response = $this->transport()->send(
+                $subscription->url,
+                $body,
+                [
                     'Content-Type' => 'application/json',
                     self::SIGNATURE_HEADER => $this->signature($body, app(TravelWebhookSecretService::class)->get($subscription)),
                     'X-Leopardo-Event' => $delivery->event_type,
                     'X-Leopardo-Delivery-Id' => $delivery->id,
                 ],
-                'timeout' => 8,
-            ]);
+            );
 
             if ($response->successful()) {
                 $delivery->forceFill([
                     'status' => TravelWebhookDeliveryStatus::SENT,
                     'attempts' => $delivery->attempts + 1,
-                    'last_status_code' => $response->status(),
+                    'last_status_code' => $response->status,
                     'last_error' => null,
                     'next_attempt_at' => null,
                     'delivered_at' => now(),
@@ -76,7 +101,26 @@ final class TravelWebhookDispatcher
                 return true;
             }
 
-            $this->markFailed($delivery, (int) $response->status(), 'HTTP '.$response->status());
+            $this->markFailed($delivery, $response->status, 'HTTP '.$response->status);
+
+            return false;
+        } catch (OutboundWebhookBlockedException $exception) {
+            // Décision, pas incident : un hôte interdit ne deviendra pas
+            // public en réessayant. Dead-letter immédiate, sans consommer les
+            // 5 tentatives — sinon un abonné mal configuré occupe la file
+            // pendant 30 minutes pour un résultat connu d'avance.
+            $delivery->forceFill([
+                'status' => TravelWebhookDeliveryStatus::DEAD,
+                'attempts' => $delivery->attempts + 1,
+                'last_status_code' => null,
+                'last_error' => $this->truncateError($exception->getMessage()),
+                'next_attempt_at' => null,
+            ])->save();
+
+            Log::warning('travel.webhook.blocked', [
+                'delivery_id' => $delivery->id,
+                'event_type' => $delivery->event_type,
+            ]);
 
             return false;
         } catch (Throwable $exception) {
@@ -112,11 +156,12 @@ final class TravelWebhookDispatcher
         $delivery->save();
     }
 
-    private function client(TravelWebhookSubscription $subscription): PendingRequest
+    private function transport(): OutboundWebhookTransport
     {
-        return Http::withoutVerifying()
-            ->acceptJson()
-            ->retry(0); // retries gérés par le journal de livraison (backoff)
+        // Résolution paresseuse : le constructeur reste instanciable sans
+        // container (`new TravelWebhookDispatcher`), ce dont dépendent les
+        // tests de signature qui n'ont besoin que de la primitive HMAC.
+        return $this->transport ?? app(OutboundWebhookTransport::class);
     }
 
     /**
