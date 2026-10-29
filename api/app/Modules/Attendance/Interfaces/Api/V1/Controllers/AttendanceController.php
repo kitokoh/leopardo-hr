@@ -10,6 +10,7 @@ use App\Http\Resources\Api\V1\AttendanceLogResource;
 use App\Http\Resources\Api\V1\AttendanceTodayResource;
 use App\Modules\Attendance\Application\Actions\ApproveCorrectionRequest;
 use App\Modules\Attendance\Application\Actions\GetAttendanceToday;
+use App\Modules\Attendance\Application\Actions\GetManagerAttendanceToday;
 use App\Modules\Attendance\Application\Actions\RejectCorrectionRequest;
 use App\Modules\Attendance\Application\Actions\SubmitCorrectionRequest;
 use App\Modules\Attendance\Application\Actions\UpdateAttendanceLog;
@@ -48,6 +49,7 @@ class AttendanceController extends Controller
         private readonly RejectCorrectionRequest $rejectCorrectionAction,
         private readonly UpdateAttendanceLog $updateAttendanceLogAction,
         private readonly GetAttendanceToday $getAttendanceToday,
+        private readonly GetManagerAttendanceToday $getManagerAttendanceToday,
         private readonly AttendanceCorrectionPresenter $presenter,
     ) {}
 
@@ -98,7 +100,7 @@ class AttendanceController extends Controller
             $target = Employee::query()->findOrFail($employeeId);
             $this->authorize('viewForEmployee', [AttendanceLog::class, $target]);
 
-            $result = $this->getAttendanceToday->forEmployee($target, $today);
+            $result = $this->getAttendanceToday->execute($target, $today);
 
             return new JsonResponse([
                 'data' => [
@@ -114,10 +116,10 @@ class AttendanceController extends Controller
             $this->authorize('viewAny', AttendanceLog::class);
 
             $perPage = max(1, min(100, $request->integer('per_page', 50)));
-            $result = $this->getAttendanceToday->forManagerScope($actor, $today, $perPage);
+            $result = $this->getManagerAttendanceToday->execute($actor, $today, $perPage);
 
             $items = collect($result['items'])->map(
-                fn (array $row) => new AttendanceTodayResource($row['employee'], $row['log'], $company->timezone, $row['summary'])
+                fn (array $row) => new AttendanceTodayResource($row['employee'], $row['log'], $company->timezone, $row['estimation'])
             )->values();
 
             return new JsonResponse([
@@ -131,7 +133,7 @@ class AttendanceController extends Controller
 
         $this->authorize('viewForEmployee', [AttendanceLog::class, $actor]);
 
-        $result = $this->getAttendanceToday->forEmployee($actor, $today);
+        $result = $this->getAttendanceToday->execute($actor, $today);
 
         return new JsonResponse([
             'data' => [
