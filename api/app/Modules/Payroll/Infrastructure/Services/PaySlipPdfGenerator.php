@@ -26,6 +26,60 @@ class PaySlipPdfGenerator
         'GB' => 'Issued in accordance with UK employment law. PAYE and National Insurance Class 1 included. Statutory minimum notice under the Employment Rights Act 1996.',
         'US' => 'Issued in accordance with US federal payroll rules. FICA (Social Security and Medicare), FUTA and federal income tax withholding included. FLSA overtime rules apply.',
         'CA' => 'Issued under the Canada Labour Code / Émis conformément au Code canadien du travail. CPP/RPC, CPP2 and EI/AE included.',
+        // ── CEMAC / CEDEAO (#9045) — référentiels pilot, voir
+        // docs/payroll/BULLETIN_{CM,CI}_MENTIONS.md. La formulation reste
+        // descriptive du régime appliqué, jamais une promesse de conformité
+        // (règle anti-over-promise #7922).
+        'CM' => 'Établi conformément au Code du travail camerounais loi n° 92/007, art. 68. Retenues CNPS (PVID/CAC/CFC) et IRPP incluses.',
+        'GA' => 'Établi conformément au Code du travail gabonais. Cotisations CNSS et IRPP incluses.',
+        'CG' => 'Établi conformément au Code du travail congolais. Cotisations CNSS et IRPP incluses.',
+        'TD' => 'Établi conformément au Code du travail tchadien. Cotisations CNPS et IRPP incluses.',
+        'CF' => 'Établi conformément au Code du travail centrafricain. Cotisations CNSS et IRPP incluses.',
+        'GQ' => 'Établi conformément au Code du travail équato-guinéen. Cotisations INSESO et IRPP incluses.',
+        'CI' => 'Établi conformément au Code du travail ivoirien loi n° 2015-532, art. 32.5. ITS et CNPS incluses.',
+        'BF' => 'Établi conformément au Code du travail burkinabè. Cotisations CNSS et IUTS incluses.',
+        'ML' => 'Établi conformément au Code du travail malien. Cotisations INPS et ITS incluses.',
+        'TG' => 'Établi conformément au Code du travail togolais. Cotisations CNSS et IRPP incluses.',
+        'BJ' => 'Établi conformément au Code du travail béninois. Cotisations CNSS et ITS incluses.',
+        'NE' => 'Établi conformément au Code du travail nigérien. Cotisations CNSS et IUTS incluses.',
+    ];
+
+    /**
+     * Identifiants légaux employeur à afficher, par pays (#9045) : le jeu de
+     * clés `company.metadata` attendu suit le référentiel de chaque juridiction
+     * (RCCM/NIU en CEMAC, RCCM/IFU ou NIF en CEDEAO, SIREN/SIRET en FR, VKN en
+     * TR, BN/TPS en CA). La source documentaire par pays est
+     * `docs/payroll/BULLETIN_{...}_MENTIONS.md`.
+     *
+     * Un pays absent de cette table conserve le comportement historique
+     * (jeu DZ), ce qui garantit la non-régression du bulletin algérien.
+     *
+     * @var array<string, array<string, string>>
+     */
+    private const COUNTRY_LEGAL_IDENTIFIERS = [
+        'CM' => ['legal_rccm' => 'RCCM', 'legal_niu' => 'NIU', 'legal_cnps_employer' => 'N° CNPS employeur'],
+        'GA' => ['legal_rccm' => 'RCCM', 'legal_nif' => 'NIF', 'legal_cnss_employer' => 'N° CNSS employeur'],
+        'CG' => ['legal_rccm' => 'RCCM', 'legal_niu' => 'NIU', 'legal_cnss_employer' => 'N° CNSS employeur'],
+        'TD' => ['legal_rccm' => 'RCCM', 'legal_nif' => 'NIF', 'legal_cnps_employer' => 'N° CNPS employeur'],
+        'CF' => ['legal_rccm' => 'RCCM', 'legal_nif' => 'NIF', 'legal_cnss_employer' => 'N° CNSS employeur'],
+        'GQ' => ['legal_rccm' => 'RCCM', 'legal_nif' => 'NIF', 'legal_inseso_employer' => 'N° INSESO employeur'],
+        'CI' => ['legal_rccm' => 'RCCM', 'legal_ncc' => 'NCC DGI', 'legal_cnps_employer' => 'N° CNPS employeur'],
+        'BF' => ['legal_rccm' => 'RCCM', 'legal_ifu' => 'IFU', 'legal_cnss_employer' => 'N° CNSS employeur'],
+        'ML' => ['legal_rccm' => 'RCCM', 'legal_nif' => 'NIF', 'legal_inps_employer' => 'N° INPS employeur'],
+        'TG' => ['legal_rccm' => 'RCCM', 'legal_nif' => 'NIF', 'legal_cnss_employer' => 'N° CNSS employeur'],
+        'BJ' => ['legal_rccm' => 'RCCM', 'legal_ifu' => 'IFU', 'legal_cnss_employer' => 'N° CNSS employeur'],
+        'NE' => ['legal_rccm' => 'RCCM', 'legal_nif' => 'NIF', 'legal_cnss_employer' => 'N° CNSS employeur'],
+        'FR' => ['legal_siren' => 'SIREN', 'legal_siret' => 'SIRET', 'legal_tva_intra' => 'TVA intracommunautaire'],
+        'TR' => ['legal_vkn' => 'Vergi No (VKN)', 'legal_sicil' => 'Ticaret Sicil No'],
+        'CA' => ['legal_bn' => 'BN', 'legal_gst_hst' => 'N° TPS/TVH', 'legal_tvq' => 'N° TVQ'],
+    ];
+
+    /** Jeu historique DZ (F-09, #1539) — conservé comme défaut. */
+    private const DEFAULT_LEGAL_IDENTIFIERS = [
+        'legal_nif' => 'NIF',
+        'legal_rc' => 'RC',
+        'legal_cnas_employer' => 'N° CNAS employeur',
+        'legal_idnat' => 'ID.Nat',
     ];
 
     public function generate(PaySlip $paySlip): string
@@ -60,9 +114,9 @@ class PaySlipPdfGenerator
             // already supports, e.g. CEMAC/CEDEAO members, GB, US, CA).
             'currency' => CountryDefaults::for($countryCode)['currency'],
             'legalMentions' => self::COUNTRY_LEGAL[$countryCode] ?? '',
-            // F-09 (#1539) : mentions légales DZ (NIF, RC, n° CNAS employeur,
-            // ID.Nat) portées par company.metadata — affichées si présentes.
-            'companyLegal' => $this->companyLegalIdentifiers($company),
+            // F-09 (#1539) : mentions légales employeur (NIF, RC, n° CNAS…) portées
+            // par company.metadata — jeu d'identifiants résolu par pays (#9045).
+            'companyLegal' => $this->companyLegalIdentifiers($company, $countryCode),
             // F-09 (#1539) : cumuls annuels (brut, retenues, net) des
             // bulletins validés de l'employé jusqu'à la période du bulletin.
             'annualCumuls' => $this->annualCumuls($paySlip),
@@ -81,24 +135,26 @@ class PaySlipPdfGenerator
     }
 
     /**
-     * F-09 (#1539) — identifiants légaux de l'employeur (DZ) portés par
-     * `company.metadata` : legal_nif, legal_rc, legal_cnas_employer,
-     * legal_idnat. Retourne uniquement les clés présentes.
+     * Mentions légales de l'employeur portées par `company.metadata`.
+     *
+     * #9045 : le jeu d'identifiants attendu dépend de la juridiction (RCCM/NIU
+     * en CEMAC, RCCM/IFU en CEDEAO, SIREN en FR, VKN en TR, BN/TPS en CA).
+     * Un pays non listé retombe sur le jeu DZ historique (F-09, #1539), ce qui
+     * préserve le bulletin algérien à l'identique.
+     *
+     * Ne retourne que les clés réellement présentes : un identifiant absent
+     * n'est jamais rendu vide, il est omis.
      *
      * @return array<string, string>
      */
-    private function companyLegalIdentifiers(?Company $company): array
+    private function companyLegalIdentifiers(?Company $company, ?string $countryCode = null): array
     {
         if ($company === null) {
             return [];
         }
 
-        $keys = [
-            'legal_nif' => 'NIF',
-            'legal_rc' => 'RC',
-            'legal_cnas_employer' => 'N° CNAS employeur',
-            'legal_idnat' => 'ID.Nat',
-        ];
+        $code = strtoupper(trim((string) $countryCode));
+        $keys = self::COUNTRY_LEGAL_IDENTIFIERS[$code] ?? self::DEFAULT_LEGAL_IDENTIFIERS;
 
         $out = [];
         foreach ($keys as $key => $label) {
