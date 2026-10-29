@@ -68,7 +68,6 @@ final class PayrollRunAccessTest extends TestCase
 
         // Préparer (calculer) : autorisé.
         $this->access->authorizeManager($run, $actor);
-        self::assertTrue(true);
 
         // Approuver (valider / clôturer) : refusé — séparation des tâches #5246.
         try {
@@ -88,9 +87,12 @@ final class PayrollRunAccessTest extends TestCase
             'manager_role' => 'principal',
         ]);
 
+        // #9025 : `authorizeApprover` renvoie `void` — le succès est l'absence
+        // d'exception. `assertTrue(true)` était une tautologie que PHPStan
+        // niveau 8 rejette ; `expectNotToPerformAssertions()` énonce la même
+        // intention sans assertion vide.
+        $this->expectNotToPerformAssertions();
         $this->access->authorizeApprover($run, $actor);
-
-        self::assertTrue(true);
     }
 
     public function test_a_comptable_manager_can_approve(): void
@@ -102,8 +104,7 @@ final class PayrollRunAccessTest extends TestCase
             'manager_role' => 'comptable',
         ]);
 
+        $this->expectNotToPerformAssertions();
         $this->access->authorizeApprover($run, $actor);
-
-        self::assertTrue(true);
     }
 }
