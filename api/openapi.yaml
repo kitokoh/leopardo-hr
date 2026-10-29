@@ -41963,6 +41963,56 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+  /restaurant/kitchen/actions:
+    post:
+      operationId: api_post_restaurant_kitchen_actions
+      tags:
+      - Restaurant
+      summary: Appliquer un geste cuisine idempotent depuis le KDS (#8448)
+      description: >-
+        #8448 - geste cuisine IDEMPOTENT venu du KDS Edge hors ligne. Le client
+        rejoue ses gestes au retour du reseau ; `client_action_id` garantit
+        qu'un rejeu n'avance pas la commande deux fois (contrainte UNIQUE sur
+        `restaurant_kitchen_actions`). Un rejeu avec le meme `client_action_id`
+        renvoie le resultat du premier appel sans effet de bord. Autorisation :
+        `restaurant.kitchen.operate`. 404 cross-tenant.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - client_action_id
+              - action
+              properties:
+                client_action_id:
+                  type: string
+                  maxLength: 64
+                  description: Identifiant d'idempotence genere par le client (KDS).
+                action:
+                  type: string
+                  enum:
+                  - start
+                  - ready
+                  - cancel
+                  description: Geste applique a la commande.
+                restaurant_order_id:
+                  type: integer
+                  description: Commande ciblee (optionnel si deduit du contexte KDS).
+      responses:
+        '200':
+          description: Geste applique (ou deja applique - idempotent)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /restaurant/orders/{restaurantOrder}/print-jobs:
     post:
       operationId: api_post_restaurant_orders_by_restaurantOrder_print_jobs
