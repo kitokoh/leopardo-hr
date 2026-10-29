@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Infrastructure\Services;
 
+use App\Contracts\Queue\OutboundWebhookSigner;
+use App\Jobs\Services\HmacWebhookSigner;
 use App\Modules\TravelAgency\Domain\Enums\TravelWebhookDeliveryStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelWebhookDelivery;
 use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
@@ -26,9 +28,23 @@ final class TravelWebhookDispatcher
 
     public const SIGNATURE_HEADER = 'X-Leopardo-Signature';
 
+    public function __construct(
+        private readonly OutboundWebhookSigner $signer = new HmacWebhookSigner,
+    ) {}
+
+    /**
+     * BOS-021 (#8210) — la primitive HMAC vient désormais du socle Integration
+     * (BC-14) au lieu d'être recopiée ici.
+     *
+     * Le préfixe `sha256=` fait partie du contrat public `X-Leopardo-Signature`
+     * consommé par les transporteurs : il reste produit ici, et la chaîne
+     * signée reste le body brut. Seule la primitive est mutualisée, ce qui
+     * garantit des signatures identiques octet pour octet (prouvé par
+     * `OutboundWebhookSignatureUnificationTest`).
+     */
     public function signature(string $payload, string $secret): string
     {
-        return 'sha256='.hash_hmac('sha256', $payload, $secret);
+        return 'sha256='.$this->signer->sign($secret, $payload);
     }
 
     /** Envoie une livraison et met à jour son statut. Retourne true si livrée. */
