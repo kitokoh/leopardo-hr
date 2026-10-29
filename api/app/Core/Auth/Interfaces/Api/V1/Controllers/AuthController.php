@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Application\Actions\AuthenticateGoogleIdentityAction;
 use App\Core\Auth\Application\Actions\ChangePasswordAction;
 use App\Core\Auth\Application\Actions\LoginAction;
 use App\Core\Auth\Application\Actions\LogoutAction;
@@ -18,7 +19,6 @@ use App\Core\Auth\Interfaces\Api\V1\Requests\ChangePasswordRequest;
 use App\Core\Auth\Interfaces\Api\V1\Requests\LoginRequest;
 use App\Core\Auth\Interfaces\Api\V1\Requests\StoreRegistrationRequest;
 use App\Core\Auth\Interfaces\Api\V1\Requests\UpdateProfileRequest;
-use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
@@ -43,6 +43,7 @@ class AuthController extends Controller
         private readonly ChangePasswordAction $changePasswordAction,
         private readonly TwoFactorAuthService $twoFactorService,
         private readonly AuthService $authService,
+        private readonly AuthenticateGoogleIdentityAction $authenticateGoogleIdentityAction,
     ) {}
 
     public function login(LoginRequest $request): JsonResponse
@@ -308,6 +309,18 @@ class AuthController extends Controller
             && filled(config('services.google.redirect'));
     }
 
+    /**
+     * Cookie « appareil de confiance » du challenge TOTP (#5579), ou `null` si
+     * le support n'en a pas posé — réponse typée pour que l'Action n'ait pas à
+     * connaître la forme brute d'un cookie de requête.
+     */
+    private function mfaRememberCookie(Request $request, Employee $employee): ?string
+    {
+        $cookie = $request->cookie('mfa_remember_'.$employee->id);
+
+        return is_string($cookie) ? $cookie : null;
+    }
+
     public function handleGoogleCallback(Request $request): JsonResponse
     {
         // Issue #2619 : validation du state — callback sans state ou avec un
@@ -417,72 +430,37 @@ class AuthController extends Controller
             $employee->save();
         }
 
-        // audit(securite) #6531 : liaison google_id (sub) — première connexion :
-        // liaison ; connexion suivante avec un sub ≠ google_id stocké : REFUS
-        // (réattribution d'email Google Workspace / compte Google compromis).
-        $googleSub = (string) $googleUser->getId();
-        if ($employee->google_id === null || $employee->google_id === '') {
-            $employee->forceFill(['google_id' => $googleSub])->save();
-            Log::channel('audit')->info('auth.google.linked', [
-                'employee_id' => $employee->id,
-                'email' => $employee->email,
-            ]);
-        } elseif (! hash_equals($employee->google_id, $googleSub)) {
-            Log::channel('audit')->warning('auth.google.identity_mismatch', [
-                'employee_id' => $employee->id,
-                'email' => $employee->email,
-            ]);
+        // Issue #7962 — la séquence de gardes SSO (liaison du sub, statut,
+        // 2FA) était recopiée à l'identique dans les deux flux Google : elle
+        // vit désormais dans une seule Action, pour qu'une correction de règle
+        // de sécurité n'ait plus qu'un endroit où se poser.
+        $outcome = $this->authenticateGoogleIdentityAction->execute(
+            employee: $employee,
+            googleSub: (string) $googleUser->getId(),
+            resolved: $resolved,
+            tokenName: 'google-auth',
+            rememberCookie: $this->mfaRememberCookie($request, $employee),
+        );
 
+        if ($outcome['status'] === 'identity_mismatch') {
             return new JsonResponse([
                 'error' => 'GOOGLE_IDENTITY_MISMATCH',
                 'message' => __('errors.GOOGLE_IDENTITY_MISMATCH'),
             ], 401);
         }
 
-        // Sécurité #2630 : un employé suspendu (ou société suspendue/expirée)
-        // ne peut pas s'authentifier, y compris via Google.
-        if ($employee->status !== 'active') {
-            throw new AccountSuspendedException;
-        }
-        if ($employee->company_id) {
-            $company = $employee->company;
-            if ($company && in_array($company->status, ['suspended', 'expired'], true)) {
-                throw new AccountSuspendedException;
-            }
-        }
+        if ($outcome['status'] === 'mfa_challenge') {
+            /** @var array{token: string, expires_in: int} $challenge */
+            $challenge = $outcome['challenge'];
 
-        // Issue #5579 : garde 2FA sur les flux SSO — sans cette vérification un
-        // employé ayant activé la TOTP pouvait contourner le challenge via Google.
-        if ($employee->two_fa_enabled_at !== null) {
-            // Appareil de confiance (cookie signé) : pas de challenge.
-            $expected = $this->twoFactorService->rememberCookieValue($employee);
-            $provided = $request->cookie('mfa_remember_'.$employee->id);
-            if (! is_string($provided) || ! hash_equals($expected, $provided)) {
-                $challenge = $this->twoFactorService->issueChallenge([
-                    'employee_id' => $employee->id,
-                    'company_id' => (string) $employee->company_id,
-                    // audit(securite) #6540 : tenant_schema résolu (user_lookups)
-                    // — en mode schéma-par-tenant, un challenge avec null ne peut
-                    // pas re-poser search_path à la vérification (2FA cassée).
-                    'tenant_schema' => $resolved['tenant_schema'] ?? null,
-                    'email' => (string) $employee->email,
-                    'device_name' => null,
-                ]);
-
-                return new JsonResponse([
-                    'mfa_challenge' => true,
-                    'mfa_challenge_token' => $challenge['token'],
-                    'mfa_challenge_expires_in' => $challenge['expires_in'],
-                ]);
-            }
+            return new JsonResponse([
+                'mfa_challenge' => true,
+                'mfa_challenge_token' => $challenge['token'],
+                'mfa_challenge_expires_in' => $challenge['expires_in'],
+            ]);
         }
 
-        // Politique tenant : rôle sensible + 2FA non activée → blocage.
-        if ($this->twoFactorService->requiresMfa($employee)) {
-            throw TwoFactorException::required();
-        }
-
-        $token = $employee->createToken('google-auth');
+        $token = $employee->createToken($outcome['token_name']);
 
         return (new EmployeeResource($employee))
             ->additional([
@@ -500,11 +478,16 @@ class AuthController extends Controller
             'device_name' => 'nullable|string|max:255',
         ]);
 
+        /** @var string $accessToken */
+        $accessToken = $validated['access_token'];
+        /** @var string|null $deviceName */
+        $deviceName = $validated['device_name'] ?? null;
+
         try {
             /** @var GoogleProvider $google */
             $google = Socialite::driver('google');
             /** @var \Laravel\Socialite\Two\User $googleUser */
-            $googleUser = $google->stateless()->userFromToken($validated['access_token']);
+            $googleUser = $google->stateless()->userFromToken($accessToken);
         } catch (\Exception $e) {
             Log::error('auth.google.token_exchange_failed', ['error' => $e->getMessage()]);
 
@@ -535,50 +518,28 @@ class AuthController extends Controller
             return new JsonResponse(['error' => 'EMPLOYEE_NOT_FOUND', 'message' => __('errors.GOOGLE_ACCOUNT_NOT_FOUND')], 401);
         }
 
-        // audit(securite) #6531 : liaison google_id + refus en cas de mismatch
-        // (parité avec handleGoogleCallback).
-        $googleSub = (string) $googleUser->getId();
-        if ($employee->google_id === null || $employee->google_id === '') {
-            $employee->forceFill(['google_id' => $googleSub])->save();
-            Log::channel('audit')->info('auth.google.linked', [
-                'employee_id' => $employee->id,
-                'email' => $employee->email,
-            ]);
-        } elseif (! hash_equals($employee->google_id, $googleSub)) {
-            Log::channel('audit')->warning('auth.google.identity_mismatch', [
-                'employee_id' => $employee->id,
-                'email' => $employee->email,
-            ]);
+        // Issue #7962 — gardes SSO partagées avec le callback (voir l'Action).
+        // Le flux mobile ne porte pas de cookie « appareil de confiance » : le
+        // challenge TOTP y est systématique, comportement inchangé (#5579).
+        $outcome = $this->authenticateGoogleIdentityAction->execute(
+            employee: $employee,
+            googleSub: (string) $googleUser->getId(),
+            resolved: $resolved,
+            tokenName: $deviceName ?? 'google-mobile',
+            rememberCookie: null,
+            challengeDeviceName: $deviceName,
+        );
 
+        if ($outcome['status'] === 'identity_mismatch') {
             return new JsonResponse([
                 'error' => 'GOOGLE_IDENTITY_MISMATCH',
                 'message' => __('errors.GOOGLE_IDENTITY_MISMATCH'),
             ], 401);
         }
 
-        // Sécurité #2630 : statut employé + société (mêmes gardes que le login classique).
-        if ($employee->status !== 'active') {
-            throw new AccountSuspendedException;
-        }
-        if ($employee->company_id) {
-            $company = $employee->company;
-            if ($company && in_array($company->status, ['suspended', 'expired'], true)) {
-                throw new AccountSuspendedException;
-            }
-        }
-
-        // Issue #5579 : garde 2FA (parité avec handleGoogleCallback).
-        // Note : le flux mobile ne dispose pas du cookie remember ; le challenge
-        // TOTP est systématique si la 2FA est activée.
-        if ($employee->two_fa_enabled_at !== null) {
-            $challenge = $this->twoFactorService->issueChallenge([
-                'employee_id' => $employee->id,
-                'company_id' => (string) $employee->company_id,
-                // audit(securite) #6540 : tenant_schema résolu (parité callback).
-                'tenant_schema' => $resolved['tenant_schema'] ?? null,
-                'email' => (string) $employee->email,
-                'device_name' => $validated['device_name'] ?? null,
-            ]);
+        if ($outcome['status'] === 'mfa_challenge') {
+            /** @var array{token: string, expires_in: int} $challenge */
+            $challenge = $outcome['challenge'];
 
             return new JsonResponse([
                 'mfa_challenge' => true,
@@ -587,12 +548,7 @@ class AuthController extends Controller
             ]);
         }
 
-        // Politique tenant : rôle sensible + 2FA non activée → blocage.
-        if ($this->twoFactorService->requiresMfa($employee)) {
-            throw TwoFactorException::required();
-        }
-
-        $tokenName = $validated['device_name'] ?? 'google-mobile';
+        $tokenName = $outcome['token_name'];
         $token = $employee->createToken($tokenName);
 
         return (new EmployeeResource($employee))
