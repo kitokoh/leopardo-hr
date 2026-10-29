@@ -10,6 +10,7 @@ use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\PaySlipLegalMentions;
 use App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator;
+use Illuminate\Support\Carbon;
 use Tests\RefreshTenantDatabase;
 use Tests\Support\PdfTextExtractor;
 use Tests\TestCase;
@@ -104,11 +105,17 @@ class PaySlipLegalMentionsByCountryTest extends TestCase
             ...$employeeAttributes,
         ]);
 
+        // #8396 : periode RELATIVE au mois courant. Les mentions legales ne
+        // dependent pas de la date ; une date figee dans le passe ferait
+        // echouer la garde check-tests-no-frozen-dates.sh sans rien prouver.
+        $periodStart = Carbon::now()->startOfMonth();
+        $periodEnd = Carbon::now()->endOfMonth();
+
         /** @var PayrollRun $run */
         $run = PayrollRun::create([
             'company_id' => $company->id,
-            'period_start' => '2026-07-01',
-            'period_end' => '2026-07-31',
+            'period_start' => $periodStart->toDateString(),
+            'period_end' => $periodEnd->toDateString(),
             'country_code' => $country,
             'status' => 'validated',
         ]);
@@ -118,8 +125,8 @@ class PaySlipLegalMentionsByCountryTest extends TestCase
             'payroll_run_id' => $run->id,
             'company_id' => $company->id,
             'employee_id' => $employee->id,
-            'period_start' => '2026-07-01',
-            'period_end' => '2026-07-31',
+            'period_start' => $periodStart->toDateString(),
+            'period_end' => $periodEnd->toDateString(),
             'gross_salary' => 500000,
             'total_deductions' => 100000,
             'net_salary' => 400000,
