@@ -75,6 +75,11 @@
       "model": "App\\Modules\\Paiements\\Domain\\Models\\PaymentWebhookEvent",
       "reason": "company_id NULLABLE : NULL = evenement d'une instance GLOBALE (meme convention que payment_webhook_endpoints). Le routage d'un webhook entrant se fait hors contexte tenant prealable (l'appelant est un fournisseur, pas un utilisateur) ; un scope fail-closed rendrait tout evenement global introuvable.",
       "added": "2026-10-24"
+    },
+    {
+      "model": "App\\Modules\\Pages\\Domain\\Models\\PageModerationAudit",
+      "reason": "Journal de moderation APPEND-ONLY (#8729) dont l'immuabilite est garantie par trigger PostgreSQL (UPDATE/DELETE rejetes). company_id NULLABLE est une denormalisation d'audit, jamais un critere de lecture : la seule lecture applicative filtre par page_id, deja resolu dans le schema tenant. Un scope fail-closed rendrait invisibles les lignes a company_id NULL (Page plateforme, acteur super-admin hors tenant) — soit exactement la trace qu'un contestataire voudrait effacer. Meme regime que FundraisingPaymentEvent et PaymentWebhookEvent.",
+      "added": "2026-10-29"
     }
   ],
   "legacy_pending_review": [
