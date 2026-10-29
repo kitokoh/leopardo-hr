@@ -12,6 +12,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProvisionDemoTenantJob;
 use App\Modules\Billing\Application\Actions\RequestTrialSignup;
+use App\Modules\Billing\Application\Actions\SetTrialPassword;
 use App\Modules\Billing\Application\Actions\VerifyTrialSignup;
 use App\Rules\SupportedCountry;
 use App\Shared\Rules\PasswordPolicy;
@@ -21,7 +22,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -41,6 +41,7 @@ class SelfServiceTrialController extends Controller
     public function __construct(
         private readonly RequestTrialSignup $requestTrialSignup,
         private readonly VerifyTrialSignup $verifyTrialSignup,
+        private readonly SetTrialPassword $setTrialPassword,
         private readonly SolutionCatalogue $solutionCatalogue,
         private readonly AuthService $authService,
         private readonly IdempotencyStore $idempotencyStore,
@@ -708,91 +709,31 @@ class SelfServiceTrialController extends Controller
             $token = trim((string) $request->input('token', ''));
         }
 
-        if ($token === '' || strlen($token) !== 64) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'PROVISIONING_TOKEN_INVALID',
-                'localized_message' => __('billing.trial_status_token_invalid'),
-            ], 404);
-        }
-
         // Même politique que la réinitialisation de mot de passe (#5620,
         // helper unique #8021).
         $validated = $request->validate([
             'password' => PasswordPolicy::required(),
         ]);
 
-        $row = DB::table('trial_provisionings')
-            ->where('provisioning_token', $token)
-            ->first();
+        // #7962 — les règles métier (token à usage unique, expiration 72 h,
+        // révocation du magic link) vivent dans l'Action, pas ici. Le
+        // controller ne fait plus que du HTTP : lire l'en-tête, valider la
+        // forme, sérialiser.
+        $result = $this->setTrialPassword->execute($token, $validated['password']);
 
-        if ($row === null || $row->status !== 'ready' || $row->company_id === null) {
+        if ($result['success'] === false) {
             return new JsonResponse([
                 'success' => false,
-                'error' => 'PROVISIONING_NOT_READY',
-                'localized_message' => __('billing.trial_password_not_ready'),
-            ], 409);
+                'error' => $result['error'],
+                'localized_message' => $result['message'],
+            ], $result['status']);
         }
-
-        if (is_scalar($row->password_set_at) && (string) $row->password_set_at !== '') {
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'TRIAL_PASSWORD_ALREADY_SET',
-                'localized_message' => __('billing.trial_password_already_set'),
-            ], 409);
-        }
-
-        // #7490 : le lien magique de l'e-mail de bienvenue porte ce token — il
-        // doit expirer. TTL 72 h depuis le provisioning ; passé ce délai,
-        // l'utilisateur passe par « Recevoir un code de connexion » puis
-        // définit son mot de passe depuis l'espace.
-        $provisionedAtRaw = $row->provisioned_at ?? null;
-        if (is_scalar($provisionedAtRaw) && (string) $provisionedAtRaw !== ''
-            && Carbon::parse((string) $provisionedAtRaw)->addHours(72)->isPast()) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'TRIAL_PASSWORD_LINK_EXPIRED',
-                'localized_message' => __('billing.trial_password_link_expired'),
-            ], 410);
-        }
-
-        $manager = $this->findTrialManager((string) $row->email, (string) $row->company_id);
-
-        if ($manager === null) {
-            Log::error('trial.set_password_manager_not_found', [
-                'company_id' => $row->company_id,
-            ]);
-
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'TRIAL_MANAGER_NOT_FOUND',
-                'localized_message' => __('billing.trial_password_manager_missing'),
-            ], 404);
-        }
-
-        $manager->forceFill(['password_hash' => Hash::make($validated['password'])])->save();
-
-        // Le magic link d'accès n'a plus lieu d'être : on révoque son hash pour
-        // qu'un email égaré ne puisse plus ouvrir de session.
-        $extraData = $manager->extra_data;
-        unset($extraData['demo_access_token_hash'], $extraData['demo_access_token_expires_at']);
-        $manager->forceFill(['extra_data' => $extraData])->save();
-
-        DB::table('trial_provisionings')
-            ->where('id', $row->id)
-            ->update(['password_set_at' => now(), 'updated_at' => now()]);
-
-        Log::info('trial.set_password_success', ['company_id' => $row->company_id]);
 
         return new JsonResponse([
             'success' => true,
-            'message' => __('billing.trial_password_set'),
-            'localized_message' => __('billing.trial_password_set'),
-            'data' => [
-                'login_url' => is_string($row->login_url) && $row->login_url !== ''
-                    ? $row->login_url
-                    : '/auth/login',
-            ],
+            'message' => $result['message'],
+            'localized_message' => $result['message'],
+            'data' => $result['data'],
         ]);
     }
 
@@ -835,25 +776,5 @@ class SelfServiceTrialController extends Controller
         throw ValidationException::withMessages([
             'trade_profile' => [__('errors.INVALID_TRADE_PROFILE')],
         ]);
-    }
-
-    /**
-     * Retrouve le manager du sandbox d'essai.
-     *
-     * Requête non authentifiée, exactement comme `DemoLoginController` (le
-     * magic link) : les sandbox vivent dans le schéma `shared_tenants`, inclus
-     * dans le search_path par défaut du service.
-     */
-    private function findTrialManager(string $email, string $companyId): ?Employee
-    {
-        /** @var Employee|null $manager */
-        $manager = Employee::query()
-            ->where('email', $email)
-            ->where('company_id', $companyId)
-            ->where('role', 'manager')
-            ->orderBy('id')
-            ->first();
-
-        return $manager;
     }
 }
