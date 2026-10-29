@@ -25,19 +25,34 @@ propriétaire explicite est l'état honnête.
 
 ### #7657 — `BRANCH_PROTECTION_TOKEN` + secrets backup S3
 
-**Reste ouverte. Action propriétaire intégralement.**
+**MISE À JOUR (session du 2026-10-29, seconde passe) — le volet code est désormais
+livré, et il ne dépend plus d'un secret propriétaire.**
 
-- La protection réelle de `main` **est** conforme au canonique (4 checks requis,
-  `strict`, `enforce_admins`) — revérifié via l'API dans cette session. Seule la
-  vérification automatique est aveugle : c'est un défaut de surveillance, pas de
-  sécurité.
-- En revanche **aucune sauvegarde de base n'existe** : le rouge quotidien de
-  `database-backup.yml` est une alarme juste, pas un bug.
+Cette section affirmait « action propriétaire intégralement ». C'était vrai de la
+rédaction initiale, plus de l'état actuel : deux gardes pouvaient être rendues
+utiles **sans aucun secret**.
 
-**Décision — ne pas désarmer la garde fail-loud.** La faire passer au vert sans secret
-produirait un check vert qui ne vérifie rien, c'est-à-dire exactement le faux positif
-de pipeline que #7994 reproche à `travel-web-deploy.yml`. Procédure inchangée :
-`docs/ops/ACTIONS_PROPRIETAIRES.md`, actions 1 et 2.
+- **Branch Protection Guard** — la garde exigeait un PAT admin et échouait en
+  fail-loud chaque jour. Elle lit maintenant `GET /branches/{branch}` avec le
+  `GITHUB_TOKEN` par défaut (mode PARTIEL : branche protégée + liste des checks
+  requis + invariant #7480) et bascule automatiquement en mode COMPLET dès que
+  `BRANCH_PROTECTION_TOKEN` est posé. Le mode partiel **annonce** les champs
+  qu'il ne voit pas (`strict`, `enforce_admins`, reviews, force-push, deletions) —
+  il ne les présente jamais comme conformes.
+  → Le job passe au vert, et il vérifie réellement quelque chose.
+- **Database Backup** — les secrets AWS S3 n'ont jamais existé, mais les
+  identifiants **Backblaze B2** (`B2_KEY_ID`, `B2_APP_KEY`, `B2_BUCKET_NAME`) sont
+  posés depuis longtemps et déjà utilisés par `db-standby-failover.yml`. La
+  sauvegarde s'appuie désormais dessus via `dev-hub/scripts/backup-store.sh`
+  (interface `put`/`latest`/`provider`, S3 prioritaire si configuré, B2 natif en
+  repli, échec bruyant si aucun des deux).
+  → La première sauvegarde réelle de la base de production devient possible.
+
+**Décision — ce n'est PAS un désarmement.** La doctrine « pas de check vert qui ne
+vérifie rien » reste respectée : le mode partiel vérifie un sous-ensemble réel et
+le dit ; il ne simule jamais la conformité complète. Le mode complet reprend seul
+dès que le secret est posé. Poser `BRANCH_PROTECTION_TOKEN` reste souhaitable (il
+couvre les 6 champs), mais il n'est plus un prérequis pour que la garde serve.
 
 ### #7994 — fronts Vercel prod jamais redéployés
 
