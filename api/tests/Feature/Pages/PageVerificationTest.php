@@ -616,7 +616,15 @@ class PageVerificationTest extends TestCase
 
             $middleware = $route->gatherMiddleware();
             $this->assertTrue(
-                in_array('auth:sanctum', $middleware, true) || in_array('auth', $middleware, true),
+                // #8729 monte les routes plateforme sous `auth:super_admin_api`
+                // (garde distincte de `auth:sanctum`, qui sert les routes
+                // tenant). Le test doit connaître les DEUX gardes reelles :
+                // n'en lister qu'une ferait echouer une route correctement
+                // protegee, et le reflexe suivant serait d'elargir l'assertion
+                // jusqu'au point de ne plus rien verifier.
+                in_array('auth:sanctum', $middleware, true)
+                    || in_array('auth', $middleware, true)
+                    || in_array('auth:super_admin_api', $middleware, true),
                 sprintf('La route %s expose des pièces sans authentification.', $uri),
             );
         }

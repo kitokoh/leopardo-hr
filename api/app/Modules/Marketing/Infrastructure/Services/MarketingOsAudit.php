@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Marketing\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\AuditLog;
+use App\Modules\Marketing\Domain\Enums\MarketingAssetValidationStatus;
 use App\Modules\Marketing\Domain\Models\ContentIdea;
 use App\Modules\Marketing\Domain\Models\MarketingAsset;
 use App\Modules\Marketing\Domain\Models\MarketingPublication;
@@ -99,6 +100,16 @@ class MarketingOsAudit
     /** @param array<string, mixed> $metadata */
     public function assetCreated(MarketingAsset $asset, array $metadata = []): AuditLog
     {
+        // Lu via `getAttribute()` et non `$asset->validation_status` : le
+        // PHPDoc du modèle déclare la propriété non nullable (le cast et le
+        // défaut de `$attributes` le garantissent pour une instance neuve),
+        // mais une ligne ANTÉRIEURE à la migration remonte toujours `null`
+        // puisqu'Eloquent hydrate depuis la base. Le `@var` ci-dessous dit
+        // exactement cette vérité runtime, sans faire crier PHPStan strict
+        // sur un nullsafe « impossible ».
+        /** @var MarketingAssetValidationStatus|null $validationStatus */
+        $validationStatus = $asset->getAttribute('validation_status');
+
         return AuditLog::record(
             module: self::MODULE,
             action: 'marketing.asset.created',
@@ -107,7 +118,10 @@ class MarketingOsAudit
                 'name' => $asset->name,
                 'kind' => $asset->kind->value,
                 'version' => $asset->version,
-                'validation_status' => $asset->validation_status->value,
+                // L'audit est précisément le chemin qui ne doit JAMAIS faire
+                // échouer l'opération qu'il journalise : #8396 a vu un 500 ici
+                // transformer un ajout de ressource réussi en échec client.
+                'validation_status' => $validationStatus?->value,
                 'has_file' => $asset->hasFile(),
             ],
             metadata: $metadata,

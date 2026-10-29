@@ -118,6 +118,12 @@ jobs:
       - name: Render worker env parity guard (issue #7977)
         run: bash dev-hub/tools/check-render-worker-env-parity.sh
 
+      - name: Render APP_KEY pinned guard (issue #7967)
+        # generateValue: true regenere APP_KEY a chaque re-sync de blueprint et
+        # invalide sessions + valeurs chiffrees en base. La cle doit rester
+        # epinglee (sync: false) dans tous les blueprints.
+        run: bash dev-hub/tools/check-render-app-key-pinned.sh .
+
       - name: Migration basename collision guard (issue #1962)
         run: bash dev-hub/tools/check-migration-basename-collisions.sh
 
