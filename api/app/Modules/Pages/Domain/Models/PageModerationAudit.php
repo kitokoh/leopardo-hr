@@ -39,16 +39,6 @@ use Illuminate\Support\Carbon;
  * #8729 est un audit **immuable** : c'est la trace qu'un contestataire
  * voudrait effacer. Un journal qu'un opérateur peut réécrire ne prouve rien.
  *
- * ## EXCEPTION TENANT-SCOPE (#7999)
- *
- * `company_id` est un POINTEUR vers le tenant dont la Page a ete suspendue ou
- * verifiee, pas une cle d'isolation. L'acteur est un moderateur PLATEFORME qui
- * agit hors de tout contexte tenant : `BelongsToCompany` ecrirait le
- * `company_id` du contexte ambiant (souvent absent) au lieu du tenant
- * reellement vise, et un scope fail-closed rendrait le journal illisible pour
- * l'autorite qui doit le consulter. Justification canonique :
- * `dev-hub/governance/tenant-scope-exceptions.json`.
- *
  * @property int $id
  * @property string|null $company_id
  * @property int $page_id

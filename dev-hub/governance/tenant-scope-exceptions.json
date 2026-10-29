@@ -75,11 +75,6 @@
       "model": "App\\Modules\\Paiements\\Domain\\Models\\PaymentWebhookEvent",
       "reason": "company_id NULLABLE : NULL = evenement d'une instance GLOBALE (meme convention que payment_webhook_endpoints). Le routage d'un webhook entrant se fait hors contexte tenant prealable (l'appelant est un fournisseur, pas un utilisateur) ; un scope fail-closed rendrait tout evenement global introuvable.",
       "added": "2026-10-24"
-    },
-    {
-      "model": "App\\Modules\\Pages\\Domain\\Models\\PageModerationAudit",
-      "reason": "Journal d'audit APPEND-ONLY de la moderation PLATEFORME (#8729). company_id est un POINTEUR vers le tenant dont la Page a ete suspendue/verifiee, pas une cle d'isolation : l'acteur est un moderateur plateforme qui agit hors de tout contexte tenant, et la lecture du journal est elle-meme tracee (RecordPageEvidenceAccessAction). Un scope fail-closed rendrait l'audit illisible pour l'autorite qui doit le consulter, et le trait BelongsToCompany ecrirait un company_id depuis le contexte ambiant au lieu du tenant reellement vise.",
-      "added": "2026-10-29"
     }
   ],
   "legacy_pending_review": [
