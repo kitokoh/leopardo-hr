@@ -127,7 +127,7 @@ class TravelCommentController extends Controller
         }
 
         if ($travelComment->getAttribute('status') === 'reported') {
-            abort(422, 'Ce commentaire est déjà signalé.');
+            abort(422, 'Ce commentaire est deja signale.');
         }
 
         $travelComment->forceFill([
