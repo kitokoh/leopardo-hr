@@ -73,7 +73,7 @@ jobs:
           # Le PAT admin (si posé) débloque le mode COMPLET ; sinon le token
           # par défaut suffit au mode PARTIEL.
           GITHUB_TOKEN: ${{ secrets.BRANCH_PROTECTION_TOKEN || github.token }}
-        run: dev-hub/tools/check-branch-protection.sh kitokoh/leopardo-hr main
+        run: bash dev-hub/tools/check-branch-protection.sh kitokoh/leopardo-hr main
 
       - name: Report the verification mode (issue #7657)
         if: always()

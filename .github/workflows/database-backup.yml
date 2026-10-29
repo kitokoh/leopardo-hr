@@ -105,7 +105,7 @@ jobs:
           # Le fournisseur de stockage est résolu par le script partagé : une
           # seule règle, testée (dev-hub/tools/test_backup_store.py), jamais
           # dupliquée dans le YAML.
-          provider="$(dev-hub/scripts/backup-store.sh provider 2>&1)" || {
+          provider="$(bash dev-hub/scripts/backup-store.sh provider 2>&1)" || {
             echo "::error::Database backup IMPOSSIBLE — aucun fournisseur de stockage configuré (issue #7657)."
             echo "::error::Poser soit BACKUP_S3_BUCKET + AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY, soit B2_BUCKET_NAME + B2_KEY_ID + B2_APP_KEY."
             exit 1
@@ -153,7 +153,7 @@ jobs:
 
           # #7657 — téléversement + vérification de taille délégués au script
           # partagé (S3 ou B2 natif, cf. dev-hub/scripts/backup-store.sh).
-          dev-hub/scripts/backup-store.sh put "${dump_file}" "${object_key}"
+          bash dev-hub/scripts/backup-store.sh put "${dump_file}" "${object_key}"
 
   backup-freshness:
     timeout-minutes: 15
@@ -194,7 +194,7 @@ jobs:
           # #7657 — le contrôle de fraîcheur doit interroger LE MÊME stockage
           # que la sauvegarde, sinon il déclare « aucune sauvegarde » alors que
           # les dumps existent (faux rouge permanent).
-          provider="$(dev-hub/scripts/backup-store.sh provider 2>&1)" || {
+          provider="$(bash dev-hub/scripts/backup-store.sh provider 2>&1)" || {
             echo "::error::Contrôle de fraîcheur IMPOSSIBLE — aucun fournisseur de stockage configuré (issue #7657)."
             exit 1
           }
@@ -220,7 +220,7 @@ jobs:
           # #7657 — `latest` rend « <ISO 8601 UTC> <clé> <taille> » quel que
           # soit le fournisseur (S3 ou B2 natif). Le parsing de la sortie
           # d'`aws s3 ls` vivait ici et ne connaissait que S3.
-          latest="$(dev-hub/scripts/backup-store.sh latest postgres/daily/)"
+          latest="$(bash dev-hub/scripts/backup-store.sh latest postgres/daily/)"
 
           if [[ -z "${latest}" ]]; then
             echo "::error::Aucune sauvegarde trouvée sous postgres/daily/ (issue #7253) — RPO non tenu."
