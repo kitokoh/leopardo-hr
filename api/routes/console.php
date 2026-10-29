@@ -454,3 +454,19 @@ $trackingIntervalMinutes = max(1, min(59, (int) config('tracking.sync_interval_m
 Schedule::command('leopardo:fleet:sync')
     ->cron("*/{$trackingIntervalMinutes} * * * *")
     ->withoutOverlapping(30);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// #7967 — rattrapage des créneaux perdus pendant un spin-down Render
+// ─────────────────────────────────────────────────────────────────────────────
+// Le plan free Render endort le conteneur web, et le scheduler tourne DEDANS :
+// toute échéance due pendant le sommeil était perdue sans trace. Le registre
+// des passages est branché sur l'événement `ScheduledTaskStarting`
+// (PlatformServiceProvider) ; cette entrée ne fait que déclencher l'analyse.
+//
+// `--report` (code retour 0) : un créneau perdu non rattrapable ne doit pas
+// faire échouer `schedule:run` en boucle — l'alerte est portée par la
+// supervision, pas par le statut du cron.
+Schedule::command('scheduler:catch-up --report')
+    ->everyFifteenMinutes()
+    ->withoutOverlapping()
+    ->onOneServer();
