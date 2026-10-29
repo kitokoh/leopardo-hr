@@ -37,7 +37,7 @@ class RotateKioskToken
      * Genere, persiste (empreinte uniquement) et audite un nouveau token.
      *
      * @return array{kiosk: AttendanceKiosk, plain_token: string}
-     *         `plain_token` n'est destine qu'a la reponse de rotation.
+     *                                                            `plain_token` n'est destine qu'a la reponse de rotation.
      */
     public function execute(AttendanceKiosk $kiosk, int $actorEmployeeId): array
     {
