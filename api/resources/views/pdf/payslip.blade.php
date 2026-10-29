@@ -77,6 +77,15 @@
             <div class="info-value">{{ $employee->first_name ?? '' }} {{ $employee->last_name ?? '' }}</div>
             <div class="info-label">{{ $t('pdf.payslip_matricule') }}</div>
             <div class="info-value">#{{ $employee->id }}</div>
+            {{-- Issue #9045 : identifiants légaux du salarié par juridiction
+                 (n° CNPS / CNSS / IPRES / sécurité sociale), résolus par
+                 PaySlipLegalMentions — rien n'est imprimé si absent. --}}
+            @if(!empty($employeeLegal))
+                @foreach($employeeLegal as $label => $value)
+                <div class="info-label">{{ $label }}</div>
+                <div class="info-value">{{ $value }}</div>
+                @endforeach
+            @endif
         </div>
         <div class="info-col">
             <div class="info-label">{{ $t('pdf.payslip_worked_days') }}</div>
