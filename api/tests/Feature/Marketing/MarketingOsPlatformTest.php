@@ -641,14 +641,20 @@ class MarketingOsPlatformTest extends TestCase
 
         $expiredId = $this->postJson($this->url($company, '/assets'), [
             'name' => 'Visuel sous licence expirée',
-            'kind' => 'image',
+            // Kind TEXTE : ces deux tests portent sur l'expiration des droits et
+            // sur l'échappement de la recherche, pas sur le dépôt de fichier.
+            // Un kind binaire (`image`, `video`) est refusé sans fichier par la
+            // garde `requiresFile()` du contrôleur — à raison : une ressource
+            // « image » sans image serait une ressource fantôme. Utiliser un
+            // kind texte préserve l'intention du test et le contrat.
+            'kind' => 'copy',
             'rights' => 'Licence stock limitée',
             'rights_expires_at' => '2020-01-01',
         ])->assertCreated()->json('data.id');
 
         $freeId = $this->postJson($this->url($company, '/assets'), [
             'name' => 'Création interne',
-            'kind' => 'video',
+            'kind' => 'script',
         ])->assertCreated()->json('data.id');
 
         $this->getJson($this->url($company, "/assets/{$expiredId}/publications"))
@@ -710,12 +716,16 @@ class MarketingOsPlatformTest extends TestCase
 
         $this->postJson($this->url($company, '/assets'), [
             'name' => 'Remise 100% restaurant',
-            'kind' => 'image',
+            // Kind texte : le test porte sur l'échappement des jokers SQL dans la
+            // recherche, pas sur le dépôt de fichier. `image` exigerait un
+            // fichier (garde `requiresFile()`), ce qui ferait échouer le POST
+            // en 422 avant même d'exercer la recherche.
+            'kind' => 'copy',
         ])->assertCreated();
 
         $this->postJson($this->url($company, '/assets'), [
             'name' => 'Visuel sans rapport',
-            'kind' => 'image',
+            'kind' => 'copy',
         ])->assertCreated();
 
         // « 100% » ne doit ramener QUE la ressource qui contient litteralement
@@ -727,7 +737,22 @@ class MarketingOsPlatformTest extends TestCase
 
         // Un motif qui ne correspond a rien reste vide : le `%` seul ne doit
         // pas se comporter comme « tout ».
+        //
+        // Nuance que l'assertion initiale ratait : le jeu de donnees de ce test
+        // contient LUI-MEME un `%` litteral (« Remise 100% restaurant »). Avec
+        // l'echappement correct, chercher `%` ramene donc exactement cette
+        // ressource — et non les deux. Attendre 0 confondait « le `%` est
+        // echappe » avec « aucune donnee ne contient de `%` », et echouait sur
+        // un comportement pourtant juste. L'assertion qui prouve reellement
+        // l'echappement est celle du dessus (1 resultat sur 2 ressources) ;
+        // celle-ci verifie qu'un motif sans correspondance ne ramene rien.
         $this->getJson($this->url($company, '/assets?search=%25'))
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.name', 'Remise 100% restaurant');
+
+        // Contre-preuve : un motif reellement absent ne ramene rien du tout.
+        $this->getJson($this->url($company, '/assets?search=zzz-inexistant'))
             ->assertOk()
             ->assertJsonCount(0, 'data');
     }

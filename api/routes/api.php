@@ -285,6 +285,12 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/public/travel/marketplace/account/bookings', [TravelCustomerAccountController::class, 'bookings']);
     });
 
+    // #8730 — rendu public SSR des Pages d'établissement. Groupe ISOLÉ :
+    // aucun middleware auth/tenant, throttling `shop-public` comme les autres
+    // surfaces publiques. Le tenant est résolu par slug ou par `Host` dans le
+    // contrôleur, fail-closed 404.
+    require __DIR__.'/modules/pages_public.php';
+
     Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {
         // TRAVEL-409 (#6061) — callback provider paiements TravelAgency
         // (signé HMAC, idempotent — public, vérifié dans le contrôleur).
@@ -544,6 +550,10 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/pharmacy.php';
     require __DIR__.'/modules/catalog.php';
 
+    // BC PAGES (#8728) — surface tenant : CRUD établissements/Pages, blocs,
+    // publication et aperçu privé. La surface publique est #8730.
+    require __DIR__.'/modules/pages.php';
+
     // BC-17 RETAIL #7672 — module vendeur générique (produits & catégories)
     require __DIR__.'/modules/retail.php';
     // BC-29 COMMUNICATION — boîte mail connectée + IA, squelette R0 (#7685)
@@ -655,6 +665,11 @@ Route::prefix('v1')->group(function (): void {
         // avec ses propres gardes `search_intel.view` / `search_intel.manage`.
         // Aucune seconde console : ce sont de nouveaux écrans de celle-ci.
         require __DIR__.'/modules/search_intelligence.php';
+
+        // BC PAGES (#8729) — modération plateforme : recherche cross-tenant,
+        // fiche, décisions de vérification, suspension/levée, accès tracé aux
+        // pièces. Sous le groupe `platform` déjà authentifié.
+        require __DIR__.'/modules/pages_platform.php';
         Route::delete('/companies/{company}', [PlatformCompanyDeletionController::class, 'destroy'])->middleware('platform.permission:companies.manage');
 
         // #8441 — paramétrage de la verticale cagnottes DANS le contexte de

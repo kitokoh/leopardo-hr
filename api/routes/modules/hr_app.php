@@ -24,26 +24,26 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     ->prefix('hr')
     ->group(function (): void {
 
-    // ── Profil de l'utilisateur RH ────────────────────────────────────────────
-    Route::get('/me', [HrController::class, 'me']);
+        // ── Profil de l'utilisateur RH ────────────────────────────────────────────
+        Route::get('/me', [HrController::class, 'me']);
 
-    // ── Dashboard RH ──────────────────────────────────────────────────────────
-    Route::get('/dashboard', [HrController::class, 'dashboard']);
+        // ── Dashboard RH ──────────────────────────────────────────────────────────
+        Route::get('/dashboard', [HrController::class, 'dashboard']);
 
-    // ── Vue d'ensemble de l'équipe ────────────────────────────────────────────
-    Route::get('/team-overview', [HrController::class, 'teamOverview']);
+        // ── Vue d'ensemble de l'équipe ────────────────────────────────────────────
+        Route::get('/team-overview', [HrController::class, 'teamOverview']);
 
-    // ── Gestion des employés (lecture + ajout + modification) ─────────────────
-    // Le RH peut ajouter et modifier les employés, mais pas changer les rôles manager.
-    // L'assignation de rôles manager est réservée au principal (RoleAssignmentController).
-    Route::get('/employees', [HrController::class, 'employees']);
-    Route::post('/employees', [HrController::class, 'addEmployee']);
-    Route::get('/employees/{employee}', [HrController::class, 'showEmployee'])->whereNumber('employee');
-    Route::patch('/employees/{employee}', [HrController::class, 'updateEmployee'])->whereNumber('employee');
+        // ── Gestion des employés (lecture + ajout + modification) ─────────────────
+        // Le RH peut ajouter et modifier les employés, mais pas changer les rôles manager.
+        // L'assignation de rôles manager est réservée au principal (RoleAssignmentController).
+        Route::get('/employees', [HrController::class, 'employees']);
+        Route::post('/employees', [HrController::class, 'addEmployee']);
+        Route::get('/employees/{employee}', [HrController::class, 'showEmployee'])->whereNumber('employee');
+        Route::patch('/employees/{employee}', [HrController::class, 'updateEmployee'])->whereNumber('employee');
 
-    // ── Réutilisation des modules RH existants (scope RH) ─────────────────────
-    // Le RH accède aux mêmes endpoints que le manager pour les absences,
-    // les avancements sur salaire, le planning, etc. Ces routes redirigent
-    // vers les controllers existants — pas de duplication.
-    // (Voir modules/rh.php, modules/dashboard.php, modules/planning.php)
-});
+        // ── Réutilisation des modules RH existants (scope RH) ─────────────────────
+        // Le RH accède aux mêmes endpoints que le manager pour les absences,
+        // les avancements sur salaire, le planning, etc. Ces routes redirigent
+        // vers les controllers existants — pas de duplication.
+        // (Voir modules/rh.php, modules/dashboard.php, modules/planning.php)
+    });

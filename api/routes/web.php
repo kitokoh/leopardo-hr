@@ -3,13 +3,13 @@
 use App\Http\Controllers\Web\AttendanceCorrectionAdminController;
 use App\Http\Controllers\Web\BiometricAdminController;
 use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\DemoLoginController;
 use App\Http\Controllers\Web\InvitationController;
 use App\Http\Controllers\Web\InvitationManagementController;
 use App\Http\Controllers\Web\KioskController;
 use App\Http\Controllers\Web\MyDashboardController;
 use App\Http\Controllers\Web\PlatformAuthController;
 use App\Http\Controllers\Web\PlatformCompanyController;
-use App\Http\Controllers\Web\DemoLoginController;
 use App\Http\Controllers\Web\WebAuthController;
 use App\Http\Controllers\Web\WebEmployeeController;
 use App\Http\Controllers\Web\WebEmployeeManagementController;

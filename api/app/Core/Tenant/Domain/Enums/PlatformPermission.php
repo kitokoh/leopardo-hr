@@ -126,6 +126,26 @@ enum PlatformPermission: string
     case SearchIntelManage = 'search_intel.manage';
 
     /**
+     * BC PAGES (#8729) — modération des Pages d'établissement depuis la
+     * console plateforme : recherche cross-tenant, fiche, décisions de
+     * vérification, suspension et levée.
+     *
+     * Deux permissions distinctes, et non une seule :
+     *
+     * - `pages.view` — lire une fiche, les métadonnées d'une pièce et son URL
+     *   signée. C'est le travail d'instruction d'un litige : le support doit
+     *   pouvoir le faire.
+     * - `pages.manage` — suspendre une Page, lever une suspension, trancher une
+     *   vérification. Ce sont des gestes qui changent la visibilité publique
+     *   d'un tiers : réservés à admin/super_admin.
+     *
+     * Les confondre obligerait à donner le droit de suspendre à quiconque doit
+     * seulement lire — exactement le défaut corrigé sur les offres (#7973).
+     */
+    case PagesView = 'pages.view';
+    case PagesManage = 'pages.manage';
+
+    /**
      * @return list<string>
      */
     public static function values(): array
@@ -168,6 +188,8 @@ enum PlatformPermission: string
             self::TeamManage => 'Gérer l’équipe plateforme et distribuer les rôles',
             self::SearchIntelView => 'Consulter le pilotage Growth & Search Intelligence (SEO, SEA, AEO, GEO)',
             self::SearchIntelManage => 'Administrer le pilotage Growth & Search Intelligence (campagnes, contenus, intégrations)',
+            self::PagesView => 'Consulter les Pages d’établissement (fiche, pièces, domaines)',
+            self::PagesManage => 'Modérer les Pages (suspension, vérification)',
         };
     }
 }

@@ -90,6 +90,28 @@ class MarketingAsset extends Model
         'rights_expires_at',
     ];
 
+    /**
+     * Valeurs par défaut alignées sur le schéma SQL.
+     *
+     * `validation_status` porte un `default('draft')` et `version` un
+     * `default(1)` en base, mais Eloquent ne lit **jamais** les défauts SQL :
+     * juste après `save()`, l'attribut vaut `null` en mémoire tant que la
+     * ligne n'a pas été relue. Tout consommateur qui lit l'objet fraîchement
+     * créé — l'audit au premier chef — tombait donc sur `null`, et
+     * `MarketingOsAudit::assetCreated()` faisait un `->value` sur `null` :
+     * `POST /platform/marketing-os/assets` répondait **500 sur chaque ajout
+     * de ressource**, en production comprise (cf. #8396).
+     *
+     * Les déclarer ici supprime la *classe* de bug plutôt que de la masquer
+     * appel par appel.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'version' => 1,
+        'validation_status' => 'draft',
+    ];
+
     /** @return array<string, string> */
     protected function casts(): array
     {
