@@ -115,3 +115,236 @@ décision nominatif avec l'action attendue et le risque associé.
 Validator, Frontend ESLint+TS, actionlint) sont la référence de vert ; aucun échec
 introduit par cette session n'a été observé. Les gardes d'architecture exécutées
 localement sont vertes (isolation modules, budget d'isolation).
+
+---
+
+# Session 2 (même journée) — reprise après la première vague
+
+## Point de départ vérifié, pas supposé
+
+`git fetch` + lecture de l'état réel : **12 issues ouvertes**, dont **9 actions
+propriétaire** déjà documentées nominativement en session 1. Le travail restant
+était donc **3 issues de fond** (#7962, #8210, #8448) plus la vérification que
+les volets code de #7994 / #7967 / #8191 étaient bien sur `main`.
+
+Vérification faite : **#7994 §3/§4/§5 et #7967 §2 sont déjà livrés** sur `main`
+(`marketplace-deploy.yml` existe, le skip prod pousse un `::error`, la garde
+`fronts-vercel` de `deploy-drift-guard.yml` lit les GitHub Deployments,
+`APP_KEY: sync: false` dans les deux blueprints). Ce qui reste sur ces deux
+issues est **strictement propriétaire** (secrets Vercel, moyen de paiement
+Render). #8191 est intégralement propriétaire : l'outillage
+`audit:scheduler-duplicates` est livré, il faut une copie des données de prod.
+
+## Ce qui a été livré
+
+| PR | Issue | Contenu |
+|---|---|---|
+| **#9017** | #8210 | Transport unique des webhooks sortants (BC-14) |
+| **#9024** | #8448 | KDS Edge offline-first + endpoint idempotent |
+| **#9025** | #7962 | Gardes d'accès nommées dans `PayrollRunController` |
+
+### #8210 — le transport, pas seulement la signature
+
+La session 1 avait unifié la **primitive de signature**. Restait la **livraison
+HTTP**, recopiée dans deux producteurs — et les deux copies n'étaient pas
+équivalentes :
+
+- `DispatchWebhook` (Billing) : garde anti-SSRF inline, TLS vérifié ;
+- `TravelWebhookDispatcher` (Travel) : **`Http::withoutVerifying()`**, aucune
+  garde d'hôte.
+
+La seconde est le vrai défaut que ce lot corrige. `withoutVerifying()` désactive
+la vérification du certificat : un abonné Travel pouvait enregistrer une URL
+`https://` vers un hôte interne (le `StoreTravelWebhookSubscriptionRequest` ne
+validait que `url`, pas `NotPrivateUrl`) et recevoir le payload signé — avec, en
+prime, un certificat non vérifié, donc un serveur imposteur accepté.
+
+`OutboundWebhookTransport` impose désormais, pour **tous** les producteurs :
+`https://` obligatoire, re-résolution DNS juste avant l'appel (TOCTOU), TLS
+vérifié, timeout borné. Ce qui reste chez le producteur est ce qui fait partie
+de son contrat public : la chaîne signée (Svix vs payload canonique), les
+en-têtes de signature, le journal de livraison et la politique de retry.
+
+### #8448 — la propriété qui rend l'offline sûr
+
+Le KDS hors ligne rejoue ses gestes. Un rejeu est inévitable (réponse perdue,
+retry, deux tablettes) et ne doit jamais faire avancer une commande deux fois.
+L'idempotence est portée par la **contrainte d'unicité** de
+`restaurant_kitchen_actions` (`company_id` + `client_action_id`), **pas** par un
+`SELECT` préalable : deux rejeux concurrents liraient tous les deux « absent »
+avant que l'un des deux n'écrive. Un rejeu répond **200**, pas 409 — c'est le
+fonctionnement normal d'un client hors ligne, pas une erreur à montrer au
+cuisinier.
+
+### #7962 — la tranche qui ne collisionne pas
+
+`PayrollRunController` recopiait un préambule tenant+manager dans 11 méthodes et
+un `catch` métier dans 5. La répétition cachait une incohérence réelle :
+`lock`/`unlock` exigeaient `principal`/`comptable` alors que
+`cancel`/`regularize` se contentaient de `isManager()`. Deux noms disent
+maintenant deux règles (`authorizeManager` / `authorizeApprover`).
+
+## Décision de coordination — la plus importante de cette session
+
+En poussant la tranche #7962, j'ai constaté que **#9019 (autre agent) travaille
+déjà sur `AuthController` et `KioskController`**, #9021 sur
+`AttendanceController`, #9016 sur `SelfServiceTrialController`.
+
+Ma PR initiale (#9022) embarquait `AuthController` **et** `PayrollRunController`.
+**Deux PR qui réécrivent le même fichier ne peuvent pas être relues.** Elle a
+donc été **fermée**, avec un commentaire qui conserve les deux constats utiles
+pour la revue de #9019 (tronc commun des six gardes Google ; les deux 503
+`GOOGLE_OAUTH_NOT_CONFIGURED` / `GOOGLE_OAUTH_UNAVAILABLE` restent distincts,
+#5170). La tranche Payroll, sans recouvrement, est repartie seule en **#9025**.
+
+C'est la règle « une PR empilée se remplace, elle ne se rebase pas
+indéfiniment » appliquée à une collision entre agents, pas à un empilement.
+
+### Correction : la tranche Auth n'est PAS livrée par #9019
+
+J'avais d'abord justifié la fermeture en écrivant que `AuthController` était
+« couvert par #9019 ». **C'était faux**, et `PROTOCOLE_LOTS_MULTI_AGENTS.md`
+§4bis (#7581) interdit exactement ça : une clôture « couvert par le lot » est une
+**affirmation de contenu**, et quand elle est fausse le correctif disparaît
+pendant que le backlog devient vert à tort.
+
+Mesure, pas supposition :
+
+```
+$ bash dev-hub/tools/check-pr-subset-of-lot.sh \
+    --lot origin/refactor/7962-auth-google-sso \
+    --pr refactor/7962-payroll-auth-actions
+
+NON PROUVE : n'est PAS un sous-ensemble du lot.
+Fichiers absents du lot (10) : les 4 Actions Google, les 3 services
+d'infrastructure, le DTO GoogleSsoResult, PayrollRunAccess et son test.
+```
+
+#9019 livre **une seule** action (`AuthenticateGoogleIdentityAction`) et réécrit
+`AuthController`. Elle ne contient **ni** les 4 Actions de flux, **ni** les 3
+services, **ni** le DTO.
+
+| Élément | État réel |
+|---|---|
+| `PayrollRunController` + `PayrollRunAccess` + test | **livré en #9025** |
+| `AuthController` (le fichier) | **traité par #9019** — bonne PR pour ce fichier |
+| 4 Actions Google + 3 services + DTO | **NON livrés** — préservés sur `refactor/7962-payroll-auth-actions` |
+
+**Conséquence : #7962 reste ouverte.** Fermer cette PR reste la bonne décision
+(une PR par fichier), mais la tranche Auth doit être reprise **après** fusion de
+#9019, par-dessus `AuthController` déjà refactorisé.
+
+## État des issues à la fin de la session 2
+
+| Issue | État | Preuve / blocage |
+|---|---|---|
+| #8210 | **FERMÉE** — #9017 mergée en `c419ebe8f` | transport unique + 14 tests |
+| #8448 | **PR #9024** | 30 tests front + 5 tests d'idempotence |
+| #7962 | **PR #9025** (Payroll) — **reste ouverte** : tranche Auth non livrée | 23 tests Payroll ; mesure §4bis ci-dessus |
+| #7994 | **propriétaire** | §3/§4/§5 livrés ; reste les secrets Vercel |
+| #7967 | **propriétaire** | §2 livré ; reste le moyen de paiement Render |
+| #8191 | **propriétaire** | outillage livré ; reste la copie de prod |
+| #8285, #8232, #7924, #7941, #8880, #8727 | **propriétaire / produit** | hors dépôt |
+
+## Ce que cette session n'a pas fait, et pourquoi
+
+Aucune issue n'a été fermée par cette session. Trois raisons, dans l'ordre :
+
+1. **Une PR ouverte n'est pas une issue livrée.** Les trois PR attendent la
+   revue et la fusion ; fermer l'issue maintenant rendrait le suivi faux.
+2. **Les 9 issues restantes sont propriétaire par nature.** Elles demandent un
+   secret, un paiement, une signature ou une donnée de production. Les fermer
+   sans l'action reviendrait à effacer le rappel du risque.
+3. **#8727 est un brouillon produit** bloqué sur un inventaire de données de
+   production, pas sur du code.
+
+## Vérifications exécutées localement
+
+`phpstan-strict.neon` 0 erreur · `pint --test` PASS · `check-layer-purity.sh`
+0 violation nouvelle · `check-bounded-context-dependencies.sh` 151 arêtes /
+0 import hors contrat · gardes migrations (tenant-schema, basenames,
+destructive-down, alter-before-create, sql-quotes) toutes OK · `vitest run`
+46 passed · `tsc --noEmit` 0 erreur · `eslint` 0 erreur · `next build` OK.
+
+**Échecs préexistants, vérifiés par `git stash` + `git checkout main`, jamais
+par supposition** : `GoogleSsoTwoFactorSchemaTest` (2, fixtures périmées),
+`TravelWebhookTest` (4, `name` requis absent des fixtures),
+`tests/page.test.tsx` (Node 20 vs `undici` Node 22).
+
+## Fusion effectuée
+
+**#9017 mergée** (squash) en `c419ebe8f` et **#8210 fermée** sur preuve. Les 4
+checks requis étaient verts sur le SHA mergé (`enforce_admins: true`, `strict:
+false` → un merge déjà à jour n'invalide pas les autres). La PR n'avait pas de
+`Closes` dans son body : le commit de merge référence l'issue, ce qui satisfait
+`check-issues-closed-without-merge.sh` ; la fermeture a été faite avec la preuve
+en commentaire plutôt que par une clôture silencieuse.
+
+## Pourquoi #9024, #9025 et #9027 ne sont PAS mergées
+
+Leurs 3 checks requis restants étaient `queued` au moment de la clôture, et
+**`main` portait lui-même 18 checks en file avec `runners: 0`** — la saturation
+décrite par `PROTOCOLE_LOTS_MULTI_AGENTS.md` §3/§4, pas un échec de ces PR.
+
+Le §4 autorise une « fenêtre de merge contrôlée » (désactiver/restaurer la
+protection de `main`) **avec l'accord du fondateur**. Je n'ai pas cet accord, et
+`AGENTS.md` interdit de merger une PR dont les checks requis ne sont pas verts.
+Les trois PR restent donc ouvertes, vérifiées localement et prêtes : c'est le
+seul état honnête, pas un abandon.
+
+## Blocage racine identifié : `runners: 0`
+
+En attendant les checks, la mesure a donné la cause exacte — ce n'est pas la
+saturation, c'est l'**absence de runner** :
+
+```
+$ gh api repos/Kitokoh/leopardo-hr/actions/runners
+runners: 0
+
+$ gh api repos/Kitokoh/leopardo-hr/actions/runs?status=queued
+queued runs: 192
+
+$ gh api repos/Kitokoh/leopardo-hr/commits/main/check-runs
+main: total 20 | success 0 | failed 0 | pending 18
+```
+
+**`main` lui-même n'a aucun check vert : 0 succès, 0 échec, 18 en attente.** Le
+runner auto-hébergé est hors ligne, donc **aucun check requis ne peut se
+terminer**, sur aucune branche. Les 192 runs en file ne sont pas un embouteillage
+qui se résorbe : ils n'ont pas de machine pour s'exécuter.
+
+### Conséquence, sans détour
+
+`AGENTS.md` interdit de merger une PR dont les checks requis ne sont pas verts, et
+`enforce_admins: true` le fait respecter par GitHub. **#9024, #9025 et #9027 ne
+peuvent donc pas être mergées**, quel que soit leur état de code — et elles sont
+toutes les trois `mergeable: true`, `blocked` uniquement par les checks en file.
+
+Ce n'est pas un défaut des PR. C'est une panne d'infrastructure qui demande une
+action propriétaire : redémarrer le runner auto-hébergé (ou basculer les
+workflows sur `ubuntu-latest`). Je ne peux pas enregistrer un runner sans les
+identifiants du propriétaire.
+
+### Ce qui a été fait à la place
+
+Plutôt que d'attendre indéfiniment ou de contourner la protection :
+
+1. **#9017 mergée** quand ses 4 checks requis étaient encore verts (avant la
+   panne) — c'est la seule PR qui a pu passer, et #8210 est fermée sur preuve.
+2. **#9024 et #9025 rebasées** sur `main` après ce merge (`dirty` → `mergeable`),
+   tests re-exécutés après rebase : 30 tests front, 23 tests Payroll.
+3. **#9019 auditée par mesure** : elle absorbe Attendance/Kiosk/SelfServiceTrial
+   mais **pas** les 4 Actions de flux Google — commentaire posté sur la PR avec
+   la sortie de `git diff --name-only`, pour que #7962 ne soit pas fermée à tort.
+4. **#9022 corrigée publiquement** : ma justification de fermeture était fausse,
+   `check-pr-subset-of-lot.sh` l'a prouvé, correction postée avec la mesure.
+
+### Ce qu'il reste à faire, dans l'ordre
+
+| # | Action | Qui |
+|---|---|---|
+| 1 | Redémarrer le runner auto-hébergé | **propriétaire** |
+| 2 | Les checks se vident (192 runs), #9024/#9025/#9027 passent au vert | automatique |
+| 3 | Merger #9024, #9025, #9027 | agent, dès checks verts |
+| 4 | Reprendre la tranche « flux Google » de #7962 par-dessus #9019 | agent, après fusion |
+| 5 | Les 9 issues propriétaire (secrets, paiement, données prod) | **propriétaire** |
