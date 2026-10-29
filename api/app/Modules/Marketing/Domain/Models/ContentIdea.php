@@ -81,6 +81,22 @@ class ContentIdea extends Model
         'production_task_id',
     ];
 
+    /**
+     * Valeurs par defaut alignees sur le schema SQL.
+     *
+     * Eloquent ne lit JAMAIS les `default()` SQL : sans ces valeurs, une idee
+     * creee sans format/statut explicite expose `null` en memoire juste apres
+     * `save()` (meme classe de bug que MarketingAsset, #8396).
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'format' => 'other',
+        'locale' => 'fr',
+        'budget_currency' => 'EUR',
+        'status' => 'idea',
+    ];
+
     /** @return array<string, string> */
     protected function casts(): array
     {

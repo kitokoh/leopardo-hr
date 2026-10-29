@@ -1,5 +1,22 @@
 # AGENTS.md - Guide de travail Leopardo
 
+Derniere mise a jour : 2026-10-29 (#8396 — defauts SQL non hydrates cote Eloquent)
+
+> Leçon 2026-10-29 (#8396, suite de #8987) : **Eloquent ne lit JAMAIS les `default()` SQL.**
+> Juste après `save()`, tout attribut non fourni explicitement vaut `null` EN MÉMOIRE alors
+> que la base porte bien le défaut : `$model->enum->value` lève alors
+> `ErrorException: Attempt to read property "value" on null` → 500 sur la création.
+> Deux modules ont payé le même prix à deux semaines d'intervalle (Restaurant ×11 modèles
+> via #8987, Marketing ×4 modèles : `MarketingAsset`, `MarketingCampaign`, `ContentIdea`,
+> `MarketingPublication`). **Règle** : tout modèle dont un cast d'enum (ou un champ lu par
+> une Resource/Audit) repose sur un `default()` de migration déclare ce défaut dans
+> `protected $attributes`. Corollaire de diagnostic : une série de 500 « à la création »
+> sur un module entier n'est presque jamais N bugs, c'est UN défaut non hydraté —
+> chercher le `->value` sur le modèle fraîchement créé avant de lire les contrôleurs.
+> Second corollaire : le JUnit du job Backend (artefact `backend-test-reports` d'un run
+> `tests.yml`) donne la liste des échecs **avec leurs traces** ; c'est la seule façon
+> honnête de clustériser #8396 — les messages d'assertion seuls ne disent pas la cause.
+
 Derniere mise a jour : 2026-10-28 (#8708 — exclusivite et verrou agent sur la vitrine marketing)
 
 > 🔒 Règle opposable 2026-10-28 : **VERROU D'EXCLUSIVITÉ VITRINE MARKETING**

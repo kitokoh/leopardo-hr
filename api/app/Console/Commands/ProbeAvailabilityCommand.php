@@ -84,7 +84,17 @@ class ProbeAvailabilityCommand extends Command
         }
 
         if ($this->option('format') === 'env') {
+            // Le fichier `env` est SOURCÉ par `docker-entrypoint.sh` : il ne doit
+            // contenir QUE de vraies variables d'environnement (MAJUSCULES).
+            // `redis` n'en est pas une — c'était un diagnostic de plus, et sa
+            // ligne `redis=down` violait l'invariant « uniquement des
+            // affectations shell d'environnement » (ProbeAvailabilityCommandTest
+            // verrouille ce format). Il reste exposé en `--format=json`.
             foreach ($result as $key => $value) {
+                if ($key === 'redis') {
+                    continue;
+                }
+
                 $this->line($key.'='.$value);
             }
 

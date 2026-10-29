@@ -91,6 +91,23 @@ class MarketingPublication extends Model
         'created_by',
     ];
 
+    /**
+     * Valeurs par defaut alignees sur le schema SQL.
+     *
+     * Eloquent ne lit JAMAIS les `default()` SQL : sans ces valeurs, une
+     * publication creee sans mode/statut explicite expose `null` en memoire
+     * juste apres `save()` — `MarketingOsAudit::publicationTransition()` lit
+     * ces deux enums par `->value` (meme classe de bug que MarketingAsset,
+     * #8396).
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'mode' => 'assisted',
+        'status' => 'idea',
+        'attempts' => 0,
+    ];
+
     /** @return array<string, string> */
     protected function casts(): array
     {
