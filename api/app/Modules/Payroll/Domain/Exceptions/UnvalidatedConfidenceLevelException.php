@@ -19,6 +19,11 @@ use App\Exceptions\DomainException;
  *
  * Le message nomme le pays et la preuve manquante pour que l'exploitant
  * sache exactement quoi produire, sans jamais suggérer un contournement.
+ *
+ * Le message passe par le catalogue (`payroll.unvalidated_confidence_level`)
+ * et non par un littéral accentué : la garde i18n #5432 refuse tout nouveau
+ * message français codé en dur sur une surface d'exception de domaine. Les
+ * paramètres sont liés via `:country`, `:level` et `:reason`.
  */
 class UnvalidatedConfidenceLevelException extends DomainException
 {
@@ -28,14 +33,11 @@ class UnvalidatedConfidenceLevelException extends DomainException
         public readonly string $reason,
     ) {
         parent::__construct(
-            sprintf(
-                'Le référentiel de paie « %s » revendique le niveau « %s » sans validation experte : %s. '
-                .'Renseignez une fiche signée dans docs/payroll/VALIDATION_EXPERTE.md (voir #7941) '
-                .'ou repassez le référentiel en « pilot ».',
-                $countryCode,
-                $claimedLevel,
-                $reason
-            ),
+            (string) __('payroll.unvalidated_confidence_level', [
+                'country' => $countryCode,
+                'level' => $claimedLevel,
+                'reason' => $reason,
+            ]),
             422,
             'UNVALIDATED_CONFIDENCE_LEVEL'
         );
