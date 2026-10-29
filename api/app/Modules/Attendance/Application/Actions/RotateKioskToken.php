@@ -6,7 +6,7 @@ namespace App\Modules\Attendance\Application\Actions;
 
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Infrastructure\Services\BiometricAuditLogger;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Support\Str;
 
 /**
@@ -31,6 +31,7 @@ class RotateKioskToken
 
     public function __construct(
         private readonly BiometricAuditLogger $biometricAudit,
+        private readonly Hasher $hasher,
     ) {}
 
     /**
@@ -44,7 +45,7 @@ class RotateKioskToken
         $plainToken = Str::random(self::TOKEN_LENGTH);
 
         $kiosk->forceFill([
-            'sync_token_hash' => Hash::make($plainToken),
+            'sync_token_hash' => $this->hasher->make($plainToken),
         ])->save();
 
         $this->biometricAudit->log(
