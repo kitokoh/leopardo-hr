@@ -174,8 +174,8 @@ final class ExpertValidationRegistry
 
             $this->entries[$country] = [
                 'country' => $country,
-                'signed_on' => $cells[1] ?? '',
-                'expert' => $cells[2] ?? '',
+                'signed_on' => $cells[1],
+                'expert' => $cells[2],
                 'scope' => $cells[3] ?? '',
             ];
         }

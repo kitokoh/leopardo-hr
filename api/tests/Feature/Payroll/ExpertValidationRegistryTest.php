@@ -52,6 +52,7 @@ class ExpertValidationRegistryTest extends TestCase
     /** Règles factices avec un niveau de confiance imposé. */
     private function rules(string $country, string $level): CountryRulesInterface
     {
+        /** @var CountryRulesInterface&\Mockery\MockInterface $rules */
         $rules = \Mockery::mock(CountryRulesInterface::class);
         $rules->shouldReceive('countryCode')->andReturn($country);
         $rules->shouldReceive('confidenceLevel')->andReturn($level);
