@@ -57,6 +57,20 @@ class RestaurantLoyaltyController extends Controller
 
         $program = RestaurantLoyaltyProgram::query()->create($request->validated());
 
+        // #9077 — « un seul programme actif par tenant » (spec §4.5 / D8) etait
+        // une regle documentee mais NULLEMENT appliquee : deux programmes
+        // actifs coexistaient, et `CreditLoyaltyPointsAction` prenait le premier
+        // trouve (`->first()`), donc le taux applique dependait de l'ordre des
+        // lignes. On desactive les autres programmes actifs du tenant dans la
+        // meme transaction que la creation : l'invariant tient a tout instant.
+        if ($program->is_active) {
+            RestaurantLoyaltyProgram::query()
+                ->where('company_id', $program->company_id)
+                ->whereKeyNot($program->getKey())
+                ->where('is_active', true)
+                ->update(['is_active' => false]);
+        }
+
         return (new RestaurantLoyaltyProgramResource($program))->response()->setStatusCode(201);
     }
 

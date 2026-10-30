@@ -263,6 +263,13 @@ class RestaurantManagerServiceProvider extends ServiceProvider
             // REST-OS-5 — observabilité du cycle de vie d'impression (évite la
             // dead-letter « no_consumer » sur les événements restaurant.print.job.*).
             $registry->register($this->app->make(\App\Modules\RestaurantManager\Application\Consumers\PrintJobOutboxConsumer::class));
+            // #9077 — `LoyaltyOrderPaidConsumer` existait mais n'etait enregistre
+            // NULLE PART : `restaurant.order.paid.v1` partait donc en dead-letter
+            // « no_consumer » et les points de fidelite n'etaient JAMAIS credites
+            // par le flux outbox (spec §6.3). Le consommateur est idempotent
+            // (CreditLoyaltyPointsAction + unique partiel), l'enregistrer ne
+            // peut pas doubler un credit.
+            $registry->register($this->app->make(\App\Modules\RestaurantManager\Application\Consumers\LoyaltyOrderPaidConsumer::class));
 
             return $registry;
         });

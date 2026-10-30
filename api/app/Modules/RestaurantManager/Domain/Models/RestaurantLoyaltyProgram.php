@@ -34,4 +34,18 @@ class RestaurantLoyaltyProgram extends Model
         'redeem_rate_minor' => 'integer',
         'is_active' => 'boolean',
     ];
+
+    /**
+     * #9077 — `is_active` vaut `true` par defaut en base, mais Eloquent ne
+     * recharge pas les valeurs par defaut apres un INSERT : un programme cree
+     * sans `is_active` explicite portait `null` en memoire alors qu'il etait
+     * actif en base. Toute logique qui lit l'attribut sur l'instance qui vient
+     * d'etre creee (dont l'invariant « un seul programme actif ») voyait donc
+     * `null` et se comportait comme si le programme etait inactif.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'is_active' => true,
+    ];
 }
