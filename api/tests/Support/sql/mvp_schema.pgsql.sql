@@ -27,6 +27,7 @@ DROP TABLE IF EXISTS shared_tenants.positions CASCADE;
 DROP TABLE IF EXISTS shared_tenants.sites CASCADE;
 DROP TABLE IF EXISTS shared_tenants.salary_advances CASCADE;
 DROP TABLE IF EXISTS shared_tenants.leave_balance_logs CASCADE;
+DROP TABLE IF EXISTS shared_tenants.leave_balances CASCADE;
 DROP TABLE IF EXISTS shared_tenants.absences CASCADE;
 DROP TABLE IF EXISTS shared_tenants.absence_types CASCADE;
 DROP TABLE IF EXISTS shared_tenants.camera_access_logs CASCADE;
@@ -671,6 +672,25 @@ CREATE TABLE shared_tenants.absences (
     rejected_reason text NULL,
     created_at timestamp NULL,
     updated_at timestamp NULL
+);
+
+-- #9077 — `leave_balances` manquait alors que la migration tenant
+-- `2026_05_10_000003_create_leave_management_tables.php` la crée en production.
+-- Trois tests AI (`EmployeeLeaveBalanceToolTest`) échouaient en QueryException
+-- sur une table qui n'existe qu'en test. La fixture doit refléter le schéma
+-- réel, pas un sous-ensemble commode.
+CREATE TABLE shared_tenants.leave_balances (
+    id serial PRIMARY KEY,
+    company_id uuid NOT NULL,
+    employee_id integer NOT NULL,
+    absence_type_id integer NOT NULL,
+    balance numeric(6, 2) NOT NULL DEFAULT 0,
+    used numeric(6, 2) NOT NULL DEFAULT 0,
+    pending numeric(6, 2) NOT NULL DEFAULT 0,
+    year smallint NOT NULL,
+    updated_at timestamptz NOT NULL DEFAULT now(),
+    CONSTRAINT leave_balances_employee_type_year_unique
+        UNIQUE (employee_id, absence_type_id, year)
 );
 
 CREATE TABLE shared_tenants.leave_balance_logs (

@@ -173,7 +173,15 @@ class IntentEngine
             return new ToolResult(
                 toolCallId: $toolCall->id,
                 name: $toolCall->name,
-                content: json_encode($result) ?: '{}',
+                // #9077 — `JSON_PRESERVE_ZERO_FRACTION` : le contrat A3 (#6850)
+                // déclare `balance`/`used`/`pending` comme des décimaux, et les
+                // modèles les castent en `float`. Sans ce drapeau, un solde de
+                // 20.0 était sérialisé « 20 » et le type annoncé au modèle
+                // devenait un entier — un consommateur qui compare au contrat
+                // voyait un changement de type. Le drapeau ne change que la
+                // représentation textuelle d'un flottant entier, jamais sa
+                // valeur JSON.
+                content: json_encode($result, JSON_PRESERVE_ZERO_FRACTION) ?: '{}',
                 success: true,
             );
         } catch (\Throwable $e) {
