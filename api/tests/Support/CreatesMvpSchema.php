@@ -584,6 +584,25 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
+        // #9077 — `leave_balances` manquait alors que la migration tenant
+        // `2026_05_10_000003_create_leave_management_tables.php` la crée en
+        // production. Trois tests AI (`EmployeeLeaveBalanceToolTest`) échouaient
+        // en QueryException sur une table qui n'existe qu'en test. La fixture
+        // doit refléter le schéma réel, pas un sous-ensemble commode.
+        Schema::create('leave_balances', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('employee_id')->index();
+            $table->unsignedInteger('absence_type_id')->index();
+            $table->decimal('balance', 6, 2)->default(0);
+            $table->decimal('used', 6, 2)->default(0);
+            $table->decimal('pending', 6, 2)->default(0);
+            $table->unsignedSmallInteger('year');
+            $table->timestampTz('updated_at')->useCurrent();
+
+            $table->unique(['employee_id', 'absence_type_id', 'year']);
+        });
+
         Schema::create('leave_balance_logs', function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
@@ -6099,6 +6118,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "audit_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "features"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "leave_balance_logs"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "leave_balances"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "absences"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "notifications"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "task_comments"'.$cascade);
