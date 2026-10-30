@@ -33,6 +33,23 @@ class RestaurantLoyaltyCustomerPolicy
         return $this->canOperateBranchResource($actor, $branchId);
     }
 
+    /**
+     * #9077 — `update` manquait, alors que `creditCustomer()` et
+     * `redeemCustomer()` appellent `$actor->cannot('update', $customer)`.
+     * Une policy sans methode `update` fait repondre `false` a Gate : les deux
+     * endpoints renvoyaient donc **403 a tout le monde**, y compris au
+     * principal — le credit et l'echange de points etaient inutilisables.
+     *
+     * Le geste est operationnel (crediter/echanger des points au comptoir),
+     * pas de la configuration : meme niveau que `create`, et le perimetre
+     * tenant est deja verifie par l'appelant (`company_id`).
+     */
+    public function update(Employee $actor, RestaurantLoyaltyCustomer $customer): bool
+    {
+        return $customer->company_id === $actor->company_id
+            && $this->canOperateBranchResource($actor, null);
+    }
+
     public function redeem(Employee $actor, RestaurantLoyaltyCustomer $customer): bool
     {
         return $customer->company_id === $actor->company_id
