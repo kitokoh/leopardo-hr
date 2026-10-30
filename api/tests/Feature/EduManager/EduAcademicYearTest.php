@@ -285,6 +285,11 @@ class EduAcademicYearTest extends TestCase
         // (résolution dynamique — aucun nom d'issue voisine en dur) ; le
         // cycle complet se déroule dans la transaction du test, et up()
         // recrée les tables #5819 via leurs propres migrations.
+        // Les dépendantes sont réellement supprimées AVANT (le helper existait
+        // mais n'était jamais appelé : `DROP TABLE edu_admissions` échouait en
+        // 2BP01 dès qu'une migration voisine l'avait référencée).
+        $this->dropTablesReferencing(self::TABLES);
+
         // down() dans l'ordre inverse des dépendances (toutes les migrations EduManager),
         // puis up() complet — les FK composites imposent l'ordre inverse des préfixes.
         foreach (array_reverse(self::MIGRATIONS) as $basename) {

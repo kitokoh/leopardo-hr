@@ -8,6 +8,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -333,6 +334,12 @@ class EduManagerMigrationsTest extends TestCase
 
     public function test_down_up_cycle_is_clean(): void
     {
+        // Ce fichier ne possède pas les migrations voisines (edu_fees,
+        // edu_admission_followups) qui portent une FK vers ses tables : les
+        // laisser en place fait échouer `DROP TABLE edu_admissions` en 2BP01.
+        // Les dépendantes sont supprimées d'abord, résolues dynamiquement.
+        $this->dropTablesReferencing(self::TABLES);
+
         // down() dans l'ordre inverse des dépendances, puis up() complet.
         foreach (array_reverse(self::MIGRATIONS) as $basename) {
             $migration = $this->migration($basename);
@@ -368,6 +375,47 @@ class EduManagerMigrationsTest extends TestCase
             'company_id' => $companyId,
             'contact_reference' => $contactReference,
         ]);
+    }
+
+    /**
+     * Supprime (dans la transaction de test) les tables du schéma tenant qui
+     * portent une FK vers l'une des tables données — y compris en cascade de
+     * dépendances (table dépendante d'une table dépendante).
+     *
+     * @param  list<string>  $tables
+     */
+    private function dropTablesReferencing(array $tables): void
+    {
+        $dropped = $tables;
+
+        do {
+            $dependents = [];
+            foreach ($dropped as $table) {
+                $rows = DB::select(
+                    'SELECT DISTINCT tc.table_name
+                       FROM information_schema.table_constraints tc
+                       JOIN information_schema.key_column_usage kcu
+                         ON kcu.constraint_name = tc.constraint_name
+                        AND kcu.table_schema = tc.table_schema
+                       JOIN information_schema.constraint_column_usage ccu
+                         ON ccu.constraint_name = tc.constraint_name
+                        AND ccu.table_schema = tc.table_schema
+                      WHERE tc.constraint_type = ?
+                        AND tc.table_schema = ?
+                        AND ccu.table_name = ?',
+                    ['FOREIGN KEY', 'shared_tenants', $table]
+                );
+                foreach ($rows as $row) {
+                    $dependents[] = (string) $row->table_name;
+                }
+            }
+
+            $dependents = array_values(array_unique(array_diff($dependents, $dropped)));
+            foreach ($dependents as $dependent) {
+                Schema::dropIfExists($dependent);
+            }
+            $dropped = array_merge($dropped, $dependents);
+        } while ($dependents !== []);
     }
 
     private function callMigrationMethod(Migration $migration, string $method): void

@@ -25,8 +25,15 @@ class GenerateMonthlyInvoicesTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private function activeSubscription(Company $company): Subscription
+    /** Entreprise du test, mémorisée : un test qui appelle le helper plusieurs
+     *  fois sans entreprise doit numéroter dans la MÊME séquence (0001, 0002,
+     *  0003), pas repartir de 0001 sur une nouvelle entreprise à chaque appel. */
+    private ?Company $billingCompany = null;
+
+    private function activeSubscription(?Company $company = null): Subscription
     {
+        $company ??= $this->billingCompany ??= Company::factory()->create();
+
         /** @var Subscription $subscription */
         $subscription = Subscription::create([
             'company_id' => $company->id,
