@@ -31,8 +31,17 @@ name: Fix/Feat Ratio Guard
 # Il deviendra requis quand ratio(main, 30j) < 3.5 (déclenchement manuel PM).
 
 on:
+  # Le résultat ne dépend PAS des commits de la PR : le job checkout
+  # explicitement `github.event.pull_request.base.sha` (main) et analyse
+  # `git log` sur cette fenêtre. Deux PR ouvertes à la même seconde sur la
+  # même base produisent donc exactement le même verdict.
+  #
+  # D'où `edited` au lieu de `synchronize` : un nouveau push ne peut pas
+  # changer la mesure (le head de la PR n'est jamais lu), alors qu'une
+  # édition du titre/de la description peut légitimement accompagner un
+  # changement de cadence côté main. `synchronize` ne coûtait que du runner.
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, reopened, ready_for_review, edited]
     branches: [main]
   workflow_dispatch:
     inputs:
