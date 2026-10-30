@@ -15,8 +15,15 @@ name: PR Issue Guard
 #     vigueur, rappelée dans .github/PULL_REQUEST_TEMPLATE.md.
 
 on:
+  # Les 2 gardes ne lisent QUE les métadonnées de la PR via l'API
+  # (`gh pr list/view --json title,body`) : jamais le diff, jamais un fichier
+  # du dépôt. Un `synchronize` rejouait donc la même réponse pour un coût de
+  # ~12 min de runner (médiane 378 s mesurée sur 30 runs).
+  #
+  # `edited` reste présent : corriger le titre ou la description change
+  # réellement la réponse de check-pr-closes-issue.sh.
   pull_request:
-    types: [opened, reopened, edited, synchronize, ready_for_review]
+    types: [opened, reopened, edited, ready_for_review]
 
 permissions:
   contents: read
