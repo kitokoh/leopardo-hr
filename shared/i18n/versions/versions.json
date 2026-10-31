@@ -48,12 +48,12 @@
   "surfaces": {
     "web": {
       "checksums": {
-        "ar": "45071d77296ddca8b4f4eb7bfaad7715bcd6e8017aafa53f2b2d79d0085fd58a",
-        "en": "289e0eeb78a64c765368973b58bdbb6ce27bf182301877a98ec6bd6b9e2da632",
-        "fr": "8642dfaef1a54719feb3fdf4329728f3dd8d6efe7e6bb87006bf7b0fd5e495e9",
-        "tr": "b17befb01f7324b9df0af74c93669dce8a4497535b954bbabcc3daa2185aff70"
+        "ar": "2b4a0a28d81e1fb5fbb8e1d7839a91ea155c306662a3436d47260cbecaccee57",
+        "en": "d6c2e99f836ac14bb5f4f7f4dd3ec8ab6b89ee5104d3794b30ab568940a5fd22",
+        "fr": "df0a3228f488cdc8d4fcefc53ba4f8115d0d53f4c388644252f79ff9951b271d",
+        "tr": "35242d19ac92ba38e0cfacee37edf90d7d83cd27de1d1d7b679d3cb09d747595"
       },
-      "updated_at": "2026-10-28T03:48:39.434Z"
+      "updated_at": "2026-10-31T21:05:00.000Z"
     },
     "admin": {
       "checksums": {
