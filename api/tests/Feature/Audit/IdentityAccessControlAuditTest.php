@@ -180,12 +180,15 @@ class IdentityAccessControlAuditTest extends TestCase
         $grant->module_key = 'marketing';
         $grant->forceFill(['company_id' => $company->id])->save();
 
+        /** @var Employee $fresh */
+        $fresh = Employee::query()->findOrFail($employee->id);
+
         $this->assertTrue(
-            $employee->fresh()?->hasModuleGrant('marketing'),
+            $fresh->hasModuleGrant('marketing'),
             'Avec un grant explicite, le module marketing est ouvert.',
         );
         $this->assertFalse(
-            $employee->fresh()?->hasModuleGrant('comptabilite'),
+            $fresh->hasModuleGrant('comptabilite'),
             'Un grant sur marketing n\'ouvre pas comptabilité.',
         );
     }
@@ -250,7 +253,14 @@ class IdentityAccessControlAuditTest extends TestCase
             .'(travel_customer_accounts), pas un `User` — troisième identité.',
         );
 
-        $this->assertIsString($employeeToken);
+        // Un token employé est bien émis, mais il n'ouvre rien sur la surface
+        // du guard `travel_customer` : les populations sont disjointes.
+        $this->assertNotEmpty($employeeToken);
+        $this->assertSame(
+            'sanctum',
+            (string) config('auth.guards.travel_customer.driver'),
+            'Le guard travel_customer est un Sanctum distinct, pas le guard employé.',
+        );
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -339,7 +349,7 @@ class IdentityAccessControlAuditTest extends TestCase
             DB::table('personal_access_tokens')->where('id', $token->accessToken->id)->count(),
             'Après révocation, la ligne de token a disparu.',
         );
-        $this->assertIsString($plain);
+        $this->assertNotEmpty($plain, 'Le jeton en clair est rendu une seule fois, à la création.');
     }
 
     /**
@@ -366,10 +376,11 @@ class IdentityAccessControlAuditTest extends TestCase
         $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->getJson('/api/v1/auth/me');
 
-        $this->assertContains(
-            $response->status(),
-            [401, 403],
-            'Un compte suspendu doit être refusé (EMPLOYEE_SUSPENDED / UNAUTHENTICATED).',
+        $status = $response->status();
+
+        $this->assertTrue(
+            $status === 401 || $status === 403,
+            'Un compte suspendu doit être refusé (EMPLOYEE_SUSPENDED / UNAUTHENTICATED) — reçu '.$status.'.',
         );
     }
 
@@ -390,10 +401,19 @@ class IdentityAccessControlAuditTest extends TestCase
     // Helpers
     // ─────────────────────────────────────────────────────────────────────
 
+    /**
+     * @template TValue
+     *
+     * @param  \Closure():TValue  $callback
+     * @return TValue
+     */
     private function withTenant(Company $company, \Closure $callback): mixed
     {
         $manager = app(\App\Core\Tenant\TenantManager::class);
 
-        return $manager->withinTenant($company, $callback);
+        /** @var TValue $result */
+        $result = $manager->withinTenant($company, $callback);
+
+        return $result;
     }
 }

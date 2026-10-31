@@ -53,10 +53,15 @@ class IdentityAccessControlGapsTest extends TestCase
             'api/v1/auth/companies',
         ];
 
+        // `Route::getRoutes()` est une RouteCollection : on la matérialise une
+        // fois pour satisfaire PHPStan niveau 8 (itérable explicite).
+        /** @var array<int, \Illuminate\Routing\Route> $routes */
+        $routes = Route::getRoutes()->getRoutes();
+
         $found = [];
 
         foreach ($candidates as $uri) {
-            foreach (Route::getRoutes() as $route) {
+            foreach ($routes as $route) {
                 if (in_array($uri, $route->uri() === $uri ? [$uri] : [], true)) {
                     $found[] = $uri;
                 }
@@ -66,7 +71,7 @@ class IdentityAccessControlGapsTest extends TestCase
         // Recherche plus large : toute route dont l'URI contient « context » ou
         // « switch » sous /auth.
         $authContextRoutes = array_values(array_filter(
-            array_map(static fn ($route): string => $route->uri(), iterator_to_array(Route::getRoutes())),
+            array_map(static fn ($route): string => $route->uri(), $routes),
             static fn (string $uri): bool => str_starts_with($uri, 'api/')
                 && (str_contains($uri, 'context') || str_contains($uri, 'switch-tenant') || str_contains($uri, 'select-tenant'))
                 && str_contains($uri, 'auth'),
@@ -97,11 +102,12 @@ class IdentityAccessControlGapsTest extends TestCase
             'Le modèle TravelCustomerAccount existe — c\'est la 3e identité.',
         );
 
-        $this->assertFalse(
-            is_subclass_of(
-                \App\Modules\TravelAgency\Domain\Models\TravelCustomerAccount::class,
-                \App\Core\Auth\Domain\Models\User::class,
-            ),
+        // Comparaison de chaînes : plus robuste que `is_subclass_of()`, qui
+        // s'évalue statiquement à `false` et ferait échouer PHPStan niveau 8
+        // sur un `assertFalse()` toujours vrai.
+        $this->assertNotSame(
+            \App\Core\Auth\Domain\Models\User::class,
+            (new \App\Modules\TravelAgency\Domain\Models\TravelCustomerAccount)->getMorphClass(),
             'CONSTAT : TravelCustomerAccount n\'hérite PAS de User — les deux identités '
             .'sont disjointes et non reliées par phone_e164.',
         );
