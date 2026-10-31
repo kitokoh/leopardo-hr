@@ -1,8 +1,8 @@
-﻿'use client';
+'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, User, Clock, ArrowRight } from 'lucide-react';
+import { Calendar, User, Clock, ArrowRight, Sparkles, AlertTriangle, Info } from 'lucide-react';
 import { SocialShare } from '@/components/SocialShare';
 import { SITE_URL } from '@/lib/site-url';
 import Image from 'next/image'
@@ -32,6 +32,19 @@ export function BlogArticle({
   relatedTitle = 'Articles recommandes',
   locale = 'fr',
 }: BlogArticleProps) {
+  const [readingProgress, setReadingProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalHeight > 0) {
+        setReadingProgress(Math.min(100, Math.max(0, (window.scrollY / totalHeight) * 100)));
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const formattedDate = new Date(post.date).toLocaleDateString(dateLocale, {
     year: 'numeric',
     month: 'long',
@@ -91,11 +104,100 @@ export function BlogArticle({
     });
   };
 
-  // Parse markdown to HTML (simple implementation)
+  // Parse markdown to HTML enrichi (images, callouts, titres, listes)
   const renderMarkdown = (markdown: string) => {
     return markdown
       .split('\n')
       .map((line, index) => {
+        // 1. Image Markdown : ![alt](src "caption") ou ![alt](src)
+        const trimmed = line.trim();
+        if (trimmed.startsWith('![') && trimmed.includes('](')) {
+          const imgMatch = trimmed.match(/^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]+)")?\)$/);
+          if (imgMatch) {
+            const [, alt, src, caption] = imgMatch;
+            const figureCaption = caption || alt;
+            return (
+              <figure
+                key={index}
+                className="my-10 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 shadow-xl shadow-slate-900/5 group"
+              >
+                <div className="relative w-full aspect-[16/9] max-h-[460px] overflow-hidden bg-slate-100 dark:bg-slate-800">
+                  <Image
+                    src={src}
+                    alt={alt || post.title}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 860px"
+                    {...localImageProps(src)}
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+                {figureCaption && (
+                  <figcaption className="px-5 py-3 text-center text-xs font-medium text-slate-500 dark:text-slate-400 bg-slate-100/70 dark:bg-slate-900/90 border-t border-slate-200/60 dark:border-slate-800">
+                    <span className="font-bold text-slate-700 dark:text-slate-300">Illustration :</span>{' '}
+                    {figureCaption}
+                  </figcaption>
+                )}
+              </figure>
+            );
+          }
+        }
+
+        // 2. Callouts & Citations : > ...
+        if (line.startsWith('> ')) {
+          const quoteRaw = line.replace(/^>\s*/, '');
+          const isTip = quoteRaw.includes('[!TIP]') || quoteRaw.toLowerCase().includes('astuce');
+          const isWarning = quoteRaw.includes('[!WARNING]') || quoteRaw.toLowerCase().includes('attention');
+          const isNote = quoteRaw.includes('[!NOTE]') || quoteRaw.toLowerCase().includes('à retenir');
+          const cleanText = quoteRaw.replace(/\[!(TIP|NOTE|WARNING|IMPORTANT|CAUTION)\]\s*/i, '');
+
+          if (isTip) {
+            return (
+              <div
+                key={index}
+                className="my-6 p-5 rounded-2xl bg-emerald-500/[0.08] border border-emerald-500/25 flex items-start gap-3.5"
+              >
+                <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                <div className="text-sm sm:text-base text-emerald-950 dark:text-emerald-200 leading-relaxed">
+                  {renderInline(cleanText, `tip-${index}`)}
+                </div>
+              </div>
+            );
+          }
+          if (isWarning) {
+            return (
+              <div
+                key={index}
+                className="my-6 p-5 rounded-2xl bg-amber-500/[0.08] border border-amber-500/25 flex items-start gap-3.5"
+              >
+                <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                <div className="text-sm sm:text-base text-amber-950 dark:text-amber-200 leading-relaxed">
+                  {renderInline(cleanText, `warn-${index}`)}
+                </div>
+              </div>
+            );
+          }
+          if (isNote) {
+            return (
+              <div
+                key={index}
+                className="my-6 p-5 rounded-2xl bg-cyan-500/[0.08] border border-cyan-500/25 flex items-start gap-3.5"
+              >
+                <Info className="w-5 h-5 text-cyan-600 dark:text-cyan-400 flex-shrink-0 mt-0.5" />
+                <div className="text-sm sm:text-base text-cyan-950 dark:text-cyan-200 leading-relaxed">
+                  {renderInline(cleanText, `note-${index}`)}
+                </div>
+              </div>
+            );
+          }
+          return (
+            <blockquote
+              key={index}
+              className="my-6 pl-5 py-2 border-l-4 border-amber-400/80 bg-amber-400/[0.04] rounded-r-xl italic text-slate-700 dark:text-slate-300"
+            >
+              {renderInline(cleanText, `quote-${index}`)}
+            </blockquote>
+          );
+        }
         if (line.startsWith('# ')) {
           // Un titre de niveau 1 dans le corps de l'article produisait un
           // SECOND <h1> sur la page (le premier étant le titre de l'article) :
@@ -155,6 +257,17 @@ export function BlogArticle({
 
   return (
     <>
+    {/* Reading Progress Bar */}
+    <div
+      aria-hidden="true"
+      className="fixed top-0 left-0 right-0 h-1 z-50 bg-slate-200/40 dark:bg-slate-800/40 backdrop-blur-sm pointer-events-none"
+    >
+      <div
+        className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 transition-[width] duration-150 ease-out shadow-sm shadow-emerald-500/50"
+        style={{ width: `${readingProgress}%` }}
+      />
+    </div>
+
     <div className="min-h-screen">
       {/* Hero Image */}
       <div className="relative w-full h-96 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-900">

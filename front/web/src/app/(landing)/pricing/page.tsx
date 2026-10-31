@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { getPricingFaq } from '@/modules/vitrine/data/pricing-faq';
 
 import { Fragment, useEffect, useState } from 'react';
@@ -8,6 +8,7 @@ import {
   Navbar,
   Footer,
   useScrollReveal,
+  RoiCalculator,
 } from '@/modules/vitrine';
 import { getPricingPlans, showsCurrency } from '@/modules/vitrine/data/pricing';
 import { CURRENCY_OPTIONS, DEFAULT_CURRENCY_OPTION, convertEurPrice, type CurrencyOption } from '@/modules/vitrine/data/currency';
@@ -958,6 +959,9 @@ export default function PricingPage() {
           </div>
         </div>
       </section>
+
+      {/* ── CALCULATEUR DE ROI INTERACTIF ──────── */}
+      <RoiCalculator />
 
       {/* ── FAQ ─────────────────────────────────── */}
       <section className="relative py-24 overflow-hidden">

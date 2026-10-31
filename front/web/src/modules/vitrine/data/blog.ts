@@ -30,6 +30,10 @@ export const blogPosts: BlogPost[] = [
 
 La gestion des ressources humaines est cruciale pour le succès d'une startup. Dans ce guide, nous vous montrerons comment mettre en place une gestion RH efficace dès le départ.
 
+![Le Cycle de Vie Collaborateur en 5 Piliers Stratégiques](/blog/startup-rh-workflow.svg "Infographie RH : Les 5 étapes du cycle de vie collaborateur")
+
+> [!TIP] **Conseil de recruteur :** Ne tardez pas à digitaliser votre registre du personnel. Dès le 3e recrutement, les fichiers éparpillés multiplient par 4 le risque de non-conformité sociale.
+
 ## 1. Définir Votre Stratégie RH
 
 Avant de recruter, vous devez définir votre stratégie RH:
@@ -92,6 +96,10 @@ Excel est un outil puissant, mais il n'est pas conçu pour la gestion de paie. L
 - Perte de données
 - Manque de conformité
 - Temps perdu
+
+![Comparatif Tableur Manuel vs Moteur de Paie Automatisé](/blog/paie-automation-comparison.svg "Étude comparative : Coûts, erreurs de calcul et conformité fiscale")
+
+> [!WARNING] **Attention aux redressements fiscaux :** Les erreurs sur les cotisations sociales et les tranches d'imposition sur tableur coûtent en moyenne 3 500 € par contrôle fiscal.
 
 ## Étape 1: Évaluer Votre Situation Actuelle
 
@@ -262,6 +270,10 @@ En suivant ces conseils, vous pouvez économiser des heures chaque semaine et vo
 
 Le RGPD (Règlement Général sur la Protection des Données) est une loi européenne qui protège les données personnelles.
 
+![Protection des Données RH & Conformité RGPD](/blog/rgpd-conformite-infographie.svg "Les 3 piliers de sécurité : Chiffrement AES-256, isolation tenant et droits des personnes")
+
+> [!NOTE] **Coffre-fort numérique :** Chaque bulletin de paie émis bénéficie d'une empreinte cryptographique SHA-256 garantissant son intégrité et sa force probante légale.
+
 ## Vos Obligations
 
 En tant qu'employeur, vous devez:
@@ -386,6 +398,10 @@ Le pointage biométrique offre:
 - Précision
 - Facilité d'utilisation
 
+![Chaîne de Confiance du Pointage Biométrique & Mobile](/blog/biometrie-securite-schema.svg "Schéma technique : Du terminal biométrique à la valorisation en paie")
+
+> [!NOTE] **Garantie RGPD :** Les gabarits d'empreintes ou visages doivent être chiffrés sous forme de vecteurs mathématiques non rétro-ingéniables, conformément aux recommandations CNIL.
+
 ## Implémentation
 
 Pour implémenter le pointage biométrique:
@@ -437,6 +453,10 @@ La gestion des absences est complexe:
 - Erreurs de calcul
 - Manque de visibilité
 - Processus lents
+
+![Circuit de Validation des Congés & Absences](/blog/conges-absences-flux.svg "Workflow intelligent : Du collaborateur mobile à la clôture de paie")
+
+> [!TIP] **Gain de réactivité :** Un circuit de validation mobile et automatisé réduit le temps de réponse aux demandes de congés de 5 jours à moins de 4 heures.
 
 ## Meilleures Pratiques
 
