@@ -39,3 +39,4 @@ export { ProductDemoVideo, type ProductDemoVideoProps } from './ProductDemoVideo
 // #8072 — hook ZKTeco remonté + verticales en cartes cliquables
 export { ZKTecoHookSection, type ZKTecoHookSectionProps } from './ZKTecoHookSection';
 export { VerticalsSection, type VerticalsSectionProps } from './VerticalsSection';
+export { RoiCalculator, type RoiCalculatorProps } from './RoiCalculator';

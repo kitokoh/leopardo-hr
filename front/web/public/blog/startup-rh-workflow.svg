@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#022c22"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#022c22"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(30, 41, 59, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.75)"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="50%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="60" result="blur" />
+    </filter>
+  </defs>
+
+  <!-- Fond & Ambiances Lumineuses -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  <circle cx="200" cy="150" r="180" fill="#10b981" opacity="0.15" filter="url(#glow)"/>
+  <circle cx="1000" cy="480" r="220" fill="#fbbf24" opacity="0.12" filter="url(#glow)"/>
+
+  <!-- Titre Principal de l'Infographie -->
+  <g transform="translate(80, 70)">
+    <rect x="0" y="0" width="160" height="28" rx="14" fill="rgba(16, 185, 129, 0.15)" stroke="#10b981" stroke-width="1"/>
+    <text x="80" y="19" font-family="Inter, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#34d399" text-anchor="middle" letter-spacing="1.5">INFOGRAPHIE RH</text>
+    <text x="0" y="65" font-family="Inter, -apple-system, sans-serif" font-size="28" font-weight="800" fill="#f8fafc">Le Cycle de Vie Collaborateur en 5 Piliers Stratégiques</text>
+    <text x="0" y="92" font-family="Inter, -apple-system, sans-serif" font-size="15" font-weight="500" fill="#94a3b8">Structurer l'équipe startup dès la phase d'amorçage pour accélérer la croissance</text>
+  </g>
+
+  <!-- Les 5 Étapes du Workflow -->
+  <g transform="translate(80, 210)">
+    <!-- Ligne de flux connectrice -->
+    <path d="M 90 90 L 950 90" stroke="url(#accentGrad)" stroke-width="3" stroke-dasharray="6 6" opacity="0.4"/>
+
+    <!-- Étape 1 : Recrutement -->
+    <g transform="translate(0, 0)">
+      <rect width="190" height="280" rx="20" fill="url(#cardGrad)" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
+      <circle cx="95" cy="50" r="26" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="2"/>
+      <text x="95" y="56" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#34d399" text-anchor="middle">1</text>
+      <text x="95" y="110" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#ffffff" text-anchor="middle">Sourcing &amp; Match</text>
+      <text x="95" y="132" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#94a3b8" text-anchor="middle">Profils &amp; Valeurs</text>
+      <path d="M 30 160 L 160 160" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="30" y="190" font-family="Inter, sans-serif" font-size="12" fill="#cbd5e1">• Fiche de poste claire</text>
+      <text x="30" y="215" font-family="Inter, sans-serif" font-size="12" fill="#cbd5e1">• Scorecard d'entretien</text>
+      <text x="30" y="240" font-family="Inter, sans-serif" font-size="12" fill="#cbd5e1">• Alignement culturel</text>
+    </g>
+
+    <!-- Étape 2 : Onboarding -->
+    <g transform="translate(215, 0)">
+      <rect width="190" height="280" rx="20" fill="url(#cardGrad)" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
+      <circle cx="95" cy="50" r="26" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="2"/>
+      <text x="95" y="56" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#34d399" text-anchor="middle">2</text>
+      <text x="95" y="110" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#ffffff" text-anchor="middle">Onboarding 30j</text>
+      <text x="95" y="132" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#94a3b8" text-anchor="middle">Intégration fluide</text>
+      <path d="M 30 160 L 160 160" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="30" y="190" font-family="Inter, sans-serif" font-size="12" fill="#cbd5e1">• Dossier dématérialisé</text>
+      <text x="30" y="215" font-family="Inter, sans-serif" font-size="12" fill="#cbd5e1">• Binôme / Parrainage</text>
+      <text x="30" y="240" font-family="Inter, sans-serif" font-size="12" fill="#cbd5e1">• Objectifs J+30</text>
+    </g>
+
+    <!-- Étape 3 : Paie & Plannings -->
+    <g transform="translate(430, 0)">
+      <rect width="190" height="280" rx="20" fill="url(#cardGrad)" stroke="rgba(251, 191, 36, 0.3)" stroke-width="1.5"/>
+      <circle cx="95" cy="50" r="26" fill="rgba(251, 191, 36, 0.2)" stroke="#fbbf24" stroke-width="2"/>
+      <text x="95" y="56" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#fbbf24" text-anchor="middle">3</text>
+      <text x="95" y="110" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#ffffff" text-anchor="middle">Paie &amp; Temps</text>
+      <text x="95" y="132" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#fbbf24" text-anchor="middle">Zéro erreur fiscale</text>
+      <path d="M 30 160 L 160 160" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="30" y="190" font-family="Inter, sans-serif" font-size="12" fill="#cbd5e1">• Pointage certifié</text>
+      <text x="30" y="215" font-family="Inter, sans-serif" font-size="12" fill="#cbd5e1">• Bulletins automatisés</text>
+      <text x="30" y="240" font-family="Inter, sans-serif" font-size="12" fill="#cbd5e1">• Déclarations 1-clic</text>
+    </g>
+
+    <!-- Étape 4 : Évaluation -->
+    <g transform="translate(645, 0)">
+      <rect width="190" height="280" rx="20" fill="url(#cardGrad)" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
+      <circle cx="95" cy="50" r="26" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="2"/>
+      <text x="95" y="56" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#34d399" text-anchor="middle">4</text>
+      <text x="95" y="110" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#ffffff" text-anchor="middle">Performance</text>
+      <text x="95" y="132" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#94a3b8" text-anchor="middle">OKRs &amp; Feedbacks</text>
+      <path d="M 30 160 L 160 160" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="30" y="190" font-family="Inter, sans-serif" font-size="12" fill="#cbd5e1">• Entretiens 1-on-1</text>
+      <text x="30" y="215" font-family="Inter, sans-serif" font-size="12" fill="#cbd5e1">• Plans de formation</text>
+      <text x="30" y="240" font-family="Inter, sans-serif" font-size="12" fill="#cbd5e1">• Suivi des jalons</text>
+    </g>
+
+    <!-- Étape 5 : Rétention -->
+    <g transform="translate(860, 0)">
+      <rect width="190" height="280" rx="20" fill="url(#cardGrad)" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
+      <circle cx="95" cy="50" r="26" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="2"/>
+      <text x="95" y="56" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#34d399" text-anchor="middle">5</text>
+      <text x="95" y="110" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#ffffff" text-anchor="middle">Fidélisation</text>
+      <text x="95" y="132" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#94a3b8" text-anchor="middle">Avantages &amp; Équité</text>
+      <path d="M 30 160 L 160 160" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="30" y="190" font-family="Inter, sans-serif" font-size="12" fill="#cbd5e1">• Package attractif</text>
+      <text x="30" y="215" font-family="Inter, sans-serif" font-size="12" fill="#cbd5e1">• Climat d'écoute</text>
+      <text x="30" y="240" font-family="Inter, sans-serif" font-size="12" fill="#cbd5e1">• Perspectives d'essor</text>
+    </g>
+  </g>
+
+  <!-- Footer Brand -->
+  <g transform="translate(80, 560)">
+    <text x="0" y="20" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#64748b">LEOPARDO BUSINESS OS • GESTION RH MODERNE</text>
+    <text x="1040" y="20" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#64748b" text-anchor="end">Plateforme Tout-en-Un</text>
+  </g>
+</svg>

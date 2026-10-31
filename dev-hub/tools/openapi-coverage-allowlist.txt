@@ -890,3 +890,13 @@ GET /v1/admin/companies/{param}/marketing-os/visibility-objectives
 POST /v1/admin/companies/{param}/marketing-os/visibility-objectives
 GET /v1/admin/companies/{param}/marketing-os/publishing-capabilities
 POST /v1/marketing/ai/suggest-production-brief
+
+# --- Blog plateforme (vitrine marketing, refs #8708) ---
+# CRUD blog articles gérés par le Super Admin pour la vitrine marketing.
+# Prototype en mémoire (phase 1) — contrat OpenAPI à documenter en phase 2
+# quand la table blog_posts et le modèle Eloquent seront en place.
+GET /v1/admin/blog/posts
+GET /v1/admin/blog/posts/{param}
+POST /v1/admin/blog/posts
+PUT /v1/admin/blog/posts/{param}
+DELETE /v1/admin/blog/posts/{param}

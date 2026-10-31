@@ -661,6 +661,15 @@ const routes = [
         }
       },
       {
+        path: '/blog-manager',
+        name: 'blog-manager',
+        component: () => import('@/views/marketing/BlogManagerView.vue'),
+        meta: {
+          title: 'navigation.blogManager',
+          icon: 'DocumentTextIcon'
+        }
+      },
+      {
         path: '/settings',
         name: 'settings',
         component: () => import('@/views/settings/SettingsView.vue'),

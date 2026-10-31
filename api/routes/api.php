@@ -923,6 +923,14 @@ Route::prefix('v1')->group(function (): void {
         // restent en mode assiste).
         Route::get('/companies/{company}/marketing-os/publishing-capabilities', [$marketingOs, 'publishingCapabilities'])->middleware('platform.permission:marketing_os.view');
 
+        // #8708 — Gestion et rédaction du Blog Vitrine depuis le Super Admin
+        $blogController = \App\Modules\Marketing\Interfaces\Api\V1\Controllers\PlatformBlogController::class;
+        Route::get('/blog/posts', [$blogController, 'index'])->middleware('platform.permission:marketing_os.view');
+        Route::get('/blog/posts/{slug}', [$blogController, 'show'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/blog/posts', [$blogController, 'store'])->middleware('platform.permission:marketing_os.manage');
+        Route::put('/blog/posts/{slug}', [$blogController, 'update'])->middleware('platform.permission:marketing_os.manage');
+        Route::delete('/blog/posts/{slug}', [$blogController, 'destroy'])->middleware('platform.permission:marketing_os.manage');
+
         // #7496 — conversions du funnel d'acquisition par étape/jour/source
         // (dashboard admin CRM commercial, données acquisition_funnel_events).
         Route::get('/funnel/stats', [PlatformAcquisitionFunnelController::class, 'index'])->middleware('platform.permission:metrics.view');
