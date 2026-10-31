@@ -378,8 +378,8 @@ au HEAD `31ef78e04`. Aucun test n'est déclaré réussi sans exécution.
 
 | Suite | Tests | Assertions | Résultat | Détail |
 |---|---|---|---|---|
-| `tests/Feature/Audit` (**écrite pour cet audit**) | **16** | **36** | ✅ **OK** | 12 acquis + 5 écarts documentés (2 classes) |
-| `tests/Feature/Audit` (répertoire complet, avec le préexistant `AuditLogGlobalTest`) | **25** | **57** | ✅ **OK** | dont 9 tests préexistants |
+| `tests/Feature/Audit` (**écrite pour cet audit**) | **16** | **37** | ✅ **OK** | 12 acquis + 5 écarts documentés (2 classes) |
+| `tests/Feature/Audit` (répertoire complet, avec le préexistant `AuditLogGlobalTest`) | **25** | **58** | ✅ **OK** | dont 9 tests préexistants |
 | `tests/Feature/Auth` + `tests/Feature/Tenant` | **157** | **588** | ⚠️ **4 failures, 1 error** | voir §4.2 |
 
 ### 4.2 Les 5 échecs préexistants de la suite identité — causes réelles
