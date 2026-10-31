@@ -189,7 +189,7 @@ resolveUserForPublicAccount(email, phoneE164):
   compte. Trois réponses possibles : (a) exiger une vérification OTP à chaque nouveau
   appareil, (b) ajouter une fenêtre d'inactivité au-delà de laquelle le numéro est
   « libéré », (c) accepter le risque et tracer. **Recommandation : (a) + (c).**
-- **O2 — Un e-mail, deux humains.** Une adresse partagée (`contact@entreprise.com`) peut
+- **O2 — Un e-mail, deux humains.** Une adresse partagée du type `contact` (arobase) `entreprise` peut
   avoir créé plusieurs `users`. L'unicité `users.email` (héritée) l'interdit aujourd'hui ;
   faut-il la conserver ? **Recommandation : la conserver**, et refuser la création.
 - **O3 — Sort de `travel_customer_accounts`.** Suppression après convergence, ou
