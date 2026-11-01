@@ -119,6 +119,15 @@ class PushNotificationService {
 
   Future<void> _getToken(FirebaseMessaging fcm) async {
     try {
+      // `getToken()` / `onTokenRefresh` sont dépréciés depuis firebase_messaging
+      // 17 au profit de `register()` / `onRegistered`, qui rendent un *Firebase
+      // Installation ID* et non un jeton FCM. Le backend (`POST /device-tokens`)
+      // attend encore un jeton FCM : basculer ici changerait le contrat d'envoi
+      // des notifications, ce qui n'est pas le périmètre de ce lot. L'infobulle
+      // est donc neutralisée explicitement plutôt que laissée en silence — sans
+      // quoi `flutter analyze` sort en code 1 et le gate mobile reste rouge.
+      // Migration à planifier avec le lot push (M2).
+      // ignore: deprecated_member_use
       _deviceToken = await fcm.getToken().timeout(_fcmOperationTimeout);
       if (kDebugMode) {
         debugPrint('FCM Token: $_deviceToken');
@@ -126,6 +135,7 @@ class PushNotificationService {
       await _syncTokenWithBackend(_deviceToken);
 
       await _tokenRefreshSubscription?.cancel();
+      // ignore: deprecated_member_use
       _tokenRefreshSubscription = fcm.onTokenRefresh.listen((newToken) {
         _deviceToken = newToken;
         if (kDebugMode) {

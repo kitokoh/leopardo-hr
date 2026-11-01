@@ -31,9 +31,8 @@ class BusinessMenuCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final visibleSections = sections
-        .where((s) => s.items.isNotEmpty)
-        .toList(growable: false);
+    final visibleSections =
+        sections.where((s) => s.items.isNotEmpty).toList(growable: false);
 
     if (visibleSections.isEmpty) return const SizedBox.shrink();
 

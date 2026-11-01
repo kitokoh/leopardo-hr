@@ -85,7 +85,8 @@ class DiscoveryItem {
   /// PAR verticale — deux verticales peuvent publier le même slug).
   String get key => '$type|$slug';
 
-  static String? _str(Object? v) => v is String && v.trim().isNotEmpty ? v.trim() : null;
+  static String? _str(Object? v) =>
+      v is String && v.trim().isNotEmpty ? v.trim() : null;
 
   static double? _dbl(Object? v) {
     if (v is num) return v.toDouble();
@@ -176,7 +177,8 @@ class DiscoveryPage {
       final inner = <String, String?>{};
       typeValue.forEach((actionKey, urlValue) {
         if (actionKey is! String) return;
-        inner[actionKey] = urlValue is String && urlValue.isNotEmpty ? urlValue : null;
+        inner[actionKey] =
+            urlValue is String && urlValue.isNotEmpty ? urlValue : null;
       });
       out[typeKey] = inner;
     });

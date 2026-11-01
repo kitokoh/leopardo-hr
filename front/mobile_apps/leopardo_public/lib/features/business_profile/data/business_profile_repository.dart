@@ -31,8 +31,7 @@ class BusinessProfileRepository {
   /// Types dont une fiche complète est réellement servie par l'API publique.
   static const Set<String> typesWithDetailEndpoint = {'restaurant'};
 
-  String detailPath(String type, String slug) =>
-      '/public/restaurants/$slug';
+  String detailPath(String type, String slug) => '/public/restaurants/$slug';
 
   /// Charge la fiche ; [fallback] évite un appel réseau inutile pour les
   /// verticales sans endpoint de détail.
@@ -119,10 +118,12 @@ class BusinessProfileRepository {
 
   PublicApiFailure _classify(int? status, Object cause) {
     if (status == null) {
-      return PublicApiFailure(PublicFailureKind.network, message: cause.toString());
+      return PublicApiFailure(PublicFailureKind.network,
+          message: cause.toString());
     }
     if (status == 404) {
-      return const PublicApiFailure(PublicFailureKind.notFound, statusCode: 404);
+      return const PublicApiFailure(PublicFailureKind.notFound,
+          statusCode: 404);
     }
     if (status == 408 || status == 504) {
       return PublicApiFailure(PublicFailureKind.timeout, statusCode: status);

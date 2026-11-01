@@ -71,16 +71,16 @@ class BusinessActionRow extends StatelessWidget {
       final hasDestination = profile.actionUrls[action] != null;
       // « contact » a une destination native (la conversation, en M2) ; les
       // autres dépendent d'une URL exposée par le serveur.
-      final reachable = action == 'contact' ? onContact != null : hasDestination;
+      final reachable =
+          action == 'contact' ? onContact != null : hasDestination;
 
       specs.add(
         _ActionSpec(
           action: action,
           label: label,
           icon: icon,
-          onPressed: reachable
-              ? () => _handle(context, action, hasDestination)
-              : null,
+          onPressed:
+              reachable ? () => _handle(context, action, hasDestination) : null,
           primary: specs.isEmpty,
         ),
       );

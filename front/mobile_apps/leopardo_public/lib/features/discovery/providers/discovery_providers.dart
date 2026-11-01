@@ -130,7 +130,8 @@ final publicDiscoveryRepositoryProvider = Provider<PublicDiscoveryRepository>(
 /// Clé = combinaison des filtres. On indexe par clé, pas par écran : revenir à
 /// « restaurant, ville X » après un détour doit retrouver le même cache, et une
 /// nouvelle recherche ne doit jamais écraser le cache d'une autre.
-final _discoveryCacheProvider = Provider<DiscoveryCache>((ref) => DiscoveryCache());
+final _discoveryCacheProvider =
+    Provider<DiscoveryCache>((ref) => DiscoveryCache());
 
 class DiscoveryCache {
   final Map<String, DiscoveryState> _entries = {};
@@ -228,7 +229,9 @@ class DiscoveryController extends Notifier<DiscoveryState> {
     state = state.copyWith(city: city, clearCity: city == null);
     // Changer de ville invalide le `near` : garder une position d'une autre
     // ville produirait une liste vide inexplicable.
-    if (city != null) state = state.copyWith(clearNear: true, usedLocation: false);
+    if (city != null) {
+      state = state.copyWith(clearNear: true, usedLocation: false);
+    }
     unawaited(load());
   }
 

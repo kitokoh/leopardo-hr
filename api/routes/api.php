@@ -55,7 +55,6 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminTrainingCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminWebhookController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAiMonitoringController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAiSettingsController;
-use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformDiscoverySettingsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyDeletionController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;
@@ -63,6 +62,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyRequestController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformDiscoverySettingsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformEmailTemplateController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformFeatureKillSwitchController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformHrReportController;

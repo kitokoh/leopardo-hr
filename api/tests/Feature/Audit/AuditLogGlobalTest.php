@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature\Audit;
 
 use App\Core\Auth\Domain\Models\AuditLog;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanySetting;
-use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\Artisan;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;

@@ -63,7 +63,8 @@ class AppStrings {
   Set<String> get keys => (_values[_locale] ?? const {}).keys.toSet();
 
   /// Toutes les clés du catalogue, indépendamment de la locale.
-  static Set<String> get allKeys => (_values[defaultLocale] ?? const {}).keys.toSet();
+  static Set<String> get allKeys =>
+      (_values[defaultLocale] ?? const {}).keys.toSet();
 
   static const Map<String, Map<String, String>> _values = {
     // ───────────────────────────── FR (référence) ─────────────────────────────
@@ -178,7 +179,6 @@ class AppStrings {
       'tabMessages': 'Messages',
       'tabActivity': 'Activity',
       'tabProfile': 'Profile',
-
       'discoverySearchHint': 'What are you looking for nearby?',
       'discoverySearchLabel': 'Search a business',
       'discoveryCityLabel': 'City',
@@ -193,7 +193,6 @@ class AppStrings {
       'discoveryUseLocation': 'Use my location',
       'discoveryLocationDenied':
           'Without your location, choose your city to see what is around.',
-
       'stateLoading': 'Loading…',
       'stateEmptyTitle': 'Nothing here yet',
       'stateEmptyBody':
@@ -211,7 +210,6 @@ class AppStrings {
           'This business is no longer available. It may have closed or stopped publishing.',
       'stateNotFoundAction': 'Back to search',
       'stateNotAvailable': 'Not available right now',
-
       'businessOpenNow': 'Open',
       'businessClosedNow': 'Closed',
       'businessVerified': 'Verified',
@@ -230,13 +228,11 @@ class AppStrings {
       'businessActionsUnavailable': 'This business does not offer that yet.',
       'businessMultipleEstablishments':
           'This place is one of several addresses of the same business.',
-
       'commonCancel': 'Cancel',
       'commonClose': 'Close',
       'commonBack': 'Back',
       'commonShareText': 'Discover %s on Leopardo',
       'commonNoModule': 'This module is not available yet.',
-
       'messagesEmptyTitle': 'No conversation',
       'messagesEmptyBody':
           'When you contact a business, the conversation will appear here.',
@@ -245,7 +241,6 @@ class AppStrings {
       'messagesUnread': 'Unread',
       'messagesComingSoon':
           'Messaging arrives with your account. No message is lost in the meantime.',
-
       'activityEmptyTitle': 'No activity',
       'activityEmptyBody':
           'Your orders and bookings will appear here after your first contact.',
@@ -253,7 +248,6 @@ class AppStrings {
       'activityBookings': 'Bookings',
       'activityFavorites': 'Favourites',
       'activitySearches': 'Recent searches',
-
       'profileLanguage': 'Language',
       'profilePrivacy': 'Privacy',
       'profileNotifications': 'Notifications',
@@ -274,7 +268,6 @@ class AppStrings {
       'tabMessages': 'الرسائل',
       'tabActivity': 'الأنشطة',
       'tabProfile': 'الملف',
-
       'discoverySearchHint': 'عمّ تبحث بالقرب منك؟',
       'discoverySearchLabel': 'ابحث عن متجر',
       'discoveryCityLabel': 'المدينة',
@@ -287,9 +280,7 @@ class AppStrings {
       'discoveryResultsCount': '%s نتيجة',
       'discoveryNearby': 'بالقرب منك',
       'discoveryUseLocation': 'استخدم موقعي',
-      'discoveryLocationDenied':
-          'بدون موقعك، اختر مدينتك لترى ما هو حولك.',
-
+      'discoveryLocationDenied': 'بدون موقعك، اختر مدينتك لترى ما هو حولك.',
       'stateLoading': 'جارٍ التحميل…',
       'stateEmptyTitle': 'لا يوجد شيء بعد',
       'stateEmptyBody': 'لم يُنشر أي متجر في هذه المدينة بعد. عد قريبًا.',
@@ -306,7 +297,6 @@ class AppStrings {
           'هذا المتجر لم يعد متاحًا. ربما أغلق أو توقف عن النشر.',
       'stateNotFoundAction': 'العودة إلى البحث',
       'stateNotAvailable': 'غير متاح حاليًا',
-
       'businessOpenNow': 'مفتوح',
       'businessClosedNow': 'مغلق',
       'businessVerified': 'موثّق',
@@ -325,13 +315,11 @@ class AppStrings {
       'businessActionsUnavailable': 'هذا المتجر لا يقدّم ذلك بعد.',
       'businessMultipleEstablishments':
           'هذا المكان أحد عناوين عدة لنفس المتجر.',
-
       'commonCancel': 'إلغاء',
       'commonClose': 'إغلاق',
       'commonBack': 'رجوع',
       'commonShareText': 'اكتشف %s على ليوباردو',
       'commonNoModule': 'هذه الوحدة غير متاحة بعد.',
-
       'messagesEmptyTitle': 'لا محادثات',
       'messagesEmptyBody': 'عندما تتواصل مع متجر، ستظهر المحادثة هنا.',
       'messagesAssistant': 'ليا',
@@ -339,15 +327,12 @@ class AppStrings {
       'messagesUnread': 'غير مقروءة',
       'messagesComingSoon':
           'الرسائل تصل مع حسابك. لا تضيع أي رسالة في الأثناء.',
-
       'activityEmptyTitle': 'لا أنشطة',
-      'activityEmptyBody':
-          'ستظهر طلباتك وحجوزاتك هنا بعد أول تواصل لك.',
+      'activityEmptyBody': 'ستظهر طلباتك وحجوزاتك هنا بعد أول تواصل لك.',
       'activityOrders': 'الطلبات',
       'activityBookings': 'الحجوزات',
       'activityFavorites': 'المفضلة',
       'activitySearches': 'عمليات البحث الأخيرة',
-
       'profileLanguage': 'اللغة',
       'profilePrivacy': 'الخصوصية',
       'profileNotifications': 'الإشعارات',
@@ -368,7 +353,6 @@ class AppStrings {
       'tabMessages': 'Mesajlar',
       'tabActivity': 'Etkinlik',
       'tabProfile': 'Profil',
-
       'discoverySearchHint': 'Yakınında ne arıyorsun?',
       'discoverySearchLabel': 'İşletme ara',
       'discoveryCityLabel': 'Şehir',
@@ -383,7 +367,6 @@ class AppStrings {
       'discoveryUseLocation': 'Konumumu kullan',
       'discoveryLocationDenied':
           'Konumun olmadan, çevreni görmek için şehrini seç.',
-
       'stateLoading': 'Yükleniyor…',
       'stateEmptyTitle': 'Henüz bir şey yok',
       'stateEmptyBody':
@@ -401,7 +384,6 @@ class AppStrings {
           'Bu işletme artık mevcut değil. Kapanmış veya yayımdan kaldırılmış olabilir.',
       'stateNotFoundAction': 'Aramaya dön',
       'stateNotAvailable': 'Şu an kullanılamıyor',
-
       'businessOpenNow': 'Açık',
       'businessClosedNow': 'Kapalı',
       'businessVerified': 'Doğrulanmış',
@@ -420,13 +402,11 @@ class AppStrings {
       'businessActionsUnavailable': 'Bu işletme bunu henüz sunmuyor.',
       'businessMultipleEstablishments':
           'Bu mekân, aynı işletmenin birkaç adresinden biri.',
-
       'commonCancel': 'İptal',
       'commonClose': 'Kapat',
       'commonBack': 'Geri',
       'commonShareText': '%s işletmesini Leopardo’da keşfet',
       'commonNoModule': 'Bu modül henüz kullanılamıyor.',
-
       'messagesEmptyTitle': 'Konuşma yok',
       'messagesEmptyBody':
           'Bir işletmeyle iletişime geçtiğinde konuşma burada görünecek.',
@@ -435,7 +415,6 @@ class AppStrings {
       'messagesUnread': 'Okunmamış',
       'messagesComingSoon':
           'Mesajlaşma hesabınla birlikte gelir. Bu arada hiçbir mesaj kaybolmaz.',
-
       'activityEmptyTitle': 'Etkinlik yok',
       'activityEmptyBody':
           'Siparişlerin ve rezervasyonların ilk iletişiminden sonra burada görünecek.',
@@ -443,7 +422,6 @@ class AppStrings {
       'activityBookings': 'Rezervasyonlar',
       'activityFavorites': 'Favoriler',
       'activitySearches': 'Son aramalar',
-
       'profileLanguage': 'Dil',
       'profilePrivacy': 'Gizlilik',
       'profileNotifications': 'Bildirimler',

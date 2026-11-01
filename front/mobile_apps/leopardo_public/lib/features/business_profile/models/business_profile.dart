@@ -124,8 +124,9 @@ class BusinessProfile {
       menu: _menu(map['menu']),
       currency: _str(map['currency']),
       verified: map['verified'] == true || map['is_verified'] == true,
-      supportedActions:
-          actions is List ? actions.whereType<String>().toList(growable: false) : const [],
+      supportedActions: actions is List
+          ? actions.whereType<String>().toList(growable: false)
+          : const [],
       actionUrls: _actionUrls(actionUrls),
     );
   }
@@ -161,7 +162,8 @@ class BusinessProfile {
     return null;
   }
 
-  static String? _str(Object? v) => v is String && v.trim().isNotEmpty ? v.trim() : null;
+  static String? _str(Object? v) =>
+      v is String && v.trim().isNotEmpty ? v.trim() : null;
 
   static double? _dbl(Object? v) {
     if (v is num) return v.toDouble();
@@ -294,7 +296,8 @@ class BusinessMenuItem {
 
     return BusinessMenuItem(
       name: name,
-      description: raw['description'] is String ? raw['description'] as String : null,
+      description:
+          raw['description'] is String ? raw['description'] as String : null,
       price: price is num
           ? price.toDouble()
           : (price is String ? double.tryParse(price) : null),

@@ -109,7 +109,8 @@ class LocationService {
   }
 }
 
-final locationServiceProvider = Provider<LocationService>((ref) => LocationService());
+final locationServiceProvider =
+    Provider<LocationService>((ref) => LocationService());
 
 /// Villes proposées pour le choix manuel.
 ///

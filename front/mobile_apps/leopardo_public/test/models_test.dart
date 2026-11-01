@@ -45,7 +45,8 @@ void main() {
       expect(DiscoveryItem.tryParse({'slug': '   '}), isNull);
     });
 
-    test('accepte un item minimal — une verticale pauvre ne casse pas la liste', () {
+    test('accepte un item minimal — une verticale pauvre ne casse pas la liste',
+        () {
       final item = DiscoveryItem.tryParse({'slug': 'x', 'type': 'showcase'});
       expect(item, isNotNull);
       // Sans `name`, on retombe sur le slug plutôt que d'afficher une tuile
@@ -55,7 +56,8 @@ void main() {
       expect(item.imageUrl, isNull);
     });
 
-    test('tolère des types numériques en String (payload d\'un autre provider)', () {
+    test('tolère des types numériques en String (payload d\'un autre provider)',
+        () {
       final item = DiscoveryItem.tryParse({
         'slug': 'x',
         'latitude': '33.5',
@@ -76,8 +78,10 @@ void main() {
       expect(DiscoveryItem.tryParse([1, 2, 3]), isNull);
     });
 
-    test('key combine type ET slug — deux verticales peuvent partager un slug', () {
-      final a = DiscoveryItem.tryParse({'slug': 'nadia', 'type': 'restaurant'})!;
+    test('key combine type ET slug — deux verticales peuvent partager un slug',
+        () {
+      final a =
+          DiscoveryItem.tryParse({'slug': 'nadia', 'type': 'restaurant'})!;
       final b = DiscoveryItem.tryParse({'slug': 'nadia', 'type': 'showcase'})!;
       expect(a.key, isNot(b.key));
       expect(a.key, 'restaurant|nadia');
@@ -145,15 +149,27 @@ void main() {
     test('`visible` absent = false — fail-closed', () {
       // Le serveur déclare ce qui est publiable ; l'app n'affiche jamais une
       // catégorie qu'il n'a pas explicitement validée.
-      final category = DiscoveryCategory.tryParse({'key': 'restaurant', 'count': 12});
+      final category =
+          DiscoveryCategory.tryParse({'key': 'restaurant', 'count': 12});
       expect(category!.visible, isFalse);
     });
 
-    test('le seuil et le compteur sont conservés pour expliquer une absence', () {
+    test('le seuil et le compteur sont conservés pour expliquer une absence',
+        () {
       final categories = DiscoveryCategories.fromJson({
         'data': [
-          {'key': 'restaurant', 'label': 'Restaurants', 'count': 12, 'visible': true},
-          {'key': 'pharmacy', 'label': 'Pharmacies', 'count': 2, 'visible': false},
+          {
+            'key': 'restaurant',
+            'label': 'Restaurants',
+            'count': 12,
+            'visible': true
+          },
+          {
+            'key': 'pharmacy',
+            'label': 'Pharmacies',
+            'count': 2,
+            'visible': false
+          },
         ],
         'meta': {'threshold': 5, 'city': 'Casablanca'},
       });
@@ -244,7 +260,8 @@ void main() {
     test('isOpenAt retourne null quand les horaires sont inconnus', () {
       // Un `null` affiche l'état SANS badge : ne rien dire vaut mieux
       // qu'afficher « Fermé » sur un commerce qui est peut-être ouvert.
-      final profile = BusinessProfile.tryParse('x', {'slug': 'x', 'name': 'X'})!;
+      final profile =
+          BusinessProfile.tryParse('x', {'slug': 'x', 'name': 'X'})!;
       expect(profile.isOpenAt(DateTime(2026, 11, 4, 12, 0)), isNull);
     });
 

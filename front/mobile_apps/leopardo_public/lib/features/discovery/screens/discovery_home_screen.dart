@@ -43,7 +43,8 @@ class DiscoveryHomeScreen extends ConsumerStatefulWidget {
   const DiscoveryHomeScreen({super.key});
 
   @override
-  ConsumerState<DiscoveryHomeScreen> createState() => _DiscoveryHomeScreenState();
+  ConsumerState<DiscoveryHomeScreen> createState() =>
+      _DiscoveryHomeScreenState();
 }
 
 class _DiscoveryHomeScreenState extends ConsumerState<DiscoveryHomeScreen> {
@@ -84,7 +85,9 @@ class _DiscoveryHomeScreenState extends ConsumerState<DiscoveryHomeScreen> {
     setState(() => _locationOutcome = result.outcome);
 
     if (result.outcome == LocationOutcome.granted && result.nearParam != null) {
-      ref.read(discoveryControllerProvider.notifier).useLocation(result.nearParam!);
+      ref
+          .read(discoveryControllerProvider.notifier)
+          .useLocation(result.nearParam!);
     }
     // Refus, service coupé, refus définitif : on ne fait RIEN de plus que
     // laisser l'écran proposer le choix de ville. Insister serait hostile.
@@ -214,7 +217,9 @@ class _DiscoveryHomeScreenState extends ConsumerState<DiscoveryHomeScreen> {
     if (_mapView) {
       return _MapPlaceholder(
         strings: strings,
-        items: state.items.where((i) => i.latitude != null && i.longitude != null).toList(),
+        items: state.items
+            .where((i) => i.latitude != null && i.longitude != null)
+            .toList(),
         onSwitchToList: () => setState(() => _mapView = false),
       );
     }
@@ -369,7 +374,9 @@ class _Pill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fg = active ? AppColors.textPrimaryFor(context) : AppColors.textSecondaryFor(context);
+    final fg = active
+        ? AppColors.textPrimaryFor(context)
+        : AppColors.textSecondaryFor(context);
 
     return Semantics(
       button: true,
@@ -381,7 +388,8 @@ class _Pill extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: active
-                ? AppColors.tint(context, AppColors.info, lightAlpha: 0.18, darkAlpha: 0.24)
+                ? AppColors.tint(context, AppColors.info,
+                    lightAlpha: 0.18, darkAlpha: 0.24)
                 : AppColors.surfaceFor(context),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
@@ -427,7 +435,8 @@ class _MapPlaceholder extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.map_outlined, size: 48, color: AppColors.textSecondaryFor(context)),
+            Icon(Icons.map_outlined,
+                size: 48, color: AppColors.textSecondaryFor(context)),
             const SizedBox(height: 12),
             Text(
               '${items.length}',
@@ -479,7 +488,8 @@ class _Footer extends StatelessWidget {
         child: Center(
           child: OutlinedButton(
             onPressed: () => onLoadMore(),
-            child: Text(strings.t('discoveryResultsCount').replaceFirst('%s', '+')),
+            child: Text(
+                strings.t('discoveryResultsCount').replaceFirst('%s', '+')),
           ),
         ),
       );

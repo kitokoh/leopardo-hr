@@ -101,7 +101,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: 'business/:type/:slug',
-                    builder: (context, state) => BusinessProfileRoute(state: state),
+                    builder: (context, state) =>
+                        BusinessProfileRoute(state: state),
                   ),
                 ],
               ),

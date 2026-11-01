@@ -40,7 +40,8 @@ void main() {
       expect(retried, isTrue);
     });
 
-    testWidgets('aucun résultat : propose d\'ÉLARGIR, pas de réessayer', (tester) async {
+    testWidgets('aucun résultat : propose d\'ÉLARGIR, pas de réessayer',
+        (tester) async {
       final strings = AppStrings.of('fr');
       var widened = false;
 
@@ -79,7 +80,8 @@ void main() {
       expect(find.text(strings.t('stateOfflineBody')), findsOneWidget);
     });
 
-    testWidgets('localisation refusée : propose le choix de ville, jamais « autoriser »',
+    testWidgets(
+        'localisation refusée : propose le choix de ville, jamais « autoriser »',
         (tester) async {
       final strings = AppStrings.of('fr');
       var choseCity = false;

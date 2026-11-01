@@ -26,6 +26,9 @@ use Tests\TestCase;
  */
 class DiscoveryCategoryThresholdTest extends TestCase
 {
+    /**
+     * @param  iterable<PublicDiscoverableProvider>  $providers
+     */
     private function service(iterable $providers, ?PlatformSettingsRepository $settings = null): PublicDiscoveryService
     {
         return new PublicDiscoveryService(
@@ -89,8 +92,8 @@ class DiscoveryCategoryThresholdTest extends TestCase
         // table (les tests ne sont pas transactionnels ici). Sans ce nettoyage,
         // ce test lirait le seuil laissé par `test_threshold_is_read_from_...`
         // et échouerait selon l'ORDRE d'exécution — un faux négatif.
-        if (Schema::hasTable('platform_settings')) {
-            DB::table('platform_settings')
+        if (Schema::hasTable('public.platform_settings')) {
+            DB::table('public.platform_settings')
                 ->where('key', PlatformSettingsRepository::DISCOVERY_CATEGORY_MIN_PAGES)
                 ->delete();
         }
@@ -149,8 +152,13 @@ class DiscoveryCategoryThresholdTest extends TestCase
         // La fixture MVP ne charge pas `platform_settings` : on la crée ici
         // pour que ce test porte sur une VRAIE lecture en base, pas sur un
         // mock. Un test ignoré ne prouve rien.
-        if (! Schema::hasTable('platform_settings')) {
-            Schema::create('platform_settings', function ($table): void {
+        // `search_path` vaut `shared_tenants,public` : une table créée sans
+        // qualification atterrit dans le schéma TENANT, et la lecture du dépôt
+        // (qui interroge `public.platform_settings`) ne la voit pas. Le test
+        // passait alors au vert pour la MAUVAISE raison — le dépôt renvoyait son
+        // défaut 5, et l'assertion « 2 » échouait en accusant le code applicatif.
+        if (! Schema::hasTable('public.platform_settings')) {
+            Schema::create('public.platform_settings', function ($table): void {
                 $table->string('key', 120)->primary();
                 $table->jsonb('value');
                 $table->string('description', 255)->nullable();
@@ -159,7 +167,7 @@ class DiscoveryCategoryThresholdTest extends TestCase
             });
         }
 
-        DB::table('platform_settings')->updateOrInsert(
+        DB::table('public.platform_settings')->updateOrInsert(
             ['key' => PlatformSettingsRepository::DISCOVERY_CATEGORY_MIN_PAGES],
             ['value' => json_encode(['default' => 2]), 'updated_at' => now(), 'created_at' => now()],
         );

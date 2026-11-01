@@ -51,7 +51,8 @@ class LoadingSkeleton extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         itemCount: itemCount,
         separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (context, index) => _ShimmerBox(height: height, base: base),
+        itemBuilder: (context, index) =>
+            _ShimmerBox(height: height, base: base),
       ),
     );
   }

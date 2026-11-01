@@ -52,9 +52,13 @@ class PublicIdentityBridgeTest extends TestCase
         $routes = app('router')->getRoutes();
 
         foreach (['/api/v1/user/register', '/api/v1/user/login'] as $uri) {
+            // `RouteCollection::match()` lève `NotFoundHttpException` si la route
+            // n'existe pas : l'existence est donc prouvée par l'absence
+            // d'exception, pas par un `assertNotNull()` — celui-ci portait sur un
+            // type non nullable et PHPStan le rejetait à juste titre
+            // (`method.alreadyNarrowedType`).
             $route = $routes->match(app('request')->create($uri, 'POST'));
 
-            $this->assertNotNull($route, "La route {$uri} doit exister.");
             $this->assertNotContains(
                 'auth:user_api',
                 $route->gatherMiddleware(),

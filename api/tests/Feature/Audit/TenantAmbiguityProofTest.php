@@ -240,12 +240,22 @@ class TenantAmbiguityProofTest extends TestCase
     // Aides
     // ==================================================================
 
+    /**
+     * Ligne de dispatch `public.user_lookups` pour l'e-mail de preuve.
+     *
+     * Le type de retour est un *object shape* et non `object` : sans lui,
+     * PHPStan niveau 8 refuse chaque `$row->schema_name` / `$row->employee_id`
+     * (`property.notFound`). Le shape décrit exactement les deux colonnes lues.
+     *
+     * @return object{schema_name: string, employee_id: int}
+     */
     private function lookupRow(): object
     {
         $row = DB::table('public.user_lookups')->where('email', self::EMAIL)->first();
 
         $this->assertNotNull($row, 'Une ligne de dispatch doit exister.');
 
+        /** @var object{schema_name: string, employee_id: int} $row */
         return $row;
     }
 

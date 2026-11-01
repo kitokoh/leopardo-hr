@@ -95,7 +95,8 @@ class BusinessProfileScreen extends ConsumerWidget {
                   title: previewItem?.name ?? '',
                   onBack: () => context.pop(),
                 ),
-                Expanded(child: LoadingSkeleton(strings: strings, itemCount: 3)),
+                Expanded(
+                    child: LoadingSkeleton(strings: strings, itemCount: 3)),
               ],
             ),
             error: (error, _) => _ErrorView(
@@ -131,7 +132,8 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final failure = error is PublicApiFailure ? error as PublicApiFailure : null;
+    final failure =
+        error is PublicApiFailure ? error as PublicApiFailure : null;
 
     // 404 : le commerce n'est plus publié. C'est une information, pas une
     // panne — surtout quand la personne arrive par un QR code imprimé il y a
@@ -217,7 +219,8 @@ class _Content extends StatelessWidget {
                   },
                   icon: const CircleAvatar(
                     backgroundColor: Colors.black45,
-                    child: Icon(Icons.arrow_back, color: Colors.white, size: 20),
+                    child:
+                        Icon(Icons.arrow_back, color: Colors.white, size: 20),
                   ),
                   tooltip: strings.t('commonBack'),
                 ),
@@ -225,7 +228,6 @@ class _Content extends StatelessWidget {
             ],
           ),
         ),
-
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
           sliver: SliverList(
@@ -336,14 +338,12 @@ class _Content extends StatelessWidget {
             ]),
           ),
         ),
-
         SliverToBoxAdapter(
           child: _SecondaryActions(
             strings: strings,
             profile: profile,
           ),
         ),
-
         const SliverToBoxAdapter(child: SizedBox(height: 32)),
       ],
     );
@@ -453,7 +453,8 @@ class _SecondaryActions extends StatelessWidget {
     // nom + adresse. Ouvrir Google Maps en dur exclurait les utilisateurs
     // d'autres app de cartes ; `geo:` laisse le téléphone choisir.
     final uri = (lat != null && lng != null)
-        ? Uri.parse('geo:$lat,$lng?q=$lat,$lng(${Uri.encodeComponent(profile.name)})')
+        ? Uri.parse(
+            'geo:$lat,$lng?q=$lat,$lng(${Uri.encodeComponent(profile.name)})')
         : Uri.parse(
             'geo:0,0?q=${Uri.encodeComponent('${profile.name} ${profile.address ?? ''}'.trim())}');
 

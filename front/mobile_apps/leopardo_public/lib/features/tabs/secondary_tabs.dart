@@ -63,9 +63,11 @@ class MessagesTab extends ConsumerWidget {
                 // découvrir plus tard que l'assistante est une IA serait une
                 // surprise désagréable, et la consigne l'interdit.
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: AppColors.tint(context, AppColors.info, lightAlpha: 0.10),
+                    color: AppColors.tint(context, AppColors.info,
+                        lightAlpha: 0.10),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
@@ -155,7 +157,8 @@ class ProfileTab extends ConsumerWidget {
               margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: AppColors.tint(context, AppColors.info, lightAlpha: 0.10),
+                color:
+                    AppColors.tint(context, AppColors.info, lightAlpha: 0.10),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
