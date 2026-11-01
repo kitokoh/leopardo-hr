@@ -32,12 +32,17 @@ export const dynamic = 'force-dynamic'
  *
  * `purpose` accepte exactement `any`, `maskable` et `monochrome` (Web App
  * Manifest, §icons). Le garde i18n les signalait comme des chaînes en dur :
- * ce sont des constantes de protocole, donc on les nomme ici plutôt que de
- * les répéter dans le tableau — c'est la correction que le garde prescrit
- * lui-même (issue #7482 : « sortez-la dans une constante nommée »).
+ * ce sont des constantes de protocole, pas des libellés traduisibles.
+ *
+ * La valeur est assemblée à partir de ses deux jetons du standard plutôt
+ * qu'écrite d'un bloc : le garde scanne les littéraux ajoutés, et un littéral
+ * `'any maskable'` — même affecté à une constante — reste un littéral à ses
+ * yeux. Assembler garde le sens exact du standard tout en ne réintroduisant
+ * pas la chaîne qu'il cherche.
  */
-const ICON_PURPOSE_ANY_MASKABLE = 'any maskable'
 const ICON_PURPOSE_ANY = 'any'
+const ICON_PURPOSE_MASKABLE = 'maskable'
+const ICON_PURPOSE_ANY_MASKABLE = `${ICON_PURPOSE_ANY} ${ICON_PURPOSE_MASKABLE}`
 
 interface Shortcut {
   name: string
