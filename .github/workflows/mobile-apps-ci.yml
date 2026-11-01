@@ -245,6 +245,11 @@ jobs:
             path: front/mobile_apps/leopardo_travel_agent
           - name: leopardo_cameras
             path: front/mobile_apps/leopardo_cameras
+          # COULOIR 16 — surface publique. Sans cette ligne, « CI verte »
+          # serait vrai tout en ne testant PAS la nouvelle app : analyze et
+          # test ne tourneraient jamais dessus. Même patron que les autres.
+          - name: leopardo_public
+            path: front/mobile_apps/leopardo_public
 
     steps:
       - name: Checkout code
@@ -383,6 +388,9 @@ jobs:
           - name: leopardo_cameras
             path: front/mobile_apps/leopardo_cameras
             artifact: leopardo-cameras-debug-apk
+          - name: leopardo_public
+            path: front/mobile_apps/leopardo_public
+            artifact: leopardo-public-debug-apk
 
     steps:
       - name: Checkout code

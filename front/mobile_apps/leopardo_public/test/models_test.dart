@@ -62,9 +62,12 @@ void main() {
         'longitude': '-7.5',
         'reviews_count': '7',
       });
+      // Un `!` UNIQUE suffit : en Dart, `item!` promeut la variable en
+      // non-nullable pour tout le reste de la portée. Répéter `!` sur les
+      // lignes suivantes déclenchait `unnecessary_non_null_assertion`.
       expect(item!.latitude, closeTo(33.5, 0.001));
-      expect(item!.longitude, closeTo(-7.5, 0.001));
-      expect(item!.reviewsCount, 7);
+      expect(item.longitude, closeTo(-7.5, 0.001));
+      expect(item.reviewsCount, 7);
     });
 
     test('une clé inutilisable produit null, sans exception', () {
