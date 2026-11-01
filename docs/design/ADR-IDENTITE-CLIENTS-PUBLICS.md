@@ -196,3 +196,86 @@ resolveUserForPublicAccount(email, phoneE164):
   conservation comme table de profil métier ? **Recommandation : conservation comme
   profil** (elle porte des données propres : préférences de voyage), avec `user_id`
   obligatoire en fin de transition.
+
+---
+
+## 8. Règles de rattachement — version mécaniquement vérifiable
+
+> **Révision 3.** Cette section remplace toute formulation déclarative antérieure. Une règle
+> qui n'est pas vérifiable par la base ou par un test n'est pas une règle, c'est une
+> intention.
+
+### 8.1 L'interdiction, énoncée une fois
+
+> **Il est interdit de rattacher deux comptes sur la seule base d'un numéro non vérifié.**
+> Aucun `UPDATE ... SET user_id = ...` ne peut se produire dans le même flux qu'une saisie
+> de numéro.
+
+La différence est décisive : « interdit » se contourne par un bug ; **impossible à écrire** ne
+se contourne pas. La contrainte ci-dessous rend l'interdiction structurelle.
+
+```sql
+ALTER TABLE public.travel_customer_accounts
+    ADD COLUMN phone_e164 varchar(20) NULL,
+    ADD COLUMN phone_verified_at timestamptz NULL,
+    ADD COLUMN user_id uuid NULL;
+
+-- La règle, en une ligne : pas de vérification, pas de rattachement.
+ALTER TABLE public.travel_customer_accounts
+    ADD CONSTRAINT travel_customer_accounts_phone_verified_before_link
+    CHECK (user_id IS NULL OR phone_verified_at IS NOT NULL);
+
+CREATE INDEX travel_customer_accounts_phone_e164_idx
+    ON public.travel_customer_accounts (phone_e164)
+    WHERE phone_e164 IS NOT NULL;
+```
+
+**Pourquoi une contrainte et pas une validation applicative** : une validation se contourne par
+un `Model::unguard()`, un `insertOrIgnore`, un import, une console. Une contrainte CHECK tient
+contre tous les chemins d'écriture, y compris ceux qu'on n'a pas écrits.
+
+### 8.2 Les sept situations, règle par règle
+
+| Situation | Règle | Vérification |
+|---|---|---|
+| **OTP et vérification du téléphone** | `phone_e164` n'est **jamais** un identifiant avant OTP réussi. Un numéro saisi est une **prétention**, pas une preuve. | `phone_verified_at` NULL ⇒ `user_id` NULL (contrainte §8.1) |
+| **Comptes existants, numéros déjà associés** | Si le numéro existe des deux côtés, **aucun rattachement automatique**. Il faut prouver la possession **et** s'authentifier sur les deux comptes, ou passer par un parcours de fusion explicite. | test : fusion avec un seul facteur ⇒ `403` |
+| **Collisions** | Deux `users` avec le même numéro : impossible (index unique partiel `users.phone_e164`). Un `users` + un `travel_customer` avec le même numéro : **autorisé** — c'est le cas normal du pont. | `23505` sur `users`, aucun sur `travel_customer_accounts` |
+| **Rattachement sécurisé** | `user_id` n'est écrit **que** par le service de rattachement, après **deux** preuves : session valide sur `users` **et** OTP réussi sur le numéro. | un test vérifie qu'un seul facteur est refusé |
+| **Changement de numéro** | L'ancien reste **tracé et vérifié** ; le nouveau exige un nouvel OTP. Un changement **ne transfère jamais** `user_id`. | test : après changement, `user_id` inchangé |
+| **Récupération de compte** | Uniquement par un canal **déjà vérifié**. Jamais par simple connaissance du numéro. | test : récupération par numéro non vérifié ⇒ `403` |
+| **Concurrence des inscriptions** | Contrainte unique en base + gestion de `23505` ⇒ réponse idempotente, jamais deux comptes. | test : deux inscriptions simultanées ⇒ un seul compte |
+
+### 8.3 Le service de rattachement — unique, audité
+
+Trois propriétés, chacune testable :
+
+1. **Point d'entrée unique.** Aucun autre code n'écrit `travel_customer_accounts.user_id`.
+   Vérifiable en CI par une règle statique (grep du motif d'écriture hors service).
+2. **Deux preuves obligatoires.** Signature exigeant `(User $accountHolder, string $verifiedPhone)` —
+   le typage rend l'oubli visible en revue.
+3. **Audit systématique.** Chaque écriture produit une ligne `audit_logs` : acteur, ancien
+   `user_id`, nouveau, numéro, motif, horodatage. Un `UPDATE` direct hors service ne laisse pas
+   de trace — c'est précisément pourquoi il est interdit.
+
+### 8.4 Ce que cette version change par rapport aux révisions antérieures
+
+| Avant | Après |
+|---|---|
+| « Ne jamais rattacher sur un numéro non vérifié » (déclaratif) | Contrainte SQL — **impossible à écrire** |
+| « Le rattachement doit être audité » | Service unique + test statique en CI |
+| Trois places où `user_id` pouvait être écrit | Une seule |
+
+### 8.5 Conséquences, composant par composant
+
+| Composant | Conséquence |
+|---|---|
+| `travel_customer_accounts` | +3 colonnes, +1 contrainte CHECK, +1 index partiel. **Additif**, aucune donnée migrée. |
+| `users` | inchangé (`phone_e164` et son index unique partiel existent déjà depuis #8736) |
+| Marketplace / travel | peut enfin reconnaître un client récurrent ; aucune rupture de contrat |
+| Applications existantes | continuent de fonctionner : `user_id` NULL = comportement actuel |
+| Mobile grand public | débloqué : login par téléphone, contrat en `PUBLIC_ACCOUNT_API_CONTRACT.md` |
+
+**Aucune donnée n'est migrée.** Les `travel_customer_accounts` existants gardent `user_id` NULL
+jusqu'à ce que leur titulaire accomplisse lui-même le rattachement. C'est plus lent qu'un
+backfill, et c'est la seule façon de respecter l'interdiction du §8.1.

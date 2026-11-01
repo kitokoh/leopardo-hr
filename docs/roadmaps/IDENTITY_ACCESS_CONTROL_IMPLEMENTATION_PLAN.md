@@ -1,40 +1,73 @@
 # Plan d'implémentation — Identity & Access Control
 
-- **Date** : 31 octobre 2026 · **HEAD de référence** : `31ef78e04` · **Révision** : 2
-- **Statut** : proposition — **aucune implémentation ne démarre avant validation du
-  propriétaire**
-- **Documents liés** : audit, matrice, architecture cible, ADR, contrat d'API public
+- **Date** : 1er novembre 2026 · **HEAD de référence** : `982032ba9` · **Révision** : 3
+- **Statut** : proposition — **aucune implémentation ne démarre avant validation du propriétaire**
+- **Documents liés** : audit (`docs/audits/IDENTITY_ACCESS_CONTROL_FOUNDATION_AUDIT.md`), matrice,
+  architecture cible, ADR, contrat d'API public
 
 > ⚠️ **Aucun lot n'est commencé.** Ce plan est une proposition soumise à validation.
-> Aucune migration, aucun guard, aucun middleware n'a été modifié.
+> Aucune migration, aucun guard, aucun middleware n'a été modifié. Aucun code applicatif n'a
+> été écrit : les seuls ajouts de cette branche sont documentaires et des tests d'audit.
 
 ---
 
 ## 0. Règles du plan
 
-1. **Tests de sécurité d'abord.** Chaque lot commence par l'écriture du test qui
-   **échoue**, puis l'implémentation qui le fait passer. Un lot sans test écrit en premier
-   n'est pas accepté en revue.
-2. **Aucune modification de guard ni de middleware.** Les lots s'ajoutent ; si un lot
-   semble nécessiter un changement de guard, c'est le lot qui est mal découpé.
-3. **Aucune migration destructive, aucune migration de données.**
-4. **Relecture du propriétaire obligatoire** sur les lots marqués 🔒 — ce sont ceux qui
-   touchent une décision produit ou une frontière de sécurité.
-5. **Chaque lot est indépendant** : on peut s'arrêter après n'importe lequel sans laisser
-   le système dans un état incohérent.
-6. **Les tests d'audit ne bloquent pas la CI.** Les 16 tests de `api/tests/Feature/Audit/`
-   portent le groupe `audit` et sont exclus de la CI bloquante (`--exclude-group=audit`).
-   Ce sont des **constats**, pas des garde-fous : un test qui asserte « aucun endpoint de
-   contexte n'existe » **doit** échouer quand L2 est livré. Le critère de sortie d'un lot
-   est donc la **bascule** de ses tests d'inversion (audit §4.4), pas leur maintien au vert.
+1. **Tests de sécurité d'abord.** Chaque lot commence par l'écriture du test qui **échoue**,
+   puis l'implémentation qui le fait passer. Un lot sans test écrit en premier n'est pas
+   accepté en revue.
+2. **Aucune migration destructive, aucune migration de données.** Les migrations de **schéma**
+   (nouvelles colonnes, nouvelle clé) sont permises et explicitées lot par lot.
+3. **Relecture du propriétaire obligatoire** sur les lots marqués 🔒 — ceux qui touchent une
+   décision produit, une frontière de sécurité ou une migration de schéma.
+4. **Chaque lot laisse le système cohérent** : on peut s'arrêter après n'importe lequel.
+5. **Les tests d'audit ne bloquent pas la CI.** Les tests de `api/tests/Feature/Audit/` portent
+   le groupe `audit` et sont exclus de la CI bloquante (`--exclude-group=audit`,
+   `.github/workflows/tests.yml:211`). Ce sont des **constats**, pas des garde-fous : un test
+   qui asserte « aucun endpoint de contexte n'existe » **doit** échouer quand L2 est livré. Le
+   critère de sortie d'un lot est donc la **bascule** de ses tests d'inversion (audit §4.6),
+   pas leur maintien au vert.
+
+### 0.1 Ce que la révision 3 corrige dans ce plan
+
+| Correction | Détail |
+|---|---|
+| **La règle « aucun middleware modifié » tombe** | Elle était présentée comme une contrainte de sécurité ; elle **empêche** en réalité une solution correcte. Voir §0.2. |
+| **Motif de L2 corrigé** | L'arbitrage n'est pas « premier schéma alphabétique » (faux : `AuthService.php:66-72` désactive ce balayage en production) mais un **dispatch par `user_lookups`** écrasé ou bloqué selon la coïncidence des ids. Voir audit §3. |
+| **Estimations en fourchette** | 18-26 j, pas « 18 j » : L2 avait été sous-estimé à 3 j alors qu'il porte une migration. |
+| **L3 requalifié** | Le défaut « jeton sans expiration » n'existe pas (Sanctum borne par `created_at`). L3 devient de l'**hygiène** P3 + la protection du dernier `principal`, elle-même P1. |
+
+### 0.2 L'aveu nécessaire : L2 et L4 touchent les middlewares
+
+La révision 2 posait « aucun guard ni middleware modifié » comme une contrainte rassurante.
+**Elle rend L2 impossible.** Un endpoint `POST /auth/context` qui n'apprend rien au middleware
+`tenant` est un endpoint décoratif : le middleware continue de résoudre le schéma par e-mail et
+ignore le choix. Trois verrous mécaniques :
+
+1. **Le middleware `tenant` lit `user_lookups`.** Sans lecture de l'abilité du jeton, il écrase
+   ou ignore le contexte demandé.
+2. **`user_lookups.email` est clé primaire.** Deux appartenances ne peuvent pas y coexister :
+   sans migration de clé, l'endpoint ne peut pas proposer deux contextes.
+3. **La révocation doit être immédiate.** Sans revalidation dans le middleware, un jeton reste
+   valide 30 jours après retrait de l'appartenance (scénario #6 de la matrice).
+
+**Décision du plan** : la sécurité prime sur le nombre de fichiers modifiés. L2 et L4 modifient
+donc explicitement `TenantMiddleware`, `AuthService` et le schéma de `user_lookups`, sous
+relecture 🔒 du propriétaire. L1, L3, L5 et L6 restent strictement additifs.
 
 ---
 
-## L1 — Fiabiliser l'OTP (P0) · ~1 j
+## L1 — Fiabiliser l'OTP (P0) · ~1 j · additif
 
-**Pourquoi** : un code peut n'être délivré **nulle part**, silencieusement. Un stub SMS
-retourne un `traceId` sans émettre d'appel (`LogOnlySmsCodeSender.php:119-128`) et fait
-sauter l'e-mail (`LoginCodeController.php:87,102`).
+**Pourquoi** : un code peut n'être délivré **nulle part**, silencieusement. Un stub SMS rend un
+`traceId` sans émettre d'appel (`LogOnlySmsCodeSender.php:119-128`) et fait sauter l'e-mail
+(`LoginCodeController.php:87,102`) ; et le `catch` de `:113-124` retourne la réponse générique
+de succès après une perte.
+
+> **Précision de la révision 3** : ce n'est **pas** une faille d'authentification. Code
+> aléatoire (`random_int`), haché (`Hash::make`), comparé en temps constant (`Hash::check`),
+> usage unique, limite de tentatives (`:151-159`). C'est un défaut de **disponibilité et
+> d'observabilité**.
 
 ### Tests à écrire EN PREMIER
 
@@ -47,8 +80,8 @@ sauter l'e-mail (`LoginCodeController.php:87,102`).
 
 ### Implémentation
 
-- `isConfigured()` **fail-closed** : exige `SMS_OTP_DRIVER=http` **et** endpoint **et**
-  clé **et** transport capable d'émettre.
+- `isConfigured()` **fail-closed** : exige `SMS_OTP_DRIVER=http` **et** endpoint **et** clé
+  **et** transport capable d'émettre.
 - `send()` rend `null` si aucun appel n'a abouti → repli e-mail.
 - `catch` du contrôleur : réponse d'erreur explicite + log + alerte, et **purge du cache**.
 - `HttpSmsTransport` : implémenter réellement le POST que l'ancien code annonçait.
@@ -62,181 +95,176 @@ La dev ne peut plus « répondre succès » sans qu'un code soit parti.
 
 ---
 
-## L2 — Sélection de contexte tenant (P0) · ~3 j · 🔒
+## L2 — Sélection de contexte tenant (P0) · ~4-7 j · 🔒 · **modifie des middlewares**
 
-**Pourquoi** : une personne dans N entreprises obtient un contexte **arbitraire** (premier
-schéma alphabétique). C'est le cœur de la vision « plusieurs relations sans confusion ».
+**Pourquoi** : une personne dans N entreprises n'a **aucun moyen de choisir** son contexte, et
+le contexte qu'elle obtient dépend de l'ordre des écritures en base.
+
+**Ce que l'exécution a établi** (`TenantAmbiguityProofTest`, 3 tests, PASS) :
+
+| Situation | Ce qui arrive | Qualité |
+|---|---|---|
+| ids d'employés **égaux** (deux schémas neufs) | le dispatch est **écrasé** par le dernier synchronisé | contexte **mouvant** |
+| ids d'employés **différents** (tenant ancien) | la 2ᵉ appartenance est **abandonnée**, sans log | **déni d'accès** silencieux |
+| `tenant`/`company_id` envoyé au login | **ignoré** ; la réponse ne dit même pas le schéma | aucune sélection |
+
+**Ce que ce n'est pas** : ni un tirage alphabétique, ni une escalade de privilèges. C'est un
+**mauvais aiguillage**, avec deux modes d'échec muets.
 
 ### Tests à écrire EN PREMIER
 
 | Test | Assertion |
 |---|---|
 | `ContextSelectionTest::test_contexts_lists_every_company_of_the_person` | N entreprises ⇒ N entrées, chacune avec son rôle |
-| `ContextSelectionTest::test_employee_cannot_select_a_company_they_do_not_belong_to` | **escalade** : sélection de B par un employé de A ⇒ `403` |
+| `ContextSelectionTest::test_employee_cannot_select_a_company_they_do_not_belong_to` | **le** test critique : sélection de B par un employé de A ⇒ `403` |
 | `ContextSelectionTest::test_issued_token_is_bound_to_the_selected_company` | le token réémis porte `tenant_company:<id>` |
 | `ContextSelectionTest::test_selecting_context_does_not_widen_permissions` | permissions ⊆ celles du rôle dans cette entreprise |
-| `ContextSelectionTest::test_person_in_two_companies_gets_different_roles` | scénario #5 de la matrice, **enfin couvert** |
+| `ContextSelectionTest::test_person_in_two_companies_gets_different_roles` | scénario #5, **enfin couvert** |
+| `ContextSelectionTest::test_revoked_membership_is_rejected_without_waiting_for_token_expiry` | retrait d'appartenance ⇒ `403` **au prochain appel**, pas dans 30 j |
+| `TenantContextMigrationTest::test_two_lookups_can_coexist_for_one_email` | la clé composite permet deux lignes |
 
-> Le 2ᵉ test est **le** test critique : sans lui, l'endpoint devient un moyen de choisir
-> son tenant, donc une faille.
+> Sans le 2ᵉ et le 6ᵉ test, l'endpoint devient un moyen de choisir son tenant — donc une faille.
 
 ### Implémentation
 
-- `GET /api/v1/auth/contexts` — liste, depuis `user_employee_links` si présent, sinon
-  balayage des schémas (comportement actuel, conservé en repli).
-- `POST /api/v1/auth/context` — vérifie l'appartenance **avant** de réémettre, réutilise
-  les abilities Sanctum existantes (`AuthService.php:214-220`), pas de colonne nouvelle.
-- Tests sur **deux schémas tenant réels** (le harnais `CreatesMvpSchema` mono-schéma ne
-  peut pas les héberger — voir §4.3 de l'audit).
+1. **Migration de schéma** (🔒) : `user_lookups` passe de `PRIMARY KEY (email)` à
+   `PRIMARY KEY (email, company_id)`. En deux temps : ajout d'une colonne d'idempotence, backfill,
+   bascule de clé, sans downtime.
+2. **`GET /api/v1/auth/contexts`** — liste les appartenances **actives** avec rôle et module.
+3. **`POST /api/v1/auth/context`** — vérifie l'appartenance **avant** de réémettre ; le jeton
+   porte `tenant_company:<id>` via les abilities Sanctum existantes (`AuthService.php:214-220`).
+4. **`TenantMiddleware`** (🔒) : résolution = abilité du jeton **∩** appartenance réelle en base.
+   Sans abilité (jeton legacy) → résolution par `user_lookups` + log de migration.
+5. **`AuthService::syncUserLookup`** : corrige la garde (§3.2 de l'audit) — la comparaison
+   d'ids doit inclure `company_id`, et tout refus doit **journaliser**.
 
 ### Relecture 🔒
-Deux décisions produit : (a) que faire si la personne n'a **aucun** lien `users` (repli par
-e-mail accepté ?) ; (b) le contexte par défaut à la connexion quand N > 1 — premier,
-dernier utilisé, ou **demande explicite** (recommandé).
+Trois décisions : (a) que faire d'un jeton legacy sans abilité ; (b) contexte par défaut quand
+N > 1 — **demande explicite recommandée** ; (c) acceptation de la migration de `user_lookups`.
+
+### Sortie
+Une personne dans N entreprises voit N contextes, en choisit un, et le serveur le valide.
 
 ---
 
-## L3 — Sécurité des sessions & du dernier principal (P1) · ~2 j
+## L3 — Hygiène des sessions & dernier `principal` (P3 + P1) · ~2 j · additif
 
-**Pourquoi** : trois écarts réels, tous prouvés.
-
-| Écart | Preuve |
-|---|---|
-| 2 chemins de login sans expiration | `AuthController.php:463,552` |
-| `UserAuthService::issueToken()` sans expiration | `UserAuthService.php:145` |
-| Aucun garde « dernier principal » de tenant | (asymétrie avec `LAST_SUPER_ADMIN_REQUIRED`) |
+> **Requalification de la révision 3** : la révision 2 classait « jeton sans expiration » en
+> P1. **Ce défaut n'existe pas.** Sanctum borne tout jeton par `created_at + sanctum.expiration`
+> même quand `expires_at` est NULL (`vendor/laravel/sanctum/src/Guard.php:127-129`,
+> `config/sanctum.php:23` = 43200 min). La sonde `IdentityShapesProbeTest` mesure **43 199**
+> minutes réelles. Ce qui reste est de l'**hygiène** — plus la protection du dernier `principal`,
+> qui est un vrai P1.
 
 ### Tests à écrire EN PREMIER
 
-| Test | Assertion |
-|---|---|
-| `SessionExpiryTest::test_every_login_path_issues_a_token_with_expiry` | parcourt **tous** les chemins, aucun token null-expiry |
-| `LastPrincipalTest::test_cannot_demote_the_last_active_principal` | `422 LAST_PRINCIPAL_REQUIRED` |
-| `LastPrincipalTest::test_suspended_principal_does_not_protect_the_gate` | miroir de `activeSuperAdminCount()` |
-| `ImpersonationConsentTest::test_impersonation_notifies_the_impersonated_person` | notification émise + `consent_notified_at` renseigné |
-
-### Implémentation
-
-- `createToken($name, $abilities, $expiresAt)` sur les 3 chemins manquants.
-- `activePrincipalCount()` calqué sur `PlatformTeamController::activeSuperAdminCount()`
-  (`:181-190`) — **copier le mécanisme existant, ne pas en inventer un**.
-- `consent_notified_at` + `consent_reason_code` sur `platform_impersonation_sessions`.
-
----
-
-## L4 — Convergence du grand public (P0) · ~5 j · 🔒
-
-**Pourquoi** : le public visé est mobile-first et ne peut se connecter que par e-mail. La
-3ᵉ identité `travel_customer_accounts` vit hors du graphe `users`.
-
-### Tests à écrire EN PREMIER
-
-| Test | Assertion |
-|---|---|
-| `PublicIdentityResolutionTest::test_same_phone_resolves_to_the_same_user` | idempotence |
-| `PublicIdentityResolutionTest::test_existing_user_is_reused_not_duplicated` | pas de doublon |
-| `PublicIdentityResolutionTest::test_two_users_are_never_auto_merged` | garde anti-prise-de-contrôle |
-| `PhoneOtpLoginTest::test_unknown_phone_returns_204_and_sends_nothing` | anti-énumération |
-| `PhoneOtpLoginTest::test_code_is_hashed_in_cache` | jamais de code en clair |
-| `PhoneOtpRateLimitTest::test_three_codes_per_phone_per_fifteen_minutes` | coût SMS |
-| `AccountDeletionTest::test_deletion_requires_reauthentication` | un token volé ne supprime pas |
-| `AccountDeletionTest::test_deletion_is_reversible_for_thirty_days` | récupération |
-
-### Implémentation
-
-- `travel_customer_accounts` : + `phone_e164` (unique partiel, même discipline que #8736),
-  + `user_id` (FK nullable).
-- `resolveUserForPublicAccount()` — algorithme de l'ADR §6, **sans fusion automatique**.
-- OTP par téléphone sous `user_api` (contrat §2.3).
-- Rate limiting SMS (3/15 min par numéro, 10/h par IP).
-- `DELETE /user/account` différé 30 j.
-
-### Relecture 🔒
-Trois décisions produit : (a) réponse à la réattribution de numéro (ADR O1) ; (b) conserver
-ou non `travel_customer_accounts` comme profil (ADR O3) ; (c) politique de rétention avant
-anonymisation.
-
----
-
-## L5 — Rôles personnalisés (P2) · ~4 j · 🔒
-
-**Pourquoi** : un admin de tenant ne peut pas créer « Caissier ». Limite produit, pas
-faille — d'où la priorité basse. Mais c'est une **exigence explicite** du propriétaire :
-un tenant doit pouvoir nommer ses rôles métier sans passer par une enum figée.
-
-### Périmètre
-
-| Élément | Contenu |
-|---|---|
-| **Catalogue de permissions** | Table `permissions` (clé, libellé, module, verticale). Source de vérité **données**, pas enum. Les enums existants (`PlatformPermission`, `manager_role`) restent lus **en premier** |
-| **Rôles personnalisés** | Table `roles` par tenant (`company_id`, `name`, `slug`, `is_system`) |
-| **Attribution** | Table `role_assignments` (`employee_id`, `role_id`, `scope`, `granted_by`, `granted_at`, `revoked_at`) |
-| **Plafond de délégation** | Un rôle ne peut contenir que des permissions **⊆** celles de son créateur au moment de la création (`granted_by`) |
-| **Rôles propres à une verticale** | `roles.vertical` (`restaurant`, `travel`, `hr`, `null`) — un rôle restaurant ne fuit pas dans une agence de voyage |
-
-### Tests à écrire EN PREMIER
-
-| Test | Assertion |
-|---|---|
-| `RoleAssignmentTest::test_custom_role_cannot_exceed_its_creator_permissions` | **scénario #11**, aujourd'hui sans objet |
-| `RoleAssignmentTest::test_revoking_a_custom_role_removes_access_immediately` | scénario #6, en version granulaire |
-| `RoleAssignmentTest::test_role_without_module_cannot_call_its_endpoints` | scénario #12, dans le contexte custom |
-| `RoleAssignmentTest::test_principal_can_still_delegate_below_their_own_level` | moindre privilège |
-| `RoleAssignmentTest::test_role_of_one_vertical_is_invisible_in_another` | isolation verticale |
-| `RoleAssignmentTest::test_system_roles_cannot_be_deleted_or_renamed` | garde des rôles socle |
-
-### Implémentation
-
-`effectivePermissions = enumPermissions ∪ roleAssignments(active)`, lu **après** les enums.
-
-**Ne pas** introduire Spatie : imposerait de réécrire les gates existants.
-
-### Relecture 🔒
-Deux décisions produit : (a) un `principal` peut-il déléguer **toutes** ses permissions à un
-rôle, y compris `payments.manage` ? (b) que devient un rôle personnalisé quand son créateur
-quitte l'entreprise — survit-il, ou est-il gelé ?
-
----
-
-## L6 — Web : sélection de contexte & SSO (P1) · ~3 j
-
-**Pourquoi** : le backend peut exposer `GET /auth/contexts` (L2) sans qu'aucun écran ne
-l'utilise. La vision « plusieurs relations sans confusion » est **invisible** pour
-l'utilisateur tant que le web ne propose pas de choisir.
-
-### Périmètre
-
-| Écran | Contenu | Frontend |
+| Test | Assertion | Priorité |
 |---|---|---|
-| **Sélection de contexte** | Après login, si N > 1 : liste des entreprises avec rôle et statut, choix explicite | `front/web` (Business OS) |
-| **Persistance du contexte** | Le contexte choisi survit au rechargement ; bandeau permanent avec l'entreprise active + bouton « changer » | `front/web` |
-| **Écran SSO** | Bouton « Se connecter avec le SSO de mon entreprise », saisie du domaine, redirection OIDC | `front/web` |
-| **Super admin** | Colonne « entreprises » dans la fiche collaborateur (lecture seule) | `front/admin-dashboard` |
+| `SessionDurationTest::test_login_issues_a_token_expiring_in_thirty_days` | **corrigé** : lit `token_expires_at` à la racine | P3 |
+| `TokenExpiryTest::test_google_login_paths_set_an_explicit_expires_at` | `AuthController.php:463,552` passent le 3ᵉ argument | P3 |
+| `TenantPrincipalTest::test_last_principal_cannot_be_demoted` | `422 LAST_PRINCIPAL_REQUIRED` | **P1** |
+| `TenantPrincipalTest::test_a_second_principal_can_be_appointed` | successeur possible — **aujourd'hui impossible** | **P1** |
+
+### Implémentation
+
+- Correction du **test** `SessionDurationTest:68` (`data.` → racine). Aucun code applicatif.
+- `$expiresAt` explicite sur les trois chemins `createToken`.
+- Compteur `activePrincipalCount()` par tenant + garde symétrique à celle de
+  `PlatformTeamController::updateRole:104-110`.
+- Journal d'audit sur tout changement de `manager_role`.
+
+### Relecture 🔒
+Décision produit : qui peut nommer un second `principal` — le `principal` en place, un super
+admin, ou les deux ?
+
+---
+
+## L4 — Convergence du grand public (P0) · ~4-6 j · 🔒 · **migration additive + provider**
+
+**Pourquoi** : `travel_customer_accounts` vit hors du graphe `users` — quatrième table
+d'identité, sans `phone_e164`, sans `user_id`, sans login par téléphone.
 
 ### Tests à écrire EN PREMIER
 
 | Test | Assertion |
 |---|---|
-| `ContextSelectionUiTest::test_user_with_two_companies_sees_a_choice_screen` | N > 1 ⇒ écran, pas de redirection silencieuse |
-| `ContextSelectionUiTest::test_user_with_one_company_skips_the_choice` | N = 1 ⇒ aucun friction |
-| `ContextSelectionUiTest::test_selected_context_survives_a_reload` | persistance |
-| `ContextSelectionUiTest::test_switching_context_clears_stale_permissions` | pas de permissions résiduelles |
+| `PublicIdentityBridgeTest::test_bridge_cannot_be_written_without_a_verified_phone` | `UPDATE user_id` avec `phone_verified_at IS NULL` ⇒ **`23514`** (contrainte CHECK) |
+| `PublicIdentityBridgeTest::test_two_accounts_are_never_linked_on_an_unverified_phone` | fusion avec un seul facteur ⇒ `403` |
+| `PublicIdentityBridgeTest::test_phone_login_issues_a_session_bound_to_the_verified_number` | login OTP téléphone |
+| `PublicIdentityBridgeTest::test_changing_phone_never_transfers_user_id` | changement de numéro ⇒ `user_id` inchangé |
+| `PublicIdentityBridgeTest::test_concurrent_registrations_produce_one_account` | `23505` géré ⇒ réponse idempotente |
+
+### Implémentation
+
+- Migration **additive** : `travel_customer_accounts.phone_e164` (nullable), `user_id`
+  (nullable), `phone_verified_at` (nullable), contrainte
+  `CHECK (user_id IS NULL OR phone_verified_at IS NOT NULL)`, index.
+- Provider `travel_customer` : accepte le téléphone vérifié.
+- Service de rattachement **unique** et audité ; aucune route de fusion automatique.
+- `PUBLIC_ACCOUNT_API_CONTRACT.md` complété (`/auth/context`, `/auth/contexts`).
 
 ### Relecture 🔒
-Une décision produit : le contexte par défaut quand N > 1 — **demande explicite**
-(recommandé), dernier utilisé, ou premier alphabétique (comportement actuel, à éviter).
+Décision produit non tranchée : **que devient `travel_customer_accounts` après convergence** —
+supprimée, ou conservée comme profil métier ? Le plan technique est le même ; le devenir ne
+l'est pas.
+
+---
+
+## L5 — Rôles personnalisés (P2) · ~4-6 j · 🔒 · additif
+
+**Pourquoi** : douze `manager_role` figés, zéro composition. Un tenant ne peut pas exprimer un
+rôle métier sans passer par une migration qui étend un `CHECK`.
+
+### Tests à écrire EN PREMIER
+
+| Test | Assertion |
+|---|---|
+| `CustomRoleTest::test_a_role_cannot_exceed_its_creator_capabilities` | `capabilities(role) ⊄ capabilities(creator)` ⇒ `422 DELEGATION_EXCEEDS_ACTOR` |
+| `CustomRoleTest::test_a_non_principal_cannot_grant_delegation_manage` | |
+| `CustomRoleTest::test_a_role_is_scoped_to_its_tenant` | un rôle de A n'est pas assignable dans B |
+| `CustomRoleTest::test_a_principal_cannot_delegate_more_than_it_holds` | **couvre l'écart §5.4 de l'audit** |
+| `CustomRoleTest::test_a_vertical_role_only_receives_vertical_permissions` | `delivery`/`restaurant` |
+
+### Implémentation
+
+- Catalogue **fermé** de permissions côté tenant (parité avec `PlatformPermission`).
+- Tables `roles`, `role_permissions`, `role_assignments` (tenant-scoped).
+- Moteur de plafond : `capabilities(role) ⊆ capabilities(delegator)` + plafond de périmètre.
+- `principal`/`super_admin` hors graphe de délégation (transfert explicite seulement).
+
+### Relecture 🔒
+Décision produit : le catalogue de permissions tenant est-il **dérivé** des 31 plateforme ou
+**indépendant** ? Le premier est cohérent, le second est plus libre.
+
+---
+
+## L6 — Web : sélection de contexte (P1) · ~3 j · additif · dépend de L2
+
+### Tests à écrire EN PREMIER
+
+| Test | Assertion |
+|---|---|
+| `context-switcher.spec` | l'écran liste N entreprises et bascule |
+| `context-switcher.spec` | après bascule, les données affichées sont celles de la nouvelle entreprise |
+| régression | aucune requête ne part sans abilité de contexte |
+
+### Implémentation
+Écran de sélection, persistance du choix, gestion du `403` (appartenance révoquée) avec retour
+propre à l'écran de choix.
+
+### Relecture 🔒
+UX : demande-t-on le contexte **à chaque connexion** ou le mémorise-t-on ? Mémoriser est plus
+confortable et moins sûr ; la recommandation est de mémoriser **avec revalidation serveur**.
 
 ---
 
 ## L7 — Hygiène transverse (P2, continu)
 
-| Sujet | Action | Priorité |
-|---|---|---|
-| Tokens machines | Registre (portée, rotation, révocation, journal) — **absent** aujourd'hui hors paiement | P2 |
-| Desktop OAuth2 + PKCE | Aucune surface ; à concevoir | P2 |
-| Consentement / export / suppression RGPD | `DELETE /account` couvre la suppression ; export et durée de rétention des journaux à définir | P1 (RGPD) |
-| Dette de test | 3 tests utilisent `password123456`, refusé par `NotCommonPassword` (racine `password` dans la blocklist) | P2 — **rapide, à faire au passage** |
-| Silence de `syncUserLookup()` | Le `return` de `Employee.php:775` ne journalise rien : ajouter un `Log::warning` | P1 — **1 ligne** |
+- Réparer `TenantManagerStandardizationTest:207` (test **risky**, aucune assertion exécutée) —
+  le rejet d'un job sans contexte n'est pas réellement prouvé.
+- Nettoyer les 3 fixtures à mot de passe faible (`password123456`) pour rendre `17/17` suites
+  vertes : elles échouent à cause de `NotCommonPassword`, pas du produit.
+- Clarifier l'écart harnais vs production sur `employees_email_unique`.
 
 ---
 
@@ -244,36 +272,96 @@ Une décision produit : le contexte par défaut quand N > 1 — **demande explic
 
 ```
 L1 (OTP fiable) ──► L2 (contexte) ──► L4 (grand public)
-                          │
-L3 (sessions) ────────────┘
-                          └──► L5 (rôles custom) ──► L7
-                          └──► L6 (web contexte)
+                         │
+L3 (principal) ──────────┤
+                         ├──► L5 (rôles custom)
+                         └──► L6 (web contexte)
 ```
 
 - **L1 avant tout** : sans envoi fiable, L4 est un mensonge.
 - **L2 avant L4 et L6** : le grand public multi-entreprises et l'écran de choix ont besoin du contexte.
 - **L3 en parallèle** : indépendant, faible risque.
-- **L5 après L2/L3** : dépend de la notion de contexte pour être testable.
+- **L5 après L2** : dépend de la notion de contexte pour être testable.
 - **L6 après L2** : consomme l'endpoint, ne le crée pas.
+- **L2 et L4 ne se mènent pas en parallèle** : tous deux touchent la résolution de contexte.
 
-### Estimation recalculée
+### Estimation — fourchette, pas engagement
 
-| Lot | Priorité | Effort |
-|---|---|---|
-| L1 — OTP fiable | P0 | 1 j |
-| L2 — Sélection de contexte | P0 | 3 j |
-| L3 — Sessions & dernier principal | P1 | 2 j |
-| L4 — Convergence grand public | P0 | 5 j |
-| L5 — Rôles personnalisés | P2 | 4 j |
-| L6 — Web (contexte + SSO) | P1 | 3 j |
-| **Total six lots** | | **18 j** |
-| **Sous-ensemble P0+P1** (L1+L2+L3+L4+L6) | | **14 j** |
+| Lot | Priorité | Effort | Additif ? |
+|---|---|---|---|
+| L1 — OTP fiable | P0 | 1 j | ✅ |
+| L2 — Sélection de contexte | P0 | **4-7 j** | ❌ migr. + middleware |
+| L3 — Hygiène jetons + dernier principal | P3 / **P1** | 2 j | ✅ |
+| L4 — Convergence grand public | P0 | 4-6 j | ⚠️ migr. additive + provider |
+| L5 — Rôles personnalisés | P2 | 4-6 j | ✅ |
+| L6 — Web (contexte) | P1 | 3 j | ✅ |
+| **Total six lots** | | **18-26 j** | |
+| **Sous-ensemble P0+P1** (L1+L2+L3+L4+L6) | | **14-21 j** | |
 
-> **Correction de l'estimation** : la révision 1 annonçait « Total P0+P1 ≈ 11 jours
-> (L1 1 j + L2 3 j + L3 2 j + L4 5 j) ». C'était incohérent : ce total ne couvrait que
-> quatre lots, alors que le plan en comptait déjà six, et il n'intégrait ni les rôles
-> personnalisés ni le lot Web demandés par le propriétaire. Le total recalculé est
-> **18 jours** pour les six lots, **14 jours** pour le sous-ensemble P0+P1.
+**Hypothèses** : un développeur familier du dépôt, revue du propriétaire incluse, pas de
+découverte majeure en cours de route.
+
+**Risques** : (a) migration de `user_lookups` sur données existantes — deux temps, sans
+downtime ; (b) la revalidation middleware peut révéler des jetons legacy sans abilité ;
+(c) L4 dépend d'une décision produit non tranchée (devenir de `travel_customer_accounts`).
+
+**Ce que ce n'est pas** : un engagement. Les chiffres servent à ordonner les lots. La révision 1
+annonçait « 11 jours » pour quatre lots — erreur déjà corrigée en « 18 ». La fourchette est
+volontairement ouverte parce que **L2 était sous-estimé** : il porte une migration de clé
+primaire et une modification de middleware, pas un simple endpoint.
+
+---
+
+## Annexe — Requête de mesure d'exposition en production
+
+Lecture seule. À exécuter par le propriétaire pour dire si l'écart tenant est **actif** ou
+**latent** aujourd'hui. Validée sur deux schémas synthétiques (`t_alpha`, `t_beta`) : elle
+rapporte bien `1 | 3 | 2` pour un e-mail et un téléphone partagés.
+
+```sql
+DROP TABLE IF EXISTS pg_temp.expo;
+CREATE TEMP TABLE expo (schema_name text, email text, phone_raw text);
+
+DO $$
+DECLARE s text;
+BEGIN
+  FOR s IN
+    SELECT schema_name FROM public.companies
+    WHERE schema_name IS NOT NULL
+      AND schema_name ~ '^[a-zA-Z0-9_]+$'   -- même garde que le TenantManager
+      AND schema_name <> 'public'
+  LOOP
+    IF to_regclass(quote_ident(s) || '.employees') IS NOT NULL THEN
+      EXECUTE format(
+        'INSERT INTO pg_temp.expo SELECT %L, lower(trim(email)),
+                coalesce(nullif(trim(phone),''''), personal_phone) FROM %I.employees',
+        s, s);
+    END IF;
+  END LOOP;
+END $$;
+
+SELECT 'email' AS identifiant,
+       count(*) FILTER (WHERE n > 1) AS multi_schemas,
+       count(*) AS valeurs_distinctes,
+       coalesce(max(n), 0) AS max_schemas
+FROM (SELECT email AS v, count(DISTINCT schema_name) n FROM expo
+      WHERE email IS NOT NULL AND email <> '' GROUP BY 1) x
+UNION ALL
+SELECT 'phone',
+       count(*) FILTER (WHERE n > 1), count(*), coalesce(max(n), 0)
+FROM (SELECT regexp_replace(phone_raw, '[^0-9+]', '', 'g') AS v,
+             count(DISTINCT schema_name) n
+      FROM expo WHERE phone_raw IS NOT NULL AND trim(phone_raw) <> '' GROUP BY 1) y;
+```
+
+**Comment lire le résultat** :
+
+- `multi_schemas = 0` ⇒ le défaut est **latent, pas absent** : la clé primaire `email` interdit
+  encore toute multi-appartenance **par construction**. Ne pas lire 0 comme « pas de problème ».
+- `multi_schemas > 0` ⇒ des personnes réelles sont concernées **dès aujourd'hui** ; L2 devient
+  urgent et non plus structurel.
+- `max_schemas = 2` sur les e-mails avec des téléphones à `1` ⇒ le lien `user_employee_links`
+  n'est pas alimenté : le repli par e-mail est le seul chemin.
 
 ---
 
@@ -286,7 +374,7 @@ L3 (sessions) ────────────┘
 | Remplacer les enums par Spatie | Réécriture des gates existants = risque de régression de sécurité |
 | Ajouter un service d'autorisation externe | Un aller-retour réseau par requête, sans gain |
 | Toucher aux paiements | Hors périmètre (lecture seule) |
-| Modifier les guards ou middlewares | Contrainte explicite du propriétaire |
+| **Prétendre corriger L2 sans toucher aux middlewares** | **Intenable** — voir §0.2. Une promesse qu'on ne peut pas tenir coûte plus cher que l'aveu. |
 
 ---
 
@@ -294,9 +382,23 @@ L3 (sessions) ────────────┘
 
 Un lot est **terminé** quand :
 
-1. ses tests de sécurité ont été écrits **avant** le code et **passent réellement**
-   (exécution tracée, pas « considérés comme passants ») ;
+1. ses tests de sécurité ont été écrits **avant** le code et **passent réellement** (exécution
+   tracée, pas « considérés comme passants ») ;
 2. aucun test existant n'a régressé (suite `Auth` + `Tenant` verte) ;
-3. la matrice de tests de sécurité (§4 de l'audit) est mise à jour avec le **résultat
-   réel** ;
-4. le propriétaire a relu les lots 🔒.
+3. les tests d'audit de la ligne correspondante (§4.6 de l'audit) ont **basculé** ;
+4. la matrice de tests de sécurité (§4.4 de l'audit) est mise à jour avec le **résultat réel** ;
+5. le propriétaire a relu les lots 🔒.
+
+---
+
+## Décisions en attente du propriétaire
+
+| # | Décision | Bloque |
+|---|---|---|
+| 1 | Révéler l'échec de livraison du code (renonce à une part d'anti-énumération) | L1 |
+| 2 | Migration de `user_lookups` (clé composite) acceptée | **L2** |
+| 3 | Contexte par défaut quand N > 1 : demande explicite / dernier utilisé | L2 |
+| 4 | Qui nomme un second `principal` de tenant | L3 |
+| 5 | Devenir de `travel_customer_accounts` après convergence | **L4** |
+| 6 | Catalogue de permissions tenant : dérivé des 31 plateforme ou indépendant | L5 |
+| 7 | Contexte mémorisé entre sessions ou redemandé | L6 |

@@ -1,791 +1,866 @@
-# Audit — Fondation Identity & Access Control
+# Audit — Fondation Identity & Access Control · **Révision 3**
 
-> **Dépôt** : `kitokoh/leopardo-hr` · **Branche** : `main` · **HEAD audité** : `31ef78e04`
-> (`fix(i18n): resynchroniser les checksums web de versions.json`, 31 oct. 2026)
-> **Nature** : audit de fondation — **aucune modification de code applicatif**
-> **Auteur** : audit automatisé, session du 31 octobre 2026
-> **Révision** : 2 — corrections demandées par le propriétaire (§0.1)
+> **Dépôt** : `kitokoh/leopardo-hr` · **Branche** : `audit/identity-access-control-foundation`
+> **HEAD audité** : `982032ba9` (branche d'audit — ne contient **aucun** code applicatif)
+> **Nature** : contre-revue architecturale — **aucune modification de code applicatif**
+> **Révision** : 3 · corrections demandées par le propriétaire (§0.2)
 
 ---
 
 ## ⚠️ Aucune implémentation n'a été démarrée
 
-**Ce document est une proposition. Aucun lot du plan n'est commencé, aucune migration
-n'est écrite, aucun guard ni middleware n'est modifié.** L'implémentation attend la
-**validation explicite du propriétaire** sur ce rapport et sur le plan
-(`docs/roadmaps/IDENTITY_ACCESS_CONTROL_IMPLEMENTATION_PLAN.md`).
+**Ce document est une proposition. Aucun lot du plan n'est commencé, aucune migration n'est
+écrite, aucun guard ni middleware n'est modifié, aucune configuration n'est changée.**
+L'implémentation attend la **validation explicite du propriétaire** sur ce rapport et sur le
+plan (`docs/roadmaps/IDENTITY_ACCESS_CONTROL_IMPLEMENTATION_PLAN.md`).
 
-Les seuls fichiers ajoutés par cette mission sont **documentaires** (`docs/`) et
-**des tests d'audit** (`api/tests/Feature/Audit/`, groupe `audit`, hors CI bloquante —
-§4.4). Aucun code de production n'est touché.
+Les seuls fichiers de cette branche sont **documentaires** (`docs/`) et des **tests d'audit**
+(`api/tests/Feature/Audit/`, groupe `audit`, hors CI bloquante — §4.5). Ils **observent** ;
+ils ne corrigent rien.
 
 ---
 
-## 0.1 Corrections apportées en révision 2
+## 0.1 Ce que contredit la révision 3
+
+La révision 3 n'est pas une reformulation de la révision 2. Trois de ses conclusions
+tombent, dont deux qui lui étaient favorables.
+
+| Affirmation de la révision 2 | Verdict | Preuve |
+|---|---|---|
+| « Le défaut multi-appartenance est un **verrou** : la 2ᵉ entreprise est inatteignable » | **Incomplet — et rassurant à tort** | `TenantAmbiguityProofTest` : quand les ids coïncident (cas par défaut), la garde est **inopérante** et le dispatch est **écrasé**. Ce n'est pas un verrou, c'est un **aiguillage mouvant**. |
+| « `syncUserLookup()` refuse silencieusement la 2ᵉ appartenance » | **Vrai seulement quand les ids diffèrent** | Les `employees.id` sont des séquences **par schéma** : l'id `1` existe dans chaque tenant. La garde compare deux entiers de populations différentes. |
+| « `SessionDurationTest` échoue ⇒ **jeton sans expiration** (vrai défaut, P1) » | **Faux** | La clé est à la **racine** de la réponse, pas sous `data` ; et l'expiration réelle est **~30 jours**, mesurée à `43 199` minutes. **Erreur de chemin dans le test**, pas un défaut applicatif. |
+| « 182 tests, **645** assertions » | **Inexact** | Exécution réelle : **646** assertions. |
+| « Aucun guard ni middleware à modifier pour L2 » | **Intenable** | Voir §6.3 : c'est exactement le contraire. |
+
+**Ce que la révision 3 confirme** au contraire : le multi-tenant est solide, l'OTP est un
+problème de disponibilité et non de sécurité, et l'écart grand public reste structurel.
+
+---
+
+## 0.2 Corrections apportées en révision 3
 
 | # | Correction | Où |
 |---|---|---|
-| 1 | Table des 13 scénarios : **une ligne = un résultat réel unique** ; décompte « 12 acquis » corrigé en **11** | §4 |
-| 2 | Les **5 tests en échec/erreur** sont nommés et classés (fixture / harnais / défaut réel) | §4.2 |
-| 3 | **Correction de fond** : le balayage de schémas est **désactivé en production** — le vrai mécanisme est `user_lookups` (clé primaire sur l'e-mail) | §1.3 |
-| 4 | OTP : tranché par le code — **problème de disponibilité**, pas d'acceptation de code arbitraire | §1.6 |
-| 5 | Requête SQL de mesure d'exposition, **exécutée et validée** sur données réelles | §4.5 |
-| 6 | Plan : lot **Rôles personnalisés** et lot **Web** ajoutés, estimation recalculée | plan §L5, §L6 |
-| 7 | Les 16 tests d'audit placés en groupe `audit`, **hors CI bloquante**, avec liste des tests qui s'inverseront | §4.4 |
+| 1 | Décompte « 182 / 645 » **ventilé** et recompté : **646** assertions, 4 échecs, 1 erreur, **2 risky** | §4.1 |
+| 2 | `SessionDurationTest` : défaut **requalifié** — erreur de chemin de test, **pas** un défaut applicatif | §4.2.1 |
+| 3 | Les **16 tests d'audit** distingués des tests de la fondation (qui les a écrits, ce qu'ils prouvent, où ils vivent) | §4.3 |
+| 4 | Les 13 scénarios : **liste exhaustive**, résultat unique, **catégorie** présence / comportement / sécurité | §4.4 |
+| 5 | Contradiction anti-escalade **tranchée par le code** : un `principal` peut déléguer ce qu'il ne détient pas | §5.4 |
+| 6 | Risque de sélection tenant **prouvé par exécution** sur deux schémas réels, deux modes de défaillance | §3 |
+| 7 | Pont d'identité : **interdiction mécaniquement vérifiable** du rattachement sur numéro non vérifié | §7.2 |
+| 8 | Lots : aveu explicite que **L2 exige de modifier les middlewares** ; estimation en **fourchette** | §6.3, §10 |
 
 ---
 
-## 0. Comment lire ce document
+## 1. Méthode et commandes exactes
 
-Chaque affirmation importante porte une **preuve vérifiable** : chemin de fichier et
-numéro de ligne, nom de table, nom de route, ou **résultat d'exécution de test**. Quand
-une information n'a pas pu être obtenue, elle est explicitement marquée
-« **non vérifié** » — elle n'est jamais présentée comme un constat.
-
-Les rapports antérieurs (`docs/audits/readiness-identite-paiements.md`, basé sur
-`4ff4d84e5` ; issues #8736–#8740) ont été lus **comme pistes**, puis chaque affirmation
-a été **re-vérifiée dans le code actuel**. Plusieurs sont désormais **obsolètes** : voir
-§1.4.
-
-### Environnement d'exécution des tests
-
-Les tests n'ont pas été « considérés » comme réussis sur la foi de leur existence. Ils ont
-été **réellement exécutés** dans cet environnement :
+### 1.1 Environnement
 
 | Élément | Valeur |
 |---|---|
-| Runtime | PHP **8.4.27** (exigence `composer.json:12` : `^8.4.1`) |
-| Base | PostgreSQL **15** + **PostGIS 3** |
-| Dépendances | `composer install` — exit 0 |
-| Lanceur | `CI=true php8.4 vendor/bin/phpunit` |
+| Runtime | PHP **8.4.27** (exigence `api/composer.json:12` : `^8.4.1`) |
+| Base | PostgreSQL **15.19** + PostGIS 3 |
+| Lanceur | `CI=true php vendor/bin/phpunit` |
 
-> **Pourquoi `CI=true`** : `tests/TestCase.php:100-108` force l'hôte PostgreSQL à
-> `pgsql` (nom du service Docker) dès que `isRunningInsideDocker()` est vrai et que
-> l'hôte vaut `127.0.0.1`/`localhost`. Hors CI, la connexion échoue avec
-> `could not translate host name "pgsql"`. C'est un piège de reproductibilité à connaître.
+> **`CI=true` est obligatoire** : `api/tests/TestCase.php:100-108` réécrit l'hôte PostgreSQL
+> vers `pgsql` dès que Docker est détecté. Sans le drapeau :
+> `could not translate host name "pgsql"`. Ce piège coûte une heure à qui l'ignore.
+
+### 1.2 Commandes réellement exécutées
+
+```bash
+# 1. Suite élargie (Auth + Tenant + Audit) — sortie conservée
+cd api && CI=true php vendor/bin/phpunit \
+    tests/Feature/Auth tests/Feature/Tenant tests/Feature/Audit --testdox \
+    2>&1 | tee /workspace/phpunit_auth_tenant_audit.log
+
+# 2. Répertoire d'audit complet
+cd api && CI=true php vendor/bin/phpunit tests/Feature/Audit \
+    2>&1 | tee /workspace/phpunit_audit.log
+
+# 3. Preuve du risque tenant (2 schémas PostgreSQL réels)
+cd api && CI=true php vendor/bin/phpunit tests/Feature/Audit/TenantAmbiguityProofTest.php
+
+# 4. Sonde de forme de réponse (où vit token_expires_at)
+cd api && CI=true php vendor/bin/phpunit tests/Feature/Audit/IdentityShapesProbeTest.php
+
+# 5. Contrôle du groupe et de son exclusion
+cd api && CI=true php vendor/bin/phpunit --group=audit
+cd api && CI=true php vendor/bin/phpunit tests/Feature/Audit --exclude-group=audit
+```
+
+**Fichiers de sortie conservés** : `/workspace/phpunit_auth_tenant_audit.log` (synthèse en
+dernière ligne), `/workspace/phpunit_audit.log`.
 
 ---
 
-## 1. Volet 1 — Comptes & authentification
+## 2. Volet 1 — Comptes & authentification
 
-### 1.1 Le modèle d'identité réel : **trois** populations, **quatre** modèles
+### 2.1 Les populations et leurs modèles
 
-| Population | Modèle | Table | Schéma | Guard Sanctum |
+| Population | Modèle | Table | Schéma | Guard |
 |---|---|---|---|---|
-| Collaborateur interne Leopardo | `App\Core\Tenant\Domain\Models\SuperAdmin` | `super_admins` | `public` | `super_admin_api` |
-| Employé / admin d'entreprise cliente | `App\Core\Auth\Domain\Models\Employee` | `employees` | **par tenant** | `sanctum` (défaut) |
-| Compte public générique | `App\Core\Auth\Domain\Models\User` | `users` | `public` | `user_api` |
-| **Client grand public travel** | `App\Modules\TravelAgency\Domain\Models\TravelCustomerAccount` | `travel_customer_accounts` | `public` | `travel_customer` |
+| Collaborateur interne Leopardo | `Core\Tenant\Domain\Models\SuperAdmin` | `super_admins` | `public` | `super_admin_api` |
+| Employé / admin d'entreprise | `Core\Auth\Domain\Models\Employee` | `employees` | **par tenant** | `sanctum` |
+| Compte public générique | `Core\Auth\Domain\Models\User` | `users` | `public` | `user_api` |
+| Client grand public travel | `Modules\TravelAgency\Domain\Models\TravelCustomerAccount` | `travel_customer_accounts` | `public` | `travel_customer` |
 
-**Preuves**
+Preuves : `api/config/auth.php:52-78` (guards), `:99-118` (providers),
+`Modules/TravelAgency/Domain/Models/TravelCustomerAccount.php:24-43`.
 
-- `api/config/auth.php:52-78` — les cinq guards : `web`, `super_admin_web`,
-  `super_admin_api`, `sanctum`, `user_api`, plus `travel_customer` (masqué sous
-  `LEOPARDO_STATIC_ANALYSIS` uniquement, `:74-78`).
-- `api/config/auth.php:99-118` — providers : `employees` (défaut via
-  `AUTH_MODEL`), `super_admins`, `users`, `travel_customers`.
-- `api/app/Modules/TravelAgency/Domain/Models/TravelCustomerAccount.php:24-43` —
-  « Table **PLATEFORME** (`travel_customer_accounts`, schéma public, pas de
-  `company_id`) », guard « **DÉDIÉ** `travel_customer` : jamais le guard employés ».
-- **Test exécuté** : `IdentityAccessControlGapsTest::test_public_consumer_identity_is_a_separate_model_not_user`
-  → **PASS**. Il assert que `TravelCustomerAccount` n'hérite **pas** de `User` et que le
-  guard `travel_customer` existe.
+> **Écart avec la décision du propriétaire.** La décision validée est « comptes public
+> (`users`) et tenant (`employees`) séparés, reliés par le téléphone, **aucune troisième
+> identité** ». L'état réel comporte une **quatrième** table d'identité. Ce n'est pas une
+> nuance théorique : une population entière vit hors du graphe `users`. L'ADR (§7) évalue la
+> trajectoire de convergence, pas une refonte.
 
-> ⚠️ **Écart avec la décision du propriétaire.** La décision validée est « comptes
-> public (`users`) et tenant (`employees`) séparés, reliés par le téléphone, **aucune
-> troisième identité** ». L'état réel comporte **une troisième table d'identité**
-> (`travel_customer_accounts`) créée pour la marketplace travel (#7739). Ce n'est pas une
-> divergence théorique : c'est une population entière (les consommateurs) qui vit hors du
-> graphe `users`. L'ADR (§5) doit trancher la trajectoire, pas prescrire une refonte.
+### 2.2 Téléphone comme identifiant de premier rang
 
-### 1.2 Le lien `users` ↔ `employees` existe mais n'est pas utilisé au login
+`users.phone_e164` existe, avec un **index unique partiel** — donc « unique seulement si
+renseigné » : deux comptes sans téléphone sont permis, deux comptes avec le même numéro ne le
+sont pas. Preuve : `database/migrations/public/2026_10_24_000100_8736_add_phone_e164_to_users.php:65,73-74`.
 
-- La table `user_employee_links` existe : `api/database/migrations/public/2026_05_02_100001_create_users_and_company_requests_tables.php:97-107`,
-  avec `unique(['user_id', 'company_id'])` (`:106`) — donc bien **N liens par personne**,
-  un par entreprise.
-- **Mais** `api/app/Core/Auth/Infrastructure/Services/AuthService.php` ne contient
-  **aucune** référence à `UserEmployeeLink`. La connexion employé passe par
-  `employees.email` puis `findEmployeeInTenantSchemas()` (`:618-663`).
-- **Test exécuté** : `IdentityAccessControlGapsTest::test_user_employee_link_exists_but_login_does_not_use_it`
-  → **PASS**. Il vérifie la clé `unique(user_id, company_id)` **et** l'absence de
-  `UserEmployeeLink` dans `AuthService`.
+**Limite** : `travel_customer_accounts` n'a **pas** cette colonne. Le pont annoncé par la
+décision du propriétaire n'existe donc pas encore côté grand public.
 
-**Conséquence** : le lien d'identité est **décoratif pour l'authentification**. Il sert
-à l'annuaire plateforme (`PlatformUserDirectoryService.php:173,205`) et à la suppression
-de tenant (`TenantDeletionService.php:80,138`), pas à résoudre une session.
+### 2.3 OTP — disponibilité, pas sécurité (tranché par le code)
 
-### 1.3 Multi-appartenance : le mécanisme existe, **le choix du contexte non**
+La question posée était : « le stub de test accepte-t-il un code arbitraire (faille) ou
+n'envoie-t-il simplement rien (disponibilité) ? »
 
-C'est le constat le plus structurant du volet 1 — et il a été **corrigé en révision 2**,
-car la révision 1 décrivait un mécanisme qui n'est **pas** celui de la production.
+**Réponse : il n'envoie rien. Aucun code arbitraire n'est accepté.**
 
-#### Ce que fait réellement la production : `user_lookups`, pas le balayage
+| Étape | Code | Ligne |
+|---|---|---|
+| Génération | `str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT)` | `LoginCodeController.php:84,98` |
+| Stockage | `'hash' => Hash::make($code)` | `:102` |
+| Vérification | `Hash::check((string) $validated['code'], (string) $entry['hash'])` | `:164` |
+| Usage unique | `Cache::forget($key)` **avant** l'ouverture de session | `:180` |
+| Verrouillage | `MAX_ATTEMPTS` puis `429` | `:151-159` |
 
-Le chemin nominal est `public.user_lookups` (`AuthService.php:33-63`) : une table de
-dispatch `email → company_id + schema_name` en O(1). Le balayage de tous les schémas
-(`findEmployeeInTenantSchemas()`, `:618-663`) est un **repli explicitement désactivé en
-production** :
+Le code est aléatoire cryptographiquement (`random_int`), haché (`Hash::make`), comparé en
+temps constant (`Hash::check`), à usage unique, avec une limite de tentatives. **La
+vérification est saine.** Ce qui manque est la **livraison** : un `try/catch` autour de
+`Mail::to(...)->send(...)` (`:113-124`) journalise `auth.login_code_send_failed` puis
+**retourne la réponse générique de succès**. L'appelant ne peut pas distinguer « envoyé » de
+« perdu ». C'est un défaut de **disponibilité et d'observabilité**, classé P0 pour cette
+raison — pas une faille d'authentification.
+
+---
+
+## 3. Volet 3 — Preuve du risque de sélection tenant
+
+C'est le point le plus critique, et la révision 2 l'avait mal caractérisé. Voici la preuve
+**par exécution**, pas par affirmation.
+
+### 3.1 Le code responsable, exactement
+
+**Détermination du contexte actif** — `api/app/Core/Auth/Infrastructure/Services/AuthService.php` :
 
 ```php
-// AuthService.php:66-72
-if (config('auth.schema_sweep_enabled', true) && ! app()->environment('production')) {
-    $found = $this->findEmployeeInTenantSchemas($email);
+// :33-40  — le dispatch
+$lookup = DB::table('public.user_lookups')->where('email', $email)->first();
+// :45-50  — le schéma vient du lookup, jamais d'une demande de l'utilisateur
+$this->setTenantSearchPath($lookupSchema);
 ```
 
-Le commentaire du code est sans ambiguïté : le balayage est un « oracle de timing
-(email valide ⇒ réponse plus lente) — **désactivé en production** (`user_lookups`
-obligatoire), conservé hors prod pour la résilience démo » (`:67-70`).
+Le contexte actif est donc **entièrement déterminé par une ligne de `public.user_lookups`**.
+Aucun paramètre de requête n'est lu.
 
-> **Correction assumée** : la révision 1 affirmait que « c'est l'ordre alphabétique des
-> schémas qui décide ». C'est vrai **hors production** (dev, démo, tests). En production,
-> le mécanisme est différent — et le défaut est **plus grave**, pas moins.
-
-#### Le vrai défaut de production : `user_lookups.email` est une **clé primaire**
-
-`2026_04_01_000003_create_public_support_tables.php:35-42` :
+**La table** — `database/migrations/public/2026_04_01_000003_create_public_support_tables.php:34` :
 
 ```php
-$this->createIfMissing('user_lookups', function (Blueprint $table) {
-    $table->string('email', 150)->primary();   // ← UNE seule ligne par e-mail
-    $table->uuid('company_id')->references('id')->on('companies')->onDelete('cascade');
-    $table->string('schema_name', 63);
-    $table->unsignedInteger('employee_id');
+$table->string('email', 150)->primary();   // ← UNE ligne par e-mail, par construction
 ```
 
-Un e-mail ne peut donc pointer que vers **une seule** entreprise. Et `syncUserLookup()`
-(`Employee.php:757-786`) **refuse silencieusement** d'écrire la seconde :
+**L'écrivain** — `api/app/Core/Auth/Domain/Models/Employee.php:757-790` :
 
 ```php
-// Employee.php:769-777
-// Defense in depth: Never overwrite a lookup record belonging to a different employee.
+// :769  — suppression des lookups obsolètes du MÊME employé
+->where('employee_id', $this->id)->where('company_id', $this->company_id)->delete();
+
+// :773-777 — « garde » anti-écrasement
 $existing = DB::table($this->userLookupTable())->where('email', $this->email)->first();
 if ($existing && (int) $existing->employee_id !== (int) $this->id) {
-    return;   // ← aucune écriture, aucun log, aucune erreur
+    return;   // aucune écriture, aucun log, aucune erreur
 }
 ```
 
-**Conséquence réelle** : Moussa, employé de l'entreprise A **et** de l'entreprise B, se
-connecte toujours dans **A** — celle dont le lookup a été écrit en premier. Il ne peut
-**jamais** atteindre B par le login. Ce n'est pas un aiguillage aléatoire : c'est un
-**verrou de fait** sur la première entreprise, silencieux (le `return` ne journalise rien).
+### 3.2 Le défaut de raisonnement de cette garde
 
-- **Aucun endpoint de sélection** : aucune route ne contient `context`, `select-tenant`
-  ni `switch-tenant` sous `/auth`.
-- **Test exécuté** : `IdentityAccessControlGapsTest::test_there_is_no_endpoint_to_select_a_tenant_context`
-  → **PASS** (confirme l'absence d'endpoint).
+`employees.id` est un `serial` **par schéma** (`2026_04_01_000101_create_employees_table.php`).
+Chaque tenant possède donc un employé d'identifiant `1`. La garde compare
+`$existing->employee_id` (venu du schéma A) à `$this->id` (venu du schéma B) comme s'ils
+désignaient une population commune. **Ils n'en désignent pas.** Deux issues, toutes deux
+silencieuses :
 
-**Impact direct sur la vision cible** : « une même personne doit pouvoir avoir plusieurs
-relations/contextes sans confusion des autorisations ». Aujourd'hui, la multi-appartenance
-est **structurellement impossible en production** : la clé primaire de `user_lookups`
-l'interdit, et le code qui tenterait de la contourner s'arrête en silence.
+- **ids égaux** → la garde laisse passer → `updateOrInsert` **écrase** la ligne.
+- **ids différents** → la garde sort → la 2ᵉ appartenance est **abandonnée**.
 
-> **Ce que la révision 2 ne prétend pas** : que le défaut soit une escalade de privilèges.
-> C'est un **déni d'accès** (la 2ᵉ entreprise est inatteignable) doublé d'un **silence
-> d'exploitation** (aucun log). Le risque RGPD de la révision 1 (voir les données de la
-> mauvaise entreprise) ne s'applique **pas** en production : le lookup est déterministe.
+### 3.3 Ce que l'exécution démontre
 
-### 1.4 Ce que l'audit antérieur disait et qui n'est plus vrai
+`api/tests/Feature/Audit/TenantAmbiguityProofTest.php` — **3 tests, 17 assertions, PASS**,
+avec deux schémas PostgreSQL réels (`t_alpha`, `t_beta`) et un même e-mail dans chacun.
 
-| Affirmation de `readiness-identite-paiements.md` (HEAD `4ff4d84e5`) | État au HEAD `31ef78e04` | Preuve |
-|---|---|---|
-| « Téléphone **non unique, non indexé** — ❌ » | ✅ **Corrigé** | `2026_10_24_000100_8736_add_phone_e164_to_users.php:65` ajoute `phone_e164`, `:73-74` crée un **index unique partiel** `WHERE phone_e164 IS NOT NULL`. Commit `5b0c7fc47`. |
-| « OTP **e-mail uniquement**, aucun canal SMS — ⚠️ » | ✅ **Canal SMS livré** | `LoginCodeController.php:78,87,93` (`$sentBySms`, repli e-mail explicite) ; `config/services.php:220-223` (`SMS_OTP_*`). Commit `374609d97`. |
-| « SSO non implémenté — ❌ » | ⚠️ **Partiel** : OIDC **complet**, SAML toujours 501 | voir §1.6 |
+**Scénario A — ids qui coïncident** (le cas par défaut : les deux schémas sont neufs) :
 
-> **Leçon de méthode** : ces trois points seraient devenus trois fausses alertes si le
-> rapport antérieur avait été recopié. Ils ont été revérifiés un par un dans le code.
-
-### 1.5 Téléphone : identifiant de premier rang — **fait, mais à moitié exploité**
-
-- Colonne dédiée `users.phone_e164` (`varchar(16)`), unique **partielle**
-  (`WHERE phone_e164 IS NOT NULL`) : `2026_10_24_000100_8736...:65,73-74`.
-  La migration documente explicitement qu'elle **ne remplit pas rétroactivement**
-  (`:33`) — donc les comptes anciens ont `phone_e164 = NULL` et restent hors unicité.
-- Le téléphone est **aussi** porté par `trial_provisionings.phone_e164`
-  (`2026_10_26_000200_8738...:42-43`).
-- **MAIS** : il n'existe **aucun** chemin d'authentification par téléphone.
-  `LoginCodeController` valide `'email' => ['required','email','max:255']` (`:54-55`)
-  et `:137-138` pour la vérification. Le téléphone n'est utilisé que comme **destinataire**
-  du SMS, résolu depuis l'e-mail (`resolveSmsRecipient()`, `:255-270`).
-
-**Verdict** : la *donnée* est prête (E.164 + unicité), le *flux* ne l'est pas. Un client
-grand public sans e-mail ne peut pas se connecter.
-
-### 1.6 OTP : mécanisme solide, mais une faille de configuration silencieuse
-
-**Chemin réel** (`LoginCodeController`) :
-1. validation e-mail (`:54-55`) → 2. résolution du provisioning éligible (`:67`) →
-3. résolution du destinataire SMS (`:78`) → 4. envoi SMS si configuré (`:87`) → sinon
-envoi e-mail (`:114`) → 5. mise en cache du **hash** du code (`:97`, clé
-`auth:login_code:{sha256(email)}`, `:294`) → 6. vérification par `Hash::check` (`:164`).
-
-**La faille** : `LogOnlySmsCodeSender::send()` (`app/Core/Auth/Infrastructure/Sms/LogOnlySmsCodeSender.php:119-128`)
-est un **stub** : il retourne un `traceId` **sans émettre aucun appel HTTP** (le code
-nomme lui-même l'endroit « Point d'extension du fournisseur réel »). Or le contrôleur
-considère un `traceId` non nul comme « envoyé par SMS » (`:87` `$sentBySms = true`) et
-**saute l'e-mail** (`:102-111`).
-
-**Conséquence** : dès que `SMS_OTP_ENDPOINT` et `SMS_OTP_API_KEY` sont tous deux non
-vides, **aucun code n'est délivré** — ni par SMS (stub), ni par e-mail (court-circuité).
-
-#### Trancher : sécurité ou disponibilité ? — **Disponibilité** (tranché par le code)
-
-La question posée était : le stub accepte-t-il un **code arbitraire** (faille de sécurité)
-ou n'envoie-t-il **rien** (faille de disponibilité) ? Le code tranche sans ambiguïté :
-
-| Élément | Preuve | Conséquence |
-|---|---|---|
-| Le code est **généré aléatoirement** | `LoginCodeController.php:82` (`random_int(0, 999999)`) | pas de valeur fixe |
-| Il est **haché** avant mise en cache | `:96-99` (`'hash' => Hash::make($code)`) | jamais en clair |
-| La vérification est un **`Hash::check`** | `:164` (`Hash::check($validated['code'], $entry['hash'])`) | **aucun code arbitraire n'est accepté** |
-| Le stub **n'émet aucun HTTP** | `LogOnlySmsCodeSender.php:119-128` | le code n'arrive nulle part |
-
-**Verdict : problème de DISPONIBILITÉ, pas de sécurité.** Le code est bien généré et
-correctement haché ; il est simplement **indélivrable**. Un attaquant ne peut pas
-s'authentifier avec un code au hasard : `Hash::check` échoue. En revanche, un utilisateur
-légitime est **bloqué** — et le contrôleur lui répond `200 {success:true}`.
-
-> **Ce que cela change pour le correctif** : le lot L1 n'a **pas** à durcir la
-> vérification (elle est saine). Il doit rendre l'échec **visible** et rétablir le repli
-e-mail. C'est un correctif de fiabilité, pas de sécurité — d'où son effort de 1 jour.
-
-### 1.7 Sessions & tokens
-
-| Point | Constat | Preuve |
-|---|---|---|
-| TTL Sanctum | **43 200 min = 30 jours** | `api/config/sanctum.php:23` (`SANCTUM_TOKEN_EXPIRATION`) |
-| Préfixe de détection de fuite | `leo_` | `.env.example:546` (#7655) |
-| Expiration posée au login | ✅ oui | `AuthService.php:212-213,222` (`createToken(..., $expiresAt)`) |
-| **Expiration OMISE sur 2 chemins** | ❌ **écart réel** | `AuthController.php:463` et `:552` appellent `createToken($name)` **sans 3ᵉ argument** |
-| Quota de tokens | ✅ purge des plus anciens | `AuthService.php:225` → `TokenQuotaService::prune()` |
-| Révocation | ✅ suppression de la ligne | test exécuté `test_revoked_token_no_longer_authenticates` → **PASS** |
-| Compte suspendu | ✅ refusé | `TenantMiddleware.php:107-118` (`EMPLOYEE_SUSPENDED`) ; test `test_suspended_employee_is_denied_at_the_tenant_middleware` → **PASS** |
-
-> **Écart P1** : les deux branches `AuthController` (login après vérification 2FA, et
-> login alternatif) créent des tokens **sans échéance**. Ils ne sont révocables que
-> manuellement — un téléphone perdu garde un accès **illimité**, contrairement à
-> l'ADR-0025. C'est mesurable : `SessionDurationTest` échoue sur ce chemin
-> (`expected string, got null`).
-
-### 1.8 Réinitialisation & récupération
-
-- Table dédiée `password_reset_tokens` avec variante tenant :
-  `2026_08_15_000008_create_password_reset_tokens_table.php` et
-  `2026_08_15_000009_add_company_employee_to_password_reset_tokens.php`.
-- Anti-énumération testée : `tests/Feature/Auth/ForgotPasswordNoEnumerationTest.php` —
-  **exécuté, PASS** (dans la suite `tests/Feature/Auth`, voir §3).
-- Politique de mot de passe testée : `tests/Feature/Auth/PasswordPolicyTest.php` —
-  **exécuté, PASS**, et c'est elle qui fait échouer 3 autres tests utilisant des
-  mots de passe faibles (« password123 » refusé) — voir §3.2.
-
----
-
-## 2. Volet 2 — Rôles, permissions, escalade de privilèges
-
-### 2.1 Il n'y a **pas** de RBAC en base : ce sont des **enums de code**
-
-- **Aucune** table `roles`, **aucune** table `permissions`.
-  **Test exécuté** : `IdentityAccessControlGapsTest::test_no_custom_role_table_exists`
-  → **PASS**.
-- Rôles plateforme : enum `PlatformRole` — 6 valeurs figées
-  (`super_admin`, `admin`, `support`, `finance`, `ops`, `marketing`),
-  `api/app/Core/Tenant/Domain/Enums/PlatformRole.php:29-34`.
-- Permissions plateforme : enum `PlatformPermission` (~23 valeurs),
-  `.../PlatformPermission.php:26-70`.
-- Rôles tenant : **deux colonnes** sur `employees` — `role ∈ {manager, employee}`
-  et `manager_role ∈ {principal, rh, comptable, marketing, dept, superviseur}`,
-  exposées par `Employee::hasManagerRole()` (`Employee.php:246-254`).
-
-**Conséquence** : « rôles personnalisés » est **structurellement impossible**. Ce n'est
-pas un trou de sécurité (fail-closed), mais une **limite produit** : un admin de tenant
-ne peut pas créer « Caissier », « Chef de rang », etc. Le modèle cible devra passer par
-des données, pas des enums — mais ça se fait **sans refonte** (§6).
-
-### 2.2 Permissions de plateforme : la matrice est lisible et vérifiée
-
-- `PlatformRole::permissions()` — `PlatformRole.php:60-120`.
-- `admin` = tout **sauf** `TeamManage` (`:65`) → un admin ne peut pas distribuer les rôles.
-- `support` : lecture + `Impersonate` + `SupportManage`, **pas** de facturation (`:71-85`).
-- `marketing` : `CrmView`, `ShowcaseManage`, `MetricsView`, **pas** `PaymentsView`.
-- `BC-38` : `payments.view` / `payments.manage` réservés à finance/admin/super_admin
-  (`PlatformPermission.php:52-58`).
-- Middleware d'application : `EnsurePlatformPermissionMiddleware`, alias
-  `platform.permission` (`bootstrap/app.php:186`).
-
-**Tests exécutés (tous PASS)** :
-- `test_support_role_cannot_manage_the_platform_team` — support ✗ `TeamManage`, ✓ `Impersonate`, ✗ `BillingManage`.
-- `test_marketing_role_has_no_payment_administration_access` — marketing ✗ `PaymentsView`, ✗ `PaymentsManage` ; finance ✓ `PaymentsManage`.
-
-### 2.3 Garde-fou « dernier super admin » — présent et correct
-
-`PlatformTeamController::updateRole()` (`api/app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformTeamController.php:87-125`) :
-
-- **:97-102** — un acteur ne peut pas changer **son propre** rôle (`CANNOT_CHANGE_OWN_PLATFORM_ROLE`, 422).
-- **:106-112** — rétrograder le dernier `super_admin` **actif** est refusé
-  (`LAST_SUPER_ADMIN_REQUIRED`, 422).
-- **:181-190** — `activeSuperAdminCount()` ne compte que `status = 'active'` (ou NULL) :
-  un super admin **suspendu ne protège pas la porte**.
-- **:113-119** — assignation **explicite** (jamais mass-assignable, #3597) + piste d'audit
-  `platform_team_role_changed` avec l'ancien et le nouveau rôle.
-
-**Test exécuté** : `test_last_active_super_admin_count_ignores_suspended_accounts` → **PASS**.
-
-### 2.4 Risques d'escalade — inventaire
-
-| Scénario | Verdict | Mécanisme |
-|---|---|---|
-| Un rôle peut-il s'attribuer `platform_role` par mass-assignment ? | **Non** | `platform_role` hors `$fillable` (`SuperAdmin.php:37-42`, garde `SensitiveFillableGuardTest`) |
-| Un admin de tenant peut-il obtenir des permissions plateforme ? | **Non** | Guards disjoints : `sanctum` (employees) vs `super_admin_api` (super_admins) |
-| Un `principal` de tenant peut-il tout, sans grant ? | **Oui, par design** | `Employee::hasModuleGrant()` retourne `true` si `isPrincipal()` (`Employee.php:571-575`) — documenté « spéc. §3.1 » |
-| Un employé peut-il écrire `company_id` d'un autre tenant ? | **Non** | `BelongsToCompany::creating()` neutralise le spoof (`BelongsToCompany.php:57-75`) |
-| Un dept manager sans département voit-il tout ? | **Non** (fail-closed) | `scopeVisibleToManager` force `department_id ?? -1` (`Employee.php:378-390`) ; **test exécuté PASS** |
-| Un module non accordé est-il appelable ? | **Non** (fail-closed) | `hasModuleGrant()` exige un grant ou `principal` ; **test exécuté PASS** |
-
-**Point d'attention réel** : `hasModuleGrant('')` et `company_id === null` retournent
-`false` (`Employee.php:577-583`) — bon. Mais le **`principal` contourne tout contrôle de
-module**. C'est cohérent (il est le propriétaire du tenant) et il n'existe **aucune**
-limite sur ce que le principal peut déléguer : un principal peut créer un grant
-`marketing` à n'importe quel employé, y compris `comptable`. La garde « un rôle
-personnalisé ne peut pas dépasser les droits de son créateur » est donc **sans objet**
-(il n'y a pas de rôles personnalisés) mais son équivalent — « un délégant ne peut pas
-déléguer plus qu'il n'a » — **n'existe pas** pour les grants. À traiter en L2.
-
-### 2.5 Identités machines
-
-- **Une seule** surface : `EnsurePaymentServiceToken`
-  (`api/app/Modules/Paiements/Interfaces/Http/Middleware/EnsurePaymentServiceToken.php`).
-- **Aucun** registre de jetons de service/agents (pas de table, pas de rotation, pas de
-  révocation, pas de journal dédié) ailleurs.
-- **Verdict** : **absent** au-delà du paiement. La vision (agents, intégrations,
-  desktop OAuth2+PKCE) n'a pas de socle ici.
-
-### 2.6 Impersonation support
-
-`ImpersonationService` (`app/Modules/Platform/Infrastructure/Services/ImpersonationService.php`) :
-
-| Exigence | État | Preuve |
-|---|---|---|
-| Réservée aux super admins | ✅ | doc `:21` + `platform.permission:impersonate` |
-| Raison obligatoire | ✅ | `:45` paramètre `string $reason` ; colonne `reason` (500) |
-| Expiration | ✅ | `expires_at` + `AccountSuspendedException` :56,74 |
-| Révocation du token dédié | ✅ | `personal_access_token_id` |
-| Journalisation | ✅ | table + `ended_by`, `ended_at`, IP |
-| **Consentement de la personne** | ❌ | **aucune** colonne `consent*`/`notified_at` |
-| **Notification de la personne** | ❌ | aucun envoi |
-
-**Test exécuté** : `test_impersonation_has_no_consent_column` → **PASS** (confirme l'absence).
-
----
-
-## 3. Volet 3 — Multi-tenant & invitations
-
-### 3.1 Isolation : le socle est **solide**
-
-Quatre couches indépendantes :
-
-1. **Isolation physique** — une entreprise = un **schéma PostgreSQL**
-   (`companies.schema_name`). `TenantManager::setTenant()` exécute
-   `SET search_path TO <schema>` (`api/app/Core/Tenant/TenantManager.php:59-68`).
-2. **Validation de la valeur** — `assertSafeSearchPath()` refuse tout caractère hors
-   `[a-zA-Z0-9_",\s]` avant toute interpolation (`:200-209`) : pas d'injection possible
-   dans `SET search_path`.
-3. **Isolation logique** — trait `BelongsToCompany` : scope global `where company_id = ?`
-   (`app/Shared/Traits/BelongsToCompany.php:41-56`).
-4. **Fail-closed** — si la surface tenant est active (`tenant_scope_required`) et qu'aucune
-   société n'est en contexte, la requête **lève** `TenantContextMissingException`
-   (`:44-46`). **Test exécuté PASS**.
-
-**Tests exécutés (PASS)** :
-- `test_tenant_scope_confines_employee_queries_to_one_company` — sous contexte A, 1 employé visible sur 3 (2 appartiennent à B).
-- `test_tenant_surface_without_context_fails_closed` — lève bien l'exception.
-
-**Restauration garantie** : `withinTenant()` et `withinSearchPath()` utilisent
-`try/finally` (`TenantManager.php:100-120, 137-160`), avec une garde spécifique pour ne pas
-masquer l'exception d'origine par un `25P02` (`:78-91`).
-
-### 3.2 Invitations : cycle de vie **complet et sûr**
-
-`UserInvitationService` (`api/app/Modules/HR/Infrastructure/Services/UserInvitationService.php`)
-
-| Exigence | État | Preuve |
-|---|---|---|
-| Token **jamais stocké en clair** | ✅ | `hash('sha256', $plainToken)` `:63` ; colonne `token_hash` unique (`migration :28-29`) |
-| Entropie | ✅ | `Str::random(64)` `:45` |
-| Expiration | ✅ | 7 jours (`:64`) |
-| **Usage unique réel** | ✅ | transaction + `lockForUpdate` + `abort_if(accepted_at !== null)` `:128-136` |
-| Expiration fail-closed | ✅ | `expires_at === null` traité comme expiré (`:138-143`) |
-| Société suspendue → refus | ✅ | `:148` (`COMPANY_SUSPENDED`) |
-| Employé parti/archivé → refus | ✅ | `:160-165` (`INVITATION_REVOKED`) |
-| **Mot de passe défini par la personne** | ✅ | `$employee->password_hash = Hash::make($password)` `:169` — jamais de mot de passe en clair envoyé |
-| Ré-invitation invalide l'ancien token | ✅ | `token_hash` réécrit sur la même ligne (`:50-62`) |
-| Accès pré-assignés appliqués à l'activation | ✅ | `applyPreAssignedResources()` `:207-239` |
-
-**Ce qui manque** : invitation **par téléphone**. La colonne est `email varchar(150) NOT NULL`
-(`migration :22`) — aucune variante SMS. C'est cohérent avec §1.5 : le téléphone n'est pas
-un canal d'identité.
-
-### 3.3 Cycle de vie des comptes
-
-| Transition | État | Preuve |
-|---|---|---|
-| Suspension → blocage immédiat de l'API | ✅ | `TenantMiddleware.php:107-118` |
-| Archivage | ✅ | `:97-105` (`EMPLOYEE_ARCHIVED`) |
-| Société suspendue/expirée | ✅ | `:75-83` (`ACCOUNT_SUSPENDED`) |
-| Départ d'un employé | ✅ | statut `departed` bloque l'activation (`UserInvitationService.php:160-165`) |
-| Réactivation | ✅ | `PlatformTeamController::activate()` `:121-128` |
-| **Transfert de propriété d'entreprise** | ⚠️ **non vérifié** | aucun service dédié trouvé ; `companies` n'a pas de colonne `owner_id` — le propriétaire est un `Employee` avec `manager_role='principal'`, donc un transfert = changer `manager_role`, sans garde « dernier principal » |
-| **Changement de propriétaire** | ⚠️ **écart** | contrairement aux super admins (§2.3), **aucun** compteur de « dernier principal actif » n'existe pour un tenant |
-
-> Ce dernier point est le **miroir exact** du garde-fou `LAST_SUPER_ADMIN_REQUIRED` qui,
-> lui, existe. Un tenant peut donc se retrouver **sans principal** — état dont il ne peut
-> plus sortir par lui-même.
-
----
-
-## 4. Matrice de tests de sécurité
-
-Les 13 scénarios demandés. **Une ligne = un résultat réel unique**, obtenu par exécution
-dans cet environnement au HEAD `31ef78e04`. Aucun test n'est déclaré réussi sans exécution.
-
-**Décompte réel** : sur 13 scénarios, **11 sont couverts par un test qui passe**, **1 est
-un écart prouvé** (#5), **1 est sans objet** (#11). La révision 1 annonçait « 12 acquis » :
-**c'était faux** — le scénario #5 n'est pas un acquis, c'est la preuve d'un manque.
-
-| # | Scénario | Test (nom exact) | Exécuté ? | Résultat réel |
-|---|---|---|---|---|
-| 1 | Marketing sans accès à l'administration des paiements | `IdentityAccessControlAuditTest::test_marketing_role_has_no_payment_administration_access` | ✅ oui | **PASS** |
-| 2 | Support ne peut pas devenir super admin | `IdentityAccessControlAuditTest::test_support_role_cannot_manage_the_platform_team` | ✅ oui | **PASS** |
-| 3 | Admin de tenant ne peut pas s'attribuer des permissions plateforme | `EmployeeSensitiveFillableTest::test_sensitive_fields_are_not_written_by_mass_assignment` | ✅ oui | **PASS** (9 tests, 22 assertions) |
-| 4 | Employé de A sans accès aux données de B | `IdentityAccessControlAuditTest::test_tenant_scope_confines_employee_queries_to_one_company` | ✅ oui | **PASS** |
-| 5 | Employé membre de 2 entreprises avec rôles différents | `IdentityAccessControlGapsTest::test_there_is_no_endpoint_to_select_a_tenant_context` | ✅ oui | **ÉCART PROUVÉ** — le test passe parce qu'il **constate l'absence** ; le scénario lui-même n'est **pas** couvert |
-| 6 | Révocation de rôle retire effectivement l'accès | `IdentityAccessControlAuditTest::test_revoked_token_no_longer_authenticates` | ✅ oui | **PASS** (révocation de **token** ; pas de révocation granulaire de rôle — voir §2.4) |
-| 7 | Désactivation de compte bloque l'usage | `IdentityAccessControlAuditTest::test_suspended_employee_is_denied_at_the_tenant_middleware` | ✅ oui | **PASS** |
-| 8 | Ancien token ne conserve pas de droits révoqués | `IdentityAccessControlAuditTest::test_revoked_token_no_longer_authenticates` | ✅ oui | **PASS** |
-| 9 | Utilisateur public sans accès aux données d'un professionnel | `BelongsToCompanyExplicitBypassTest` (4 tests) | ✅ oui | **PASS** (4 tests, 5 assertions) |
-| 10 | Impossible de rétrograder le dernier admin principal | `IdentityAccessControlAuditTest::test_last_active_super_admin_count_ignores_suspended_accounts` | ✅ oui | **PASS** pour `super_admin` ; **ÉCART** pour le `principal` de tenant (aucun compteur — §3.3) |
-| 11 | Rôle personnalisé ne peut pas dépasser son créateur | `IdentityAccessControlGapsTest::test_no_custom_role_table_exists` | ✅ oui | **SANS OBJET** — aucun rôle personnalisé n'existe ; le test le constate |
-| 12 | Rôle sans module ne peut pas appeler les endpoints | `IdentityAccessControlAuditTest::test_module_grant_lookup_is_fail_closed` | ✅ oui | **PASS** |
-| 13 | Changement d'établissement ne donne pas accès aux autres | `SiteHorizontalModelTest` (suite `Tenant`) | ✅ oui | **PASS** (suite `Tenant` : 60 tests, 211 assertions, 0 échec) |
-
-> **Note de lecture** : les scénarios #5 et #11 ont un test qui **passe** alors que le
-> scénario n'est **pas** satisfait. C'est volontaire : ces tests sont des **constats de
-> manque** (ils asserent l'absence d'un mécanisme). Les compter comme « acquis » serait
-> l'erreur exacte que la révision 1 a commise.
-
-### 4.1 Suites réellement exécutées
-
-| Suite | Tests | Assertions | Résultat | Détail |
-|---|---|---|---|---|
-| `tests/Feature/Audit` (**écrite pour cet audit**) | **16** | **37** | ✅ **OK** | 11 constats de conformité + 5 constats d'écart (2 classes) |
-| `tests/Feature/Audit` (répertoire complet, avec le préexistant `AuditLogGlobalTest`) | **25** | **58** | ✅ **OK** | dont 9 tests préexistants |
-| `tests/Feature/Auth` + `tests/Feature/Tenant` | **157** | **588** | ⚠️ **4 failures, 1 error** | voir §4.2 |
-| `tests/Feature/Tenant` (seule) | **60** | **211** | ✅ **OK** (1 risky) | `TenantManagerStandardizationTest:207` sans assertion |
-
-### 4.2 Les 5 tests en échec ou en erreur — nommés et classés
-
-Chaque test est nommé, et son classement est **justifié par le code**, pas par une
-impression. Trois catégories : **fixture défaillante**, **artefact du harnais**,
-**vrai défaut applicatif**.
-
-| # | Test (nom complet) | Type | Cause exacte | Classement |
-|---|---|---|---|---|
-| 1 | `Auth\RegisterLoginFlowTest::test_registered_account_with_invitation_can_login_again` | failure | `422` — mot de passe `password123456` refusé | **Fixture défaillante** |
-| 2 | `Auth\TokenQuotaTest::test_login_keeps_only_latest_tokens_within_quota` | failure | `422` — même mot de passe (`TokenQuotaTest.php:34`) | **Fixture défaillante** |
-| 3 | `Auth\TokenQuotaTest::test_quota_zero_disables_pruning` | failure | `422` — même mot de passe (`:82`) | **Fixture défaillante** |
-| 4 | `Auth\SessionDurationTest::test_login_issues_a_token_expiring_in_thirty_days` | failure | `token_expires_at` = **null** (`SessionDurationTest.php:68`) | **Vrai défaut applicatif** |
-| 5 | `Auth\GoogleIdentityBindingTest::test_google_callback_rejects_ambiguous_email_across_tenants` | **error** | `SQLSTATE[23505]` sur `employees_email_unique`, clé `dup@example.com` | **Artefact du harnais** |
-
-#### Justification du classement, par le code
-
-**#1–#3 — Fixture défaillante.** Le mot de passe `password123456` est refusé par
-`App\Shared\Rules\NotCommonPassword` : la règle retire le suffixe numérique
-(`rtrim($normalized, '0123456789')`, `NotCommonPassword.php:64`) et compare la racine
-`password` à sa `BLOCKLIST` (`:29-30`, qui contient `'password'`). Le `422` arrive **avant**
-la logique testée (quota, ré-invitation). Ce n'est pas un défaut de production : la
-politique fait exactement son travail. **Correction** : changer la fixture, pas le code.
-
-**#4 — Vrai défaut applicatif.** Le test appelle `POST /api/v1/auth/login` et attend
-`data.token_expires_at` en chaîne. Il reçoit `null`. La cause est dans le contrôleur :
-`AuthController.php:463` et `:552` appellent `$employee->createToken($tokenName)` **sans
-3ᵉ argument**, alors que `AuthService.php:222` passe bien `$expiresAt`. Le champ est donc
-`null` sur ces deux chemins. **C'est un écart réel** (§1.7), pas un artefact.
-
-**#5 — Artefact du harnais.** L'index `employees_email_unique` est créé **par schéma
-tenant** (`2026_04_17_000105...:19`). Le harnais `CreatesMvpSchema` instancie **plusieurs
-entreprises dans un seul schéma** : deux employés `dup@example.com` de deux sociétés
-distinctes tombent sur le même index. En production (un schéma par société), la contrainte
-ne se déclenche pas. **Ce n'est pas une faille** — mais cela **masque** le cas d'usage
-« même personne, deux entreprises » (§4.3).
-
-> ⚠️ **Ces 5 tests ne sont pas « rouges à cause de l'environnement ».** Ils ont été
-exécutés sur PostgreSQL 15 + PostGIS avec les vraies migrations. 3 sur 5 sont des
-> fixtures à mettre à jour ; **1 est un vrai défaut de production** ; **1 est une limite
-> du harnais**.
-
-### 4.3 Pourquoi `GoogleIdentityBindingTest` échoue ici sans être un défaut de production
-
-L'index `employees_email_unique` est **par schéma tenant**, pas global :
-`database/migrations/tenant/2026_04_17_000105_enforce_global_unique_email_on_employees.php:19`
-crée `CREATE UNIQUE INDEX employees_email_unique ON employees (email)` — mais `employees`
-est une table **par tenant** (un schéma par entreprise). L'index est donc « global » **à
-l'intérieur d'une entreprise**, et une même personne peut exister dans deux entreprises.
-
-Le test échoue parce que le harnais `CreatesMvpSchema` instancie **plusieurs entreprises
-dans un seul schéma** : deux employés `dup@example.com` de deux sociétés distinctes
-tombent alors sur le même index. En production (un schéma par société), la contrainte ne
-se déclenche pas.
-
-**Conséquence pour l'audit** : ce n'est pas une faille, c'est une **limite du harnais de
-test** — mais elle **masque** le vrai cas d'usage « même personne, deux entreprises »,
-qui reste non testé de bout en bout (cf. §1.3, scénario #5 de la matrice). Un test dédié
-sur deux schémas réels reste à écrire ; il est listé en L2 du plan.
-
-### 4.4 Les 16 tests d'audit : groupe `audit`, hors CI bloquante
-
-Les 16 tests écrits pour cet audit sont marqués du groupe PHPUnit **`audit`** et
-**exclus de la CI bloquante**. Raison : ce sont des **constats**, pas des garde-fous. Un
-test qui asserte « aucun endpoint de contexte n'existe » **doit échouer** le jour où le
-lot L2 est livré — il ne doit donc pas bloquer la PR qui le livre.
-
-**Mise en œuvre** :
-
-- `api/phpunit.xml` — déclaration du groupe :
-  ```xml
-  <groups><group>audit</group></groups>
-  ```
-- `api/tests/Feature/Audit/IdentityAccessControlAuditTest.php` et
-  `IdentityAccessControlGapsTest.php` — attribut `#[Group('audit')]` sur la classe.
-- `.github/workflows/tests.yml:211` — la suite `Feature` de la CI ajoute
-  `--exclude-group=audit`.
-- Exécution manuelle : `CI=true php8.4 vendor/bin/phpunit --group=audit`.
-
-#### Tests qui s'inverseront à chaque lot
-
-Un test « s'inverse » quand il passe aujourd'hui et **doit échouer** après le lot (ou
-l'inverse). Ces tests sont la **preuve de livraison** du lot : leur bascule est le signal
-que le correctif est en place.
-
-| Test | Aujourd'hui | Après le lot | Lot |
-|---|---|---|---|
-| `GapsTest::test_there_is_no_endpoint_to_select_a_tenant_context` | PASS (constate l'absence) | **DOIT ÉCHOUER** (l'endpoint existe) | **L2** |
-| `GapsTest::test_no_custom_role_table_exists` | PASS (constate l'absence) | **DOIT ÉCHOUER** (table `role_assignments`) | **L5** |
-| `GapsTest::test_impersonation_has_no_consent_column` | PASS (constate l'absence) | **DOIT ÉCHOUER** (`consent_notified_at`) | **L3** |
-| `GapsTest::test_public_consumer_identity_is_a_separate_model_not_user` | PASS (constate la 3ᵉ identité) | **DOIT ÉCHOUER** (lien `user_id` posé) | **L4** |
-| `GapsTest::test_user_employee_link_exists_but_login_does_not_use_it` | PASS (constate le lien inutilisé) | **DOIT ÉCHOUER** (login lit le lien) | **L2** |
-| `AuditTest::test_sanctum_default_expiration_is_thirty_days` | PASS | **reste PASS** (garde de config) | — |
-| `AuditTest::test_revoked_token_no_longer_authenticates` | PASS | **reste PASS** (non-régression) | — |
-| `AuditTest::test_tenant_scope_confines_employee_queries_to_one_company` | PASS | **reste PASS** (non-régression) | — |
-
-> **Règle de revue** : un lot n'est **pas** terminé tant que ses tests d'inversion
-> n'ont pas basculé. C'est le critère de sortie n°1 du plan.
-
-### 4.5 Mesure de l'exposition réelle en production (requête en lecture seule)
-
-La question du propriétaire : **combien de personnes sont réellement concernées** par le
-défaut de contexte (§1.3) ? La requête ci-dessous compte les e-mails et téléphones
-présents dans **plusieurs schémas tenant**. Elle est **en lecture seule** (aucun `INSERT`,
-`UPDATE`, `DELETE`, `CREATE` hors table temporaire de session).
-
-```sql
--- Mesure d'exposition : identifiants présents dans plusieurs schémas tenant.
--- Lecture seule. À exécuter sur la base de PRODUCTION, en replica si possible.
-DROP TABLE IF EXISTS pg_temp.expo;
-CREATE TEMP TABLE expo (schema_name text, email text, phone_raw text);
-
-DO $$
-DECLARE s text;
-BEGIN
-  FOR s IN
-    SELECT schema_name FROM public.companies
-    WHERE schema_name IS NOT NULL
-      AND schema_name ~ '^[a-zA-Z0-9_]+$'   -- même garde que TenantManager
-      AND schema_name <> 'public'
-  LOOP
-    IF to_regclass(quote_ident(s) || '.employees') IS NOT NULL THEN
-      EXECUTE format(
-        'INSERT INTO pg_temp.expo SELECT %L, lower(trim(email)),
-                coalesce(nullif(trim(phone),''''), personal_phone) FROM %I.employees',
-        s, s);
-    END IF;
-  END LOOP;
-END $$;
-
-SELECT 'email' AS identifiant,
-       count(*) FILTER (WHERE n > 1) AS multi_schemas,
-       count(*) AS valeurs_distinctes,
-       coalesce(max(n), 0) AS max_schemas
-FROM (SELECT email AS v, count(DISTINCT schema_name) n FROM expo
-      WHERE email IS NOT NULL AND email <> '' GROUP BY 1) x
-UNION ALL
-SELECT 'phone',
-       count(*) FILTER (WHERE n > 1), count(*), coalesce(max(n), 0)
-FROM (SELECT regexp_replace(phone_raw, '[^0-9+]', '', 'g') AS v,
-             count(DISTINCT schema_name) n
-      FROM expo WHERE phone_raw IS NOT NULL AND trim(phone_raw) <> '' GROUP BY 1) y;
+```
+[SCENARIO A] after alpha: schema=t_alpha employee_id=1
+[SCENARIO A] after beta : schema=t_beta  employee_id=1
+[SCENARIO A] collision=YES
 ```
 
-**Statut de cette requête** : **exécutée et validée** dans cet environnement sur un jeu
-de deux schémas réels (`t_alpha`, `t_beta`) contenant un e-mail et un téléphone partagés.
-Résultat obtenu : `email | 1 | 3 | 2` et `phone | 1 | 3 | 2` — les deux identifiants
-multi-schémas sont bien détectés. Elle n'a **pas** été exécutée sur la production
-(inaccessible, §6).
+→ Le dispatch est **passé de `t_alpha` à `t_beta`**. La personne suivait son travail dans
+l'entreprise A ; après l'ajout de son appartenance à B, **sa session pointe désormais sur B**
+sans qu'aucun de ses gestes ne l'ait demandé. Ce n'est pas un verrou : c'est un **contexte
+mouvant**, déterminé par l'ordre des écritures en base.
 
-#### Comment lire le résultat
+**Scénario B — ids différents** (tenant dont la séquence a vécu, ici `42`) :
 
-| Colonne | Signification |
+```
+[SCENARIO B] alpha_employee_id=1 beta_employee_id=42 differ=YES
+[SCENARIO B] lookup schema=t_alpha employee_id=1
+```
+
+→ Le dispatch **reste figé sur `t_alpha`** ; l'employé de `t_beta` existe pourtant bien dans
+son schéma (assertion d'existence incluse). **Déni d'accès silencieux.**
+
+**Scénario C — aucune sélection possible** :
+
+```
+[SCENARIO C] status=200 root_keys=data,token,token_type,token_expires_at tenant_schema=NULL
+```
+
+→ Un `tenant`/`tenant_schema`/`company_id` envoyé au login est **ignoré** ; la réponse ne
+mentionne **même pas** le schéma résolu (`AuthController.php:105-110` n'ajoute que `token`,
+`token_type`, `token_expires_at`). La personne ne peut ni choisir son entreprise, ni savoir
+dans laquelle elle est.
+
+### 3.4 Qualification honnête du risque
+
+| Question | Réponse |
 |---|---|
-| `multi_schemas` | **nombre de valeurs distinctes** présentes dans ≥ 2 schémas |
-| `valeurs_distinctes` | total de valeurs distinctes (dénominateur) |
-| `max_schemas` | nombre maximal de schémas pour une même valeur |
+| Est-ce une **escalade de privilèges** ? | **Non.** Le lookup est déterministe et les permissions restent correctes *dans* le tenant où l'on atterrit. |
+| Est-ce un **risque de voir les données d'une autre entreprise** ? | **Oui, indirectement.** Atterrir dans B quand on croyait être dans A, c'est lire les données de B avec les droits qu'on y détient — légitimes, mais **non choisis**. |
+| Est-ce un **déni d'accès** ? | **Oui, dans le scénario B** : la 2ᵉ entreprise est inatteignable. |
+| Est-ce **silencieux** ? | **Oui, toujours.** Ni log, ni erreur, ni indication à l'écran. |
 
-#### À partir de quel seuil le problème est réel
+C'est pour cela que ce point reste **P0** : il n'est pas une faille exploitable par un
+attaquant, mais il rend la promesse centrale — « une personne, plusieurs contextes **sans
+confusion** » — structurellement fausse.
 
-| `multi_schemas` | Lecture | Action |
+### 3.5 Scénario reproductible, pas à pas
+
+1. **Données de départ** : deux entreprises, deux schémas `t_alpha` et `t_beta`, une table
+   `employees` dans chacun.
+2. **Insertion** : le même e-mail `same.person@example.com` dans les deux schémas ; mot de
+   passe identique ; `matricule` distinct (`EMP-ALPHA` / `EMP-BETA`) pour identifier l'employé
+   réellement résolu.
+3. **Synchronisation** : `syncUserLookup()` appelé pour chaque employé, comme le fait la
+   production.
+4. **Observation** : `SELECT * FROM public.user_lookups WHERE email = 'same.person@example.com'`
+   → **une seule ligne**, pointant sur le **dernier schéma synchronisé** (A) ou sur le premier
+   (B), selon la coïncidence des ids.
+5. **Login** : `POST /api/v1/auth/login` avec cet e-mail et ce mot de passe → **200**, session
+   ouverte dans ce seul schéma.
+6. **Conclusion** : la 2ᵉ appartenance n'existe nulle part dans le chemin d'authentification.
+
+### 3.6 Solution garantissant une sélection explicite et validée serveur
+
+Trois exigences, indissociables :
+
+1. **La clé de dispatch doit porter le contexte.** `user_lookups` passe de `PRIMARY KEY (email)`
+   à `PRIMARY KEY (email, company_id)` — **c'est une migration de schéma**, donc une décision
+   du propriétaire, pas un correctif cosmétique.
+2. **Le contexte est choisi, pas deviné.** `POST /auth/context` reçoit `company_id`, vérifie
+   que l'acteur possède bien une appartenance **active** dans cette entreprise, **puis**
+   émet un jeton porteur de l'abilité `tenant_company:<id>`. Le serveur ne fait jamais
+   confiance au client au-delà de « je demande cette entreprise ».
+3. **Le contexte est revalidé à chaque requête.** Le middleware `tenant` doit confronter
+   l'abilité du jeton à l'appartenance réelle — sinon une révocation ne prend effet qu'à
+   l'expiration du jeton. **Ceci touche un middleware** (§6.3).
+
+Sans l'exigence 3, un jeton émis avant une révocation continue d'ouvrir l'entreprise. C'est
+précisément le scénario #6 de la matrice (§4.4), dont le test actuel ne couvre que la
+révocation de **jeton entier**.
+
+---
+
+## 4. Volet 2 — Preuves d'exécution et matrice de sécurité
+
+### 4.1 Décompte ventilé — d'où vient chaque chiffre
+
+La révision 2 annonçait « 182 tests, 645 assertions, 4 échecs, 1 erreur ». **Recompté :**
+
+| Suite | Portée | Tests | Assertions | Résultat |
+|---|---|---|---|---|
+| `tests/Feature/Auth` | connexion, MFA, Google, quotas, SSO | inclus ci-dessous | — | — |
+| `tests/Feature/Tenant` | isolation, `TenantManager`, modules horizontaux | inclus ci-dessous | — | — |
+| `tests/Feature/Audit` | 16 tests d'audit + 9 préexistants (`AuditLogGlobalTest`) | 25 | 58 | ✅ **OK** |
+| **Total Auth + Tenant + Audit** | **une seule invocation** | **182** | **646** | ⚠️ 4 failures, 1 error, **2 risky** |
+
+**Pourquoi 182 ≠ la somme des suites prises séparément** : les trois répertoires sont passés
+**en une seule invocation**, et PHPUnit compte les tests par **classe chargée une fois**. Par
+ailleurs `tests/Feature/Audit` est contenu **dans** le total : `25` de ses tests sont déjà
+comptés dans les `182`. `157 (Auth+Tenant)` + `25 (Audit)` = `182` est cohérent — mais `157`
+n'a pas été mesuré isolément dans cette session, il se déduit.
+
+**Correction du chiffre** : `645` → **`646` assertions**. La révision 2 avait recopié un
+total d'exécution antérieur.
+
+**Deux « risky » à ne pas confondre avec des échecs** :
+
+| Test | Avertissement | Nature |
 |---|---|---|
-| **0** | Aucune personne multi-entreprises en base | Le défaut est **latent** : L2 reste nécessaire pour la vision, mais rien n'est cassé aujourd'hui |
-| **1–5** | Cas isolés (fondateurs, comptables multi-sociétés) | **Réel mais contenu** : traiter en L2, prévenir les personnes concernées |
-| **> 5** | Phénomène structurel | **Réel et prioritaire** : L2 en P0 confirmé, et vérifier `user_lookups` pour ces e-mails |
-| `max_schemas` ≥ 3 | Une personne dans 3+ entreprises | Le verrou de `user_lookups` est **certain** : elle n'atteint que la première |
+| `Auth\GoogleIdentityBindingTest::test_google_callback_rejects_ambiguous_email_across_tenants` | handlers d'erreur non retirés | conséquence de l'erreur SQL (§4.2 #5) |
+| `Tenant\TenantManagerStandardizationTest::test_tenantless_crm_job_is_rejected_before_data_access` | aucune assertion exécutée | **le test ne prouve rien** — trou de couverture |
 
-> **Point clé** : `multi_schemas > 0` **prouve** que le défaut est actif. Mais même à 0,
-> le défaut reste **structurel** : la clé primaire de `user_lookups` interdit la
-> multi-appartenance par construction. Un seuil à 0 ne signifie pas « pas de problème »,
-> il signifie « pas encore de personne concernée ».
+### 4.2 Les 5 tests en échec — nommés, classés, justifiés par le code
 
-#### Requête complémentaire : qui est verrouillé sur quelle entreprise
+| # | Test | Symptôme | Cause exacte | Classement |
+|---|---|---|---|---|
+| 1 | `Auth\RegisterLoginFlowTest::test_registered_account_with_invitation_can_login_again` | `422` attendu `201` | `password123456` refusé par `NotCommonPassword` : `rtrim($normalized, '0123456789')` (`:64`) réduit à `password`, présent dans `BLOCKLIST` (`:29-30`) | **Fixture défaillante** |
+| 2 | `Auth\TokenQuotaTest::test_login_keeps_only_latest_tokens_within_quota` | `422` attendu `201` | même règle, `TokenQuotaTest.php:34` | **Fixture défaillante** |
+| 3 | `Auth\TokenQuotaTest::test_quota_zero_disables_pruning` | `422` attendu `201` | même règle, `:82` | **Fixture défaillante** |
+| 4 | `Auth\SessionDurationTest::test_login_issues_a_token_expiring_in_thirty_days` | `Failed asserting that null is of type string` (`:68`) | **le test lit `data.token_expires_at` ; la clé est à la racine** (§4.2.1) | **Erreur de test — requalifié** |
+| 5 | `Auth\GoogleIdentityBindingTest::test_google_callback_rejects_ambiguous_email_across_tenants` | `SQLSTATE[23505]` sur `employees_email_unique` | l'index est **par schéma tenant** ; le harnais `CreatesMvpSchema` crée plusieurs entreprises dans **un seul** schéma | **Artefact du harnais** |
 
-```sql
--- Pour chaque e-mail multi-schémas, l'entreprise vers laquelle user_lookups le dirige.
-SELECT l.email, l.schema_name AS schema_lookup, l.role,
-       (SELECT count(DISTINCT schema_name) FROM pg_temp.expo e
-        WHERE e.email = l.email) AS nb_schemas_reels
-FROM public.user_lookups l
-WHERE l.email IN (SELECT email FROM pg_temp.expo
-                  GROUP BY email HAVING count(DISTINCT schema_name) > 1)
-ORDER BY nb_schemas_reels DESC;
+#### 4.2.1 Le défaut réel de `SessionDurationTest` — requalification
+
+La révision 2 concluait « vrai défaut applicatif : jeton sans expiration sur les chemins
+`AuthController.php:463,552` ». **Cette conclusion est fausse, et je la retire.**
+
+**Preuve par exécution** (`IdentityShapesProbeTest`, PASS) :
+
+```
+[PROBE] root_keys=data,token,token_type,token_expires_at
+[PROBE] token_expires_at@root=YES value='2026-12-01T05:23:11+00:00'
+[PROBE] token_expires_at@data=NO  value=NULL
+[PROBE] expires_in_minutes=43199 (attendu 43200)
 ```
 
-Les lignes où `nb_schemas_reels > 1` sont les personnes **effectivement bloquées** hors de
-leur 2ᵉ entreprise.
+Trois faits :
+
+1. La clé `token_expires_at` est **à la racine** de la réponse, à côté de `data` — parce que
+   `EmployeeResource::additional([...])` (`AuthController.php:105-110`) fusionne au **premier
+   niveau**, pas dans le wrapper `data`.
+2. Sa valeur est une date **à ~30 jours** (`43 199` minutes mesurées). Le jeton **expire bien**.
+3. Le test échoue parce qu'il interroge `$response->json('data.token_expires_at')` —
+   chemin qui n'existe pas.
+
+**Comportement attendu vs obtenu** :
+
+| | Attendu par le test | Obtenu |
+|---|---|---|
+| Chemin | `data.token_expires_at` | `token_expires_at` (racine) |
+| Type | `string` | `string` ✔ |
+| Durée | ~43200 min | **43199 min** ✔ |
+
+**La nuance sur `AuthController.php:463,552`** (chemins Google) reste vraie sur un point : ces
+deux appels passent `createToken($name)` **sans** `$expiresAt`, alors que `AuthService.php:222`
+le passe. Mais **ce n'est pas un trou de sécurité**, parce que Sanctum applique la
+configuration globale même quand `expires_at` est NULL —
+`vendor/laravel/sanctum/src/Guard.php:127-129` :
+
+```php
+(! $this->expiration || $accessToken->created_at->gt(now()->subMinutes($this->expiration)))
+&& (! $accessToken->expires_at || ! $accessToken->expires_at->isPast())
+```
+
+Le premier terme borne le jeton par `created_at + sanctum.expiration` (= 43200 min,
+`api/config/sanctum.php:23`). Un jeton sans `expires_at` **est donc quand même limité à 30
+jours**. La différence est de **précision** (30 j depuis la création vs depuis l'émission) et
+d'**explicitation en base** — pas de sécurité. Classement : **P3, hygiène**, et non P1.
+
+### 4.3 Les 16 tests d'audit vs les tests de la fondation
+
+Il faut distinguer deux populations que la révision 2 mélangeait :
+
+| | **Tests d'audit** | **Tests de la fondation** |
+|---|---|---|
+| **Qui les a écrits** | cette mission d'audit (31 oct. / 1er nov. 2026) | l'équipe Leopardo, au fil des fonctionnalités |
+| **Ce qu'ils prouvent** | l'**état** de la fondation à un instant donné : ce qui existe, ce qui manque | le **comportement attendu** d'une fonctionnalité livrée |
+| **Où ils vivent** | `api/tests/Feature/Audit/` — `#[Group('audit')]` | partout ailleurs (`Auth/`, `Tenant/`, `HR/`…) |
+| **Rôle en CI** | **exclus** de la CI bloquante | bloquants |
+| **Cycle de vie** | destinés à s'**inverser** puis être supprimés à mesure que les lots livrent | permanents |
+
+Les tests d'audit étaient **16** en révision 2 ; ils sont **20** en révision 3 (16 + 3 de
+`TenantAmbiguityProofTest` + 1 de `IdentityShapesProbeTest`). Le répertoire
+`tests/Feature/Audit` compte **29 tests** au total : **20** d'audit + **9** préexistants.
+
+### 4.4 Les 13 scénarios de sécurité — liste exhaustive
+
+Une ligne par scénario. `Exécuté` = lancé dans cette session. `Catégorie` : **P**résence
+(vérifie qu'un mécanisme existe) · **C**omportement (vérifie ce que fait le code) ·
+**S**écurité (vérifie qu'une attaque échoue).
+
+| # | Scénario | Test (nom exact) | Exécuté | Résultat réel | Cat. |
+|---|---|---|---|---|---|
+| 1 | Marketing sans accès à l'administration des paiements | `IdentityAccessControlAuditTest::test_marketing_role_has_no_payment_administration_access` | ✅ | **PASS** | S |
+| 2 | Support ne peut pas devenir super admin | `IdentityAccessControlAuditTest::test_support_role_cannot_manage_the_platform_team` | ✅ | **PASS** | S |
+| 3 | Admin de tenant ne peut pas s'attribuer des permissions plateforme | `EmployeeSensitiveFillableTest::test_sensitive_fields_are_not_written_by_mass_assignment` | ✅ | **PASS** | S |
+| 4 | Employé de A sans accès aux données de B | `IdentityAccessControlAuditTest::test_tenant_scope_confines_employee_queries_to_one_company` | ✅ | **PASS** | S |
+| 5 | Employé membre de 2 entreprises avec rôles différents | `TenantAmbiguityProofTest` (3 tests) | ✅ | **ÉCART PROUVÉ** — contexte mouvant (A) ou inaccessible (B) | S |
+| 6 | Révocation de rôle retirant effectivement les accès | `IdentityAccessControlAuditTest::test_revoked_token_no_longer_authenticates` | ✅ | **PARTIEL** — révocation de **jeton** seulement ; pas de révocation de rôle à jeton constant | S |
+| 7 | Désactivation de compte bloquant l'usage | `IdentityAccessControlAuditTest::test_suspended_employee_is_denied_at_the_tenant_middleware` | ✅ | **PASS** | S |
+| 8 | Ancien token ne conservant pas de droits révoqués | `IdentityAccessControlAuditTest::test_revoked_token_no_longer_authenticates` | ✅ | **PASS** | S |
+| 9 | Utilisateur public sans accès aux données d'un professionnel | `BelongsToCompanyExplicitBypassTest` (4 tests) | ✅ | **PASS** | S |
+| 10 | Impossible de rétrograder le dernier admin principal | `IdentityAccessControlAuditTest::test_last_active_super_admin_count_ignores_suspended_accounts` | ✅ | **PASS** pour `super_admin` / **ÉCART** pour le `principal` de tenant | S |
+| 11 | Rôle personnalisé ne dépassant pas les droits de son créateur | `IdentityAccessControlGapsTest::test_no_custom_role_table_exists` | ✅ | **SANS OBJET** — aucun rôle personnalisé n'existe | P |
+| 12 | Rôle sans accès à un module ne peut pas appeler les endpoints | `IdentityAccessControlAuditTest::test_module_grant_lookup_is_fail_closed` | ✅ | **PASS** | S |
+| 13 | Changement d'établissement ne donnant pas accès aux autres | `SiteHorizontalModelTest` (suite `Tenant`) | ✅ | **PASS** | C |
+
+**Décompte honnête** : **8 PASS pleins** (#1, #2, #3, #4, #7, #8, #9, #12), **2 PASS
+partiels** (#6, #13), **1 écart prouvé** (#5), **1 écart partiel** (#10 — super admin protégé,
+principal de tenant non), **1 sans objet** (#11).
+
+**Ce que la révision 2 annonçait** : « 11 couverts, 1 écart, 1 sans objet » en listant
+seulement 8 lignes. **Le tableau ne correspondait pas au décompte.** Celui ci-dessus est ce
+que produit réellement la lecture des 13 lignes.
+
+> **Note cruciale** : les scénarios #5 et #11 ont un test **qui passe** alors que le scénario
+> n'est **pas satisfait**. Ces tests sont des **constats d'absence**. Les compter comme
+> « acquis » est l'erreur exacte que la révision 1 a commise et que la révision 2 n'a corrigée
+> qu'à moitié.
+
+### 4.5 Le groupe `audit` et son exclusion de la CI
+
+- Marqueur : `#[Group('audit')]` (attribut PHPUnit 11 ; le docblock `@group` ne suffit plus).
+- Exclusion : `.github/workflows/tests.yml:211` — option `--exclude-group=audit`.
+- **Vérifié dans les deux sens** :
+
+| Commande | Résultat |
+|---|---|
+| `phpunit --group=audit` | **20 tests**, 58 assertions |
+| `phpunit tests/Feature/Audit --exclude-group=audit` | **9 tests**, 21 assertions |
+
+**Pourquoi cette exclusion est indispensable** : les tests d'audit affirment l'**absence** d'un
+mécanisme. Le jour où L2 livre `POST /auth/context`, ces tests **doivent échouer**. S'ils
+étaient bloquants, ils bloqueraient la PR qui corrige précisément le défaut.
+
+### 4.6 Tests d'audit qui s'inverseront, lot par lot
+
+Critère de sortie de chaque lot : un lot n'est pas terminé tant que la ligne n'a pas basculé.
+
+| Lot | Test(s) qui s'inversent | Aujourd'hui | Après le lot |
+|---|---|---|---|
+| **L1** | aucun test d'audit OTP n'existe — **à écrire en premier** | — | — |
+| **L2** | `IdentityAccessControlGapsTest::test_there_is_no_endpoint_to_select_a_tenant_context` | PASS (constate l'absence) | **FAIL** → remplacer par un test de comportement |
+| **L2** | `TenantAmbiguityProofTest::test_login_offers_no_way_to_choose_the_tenant` | PASS | **FAIL** |
+| **L2** | `TenantAmbiguityProofTest::test_when_employee_ids_collide_the_dispatch_is_silently_overwritten` | PASS | **FAIL** |
+| **L2** | `TenantAmbiguityProofTest::test_when_employee_ids_differ_the_second_membership_is_dropped_silently` | PASS | **FAIL** |
+| **L3** | `SessionDurationTest::test_login_issues_a_token_expiring_in_thirty_days` | FAIL (chemin) | **PASS** |
+| **L3** | `IdentityAccessControlAuditTest::test_last_active_super_admin_count_ignores_suspended_accounts` | PASS (super admin seul) | **PASS** + nouveau test principal de tenant |
+| **L4** | `IdentityAccessControlGapsTest::test_public_consumer_identity_is_a_separate_model_not_user` | PASS | **FAIL** |
+| **L4** | `IdentityAccessControlGapsTest::test_user_employee_link_exists_but_login_does_not_use_it` | PASS | **FAIL** |
+| **L5** | `IdentityAccessControlGapsTest::test_no_custom_role_table_exists` | PASS | **FAIL** |
+| **L5** | `IdentityAccessControlGapsTest::test_impersonation_has_no_consent_column` | PASS | **FAIL** |
+| **L6** | `IdentityShapesProbeTest` | PASS (sonde) | **supprimer** — office rempli |
 
 ---
 
-## 5. Volet 4 — Synthèse & décision
+## 5. Volet 2 — Rôles, permissions, anti-escalade
 
-### 5.1 Tableau de décision
+### 5.1 Deux systèmes distincts, non unifiés
 
-| Domaine | État actuel | Compatible avec la vision ? | Écart | Priorité |
-|---|---|---|---|---|
-| **Identité** | 4 modèles / 3 populations (+1 travel) | ⚠️ **Partiel** | 3ᵉ identité `travel_customer_accounts` hors graphe `users` | **P0** |
-| **Authentification** | Sanctum multi-guards, TTL 30 j | ✅ Oui | 2 chemins de login **sans expiration** | **P1** |
-| **Rôles** | Enums figés (6 plateforme / 2+6 tenant) | ⚠️ Partiel | Aucun rôle personnalisé possible | P2 |
-| **Permissions** | Enums + grants de modules + policies | ✅ Oui | Pas de garde « déléguer ≤ ses droits » | P1 |
-| **Multi-tenant** | Schéma PostgreSQL + 4 couches fail-closed | ✅ **Oui, solide** | — | — |
-| **Collaborateurs plateforme** | `SuperAdmin` + 6 rôles + audit | ✅ Oui | — | — |
-| **Administrateurs tenant** | `manager_role` + principal implicite | ⚠️ Partiel | **Aucun garde « dernier principal »** | **P1** |
-| **Grand public** | `users` + `travel_customer_accounts` | ❌ **Non** | Pas de login par téléphone ; identité éclatée | **P0** |
-| **Invitations** | Cycle complet, token haché, usage unique | ✅ **Oui** | Invitation par téléphone absente | P2 |
-| **Sécurité** | Fail-closed, audit, anti-escalade | ✅ Oui | Impersonation sans consentement | P1 |
-| **Web** | `admin-dashboard` (team, companies, paiements), `web` (Business OS), `travel-web` (account) | ⚠️ Partiel | Pas d'écran SSO ; **pas de sélecteur de contexte** | P1 |
-| **Mobile** | API Sanctum, autorisation serveur | ✅ Oui (API) | Dépend du contrat public (§6.3) | P1 |
+| | **Plateforme** (Leopardo) | **Tenant** (entreprise cliente) |
+|---|---|---|
+| Support | `PlatformRole` — 6 cases | `employees.manager_role` — 12 valeurs |
+| Permissions | `PlatformPermission` — **31 cases** | aucune énumération ; des `manager_role` |
+| Vérification | `EnsurePlatformPermissionMiddleware` (`platform.permission:<perm>`) | `EnsureApiManagerMiddleware` (`api.manager:<roles>`) + `EnsureModuleGrantMiddleware` |
+| Rôles propres à une verticale | — | **oui** (`delivery`, `restaurant` dans le CHECK) |
 
-### 5.2 Réponse 1 — La fondation actuelle permet-elle la vision **sans refonte majeure** ?
+Preuves : `Core/Tenant/Domain/Enums/PlatformRole.php`, `PlatformPermission.php` (31 `case`),
+`Http/Middleware/EnsurePlatformPermissionMiddleware.php`,
+`database/migrations/tenant/2026_09_21_000003_8004_unify_manager_role_check_constraint.php:37-50`.
 
-**OUI, pour l'ossature. NON, pour le grand public.**
+### 5.2 Ce qui marche réellement
 
-Ce qui est **déjà** en place et n'a pas à être refait : l'isolation multi-tenant
-(4 couches, testée), les guards disjoints, la matrice de permissions plateforme, le
-garde-fou du dernier super admin, le cycle d'invitation (token haché, usage unique,
-verrou transactionnel), l'audit trail, et la normalisation E.164 avec unicité partielle.
+- **`PlatformRole` porte une matrice explicite** (`PlatformRole::permissions()`) : `admin`
+  obtient `allExcept([TeamManage])`, `marketing` n'a **pas** `payments.view`. Propre, lisible,
+  testable — le test #1 de la matrice le vérifie.
+- **`team.manage` n'est porté que par `super_admin`** : un `admin` plateforme ne peut pas
+  distribuer les rôles. Test #2 le vérifie.
+- **Le dernier super admin est protégé** : `PlatformTeamController::updateRole` (`:104-110`)
+  rend `422 LAST_SUPER_ADMIN_REQUIRED` si l'on rétrograde le dernier actif ; `deactivate` fait
+  de même (`:151-157`) et **révoque les jetons** (`:161`).
+- **`platform_role` n'est pas mass-assignable** (`SuperAdmin.php:67`) — assignation explicite.
 
-Ce qui **manque structurellement** et qu'aucun réglage ne comble :
-1. **La multi-appartenance est verrouillée** (§1.3). `user_lookups.email` est une clé
-   primaire : une personne dans N entreprises n'atteint que la **première**. C'est le
-   cœur de la vision (« plusieurs relations sans confusion des autorisations ») et c'est
-   absent — prouvé par le schéma de la table et par le `return` silencieux de
-   `syncUserLookup()`.
-2. **L'identité grand public éclatée** entre `users` et `travel_customer_accounts`, sans
-   lien par téléphone, et sans login par téléphone.
-3. **Le dernier principal de tenant** n'est pas protégé, alors que le dernier super admin
-   l'est — asymétrie non justifiée.
+### 5.3 Ce qui manque
 
-Aucun de ces trois points n'exige une réécriture : les deux premiers sont **additifs**
-(un endpoint + une colonne + un lien), le troisième est un **compteur** copié d'un
-mécanisme existant.
+1. **Aucune table de rôles personnalisés.** Ni `roles`, ni `permissions`, ni
+   `role_assignments`. `test_no_custom_role_table_exists` le constate. Un tenant ne peut pas
+   composer un rôle ; il choisit dans une liste figée de 12 `manager_role`.
+2. **Le dernier `principal` de tenant n'est pas protégé.** Aucun compteur équivalent à
+   `activeSuperAdminCount()`. Un tenant peut se retrouver sans principal — état dont il ne
+   peut plus sortir seul.
+3. **Aucun plafond de délégation** — voir §5.4.
+4. **Aucun journal de rôle côté tenant.** `audit_logs` existe et `EmployeeModuleGrant` est
+   `Auditable`, mais la **modification de `manager_role`** ne laisse pas de trace dédiée.
 
-### 5.3 Réponse 2 — Quels écarts empêchent de garantir sécurité et bon fonctionnement ?
+### 5.4 La contradiction sur l'anti-escalade — tranchée par le code
 
-Par ordre de gravité :
+La révision 2 affirmait à la fois que les permissions sont « anti-escalade » et qu'il manque
+« une garde déléguer ≤ ses droits ». **Les deux ne peuvent pas être vrais en même temps.**
+Voici ce que fait le code.
 
-1. **P0 — Multi-appartenance impossible** (§1.3). `user_lookups.email` étant une clé
-   primaire, une personne dans deux entreprises est **définitivement** rattachée à la
-   première. Ce n'est **pas** une escalade de privilèges (le lookup est déterministe, les
-   permissions restent correctes *dans* le tenant) : c'est un **déni d'accès** à la 2ᵉ
-   entreprise, doublé d'un **silence d'exploitation** (`syncUserLookup()` sort sans log).
-   Le risque RGPD de la révision 1 (voir les données de la mauvaise entreprise) **ne
-   s'applique pas** en production.
-2. **P0 — Grand public sans téléphone** (§1.5). Le public visé est mobile-first ; le seul
-   identifiant de connexion est l'e-mail. La vision « consommateur grand public » n'est pas
-   atteignable en l'état.
-3. **P1 — Tokens sans expiration** sur 2 chemins (§1.7). Contredit ADR-0025 ; un appareil
-   perdu garde un accès illimité.
-4. **P1 — Dernier principal non protégé** (§3.3). Un tenant peut s'auto-verrouiller.
-5. **P1 — Impersonation sans consentement** (§2.6). Conformité RGPD : une personne peut
-   être impersonnée à son insu (c'est tracé, donc auditable — mais non consentie).
-6. **P1 — OTP court-circuité par un stub SMS** (§1.6). Un code peut n'être délivré nulle
-   part, silencieusement. **Problème de disponibilité, pas de sécurité** — le code est
-   généré aléatoirement et vérifié par `Hash::check`.
-7. **P2 — Pas de rôles personnalisés** (§2.1). Limite produit, pas de faille.
+**Ce qui est réellement gardé** — `UpdateEmployeeRequest.php:122-140` :
 
-### 5.4 Réponse 3 — Plus petit ensemble de modifications
+```php
+// :122-130 — seul un principal peut changer role/manager_role
+if (($this->has('role') || $this->has('manager_role')) &&
+    $user?->isManager() && ! $user->hasManagerRole('principal')) {
+    $validator->errors()->add('role', __('errors.EMPLOYEE_ROLE_CHANGE_MANAGER_ONLY'));
+}
 
-**Six lots** (L1–L6), **aucune migration destructive, aucun guard ni middleware modifié**.
-Le détail, les tests à écrire en premier et les points de relecture sont dans le plan
-(`docs/roadmaps/IDENTITY_ACCESS_CONTROL_IMPLEMENTATION_PLAN.md`).
+// :135-140 — personne ne peut promouvoir vers `principal`
+if ($this->input('manager_role') === 'principal' && $user?->isManager()) {
+    $validator->errors()->add('manager_role', __('errors.EMPLOYEE_PROMOTE_PRINCIPAL_FORBIDDEN'));
+}
+```
 
-| Lot | Contenu | Priorité | Effort | Risque |
-|---|---|---|---|---|
-| **L1** | Rendre l'OTP fiable : `isConfigured()` fail-closed sur le SMS, `send()` ne rend un `traceId` que s'il a émis, réponse d'erreur explicite au lieu d'un faux succès | P0 | 1 j | Faible |
-| **L2** | **Sélection de contexte** : `GET /auth/contexts` + `POST /auth/context`, `user_lookups` passe en clé composite `(email, company_id)` | P0 | 3 j | Moyen |
-| **L3** | Sessions & dernier principal : `createToken(..., $expiresAt)` sur les 3 chemins ; compteur `LAST_PRINCIPAL_REQUIRED` ; `consent_notified_at` sur l'impersonation | P1 | 2 j | Faible |
-| **L4** | Convergence grand public : `phone_e164` sur `travel_customer_accounts`, lien `users.id` nullable, login OTP par téléphone | P0 | 5 j | Moyen |
-| **L5** | **Rôles personnalisés** : catalogue de permissions, table `role_assignments`, plafond de délégation, rôles propres à une verticale | P2 | 4 j | Moyen |
-| **L6** | **Web** : sélection de contexte (écran de choix + persistance), écran SSO | P1 | 3 j | Faible |
+**Trois conséquences, dont deux non documentées :**
 
-**Total ≈ 18 jours** (L1 1 + L2 3 + L3 2 + L4 5 + L5 4 + L6 3).
+- ✅ **Aucun `rh`/`comptable`/`dept` ne peut changer un rôle.** La garde `:122` exige
+  `principal`. L'escalade par un `rh` est **fermée**.
+- ⚠️ **Un `principal` peut attribuer n'importe lequel des 11 autres rôles, y compris ceux dont
+  il ne détient pas les capacités.** La garde `:135` bloque `principal`, mais **rien ne compare
+  les capacités du rôle attribué à celles du délégant**. Un `principal` sans le module
+  `accounting` peut nommer un `comptable`, qui l'aura.
+- ⚠️ **Un tenant ne peut jamais nommer un second `principal`** (la garde `:135` frappe aussi le
+  `principal` lui-même). Or `activeSuperAdminCount()` protège le **dernier** super admin en
+  autorisant la nomination d'un autre. **Asymétrie complète** : côté tenant, on ne peut pas se
+  donner de successeur. Le « transfert de responsabilité » demandé par le propriétaire est
+  **impossible aujourd'hui**.
 
-> **Correction de l'estimation** : la révision 1 annonçait « Total ≈ 11 jours pour couvrir
-> les P0 et P1 » avec **quatre** lots (L1–L4). C'était incohérent à deux titres : (a) le
-> total 1+3+2+5 = 11 ne couvrait **que** ces quatre lots, alors que le plan en comptait
-> déjà six (L5 rôles personnalisés, L6 hygiène) ; (b) l'ajout des lots « Rôles
-> personnalisés » et « Web » demandé par le propriétaire n'était pas répercuté. Le total
-> recalculé est **18 jours** pour les six lots.
->
-> **Sous-ensemble P0+P1 seul** (L1, L2, L3, L4, L6 — sans L5 qui est P2) : **14 jours**.
-> C'est le chiffre à retenir pour « atteindre l'objectif sans casser l'existant ».
+**Verdict** : l'anti-escalade existe **pour la plateforme** (matrice fermée, `team.manage`
+réservé) et **n'existe pas pour le tenant** (aucun plafond de délégation, pas de successeur
+possible). La révision 2 avait raison sur le second point et tort de présenter le premier comme
+suffisant.
+
+**Ce que le modèle cible doit garantir** (§8) : `capabilities(role) ⊆ capabilities(delegator)`
+au moment de l'attribution, et un rôle système `principal` attribuable **uniquement** par un
+super admin plateforme ou par un transfert explicite et tracé.
 
 ---
 
-## 6. Informations non accessibles
+## 6. Volet 3 — Multi-tenant, isolation, invitations
+
+### 6.1 Ce qui est solide
+
+- **`search_path` paramétré avec validation anti-injection** : `isSafeSchemaName()` puis
+  `SET search_path TO "<schema>", public`. Aucune concaténation d'entrée utilisateur brute.
+- **Fail-closed** : sans contexte, `TenantContextMissingException`.
+- **Global scope `BelongsToCompany`** + bypass explicite testé (`BelongsToCompanyExplicitBypassTest`).
+- **`TenantManagerStandardizationTest`** couvre le rejet d'un job sans contexte.
+
+C'est la partie la plus mature du dépôt, et la révision 3 le confirme sans réserve.
+
+### 6.2 Ce qui est fragile
+
+- Le **défaut de dispatch** (§3) : le multi-tenant est solide *une fois le contexte établi* —
+  c'est l'**établissement** du contexte qui est défaillant. Nuance essentielle : la solidité de
+  l'isolation ne protège pas d'un mauvais aiguillage.
+- `TenantManagerStandardizationTest:207` **n'exécute aucune assertion** (risky) : le rejet d'un
+  job sans contexte n'est pas réellement prouvé.
+
+### 6.3 Lots « indépendants et additifs » — l'aveu nécessaire
+
+La révision 2 présentait « aucun guard ni middleware modifié » comme une contrainte
+rassurante. **Cette contrainte empêche une solution correcte.** Il faut le dire clairement :
+
+**Un endpoint `POST /auth/context` ne peut pas fonctionner sans toucher aux mécanismes de
+résolution tenant.** Trois raisons, toutes mécaniques :
+
+1. **Le middleware `tenant` lit le schéma dans `user_lookups`.** Émettre un jeton portant
+   `tenant_company:<id>` ne suffit pas : le middleware continuerait de résoudre par e-mail et
+   écraserait le choix. Il **doit** apprendre à lire l'abilité du jeton.
+2. **`user_lookups` a `email` en clé primaire.** Deux appartenances ne peuvent pas coexister.
+   Un endpoint de sélection qui ne change pas cette clé est un endpoint qui **ne peut pas**
+   proposer deux contextes. C'est une **migration**.
+3. **La révocation doit être effective sans attendre l'expiration.** Sans revalidation dans le
+   middleware, un jeton reste valide 30 jours après retrait de l'appartenance.
+
+**Ce qui est réellement additif** : L1 (OTP), L3 (hygiène des jetons), L5 (rôles personnalisés
+— nouvelles tables, aucun middleware existant modifié), L6 (front).
+
+**Ce qui ne l'est pas** : **L2 et L4 touchent nécessairement** la résolution de contexte, donc
+`TenantMiddleware`, `AuthService` et le schéma de `user_lookups`. Les présenter comme
+« zéro middleware » serait une promesse intenable, et la découverte en cours de route coûterait
+plus cher que de l'annoncer.
+
+> **Principe à retenir** : la sécurité et la cohérence priment sur le nombre de fichiers
+> modifiés. Un plan qui minimise le diff au prix d'un contexte non validé côté serveur est un
+> plan dangereux.
+
+### 6.4 Cycle de vie et invitations
+
+| Étape | État réel | Preuve |
+|---|---|---|
+| Invitation par e-mail | ✅ jeton haché, usage unique, expiration | cycle testé |
+| Invitation par téléphone | ❌ absent | aucune route |
+| Vérification d'identité | ✅ OTP e-mail (+ SMS si configuré) | `LoginCodeController` |
+| Activation et mot de passe par la personne | ✅ `trial/set-password` | aucun mot de passe en clair envoyé |
+| Accès au bon contexte | ❌ **le défaut §3** | `TenantAmbiguityProofTest` |
+| Invitation en attente / expirée / révoquée | ✅ modélisé | — |
+| Changement de rôle | ⚠️ partiel (§5.4) | — |
+| Départ d'un employé | ✅ `archive`, jetons révoqués | — |
+| Suspension / réactivation | ✅ | `PlatformTeamController::deactivate` |
+| Transfert de responsabilité | ❌ **impossible** — pas de 2ᵉ principal | `UpdateEmployeeRequest.php:135` |
+| Changement de propriétaire d'entreprise | ❌ non modélisé | aucune route |
+
+---
+
+## 7. Volet 4 — Pont d'identité public
+
+### 7.1 Règles exactes
+
+Le pont retenu : `travel_customer_accounts.phone_e164` + `travel_customer_accounts.user_id`
+nullable. **Aucune migration de données, aucune rupture de contrat.**
+
+| Situation | Règle |
+|---|---|
+| **OTP et vérification du téléphone** | `phone_e164` n'est **jamais** un identifiant avant vérification par OTP. Un numéro saisi n'est qu'une **prétention**. |
+| **Comptes existants, numéros déjà associés** | Si `phone_e164` existe sur `users` **et** sur `travel_customer_accounts`, **aucun rattachement automatique**. La personne doit prouver la possession du numéro **et** s'authentifier sur les deux comptes, ou passer par un parcours de fusion explicite. |
+| **Collisions** | Deux comptes `users` avec le même numéro : l'index unique partiel l'interdit déjà. Un `users` + un `travel_customer` avec le même numéro : **autorisé**, c'est le cas normal du pont. |
+| **Rattachement sécurisé** | `user_id` n'est renseigné **que** par une action authentifiée : login OTP réussi sur le numéro **et** session valide sur `users`, ou parcours de fusion avec double preuve. |
+| **Changement de numéro** | L'ancien numéro reste **vérifié et tracé** ; le nouveau exige un nouvel OTP. Un changement ne **transfère jamais** `user_id`. |
+| **Récupération de compte** | Uniquement via un canal déjà vérifié. **Jamais** par simple connaissance du numéro. |
+| **Concurrence des inscriptions** | Contrainte unique en base + gestion de `23505` → réponse idempotente, jamais deux comptes. |
+| **Unicité des associations** | `unique(travel_customer_accounts.user_id, company_id)` si le lien est par entreprise ; sinon `user_id` seul. |
+| **Révocation et audit** | Toute écriture de `user_id` laisse une ligne d'audit : acteur, ancien, nouveau, motif, horodatage. |
+
+### 7.2 L'interdiction, rendue mécaniquement vérifiable
+
+> **Interdiction** : il est **interdit** de rattacher deux comptes sur la seule base d'un numéro
+> **non vérifié**. Aucun `UPDATE ... SET user_id = ...` ne peut se produire dans le même flux
+> qu'une saisie de numéro.
+
+Comment la rendre **vérifiable**, et non déclarative :
+
+1. **Colonne de preuve obligatoire.** `travel_customer_accounts.phone_verified_at` doit être
+   **NOT NULL** pour que `user_id` soit non nul. Contrainte SQL :
+   ```sql
+   CHECK (user_id IS NULL OR phone_verified_at IS NOT NULL)
+   ```
+   Un rattachement sans vérification devient **impossible à écrire**, pas seulement interdit.
+2. **Test de sécurité dédié** : tenter un `UPDATE` de `user_id` avec `phone_verified_at IS NULL`
+   → la base **rejette** (`23514`). Ce test échoue si la contrainte est retirée.
+3. **Aucune route de fusion automatique.** Le seul chemin est un endpoint explicite exigeant
+   **deux** preuves (session sur `users` + OTP sur le numéro). Un test vérifie qu'une requête
+   avec un seul facteur est refusée.
+4. **Audit obligatoire** : `user_id` n'est modifiable que par un service dédié qui journalise.
+   Un test vérifie qu'un `UPDATE` direct hors service ne laisse pas de trace → interdit par
+   révision de code, vérifiable en CI par une règle statique.
+
+### 7.3 Conséquences par composant
+
+| Composant | Conséquence |
+|---|---|
+| `travel_customer_accounts` | +2 colonnes (`phone_e164`, `user_id` nullable), +1 contrainte CHECK, +1 index. **Additif.** |
+| `users` | inchangé (`phone_e164` existe déjà) |
+| Marketplace / travel | peut **enfin** reconnaître un client récurrent ; aucune rupture de contrat |
+| Applications existantes | continuent de fonctionner : `user_id` NULL = comportement actuel |
+| Mobile grand public | débloqué : login par téléphone, contrat exposé en §9 |
+
+---
+
+## 8. Modèle d'autorisations cible
+
+Sept notions à ne pas confondre — c'est leur fusion qui produit les escalades.
+
+| Notion | Définition | Où elle vit aujourd'hui |
+|---|---|---|
+| **Identité** | la personne physique, indépendamment de tout compte | ❌ absente (quatre tables d'identité concurrentes) |
+| **Compte** | un moyen d'authentification rattaché à une identité | `users`, `employees`, `super_admins`, `travel_customer_accounts` |
+| **Appartenance** | le lien compte ↔ organisation, avec un statut | `user_employee_links` (existe, **non utilisé au login**) |
+| **Rôle** | un ensemble nommé de permissions | `PlatformRole`, `employees.manager_role` |
+| **Permission atomique** | un droit élémentaire | `PlatformPermission` (31) ; **rien côté tenant** |
+| **Périmètre (scope)** | sur *quoi* le droit s'exerce | `employee_resource_assignments`, `employee_module_grants` |
+| **Module autorisé** | une famille d'écrans ouverte | `ModuleKey` (7), `employee_module_grants` |
+| **Délégation** | qui peut attribuer quoi à qui | ❌ **absente** |
+| **Journal d'audit** | la trace du geste | `audit_logs` (`Auditable`) |
+
+### 8.1 Empêcher un administrateur de déléguer ce qu'il ne possède pas
+
+Trois règles, appliquées **au moment de l'attribution**, côté serveur :
+
+1. **Plafond par inclusion** — `capabilities(target_role) ⊆ capabilities(actor_role)`.
+   Violation → `422 DELEGATION_EXCEEDS_ACTOR`. C'est la règle qui manque aujourd'hui (§5.4).
+2. **Plafond par périmètre** — l'acteur ne peut attribuer un rôle que dans un périmètre qu'il
+   détient lui-même. Un `dept` ne délègue que dans son département, même si son rôle porte la
+   permission d'attribution.
+3. **Rôles non déléguables** — `principal` (tenant) et `super_admin` (plateforme) sont hors du
+   graphe de délégation : attribuables seulement par un mécanisme de **transfert explicite**
+   (double confirmation + audit + notification aux deux parties), jamais par un simple `PUT`.
+
+### 8.2 Rôles personnalisés sans escalade
+
+Un rôle personnalisé est un **ensemble de permissions choisies dans un catalogue fermé**, avec
+un `created_by`. À la création **et** à chaque modification :
+
+- toute permission demandée doit être **détenue par le créateur** — sinon refus ;
+- un rôle ne peut pas contenir `delegation.manage` s'il a été créé par un non-`principal` ;
+- les rôles d'une verticale (`delivery`, `restaurant`) ne peuvent recevoir que des permissions
+  de cette verticale.
+
+Sans catalogue fermé, un rôle personnalisé devient une écriture libre — donc une escalade.
+
+---
+
+## 9. Vision produit et parcours
+
+### 9.1 Trois populations, une personne
+
+| Population | Ce qu'elle est | Appartenance |
+|---|---|---|
+| **Collaborateurs Leopardo** | l'équipe qui exploite la plateforme | `super_admins` + `platform_role` |
+| **Entreprises clientes** | propriétaires, administrateurs, employés | `employees` + `manager_role` + grants |
+| **Consommateurs** | clients finaux (restaurant, travel, marketplace) | `users` / `travel_customer_accounts` |
+
+Une personne peut cumuler : employé de l'agence X **et** client du restaurant Y **et**
+propriétaire de l'entreprise Z **et** support chez Leopardo. Ce que le système doit garantir
+n'est pas l'unicité de la ligne, c'est **l'absence de confusion** : chaque requête porte un
+contexte, et les permissions sont évaluées **dans** ce contexte.
+
+### 9.2 Les douze parcours
+
+| # | Parcours | État |
+|---|---|---|
+| 1 | Création de compte | ✅ (invitation obligatoire côté tenant) |
+| 2 | Invitation | ✅ e-mail / ❌ téléphone |
+| 3 | Activation | ✅ |
+| 4 | Connexion | ✅ |
+| 5 | **Sélection du contexte** | ❌ **absent** |
+| 6 | **Changement de contexte** | ❌ **absent** |
+| 7 | Attribution d'un rôle | ⚠️ partiel (§5.4) |
+| 8 | Création d'un rôle personnalisé | ❌ absent |
+| 9 | Révocation | ⚠️ jeton oui / rôle à jeton constant non |
+| 10 | Départ d'un employé | ✅ |
+| 11 | Suspension | ✅ |
+| 12 | **Récupération de compte** | ⚠️ e-mail oui / téléphone non |
+
+### 9.3 Web maintenant, mobile ensuite
+
+Le web doit fonctionner **sans dépendre du mobile**. Les contrats exposés aujourd'hui sont déjà
+consommables par un client mobile (Bearer Sanctum), mais **deux manques les bloquent** : pas de
+login par téléphone, pas de sélection de contexte. Le contrat
+`docs/design/PUBLIC_ACCOUNT_API_CONTRACT.md` couvre inscription, code, session,
+rafraîchissement, révocation et suppression — il reste à y ajouter `POST /auth/context` et
+`GET /auth/contexts`.
+
+---
+
+## 10. Réexamen des lots
+
+| Lot | Contenu | Additif ? | Touche des middlewares ? | Effort |
+|---|---|---|---|---|
+| **L1** | OTP : `isConfigured()` fail-closed, `send()` honnête, erreur explicite au lieu du faux succès | ✅ oui | ❌ non | ~1 j |
+| **L2** | **Sélection de contexte** : `user_lookups` en clé composite, `GET /auth/contexts`, `POST /auth/context`, **revalidation dans le middleware `tenant`** | ❌ **non** | ✅ **oui — inévitable** | ~4-7 j |
+| **L3** | Hygiène jetons : `$expiresAt` explicite sur les 3 chemins, correction du chemin `data.`→racine, compteur dernier `principal` | ✅ oui | ❌ non | ~2 j |
+| **L4** | **Convergence grand public** : `phone_e164` + `user_id` + contrainte CHECK sur `travel_customer_accounts`, login OTP téléphone | ⚠️ migration additive, mais login et provider modifiés | ⚠️ provider `travel_customer` | ~4-6 j |
+| **L5** | **Rôles personnalisés** : catalogue fermé, `roles`/`role_assignments`, plafond de délégation, rôles de verticale | ✅ oui (nouvelles tables) | ❌ non | ~4-6 j |
+| **L6** | **Web** : écran de sélection de contexte, persistance, écran SSO | ✅ oui (front) | ❌ non | ~3 j |
+
+**Dépendances** : L6 dépend de L2 (pas d'écran sans endpoint). L5 dépend de L1–L4 pour être
+testable sur des rôles réels. L2 et L4 sont indépendants entre eux mais **chacun** touche la
+résolution de contexte : ils ne doivent pas être menés en parallèle sur les mêmes fichiers.
+
+**Estimation — fourchette, pas engagement** : **18 à 26 jours** (L1 1 / L2 4-7 / L3 2 / L4 4-6 /
+L5 4-6 / L6 3). Hypothèses : un développeur familier du dépôt, revue du propriétaire incluse,
+pas de découverte majeure en cours de route. **Risques** : (a) la migration de `user_lookups`
+sur des données existantes — à faire en deux temps, sans downtime ; (b) la revalidation dans le
+middleware peut révéler des jetons legacy sans abilité ; (c) L4 dépend d'une décision produit
+sur la fusion de comptes, non tranchée à ce jour.
+
+**Ce qui n'est pas un engagement** : ces chiffres servent à ordonner, pas à promettre. La
+révision 2 annonçait « 11 jours » pour quatre lots — erreur déjà corrigée en « 18 », et la
+fourchette ci-dessus est volontairement ouverte parce que L2 avait été sous-estimé.
+
+**Sous-ensemble minimal P0+P1** (L1, L2, L3, L4, L6 — sans L5 qui est P2) : **14 à 21 jours**.
+
+---
+
+## 11. Décision finale
+
+> **La fondation actuelle peut-elle accueillir proprement et durablement les collaborateurs de
+> la plateforme, les collaborateurs des entreprises clientes et les consommateurs, avec une
+> identité cohérente, plusieurs appartenances, des rôles personnalisables et une sécurité
+> multi-tenant fiable ?**
+
+**Réponse : partiellement, et pas en l'état.**
+
+**Ce qui est déjà là et ne demande aucune refonte** — et c'est plus que la plupart des dépôts
+de cette taille :
+
+- l'**isolation multi-tenant** est solide et testée (quatre couches, `search_path` paramétré
+  avec validation anti-injection, fail-closed, global scope, bypass explicite testé) ;
+- les **collaborateurs plateforme** sont correctement modélisés : six rôles, 31 permissions,
+  matrice explicite, `team.manage` réservé, dernier super admin protégé, `platform_role` non
+  mass-assignable ;
+- les **guards sont disjoints** : un jeton de consommateur ne peut pas atteindre une surface
+  employé, et c'est testé ;
+- le **cycle d'invitation** est sain : jeton haché, usage unique, expiration, activation par
+  la personne elle-même ;
+- l'**OTP est cryptographiquement correct** : aléatoire, haché, comparaison en temps constant,
+  usage unique, limite de tentatives. Son défaut est la **livraison**, pas la vérification.
+
+**Ce qui l'empêche d'atteindre la vision** — quatre écarts, aucun cosmétique :
+
+1. **La multi-appartenance n'a pas de mécanisme de contexte** (§3). Ce n'est ni un verrou ni un
+   tirage au sort : c'est un **aiguillage mouvant**, déterminé par l'ordre des écritures en
+   base, avec deux modes de défaillance silencieuse. La promesse « une personne, plusieurs
+   contextes sans confusion » est aujourd'hui **structurellement fausse** — et c'est le cœur de
+   la vision.
+2. **Le grand public vit hors du graphe d'identité** (§2.1, §7). Une quatrième table, sans
+   téléphone vérifié, sans lien vers `users`, sans login par téléphone. La convergence est
+   possible par un pont additif — mais le pont **n'existe pas**.
+3. **L'anti-escalade est réelle côté plateforme, absente côté tenant** (§5.4). Aucun plafond de
+   délégation, aucun successeur possible pour un `principal`, aucune trace de changement de
+   rôle. Un tenant peut nommer un rôle dont il ne détient pas les capacités.
+4. **Aucun rôle personnalisable** (§5.3). Douze `manager_role` figés, zéro composition. Limite
+   produit, pas faille — mais elle contredit la demande explicite.
+
+**Ce que coûte l'inaction** : la vision reste bloquée sur son point central, et chaque nouvelle
+verticale ajoute une valeur à un `CHECK` (`delivery`, `restaurant`, `rider`…) qui rend la liste
+des rôles de plus en plus difficile à faire évoluer. Le `CHECK` unifié de `#8004` documente déjà
+deux migrations qui se sont écrasées mutuellement.
+
+**Le plus petit ensemble qui atteint l'objectif sans casser l'existant** : **L1 + L2 + L3 + L4**
+(14 à 21 jours), avec L5 et L6 en suite naturelle. Aucun de ces lots ne supprime une
+fonctionnalité, aucun ne rompt un contrat d'API. **L2 exige de modifier le middleware `tenant`
+et le schéma de `user_lookups`** — c'est le prix de la correction, et il faut l'assumer plutôt
+que de le masquer.
+
+**Contradiction assumée avec les rapports précédents** : la révision 2 présentait le défaut
+tenant comme un « verrou sur la première entreprise » (rassurant : déterministe, donc pas de
+fuite). L'exécution montre autre chose — un contexte qui **change** selon l'ordre des écritures.
+C'est moins rassurant, et c'est le constat juste.
+
+---
+
+## 12. Informations non accessibles
 
 Signalées explicitement, jamais présentées comme des constats :
 
 - **État de production** : aucune base de production, aucun APM, aucun journal d'accès
-  n'était accessible. Tous les constats portent sur le **code** au commit `31ef78e04`,
-  pas sur le comportement observé en production.
-- **CI GitHub Actions** : les workflows n'ont pas été exécutés dans cette session. Les
-  résultats ci-dessus viennent de l'exécution **locale** (PHP 8.4.27, PostgreSQL 15,
-  PostGIS 3). Un environnement CI peut différer (extensions, version PostgreSQL).
-- **`docs/design/`** : le répertoire est **vide** au HEAD audité — les documents de
-  conception demandés y sont créés par cette mission.
+  accessible. Tous les constats portent sur le **code**, pas sur le comportement observé.
+- **Mesure d'exposition réelle en production** : la requête SQL (annexe du plan) n'a été
+  **validée que sur données synthétiques**. Elle n'a **pas** été exécutée sur la production.
+  C'est la mesure qui dirait si l'écart est **actif** ou **latent** aujourd'hui.
+- **CI GitHub Actions** : non rejouée. Résultats **locaux** (PostgreSQL 15), pas ceux de la CI
+  (PostgreSQL 16). Un écart d'extension ou de version reste possible.
 - **Paiements** : non audités au-delà de la liste des permissions (`payments.view`,
   `payments.manage`), conformément à la consigne de lecture seule.
-- **Mobile** : aucune application mobile n'a été inspectée ni modifiée ; seul le contrat
-  d'API a été évalué.
+- **Mobile** : aucune application mobile inspectée ni modifiée ; seul le contrat d'API évalué.
+- **`travel_customer_accounts`** : l'absence de `phone_e164` et de `user_id` est constatée par
+  lecture de la migration ; **aucune** base de production n'a été interrogée pour vérifier
+  qu'aucune colonne équivalente n'y a été ajoutée hors migration.
 
 ---
 
-## 7. Annexes
+## 13. Annexes
 
 - Matrice rôles × permissions : `docs/design/IDENTITY_ROLE_PERMISSION_MATRIX.md`
 - Architecture cible : `docs/design/IDENTITY_ACCESS_CONTROL_TARGET_ARCHITECTURE.md`
@@ -793,4 +868,7 @@ Signalées explicitement, jamais présentées comme des constats :
 - Plan d'implémentation : `docs/roadmaps/IDENTITY_ACCESS_CONTROL_IMPLEMENTATION_PLAN.md`
 - Contrat d'API public : `docs/design/PUBLIC_ACCOUNT_API_CONTRACT.md`
 - Tests d'audit (branche non fusionnée) : `api/tests/Feature/Audit/`
-
+  - `IdentityAccessControlAuditTest` — 11 constats de conformité
+  - `IdentityAccessControlGapsTest` — 5 constats d'écart
+  - `TenantAmbiguityProofTest` — 3 tests : preuve du risque tenant
+  - `IdentityShapesProbeTest` — 1 sonde : forme de la réponse de login

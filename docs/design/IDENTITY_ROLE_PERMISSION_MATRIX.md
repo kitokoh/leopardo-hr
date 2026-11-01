@@ -172,3 +172,86 @@ Le code contient **quatre** modèles d'identité. Il faut distinguer :
 
 **C'est ce seul point que l'ADR doit trancher.** Voir
 `docs/design/ADR-IDENTITE-CLIENTS-PUBLICS.md`.
+
+---
+
+## 6. Anti-escalade : ce qui est gardé, ce qui ne l'est pas — **tranché par le code**
+
+> **Révision 3.** La révision 2 affirmait simultanément que les permissions sont
+> « anti-escalade » et qu'il manque « une garde déléguer ≤ ses droits ». Ces deux
+> affirmations ne peuvent pas être vraies ensemble. Voici ce que fait réellement le code.
+
+### 6.1 La garde qui existe — `UpdateEmployeeRequest.php:122-140`
+
+```php
+// :122-130 — seul un `principal` peut changer role/manager_role
+if (($this->has('role') || $this->has('manager_role')) &&
+    $user?->isManager() && ! $user->hasManagerRole('principal')) {
+    $validator->errors()->add('role', __('errors.EMPLOYEE_ROLE_CHANGE_MANAGER_ONLY'));
+}
+
+// :135-140 — personne ne peut promouvoir vers `principal`
+if ($this->input('manager_role') === 'principal' && $user?->isManager()) {
+    $validator->errors()->add('manager_role', __('errors.EMPLOYEE_PROMOTE_PRINCIPAL_FORBIDDEN'));
+}
+```
+
+Complétée par `EmployeePolicy::update` (`:42-54`) : `company_id` identique obligatoire, puis
+`hasManagerRole('principal', 'rh')`.
+
+### 6.2 Ce que cela garantit — et ce que cela ne garantit pas
+
+| Affirmation | Verdict | Preuve |
+|---|---|---|
+| Un `rh`/`comptable`/`dept`/`marketing` ne peut **pas** changer un rôle | ✅ **vrai** | garde `:122` exige `principal` |
+| Un `principal` peut attribuer n'importe lequel des 11 autres rôles | ✅ **vrai** | aucune comparaison de capacités |
+| Il ne peut attribuer **que** des rôles dont il détient les capacités | ❌ **faux** | **aucun plafond d'inclusion** dans le code |
+| Un tenant peut nommer un **second** `principal` | ❌ **faux** | garde `:135` frappe aussi le `principal` |
+| Le **dernier** `principal` est protégé | ❌ **faux côté tenant** | aucun compteur équivalent (`PlatformTeamController.php:104-110` existe **côté plateforme seulement**) |
+| Le changement de `manager_role` est **tracé** | ❌ **faux** | `audit_logs` couvre les grants et `SuperAdmin`, pas `manager_role` |
+
+### 6.3 Les trois écarts, énoncés précisément
+
+**Écart A — pas de plafond de délégation.**
+Un `principal` sans le module `accounting` peut nommer un `comptable`, qui l'aura. La règle
+`capabilities(role) ⊆ capabilities(delegator)` n'est écrite nulle part.
+
+**Écart B — aucun successeur possible.**
+La garde `:135` vise `manager_role === 'principal'`, sans distinguer « je promeus quelqu'un »
+de « je me promeus ». Résultat : un tenant à un seul `principal` ne peut **jamais** en avoir
+deux. Le « transfert de responsabilité » demandé par le propriétaire est aujourd'hui
+**impossible**, alors qu'il est **possible côté plateforme** (autoriser un second, puis
+protéger le dernier).
+
+**Écart C — aucun journal.**
+`EmployeeModuleGrant` est `Auditable`. Le changement de `manager_role`, qui est **plus**
+sensible, ne l'est pas.
+
+### 6.4 Asymétrie plateforme / tenant
+
+| Mécanisme | Plateforme | Tenant |
+|---|---|---|
+| Matrice de permissions fermée | ✅ 31 permissions | ❌ 12 `manager_role` figés |
+| Plafond de délégation | ✅ `allExcept([TeamManage])` | ❌ absent |
+| Protection du dernier détenteur | ✅ `LAST_SUPER_ADMIN_REQUIRED` | ❌ absent |
+| Second détenteur nommable | ✅ | ❌ **interdit** |
+| Journal du changement | ✅ `Auditable` | ❌ absent |
+
+**Conclusion** : l'anti-escalade est **réelle côté plateforme**, **absente côté tenant**. Ce
+n'est pas une faille exploitable de l'extérieur — un `principal` est déjà l'administrateur de
+son entreprise — mais c'est une **contrainte de conception manquante** qui rend impossible la
+délégation fine que la vision demande, et impossible le transfert de responsabilité.
+
+### 6.5 Modèle cible — les règles à écrire
+
+| Règle | Effet | Test obligatoire |
+|---|---|---|
+| `capabilities(target) ⊆ capabilities(actor)` | pas de délégation au-dessus de soi | `422 DELEGATION_EXCEEDS_ACTOR` |
+| Plafond de **périmètre** | un `dept` ne délègue que dans son département | refus hors périmètre |
+| `principal`/`super_admin` hors graphe de délégation | transfert explicite seulement (double confirmation + audit + notification) | `403` sur `PUT` simple |
+| Catalogue **fermé** de permissions tenant | pas d'écriture libre | rôle avec permission inconnue ⇒ `422` |
+| Journal obligatoire de tout changement de rôle | traçabilité | ligne `audit_logs` attendue |
+
+Ces règles sont l'objet du lot **L5** (rôles personnalisés) du plan, et partiellement de
+**L3** (successeur `principal`). Le scénario #11 de la matrice de sécurité — « rôle personnalisé
+ne dépassant pas les droits de son créateur » — est le critère d'acceptation de L5.
