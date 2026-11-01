@@ -264,8 +264,7 @@ Future<void> _ensureFirebaseInitialized() async {
     // GoogleService-Info.plist) compile mais rend les push muettes —
     // l'échec doit être VISIBLE au bootstrap, pas avalé en silence.
     final rawError = e.toString();
-    final isPlaceholderConfig =
-        rawError.contains('REPLACE') ||
+    final isPlaceholderConfig = rawError.contains('REPLACE') ||
         rawError.contains('000000000000') ||
         rawError.contains('AIzaSyREPLACE');
     debugPrint(
