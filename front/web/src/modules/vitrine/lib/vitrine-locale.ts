@@ -34,7 +34,8 @@ type HeroStat = {
 }
 
 
-type LandingCopy = {
+export type VitrineCopy = LandingCopy
+export type LandingCopy = {
   nav: {
     sections: Array<{ id: string; label: string }>
     login: string
@@ -131,6 +132,13 @@ type LandingCopy = {
     description: string
     sections: Array<{ title: string; links: string[] }>
     rights: string
+    systemStatus: string
+    badges: {
+      public: string
+      offered: string
+      trial: string
+      equity: string
+    }
     newsletter: {
       title: string
       description: string
