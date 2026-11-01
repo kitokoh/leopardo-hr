@@ -1935,7 +1935,8 @@
     "accountingOverview": "Tableau de bord",
     "accountingConfig": "Paramétrage",
     "fuelStationHub": "Hub stations-service",
-    "fuelStationOps": "Opérations"
+    "fuelStationOps": "Opérations",
+    "discoverySettings": "Découverte publique"
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?",
@@ -10605,6 +10606,31 @@
       "network": "Connexion impossible.",
       "confirm": "L'activation a échoué.",
       "stale": "Le résumé a changé. Vérifiez-le à nouveau."
+    }
+  },
+  "discoverySettings": {
+    "title": "Découverte publique",
+    "subtitle": "Réglages de l'application grand public, commune par commune.",
+    "thresholdLabel": "Seuil de catégories",
+    "thresholdHint": "Une catégorie n'apparaît dans l'application que si la commune compte au moins ce nombre de fiches publiées. Valeur actuelle : {defaultValue}.",
+    "pages": "fiches publiées",
+    "minMax": "Valeur entière entre {min} et {max}.",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "cancel": "Annuler",
+    "noChange": "Aucune modification à enregistrer.",
+    "savedFrom": "Seuil modifié de {previous} à {current}.",
+    "audited": "Ce changement a été journalisé dans l'audit de la plateforme.",
+    "loadError": "Impossible de lire les réglages de découverte.",
+    "retry": "Réessayer",
+    "saveError": "L'enregistrement a échoué. La valeur n'a pas été modifiée.",
+    "cityOverridesTitle": "Seuils spécifiques par commune",
+    "cityOverridesHint": "Ces valeurs ont été posées hors de cet écran et prévalent sur le seuil global.",
+    "error": {
+      "required": "Saisissez un nombre entier.",
+      "integer": "Le seuil doit être un nombre entier.",
+      "min": "Le seuil minimal est {min}.",
+      "max": "Le seuil maximal est {max}."
     }
   }
 }

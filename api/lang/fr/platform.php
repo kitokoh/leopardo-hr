@@ -15,6 +15,7 @@ return [
     'admin_chat_unavailable' => "L'assistant IA est configuré par tenant : la console plateforme ne peut pas répondre au nom d'un tenant. Connectez-vous à l'espace du tenant pour utiliser l'assistant.",
     'conversation_not_found' => 'Conversation introuvable.',
     'conversations_unavailable' => 'Conversations indisponibles.',
+    'discovery_settings_unavailable' => 'Réglages de découverte indisponibles — la table des réglages de plateforme n\'est pas encore déployée.',
     'oauth_save_failed' => 'Impossible d\'enregistrer la configuration.',
     'ai_settings_unknown_keys' => 'Réglage(s) inconnu(s) : :keys',
     'ai_settings_unknown_key' => 'Réglage inconnu : :key',

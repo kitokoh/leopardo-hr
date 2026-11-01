@@ -55,6 +55,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminTrainingCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminWebhookController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAiMonitoringController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAiSettingsController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformDiscoverySettingsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyDeletionController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;
@@ -994,6 +995,14 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/platform/ai/settings/reset', [PlatformAiSettingsController::class, 'reset'])->middleware('platform.permission:settings.manage');
         // Test à blanc du fournisseur : valider une clé AVANT d'activer l'IA.
         Route::post('/platform/ai/test-connection', [PlatformAiSettingsController::class, 'testConnection'])->middleware('platform.permission:settings.manage');
+
+        // COULOIR 16 — M1 · seuil de catégories de la découverte publique.
+        // Même permission que les autres réglages de plateforme : un super
+        // admin de support n'hérite pas du réglage commercial. `PUT` et non
+        // `POST` : rejouer la même valeur ne doit produire aucune écriture ni
+        // aucune ligne d'audit.
+        Route::get('/platform/discovery/settings', [PlatformDiscoverySettingsController::class, 'show'])->middleware('platform.permission:settings.manage');
+        Route::put('/platform/discovery/settings', [PlatformDiscoverySettingsController::class, 'update'])->middleware('platform.permission:settings.manage');
 
         // #7385 — suivi de l'assistant, tous tenants (usage, coûts, erreurs).
         // #8020 — onglets de l'écran Paramètres › Assistant IA, dont la garde
