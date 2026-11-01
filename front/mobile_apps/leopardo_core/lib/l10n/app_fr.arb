@@ -6985,5 +6985,13 @@
   "discoverysettingsErrorRequired": "Saisissez un nombre entier.",
   "discoverysettingsErrorInteger": "Le seuil doit être un nombre entier.",
   "discoverysettingsErrorMin": "Le seuil minimal est {min}.",
-  "discoverysettingsErrorMax": "Le seuil maximal est {max}."
+  "discoverysettingsErrorMax": "Le seuil maximal est {max}.",
+  "publicappManifestname": "Leopardo — Trouver près de chez vous",
+  "publicappManifestdescription": "Trouvez un professionnel près de chez vous, parlez-lui, retrouvez tout.",
+  "publicappShortcuthome": "Découvrir",
+  "publicappShortcuthomedesc": "Chercher un professionnel près de chez vous",
+  "publicappShortcutmessages": "Messages",
+  "publicappShortcutmessagesdesc": "Retrouver vos conversations",
+  "publicappShortcutprofile": "Profil",
+  "publicappShortcutprofiledesc": "Langue, confidentialité, notifications"
 }

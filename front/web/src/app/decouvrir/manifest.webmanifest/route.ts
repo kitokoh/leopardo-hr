@@ -27,6 +27,18 @@ import { t } from '@/lib/i18n/locale-catalog'
 
 export const dynamic = 'force-dynamic'
 
+/**
+ * Valeurs du standard PWA, pas du texte utilisateur.
+ *
+ * `purpose` accepte exactement `any`, `maskable` et `monochrome` (Web App
+ * Manifest, §icons). Le garde i18n les signalait comme des chaînes en dur :
+ * ce sont des constantes de protocole, donc on les nomme ici plutôt que de
+ * les répéter dans le tableau — c'est la correction que le garde prescrit
+ * lui-même (issue #7482 : « sortez-la dans une constante nommée »).
+ */
+const ICON_PURPOSE_ANY_MASKABLE = 'any maskable'
+const ICON_PURPOSE_ANY = 'any'
+
 interface Shortcut {
   name: string
   short_name: string
@@ -162,10 +174,10 @@ export async function GET(request: Request) {
       // on se déplace. `business`/`productivity` décrivaient le produit RH.
       categories: ['food', 'shopping', 'travel'],
       icons: [
-        { src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' },
-        { src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
-        { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
-        { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+        { src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: ICON_PURPOSE_ANY_MASKABLE },
+        { src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: ICON_PURPOSE_ANY },
+        { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: ICON_PURPOSE_ANY_MASKABLE },
+        { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: ICON_PURPOSE_ANY_MASKABLE },
       ],
       shortcuts: copy.shortcuts,
       prefer_related_applications: false,

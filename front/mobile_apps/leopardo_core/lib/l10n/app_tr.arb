@@ -6985,5 +6985,13 @@
   "discoverysettingsErrorRequired": "Bir tam sayı girin.",
   "discoverysettingsErrorInteger": "Eşik bir tam sayı olmalıdır.",
   "discoverysettingsErrorMin": "En düşük eşik {min}.",
-  "discoverysettingsErrorMax": "En yüksek eşik {max}."
+  "discoverysettingsErrorMax": "En yüksek eşik {max}.",
+  "publicappManifestname": "Leopardo — Yakınınızdakini bulun",
+  "publicappManifestdescription": "Yakınınızdaki bir işletmeyi bulun, onunla konuşun, her şeyi bir arada tutun.",
+  "publicappShortcuthome": "Keşfet",
+  "publicappShortcuthomedesc": "Yakınınızdaki bir işletmeyi bulun",
+  "publicappShortcutmessages": "Mesajlar",
+  "publicappShortcutmessagesdesc": "Konuşmalarınızı açın",
+  "publicappShortcutprofile": "Profil",
+  "publicappShortcutprofiledesc": "Dil, gizlilik, bildirimler"
 }

@@ -6985,5 +6985,13 @@
   "discoverysettingsErrorRequired": "Enter a whole number.",
   "discoverysettingsErrorInteger": "The threshold must be a whole number.",
   "discoverysettingsErrorMin": "The minimum threshold is {min}.",
-  "discoverysettingsErrorMax": "The maximum threshold is {max}."
+  "discoverysettingsErrorMax": "The maximum threshold is {max}.",
+  "publicappManifestname": "Leopardo — Find what's near you",
+  "publicappManifestdescription": "Find a business near you, talk to them, keep everything in one place.",
+  "publicappShortcuthome": "Discover",
+  "publicappShortcuthomedesc": "Find a business near you",
+  "publicappShortcutmessages": "Messages",
+  "publicappShortcutmessagesdesc": "Open your conversations",
+  "publicappShortcutprofile": "Profile",
+  "publicappShortcutprofiledesc": "Language, privacy, notifications"
 }

@@ -6985,5 +6985,13 @@
   "discoverysettingsErrorRequired": "أدخل عددًا صحيحًا.",
   "discoverysettingsErrorInteger": "يجب أن يكون الحد عددًا صحيحًا.",
   "discoverysettingsErrorMin": "الحد الأدنى هو {min}.",
-  "discoverysettingsErrorMax": "الحد الأقصى هو {max}."
+  "discoverysettingsErrorMax": "الحد الأقصى هو {max}.",
+  "publicappManifestname": "ليوباردو — اعثر على ما هو قريب منك",
+  "publicappManifestdescription": "اعثر على مهني قريب منك، تحدث معه، واحتفظ بكل شيء في مكان واحد.",
+  "publicappShortcuthome": "اكتشف",
+  "publicappShortcuthomedesc": "ابحث عن مهني قريب منك",
+  "publicappShortcutmessages": "الرسائل",
+  "publicappShortcutmessagesdesc": "افتح محادثاتك",
+  "publicappShortcutprofile": "الملف الشخصي",
+  "publicappShortcutprofiledesc": "اللغة والخصوصية والإشعارات"
 }
