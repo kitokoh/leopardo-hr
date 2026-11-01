@@ -307,6 +307,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { title: 'Légal', links: ['Confidentialité (RGPD)', 'CGU', 'Mentions légales', 'Devenir actionnaire'] },
       ],
       
+      rights: 'Tous droits réservés.',
       systemStatus: 'Tous les systèmes opérationnels',
       badges: {
         public: 'Public',
@@ -469,6 +470,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { title: 'Legal', links: ['Privacy (GDPR)', 'Terms', 'Legal notice', 'Become a shareholder'] },
       ],
       
+      rights: 'All rights reserved.',
       systemStatus: 'All systems operational',
       badges: {
         public: 'Public',
@@ -631,6 +633,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { title: 'Yasal', links: ['Gizlilik (KVKK/GDPR)', 'Kullanım Koşulları', 'Yasal bildirim', 'Ortak olun'] },
       ],
       
+      rights: 'Tum haklari saklidir.',
       systemStatus: 'Tüm sistemler çalışıyor',
       badges: {
         public: 'Herkese Açık',
@@ -793,6 +796,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { title: 'قانوني', links: ['الخصوصية (GDPR)', 'الشروط', 'الإشعارات القانونية', 'كن مساهماً'] },
       ],
       
+      rights: 'جميع الحقوق محفوظة.',
       systemStatus: 'جميع الأنظمة تعمل',
       badges: {
         public: 'عام',
