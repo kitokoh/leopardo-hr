@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Gift, Globe, ShieldCheck, Lock, Activity } from 'lucide-react'
-import { useVitrineLocale } from '../lib/vitrine-locale'
+import { useVitrineLocale, type VitrineCopy } from '../lib/vitrine-locale'
 import { t } from '@/lib/i18n/locale-catalog'
 
 // Pas de lien social dans le footer : le compte X @leopardo_hr est inexistant
@@ -83,18 +83,18 @@ export function getFooterHref(sectionIndex: number, linkIndex: number): string |
   return routes[key] ?? null
 }
 
-function getLinkBadge(href: string): { label: string; color: string } | null {
+function getLinkBadge(href: string, badges: VitrineCopy['footer']['badges']): { label: string; color: string } | null {
   if (href === '/decouvrir') {
-    return { label: 'Public', color: 'bg-amber-500/10 text-amber-300 border-amber-500/30' }
+    return { label: badges.public, color: 'bg-amber-500/10 text-amber-300 border-amber-500/30' }
   }
   if (href === '/packs') {
-    return { label: 'Offert', color: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' }
+    return { label: badges.offered, color: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' }
   }
   if (href === '/pricing') {
-    return { label: 'Essai 14j', color: 'bg-teal-500/10 text-teal-300 border-teal-500/30' }
+    return { label: badges.trial, color: 'bg-teal-500/10 text-teal-300 border-teal-500/30' }
   }
   if (href === '/investir') {
-    return { label: 'Actionnaires', color: 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30' }
+    return { label: badges.equity, color: 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30' }
   }
   return null
 }
@@ -108,15 +108,6 @@ export function Footer() {
   // The Blog link ('1-2' -> /blog) is hidden when NEXT_PUBLIC_ENABLE_BLOG is
   // disabled, since the route itself now 404s in that case (issue #1305).
   const { enableBlog } = getEnvConfig()
-
-  const systemStatusLabel =
-    locale === 'en'
-      ? 'All systems operational'
-      : locale === 'es'
-        ? 'Todos los sistemas operativos'
-        : locale === 'ar'
-          ? 'جميع الأنظمة تعمل'
-          : 'Tous les systèmes opérationnels'
 
   return (
     <footer className="relative bg-slate-950 text-slate-300 border-t border-slate-800/80 overflow-hidden">
@@ -147,7 +138,7 @@ export function Footer() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              <span>{systemStatusLabel} &bull; 99.98%</span>
+              <span>{copy.footer.systemStatus} &bull; 99.98%</span>
             </div>
 
             <p className="text-sm text-slate-400 leading-relaxed max-w-sm mb-5">
@@ -203,7 +194,7 @@ export function Footer() {
                   const href = getFooterHref(index, linkIndex)
                   if (!href || (href === '/blog' && !enableBlog)) return null
 
-                  const badge = getLinkBadge(href)
+                  const badge = getLinkBadge(href, copy.footer.badges)
 
                   return (
                     <li key={`${section.title}-link-${linkIndex}`}>
