@@ -8806,5 +8806,15 @@
       "min": "En düşük eşik {min}.",
       "max": "En yüksek eşik {max}."
     }
+  },
+  "publicApp": {
+    "manifestName": "Leopardo — Yakınınızdakini bulun",
+    "manifestDescription": "Yakınınızdaki bir işletmeyi bulun, onunla konuşun, her şeyi bir arada tutun.",
+    "shortcutHome": "Keşfet",
+    "shortcutHomeDesc": "Yakınınızdaki bir işletmeyi bulun",
+    "shortcutMessages": "Mesajlar",
+    "shortcutMessagesDesc": "Konuşmalarınızı açın",
+    "shortcutProfile": "Profil",
+    "shortcutProfileDesc": "Dil, gizlilik, bildirimler"
   }
 }

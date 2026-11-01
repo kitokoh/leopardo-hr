@@ -8806,5 +8806,15 @@
       "min": "The minimum threshold is {min}.",
       "max": "The maximum threshold is {max}."
     }
+  },
+  "publicApp": {
+    "manifestName": "Leopardo — Find what's near you",
+    "manifestDescription": "Find a business near you, talk to them, keep everything in one place.",
+    "shortcutHome": "Discover",
+    "shortcutHomeDesc": "Find a business near you",
+    "shortcutMessages": "Messages",
+    "shortcutMessagesDesc": "Open your conversations",
+    "shortcutProfile": "Profile",
+    "shortcutProfileDesc": "Language, privacy, notifications"
   }
 }

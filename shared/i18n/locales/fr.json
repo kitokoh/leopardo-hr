@@ -8806,5 +8806,15 @@
       "min": "Le seuil minimal est {min}.",
       "max": "Le seuil maximal est {max}."
     }
+  },
+  "publicApp": {
+    "manifestName": "Leopardo — Trouver près de chez vous",
+    "manifestDescription": "Trouvez un professionnel près de chez vous, parlez-lui, retrouvez tout.",
+    "shortcutHome": "Découvrir",
+    "shortcutHomeDesc": "Chercher un professionnel près de chez vous",
+    "shortcutMessages": "Messages",
+    "shortcutMessagesDesc": "Retrouver vos conversations",
+    "shortcutProfile": "Profil",
+    "shortcutProfileDesc": "Langue, confidentialité, notifications"
   }
 }

@@ -9228,5 +9228,15 @@
       "min": "الحد الأدنى هو {min}.",
       "max": "الحد الأقصى هو {max}."
     }
+  },
+  "publicApp": {
+    "manifestName": "ليوباردو — اعثر على ما هو قريب منك",
+    "manifestDescription": "اعثر على مهني قريب منك، تحدث معه، واحتفظ بكل شيء في مكان واحد.",
+    "shortcutHome": "اكتشف",
+    "shortcutHomeDesc": "ابحث عن مهني قريب منك",
+    "shortcutMessages": "الرسائل",
+    "shortcutMessagesDesc": "افتح محادثاتك",
+    "shortcutProfile": "الملف الشخصي",
+    "shortcutProfileDesc": "اللغة والخصوصية والإشعارات"
   }
 }
