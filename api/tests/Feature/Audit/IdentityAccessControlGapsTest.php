@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Audit;
 
 use Illuminate\Support\Facades\Route;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -18,7 +19,13 @@ use Tests\TestCase;
  * signal de sortie).
  *
  * Branche d'audit uniquement — jamais fusionnée.
+ *
+ * Groupe `audit` : EXCLU de la CI bloquante (`--exclude-group=audit`). Ces
+ * tests sont des constats, pas des garde-fous : ils DOIVENT échouer quand le
+ * lot correspondant est livré. Les faire bloquer la CI interdirait la PR qui
+ * livre le correctif.
  */
+#[Group('audit')]
 class IdentityAccessControlGapsTest extends TestCase
 {
     use CreatesMvpSchema;

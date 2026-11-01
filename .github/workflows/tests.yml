@@ -208,7 +208,12 @@ jobs:
         # `leopardo_test_test_{token}`, créée automatiquement — voir
         # tests/TestCase::configureTestingDatabaseConnection). La suite sérielle
         # dépassait les 45 min (timeout du job) et bloquait main.
-        run: php artisan test --testsuite=Feature --parallel --processes=4 --log-junit=storage/test-results/feature.xml
+        # Groupe `audit` exclu : les tests de l'audit Identity & Access Control
+        # sont des CONSTATS, pas des garde-fous. Ils asserent l'absence d'un
+        # mécanisme et DOIVENT échouer quand le lot correspondant est livré —
+        # les inclure bloquerait la PR qui livre le correctif.
+        # Exécution manuelle : vendor/bin/phpunit --group=audit
+        run: php artisan test --testsuite=Feature --parallel --processes=4 --exclude-group=audit --log-junit=storage/test-results/feature.xml
 
       - name: Triage causal des échecs (clusters par signature)
         # Issue #8396 : 264 échecs ne sont pas 264 bugs. Le tableau brut ne dit

@@ -11,6 +11,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\EmployeeModuleGrant;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -27,7 +28,10 @@ use Tests\TestCase;
  *
  * Cette branche n'est JAMAIS fusionnée dans `main` : elle sert de preuve
  * exécutable, pas de code de production.
+ *
+ * Groupe `audit` : EXCLU de la CI bloquante (`--exclude-group=audit`).
  */
+#[Group('audit')]
 class IdentityAccessControlAuditTest extends TestCase
 {
     use CreatesMvpSchema;

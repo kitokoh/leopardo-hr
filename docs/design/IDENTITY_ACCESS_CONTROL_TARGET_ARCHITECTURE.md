@@ -145,7 +145,7 @@ et la trace le prouve.
 | Une table `identities` unifiant les 4 modèles | Migration de données massive, casse 4 guards, aucun gain de sécurité — le problème n'est pas le nombre de tables mais **l'absence de lien**. |
 | Un service d'autorisation central (« PDP ») externe | Le socle `Gate`/policies suffit ; un PDP ajouterait un aller-retour réseau sur **chaque** requête. |
 | Fusionner `super_admins` dans `users` | Population interne, guards disjoints, aucune confusion d'autorisation. Le gain serait cosmétique, le risque réel. |
-| Rendre `findEmployeeInTenantSchemas()` déterministe par tri | Ne résout rien : « le premier par ordre alphabétique » reste arbitraire. Il faut **demander** à l'utilisateur. |
+| Rendre `findEmployeeInTenantSchemas()` déterministe par tri | Ne résout rien : « le premier par ordre alphabétique » reste arbitraire. Il faut **demander** à l'utilisateur. (Rappel : ce balayage est de toute façon **désactivé en production** — le chemin réel est `user_lookups`, dont la clé primaire sur l'e-mail interdit la multi-appartenance. Voir audit §1.3.) |
 | Supprimer le guard `travel_customer` maintenant | Casse le contrat de la marketplace et l'app mobile. L'ADR prévoit une dépréciation **planifiée**. |
 
 ---

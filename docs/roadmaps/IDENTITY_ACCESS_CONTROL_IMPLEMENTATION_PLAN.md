@@ -1,9 +1,12 @@
 # Plan d'implémentation — Identity & Access Control
 
-- **Date** : 31 octobre 2026 · **HEAD de référence** : `31ef78e04`
+- **Date** : 31 octobre 2026 · **HEAD de référence** : `31ef78e04` · **Révision** : 2
 - **Statut** : proposition — **aucune implémentation ne démarre avant validation du
   propriétaire**
 - **Documents liés** : audit, matrice, architecture cible, ADR, contrat d'API public
+
+> ⚠️ **Aucun lot n'est commencé.** Ce plan est une proposition soumise à validation.
+> Aucune migration, aucun guard, aucun middleware n'a été modifié.
 
 ---
 
@@ -19,6 +22,11 @@
    touchent une décision produit ou une frontière de sécurité.
 5. **Chaque lot est indépendant** : on peut s'arrêter après n'importe lequel sans laisser
    le système dans un état incohérent.
+6. **Les tests d'audit ne bloquent pas la CI.** Les 16 tests de `api/tests/Feature/Audit/`
+   portent le groupe `audit` et sont exclus de la CI bloquante (`--exclude-group=audit`).
+   Ce sont des **constats**, pas des garde-fous : un test qui asserte « aucun endpoint de
+   contexte n'existe » **doit** échouer quand L2 est livré. Le critère de sortie d'un lot
+   est donc la **bascule** de ses tests d'inversion (audit §4.4), pas leur maintien au vert.
 
 ---
 
@@ -153,52 +161,119 @@ anonymisation.
 ## L5 — Rôles personnalisés (P2) · ~4 j · 🔒
 
 **Pourquoi** : un admin de tenant ne peut pas créer « Caissier ». Limite produit, pas
-faille — d'où la priorité basse.
+faille — d'où la priorité basse. Mais c'est une **exigence explicite** du propriétaire :
+un tenant doit pouvoir nommer ses rôles métier sans passer par une enum figée.
+
+### Périmètre
+
+| Élément | Contenu |
+|---|---|
+| **Catalogue de permissions** | Table `permissions` (clé, libellé, module, verticale). Source de vérité **données**, pas enum. Les enums existants (`PlatformPermission`, `manager_role`) restent lus **en premier** |
+| **Rôles personnalisés** | Table `roles` par tenant (`company_id`, `name`, `slug`, `is_system`) |
+| **Attribution** | Table `role_assignments` (`employee_id`, `role_id`, `scope`, `granted_by`, `granted_at`, `revoked_at`) |
+| **Plafond de délégation** | Un rôle ne peut contenir que des permissions **⊆** celles de son créateur au moment de la création (`granted_by`) |
+| **Rôles propres à une verticale** | `roles.vertical` (`restaurant`, `travel`, `hr`, `null`) — un rôle restaurant ne fuit pas dans une agence de voyage |
 
 ### Tests à écrire EN PREMIER
 
 | Test | Assertion |
 |---|---|
 | `RoleAssignmentTest::test_custom_role_cannot_exceed_its_creator_permissions` | **scénario #11**, aujourd'hui sans objet |
-| `RoleAssignmentTest::test_revoking_a_custom_role_removes_access_immediately` | scénario #6 |
+| `RoleAssignmentTest::test_revoking_a_custom_role_removes_access_immediately` | scénario #6, en version granulaire |
 | `RoleAssignmentTest::test_role_without_module_cannot_call_its_endpoints` | scénario #12, dans le contexte custom |
 | `RoleAssignmentTest::test_principal_can_still_delegate_below_their_own_level` | moindre privilège |
+| `RoleAssignmentTest::test_role_of_one_vertical_is_invisible_in_another` | isolation verticale |
+| `RoleAssignmentTest::test_system_roles_cannot_be_deleted_or_renamed` | garde des rôles socle |
 
 ### Implémentation
 
-Table `role_assignments` (§3.2 de l'architecture cible), lue **après** les enums.
-`effectivePermissions = enumPermissions ∪ roleAssignments(active)`.
+`effectivePermissions = enumPermissions ∪ roleAssignments(active)`, lu **après** les enums.
 
 **Ne pas** introduire Spatie : imposerait de réécrire les gates existants.
 
+### Relecture 🔒
+Deux décisions produit : (a) un `principal` peut-il déléguer **toutes** ses permissions à un
+rôle, y compris `payments.manage` ? (b) que devient un rôle personnalisé quand son créateur
+quitte l'entreprise — survit-il, ou est-il gelé ?
+
 ---
 
-## L6 — Hygiène transverse (P2, continu)
+## L6 — Web : sélection de contexte & SSO (P1) · ~3 j
+
+**Pourquoi** : le backend peut exposer `GET /auth/contexts` (L2) sans qu'aucun écran ne
+l'utilise. La vision « plusieurs relations sans confusion » est **invisible** pour
+l'utilisateur tant que le web ne propose pas de choisir.
+
+### Périmètre
+
+| Écran | Contenu | Frontend |
+|---|---|---|
+| **Sélection de contexte** | Après login, si N > 1 : liste des entreprises avec rôle et statut, choix explicite | `front/web` (Business OS) |
+| **Persistance du contexte** | Le contexte choisi survit au rechargement ; bandeau permanent avec l'entreprise active + bouton « changer » | `front/web` |
+| **Écran SSO** | Bouton « Se connecter avec le SSO de mon entreprise », saisie du domaine, redirection OIDC | `front/web` |
+| **Super admin** | Colonne « entreprises » dans la fiche collaborateur (lecture seule) | `front/admin-dashboard` |
+
+### Tests à écrire EN PREMIER
+
+| Test | Assertion |
+|---|---|
+| `ContextSelectionUiTest::test_user_with_two_companies_sees_a_choice_screen` | N > 1 ⇒ écran, pas de redirection silencieuse |
+| `ContextSelectionUiTest::test_user_with_one_company_skips_the_choice` | N = 1 ⇒ aucun friction |
+| `ContextSelectionUiTest::test_selected_context_survives_a_reload` | persistance |
+| `ContextSelectionUiTest::test_switching_context_clears_stale_permissions` | pas de permissions résiduelles |
+
+### Relecture 🔒
+Une décision produit : le contexte par défaut quand N > 1 — **demande explicite**
+(recommandé), dernier utilisé, ou premier alphabétique (comportement actuel, à éviter).
+
+---
+
+## L7 — Hygiène transverse (P2, continu)
 
 | Sujet | Action | Priorité |
 |---|---|---|
 | Tokens machines | Registre (portée, rotation, révocation, journal) — **absent** aujourd'hui hors paiement | P2 |
 | Desktop OAuth2 + PKCE | Aucune surface ; à concevoir | P2 |
 | Consentement / export / suppression RGPD | `DELETE /account` couvre la suppression ; export et durée de rétention des journaux à définir | P1 (RGPD) |
-| Dette de test | 4 tests utilisent des mots de passe refusés par la politique (`password123`) | P2 — **rapide, à faire au passage** |
+| Dette de test | 3 tests utilisent `password123456`, refusé par `NotCommonPassword` (racine `password` dans la blocklist) | P2 — **rapide, à faire au passage** |
+| Silence de `syncUserLookup()` | Le `return` de `Employee.php:775` ne journalise rien : ajouter un `Log::warning` | P1 — **1 ligne** |
 
 ---
 
 ## Séquencement
 
 ```
-L1 (OTP fiable)  ──►  L2 (contexte)  ──►  L4 (grand public)
-                            │
-L3 (sessions) ──────────────┘
-                            └──────────►  L5 (rôles custom) ──► L6
+L1 (OTP fiable) ──► L2 (contexte) ──► L4 (grand public)
+                          │
+L3 (sessions) ────────────┘
+                          └──► L5 (rôles custom) ──► L7
+                          └──► L6 (web contexte)
 ```
 
 - **L1 avant tout** : sans envoi fiable, L4 est un mensonge.
-- **L2 avant L4** : le grand public multi-entreprises a besoin du contexte.
+- **L2 avant L4 et L6** : le grand public multi-entreprises et l'écran de choix ont besoin du contexte.
 - **L3 en parallèle** : indépendant, faible risque.
 - **L5 après L2/L3** : dépend de la notion de contexte pour être testable.
+- **L6 après L2** : consomme l'endpoint, ne le crée pas.
 
-**Total P0+P1 ≈ 11 jours** (L1 1 j + L2 3 j + L3 2 j + L4 5 j).
+### Estimation recalculée
+
+| Lot | Priorité | Effort |
+|---|---|---|
+| L1 — OTP fiable | P0 | 1 j |
+| L2 — Sélection de contexte | P0 | 3 j |
+| L3 — Sessions & dernier principal | P1 | 2 j |
+| L4 — Convergence grand public | P0 | 5 j |
+| L5 — Rôles personnalisés | P2 | 4 j |
+| L6 — Web (contexte + SSO) | P1 | 3 j |
+| **Total six lots** | | **18 j** |
+| **Sous-ensemble P0+P1** (L1+L2+L3+L4+L6) | | **14 j** |
+
+> **Correction de l'estimation** : la révision 1 annonçait « Total P0+P1 ≈ 11 jours
+> (L1 1 j + L2 3 j + L3 2 j + L4 5 j) ». C'était incohérent : ce total ne couvrait que
+> quatre lots, alors que le plan en comptait déjà six, et il n'intégrait ni les rôles
+> personnalisés ni le lot Web demandés par le propriétaire. Le total recalculé est
+> **18 jours** pour les six lots, **14 jours** pour le sous-ensemble P0+P1.
 
 ---
 
