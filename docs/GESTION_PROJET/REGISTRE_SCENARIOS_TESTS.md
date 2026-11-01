@@ -1,3 +1,47 @@
+## 2026-11-01 — #9102 (Couloir 16) : canal grand public — catégories dynamiques et seuil réglable
+
+**Surface API** : 3 routes nouvelles, aucune renommée ni retirée.
+`GET /api/v1/public/discovery/categories` (public, sans authentification) ;
+`GET` et `PUT /api/v1/admin/platform/discovery/settings` (super-admin,
+permission `settings.manage`).
+
+**Pourquoi c'est un scénario de test et pas un simple réglage** : le seuil
+décide de ce que le grand public VOIT. Trois états se ressemblent à l'écran et
+n'ont pas la même cause — une catégorie sous le seuil, une catégorie sans
+données, et une catégorie absente du référentiel. Les confondre ferait afficher
+un vide inexplicable au visiteur, ou pire, ferait croire à une panne.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| catégorie sous le seuil → **listée** avec `visible:false` | le vide deviendrait indistinguable d'une absence de données |
+| seuil **0** refusé (422) | un seuil à 0 afficherait TOUTES les catégories, y compris vides |
+| seuil non entier refusé | un `"5.5"` ferait basculer la comparaison en flottant |
+| `PUT` **idempotent** (même valeur) | rejouer la requête écrirait un audit trompeur |
+| ancienne valeur dans `audit_logs` | une baisse de seuil élargirait l'affichage public sans trace |
+| réglage absent → défaut **5**, jamais 0 | une base non migrée publierait tout |
+| `PUT` sans `settings.manage` → 403 | n'importe quel employé changerait la vitrine publique |
+| `GET` public sans jeton → 200 | l'Accueil de la PWA ne pourrait pas se charger avant connexion |
+
+**Automatisé** : `api/tests/Feature/LeopardoPublic/DiscoveryCategoryThresholdTest.php`,
+`PlatformDiscoverySettingsTest.php` (autorisation avec vrai jeton +
+`Auth::forgetGuards()`), `PublicIdentityBridgeTest.php` (8 cas du pont
+d'identité, groupe `audit`), et côté Flutter
+`front/mobile_apps/leopardo_public/test/integration/accueil_fiche_contact_test.dart`
+(6 tests : Accueil → Fiche → Contact, bouton « Contacter » **désactivé** en M1
+car aucun contrat de réservation n'existe — un bouton actif serait le bouton
+mort interdit par le cahier des charges).
+
+**Résultats réels** : `LeopardoPublic --exclude-group=audit` → **48 passed
+(274 assertions), 0 échec** ; `--group=audit` → 28 passed (87 assertions) ;
+`flutter test` → 42 tests ; `flutter analyze` core + public → No issues found ;
+`phpstan level 8` → No errors ; `pint --test` → PASS ;
+`check-openapi-route-coverage.py --strict-staleness` → drift 0.
+
+**Piège d'environnement** : `search_path` vaut `shared_tenants,public`. Une
+table créée sans qualification atterrit dans le schéma TENANT — un test de
+seuil passait alors au vert pour la mauvaise raison (le dépôt rendait son
+défaut parce qu'il ne voyait pas la table).
+
 ## 2026-10-28 — #8231 (BOS-043) : ecran Lea, description libre -> resume -> confirmation
 
 **Surface** : front uniquement pour le parcours (aucune route nouvelle), plus **un champ ajoute**
