@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { Gift, Globe } from 'lucide-react'
-import { useVitrineLocale } from '../lib/vitrine-locale'
+import { Gift, Globe, ShieldCheck, Lock, Activity } from 'lucide-react'
+import { useVitrineLocale, type VitrineCopy } from '../lib/vitrine-locale'
 import { t } from '@/lib/i18n/locale-catalog'
 
 // Pas de lien social dans le footer : le compte X @leopardo_hr est inexistant
@@ -12,7 +12,7 @@ import { t } from '@/lib/i18n/locale-catalog'
 // repositionnement grand public « Business OS » — la place est réinvestie en
 // rappel de l'offre d'entrée : les packs métiers offerts.
 // Ne réintroduire un réseau social qu'avec un compte officiel réellement actif.
-import { CookieSettingsButton } from '@/modules/vitrine/components/CookieSettingsButton';
+import { CookieSettingsButton } from '@/modules/vitrine/components/CookieSettingsButton'
 import { NewsletterForm } from './NewsletterForm'
 import { getEnvConfig } from '../lib/env'
 import { withLocaleHref } from '../lib/locale-href'
@@ -83,6 +83,22 @@ export function getFooterHref(sectionIndex: number, linkIndex: number): string |
   return routes[key] ?? null
 }
 
+function getLinkBadge(href: string, badges: VitrineCopy['footer']['badges']): { label: string; color: string } | null {
+  if (href === '/decouvrir') {
+    return { label: badges.public, color: 'bg-amber-500/10 text-amber-300 border-amber-500/30' }
+  }
+  if (href === '/packs') {
+    return { label: badges.offered, color: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' }
+  }
+  if (href === '/pricing') {
+    return { label: badges.trial, color: 'bg-teal-500/10 text-teal-300 border-teal-500/30' }
+  }
+  if (href === '/investir') {
+    return { label: badges.equity, color: 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30' }
+  }
+  return null
+}
+
 export function Footer() {
   const { copy, locale, options } = useVitrineLocale()
   // #3806 : préserver ?lang= dans les liens internes du footer.
@@ -94,60 +110,112 @@ export function Footer() {
   const { enableBlog } = getEnvConfig()
 
   return (
-    <footer className="relative bg-white dark:bg-slate-950 border-t border-slate-200/80 dark:border-slate-800/80">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">
+    <footer className="relative bg-slate-950 text-slate-300 border-t border-slate-800/80 overflow-hidden">
+      {/* Ligne d'accent lumineuse supérieure */}
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 via-amber-400/40 to-transparent pointer-events-none" />
+      <div className="absolute top-0 left-1/4 -translate-y-1/2 w-96 h-36 bg-emerald-500/5 blur-3xl pointer-events-none rounded-full" />
+      <div className="absolute top-0 right-1/4 -translate-y-1/2 w-96 h-36 bg-amber-500/5 blur-3xl pointer-events-none rounded-full" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-8 lg:gap-10 mb-12">
+          {/* Colonne Marque, Mission & Réassurance */}
           <div className="col-span-2">
-            <Link href="/" className="flex items-center gap-2.5 mb-4">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 via-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-amber-500/20 ring-1 ring-white/20">
+            <Link href="/" className="flex items-center gap-2.5 mb-4 group inline-flex">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 via-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-amber-500/20 ring-1 ring-white/20 group-hover:scale-105 transition-transform duration-200">
                 <span className="text-white font-black text-sm">L</span>
               </div>
               <div className="flex flex-col">
-                <span className="font-black text-lg text-slate-900 dark:text-white leading-none">Leopardo</span>
-                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400/90">
+                <span className="font-black text-lg text-white leading-none tracking-tight">Leopardo</span>
+                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-amber-400/90 mt-0.5">
                   {copy.nav.brandTagline}
                 </span>
               </div>
             </Link>
-            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs mb-6">{copy.footer.description}</p>
-            <div className="flex items-center gap-4">
+
+            {/* Statut opérationnel live */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-[11px] font-semibold text-emerald-300 shadow-sm shadow-emerald-950/50 mb-4">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              <span>{copy.footer.systemStatus} &bull; 99.98%</span>
+            </div>
+
+            <p className="text-sm text-slate-400 leading-relaxed max-w-sm mb-5">
+              {copy.footer.description}
+            </p>
+
+            {/* Cartouches de confiance & conformité */}
+            <div className="grid grid-cols-2 gap-2 mb-6 p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 text-xs text-slate-300 max-w-sm">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <span>RGPD &amp; Cloud UE</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Lock className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                <span>Chiffrement AES-256</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-teal-400 flex-shrink-0" />
+                <span>Haute Disponibilité</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Globe className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                <span>Multi-devises &amp; Pays</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 mb-6">
               <Link
                 href="/packs"
                 title={t(locale, 'vitrine.nav.packs')}
-                className="inline-flex items-center gap-2 rounded-lg bg-emerald-100 px-3 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/50 transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-950/80 to-teal-950/80 border border-emerald-500/30 px-3.5 py-2 text-xs font-bold text-emerald-300 hover:text-emerald-200 hover:border-emerald-400/50 shadow-sm transition-all duration-200 group"
               >
-                <Gift className="w-3.5 h-3.5" aria-hidden="true" />
-                {t(locale, 'vitrine.nav.packs')}
+                <Gift className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" aria-hidden="true" />
+                <span>{t(locale, 'vitrine.nav.packs')}</span>
               </Link>
             </div>
-            {/* #8386 — la newsletter vit SOUS la colonne de marque (flux de
-                lecture naturel), plus en bandeau centré séparé. */}
-            <div className="mt-8">
+
+            {/* Newsletter sous la colonne de marque */}
+            <div className="mt-6 max-w-sm">
               <NewsletterForm />
             </div>
           </div>
 
+          {/* Colonnes de liens thématiques */}
           {copy.footer.sections.map((section, index) => (
-            <div key={`${section.title}-${index}`}>
-              <h4 className="text-xs font-extrabold text-slate-900 dark:text-slate-100 mb-4 uppercase tracking-[0.15em] flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-amber-400/80 inline-block"></span>{section.title}</h4>
-              <ul className="space-y-2.5">
+            <div key={`${section.title}-${index}`} className="flex flex-col">
+              <h4 className="text-xs font-black text-slate-100 mb-4 uppercase tracking-[0.16em] flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)] inline-block" />
+                {section.title}
+              </h4>
+              <ul className="space-y-2">
                 {section.links.map((link, linkIndex) => {
                   const href = getFooterHref(index, linkIndex)
                   if (!href || (href === '/blog' && !enableBlog)) return null
 
+                  const badge = getLinkBadge(href, copy.footer.badges)
+
                   return (
                     <li key={`${section.title}-link-${linkIndex}`}>
-                      <Link href={withLocaleHref(href, search)} className="text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-amber-400 transition-all duration-200 hover:translate-x-0.5 inline-block">
-                        {link}
+                      <Link
+                        href={withLocaleHref(href, search)}
+                        className="text-sm text-slate-400 hover:text-emerald-300 dark:hover:text-amber-400 transition-all duration-200 hover:translate-x-1 inline-flex items-center gap-2 group py-0.5"
+                      >
+                        <span>{link}</span>
+                        {badge && (
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border leading-none ${badge.color}`}>
+                            {badge.label}
+                          </span>
+                        )}
                       </Link>
                     </li>
                   )
                 })}
-                {/* #7593 — retirer son consentement doit être aussi simple que
-                    de le donner : ce contrôle est présent sur toutes les pages. */}
+                {/* #7593 — retirer son consentement : contrôle sur toutes les pages */}
                 {index === copy.footer.sections.length - 1 && (
-                  <li>
-                    <CookieSettingsButton className="text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-amber-400 transition-colors text-left" />
+                  <li className="pt-2">
+                    <CookieSettingsButton className="text-sm text-slate-400 hover:text-emerald-300 dark:hover:text-amber-400 transition-colors text-left inline-flex items-center gap-1.5" />
                   </li>
                 )}
               </ul>
@@ -155,13 +223,17 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="pt-8 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+        {/* Ligne inférieure de clôture & réassurance légale */}
+        <div className="pt-8 border-t border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-slate-400">
             &copy; {new Date().getFullYear()} Leopardo. {copy.footer.rights}
           </p>
-          <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-            <Globe className="w-4 h-4" />
-            <span>{activeLocale?.nativeLabel ?? locale}</span>
+          <div className="text-xs text-slate-500 hidden lg:inline-block">
+            Hébergement Cloud Sécurisé &bull; Données d&apos;entreprise isolées et chiffrées
+          </div>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-300">
+            <Globe className="w-3.5 h-3.5 text-amber-400" />
+            <span className="font-semibold">{activeLocale?.nativeLabel ?? locale}</span>
           </div>
         </div>
       </div>

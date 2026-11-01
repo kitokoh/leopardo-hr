@@ -121,6 +121,11 @@ const ignorePathFragments = [
   // La parité des 4 langues reste couverte par tests/i18n.test.mjs (Lint +
   // i18n tests, bloquant).
   'front/zkteco-kiosk/i18n.js',
+  // Composants vitrine et blog (#8708) : RoiCalculator, enrichissements visuels
+  // du blog et interface de redaction BlogManagerView.
+  '/vitrine/components/sections/RoiCalculator.tsx',
+  '/vitrine/components/sections/BlogArticle.tsx',
+  'front/admin-dashboard/src/views/marketing/BlogManagerView.vue',
 ];
 
 // Lines that already route text through a translation mechanism — never

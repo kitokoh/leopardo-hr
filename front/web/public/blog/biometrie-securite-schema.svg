@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" fill="none">
+  <defs>
+    <linearGradient id="bgGrad3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#022c22"/>
+      <stop offset="40%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#064e3b"/>
+    </linearGradient>
+    <linearGradient id="terminalGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(30, 41, 59, 0.9)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.95)"/>
+    </linearGradient>
+    <filter id="glow3" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="80" result="blur" />
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bgGrad3)"/>
+  <circle cx="600" cy="315" r="240" fill="#10b981" opacity="0.12" filter="url(#glow3)"/>
+
+  <!-- Titre -->
+  <g transform="translate(80, 60)">
+    <rect x="0" y="0" width="170" height="28" rx="14" fill="rgba(16, 185, 129, 0.15)" stroke="#10b981" stroke-width="1"/>
+    <text x="85" y="19" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#34d399" text-anchor="middle" letter-spacing="1.5">ARCHITECTURE SÉCURISÉE</text>
+    <text x="0" y="65" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="#f8fafc">Chaîne de Confiance du Pointage Biométrique &amp; Mobile</text>
+    <text x="0" y="92" font-family="Inter, sans-serif" font-size="15" font-weight="500" fill="#94a3b8">Du capteur physique ou smartphone jusqu'au calcul automatique des heures supplémentaires</text>
+  </g>
+
+  <!-- 3 Blocs Connectés : Terminal -> Passerelle Sécurisée -> Moteur Paie -->
+  <g transform="translate(80, 190)">
+    <!-- Flèches directionnelles -->
+    <path d="M 310 140 L 410 140" stroke="#10b981" stroke-width="3" stroke-dasharray="6 6"/>
+    <polygon points="415,140 405,135 405,145" fill="#10b981"/>
+
+    <path d="M 690 140 L 790 140" stroke="#fbbf24" stroke-width="3" stroke-dasharray="6 6"/>
+    <polygon points="795,140 785,135 785,145" fill="#fbbf24"/>
+
+    <!-- Bloc 1 : Capteurs Locaux -->
+    <g transform="translate(0, 0)">
+      <rect width="300" height="290" rx="20" fill="url(#terminalGrad)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+      <circle cx="150" cy="55" r="28" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="2"/>
+      <text x="150" y="62" font-family="Inter, sans-serif" font-size="18" font-weight="800" fill="#34d399" text-anchor="middle">01</text>
+      <text x="150" y="120" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#ffffff" text-anchor="middle">Capteurs &amp; PWA</text>
+      <text x="150" y="144" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#94a3b8" text-anchor="middle">Pointeuses ZKTeco &amp; QR Kiosks</text>
+      <path d="M 30 170 L 270 170" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="35" y="200" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Empreinte &amp; Reconnaissance</text>
+      <text x="35" y="225" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Géofencing GPS dynamique</text>
+      <text x="35" y="250" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Mode hors-ligne autonome</text>
+    </g>
+
+    <!-- Bloc 2 : Passerelle EdgeSync -->
+    <g transform="translate(380, 0)">
+      <rect width="300" height="290" rx="20" fill="url(#terminalGrad)" stroke="rgba(16, 185, 129, 0.3)" stroke-width="1.5"/>
+      <circle cx="150" cy="55" r="28" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="2"/>
+      <text x="150" y="62" font-family="Inter, sans-serif" font-size="18" font-weight="800" fill="#34d399" text-anchor="middle">02</text>
+      <text x="150" y="120" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#ffffff" text-anchor="middle">Passerelle EdgeSync</text>
+      <text x="150" y="144" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#34d399" text-anchor="middle">Vérification Cryptographique</text>
+      <path d="M 30 170 L 270 170" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="35" y="200" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Déduplication en temps réel</text>
+      <text x="35" y="225" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Signature TLS HMAC-SHA256</text>
+      <text x="35" y="250" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Isolation étanche par tenant</text>
+    </g>
+
+    <!-- Bloc 3 : Traitement Automatique -->
+    <g transform="translate(760, 0)">
+      <rect width="300" height="290" rx="20" fill="url(#terminalGrad)" stroke="rgba(251, 191, 36, 0.3)" stroke-width="1.5"/>
+      <circle cx="150" cy="55" r="28" fill="rgba(251, 191, 36, 0.2)" stroke="#fbbf24" stroke-width="2"/>
+      <text x="150" y="62" font-family="Inter, sans-serif" font-size="18" font-weight="800" fill="#fbbf24" text-anchor="middle">03</text>
+      <text x="150" y="120" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#ffffff" text-anchor="middle">Payroll Engine</text>
+      <text x="150" y="144" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#fbbf24" text-anchor="middle">Valorisation Directe en Paie</text>
+      <path d="M 30 170 L 270 170" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="35" y="200" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Calcul des heures sup (25%/50%)</text>
+      <text x="35" y="225" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Décompte pauses &amp; retards</text>
+      <text x="35" y="250" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Injection directe en bulletin</text>
+    </g>
+  </g>
+
+  <!-- Footer -->
+  <g transform="translate(80, 565)">
+    <text x="0" y="15" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#64748b">SYNCHRONISATION INSTANTANÉE • CONFORMITÉ AUDIT SOCIAL</text>
+    <text x="1040" y="15" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#fbbf24" text-anchor="end">ZÉRO POINTAGE FANTÔME</text>
+  </g>
+</svg>

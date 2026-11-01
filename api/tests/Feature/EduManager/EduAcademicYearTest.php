@@ -35,13 +35,46 @@ class EduAcademicYearTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    /** @var list<string> */
+    /**
+     * Tables créées par `MIGRATIONS` — graine de la fermeture de dépendances.
+     *
+     * Elle doit être le MIROIR de `MIGRATIONS` : ce test rejoue le `down()` de
+     * TOUTES ces migrations, donc toute table qu'elles créent peut entrer en
+     * conflit de FK avec une migration voisine. Une graine incomplète laissait
+     * `edu_guardians` (créée par `000103`, qui EST dans `MIGRATIONS`) hors de
+     * la fermeture : le `down()` de `000103` échouait en 2BP01 parce que
+     * `edu_guardian_portal_links`, `edu_guardian_access_tokens` et
+     * `edu_guardian_access_links` — créées par des migrations voisines — la
+     * référençaient encore.
+     *
+     * @var list<string>
+     */
     private const TABLES = [
+        // EDU-002 (#5818)
+        'edu_campuses',
+        'edu_students',
+        'edu_guardians',
+        'edu_student_guardians',
+        // EDU-003 (#5819)
         'edu_academic_years',
         'edu_classes',
         'edu_subjects',
         'edu_teachers',
         'edu_teacher_subjects',
+        // EDU-004 (#5820)
+        'edu_admissions',
+        // EDU-005 (#5821)
+        'edu_attendance_records',
+        'edu_attendance_corrections',
+        // EDU-007 (#5823)
+        'edu_assessments',
+        'edu_grades',
+        'edu_grade_versions',
+        // EDU-006 (#5822)
+        'edu_timetable_slots',
+        // EDU-008 (#5824)
+        'edu_report_cards',
+        'edu_report_card_lines',
     ];
 
     /** @var list<string> */
@@ -285,6 +318,11 @@ class EduAcademicYearTest extends TestCase
         // (résolution dynamique — aucun nom d'issue voisine en dur) ; le
         // cycle complet se déroule dans la transaction du test, et up()
         // recrée les tables #5819 via leurs propres migrations.
+        // Les dépendantes sont réellement supprimées AVANT (le helper existait
+        // mais n'était jamais appelé : `DROP TABLE edu_admissions` échouait en
+        // 2BP01 dès qu'une migration voisine l'avait référencée).
+        $this->dropTablesReferencing(self::TABLES);
+
         // down() dans l'ordre inverse des dépendances (toutes les migrations EduManager),
         // puis up() complet — les FK composites imposent l'ordre inverse des préfixes.
         foreach (array_reverse(self::MIGRATIONS) as $basename) {
@@ -311,40 +349,113 @@ class EduAcademicYearTest extends TestCase
      * portent une FK vers l'une des tables données — y compris en cascade de
      * dépendances (table dépendante d'une table dépendante).
      *
+     * L'ORDRE de suppression est le point délicat : une table ne peut être
+     * supprimée que lorsque plus AUCUNE table encore présente ne la référence.
+     * La version précédente supprimait les dépendantes au fur et à mesure de
+     * leur découverte, dans l'ordre où `information_schema` les rendait — ce
+     * qui droppait parfois une table PARENTE avant sa fille. Cas observé :
+     * `edu_admissions` était supprimée alors que `edu_fees` et
+     * `edu_admission_followups` (FK vers elle) existaient encore → 2BP01.
+     *
+     * On calcule donc d'abord la FERMETURE complète (aucune suppression), puis
+     * on supprime par vagues : à chaque tour, seules les tables que plus rien
+     * ne référence *dans l'ensemble restant* sont supprimées. C'est un tri
+     * topologique inverse, et il est stable quel que soit l'ordre de retour de
+     * `information_schema`.
+     *
      * @param  list<string>  $tables
      */
     private function dropTablesReferencing(array $tables): void
     {
-        $dropped = $tables;
+        // Le graphe de FK est lu en UNE requête : `information_schema` n'est pas
+        // indexé, chaque appel coûte ~1,2 s sur ce schéma, et l'implémentation
+        // « une requête par table et par tour » en émettait ~250 → à elle seule
+        // elle expliquait les ~165 s du test. La fermeture puis le tri
+        // topologique se font en mémoire, sans plus toucher la base.
+        $edges = $this->foreignKeyEdges();
+
+        // 1. Fermeture transitive : toutes les tables à supprimer.
+        $closure = array_fill_keys($tables, true);
 
         do {
-            $dependents = [];
-            foreach ($dropped as $table) {
-                $rows = DB::select(
-                    'SELECT DISTINCT tc.table_name
-                       FROM information_schema.table_constraints tc
-                       JOIN information_schema.key_column_usage kcu
-                         ON kcu.constraint_name = tc.constraint_name
-                        AND kcu.table_schema = tc.table_schema
-                       JOIN information_schema.constraint_column_usage ccu
-                         ON ccu.constraint_name = tc.constraint_name
-                        AND ccu.table_schema = tc.table_schema
-                      WHERE tc.constraint_type = ?
-                        AND tc.table_schema = ?
-                        AND ccu.table_name = ?',
-                    ['FOREIGN KEY', 'shared_tenants', $table]
-                );
-                foreach ($rows as $row) {
-                    $dependents[] = (string) $row->table_name;
+            $added = false;
+            foreach (array_keys($closure) as $table) {
+                foreach ($edges[$table] ?? [] as $dependent) {
+                    if (! isset($closure[$dependent])) {
+                        $closure[$dependent] = true;
+                        $added = true;
+                    }
+                }
+            }
+        } while ($added);
+
+        // 2. Suppression par vagues, dépendantes d'abord : une table T n'est
+        //    supprimée que si AUCUNE table encore présente ne la référence —
+        //    exactement la condition que PostgreSQL vérifie pour refuser un
+        //    DROP en 2BP01.
+        $remaining = array_keys($closure);
+
+        while ($remaining !== []) {
+            $leaves = [];
+
+            foreach ($remaining as $table) {
+                $stillReferenced = false;
+                foreach ($edges[$table] ?? [] as $dependent) {
+                    if (in_array($dependent, $remaining, true)) {
+                        $stillReferenced = true;
+                        break;
+                    }
+                }
+
+                if (! $stillReferenced) {
+                    $leaves[] = $table;
                 }
             }
 
-            $dependents = array_values(array_unique(array_diff($dependents, $dropped)));
-            foreach ($dependents as $dependent) {
-                Schema::dropIfExists($dependent);
+            // Aucune feuille = cycle de FK : on retombe sur l'ensemble entier
+            // pour ne pas boucler indéfiniment (PostgreSQL refusera, mais le
+            // message sera explicite plutôt qu'un timeout).
+            if ($leaves === []) {
+                $leaves = $remaining;
             }
-            $dropped = array_merge($dropped, $dependents);
-        } while ($dependents !== []);
+
+            foreach ($leaves as $leaf) {
+                Schema::dropIfExists($leaf);
+            }
+
+            $remaining = array_values(array_diff($remaining, $leaves));
+        }
+    }
+
+    /**
+     * Graphe des FK du schéma tenant : `table référencée => [tables dépendantes]`.
+     *
+     * Une seule requête pour tout le schéma (cf. coût d'`information_schema`).
+     *
+     * @return array<string, list<string>>
+     */
+    private function foreignKeyEdges(): array
+    {
+        $rows = DB::select(
+            'SELECT DISTINCT ccu.table_name AS referenced, tc.table_name AS dependent
+               FROM information_schema.table_constraints tc
+               JOIN information_schema.key_column_usage kcu
+                 ON kcu.constraint_name = tc.constraint_name
+                AND kcu.table_schema = tc.table_schema
+               JOIN information_schema.constraint_column_usage ccu
+                 ON ccu.constraint_name = tc.constraint_name
+                AND ccu.table_schema = tc.table_schema
+              WHERE tc.constraint_type = ?
+                AND tc.table_schema = ?',
+            ['FOREIGN KEY', 'shared_tenants']
+        );
+
+        $edges = [];
+        foreach ($rows as $row) {
+            $edges[(string) $row->referenced][] = (string) $row->dependent;
+        }
+
+        return $edges;
     }
 
     private function academicYear(Company $company, string $name): EduAcademicYear

@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" fill="none">
+  <defs>
+    <linearGradient id="bgGrad5" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#022c22"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#022c22"/>
+    </linearGradient>
+    <linearGradient id="shieldGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(30, 41, 59, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+    <filter id="glow5" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="80" result="blur" />
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bgGrad5)"/>
+  <circle cx="250" cy="300" r="180" fill="#10b981" opacity="0.12" filter="url(#glow5)"/>
+  <circle cx="950" cy="320" r="200" fill="#fbbf24" opacity="0.1" filter="url(#glow5)"/>
+
+  <!-- Header -->
+  <g transform="translate(80, 60)">
+    <rect x="0" y="0" width="180" height="28" rx="14" fill="rgba(16, 185, 129, 0.15)" stroke="#10b981" stroke-width="1"/>
+    <text x="90" y="19" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#34d399" text-anchor="middle" letter-spacing="1.5">SÉCURITÉ &amp; CONFIDENTIALITÉ</text>
+    <text x="0" y="65" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="#f8fafc">Protection des Données RH &amp; Conformité RGPD</text>
+    <text x="0" y="92" font-family="Inter, sans-serif" font-size="15" font-weight="500" fill="#94a3b8">Chiffrement de bout en bout, isolation multi-tenant et registre de consentement légal</text>
+  </g>
+
+  <!-- 3 Piliers de sécurité -->
+  <g transform="translate(80, 195)">
+    <!-- Pilier 1 : Chiffrement -->
+    <g transform="translate(0, 0)">
+      <rect width="320" height="280" rx="20" fill="url(#shieldGrad)" stroke="rgba(16, 185, 129, 0.3)" stroke-width="1.5"/>
+      <circle cx="50" cy="50" r="24" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="2"/>
+      <text x="50" y="56" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#34d399" text-anchor="middle">🔒</text>
+      <text x="90" y="55" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#ffffff">Chiffrement AES-256</text>
+      <path d="M 30 90 L 290 90" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="30" y="125" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Bulletins chiffrés au repos</text>
+      <text x="30" y="155" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Communications TLS 1.3</text>
+      <text x="30" y="185" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Clés rotatives automatiques</text>
+      <text x="30" y="215" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Coffre-fort numérique salarié</text>
+      <rect x="30" y="240" width="130" height="24" rx="6" fill="rgba(16, 185, 129, 0.15)"/>
+      <text x="95" y="256" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#34d399" text-anchor="middle">ZERO-LEAK PROOF</text>
+    </g>
+
+    <!-- Pilier 2 : Isolation Tenant -->
+    <g transform="translate(360, 0)">
+      <rect width="320" height="280" rx="20" fill="url(#shieldGrad)" stroke="rgba(56, 189, 248, 0.3)" stroke-width="1.5"/>
+      <circle cx="50" cy="50" r="24" fill="rgba(56, 189, 248, 0.2)" stroke="#38bdf8" stroke-width="2"/>
+      <text x="50" y="56" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#38bdf8" text-anchor="middle">🛡️</text>
+      <text x="90" y="55" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#ffffff">Isolation Multi-Tenant</text>
+      <path d="M 30 90 L 290 90" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="30" y="125" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Schéma PostgreSQL dédié</text>
+      <text x="30" y="155" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Aucune fuite inter-entreprises</text>
+      <text x="30" y="185" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• RBAC strict par granularité</text>
+      <text x="30" y="215" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Cloisonnement comptable</text>
+      <rect x="30" y="240" width="130" height="24" rx="6" fill="rgba(56, 189, 248, 0.15)"/>
+      <text x="95" y="256" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#38bdf8" text-anchor="middle">ENTERPRISE GRADE</text>
+    </g>
+
+    <!-- Pilier 3 : Droits & Purge -->
+    <g transform="translate(720, 0)">
+      <rect width="320" height="280" rx="20" fill="url(#shieldGrad)" stroke="rgba(251, 191, 36, 0.3)" stroke-width="1.5"/>
+      <circle cx="50" cy="50" r="24" fill="rgba(251, 191, 36, 0.2)" stroke="#fbbf24" stroke-width="2"/>
+      <text x="50" y="56" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#fbbf24" text-anchor="middle">⚖️</text>
+      <text x="90" y="55" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#ffffff">Droits des Personnes</text>
+      <path d="M 30 90 L 290 90" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="30" y="125" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Droit d'accès &amp; export JSON/PDF</text>
+      <text x="30" y="155" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Droit à l'oubli &amp; anonymisation</text>
+      <text x="30" y="185" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Registre CNIL / RGPD prêt</text>
+      <text x="30" y="215" font-family="Inter, sans-serif" font-size="13" fill="#cbd5e1">• Journal d'audit infalsifiable</text>
+      <rect x="30" y="240" width="130" height="24" rx="6" fill="rgba(251, 191, 36, 0.15)"/>
+      <text x="95" y="256" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#fbbf24" text-anchor="middle">RGPD / GDPR READY</text>
+    </g>
+  </g>
+
+  <!-- Footer -->
+  <g transform="translate(80, 565)">
+    <text x="0" y="15" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#64748b">HEBERGEMENT CLOUD SOUVERAIN • HAUTE DISPONIBILITÉ 99.98%</text>
+    <text x="1040" y="15" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#10b981" text-anchor="end">CONFORMITÉ RGPD EUROPE &amp; AFRIQUE</text>
+  </g>
+</svg>

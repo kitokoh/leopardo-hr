@@ -34,7 +34,8 @@ type HeroStat = {
 }
 
 
-type LandingCopy = {
+export type VitrineCopy = LandingCopy
+export type LandingCopy = {
   nav: {
     sections: Array<{ id: string; label: string }>
     login: string
@@ -131,6 +132,13 @@ type LandingCopy = {
     description: string
     sections: Array<{ title: string; links: string[] }>
     rights: string
+    systemStatus: string
+    badges: {
+      public: string
+      offered: string
+      trial: string
+      equity: string
+    }
     newsletter: {
       title: string
       description: string
@@ -298,7 +306,15 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { title: 'Applications mobiles', links: ['Employé (Android)', 'Employé (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Admin plateforme (Android)'] },
         { title: 'Légal', links: ['Confidentialité (RGPD)', 'CGU', 'Mentions légales', 'Devenir actionnaire'] },
       ],
+      
       rights: 'Tous droits réservés.',
+      systemStatus: 'Tous les systèmes opérationnels',
+      badges: {
+        public: 'Public',
+        offered: 'Offert',
+        trial: 'Essai 14j',
+        equity: 'Actionnaires',
+      },
       newsletter: {
         title: 'Newsletter',
         description: 'Recevez nos conseils de gestion et mises à jour produit.',
@@ -453,7 +469,15 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { title: 'Mobile Apps', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'Legal', links: ['Privacy (GDPR)', 'Terms', 'Legal notice', 'Become a shareholder'] },
       ],
+      
       rights: 'All rights reserved.',
+      systemStatus: 'All systems operational',
+      badges: {
+        public: 'Public',
+        offered: 'Free',
+        trial: '14-day trial',
+        equity: 'Shareholders',
+      },
       newsletter: {
         title: 'Newsletter',
         description: 'Get our HR tips and product updates.',
@@ -608,7 +632,15 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { title: 'Mobil Uygulamalar', links: ['Çalışan (Android)', 'Çalışan (iOS)', 'Yönetici (Android)', 'Yönetici (iOS)', 'Platform Yöneticisi (Android)'] },
         { title: 'Yasal', links: ['Gizlilik (KVKK/GDPR)', 'Kullanım Koşulları', 'Yasal bildirim', 'Ortak olun'] },
       ],
+      
       rights: 'Tum haklari saklidir.',
+      systemStatus: 'Tüm sistemler çalışıyor',
+      badges: {
+        public: 'Herkese Açık',
+        offered: 'Ücretsiz',
+        trial: '14 gün deneme',
+        equity: 'Hissedarlar',
+      },
       newsletter: {
         title: 'Bülten',
         description: 'İK ipuçlarımızı ve ürün güncellemelerimizi alın.',
@@ -763,7 +795,15 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { title: 'تطبيقات الجوال', links: ['الموظف (Android)', 'الموظف (iOS)', 'المدير (Android)', 'المدير (iOS)', 'مشرف المنصة (Android)'] },
         { title: 'قانوني', links: ['الخصوصية (GDPR)', 'الشروط', 'الإشعارات القانونية', 'كن مساهماً'] },
       ],
+      
       rights: 'جميع الحقوق محفوظة.',
+      systemStatus: 'جميع الأنظمة تعمل',
+      badges: {
+        public: 'عام',
+        offered: 'مجاني',
+        trial: 'تجربة 14 يوم',
+        equity: 'المساهمون',
+      },
       newsletter: {
         title: 'النشرة الإخبارية',
         description: 'احصل على نصائح الموارد البشرية وتحديثات المنتج.',

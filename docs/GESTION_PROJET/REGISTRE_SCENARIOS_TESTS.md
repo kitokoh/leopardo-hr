@@ -2295,3 +2295,26 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 - **Note de décision** : le flag `ONBOARDING_LEA_ENABLED` est **OFF par
   défaut** — le parcours introduit un appel LLM payant dans le funnel
   d'inscription, son activation relève d'une décision d'exploitation.
+
+
+## Lot 2026-10-31 — Vitrine Blog Enrichi, Infographies SVG, Calculateur ROI et Gestion Blog Super Admin (refs #8708)
+
+- **Composants concernes** :
+  - `front/web/src/modules/vitrine/components/sections/BlogArticle.tsx` (barre de progression scroll, callouts `[!TIP]`/`[!WARNING]`/`[!NOTE]`, support images markdown)
+  - `front/web/src/modules/vitrine/components/sections/RoiCalculator.tsx` (simulateur ROI interactif sur `/pricing`)
+  - `front/web/src/modules/vitrine/data/blog.ts` (enrichissement 5 articles avec infographies SVG)
+  - `front/admin-dashboard/src/views/marketing/BlogManagerView.vue` (interface double volet redaction + previsualisation)
+  - `api/app/Modules/Marketing/Interfaces/Api/V1/Controllers/PlatformBlogController.php` (CRUD API `/platform/blog/posts`)
+- **Cas couverts** :
+  1. Affichage article vitrine : progression de lecture calculée dynamiquement au scroll ;
+  2. Rendu des infographies SVG locales dans le markdown du corps d'article ;
+  3. Interactivité du simulateur ROI : calculs d'économies annuelles et ROI % selon secteur, effectif et coût horaire ;
+  4. Rédaction super admin : double volet avec mise à jour réactive de la prévisualisation ;
+  5. CRUD API plateforme : listing, consultation, création, mise à jour et suppression d'articles sous permissions `marketing_os.view`/`marketing_os.manage`.
+- **Preuves et gardes verifiees** :
+  - `check:mojibake` : OK (aucun caractère double-encodé UTF-8)
+  - `check:french-copy` : OK (aucune forme interdite dans la copy FR)
+  - `check:orphans` : OK (27 pages landing, toutes liées)
+  - `check:assets` : OK (5 assets de marque conformes)
+  - `check-vitrine-agent-lock.sh` : OK (autorisation accordée à la branche vitrine)
+  - `php -l` : 0 erreur de syntaxe
