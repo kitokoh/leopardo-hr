@@ -62,6 +62,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyRequestController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformDiscoverySettingsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformEmailTemplateController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformFeatureKillSwitchController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformHrReportController;
@@ -366,6 +367,19 @@ Route::prefix('v1')->group(function (): void {
     // (patron BC-27/BC-28) ; chaque entite reste soumise a sa propre garde
     // fail-closed (is_public, statut societe, feature verticale).
     Route::middleware(['throttle:shop-public'])->get('/public/discover', [PublicDiscoveryController::class, 'index']);
+
+    // COULOIR 16 — catégories VISIBLES de la découverte, par ville.
+    //
+    // Le seuil (« au moins N Pages publiées dans la catégorie ») est un
+    // réglage de PLATEFORME réglable depuis le Superadmin
+    // (`platform_settings.discovery.category_min_pages`), jamais une constante
+    // codée en dur : une constante obligerait un déploiement pour ajuster un
+    // seuil commercial et, surtout, resterait invisible à l'écran Superadmin.
+    //
+    // Même isolation que `/public/discover` : aucune auth, aucun middleware
+    // tenant, aucun identifiant interne dans la réponse.
+    Route::middleware(['throttle:shop-public'])
+        ->get('/public/discovery/categories', [PublicDiscoveryController::class, 'categories']);
 
     // SUPERAPP-P1 (#8760) — contact public « Contacter ce professionnel ».
     // Route isolee SANS auth ni middleware tenant (patron BC-27/BC-28) : le
@@ -989,6 +1003,14 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/platform/ai/settings/reset', [PlatformAiSettingsController::class, 'reset'])->middleware('platform.permission:settings.manage');
         // Test à blanc du fournisseur : valider une clé AVANT d'activer l'IA.
         Route::post('/platform/ai/test-connection', [PlatformAiSettingsController::class, 'testConnection'])->middleware('platform.permission:settings.manage');
+
+        // COULOIR 16 — M1 · seuil de catégories de la découverte publique.
+        // Même permission que les autres réglages de plateforme : un super
+        // admin de support n'hérite pas du réglage commercial. `PUT` et non
+        // `POST` : rejouer la même valeur ne doit produire aucune écriture ni
+        // aucune ligne d'audit.
+        Route::get('/platform/discovery/settings', [PlatformDiscoverySettingsController::class, 'show'])->middleware('platform.permission:settings.manage');
+        Route::put('/platform/discovery/settings', [PlatformDiscoverySettingsController::class, 'update'])->middleware('platform.permission:settings.manage');
 
         // #7385 — suivi de l'assistant, tous tenants (usage, coûts, erreurs).
         // #8020 — onglets de l'écran Paramètres › Assistant IA, dont la garde

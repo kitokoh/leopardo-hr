@@ -750,6 +750,18 @@ const routes = [
         }
       },
       {
+        // COULOIR 16 — M1 · seuil de catégories de la découverte publique.
+        // Voisin de la route IA : ce sont deux réglages de plateforme, donc
+        // deux entrées de « Paramètres » côté cockpit, pas une entrée métier.
+        path: '/settings/discovery',
+        name: 'settings-discovery',
+        component: () => import('@/views/settings/DiscoverySettingsView.vue'),
+        meta: {
+          title: 'navigation.discoverySettings',
+          icon: 'MagnifyingGlassIcon'
+        }
+      },
+      {
         path: '/settings/payroll/holidays',
         name: 'payroll-holidays',
         component: () => import('../views/settings/HolidaysView.vue'),

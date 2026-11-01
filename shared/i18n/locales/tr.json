@@ -1740,7 +1740,8 @@
     "travelAgency": "Seyahat acentesi",
     "emailTemplates": "E-postalar",
     "settings": "Ayarlar",
-    "messaging": "Mesajlaşma"
+    "messaging": "Mesajlaşma",
+    "discoverySettings": "Genel keşif"
   },
   "webhooks": {
     "confirm_delete": "Bu webhook silinsin mi?"
@@ -8780,5 +8781,40 @@
       "confirm": "Etkinleştirme başarısız.",
       "stale": "Özet değişti. Lütfen yeniden inceleyin."
     }
+  },
+  "discoverySettings": {
+    "title": "Genel keşif",
+    "subtitle": "Herkese açık uygulamanın ayarları, şehir bazında.",
+    "thresholdLabel": "Kategori eşiği",
+    "thresholdHint": "Bir kategori uygulamada ancak şehirde en az bu kadar yayınlanmış kart varsa görünür. Geçerli değer: {defaultValue}.",
+    "pages": "yayınlanmış kart",
+    "minMax": "{min} ile {max} arasında tam sayı.",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor…",
+    "cancel": "İptal",
+    "noChange": "Kaydedilecek değişiklik yok.",
+    "savedFrom": "Eşik {previous} değerinden {current} değerine değiştirildi.",
+    "audited": "Bu değişiklik platform denetim günlüğüne kaydedildi.",
+    "loadError": "Keşif ayarları okunamadı.",
+    "retry": "Yeniden dene",
+    "saveError": "Kaydetme başarısız. Değer değiştirilmedi.",
+    "cityOverridesTitle": "Şehre özel eşikler",
+    "cityOverridesHint": "Bu değerler bu ekranın dışında belirlenmiş olup genel eşiğin önüne geçer.",
+    "error": {
+      "required": "Bir tam sayı girin.",
+      "integer": "Eşik bir tam sayı olmalıdır.",
+      "min": "En düşük eşik {min}.",
+      "max": "En yüksek eşik {max}."
+    }
+  },
+  "publicApp": {
+    "manifestName": "Leopardo — Yakınınızdakini bulun",
+    "manifestDescription": "Yakınınızdaki bir işletmeyi bulun, onunla konuşun, her şeyi bir arada tutun.",
+    "shortcutHome": "Keşfet",
+    "shortcutHomeDesc": "Yakınınızdaki bir işletmeyi bulun",
+    "shortcutMessages": "Mesajlar",
+    "shortcutMessagesDesc": "Konuşmalarınızı açın",
+    "shortcutProfile": "Profil",
+    "shortcutProfileDesc": "Dil, gizlilik, bildirimler"
   }
 }

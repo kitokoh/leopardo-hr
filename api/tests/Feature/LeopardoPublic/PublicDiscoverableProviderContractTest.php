@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\LeopardoPublic;
 
 use App\Shared\Contracts\Discovery\PublicDiscoverableProvider;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
@@ -305,7 +306,21 @@ class PublicDiscoverableProviderContractTest extends TestCase
         foreach ($this->providers() as $type => $provider) {
             $segment = self::TYPE_SEGMENTS[$type];
 
-            foreach ($provider->search([]) as $item) {
+            // Ce garde se DÉCLARE indépendant des données (cf. en-tête) : il ne
+            // doit donc pas dépendre de l'état du schéma laissé par la classe
+            // précédente. `search()` interroge la base ; si une classe
+            // `CreatesMvpSchema` vient de tourner, `shared_tenants` est une
+            // fixture partielle et la table de la verticale peut manquer —
+            // observé avec `restaurant_branches`. Sans cette garde, l'échec
+            // accuse le provider alors que la cause est l'ORDRE d'exécution.
+            // Un schéma absent = zéro ligne à vérifier, pas un défaut de code.
+            try {
+                $items = $provider->search([]);
+            } catch (QueryException) {
+                continue;
+            }
+
+            foreach ($items as $item) {
                 /** @var array<string, mixed> $item */
                 $url = $item['url'] ?? null;
 

@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  COULOIR 16 — M1 · Maquette 360 px · parcours « fiche → contact » en RTL.
+
+  Version miroir arabe du parcours. Ce n'est PAS un `transform="scale(-1,1)"`
+  du fichier LTR : un miroir mécanique retourne aussi les photos, le logo et
+  les chiffres — or en arabe les nombres restent écrits de gauche à droite.
+  La maquette est donc retournée structurellement, puis le contenu
+  (nombres, « +90 », « 1/4 ») est réécrit en LTR à l'intérieur des zones
+  miroir. C'est exactement ce que fait `Directionality.rtl` dans Flutter,
+  et ce que la maquette doit montrer.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="740" viewBox="0 0 1140 740" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Naskh Arabic', sans-serif">
+  <rect width="1140" height="740" fill="#F8FAFC"/>
+
+  <g direction="rtl">
+  <text x="24" y="36" font-size="17" font-weight="800" fill="#0F172A" text-anchor="start">Couloir 16 — parcours fiche → contact (360 px, RTL / العربية)</text>
+  <text x="24" y="58" font-size="12" fill="#64748B" text-anchor="start">Miroir structurel, pas une inversion mécanique : les nombres et les indicatifs restent LTR</text>
+
+  <!-- ══════════ ÉCRAN 1 — FICHE ══════════ -->
+  <g transform="translate(24,80)">
+    <rect width="340" height="620" rx="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <text x="328" y="0" font-size="11" font-weight="700" fill="#334155" text-anchor="end" direction="ltr">1 · بطاقة المتجر (بدون حساب)</text>
+
+    <rect x="0" y="0" width="340" height="26" rx="20" fill="#FFFFFF"/>
+    <text x="16" y="18" font-size="10" fill="#94A3B8" direction="ltr">9:41</text>
+    <rect x="18" y="9" width="26" height="8" rx="2" fill="#CBD5E1"/>
+
+    <!-- Photos -->
+    <rect x="0" y="26" width="340" height="150" fill="url(#photoGradRtl)"/>
+    <g opacity="0.55">
+      <circle cx="278" cy="86" r="20" fill="#FFFFFF"/>
+      <circle cx="190" cy="112" r="14" fill="#FFFFFF"/>
+      <circle cx="88" cy="82" r="18" fill="#FFFFFF"/>
+    </g>
+    <g direction="ltr">
+      <rect x="16" y="140" width="52" height="18" rx="9" fill="#0F172A" opacity="0.55"/>
+      <text x="42" y="153" font-size="9" text-anchor="middle" fill="#FFFFFF">1 / 4</text>
+    </g>
+
+    <!-- Retour : flèche miroir (pointe vers la droite) -->
+    <circle cx="316" cy="52" r="14" fill="#FFFFFF" opacity="0.92"/>
+    <path d="M312 52 L320 52 M316 46 L322 52 L316 58" stroke="#0F172A" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="24" cy="52" r="14" fill="#FFFFFF" opacity="0.92"/>
+    <path d="M29 50 v-3 h-10 v3 M28 50 v8 h-8 v-8" stroke="#0F172A" stroke-width="1.4" fill="none"/>
+
+    <!-- Titre (ancre à droite) -->
+    <text x="320" y="206" font-size="17" font-weight="800" fill="#0F172A" text-anchor="end">البوسفور</text>
+
+    <g transform="translate(258,216)">
+      <rect width="62" height="16" rx="8" fill="#D1FAE5"/>
+      <path d="M46 8.6 l2 2 4-4.4" stroke="#059669" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="38" y="11.4" font-size="8.5" font-weight="700" fill="#047857" text-anchor="end">موثّق</text>
+    </g>
+    <g transform="translate(154,216)">
+      <rect width="96" height="16" rx="8" fill="#F0FDF4" stroke="#BBF7D0"/>
+      <circle cx="87" cy="8" r="3" fill="#10B981"/>
+      <text x="79" y="11.2" font-size="8.5" font-weight="600" fill="#047857" text-anchor="end">مفتوح · 23:30</text>
+    </g>
+
+    <text x="320" y="248" font-size="10.5" fill="#64748B" text-anchor="end">مطعم · قاضي كوي · 850 م</text>
+
+    <!-- Adresse -->
+    <g transform="translate(20,260)">
+      <rect width="300" height="42" rx="10" fill="#F8FAFC" stroke="#E2E8F0"/>
+      <path d="M286 21 c0 -3.3 -2.7 -6 -6 -6 s-6 2.7 -6 6 c0 4.5 6 10 6 10 s6 -5.5 6 -10 z" stroke="#10B981" stroke-width="1.4" fill="none"/>
+      <circle cx="280" cy="21" r="1.8" fill="#10B981"/>
+      <text x="264" y="18" font-size="9.5" fill="#334155" text-anchor="end">مودا جاد. ١٢، قاضي كوي</text>
+      <text x="264" y="31" font-size="8.5" fill="#94A3B8" text-anchor="end">افتح في الخرائط</text>
+      <path d="M22 21 h-8 M26 17 l-4 4 4 4" stroke="#10B981" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <text x="320" y="326" font-size="11" font-weight="700" fill="#0F172A" text-anchor="end">أوقات العمل</text>
+    <text x="320" y="342" font-size="9.5" fill="#64748B" text-anchor="end">اليوم 11:00 – 23:30</text>
+    <text x="320" y="356" font-size="9.5" fill="#94A3B8" text-anchor="end">غدًا 11:00 – 23:30</text>
+
+    <!-- Actions (ordre miroir : Contacter à droite) -->
+    <text x="320" y="382" font-size="11" font-weight="700" fill="#0F172A" text-anchor="end">الإجراءات</text>
+    <g transform="translate(224,392)">
+      <rect width="96" height="34" rx="10" fill="#10B981"/>
+      <text x="48" y="21.5" font-size="11" font-weight="700" text-anchor="middle" fill="#FFFFFF">تواصل</text>
+    </g>
+    <g transform="translate(122,392)">
+      <rect width="96" height="34" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.4"/>
+      <text x="48" y="21.5" font-size="11" font-weight="600" text-anchor="middle" fill="#334155">اطلب</text>
+    </g>
+    <g transform="translate(20,392)">
+      <rect width="96" height="34" rx="10" fill="#F1F5F9" stroke="#E2E8F0" stroke-width="1.4" stroke-dasharray="3 3"/>
+      <text x="48" y="20" font-size="9" font-weight="600" text-anchor="middle" fill="#94A3B8">احجز</text>
+      <text x="48" y="29" font-size="7" text-anchor="middle" fill="#CBD5E1">غير متاح</text>
+    </g>
+    <text x="320" y="440" font-size="8" fill="#94A3B8" text-anchor="end">لا زر بلا وظيفة: «احجز» يظهر فقط إذا أعلن المزوّد عنه.</text>
+
+    <g transform="translate(202,452)">
+      <rect width="118" height="22" rx="11" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="59" y="14.5" font-size="8.5" text-anchor="middle" fill="#64748B">الإبلاغ عن البطاقة</text>
+    </g>
+
+    <!-- Onglets (ordre miroir : Accueil à droite) -->
+    <line x1="0" y1="560" x2="340" y2="560" stroke="#E2E8F0"/>
+    <g font-size="8" text-anchor="middle">
+      <text x="298" y="588" fill="#10B981" font-weight="700">الرئيسية</text>
+      <text x="212" y="588" fill="#94A3B8">الرسائل</text>
+      <text x="128" y="588" fill="#94A3B8">النشاطات</text>
+      <text x="42" y="588" fill="#94A3B8">الملف</text>
+      <circle cx="298" cy="572" r="4" fill="#10B981"/>
+      <circle cx="212" cy="572" r="4" fill="#CBD5E1"/>
+      <circle cx="128" cy="572" r="4" fill="#CBD5E1"/>
+      <circle cx="42" cy="572" r="4" fill="#CBD5E1"/>
+    </g>
+  </g>
+
+  <!-- ══════════ ÉCRAN 2 — CONTACT ══════════ -->
+  <g transform="translate(400,80)">
+    <rect width="340" height="620" rx="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <text x="328" y="0" font-size="11" font-weight="700" fill="#334155" text-anchor="end" direction="ltr">2 · التواصل — الحساب هنا فقط</text>
+
+    <rect x="0" y="0" width="340" height="26" rx="20" fill="#FFFFFF"/>
+    <text x="16" y="18" font-size="10" fill="#94A3B8" direction="ltr">9:41</text>
+
+    <circle cx="314" cy="50" r="13" fill="#F1F5F9"/>
+    <path d="M310 50 L318 50 M314 44 L320 50 L314 56" stroke="#0F172A" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <text x="320" y="90" font-size="16" font-weight="800" fill="#0F172A" text-anchor="end">أرسل رسالة</text>
+    <text x="320" y="108" font-size="10" fill="#64748B" text-anchor="end">إلى البوسفور · عادةً يردّ خلال ساعتين</text>
+
+    <g transform="translate(20,124)">
+      <rect width="300" height="86" rx="10" fill="#F8FAFC" stroke="#CBD5E1"/>
+      <text x="288" y="22" font-size="9.5" fill="#94A3B8" text-anchor="end">مرحبًا، أرغب في الحجز لـ…</text>
+      <line x1="14" y1="76" x2="288" y2="76" stroke="#E2E8F0"/>
+      <text x="288" y="68" font-size="8" fill="#CBD5E1" text-anchor="end" direction="ltr">0 / 500</text>
+    </g>
+
+    <text x="320" y="236" font-size="10" font-weight="700" fill="#334155" text-anchor="end">رقم هاتفك</text>
+    <g transform="translate(20,244)">
+      <rect width="300" height="38" rx="10" fill="#FFFFFF" stroke="#10B981" stroke-width="1.8"/>
+      <text x="288" y="24" font-size="11" font-weight="600" fill="#0F172A" text-anchor="end" direction="ltr">+90 5•• ••• •• 42</text>
+    </g>
+    <text x="320" y="300" font-size="8.5" fill="#64748B" text-anchor="end">لا يظهر رقمك للمتجر دون موافقتك الصريحة.</text>
+
+    <text x="320" y="326" font-size="10" font-weight="700" fill="#334155" text-anchor="end">الرمز المُرسل بالرسالة النصية</text>
+    <g transform="translate(20,334)">
+      <g direction="ltr">
+        <rect x="256" width="44" height="44" rx="9" fill="#F8FAFC" stroke="#E2E8F0"/><text x="278" y="29" font-size="15" font-weight="700" text-anchor="middle" fill="#0F172A">4</text>
+        <rect x="206" width="44" height="44" rx="9" fill="#F8FAFC" stroke="#E2E8F0"/><text x="228" y="29" font-size="15" font-weight="700" text-anchor="middle" fill="#0F172A">8</text>
+        <rect x="156" width="44" height="44" rx="9" fill="#FFFFFF" stroke="#10B981" stroke-width="2"/><text x="178" y="29" font-size="15" font-weight="700" text-anchor="middle" fill="#0F172A">1</text>
+        <rect x="106" width="44" height="44" rx="9" fill="#F8FAFC" stroke="#E2E8F0"/>
+      </g>
+      <text x="90" y="27" font-size="9" fill="#10B981" font-weight="600" text-anchor="end">إعادة الإرسال</text>
+      <text x="90" y="38" font-size="8" fill="#94A3B8" text-anchor="end">خلال ٤٢ ثانية</text>
+    </g>
+
+    <g transform="translate(20,392)">
+      <rect width="300" height="40" rx="9" fill="#FFFBEB" stroke="#FDE68A"/>
+      <text x="288" y="16" font-size="8.5" font-weight="700" fill="#92400E" text-anchor="end">لم يصلك الرمز؟</text>
+      <text x="288" y="29" font-size="8.5" fill="#B45309" text-anchor="end">استلمه بالبريد الإلكتروني</text>
+    </g>
+
+    <g transform="translate(20,442)">
+      <rect width="300" height="30" rx="9" fill="#FEF2F2" stroke="#FECACA"/>
+      <text x="288" y="19" font-size="8.5" fill="#B91C1C" text-anchor="end">انتهت صلاحية الرمز. اطلب رمزًا جديدًا.</text>
+    </g>
+
+    <g transform="translate(20,486)">
+      <rect width="300" height="42" rx="11" fill="#10B981"/>
+      <text x="150" y="26" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">أرسل الرسالة</text>
+    </g>
+
+    <text x="320" y="552" font-size="8" fill="#94A3B8" text-anchor="end">لا تُنشأ كلمة مرور ولا تُرسل. التسجيل بالرمز.</text>
+    <text x="320" y="566" font-size="8" fill="#94A3B8" text-anchor="end">رمز لمرة واحدة، صالح ١٠ دقائق.</text>
+  </g>
+
+  <!-- ══════════ ÉCRAN 3 — CONVERSATION ══════════ -->
+  <g transform="translate(776,80)">
+    <rect width="340" height="620" rx="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <text x="328" y="0" font-size="11" font-weight="700" fill="#334155" text-anchor="end" direction="ltr">3 · المحادثة</text>
+
+    <rect x="0" y="0" width="340" height="26" rx="20" fill="#FFFFFF"/>
+    <text x="16" y="18" font-size="10" fill="#94A3B8" direction="ltr">9:43</text>
+
+    <line x1="0" y1="62" x2="340" y2="62" stroke="#E2E8F0"/>
+    <circle cx="314" cy="44" r="13" fill="#F1F5F9"/>
+    <path d="M310 44 L318 44 M314 38 L320 44 L314 50" stroke="#0F172A" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="290" y="41" font-size="11" font-weight="700" fill="#0F172A" text-anchor="end">البوسفور</text>
+    <circle cx="290" cy="50" r="2.4" fill="#10B981"/>
+    <text x="283" y="53" font-size="8" fill="#64748B" text-anchor="end">متصل</text>
+
+    <!-- Message client : bulle à DROITE en RTL -->
+    <g transform="translate(90,84)">
+      <rect width="230" height="54" rx="12" fill="#10B981"/>
+      <text x="218" y="21" font-size="9.5" fill="#FFFFFF" text-anchor="end">مرحبًا، أرغب في الحجز</text>
+      <text x="218" y="35" font-size="9.5" fill="#FFFFFF" text-anchor="end">لأربعة أشخاص هذا المساء،</text>
+      <text x="218" y="49" font-size="9.5" fill="#FFFFFF" text-anchor="end">حوالي الساعة ٢٠:٠٠.</text>
+    </g>
+    <text x="320" y="150" font-size="7.5" fill="#94A3B8" text-anchor="end">أُرسلت · 9:43</text>
+
+    <!-- Réponse commerce : bulle à GAUCHE -->
+    <g transform="translate(20,164)">
+      <rect width="230" height="40" rx="12" fill="#F1F5F9"/>
+      <text x="218" y="18" font-size="9.5" fill="#0F172A" text-anchor="end">مساء الخير! طاولة لأربعة</text>
+      <text x="218" y="31" font-size="9.5" fill="#0F172A" text-anchor="end">الساعة ٢٠:٠٠، تم الحجز.</text>
+    </g>
+
+    <g transform="translate(20,216)">
+      <rect width="46" height="26" rx="12" fill="#F1F5F9"/>
+      <circle cx="34" cy="13" r="2.6" fill="#94A3B8"/>
+      <circle cx="25" cy="13" r="2.6" fill="#94A3B8"/>
+      <circle cx="16" cy="13" r="2.6" fill="#94A3B8"/>
+    </g>
+
+    <!-- Léa : séparée, identifiée IA -->
+    <g transform="translate(20,268)">
+      <rect width="300" height="46" rx="10" fill="#F5F3FF" stroke="#DDD6FE"/>
+      <rect x="264" y="10" width="26" height="26" rx="8" fill="#7C3AED"/>
+      <text x="277" y="27" font-size="10" font-weight="800" text-anchor="middle" fill="#FFFFFF">L</text>
+      <text x="254" y="20" font-size="9" font-weight="700" fill="#5B21B6" text-anchor="end">ليا · مساعدة ذكاء اصطناعي</text>
+      <text x="254" y="33" font-size="8" fill="#7C3AED" text-anchor="end">منفصلة عن المتجر ومُعرَّفة كذكاء اصطناعي</text>
+    </g>
+
+    <line x1="0" y1="546" x2="340" y2="546" stroke="#E2E8F0"/>
+    <g transform="translate(72,558)">
+      <rect width="252" height="36" rx="18" fill="#F8FAFC" stroke="#E2E8F0"/>
+      <text x="238" y="22" font-size="9.5" fill="#94A3B8" text-anchor="end">اكتب رسالة…</text>
+    </g>
+    <circle cx="36" cy="576" r="18" fill="#10B981"/>
+    <path d="M42 576 h-12 M35 571 l-5 5 5 5" stroke="#FFFFFF" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Légende -->
+  <g transform="translate(24,690)">
+    <text x="0" y="0" font-size="10" font-weight="700" fill="#334155" text-anchor="start">ثلاث لمسات: البطاقة → تواصل → حقل الرسالة.</text>
+    <text x="0" y="16" font-size="9.5" fill="#64748B" text-anchor="start">ترتيب الأيقونات والتبويبات معكوس، لكن الأرقام والاتجاه «+90» تبقى LTR — كما يفعل Directionality.rtl في Flutter.</text>
+  </g>
+  </g>
+
+  <defs>
+    <linearGradient id="photoGradRtl" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#CBD5E1"/>
+      <stop offset="100%" stop-color="#94A3B8"/>
+    </linearGradient>
+  </defs>
+</svg>

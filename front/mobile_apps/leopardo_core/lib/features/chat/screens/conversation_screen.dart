@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// `chatThreadControllerProvider` est un `StateNotifierProvider.family`
-// (`legacy.dart` en Riverpod 3) : sans cet import, `next`/`state` sont inférés
-// `Object?` et les accès `.messages`/`.offline` échouent (#8754).
-import 'package:flutter_riverpod/legacy.dart';
+// `chatThreadControllerProvider` est un `StateNotifierProvider.family` déclaré
+// dans `providers/conversation_provider.dart`, qui porte lui-même l'import
+// `legacy.dart` (#8754). Le type y est donc déjà résolu : réimporter `legacy.dart`
+// ici était devenu inutile, et `flutter analyze` le refuse en warning — or le
+// gate mobile traite les warnings comme des échecs.
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
@@ -134,7 +135,8 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
-                  const Icon(Icons.cloud_off, size: 16, color: AppColors.warning),
+                  const Icon(Icons.cloud_off,
+                      size: 16, color: AppColors.warning),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(

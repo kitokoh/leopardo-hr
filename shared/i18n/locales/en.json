@@ -1740,7 +1740,8 @@
     "travelAgency": "Travel agency",
     "emailTemplates": "Emails",
     "settings": "Settings",
-    "messaging": "Messaging"
+    "messaging": "Messaging",
+    "discoverySettings": "Public discovery"
   },
   "webhooks": {
     "confirm_delete": "Delete this webhook?"
@@ -8780,5 +8781,40 @@
       "confirm": "Activation failed.",
       "stale": "The summary changed. Please review it again."
     }
+  },
+  "discoverySettings": {
+    "title": "Public discovery",
+    "subtitle": "Settings for the consumer app, city by city.",
+    "thresholdLabel": "Category threshold",
+    "thresholdHint": "A category only appears in the app if the city has at least this many published listings. Current value: {defaultValue}.",
+    "pages": "published listings",
+    "minMax": "Whole number between {min} and {max}.",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "noChange": "Nothing to save.",
+    "savedFrom": "Threshold changed from {previous} to {current}.",
+    "audited": "This change was recorded in the platform audit log.",
+    "loadError": "Could not read the discovery settings.",
+    "retry": "Retry",
+    "saveError": "Saving failed. The value was not changed.",
+    "cityOverridesTitle": "City-specific thresholds",
+    "cityOverridesHint": "These values were set outside this screen and take precedence over the global threshold.",
+    "error": {
+      "required": "Enter a whole number.",
+      "integer": "The threshold must be a whole number.",
+      "min": "The minimum threshold is {min}.",
+      "max": "The maximum threshold is {max}."
+    }
+  },
+  "publicApp": {
+    "manifestName": "Leopardo — Find what's near you",
+    "manifestDescription": "Find a business near you, talk to them, keep everything in one place.",
+    "shortcutHome": "Discover",
+    "shortcutHomeDesc": "Find a business near you",
+    "shortcutMessages": "Messages",
+    "shortcutMessagesDesc": "Open your conversations",
+    "shortcutProfile": "Profile",
+    "shortcutProfileDesc": "Language, privacy, notifications"
   }
 }

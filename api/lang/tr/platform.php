@@ -15,6 +15,7 @@ return [
     'admin_chat_unavailable' => 'Yapay zekâ asistanı kiracı bazında yapılandırılır: platform konsolu bir kiracı adına yanıt veremez. Asistanı kullanmak için kiracı çalışma alanına giriş yapın.',
     'conversation_not_found' => 'Conversation introuvable.',
     'conversations_unavailable' => 'Conversations indisponibles.',
+    'discovery_settings_unavailable' => 'Keşif ayarları kullanılamıyor — platform ayarları tablosu henüz dağıtılmadı.',
     'oauth_save_failed' => 'Yapılandırma kaydedilemedi.',
     'ai_settings_unknown_keys' => 'Bilinmeyen ayar(lar): :keys',
     'ai_settings_unknown_key' => 'Bilinmeyen ayar: :key',

@@ -98,7 +98,11 @@ if ($failures.Count -eq 0) {
 
     # QA 2026-08-15 (#2661) : leopardo_hr et leopardo_marketing étaient
     # absents de la vérification de dépendance à leopardo_core.
-    foreach ($app in @("leopardo_employee", "leopardo_manager", "leopardo_hr", "leopardo_platform_admin", "leopardo_marketing")) {
+    # COULOIR 16 : leopardo_public est ajouté pour la même raison — l'app
+    # grand public réutilise le client API et le stockage sécurisé du core ;
+    # si la dépendance sautait, elle embarquerait son propre client HTTP et
+    # un second endroit où le jeton peut fuir. Le garde doit le refuser.
+    foreach ($app in @("leopardo_employee", "leopardo_manager", "leopardo_hr", "leopardo_platform_admin", "leopardo_marketing", "leopardo_public")) {
         $pubspec = Join-Path $appsRoot "$app/pubspec.yaml"
         $content = Get-Content -LiteralPath $pubspec -Raw
         if (-not $content.Contains("leopardo_core:")) {

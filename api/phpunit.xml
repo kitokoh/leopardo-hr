@@ -12,6 +12,15 @@
             <directory>tests/Feature</directory>
         </testsuite>
     </testsuites>
+    <!-- Groupe `audit` : constats de l'audit Identity & Access Control.
+         Ce sont des PREUVES, pas des garde-fous : un test qui asserte
+         « aucun endpoint de contexte n'existe » DOIT échouer quand le lot L2
+         est livré. La CI les exclut (option exclude-group) pour ne pas
+         bloquer la PR qui livre le correctif.
+         Le groupe est déclaré par l'attribut #[Group('audit')] sur les classes
+         de tests/Feature/Audit/IdentityAccessControl*Test.php — PHPUnit 11
+         n'accepte plus d'élément <groups> dans ce fichier.
+         Exécution manuelle : vendor/bin/phpunit avec l'option group=audit -->
     <source>
         <include>
             <directory>app</directory>

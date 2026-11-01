@@ -43,6 +43,7 @@ use App\Shared\Contracts\Geo\GeoServiceContract;
 use App\Shared\Discovery\PublicDiscoveryService;
 use App\Shared\Discovery\PublicProfileLocator;
 use App\Shared\Establishments\EstablishmentAggregationService;
+use App\Shared\Services\PublicCommerce\PlatformSettingsRepository;
 use App\Shared\Support\Entitlements\ContainerFeatureEntitlements;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -112,6 +113,8 @@ class AppServiceProvider extends ServiceProvider
             return new PublicDiscoveryService(
                 $providers,
                 $app->make(GeoServiceContract::class),
+                // COULOIR 16 — seuil de catégories réglable (Superadmin).
+                $app->make(PlatformSettingsRepository::class),
             );
         });
         // SUPERAPP-P1 (#8760) — RESOLUTION d'un profil public vers son tenant

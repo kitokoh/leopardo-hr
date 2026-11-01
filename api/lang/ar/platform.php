@@ -15,6 +15,7 @@ return [
     'admin_chat_unavailable' => 'يتم إعداد مساعد الذكاء الاصطناعي لكل مستأجر: لا يمكن لوحدة التحكم الأساسية الرد باسم مستأجر. سجّل الدخول إلى مساحة المستأجر لاستخدام المساعد.',
     'conversation_not_found' => 'Conversation introuvable.',
     'conversations_unavailable' => 'Conversations indisponibles.',
+    'discovery_settings_unavailable' => 'إعدادات الاستكشاف غير متاحة — لم يتم بعد نشر جدول إعدادات المنصة.',
     'oauth_save_failed' => 'تعذر حفظ الإعدادات.',
     'ai_settings_unknown_keys' => 'إعداد/إعدادات غير معروفة: :keys',
     'ai_settings_unknown_key' => 'إعداد غير معروف: :key',

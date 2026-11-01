@@ -5897,6 +5897,99 @@ paths:
           $ref: '#/components/responses/Error422'
         '429':
           $ref: '#/components/responses/Error429'
+  /public/discovery/categories:
+    get:
+      operationId: api_get_public_discovery_categories
+      tags:
+      - Discovery
+      summary: Categories visibles de la decouverte publique, par ville (COULOIR 16)
+      description: >-
+        Categories de la decouverte publique pour une ville, avec le seuil
+        d'affichage applique. Une categorie n'est `visible` que si la ville
+        compte au moins N Pages publiees dedans ; N est un reglage de
+        PLATEFORME (`platform_settings.discovery.category_min_pages`, editable
+        via `/admin/platform/discovery/settings`), jamais une constante codee
+        en dur. Les categories SOUS le seuil sont renvoyees avec
+        `visible: false` plutot que supprimees : les omettre serait
+        indistinguable d'une categorie inexistante dans la ville, et
+        l'interface ne pourrait pas expliquer l'absence. Route isolee sans
+        authentification (throttle `shop-public`), patron BC-27/BC-28 : aucun
+        identifiant interne, aucun `company_id`, aucun middleware tenant.
+        En cas d'absence de la table de reglages, le seuil par defaut (5) est
+        applique — la decouverte publique ne tombe jamais en panne pour un
+        reglage manquant.
+      security: []
+      parameters:
+      - name: city
+        in: query
+        required: false
+        description: >-
+          Ville filtree (insensible a la casse en PostgreSQL). Absente, les
+          comptages portent sur toutes les villes confondues.
+        schema:
+          type: string
+          maxLength: 120
+      responses:
+        '200':
+          description: Categories comptees, avec le seuil applique
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                - meta
+                properties:
+                  data:
+                    type: array
+                    description: Une entree par categorie rencontree, triee par cle.
+                    items:
+                      type: object
+                      required:
+                      - key
+                      - label
+                      - count
+                      - visible
+                      properties:
+                        key:
+                          type: string
+                          description: Cle technique de la categorie (valeur serveur, jamais traduite cote client).
+                          example: restaurant
+                        label:
+                          type: string
+                          description: Libelle affichable. Egal a `key` tant que le catalogue de libelles n'est pas expose.
+                          example: restaurant
+                        count:
+                          type: integer
+                          minimum: 0
+                          description: Nombre de Pages publiees dans cette categorie pour la ville demandee.
+                          example: 12
+                        visible:
+                          type: boolean
+                          description: >-
+                            Vrai si `count >= meta.threshold`. Faux ne signifie
+                            PAS « categorie absente » : elle existe, mais pas
+                            assez pour etre mise en avant.
+                  meta:
+                    type: object
+                    required:
+                    - threshold
+                    - city
+                    properties:
+                      threshold:
+                        type: integer
+                        minimum: 1
+                        description: Seuil effectivement applique (reglage Superadmin, ou defaut 5).
+                        example: 5
+                      city:
+                        type: string
+                        nullable: true
+                        description: Ville demandee, ou null si le comptage est global.
+                        example: Casablanca
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
   /public/contact-requests:
     post:
       tags:
@@ -11595,6 +11688,161 @@ paths:
           description: Reglages enregistres
         '422':
           $ref: '#/components/responses/Validation422'
+  /admin/platform/discovery/settings:
+    get:
+      operationId: api_get_admin_platform_discovery_settings
+      tags:
+      - Platform
+      summary: Seuil de categories de la decouverte publique (super-admin, COULOIR 16)
+      description: >-
+        Etat courant du seuil « une categorie n'apparait que si la ville compte
+        au moins N Pages publiees dedans ». `settings` porte les surcharges
+        enregistrees (dont un eventuel seuil PAR VILLE pose hors interface) et
+        `effective` la valeur reellement appliquee a la ville par defaut — les
+        deux sont renvoyes pour que l'ecran n'affiche jamais 5 alors que la
+        production tourne a 8. `min` et `max` sont exposes pour que le
+        formulaire applique la MEME regle que le serveur, plutot que de la
+        decouvrir en recevant un 422. Permission requise : `settings.manage`
+        (la meme que les autres reglages de plateforme) — un super admin
+        charge du support n'herite pas du droit de changer un seuil commercial.
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Seuil courant, surcharges et bornes acceptees
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - key
+                    - settings
+                    - effective
+                    - default
+                    - min
+                    - max
+                    properties:
+                      key:
+                        type: string
+                        description: Cle du reglage dans `public.platform_settings`.
+                        example: discovery.category_min_pages
+                      settings:
+                        type: object
+                        description: >-
+                          Surcharges enregistrees. Peut contenir un seuil par
+                          ville en plus du seuil global.
+                        additionalProperties: true
+                      effective:
+                        type: integer
+                        minimum: 1
+                        description: Valeur appliquee quand aucune surcharge de ville ne s'applique.
+                        example: 5
+                      default:
+                        type: integer
+                        minimum: 1
+                        description: Valeur de repli si la table de reglages est absente.
+                        example: 5
+                      min:
+                        type: integer
+                        description: Borne basse acceptee par `PUT`. 0 est REFUSE, jamais corrige en silence.
+                        example: 1
+                      max:
+                        type: integer
+                        description: Borne haute acceptee par `PUT`.
+                        example: 1000
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    put:
+      operationId: api_put_admin_platform_discovery_settings
+      tags:
+      - Platform
+      summary: Modifier le seuil de categories de la decouverte publique
+      description: >-
+        Ecrit le seuil. `PUT` (idempotent) plutot que `POST` : rejouer la meme
+        valeur ne produit ni ecriture ni ligne d'audit. Validation stricte —
+        `integer` refuse « 5.5 » et « abc », `min:1` refuse 0 et les negatifs ;
+        les deux sont necessaires, `min:1` seul laisserait passer 5.5 et
+        `integer` seul laisserait passer 0. Une valeur 0 est REFUSEE (422) et
+        non silencieusement remplacee par le defaut : un administrateur qui
+        tape 0 doit savoir que 0 est invalide, sinon il croit avoir regle
+        quelque chose. La reponse porte l'ancienne ET la nouvelle valeur, et le
+        changement est journalise dans `audit_logs` avec l'acteur lu sur la
+        session Sanctum — jamais sur le corps de la requete, ce qui permettrait
+        d'attribuer un changement a un autre administrateur.
+      security:
+      - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - category_min_pages
+              properties:
+                category_min_pages:
+                  type: integer
+                  minimum: 1
+                  maximum: 1000
+                  description: Nombre minimal de Pages publiees pour qu'une categorie soit visible.
+                  example: 5
+      responses:
+        '200':
+          description: Seuil ecrit (ou inchange si la valeur etait identique)
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - changed
+                    - previous
+                    - current
+                    properties:
+                      changed:
+                        type: boolean
+                        description: Faux si la valeur soumise egalait la valeur courante (aucune ecriture, aucune ligne d'audit).
+                      previous:
+                        type: integer
+                        nullable: true
+                        description: Valeur avant l'appel ; null si aucune surcharge n'existait.
+                        example: 5
+                      current:
+                        type: integer
+                        description: Valeur apres l'appel.
+                        example: 8
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+        '503':
+          description: >-
+            Table de reglages absente (deploiement partiel). La decouverte
+            publique continue de servir le seuil par defaut : ce n'est pas une
+            erreur de la requete.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: SETTINGS_UNAVAILABLE
+                  message:
+                    type: string
   /admin/platform/ai/settings/reset:
     post:
       operationId: api_post_admin_platform_ai_settings_reset
