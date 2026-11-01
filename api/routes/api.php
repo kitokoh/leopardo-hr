@@ -367,6 +367,19 @@ Route::prefix('v1')->group(function (): void {
     // fail-closed (is_public, statut societe, feature verticale).
     Route::middleware(['throttle:shop-public'])->get('/public/discover', [PublicDiscoveryController::class, 'index']);
 
+    // COULOIR 16 — catégories VISIBLES de la découverte, par ville.
+    //
+    // Le seuil (« au moins N Pages publiées dans la catégorie ») est un
+    // réglage de PLATEFORME réglable depuis le Superadmin
+    // (`platform_settings.discovery.category_min_pages`), jamais une constante
+    // codée en dur : une constante obligerait un déploiement pour ajuster un
+    // seuil commercial et, surtout, resterait invisible à l'écran Superadmin.
+    //
+    // Même isolation que `/public/discover` : aucune auth, aucun middleware
+    // tenant, aucun identifiant interne dans la réponse.
+    Route::middleware(['throttle:shop-public'])
+        ->get('/public/discovery/categories', [PublicDiscoveryController::class, 'categories']);
+
     // SUPERAPP-P1 (#8760) — contact public « Contacter ce professionnel ».
     // Route isolee SANS auth ni middleware tenant (patron BC-27/BC-28) : le
     // tenant destinataire est resolu COTE SERVEUR par (type, slug public)

@@ -41,4 +41,23 @@ class PublicDiscoveryController extends Controller
 
         return response()->json($this->discovery->discover($filters));
     }
+
+    /**
+     * COULOIR 16 — `GET /api/v1/public/discovery/categories?city=…`
+     *
+     * Catégories de la ville, avec le seuil de visibilité appliqué. Le seuil
+     * étant un réglage Superadmin, il est renvoyé dans `meta.threshold` pour
+     * que le frontend puisse l'expliquer sans le deviner.
+     *
+     * Route publique, même isolation que `index()` : aucune auth, aucun
+     * middleware tenant, aucun identifiant interne.
+     */
+    public function categories(Request $request): JsonResponse
+    {
+        $filters = $request->validate([
+            'city' => ['sometimes', 'string', 'max:120'],
+        ]);
+
+        return response()->json($this->discovery->categories($filters['city'] ?? null));
+    }
 }

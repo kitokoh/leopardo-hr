@@ -7,6 +7,7 @@ namespace App\Shared\Discovery;
 use App\Shared\Contracts\Discovery\PublicDiscoverableProvider;
 use App\Shared\Contracts\Geo\GeoServiceContract;
 use App\Shared\Geo\GeoPoint;
+use App\Shared\Services\PublicCommerce\PlatformSettingsRepository;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
@@ -40,6 +41,11 @@ final class PublicDiscoveryService
     public function __construct(
         private readonly iterable $providers,
         private readonly GeoServiceContract $geo,
+        // COULOIR 16 — seuil de catégories réglable depuis le Superadmin.
+        // Optionnel pour ne pas casser les constructions existantes (tests
+        // unitaires, providers partiels) : sans lui, le défaut du document
+        // s'applique — jamais 0, jamais « tout visible ».
+        private readonly ?PlatformSettingsRepository $settings = null,
     ) {}
 
     /**
@@ -142,6 +148,68 @@ final class PublicDiscoveryService
         ksort($map);
 
         return $map;
+    }
+
+    /**
+     * COULOIR 16 — catégories VISIBLES de la découverte, pour une ville.
+     *
+     * Une catégorie n'est visible que si la ville compte au moins N Pages
+     * publiées dedans, N venant de `platform_settings`
+     * (`PlatformSettingsRepository::categoryMinPages()`). Le seuil n'est
+     * JAMAIS une constante : c'est un réglage Superadmin.
+     *
+     * Une catégorie sous le seuil est renvoyée avec `visible: false` plutôt
+     * que supprimée : le frontend doit pouvoir dire « bientôt disponible »
+     * au lieu de laisser croire qu'il n'y a rien. Supprimer la ligne serait
+     * indistinguable d'une absence de données.
+     *
+     * @return array{data: list<array{key:string,label:string,count:int,visible:bool}>, meta: array{threshold:int,city:?string}}
+     */
+    public function categories(?string $city = null): array
+    {
+        $threshold = $this->settings !== null
+            ? $this->settings->categoryMinPages($city)
+            : PlatformSettingsRepository::DEFAULT_CATEGORY_MIN_PAGES;
+
+        /** @var array<string, int> $counts */
+        $counts = [];
+
+        foreach ($this->providers as $provider) {
+            foreach ($provider->search([
+                'q' => null,
+                'city' => $city,
+                'limit' => self::MAX_PER_PAGE * 10,
+            ]) as $item) {
+                $category = $item['category'] ?? null;
+
+                if (! is_string($category) || $category === '') {
+                    continue;
+                }
+
+                $counts[$category] = ($counts[$category] ?? 0) + 1;
+            }
+        }
+
+        ksort($counts);
+
+        $data = [];
+
+        foreach ($counts as $key => $count) {
+            $data[] = [
+                'key' => (string) $key,
+                'label' => (string) $key,
+                'count' => $count,
+                'visible' => $count >= $threshold,
+            ];
+        }
+
+        return [
+            'data' => $data,
+            'meta' => [
+                'threshold' => $threshold,
+                'city' => $city,
+            ],
+        ];
     }
 
     /**
