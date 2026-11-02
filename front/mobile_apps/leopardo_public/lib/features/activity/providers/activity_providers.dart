@@ -35,6 +35,8 @@ final publicFavoritesProvider = FutureProvider<List<PublicFavorite>>((ref) {
 });
 
 /// Dernières recherches du client.
-final publicSearchHistoryProvider = FutureProvider<List<PublicSearchEntry>>((ref) {
+final publicSearchHistoryProvider = FutureProvider<List<PublicSearchEntry>>((
+  ref,
+) {
   return ref.watch(publicActivityRepositoryProvider).searchHistory();
 });

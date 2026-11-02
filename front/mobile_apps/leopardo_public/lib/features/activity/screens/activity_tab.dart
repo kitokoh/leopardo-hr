@@ -107,8 +107,11 @@ class ActivityTab extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.lock_outline,
-                size: 40, color: AppColors.textSecondaryFor(context)),
+            Icon(
+              Icons.lock_outline,
+              size: 40,
+              color: AppColors.textSecondaryFor(context),
+            ),
             const SizedBox(height: 14),
             Text(
               strings.t('activitySignInRequired'),
@@ -291,7 +294,9 @@ class _FavoritesSection extends ConsumerWidget {
                     await ref
                         .read(publicActivityRepositoryProvider)
                         .removeFavorite(
-                            favorite.targetType, favorite.targetSlug);
+                          favorite.targetType,
+                          favorite.targetSlug,
+                        );
                     ref.invalidate(publicFavoritesProvider);
                   },
                 ),

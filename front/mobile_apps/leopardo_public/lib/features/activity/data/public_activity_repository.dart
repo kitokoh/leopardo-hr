@@ -155,26 +155,31 @@ class PublicActivityRepository {
 
   /// `GET /api/v1/user/activities`
   Future<PublicActivityPage> activities({int perPage = 50}) async {
-    final json = await _request(activitiesPath, method: 'GET', query: {
-      'per_page': perPage,
-    });
+    final json = await _request(
+      activitiesPath,
+      method: 'GET',
+      query: {'per_page': perPage},
+    );
 
     final rawData = json['data'];
     final rawMeta = json['meta'];
 
     final activities = rawData is List
         ? rawData
-            .whereType<Map>()
-            .map((e) => PublicActivity.fromJson(Map<String, dynamic>.from(e)))
-            .toList(growable: false)
+              .whereType<Map>()
+              .map((e) => PublicActivity.fromJson(Map<String, dynamic>.from(e)))
+              .toList(growable: false)
         : const <PublicActivity>[];
 
     final sections = rawMeta is Map && rawMeta['sections'] is List
         ? (rawMeta['sections'] as List)
-            .whereType<Map>()
-            .map((e) =>
-                PublicActivitySection.fromJson(Map<String, dynamic>.from(e)))
-            .toList(growable: false)
+              .whereType<Map>()
+              .map(
+                (e) => PublicActivitySection.fromJson(
+                  Map<String, dynamic>.from(e),
+                ),
+              )
+              .toList(growable: false)
         : const <PublicActivitySection>[];
 
     return PublicActivityPage(activities: activities, sections: sections);
