@@ -174,7 +174,6 @@ class AppStrings {
       // Activités, favoris, historique (M3)
       'activityOrderTitle': 'Commande',
       'activityBookingTitle': 'Réservation',
-      'activityEmptyTitle': 'Aucune activité pour le moment',
       'activitySectionOrders': 'Commandes',
       'activitySectionBookings': 'Réservations',
       'activityStatusOpen': 'En cours',
@@ -277,7 +276,6 @@ class AppStrings {
       // Activities, favourites, history (M3)
       'activityOrderTitle': 'Order',
       'activityBookingTitle': 'Booking',
-      'activityEmptyTitle': 'No activity yet',
       'activitySectionOrders': 'Orders',
       'activitySectionBookings': 'Bookings',
       'activityStatusOpen': 'In progress',
@@ -376,7 +374,6 @@ class AppStrings {
       // الأنشطة والمفضلة وسجل البحث (M3)
       'activityOrderTitle': 'طلب',
       'activityBookingTitle': 'حجز',
-      'activityEmptyTitle': 'لا يوجد نشاط بعد',
       'activitySectionOrders': 'الطلبات',
       'activitySectionBookings': 'الحجوزات',
       'activityStatusOpen': 'قيد التنفيذ',
@@ -479,7 +476,6 @@ class AppStrings {
       // Etkinlikler, favoriler, arama geçmişi (M3)
       'activityOrderTitle': 'Sipariş',
       'activityBookingTitle': 'Rezervasyon',
-      'activityEmptyTitle': 'Henüz etkinlik yok',
       'activitySectionOrders': 'Siparişler',
       'activitySectionBookings': 'Rezervasyonlar',
       'activityStatusOpen': 'Devam ediyor',
