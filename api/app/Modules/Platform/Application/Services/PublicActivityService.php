@@ -243,7 +243,7 @@ final class PublicActivityService
                 'query' => $entry->query,
                 'city' => $entry->city,
                 'result_count' => $entry->result_count,
-                'searched_at' => $entry->searched_at?->toIso8601String(),
+                'searched_at' => $entry->searched_at->toIso8601String(),
             ])
             ->values();
     }
