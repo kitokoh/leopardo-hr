@@ -39,8 +39,11 @@ class MessagesTab extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.forum_outlined,
-                    size: 44, color: AppColors.textSecondaryFor(context)),
+                Icon(
+                  Icons.forum_outlined,
+                  size: 44,
+                  color: AppColors.textSecondaryFor(context),
+                ),
                 const SizedBox(height: 14),
                 Text(
                   strings.t('messagesEmptyTitle'),
@@ -62,18 +65,26 @@ class MessagesTab extends ConsumerWidget {
                 // découvrir plus tard que l'assistante est une IA serait une
                 // surprise désagréable, et la consigne l'interdit.
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                    color: AppColors.tint(context, AppColors.info,
-                        lightAlpha: 0.10),
+                    color: AppColors.tint(
+                      context,
+                      AppColors.info,
+                      lightAlpha: 0.10,
+                    ),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.smart_toy_outlined,
-                          size: 15, color: AppColors.info),
+                      const Icon(
+                        Icons.smart_toy_outlined,
+                        size: 15,
+                        color: AppColors.info,
+                      ),
                       const SizedBox(width: 6),
                       Flexible(
                         child: Text(
@@ -135,8 +146,11 @@ class ProfileTab extends ConsumerWidget {
               margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color:
-                    AppColors.tint(context, AppColors.info, lightAlpha: 0.10),
+                color: AppColors.tint(
+                  context,
+                  AppColors.info,
+                  lightAlpha: 0.10,
+                ),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
