@@ -36,11 +36,13 @@ use App\Policies\CrmSearchPolicy;
 use App\Policies\CrmTaskPolicy;
 use App\Policies\ExportPolicy;
 use App\Shared\Contracts\Discovery\PublicDiscoverableProvider;
+use App\Shared\Contracts\Discovery\PublicActivityProvider;
 use App\Shared\Contracts\Discovery\PublicProfileResolver;
 use App\Shared\Contracts\Entitlements\FeatureEntitlements;
 use App\Shared\Contracts\Establishments\EstablishmentProvider;
 use App\Shared\Contracts\Geo\GeoServiceContract;
 use App\Shared\Discovery\PublicDiscoveryService;
+use App\Shared\Discovery\PublicActivityLocator;
 use App\Shared\Discovery\PublicProfileLocator;
 use App\Shared\Establishments\EstablishmentAggregationService;
 use App\Shared\Services\PublicCommerce\PlatformSettingsRepository;
@@ -127,6 +129,19 @@ class AppServiceProvider extends ServiceProvider
             $resolvers = $app->tagged('public.profile_resolver');
 
             return new PublicProfileLocator($resolvers);
+        });
+        // COULOIR 16 — M3 (#9105) — LECTURE d'une activite publique (commande,
+        // reservation) dans le schema de son tenant. Meme inversion de
+        // dependance que la decouverte et la resolution de profil : chaque
+        // verticale tague son `PublicActivityProvider` sous
+        // `public.activity_provider`, ce service n'importe aucune classe
+        // `App\Modules\*` (garde #5584). Un module sans provider n'apparait
+        // donc pas dans l'onglet Activites.
+        $this->app->singleton(PublicActivityLocator::class, function (Application $app): PublicActivityLocator {
+            /** @var iterable<PublicActivityProvider> $providers */
+            $providers = $app->tagged('public.activity_provider');
+
+            return new PublicActivityLocator($providers);
         });
         // Hub \u00ab Mes \u00e9tablissements \u00bb (#7910) \u2014 agr\u00e9gateur de LECTURE des
         // \u00e9tablissements cross-verticale. Registre PAR MODULE (d\u00e9cision
