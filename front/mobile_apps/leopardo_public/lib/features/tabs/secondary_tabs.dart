@@ -7,7 +7,6 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 
 import '../../core/providers/app_providers.dart';
-import '../../core/widgets/state_widgets.dart';
 
 /// Onglets secondaires du M1.
 ///
@@ -91,27 +90,6 @@ class MessagesTab extends ConsumerWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-/// Onglet Activités — vide tant que les index d'activité n'existent pas (M3).
-class ActivityTab extends ConsumerWidget {
-  const ActivityTab({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final strings = ref.watch(appStringsProvider);
-
-    // Aucun module n'est affiché : le contrat d'activité n'existe pas encore.
-    // Un onglet « Commandes » vide laisserait croire que les commandes sont
-    // disponibles et cassées. Voir §5 du plan M0 : M1-9 et M1-10.
-    return Directionality(
-      textDirection: strings.isRtl ? TextDirection.rtl : TextDirection.ltr,
-      child: Scaffold(
-        appBar: AppBar(title: Text(strings.t('tabActivity'))),
-        body: EmptyContentState(strings: strings),
       ),
     );
   }

@@ -4541,6 +4541,298 @@ paths:
           description: Déconnecté
         '401':
           description: Non authentifié
+  /user/activities:
+    get:
+      operationId: api_get_user_activities
+      tags:
+      - User
+      summary: Activités du client public (COULOIR 16, M3, #9105)
+      description: >-
+        Commandes et réservations du client authentifié, tous professionnels
+        confondus. Guard `auth:user_api` : le client est un `users.id`
+        plateforme, pas un employé — AUCUN middleware tenant.
+
+        La lecture s'appuie sur la table de ROUTAGE `public_activity_index`
+        (client -> tenant + référence), qui ne contient aucun contenu métier et
+        n'autorise rien à elle seule : chaque ligne est ensuite relue DANS son
+        contexte tenant via le `PublicActivityProvider` de la verticale, qui
+        revérifie l'appartenance et renvoie le statut RÉEL. Une ligne dont le
+        provider ne confirme pas l'appartenance est écartée silencieusement.
+
+        `meta.sections` ne liste que les verticales qui ont un contrat : un
+        module sans contrat n'apparaît pas dans l'onglet.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 50
+      responses:
+        '200':
+          description: Activités vérifiées du client
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PublicActivity'
+                  meta:
+                    type: object
+                    properties:
+                      sections:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            vertical:
+                              type: string
+                            types:
+                              type: array
+                              items:
+                                type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /user/favorites:
+    get:
+      operationId: api_get_user_favorites
+      tags:
+      - User
+      summary: Favoris du client public (COULOIR 16, M3, #9105)
+      description: >-
+        Profils mis en favori par le client authentifié. Le favori stocke
+        `(target_type, target_slug)` — jamais de `company_id` fourni par le
+        client. Le tenant de chaque favori est résolu à l'affichage, fail-closed :
+        un profil dépublié reste dans la liste mais porte `available: false`,
+        pour que l'écran propose autre chose au lieu d'un bouton mort.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 100
+      responses:
+        '200':
+          description: Favoris du client
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PublicFavorite'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '429':
+          $ref: '#/components/responses/Error429'
+    post:
+      operationId: api_post_user_favorites
+      tags:
+      - User
+      summary: Ajouter un favori (COULOIR 16, M3, #9105)
+      description: >-
+        Idempotent : rejouer l'ajout renvoie 200 avec le favori existant au lieu
+        d'en créer un second. Le profil est résolu AVANT l'écriture : un slug
+        inexistant, dépublié ou suspendu renvoie un 404 UNIFORME
+        (`PROFILE_NOT_AVAILABLE`), indistinguable d'un slug inconnu — les favoris
+        ne peuvent donc pas servir d'oracle d'existence.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - target_type
+              - target_slug
+              properties:
+                target_type:
+                  type: string
+                  maxLength: 40
+                target_slug:
+                  type: string
+                  maxLength: 160
+      responses:
+        '201':
+          description: Favori créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PublicFavorite'
+        '200':
+          description: Favori déjà présent (idempotent)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PublicFavorite'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Profil inexistant ou non publiable (réponse uniforme, anti-énumération)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /user/favorites/{type}/{slug}:
+    delete:
+      operationId: api_delete_user_favorite
+      tags:
+      - User
+      summary: Retirer un favori (COULOIR 16, M3, #9105)
+      description: >-
+        Idempotent : retirer un favori absent renvoie 204, pas 404. L'intention
+        de la personne est satisfaite dans les deux cas.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+          maxLength: 40
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          maxLength: 160
+      responses:
+        '204':
+          description: Favori retiré (ou déjà absent)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /user/search-history:
+    get:
+      operationId: api_get_user_search_history
+      tags:
+      - User
+      summary: Historique de recherche du client public (COULOIR 16, M3, #9105)
+      description: >-
+        Dernières recherches du client authentifié. L'historique vit d'abord sur
+        l'APPAREIL (il alimente « reprendre où vous étiez » et le cache hors
+        ligne, sans exiger de compte) ; cette route ne sert qu'à le retrouver sur
+        un autre appareil. Aucune coordonnée n'est stockée : `city` est une ville
+        choisie ou approximative.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 20
+          default: 20
+      responses:
+        '200':
+          description: Dernières recherches
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PublicSearchHistoryEntry'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '429':
+          $ref: '#/components/responses/Error429'
+    post:
+      operationId: api_post_user_search_history
+      tags:
+      - User
+      summary: Enregistrer une recherche (COULOIR 16, M3, #9105)
+      description: >-
+        Idempotent par `(client, query, city)` : répéter la même recherche la
+        remonte au lieu d'empiler des doublons. Aucune coordonnée n'est acceptée
+        — la position précise n'est jamais conservée.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - query
+              properties:
+                query:
+                  type: string
+                  minLength: 1
+                  maxLength: 160
+                city:
+                  type: string
+                  maxLength: 120
+                  nullable: true
+                result_count:
+                  type: integer
+                  minimum: 0
+                  maximum: 100000
+      responses:
+        '204':
+          description: Recherche enregistrée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+    delete:
+      operationId: api_delete_user_search_history
+      tags:
+      - User
+      summary: Effacer l'historique de recherche (COULOIR 16, M3, #9105)
+      description: Droit à l'effacement, depuis l'écran Profil.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Historique effacé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      deleted:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '429':
+          $ref: '#/components/responses/Error429'
   /user/google-signin:
     post:
       operationId: api_post_user_google_signin
@@ -62892,6 +63184,76 @@ components:
           additionalProperties:
             type: object
             additionalProperties: true
+    PublicActivity:
+      type: object
+      description: >-
+        Activité d'un client public, REVALIDÉE dans le contexte de son tenant
+        (COULOIR 16, M3, #9105). Aucun identifiant interne de tenant, aucun nom
+        d'employé, aucun montant d'achat.
+      properties:
+        vertical:
+          type: string
+          description: Verticale d'origine (`restaurant`, …).
+        activity_type:
+          type: string
+          enum:
+          - order
+          - booking
+        reference:
+          type: string
+          description: Référence publique de l'activité (`RST-…`, `RSV-…`).
+        status:
+          type: string
+          description: >-
+            Statut RELU côté tenant, jamais recopié de l'index (qui n'est qu'une
+            projection pouvant être en retard d'un événement).
+        title:
+          type: string
+          description: Libellé localisé (« Commande », « Réservation »).
+        occurred_at:
+          type: string
+          format: date-time
+    PublicFavorite:
+      type: object
+      description: >-
+        Profil mis en favori par un client public (COULOIR 16, M3, #9105).
+        Stocké par `(target_type, target_slug)` — jamais par `company_id`.
+      properties:
+        target_type:
+          type: string
+        target_slug:
+          type: string
+        display_name:
+          type: string
+          nullable: true
+          description: Nom commercial du professionnel, ou null s'il n'est plus joignable.
+        available:
+          type: boolean
+          description: >-
+            Faux si le profil n'est plus joignable (dépublié, suspendu). Le
+            favori est conservé — la personne l'a choisi — mais l'écran propose
+            autre chose au lieu d'un bouton mort.
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+    PublicSearchHistoryEntry:
+      type: object
+      description: >-
+        Entrée d'historique de recherche (COULOIR 16, M3, #9105). Aucune
+        coordonnée : `city` est une ville choisie ou approximative.
+      properties:
+        query:
+          type: string
+        city:
+          type: string
+          nullable: true
+        result_count:
+          type: integer
+        searched_at:
+          type: string
+          format: date-time
+          nullable: true
     PublicConversationSummary:
       type: object
       description: >
