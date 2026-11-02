@@ -166,20 +166,20 @@ class PublicActivityRepository {
 
     final activities = rawData is List
         ? rawData
-              .whereType<Map>()
-              .map((e) => PublicActivity.fromJson(Map<String, dynamic>.from(e)))
-              .toList(growable: false)
+            .whereType<Map>()
+            .map((e) => PublicActivity.fromJson(Map<String, dynamic>.from(e)))
+            .toList(growable: false)
         : const <PublicActivity>[];
 
     final sections = rawMeta is Map && rawMeta['sections'] is List
         ? (rawMeta['sections'] as List)
-              .whereType<Map>()
-              .map(
-                (e) => PublicActivitySection.fromJson(
-                  Map<String, dynamic>.from(e),
-                ),
-              )
-              .toList(growable: false)
+            .whereType<Map>()
+            .map(
+              (e) => PublicActivitySection.fromJson(
+                Map<String, dynamic>.from(e),
+              ),
+            )
+            .toList(growable: false)
         : const <PublicActivitySection>[];
 
     return PublicActivityPage(activities: activities, sections: sections);
