@@ -80,6 +80,21 @@
       "model": "App\\Modules\\Pages\\Domain\\Models\\PageModerationAudit",
       "reason": "Journal de moderation APPEND-ONLY (#8729) dont l'immuabilite est garantie par trigger PostgreSQL (UPDATE/DELETE rejetes). company_id NULLABLE est une denormalisation d'audit, jamais un critere de lecture : la seule lecture applicative filtre par page_id, deja resolu dans le schema tenant. Un scope fail-closed rendrait invisibles les lignes a company_id NULL (Page plateforme, acteur super-admin hors tenant) — soit exactement la trace qu'un contestataire voudrait effacer. Meme regime que FundraisingPaymentEvent et PaymentWebhookEvent.",
       "added": "2026-10-29"
+    },
+    {
+      "model": "App\\Modules\\Platform\\Domain\\Models\\PublicActivityIndex",
+      "reason": "Table PLATEFORME (schema public) SANS colonne company_id : c'est un INDEX DE ROUTAGE (client -> tenant + reference) qui ne contient aucun contenu metier et n'autorise rien. company_id y est une coordonnee de routage, jamais un critere d'isolation : chaque lecture rejoue le controle d'acces dans le contexte du tenant via PublicActivityProvider (#9105). Trait inapplicable (meme regime que PublicContactRequest #8760).",
+      "added": "2026-11-02"
+    },
+    {
+      "model": "App\\Modules\\Platform\\Domain\\Models\\PublicFavorite",
+      "reason": "Table PLATEFORME (schema public) SANS colonne company_id : un favori appartient au CLIENT, pas au commercant, et peut viser des profils de plusieurs verticales et de plusieurs tenants. Le rattachement est porte par (target_type, target_slug) ; accepter un company_id fourni par le client permettrait de viser un tenant arbitraire (#9105). Trait inapplicable.",
+      "added": "2026-11-02"
+    },
+    {
+      "model": "App\\Modules\\Platform\\Domain\\Models\\PublicSearchHistory",
+      "reason": "Table PLATEFORME (schema public) SANS colonne company_id : l'historique de recherche appartient au client et ne concerne aucun tenant. Aucune coordonnee n'y est stockee (city = ville choisie ou approximative) (#9105). Trait inapplicable.",
+      "added": "2026-11-02"
     }
   ],
   "legacy_pending_review": [
