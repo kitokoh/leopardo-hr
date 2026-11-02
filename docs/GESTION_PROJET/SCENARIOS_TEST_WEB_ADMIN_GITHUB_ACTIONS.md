@@ -925,3 +925,12 @@ Le merge `8890f8ba3` a écrasé `front/admin-dashboard/src/i18n/locales/*.json` 
 4. **Réglages comptables** : les 31 libellés `accounting.settings.*` sont rendus, y compris les intitulés de champs.
 5. **Équipe plateforme** : les 52 libellés `team.platform.*` sont rendus.
 6. **Aucune régression de surface** : les clés déjà présentes n'ont pas été réécrites (l'état courant gagne) ; `git diff` ne contient que des additions.
+
+## Note de conservation 2026-11-02 — couloir 16 M3 : aucune surface admin modifiée (issue #9105, PR #9108)
+
+**Aucun écran du dashboard admin n'est touché par ce lot.** La note est requise parce que le diff contient des fichiers sous `front/web` (l'onglet Activités de la PWA publique et les catalogues i18n partagés), et que la garde de gouvernance ne distingue pas la PWA publique du dashboard admin.
+
+- **Ce qui change côté web** : uniquement la PWA publique du couloir 16 (`/decouvrir`, `/conversations`) et les catalogues `shared/i18n/locales/*.json` (23 clés `publicApp.*` ajoutées, propagées par `sync-web.js`). Aucune route `/admin`, aucun composant du dashboard, aucune permission `settings.manage` n'est modifiée.
+- **Le seuil de catégories par ville** reste éditable via `GET`/`PUT /admin/platform/discovery/settings` livré en M1 (#9102) : ce lot ne le touche pas, il ne fait que consommer les catégories déjà exposées.
+- **Scénarios admin existants valides tels quels** : les 6 scénarios de la note précédente (titres de dashboard, compteurs, tunnels d'activation, réglages, équipe plateforme, non-régression de surface) restent inchangés.
+- **Vérification** : `I18N_VALIDATION_OK (4 locales)`, parité ×4 verte, et `git diff --exit-code` propre après les trois syncs (web, mobile, backend).

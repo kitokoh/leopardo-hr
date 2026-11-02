@@ -40,13 +40,13 @@ use Illuminate\Support\Collection;
  */
 final class PublicActivityService
 {
-    /** Nombre maximal d'activités renvoyées (borne de charge utile). */
+    /** Nombre maximal d'activites renvoyees (borne de charge utile). */
     public const MAX_ACTIVITIES = 50;
 
-    /** Nombre maximal de favoris renvoyés. */
+    /** Nombre maximal de favoris renvoyes. */
     public const MAX_FAVORITES = 100;
 
-    /** Nombre maximal d'entrées d'historique renvoyées. */
+    /** Nombre maximal d'entrees d'historique renvoyees. */
     public const MAX_HISTORY = 20;
 
     public function __construct(
