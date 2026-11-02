@@ -94,9 +94,10 @@ final class RestaurantPublicActivityProvider implements PublicActivityProvider
             static fn (RestaurantReservation $reservation): array => [
                 'reference' => (string) $reservation->reference,
                 'status' => $reservation->status->value,
-                'occurred_at' => $reservation->reserved_at?->toIso8601String()
-                    ?? $reservation->created_at?->toIso8601String()
-                    ?? '',
+                // `reserved_at` est NOT NULL (migration 6175, `timestamp(...)`)
+                // et castée en `datetime` : PHPStan a raison, le nullsafe est
+                // inutile et le `??` qui suivait ne pouvait jamais se déclencher.
+                'occurred_at' => $reservation->reserved_at->toIso8601String(),
                 'title' => (string) __('publicApp.activityBookingTitle'),
             ],
         );
