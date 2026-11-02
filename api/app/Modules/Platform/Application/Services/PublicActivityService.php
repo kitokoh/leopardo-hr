@@ -88,7 +88,7 @@ final class PublicActivityService
      * contenir une référence supprimée côté tenant, ou une ligne dont
      * l'appartenance a changé.
      *
-     * @return Collection<int, array<string, mixed>>
+     * @return Collection<int, array{vertical: string, activity_type: string, reference: string, status: string, title: string, occurred_at: string}>
      */
     public function activitiesFor(User $client, int $limit = self::MAX_ACTIVITIES): Collection
     {
@@ -143,7 +143,7 @@ final class PublicActivityService
      * `available: false` pour que l'écran propose autre chose au lieu d'un
      * bouton mort.
      *
-     * @return Collection<int, array<string, mixed>>
+     * @return Collection<int, array{target_type: string, target_slug: string, display_name: string|null, available: bool, created_at: string|null}>
      */
     public function favoritesFor(User $client, int $limit = self::MAX_FAVORITES): Collection
     {
@@ -227,7 +227,7 @@ final class PublicActivityService
     /**
      * Dernières recherches d'un client.
      *
-     * @return Collection<int, array<string, mixed>>
+     * @return Collection<int, array{query: string, city: string|null, result_count: int, searched_at: string|null}>
      */
     public function searchHistoryFor(User $client, int $limit = self::MAX_HISTORY): Collection
     {

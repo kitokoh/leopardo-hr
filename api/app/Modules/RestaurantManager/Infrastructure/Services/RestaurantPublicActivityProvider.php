@@ -75,9 +75,7 @@ final class RestaurantPublicActivityProvider implements PublicActivityProvider
             RestaurantOrder::class,
             static fn (RestaurantOrder $order): array => [
                 'reference' => (string) $order->reference,
-                'status' => $order->status instanceof \BackedEnum
-                    ? (string) $order->status->value
-                    : (string) $order->status,
+                'status' => $order->status->value,
                 'occurred_at' => (string) $order->created_at?->toIso8601String(),
                 'title' => (string) __('publicApp.activityOrderTitle'),
             ],
@@ -95,9 +93,7 @@ final class RestaurantPublicActivityProvider implements PublicActivityProvider
             RestaurantReservation::class,
             static fn (RestaurantReservation $reservation): array => [
                 'reference' => (string) $reservation->reference,
-                'status' => $reservation->status instanceof \BackedEnum
-                    ? (string) $reservation->status->value
-                    : (string) $reservation->status,
+                'status' => $reservation->status->value,
                 'occurred_at' => (string) ($reservation->reserved_at ?? $reservation->created_at)?->toIso8601String(),
                 'title' => (string) __('publicApp.activityBookingTitle'),
             ],
