@@ -32,6 +32,9 @@ class RestaurantReservation extends Model
         'branch_id',
         'reference',
         'customer_contact_id',
+        // COULOIR 16 — M3 (#9105) : client de la passerelle publique
+        // (`users.id`). NULL pour les réservations prises au comptoir.
+        'public_client_id',
         'contact_name',
         'contact_phone',
         'reserved_at',

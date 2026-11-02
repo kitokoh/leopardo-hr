@@ -67,6 +67,7 @@ use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantEstablishmen
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsumerRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantProfileResolver;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantPublicActivityProvider;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
 use App\Modules\RestaurantManager\Policies\RestaurantPrintJobPolicy;
 use Illuminate\Contracts\Foundation\Application;
@@ -104,6 +105,11 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         // SUPERAPP-P1 (#8760) — resolution fail-closed du profil pour le
         // contact public (memes gardes que la decouverte, aucune duplication).
         $this->app->tag([RestaurantProfileResolver::class], 'public.profile_resolver');
+        // COULOIR 16 — M3 (#9105) — la verticale DECLARE qu'elle sert des
+        // activites publiques (`order`, `booking`). Sans ce tag, l'onglet
+        // Activites n'affiche AUCUNE section restaurant : c'est le mecanisme
+        // « un module sans contrat n'apparait pas ».
+        $this->app->tag([RestaurantPublicActivityProvider::class], 'public.activity_provider');
         // BOS-014 (#8201) — le manifest (contrat Core v2) est enregistré au
         // catalogue central des solutions (clé d'allowlist
         // `restaurantmanager`) : la verticale devient activable via

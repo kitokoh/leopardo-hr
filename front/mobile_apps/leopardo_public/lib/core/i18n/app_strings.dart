@@ -170,6 +170,19 @@ class AppStrings {
       'profileNotSignedInBody':
           'Vous pouvez tout consulter. Un compte n’est demandé qu’au moment de contacter un commerçant.',
       'profileComingSoon': 'Disponible avec votre compte.',
+
+      // Activités, favoris, historique (M3)
+      'activityOrderTitle': 'Commande',
+      'activityBookingTitle': 'Réservation',
+      'activitySectionOrders': 'Commandes',
+      'activitySectionBookings': 'Réservations',
+      'activityStatusOpen': 'En cours',
+      'activitySignInRequired': 'Connectez-vous pour retrouver vos activités.',
+      'favoritesTitle': 'Favoris',
+      'favoritesEmptyTitle': 'Aucun favori',
+      'favoritesUnavailable': 'Ce commerce n’est plus disponible',
+      'searchHistoryTitle': 'Recherches récentes',
+      'searchHistoryClear': 'Effacer l’historique',
     },
 
     // ───────────────────────────── EN ─────────────────────────────
@@ -259,6 +272,19 @@ class AppStrings {
       'profileNotSignedInBody':
           'You can browse everything. An account is only asked for when you contact a business.',
       'profileComingSoon': 'Available with your account.',
+
+      // Activities, favourites, history (M3)
+      'activityOrderTitle': 'Order',
+      'activityBookingTitle': 'Booking',
+      'activitySectionOrders': 'Orders',
+      'activitySectionBookings': 'Bookings',
+      'activityStatusOpen': 'In progress',
+      'activitySignInRequired': 'Sign in to see your activity.',
+      'favoritesTitle': 'Favourites',
+      'favoritesEmptyTitle': 'No favourites',
+      'favoritesUnavailable': 'This business is no longer available',
+      'searchHistoryTitle': 'Recent searches',
+      'searchHistoryClear': 'Clear history',
     },
 
     // ───────────────────────────── AR (RTL) ─────────────────────────────
@@ -344,6 +370,19 @@ class AppStrings {
       'profileNotSignedInBody':
           'يمكنك تصفح كل شيء. يُطلب الحساب فقط عند التواصل مع متجر.',
       'profileComingSoon': 'متاح مع حسابك.',
+
+      // الأنشطة والمفضلة وسجل البحث (M3)
+      'activityOrderTitle': 'طلب',
+      'activityBookingTitle': 'حجز',
+      'activitySectionOrders': 'الطلبات',
+      'activitySectionBookings': 'الحجوزات',
+      'activityStatusOpen': 'قيد التنفيذ',
+      'activitySignInRequired': 'سجّل الدخول لعرض أنشطتك.',
+      'favoritesTitle': 'المفضلة',
+      'favoritesEmptyTitle': 'لا توجد مفضلات',
+      'favoritesUnavailable': 'هذا المتجر لم يعد متاحًا',
+      'searchHistoryTitle': 'عمليات البحث الأخيرة',
+      'searchHistoryClear': 'مسح السجل',
     },
 
     // ───────────────────────────── TR ─────────────────────────────
@@ -433,6 +472,19 @@ class AppStrings {
       'profileNotSignedInBody':
           'Her şeye bakabilirsin. Hesap yalnızca bir işletmeyle iletişime geçerken istenir.',
       'profileComingSoon': 'Hesabınla kullanılabilir.',
+
+      // Etkinlikler, favoriler, arama geçmişi (M3)
+      'activityOrderTitle': 'Sipariş',
+      'activityBookingTitle': 'Rezervasyon',
+      'activitySectionOrders': 'Siparişler',
+      'activitySectionBookings': 'Rezervasyonlar',
+      'activityStatusOpen': 'Devam ediyor',
+      'activitySignInRequired': 'Etkinliklerini görmek için giriş yap.',
+      'favoritesTitle': 'Favoriler',
+      'favoritesEmptyTitle': 'Favori yok',
+      'favoritesUnavailable': 'Bu işletme artık mevcut değil',
+      'searchHistoryTitle': 'Son aramalar',
+      'searchHistoryClear': 'Geçmişi temizle',
     },
   };
 }

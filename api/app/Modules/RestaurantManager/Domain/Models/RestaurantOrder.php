@@ -49,6 +49,9 @@ class RestaurantOrder extends Model
         'zone_id',
         'covers',
         'customer_contact_id',
+        // COULOIR 16 — M3 (#9105) : client de la passerelle publique
+        // (`users.id`). NULL pour les commandes POS, kiosque et sans compte.
+        'public_client_id',
         'rider_id',
         'status',
         'subtotal_minor',

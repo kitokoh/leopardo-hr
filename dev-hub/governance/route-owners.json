@@ -85,6 +85,10 @@
     {
       "controller": "App\\Modules\\Platform\\Interfaces\\Api\\V1\\Controllers\\SupportTicketController",
       "reason": "Tickets support tenant (api/v1/support-tickets) — Modules/Platform, scope tenant assumé."
+    },
+    {
+      "controller": "App\\Modules\\Platform\\Interfaces\\Api\\V1\\Controllers\\PublicActivityController",
+      "reason": "Activites, favoris et historique du client public (COULOIR 16 M3, #9105) — controleur colocalise dans Modules/Platform (BC-01) mais servi dans api/routes/modules/user.php sous auth:user_api, SANS middleware tenant : un client public agit sur plusieurs entreprises et le tenant est resolu cote serveur depuis la reference. Aucune route tenant n'est exposee ici ; le fichier user.php est classe tenant par la garde au niveau fichier, d'ou cette exception."
     }
   ],
   "platform_uri_prefixes": [

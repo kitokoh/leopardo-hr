@@ -12,6 +12,7 @@ use App\Modules\Billing\Interfaces\Api\V1\Controllers\CompanyRequestController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyIntegrationRequestController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\UserEmployeeLinkController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\PublicConversationController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicActivityController;
 use Illuminate\Support\Facades\Route;
 
 // Public (sans auth, throttle strict)
@@ -68,6 +69,32 @@ Route::middleware(['throttle:shop-public', 'auth:user_api'])->prefix('public/con
         ->whereNumber('thread');
     Route::post('/{companyId}/{thread}/messages', [PublicConversationController::class, 'storeMessage'])
         ->whereNumber('thread');
+});
+
+// COULOIR 16 — M3 (#9105) · Activités, favoris et historique de recherche.
+//
+// Même régime que `/public/conversations` : le client est un `users.id`
+// (guard `user_api`), il n'y a AUCUN middleware `tenant`. Un client agit sur
+// plusieurs entreprises, et le tenant d'une activité est résolu côté serveur
+// depuis la référence — jamais depuis un identifiant fourni par le client.
+//
+// Throttle `shop-public` : ce sont des écritures déclenchées par un visiteur.
+Route::middleware(['throttle:shop-public', 'auth:user_api'])->prefix('user')->group(function (): void {
+    // Activités : l'index ne contient que des références, chaque ligne est
+    // revalidée dans son contexte tenant avant d'être renvoyée.
+    Route::get('/activities', [PublicActivityController::class, 'index']);
+
+    // Favoris : `(target_type, target_slug)`, jamais de `company_id` client.
+    Route::get('/favorites', [PublicActivityController::class, 'favorites']);
+    Route::post('/favorites', [PublicActivityController::class, 'storeFavorite']);
+    Route::delete('/favorites/{type}/{slug}', [PublicActivityController::class, 'destroyFavorite'])
+        ->where('type', '[a-z_]{1,40}')
+        ->where('slug', '[A-Za-z0-9_-]{1,160}');
+
+    // Historique de recherche : local d'abord, synchronisé si compte.
+    Route::get('/search-history', [PublicActivityController::class, 'searchHistory']);
+    Route::post('/search-history', [PublicActivityController::class, 'storeSearchHistory']);
+    Route::delete('/search-history', [PublicActivityController::class, 'clearSearchHistory']);
 });
 
 // Manager: lier un utilisateur ordinaire a un employe

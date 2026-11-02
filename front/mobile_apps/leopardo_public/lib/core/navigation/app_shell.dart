@@ -6,6 +6,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import '../../core/providers/app_providers.dart';
 import '../../features/business_profile/screens/business_profile_route.dart';
 import '../../features/discovery/screens/discovery_home_screen.dart';
+import '../../features/activity/screens/activity_tab.dart';
 import '../../features/tabs/secondary_tabs.dart';
 
 /// Coque à 4 onglets.
