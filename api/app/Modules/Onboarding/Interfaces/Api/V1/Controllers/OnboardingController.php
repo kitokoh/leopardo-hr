@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Modules\Onboarding\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Infrastructure\Services\AuthService;
 use App\Http\Controllers\Controller;
 use App\Modules\HR\Domain\Models\UserInvitation;
 use App\Modules\HR\Infrastructure\Services\UserInvitationService;
 use Illuminate\Http\JsonResponse;
 use App\Modules\Onboarding\Interfaces\Api\V1\Requests\ActivateInvitationRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Module 6 — Public Onboarding API
@@ -22,7 +24,10 @@ use Illuminate\Http\Request;
  */
 class OnboardingController extends Controller
 {
-    public function __construct(private readonly UserInvitationService $userInvitationService) {}
+    public function __construct(
+        private readonly UserInvitationService $userInvitationService,
+        private readonly AuthService $authService,
+    ) {}
 
     /**
      * GET /onboarding/invitation/{token}
@@ -46,6 +51,19 @@ class OnboardingController extends Controller
 
         if ($invitation->expires_at?->isPast()) {
             return $this->errorResponse('INVITATION_EXPIRED', 410);
+        }
+
+        // Correctif onboarding (audit IAM) — `show` annonçait une invitation
+        // valide pour une société suspendue/expirée : l'utilisateur remplissait
+        // le formulaire puis recevait un 403 à l'activation. On applique ici la
+        // même garde que `accept()` pour que l'écran dise la vérité.
+        $company = \App\Core\Tenant\Domain\Models\Company::query()
+            ->from('public.companies')
+            ->whereKey($invitation->company_id)
+            ->first();
+
+        if ($company !== null && in_array($company->status, ['suspended', 'expired'], true)) {
+            return $this->errorResponse('COMPANY_SUSPENDED', 403);
         }
 
         return new JsonResponse([
@@ -88,9 +106,31 @@ class OnboardingController extends Controller
 
         $employee = $this->userInvitationService->accept($token, $validated['password']);
 
-        // Issue a Sanctum token for immediate login after activation
-        $deviceName = $request->input('device_name', 'mobile');
-        $sanctumToken = $employee->createToken($deviceName);
+        // Correctif onboarding (audit IAM) — le jeton était forgé ici avec
+        // `$employee->createToken($deviceName)` : il ne portait AUCUNE ability
+        // `tenant_schema:` / `tenant_company:` / `tenant_employee:`. Le
+        // middleware TenantMiddleware ne pouvait donc pas résoudre le contexte
+        // tenant et l'employé fraîchement activé arrivait sur un dashboard
+        // inaccessible (403 COMPANY_NOT_FOUND) alors que l'activation avait
+        // réussi. On réutilise le chemin de connexion ÉPROUVÉ
+        // (`AuthService::login`), qui construit ces abilities, applique le
+        // quota de jetons (#7009) et positionne `last_login_at`.
+        $deviceName = (string) $request->input('device_name', 'mobile');
+
+        try {
+            $auth = $this->authService->login($employee->email, $validated['password'], $deviceName);
+            $plainToken = $auth['token'];
+            $expiresAt = $auth['token_expires_at'];
+        } catch (\Throwable $e) {
+            // Le compte EST activé : on ne casse pas l'activation pour un échec
+            // de connexion automatique, on dégrade vers la connexion manuelle.
+            Log::warning('onboarding.activate.autologin_failed', [
+                'employee_id' => $employee->id,
+                'error' => $e->getMessage(),
+            ]);
+            $plainToken = null;
+            $expiresAt = null;
+        }
 
         return new JsonResponse([
             'data' => [
@@ -100,10 +140,11 @@ class OnboardingController extends Controller
                     'first_name' => $employee->first_name,
                     'last_name' => $employee->last_name,
                     'role' => $employee->role,
+                    'manager_role' => $employee->manager_role,
                 ],
-                'token' => $sanctumToken->plainTextToken,
+                'token' => $plainToken,
                 'token_type' => 'Bearer',
-                'token_expires_at' => null,
+                'token_expires_at' => $expiresAt,
             ],
             'message' => 'ACCOUNT_ACTIVATED',
         ], 201);
