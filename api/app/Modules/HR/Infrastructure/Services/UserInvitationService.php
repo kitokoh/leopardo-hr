@@ -57,6 +57,18 @@ class UserInvitationService
             $invitation->employee_id = $employee->id;
         }
 
+        // Correctif onboarding (audit IAM) — une invitation DÉJÀ CONSOMMÉE ne
+        // doit jamais être rouverte. L'ancien code remettait `accepted_at` à
+        // null et rotationnait le jeton : un resend (ou une ré-invitation d'un
+        // employé existant) produisait un lien valide permettant de RÉÉCRIRE
+        // le mot de passe d'un compte déjà actif — prise de contrôle de compte
+        // par simple connaissance de l'adresse e-mail. On sort sans toucher au
+        // jeton ni envoyer de courriel : le compte est actif, la récupération
+        // passe par le flux « mot de passe oublié ».
+        if ($invitation->accepted_at !== null) {
+            return '';
+        }
+
         $invitation->email = $employee->email;
         $invitation->schema_name = $company->schema_name;
         $invitation->role = $employee->role;
