@@ -94,7 +94,7 @@ final class RestaurantPublicActivityProvider implements PublicActivityProvider
             static fn (RestaurantReservation $reservation): array => [
                 'reference' => (string) $reservation->reference,
                 'status' => $reservation->status->value,
-                'occurred_at' => (string) ($reservation->reserved_at ?? $reservation->created_at)?->toIso8601String(),
+                'occurred_at' => ($reservation->reserved_at ?? $reservation->created_at)->toIso8601String(),
                 'title' => (string) __('publicApp.activityBookingTitle'),
             ],
         );

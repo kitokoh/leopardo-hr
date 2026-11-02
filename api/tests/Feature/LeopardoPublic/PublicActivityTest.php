@@ -40,8 +40,6 @@ class PublicActivityTest extends TestCase
 
     private Company $company;
 
-    private Company $otherCompany;
-
     private User $client;
 
     private User $otherClient;
@@ -55,13 +53,6 @@ class PublicActivityTest extends TestCase
             'currency' => 'DZD',
             'slug' => 'resto-activites',
             'name' => 'Restaurant Activités',
-        ]);
-
-        $this->otherCompany = Company::factory()->create([
-            'country' => 'DZ',
-            'currency' => 'DZD',
-            'slug' => 'resto-rival',
-            'name' => 'Restaurant Rival',
         ]);
 
         $this->client = User::factory()->create([

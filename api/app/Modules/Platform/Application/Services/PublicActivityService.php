@@ -227,7 +227,7 @@ final class PublicActivityService
     /**
      * Dernières recherches d'un client.
      *
-     * @return Collection<int, array{query: string, city: string|null, result_count: int, searched_at: string|null}>
+     * @return Collection<int, array{query: string, city: string|null, result_count: int, searched_at: string}>
      */
     public function searchHistoryFor(User $client, int $limit = self::MAX_HISTORY): Collection
     {
