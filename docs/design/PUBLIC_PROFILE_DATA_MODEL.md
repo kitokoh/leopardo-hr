@@ -3,7 +3,16 @@
 - **Dépôt** : `kitokoh/leopardo-hr`
 - **Portée** : application grand public Leopardo (canal public)
 - **Statut** : spécification. **Aucune migration créée par ce document hors celles déjà livrées en M3.**
-- **Lot** : M0 (complément) — livrable manquant signalé par `COULOIR16_CARTOGRAPHIE.md` §2.1
+- **Lot** : M0 (complément) — modèle prescrit par `COULOIR16_PLAN.md` §2, dont le fichier n'existait pas
+
+> **Note sur l'origine de ce document.** `COULOIR16_PLAN.md` §2 spécifie le
+> modèle de données du profil public, et son §8 le liste comme livrable M0.
+> `COULOIR16_CARTOGRAPHIE.md` §2.1 déclare ce fichier livré. Vérification faite
+> (`git cat-file -e`, recherche plein texte sur toutes les branches) : il
+> **n'existait pas**. Le plan fait foi ici ; la cartographie est corrigée dans
+> la même PR. Ce document reprend la spécification du plan et l'aligne sur les
+> migrations M3 réellement écrites, qui diffèrent du plan sur trois points
+> (§5, §8, §9).
 - **Langues** : `fr`, `en`, `ar` (RTL), `tr`
 - **Ville / pays** : **jamais codés en dur** — voir §6
 
