@@ -331,3 +331,18 @@ Les 8 jobs `Build Debug leopardo_*` étaient donc rouges sur `main` en permanenc
 **Aucun changement de comportement.** Le diff sur `front/mobile_apps/leopardo_core/lib/l10n/app_{fr,en,ar,tr}.arb` est uniquement la régénération mécanique (`shared/i18n/sync/sync-mobile.js`) des **6 clés partagées** `discovery.company*` introduites pour la **fiche publique web** `/commerce/[slug]` de la verticale Trade (P2-01, #8802) : `companyTitle`, `companyAboutTitle`, `companyImport`, `companyExport`, `companyDomestic`, `companyNotFoundTitle`. Les clés sont disponibles pour une future surface mobile de découverte, **aucun écran Dart existant ne les consomme**. Scénarios existants valides tels quels.
 
 Vérifié : `node shared/i18n/sync/sync-mobile.js` → `I18N_SYNC_MOBILE_OK`, `node shared/i18n/validators/validate.js` → `I18N_VALIDATION_OK (4 locales)`, et `git diff --exit-code` **propre** après les trois syncs (web, mobile, backend).
+
+## Note de conservation 2026-11-02 — onglet Activités du couloir 16 (M3, issue #9105, PR #9108)
+
+**L'onglet Activités de `leopardo_public` cesse d'être un état vide M1.** Il consomme trois nouvelles surfaces (`/user/activities`, `/user/favorites`, `/user/search-history`) sous `auth:user_api`.
+
+- **Aucune section sans contrat** : l'écran n'affiche que les verticales que le serveur déclare dans `meta.sections`. Une verticale sans `PublicActivityProvider` tagué n'apparaît pas — l'onglet ne peut donc pas montrer une section vide « par construction ».
+- **Le statut n'est jamais calculé côté app** : il est relu par le serveur dans le schéma du tenant. Un statut inconnu est affiché tel quel plutôt que masqué ou traduit au hasard.
+- **États obligatoires** via `state_widgets.dart`, sans `if` ad hoc dans l'écran : chargement (squelette), vide, erreur, **hors ligne** (aucune donnée périmée présentée comme fraîche), **404 traité comme une absence et non comme une panne**, et **401/403 traduit en « connectez-vous »** plutôt qu'en erreur technique.
+- **Favoris** : un profil dépublié reste listé avec la mention « ce commerce n'est plus disponible » au lieu d'un bouton mort ; retrait optimiste puis `invalidate`.
+- **Historique** : section autonome avec effacement ; aucune coordonnée n'est envoyée ni affichée.
+- **RTL** : l'écran applique `Directionality` depuis `AppStrings.isRtl` (arabe).
+
+**Scénarios automatisés** (`front/mobile_apps/leopardo_public/test/activity_models_test.dart`, 11 cas) : désérialisation d'une activité complète ; **statut absent jamais inventé** ; date invalide tolérée sans lever ; section sans type reste vide ; favori indisponible conservé et marqué ; nom vide normalisé en `null` ; entrée d'historique sans coordonnée ; **parité des 12 clés M3 sur les 4 locales** (repli sur la clé brute = échec) ; arabe bien RTL.
+
+**Vérification** : `I18N_VALIDATION_OK (4 locales)` et parité ×4 vertes après `sync-mobile.js`. Aucun test Flutter exécuté dans la sandbox (SDK absent) — la CI fait foi pour cette surface, comme pour les notes précédentes.
