@@ -57,10 +57,10 @@ interface PublicActivityProvider
      * Relit une activité DANS le contexte du tenant, pour ce client précis.
      *
      * @param  string  $activityType  `order` | `booking`
-     * @param  string  $externalRef   référence dans le schéma du tenant
-     * @param  int     $userId        `users.id` du client authentifié
+     * @param  string  $externalRef  référence dans le schéma du tenant
+     * @param  int  $userId  `users.id` du client authentifié
      * @return array{reference: string, status: string, occurred_at: string, title: string}|null
-     *                                                                                          `null` si l'activité n'existe pas, n'appartient pas à ce client, ou n'est plus joignable.
+     *                                                                                           `null` si l'activité n'existe pas, n'appartient pas à ce client, ou n'est plus joignable.
      */
     public function findForClient(string $activityType, string $externalRef, int $userId): ?array;
 }
