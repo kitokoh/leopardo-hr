@@ -1,6 +1,12 @@
-# 📱 Leopardo RH — Application Mobile
+# 📱 Leopardo Manager — Application Mobile
 
-Application Flutter de gestion RH pour les employés et managers.
+Application Flutter **espace manager/RH** de la famille Leopardo RH : équipe,
+validations, approbations et tableau de bord.
+
+> ⚠️ En-tête corrigé en M1-quater (#9112) : ce README portait l'en-tête générique
+> « Leopardo RH — Application Mobile », indistinguable de celui de `leopardo_employee`
+> et de `leopardo_hr`. La différenciation par sous-rôle manager se fait dans les
+> écrans concernés, pas dans le router.
 
 ## Architecture
 
