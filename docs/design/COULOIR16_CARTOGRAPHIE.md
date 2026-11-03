@@ -122,6 +122,43 @@ vente RH — exactement ce que la spécification interdit.
 
 `/manifest` (produit RH) est **inchangé** — c'est l'objet du test de non-régression.
 
+### 2.4 M1-ter — identité produit de l'app Flutter ✅ (#9110)
+
+**Le défaut trouvé.** Le correctif M1-bis n'avait traité que la **PWA web**. Côté
+Flutter, `front/mobile_apps/leopardo_public` — scaffoldée par copie d'une app
+existante — avait gardé l'identité du **produit RH** :
+
+| Fichier | Ce qu'il déclarait | Conséquence |
+|---|---|---|
+| `README.md` | « Leopardo RH — Application Mobile », identifiants de démo RH, `api.leopardo-rh.com` | un développeur qui ouvre l'app croit travailler sur le produit RH |
+| `web/manifest.json` | `name`/`short_name` = `leopardo_rh`, `description` = « A new Flutter project. » | une PWA installée depuis l'app publique s'appelle `leopardo_rh` |
+| `web/index.html` | `<title>leopardo_rh</title>`, description placeholder | idem côté navigateur |
+| `ios/Runner/Info.plist` | `CFBundleName` = `leopardo_employee` | l'app iOS porte le nom d'une **troisième** app |
+
+**Le correctif.**
+
+| Fichier | Rôle |
+|---|---|
+| `front/mobile_apps/leopardo_public/README.md` | réécrit : identité publique, 4 onglets, 4 langues, guard `user_api`, 8 états, jalons M0→M4, portes (b)/(c) |
+| `front/mobile_apps/leopardo_public/web/manifest.json` | `name`/`short_name`/`description`/`theme_color` propres à la surface publique, `categories: food/shopping/travel` |
+| `front/mobile_apps/leopardo_public/web/index.html` | `<title>`, `meta description`, `apple-mobile-web-app-title` |
+| `front/mobile_apps/leopardo_public/ios/Runner/Info.plist` | `CFBundleName` = `leopardo_public` |
+| `melos.yaml` | `leopardo_public` déclarée — elle ne l'était **pas**, donc `melos analyze`/`melos test` ne la couvraient pas |
+| `front/mobile_apps/README.md` | ligne de description + compteur « 9 packages » → 10 |
+| `dev-hub/tools/check-mobile-app-identity.sh` | **garde** : refuse toute identité empruntée (manifeste, index.html, Info.plist, AndroidManifest) et toute app absente de `melos.yaml` |
+| `dev-hub/tools/mobile-app-identity-baseline.txt` | dette préexistante figée (32 entrées, **aucune** pour `leopardo_public`) |
+| `.github/workflows/mobile-apps-ci.yml` | le garde est branché dans `mobile-apps-guard` |
+
+**Pourquoi une baseline et pas un simple échec.** Six autres apps portent déjà une
+identité empruntée (dette antérieure à ce garde). Les faire échouer toutes
+bloquerait `main` pour un défaut que ce lot ne prétend pas corriger. Le dépôt a
+déjà tranché ce cas pour la duplication Flutter (#7652) : une baseline fige la
+dette et refuse toute **nouvelle** entrée. La liste doit maigrir.
+
+**Preuve du garde.** Cas nominal → exit 0 (10 apps, 0 nouvelle violation).
+Test de mutation (réintroduction de `leopardo_rh` dans le manifeste public) →
+exit 1 avec la violation nommée, puis restauration → exit 0.
+
 ---
 
 ## 3. Ce qui reste à faire — et pourquoi ce n'est pas fait
@@ -129,18 +166,35 @@ vente RH — exactement ce que la spécification interdit.
 | Jalon | État | Blocage | Issue |
 |---|---|---|---|
 | **M2** — contact, OTP téléphone, messages, push | ⛔ **bloqué par conception** | porte (b) : attend **L1** (#9091, OTP fiable) et **L4** (#9094, convergence vers `users`) | [#9104](https://github.com/kitokoh/leopardo-hr/issues/9104) |
-| **M3** — activités, favoris, historique | ⬜ manquant | contrat `public_activity_index` à créer | [#9105](https://github.com/kitokoh/leopardo-hr/issues/9105) |
-| **M4** — hors ligne, perf, distribution | ⬜ manquant | porte (c) : dépense de compte développeur | [#9106](https://github.com/kitokoh/leopardo-hr/issues/9106) |
+| **M3** — activités, favoris, historique | ✅ **livré** (#9108) | — | [#9105](https://github.com/kitokoh/leopardo-hr/issues/9105) |
+| **M4** — hors ligne, perf, distribution | ⛔ **bloqué par conception** | porte (c) : dépense de compte développeur | [#9106](https://github.com/kitokoh/leopardo-hr/issues/9106) |
+
+> **Rectification (2026-11-03, M1-ter #9110).** Cette table annonçait M3 comme
+> « manquant ». C'était vrai à la date de la cartographie, plus au HEAD : M3 a
+> été livré par la PR #9108 (commit `d3db45f48`) — `public_activity_index`,
+> `public_favorites`, `public_search_history`, `PublicActivityService`,
+> `PublicActivityLocator`, les routes `/user/activities`, `/user/favorites`,
+> `/user/search-history` et l'onglet Flutter correspondant. La ligne est
+> corrigée plutôt que laissée fausse : une cartographie périmée fait refaire un
+> travail déjà fait.
 
 ### 3.1 Détail des manques vérifiés
 
 | Manque | Preuve du manque | Impact |
 |---|---|---|
 | **OTP par téléphone** | `LoginCodeController:55` valide `email` uniquement | parcours critique « Contacter » non couvert |
-| **Favoris / activités / historique** | aucune route `favorite` sous `user_api` ; `marketplace_favorites` existe mais guard distinct (retail) | onglet Activités vide |
 | **Jetons de notification publics** | `device_tokens` vit en schéma **tenant** ; aucune route publique | push M2 bloqué |
-| **Catégories par ville** | `pages` n'a pas de colonne `category` ; la catégorie vient de `establishment_type` côté provider | seuil par catégorie à définir sur `establishment_type` |
 | **Action `booking`** | `RestaurantDiscoverableProvider::supportedActions()` → `['contact','order']` | **correct** : pas de contrat public, donc pas de bouton |
+
+> **Livré depuis (M3, #9108)** : favoris, activités et historique de recherche
+> existent désormais sous `auth:user_api` — `GET /user/activities`,
+> `GET|POST /user/favorites`, `DELETE /user/favorites/{type}/{slug}`,
+> `GET|POST|DELETE /user/search-history`. L'onglet Activités n'est plus vide.
+>
+> **Livré depuis (M1, #9102)** : le seuil de catégories est éditable depuis le
+> Superadmin (`GET|PUT /admin/platform/discovery/settings`) et
+> `GET /public/discovery/categories` expose `visible` par catégorie. La ligne
+> « catégories par ville » ci-dessus est donc résolue côté `establishment_type`.
 
 ### 3.2 Dette préexistante constatée (hors périmètre couloir 16)
 

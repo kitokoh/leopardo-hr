@@ -22,7 +22,7 @@
 		<string>tr</string>
 	</array>
 	<key>CFBundleName</key>
-	<string>leopardo_employee</string>
+        <string>leopardo_public</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

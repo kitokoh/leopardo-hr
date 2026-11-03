@@ -1,12 +1,15 @@
 {
-    "name": "leopardo_rh",
-    "short_name": "leopardo_rh",
+    "name": "Leopardo — Trouver près de toi",
+    "short_name": "Leopardo",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0F172A",
+    "theme_color": "#0F172A",
+    "description": "Trouvez les commerces autour de vous, parlez-leur, retrouvez vos commandes et vos favoris.",
     "orientation": "portrait-primary",
+    "lang": "fr",
+    "dir": "auto",
+    "categories": ["food", "shopping", "travel"],
     "prefer_related_applications": false,
     "icons": [
         {

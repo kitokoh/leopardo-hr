@@ -15,6 +15,7 @@ desormais les seules applications mobiles actives.
 - `leopardo_marketing/` : app mobile marketing/communication (vitrine). Intégrée à melos et à la CI (QA 2026-08-15, #2661) ; son écran stats est encore un mock — chantier ouvert.
 - `leopardo_travel_agent/` : app mobile agent/vendeur TravelAgency (TRAVEL-701 #6088 + TRAVEL-810 #6100) — vente guichet multi-passagers, encaissement cash, check-in QR, manifeste, caisse PDV. Basée sur `leopardo_core`, intégrée à melos et à la CI mobile.
 - `leopardo_cameras/` : app mobile « Leopardo Caméras » (BC-19 DEVICE, #7426) — mur des caméras du tenant, visionnage direct via `GET /cameras/{id}/stream-token` (WebRTC MediaMTX, #7424), événements et alertes (#7427) avec cible de deep link `/events?focus=<id>`. Réservée aux responsables (module `cameras` + `api.manager`) ; basée sur `leopardo_core`, intégrée à melos et à la CI mobile.
+- `leopardo_public/` : app mobile **grand public** (Couloir 16, #9102) — la **surface publique** Leopardo : trouver un commerce, voir sa fiche, lui parler, retrouver commandes et favoris. Ce n'est **ni une verticale ni une horizontale, c'est un canal** : aucune règle métier propre, aucun nouveau Bounded Context. Guard `user_api` (client), distinct de `sanctum` (employés) ; 4 onglets, 4 langues fr/en/ar(RTL)/tr, `minSdk 26` ; basée sur `leopardo_core`, intégrée à melos et à la CI mobile.
 ## Regles de contribution
 
 - Toute modification partagee va dans `leopardo_core`.
@@ -27,7 +28,7 @@ desormais les seules applications mobiles actives.
 
 ## CI et distribution
 
-- `Mobile Apps CI - Flutter` (`mobile-apps-ci.yml`) valide les 9 packages : `leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_marketing`, `leopardo_accounting`, `leopardo_platform_admin`, `leopardo_travel_agent` et `leopardo_cameras`.
+- `Mobile Apps CI - Flutter` (`mobile-apps-ci.yml`) valide les 10 packages : `leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_marketing`, `leopardo_accounting`, `leopardo_platform_admin`, `leopardo_travel_agent`, `leopardo_cameras` et `leopardo_public`.
 - `Mobile - Build and Firebase Distribution` (`mobile-distribute.yml`) compile et distribue les APK Android de lancement vers Firebase App Distribution.
 
 ## Garde-fous Plan 26

@@ -1,0 +1,40 @@
+# Baseline d'identité produit des apps Flutter (garde #9110).
+#
+# Chaque ligne = une violation PRÉEXISTANTE, figée pour ne pas bloquer
+# main. Toute NOUVELLE violation est refusée par
+# dev-hub/tools/check-mobile-app-identity.sh.
+#
+# Cette liste doit MAIGRIR : corriger une app puis régénérer.
+# Régénérer : bash dev-hub/tools/check-mobile-app-identity.sh --update-baseline
+front/mobile_apps/leopardo_employee/web/index.html|apple-title nomme l'app 'leopardo_rh' (app courante : 'leopardo_employee')
+front/mobile_apps/leopardo_employee/web/index.html|meta description placeholder Flutter non remplacée
+front/mobile_apps/leopardo_employee/web/index.html|title nomme l'app 'leopardo_rh' (app courante : 'leopardo_employee')
+front/mobile_apps/leopardo_employee/web/manifest.json|champ 'name' nomme l'app 'leopardo_rh' (app courante : 'leopardo_employee')
+front/mobile_apps/leopardo_employee/web/manifest.json|champ 'short_name' nomme l'app 'leopardo_rh' (app courante : 'leopardo_employee')
+front/mobile_apps/leopardo_employee/web/manifest.json|description placeholder Flutter non remplacée
+front/mobile_apps/leopardo_hr/ios/Runner/Info.plist|CFBundleName nomme l'app 'leopardo_manager' (app courante : 'leopardo_hr')
+front/mobile_apps/leopardo_hr/web/index.html|apple-title nomme l'app 'leopardo_rh' (app courante : 'leopardo_hr')
+front/mobile_apps/leopardo_hr/web/index.html|meta description placeholder Flutter non remplacée
+front/mobile_apps/leopardo_hr/web/index.html|title nomme l'app 'leopardo_rh' (app courante : 'leopardo_hr')
+front/mobile_apps/leopardo_hr/web/manifest.json|champ 'name' nomme l'app 'leopardo_rh' (app courante : 'leopardo_hr')
+front/mobile_apps/leopardo_hr/web/manifest.json|champ 'short_name' nomme l'app 'leopardo_rh' (app courante : 'leopardo_hr')
+front/mobile_apps/leopardo_hr/web/manifest.json|description placeholder Flutter non remplacée
+front/mobile_apps/leopardo_manager/web/index.html|apple-title nomme l'app 'leopardo_rh' (app courante : 'leopardo_manager')
+front/mobile_apps/leopardo_manager/web/index.html|meta description placeholder Flutter non remplacée
+front/mobile_apps/leopardo_manager/web/index.html|title nomme l'app 'leopardo_rh' (app courante : 'leopardo_manager')
+front/mobile_apps/leopardo_manager/web/manifest.json|champ 'name' nomme l'app 'leopardo_rh' (app courante : 'leopardo_manager')
+front/mobile_apps/leopardo_manager/web/manifest.json|champ 'short_name' nomme l'app 'leopardo_rh' (app courante : 'leopardo_manager')
+front/mobile_apps/leopardo_manager/web/manifest.json|description placeholder Flutter non remplacée
+front/mobile_apps/leopardo_marketing/ios/Runner/Info.plist|CFBundleName nomme l'app 'leopardo_accounting' (app courante : 'leopardo_marketing')
+front/mobile_apps/leopardo_marketing/web/index.html|apple-title nomme l'app 'leopardo_accounting' (app courante : 'leopardo_marketing')
+front/mobile_apps/leopardo_marketing/web/index.html|meta description placeholder Flutter non remplacée
+front/mobile_apps/leopardo_marketing/web/index.html|title nomme l'app 'leopardo_accounting' (app courante : 'leopardo_marketing')
+front/mobile_apps/leopardo_marketing/web/manifest.json|champ 'name' nomme l'app 'leopardo_accounting' (app courante : 'leopardo_marketing')
+front/mobile_apps/leopardo_marketing/web/manifest.json|champ 'short_name' nomme l'app 'leopardo_accounting' (app courante : 'leopardo_marketing')
+front/mobile_apps/leopardo_marketing/web/manifest.json|description placeholder Flutter non remplacée
+front/mobile_apps/leopardo_platform_admin/web/index.html|apple-title nomme l'app 'leopardo_rh' (app courante : 'leopardo_platform_admin')
+front/mobile_apps/leopardo_platform_admin/web/index.html|meta description placeholder Flutter non remplacée
+front/mobile_apps/leopardo_platform_admin/web/index.html|title nomme l'app 'leopardo_rh' (app courante : 'leopardo_platform_admin')
+front/mobile_apps/leopardo_platform_admin/web/manifest.json|champ 'name' nomme l'app 'leopardo_rh' (app courante : 'leopardo_platform_admin')
+front/mobile_apps/leopardo_platform_admin/web/manifest.json|champ 'short_name' nomme l'app 'leopardo_rh' (app courante : 'leopardo_platform_admin')
+front/mobile_apps/leopardo_platform_admin/web/manifest.json|description placeholder Flutter non remplacée
