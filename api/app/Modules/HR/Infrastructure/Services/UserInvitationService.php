@@ -29,6 +29,12 @@ class UserInvitationService
      *                                                                                                           ressource voyagent dans l'invitation et sont créés à l'ACTIVATION
      *                                                                                                           (l'employé n'a de session qu'à ce moment-là ; s'il n'active jamais,
      *                                                                                                           aucun accès n'existe).
+     *
+     * @return string jeton en clair, ou `''` quand l'invitation est DÉJÀ
+     *                consommée (compte actif) : aucun jeton n'est émis, aucun
+     *                courriel n'est envoyé, rien n'est rouvert. Les appelants
+     *                doivent traiter `''` comme « rien à renvoyer », pas comme
+     *                un envoi réussi.
      */
     public function createAndSend(
         Company $company,
