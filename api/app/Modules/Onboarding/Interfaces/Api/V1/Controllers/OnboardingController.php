@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Onboarding\Interfaces\Api\V1\Controllers;
 
-use App\Core\Auth\Infrastructure\Services\AuthService;
+use App\Core\Auth\Domain\Contracts\InvitationActivationContract;
 use App\Http\Controllers\Controller;
 use App\Modules\HR\Domain\Models\UserInvitation;
-use App\Modules\HR\Infrastructure\Services\UserInvitationService;
 use Illuminate\Http\JsonResponse;
 use App\Modules\Onboarding\Interfaces\Api\V1\Requests\ActivateInvitationRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Module 6 — Public Onboarding API
@@ -25,8 +23,7 @@ use Illuminate\Support\Facades\Log;
 class OnboardingController extends Controller
 {
     public function __construct(
-        private readonly UserInvitationService $userInvitationService,
-        private readonly AuthService $authService,
+        private readonly InvitationActivationContract $activateInvitation,
     ) {}
 
     /**
@@ -104,33 +101,20 @@ class OnboardingController extends Controller
             return $this->errorResponse('INVITATION_EXPIRED', 410);
         }
 
-        $employee = $this->userInvitationService->accept($token, $validated['password']);
-
-        // Correctif onboarding (audit IAM) — le jeton était forgé ici avec
-        // `$employee->createToken($deviceName)` : il ne portait AUCUNE ability
-        // `tenant_schema:` / `tenant_company:` / `tenant_employee:`. Le
-        // middleware TenantMiddleware ne pouvait donc pas résoudre le contexte
-        // tenant et l'employé fraîchement activé arrivait sur un dashboard
-        // inaccessible (403 COMPANY_NOT_FOUND) alors que l'activation avait
-        // réussi. On réutilise le chemin de connexion ÉPROUVÉ
-        // (`AuthService::login`), qui construit ces abilities, applique le
-        // quota de jetons (#7009) et positionne `last_login_at`.
         $deviceName = (string) $request->input('device_name', 'mobile');
 
-        try {
-            $auth = $this->authService->login($employee->email, $validated['password'], $deviceName);
-            $plainToken = $auth['token'];
-            $expiresAt = $auth['token_expires_at'];
-        } catch (\Throwable $e) {
-            // Le compte EST activé : on ne casse pas l'activation pour un échec
-            // de connexion automatique, on dégrade vers la connexion manuelle.
-            Log::warning('onboarding.activate.autologin_failed', [
-                'employee_id' => $employee->id,
-                'error' => $e->getMessage(),
-            ]);
-            $plainToken = null;
-            $expiresAt = null;
-        }
+        // Cas d'usage PARTAGÉ avec `POST /auth/register` : une seule règle
+        // d'activation, un seul endroit où la corriger. Le jeton rendu porte
+        // les abilities tenant (via `AuthService::login`), sinon
+        // `TenantMiddleware` ne peut pas résoudre le contexte et l'employé
+        // fraîchement activé reçoit un 403 sur son dashboard.
+        $result = $this->activateInvitation->activate(
+            plainToken: $token,
+            password: $validated['password'],
+            deviceName: $deviceName,
+        );
+
+        $employee = $result['employee'];
 
         return new JsonResponse([
             'data' => [
@@ -142,9 +126,9 @@ class OnboardingController extends Controller
                     'role' => $employee->role,
                     'manager_role' => $employee->manager_role,
                 ],
-                'token' => $plainToken,
+                'token' => $result['token'],
                 'token_type' => 'Bearer',
-                'token_expires_at' => $expiresAt,
+                'token_expires_at' => $result['token_expires_at'],
             ],
             'message' => 'ACCOUNT_ACTIVATED',
         ], 201);
