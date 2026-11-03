@@ -1,98 +1,103 @@
-# 📱 Leopardo RH — Application Mobile
+# Leopardo — application grand public (Couloir 16)
 
-Application Flutter de gestion RH pour les employés et managers.
+Application mobile de la **surface publique** Leopardo : trouver un commerce autour de
+soi, voir sa fiche, lui parler, retrouver ses commandes et ses favoris.
+
+> **Ce n'est ni une verticale ni une horizontale : c'est un canal.**
+> Cette application n'a **aucune règle métier propre**. Elle présente et orchestre des
+> capacités qui appartiennent déjà à d'autres Bounded Contexts (Identité, BC-13
+> Restaurant, Shared/Discovery). Conséquence directe : **aucun nouveau Bounded Context
+> n'est créé ici**, et aucune messagerie, aucun historique, aucun compte n'est dupliqué.
+
+## Ce que l'application fait
+
+| Onglet | Contenu | Source serveur |
+|---|---|---|
+| **Accueil** | recherche toujours visible, catégories dynamiques, bascule carte/liste, « ouvert maintenant » | `GET /api/v1/public/discover`, `GET /api/v1/public/discovery/categories` |
+| **Messages** | conversations avec les commerces | `/api/v1/public/conversations` (guard `user_api`) |
+| **Activités** | commandes, favoris, historique de recherche | `/api/v1/user/activities`, `/api/v1/user/favorites`, `/api/v1/user/search-history` |
+| **Profil** | langue, consentement, compte | `/api/v1/user/me` (guard `user_api`) |
+
+### Les boutons de la fiche ne sont jamais codés en dur
+
+`Contacter` / `Commander` / `Réserver` sont construits **uniquement** à partir de
+`supportedActions()` renvoyé par le serveur. Un bouton n'existe que si le commerçant
+déclare la capacité **et** qu'une destination existe. C'est ce qui garantit qu'il n'y a
+jamais de bouton mort — et c'est pourquoi `Réserver` n'apparaît pas pour les restaurants
+aujourd'hui : aucun contrat public de réservation n'existe encore.
 
 ## Architecture
 
-- Framework : Flutter 3.x
-- State management : `flutter_riverpod` 3.3
-- Architecture active : providers Riverpod + services API, pas Bloc
+- **Framework** : Flutter 3.x, `minSdk 26` (contrainte `sentry_flutter` ^10, #8774).
+- **État** : `flutter_riverpod` 3.x — providers + repositories, pas de Bloc.
+- **Navigation** : `go_router` avec `StatefulShellRoute` + `IndexedStack` (l'état d'un
+  onglet survit au changement d'onglet).
+- **Base partagée** : `leopardo_core` (client API, thème, couleurs, typographie).
+  Aucune dépendance métier (pas de géofencing, pas de paie, pas de caméras) n'entre ici.
+- **Jetons** : `flutter_secure_storage` uniquement — Keystore Android / Keychain iOS,
+  jamais une préférence en clair.
 
-## 🌐 Environnements
+### Langues
 
-| Environnement | URL API | Usage |
-| :--- | :--- | :--- |
-| **Local** | `http://10.0.2.2:8000/api/v1` | Développement (émulateur) |
-| **Staging** | `https://gestionemployerbackend.onrender.com/api/v1` | Tests internes |
-| **Production** | `https://api.leopardo-rh.com/api/v1` | Play Store — ⚠️ domaine cible pas encore configure/DNS-resolu (voir `docs/GESTION_PROJET/RAPPORT_DEPLOIEMENT_RENDER.md`) |
+`fr`, `en`, `ar` (**RTL**), `tr`. Le catalogue est **local** à l'application
+(`lib/core/i18n/app_strings.dart`) et non les ARB de `leopardo_core` : les ~7 000 clés du
+core sont le vocabulaire RH/Business OS, et les importer ferait ressembler cette
+application à un logiciel RH avec des boutons ajoutés. Les clés sont **stables** ;
+l'éditeur de messages du Superadmin édite les textes, jamais les clés.
 
-## 🚀 Démarrage rapide
+### Les 8 états obligatoires
 
-### 1. Prérequis
-- [Flutter SDK](https://flutter.dev/docs/get-started/install) ≥ 3.3.0
-- Android Studio ou VS Code avec extension Flutter
-- Un émulateur Android ou un téléphone en mode développeur
+Squelette de chargement · vide · aucun résultat · erreur · hors ligne (bandeau + cache) ·
+position refusée · introuvable (404) · succès. Ils vivent dans
+`lib/core/widgets/state_widgets.dart` et sont couverts par `test/states_test.dart`.
 
-### 2. Installation
+## Environnements
+
+L'URL d'API n'est **pas** résolue ici : `leopardo_core`'s `ApiClient.resolveBaseUrl()`
+s'en charge, avec un comportement **fail-closed en release** (un build release sans
+`--dart-define=API_BASE_URL=…` lève au lieu de retomber sur un backend de dev — #4524 /
+#7963). Ce fichier ne duplique pas cette logique.
+
 ```bash
-cd mobile
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000/api/v1 \
+            --dart-define=PILOT_CITY=<ville pilote>
+```
+
+`PILOT_CITY` est **vide par défaut** : l'application ne prétend pas couvrir une ville
+qu'elle ne connaît pas.
+
+## Démarrage
+
+```bash
+cd front/mobile_apps/leopardo_public
 flutter pub get
+flutter analyze
+flutter test
 ```
 
-### 3. Lancer en développement
-```bash
-# Option A — Make (recommandé)
-make run-dev
+## État des jalons (Couloir 16)
 
-# Option B — Commande directe
-flutter run --dart-define-from-file=.env.local
-```
+| Jalon | Contenu | État |
+|---|---|---|
+| **M0** | dossier d'architecture et contrat | ✅ livré (#9101) |
+| **M0-bis** | modèle de données du profil public | ✅ livré (#9109) |
+| **M1** | app Flutter, seuil de catégories éditable | ✅ livré (#9102) |
+| **M1-bis** | manifeste PWA propre à la surface publique | ✅ livré (#9103) |
+| **M1-ter** | identité produit de cette application | ✅ livré (#9110) |
+| **M2** | OTP téléphone, messages, push | ⛔ **bloqué — porte (b)** : attend L1 (#9091) et L4 (#9094) |
+| **M3** | activités, favoris, historique | ✅ livré (#9108) |
+| **M4** | hors ligne, performance, distribution | ⛔ **bloqué — porte (c)** : dépense de compte développeur |
 
-## 📦 Compiler l'APK (pour testeurs)
+## Portes
 
-```bash
-# Option A — Make (recommandé)
-make build-staging
+- **(b)** M2 n'est pas démarré : l'OTP par téléphone dépend de la fiabilisation de
+  l'envoi SMS (L1) et de la convergence du grand public vers `users` (L4).
+- **(c)** Aucun compte développeur de magasin n'est créé : c'est une dépense, elle exige
+  un accord explicite.
 
-# Option B — Commande directe
-flutter build apk --release \
-  --dart-define-from-file=.env.staging \
-  --build-name=1.0.0 --build-number=1
-```
+## Documentation
 
-L'APK se trouve dans : `build/app/outputs/flutter-apk/app-release.apk`
-
-## 🛒 Compiler pour le Play Store
-
-```bash
-# Option A — Make (recommandé)
-make build-prod
-
-# Option B — Commande directe
-flutter build appbundle --release \
-  --dart-define-from-file=.env.production \
-  --build-name=1.0.0 --build-number=1
-```
-
-Le fichier `.aab` se trouve dans : `build/app/outputs/bundle/release/app-release.aab`
-
-## 🔑 Comptes de test (Staging)
-
-> Ces comptes nécessitent que le DemoCompanySeeder ait été exécuté.
-
-| Rôle | Email | Mot de passe |
-| :--- | :--- | :--- |
-| Manager principal | `ahmed.benali@techcorp-algerie.dz` | `password123` |
-| Manager RH | `fatima.meziane@techcorp-algerie.dz` | `password123` |
-| Employé | `karim.aouad@techcorp-algerie.dz` | `password123` |
-
-## 📋 ID Application
-- **Package Android** : `com.leopardo.rh`
-- **Nom affiché** : Leopardo RH
-- **Version** : 1.0.0
-
-## 🧪 Mocking & Développement Offline
-
-Pour travailler sans API fonctionnelle, l'application utilise des mocks situés dans `assets/mock/`.
-
-**Important :** La source de vérité pour les structures de données API est `api/openapi.yaml` ; les exemples JSON `/docs/api-mock-data/` sont générés à la demande (`python dev-hub/tools/generate_api_examples.py`, non versionnés — #7654). Les fichiers JSON dans `assets/mock/` doivent être maintenus en synchronisation avec ces schémas centraux.
-
-Pour mettre à jour les mocks :
-1. Régénérer puis consulter `/docs/api-mock-data/` (`python dev-hub/tools/generate_api_examples.py`).
-2. Utiliser le script `/tools/generate_api_examples.py` pour régénérer les exemples si nécessaire.
-3. Copier les fichiers pertinents dans `mobile/assets/mock/` en suivant la convention `mock_{nom}.json`.
-
-## ⚠️ Note Cold Start (Staging)
-Le premier appel vers le serveur Render peut prendre **30 à 60 secondes**
-car le serveur se réveille depuis sa mise en veille automatique (plan gratuit).
-Les appels suivants sont normaux (< 300ms).
+- `docs/design/COULOIR16_PLAN.md` — architecture et contrat du couloir.
+- `docs/design/COULOIR16_CARTOGRAPHIE.md` — ce qui existait, ce qui est livré, ce qui reste.
+- `docs/design/PUBLIC_PROFILE_DATA_MODEL.md` — modèle de données du profil public.
+- `docs/design/PUBLIC_ACCOUNT_API_CONTRACT.md` — contrat d'API du compte public.
