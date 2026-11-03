@@ -1,11 +1,11 @@
 {
-    "name": "leopardo_rh",
-    "short_name": "leopardo_rh",
+    "name": "Leopardo Manager",
+    "short_name": "Leopardo Mgr",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Leopardo RH — espace manager : équipe, validations, approbations et tableau de bord.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

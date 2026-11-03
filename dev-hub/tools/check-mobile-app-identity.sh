@@ -90,9 +90,20 @@ for t in "${HISTORICAL_APP_TOKENS[@]}"; do
   OTHER_APPS+=("$t")
 done
 
-# Marqueurs du produit RH. Légitimes dans la famille RH, interdits ailleurs.
+# Marqueurs de la PLATEFORME RH. Légitimes dans la famille RH, interdits ailleurs.
+#
+# ⚠️ « Leopardo RH » n'est PAS dans cette liste, et c'est volontaire. C'est la
+# marque de la FAMILLE PRODUIT, pas l'identité d'une app : `leopardo_accounting`,
+# `leopardo_cameras`, `leopardo_travel_agent` et `leopardo_marketing` la portent
+# tous dans leur `pubspec.yaml` (« Leopardo RH — application comptabilité… »).
+# La mettre ici produisait un faux positif garanti sur ces apps, et un garde qui
+# crie au loup est un garde qu'on désactive (voir M1-quater, #9112).
+#
+# Ce qu'on interdit, c'est la contamination d'INFRASTRUCTURE : l'hôte d'API RH,
+# le backend employeur, et la formule de gestion RH — des marqueurs qu'aucune
+# app non-RH n'a de raison légitime de porter.
 RH_FAMILY=" leopardo_hr leopardo_employee leopardo_manager leopardo_platform_admin leopardo_core "
-RH_MARKERS=("gestionemployerbackend" "api.leopardo-rh.com" "Leopardo RH" "gestion RH")
+RH_MARKERS=("gestionemployerbackend" "api.leopardo-rh.com" "gestion RH")
 
 violations=()
 
