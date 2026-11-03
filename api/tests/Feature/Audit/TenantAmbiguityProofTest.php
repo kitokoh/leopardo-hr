@@ -240,8 +240,17 @@ class TenantAmbiguityProofTest extends TestCase
     // Aides
     // ==================================================================
 
+    /**
+     * La forme est déclarée, pas devinée : `first()` renvoie un `stdClass`
+     * anonyme, et PHPStan niveau 8 refuse l'accès à une propriété d'`object`.
+     * Sans cette forme, les 14 lectures `->schema_name` / `->employee_id` du
+     * fichier sortent en erreur et le check requis PHPStan reste rouge.
+     *
+     * @return object{schema_name: string, employee_id: int}
+     */
     private function lookupRow(): object
     {
+        /** @var object{schema_name: string, employee_id: int}|null $row */
         $row = DB::table('public.user_lookups')->where('email', self::EMAIL)->first();
 
         $this->assertNotNull($row, 'Une ligne de dispatch doit exister.');
