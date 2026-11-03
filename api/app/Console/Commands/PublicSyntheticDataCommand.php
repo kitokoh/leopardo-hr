@@ -390,8 +390,14 @@ final class PublicSyntheticDataCommand extends Command
      */
     private function defaultPlanId(): int
     {
-        $id = Schema::hasTable('plans')
-            ? DB::table('plans')->orderBy('id')->value('id')
+        // ⚠️ `Schema::hasTable('plans')` renvoie FAUX sous le `search_path`
+        // `shared_tenants, public` des tests, alors que `public.plans` existe
+        // (vérifié en exécutant : hasTable('plans')=false,
+        // hasTable('public.plans')=true). La qualification explicite est donc
+        // obligatoire — sans elle, la commande échoue en test alors qu'elle
+        // fonctionne en production, où le search_path diffère.
+        $id = Schema::hasTable('public.plans')
+            ? DB::table('public.plans')->orderBy('id')->value('id')
             : null;
 
         if (! is_numeric($id)) {

@@ -36,11 +36,15 @@ class PublicSyntheticDataTest extends TestCase
         // Un plan est requis : `companies.plan_id` est NOT NULL et référence
         // `plans`. On en crée un minimal plutôt que de dépendre de PlanSeeder,
         // pour que le test ne dépende pas de l'ordre des seeders.
-        if (Schema::hasTable('plans') && DB::table('plans')->count() === 0) {
+        //
+        // ⚠️ Qualification `public.` OBLIGATOIRE : sous le `search_path`
+        // `shared_tenants, public` des tests, `Schema::hasTable('plans')`
+        // renvoie FAUX alors que la table existe (vérifié en exécutant).
+        if (Schema::hasTable('public.plans') && DB::table('public.plans')->count() === 0) {
             // `public.plans` n'a PAS de colonne `updated_at` (migration
             // 2026_04_01_000001 : `created_at` seulement) — l'insérer ferait
             // échouer le setUp de TOUS les tests du fichier.
-            DB::table('plans')->insert([
+            DB::table('public.plans')->insert([
                 'name' => 'Synthetic',
                 'price_monthly' => 0,
                 'created_at' => now(),
