@@ -92,12 +92,22 @@ class SetupInterviewVerticalChecklistsTest extends TestCase
         );
     }
 
-    public function test_fuel_station_checklist_also_applies_for_operational_flag_only(): void
+    public function test_fuel_station_checklist_applies_for_the_declared_sector_code(): void
     {
-        // Détection par le flag opérationnel `fuel` (featureKeys du catalogue
-        // front) comme par le code déclaré `fuel_station`.
+        // Détection par le code DÉCLARÉ `fuel_station` (SECTOR_SOLUTIONS du
+        // planner, ModuleRegistry) — la SEULE clé backend existante.
+        //
+        // Ce test affirmait auparavant qu'un flag `fuel` suffisait. C'était
+        // faux : `'fuel'` n'existe que dans le catalogue FRONTEND
+        // (`front/web/src/lib/client-features.ts`) et n'est jamais une clé du
+        // `ModuleRegistry` backend, qui ne connaît que `fuel_station`. La
+        // branche `hasFeature('fuel')` était donc toujours fausse — du code
+        // mort retiré par l'audit du 2026-10-21 (commit cbb43bed6), qui a
+        // laissé ce test derrière lui. On teste désormais le comportement
+        // RÉEL : le secteur déclaré à l'entretien active la verticale, et la
+        // checklist suit.
         $company = $this->companyWithInterview(
-            ['fuel' => true],
+            ['fuel_station' => true],
             ['company_type' => 'team', 'sector' => 'fuel_station', 'premises' => 'single'],
         );
 
@@ -105,6 +115,23 @@ class SetupInterviewVerticalChecklistsTest extends TestCase
 
         $this->assertContains('fuel_setup_station', $keys);
         $this->assertContains('fuel_first_sale', $keys);
+    }
+
+    public function test_a_frontend_only_fuel_flag_does_not_activate_the_fuel_checklist(): void
+    {
+        // Garde de non-régression : `fuel` n'est PAS une clé backend. Un tenant
+        // qui ne porte que ce flag (catalogue front) ne doit pas recevoir la
+        // checklist station-service — sinon on réintroduit la croyance que les
+        // deux catalogues partagent le même espace de noms.
+        $company = $this->companyWithInterview(
+            ['fuel' => true],
+            ['company_type' => 'team', 'sector' => 'services', 'premises' => 'single'],
+        );
+
+        $keys = $this->seededKeys($company);
+
+        $this->assertNotContains('fuel_setup_station', $keys);
+        $this->assertNotContains('fuel_first_sale', $keys);
     }
 
     public function test_fuel_solo_company_never_gets_team_steps(): void
