@@ -86,6 +86,17 @@ background sync (`leopardo-sync`), gestion online/offline.
 du profil public et de l'index des activités (**références seulement**), contrat
 OpenAPI, maquettes 360 px et RTL (`docs/design/couloir16-mockups/`).
 
+> **Correction (2026-11-02, M0-bis).** Cette section annonçait le modèle de
+> données du profil public comme livré. Le fichier
+> `docs/design/PUBLIC_PROFILE_DATA_MODEL.md` **n'existait pas** — ni dans
+> `main`, ni dans aucune branche (`git cat-file -e`, recherche plein texte).
+> Défaut de forme, pas de fond : la spécification était bien dans
+> `COULOIR16_PLAN.md` §2, mais aucun fichier ne la portait. Il est désormais
+> écrit et aligné sur les migrations M3 réellement livrées, dont il corrige
+> trois écarts (`public_favorites` sans `company_id`,
+> `public_search_history` sans coordonnées, `public_activity_index` avec sa
+> clé d'unicité réelle).
+
 ### 2.2 M1 — app Flutter + seuil de catégories ✅
 
 `front/mobile_apps/leopardo_public/` — 24 fichiers Dart :
