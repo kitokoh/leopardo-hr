@@ -58,7 +58,7 @@ jobs:
           lfs: false
 
       - name: Run actionlint
-        uses: reviewdog/action-actionlint@e0207a28405ecad11953ba625a95d92f7889572a # v1
+        uses: reviewdog/action-actionlint@619a81ec64ff8c0211cd6146eb2b21e8f1d7f440 # v1
         with:
           fail_level: error
 
