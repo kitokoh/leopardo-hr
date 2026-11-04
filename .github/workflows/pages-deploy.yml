@@ -4,12 +4,17 @@ name: Deploy Landing - GitHub Pages
 # branche `gh-pages` (legacy build) → Actions, contenu versionné sur `main`
 # sous `site/gh-pages/`. Objectif fondateur : « ne garder que main » (#6815).
 # Contenu identique à l'ancienne branche (mêmes chemins relatifs).
+#
+# Ajout : le cahier de recette `docs/recette/tests-ia-leopardo-hr.md` est rendu
+# en HTML et publié sous `/recette/` du même site Pages, afin que les testeurs
+# IA et humains disposent d'une page lisible (tableaux, colonnes à remplir).
 
 on:
   push:
     branches: [main]
     paths:
       - 'site/gh-pages/**'
+      - 'docs/recette/**'
       - '.github/workflows/pages-deploy.yml'
   workflow_dispatch:
 
@@ -36,10 +41,33 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
 
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Markdown renderer
+        run: pip install --quiet 'markdown==3.11.2'
+
+      - name: Assemble site (landing + cahier de recette)
+        run: |
+          set -euo pipefail
+          rm -rf _site
+          cp -r site/gh-pages _site
+          mkdir -p _site/recette
+          cp docs/recette/tests-ia-leopardo-hr.md _site/recette/tests-ia-leopardo-hr.md
+          cp docs/recette/prompt-agent-testeur.md _site/recette/prompt-agent-testeur.md
+          python3 docs/recette/build_pages.py \
+            docs/recette/tests-ia-leopardo-hr.md \
+            _site/recette/index.html
+          # L'onglet « Recette » est déjà présent dans le menu principal de
+          # site/gh-pages/index.html (lien relatif vers recette/), donc aucune
+          # injection de lien n'est nécessaire ici.
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
-          path: site/gh-pages
+          path: _site
 
       - name: Deploy to GitHub Pages
         id: deployment

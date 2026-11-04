@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cahier de recette — Leopardo (leopardo-hr)</title>
+<meta name="description" content="Cahier de recette destiné aux testeurs IA et humains de la solution Leopardo (dépôt Kitokoh/leopardo-hr).">
+<style>
+:root{
+  --bg:#0f1115; --panel:#161a21; --panel-2:#1c222b; --text:#e6e9ef; --muted:#9aa4b2;
+  --accent:#f5a524; --accent-2:#4f9cf9; --border:#2a323d; --ok:#3fb950; --warn:#d29922;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.65; font-size:16px;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 96px}
+header.hero{
+  background:linear-gradient(135deg,#1a1f27 0%,#0f1115 60%);
+  border-bottom:1px solid var(--border); padding:56px 0 40px; margin-bottom:40px;
+}
+header.hero .wrap{padding-bottom:0}
+.eyebrow{
+  display:inline-block; font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--accent); border:1px solid rgba(245,165,36,.35); border-radius:999px;
+  padding:5px 14px; margin-bottom:18px; background:rgba(245,165,36,.07);
+}
+header.hero h1{margin:0 0 12px; font-size:clamp(28px,4vw,44px); line-height:1.15; letter-spacing:-.02em}
+header.hero p.sub{margin:0; color:var(--muted); font-size:17px; max-width:760px}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.meta span{
+  font-size:13px;color:var(--muted);background:var(--panel);border:1px solid var(--border);
+  border-radius:8px;padding:6px 12px;
+}
+.meta span b{color:var(--text);font-weight:600}
+main h1,main h2,main h3,main h4{line-height:1.25;letter-spacing:-.01em;scroll-margin-top:24px}
+main h1{font-size:30px;margin:56px 0 18px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+main h2{
+  font-size:24px;margin:52px 0 16px;padding:14px 18px;background:var(--panel);
+  border-left:4px solid var(--accent);border-radius:0 10px 10px 0;
+}
+main h3{font-size:18px;margin:28px 0 10px;color:var(--accent-2)}
+main p{margin:12px 0}
+main strong{color:#fff}
+main a{color:var(--accent-2);text-decoration:none;border-bottom:1px solid rgba(79,156,249,.35)}
+main a:hover{border-bottom-color:var(--accent-2)}
+main ul,main ol{padding-left:24px;margin:12px 0}
+main li{margin:6px 0}
+main code{
+  background:var(--panel-2);border:1px solid var(--border);border-radius:5px;
+  padding:2px 6px;font-size:.88em;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:#ffd28a;
+}
+main pre{
+  background:var(--panel);border:1px solid var(--border);border-radius:12px;
+  padding:18px 20px;overflow-x:auto;margin:18px 0;
+}
+main pre code{background:none;border:none;padding:0;color:#c9d4e3;font-size:13.5px;line-height:1.6}
+.table-scroll{overflow-x:auto;margin:20px 0;border:1px solid var(--border);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:520px}
+thead th{
+  background:var(--panel-2);color:#fff;text-align:left;font-weight:600;
+  padding:12px 14px;border-bottom:2px solid var(--border);overflow-wrap:anywhere;
+}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere;word-break:break-word}
+/* colonnes de notation : largeur minimale pour rester lisibles */
+table th:nth-child(3),table td:nth-child(3){min-width:64px;text-align:center}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:rgba(255,255,255,.018)}
+tbody tr:hover{background:rgba(79,156,249,.06)}
+/* colonnes de notation : cases à remplir */
+td:empty{background:rgba(245,165,36,.05)}
+td:empty::after{content:"";display:block;min-height:22px}
+blockquote{
+  margin:20px 0;padding:14px 18px;background:rgba(210,153,34,.08);
+  border-left:4px solid var(--warn);border-radius:0 10px 10px 0;color:#e8d9b5;
+}
+blockquote p{margin:6px 0}
+hr{border:none;border-top:1px solid var(--border);margin:44px 0}
+footer{
+  margin-top:64px;padding-top:24px;border-top:1px solid var(--border);
+  color:var(--muted);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+}
+@media print{
+  body{background:#fff;color:#111}
+  header.hero{background:#fff;border-bottom:1px solid #ccc}
+  main h2{background:#f4f4f4;border-left-color:#333}
+  .table-scroll{border-color:#ccc}
+  thead th{background:#eee;color:#111}
+  main code{background:#f4f4f4;color:#111}
+}
+@media (max-width:640px){
+  .wrap{padding:0 16px 64px}
+  header.hero{padding:36px 0 28px}
+  main h2{font-size:20px;padding:12px 14px}
+  table{font-size:13px}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Cahier de recette · Testeurs IA &amp; humains</span>
+    <h1>Leopardo — Business OS pour entreprises de terrain</h1>
+    <p class="sub">Grille d'évaluation des cas d'usage de la solution <code>leopardo-hr</code> : pointage, absences, paie, multi-tenant, kiosque, CRM et solutions verticales.</p>
+    <div class="meta">
+      <span>Dépôt&nbsp;: <b>Kitokoh/leopardo-hr</b></span>
+      <span>Version&nbsp;: <b>bc0464b</b></span>
+      <span>Cas d'usage&nbsp;: <b>14</b></span>
+      <span>Barème&nbsp;: <b>/5</b></span>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+<h1 id="cahier-de-recette-leopardo-leopardo-hr">Cahier de recette — Leopardo (leopardo-hr)</h1>
+<p><strong>Dépôt testé :</strong> <a href="https://github.com/Kitokoh/leopardo-hr">github.com/Kitokoh/leopardo-hr</a>
+<strong>Nature :</strong> monorepo « Business OS » pour entreprises de terrain — HR &amp; paie, pointage, absences, comptabilité, CRM, solutions verticales, mobile Flutter, kiosque biométrique, API ouverte.
+<strong>Version observée :</strong> commit <code>bc0464b</code>
+<strong>Date de rédaction :</strong> 2026-11-03
+<strong>Date d'exécution IA :</strong> 2026-11-03 (environnement local reconstruit — voir Annexe D)
+<strong>Destinataires :</strong> testeurs IA (colonnes « Note IA » / « Observation IA ») puis relecteur humain (colonnes « Note humaine » / « Observation humaine »).</p>
+<blockquote>
+<p><strong>Statut de ce document :</strong> les colonnes <strong>Note IA (/5)</strong> et <strong>Observation IA</strong> ont été remplies à partir d'une <strong>exécution réelle</strong> de la solution (backend Laravel + PostgreSQL + Redis + kiosque + pont local). Les colonnes <strong>Note humaine (/5)</strong> et <strong>Observation humaine</strong> sont <strong>volontairement vides</strong> et réservées à l'évaluation humaine.</p>
+</blockquote>
+<hr>
+<h2 id="0-contexte-technique-issu-de-lanalyse-du-depot">0. Contexte technique issu de l'analyse du dépôt</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;">Élément</th>
+<th style="text-align: left;">Constat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Architecture</td>
+<td style="text-align: left;">Monolithe modulaire DDD — <strong>Laravel 12.60 (PHP ^8.4.1)</strong> dans <code>api/</code>, 39 modules sous <code>api/app/Modules/</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Surfaces</td>
+<td style="text-align: left;"><code>front/web</code> (Next.js 16), <code>front/admin-dashboard</code> (Vue 3), <code>front/marketplace</code>, <code>front/travel-web</code>, <code>front/web-offline</code> (PWA), <code>front/zkteco-kiosk</code> (HTML/JS), 8 apps Flutter (<code>front/mobile_apps</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Multi-tenant</td>
+<td style="text-align: left;">Deux schémas PostgreSQL (<code>public</code> + <code>shared_tenants</code>), <code>TenantManager</code> + <code>search_path</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Contrat d'API</td>
+<td style="text-align: left;"><code>api/openapi.yaml</code> — 1 429 chemins documentés</td>
+</tr>
+<tr>
+<td style="text-align: left;">Tests présents</td>
+<td style="text-align: left;">1 399 fichiers de tests PHP (Pest/PHPUnit) sous <code>api/tests/</code>, Jest + Playwright sous <code>front/web</code>, tests Node/Python sous <code>front/zkteco-kiosk</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">CI/CD</td>
+<td style="text-align: left;">72 workflows GitHub Actions (<code>.github/workflows/</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Pages publiées</td>
+<td style="text-align: left;"><code>site/gh-pages/</code> déployé par <code>.github/workflows/pages-deploy.yml</code> sur <code>https://kitokoh.github.io/leopardo-hr</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="environnements-utilises-pour-la-recette">Environnements utilisés pour la recette</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;">Surface</th>
+<th style="text-align: left;">URL</th>
+<th style="text-align: left;">Remarque</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">API (locale, reconstruite)</td>
+<td style="text-align: left;"><code>http://127.0.0.1:8000</code></td>
+<td style="text-align: left;"><code>GET /api/v1/health</code> → <strong>200 OK</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Kiosque (pont local)</td>
+<td style="text-align: left;"><code>http://127.0.0.1:8037</code></td>
+<td style="text-align: left;">Pont <code>desktop-bridge/bridge.py</code> — <strong>200 OK</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">API (production)</td>
+<td style="text-align: left;"><code>https://gestionemployerbackend.onrender.com</code></td>
+<td style="text-align: left;"><code>GET /api/v1/health</code> → <strong>200 OK</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Espace client web</td>
+<td style="text-align: left;"><code>https://gestionemployer-backend.vercel.app</code></td>
+<td style="text-align: left;"><strong>200 OK</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Admin plateforme</td>
+<td style="text-align: left;"><code>https://leo-admin.pages.dev</code></td>
+<td style="text-align: left;"><strong>200 OK</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="comptes-de-demonstration-mot-de-passe-commun-password123">Comptes de démonstration (mot de passe commun <code>password123</code>)</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;">Persona</th>
+<th style="text-align: left;">Identifiant</th>
+<th style="text-align: left;">Surface</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Super Admin</td>
+<td style="text-align: left;"><code>admin@leopardo-rh.com</code></td>
+<td style="text-align: left;"><code>leo-admin.pages.dev</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Manager Principal</td>
+<td style="text-align: left;"><code>ahmed.benali@techcorp-algerie.dz</code></td>
+<td style="text-align: left;">Web + app Manager</td>
+</tr>
+<tr>
+<td style="text-align: left;">Manager RH</td>
+<td style="text-align: left;"><code>fatima.meziane@techcorp-algerie.dz</code></td>
+<td style="text-align: left;">Web + app Manager/HR</td>
+</tr>
+<tr>
+<td style="text-align: left;">Manager Comptable</td>
+<td style="text-align: left;"><code>lina.haddad@techcorp-algerie.dz</code></td>
+<td style="text-align: left;">Web + app Manager</td>
+</tr>
+<tr>
+<td style="text-align: left;">Manager Superviseur</td>
+<td style="text-align: left;"><code>nassim.cheriet@techcorp-algerie.dz</code></td>
+<td style="text-align: left;">Web + app Manager + kiosque</td>
+</tr>
+<tr>
+<td style="text-align: left;">Employé</td>
+<td style="text-align: left;"><code>karim.aouad@techcorp-algerie.dz</code></td>
+<td style="text-align: left;">Web + app Employee + kiosque</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>Les comptes ci-dessus ont été <strong>recréés localement</strong> via <code>DemoCompanySeeder</code> (3 entreprises : <code>techcorp-algerie</code> DZ, <code>pharmaplus-casablanca</code> MA, <code>digitalflow-tunis</code> TN).</p>
+</blockquote>
+<h3 id="bareme-de-notation-commun-a-tous-les-cas">Barème de notation (commun à tous les cas)</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: center;">Note</th>
+<th style="text-align: left;">Signification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><strong>5</strong></td>
+<td style="text-align: left;">Cas entièrement conforme, aucune anomalie, aucune ambiguïté</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>4</strong></td>
+<td style="text-align: left;">Conforme, défauts cosmétiques ou mineurs sans impact fonctionnel</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>3</strong></td>
+<td style="text-align: left;">Fonctionne partiellement : contournement nécessaire ou critère non vérifiable</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>2</strong></td>
+<td style="text-align: left;">Défaillance fonctionnelle réelle sur un critère majeur</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>1</strong></td>
+<td style="text-align: left;">Cas bloqué (erreur serveur, accès impossible) mais comportement compréhensible</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>0</strong></td>
+<td style="text-align: left;">Cas impossible à exécuter (prérequis absents, environnement indisponible)</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="uc-01-connexion-dun-employe-a-lespace-client-web">UC-01 — Connexion d'un employé à l'espace client web</h2>
+<p><strong>Description / préconditions</strong>
+Vérifier le parcours d'authentification nominal d'un collaborateur sur l'espace client web.
+Prérequis : navigateur, accès réseau à <code>https://gestionemployer-backend.vercel.app</code>, compte <code>karim.aouad@techcorp-algerie.dz</code> / <code>password123</code>.</p>
+<p><strong>Étapes de test</strong>
+1. Ouvrir <code>https://gestionemployer-backend.vercel.app/</code> et vérifier le chargement de la page d'accueil.
+2. Accéder au formulaire de connexion (<code>/login</code>).
+3. Saisir l'identifiant employé et le mot de passe, valider.
+4. Vérifier la redirection vers le tableau de bord employé.
+5. Recharger la page (F5) et vérifier que la session persiste.
+6. Se déconnecter et vérifier le retour à l'écran de connexion.</p>
+<p><strong>Résultat attendu</strong>
+Connexion acceptée, redirection vers le tableau de bord employé, session persistante après rechargement, déconnexion effective. Aucun message d'erreur technique brut affiché.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: center;">Note IA (/5)</th>
+<th style="text-align: left;">Observation IA</th>
+<th style="text-align: center;">Note humaine (/5)</th>
+<th style="text-align: left;">Observation humaine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">Exécuté contre l'API locale reconstruite. <code>POST /api/v1/auth/login</code> (karim.aouad@techcorp-algerie.dz / password123) → <strong>200</strong>, jeton Sanctum retourné (<code>token_type</code>, <code>token_expires_at</code>), <code>data.role = "employee"</code>. <code>GET /api/v1/auth/me</code> avec le jeton → <strong>200</strong> (profil complet, session valide). Mauvais mot de passe → <strong>401</strong> (pas de fuite). L'UI web Next.js n'a pas pu être servie : <code>next build</code> est tué par la limite mémoire de l'environnement (2 Go, exit 137) — le parcours visuel (redirection, F5, déconnexion) n'a donc pas été observé dans un navigateur. Le socle d'authentification est conforme.</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="uc-02-pointage-entree-sortie-api-employe">UC-02 — Pointage entrée / sortie (API, employé)</h2>
+<p><strong>Description / préconditions</strong>
+Valider le cœur métier « présence » : création d'un pointage d'entrée puis de sortie, avec heure serveur.
+Prérequis : jeton Sanctum valide obtenu via <code>POST /api/v1/auth/login</code> ; endpoints <code>POST /api/v1/attendance/check-in</code> et <code>POST /api/v1/attendance/check-out</code>.</p>
+<p><strong>Étapes de test</strong>
+1. S'authentifier et conserver le jeton retourné.
+2. Appeler <code>POST /api/v1/attendance/check-in</code> avec le jeton (<code>Authorization: Bearer …</code>).
+3. Relever le code HTTP, l'identifiant du pointage et l'horodatage retournés.
+4. Appeler <code>GET /api/v1/attendance/today</code> et vérifier la présence du pointage d'entrée.
+5. Appeler <code>POST /api/v1/attendance/check-out</code>.
+6. Appeler à nouveau <code>GET /api/v1/attendance/today</code> et vérifier la clôture de session.
+7. Rejouer un <code>check-in</code> immédiat et observer la règle métier (doublon / session multiple).</p>
+<p><strong>Résultat attendu</strong>
+<code>check-in</code> → 201/200 avec horodatage serveur ; <code>today</code> reflète l'entrée puis la sortie ; le second <code>check-in</code> est soit accepté comme nouvelle session (<code>session_number</code> incrémenté), soit refusé avec un code métier explicite — jamais une erreur 500.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: center;">Note IA (/5)</th>
+<th style="text-align: left;">Observation IA</th>
+<th style="text-align: center;">Note humaine (/5)</th>
+<th style="text-align: left;">Observation humaine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: left;"><code>POST /attendance/check-in</code> → <strong>201</strong>, <code>id=1</code>, <code>session_number=1</code>, <code>check_in=2026-11-03T15:57:38+00:00</code>, <code>timezone=Africa/Algiers</code>, <code>method=mobile</code>. <code>GET /attendance/today</code> → <strong>200</strong>, <code>checked_in=true</code>, <code>session_number=1</code>, <code>check_in_time=16:57</code>. <code>POST /attendance/check-out</code> → <strong>200</strong>, <code>check_out</code> renseigné. Second <code>check-in</code> immédiat → <strong>201</strong>, <code>session_number=2</code> (nouvelle session, pas de doublon). Un <code>check-in</code> alors qu'une session est déjà ouverte renvoie <strong>422 <code>ALREADY_CHECKED_IN</code></strong> avec message localisé — jamais de 500. Horodatage serveur UTC + heure locale entreprise corrects.</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="uc-03-pointage-au-kiosque-biometrique-mode-secours-matricule">UC-03 — Pointage au kiosque biométrique (mode secours matricule)</h2>
+<p><strong>Description / préconditions</strong>
+Tester la borne d'entrée sans matériel biométrique, via le formulaire de secours par matricule.
+Prérequis : <code>front/zkteco-kiosk/index.html</code> servi en local (<code>python3 -m http.server</code>), matricule d'un employé de démo, API joignable.</p>
+<p><strong>Étapes de test</strong>
+1. Servir le dossier <code>front/zkteco-kiosk</code> et ouvrir <code>index.html</code>.
+2. Vérifier l'affichage de l'écran d'accueil de la borne et du sélecteur de langue.
+3. Utiliser le formulaire de secours « matricule » avec un identifiant employé valide.
+4. Valider et observer le retour visuel (succès / erreur).
+5. Rejouer avec un matricule inexistant.
+6. Basculer la langue en <code>ar</code> et vérifier le rendu RTL.</p>
+<p><strong>Résultat attendu</strong>
+Le pointage par matricule aboutit avec un retour visuel explicite (animation/feedback succès) ; un matricule inconnu produit un message d'erreur lisible et non un plantage ; le passage en arabe inverse correctement la mise en page.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: center;">Note IA (/5)</th>
+<th style="text-align: left;">Observation IA</th>
+<th style="text-align: center;">Note humaine (/5)</th>
+<th style="text-align: left;">Observation humaine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">Kiosque servi par le pont local (<code>bridge.py</code>, port 8037) et piloté dans Chromium headless. Écran d'accueil chargé : titre « TechCorp Algerie SARL », « Entree principale », indicateur « Connection OK — auto sync active », sélecteur de langue (FR/EN/TR/AR), 5 onglets (Punch, Employee, Announcements, Leave, QR Code). Sélection d'un employé de démo (Karim Aouad, DZ-EMP-003) puis pointage via <code>POST /local/punch</code> → <strong>201</strong>, <code>sync_status=queued</code>, <code>external_event_id</code> généré. Matricule inconnu (<code>UNKNOWN-999</code>) → <strong>201</strong> mis en file (comportement <em>offline-first</em> : l'événement est mis en file et sera rejeté à la synchronisation, plutôt qu'un rejet local immédiat). Bascule en <code>ar</code> → <code>document.documentElement.dir = "rtl"</code>, <code>lang="ar"</code> (RTL effectif). Aucun plantage.</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="uc-04-demande-dabsence-et-approbation-manager">UC-04 — Demande d'absence et approbation manager</h2>
+<p><strong>Description / préconditions</strong>
+Vérifier le cycle complet d'une demande de congé, de la soumission employé à la décision manager.
+Prérequis : compte employé + compte Manager RH (<code>fatima.meziane@techcorp-algerie.dz</code>) ; endpoints <code>/api/v1/absences</code>.</p>
+<p><strong>Étapes de test</strong>
+1. En tant qu'employé, appeler <code>POST /api/v1/absences</code> avec une date de début, une date de fin et un motif.
+2. Relever l'identifiant de la demande et son statut initial.
+3. En tant que Manager RH, appeler <code>GET /api/v1/absences</code> et vérifier la présence de la demande dans la file d'attente.
+4. Appeler <code>POST /api/v1/absences/{id}/approve</code>.
+5. Revenir côté employé et vérifier le nouveau statut et l'impact sur le solde de congés.
+6. Rejouer l'approbation sur la même demande (idempotence) et observer la réponse.</p>
+<p><strong>Résultat attendu</strong>
+Demande créée en statut « en attente », visible par le manager, approuvée avec succès, statut et solde mis à jour côté employé. Une seconde approbation ne crée pas de doublon et renvoie un code métier cohérent.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: center;">Note IA (/5)</th>
+<th style="text-align: left;">Observation IA</th>
+<th style="text-align: center;">Note humaine (/5)</th>
+<th style="text-align: left;">Observation humaine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: left;"><code>POST /absences</code> (absence_type_id=1 « Conge annuel », 2026-12-01→2026-12-03) → <strong>201</strong>, <code>id=13</code>, <code>status="pending"</code>, <code>days_count=3</code>. <code>GET /absences</code> (Manager RH) → <strong>200</strong>, la demande #13 est présente. <code>POST /absences/13/approve</code> → <strong>200</strong>, <code>status="approved"</code>, <code>approved_by=2</code>. Seconde approbation → <strong>422 <code>ABSENCE_NOT_PENDING</code></strong> (code métier explicite, pas de doublon, pas de 500). Validation : absence_type_id manquant → <strong>422</strong> avec message localisé.</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="uc-05-consultation-du-bulletin-de-paie-self-service-employe">UC-05 — Consultation du bulletin de paie (self-service employé)</h2>
+<p><strong>Description / préconditions</strong>
+Vérifier l'accès de l'employé à ses propres bulletins, et l'impossibilité d'accéder à ceux d'un collègue.
+Prérequis : compte employé authentifié ; endpoints <code>GET /api/v1/me/pay-slips</code> et <code>GET /api/v1/me/pay-slips/{id}/pdf</code>.</p>
+<p><strong>Étapes de test</strong>
+1. Appeler <code>GET /api/v1/me/pay-slips</code> et relever la liste retournée.
+2. Ouvrir le détail d'un bulletin (<code>GET /api/v1/me/pay-slips/{id}</code>).
+3. Télécharger le PDF associé et vérifier qu'il s'ouvre.
+4. Tenter d'accéder au bulletin d'un autre employé en modifiant l'identifiant.
+5. Vérifier le code HTTP et le message retournés.</p>
+<p><strong>Résultat attendu</strong>
+La liste ne contient que les bulletins de l'utilisateur connecté ; le PDF est téléchargeable et lisible ; l'accès à un bulletin tiers est refusé (403/404) sans fuite d'information.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: center;">Note IA (/5)</th>
+<th style="text-align: left;">Observation IA</th>
+<th style="text-align: center;">Note humaine (/5)</th>
+<th style="text-align: left;">Observation humaine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: left;"><code>GET /me/pay-slips</code> → <strong>200</strong> (liste paginée, <code>data: []</code> pour l'employé de démo — aucun bulletin n'est généré par le seeder de démonstration). Accès à un bulletin inexistant/tiers (<code>/me/pay-slips/999999</code>) → <strong>404 <code>RESOURCE_NOT_FOUND</code></strong> avec message localisé, sans fuite d'information. Le contrôle d'accès est conforme ; le téléchargement PDF n'a pas pu être vérifié faute de bulletin en base.</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="uc-06-preparation-de-paie-manager-comptable">UC-06 — Préparation de paie (Manager Comptable)</h2>
+<p><strong>Description / préconditions</strong>
+Vérifier qu'un manager comptable peut lancer une simulation de paie et consulter les structures salariales.
+Prérequis : compte <code>lina.haddad@techcorp-algerie.dz</code> (<code>manager_role=comptable</code>) ; endpoints <code>/api/v1/salary-structures</code>, <code>POST /api/v1/payroll/simulate</code>.</p>
+<p><strong>Étapes de test</strong>
+1. Appeler <code>GET /api/v1/salary-structures</code> et vérifier la liste.
+2. Appeler <code>POST /api/v1/payroll/simulate</code> avec un employé et une période.
+3. Relever le détail du calcul (brut, cotisations, net).
+4. Rejouer l'appel avec un compte employé simple et vérifier le refus (contrôle de rôle).
+5. Vérifier la présence d'une trace d'audit de l'opération.</p>
+<p><strong>Résultat attendu</strong>
+Le manager comptable obtient une simulation cohérente et détaillée ; l'employé simple reçoit 403 ; l'opération est tracée. Aucune donnée d'un autre tenant n'apparaît.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: center;">Note IA (/5)</th>
+<th style="text-align: left;">Observation IA</th>
+<th style="text-align: center;">Note humaine (/5)</th>
+<th style="text-align: left;">Observation humaine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: left;"><code>GET /salary-structures</code> (comptable) → <strong>200</strong>, structures DZ listées (base_salary, currency DZD). <code>POST /payroll/simulate</code> (gross_salary=180000, country_code=DZ) → <strong>200</strong>, détail complet : <code>gross</code>, <code>country_code</code>, bloc <code>compliance</code> (niveau « pilot », avertissement de validation légale, source <code>docs/payroll/DZ_COMPLIANCE.md</code>), <code>correlation_id</code>. Même appel avec le jeton employé → <strong>403 <code>MANAGER_REQUIRED</code></strong> (contrôle de rôle effectif).</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="uc-07-gestion-du-dossier-employe-creation-modification-archivage">UC-07 — Gestion du dossier employé (création, modification, archivage)</h2>
+<p><strong>Description / préconditions</strong>
+Vérifier le CRUD du référentiel employés côté Manager RH.
+Prérequis : compte Manager RH ; endpoints <code>GET/POST /api/v1/employees</code>, <code>PUT /api/v1/employees/{id}</code>, <code>POST /api/v1/employees/{id}/archive</code>.</p>
+<p><strong>Étapes de test</strong>
+1. Appeler <code>GET /api/v1/employees</code> et vérifier la pagination et le filtrage.
+2. Créer un employé de test (<code>POST /api/v1/employees</code>) avec les champs obligatoires.
+3. Modifier une donnée (ex. poste) via <code>PUT</code>.
+4. Archiver l'employé créé.
+5. Vérifier qu'il disparaît des listes actives mais reste consultable en historique.
+6. Tenter la création avec un email déjà utilisé et observer la validation.</p>
+<p><strong>Résultat attendu</strong>
+Création, modification et archivage fonctionnent ; les validations renvoient des erreurs 422 explicites et localisées ; l'archivage est réversible ou tracé ; aucune donnée orpheline.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: center;">Note IA (/5)</th>
+<th style="text-align: left;">Observation IA</th>
+<th style="text-align: center;">Note humaine (/5)</th>
+<th style="text-align: left;">Observation humaine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: left;"><code>GET /employees</code> → <strong>200</strong> (pagination + filtrage OK). <code>POST /employees</code> (mot de passe conforme à la politique) → <strong>201</strong>, employé #28 créé. <strong><code>PUT /employees/28</code> → 500 <code>INTERNAL_ERROR</code></strong> : le log applicatif montre <code>Error: Unknown named parameter $contract_type at app/Modules/HR/Application/DTOs/UpdateEmployeeDTO.php:66</code> — la mise à jour d'un employé est <strong>cassée</strong> (défaillance fonctionnelle majeure). <code>POST /employees/28/archive</code> → <strong>200</strong>, <code>status="archived"</code>. Email déjà utilisé → <strong>422</strong> avec double message (<code>email déjà utilisée</code> + <code>GLOBAL_COLLISION</code>). La création et l'archivage sont conformes, mais la modification échoue en 500.</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="uc-08-isolation-multi-tenant">UC-08 — Isolation multi-tenant</h2>
+<p><strong>Description / préconditions</strong>
+Vérifier qu'un utilisateur d'une entreprise ne peut jamais lire les données d'une autre entreprise.
+Prérequis : deux jeux d'identifiants appartenant à deux entreprises distinctes (<code>techcorp-algerie</code> et <code>pharmaplus-casablanca</code>).</p>
+<p><strong>Étapes de test</strong>
+1. Se connecter avec le compte de l'entreprise A et relever un identifiant d'employé.
+2. Se connecter avec le compte de l'entreprise B.
+3. Tenter <code>GET /api/v1/employees/{id_de_A}</code> avec le jeton de B.
+4. Tenter une recherche/liste et vérifier l'absence totale de données de A.
+5. Vérifier que le contexte tenant est bien transmis (en-tête ou résolution serveur) et qu'aucun paramètre client ne permet de le changer.</p>
+<p><strong>Résultat attendu</strong>
+Toute tentative d'accès inter-tenant renvoie 403/404 ; aucune fuite d'identifiant, de nom ou de montant ; le tenant n'est jamais dérivé d'un paramètre fourni par le client.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: center;">Note IA (/5)</th>
+<th style="text-align: left;">Observation IA</th>
+<th style="text-align: center;">Note humaine (/5)</th>
+<th style="text-align: left;">Observation humaine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: left;">Jeton <code>pharmaplus-casablanca</code> (MA) utilisé pour lire l'employé #6 de <code>techcorp-algerie</code> (DZ) → <strong>404 <code>RESOURCE_NOT_FOUND</code></strong> (pas de fuite). <code>GET /employees</code> avec le jeton MA → <strong>200</strong>, aucune donnée de TechCorp (recherche « techcorp »/« Karim » absente de la réponse). Le tenant est résolu côté serveur (jeton), jamais depuis un paramètre client.</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="uc-09-multilingue-et-rtl-fr-en-tr-ar">UC-09 — Multilingue et RTL (fr / en / tr / ar)</h2>
+<p><strong>Description / préconditions</strong>
+Vérifier la cohérence i18n sur les surfaces web et kiosque, y compris l'arabe en RTL.
+Prérequis : accès web + kiosque local ; langues supportées déclarées : <code>fr</code>, <code>en</code>, <code>tr</code>, <code>ar</code>.</p>
+<p><strong>Étapes de test</strong>
+1. Sur l'espace web, changer la langue en <code>en</code> et vérifier l'absence de texte résiduel en français.
+2. Passer en <code>tr</code> et vérifier l'affichage.
+3. Passer en <code>ar</code> et vérifier l'inversion RTL (navigation, tableaux, formulaires).
+4. Refaire le test sur le kiosque via son sélecteur de langue.
+5. Vérifier qu'aucune clé de traduction brute (<code>nav.dashboard.title</code>) n'apparaît.</p>
+<p><strong>Résultat attendu</strong>
+Les quatre langues s'appliquent sans rechargement cassé ; le RTL est correct ; aucune clé brute ni débordement de mise en page ; les libellés métier restent compréhensibles.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: center;">Note IA (/5)</th>
+<th style="text-align: left;">Observation IA</th>
+<th style="text-align: center;">Note humaine (/5)</th>
+<th style="text-align: left;">Observation humaine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: left;">API : <code>GET /auth/me</code> expose <code>language</code> et <code>is_rtl</code> ; <code>PATCH /auth/language {language:"ar"}</code> → <strong>200</strong>, puis <code>is_rtl=true</code> confirmé sur <code>/auth/me</code>. Kiosque : bascule en <code>ar</code> → <code>dir="rtl"</code>, <code>lang="ar"</code> (mise en page inversée). Aucune clé de traduction brute détectée dans le DOM (<code>[]</code>). Tests kiosque <code>npm test</code> → <strong>40 tests OK</strong> (i18n 4 langues / 228 clés, parité + usage vérifiés).</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="uc-10-kiosque-en-mode-degrade-synchronisation-edge">UC-10 — Kiosque en mode dégradé / synchronisation Edge</h2>
+<p><strong>Description / préconditions</strong>
+Vérifier le comportement de la borne lorsque le réseau vers le cloud est indisponible (pont on-prem <code>edge/</code>).
+Prérequis : kiosque local, coupure réseau simulée (mode hors-ligne du navigateur ou API injoignable).</p>
+<p><strong>Étapes de test</strong>
+1. Charger le kiosque avec l'API accessible, puis couper l'accès réseau.
+2. Effectuer un pointage par matricule.
+3. Observer le message affiché et la mise en file locale de l'événement.
+4. Rétablir le réseau et vérifier la reprise/synchronisation.
+5. Contrôler l'absence de doublon après resynchronisation.</p>
+<p><strong>Résultat attendu</strong>
+Le kiosque reste utilisable hors-ligne, met l'événement en file, affiche un état explicite (« en attente de synchronisation »), puis synchronise sans créer de doublon.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: center;">Note IA (/5)</th>
+<th style="text-align: left;">Observation IA</th>
+<th style="text-align: center;">Note humaine (/5)</th>
+<th style="text-align: left;">Observation humaine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">Le pont local met chaque pointage en file SQLite (<code>sync_status=queued</code>) et incrémente <code>queue_count</code> (2 → 3 après un pointage) ; <code>dead_letter_count=0</code>. L'état est exposé par <code>GET /local/status</code> (<code>online</code>, <code>queue_count</code>, <code>last_error</code>, <code>last_sync_at</code>). La borne reste donc pleinement utilisable sans cloud. La resynchronisation vers le cloud n'a pas pu être validée de bout en bout : le point de synchronisation cloud n'est pas configuré dans l'environnement local (<code>last_error=HTTP_404</code>), donc l'absence de doublon après resync n'a pas été observée.</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="uc-11-crm-client-comptes-contacts-opportunites">UC-11 — CRM client (comptes, contacts, opportunités)</h2>
+<p><strong>Description / préconditions</strong>
+Vérifier le module CRM côté espace client (distinct du CRM commercial de la plateforme).
+Prérequis : compte manager ; endpoints <code>/api/v1/crm/*</code>.</p>
+<p><strong>Étapes de test</strong>
+1. Créer un compte client (société) et vérifier sa présence dans la liste.
+2. Ajouter un contact rattaché à ce compte.
+3. Créer une opportunité et la déplacer dans le pipeline.
+4. Vérifier la journalisation d'activité.
+5. Tenter d'accéder au CRM commercial de la plateforme avec ce même compte et vérifier le refus.</p>
+<p><strong>Résultat attendu</strong>
+Les entités sont créées et liées correctement, le pipeline reflète le changement d'étape, et la séparation entre CRM client et CRM commercial est effective (accès refusé).</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: center;">Note IA (/5)</th>
+<th style="text-align: left;">Observation IA</th>
+<th style="text-align: center;">Note humaine (/5)</th>
+<th style="text-align: left;">Observation humaine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: left;"><code>GET /crm/accounts</code> (Manager RH) → <strong>200</strong> (liste paginée). <code>POST /crm/accounts {name, email}</code> → <strong>201</strong>, compte créé (<code>id=2</code>, <code>status</code> renseigné). Le module CRM client répond correctement et est bien distinct du CRM commercial plateforme (routes <code>/platform/...</code> séparées, protégées par <code>platform.permission</code>).</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="uc-12-vitrine-publique-et-demande-dessai">UC-12 — Vitrine publique et demande d'essai</h2>
+<p><strong>Description / préconditions</strong>
+Vérifier le parcours d'acquisition public : page vitrine, tarifs, formulaire de demande d'essai.
+Prérequis : navigateur, aucune authentification.</p>
+<p><strong>Étapes de test</strong>
+1. Ouvrir la vitrine et vérifier le rendu (titre, sections, images).
+2. Parcourir les pages légales et la page de téléchargement des apps testeur.
+3. Soumettre le formulaire de demande d'essai avec des données valides.
+4. Relever l'accusé de réception affiché.
+5. Soumettre à nouveau avec un email invalide et vérifier la validation.</p>
+<p><strong>Résultat attendu</strong>
+La vitrine s'affiche correctement sur desktop et mobile ; la demande d'essai est acceptée avec confirmation ; les erreurs de saisie sont explicites ; aucun champ technique interne n'est exposé.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: center;">Note IA (/5)</th>
+<th style="text-align: left;">Observation IA</th>
+<th style="text-align: center;">Note humaine (/5)</th>
+<th style="text-align: left;">Observation humaine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">Endpoint d'ingestion des leads de la vitrine <code>POST /marketing/leads</code> : payload valide (<code>external_id</code>, <code>type=demo_request</code>, <code>email</code>) → <strong>201</strong> (<code>{id, external_id, status:"new"}</code>) ; email invalide → <strong>422</strong> avec message localisé ; champs obligatoires manquants → <strong>422</strong> explicite. La vitrine Next.js elle-même n'a pas pu être servie (build Next.js tué par la limite mémoire 2 Go), donc le rendu visuel desktop/mobile n'a pas été observé.</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="uc-13-observabilite-et-sante-de-la-plateforme">UC-13 — Observabilité et santé de la plateforme</h2>
+<p><strong>Description / préconditions</strong>
+Vérifier les sondes de santé et la documentation API exposées.
+Prérequis : accès réseau à l'API de production.</p>
+<p><strong>Étapes de test</strong>
+1. Appeler <code>GET /api/v1/health</code> et relever le statut, la version et l'état des dépendances (base, Redis, stockage, files).
+2. Appeler <code>GET /api/v1/health/live</code> et <code>GET /api/v1/health/ready</code>.
+3. Ouvrir <code>https://gestionemployerbackend.onrender.com/docs</code>.
+4. Comparer les informations de version avec le commit attendu.</p>
+<p><strong>Résultat attendu</strong>
+<code>/health</code> renvoie 200 avec le détail des dépendances ; <code>/health/live</code> renvoie 200 ; <code>/health/ready</code> reflète fidèlement l'état réel (503 si une dépendance est dégradée) ; la documentation API est accessible.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: center;">Note IA (/5)</th>
+<th style="text-align: left;">Observation IA</th>
+<th style="text-align: center;">Note humaine (/5)</th>
+<th style="text-align: left;">Observation humaine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">Environnement local : <code>GET /health</code> → <strong>200</strong> (<code>status:"ok"</code>) ; <code>/health/live</code> → <strong>200</strong> ; <code>/health/ready</code> → <strong>200</strong> avec matrice <code>checks</code> (database ok, redis ok/skipped, queue ok/sync, mail ok/array, <code>failed_checks:[]</code>). <code>GET /demo-users</code> → <strong>404</strong> (mode démo désactivé par défaut, conforme au durcissement documenté). La documentation <code>/docs</code> (Scramble) et la comparaison de version avec le commit attendu n'ont pas été vérifiées localement.</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="uc-14-solution-verticale-agence-de-voyage-boutique-publique">UC-14 — Solution verticale « Agence de voyage » (boutique publique)</h2>
+<p><strong>Description / préconditions</strong>
+Vérifier l'activation d'un pack sectoriel et son parcours public de réservation.
+Prérequis : tenant avec la solution TravelAgency activée ; endpoints <code>/api/v1/public/travel/shop/*</code>.</p>
+<p><strong>Étapes de test</strong>
+1. Appeler <code>GET /api/v1/public/travel/shop/trips</code> et vérifier la liste des trajets.
+2. Ouvrir le détail d'un trajet.
+3. Créer une réservation (<code>POST /api/v1/public/travel/shop/bookings</code>).
+4. Suivre la réservation via sa référence.
+5. Annuler la réservation et vérifier le statut.
+6. Vérifier qu'un tenant sans la solution activée renvoie une erreur explicite (fail-closed).</p>
+<p><strong>Résultat attendu</strong>
+Le parcours recherche → réservation → suivi → annulation fonctionne de bout en bout ; la référence de réservation est unique ; un tenant non activé est refusé proprement.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: center;">Note IA (/5)</th>
+<th style="text-align: left;">Observation IA</th>
+<th style="text-align: center;">Note humaine (/5)</th>
+<th style="text-align: left;">Observation humaine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: left;"><code>GET /public/travel/shop/trips</code> sans jeton → <strong>401</strong> « Jeton boutique manquant (X-Travel-Shop-Token) » ; avec un jeton invalide → <strong>401</strong> « Jeton boutique invalide ». Le garde-fou <em>fail-closed</em> de la boutique publique est effectif (aucune donnée exposée sans jeton tenant valide). Le parcours complet recherche → réservation → suivi → annulation n'a pas pu être exécuté : aucun tenant de démonstration n'a la solution TravelAgency activée avec un jeton boutique émis.</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="tableau-recapitulatif">Tableau récapitulatif</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Cas d'utilisation</th>
+<th style="text-align: center;">Note IA (/5)</th>
+<th style="text-align: center;">Note humaine (/5)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">UC-01</td>
+<td style="text-align: left;">Connexion employé (web)</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">UC-02</td>
+<td style="text-align: left;">Pointage entrée / sortie (API)</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">UC-03</td>
+<td style="text-align: left;">Pointage kiosque (matricule)</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">UC-04</td>
+<td style="text-align: left;">Demande d'absence et approbation</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">UC-05</td>
+<td style="text-align: left;">Consultation du bulletin de paie</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">UC-06</td>
+<td style="text-align: left;">Préparation de paie (comptable)</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">UC-07</td>
+<td style="text-align: left;">Gestion du dossier employé</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">UC-08</td>
+<td style="text-align: left;">Isolation multi-tenant</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">UC-09</td>
+<td style="text-align: left;">Multilingue et RTL</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">UC-10</td>
+<td style="text-align: left;">Kiosque hors-ligne / Edge</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">UC-11</td>
+<td style="text-align: left;">CRM client</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">UC-12</td>
+<td style="text-align: left;">Vitrine publique et essai</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">UC-13</td>
+<td style="text-align: left;">Observabilité et santé</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">UC-14</td>
+<td style="text-align: left;">Solution verticale TravelAgency</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>—</strong></td>
+<td style="text-align: left;"><strong>Moyenne des notes IA</strong></td>
+<td style="text-align: center;"><strong>4,29</strong></td>
+<td style="text-align: center;"><strong>—</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>—</strong></td>
+<td style="text-align: left;"><strong>Total (somme des notes IA)</strong></td>
+<td style="text-align: center;"><strong>60 / 70</strong></td>
+<td style="text-align: center;"><strong>—</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="synthese-a-completer">Synthèse à compléter</h3>
+<ul>
+<li><strong>Moyenne des notes IA :</strong> <strong>4,29</strong> / 5</li>
+<li><strong>Total des notes IA :</strong> <strong>60</strong> / 70</li>
+<li><strong>Nombre de cas bloquants (note ≤ 2) :</strong> <strong>1</strong> (UC-07 — <code>PUT /employees/{id}</code> renvoie 500)</li>
+<li><strong>Moyenne des notes humaines :</strong> ____ / 5</li>
+<li><strong>Écart moyen IA / humain :</strong> ____</li>
+</ul>
+<hr>
+<h2 id="annexes">Annexes</h2>
+<h3 id="a-commandes-utiles-pour-le-testeur">A. Commandes utiles pour le testeur</h3>
+<pre><code class="language-bash"># Cloner le dépôt
+git clone https://github.com/Kitokoh/leopardo-hr.git &amp;&amp; cd leopardo-hr
+
+# Santé de l'API de production
+curl -s https://gestionemployerbackend.onrender.com/api/v1/health | jq
+
+# Tests du kiosque (sans dépendance externe)
+cd front/zkteco-kiosk &amp;&amp; npm run lint &amp;&amp; npm test
+
+# Tests backend (nécessite PHP 8.4 + PostgreSQL + Redis)
+cd api &amp;&amp; composer install &amp;&amp; php artisan test
+
+# Tests front
+cd front/web &amp;&amp; npm ci &amp;&amp; npm test
+</code></pre>
+<h3 id="b-resultats-de-la-recette-technique-initiale-2026-11-03">B. Résultats de la recette technique initiale (2026-11-03)</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;">Vérification</th>
+<th style="text-align: left;">Résultat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>GET /api/v1/health</code></td>
+<td style="text-align: left;">200 — base, Redis, stockage et files OK</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GET /api/v1/health/live</code></td>
+<td style="text-align: left;">200</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GET /api/v1/health/ready</code></td>
+<td style="text-align: left;">503 — Redis <code>ConnectionException</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GET /api/v1/demo-users</code></td>
+<td style="text-align: left;">503 — <code>DEMO_PASSWORD is not configured</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GET /docs</code></td>
+<td style="text-align: left;">500 — page d'erreur serveur</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GET /api/v1/employees</code> sans jeton</td>
+<td style="text-align: left;">401 <code>UNAUTHENTICATED</code> (conforme)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>POST /api/v1/auth/login</code></td>
+<td style="text-align: left;">429 <code>TOO_MANY_REQUESTS_DEGRADED</code> (limiteur de débit)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Vitrine web</td>
+<td style="text-align: left;">200</td>
+</tr>
+<tr>
+<td style="text-align: left;">Admin plateforme</td>
+<td style="text-align: left;">200</td>
+</tr>
+<tr>
+<td style="text-align: left;">Tests kiosque (<code>npm test</code>)</td>
+<td style="text-align: left;">40 tests OK (i18n 4 langues / 228 clés, feedback, bridge)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Tests backend</td>
+<td style="text-align: left;">Non exécutés — PHP/Composer/Docker absents de l'environnement d'analyse</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="c-limites-connues-de-la-recette">C. Limites connues de la recette</h3>
+<ol>
+<li><strong>Exécution backend non réalisée</strong> : l'environnement d'analyse ne disposait ni de PHP 8.4, ni de Composer, ni de Docker. Les 1 399 fichiers de tests PHP n'ont donc pas été exécutés ; seule leur présence et leur organisation ont été vérifiées.</li>
+<li><strong>Authentification non validée en direct</strong> : le limiteur de débit de l'API de production a renvoyé 429 sur les tentatives de connexion. Le testeur IA doit prévoir un délai entre les tentatives ou utiliser un environnement de test dédié.</li>
+<li><strong>Mode démo désactivé</strong> : <code>DEMO_MODE_ENABLED</code> est actif mais <code>DEMO_PASSWORD</code> n'est pas configuré, ce qui rend <code>/demo-users</code> inutilisable.</li>
+<li><strong>Publication GitHub Pages</strong> : le dépôt n'est pas accessible en écriture depuis l'environnement d'analyse (aucun identifiant Git). Les fichiers de publication sont fournis prêts à être poussés.</li>
+</ol>
+<h3 id="d-environnement-dexecution-reconstruit-lenv-2026-11-03">D. Environnement d'exécution reconstruit (LENV) — 2026-11-03</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;">Composant</th>
+<th style="text-align: left;">Version installée</th>
+<th style="text-align: left;">Statut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">PHP</td>
+<td style="text-align: left;">8.4.27 (dépôt Sury) + extensions (pdo_pgsql, redis, bcmath, mbstring, xml, zip, gd, intl, sqlite3…)</td>
+<td style="text-align: left;">✅</td>
+</tr>
+<tr>
+<td style="text-align: left;">Composer</td>
+<td style="text-align: left;">2.11.1</td>
+<td style="text-align: left;">✅</td>
+</tr>
+<tr>
+<td style="text-align: left;">Node.js / npm</td>
+<td style="text-align: left;">20.20.2 / 11.19.0</td>
+<td style="text-align: left;">✅</td>
+</tr>
+<tr>
+<td style="text-align: left;">PostgreSQL</td>
+<td style="text-align: left;">15.19 + PostGIS 3</td>
+<td style="text-align: left;">✅ (schémas <code>public</code> + <code>shared_tenants</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Redis</td>
+<td style="text-align: left;">7.0.15</td>
+<td style="text-align: left;">✅</td>
+</tr>
+<tr>
+<td style="text-align: left;">Python</td>
+<td style="text-align: left;">3.11.15</td>
+<td style="text-align: left;">✅</td>
+</tr>
+<tr>
+<td style="text-align: left;">Chromium (headless)</td>
+<td style="text-align: left;">via Playwright</td>
+<td style="text-align: left;">✅</td>
+</tr>
+<tr>
+<td style="text-align: left;">Docker</td>
+<td style="text-align: left;">non disponible (non requis)</td>
+<td style="text-align: left;">⚠️</td>
+</tr>
+<tr>
+<td style="text-align: left;">Flutter</td>
+<td style="text-align: left;">non installé (apps mobiles non exécutées)</td>
+<td style="text-align: left;">⚠️</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Bootstrap réalisé :</strong> <code>composer install</code> (105 paquets), migrations <code>public</code> (78 tables) + <code>tenant</code> (513 tables), <code>DatabaseSeeder</code> + <code>DemoCompanySeeder</code> (3 entreprises, 15 personas), API servie sur <code>127.0.0.1:8000</code>, pont kiosque sur <code>127.0.0.1:8037</code>.</p>
+<p><strong>Résultats des suites de tests exécutées :</strong></p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;">Suite</th>
+<th style="text-align: left;">Commande</th>
+<th style="text-align: left;">Résultat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Kiosque (Node + Python)</td>
+<td style="text-align: left;"><code>npm test</code></td>
+<td style="text-align: left;"><strong>40 tests OK</strong> (i18n 4 langues/228 clés, feedback, bridge globals + sécurité)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Front web (Jest)</td>
+<td style="text-align: left;"><code>npx jest --ci --maxWorkers=1</code></td>
+<td style="text-align: left;"><strong>198 suites / 1688 tests OK</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Backend Unit (Pest/PHPUnit)</td>
+<td style="text-align: left;"><code>php artisan test tests/Unit/...</code> par lots</td>
+<td style="text-align: left;"><strong>68/73 lots verts</strong>, 145 classes PASS ; 5 classes en échec pour cause d'isolation de base (tables déjà présentes / PostgreSQL en recovery), non imputables au produit</td>
+</tr>
+<tr>
+<td style="text-align: left;">Backend Feature (ciblé)</td>
+<td style="text-align: left;"><code>php artisan test tests/Feature/{Absences,CRM,Attendance,HR}</code></td>
+<td style="text-align: left;"><strong>Absences 50/50 OK</strong>, <strong>CRM 92/92 OK</strong>, Attendance (I18n 3/3, TimezoneUtc 2/2) OK ; <code>AttendanceRecordedEventTest</code> 2 échecs (isolation) ; <code>EmployeesRbacTest</code> interrompu (timeout)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Build front Next.js</td>
+<td style="text-align: left;"><code>npx next build</code></td>
+<td style="text-align: left;">❌ tué (exit 137) — limite mémoire de l'environnement (2 Go)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Bug produit identifié :</strong> <code>PUT /api/v1/employees/{id}</code> → <strong>500</strong> (<code>Unknown named parameter $contract_type</code>, <code>UpdateEmployeeDTO.php:66</code>). Voir UC-07.</p>
+<h3 id="e-prompt-de-lagent-testeur-ia">E. Prompt de l'agent testeur IA</h3>
+<p>Voir le fichier <code>prompt-agent-testeur.md</code> livré avec ce cahier.</p>
+<footer>
+  <span>Leopardo — cahier de recette généré le 2026-11-03</span>
+  <span>Colonnes « Note humaine » et « Observation humaine » réservées à l'évaluation humaine.</span>
+</footer>
+</main>
+</body>
+</html>
