@@ -204,7 +204,8 @@ trait RefreshTenantDatabase
         // tenant fixture and make a healthy canonical database look missing;
         // that would remigrate before every test and exhaust Coverage timeout.
         $row = DB::selectOne(
-            "SELECT to_regclass('public.companies') AS companies,\n                    to_regclass('shared_tenants.export_history') AS export_history,\n                    to_regclass('shared_tenants.onboarding_steps') AS onboarding_steps,\n                    to_regclass('shared_tenants.social_contributions') AS social_contributions,\n                    to_regclass('shared_tenants.employees') AS employees,\n                    to_regclass('shared_tenants.app_notifications') AS app_notifications,\n                    to_regclass('shared_tenants.migrations') AS migrations_repo,\n                    to_regclass('shared_tenants.training_enrollments') AS training_enrollments"
+            "SELECT to_regclass('public.companies') AS companies,\n                    to_regclass('shared_tenants.export_history') AS export_history,\n                    to_regclass('shared_tenants.onboarding_steps') AS onboarding_steps,\n                    to_regclass('shared_tenants.social_contributions') AS social_contributions,\n                    to_regclass('shared_tenants.employees') AS employees,\n                    to_regclass('shared_tenants.app_notifications') AS app_notifications,\n                    to_regclass('shared_tenants.migrations') AS migrations_repo,\n                    to_regclass('shared_tenants.training_enrollments') AS training_enrollments,
+                    to_regclass('shared_tenants.biometric_enrollments') AS biometric_enrollments"
         );
 
         return $row !== null
@@ -234,7 +235,16 @@ trait RefreshTenantDatabase
             // exister (migrations jouées) alors que la table a disparu
             // (interruption entre DROP et re-migration) ; `training_enrollments`
             // est la table du crash « alter table ... add constraint ».
-            && $row->training_enrollments !== null;
+            && $row->training_enrollments !== null
+            // Issue #9115 : `biometric_enrollments` (migration tenant #6764) est
+            // la table du crash « relation ... does not exist » observé sur
+            // `KioskEnrollmentController::resolveEnrollment()`. La garde avait
+            // été étendue deux fois (#6754 `training_enrollments`, #5201
+            // `employees`) mais jamais à cette table, ajoutée après. Sans elle,
+            // un worker qui enchaîne `CreatesMvpSchema` (fixture partielle) puis
+            // `RefreshTenantDatabase` saute la re-migration et le fichier entier
+            // meurt en 42P01 puis 25P02 — le job Backend ne rend aucun verdict.
+            && $row->biometric_enrollments !== null;
     }
 
     /**

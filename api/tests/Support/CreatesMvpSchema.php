@@ -4783,6 +4783,78 @@ trait CreatesMvpSchema
             });
         }
 
+        // BIO-003 (#6764) — gabarits biométriques tenant-scoped.
+        // Miroir EXACT de la migration tenant
+        // 2026_09_02_000200_6764_create_biometric_enrollments_table.
+        //
+        // Issue #9115 : cette table manquait à la fixture alors que la garde
+        // `canonicalSchemaReady()` (RefreshTenantDatabase) ne la comptait pas
+        // parmi ses sentinelles. Un worker qui enchaînait une classe
+        // `CreatesMvpSchema` puis une classe `RefreshTenantDatabase` déclarait
+        // la base « canonique prête » sur un schéma partiel → la re-migration
+        // était sautée → `KioskEnrollmentController::resolveEnrollment()`
+        // levait 42P01 `relation "biometric_enrollments" does not exist`, puis
+        // 25P02 en cascade sur tout le reste du fichier. Le job Backend ne
+        // rendait donc jamais de verdict (timeout 5 h).
+        if (! Schema::hasTable($this->moduleTable('biometric_enrollments'))) {
+            Schema::create($this->moduleTable('biometric_enrollments'), function (Blueprint $table): void {
+                $table->increments('id');
+                $table->uuid('company_id');
+                $table->unsignedInteger('employee_id');
+                $table->string('method', 20);
+                $table->string('status', 20)->default('pending');
+                $table->unsignedSmallInteger('version')->default(1);
+                $table->unsignedSmallInteger('template_key_version')->default(1);
+                $table->text('template');
+                $table->string('provider', 60)->nullable();
+                $table->string('correlation_id', 100)->nullable();
+                $table->string('enrolled_via', 20)->default('kiosk');
+                $table->unsignedInteger('created_by_employee_id')->nullable();
+                $table->unsignedInteger('activated_by_employee_id')->nullable();
+                $table->unsignedInteger('revoked_by_employee_id')->nullable();
+                $table->timestampTz('enrolled_at')->nullable();
+                $table->timestampTz('revoked_at')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'employee_id']);
+                $table->index(['company_id', 'status']);
+                $table->index(['employee_id', 'method', 'status']);
+            });
+
+            // Un seul enrôlement ACTIF par employé et méthode (BIO-002).
+            DB::statement(
+                'CREATE UNIQUE INDEX IF NOT EXISTS biometric_enrollments_one_active_per_employee_method '
+                ."ON biometric_enrollments (company_id, employee_id, method) WHERE status = 'active'"
+            );
+        }
+
+        // BIO-008 (#6773) — journal d'audit biométrique (aucun gabarit, aucun
+        // secret). Miroir de la migration tenant
+        // 2026_09_02_000203_6773_create_biometric_audit_logs_table.
+        if (! Schema::hasTable($this->moduleTable('biometric_audit_logs'))) {
+            Schema::create($this->moduleTable('biometric_audit_logs'), function (Blueprint $table): void {
+                $table->increments('id');
+                $table->uuid('company_id');
+                $table->unsignedInteger('employee_id')->nullable();
+                $table->unsignedInteger('kiosk_id')->nullable();
+                $table->unsignedInteger('site_id')->nullable();
+                $table->unsignedInteger('actor_employee_id')->nullable();
+                $table->string('event', 60);
+                $table->string('method', 20)->nullable();
+                $table->string('result_code', 60)->nullable();
+                $table->string('correlation_id', 100)->nullable();
+                $table->string('device_code_hash', 80)->nullable();
+                $table->json('context')->nullable();
+                $table->timestampTz('occurred_at')->useCurrent();
+                $table->timestamps();
+
+                $table->index(['company_id', 'event']);
+                $table->index(['company_id', 'employee_id', 'occurred_at']);
+                $table->index(['company_id', 'kiosk_id', 'occurred_at']);
+                $table->index(['company_id', 'correlation_id']);
+            });
+        }
+
     }
 
     private function createVerticalParityTables(): void
@@ -6041,6 +6113,11 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "personal_access_tokens"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_kiosks"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "biometric_enrollment_requests"'.$cascade);
+        // Issue #9115 — tables biométriques créées par les migrations tenant
+        // #6764 / #6773 : sans ces DROP, un rebuild de la fixture laisse les
+        // tables en place et le `CREATE TABLE` suivant échoue en 42P07.
+        DB::statement('DROP TABLE IF EXISTS "biometric_audit_logs"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "biometric_enrollments"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_correction_requests"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_period_closures"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "camera_access_logs"'.$cascade);
