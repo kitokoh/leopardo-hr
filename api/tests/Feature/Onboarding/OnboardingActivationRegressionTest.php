@@ -49,6 +49,7 @@ class OnboardingActivationRegressionTest extends TestCase
      * Crée une invitation ouverte pour un employé du tenant courant et
      * retourne [invitation, jeton en clair].
      *
+     * @param  array<string, mixed>  $employeeAttributes
      * @return array{0: UserInvitation, 1: string}
      */
     private function inviteEmployee(array $employeeAttributes = []): array
