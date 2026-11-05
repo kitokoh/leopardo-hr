@@ -27,20 +27,22 @@
       </div>
     </div>
 
-    <div v-if="loading" class="p-12 text-center text-sm text-slate-500 dark:text-slate-400">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600 mx-auto mb-4"></div>
-      {{ $t('time.loadingData', 'Chargement des données...') }}
+    <!-- Audit UX 2026-11 : états de chargement / erreur / vide homogènes et
+         réutilisables (squelette aux dimensions des lignes, reprise possible
+         sur erreur) au lieu d'un spinner nu et d'un texte rouge sans action. -->
+    <div v-if="loading" role="status" aria-busy="true">
+      <span class="sr-only">{{ $t('time.loadingData', 'Chargement des données...') }}</span>
+      <SkeletonRows :rows="6" />
     </div>
-    <div v-else-if="error" class="p-8 text-center text-sm text-red-600">{{ error }}</div>
-    <div v-else-if="filteredRows.length === 0" class="p-8 text-center text-sm text-gray-500">
-      {{ emptyMessage || $t('common.noResults', 'Aucun résultat trouvé.') }}
-    </div>
+    <ErrorState v-else-if="error" :message="error" @retry="$emit('retry')" />
+    <EmptyState v-else-if="filteredRows.length === 0" :description="emptyMessage || $t('common.noResults', 'Aucun résultat trouvé.')" />
     <div v-else class="overflow-x-auto">
       <table class="min-w-full divide-y divide-slate-200/50 dark:divide-slate-800/50" role="table">
         <caption v-if="caption" class="sr-only">{{ caption }}</caption>
         <thead class="bg-slate-50/50 dark:bg-slate-800/50">
           <tr>
             <th
+              scope="col"
               v-for="col in columns"
               :key="col.key"
               class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
@@ -100,6 +102,9 @@
 import { ref, computed, watch } from 'vue'
 import { MagnifyingGlassIcon, ArrowDownTrayIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/24/outline'
 import Pagination from './Pagination.vue'
+import EmptyState from './EmptyState.vue'
+import ErrorState from './ErrorState.vue'
+import SkeletonRows from './SkeletonRows.vue'
 
 const props = defineProps({
   columns: { type: Array, required: true },
@@ -118,7 +123,7 @@ const props = defineProps({
   caption: { type: String, default: '' }
 })
 
-defineEmits(['export'])
+defineEmits(['export', 'retry'])
 
 const searchQuery = ref('')
 const sortKey = ref(props.defaultSort)

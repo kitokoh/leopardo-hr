@@ -269,13 +269,17 @@
 
           <!-- Simulation Article Vitrine -->
           <div class="space-y-4 max-h-[750px] overflow-y-auto pr-2">
-            <div class="inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+            <div class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
               {{ currentArticle.category || 'Catégorie' }}
             </div>
 
-            <h1 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight">
+            <!-- Audit UX 2026-11 : la page portait DEUX <h1> (titre de vue +
+                 titre d'article prévisualisé). Le titre de l'article est un
+                 contenu prévisualisé, pas le titre de la page : il devient un
+                 <h2> pour garder une hiérarchie unique. -->
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight">
               {{ currentArticle.title || "Titre de l’article" }}
-            </h1>
+            </h2>
 
             <div class="flex items-center gap-3 text-xs text-slate-400">
               <span>Par {{ currentArticle.author.name || 'Auteur' }}</span>
