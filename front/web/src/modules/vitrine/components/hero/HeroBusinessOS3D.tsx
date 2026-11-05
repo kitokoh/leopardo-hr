@@ -144,7 +144,7 @@ const CORE_COLOR = new Color('#0d9488');
 // recevoir le pointeur et le focus clavier. `pointer-events-none` est retiré
 // et un anneau `focus-visible` rend le focus visible sur le fond nuit.
 const LABEL_CLASS =
-  'absolute left-0 top-0 z-10 flex items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-slate-950/55 px-2 py-0.5 text-[10px] font-semibold text-slate-200/90 shadow-lg shadow-slate-950/40 backdrop-blur-md transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400';
+  'absolute left-0 top-0 z-10 flex items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-slate-950/55 px-2 py-0.5 text-xs font-semibold text-slate-200/90 shadow-lg shadow-slate-950/40 backdrop-blur-md transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400';
 const LABEL_DOT_CLASS = 'h-1.5 w-1.5 rounded-full';
 
 type ModuleNode = {

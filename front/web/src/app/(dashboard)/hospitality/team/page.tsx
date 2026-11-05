@@ -275,13 +275,13 @@ export default function HospitalityTeamPage() {
       ) : null}
 
       {assignments.length > 0 ? (
-        <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
+        <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-white">
           <table className="w-full text-sm">
             <thead className="bg-neutral-50 text-left text-neutral-600">
               <tr>
-                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.team.col.employee')}</th>
-                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.team.col.role')}</th>
-                <th className="px-4 py-2" />
+                <th scope="col" className="px-4 py-2 font-medium">{t(locale, 'hospitality.team.col.employee')}</th>
+                <th scope="col" className="px-4 py-2 font-medium">{t(locale, 'hospitality.team.col.role')}</th>
+                <th scope="col" className="px-4 py-2" />
               </tr>
             </thead>
             <tbody>

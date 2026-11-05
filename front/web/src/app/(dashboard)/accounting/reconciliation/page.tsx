@@ -231,22 +231,22 @@ export default function ReconciliationPage() {
             [t(locale, 'bankRecon.gap'), fmt(stats.gap)],
           ].map(([label, value]) => (
             <div key={String(label)} className="rounded-2xl border border-app-border bg-white p-4 shadow-sm">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{label}</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{label}</p>
               <p className="mt-1 font-mono text-lg font-black text-slate-900">{value}</p>
             </div>
           ))}
           <div className="rounded-2xl border border-app-border bg-white p-4 shadow-sm">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{t(locale, 'bankRecon.matchedLines')} / {t(locale, 'bankRecon.pendingLines')}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{t(locale, 'bankRecon.matchedLines')} / {t(locale, 'bankRecon.pendingLines')}</p>
             <p className="mt-1 text-lg font-black text-slate-900">
               {stats.matched} / {stats.pending}
             </p>
           </div>
           <div className="rounded-2xl border border-app-border bg-white p-4 shadow-sm">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{t(locale, 'bankRecon.matchedAmount')}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{t(locale, 'bankRecon.matchedAmount')}</p>
             <p className="mt-1 font-mono text-lg font-black text-emerald-700">{fmt(stats.matchedAmount)}</p>
           </div>
           <div className="rounded-2xl border border-app-border bg-white p-4 shadow-sm">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{t(locale, 'bankRecon.pendingAmount')}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{t(locale, 'bankRecon.pendingAmount')}</p>
             <p className="mt-1 font-mono text-lg font-black text-amber-600">{fmt(stats.pendingAmount)}</p>
           </div>
         </section>
@@ -257,12 +257,12 @@ export default function ReconciliationPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-app-border bg-transparent/50">
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'bankRecon.lineDate')}</th>
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'bankRecon.lineLabel')}</th>
-                <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'bankRecon.lineAmount')}</th>
-                <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'bankRecon.lineStatus')}</th>
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'bankRecon.confidence')}</th>
-                <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'bankRecon.match')}</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'bankRecon.lineDate')}</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'bankRecon.lineLabel')}</th>
+                <th scope="col" className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'bankRecon.lineAmount')}</th>
+                <th scope="col" className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'bankRecon.lineStatus')}</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'bankRecon.confidence')}</th>
+                <th scope="col" className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'bankRecon.match')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-app-border">
@@ -279,7 +279,7 @@ export default function ReconciliationPage() {
                     <td className="max-w-[260px] truncate px-4 py-3 font-medium text-slate-700" title={line.label}>
                       {line.label}
                       {line.proposed_payment_id && line.status === 'pending' && (
-                        <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-sky-600">
+                        <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-sky-600">
                           <Link2 className="h-2.5 w-2.5" />
                           {t(locale, 'bankRecon.proposed')} #{line.proposed_payment_id}
                         </span>
@@ -287,7 +287,7 @@ export default function ReconciliationPage() {
                     </td>
                     <td className="px-4 py-3 text-right font-mono text-xs font-bold text-slate-800">{fmt(line.amount)}</td>
                     <td className="px-4 py-3 text-center">
-                      <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${line.status === 'matched' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
+                      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${line.status === 'matched' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
                         {line.status === 'matched' ? t(locale, 'bankRecon.statusMatched') : t(locale, 'bankRecon.statusPending')}
                       </span>
                     </td>

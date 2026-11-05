@@ -285,20 +285,20 @@ function ProductsPanel({ categories }: { categories: RetailCategory[] }) {
         <table className="min-w-full divide-y divide-slate-200 text-sm">
           <thead className="bg-slate-50">
             <tr>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'commerce.products.name', 'Nom')}
               </th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'commerce.products.category', 'Catégorie')}
               </th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">SKU</th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">SKU</th>
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'commerce.products.price', 'Prix')}
               </th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'commerce.common.status', 'Statut')}
               </th>
-              <th className="px-4 py-3 text-end font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-end font-semibold text-slate-700">
                 {t(locale, 'commerce.table.actions', 'Actions')}
               </th>
             </tr>

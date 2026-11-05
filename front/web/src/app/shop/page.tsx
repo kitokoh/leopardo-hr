@@ -255,7 +255,7 @@ export default function ShopPage() {
             >
               <ShoppingCart className="h-4 w-4 text-amber-600" aria-hidden="true" />
               {cartCount > 0 ? (
-                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-black text-white">
+                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-xs font-black text-white">
                   {cartCount}
                 </span>
               ) : null}
@@ -347,15 +347,15 @@ export default function ShopPage() {
                 </div>
                 <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
                   <div>
-                    <dt className="text-[10px] font-black uppercase tracking-widest text-emerald-700">{t(locale, 'restaurant.shop.orderRef')}</dt>
+                    <dt className="text-xs font-black uppercase tracking-widest text-emerald-700">{t(locale, 'restaurant.shop.orderRef')}</dt>
                     <dd className="font-mono font-black text-slate-900">{order.reference}</dd>
                   </div>
                   <div>
-                    <dt className="text-[10px] font-black uppercase tracking-widest text-emerald-700">{t(locale, 'restaurant.shop.orderStatus')}</dt>
+                    <dt className="text-xs font-black uppercase tracking-widest text-emerald-700">{t(locale, 'restaurant.shop.orderStatus')}</dt>
                     <dd className="font-bold text-slate-800">{order.status}</dd>
                   </div>
                   <div>
-                    <dt className="text-[10px] font-black uppercase tracking-widest text-emerald-700">{t(locale, 'restaurant.shop.total')}</dt>
+                    <dt className="text-xs font-black uppercase tracking-widest text-emerald-700">{t(locale, 'restaurant.shop.total')}</dt>
                     <dd className="font-black text-slate-900">{money(order.total_minor, order.currency, locale)}</dd>
                   </div>
                 </dl>
@@ -398,7 +398,7 @@ export default function ShopPage() {
         {/* Panier */}
         {cartOpen ? (
           <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-label={t(locale, 'restaurant.shop.cart')}>
-            <button type="button" aria-label="Fermer" className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm" onClick={() => setCartOpen(false)} />
+            <button type="button" aria-label={t(locale, 'a11y.close', 'Fermer')} className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm" onClick={() => setCartOpen(false)} />
             <div className="relative max-h-[85vh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-white p-6 shadow-premium sm:rounded-3xl">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-black tracking-tight text-slate-950">{t(locale, 'restaurant.shop.cart')}</h2>
@@ -436,7 +436,7 @@ export default function ShopPage() {
                   </div>
 
                   <label className="block space-y-1.5 pt-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t(locale, 'restaurant.shop.phone')}</span>
+                    <span className="text-xs font-black uppercase tracking-widest text-slate-500">{t(locale, 'restaurant.shop.phone')}</span>
                     <input
                       type="tel"
                       value={phone}

@@ -354,28 +354,28 @@ export default function TravelBookingsPage() {
         <table className="min-w-full divide-y divide-slate-200 text-sm">
           <thead className="bg-slate-50">
             <tr>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'travel.field.reference', 'Référence')}
               </th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'travel.field.trip', 'Trajet')}
               </th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'travel.field.status', 'Statut')}
               </th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'travel.field.paymentStatus', 'Paiement')}
               </th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'travel.field.passengerCount', 'Passagers')}
               </th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'travel.field.totalAmount', 'Montant')}
               </th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'travel.field.createdAt', 'Créé le')}
               </th>
-              <th className="px-4 py-3 text-end font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-end font-semibold text-slate-700">
                 {t(locale, 'travel.table.actions', 'Actions')}
               </th>
             </tr>
@@ -721,22 +721,22 @@ function BookingDetailPanel({
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-50">
                   <tr>
-                    <th className="px-4 py-2 text-start font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">
                       {t(locale, 'travel.field.fullName', 'Nom complet')}
                     </th>
-                    <th className="px-4 py-2 text-start font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">
                       {t(locale, 'travel.field.ageCategory', 'Catégorie')}
                     </th>
-                    <th className="px-4 py-2 text-start font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">
                       {t(locale, 'travel.field.class', 'Classe')}
                     </th>
-                    <th className="px-4 py-2 text-start font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">
                       {t(locale, 'travel.field.seat', 'Siège')}
                     </th>
-                    <th className="px-4 py-2 text-start font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">
                       {t(locale, 'travel.field.unitPrice', 'Prix unitaire')}
                     </th>
-                    <th className="px-4 py-2 text-end font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-2 text-end font-semibold text-slate-700">
                       {t(locale, 'travel.table.actions', 'Actions')}
                     </th>
                   </tr>
@@ -787,19 +787,19 @@ function BookingDetailPanel({
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-50">
                   <tr>
-                    <th className="px-4 py-2 text-start font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">
                       {t(locale, 'travel.field.ticketNumber', 'N° billet')}
                     </th>
-                    <th className="px-4 py-2 text-start font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">
                       {t(locale, 'travel.field.passenger', 'Passager')}
                     </th>
-                    <th className="px-4 py-2 text-start font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">
                       {t(locale, 'travel.field.status', 'Statut')}
                     </th>
-                    <th className="px-4 py-2 text-start font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">
                       {t(locale, 'travel.field.issuedAt', 'Émis le')}
                     </th>
-                    <th className="px-4 py-2 text-end font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-2 text-end font-semibold text-slate-700">
                       {t(locale, 'travel.table.actions', 'Actions')}
                     </th>
                   </tr>

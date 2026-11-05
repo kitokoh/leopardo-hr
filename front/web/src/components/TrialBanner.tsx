@@ -66,7 +66,7 @@ export function TrialBanner({
         data-testid="trial-badge"
         data-trial-days-left={daysLeft}
         title={expired ? t(locale, 'trial.endedTitle') : message}
-        className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-bold transition ${
+        className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-bold transition ${
           expired
             ? 'border-red-300 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300'
             : 'border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300'
@@ -104,7 +104,7 @@ export function TrialBanner({
             )}
           </span>
           <p className="min-w-0 text-xs font-bold leading-5 text-slate-800 dark:text-slate-100">
-            <span className="mr-1.5 rounded-full bg-white/70 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-slate-600 dark:bg-slate-900/60 dark:text-slate-300">
+            <span className="mr-1.5 rounded-full bg-white/70 px-2 py-0.5 text-xs font-black uppercase tracking-wide text-slate-600 dark:bg-slate-900/60 dark:text-slate-300">
               {t(locale, 'trial.trialBadge')}
             </span>
             {message}

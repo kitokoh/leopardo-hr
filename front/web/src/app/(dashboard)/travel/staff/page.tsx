@@ -338,11 +338,11 @@ export default function TravelStaffPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-slate-200 text-xs font-bold uppercase tracking-wide text-slate-500">
-                  <th className="px-3 py-2">{t(locale, 'travel.staff.employee', 'Employé')}</th>
-                  <th className="px-3 py-2">{t(locale, 'travel.staff.role', 'Rôle')}</th>
-                  <th className="px-3 py-2">{t(locale, 'travel.staff.scope', 'Scope')}</th>
-                  <th className="px-3 py-2">{t(locale, 'travel.common.createdAt', 'Créé le')}</th>
-                  <th className="px-3 py-2" />
+                  <th scope="col" className="px-3 py-2">{t(locale, 'travel.staff.employee', 'Employé')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'travel.staff.role', 'Rôle')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'travel.staff.scope', 'Scope')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'travel.common.createdAt', 'Créé le')}</th>
+                  <th scope="col" className="px-3 py-2" />
                 </tr>
               </thead>
               <tbody>
@@ -393,11 +393,11 @@ export default function TravelStaffPage() {
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr className="border-b border-slate-200 text-xs font-bold uppercase tracking-wide text-slate-500">
-                    <th className="px-3 py-2">{t(locale, 'travel.staff.employee', 'Employé')}</th>
-                    <th className="px-3 py-2">{t(locale, 'travel.staff.role', 'Rôle')}</th>
-                    <th className="px-3 py-2">{t(locale, 'travel.staff.scope', 'Scope')}</th>
-                    <th className="px-3 py-2">{t(locale, 'travel.common.status', 'Statut')}</th>
-                    <th className="px-3 py-2">{t(locale, 'travel.staff.revokedAt', 'Révoquée le')}</th>
+                    <th scope="col" className="px-3 py-2">{t(locale, 'travel.staff.employee', 'Employé')}</th>
+                    <th scope="col" className="px-3 py-2">{t(locale, 'travel.staff.role', 'Rôle')}</th>
+                    <th scope="col" className="px-3 py-2">{t(locale, 'travel.staff.scope', 'Scope')}</th>
+                    <th scope="col" className="px-3 py-2">{t(locale, 'travel.common.status', 'Statut')}</th>
+                    <th scope="col" className="px-3 py-2">{t(locale, 'travel.staff.revokedAt', 'Révoquée le')}</th>
                   </tr>
                 </thead>
                 <tbody>

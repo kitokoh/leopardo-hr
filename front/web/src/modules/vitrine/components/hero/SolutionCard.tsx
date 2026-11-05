@@ -156,7 +156,7 @@ export function SolutionCard({ solutionId, locale, onClose, returnFocusRef }: So
           <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/80 to-transparent" />
           <div className="flex items-start justify-between gap-4">
             <div>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.2)]">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.2)]">
                 <Sparkles className="h-3 w-3" aria-hidden="true" />
                 {copy.badge}
               </span>
@@ -187,7 +187,7 @@ export function SolutionCard({ solutionId, locale, onClose, returnFocusRef }: So
 
           {detail.users.length > 0 && (
             <div>
-              <h3 className="mb-2.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <h3 className="mb-2.5 text-xs font-bold uppercase tracking-wider text-slate-400">
                 {copy.usersTitle}
               </h3>
               <ul className="flex flex-wrap gap-2">
@@ -205,7 +205,7 @@ export function SolutionCard({ solutionId, locale, onClose, returnFocusRef }: So
 
           {detail.features.length > 0 && (
             <div>
-              <h3 className="mb-2.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <h3 className="mb-2.5 text-xs font-bold uppercase tracking-wider text-slate-400">
                 {copy.featuresTitle}
               </h3>
               <ul className="space-y-2">

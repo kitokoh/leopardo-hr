@@ -108,7 +108,7 @@ export default function CrmPipelinePage() {
           {stages.map((stage) => (
             <div key={stage.key} className="rounded-2xl border border-slate-100 bg-white/60 p-3 backdrop-blur">
               <div className="mb-3 flex items-center justify-between">
-                <span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wider ${stage.color}`}>
+                <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-black uppercase tracking-wider ${stage.color}`}>
                   {t(locale, `crm.pipeline.stage.${stage.key}`, stage.key)}
                 </span>
                 <span className="text-xs font-bold text-slate-400">{byStage(stage.key).length}</span>
@@ -119,7 +119,7 @@ export default function CrmPipelinePage() {
                     <p className="text-sm font-semibold text-slate-800">{opportunity.name}</p>
                     <p className="mt-1 text-xs font-bold text-slate-600">{formatAmount(opportunity.amount)}</p>
                     {opportunity.expected_close_at && (
-                      <p className="mt-1 text-[11px] text-slate-400">
+                      <p className="mt-1 text-xs text-slate-400">
                         {new Date(opportunity.expected_close_at).toLocaleDateString()}
                       </p>
                     )}

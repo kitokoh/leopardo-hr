@@ -52,7 +52,7 @@
                 {{ account.label }}
                 <span
                   v-if="account.is_system"
-                  class="ml-2 inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                  class="ml-2 inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold uppercase text-slate-500 dark:bg-slate-800 dark:text-slate-400"
                   :title="t('accountingModule.chartSystemNote')"
                 >
                   {{ t('accountingModule.chartSystemBadge') }}

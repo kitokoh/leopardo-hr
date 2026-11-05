@@ -32,7 +32,7 @@
                 :style="{ width: progress + '%' }"
               ></div>
             </div>
-            <div class="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <div class="flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest text-slate-500">
               <span class="animate-pulse" v-if="status === 'logging-out'">Fermeture de session...</span>
               <span v-else>Session sécurisée — redirection</span>
             </div>
@@ -40,7 +40,7 @@
         </div>
       </div>
 
-      <p class="text-[10px] font-black uppercase tracking-widest text-slate-600">
+      <p class="text-xs font-black uppercase tracking-widest text-slate-600">
         © 2026 Leopardo Systems • Sécurité Approuvée
       </p>
     </div>

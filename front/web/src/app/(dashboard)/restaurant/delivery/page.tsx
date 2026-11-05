@@ -140,7 +140,7 @@ export default function RestaurantDeliveryPage() {
       {tab === 'zones' ? (
         <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
           <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50"><tr><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colName', 'Nom')}</th><th className="px-4 py-3 text-left font-semibold text-slate-700">Branche</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colFees', 'Frais & minimum')}</th></tr></thead>
+            <thead className="bg-slate-50"><tr><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colName', 'Nom')}</th><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">Branche</th><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colFees', 'Frais & minimum')}</th></tr></thead>
             <tbody className="divide-y divide-slate-100">
               {zones.map((z) => {
                 const row = z as { id: number; name: string; branch_id: number; fee_minor: number; min_order_minor: number | null; status: string };
@@ -161,7 +161,7 @@ export default function RestaurantDeliveryPage() {
       {tab === 'riders' ? (
         <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
           <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50"><tr><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colName', 'Nom')}</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colPhone')}</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colVehicle')}</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colActive', 'Actif')}</th></tr></thead>
+            <thead className="bg-slate-50"><tr><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colName', 'Nom')}</th><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colPhone')}</th><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colVehicle')}</th><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colActive', 'Actif')}</th></tr></thead>
             <tbody className="divide-y divide-slate-100">
               {riders.map((row) => {
                 return (
@@ -206,7 +206,7 @@ export default function RestaurantDeliveryPage() {
 
           <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
             <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-50"><tr><th className="px-4 py-3 text-left font-semibold text-slate-700">ID</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colOrder', 'Commande')}</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colRider', 'Livreur')}</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colStatus', 'Statut')}</th><th className="px-4 py-3 text-right font-semibold text-slate-700" aria-label="Actions" /></tr></thead>
+              <thead className="bg-slate-50"><tr><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">ID</th><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colOrder', 'Commande')}</th><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colRider', 'Livreur')}</th><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colStatus', 'Statut')}</th><th scope="col" className="px-4 py-3 text-right font-semibold text-slate-700" aria-label={t(locale, 'common.actions', 'Actions')} /></tr></thead>
               <tbody className="divide-y divide-slate-100">
                 {deliveries.map((d) => (
                   <tr key={d.id} className="hover:bg-slate-50">
@@ -262,7 +262,7 @@ export default function RestaurantDeliveryPage() {
       {tab === 'loyalty' ? (
         <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
           <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50"><tr><th className="px-4 py-3 text-left font-semibold text-slate-700">Contact</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colPoints', 'Points')}</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colTier', 'Palier')}</th></tr></thead>
+            <thead className="bg-slate-50"><tr><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">Contact</th><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colPoints', 'Points')}</th><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colTier', 'Palier')}</th></tr></thead>
             <tbody className="divide-y divide-slate-100">
               {loyalty.map((l) => {
                 const row = l as { id: number; customer_contact_id: number; points: number; tier_code: string | null };
@@ -282,7 +282,7 @@ export default function RestaurantDeliveryPage() {
       {tab === 'promotions' ? (
         <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
           <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50"><tr><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colCode', 'Code')}</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colTitle', 'Titre')}</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colType', 'Type')}</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colValue', 'Valeur')}</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colUses', 'Utilisations')}</th></tr></thead>
+            <thead className="bg-slate-50"><tr><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colCode', 'Code')}</th><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colTitle', 'Titre')}</th><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colType', 'Type')}</th><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colValue', 'Valeur')}</th><th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colUses', 'Utilisations')}</th></tr></thead>
             <tbody className="divide-y divide-slate-100">
               {promotions.map((p) => {
                 const row = p as { id: number; code: string; title: string; discount_type: string; value_minor: number; used_count: number; max_uses: number | null };

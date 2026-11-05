@@ -20,7 +20,7 @@
         </div>
         <div class="ml-5 w-0 flex-1">
           <dl>
-            <dt class="text-sm font-medium text-slate-500 dark:text-slate-400 truncate uppercase tracking-widest text-[10px] font-black">
+            <dt class="text-sm font-medium text-slate-500 dark:text-slate-400 truncate uppercase tracking-widest text-xs font-black">
               {{ title }}
             </dt>
             <dd class="flex items-center mt-1">
@@ -45,7 +45,7 @@
 
       <!-- Status details -->
       <div v-if="showDetails" class="mt-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
-        <div class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+        <div class="text-xs font-black uppercase tracking-widest text-slate-400">
           Sync: {{ formatTime(lastCheck) }}
         </div>
         <div v-if="uptime" class="text-xs text-gray-500 mt-1">

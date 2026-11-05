@@ -285,13 +285,13 @@ export function ConversationPanel({ thread, currentUserId, onBack, onThreadActiv
 
         <div className="min-w-0 flex-1">
           <h2 className="truncate text-sm font-semibold text-gray-900">{thread.title}</h2>
-          <p className="text-[11px] text-gray-400">
+          <p className="text-xs text-gray-400">
             {thread.kind === 'group' ? 'Conversation de groupe' : 'Conversation privée'}
           </p>
         </div>
 
         {pollingState === 'offline' && (
-          <span className="flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-900">
+          <span className="flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900">
             <WifiOff className="h-3 w-3" aria-hidden />
             Hors ligne
           </span>
@@ -325,7 +325,7 @@ export function ConversationPanel({ thread, currentUserId, onBack, onThreadActiv
               type="button"
               onClick={() => void loadOlder()}
               disabled={loadingOlder}
-              className="rounded-full border border-gray-200 px-3 py-1 text-[11px] font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+              className="rounded-full border border-gray-200 px-3 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50"
             >
               {loadingOlder ? 'Chargement…' : 'Messages plus anciens'}
             </button>
@@ -337,7 +337,7 @@ export function ConversationPanel({ thread, currentUserId, onBack, onThreadActiv
             <div>
               <MessageSquarePlaceholder />
               <p className="mt-2 text-xs font-medium text-gray-600">Aucun message</p>
-              <p className="text-[11px] text-gray-400">Écrivez le premier message de cette conversation.</p>
+              <p className="text-xs text-gray-400">Écrivez le premier message de cette conversation.</p>
             </div>
           </div>
         )}
@@ -352,7 +352,7 @@ export function ConversationPanel({ thread, currentUserId, onBack, onThreadActiv
             >
               {message.reply_to !== null && (
                 <div
-                  className={`mb-0.5 max-w-[75%] truncate rounded-lg border-l-2 border-gray-300 bg-gray-50 px-2 py-1 text-[10px] text-gray-500 ${
+                  className={`mb-0.5 max-w-[75%] truncate rounded-lg border-l-2 border-gray-300 bg-gray-50 px-2 py-1 text-xs text-gray-500 ${
                     mine ? 'mr-1' : 'ml-1'
                   }`}
                 >
@@ -369,7 +369,7 @@ export function ConversationPanel({ thread, currentUserId, onBack, onThreadActiv
                 }`}
               >
                 {!mine && message.author !== null && (
-                  <p className="mb-0.5 text-[10px] font-semibold opacity-70">{message.author.name}</p>
+                  <p className="mb-0.5 text-xs font-semibold opacity-70">{message.author.name}</p>
                 )}
 
                 {message.deleted ? (
@@ -383,7 +383,7 @@ export function ConversationPanel({ thread, currentUserId, onBack, onThreadActiv
                         href={attachmentUrl(message.conversation_thread_id, message.id)}
                         target="_blank"
                         rel="noreferrer"
-                        className={`mt-1.5 flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] underline-offset-2 hover:underline ${
+                        className={`mt-1.5 flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs underline-offset-2 hover:underline ${
                           mine ? 'bg-emerald-700/40 text-white' : 'bg-white/70 text-gray-700'
                         }`}
                       >
@@ -395,7 +395,7 @@ export function ConversationPanel({ thread, currentUserId, onBack, onThreadActiv
                   </>
                 )}
 
-                <p className={`mt-1 text-[10px] ${mine ? 'text-white/60' : 'text-gray-400'}`}>
+                <p className={`mt-1 text-xs ${mine ? 'text-white/60' : 'text-gray-400'}`}>
                   {new Date(message.created_at).toLocaleTimeString(undefined, {
                     hour: '2-digit',
                     minute: '2-digit',
@@ -450,7 +450,7 @@ export function ConversationPanel({ thread, currentUserId, onBack, onThreadActiv
       {/* Composition */}
       <div className="border-t border-gray-100 p-2.5">
         {replyTo !== null && (
-          <div className="mb-1.5 flex items-center gap-2 rounded-lg bg-gray-50 px-2 py-1 text-[11px] text-gray-600">
+          <div className="mb-1.5 flex items-center gap-2 rounded-lg bg-gray-50 px-2 py-1 text-xs text-gray-600">
             <CornerUpLeft className="h-3 w-3 shrink-0 text-gray-400" aria-hidden />
             <span className="min-w-0 flex-1 truncate">
               Réponse à : {replyTo.body !== '' ? replyTo.body : 'pièce jointe'}
@@ -467,7 +467,7 @@ export function ConversationPanel({ thread, currentUserId, onBack, onThreadActiv
         )}
 
         {editing !== null && (
-          <div className="mb-1.5 flex items-center gap-2 rounded-lg bg-amber-50 px-2 py-1 text-[11px] text-amber-900">
+          <div className="mb-1.5 flex items-center gap-2 rounded-lg bg-amber-50 px-2 py-1 text-xs text-amber-900">
             <Pencil className="h-3 w-3 shrink-0" aria-hidden />
             <span className="flex-1">Modification d&apos;un message</span>
             <button
@@ -485,10 +485,10 @@ export function ConversationPanel({ thread, currentUserId, onBack, onThreadActiv
         )}
 
         {attachment !== null && (
-          <div className="mb-1.5 flex items-center gap-2 rounded-lg bg-emerald-50 px-2 py-1 text-[11px] text-emerald-900">
+          <div className="mb-1.5 flex items-center gap-2 rounded-lg bg-emerald-50 px-2 py-1 text-xs text-emerald-900">
             <Paperclip className="h-3 w-3 shrink-0" aria-hidden />
             <span className="min-w-0 flex-1 truncate">{attachment.name}</span>
-            <span className="shrink-0 text-[10px] text-emerald-700">
+            <span className="shrink-0 text-xs text-emerald-700">
               {(attachment.size / 1024).toFixed(0)} Ko
             </span>
             <button
@@ -503,7 +503,7 @@ export function ConversationPanel({ thread, currentUserId, onBack, onThreadActiv
         )}
 
         {sendError !== null && (
-          <p className="mb-1.5 text-[11px] text-red-700" role="alert">
+          <p className="mb-1.5 text-xs text-red-700" role="alert">
             {sendError}
           </p>
         )}

@@ -42,7 +42,7 @@ export function GeoSessionStatusBadge({ status, labels }: Props): ReactElement {
 
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider ${className}`}
+      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider ${className}`}
     >
       {label}
     </span>

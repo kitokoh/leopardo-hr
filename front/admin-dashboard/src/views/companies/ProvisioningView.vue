@@ -86,7 +86,7 @@
               v-for="f in filters"
               :key="f.id"
               type="button"
-              class="rounded-lg px-3 py-1.5 text-[11px] font-black uppercase tracking-wide transition"
+              class="rounded-lg px-3 py-1.5 text-xs font-black uppercase tracking-wide transition"
               :class="activeFilter === f.id
                 ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
                 : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white'"
@@ -116,7 +116,7 @@
         <div v-else class="overflow-x-auto">
           <table class="w-full text-left">
             <thead class="border-b border-slate-200/60 bg-slate-50/60 dark:border-slate-800/60 dark:bg-slate-900/40">
-              <tr class="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
+              <tr class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
                 <th class="px-6 py-3">{{ t('provisioning.colTenant', 'Tenant') }}</th>
                 <th class="px-6 py-3">{{ t('provisioning.colStep', 'Dernière étape') }}</th>
                 <th class="px-6 py-3">{{ t('provisioning.colSites', 'Établissements') }}</th>
@@ -139,7 +139,7 @@
                 </td>
                 <td class="px-6 py-4">
                   <span
-                    class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wide"
+                    class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-black uppercase tracking-wide"
                     :class="stepClass(tenant.provisioning_step)"
                   >
                     <span class="h-1.5 w-1.5 rounded-full" :class="stepDot(tenant.provisioning_step)"></span>
@@ -191,7 +191,7 @@
         <div class="overflow-x-auto">
           <table class="w-full text-left">
             <thead class="border-b border-slate-200/60 bg-slate-50/60 dark:border-slate-800/60 dark:bg-slate-900/40">
-              <tr class="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
+              <tr class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
                 <th class="px-6 py-3">{{ t('provisioning.colEmail', 'Compte (masqué)') }}</th>
                 <th class="px-6 py-3">{{ t('provisioning.colStatus', 'Statut') }}</th>
                 <th class="px-6 py-3">{{ t('provisioning.colSince', 'Depuis') }}</th>
@@ -202,7 +202,7 @@
               <tr v-for="(f, i) in failures" :key="i">
                 <td class="px-6 py-4 font-mono text-xs text-slate-600 dark:text-slate-300">{{ f.email ?? '—' }}</td>
                 <td class="px-6 py-4">
-                  <span class="rounded-lg bg-red-100 px-2.5 py-1 text-[10px] font-black uppercase text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                  <span class="rounded-lg bg-red-100 px-2.5 py-1 text-xs font-black uppercase text-red-700 dark:bg-red-900/30 dark:text-red-400">
                     {{ f.status }}
                   </span>
                 </td>

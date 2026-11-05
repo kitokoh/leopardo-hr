@@ -533,7 +533,7 @@ export default function EmployeesPage() {
               {departments.map((item) => (
                 <li
                   key={item.id}
-                  className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-600"
+                  className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-slate-600"
                 >
                   {item.name}
                 </li>
@@ -745,7 +745,7 @@ export default function EmployeesPage() {
                       <p className="flex flex-wrap items-center gap-2 text-sm font-bold text-slate-950">
                         <span className="truncate">{fullName}</span>
                         {isSelf ? (
-                          <span className="rounded-full bg-slate-900 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white">
+                          <span className="rounded-full bg-slate-900 px-2 py-0.5 text-xs font-black uppercase tracking-wider text-white">
                             {teamRolesT(locale, 'youBadge')}
                           </span>
                         ) : null}
@@ -753,7 +753,7 @@ export default function EmployeesPage() {
                       <p className="truncate text-xs text-slate-500">{employee.email ?? ''}</p>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-wider">
+                    <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-wider">
                       {employee.matricule ? (
                         <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">
                           {employee.matricule}
@@ -803,14 +803,14 @@ export default function EmployeesPage() {
                       {/* Rôle (managers, hors propre ligne) */}
                       {isManager ? (
                         <div className="rounded-2xl border border-app-border bg-white p-4">
-                          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                          <p className="text-xs font-bold uppercase tracking-wider text-slate-600">
                             {teamRolesT(locale, 'colRole')}
                           </p>
                           <div className="mt-2">
                             {isSelf ? (
                               <span
                                 title={teamRolesT(locale, 'selfRoleLocked')}
-                                className="inline-flex rounded-full bg-rh-light px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-rh-dark"
+                                className="inline-flex rounded-full bg-rh-light px-3 py-1 text-xs font-bold uppercase tracking-wider text-rh-dark"
                               >
                                 {teamRoleLabel(locale, employee.role, employee.manager_role)}
                               </span>
@@ -844,7 +844,7 @@ export default function EmployeesPage() {
                       {/* Invitation : statut + renvoi + révocation (managers) */}
                       {isManager ? (
                         <div className="rounded-2xl border border-app-border bg-white p-4">
-                          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                          <p className="text-xs font-bold uppercase tracking-wider text-slate-600">
                             {teamRolesT(locale, 'colInvitation')}
                           </p>
                           <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -852,12 +852,12 @@ export default function EmployeesPage() {
                               <>
                                 <span
                                   data-testid={`team-invitation-status-${employee.id}`}
-                                  className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-600"
+                                  className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-slate-600"
                                 >
                                   {teamRolesT(locale, invitationStatusKey)}
                                 </span>
                                 {invitation.last_sent_at ? (
-                                  <span className="text-[11px] font-medium text-slate-400">
+                                  <span className="text-xs font-medium text-slate-400">
                                     {interpolate(teamRolesT(locale, 'invitationSentAt'), {
                                       date: new Date(invitation.last_sent_at).toLocaleDateString(toIntlLocale(locale)),
                                     })}
@@ -870,14 +870,14 @@ export default function EmployeesPage() {
                                       onClick={() => void handleResend(invitation)}
                                       disabled={busyInvitationId === invitation.id}
                                       data-testid={`team-resend-${employee.id}`}
-                                      className="inline-flex items-center gap-1.5 rounded-xl border border-app-border px-3 py-1.5 text-[11px] font-bold text-slate-700 transition hover:bg-slate-100 disabled:opacity-60"
+                                      className="inline-flex items-center gap-1.5 rounded-xl border border-app-border px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:bg-slate-100 disabled:opacity-60"
                                     >
                                       <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
                                       {teamRolesT(locale, 'resend')}
                                     </button>
                                     {confirmRevokeId === invitation.id ? (
                                       <>
-                                        <span className="text-[11px] font-bold text-slate-600">
+                                        <span className="text-xs font-bold text-slate-600">
                                           {teamRolesT(locale, 'revokeTitle')}
                                         </span>
                                         <button
@@ -885,14 +885,14 @@ export default function EmployeesPage() {
                                           onClick={() => void handleRevoke(invitation)}
                                           disabled={busyInvitationId === invitation.id}
                                           data-testid={`team-revoke-confirm-${employee.id}`}
-                                          className="rounded-xl bg-red-600 px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-red-700 disabled:opacity-60"
+                                          className="rounded-xl bg-red-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-red-700 disabled:opacity-60"
                                         >
                                           {teamRolesT(locale, 'revokeConfirm')}
                                         </button>
                                         <button
                                           type="button"
                                           onClick={() => setConfirmRevokeId(null)}
-                                          className="rounded-xl border border-app-border px-3 py-1.5 text-[11px] font-bold text-slate-600 transition hover:bg-slate-100"
+                                          className="rounded-xl border border-app-border px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-slate-100"
                                         >
                                           {teamRolesT(locale, 'cancel')}
                                         </button>
@@ -906,7 +906,7 @@ export default function EmployeesPage() {
                                           setNotice(null);
                                         }}
                                         data-testid={`team-revoke-${employee.id}`}
-                                        className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 px-3 py-1.5 text-[11px] font-bold text-red-600 transition hover:bg-red-50"
+                                        className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 px-3 py-1.5 text-xs font-bold text-red-600 transition hover:bg-red-50"
                                       >
                                         <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                                         {teamRolesT(locale, 'revoke')}
@@ -916,7 +916,7 @@ export default function EmployeesPage() {
                                 ) : null}
                               </>
                             ) : (
-                              <span className="text-[11px] font-medium text-slate-400">
+                              <span className="text-xs font-medium text-slate-400">
                                 {teamRolesT(locale, 'invitationNone')}
                               </span>
                             )}
@@ -944,7 +944,7 @@ export default function EmployeesPage() {
                         <div className="flex flex-wrap items-center gap-2">
                           {confirmArchiveId === employee.id ? (
                             <>
-                              <span className="text-[11px] font-bold text-slate-600">
+                              <span className="text-xs font-bold text-slate-600">
                                 {teamRolesT(locale, 'archiveTitle')}
                               </span>
                               <button
@@ -952,14 +952,14 @@ export default function EmployeesPage() {
                                 onClick={() => void handleArchive(employee)}
                                 disabled={busyEmployeeId === employee.id}
                                 data-testid={`team-archive-confirm-${employee.id}`}
-                                className="rounded-xl bg-red-600 px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-red-700 disabled:opacity-60"
+                                className="rounded-xl bg-red-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-red-700 disabled:opacity-60"
                               >
                                 {teamRolesT(locale, 'archiveConfirm')}
                               </button>
                               <button
                                 type="button"
                                 onClick={() => setConfirmArchiveId(null)}
-                                className="rounded-xl border border-app-border px-3 py-1.5 text-[11px] font-bold text-slate-600 transition hover:bg-slate-100"
+                                className="rounded-xl border border-app-border px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-slate-100"
                               >
                                 {teamRolesT(locale, 'cancel')}
                               </button>
@@ -973,7 +973,7 @@ export default function EmployeesPage() {
                                 setNotice(null);
                               }}
                               data-testid={`team-archive-${employee.id}`}
-                              className="inline-flex items-center gap-1.5 rounded-xl border border-app-border px-3 py-1.5 text-[11px] font-bold text-slate-600 transition hover:bg-slate-100"
+                              className="inline-flex items-center gap-1.5 rounded-xl border border-app-border px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-slate-100"
                             >
                               <Archive className="h-3.5 w-3.5" aria-hidden="true" />
                               {teamRolesT(locale, 'archiveAction')}

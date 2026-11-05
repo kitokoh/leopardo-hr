@@ -211,12 +211,12 @@ export default function ChartPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-app-border bg-transparent/50">
-                <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.chartCode')}</th>
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.chartLabel')}</th>
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.chartType')}</th>
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.chartClass')}</th>
-                <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.chartStatus')}</th>
-                <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500"> </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.chartCode')}</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.chartLabel')}</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.chartType')}</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.chartClass')}</th>
+                <th scope="col" className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.chartStatus')}</th>
+                <th scope="col" className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500"> </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-app-border">
@@ -231,7 +231,7 @@ export default function ChartPage() {
                     <td className="px-4 py-3 font-medium text-slate-700">
                       {account.label}
                       {account.is_system && (
-                        <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-slate-400">
                           {t(locale, 'accountingModule.chartSystemNote')}
                         </span>
                       )}
@@ -239,7 +239,7 @@ export default function ChartPage() {
                     <td className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, TYPE_LABEL_KEY[account.type] ?? 'accountingModule.chartTypeAsset')}</td>
                     <td className="px-4 py-3 text-slate-500">{account.class}</td>
                     <td className="px-4 py-3 text-center">
-                      <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${account.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${account.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
                         {account.is_active ? t(locale, 'accountingModule.chartActive') : t(locale, 'accountingModule.chartInactive')}
                       </span>
                     </td>

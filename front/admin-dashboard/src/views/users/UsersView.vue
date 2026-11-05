@@ -46,7 +46,7 @@
       <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <!-- Search -->
         <div class="lg:col-span-2">
-          <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">{{ $t('users.filters.search.label', 'Rechercher') }}</label>
+          <label class="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">{{ $t('users.filters.search.label', 'Rechercher') }}</label>
           <div class="relative group">
             <MagnifyingGlassIcon class="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
             <input
@@ -60,7 +60,7 @@
 
         <!-- Status Filter -->
         <div>
-          <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">{{ $t('users.filters.status.label', 'Statut') }}</label>
+          <label class="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">{{ $t('users.filters.status.label', 'Statut') }}</label>
           <select
             v-model="filters.status"
             class="block w-full px-4 py-3 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all outline-none appearance-none"
@@ -89,25 +89,25 @@
         <div class="flex items-center space-x-6">
           <button
             @click="bulkAction('activate')"
-            class="text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-500 transition-colors"
+            class="text-xs font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-500 transition-colors"
           >
             {{ $t('users.bulkPanel.activate', 'Activer') }}
           </button>
           <button
             @click="askBulkDeactivate"
-            class="text-[10px] font-black uppercase tracking-widest text-amber-600 hover:text-amber-500 transition-colors"
+            class="text-xs font-black uppercase tracking-widest text-amber-600 hover:text-amber-500 transition-colors"
           >
             {{ $t('users.bulkPanel.deactivate', 'Désactiver') }}
           </button>
           <button
             @click="bulkAction('export')"
-            class="text-[10px] font-black uppercase tracking-widest text-brand-600 hover:text-brand-500 transition-colors"
+            class="text-xs font-black uppercase tracking-widest text-brand-600 hover:text-brand-500 transition-colors"
           >
             {{ $t('users.bulkPanel.export', 'Exporter') }}
           </button>
           <button
             @click="clearSelection"
-            class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-500 transition-colors"
+            class="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-500 transition-colors"
           >
             {{ $t('users.bulkPanel.cancel', 'Annuler') }}
           </button>

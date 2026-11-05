@@ -135,7 +135,7 @@ export default function GuardianPortalPage() {
                     <p className="text-xs font-bold uppercase tracking-widest text-slate-400">{t(locale, 'edu.guardian.children')}</p>
                   </div>
                 </div>
-                <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-700">
+                <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-black uppercase tracking-widest text-emerald-700">
                   <ShieldCheck className="h-3 w-3" aria-hidden="true" />
                   RGPD
                 </span>
@@ -162,7 +162,7 @@ export default function GuardianPortalPage() {
 
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
                     <div className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t(locale, 'edu.guardian.presence')}</p>
+                      <p className="text-xs font-black uppercase tracking-widest text-slate-400">{t(locale, 'edu.guardian.presence')}</p>
                       <div className="mt-2 space-y-1 text-sm">
                         <p className="flex justify-between">
                           <span className="text-slate-500">{t(locale, 'edu.guardian.today')}</span>
@@ -178,7 +178,7 @@ export default function GuardianPortalPage() {
                     </div>
 
                     <div className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                      <p className="text-xs font-black uppercase tracking-widest text-slate-400">
                         {t(locale, 'edu.guardian.reportCards')} <span className="normal-case">({t(locale, 'edu.guardian.publishedOnly')})</span>
                       </p>
                       {child.report_cards.length === 0 ? (

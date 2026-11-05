@@ -97,7 +97,7 @@
                   </dd>
                   <p
                     v-if="health.adoption.onboarding.observed"
-                    class="mt-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500"
+                    class="mt-1 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500"
                   >
                     {{ t('companyDetail.fieldAdoption') }}
                     {{ health.adoption.onboarding.observed.progress_percent }}%
@@ -128,7 +128,7 @@
                     :key="action.key"
                     class="flex items-start gap-4 rounded-2xl border border-slate-100 p-4 shadow-sm transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-900/50"
                   >
-                    <span :class="['mt-0.5 rounded-lg px-2 py-0.5 text-[10px] font-black uppercase', priorityBadgeClass(action.priority)]">
+                    <span :class="['mt-0.5 rounded-lg px-2 py-0.5 text-xs font-black uppercase', priorityBadgeClass(action.priority)]">
                       {{ action.priority }}
                     </span>
                     <div class="flex-1">
@@ -175,7 +175,7 @@
                     </div>
                     <div>
                       <p class="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wide">{{ formatFeatureName(key) }}</p>
-                      <p class="text-[10px] font-bold text-slate-500 uppercase">{{ enabled ? t('companyDetail.moduleActive', 'Module Actif') : t('companyDetail.moduleDisabled', 'Module Désactivé') }}</p>
+                      <p class="text-xs font-bold text-slate-500 uppercase">{{ enabled ? t('companyDetail.moduleActive', 'Module Actif') : t('companyDetail.moduleDisabled', 'Module Désactivé') }}</p>
                     </div>
                   </div>
                   <Switch
@@ -221,7 +221,7 @@
                       </div>
                       <div>
                         <p class="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wide">{{ formatFeatureName(key) }}</p>
-                        <p class="text-[10px] font-bold text-slate-500 uppercase">{{ enabled ? t('companyDetail.moduleActive', 'Module Actif') : t('companyDetail.moduleDisabled', 'Module Désactivé') }}</p>
+                        <p class="text-xs font-bold text-slate-500 uppercase">{{ enabled ? t('companyDetail.moduleActive', 'Module Actif') : t('companyDetail.moduleDisabled', 'Module Désactivé') }}</p>
                       </div>
                     </div>
                     <Switch
@@ -360,7 +360,7 @@
               <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <LifebuoyIcon class="h-5 w-5 text-amber-500" />
                 {{ t('companyDetail.support', 'Support') }}
-                <span v-if="supportSummary.open_count > 0" class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-black uppercase text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                <span v-if="supportSummary.open_count > 0" class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-black uppercase text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
                   {{ supportSummary.open_count }} {{ supportSummary.open_count > 1 ? t('companyDetail.openPlural', 'ouverts') : t('companyDetail.openSingular', 'ouvert') }}
                 </span>
               </h2>
@@ -388,15 +388,15 @@
                 >
                   <div class="flex items-start justify-between gap-2">
                     <p class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ ticket.subject }}</p>
-                    <span :class="['shrink-0 rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest', ticketPriorityClass(ticket.priority)]">
+                    <span :class="['shrink-0 rounded-lg border px-2 py-0.5 text-xs font-black uppercase tracking-widest', ticketPriorityClass(ticket.priority)]">
                       {{ ticket.priority }}
                     </span>
                   </div>
                   <div class="mt-2 flex items-center justify-between">
-                    <span :class="['rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest', ticketStatusClass(ticket.status)]">
+                    <span :class="['rounded-lg border px-2 py-0.5 text-xs font-black uppercase tracking-widest', ticketStatusClass(ticket.status)]">
                       {{ ticket.status }}
                     </span>
-                    <span class="text-[10px] font-semibold text-slate-400">{{ ticket.messages_count }} {{ ticket.messages_count > 1 ? t('companyDetail.messagePlural', 'messages') : t('companyDetail.messageSingular', 'message') }}</span>
+                    <span class="text-xs font-semibold text-slate-400">{{ ticket.messages_count }} {{ ticket.messages_count > 1 ? t('companyDetail.messagePlural', 'messages') : t('companyDetail.messageSingular', 'message') }}</span>
                   </div>
                 </li>
               </ul>
@@ -738,7 +738,7 @@ function statusBadgeClass(status) {
     suspended: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 border-red-200 dark:border-red-800',
     expired: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700',
   }
-  return `text-[10px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-md border ${classes[status] || classes.expired}`
+  return `text-xs font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-md border ${classes[status] || classes.expired}`
 }
 
 function priorityBadgeClass(priority) {

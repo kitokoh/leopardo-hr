@@ -276,12 +276,12 @@ export default function FuelRotationsPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-slate-200 text-xs font-bold uppercase tracking-wide text-slate-500">
-                  <th className="px-3 py-2">{t(locale, 'fuel.rotations.name', 'Nom')}</th>
-                  <th className="px-3 py-2">{t(locale, 'fuel.rotations.station', 'Station')}</th>
-                  <th className="px-3 py-2">{t(locale, 'fuel.rotations.startTime', 'Début')}</th>
-                  <th className="px-3 py-2">{t(locale, 'fuel.rotations.endTime', 'Fin')}</th>
-                  <th className="px-3 py-2">{t(locale, 'fuel.rotations.assignments', 'Affectations')}</th>
-                  <th className="px-3 py-2" />
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.rotations.name', 'Nom')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.rotations.station', 'Station')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.rotations.startTime', 'Début')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.rotations.endTime', 'Fin')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.rotations.assignments', 'Affectations')}</th>
+                  <th scope="col" className="px-3 py-2" />
                 </tr>
               </thead>
               <tbody>

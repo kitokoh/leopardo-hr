@@ -627,7 +627,7 @@ export default function DashboardLayout({
                 <button
                   type="button"
                   onClick={() => setShowInterview(true)}
-                  className="hidden items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700 transition hover:bg-emerald-100 md:inline-flex"
+                  className="hidden items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700 transition hover:bg-emerald-100 md:inline-flex"
                 >
                   {labels.dashboard.resumeOnboarding}
                 </button>
@@ -646,7 +646,7 @@ export default function DashboardLayout({
                 >
                   <Bell className="h-5 w-5" aria-hidden="true" />
                   {unreadCount > 0 ? (
-                    <span className="absolute -right-1 -top-1 min-w-5 rounded-full bg-red-500 px-1.5 py-0.5 text-center text-[10px] font-bold text-white">
+                    <span className="absolute -right-1 -top-1 min-w-5 rounded-full bg-red-500 px-1.5 py-0.5 text-center text-xs font-bold text-white">
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   ) : null}
@@ -685,7 +685,7 @@ export default function DashboardLayout({
                             {!notification.is_read ? <span className="mt-1 h-2 w-2 rounded-full bg-emerald-500" aria-label={labels.dashboard.notificationUnread} /> : null}
                           </div>
                           <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600">{notification.body}</p>
-                          <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">{notification.type}</p>
+                          <p className="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{notification.type}</p>
                         </button>
                       )) : (
                         <p className="rounded-lg bg-transparent p-3 text-sm text-slate-600">{labels.dashboard.noNotifications}</p>

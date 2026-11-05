@@ -150,7 +150,7 @@ export default function HealthHomePage() {
                     key={kpi.label}
                     className="rounded-2xl border border-slate-200/60 bg-white/80 p-4 shadow-sm backdrop-blur-xl"
                   >
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{kpi.label}</p>
+                    <p className="text-xs font-black uppercase tracking-widest text-slate-500">{kpi.label}</p>
                     <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">{kpi.value}</p>
                   </div>
                 ))}
@@ -192,13 +192,13 @@ export default function HealthHomePage() {
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-50">
                   <tr>
-                    <th className="px-4 py-3 text-left font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">
                       {t(locale, 'health.patients.mrn', 'N° dossier')}
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">
                       {t(locale, 'health.patients.fullName', 'Nom complet')}
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">
                       {t(locale, 'health.patients.status', 'Statut')}
                     </th>
                   </tr>

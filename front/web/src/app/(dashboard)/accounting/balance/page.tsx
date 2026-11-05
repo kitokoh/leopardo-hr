@@ -114,11 +114,11 @@ export default function BalancePage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-app-border bg-transparent/50">
-                <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.chartCode')}</th>
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.chartLabel')}</th>
-                <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerDebit')}</th>
-                <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerCredit')}</th>
-                <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerBalance')}</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.chartCode')}</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.chartLabel')}</th>
+                <th scope="col" className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerDebit')}</th>
+                <th scope="col" className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerCredit')}</th>
+                <th scope="col" className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerBalance')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-app-border">

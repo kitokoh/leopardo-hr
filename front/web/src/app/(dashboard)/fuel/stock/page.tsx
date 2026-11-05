@@ -299,11 +299,11 @@ export default function FuelStockPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-slate-200 text-xs font-bold uppercase tracking-wide text-slate-500">
-                  <th className="px-3 py-2">{t(locale, 'fuel.stock.product', 'Produit')}</th>
-                  <th className="px-3 py-2">{t(locale, 'fuel.stock.station', 'Station')}</th>
-                  <th className="px-3 py-2">{t(locale, 'fuel.stock.quantity', 'Quantité (L)')}</th>
-                  <th className="px-3 py-2">{t(locale, 'fuel.stock.entryType', 'Type')}</th>
-                  <th className="px-3 py-2">{t(locale, 'fuel.stock.date', 'Date')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.stock.product', 'Produit')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.stock.station', 'Station')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.stock.quantity', 'Quantité (L)')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.stock.entryType', 'Type')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.stock.date', 'Date')}</th>
                 </tr>
               </thead>
               <tbody>

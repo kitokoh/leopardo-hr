@@ -77,7 +77,7 @@ export default function ContractsPage() {
       draft: 'bg-slate-100 text-slate-600',
     };
     const labels: Record<string, string> = { active: 'Actif', suspended: 'Suspendu', terminated: 'Termine', draft: 'Brouillon' };
-    return <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${styles[status] || styles.draft}`}>{labels[status] || status}</span>;
+    return <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${styles[status] || styles.draft}`}>{labels[status] || status}</span>;
   };
 
   const downloadPdf = async (id: number) => {
@@ -164,12 +164,12 @@ export default function ContractsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-app-border bg-transparent/50">
-                <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Employe</th>
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Type</th>
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Debut</th>
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Fin</th>
-                <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">Statut</th>
-                <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Actions</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Employe</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Type</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Debut</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Fin</th>
+                <th scope="col" className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">Statut</th>
+                <th scope="col" className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-app-border">

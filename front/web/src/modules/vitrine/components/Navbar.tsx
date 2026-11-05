@@ -340,7 +340,7 @@ export function Navbar({ overDarkStage = false }: Props) {
             </div>
             <div className="flex flex-col">
               <span className="font-black text-xl text-slate-900 dark:text-white leading-none">Leopardo</span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400/90">{copy.nav.brandTagline}</span>
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400/90">{copy.nav.brandTagline}</span>
             </div>
           </Link>
 

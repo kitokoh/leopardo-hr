@@ -512,18 +512,18 @@ export function OnboardingWizard({
                       )}
                     </div>
                     {isSkipped && (
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-slate-400">
                         {onboarding.skip}
                       </span>
                     )}
                     {quickStart && !isCompleted && !isSkipped && s.required === false && (
-                      <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-600">
+                      <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-amber-600">
                         {onboarding.later}
                       </span>
                     )}
                     {/* #R10 — estimation de temps pour les étapes non terminées */}
                     {!isCompleted && !isSkipped && STEP_ESTIMATED_MINUTES[s.step_key] && (
-                      <span className="shrink-0 text-[10px] font-semibold text-slate-500">
+                      <span className="shrink-0 text-xs font-semibold text-slate-500">
                         {onboarding.estimatedMinutes.replace('{n}', String(STEP_ESTIMATED_MINUTES[s.step_key]))}
                       </span>
                     )}

@@ -23,7 +23,7 @@
             @keydown.up.prevent="moveUp"
             @keydown.enter.prevent="selectCurrent"
           />
-          <kbd class="hidden sm:inline-flex px-2 py-0.5 text-[10px] font-mono text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 rounded">
+          <kbd class="hidden sm:inline-flex px-2 py-0.5 text-xs font-mono text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 rounded">
             ESC
           </kbd>
         </div>
@@ -48,7 +48,7 @@
               <div class="text-xs opacity-80 truncate font-medium" v-if="item.description">{{ item.description }}</div>
             </div>
             <span
-              class="text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-wider"
+              class="text-xs font-black px-2 py-1 rounded-lg uppercase tracking-wider"
               :class="index === activeIndex ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'"
               v-if="item.shortcut"
             >
@@ -61,7 +61,7 @@
           {{ noResultsLabel }}
         </div>
 
-        <div class="px-6 py-4 border-t border-slate-200/50 dark:border-slate-800/50 flex items-center gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+        <div class="px-6 py-4 border-t border-slate-200/50 dark:border-slate-800/50 flex items-center gap-6 text-xs font-bold uppercase tracking-widest text-slate-400">
           <span class="flex items-center gap-1.5"><kbd class="px-1.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-md font-mono text-slate-500">↑↓</kbd> {{ t('adminPalette.navNavigate') }}</span>
           <span class="flex items-center gap-1.5"><kbd class="px-1.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-md font-mono text-slate-500">↵</kbd> {{ t('adminPalette.navSelect') }}</span>
           <span class="flex items-center gap-1.5"><kbd class="px-1.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-md font-mono text-slate-500">esc</kbd> {{ t('adminPalette.navClose') }}</span>

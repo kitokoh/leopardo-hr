@@ -311,18 +311,18 @@ export default function SmartAttendanceSessionDetailPage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-app-border bg-slate-50/50">
-                        <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnType}</th>
-                        <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnTime}</th>
-                        <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnLatitude}</th>
-                        <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnLongitude}</th>
-                        <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnAccuracy}</th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnType}</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnTime}</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnLatitude}</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnLongitude}</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnAccuracy}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-app-border">
                       {session.location_events.map((ev) => (
                         <tr key={ev.id} className="hover:bg-slate-50/60">
                           <td className="px-6 py-3">
-                            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-slate-700">
+                            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-slate-700">
                               {ev.event_type}
                             </span>
                           </td>

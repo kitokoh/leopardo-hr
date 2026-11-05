@@ -174,10 +174,10 @@ export default function PartnerDashboard() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-app-border bg-transparent/50">
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.table.tenantId}</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.table.date}</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.table.status}</th>
-                  <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.table.amount}</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.table.tenantId}</th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.table.date}</th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.table.status}</th>
+                  <th scope="col" className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.table.amount}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-app-border">
@@ -186,7 +186,7 @@ export default function PartnerDashboard() {
                     <td className="px-6 py-4 font-mono text-sm font-bold text-slate-950">{comm.company_id.substring(0, 8)}...</td>
                     <td className="px-4 py-4 text-sm text-slate-500">{new Date(comm.created_at).toLocaleDateString()}</td>
                     <td className="px-4 py-4">
-                      <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${
+                      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${
                         comm.status === 'paid' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
                       }`}>
                         {comm.status === 'paid' ? labels.table.statusPaid : labels.table.statusPending}

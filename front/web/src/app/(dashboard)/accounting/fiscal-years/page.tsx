@@ -130,14 +130,14 @@ export default function FiscalYearsPage() {
         </motion.section>
       )}
 
-      <section className="overflow-hidden rounded-3xl border border-app-border bg-white shadow-sm">
+      <section className="overflow-x-auto rounded-3xl border border-app-border bg-white shadow-sm">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-app-border bg-transparent/50">
-              <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.fyYear')}</th>
-              <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.fyStatus')}</th>
-              <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.fyClosedAt')}</th>
-              <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500"> </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.fyYear')}</th>
+              <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.fyStatus')}</th>
+              <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.fyClosedAt')}</th>
+              <th scope="col" className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500"> </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-app-border">
@@ -150,7 +150,7 @@ export default function FiscalYearsPage() {
                 <tr key={year.year} className="transition-colors hover:bg-transparent/60">
                   <td className="px-6 py-4 font-mono text-sm font-black text-slate-800">{year.year}</td>
                   <td className="px-4 py-4">
-                    <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${year.status === 'open' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                    <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${year.status === 'open' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
                       {year.status === 'open' ? t(locale, 'accountingModule.fyStatusOpen') : t(locale, 'accountingModule.fyStatusClosed')}
                     </span>
                   </td>

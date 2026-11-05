@@ -373,7 +373,7 @@ export default function DiscoveryExplorer({
                 key={`${item.type}-${item.slug}`}
                 className="flex flex-col rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
               >
-                <span className="mb-1 text-[11px] font-bold uppercase tracking-wide text-amber-700">
+                <span className="mb-1 text-xs font-bold uppercase tracking-wide text-amber-700">
                   {typeLabel(locale, item.type)}
                 </span>
                 <h2 className="text-base font-bold text-slate-950">{item.name}</h2>

@@ -81,7 +81,7 @@
         <div v-for="check in checks" :key="check.id" class="py-3">
           <div class="flex flex-wrap items-center gap-2">
             <span class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ check.engine }}</span>
-            <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-black uppercase text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+            <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs font-black uppercase text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
               {{ check.method_badge }}
             </span>
             <span
@@ -100,7 +100,7 @@
           <p v-if="check.observed_text" class="mt-1 text-xs italic text-slate-600 dark:text-slate-400">
             « {{ check.observed_text }} »
           </p>
-          <p class="mt-1 text-[11px] text-slate-400">
+          <p class="mt-1 text-xs text-slate-400">
             {{ formatDate(check.observed_at) }}
             <span v-if="!check.supports_quantified_claim">
               — {{ t('searchIntel.geo.noQuantifiedClaim', 'ne permet pas une affirmation chiffree') }}

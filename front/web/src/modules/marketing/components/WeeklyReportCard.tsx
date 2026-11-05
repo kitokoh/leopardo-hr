@@ -60,7 +60,7 @@ export function WeeklyReportCard() {
       <div className="flex items-center justify-between border-b border-app-border px-6 py-4">
         <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">{t(locale, 'marketing.web.weeklyReport.title')}</h2>
         {report ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-violet-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-700">
+          <span className="inline-flex items-center gap-1 rounded-full bg-violet-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-violet-700">
             <Sparkles className="h-3 w-3" />
             {report.summary_source === 'ai' ? t(locale, 'marketing.aiSummary') : t(locale, 'marketing.autoSummary')}
           </span>
@@ -77,28 +77,28 @@ export function WeeklyReportCard() {
               <div className="rounded-2xl bg-slate-50 p-4">
                 <TrendingUp className="mb-2 h-4 w-4 text-emerald-600" />
                 <p data-testid="weekly-report-published" className="text-xl font-black text-slate-950">{report.stats.posts_published}</p>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{t(locale, 'marketing.web.weeklyReport.published')}</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'marketing.web.weeklyReport.published')}</p>
               </div>
               <div className="rounded-2xl bg-slate-50 p-4">
                 <AlertTriangle className="mb-2 h-4 w-4 text-red-500" />
                 <p data-testid="weekly-report-failed" className="text-xl font-black text-slate-950">{report.stats.posts_failed}</p>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{t(locale, 'marketing.web.weeklyReport.failed')}</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'marketing.web.weeklyReport.failed')}</p>
               </div>
               <div className="rounded-2xl bg-slate-50 p-4">
                 <CalendarClock className="mb-2 h-4 w-4 text-info" />
                 <p data-testid="weekly-report-upcoming" className="text-xl font-black text-slate-950">{report.stats.posts_scheduled_upcoming}</p>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{t(locale, 'marketing.web.weeklyReport.upcoming')}</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'marketing.web.weeklyReport.upcoming')}</p>
               </div>
               <div className="rounded-2xl bg-slate-50 p-4">
                 <Mail className="mb-2 h-4 w-4 text-emerald-600" />
                 <p data-testid="weekly-report-emails" className="text-xl font-black text-slate-950">{report.stats.campaign_emails_sent ?? 0}</p>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{t(locale, 'marketing.web.weeklyReport.emails')}</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'marketing.web.weeklyReport.emails')}</p>
               </div>
             </div>
             {Object.keys(report.stats.publications_by_platform).length > 0 ? (
               <div data-testid="weekly-report-platforms" className="flex flex-wrap gap-1.5">
                 {Object.entries(report.stats.publications_by_platform).map(([platform, total]) => (
-                  <span key={platform} className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                  <span key={platform} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-slate-600">
                     {platform} · {total}
                   </span>
                 ))}

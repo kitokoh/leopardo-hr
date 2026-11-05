@@ -268,11 +268,11 @@ export function CommerceCrudTable({ config }: { config: CommerceCrudConfig }) {
           <thead className="bg-slate-50">
             <tr>
               {config.columns.map((col) => (
-                <th key={col.key} className="px-4 py-3 text-start font-semibold text-slate-700">
+                <th key={col.key} scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                   {col.label}
                 </th>
               ))}
-              <th className="px-4 py-3 text-end font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-end font-semibold text-slate-700">
                 {t(locale, 'commerce.table.actions', 'Actions')}
               </th>
             </tr>

@@ -446,11 +446,11 @@ export default function DashboardPage() {
             <div className="grid grid-cols-2 gap-2 text-center">
               <div className="rounded-xl bg-emerald-50 px-4 py-3">
                 <p className="text-2xl font-black text-emerald-700">{activeModules}</p>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-900">{i18nT(locale, 'dashboard.active_employees', 'Actifs')}</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-emerald-900">{i18nT(locale, 'dashboard.active_employees', 'Actifs')}</p>
               </div>
               <div className="rounded-xl bg-amber-50 px-4 py-3">
                 <p className="text-2xl font-black text-amber-700">{lockedModules}</p>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-amber-900">{i18nT(locale, 'dashboard.upgrade', 'Upgrade')}</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-amber-900">{i18nT(locale, 'dashboard.upgrade', 'Upgrade')}</p>
               </div>
             </div>
           </div>

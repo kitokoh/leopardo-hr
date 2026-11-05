@@ -294,13 +294,13 @@ export default function PayrollPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-app-border bg-transparent/50">
-                    <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnEmployee}</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnPeriod}</th>
-                    <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnGross}</th>
-                    <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnNet}</th>
-                    <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnStatus}</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnCompliance}</th>
-                    <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnActions}</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnEmployee}</th>
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnPeriod}</th>
+                    <th scope="col" className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnGross}</th>
+                    <th scope="col" className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnNet}</th>
+                    <th scope="col" className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnStatus}</th>
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnCompliance}</th>
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnActions}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-app-border">
@@ -315,7 +315,7 @@ export default function PayrollPage() {
                       <td className="px-4 py-4 text-right tabular-nums text-slate-900">{formatCurrency(slip.gross_salary)}</td>
                       <td className="px-4 py-4 text-right tabular-nums font-bold text-emerald-700">{formatCurrency(slip.net_salary)}</td>
                       <td className="px-4 py-4 text-center">
-                        <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${slip.status === 'validated' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
+                        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${slip.status === 'validated' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
                           {slip.status === 'validated' ? labels.statusValidated : labels.statusDraft}
                         </span>
                       </td>
@@ -367,12 +367,12 @@ export default function PayrollPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-app-border bg-transparent/50">
-                    <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnPeriod}</th>
-                    <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnEmployees}</th>
-                    <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnTotalGross}</th>
-                    <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnTotalNet}</th>
-                    <th className="px-6 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnStatus}</th>
-                    <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnActions}</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnPeriod}</th>
+                    <th scope="col" className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnEmployees}</th>
+                    <th scope="col" className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnTotalGross}</th>
+                    <th scope="col" className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnTotalNet}</th>
+                    <th scope="col" className="px-6 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnStatus}</th>
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnActions}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-app-border">
@@ -389,13 +389,13 @@ export default function PayrollPage() {
                       <td className="px-6 py-4 text-center">
                         {isPlaceholderRun(run) && (
                           <span
-                            className="mb-1 inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-red-700 ring-1 ring-red-200 dark:bg-red-950/30 dark:text-red-400 dark:ring-red-900/40"
+                            className="mb-1 inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-black uppercase tracking-widest text-red-700 ring-1 ring-red-200 dark:bg-red-950/30 dark:text-red-400 dark:ring-red-900/40"
                             title={runCompliance(run)?.warning ?? undefined}
                           >
                             ⚠ {labels.runPlaceholderBadge}
                           </span>
                         )}
-                        <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${runStatusTone(run.status)}`}>
+                        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${runStatusTone(run.status)}`}>
                           {runStatusLabel(run.status)}
                         </span>
                       </td>

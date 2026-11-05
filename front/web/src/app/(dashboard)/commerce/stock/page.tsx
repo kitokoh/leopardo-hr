@@ -107,16 +107,16 @@ function LevelsTable({
       <table className="min-w-full divide-y divide-slate-200 text-sm">
         <thead className="bg-slate-50">
           <tr>
-            <th className="px-4 py-3 text-start font-semibold text-slate-700">
+            <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
               {t(locale, 'commerce.stock.location', 'Emplacement')}
             </th>
-            <th className="px-4 py-3 text-start font-semibold text-slate-700">
+            <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
               {t(locale, 'commerce.stock.product', 'Produit')}
             </th>
-            <th className="px-4 py-3 text-start font-semibold text-slate-700">
+            <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
               {t(locale, 'commerce.stock.quantity', 'Quantité')}
             </th>
-            <th className="px-4 py-3 text-start font-semibold text-slate-700">
+            <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
               {t(locale, 'commerce.stock.threshold', 'Seuil d’alerte')}
             </th>
           </tr>
@@ -572,22 +572,22 @@ export default function CommerceStockPage() {
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-50">
                   <tr>
-                    <th className="px-4 py-3 text-start font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                       {t(locale, 'commerce.stock.date', 'Date')}
                     </th>
-                    <th className="px-4 py-3 text-start font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                       {t(locale, 'commerce.stock.location', 'Emplacement')}
                     </th>
-                    <th className="px-4 py-3 text-start font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                       {t(locale, 'commerce.stock.product', 'Produit')}
                     </th>
-                    <th className="px-4 py-3 text-start font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                       {t(locale, 'commerce.stock.delta', 'Delta')}
                     </th>
-                    <th className="px-4 py-3 text-start font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                       {t(locale, 'commerce.stock.reason', 'Motif')}
                     </th>
-                    <th className="px-4 py-3 text-start font-semibold text-slate-700">
+                    <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                       {t(locale, 'commerce.stock.note', 'Note')}
                     </th>
                   </tr>

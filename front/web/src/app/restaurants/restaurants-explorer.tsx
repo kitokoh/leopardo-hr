@@ -162,7 +162,7 @@ export default function RestaurantsExplorer({
         aria-label={t(locale, 'restaurant.public.searchLabel')}
       >
         <label className="block space-y-1 lg:col-span-2">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+          <span className="text-xs font-black uppercase tracking-widest text-slate-500">
             {t(locale, 'restaurant.public.searchLabel')}
           </span>
           <input
@@ -175,7 +175,7 @@ export default function RestaurantsExplorer({
           />
         </label>
         <label className="block space-y-1">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+          <span className="text-xs font-black uppercase tracking-widest text-slate-500">
             {t(locale, 'restaurant.public.cityLabel')}
           </span>
           <input
@@ -188,7 +188,7 @@ export default function RestaurantsExplorer({
           />
         </label>
         <label className="block space-y-1">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+          <span className="text-xs font-black uppercase tracking-widest text-slate-500">
             {t(locale, 'restaurant.public.typeLabel')}
           </span>
           <select
@@ -206,7 +206,7 @@ export default function RestaurantsExplorer({
           </select>
         </label>
         <label className="block space-y-1">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+          <span className="text-xs font-black uppercase tracking-widest text-slate-500">
             {t(locale, 'restaurant.public.cuisineLabel')}
           </span>
           <input

@@ -254,7 +254,7 @@ function PlanSummaryCard({
             >
               {copy.annual}
               {annualDiscountPct !== null && (
-                <span className="ml-1.5 text-[10px] font-black">-{annualDiscountPct}%</span>
+                <span className="ml-1.5 text-xs font-black">-{annualDiscountPct}%</span>
               )}
             </button>
           </div>
@@ -772,7 +772,7 @@ function StepPayment({
               className={`${inputBase} pl-10 font-mono ${isSandboxCard ? 'border-amber-400 ring-amber-500/10' : ''}`}
             />
             {isSandboxCard && (
-              <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] font-black text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded-full">
+              <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-black text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded-full">
                 {copy.payment.testBadge}
               </span>
             )}

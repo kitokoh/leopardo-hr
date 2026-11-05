@@ -150,7 +150,7 @@ export default function LetteringPage() {
             className="rounded-xl border border-app-border bg-white px-3 py-2.5 text-sm"
           />
         </label>
-        <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${closed ? 'bg-slate-100 text-slate-500' : balanced ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
+        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${closed ? 'bg-slate-100 text-slate-500' : balanced ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
           {closed ? t(locale, 'accountingModule.lgClosed') : balanced ? t(locale, 'accountingModule.lgBalanced') : t(locale, 'accountingModule.lgUnbalanced')}
         </span>
         {error && (
@@ -207,13 +207,13 @@ export default function LetteringPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-app-border bg-transparent/50">
-                <th className="w-12 px-4 py-3">{t(locale, 'accountingModule.lgSelect')}</th>
-                <th className="px-2 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerDate')}</th>
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerPiece')}</th>
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerAccount')}</th>
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerDesc')}</th>
-                <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerDebit')}</th>
-                <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerCredit')}</th>
+                <th scope="col" className="w-12 px-4 py-3">{t(locale, 'accountingModule.lgSelect')}</th>
+                <th scope="col" className="px-2 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerDate')}</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerPiece')}</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerAccount')}</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerDesc')}</th>
+                <th scope="col" className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerDebit')}</th>
+                <th scope="col" className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerCredit')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-app-border">

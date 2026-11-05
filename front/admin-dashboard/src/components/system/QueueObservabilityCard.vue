@@ -61,7 +61,7 @@
       <!-- Redis + queue summary -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div class="rounded-xl border border-slate-200/60 dark:border-slate-800/60 p-3">
-          <div class="text-[10px] font-black uppercase tracking-widest text-slate-400">Redis</div>
+          <div class="text-xs font-black uppercase tracking-widest text-slate-400">Redis</div>
           <div class="mt-1 flex items-center gap-1.5">
             <span :class="['h-2 w-2 rounded-full', data?.redis?.ok ? 'bg-emerald-500' : 'bg-red-500']"></span>
             <span class="text-sm font-bold" :class="data?.redis?.ok ? 'text-emerald-600' : 'text-red-600'">
@@ -70,11 +70,11 @@
           </div>
         </div>
         <div class="rounded-xl border border-slate-200/60 dark:border-slate-800/60 p-3">
-          <div class="text-[10px] font-black uppercase tracking-widest text-slate-400">Profondeur totale</div>
+          <div class="text-xs font-black uppercase tracking-widest text-slate-400">Profondeur totale</div>
           <div class="mt-1 text-sm font-bold text-slate-900 dark:text-white">{{ data?.queue_total_depth ?? 0 }}</div>
         </div>
         <div class="rounded-xl border border-slate-200/60 dark:border-slate-800/60 p-3">
-          <div class="text-[10px] font-black uppercase tracking-widest text-slate-400">Jobs échoués</div>
+          <div class="text-xs font-black uppercase tracking-widest text-slate-400">Jobs échoués</div>
           <div
             class="mt-1 text-sm font-bold"
             :class="data?.alerts?.failed_jobs ? 'text-red-600' : 'text-slate-900 dark:text-white'"
@@ -83,7 +83,7 @@
           </div>
         </div>
         <div class="rounded-xl border border-slate-200/60 dark:border-slate-800/60 p-3">
-          <div class="text-[10px] font-black uppercase tracking-widest text-slate-400">Connexion file</div>
+          <div class="text-xs font-black uppercase tracking-widest text-slate-400">Connexion file</div>
           <div class="mt-1 text-sm font-bold text-slate-900 dark:text-white">{{ data?.queue_connection ?? '—' }}</div>
         </div>
       </div>
@@ -119,7 +119,7 @@
             <div class="flex items-center gap-2 flex-shrink-0">
               <span
                 :class="[
-                  'px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest',
+                  'px-2 py-0.5 rounded-full text-xs font-black uppercase tracking-widest',
                   task.status === 'success' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
                   task.status === 'failed' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
                   'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
@@ -127,7 +127,7 @@
               >
                 {{ task.status }}
               </span>
-              <span v-if="task.is_stale" class="text-[10px] font-black uppercase tracking-widest text-amber-600">stale</span>
+              <span v-if="task.is_stale" class="text-xs font-black uppercase tracking-widest text-amber-600">stale</span>
               <span class="text-slate-500 dark:text-slate-400">{{ formatTime(task.finished_at || task.started_at) }}</span>
             </div>
           </div>

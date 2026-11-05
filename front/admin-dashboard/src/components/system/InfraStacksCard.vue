@@ -57,7 +57,7 @@
               </div>
               <span
                 v-if="stack.active"
-                class="rounded-full bg-emerald-600 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-white"
+                class="rounded-full bg-emerald-600 px-2 py-0.5 text-xs font-black uppercase tracking-widest text-white"
               >
                 {{ t('systemPage.infra.activeBadge') }}
               </span>
@@ -74,7 +74,7 @@
               </div>
             </dl>
 
-            <p v-if="stack.status_note" class="mt-3 line-clamp-3 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+            <p v-if="stack.status_note" class="mt-3 line-clamp-3 text-xs leading-snug text-slate-500 dark:text-slate-400">
               {{ stack.status_note }}
             </p>
 
@@ -96,7 +96,7 @@
       </section>
     </div>
 
-    <p class="border-t border-slate-200 px-6 py-3 text-[11px] text-slate-400 dark:border-slate-700">
+    <p class="border-t border-slate-200 px-6 py-3 text-xs text-slate-400 dark:border-slate-700">
       {{ dispatchConfigured ? t('systemPage.infra.hintDispatch') : t('systemPage.infra.hintNoToken') }}
     </p>
   </div>

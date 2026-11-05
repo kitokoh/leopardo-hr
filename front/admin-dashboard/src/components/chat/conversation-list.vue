@@ -94,7 +94,7 @@
               </span>
               <span
                 v-if="thread.kind === 'group'"
-                class="shrink-0 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
+                class="shrink-0 rounded-full bg-emerald-100 px-1.5 py-0.5 text-xs font-bold uppercase text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
               >
                 {{ t('chatHub.list.kindGroup') }}
               </span>
@@ -103,7 +103,7 @@
               <span class="truncate text-xs text-slate-400">
                 {{ thread.subject_type ? subjectLabel(thread) : t('chatHub.list.noSubject') }}
               </span>
-              <span class="shrink-0 text-[11px] text-slate-400">{{ formatDate(thread.last_message_at) }}</span>
+              <span class="shrink-0 text-xs text-slate-400">{{ formatDate(thread.last_message_at) }}</span>
             </span>
           </span>
 

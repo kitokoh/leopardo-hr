@@ -194,7 +194,7 @@ export default function ReportsPage() {
             <div className="mb-4 flex-1 space-y-2">
               {report.params.map(p => (
                 <div key={p.key}>
-                  <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-slate-400">{p.label}</label>
+                  <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-400">{p.label}</label>
                   <input
                     type={p.type}
                     value={params[report.id]?.[p.key] || ''}

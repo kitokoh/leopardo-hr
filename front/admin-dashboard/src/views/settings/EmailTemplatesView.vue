@@ -6,7 +6,7 @@
         <p class="mt-1 max-w-2xl text-sm text-slate-500 dark:text-slate-400">{{ t('emailsAdmin.subtitle') }}</p>
       </div>
       <span
-        class="rounded-full bg-amber-50 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+        class="rounded-full bg-amber-50 px-3 py-1 text-xs font-black uppercase tracking-widest text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
       >
         {{ t('emailsAdmin.bodyHint') }}
       </span>
@@ -34,7 +34,7 @@
           <span class="truncate">{{ labelFor(template) }}</span>
           <span
             v-if="isCustomised(template)"
-            class="shrink-0 rounded-full bg-amber-400/90 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-950"
+            class="shrink-0 rounded-full bg-amber-400/90 px-2 py-0.5 text-xs font-black uppercase tracking-wider text-amber-950"
           >
             {{ t('emailsAdmin.overridden') }}
           </span>

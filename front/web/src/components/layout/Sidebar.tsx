@@ -72,7 +72,7 @@ function sidebarLinkClass(active: boolean): string {
 
 function SidebarSectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <p className="px-1 pb-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
+    <p className="px-1 pb-1 text-xs font-black uppercase tracking-widest text-slate-500">
       {children}
     </p>
   );
@@ -111,7 +111,7 @@ function SidebarModuleLink({
         {module.state === 'trial' ? (
           <span
             data-testid="sidebar-module-trial-badge"
-            className="rounded-md border border-amber-200 bg-amber-50 px-1 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-600"
+            className="rounded-md border border-amber-200 bg-amber-50 px-1 py-0.5 text-xs font-black uppercase tracking-widest text-amber-600"
           >
             Trial
           </span>
@@ -158,7 +158,7 @@ function SidebarGroupAccordion({
         aria-controls={`dashboard-${entry.id}-menu-panel`}
         onClick={onToggle}
         className={[
-          'flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-[11px] font-black uppercase tracking-tight transition',
+          'flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-xs font-black uppercase tracking-tight transition',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40',
           active ? 'text-emerald-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900',
         ].join(' ')}
@@ -223,7 +223,7 @@ function BusinessCard({
     >
       <span
         className={[
-          'flex shrink-0 items-center justify-center rounded-xl border text-[11px] font-black uppercase',
+          'flex shrink-0 items-center justify-center rounded-xl border text-xs font-black uppercase',
           compact ? 'h-7 w-7' : 'h-9 w-9',
           active
             ? 'border-emerald-200 bg-white text-emerald-700'
@@ -235,7 +235,7 @@ function BusinessCard({
       </span>
       <span className="min-w-0 flex-1 truncate">{label}</span>
       {module.state === 'trial' ? (
-        <span className="rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-600">Trial</span>
+        <span className="rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-xs font-black uppercase tracking-widest text-amber-600">Trial</span>
       ) : null}
     </Link>
   );

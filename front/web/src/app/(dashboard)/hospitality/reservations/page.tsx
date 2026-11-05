@@ -148,11 +148,11 @@ export default function HospitalityReservationsPage() {
           <table className="w-full text-sm">
             <thead className="bg-neutral-50 text-left text-neutral-600">
               <tr>
-                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.reservations.col.reference')}</th>
-                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.reservations.col.guest')}</th>
-                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.reservations.col.dates')}</th>
-                <th className="px-4 py-2 font-medium">{t(locale, 'hospitality.reservations.col.status')}</th>
-                <th className="px-4 py-2" />
+                <th scope="col" className="px-4 py-2 font-medium">{t(locale, 'hospitality.reservations.col.reference')}</th>
+                <th scope="col" className="px-4 py-2 font-medium">{t(locale, 'hospitality.reservations.col.guest')}</th>
+                <th scope="col" className="px-4 py-2 font-medium">{t(locale, 'hospitality.reservations.col.dates')}</th>
+                <th scope="col" className="px-4 py-2 font-medium">{t(locale, 'hospitality.reservations.col.status')}</th>
+                <th scope="col" className="px-4 py-2" />
               </tr>
             </thead>
             <tbody>

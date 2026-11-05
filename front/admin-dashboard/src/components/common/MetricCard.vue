@@ -15,7 +15,7 @@
       <span
         v-if="reliability"
         :class="reliabilityClass"
-        class="shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-black uppercase tracking-tight"
+        class="shrink-0 rounded-full border px-2 py-0.5 text-xs font-black uppercase tracking-tight"
         :title="reliabilityTitle"
       >
         {{ reliabilityLabel }}

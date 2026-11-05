@@ -126,14 +126,14 @@ export function Footer() {
               </div>
               <div className="flex flex-col">
                 <span className="font-black text-lg text-white leading-none tracking-tight">Leopardo</span>
-                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-amber-400/90 mt-0.5">
+                <span className="text-xs font-bold uppercase tracking-[0.2em] text-amber-400/90 mt-0.5">
                   {copy.nav.brandTagline}
                 </span>
               </div>
             </Link>
 
             {/* Statut opérationnel live */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-[11px] font-semibold text-emerald-300 shadow-sm shadow-emerald-950/50 mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-xs font-semibold text-emerald-300 shadow-sm shadow-emerald-950/50 mb-4">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
@@ -204,7 +204,7 @@ export function Footer() {
                       >
                         <span>{link}</span>
                         {badge && (
-                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border leading-none ${badge.color}`}>
+                          <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full border leading-none ${badge.color}`}>
                             {badge.label}
                           </span>
                         )}

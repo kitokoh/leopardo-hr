@@ -226,11 +226,11 @@ export default function ShareAccessesPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-app-border bg-transparent/50">
-                    <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'shareAccesses.dateHeader')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'shareAccesses.actionHeader')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'shareAccesses.ipHeader')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'shareAccesses.userAgentHeader')}</th>
-                    <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'shareAccesses.requestIdHeader')}</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'shareAccesses.dateHeader')}</th>
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'shareAccesses.actionHeader')}</th>
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'shareAccesses.ipHeader')}</th>
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'shareAccesses.userAgentHeader')}</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'shareAccesses.requestIdHeader')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-app-border">
@@ -239,7 +239,7 @@ export default function ShareAccessesPage() {
                       <td className="whitespace-nowrap px-6 py-4 font-medium text-slate-700">{formatDate(access.created_at)}</td>
                       <td className="px-4 py-4">
                         <span
-                          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${
+                          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${
                             access.action === 'accounting.share.download'
                               ? 'bg-emerald-50 text-emerald-700'
                               : 'bg-sky-50 text-sky-700'

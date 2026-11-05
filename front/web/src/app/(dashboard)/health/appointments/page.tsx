@@ -169,12 +169,12 @@ export default function HealthAppointmentsPage() {
           <table className="min-w-full divide-y divide-slate-200 text-sm">
             <thead className="bg-slate-50">
               <tr>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.appointments.slot', 'Créneau')}</th>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.appointments.patient', 'Patient')}</th>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.appointments.practitioner', 'Praticien')}</th>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.appointments.reason', 'Motif')}</th>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.appointments.status', 'Statut')}</th>
-                <th className="px-4 py-3 text-right font-semibold text-slate-700" aria-label="Actions" />
+                <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.appointments.slot', 'Créneau')}</th>
+                <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.appointments.patient', 'Patient')}</th>
+                <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.appointments.practitioner', 'Praticien')}</th>
+                <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.appointments.reason', 'Motif')}</th>
+                <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.appointments.status', 'Statut')}</th>
+                <th scope="col" className="px-4 py-3 text-right font-semibold text-slate-700" aria-label={t(locale, 'common.actions', 'Actions')} />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

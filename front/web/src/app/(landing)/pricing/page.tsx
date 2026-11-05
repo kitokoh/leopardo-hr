@@ -854,7 +854,7 @@ export default function PricingPage() {
             <table className="w-full min-w-[720px]">
               <thead>
                 <tr className="bg-transparent dark:bg-slate-900">
-                  <th className="text-left py-5 px-6 font-bold text-slate-900 dark:text-white text-sm w-[32%]">
+                  <th scope="col" className="text-left py-5 px-6 font-bold text-slate-900 dark:text-white text-sm w-[32%]">
                     {copy.comparison.featureColumn}
                   </th>
                   {plans.map((plan, i) => {
@@ -862,6 +862,7 @@ export default function PricingPage() {
                     const isFree = plan.price === '0';
                     return (
                       <th
+                        scope="col"
                         key={plan.name}
                         className={`text-center py-5 px-4 font-black text-sm ${
                           plan.popular

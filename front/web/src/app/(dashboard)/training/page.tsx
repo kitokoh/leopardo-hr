@@ -140,7 +140,7 @@ export default function TrainingPage() {
       cancelled: { class: 'bg-red-50 text-red-700', label: 'Annule' },
     };
     const style = map[status] || map.scheduled;
-    return <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${style.class}`}>{style.label}</span>;
+    return <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${style.class}`}>{style.label}</span>;
   };
 
   const categoryCounts = courses.reduce<Record<string, number>>((acc, c) => {
@@ -221,7 +221,7 @@ export default function TrainingPage() {
                     <div className="flex-1">
                       <div className="mb-1 flex items-center gap-2">
                         <h3 className="text-sm font-bold text-slate-950">{course.title}</h3>
-                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-slate-500">
                           {TYPE_LABELS[course.type] ?? course.type}
                         </span>
                       </div>

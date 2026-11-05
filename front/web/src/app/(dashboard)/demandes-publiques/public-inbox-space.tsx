@@ -341,7 +341,7 @@ export function PublicInboxSpace() {
                             {thread.title !== '' ? thread.title : publicInboxT(locale, 'noSlug')}
                           </span>
                           {thread.unread ? (
-                            <span className="shrink-0 rounded-full bg-emerald-600 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-white">
+                            <span className="shrink-0 rounded-full bg-emerald-600 px-1.5 py-0.5 text-xs font-semibold uppercase text-white">
                               {publicInboxT(locale, 'unread')}
                             </span>
                           ) : null}
@@ -477,7 +477,7 @@ export function PublicInboxSpace() {
                                     <p className="whitespace-pre-wrap break-words">{message.body}</p>
                                   )}
                                   <span
-                                    className={`mt-1 flex items-center gap-1 text-[10px] ${
+                                    className={`mt-1 flex items-center gap-1 text-xs ${
                                       mine ? 'text-emerald-50/80' : 'text-slate-500'
                                     }`}
                                   >

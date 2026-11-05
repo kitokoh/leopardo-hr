@@ -372,7 +372,7 @@ export default function SupportPage() {
                 type="button"
                 onClick={() => void backToList()}
                 data-testid="support-back-to-list"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-app-border px-3 py-1.5 text-[11px] font-bold text-slate-600 transition hover:bg-slate-100"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-app-border px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-slate-100"
               >
                 <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" aria-hidden="true" />
                 {supportTicketsT(locale, 'back_to_list')}
@@ -381,14 +381,14 @@ export default function SupportPage() {
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <span
                   data-testid="support-detail-status"
-                  className={`rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${supportStatusBadgeClass(selectedTicket.status)}`}
+                  className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${supportStatusBadgeClass(selectedTicket.status)}`}
                 >
                   {supportStatusLabel(locale, selectedTicket.status)}
                 </span>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-slate-600">
                   {supportCategoryLabel(locale, selectedTicket.category)}
                 </span>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-slate-600">
                   {supportPriorityLabel(locale, selectedTicket.priority)}
                 </span>
               </div>
@@ -398,7 +398,7 @@ export default function SupportPage() {
               <div className="flex flex-wrap items-center gap-2">
                 {confirmClose ? (
                   <>
-                    <span className="text-[11px] font-bold text-slate-600">
+                    <span className="text-xs font-bold text-slate-600">
                       {supportTicketsT(locale, 'close_confirm_title')}
                     </span>
                     <button
@@ -406,14 +406,14 @@ export default function SupportPage() {
                       onClick={() => void handleClose()}
                       disabled={closing}
                       data-testid="support-close-confirm"
-                      className="rounded-xl bg-red-600 px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-red-700 disabled:opacity-60"
+                      className="rounded-xl bg-red-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-red-700 disabled:opacity-60"
                     >
                       {supportTicketsT(locale, 'close_confirm')}
                     </button>
                     <button
                       type="button"
                       onClick={() => setConfirmClose(false)}
-                      className="rounded-xl border border-app-border px-3 py-1.5 text-[11px] font-bold text-slate-600 transition hover:bg-slate-100"
+                      className="rounded-xl border border-app-border px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-slate-100"
                     >
                       {supportTicketsT(locale, 'cancel')}
                     </button>
@@ -427,7 +427,7 @@ export default function SupportPage() {
                       setNotice(null);
                     }}
                     data-testid="support-close-toggle"
-                    className="inline-flex items-center gap-1.5 rounded-xl border border-app-border px-3 py-1.5 text-[11px] font-bold text-slate-600 transition hover:bg-slate-100"
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-app-border px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-slate-100"
                   >
                     <XCircle className="h-3.5 w-3.5" aria-hidden="true" />
                     {supportTicketsT(locale, 'close_action')}
@@ -449,7 +449,7 @@ export default function SupportPage() {
                     : 'ms-auto border-app-border bg-slate-50'
                 }`}
               >
-                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
                   {supportTicketsT(locale, item.from_platform ? 'from_platform' : 'from_company')}
                   {item.created_at ? ` — ${formatDate(item.created_at)}` : ''}
                 </p>
@@ -627,7 +627,7 @@ export default function SupportPage() {
           </p>
         </div>
 
-        <div className="hidden gap-4 border-b border-app-border px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 md:grid md:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.3fr)]">
+        <div className="hidden gap-4 border-b border-app-border px-6 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 md:grid md:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.3fr)]">
           <span>{supportTicketsT(locale, 'field_subject')}</span>
           <span>{supportTicketsT(locale, 'field_category')}</span>
           <span>{supportTicketsT(locale, 'field_priority')}</span>
@@ -662,7 +662,7 @@ export default function SupportPage() {
                 <span>
                   <span
                     data-testid={`support-ticket-status-${ticket.id}`}
-                    className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${supportStatusBadgeClass(ticket.status)}`}
+                    className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${supportStatusBadgeClass(ticket.status)}`}
                   >
                     {supportStatusLabel(locale, ticket.status)}
                   </span>

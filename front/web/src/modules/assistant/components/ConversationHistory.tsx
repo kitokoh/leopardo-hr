@@ -118,7 +118,7 @@ export function ConversationHistory({
                     </span>
                     <span className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-slate-500">
                       <span>{conversationDate(conversation, locale)}</span>
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600">
                         {ta(locale, 'tokens_label', { count: conversation.token_count })}
                       </span>
                     </span>

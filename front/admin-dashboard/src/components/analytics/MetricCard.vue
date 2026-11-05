@@ -56,7 +56,7 @@
 
       <!-- Mini chart or progress bar -->
       <div v-if="showProgress" class="mt-4 animate-slide-up">
-        <div class="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1.5">
+        <div class="flex items-center justify-between text-xs font-black uppercase tracking-widest text-slate-500 mb-1.5">
           <span>Progression</span>
           <span>{{ progressValue }}%</span>
         </div>

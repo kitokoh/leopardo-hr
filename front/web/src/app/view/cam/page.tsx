@@ -166,20 +166,20 @@ export default function PublicCameraViewerPage() {
 
               <dl className="space-y-3 text-sm">
                 <div>
-                  <dt className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.viewer.streamUrl')}</dt>
+                  <dt className="text-xs font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.viewer.streamUrl')}</dt>
                   <dd className="font-mono text-xs break-all text-slate-800">{payload?.stream_url ?? ''}</dd>
                 </div>
                 <div>
-                  <dt className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.viewer.streamToken')}</dt>
+                  <dt className="text-xs font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.viewer.streamToken')}</dt>
                   <dd className="font-mono text-xs break-all text-slate-800">{payload?.stream_token ?? ''}</dd>
                 </div>
                 <div>
-                  <dt className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.viewer.expiresAt')}</dt>
+                  <dt className="text-xs font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.viewer.expiresAt')}</dt>
                   <dd className="text-slate-800">{formatDate(payload?.expires_at)}</dd>
                 </div>
                 {payload?.granted_to_name ? (
                   <div>
-                    <dt className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.viewer.grantedTo')}</dt>
+                    <dt className="text-xs font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.viewer.grantedTo')}</dt>
                     <dd className="text-slate-800">{payload.granted_to_name}</dd>
                   </div>
                 ) : null}

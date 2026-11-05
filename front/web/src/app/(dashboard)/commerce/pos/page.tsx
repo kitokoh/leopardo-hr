@@ -654,16 +654,17 @@ export default function CommercePosPage() {
                   {t(locale, 'commerce.common.status', 'Statut')} :{' '}
                   {t(locale, `commerce.orderStatus.${receipt.status}`, receipt.status)}
                 </p>
-                <table className="mt-4 min-w-full text-sm">
+                <div className="mt-4 overflow-x-auto">
+                <table className="min-w-full text-sm">
                   <thead>
                     <tr className="border-b border-slate-200 text-start">
-                      <th className="py-2 text-start font-semibold text-slate-700">
+                      <th scope="col" className="py-2 text-start font-semibold text-slate-700">
                         {t(locale, 'commerce.pos.item', 'Article')}
                       </th>
-                      <th className="py-2 text-start font-semibold text-slate-700">
+                      <th scope="col" className="py-2 text-start font-semibold text-slate-700">
                         {t(locale, 'commerce.pos.quantity', 'Quantité')}
                       </th>
-                      <th className="py-2 text-end font-semibold text-slate-700">
+                      <th scope="col" className="py-2 text-end font-semibold text-slate-700">
                         {t(locale, 'commerce.pos.lineTotal', 'Total ligne')}
                       </th>
                     </tr>
@@ -680,6 +681,7 @@ export default function CommercePosPage() {
                     ))}
                   </tbody>
                 </table>
+                </div>
                 <div className="mt-3 space-y-1 border-t border-slate-200 pt-3 text-sm">
                   <p className="flex justify-between">
                     <span className="text-slate-600">{t(locale, 'commerce.pos.total', 'Total')}</span>

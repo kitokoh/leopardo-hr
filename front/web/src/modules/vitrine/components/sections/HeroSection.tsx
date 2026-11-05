@@ -331,7 +331,7 @@ export function HeroSection({
                 {badgeConfig.icon && <span className="animate-pulse">{badgeConfig.icon}</span>}
                 <span>{badgeConfig.text}</span>
                 {badgeConfig.label && (
-                  <span className="rounded-full bg-emerald-700 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white">
+                  <span className="rounded-full bg-emerald-700 px-2 py-0.5 text-xs font-black uppercase tracking-wider text-white">
                     {badgeConfig.label}
                   </span>
                 )}

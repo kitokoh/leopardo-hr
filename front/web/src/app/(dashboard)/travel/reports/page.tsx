@@ -363,15 +363,15 @@ export default function TravelReportsPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-slate-200 text-slate-500">
-                  <th className="px-3 py-2 font-medium">{t(locale, 'travel.field.code', 'Code')}</th>
-                  <th className="px-3 py-2 font-medium">
+                  <th scope="col" className="px-3 py-2 font-medium">{t(locale, 'travel.field.code', 'Code')}</th>
+                  <th scope="col" className="px-3 py-2 font-medium">
                     {t(locale, 'travel.field.departureDate', 'Départ')}
                   </th>
-                  <th className="px-3 py-2 font-medium">
+                  <th scope="col" className="px-3 py-2 font-medium">
                     {t(locale, 'travel.reports.seatsSold', 'Places vendues')}
                   </th>
-                  <th className="px-3 py-2 font-medium">{t(locale, 'travel.field.totalSeats', 'Places')}</th>
-                  <th className="px-3 py-2 font-medium">
+                  <th scope="col" className="px-3 py-2 font-medium">{t(locale, 'travel.field.totalSeats', 'Places')}</th>
+                  <th scope="col" className="px-3 py-2 font-medium">
                     {t(locale, 'travel.reports.occupancyRate', "Taux d'occupation")}
                   </th>
                 </tr>
