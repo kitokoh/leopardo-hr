@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Modules\Marketing\Infrastructure\Repositories;
 
+use App\Core\Tenant\TenantManager;
 use App\Modules\Marketing\Domain\Contracts\MarketingLeadRepositoryInterface;
 use App\Modules\Marketing\Domain\DTOs\CreateMarketingLeadDTO;
 use App\Modules\Marketing\Domain\Models\MarketingLead;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Throwable;
 
 class MarketingLeadRepository implements MarketingLeadRepositoryInterface
 {
+    public function __construct(
+        private readonly TenantManager $tenantManager,
+    ) {}
+
     public function create(CreateMarketingLeadDTO $dto): MarketingLead
     {
         return $this->onPublicSchema(fn (): MarketingLead => MarketingLead::query()->create([
@@ -56,8 +59,12 @@ class MarketingLeadRepository implements MarketingLeadRepositoryInterface
      * introuvable → SQLSTATE 42P01 « relation ... does not exist », puis
      * 25P02 « current transaction is aborted » en cascade.
      *
-     * Pattern try/finally (#2689, #3368) : le search_path est TOUJOURS rendu à
-     * son état d'entrée, y compris si le callback lève. No-op hors PostgreSQL.
+     * La bascule elle-même n'est PAS réimplémentée ici : `withinSearchPath()`
+     * est le seul point autorisé à émettre `SET search_path` (ADR-0027 /
+     * BOS-019 #8204) — il valide la chaîne cible (`assertSafeSearchPath`) et
+     * avale le 25P02 de restauration pour ne pas masquer l'exception d'origine.
+     * Réécrire ce `try/finally` localement, c'était réintroduire une
+     * interpolation de chaîne non validée et perdre cette seconde garantie.
      *
      * @template T
      *
@@ -66,43 +73,6 @@ class MarketingLeadRepository implements MarketingLeadRepositoryInterface
      */
     private function onPublicSchema(callable $callback): mixed
     {
-        $previous = $this->currentSearchPath();
-
-        if ($previous === null) {
-            return $callback();
-        }
-
-        DB::statement('SET search_path TO public');
-
-        try {
-            return $callback();
-        } finally {
-            DB::statement('SET search_path TO '.$previous);
-        }
-    }
-
-    /**
-     * `search_path` courant de la session, ou null si indisponible (driver
-     * non PostgreSQL, connexion absente) — dans ce cas on ne touche à rien.
-     */
-    private function currentSearchPath(): ?string
-    {
-        if (DB::getDriverName() !== 'pgsql') {
-            return null;
-        }
-
-        try {
-            $row = DB::selectOne('SHOW search_path');
-        } catch (Throwable) {
-            return null;
-        }
-
-        if (! is_object($row) || ! property_exists($row, 'search_path')) {
-            return null;
-        }
-
-        $value = (string) $row->search_path;
-
-        return $value === '' ? null : $value;
+        return $this->tenantManager->withinSearchPath('public', $callback);
     }
 }
