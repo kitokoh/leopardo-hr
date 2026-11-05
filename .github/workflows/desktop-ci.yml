@@ -68,6 +68,20 @@ jobs:
         with:
           channel: stable
 
+      - name: Pin the Apple dependency manager to CocoaPods
+        # #9118 — FlutterFire BoM 5.1.0 embarque DEUX pins Apple : 12.19.3
+        # (CocoaPods) et 13.1.1 (SPM). C'est le gestionnaire choisi qui décide.
+        # Flutter active SPM par défaut depuis peu, et le pin 13 rend la
+        # résolution IMPOSSIBLE : Firebase Apple 13 exige GTMSessionFetcher 4
+        # alors que GoogleSignIn 9 (google_sign_in_ios, dernière version) exige
+        # encore 3.x — voir google/GoogleSignIn-iOS#655 (« SPM users should
+        # pause Firebase 13 updates until the next GSI release »).
+        # CocoaPods est AUSSI le gestionnaire réel des builds iOS/macOS des
+        # apps : le build de vérification reste donc représentatif de ce qui
+        # serait livré. À retirer quand google_sign_in_ios supportera
+        # GTMSessionFetcher 4.
+        run: flutter config --no-enable-swift-package-manager
+
       - name: Install dependencies
         working-directory: front/mobile_apps/${{ matrix.app }}
         run: flutter pub get
