@@ -302,7 +302,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       description: "Suite métier mobile-first pour gérer vos équipes sur le terrain, au bureau et à distance. Applications Employé, Manager et Admin plateforme disponibles sur mobile.",
       sections: [
         { title: 'Produit', links: ['Fonctionnalités', 'Tarifs', 'Intégrations', 'API', 'Changelog', 'Leopardo for Windows', 'À propos', 'Vidéos', 'Employés', 'Comptabilité', 'Marketing', 'Trouver un pro'] },
-        { title: 'Ressources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Communauté', 'Études de cas', 'Témoignages', 'Comparer', 'Packs offerts', 'Carrières', 'Branding'] },
+        { title: 'Ressources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Communauté', 'Études de cas', 'Témoignages', 'Comparer', 'Packs offerts', 'Carrières', 'Branding', 'Outils'] },
         { title: 'Applications mobiles', links: ['Employé (Android)', 'Employé (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Admin plateforme (Android)'] },
         { title: 'Légal', links: ['Confidentialité (RGPD)', 'CGU', 'Mentions légales', 'Devenir actionnaire'] },
       ],
@@ -465,7 +465,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       description: 'Mobile-First Company OS for managing your workforce in the field, at the office and remotely. Employee, Manager and Platform Admin available on mobile.',
       sections: [
         { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows', 'About', 'Videos', 'Employees', 'Accounting', 'Marketing', 'Find a pro'] },
-        { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Community', 'Case studies', 'Testimonials', 'Compare', 'Packs', 'Careers', 'Brand assets'] },
+        { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Community', 'Case studies', 'Testimonials', 'Compare', 'Packs', 'Careers', 'Brand assets', 'Tools'] },
         { title: 'Mobile Apps', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'Legal', links: ['Privacy (GDPR)', 'Terms', 'Legal notice', 'Become a shareholder'] },
       ],
@@ -628,7 +628,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       description: 'Saha, ofis ve uzaktan calisanlarinizi yonetmek icin Mobile-First Company OS. Employee, Manager ve Platform Admin mobilde kullanilabilir.',
       sections: [
         { title: 'Ürün', links: ['Özellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Değişiklikler', 'Windows için Leopardo', 'Hakkımızda', 'Videolar', 'Çalışanlar', 'Muhasebe', 'Pazarlama', 'Profesyonel bul'] },
-        { title: 'Kaynaklar', links: ['Dokümantasyon', 'Rehberler', 'Blog', 'İletişim', 'Topluluk', 'Vaka çalışmaları', 'Referanslar', 'Karşılaştır', 'Ücretsiz paketler', 'Kariyer', 'Marka'] },
+        { title: 'Kaynaklar', links: ['Dokümantasyon', 'Rehberler', 'Blog', 'İletişim', 'Topluluk', 'Vaka çalışmaları', 'Referanslar', 'Karşılaştır', 'Ücretsiz paketler', 'Kariyer', 'Marka', 'Araçlar'] },
         { title: 'Mobil Uygulamalar', links: ['Çalışan (Android)', 'Çalışan (iOS)', 'Yönetici (Android)', 'Yönetici (iOS)', 'Platform Yöneticisi (Android)'] },
         { title: 'Yasal', links: ['Gizlilik (KVKK/GDPR)', 'Kullanım Koşulları', 'Yasal bildirim', 'Ortak olun'] },
       ],
@@ -791,7 +791,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       description: 'Mobile-First Company OS لإدارة فريقك في الميدان والمكتب وعن بُعد. Employee وManager وPlatform Admin متاحة على الجوال.',
       sections: [
         { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'ليوباردو لويندوز', 'من نحن', 'فيديوهات', 'الموظفون', 'المحاسبة', 'التسويق', 'ابحث عن مهني'] },
-        { title: 'الموارد', links: ['التوثيق', 'أدلة', 'المدونة', 'اتصل بنا', 'المجتمع', 'دراسات الحالة', 'الشهادات', 'قارن', 'حزم مجانية', 'الوظائف', 'الهوية'] },
+        { title: 'الموارد', links: ['التوثيق', 'أدلة', 'المدونة', 'اتصل بنا', 'المجتمع', 'دراسات الحالة', 'الشهادات', 'قارن', 'حزم مجانية', 'الوظائف', 'الهوية', 'أدوات'] },
         { title: 'تطبيقات الجوال', links: ['الموظف (Android)', 'الموظف (iOS)', 'المدير (Android)', 'المدير (iOS)', 'مشرف المنصة (Android)'] },
         { title: 'قانوني', links: ['الخصوصية (GDPR)', 'الشروط', 'الإشعارات القانونية', 'كن مساهماً'] },
       ],
