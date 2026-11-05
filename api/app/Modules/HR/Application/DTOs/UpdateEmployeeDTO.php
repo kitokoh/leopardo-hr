@@ -27,6 +27,13 @@ final readonly class UpdateEmployeeDTO
         public ?string $password = null,
         public ?string $status = null,
         public ?string $manager_id = null,
+        // #8126/#4609 — `matricule` et `contract_type` sont validés par
+        // UpdateEmployeeRequest (et persistés par EmployeeService::update())
+        // mais étaient ABSENTS du constructeur : `new self(...$validated)`
+        // levait « Unknown named parameter $matricule / $contract_type » → 500
+        // sur PUT /api/v1/employees/{id} dès qu'un de ces champs était envoyé.
+        public ?string $matricule = null,
+        public ?string $contract_type = null,
         public ?string $contract_start = null,
         public ?int $schedule_id = null,
         public ?string $salary_type = null,
@@ -86,6 +93,8 @@ final readonly class UpdateEmployeeDTO
             'password' => $this->password,
             'status' => $this->status,
             'manager_id' => $this->manager_id,
+            'matricule' => $this->matricule,
+            'contract_type' => $this->contract_type,
             'contract_start' => $this->contract_start,
             'schedule_id' => $this->schedule_id,
             'salary_type' => $this->salary_type,
