@@ -1,0 +1,72 @@
+import type { ToolCategory, ToolDefinition } from '../types';
+
+/**
+ * Catalogue Leopardo Toolbox — métadonnées pures.
+ *
+ * Ajouter un outil = 1 entrée ici + 1 dossier `tools/<slug>/` (logique + tests)
+ * + 1 formulaire dans `components/tools/`. Aucune autre modification n'est
+ * nécessaire : les routes `/toolbox` et `/toolbox/[slug]` sont générées depuis
+ * ce catalogue (`generateStaticParams`).
+ */
+
+export const TOOL_CATEGORIES: ToolCategory[] = [
+  { id: 'calcul', icon: 'calculator' },
+  { id: 'conversion', icon: 'arrow-left-right' },
+  { id: 'finance', icon: 'receipt' },
+  { id: 'sante', icon: 'heart-pulse' },
+  { id: 'travail', icon: 'briefcase' },
+];
+
+export const TOOLS: ToolDefinition[] = [
+  {
+    slug: 'imc',
+    category: 'sante',
+    icon: 'heart-pulse',
+    version: '1.0.0',
+    keywords: ['imc', 'bmi', 'poids', 'taille', 'sante', 'corpulence', 'obesite'],
+    warnings: ['notAdvice'],
+    references: [
+      { labelKey: 'toolbox.ref.whoBmi', url: 'https://www.who.int/health-topics/obesity' },
+    ],
+  },
+  {
+    slug: 'tva',
+    category: 'finance',
+    icon: 'receipt',
+    version: '1.0.0',
+    keywords: ['tva', 'vat', 'ht', 'ttc', 'taxe', 'facture', 'france'],
+    warnings: [],
+    references: [
+      { labelKey: 'toolbox.ref.frVatRates', url: 'https://www.impots.gouv.fr/professionnel/les-taux-de-tva' },
+    ],
+  },
+  {
+    slug: 'salaire-net',
+    category: 'travail',
+    icon: 'briefcase',
+    version: '1.0.0',
+    keywords: ['salaire', 'brut', 'net', 'paie', 'cotisations', 'remuneration'],
+    warnings: ['estimate', 'notAdvice'],
+    references: [],
+  },
+  {
+    slug: 'convertisseur-unites',
+    category: 'conversion',
+    icon: 'arrow-left-right',
+    version: '1.0.0',
+    keywords: ['conversion', 'unites', 'longueur', 'masse', 'volume', 'surface', 'vitesse', 'temperature'],
+    warnings: [],
+    references: [
+      { labelKey: 'toolbox.ref.siBrochure', url: 'https://www.bipm.org/en/publications/si-brochure' },
+    ],
+  },
+  {
+    slug: 'pourcentage',
+    category: 'calcul',
+    icon: 'percent',
+    version: '1.0.0',
+    keywords: ['pourcentage', 'pourcent', 'evolution', 'variation', 'remise', 'augmentation'],
+    warnings: [],
+    references: [],
+  },
+];
