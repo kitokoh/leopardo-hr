@@ -29,6 +29,11 @@ class UserInvitationService
      *                                                                                                           ressource voyagent dans l'invitation et sont créés à l'ACTIVATION
      *                                                                                                           (l'employé n'a de session qu'à ce moment-là ; s'il n'active jamais,
      *                                                                                                           aucun accès n'existe).
+     * @return string jeton en clair, ou `''` quand l'invitation est DÉJÀ
+     *                consommée (compte actif) : aucun jeton n'est émis, aucun
+     *                courriel n'est envoyé, rien n'est rouvert. Les appelants
+     *                doivent traiter `''` comme « rien à renvoyer », pas comme
+     *                un envoi réussi.
      */
     public function createAndSend(
         Company $company,
@@ -140,8 +145,8 @@ class UserInvitationService
      * accès ressource pré-assignés.
      *
      * @param  array{first_name?: string|null, last_name?: string|null, email?: string|null}|null  $profile
-     *                                                                                                      Profil saisi par l'employé à l'activation (`/auth/register`).
-     *                                                                                                      `null` = activation par lien : le profil existant est conservé.
+     *                                                                                                       Profil saisi par l'employé à l'activation (`/auth/register`).
+     *                                                                                                       `null` = activation par lien : le profil existant est conservé.
      */
     public function accept(string $plainToken, string $password, ?array $profile = null): Employee
     {
@@ -187,13 +192,13 @@ class UserInvitationService
                 // par lien, `$profile` est null : le profil existant est
                 // conservé tel quel (aucune régression).
                 if ($profile !== null) {
-                    if (isset($profile['first_name']) && is_string($profile['first_name']) && $profile['first_name'] !== '') {
+                    if (isset($profile['first_name']) && $profile['first_name'] !== '') {
                         $employee->first_name = $profile['first_name'];
                     }
-                    if (isset($profile['last_name']) && is_string($profile['last_name']) && $profile['last_name'] !== '') {
+                    if (isset($profile['last_name']) && $profile['last_name'] !== '') {
                         $employee->last_name = $profile['last_name'];
                     }
-                    if (isset($profile['email']) && is_string($profile['email']) && $profile['email'] !== '') {
+                    if (isset($profile['email']) && $profile['email'] !== '') {
                         $employee->email = strtolower(trim($profile['email']));
                     }
                 }
@@ -202,7 +207,7 @@ class UserInvitationService
                 // `/auth/register` : un RH invité obtenait `role=manager` mais
                 // `manager_role=null`, donc `isHr()` faux et des permissions
                 // erronées dès la première connexion.
-                if (is_string($invitation->role) && $invitation->role !== '') {
+                if ($invitation->role !== '') {
                     $employee->role = $invitation->role;
                 }
                 if (is_string($invitation->manager_role) && $invitation->manager_role !== '') {

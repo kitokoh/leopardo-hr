@@ -50,6 +50,7 @@ class OnboardingActivationConvergenceTest extends TestCase
     }
 
     /**
+     * @param  array<string, mixed>  $employeeAttributes
      * @return array{0: UserInvitation, 1: string}
      */
     private function inviteEmployee(array $employeeAttributes = []): array

@@ -2362,3 +2362,25 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
   - `check:assets` : OK (5 assets de marque conformes)
   - `check-vitrine-agent-lock.sh` : OK (autorisation accordée à la branche vitrine)
   - `php -l` : 0 erreur de syntaxe
+
+
+## Lot 2026-11-04 — Convergence de l'activation d'invitation (refs #9114, #9117)
+
+- **Composants concernes** :
+  - `api/app/Core/Auth/Domain/Contracts/InvitationActivationContract.php` (nouveau contrat Core/Auth)
+  - `api/app/Modules/HR/Infrastructure/Services/InvitationActivationService.php` (implementation HR, garde #8717)
+  - `api/app/Modules/HR/Infrastructure/Services/UserInvitationService.php` (reprise de compte par resend d'invitation)
+  - `api/app/Http/Controllers/Web/InvitationManagementController.php` (surface Web d'administration)
+  - `api/app/Http/Controllers/Web/PlatformCompanyController.php` (surface Web plateforme)
+  - `api/app/Modules/Onboarding/Interfaces/Api/V1/Controllers/OnboardingController.php` (surface API onboarding)
+- **Cas couverts** :
+  1. Un employe deja invite qui reclique le lien d'invitation **converge** vers son compte existant au lieu d'en creer un second ;
+  2. Le contrat `InvitationActivationContract` est resolu par le conteneur et lie l'implementation HR (aucun couplage Core -> Module) ;
+  3. La garde #8717 (pas de dependance Core vers un Module) reste respectee ;
+  4. Les deux surfaces (Web admin et API onboarding) partagent le meme chemin d'activation ;
+  5. Le resend d'invitation ne cree pas de doublon d'employe ni de doublon d'utilisateur.
+- **Preuves et gardes verifiees** (`CI=true`, PHP 8.4 + PostgreSQL 15) :
+  - `php artisan test tests/Feature/Onboarding` : **121 passed / 538 assertions** ;
+  - `phpstan-strict.neon` niveau 8 : **0 erreur** ;
+  - `pint --test` : **OK** sur tous les fichiers du lot.
+- **Non couvert** : parcours navigateur de bout en bout sur le lien d'invitation recu par email (couvert par les tests de feature, pas par un E2E Playwright).

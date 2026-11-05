@@ -506,12 +506,21 @@ class PlatformCompanyController extends Controller
         $superAdmin = $request->user('super_admin_web') ?? $request->user('super_admin_api');
 
         DB::statement('SET search_path TO public');
-        $invitationService->createAndSend(
+        $token = $invitationService->createAndSend(
             company: $company,
             employee: $managerEmployee,
             invitedByType: 'super_admin',
             invitedByEmail: $superAdmin->email,
         );
+
+        // #9114 : une invitation déjà consommée n'émet plus de jeton (le compte
+        // est actif). Annoncer « renvoyée » dans ce cas ferait croire au
+        // super-admin qu'un courriel est parti alors que rien n'a été envoyé.
+        if ($token === '') {
+            return back()->withErrors([
+                'resend' => 'Invitation deja acceptee : ce manager est deja actif. Utiliser "mot de passe oublie" si necessaire.',
+            ]);
+        }
 
         return back()->with('status', 'Invitation manager renvoyee.');
     }
