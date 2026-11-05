@@ -7,8 +7,8 @@ namespace App\Modules\Onboarding\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Contracts\InvitationActivationContract;
 use App\Http\Controllers\Controller;
 use App\Modules\HR\Domain\Models\UserInvitation;
-use Illuminate\Http\JsonResponse;
 use App\Modules\Onboarding\Interfaces\Api\V1\Requests\ActivateInvitationRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**

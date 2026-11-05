@@ -40,8 +40,8 @@ interface InvitationActivationContract
      * Active l'invitation et émet un jeton Sanctum utilisable.
      *
      * @param  array{first_name?: string|null, last_name?: string|null, email?: string|null}|null  $profile
-     *                                                                                                      Profil saisi à l'activation. `null` = activation par lien,
-     *                                                                                                      le profil existant est conservé.
+     *                                                                                                       Profil saisi à l'activation. `null` = activation par lien,
+     *                                                                                                       le profil existant est conservé.
      * @param  bool  $registrationMode  `true` pour `/auth/register` : toute invitation inexploitable
      *                                  donne `422 REGISTRATION_NOT_AVAILABLE` (contrat historique, pas
      *                                  d'oracle sur l'état des invitations) et un jeton est TOUJOURS rendu.
