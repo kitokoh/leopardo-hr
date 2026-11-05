@@ -8,6 +8,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Shared\Services\PublicCommerce\PlatformSettingsRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Testing\PendingCommand;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -28,6 +29,24 @@ class PublicSyntheticDataTest extends TestCase
     use RefreshTenantDatabase;
 
     private const PREFIX = 'pub-synth-';
+
+    /**
+     * `$this->command()` est typé `PendingCommand|int` : le `int` n'apparaît
+     * que si la console tourne sans mock, mais PHPStan niveau 8 refuse alors
+     * toute assertion chaînée (`Cannot call method assertSuccessful() on
+     * PendingCommand|int`). Le narrowing est fait UNE fois ici plutôt que par
+     * onze `assertInstanceOf` dispersés dans les tests.
+     *
+     * @param  array<string, mixed>  $parameters
+     */
+    private function command(string $name, array $parameters = []): PendingCommand
+    {
+        $pending = $this->artisan($name, $parameters);
+
+        self::assertInstanceOf(PendingCommand::class, $pending);
+
+        return $pending;
+    }
 
     protected function setUp(): void
     {
@@ -54,7 +73,7 @@ class PublicSyntheticDataTest extends TestCase
 
     public function test_it_creates_one_tenant_per_configured_city(): void
     {
-        $this->artisan('leopardo:public:synthetic-data')->assertSuccessful();
+        $this->command('leopardo:public:synthetic-data')->assertSuccessful();
 
         $cities = array_keys((array) config('public_synthetic.cities'));
 
@@ -73,12 +92,12 @@ class PublicSyntheticDataTest extends TestCase
 
     public function test_it_is_idempotent(): void
     {
-        $this->artisan('leopardo:public:synthetic-data')->assertSuccessful();
+        $this->command('leopardo:public:synthetic-data')->assertSuccessful();
 
         $companiesAfterFirst = Company::query()->where('slug', 'like', self::PREFIX.'%')->count();
         $branchesAfterFirst = $this->branchCount();
 
-        $this->artisan('leopardo:public:synthetic-data')->assertSuccessful();
+        $this->command('leopardo:public:synthetic-data')->assertSuccessful();
 
         $this->assertSame(
             $companiesAfterFirst,
@@ -95,7 +114,7 @@ class PublicSyntheticDataTest extends TestCase
 
     public function test_published_and_unpublished_establishments_coexist(): void
     {
-        $this->artisan('leopardo:public:synthetic-data')->assertSuccessful();
+        $this->command('leopardo:public:synthetic-data')->assertSuccessful();
 
         $published = DB::table('shared_tenants.restaurant_branches')
             ->where('is_public', true)
@@ -116,7 +135,7 @@ class PublicSyntheticDataTest extends TestCase
 
     public function test_every_published_establishment_has_a_globally_unique_public_slug(): void
     {
-        $this->artisan('leopardo:public:synthetic-data')->assertSuccessful();
+        $this->command('leopardo:public:synthetic-data')->assertSuccessful();
 
         $slugs = DB::table('shared_tenants.restaurant_branches')
             ->where('is_public', true)
@@ -138,7 +157,7 @@ class PublicSyntheticDataTest extends TestCase
 
     public function test_unpublished_establishments_have_no_public_slug(): void
     {
-        $this->artisan('leopardo:public:synthetic-data')->assertSuccessful();
+        $this->command('leopardo:public:synthetic-data')->assertSuccessful();
 
         $withSlug = DB::table('shared_tenants.restaurant_branches')
             ->where('is_public', false)
@@ -158,7 +177,7 @@ class PublicSyntheticDataTest extends TestCase
             $this->markTestSkipped('public.platform_settings absente de cette base.');
         }
 
-        $this->artisan('leopardo:public:synthetic-data')->assertSuccessful();
+        $this->command('leopardo:public:synthetic-data')->assertSuccessful();
 
         $raw = DB::table('public.platform_settings')
             ->where('key', PlatformSettingsRepository::DISCOVERY_CATEGORY_MIN_PAGES)
@@ -179,8 +198,8 @@ class PublicSyntheticDataTest extends TestCase
         // Un tenant qui NE porte PAS le préfixe : il ne doit jamais être touché.
         $real = Company::factory()->create(['slug' => 'client-reel-inedit']);
 
-        $this->artisan('leopardo:public:synthetic-data')->assertSuccessful();
-        $this->artisan('leopardo:public:synthetic-data', ['--clean' => true])->assertSuccessful();
+        $this->command('leopardo:public:synthetic-data')->assertSuccessful();
+        $this->command('leopardo:public:synthetic-data', ['--clean' => true])->assertSuccessful();
 
         $this->assertSame(
             0,
@@ -194,13 +213,13 @@ class PublicSyntheticDataTest extends TestCase
 
     public function test_it_refuses_an_unknown_city(): void
     {
-        $this->artisan('leopardo:public:synthetic-data', ['--city' => 'ville-inexistante'])
+        $this->command('leopardo:public:synthetic-data', ['--city' => 'ville-inexistante'])
             ->assertFailed();
     }
 
     public function test_it_limits_execution_to_one_city(): void
     {
-        $this->artisan('leopardo:public:synthetic-data', ['--city' => 'valmora'])
+        $this->command('leopardo:public:synthetic-data', ['--city' => 'valmora'])
             ->assertSuccessful();
 
         $this->assertDatabaseHas('companies', ['slug' => self::PREFIX.'valmora']);

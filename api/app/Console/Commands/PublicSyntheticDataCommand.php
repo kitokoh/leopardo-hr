@@ -222,7 +222,11 @@ final class PublicSyntheticDataCommand extends Command
         $count = 0;
         $index = 0;
 
-        /** @var list<array<string, mixed>> $companies */
+        // Pas de `@var list<array<string, mixed>>` ici : le cast ne garantit
+        // rien, et affirmer la forme au PHPDoc rendait le `is_array()` de la
+        // boucle « toujours vrai » pour PHPStan (fonction.alreadyNarrowedType).
+        // Les gardes restent la seule vérification réelle.
+        /** @var array<array-key, mixed> $companies */
         $companies = (array) ($city['companies'] ?? []);
 
         foreach ($companies as $companySpec) {
@@ -230,7 +234,7 @@ final class PublicSyntheticDataCommand extends Command
                 continue;
             }
 
-            /** @var list<array<string, mixed>> $establishments */
+            /** @var array<array-key, mixed> $establishments */
             $establishments = (array) ($companySpec['establishments'] ?? []);
 
             foreach ($establishments as $spec) {
@@ -321,11 +325,11 @@ final class PublicSyntheticDataCommand extends Command
         // `json_encode` est typé `string|false` même avec JSON_THROW_ON_ERROR :
         // PHPStan level max refuse l'union. On encode puis on vérifie, plutôt
         // que de caster en aveugle — un `false` deviendrait `""` en base.
+        // `JSON_THROW_ON_ERROR` fait lever `JsonException` : la branche
+        // `false` est inatteignable, et PHPStan level 8 le prouve
+        // (`function.alreadyNarrowedType`). On ne garde donc pas de test
+        // défensif sur un `false` qui ne peut pas arriver.
         $encoded = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
-
-        if (! is_string($encoded)) {
-            throw new RuntimeException('Le seuil de catégories n\'a pas pu être encodé en JSON.');
-        }
 
         DB::table('public.platform_settings')->updateOrInsert(
             ['key' => PlatformSettingsRepository::DISCOVERY_CATEGORY_MIN_PAGES],
