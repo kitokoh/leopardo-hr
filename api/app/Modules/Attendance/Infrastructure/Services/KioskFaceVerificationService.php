@@ -127,12 +127,18 @@ final class KioskFaceVerificationService
                 // Vérifié → événement de pointage (méthode réellement utilisée :
                 // `face` — matrice kiosque + flags employé re-vérifiés côté
                 // serveur par KioskAttendanceService).
+                // #9170 — `biometricVerified: true` : la comparaison 1:1 vient
+                // d'aboutir côté serveur, la preuve biométrique existe donc par
+                // construction. Sans ce drapeau, `punch()` dégraderait la
+                // méthode en `manual` (fail-closed #7958, prévu pour la preuve
+                // déclarative du device) et l'audit mentirait sur la méthode.
                 $log = $this->kioskAttendance->punch(
                     kiosk: $kiosk,
                     identifier: $identifier,
                     action: $action,
                     workType: $workType,
                     method: 'face',
+                    biometricVerified: true,
                 );
 
                 return $this->outcome(FaceVerificationStatus::Verified, $log, $correlationId);
