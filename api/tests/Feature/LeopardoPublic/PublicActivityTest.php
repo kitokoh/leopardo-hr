@@ -10,6 +10,7 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\Platform\Domain\Models\PublicActivityIndex;
 use App\Modules\Platform\Domain\Models\PublicFavorite;
 use App\Modules\Platform\Domain\Models\PublicSearchHistory;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Shared\Discovery\PublicActivityLocator;
 use Illuminate\Support\Facades\Auth;
@@ -53,7 +54,25 @@ class PublicActivityTest extends TestCase
             'currency' => 'DZD',
             'slug' => 'resto-activites',
             'name' => 'Restaurant Activités',
+            // La résolution d'un profil public (favoris) exige la feature
+            // `restaurantmanager` active : sans elle, `PublicProfileLocator`
+            // renvoie null et l'ajout de favori répond 404 (fail-closed).
+            'features' => ['restaurantmanager' => true],
         ]);
+
+        // Établissement PUBLIÉ portant le slug public `resto-activites` : c'est
+        // la cible que les tests de favoris résolvent. Sans publication, le
+        // profil est introuvable et l'ajout de favori est refusé (404).
+        app(TenantManager::class)->withinTenant(
+            $this->company,
+            fn (): RestaurantBranch => RestaurantBranch::factory()->create([
+                'company_id' => $this->company->id,
+                'name' => 'Restaurant Activités',
+                'status' => 'active',
+                'is_public' => true,
+                'public_slug' => 'resto-activites',
+            ]),
+        );
 
         $this->client = User::factory()->create([
             'email' => 'client-activites@example.test',
@@ -344,9 +363,20 @@ class PublicActivityTest extends TestCase
         $tenants = $this->app->make(TenantManager::class);
 
         return $tenants->withinTenant($company, function () use ($company, $owner, $reference): RestaurantOrder {
+            // `restaurant_orders.branch_id` est NOT NULL : une commande sans
+            // établissement est invalide en base. On crée donc l'établissement
+            // dans le MÊME contexte tenant avant la commande — sans quoi
+            // l'insertion lève 23502 (NOT NULL), que le `finally` de
+            // `withinTenant` masquait en 25P02 (correctif TenantManager).
+            /** @var RestaurantBranch $branch */
+            $branch = RestaurantBranch::factory()->create([
+                'company_id' => $company->id,
+            ]);
+
             /** @var RestaurantOrder $order */
             $order = RestaurantOrder::query()->create([
                 'company_id' => $company->id,
+                'branch_id' => $branch->id,
                 'reference' => $reference,
                 'order_type' => 'takeaway',
                 'status' => 'open',

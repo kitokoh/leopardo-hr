@@ -109,7 +109,21 @@ final class TenantManager
             return $cb();
         } finally {
             if ($this->isPostgres()) {
-                DB::statement('SET search_path TO '.$oldPath);
+                try {
+                    DB::statement('SET search_path TO '.$oldPath);
+                } catch (QueryException $exception) {
+                    // Même garde que resetToPrevious() et withinSearchPath() :
+                    // après une requête en échec, PostgreSQL rejette TOUTE
+                    // instruction de la transaction courante (25P02). Sans ce
+                    // garde, le `SET search_path` de nettoyage REMPLAÇAIT
+                    // l'exception d'origine — un `23502` (NOT NULL) devenait un
+                    // `25P02` illisible, masquant la vraie cause. La transaction
+                    // est déjà morte : le scope amont (test/teardown) la
+                    // rollbackera. On ne relance donc que les autres erreurs.
+                    if ($exception->getCode() !== '25P02') {
+                        throw $exception;
+                    }
+                }
             }
 
             $this->restoreCompanyContext($oldCompany);
