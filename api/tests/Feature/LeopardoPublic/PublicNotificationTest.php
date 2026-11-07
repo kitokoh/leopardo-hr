@@ -14,7 +14,11 @@ use App\Modules\Platform\Application\Services\PublicNotificationService;
 use App\Modules\Platform\Domain\Models\PublicNotification;
 use App\Modules\RestaurantManager\Application\Actions\TransitionOrderAction;
 use App\Modules\RestaurantManager\Domain\Enums\OrderStatus;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantTaxRate;
 use App\Shared\Contracts\Notification\PublicClientNotifier;
 use Illuminate\Support\Facades\Auth;
 use Tests\RefreshTenantDatabase;
@@ -418,19 +422,38 @@ class PublicNotificationTest extends TestCase
         $tenants = $this->app->make(TenantManager::class);
 
         return $tenants->withinTenant($this->company, function () use ($owner, $reference): RestaurantOrder {
+            // Une commande réelle exige une branche, un taux de taxe et au moins
+            // une ligne active : `TransitionOrderAction` décrémente le stock à
+            // la confirmation et refuse une commande sans ligne active.
+            $branch = RestaurantBranch::factory()->create();
+            $taxRate = RestaurantTaxRate::factory()->create(['rate_bps' => 0]);
+            $product = RestaurantProduct::factory()->create([
+                'branch_id' => $branch->id,
+                'price_minor' => 1200,
+                'currency' => $branch->currency,
+                'tax_rate_id' => $taxRate->id,
+                'is_available' => true,
+            ]);
+
             /** @var RestaurantOrder $order */
-            $order = RestaurantOrder::query()->create([
-                'company_id' => $this->company->id,
+            $order = RestaurantOrder::factory()->create([
+                'branch_id' => $branch->id,
                 'reference' => $reference,
-                'order_type' => 'takeaway',
                 'status' => 'open',
-                'subtotal_minor' => 1200,
-                'tax_minor' => 0,
-                'discount_minor' => 0,
-                'total_minor' => 1200,
-                'currency' => 'DZD',
-                'source' => 'online',
+                'currency' => $branch->currency,
                 'public_client_id' => $owner?->id,
+            ]);
+
+            RestaurantOrderItem::query()->create([
+                'company_id' => $this->company->id,
+                'order_id' => $order->id,
+                'product_id' => $product->id,
+                'quantity' => 1,
+                'unit_price_minor' => 1200,
+                'line_total_minor' => 1200,
+                'tax_minor' => 0,
+                'status' => 'active',
+                'line_index' => 1,
             ]);
 
             return $order;
