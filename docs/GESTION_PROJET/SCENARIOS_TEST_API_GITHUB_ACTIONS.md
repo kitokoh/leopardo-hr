@@ -2544,3 +2544,33 @@ Correction **purement mecanique**, verifiee plutot que supposee : `git diff -w` 
 ### Scenarios de recette
 
 Les scenarios existants restent valides tels quels : le perimetre des routes, les piles de middlewares et les prefixes sont identiques. Un appel `GET /api/v1/absences` avec un jeton valide se comporte exactement comme avant ce lot.
+
+## 2026-11-07 — IAM : sélection explicite du contexte tenant (#9092)
+
+**Contrat concerné** : `GET /v1/auth/contexts` (nouveau) et `POST /v1/auth/context` (nouveau) — une personne membre de plusieurs entreprises choisit **explicitement** celle dans laquelle elle agit.
+
+**Le défaut corrigé** — `AuthService::findEmployeeInTenantSchemas()` parcourait les schémas tenant et retournait le **premier** employé dont l'e-mail correspondait, dans l'ordre de `public.companies` : une personne membre de deux entreprises obtenait un contexte **arbitraire**, et c'est l'ordre alphabétique des schémas qui décidait de ses permissions. Aucun endpoint ne permettait de choisir — constat verrouillé par `test_there_is_no_endpoint_to_select_a_tenant_context`.
+
+**Contrat** — `GET /v1/auth/contexts` rend les entreprises de la personne (`company_id`, `company_name`, `role`, `manager_role`, `permissions`) ; `POST /v1/auth/context {company_id}` réémet un jeton Sanctum **borné** à l'entreprise choisie, avec les **mêmes** abilities qu'au login (`tenant_schema:`, `tenant_company:`, `tenant_employee:`) — la sélection ne fait que les reborner, elle n'élargit rien.
+
+**Sécurité** — l'appartenance est vérifiée **avant** toute réémission : une entreprise à laquelle la personne n'appartient pas rend **403 `TENANT_CONTEXT_FORBIDDEN`**, jamais un jeton. Aucune modification de guard ni de middleware ; les contrats existants sont inchangés (l'app mobile qui n'appelle pas ces routes n'est pas impactée).
+
+**Résolution** — `public.user_employee_links` d'abord (source de vérité), repli par balayage **exhaustif et trié** des schémas tenant pour les personnes sans ligne `users` : le repli est **déterministe**, ce que le comportement d'origine n'était pas.
+
+- Scénarios à vérifier : **liste** — une personne de deux entreprises voit les deux, triées par nom ; **sélection** — `POST /v1/auth/context` avec l'entreprise B rend un jeton dont les abilities portent le schéma de B ; **escalade refusée** — `POST /v1/auth/context` avec une entreprise à laquelle la personne n'appartient pas rend **403**, sans jeton ; **isolation** — le jeton réémis n'ouvre que le tenant choisi.
+- Couverture : `api/tests/Feature/Auth/TenantContextSelectionTest.php` — **5 tests, 23 assertions**, sur **deux schémas tenant réels** (le harnais `CreatesMvpSchema` est mono-schéma et ne peut pas représenter deux appartenances). `phpstan` niveau 8 : 0 erreur ; `pint` : clean ; `redocly lint` : valide ; couverture des routes : **0 nouvelle non couverte**.
+
+## 2026-11-07 — IAM : rôles personnalisés de tenant avec plafond de délégation (#9095)
+
+**Contrat concerné** : `GET|POST /v1/company/roles` et `PUT|DELETE /v1/company/roles/{role}` (nouveaux) — un `principal` compose un rôle nommé (« Caissier », « Chef de rang ») à partir du registre **fermé** `DelegablePermission`.
+
+**Le constat** — il n'existe **aucune** table `roles`/`permissions` : les rôles sont des enums figés (`employees.role`, `employees.manager_role`, `PlatformRole`). Un admin de tenant ne pouvait pas créer un rôle sur mesure sans une migration qui étend un `CHECK`. Ce n'est pas une faille (fail-closed), c'est une **limite produit** — constat verrouillé par `test_no_custom_role_table_exists`.
+
+**La règle qui manquait** — `permissions ⊆ capabilities(créateur)`, appliquée à la **création** ET à la **modification**. Tant qu'aucune table de rôles n'existait, le scénario « un rôle personnalisé dépasse les droits de son créateur » était **structurellement impossible** ; dès l'introduction de `role_assignments`, il devient **critique**. Un `rh` ne peut pas fabriquer un rôle portant `is_principal` ni `delegation.manage` — il ne les détient pas. Le refus est **informatif** : **422 `DELEGATION_EXCEEDS_ACTOR`** avec la liste des permissions en excès, et non un 403 générique.
+
+**Registre fermé** — `DelegablePermission` est **dérivé** de `EmployeeResource::capabilities()` (le contrat de session existant) : aucune permission inventée, **aucune introduction de Spatie**, aucun gate existant réécrit. La table `role_assignments` est lue **après** les enums : `effectivePermissions = enumPermissions(role, manager_role) ∪ roleAssignments(active)`.
+
+**Migration additive** — `2026_11_07_000500_9095_create_role_assignments_table.php` (tenant) : `company_id` porte le tenant, **aucune FK vers `public.companies`** (conventions migrations tenant §2.6, même doctrine que `employee_module_grants` #7761) ; `down()` complet. Miroir dans `CreatesMvpSchema` (garde #5443).
+
+- Scénarios à vérifier : **plafond du créateur** — un `rh` tentant d'accorder `is_principal` reçoit **422** + `excess`, et **aucune** ligne n'est créée ; **`delegation.manage`** — un non-principal ne peut pas l'accorder (422) ; **isolation tenant** — un rôle du tenant B n'apparaît pas dans la liste du tenant A et n'est pas modifiable depuis A (**404**) ; **registre fermé** — une permission hors registre est refusée (422) ; **verticale** — un rôle marqué `restaurant` porte sa verticale, et la révocation est **effective à la requête suivante**.
+- Couverture : `api/tests/Feature/Auth/CustomRoleDelegationTest.php` — **5 tests, 18 assertions**. `phpstan` niveau 8 : 0 erreur ; `pint` : clean ; `redocly lint` : valide ; couverture des routes : **0 nouvelle non couverte**.
