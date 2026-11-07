@@ -126,6 +126,18 @@ const ignorePathFragments = [
   '/vitrine/components/sections/RoiCalculator.tsx',
   '/vitrine/components/sections/BlogArticle.tsx',
   'front/admin-dashboard/src/views/marketing/BlogManagerView.vue',
+  // Catalogue i18n du module autonome Leopardo Toolbox (mission Toolbox) :
+  // `front/web/src/modules/toolbox/data/copy.ts` et `tool-options.ts` SONT le
+  // mécanisme de localisation du module (catalogues inline ×4 fr/en/tr/ar,
+  // typés, accédés via getToolboxCopy(locale)) — exactement le même cas que
+  // vitrine-locale.ts et /vitrine/data/ ci-dessus. La Toolbox est une surface
+  // PUBLIQUE de la vitrine : elle suit la convention vitrine (catalogue inline
+  // dans data/) plutôt que le catalogue partagé shared/i18n (propagé au
+  // backend et au mobile, où la Toolbox n'existe pas). L'exemption est scopée
+  // à data/ : un composant du module qui porterait une chaîne en dur reste
+  // signalé (contre-contrôle dans check-i18n-diff-test.sh). La complétude des
+  // 4 langues reste couverte par les tests du module.
+  '/toolbox/data/',
 ];
 
 // Lines that already route text through a translation mechanism — never

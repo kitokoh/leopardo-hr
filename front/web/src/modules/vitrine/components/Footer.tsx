@@ -60,6 +60,10 @@ export function getFooterHref(sectionIndex: number, linkIndex: number): string |
     '1-8': '/packs',
     '1-9': '/careers',
     '1-10': '/branding',
+    // LEOPARDO TOOLBOX — catégorie autonome publique (outils gratuits sans
+    // compte). Liée depuis le footer pour la découvrabilité (et pour rester
+    // cohérent avec la garde #8075 si la page migrait sous (landing)).
+    '1-11': '/toolbox',
     '2-0': '/download#mobile-apps',
     '2-1': '/mobile',
     '2-2': '/download#mobile-apps',

@@ -5,6 +5,7 @@ import { getEnvConfig } from '@/modules/vitrine/lib/env';
 import { getSiteUrl } from '@/lib/site';
 import { getAllCaseStudySlugs } from '@/modules/vitrine/lib/case-studies';
 import { getAlternativePages } from '@/modules/vitrine/data/alternatives';
+import { TOOLS } from '@/modules/toolbox/data/catalog';
 
 const siteUrl = getSiteUrl();
 const locales = ['fr', 'en', 'tr', 'ar'] as const;
@@ -141,7 +142,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     alternates: localizedAlternates(`/alternatives/${p.slug}`),
   }));
 
-  const allStatic = [...staticPages, ...caseStudyPages, ...restaurantPages, ...alternativePages];
+  // LEOPARDO TOOLBOX — catégorie autonome publique (`/toolbox`), indexable et
+  // accessible sans authentification. Les slugs viennent du catalogue du module
+  // (`TOOLS`) : ajouter un outil l'expose automatiquement au sitemap.
+  const toolboxPages: MetadataRoute.Sitemap = [
+    page('/toolbox', 'weekly', 0.7),
+    ...TOOLS.map((tool) => page(`/toolbox/${tool.slug}`, 'monthly', 0.6)),
+  ];
+
+  const allStatic = [
+    ...staticPages,
+    ...caseStudyPages,
+    ...restaurantPages,
+    ...alternativePages,
+    ...toolboxPages,
+  ];
 
   // Blog posts: source réelle = src/modules/vitrine/data/blog (getBlogPosts).
   // Déduplication des slugs toutes locales confondues : un seul entry par slug,
