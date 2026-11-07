@@ -40,7 +40,7 @@ export function ApproveSessionModal({ employeeName, onConfirm, onCancel, loading
             {labels.approveModalNoteLabel}
           </label>
           <textarea
-            className="mt-1.5 w-full rounded-xl border border-slate-200 bg-transparent px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 disabled:opacity-50"
+            className="mt-1.5 w-full rounded-xl border border-slate-200 bg-transparent px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 disabled:opacity-50"
             rows={3}
             placeholder={labels.approveModalNotePlaceholder}
             value={note}

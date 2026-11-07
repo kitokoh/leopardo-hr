@@ -74,14 +74,14 @@ export default function TeacherHomePage() {
                     </div>
                     <div>
                       <p className="font-black tracking-tight text-slate-950">{entry.name}</p>
-                      <p className="font-mono text-xs font-bold text-slate-400">
+                      <p className="font-mono text-xs font-bold text-slate-500">
                         {entry.code} {entry.level ? `· ${entry.level}` : ''}
                       </p>
                     </div>
                   </div>
                   <StatusBadge status={entry.status} />
                 </div>
-                {entry.campus?.name ? <p className="mt-3 text-xs font-medium text-slate-400">{entry.campus.name}</p> : null}
+                {entry.campus?.name ? <p className="mt-3 text-xs font-medium text-slate-500">{entry.campus.name}</p> : null}
                 <div className="mt-4 flex items-center gap-4 border-t border-slate-100 pt-3 text-xs font-bold text-slate-500">
                   <span className="inline-flex items-center gap-1.5"><CalendarCheck className="h-3.5 w-3.5 text-emerald-500" aria-hidden="true" />{t(locale, 'edu.teacher.attendance')}</span>
                   <span className="inline-flex items-center gap-1.5"><BookOpen className="h-3.5 w-3.5 text-cyan-500" aria-hidden="true" />{t(locale, 'edu.teacher.grades')}</span>

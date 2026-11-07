@@ -14,6 +14,7 @@ import {
 } from '@/lib/dashboard-nav';
 import type { AppLocale, CopyTree, StoredAuthUser } from '@/lib/i18n';
 import { AccountMenu } from '@/components/layout/AccountMenu';
+import { useFocusTrap } from '@/hooks/use-focus-trap';
 
 /**
  * #7908 — Sidebar gauche UNIFIÉE de l'espace client, TOUJOURS rendue
@@ -99,7 +100,7 @@ function SidebarModuleLink({
       className={`${nested ? 'ps-6 ' : ''}${sidebarLinkClass(active)}`}
     >
       <span className="flex min-w-0 items-center gap-2">
-        {module.icon ? <module.icon className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" /> : null}
+        {module.icon ? <module.icon className="h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" /> : null}
         <span className="truncate">{labels.dashboard.modules[module.key] ?? module.label}</span>
       </span>
       {/* #8028 — un module en essai doit rester VISIBLE comme tel dans la
@@ -273,6 +274,11 @@ export function Sidebar({
   // (`mounted`), il n'y a donc pas de désaccord SSR/hydratation.
   const [openGroups, setOpenGroups] = useState<OpenGroups>(readStoredGroups);
 
+  // #UX-audit — piège de focus + fermeture par Échap sur le tiroir mobile
+  // (WCAG 2.1.1 / 2.1.2 / 2.4.3). Actif uniquement en mode tiroir ouvert.
+  const trapActive = !isDesktop && mobileNavOpen;
+  const sidebarRef = useFocusTrap<HTMLElement>(trapActive, onClose);
+
   const toggleGroup = useCallback((id: NavMenuGroupId) => {
     setOpenGroups((current) => {
       const next = { ...current, [id]: !current[id] };
@@ -308,6 +314,7 @@ export function Sidebar({
 
   return (
     <aside
+      ref={sidebarRef}
       data-testid="dashboard-sidebar"
       id="dashboard-sidebar"
       role={isDesktop ? undefined : 'dialog'}
@@ -335,7 +342,7 @@ export function Sidebar({
         <button
           type="button"
           onClick={onClose}
-          className="shrink-0 rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 md:hidden"
+          className="shrink-0 rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-600 md:hidden"
           aria-label={i18nT(locale, 'a11y.close')}
           data-testid="dashboard-nav-close"
         >
@@ -401,7 +408,7 @@ export function Sidebar({
             aria-current={pathname === '/modules' ? 'page' : undefined}
             className={sidebarLinkClass(pathname === '/modules')}
           >
-            <LayoutGrid className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" />
+            <LayoutGrid className="h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
             <span className="truncate">{labels.dashboard.platformModules}</span>
           </Link>
           <Link
@@ -411,7 +418,7 @@ export function Sidebar({
             aria-current={pathname === '/billing' ? 'page' : undefined}
             className={sidebarLinkClass(pathname === '/billing')}
           >
-            <CreditCard className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" />
+            <CreditCard className="h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
             <span className="truncate">{labels.dashboard.userMenuBilling}</span>
           </Link>
           <Link
@@ -421,7 +428,7 @@ export function Sidebar({
             aria-current={pathname === '/settings/developer' ? 'page' : undefined}
             className={sidebarLinkClass(pathname === '/settings/developer')}
           >
-            <Plug className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" />
+            <Plug className="h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
             <span className="truncate">{labels.dashboard.modules.integrations}</span>
           </Link>
         </nav>

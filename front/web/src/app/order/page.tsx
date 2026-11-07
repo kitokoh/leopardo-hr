@@ -142,7 +142,7 @@ export default function OrderTrackingPage() {
               type="text"
               value={reference}
               onChange={(event) => setReference(event.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-sm text-slate-900 placeholder:text-slate-400 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-sm text-slate-900 placeholder:text-slate-500 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
               maxLength={40}
               required
             />
@@ -221,7 +221,7 @@ export default function OrderTrackingPage() {
                 </span>
               </p>
               {track.updated_at ? (
-                <p className="pt-1 text-xs text-slate-400">
+                <p className="pt-1 text-xs text-slate-500">
                   {t(locale, 'restaurant.public.updatedAt')} — {track.updated_at}
                 </p>
               ) : null}

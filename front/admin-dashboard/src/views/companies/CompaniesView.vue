@@ -280,7 +280,7 @@
               </h2>
             </div>
             <button
-              class="rounded-xl border border-slate-200 p-2 text-slate-400 transition hover:bg-slate-100 dark:border-slate-800 dark:hover:bg-slate-900"
+              class="rounded-xl border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-100 dark:border-slate-800 dark:hover:bg-slate-900"
               type="button"
               @click="closeCreateClient"
             >

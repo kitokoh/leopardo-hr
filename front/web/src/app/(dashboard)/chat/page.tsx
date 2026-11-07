@@ -136,6 +136,7 @@ export default function ChatPage() {
           <ConversationPanel
             thread={selected}
             currentUserId={currentUserId}
+            locale={locale}
             onBack={() => setSelectedId(null)}
             onThreadActivity={markActivity}
           />

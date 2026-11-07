@@ -81,7 +81,7 @@ export default function CrmContactsPage() {
         </div>
 
         {loading && (
-          <div className="flex items-center justify-center gap-3 py-16 text-slate-400">
+          <div className="flex items-center justify-center gap-3 py-16 text-slate-500">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
             <span className="text-sm">{t(locale, 'crm.loading')}</span>
           </div>
@@ -102,7 +102,7 @@ export default function CrmContactsPage() {
         )}
 
         {!loading && !error && contacts.length === 0 && (
-          <div className="flex flex-col items-center gap-3 py-16 text-slate-400">
+          <div className="flex flex-col items-center gap-3 py-16 text-slate-500">
             <Inbox className="h-10 w-10" />
             <p className="text-sm">{t(locale, 'crm.contacts.empty')}</p>
           </div>
@@ -128,7 +128,7 @@ export default function CrmContactsPage() {
                       )}
                     </div>
                     {contact.account && (
-                      <span className="text-xs font-medium text-slate-400">{contact.account.name}</span>
+                      <span className="text-xs font-medium text-slate-500">{contact.account.name}</span>
                     )}
                   </div>
                   <div className="mt-3 space-y-1 text-sm text-slate-500">

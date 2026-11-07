@@ -205,7 +205,7 @@ export default function CrudPage({ resource }: { resource: CrudResource }) {
               type="button"
               title={t(locale, 'edu.common.edit')}
               onClick={() => void openEdit(row)}
-              className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+              className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-600"
             >
               <Pencil className="h-4 w-4" aria-hidden="true" />
             </button>
@@ -213,7 +213,7 @@ export default function CrudPage({ resource }: { resource: CrudResource }) {
               type="button"
               title={t(locale, 'edu.common.delete')}
               onClick={() => void remove(row)}
-              className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600"
+              className="rounded-lg p-1.5 text-slate-500 hover:bg-rose-50 hover:text-rose-600"
             >
               <Trash2 className="h-4 w-4" aria-hidden="true" />
             </button>

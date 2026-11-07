@@ -68,10 +68,10 @@
         </div>
 
         <div v-else-if="tickets.length === 0" class="p-16 text-center">
-          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400">
+          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
             <InboxIcon class="h-7 w-7" />
           </div>
-          <p class="mt-4 text-sm font-bold text-slate-400 uppercase tracking-widest">{{ $t('support.noTicket') }}</p>
+          <p class="mt-4 text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{{ $t('support.noTicket') }}</p>
         </div>
 
         <div v-else class="max-h-[640px] divide-y divide-slate-200/50 overflow-y-auto dark:divide-slate-800/50">
@@ -96,7 +96,7 @@
               <span :class="['rounded-lg border px-2 py-0.5 text-xs font-black uppercase tracking-widest', statusClass(ticket.status)]">
                 {{ statusLabel(ticket.status) }}
               </span>
-              <span class="text-xs font-semibold text-slate-400">{{ formatDate(ticket.last_message_at) }}</span>
+              <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">{{ formatDate(ticket.last_message_at) }}</span>
             </div>
           </button>
         </div>
@@ -106,8 +106,8 @@
       <div class="card lg:col-span-3 animate-slide-up" style="animation-delay: 0.15s">
         <div v-if="!selectedTicket" class="flex h-full min-h-[400px] items-center justify-center p-16 text-center">
           <div>
-            <ChatBubbleBottomCenterTextIcon class="mx-auto h-10 w-10 text-slate-300" />
-            <p class="mt-4 text-sm font-bold text-slate-400 uppercase tracking-widest">
+            <ChatBubbleBottomCenterTextIcon class="mx-auto h-10 w-10 text-slate-500 dark:text-slate-400" />
+            <p class="mt-4 text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
               {{ $t('support.selectTicket') }}
             </p>
           </div>
@@ -162,7 +162,7 @@
                 ]"
               >
                 <p class="whitespace-pre-wrap leading-relaxed">{{ message.body }}</p>
-                <p :class="['mt-1 text-xs font-semibold', message.from_platform ? 'text-brand-100' : 'text-slate-400']">
+                <p :class="['mt-1 text-xs font-semibold', message.from_platform ? 'text-brand-100' : 'text-slate-500 dark:text-slate-400']">
                   {{ message.author_name || (message.from_platform ? t('supportTickets.teamLeopardo', 'Équipe Leopardo') : t('supportTickets.client', 'Client')) }} · {{ formatDate(message.created_at) }}
                 </p>
               </div>
@@ -378,7 +378,7 @@ function priorityClass(priority) {
     urgent: 'border-red-300 bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-300',
     high: 'border-orange-300 bg-orange-50 text-orange-700 dark:bg-orange-950/30 dark:text-orange-300',
     normal: 'border-slate-200 bg-slate-50 text-slate-600 dark:bg-slate-900/40 dark:text-slate-300',
-    low: 'border-slate-200 bg-slate-50 text-slate-400 dark:bg-slate-900/40 dark:text-slate-500',
+    low: 'border-slate-200 bg-slate-50 text-slate-500 dark:bg-slate-900/40 dark:text-slate-500',
   }
   return classes[priority] || classes.normal
 }
@@ -408,7 +408,7 @@ onMounted(loadTickets)
 <style scoped>
 @reference '../../style.css';
 .form-input {
-  @apply block w-full rounded-2xl border border-slate-200 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-400 font-medium;
+  @apply block w-full rounded-2xl border border-slate-200 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-500 font-medium;
 }
 .form-select {
   @apply rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold uppercase tracking-widest text-slate-700 outline-none transition focus:border-brand-500 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-200;

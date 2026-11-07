@@ -218,9 +218,9 @@ export default function LetteringPage() {
             </thead>
             <tbody className="divide-y divide-app-border">
               {loading ? (
-                <tr><td colSpan={7} className="px-6 py-10 text-center text-sm text-slate-400">{t(locale, 'accountingModule.loading')}</td></tr>
+                <tr><td colSpan={7} className="px-6 py-10 text-center text-sm text-slate-500">{t(locale, 'accountingModule.loading')}</td></tr>
               ) : entries.length === 0 ? (
-                <tr><td colSpan={7} className="px-6 py-10 text-center text-sm text-slate-400">{t(locale, 'accountingModule.lgEmpty')}</td></tr>
+                <tr><td colSpan={7} className="px-6 py-10 text-center text-sm text-slate-500">{t(locale, 'accountingModule.lgEmpty')}</td></tr>
               ) : (
                 entries.map((entry) => (
                   <tr

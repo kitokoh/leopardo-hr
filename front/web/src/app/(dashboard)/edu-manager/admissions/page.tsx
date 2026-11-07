@@ -113,10 +113,10 @@ export default function AdmissionsPage() {
       render: (row) =>
         row.student ? (
           <span className="text-sm text-slate-600">
-            {row.student.display_name} <span className="font-mono text-xs text-slate-400">({row.student.student_number})</span>
+            {row.student.display_name} <span className="font-mono text-xs text-slate-500">({row.student.student_number})</span>
           </span>
         ) : (
-          <span className="text-slate-400">—</span>
+          <span className="text-slate-500">—</span>
         ),
     },
     {

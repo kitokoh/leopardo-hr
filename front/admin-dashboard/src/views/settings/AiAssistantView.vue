@@ -223,7 +223,7 @@
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
               <thead>
-                <tr class="text-left text-xs uppercase text-slate-400">
+                <tr class="text-left text-xs uppercase text-slate-500 dark:text-slate-400">
                   <th class="py-2">{{ t('aiAssistant.company') }}</th>
                   <th class="py-2 text-right">{{ t('aiAssistant.requests') }}</th>
                   <th class="py-2 text-right">{{ t('aiAssistant.tokens') }}</th>
@@ -252,7 +252,7 @@
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
               <thead>
-                <tr class="text-left text-xs uppercase text-slate-400">
+                <tr class="text-left text-xs uppercase text-slate-500 dark:text-slate-400">
                   <th class="py-2">{{ t('aiAssistant.tool') }}</th>
                   <th class="py-2 text-right">{{ t('aiAssistant.calls') }}</th>
                   <th class="py-2 text-right">{{ t('aiAssistant.awaitingConfirmation') }}</th>
@@ -280,7 +280,7 @@
           </h2>
           <ul class="space-y-3">
             <li v-for="(err, index) in recentErrors" :key="index" class="text-sm">
-              <span class="font-mono text-xs text-slate-400">{{ err.created_at }}</span>
+              <span class="font-mono text-xs text-slate-500 dark:text-slate-400">{{ err.created_at }}</span>
               <span class="ml-2 rounded bg-slate-100 px-2 py-0.5 font-mono text-xs dark:bg-slate-800">
                 {{ err.provider || '—' }}
               </span>
@@ -377,7 +377,7 @@ function selectTab(id) {
 }
 
 function statusClass(key) {
-  return configured(key) ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'
+  return configured(key) ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500'
 }
 
 function errorClass(value) {

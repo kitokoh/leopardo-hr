@@ -30,7 +30,7 @@
     </header>
 
     <!-- Chargement initial -->
-    <div v-if="loading" class="flex flex-1 items-center justify-center gap-3 text-slate-400">
+    <div v-if="loading" class="flex flex-1 items-center justify-center gap-3 text-slate-500 dark:text-slate-400">
       <div class="h-5 w-5 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
       <span class="text-sm">{{ t('chatHub.common.loading') }}</span>
     </div>
@@ -63,7 +63,7 @@
           </button>
         </div>
 
-        <div v-if="messages.length === 0" class="flex h-full flex-col items-center justify-center gap-2 text-center text-slate-400">
+        <div v-if="messages.length === 0" class="flex h-full flex-col items-center justify-center gap-2 text-center text-slate-500 dark:text-slate-400">
           <ChatBubbleLeftRightIcon class="h-10 w-10" />
           <p class="text-sm font-medium">{{ t('chatHub.thread.empty') }}</p>
           <p class="text-xs">{{ t('chatHub.thread.emptyHint') }}</p>
@@ -125,7 +125,7 @@
             <div
               :class="[
                 'mt-1 flex items-center gap-2 text-xs',
-                isMine(message) ? 'text-indigo-200' : 'text-slate-400'
+                isMine(message) ? 'text-indigo-200' : 'text-slate-500 dark:text-slate-400'
               ]"
             >
               <span>{{ formatTime(message.created_at) }}</span>
@@ -196,7 +196,7 @@
             <span class="font-semibold">{{ t('chatHub.thread.replyingTo') }}</span>
             {{ truncate(replyTarget.body, 80) }}
           </p>
-          <button type="button" class="text-xs text-slate-400 hover:text-red-500" @click="cancelReply">
+          <button type="button" class="text-xs text-slate-500 dark:text-slate-400 hover:text-red-500" @click="cancelReply">
             ✕
           </button>
         </div>
@@ -212,9 +212,9 @@
           <span class="flex min-w-0 items-center gap-2">
             <PaperClipIcon class="h-4 w-4 shrink-0 text-slate-500" />
             <span class="truncate">{{ pendingAttachment.name }}</span>
-            <span class="shrink-0 text-slate-400">{{ formatSize(pendingAttachment.size) }}</span>
+            <span class="shrink-0 text-slate-500 dark:text-slate-400">{{ formatSize(pendingAttachment.size) }}</span>
           </span>
-          <button type="button" class="shrink-0 text-slate-400 hover:text-red-500" :aria-label="t('chatHub.common.cancel')" @click="pendingAttachment = null">
+          <button type="button" class="shrink-0 text-slate-500 dark:text-slate-400 hover:text-red-500" :aria-label="t('chatHub.common.cancel')" @click="pendingAttachment = null">
             ✕
           </button>
         </div>
@@ -257,7 +257,7 @@
           </button>
         </form>
 
-        <p class="mt-1 text-xs text-slate-400">{{ t('chatHub.thread.enterHint') }}</p>
+        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ t('chatHub.thread.enterHint') }}</p>
       </div>
     </template>
   </section>

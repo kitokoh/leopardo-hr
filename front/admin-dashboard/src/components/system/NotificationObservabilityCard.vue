@@ -3,14 +3,14 @@
     <div class="flex items-center justify-between border-b border-slate-200/50 px-6 py-5 dark:border-slate-800/50">
       <div>
         <h3 class="text-xl font-bold text-slate-900 dark:text-white">Notifications &amp; Runbooks</h3>
-        <p class="text-xs text-slate-400 mt-0.5">
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
           Échecs d'envoi (email/SMS/push/WhatsApp) tous clients confondus sur 24h, et procédures d'incident.
         </p>
       </div>
       <button
         @click="$emit('refresh')"
         :disabled="loading"
-        class="p-2 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
+        class="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
         title="Actualiser"
       >
         <ArrowPathIcon class="h-5 w-5" :class="{ 'animate-spin': loading }" />
@@ -37,15 +37,15 @@
       <!-- Summary -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div class="rounded-xl border border-slate-200/60 dark:border-slate-800/60 p-3">
-          <div class="text-xs font-black uppercase tracking-widest text-slate-400">Clients scannés</div>
+          <div class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Clients scannés</div>
           <div class="mt-1 text-sm font-bold text-slate-900 dark:text-white">{{ data?.companies_scanned ?? '—' }}</div>
         </div>
         <div class="rounded-xl border border-slate-200/60 dark:border-slate-800/60 p-3">
-          <div class="text-xs font-black uppercase tracking-widest text-slate-400">Événements ({{ data?.window_hours ?? 24 }}h)</div>
+          <div class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Événements ({{ data?.window_hours ?? 24 }}h)</div>
           <div class="mt-1 text-sm font-bold text-slate-900 dark:text-white">{{ data?.totals?.events ?? '—' }}</div>
         </div>
         <div class="rounded-xl border border-slate-200/60 dark:border-slate-800/60 p-3">
-          <div class="text-xs font-black uppercase tracking-widest text-slate-400">Échecs</div>
+          <div class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Échecs</div>
           <div
             class="mt-1 text-sm font-bold"
             :class="data?.alerts?.notification_failures ? 'text-red-600' : 'text-slate-900 dark:text-white'"
@@ -54,14 +54,14 @@
           </div>
         </div>
         <div class="rounded-xl border border-slate-200/60 dark:border-slate-800/60 p-3">
-          <div class="text-xs font-black uppercase tracking-widest text-slate-400">Taux d'échec</div>
+          <div class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Taux d'échec</div>
           <div class="mt-1 text-sm font-bold text-slate-900 dark:text-white">{{ formatRate(data?.totals?.failure_rate) }}</div>
         </div>
       </div>
 
       <!-- By channel -->
       <div v-if="data?.by_channel?.length">
-        <h4 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Échecs par canal</h4>
+        <h4 class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-2">Échecs par canal</h4>
         <div class="space-y-1.5">
           <div
             v-for="channel in data.by_channel"
@@ -76,7 +76,7 @@
 
       <!-- Recent failures -->
       <div v-if="data?.recent_failures?.length">
-        <h4 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Échecs récents</h4>
+        <h4 class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-2">Échecs récents</h4>
         <div class="space-y-1.5">
           <div
             v-for="(failure, index) in data.recent_failures"
@@ -99,7 +99,7 @@
 
       <!-- Runbooks -->
       <div v-if="data?.runbooks?.length">
-        <h4 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Runbooks opérationnels</h4>
+        <h4 class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-2">Runbooks opérationnels</h4>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
           <a
             v-for="runbook in data.runbooks"

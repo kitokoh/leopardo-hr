@@ -152,7 +152,7 @@
               autocomplete="off"
               :placeholder="bankingData.country === 'DZ' ? t('settingsPage.ibanPlaceholderDZ', 'IBAN ou RIB algérien (20 chiffres)') : 'FR76 3000 4000 0100 0000 0000 000'"
             >
-            <p class="mt-1.5 text-xs font-medium text-slate-400">
+            <p class="mt-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
               {{ t('settingsPage.ibanHint', 'Format IBAN ISO 13616 (majuscules, sans espaces). Les espaces sont ignorés automatiquement.') }}
             </p>
           </div>
@@ -452,7 +452,7 @@ async function submitDisable2fa() {
 <style scoped>
 @reference '../../style.css';
 .form-input {
-  @apply block w-full rounded-2xl border border-slate-200 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-400 font-medium;
+  @apply block w-full rounded-2xl border border-slate-200 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-500 font-medium;
 }
 </style>
 

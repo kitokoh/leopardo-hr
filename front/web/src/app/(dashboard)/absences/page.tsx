@@ -397,7 +397,7 @@ export default function AbsencesPage() {
               <button
                 onClick={() => setShowForm(false)}
                 aria-label={labels.cancel}
-                className="rounded-full p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                className="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-600"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -528,7 +528,7 @@ export default function AbsencesPage() {
               <button
                 onClick={() => setRejectTarget(null)}
                 aria-label={labels.cancel}
-                className="rounded-full p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                className="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-600"
               >
                 <X className="h-4 w-4" />
               </button>

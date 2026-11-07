@@ -336,7 +336,7 @@ export default function SocialCalendarPage() {
             <button
               type="button"
               onClick={() => setComposerDay(null)}
-              className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+              className="rounded-lg p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-600"
               aria-label={a11y.close}
             >
               <X className="h-4 w-4" />
@@ -374,7 +374,7 @@ export default function SocialCalendarPage() {
               <button
                 type="button"
                 onClick={() => setSelectedPost(null)}
-                className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                className="rounded-lg p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-600"
                 aria-label={a11y.close}
               >
                 <X className="h-4 w-4" />

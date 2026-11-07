@@ -520,7 +520,7 @@ export default function PricingPage() {
             {copy.trust.items.map((item) => (
               <div
                 key={item}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-slate-300 text-xs font-medium"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-slate-500 text-xs font-medium"
               >
                 <ShieldCheck className="w-3 h-3 text-emerald-400" />
                 {item}

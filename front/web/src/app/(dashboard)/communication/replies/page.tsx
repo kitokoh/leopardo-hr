@@ -226,7 +226,7 @@ export default function CommunicationRepliesPage() {
         )}
 
         {loading && (
-          <div className="flex items-center justify-center gap-3 py-16 text-slate-400">
+          <div className="flex items-center justify-center gap-3 py-16 text-slate-500">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
             <span className="text-sm">{tc(locale, 'common.loading')}</span>
           </div>
@@ -254,7 +254,7 @@ export default function CommunicationRepliesPage() {
         )}
 
         {!loading && !error && replies.length === 0 && (
-          <div className="flex flex-col items-center gap-3 py-16 text-slate-400">
+          <div className="flex flex-col items-center gap-3 py-16 text-slate-500">
             <Inbox className="h-10 w-10" />
             <p className="text-sm font-medium">{tc(locale, 'replies.empty')}</p>
             <p className="text-xs">{tc(locale, 'replies.emptyHint')}</p>
@@ -278,12 +278,12 @@ export default function CommunicationRepliesPage() {
                         {tc(locale, 'replies.modeLabel')} : {tc(locale, `replies.mode.${reply.mode}`)}
                       </span>
                       {typeof reply.ai_confidence === 'number' && (
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-slate-500">
                           {tc(locale, 'replies.confidence', { value: reply.ai_confidence })}
                         </span>
                       )}
                     </div>
-                    <span className="text-xs text-slate-400">{formatDate(reply.created_at)}</span>
+                    <span className="text-xs text-slate-500">{formatDate(reply.created_at)}</span>
                   </div>
 
                   <dl className="mt-3 space-y-1 text-sm">

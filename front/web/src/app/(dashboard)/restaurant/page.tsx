@@ -270,7 +270,7 @@ export default function RestaurantHomePage() {
                       {alertCount > 0 ? (
                         <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800">{alertCount}</span>
                       ) : (
-                        <span className="text-slate-400">0</span>
+                        <span className="text-slate-500">0</span>
                       )}
                     </td>
                   </tr>

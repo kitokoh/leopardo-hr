@@ -823,7 +823,7 @@ function ticketPriorityClass(priority) {
     urgent: 'border-red-300 bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-300',
     high: 'border-orange-300 bg-orange-50 text-orange-700 dark:bg-orange-950/30 dark:text-orange-300',
     normal: 'border-slate-200 bg-slate-50 text-slate-600 dark:bg-slate-900/40 dark:text-slate-300',
-    low: 'border-slate-200 bg-slate-50 text-slate-400 dark:bg-slate-900/40 dark:text-slate-500',
+    low: 'border-slate-200 bg-slate-50 text-slate-500 dark:bg-slate-900/40 dark:text-slate-500',
   }
   return classes[priority] || classes.normal
 }

@@ -15,15 +15,15 @@
     <!-- PA2-ADM-004: explicit lead -> trial -> client conversion summary -->
     <div v-if="!isLoading && !errorMessage" class="grid grid-cols-1 gap-4 sm:grid-cols-3 shrink-0">
       <div class="card p-4">
-        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">{{ $t('crm.leadsTotal') }}</p>
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{{ $t('crm.leadsTotal') }}</p>
         <p class="mt-1 text-2xl font-black text-slate-900 dark:text-white">{{ meta.total_leads }}</p>
       </div>
       <div class="card p-4">
-        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">{{ $t('crm.leadToTrialRate') }}</p>
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{{ $t('crm.leadToTrialRate') }}</p>
         <p class="mt-1 text-2xl font-black text-emerald-600">{{ formatRate(meta.conversion.lead_to_trial_rate) }}</p>
       </div>
       <div class="card p-4">
-        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">{{ $t('crm.leadToClientRate') }}</p>
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{{ $t('crm.leadToClientRate') }}</p>
         <p class="mt-1 text-2xl font-black text-blue-600">{{ formatRate(meta.conversion.lead_to_client_rate) }}</p>
       </div>
     </div>
@@ -54,12 +54,12 @@
             <span class="inline-block mt-2 text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
               {{ formatSource(item.source) }}
             </span>
-            <p v-if="item.note" class="text-xs text-slate-400 mt-2 line-clamp-2">{{ item.note }}</p>
+            <p v-if="item.note" class="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-2">{{ item.note }}</p>
             <div class="mt-3 flex items-center justify-between">
-              <span class="text-xs text-slate-400">{{ formatDate(item.created_at) }}</span>
+              <span class="text-xs text-slate-500 dark:text-slate-400">{{ formatDate(item.created_at) }}</span>
             </div>
           </div>
-          <div v-if="!pipeline.leads?.length" class="text-center p-4 text-sm text-slate-400 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
+          <div v-if="!pipeline.leads?.length" class="text-center p-4 text-sm text-slate-500 dark:text-slate-400 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
             {{ $t('crm.noLead') }}
           </div>
         </div>
@@ -83,12 +83,12 @@
             <span class="inline-block mt-2 text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
               {{ formatSource(item.source) }}
             </span>
-            <p v-if="item.note" class="text-xs text-slate-400 mt-2 line-clamp-2">{{ item.note }}</p>
+            <p v-if="item.note" class="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-2">{{ item.note }}</p>
             <div class="mt-3 flex items-center justify-between">
               <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{{ item.company.days_left }}{{ $t('crm.daysLeft', 'j restants') }}</span>
             </div>
           </div>
-          <div v-if="!pipeline.trials?.length" class="text-center p-4 text-sm text-slate-400 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
+          <div v-if="!pipeline.trials?.length" class="text-center p-4 text-sm text-slate-500 dark:text-slate-400 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
             {{ $t('crm.noTrial') }}
           </div>
         </div>
@@ -111,12 +111,12 @@
             <span class="inline-block mt-2 text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
               {{ formatSource(item.source) }}
             </span>
-            <p v-if="item.note" class="text-xs text-slate-400 mt-2 line-clamp-2">{{ item.note }}</p>
+            <p v-if="item.note" class="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-2">{{ item.note }}</p>
             <div class="mt-3 flex items-center justify-between">
               <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{{ $t('crm.activeBadge', 'Actif') }}</span>
             </div>
           </div>
-          <div v-if="!pipeline.active?.length" class="text-center p-4 text-sm text-slate-400 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
+          <div v-if="!pipeline.active?.length" class="text-center p-4 text-sm text-slate-500 dark:text-slate-400 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
             {{ $t('crm.noClient') }}
           </div>
         </div>
@@ -136,11 +136,11 @@
         <div class="flex-1 p-3 space-y-3 overflow-y-auto">
           <div v-for="item in pipeline.rejected" :key="item.id" class="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
             <h3 class="font-bold text-slate-600 dark:text-slate-400">{{ item.company_name }}</h3>
-            <p class="text-xs text-slate-400 mt-1">
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
               {{ item.company ? item.company.status : item.status }}
             </p>
           </div>
-          <div v-if="!pipeline.rejected?.length" class="text-center p-4 text-sm text-slate-400 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg">
+          <div v-if="!pipeline.rejected?.length" class="text-center p-4 text-sm text-slate-500 dark:text-slate-400 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg">
             {{ $t('crm.noHistory') }}
           </div>
         </div>

@@ -161,7 +161,7 @@ export default function TeacherClassPage() {
               <div key={student.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 px-3 py-2">
                 <div>
                   <p className="text-sm font-bold text-slate-800">{student.display_name}</p>
-                  <p className="font-mono text-xs text-slate-400">{student.student_number}</p>
+                  <p className="font-mono text-xs text-slate-500">{student.student_number}</p>
                 </div>
                 <SelectInput
                   value={attendance[String(student.id)] ?? ''}
@@ -190,7 +190,7 @@ export default function TeacherClassPage() {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <p className="font-bold text-slate-900">{assessment.title}</p>
-                    <p className="text-xs font-medium text-slate-400">
+                    <p className="text-xs font-medium text-slate-500">
                       {assessment.subject?.name ?? `#${assessment.id}`} · {t(locale, 'edu.assessments.maxScore')} {assessment.max_score} ·{' '}
                       {assessment.assessment_date ?? '—'}
                     </p>
@@ -204,7 +204,7 @@ export default function TeacherClassPage() {
                       <div key={student.id} className="flex items-center justify-between gap-3">
                         <span className="text-sm text-slate-700">{student.display_name}</span>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-slate-400">/ {assessment.max_score}</span>
+                          <span className="text-xs text-slate-500">/ {assessment.max_score}</span>
                           <TextInput
                             type="number"
                             min={0}

@@ -47,7 +47,7 @@
               </td>
             </tr>
             <tr v-if="pendingItems.length === 0">
-              <td colspan="6" class="py-8 text-center text-slate-400">
+              <td colspan="6" class="py-8 text-center text-slate-500 dark:text-slate-400">
                 {{ $t('tax_rates.pending_empty') }}
               </td>
             </tr>
@@ -103,11 +103,11 @@
                 <!-- #1929 : submit/history sont des actions TENANT (manager) —
                      pas d'endpoint /admin équivalent ; le super-admin approuve
                      ou rejette depuis la liste « En attente ». -->
-                <span class="text-xs text-slate-400 dark:text-slate-500">{{ $t('tax_rates.status_only') }}</span>
+                <span class="text-xs text-slate-500 dark:text-slate-500">{{ $t('tax_rates.status_only') }}</span>
               </td>
             </tr>
             <tr v-if="rates.length === 0">
-              <td colspan="7" class="py-8 text-center text-slate-400">{{ $t('tax_rates.rates_empty') }}</td>
+              <td colspan="7" class="py-8 text-center text-slate-500 dark:text-slate-400">{{ $t('tax_rates.rates_empty') }}</td>
             </tr>
           </tbody>
         </table>

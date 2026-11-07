@@ -238,7 +238,7 @@ export default function SmartAttendanceSessionDetailPage() {
                   <div className="mt-2 h-12 w-0.5 bg-slate-200" />
                 </div>
                 <div className="ml-4 mt-1">
-                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{labels.checkInDetected}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{labels.checkInDetected}</p>
                   <p className="text-lg font-black text-slate-900">{formatDateTime(session.check_in_time, intlLocale)}</p>
                 </div>
               </div>
@@ -250,7 +250,7 @@ export default function SmartAttendanceSessionDetailPage() {
                   </div>
                 </div>
                 <div className="ml-4 mt-1">
-                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{labels.departure}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{labels.departure}</p>
                   <p className="text-lg font-black text-slate-900">{formatDateTime(session.check_out_time, intlLocale)}</p>
                   {session.duration_minutes != null ? (
                     <p className="text-sm text-slate-500">{labels.durationLabel}{formatDuration(session.duration_minutes)}</p>

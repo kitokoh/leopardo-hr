@@ -430,7 +430,7 @@ export default function CameraDetailPage() {
                   </div>
                 ) : null}
               </dl>
-              <p className="text-xs text-slate-400">{t(locale, 'cameras.detail.webrtcHint')}</p>
+              <p className="text-xs text-slate-500">{t(locale, 'cameras.detail.webrtcHint')}</p>
             </Card>
 
             <Card className="space-y-4">
@@ -443,7 +443,7 @@ export default function CameraDetailPage() {
                 <Notice tone="warning">{t(locale, 'cameras.detail.permissionsRestricted')}</Notice>
               ) : (
                 <>
-                  <p className="text-xs text-slate-400">{t(locale, 'cameras.detail.permissionsHint')}</p>
+                  <p className="text-xs text-slate-500">{t(locale, 'cameras.detail.permissionsHint')}</p>
                   {permissionsLoaded && permissions.length === 0 ? (
                     <p className="text-sm text-slate-500">{t(locale, 'cameras.detail.permissionsEmpty')}</p>
                   ) : (
@@ -499,7 +499,7 @@ export default function CameraDetailPage() {
                 <KeyRound className="h-4 w-4 text-emerald-700" aria-hidden="true" />
                 {t(locale, 'cameras.detail.tokensTitle')}
               </h2>
-              <p className="text-xs text-slate-400">{t(locale, 'cameras.detail.tokensHint')}</p>
+              <p className="text-xs text-slate-500">{t(locale, 'cameras.detail.tokensHint')}</p>
 
               {tokensLoaded && tokens.length === 0 ? (
                 <p className="text-sm text-slate-500">{t(locale, 'cameras.detail.tokensEmpty')}</p>
@@ -585,7 +585,7 @@ export default function CameraDetailPage() {
                     </Button>
                     <span className="text-xs text-slate-500">{t(locale, 'cameras.detail.tokenValueWarning')}</span>
                   </div>
-                  <p className="text-xs text-slate-400">{t(locale, 'cameras.detail.tokenRevocationHint')}</p>
+                  <p className="text-xs text-slate-500">{t(locale, 'cameras.detail.tokenRevocationHint')}</p>
                 </div>
               ) : null}
             </Card>
@@ -595,7 +595,7 @@ export default function CameraDetailPage() {
                 <ScrollText className="h-4 w-4 text-emerald-700" aria-hidden="true" />
                 {t(locale, 'cameras.detail.logsTitle')}
               </h2>
-              <p className="text-xs text-slate-400">{t(locale, 'cameras.detail.logsHint')}</p>
+              <p className="text-xs text-slate-500">{t(locale, 'cameras.detail.logsHint')}</p>
 
               {logsError ? (
                 <Notice tone="error">{t(locale, 'cameras.detail.logsLoadError')}</Notice>
@@ -628,7 +628,7 @@ export default function CameraDetailPage() {
                   </table>
                 </div>
               )}
-              <p className="text-xs text-slate-400">{t(locale, 'cameras.detail.logsRetention')}</p>
+              <p className="text-xs text-slate-500">{t(locale, 'cameras.detail.logsRetention')}</p>
             </Card>
           </>
         )}

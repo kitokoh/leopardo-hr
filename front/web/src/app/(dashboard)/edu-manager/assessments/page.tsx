@@ -264,10 +264,10 @@ export default function AssessmentsPage() {
               <div key={student.id} className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-sm font-bold text-slate-800">{student.display_name}</p>
-                  <p className="font-mono text-xs text-slate-400">{student.student_number}</p>
+                  <p className="font-mono text-xs text-slate-500">{student.student_number}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-400">/ {grading?.max_score}</span>
+                  <span className="text-xs text-slate-500">/ {grading?.max_score}</span>
                   <TextInput
                     type="number"
                     min={0}

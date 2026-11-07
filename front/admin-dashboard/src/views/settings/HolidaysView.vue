@@ -78,7 +78,7 @@
               </td>
             </tr>
             <tr v-if="!loading && holidays.length === 0">
-              <td colspan="5" class="py-8 text-center text-slate-400">
+              <td colspan="5" class="py-8 text-center text-slate-500 dark:text-slate-400">
                 {{ t('holidays.empty', { country: countryCode, year: String(year) }) }}
               </td>
             </tr>
@@ -148,7 +148,7 @@
               </td>
             </tr>
             <tr v-if="!islamicLoading && islamicEntries.length === 0">
-              <td colspan="6" class="py-8 text-center text-slate-400">
+              <td colspan="6" class="py-8 text-center text-slate-500 dark:text-slate-400">
                 {{ t('holidays.islamic.empty', { year: islamicYear }) }}
               </td>
             </tr>

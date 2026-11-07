@@ -167,7 +167,7 @@
             <h3 class="text-lg font-bold text-slate-900 dark:text-white">
               {{ t('travel.bookings.detailTitle', 'Réservation') }} {{ detail.reference }}
             </h3>
-            <button class="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800" @click="closeDetail">
+            <button class="rounded-lg p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800" @click="closeDetail">
               <XMarkIcon class="h-5 w-5" />
             </button>
           </div>

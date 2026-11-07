@@ -419,7 +419,7 @@ export default function MarketingPage() {
                             onClick={() => setInteractionsPostId((prev) => (prev === post.id ? null : post.id))}
                             title={t(locale, 'marketing.web.interactions.toggle')}
                             data-testid={`post-interactions-toggle-${post.id}`}
-                            className={`rounded-lg p-2 transition hover:bg-slate-100 ${interactionsPostId === post.id ? 'text-emerald-700' : 'text-slate-400 hover:text-emerald-700'}`}
+                            className={`rounded-lg p-2 transition hover:bg-slate-100 ${interactionsPostId === post.id ? 'text-emerald-700' : 'text-slate-500 hover:text-emerald-700'}`}
                           >
                             <MessageCircle className="h-4 w-4" />
                           </button>
@@ -430,7 +430,7 @@ export default function MarketingPage() {
                               onClick={() => handlePublishNow(post)}
                               disabled={pendingActionId === post.id}
                               title={t(locale, 'marketing.publishNow')}
-                              className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-700 disabled:opacity-50"
+                              className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-emerald-700 disabled:opacity-50"
                             >
                               <Send className="h-4 w-4" />
                             </button>
@@ -438,7 +438,7 @@ export default function MarketingPage() {
                               onClick={() => handleDelete(post)}
                               disabled={pendingActionId === post.id}
                               title={t(locale, 'marketing.web.postActions.delete')}
-                              className="rounded-lg p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                              className="rounded-lg p-2 text-slate-500 transition hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>

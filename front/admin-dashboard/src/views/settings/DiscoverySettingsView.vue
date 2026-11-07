@@ -131,7 +131,7 @@
                  bouton mort qui ne fait rien de visible. -->
             <span
               v-else-if="!saving"
-              class="text-sm text-slate-400"
+              class="text-sm text-slate-500 dark:text-slate-400"
             >
               {{ t('discoverySettings.noChange') }}
             </span>

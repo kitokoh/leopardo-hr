@@ -10,7 +10,7 @@
       <div class="flex items-start justify-between">
         <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ title }}</h3>
         <button
-          class="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800"
+          class="rounded-lg p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800"
           :aria-label="t('travel.common.close', 'Fermer')"
           @click="$emit('cancel')"
         >

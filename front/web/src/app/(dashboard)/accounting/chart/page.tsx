@@ -221,9 +221,9 @@ export default function ChartPage() {
             </thead>
             <tbody className="divide-y divide-app-border">
               {loading ? (
-                <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-400">{t(locale, 'accountingModule.loading')}</td></tr>
+                <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">{t(locale, 'accountingModule.loading')}</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-400">{t(locale, 'accountingModule.chartEmpty')}</td></tr>
+                <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">{t(locale, 'accountingModule.chartEmpty')}</td></tr>
               ) : (
                 filtered.map((account) => (
                   <tr key={account.code} className="transition-colors hover:bg-transparent/60">
@@ -231,7 +231,7 @@ export default function ChartPage() {
                     <td className="px-4 py-3 font-medium text-slate-700">
                       {account.label}
                       {account.is_system && (
-                        <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-slate-400">
+                        <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-slate-500">
                           {t(locale, 'accountingModule.chartSystemNote')}
                         </span>
                       )}
@@ -247,7 +247,7 @@ export default function ChartPage() {
                       <button
                         onClick={() => void toggleActive(account)}
                         title={t(locale, 'accountingModule.chartToggle')}
-                        className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-amber-600"
+                        className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-amber-600"
                       >
                         <Power className="h-4 w-4" />
                       </button>
@@ -255,7 +255,7 @@ export default function ChartPage() {
                         <button
                           onClick={() => void deleteAccount(account)}
                           title={t(locale, 'accountingModule.chartDelete')}
-                          className="rounded-lg p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-600"
+                          className="rounded-lg p-2 text-slate-500 transition hover:bg-red-50 hover:text-red-600"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>

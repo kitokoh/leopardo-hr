@@ -62,7 +62,7 @@ export function Modal({ open, title, onClose, closeLabel = 'Fermer', children }:
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl px-2 py-1 text-sm font-bold text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-xl px-2 py-1 text-sm font-bold text-slate-500 hover:bg-slate-100 hover:text-slate-600"
           >
             ✕
           </button>

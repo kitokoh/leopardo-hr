@@ -17,13 +17,13 @@
             <label for="search" class="sr-only">{{ $t('shell.search', 'Rechercher') }}</label>
             <div class="relative group">
               <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 transition-colors group-focus-within:text-brand-500">
-                <MagnifyingGlassIcon class="h-5 w-5 text-slate-400" />
+                <MagnifyingGlassIcon class="h-5 w-5 text-slate-500 dark:text-slate-400" />
               </div>
               <input
                 id="search"
                 v-model="searchQuery"
                 name="search"
-                class="block w-full rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-100/50 dark:bg-slate-800/50 py-2 pl-10 pr-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:ring-2 focus:ring-brand-500 sm:text-sm sm:leading-6 transition-all duration-200"
+                class="block w-full rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-100/50 dark:bg-slate-800/50 py-2 pl-10 pr-3 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:ring-2 focus:ring-brand-500 sm:text-sm sm:leading-6 transition-all duration-200"
                 :placeholder="$t('shell.search', 'Rechercher') + '...'"
                 type="search"
                 @keyup.enter="handleSearch"
@@ -159,7 +159,7 @@
               v-if="dashboardStore.criticalAlerts.length > 0"
               @click="showAlerts = !showAlerts"
               class="relative rounded-full bg-red-100 p-2 text-red-600 hover:bg-red-200"
-              aria-label="Alertes système"
+              :aria-label="$t('shell.systemAlerts', 'Alertes système')"
             >
               <ExclamationTriangleIcon class="h-5 w-5" />
               <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
@@ -197,8 +197,8 @@
           <button
             @click="themeStore.toggle()"
             class="rounded-md p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
-            :title="themeStore.isDark ? 'Mode clair' : 'Mode sombre'"
-            :aria-label="themeStore.isDark ? 'Activer le mode clair' : 'Activer le mode sombre'"
+            :title="themeStore.isDark ? $t('shell.themeLight', 'Mode clair') : $t('shell.themeDark', 'Mode sombre')"
+            :aria-label="themeStore.isDark ? $t('shell.enableLight', 'Activer le mode clair') : $t('shell.enableDark', 'Activer le mode sombre')"
           >
             <SunIcon v-if="themeStore.isDark" class="h-5 w-5" />
             <MoonIcon v-else class="h-5 w-5" />
@@ -209,7 +209,7 @@
             @click="refreshData"
             :disabled="isRefreshing"
             class="rounded-md p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 disabled:opacity-50"
-            aria-label="Actualiser les données"
+            :aria-label="$t('shell.refreshData', 'Actualiser les données')"
           >
             <ArrowPathIcon
               :class="[

@@ -101,7 +101,7 @@ export default function CrmAccountsPage() {
       <div className="rounded-3xl border border-white/20 bg-white/70 p-6 shadow-premium backdrop-blur-xl">
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative w-full sm:max-w-xs">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -116,7 +116,7 @@ export default function CrmAccountsPage() {
         </div>
 
         {loading && (
-          <div className="flex items-center justify-center gap-3 py-16 text-slate-400">
+          <div className="flex items-center justify-center gap-3 py-16 text-slate-500">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
             <span className="text-sm">{t(locale, 'crm.loading')}</span>
           </div>
@@ -137,7 +137,7 @@ export default function CrmAccountsPage() {
         )}
 
         {!loading && !error && filtered.length === 0 && (
-          <div className="flex flex-col items-center gap-3 py-16 text-slate-400">
+          <div className="flex flex-col items-center gap-3 py-16 text-slate-500">
             <Inbox className="h-10 w-10" />
             <p className="text-sm">{t(locale, 'crm.accounts.empty')}</p>
           </div>
@@ -148,7 +148,7 @@ export default function CrmAccountsPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="border-b border-slate-100 text-xs uppercase tracking-wider text-slate-400">
+                  <tr className="border-b border-slate-100 text-xs uppercase tracking-wider text-slate-500">
                     <th scope="col" className="pb-3 pr-4 font-bold">{t(locale, 'crm.accounts.colName')}</th>
                     <th scope="col" className="pb-3 pr-4 font-bold">{t(locale, 'crm.accounts.colStatus')}</th>
                     <th scope="col" className="pb-3 pr-4 font-bold">{t(locale, 'crm.accounts.colEmail')}</th>

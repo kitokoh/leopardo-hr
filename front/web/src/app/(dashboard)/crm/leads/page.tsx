@@ -98,7 +98,7 @@ export default function CrmLeadsPage() {
         </div>
 
         {loading && (
-          <div className="flex items-center justify-center gap-3 py-16 text-slate-400">
+          <div className="flex items-center justify-center gap-3 py-16 text-slate-500">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
             <span className="text-sm">{t(locale, 'crm.loading')}</span>
           </div>
@@ -119,7 +119,7 @@ export default function CrmLeadsPage() {
         )}
 
         {!loading && !error && leads.length === 0 && (
-          <div className="flex flex-col items-center gap-3 py-16 text-slate-400">
+          <div className="flex flex-col items-center gap-3 py-16 text-slate-500">
             <Inbox className="h-10 w-10" />
             <p className="text-sm">{t(locale, 'crm.leads.empty')}</p>
           </div>
@@ -130,7 +130,7 @@ export default function CrmLeadsPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="border-b border-slate-100 text-xs uppercase tracking-wider text-slate-400">
+                  <tr className="border-b border-slate-100 text-xs uppercase tracking-wider text-slate-500">
                     <th scope="col" className="pb-3 pr-4 font-bold">{t(locale, 'crm.leads.colName')}</th>
                     <th scope="col" className="pb-3 pr-4 font-bold">{t(locale, 'crm.leads.colCompany')}</th>
                     <th scope="col" className="pb-3 pr-4 font-bold">{t(locale, 'crm.leads.colStatus')}</th>

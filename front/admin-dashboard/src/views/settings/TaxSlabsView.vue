@@ -24,7 +24,7 @@
             <option value="company">{{ $t('tax_slabs.scope_company') }}</option>
           </select>
         </div>
-        <p class="text-sm text-slate-400 ml-1">({{ $t('tax_slabs.national_note') }})</p>
+        <p class="text-sm text-slate-500 dark:text-slate-400 ml-1">({{ $t('tax_slabs.national_note') }})</p>
       </div>
 
       <div class="mt-6">
@@ -74,15 +74,15 @@
 
       <div v-if="simResult" class="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-          <div class="text-xs font-bold text-slate-400 uppercase tracking-wide">{{ $t('tax_slabs.sim_gross') }}</div>
+          <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">{{ $t('tax_slabs.sim_gross') }}</div>
           <div class="mt-1 text-xl font-black text-slate-900 dark:text-white">{{ money(simResult.gross) }}</div>
         </div>
         <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-          <div class="text-xs font-bold text-slate-400 uppercase tracking-wide">{{ $t('tax_slabs.sim_social') }}</div>
+          <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">{{ $t('tax_slabs.sim_social') }}</div>
           <div class="mt-1 text-xl font-black text-slate-900 dark:text-white">{{ money(simResult.social_employee) }}</div>
         </div>
         <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-          <div class="text-xs font-bold text-slate-400 uppercase tracking-wide">{{ $t('tax_slabs.sim_tax') }}</div>
+          <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">{{ $t('tax_slabs.sim_tax') }}</div>
           <div class="mt-1 text-xl font-black text-rose-600 dark:text-rose-400">{{ money(simResult.income_tax) }}</div>
         </div>
         <div class="rounded-lg border border-emerald-200 dark:border-emerald-800 p-4">

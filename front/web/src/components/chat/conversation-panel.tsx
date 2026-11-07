@@ -38,15 +38,24 @@ import {
   type ChatThread,
 } from '@/lib/chat';
 import { useConversationPolling, type PollingState } from '@/components/chat/use-conversation-polling';
+import { chatT } from '@/lib/i18n/chat';
+import type { AppLocale } from '@/lib/i18n';
 
 interface ConversationPanelProps {
   thread: ChatThread | null;
   currentUserId: number | null;
+  locale?: AppLocale;
   onBack?: () => void;
   onThreadActivity?: (threadId: number) => void;
 }
 
-export function ConversationPanel({ thread, currentUserId, onBack, onThreadActivity }: ConversationPanelProps) {
+export function ConversationPanel({
+  thread,
+  currentUserId,
+  locale = 'fr',
+  onBack,
+  onThreadActivity,
+}: ConversationPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [lastSeq, setLastSeq] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -411,7 +420,7 @@ export function ConversationPanel({ thread, currentUserId, onBack, onThreadActiv
                     type="button"
                     onClick={() => setReplyTo(message)}
                     className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
-                    aria-label="Répondre à ce message"
+                    aria-label={chatT(locale, 'replyToMessage')}
                   >
                     <CornerUpLeft className="h-3 w-3" aria-hidden />
                   </button>
@@ -459,7 +468,7 @@ export function ConversationPanel({ thread, currentUserId, onBack, onThreadActiv
               type="button"
               onClick={() => setReplyTo(null)}
               className="rounded p-0.5 hover:bg-gray-200"
-              aria-label="Annuler la réponse"
+              aria-label={chatT(locale, 'cancelReply')}
             >
               <X className="h-3 w-3" aria-hidden />
             </button>
@@ -495,7 +504,7 @@ export function ConversationPanel({ thread, currentUserId, onBack, onThreadActiv
               type="button"
               onClick={() => setAttachment(null)}
               className="rounded p-0.5 hover:bg-emerald-100"
-              aria-label="Retirer la pièce jointe"
+              aria-label={chatT(locale, 'removeAttachment')}
             >
               <X className="h-3 w-3" aria-hidden />
             </button>

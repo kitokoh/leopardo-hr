@@ -74,7 +74,7 @@
               </td>
             </tr>
             <tr v-if="items.length === 0">
-              <td colspan="7" class="py-8 text-center text-slate-400">{{ $t('social_contrib.empty') }}</td>
+              <td colspan="7" class="py-8 text-center text-slate-500 dark:text-slate-400">{{ $t('social_contrib.empty') }}</td>
             </tr>
           </tbody>
         </table>
@@ -115,19 +115,19 @@
         <div v-for="(sim, label) in { a: simA, b: simB }" :key="label" class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
           <div class="flex items-center justify-between">
             <h3 class="font-bold text-slate-900 dark:text-white">{{ sim.country_code }}</h3>
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-wide">{{ $t('social_contrib.total_cost') }}</span>
+            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">{{ $t('social_contrib.total_cost') }}</span>
           </div>
           <div class="mt-3 grid grid-cols-2 gap-3 text-sm">
             <div class="rounded bg-slate-50 dark:bg-slate-800 p-3">
-              <div class="text-xs font-bold text-slate-400">{{ $t('social_contrib.sim_employee') }}</div>
+              <div class="text-xs font-bold text-slate-500 dark:text-slate-400">{{ $t('social_contrib.sim_employee') }}</div>
               <div class="mt-1 text-lg font-black text-slate-800 dark:text-slate-100">{{ money(sim.social_employee) }}</div>
             </div>
             <div class="rounded bg-slate-50 dark:bg-slate-800 p-3">
-              <div class="text-xs font-bold text-slate-400">{{ $t('social_contrib.sim_employer') }}</div>
+              <div class="text-xs font-bold text-slate-500 dark:text-slate-400">{{ $t('social_contrib.sim_employer') }}</div>
               <div class="mt-1 text-lg font-black text-slate-800 dark:text-slate-100">{{ money(sim.social_employer) }}</div>
             </div>
             <div class="rounded bg-slate-50 dark:bg-slate-800 p-3">
-              <div class="text-xs font-bold text-slate-400">{{ $t('social_contrib.sim_tax') }}</div>
+              <div class="text-xs font-bold text-slate-500 dark:text-slate-400">{{ $t('social_contrib.sim_tax') }}</div>
               <div class="mt-1 text-lg font-black text-rose-600">{{ money(sim.income_tax) }}</div>
             </div>
             <div class="rounded bg-emerald-50 dark:bg-emerald-900/40 p-3">

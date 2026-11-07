@@ -25,7 +25,7 @@
     </div>
 
     <!-- Chargement -->
-    <div v-if="loading" class="flex items-center justify-center gap-3 py-12 text-slate-400">
+    <div v-if="loading" class="flex items-center justify-center gap-3 py-12 text-slate-500 dark:text-slate-400">
       <div class="h-4 w-4 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
       <span class="text-sm">{{ t('chatHub.common.loading') }}</span>
     </div>
@@ -48,7 +48,7 @@
     <!-- Vide -->
     <div
       v-else-if="filtered.length === 0"
-      class="flex flex-col items-center gap-2 px-4 py-12 text-center text-slate-400"
+      class="flex flex-col items-center gap-2 px-4 py-12 text-center text-slate-500 dark:text-slate-400"
     >
       <ChatBubbleLeftRightIcon class="h-8 w-8" />
       <p class="text-sm font-medium">{{ t('chatHub.list.empty') }}</p>
@@ -100,10 +100,10 @@
               </span>
             </span>
             <span class="mt-0.5 flex items-center justify-between gap-2">
-              <span class="truncate text-xs text-slate-400">
+              <span class="truncate text-xs text-slate-500 dark:text-slate-400">
                 {{ thread.subject_type ? subjectLabel(thread) : t('chatHub.list.noSubject') }}
               </span>
-              <span class="shrink-0 text-xs text-slate-400">{{ formatDate(thread.last_message_at) }}</span>
+              <span class="shrink-0 text-xs text-slate-500 dark:text-slate-400">{{ formatDate(thread.last_message_at) }}</span>
             </span>
           </span>
 

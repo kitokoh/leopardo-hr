@@ -134,7 +134,7 @@ export default function ContractsPage() {
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
           {/* #4574 : placeholder localisé */}
           <input
             type="text"
@@ -182,12 +182,12 @@ export default function ContractsPage() {
                   <td className="px-6 py-4 font-bold text-slate-950">{c.employee_name}</td>
                   <td className="px-4 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">{c.type}</td>
                   <td className="px-4 py-4 text-slate-600">
-                    <span className="inline-flex items-center gap-1"><Calendar className="h-3 w-3 text-slate-400" />{c.start_date}</span>
+                    <span className="inline-flex items-center gap-1"><Calendar className="h-3 w-3 text-slate-500" />{c.start_date}</span>
                   </td>
                   <td className="px-4 py-4 text-slate-600">{c.end_date || 'Indefini'}</td>
                   <td className="px-4 py-4 text-center">{statusBadge(c.status)}</td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => downloadPdf(c.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-700" title="Telecharger PDF">
+                    <button onClick={() => downloadPdf(c.id)} className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-emerald-700" title="Telecharger PDF">
                       <Download className="h-4 w-4" />
                     </button>
                   </td>

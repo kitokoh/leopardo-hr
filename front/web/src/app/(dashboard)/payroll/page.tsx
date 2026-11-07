@@ -327,8 +327,8 @@ export default function PayrollPage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1">
-                          <Button variant="ghost" size="sm" onClick={() => downloadPdf(slip.id)} title={labels.downloadPdf} aria-label={labels.downloadPdf} icon={<Download className="h-4 w-4" />} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-emerald-700" />
-                          <Button variant="ghost" size="sm" onClick={() => openDetail(slip)} title={labels.viewDetail} aria-label={labels.viewDetail} icon={<Eye className="h-4 w-4" />} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-emerald-700" />
+                          <Button variant="ghost" size="sm" onClick={() => downloadPdf(slip.id)} title={labels.downloadPdf} aria-label={labels.downloadPdf} icon={<Download className="h-4 w-4" />} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-emerald-700" />
+                          <Button variant="ghost" size="sm" onClick={() => openDetail(slip)} title={labels.viewDetail} aria-label={labels.viewDetail} icon={<Eye className="h-4 w-4" />} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-emerald-700" />
                         </div>
                       </td>
                     </tr>

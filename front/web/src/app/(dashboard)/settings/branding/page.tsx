@@ -223,7 +223,7 @@ export default function BrandingPage() {
           {/* Identité : nom d'affichage + logo. */}
           <div className="rounded-3xl border border-app-border bg-white p-6 shadow-sm">
             <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-800">
-              <ImageIcon className="h-4 w-4 text-slate-400" aria-hidden="true" />
+              <ImageIcon className="h-4 w-4 text-slate-500" aria-hidden="true" />
               {i18nT(locale, 'brandingPage.identityTitle')}
             </h2>
 
@@ -238,7 +238,7 @@ export default function BrandingPage() {
                 className={inputClassName}
                 data-testid="branding-display-name"
               />
-              <span className="mt-1 block text-xs text-slate-400">{i18nT(locale, 'brandingPage.displayNameHint')}</span>
+              <span className="mt-1 block text-xs text-slate-500">{i18nT(locale, 'brandingPage.displayNameHint')}</span>
             </label>
 
             <div className="mt-5">
@@ -249,12 +249,12 @@ export default function BrandingPage() {
                   <img src={previewLogoUrl} alt={i18nT(locale, 'brandingPage.logoPreviewAlt')} className="h-14 w-14 rounded-xl border border-slate-200 bg-white object-contain" />
                 ) : (
                   <span className="flex h-14 w-14 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
-                    <ImageIcon className="h-6 w-6 text-slate-300" aria-hidden="true" />
+                    <ImageIcon className="h-6 w-6 text-slate-500" aria-hidden="true" />
                   </span>
                 )}
                 <span className="min-w-0">
                   <span className="block text-sm font-bold text-emerald-700">{i18nT(locale, 'brandingPage.logoChoose')}</span>
-                  <span className="mt-1 block text-xs text-slate-400">{i18nT(locale, 'brandingPage.logoHint')}</span>
+                  <span className="mt-1 block text-xs text-slate-500">{i18nT(locale, 'brandingPage.logoHint')}</span>
                 </span>
                 <input
                   ref={fileInputRef}
@@ -271,7 +271,7 @@ export default function BrandingPage() {
           {/* Couleurs + mode de marque. */}
           <div className="rounded-3xl border border-app-border bg-white p-6 shadow-sm">
             <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-800">
-              <Palette className="h-4 w-4 text-slate-400" aria-hidden="true" />
+              <Palette className="h-4 w-4 text-slate-500" aria-hidden="true" />
               {i18nT(locale, 'brandingPage.colorsTitle')}
             </h2>
 

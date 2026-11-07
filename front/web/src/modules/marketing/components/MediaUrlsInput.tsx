@@ -77,7 +77,7 @@ export function MediaUrlsInput({ value, onChange, disabled = false }: MediaUrlsI
                 onClick={() => removeUrl(url)}
                 disabled={disabled}
                 aria-label={`${t(locale, 'marketing.web.mediaUrls.remove')} ${url}`}
-                className="rounded p-1 text-slate-400 transition hover:text-red-600 disabled:opacity-50"
+                className="rounded p-1 text-slate-500 transition hover:text-red-600 disabled:opacity-50"
               >
                 <X className="h-3.5 w-3.5" />
               </button>

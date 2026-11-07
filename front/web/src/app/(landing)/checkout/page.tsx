@@ -152,7 +152,7 @@ function StepIndicator({
                 ? 'bg-emerald-700 text-white shadow-lg shadow-emerald-500/30'
                 : i === step
                 ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
             }`}
           >
             {i < step ? <Check className="w-4 h-4" /> : i + 1}

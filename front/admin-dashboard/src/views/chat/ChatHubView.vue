@@ -94,7 +94,7 @@
 
       <div
         v-else
-        class="flex flex-1 flex-col items-center justify-center gap-2 px-6 text-center text-slate-400"
+        class="flex flex-1 flex-col items-center justify-center gap-2 px-6 text-center text-slate-500 dark:text-slate-400"
         :class="mobilePane === 'thread' ? 'flex' : 'hidden md:flex'"
       >
         <ChatBubbleLeftRightIcon class="h-12 w-12" />

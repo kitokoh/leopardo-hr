@@ -284,7 +284,7 @@ export default function CommunicationInboxPage() {
       <CommunicationTabs />
 
       {loading && (
-        <div className="flex items-center justify-center gap-3 py-16 text-slate-400">
+        <div className="flex items-center justify-center gap-3 py-16 text-slate-500">
           <div className="h-5 w-5 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
           <span className="text-sm">{tc(locale, 'common.loading')}</span>
         </div>
@@ -340,7 +340,7 @@ export default function CommunicationInboxPage() {
             <p className="mb-5 text-sm text-slate-500">{tc(locale, 'mailbox.subtitle')}</p>
 
             {integrations.length === 0 ? (
-              <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-slate-200 py-10 text-slate-400">
+              <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-slate-200 py-10 text-slate-500">
                 <Inbox className="h-8 w-8" />
                 <p className="text-sm font-medium">{tc(locale, 'mailbox.empty')}</p>
                 <p className="text-xs">{tc(locale, 'mailbox.emptyHint')}</p>
@@ -411,7 +411,7 @@ export default function CommunicationInboxPage() {
                 <MailPlus className="h-4 w-4" />
                 {connecting ? tc(locale, 'mailbox.connecting') : tc(locale, 'mailbox.connect')}
               </button>
-              <p className="w-full text-xs text-slate-400">
+              <p className="w-full text-xs text-slate-500">
                 {tc(locale, 'mailbox.connectHint')} {tc(locale, 'mailbox.withSendHint')}
               </p>
             </div>
@@ -425,7 +425,7 @@ export default function CommunicationInboxPage() {
             </h2>
             <p className="mb-4 text-sm text-slate-500">{tc(locale, 'proposals.subtitle')}</p>
             {proposals.length === 0 ? (
-              <p className="rounded-2xl border border-dashed border-slate-200 py-6 text-center text-sm text-slate-400">
+              <p className="rounded-2xl border border-dashed border-slate-200 py-6 text-center text-sm text-slate-500">
                 {tc(locale, 'proposals.empty')}
               </p>
             ) : (
@@ -437,7 +437,7 @@ export default function CommunicationInboxPage() {
                   >
                     <p className="font-semibold text-slate-900">{proposal.suggested_name ?? proposal.email}</p>
                     <p className="text-xs text-slate-500">{proposal.email}</p>
-                    <p className="mt-1 text-xs text-slate-400">
+                    <p className="mt-1 text-xs text-slate-500">
                       {tc(locale, 'proposals.seenIn', { count: proposal.message_count })}
                     </p>
                     <div className="mt-3 flex gap-2">
@@ -489,7 +489,7 @@ export default function CommunicationInboxPage() {
             <p className="mb-4 text-sm text-slate-500">{tc(locale, 'threads.subtitle')}</p>
 
             {threads.length === 0 ? (
-              <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-slate-200 py-10 text-slate-400">
+              <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-slate-200 py-10 text-slate-500">
                 <Inbox className="h-8 w-8" />
                 <p className="text-sm font-medium">{tc(locale, 'threads.empty')}</p>
                 <p className="text-xs">{tc(locale, 'threads.emptyHint')}</p>
@@ -513,7 +513,7 @@ export default function CommunicationInboxPage() {
                           </span>
                           <span className="block text-xs text-slate-500">{thread.snippet}</span>
                         </span>
-                        <span className="flex items-center gap-3 text-xs text-slate-400">
+                        <span className="flex items-center gap-3 text-xs text-slate-500">
                           <span>{tc(locale, 'threads.messagesCount', { count: thread.message_count })}</span>
                           <span>{formatDate(thread.last_message_at)}</span>
                           {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -523,7 +523,7 @@ export default function CommunicationInboxPage() {
                       {isOpen && (
                         <div className="space-y-3 border-t border-slate-100 p-4">
                           {threadLoading === thread.id && (
-                            <p className="text-sm text-slate-400">{tc(locale, 'threads.loadingMessages')}</p>
+                            <p className="text-sm text-slate-500">{tc(locale, 'threads.loadingMessages')}</p>
                           )}
                           {threadError && threadLoading !== thread.id && messages.length === 0 && (
                             <p className="text-sm text-red-500">{threadError}</p>
@@ -558,7 +558,7 @@ export default function CommunicationInboxPage() {
                                   </span>
                                 )}
                                 {typeof message.ai_confidence === 'number' && (
-                                  <span className="text-xs text-slate-400">
+                                  <span className="text-xs text-slate-500">
                                     {tc(locale, 'messages.confidence', { value: message.ai_confidence })}
                                   </span>
                                 )}
@@ -575,10 +575,10 @@ export default function CommunicationInboxPage() {
                                   {message.body}
                                 </p>
                               ) : (
-                                <p className="mt-3 text-sm italic text-slate-400">{message.snippet}</p>
+                                <p className="mt-3 text-sm italic text-slate-500">{message.snippet}</p>
                               )}
                               {message.labels.length > 0 && (
-                                <p className="mt-2 flex items-center gap-1 text-xs text-slate-400">
+                                <p className="mt-2 flex items-center gap-1 text-xs text-slate-500">
                                   <Paperclip className="h-3 w-3" />
                                   {message.labels.join(' · ')}
                                 </p>

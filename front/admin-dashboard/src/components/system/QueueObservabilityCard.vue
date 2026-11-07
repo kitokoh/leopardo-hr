@@ -3,14 +3,14 @@
     <div class="flex items-center justify-between border-b border-slate-200/50 px-6 py-5 dark:border-slate-800/50">
       <div>
         <h3 class="text-xl font-bold text-slate-900 dark:text-white">Observabilité Redis / Jobs</h3>
-        <p class="text-xs text-slate-400 mt-0.5">
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
           Profondeur des files, jobs échoués et dernière exécution des tâches planifiées.
         </p>
       </div>
       <button
         @click="$emit('refresh')"
         :disabled="loading"
-        class="p-2 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
+        class="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
         title="Actualiser"
       >
         <ArrowPathIcon class="h-5 w-5" :class="{ 'animate-spin': loading }" />
@@ -61,7 +61,7 @@
       <!-- Redis + queue summary -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div class="rounded-xl border border-slate-200/60 dark:border-slate-800/60 p-3">
-          <div class="text-xs font-black uppercase tracking-widest text-slate-400">Redis</div>
+          <div class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Redis</div>
           <div class="mt-1 flex items-center gap-1.5">
             <span :class="['h-2 w-2 rounded-full', data?.redis?.ok ? 'bg-emerald-500' : 'bg-red-500']"></span>
             <span class="text-sm font-bold" :class="data?.redis?.ok ? 'text-emerald-600' : 'text-red-600'">
@@ -70,11 +70,11 @@
           </div>
         </div>
         <div class="rounded-xl border border-slate-200/60 dark:border-slate-800/60 p-3">
-          <div class="text-xs font-black uppercase tracking-widest text-slate-400">Profondeur totale</div>
+          <div class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Profondeur totale</div>
           <div class="mt-1 text-sm font-bold text-slate-900 dark:text-white">{{ data?.queue_total_depth ?? 0 }}</div>
         </div>
         <div class="rounded-xl border border-slate-200/60 dark:border-slate-800/60 p-3">
-          <div class="text-xs font-black uppercase tracking-widest text-slate-400">Jobs échoués</div>
+          <div class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Jobs échoués</div>
           <div
             class="mt-1 text-sm font-bold"
             :class="data?.alerts?.failed_jobs ? 'text-red-600' : 'text-slate-900 dark:text-white'"
@@ -83,14 +83,14 @@
           </div>
         </div>
         <div class="rounded-xl border border-slate-200/60 dark:border-slate-800/60 p-3">
-          <div class="text-xs font-black uppercase tracking-widest text-slate-400">Connexion file</div>
+          <div class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Connexion file</div>
           <div class="mt-1 text-sm font-bold text-slate-900 dark:text-white">{{ data?.queue_connection ?? '—' }}</div>
         </div>
       </div>
 
       <!-- Per-queue depth -->
       <div v-if="data?.queues?.length">
-        <h4 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Files</h4>
+        <h4 class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-2">Files</h4>
         <div class="space-y-1.5">
           <div
             v-for="queue in data.queues"
@@ -107,7 +107,7 @@
 
       <!-- Scheduled tasks last run -->
       <div v-if="data?.scheduled_tasks?.length">
-        <h4 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Dernière exécution des tâches planifiées</h4>
+        <h4 class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-2">Dernière exécution des tâches planifiées</h4>
         <div class="space-y-1.5">
           <div
             v-for="task in data.scheduled_tasks"
@@ -139,7 +139,7 @@
 
       <!-- Recent failed jobs -->
       <div v-if="data?.failed_jobs?.recent?.length">
-        <h4 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Jobs échoués récents</h4>
+        <h4 class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-2">Jobs échoués récents</h4>
         <div class="space-y-1.5">
           <div
             v-for="job in data.failed_jobs.recent"

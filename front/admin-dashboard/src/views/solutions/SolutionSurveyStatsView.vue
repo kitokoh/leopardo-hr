@@ -33,7 +33,7 @@
       <button class="ml-3 underline font-bold" @click="load">{{ $t('surveyStats.retry') }}</button>
     </div>
 
-    <div v-if="isLoading" class="py-12 text-center text-sm font-bold text-slate-400 uppercase tracking-widest">
+    <div v-if="isLoading" class="py-12 text-center text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
       {{ $t('surveyStats.loading') }}
     </div>
 
@@ -72,12 +72,12 @@
         <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">{{ $t('surveyStats.bySolutionHint') }}</p>
 
         <div v-if="data.by_solution.length === 0" class="py-8 text-center">
-          <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-300" />
+          <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-500 dark:text-slate-400" />
           <p class="mt-3 text-sm font-medium text-slate-500">{{ $t('surveyStats.empty') }}</p>
         </div>
         <table v-else class="w-full text-sm">
           <thead>
-            <tr class="text-left text-xs uppercase tracking-widest text-slate-400">
+            <tr class="text-left text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400">
               <th class="pb-3 font-bold">{{ $t('surveyStats.solutionColumn') }}</th>
               <th class="pb-3 font-bold">{{ $t('surveyStats.responsesColumn') }}</th>
               <th class="pb-3 font-bold">{{ $t('surveyStats.shareColumn') }}</th>
@@ -109,7 +109,7 @@
         <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">{{ $t('surveyStats.packagesHint') }}</p>
 
         <div v-if="data.packages.length === 0" class="py-8 text-center">
-          <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-300" />
+          <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-500 dark:text-slate-400" />
           <p class="mt-3 text-sm font-medium text-slate-500">{{ $t('surveyStats.empty') }}</p>
         </div>
         <ul v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -130,14 +130,14 @@
         <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">{{ $t('surveyStats.answersHint') }}</p>
 
         <div v-if="data.answers.length === 0" class="py-8 text-center">
-          <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-300" />
+          <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-500 dark:text-slate-400" />
           <p class="mt-3 text-sm font-medium text-slate-500">{{ $t('surveyStats.empty') }}</p>
         </div>
         <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div v-for="question in data.answers" :key="question.question" class="rounded-xl border border-slate-200 dark:border-slate-700 p-5">
             <div class="flex items-center justify-between mb-4">
               <p class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ question.question }}</p>
-              <span class="text-xs font-medium text-slate-400">{{ question.total }}</span>
+              <span class="text-xs font-medium text-slate-500 dark:text-slate-400">{{ question.total }}</span>
             </div>
             <ul class="space-y-2">
               <li v-for="value in question.values" :key="value.value" class="flex items-center gap-3">

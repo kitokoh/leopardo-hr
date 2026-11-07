@@ -119,7 +119,7 @@ export default function ModulesPage() {
                 {module.enabled ? (module.state === 'trial' ? 'Trial' : labels.dashboard.present) : 'Lock'}
               </span>
             </div>
-          )) : <p className="text-sm text-slate-400">—</p>}
+          )) : <p className="text-sm text-slate-500">—</p>}
         </div>
       </section>
 

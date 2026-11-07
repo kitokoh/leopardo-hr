@@ -85,7 +85,7 @@
               {{ check.method_badge }}
             </span>
             <span
-              :class="check.is_present ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'"
+              :class="check.is_present ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500'"
               class="text-xs font-black uppercase"
             >
               {{ check.is_present
@@ -100,7 +100,7 @@
           <p v-if="check.observed_text" class="mt-1 text-xs italic text-slate-600 dark:text-slate-400">
             « {{ check.observed_text }} »
           </p>
-          <p class="mt-1 text-xs text-slate-400">
+          <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
             {{ formatDate(check.observed_at) }}
             <span v-if="!check.supports_quantified_claim">
               — {{ t('searchIntel.geo.noQuantifiedClaim', 'ne permet pas une affirmation chiffree') }}

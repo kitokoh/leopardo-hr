@@ -52,7 +52,7 @@
         </template>
         <template #cell-ticket_status="{ value }">
           <StatusBadge v-if="value" :status="value" :map="ticketStatusMap" />
-          <span v-else class="text-xs text-slate-400">{{ t('travel.checkin.noTicket', 'Sans billet') }}</span>
+          <span v-else class="text-xs text-slate-500 dark:text-slate-400">{{ t('travel.checkin.noTicket', 'Sans billet') }}</span>
         </template>
         <template #cell-checkin="{ row }">
           <button
@@ -67,7 +67,7 @@
             <CheckCircleIcon class="h-4 w-4" />
             {{ t('travel.checkin.done', 'Embarqué') }}
           </span>
-          <span v-else class="text-xs text-slate-400">—</span>
+          <span v-else class="text-xs text-slate-500 dark:text-slate-400">—</span>
         </template>
       </DataTable>
     </template>

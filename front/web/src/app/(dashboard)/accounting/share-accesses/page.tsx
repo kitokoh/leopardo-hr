@@ -194,7 +194,7 @@ export default function ShareAccessesPage() {
             </span>
           )}
           {total > 0 && (
-            <span className="ml-auto text-xs font-medium text-slate-400">
+            <span className="ml-auto text-xs font-medium text-slate-500">
               {interpolate(t(locale, 'shareAccesses.total'), { count: total })}
             </span>
           )}
@@ -202,7 +202,7 @@ export default function ShareAccessesPage() {
 
         {selectedId === null ? (
           <div className="px-6 py-14 text-center">
-            <Globe className="mx-auto mb-3 h-8 w-8 text-slate-300" />
+            <Globe className="mx-auto mb-3 h-8 w-8 text-slate-500" />
             <p className="text-sm font-medium text-slate-500">{t(locale, 'shareAccesses.noDocumentSelected')}</p>
           </div>
         ) : accessError ? (
@@ -212,11 +212,11 @@ export default function ShareAccessesPage() {
           </div>
         ) : loadingAccesses ? (
           <div className="px-6 py-14 text-center">
-            <p className="text-sm font-medium text-slate-400">{t(locale, 'shareAccesses.loading')}</p>
+            <p className="text-sm font-medium text-slate-500">{t(locale, 'shareAccesses.loading')}</p>
           </div>
         ) : accesses.length === 0 ? (
           <div className="px-6 py-14 text-center">
-            <Eye className="mx-auto mb-3 h-8 w-8 text-slate-300" />
+            <Eye className="mx-auto mb-3 h-8 w-8 text-slate-500" />
             <p className="text-sm font-bold text-slate-700">{t(locale, 'shareAccesses.emptyTitle')}</p>
             <p className="mt-1 text-sm text-slate-500">{t(locale, 'shareAccesses.emptyBody')}</p>
           </div>
@@ -253,7 +253,7 @@ export default function ShareAccessesPage() {
                       <td className="max-w-[280px] truncate px-4 py-4 text-slate-500" title={access.user_agent ?? undefined}>
                         {access.user_agent || '—'}
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4 font-mono text-xs text-slate-400">{access.request_id || '—'}</td>
+                      <td className="whitespace-nowrap px-6 py-4 font-mono text-xs text-slate-500">{access.request_id || '—'}</td>
                     </tr>
                   ))}
                 </tbody>

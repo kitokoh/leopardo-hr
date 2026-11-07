@@ -184,7 +184,7 @@ export default function TravelHomePage() {
             {t(locale, 'travel.home.portalDesc', 'Recherche de trajets et réservation côté client.')}
           </p>
         </div>
-        <ExternalLink className="h-5 w-5 shrink-0 text-slate-400 transition group-hover:text-slate-700" />
+        <ExternalLink className="h-5 w-5 shrink-0 text-slate-500 transition group-hover:text-slate-700" />
       </Link>
     </ModulePageShell>
   );

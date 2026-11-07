@@ -103,7 +103,7 @@
         </div>
       </div>
 
-      <p class="text-xs text-slate-400 dark:text-slate-500">
+      <p class="text-xs text-slate-500 dark:text-slate-500">
         {{ $t('accounting.dashboard.currency_hint') }}
       </p>
 
@@ -160,7 +160,7 @@
                   >
                     {{ row.days_late }} {{ $t('accounting.dashboard.days') }}
                   </span>
-                  <span v-else class="text-xs text-slate-400">—</span>
+                  <span v-else class="text-xs text-slate-500 dark:text-slate-400">—</span>
                 </td>
                 <td class="py-2.5 pr-3 text-right text-slate-700 dark:text-slate-300">{{ formatAmount(row.total_ttc) }}</td>
                 <td class="py-2.5 pr-3 text-right text-slate-500 dark:text-slate-400">{{ formatAmount(row.paid_amount) }}</td>
