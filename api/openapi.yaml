@@ -24424,6 +24424,141 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Error422'
+  /company/roles:
+    get:
+      operationId: api_get_company_roles
+      tags:
+      - Company
+      summary: Lister les roles personnalises actifs du tenant
+      description: 'Issue #9095 (IAM-L5) — roles personnalises de tenant. Un role = un nom + un jeu de permissions borne par le registre ferme DelegablePermission. Les roles revoques ne sont pas listes. Le catalogue des permissions delegables est renvoye avec la liste.'
+      responses:
+        '200':
+          description: Roles personnalises actifs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CustomRole'
+                  catalogue:
+                    type: array
+                    items:
+                      type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_company_roles
+      tags:
+      - Company
+      summary: Creer un role personnalise
+      description: 'Issue #9095 (IAM-L5) — le plafond de delegation s applique : permissions ⊆ capabilities(createur). Une permission que le createur ne detient pas rend 422 DELEGATION_EXCEEDS_ACTOR avec la liste des permissions en exces. Un non-principal ne peut pas accorder delegation.manage.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - permissions
+              properties:
+                name:
+                  type: string
+                  maxLength: 80
+                permissions:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
+                vertical:
+                  type: string
+                  nullable: true
+                  maxLength: 40
+      responses:
+        '201':
+          description: Role cree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CustomRole'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /company/roles/{role}:
+    put:
+      operationId: api_put_company_roles_role
+      tags:
+      - Company
+      summary: Modifier un role personnalise
+      description: 'Issue #9095 (IAM-L5) — le plafond s applique AUSSI a la modification : une modification ne peut pas elargir un role au-dela de ce que l acteur detient.'
+      parameters:
+      - name: role
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - permissions
+              properties:
+                permissions:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Role modifie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CustomRole'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      operationId: api_delete_company_roles_role
+      tags:
+      - Company
+      summary: Revoquer un role personnalise
+      description: 'Issue #9095 (IAM-L5) — revocation effective a la requete suivante. La ligne reste (audit du geste) mais n est plus lue.'
+      parameters:
+      - name: role
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Role revoque
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /payroll/audit:
     get:
       tags:
@@ -63622,6 +63757,32 @@ components:
         manager_role:
           type: string
           nullable: true
+    # Issue #9095 (IAM-L5) — role personnalise de tenant.
+    CustomRole:
+      type: object
+      description: Un role personnalise d'un tenant, borne par le registre ferme DelegablePermission.
+      required:
+      - id
+      - name
+      - permissions
+      properties:
+        id:
+          type: integer
+          example: 12
+        name:
+          type: string
+          example: Caissier
+        permissions:
+          type: array
+          items:
+            type: string
+          example:
+          - can_view_dashboard
+          - can_view_fleet
+        vertical:
+          type: string
+          nullable: true
+          example: restaurant
     PageWriteRequest:
       type: object
       description: Attributs modifiables d'une Page (BC PAGES, #8728).

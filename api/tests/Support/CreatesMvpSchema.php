@@ -2282,6 +2282,24 @@ trait CreatesMvpSchema
             });
         }
 
+        // Issue #9095 (IAM-L5) — rôles personnalisés de tenant.
+        // Miroir de la migration 2026_11_07_000500_9095 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('role_assignments'))) {
+            Schema::create($this->moduleTable('role_assignments'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 80);
+                $table->jsonb('permissions');
+                $table->string('vertical', 40)->nullable();
+                $table->unsignedInteger('created_by_employee_id')->nullable();
+                $table->timestamp('revoked_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'name'], 'role_assignments_company_name_unique');
+                $table->index(['company_id', 'revoked_at'], 'role_assignments_company_active_idx');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('catalog_inquiries'))) {
             Schema::create($this->moduleTable('catalog_inquiries'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
