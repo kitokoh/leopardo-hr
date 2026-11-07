@@ -38,11 +38,11 @@
 | Persona | Identifiant | Surface |
 | :--- | :--- | :--- |
 | Super Admin | `admin@leopardo-rh.com` | `leo-admin.pages.dev` |
-| Manager Principal | `ahmed.benali@techcorp-algerie.dz` | Web + app Manager |
-| Manager RH | `fatima.meziane@techcorp-algerie.dz` | Web + app Manager/HR |
-| Manager Comptable | `lina.haddad@techcorp-algerie.dz` | Web + app Manager |
-| Manager Superviseur | `nassim.cheriet@techcorp-algerie.dz` | Web + app Manager + kiosque |
-| Employé | `karim.aouad@techcorp-algerie.dz` | Web + app Employee + kiosque |
+| Manager Principal | `ahmed.benali@example.com` | Web + app Manager |
+| Manager RH | `fatima.meziane@example.com` | Web + app Manager/HR |
+| Manager Comptable | `lina.haddad@example.com` | Web + app Manager |
+| Manager Superviseur | `nassim.cheriet@example.com` | Web + app Manager + kiosque |
+| Employé | `karim.aouad@example.com` | Web + app Employee + kiosque |
 
 > Les comptes ci-dessus ont été **recréés localement** via `DemoCompanySeeder` (3 entreprises : `techcorp-algerie` DZ, `pharmaplus-casablanca` MA, `digitalflow-tunis` TN).
 
@@ -63,7 +63,7 @@
 
 **Description / préconditions**
 Vérifier le parcours d'authentification nominal d'un collaborateur sur l'espace client web.
-Prérequis : navigateur, accès réseau à `https://gestionemployer-backend.vercel.app`, compte `karim.aouad@techcorp-algerie.dz` / `password123`.
+Prérequis : navigateur, accès réseau à `https://gestionemployer-backend.vercel.app`, compte `karim.aouad@example.com` / `password123`.
 
 **Étapes de test**
 1. Ouvrir `https://gestionemployer-backend.vercel.app/` et vérifier le chargement de la page d'accueil.
@@ -78,7 +78,7 @@ Connexion acceptée, redirection vers le tableau de bord employé, session persi
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 4 | Exécuté contre l'API locale reconstruite. `POST /api/v1/auth/login` (karim.aouad@techcorp-algerie.dz / password123) → **200**, jeton Sanctum retourné (`token_type`, `token_expires_at`), `data.role = "employee"`. `GET /api/v1/auth/me` avec le jeton → **200** (profil complet, session valide). Mauvais mot de passe → **401** (pas de fuite). L'UI web Next.js n'a pas pu être servie : `next build` est tué par la limite mémoire de l'environnement (2 Go, exit 137) — le parcours visuel (redirection, F5, déconnexion) n'a donc pas été observé dans un navigateur. Le socle d'authentification est conforme. |  |  |
+| 4 | Exécuté contre l'API locale reconstruite. `POST /api/v1/auth/login` (karim.aouad@example.com / password123) → **200**, jeton Sanctum retourné (`token_type`, `token_expires_at`), `data.role = "employee"`. `GET /api/v1/auth/me` avec le jeton → **200** (profil complet, session valide). Mauvais mot de passe → **401** (pas de fuite). L'UI web Next.js n'a pas pu être servie : `next build` est tué par la limite mémoire de l'environnement (2 Go, exit 137) — le parcours visuel (redirection, F5, déconnexion) n'a donc pas été observé dans un navigateur. Le socle d'authentification est conforme. |  |  |
 
 ---
 
@@ -133,7 +133,7 @@ Le pointage par matricule aboutit avec un retour visuel explicite (animation/fee
 
 **Description / préconditions**
 Vérifier le cycle complet d'une demande de congé, de la soumission employé à la décision manager.
-Prérequis : compte employé + compte Manager RH (`fatima.meziane@techcorp-algerie.dz`) ; endpoints `/api/v1/absences`.
+Prérequis : compte employé + compte Manager RH (`fatima.meziane@example.com`) ; endpoints `/api/v1/absences`.
 
 **Étapes de test**
 1. En tant qu'employé, appeler `POST /api/v1/absences` avec une date de début, une date de fin et un motif.
@@ -178,7 +178,7 @@ La liste ne contient que les bulletins de l'utilisateur connecté ; le PDF est t
 
 **Description / préconditions**
 Vérifier qu'un manager comptable peut lancer une simulation de paie et consulter les structures salariales.
-Prérequis : compte `lina.haddad@techcorp-algerie.dz` (`manager_role=comptable`) ; endpoints `/api/v1/salary-structures`, `POST /api/v1/payroll/simulate`.
+Prérequis : compte `lina.haddad@example.com` (`manager_role=comptable`) ; endpoints `/api/v1/salary-structures`, `POST /api/v1/payroll/simulate`.
 
 **Étapes de test**
 1. Appeler `GET /api/v1/salary-structures` et vérifier la liste.

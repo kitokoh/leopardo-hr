@@ -219,27 +219,27 @@ footer{
 </tr>
 <tr>
 <td style="text-align: left;">Manager Principal</td>
-<td style="text-align: left;"><code>ahmed.benali@techcorp-algerie.dz</code></td>
+<td style="text-align: left;"><code>ahmed.benali@example.com</code></td>
 <td style="text-align: left;">Web + app Manager</td>
 </tr>
 <tr>
 <td style="text-align: left;">Manager RH</td>
-<td style="text-align: left;"><code>fatima.meziane@techcorp-algerie.dz</code></td>
+<td style="text-align: left;"><code>fatima.meziane@example.com</code></td>
 <td style="text-align: left;">Web + app Manager/HR</td>
 </tr>
 <tr>
 <td style="text-align: left;">Manager Comptable</td>
-<td style="text-align: left;"><code>lina.haddad@techcorp-algerie.dz</code></td>
+<td style="text-align: left;"><code>lina.haddad@example.com</code></td>
 <td style="text-align: left;">Web + app Manager</td>
 </tr>
 <tr>
 <td style="text-align: left;">Manager Superviseur</td>
-<td style="text-align: left;"><code>nassim.cheriet@techcorp-algerie.dz</code></td>
+<td style="text-align: left;"><code>nassim.cheriet@example.com</code></td>
 <td style="text-align: left;">Web + app Manager + kiosque</td>
 </tr>
 <tr>
 <td style="text-align: left;">Employé</td>
-<td style="text-align: left;"><code>karim.aouad@techcorp-algerie.dz</code></td>
+<td style="text-align: left;"><code>karim.aouad@example.com</code></td>
 <td style="text-align: left;">Web + app Employee + kiosque</td>
 </tr>
 </tbody>
@@ -286,7 +286,7 @@ footer{
 <h2 id="uc-01-connexion-dun-employe-a-lespace-client-web">UC-01 — Connexion d'un employé à l'espace client web</h2>
 <p><strong>Description / préconditions</strong>
 Vérifier le parcours d'authentification nominal d'un collaborateur sur l'espace client web.
-Prérequis : navigateur, accès réseau à <code>https://gestionemployer-backend.vercel.app</code>, compte <code>karim.aouad@techcorp-algerie.dz</code> / <code>password123</code>.</p>
+Prérequis : navigateur, accès réseau à <code>https://gestionemployer-backend.vercel.app</code>, compte <code>karim.aouad@example.com</code> / <code>password123</code>.</p>
 <p><strong>Étapes de test</strong>
 1. Ouvrir <code>https://gestionemployer-backend.vercel.app/</code> et vérifier le chargement de la page d'accueil.
 2. Accéder au formulaire de connexion (<code>/login</code>).
@@ -308,7 +308,7 @@ Connexion acceptée, redirection vers le tableau de bord employé, session persi
 <tbody>
 <tr>
 <td style="text-align: center;">4</td>
-<td style="text-align: left;">Exécuté contre l'API locale reconstruite. <code>POST /api/v1/auth/login</code> (karim.aouad@techcorp-algerie.dz / password123) → <strong>200</strong>, jeton Sanctum retourné (<code>token_type</code>, <code>token_expires_at</code>), <code>data.role = "employee"</code>. <code>GET /api/v1/auth/me</code> avec le jeton → <strong>200</strong> (profil complet, session valide). Mauvais mot de passe → <strong>401</strong> (pas de fuite). L'UI web Next.js n'a pas pu être servie : <code>next build</code> est tué par la limite mémoire de l'environnement (2 Go, exit 137) — le parcours visuel (redirection, F5, déconnexion) n'a donc pas été observé dans un navigateur. Le socle d'authentification est conforme.</td>
+<td style="text-align: left;">Exécuté contre l'API locale reconstruite. <code>POST /api/v1/auth/login</code> (karim.aouad@example.com / password123) → <strong>200</strong>, jeton Sanctum retourné (<code>token_type</code>, <code>token_expires_at</code>), <code>data.role = "employee"</code>. <code>GET /api/v1/auth/me</code> avec le jeton → <strong>200</strong> (profil complet, session valide). Mauvais mot de passe → <strong>401</strong> (pas de fuite). L'UI web Next.js n'a pas pu être servie : <code>next build</code> est tué par la limite mémoire de l'environnement (2 Go, exit 137) — le parcours visuel (redirection, F5, déconnexion) n'a donc pas été observé dans un navigateur. Le socle d'authentification est conforme.</td>
 <td style="text-align: center;"></td>
 <td style="text-align: left;"></td>
 </tr>
@@ -383,7 +383,7 @@ Le pointage par matricule aboutit avec un retour visuel explicite (animation/fee
 <h2 id="uc-04-demande-dabsence-et-approbation-manager">UC-04 — Demande d'absence et approbation manager</h2>
 <p><strong>Description / préconditions</strong>
 Vérifier le cycle complet d'une demande de congé, de la soumission employé à la décision manager.
-Prérequis : compte employé + compte Manager RH (<code>fatima.meziane@techcorp-algerie.dz</code>) ; endpoints <code>/api/v1/absences</code>.</p>
+Prérequis : compte employé + compte Manager RH (<code>fatima.meziane@example.com</code>) ; endpoints <code>/api/v1/absences</code>.</p>
 <p><strong>Étapes de test</strong>
 1. En tant qu'employé, appeler <code>POST /api/v1/absences</code> avec une date de début, une date de fin et un motif.
 2. Relever l'identifiant de la demande et son statut initial.
@@ -446,7 +446,7 @@ La liste ne contient que les bulletins de l'utilisateur connecté ; le PDF est t
 <h2 id="uc-06-preparation-de-paie-manager-comptable">UC-06 — Préparation de paie (Manager Comptable)</h2>
 <p><strong>Description / préconditions</strong>
 Vérifier qu'un manager comptable peut lancer une simulation de paie et consulter les structures salariales.
-Prérequis : compte <code>lina.haddad@techcorp-algerie.dz</code> (<code>manager_role=comptable</code>) ; endpoints <code>/api/v1/salary-structures</code>, <code>POST /api/v1/payroll/simulate</code>.</p>
+Prérequis : compte <code>lina.haddad@example.com</code> (<code>manager_role=comptable</code>) ; endpoints <code>/api/v1/salary-structures</code>, <code>POST /api/v1/payroll/simulate</code>.</p>
 <p><strong>Étapes de test</strong>
 1. Appeler <code>GET /api/v1/salary-structures</code> et vérifier la liste.
 2. Appeler <code>POST /api/v1/payroll/simulate</code> avec un employé et une période.
