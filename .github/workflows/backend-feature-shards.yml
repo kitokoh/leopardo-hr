@@ -1,0 +1,264 @@
+name: Backend Feature Shards (B7)
+
+# POURQUOI CE WORKFLOW EXISTE
+# ---------------------------
+# La suite Feature complete depasse la limite de 5 h du runner GitHub Actions :
+# le job `Backend` de tests.yml est annule avant la fin, donc AUCUN run ne
+# produit de verdict complet (constat B7). Ce workflow decoupe la suite en
+# shards independants, chacun sous la limite, et agrege leurs verdicts.
+#
+# Il ne remplace PAS tests.yml : il le complete. Le job `Backend` de tests.yml
+# reste la reference pour la suite entiere ; ce workflow donne un verdict
+# exploitable quand la suite entiere ne tient pas dans le runner.
+#
+# MECANISME DE DECOUPAGE (mesure, pas suppose)
+# -------------------------------------------
+#   - `--filter` regex de nom de classe : 0 test selectionne, SILENCIEUSEMENT
+#     (mesure : 6 min 40 s pour zero test). A ne jamais utiliser.
+#   - glob de fichiers : paratest refuse (`Too many arguments, expected
+#     arguments "path"`) — il n'accepte qu'UN SEUL <path>.
+#   - `<directory prefix="...">` : le prefixe s'applique RECURSIVEMENT, donc
+#     les shards se chevauchent.
+#   - testsuite `<file>` explicite : FONCTIONNE. Verifie en execution reelle
+#     sous paratest (3 tests annonces, 3 testcases au JUnit, exit 0).
+#
+# Les 6 sous-shards `FeatureRoot1..6` decoupent les 207 fichiers
+# `tests/Feature/*Test.php` (le « shard root ») ; les 71 autres shards sont les
+# sous-repertoires de tests/Feature. Partition verifiee : 1485 tests = 1485
+# affectes, aucun perdu, aucun compte deux fois.
+#
+# Les testsuites FeatureRoot1..6 sont generees dans api/phpunit.xml par
+# `php dev-tools/generate-feature-shards.php` (idempotent, `--check` en garde).
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'api/**'
+      - '.github/workflows/backend-feature-shards.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'api/**'
+      - '.github/workflows/backend-feature-shards.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: feature-shards-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  shards:
+    timeout-minutes: 300
+    name: Feature shard ${{ matrix.shard }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - FeatureRoot1
+          - FeatureRoot2
+          - FeatureRoot3
+          - FeatureRoot4
+          - FeatureRoot5
+          - FeatureRoot6
+          - AI
+          - Absences
+          - Accounting
+          - Attendance
+          - Audit
+          - Auth
+          - Billing
+          - BusinessOs
+          - CRM
+          - Cabinet
+          - Cameras
+          - Catalog
+          - Communication
+          - Console
+          - Contracts
+          - Core
+          - DataModel
+          - Database
+          - Delivery
+          - Demo
+          - E2E
+          - Edge
+          - EdgeSync
+          - EduManager
+          - Estimation
+          - Evaluations
+          - Events
+          - Expense
+          - Fleet
+          - Fuel
+          - FuelStation
+          - Fundraising
+          - Geo
+          - Governance
+          - HR
+          - HealthManager
+          - Hospitality
+          - Leave
+          - LeopardoPublic
+          - Logging
+          - Mail
+          - Marketing
+          - Modules
+          - MultiCountry
+          - Notification
+          - Onboarding
+          - Pages
+          - Paiements
+          - Payroll
+          - Pharmacy
+          - Planning
+          - Platform
+          - Privacy
+          - Queue
+          - Restaurant
+          - Retail
+          - SearchIntelligence
+          - Security
+          - Seed
+          - Shared
+          - Showcase
+          - Solutions
+          - Tenant
+          - Tracking
+          - Trade
+          - Training
+          - Travel
+          - User
+          - Vtc
+          - Web
+          - Webhooks
+
+    services:
+      postgres:
+        image: postgis/postgis:16-3.5
+        env:
+          POSTGRES_DB: leopardo_test
+          POSTGRES_USER: leopardo_user
+          POSTGRES_PASSWORD: leopardo_pass_test
+        ports:
+          - 5432:5432
+        options: >-
+          --name leopardo-postgres
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+          fetch-depth: 0
+
+      - name: Raise PostgreSQL max_locks_per_transaction (#8004)
+        run: |
+          set -euo pipefail
+          docker exec leopardo-postgres \
+            psql -U leopardo_user -v ON_ERROR_STOP=1 -d postgres \
+            -c "ALTER SYSTEM SET max_locks_per_transaction = 512;"
+          docker restart leopardo-postgres
+          ready=0
+          for _ in $(seq 1 60); do
+            if docker exec leopardo-postgres pg_isready -U leopardo_user -d leopardo_test >/dev/null 2>&1; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then
+            echo "::error::postgres n'est pas redevenu pret apres redemarrage (60 s)"
+            exit 1
+          fi
+          actual="$(docker exec leopardo-postgres \
+            psql -U leopardo_user -d postgres -tAc 'SHOW max_locks_per_transaction;')"
+          actual="${actual//[[:space:]]/}"
+          if [ "$actual" != "512" ]; then
+            echo "::error::max_locks_per_transaction=${actual:-<vide>} (attendu : 512)"
+            exit 1
+          fi
+          echo "max_locks_per_transaction=${actual} (effectif apres redemarrage)"
+
+      - name: Setup backend (PHP + Composer + multi-tenant DB)
+        uses: ./.github/actions/setup-backend-db
+
+      - name: Verifier que les shards generes sont a jour
+        working-directory: ./api
+        run: php dev-tools/generate-feature-shards.php --check
+
+      - name: Run feature shard
+        id: shard
+        continue-on-error: true
+        working-directory: ./api
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: leopardo_test
+          DB_SEARCH_PATH: public,shared_tenants
+        run: |
+          set -euo pipefail
+          SHARD="${{ matrix.shard }}"
+          mkdir -p storage/test-results
+          php artisan test --testsuite="$SHARD" --parallel --processes=4 \
+            --exclude-group=audit \
+            --log-junit="storage/test-results/shard-${SHARD}.xml"
+
+      - name: Resume du shard
+        if: always()
+        working-directory: ./api
+        shell: bash
+        run: |
+          set -uo pipefail
+          SHARD="${{ matrix.shard }}"
+          FILE="storage/test-results/shard-${SHARD}.xml"
+          if [ ! -f "$FILE" ]; then
+            echo "### Shard \`${SHARD}\` : aucun rapport JUnit produit" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          python3 - "$FILE" "$SHARD" <<'PYEOF'
+          import sys
+          import xml.etree.ElementTree as ET
+
+          path, shard = sys.argv[1], sys.argv[2]
+          root = ET.parse(path).getroot()
+          tests = failures = errors = skipped = 0
+          for suite in root.iter('testsuite'):
+              tests += int(suite.get('tests', '0'))
+              failures += int(suite.get('failures', '0'))
+              errors += int(suite.get('errors', '0'))
+              skipped += int(suite.get('skipped', '0'))
+          print(f"### Shard `{shard}` : {tests} tests, {failures} echecs, {errors} erreurs, {skipped} ignores")
+          PYEOF
+
+      - name: Upload shard report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: feature-shard-${{ matrix.shard }}
+          path: api/storage/test-results/shard-*.xml
+          if-no-files-found: ignore
+
+      - name: Fail shard if tests failed
+        if: steps.shard.outcome == 'failure'
+        run: |
+          echo "Shard ${{ matrix.shard }} a echoue."
+          exit 1

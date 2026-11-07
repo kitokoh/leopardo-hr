@@ -107,5 +107,9 @@ class AbsenceTypesTenantUniqueRegressionTest extends TestCase
             'deducts_leave' => true,
             'requires_proof' => false,
         ]);
+
+        // La violation laisse la transaction PostgreSQL avortée : on la
+        // restaure pour que le teardown (SET search_path) ne plante pas.
+        DB::rollBack();
     }
 }
