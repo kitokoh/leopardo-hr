@@ -359,12 +359,14 @@ export function SetupInterview({
           <motion.section
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-3xl border border-emerald-100 bg-white p-8 shadow-xl dark:border-emerald-900/40 dark:bg-slate-900"
+            className="overflow-hidden rounded-3xl border border-emerald-100 bg-white p-8 shadow-2xl ring-1 ring-slate-900/5 dark:border-emerald-900/40 dark:bg-slate-900"
             data-testid="interview-recap"
           >
+            {/* Ligne d'accent lumineuse supérieure */}
+            <div className="-mx-8 -mt-8 mb-6 h-1.5 bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400" />
             <div className="mb-4 flex items-center gap-4">
               <LeoMascot variant="wave" size={72} float />
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-50 to-cyan-50 dark:from-emerald-900/30 dark:to-cyan-900/20">
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-50 to-cyan-50 shadow-xs dark:from-emerald-900/30 dark:to-cyan-900/20">
                 <Sparkles className="h-6 w-6 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
               </div>
             </div>
@@ -393,15 +395,17 @@ export function SetupInterview({
                 onClose('completed');
               }}
               data-testid="interview-recap-cta"
-              className="mt-8 w-full rounded-2xl bg-emerald-600 px-6 py-3 text-sm font-black text-white transition hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+              className="mt-8 w-full cursor-pointer rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 px-6 py-3.5 text-sm font-black text-white shadow-lg shadow-emerald-600/25 ring-1 ring-emerald-500/30 transition-all hover:scale-[1.01] hover:from-emerald-500 hover:to-teal-500 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
             >
               {t('recapCta', 'Découvrir mon espace')}
             </button>
           </motion.section>
         ) : question ? (
-          <section className="relative rounded-3xl border border-slate-200 bg-white p-8 shadow-xl dark:border-slate-800 dark:bg-slate-900">
+          <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-2xl ring-1 ring-slate-900/5 dark:border-slate-800 dark:bg-slate-900">
+            {/* Ligne d'accent lumineuse supérieure */}
+            <div className="-mx-8 -mt-8 mb-6 h-1.5 bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400" />
             {/* Leo accompagne l'entretien — décoratif, masqué sur mobile. */}
-            <div className="absolute -top-10 right-8 hidden sm:block" aria-hidden="true">
+            <div className="absolute top-2 right-8 hidden sm:block" aria-hidden="true">
               <LeoMascot size={64} float />
             </div>
             <header className="mb-6">
@@ -453,7 +457,7 @@ export function SetupInterview({
                     <button
                       type="submit"
                       data-testid="interview-freetext-continue"
-                      className="mt-4 w-full rounded-2xl bg-emerald-600 px-6 py-3 text-sm font-black text-white transition hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+                      className="mt-4 w-full cursor-pointer rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 px-6 py-3.5 text-sm font-black text-white shadow-lg shadow-emerald-600/25 ring-1 ring-emerald-500/30 transition-all hover:scale-[1.01] hover:from-emerald-500 hover:to-teal-500 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
                     >
                       {t('continue', 'Continuer')}
                     </button>
@@ -472,10 +476,10 @@ export function SetupInterview({
                         data-testid={`interview-option-${option}`}
                         onClick={() => (question.multi ? toggleMulti(option) : answer(option))}
                         className={[
-                          'flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left text-sm font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40',
+                          'flex cursor-pointer items-center justify-between gap-3 rounded-2xl border px-4 py-3.5 text-left text-sm font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40',
                           selected
-                            ? 'border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300'
-                            : 'border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/40 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-emerald-800 dark:hover:bg-emerald-900/20',
+                            ? 'border-emerald-500 bg-emerald-50/80 text-emerald-900 shadow-sm ring-1 ring-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-300'
+                            : 'border-slate-200 bg-white text-slate-700 hover:scale-[1.01] hover:border-emerald-300 hover:bg-emerald-50/40 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-emerald-800 dark:hover:bg-emerald-900/20',
                         ].join(' ')}
                       >
                         <span>
@@ -492,7 +496,7 @@ export function SetupInterview({
                     type="button"
                     onClick={confirmMulti}
                     data-testid="interview-multi-continue"
-                    className="mt-5 w-full rounded-2xl bg-emerald-600 px-6 py-3 text-sm font-black text-white transition hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+                    className="mt-5 w-full cursor-pointer rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 px-6 py-3.5 text-sm font-black text-white shadow-lg shadow-emerald-600/25 ring-1 ring-emerald-500/30 transition-all hover:scale-[1.01] hover:from-emerald-500 hover:to-teal-500 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
                   >
                     {t('finish', 'Terminer')}
                   </button>

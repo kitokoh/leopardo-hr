@@ -20,68 +20,45 @@ import { withLocaleHref } from '../lib/locale-href'
 export function getFooterHref(sectionIndex: number, linkIndex: number): string | null {
   const key = `${sectionIndex}-${linkIndex}`
   const routes: Record<string, string> = {
-    // PA2-MKT-013: the Footer renders on every landing page (26+ routes),
-    // not just `/`. A bare `#fonctionnalites` hash only ever resolves
-    // against the *current* page's DOM, so on any page other than the
-    // homepage it pointed at a non-existent anchor. `/#fonctionnalites`
-    // navigates to the homepage first, where the Features section now
-    // carries a matching `id="fonctionnalites"` (see FeaturesSection).
+    // ─── Section 0 : Produit & Modules ───
     '0-0': '/#fonctionnalites',
     '0-1': '/pricing',
     '0-2': '/integrations',
-    // `/integrations#api` also had no matching `id="api"` on that page;
-    // the integrations page now exposes one on its main section.
     '0-3': '/integrations#api',
     '0-4': '/changelog',
     '0-5': '/download',
-    // Audit expert 2026-08-15 (issue #2609) : pages orphelines liées
-    // (étaient absentes de toute navigation, uniquement dans le sitemap).
-    '0-6': '/about',
-    '0-7': '/videos',
-    // #8075 : pages modules construites mais jamais liées — 1 clic footer.
-    '0-8': '/employes',
-    '0-9': '/comptabilite',
-    '0-10': '/marketing',
-    // SUPERAPP-P0 (#8611) : passerelle publique « Leopardo Public » — point
-    // d'entrée neutre cross-verticale (recherche métier/service/nom, proximité,
-    // fiches publiques). Liée depuis le footer pour ne pas être orpheline (#8075).
-    '0-11': '/decouvrir',
+    '0-6': '/mobile',
+    '0-7': '/employes',
+    '0-8': '/comptabilite',
+    '0-9': '/marketing',
+    '0-10': '/decouvrir',
+
+    // ─── Section 1 : Ressources & Découverte ───
     '1-0': '/docs',
     '1-1': '/guides/rh-startup',
     '1-2': '/blog',
-    '1-3': '/contact',
-    '1-4': '/contact?topic=community',
-    // #8075 : pages orphelines liées (case-studies et restaurateur méritent
-    // le trafic, cf. issue) ; '1-8' sert désormais le hub /packs (offre grand public) ; /branding repositionné en '1-10' (il occupait
-    // '1-5' alors qu'aucune locale n'a de 6e libellé Ressources).
-    '1-5': '/case-studies',
-    '1-6': '/testimonials',
-    '1-7': '/alternatives',
-    '1-8': '/packs',
-    '1-9': '/careers',
-    '1-10': '/branding',
-    // LEOPARDO TOOLBOX — catégorie autonome publique (outils gratuits sans
-    // compte). Liée depuis le footer pour la découvrabilité (et pour rester
-    // cohérent avec la garde #8075 si la page migrait sous (landing)).
-    '1-11': '/toolbox',
-    '2-0': '/download#mobile-apps',
-    '2-1': '/mobile',
-    '2-2': '/download#mobile-apps',
-    '2-3': '/download#mobile-apps',
-    '2-4': '/download#mobile-apps',
-    // Le lien « Mentions légales » pointait vers /terms (la page CGU) : un lien
-    // qui ment sur sa destination. Tant qu'une vraie page de mentions légales
-    // n'existe pas (elle exige les données éditeur/hébergeur), la colonne ne
-    // liste que ce qui existe, et la confidentialité porte explicitement le RGPD.
+
+    '1-3': '/case-studies',
+    '1-4': '/testimonials',
+    '1-5': '/alternatives',
+    '1-6': '/packs',
+    // LEOPARDO TOOLBOX — catégorie autonome publique (outils gratuits sans compte)
+    '1-7': '/toolbox',
+    '1-8': '/contact?topic=community',
+
+    // ─── Section 2 : Entreprise & Écosystème ───
+    '2-0': '/about',
+    '2-1': '/contact',
+    '2-2': '/careers',
+    '2-3': '/branding',
+    '2-4': '/videos',
+    '2-5': '/investir',
+
+    // ─── Section 3 : Légal & Conformité ───
+
     '3-0': '/privacy',
     '3-1': '/terms',
-    // La page existe désormais : le lien pointe vers les mentions légales
-    // (et non plus vers les CGU, cf. correctif du lot vitrine).
     '3-2': '/mentions-legales',
-    // #8440 — « Devenir actionnaire » : entrée volontairement discrète en
-    // pied de page (pas de carte home ni de bandeau), vers la page de
-    // manifestation d'intérêt pour prendre des parts de l'entreprise.
-    '3-3': '/investir',
   }
 
   return routes[key] ?? null
@@ -204,7 +181,7 @@ export function Footer() {
                     <li key={`${section.title}-link-${linkIndex}`}>
                       <Link
                         href={withLocaleHref(href, search)}
-                        className="text-sm text-slate-400 hover:text-emerald-300 dark:hover:text-amber-400 transition-all duration-200 hover:translate-x-1 inline-flex items-center gap-2 group py-0.5"
+                        className="text-sm text-slate-400 hover:text-emerald-300 transition-all duration-200 hover:translate-x-1 inline-flex items-center gap-2 group py-0.5"
                       >
                         <span>{link}</span>
                         {badge && (
@@ -216,10 +193,10 @@ export function Footer() {
                     </li>
                   )
                 })}
-                {/* #7593 — retirer son consentement : contrôle sur toutes les pages */}
+                {/* #7593 — retirer son consentement : contrôle sur toutes les pages (colonne Légal) */}
                 {index === copy.footer.sections.length - 1 && (
                   <li className="pt-2">
-                    <CookieSettingsButton className="text-sm text-slate-400 hover:text-emerald-300 dark:hover:text-amber-400 transition-colors text-left inline-flex items-center gap-1.5" />
+                    <CookieSettingsButton className="text-sm text-slate-400 hover:text-emerald-300 transition-colors text-left inline-flex items-center gap-1.5" />
                   </li>
                 )}
               </ul>

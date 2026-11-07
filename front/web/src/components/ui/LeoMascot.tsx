@@ -40,7 +40,6 @@ export function LeoMascot({ variant = 'base', size = 96, float = false, classNam
       aria-hidden="true"
       width={size}
       height={size}
-      priority={false}
       className={`pointer-events-none select-none ${float ? 'leo-mascot-float' : ''} ${className}`.trim()}
     />
   );
