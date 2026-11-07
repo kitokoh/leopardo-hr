@@ -7,6 +7,8 @@ namespace App\Core\Auth\Domain\Models;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Modules\HR\Domain\Models\UserEmployeeLink;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Carbon;
@@ -36,7 +38,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|null $purge_scheduled_at Purge planifiee a 30 jours (M2 #9104)
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder
+ *
+ * @mixin Builder
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static> query()
  * @method static static create(array<string, mixed> $attributes = [])
  * @method static static|null find(mixed $id, array<int, string> $columns = ['*'])
@@ -47,8 +51,8 @@ use Laravel\Sanctum\HasApiTokens;
  */
 class User extends Authenticatable implements HasApiTokensContract
 {
-    use \Illuminate\Database\Eloquent\Factories\HasFactory;
     use HasApiTokens;
+    use HasFactory;
 
     protected $table = 'users';
 
