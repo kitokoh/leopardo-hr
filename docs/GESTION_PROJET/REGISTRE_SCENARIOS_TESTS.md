@@ -1,3 +1,38 @@
+## 2026-11-07 — #9142 (Couloir 16, M3-bis) : habitude quotidienne — notification de réponse commerçant et suivi de commande
+
+**Surface API** : 3 routes nouvelles, aucune renommée ni retirée.
+`GET /api/v1/user/notifications` ; `POST /api/v1/user/notifications/read-all` ;
+`POST /api/v1/user/notifications/{notification}/read` (toutes sous `auth:user_api`
++ `throttle:shop-public`).
+
+**Pourquoi c'est un scénario de test et pas un simple réglage** : c'est le seul
+levier de rétention du couloir. Sans notification, le client n'a aucune raison de
+rouvrir l'app après avoir écrit à un commerçant — il doit deviner qu'une réponse
+est arrivée. Trois états se ressemblent à l'écran et n'ont pas la même cause : une
+boîte vide, une notification non lue, et une notification qui ne m'appartient pas.
+Les confondre ferait afficher une pastille fantôme, ou pire, laisserait croire à
+une panne.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| réponse de manager → **1** notification pour le client | le client ne saurait jamais qu'on lui a répondu |
+| deux réponses sur le même fil → **1** notification | la pastille gonflerait à chaque message |
+| changement de statut de commande → notification | le suivi de commande serait aveugle |
+| commande **sans** client public → **0** ligne | le cas majoritaire (comptoir) créerait du bruit |
+| notification d'autrui → **404**, jamais 403 | un 403 confirmerait son existence et permettrait d'énumérer |
+| marquage lu **idempotent** (date de 1ʳᵉ lecture) | relire déplacerait la mesure du retour à J7 |
+| corps **sans PII** (ni `@`, ni montant, ni devise) | un numéro ou un prix fuiterait dans la notification |
+| contrat `PublicClientNotifier` résolu | la verticale notifierait dans le vide, silencieusement (best-effort) |
+| `GET` sans jeton → **401** | la boîte d'un client serait lisible par n'importe qui |
+
+**Automatisé** : `api/tests/Feature/LeopardoPublic/PublicNotificationTest.php`
+(14 tests, 40 assertions — autorisation avec vrai jeton + `Auth::forgetGuards()`,
+404 sur la notification d'autrui, dédoublonnage, absence de PII, résolution du
+contrat partagé).
+
+**Non couvert** : le push FCM/APNs (`public_device_tokens`) reste en M2 (#9104),
+bloqué par la porte (b) — ici tout est in-app.
+
 ## 2026-11-01 — #9102 (Couloir 16) : canal grand public — catégories dynamiques et seuil réglable
 
 **Surface API** : 3 routes nouvelles, aucune renommée ni retirée.
