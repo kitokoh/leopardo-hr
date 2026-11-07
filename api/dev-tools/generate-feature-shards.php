@@ -121,6 +121,36 @@ $weights = array_column($buckets, 'weight');
 $min = min($weights);
 $max = max($weights);
 
+// ── Shards de sous-répertoires ────────────────────────────────────────────
+// La matrice du workflow (backend-feature-shards.yml) attend UN shard par
+// sous-répertoire de tests/Feature. Sans ces testsuites, `--testsuite=<Sub>`
+// ne sélectionne AUCUN test et paratest meurt en écrivant le JUnit
+// (`Writer::write(): Argument #1 must be of type TestSuite, null given`) :
+// 71 shards rouges pour un défaut de GÉNÉRATION, pas un échec de test.
+// Les fichiers sont listés explicitement (récursivement) : c'est le seul
+// mécanisme que paratest honore (cf. en-tête).
+$subdirs = glob($root.'/tests/Feature/*', GLOB_ONLYDIR) ?: [];
+sort($subdirs);
+
+$subdirShards = [];
+foreach ($subdirs as $dir) {
+    $name = basename($dir);
+    $found = [];
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS)
+    );
+    foreach ($iterator as $entry) {
+        if ($entry->isFile() && str_ends_with($entry->getFilename(), 'Test.php')) {
+            $found[] = 'tests/Feature/'.$name.'/'.substr($entry->getPathname(), strlen($dir) + 1);
+        }
+    }
+    if ($found === []) {
+        continue; // ex. Fixtures/ : aucun test, donc aucun shard.
+    }
+    sort($found);
+    $subdirShards[$name] = $found;
+}
+
 $generated = BEGIN_MARKER."\n";
 $generated .= "        <!--\n";
 $generated .= "          Zone GÉNÉRÉE — ne pas éditer à la main.\n";
@@ -134,6 +164,9 @@ $generated .= "          générateur).\n";
 $generated .= "\n";
 $generated .= "          Fichiers : ".count($files)." — poids cumulé : {$totalTests} méthodes.\n";
 $generated .= "          Équilibrage : panier le plus léger {$min}, le plus lourd {$max}.\n";
+$generated .= "\n";
+$generated .= "          Suivent un shard par sous-répertoire de tests/Feature ("
+    .count($subdirShards)." shards), chacun listant ses <file> récursivement.\n";
 $generated .= "        -->\n";
 
 foreach ($buckets as $index => $bucket) {
@@ -144,6 +177,16 @@ foreach ($buckets as $index => $bucket) {
     sort($filesInBucket);
 
     foreach ($filesInBucket as $relative) {
+        $generated .= "            <file>{$relative}</file>\n";
+    }
+
+    $generated .= "        </testsuite>\n";
+}
+
+foreach ($subdirShards as $name => $subdirFiles) {
+    $generated .= "        <testsuite name=\"{$name}\">\n";
+
+    foreach ($subdirFiles as $relative) {
         $generated .= "            <file>{$relative}</file>\n";
     }
 
@@ -186,6 +229,7 @@ fwrite(STDOUT, "Fichiers énumérés      : ".count($files)."\n");
 fwrite(STDOUT, "Fichiers affectés      : {$assigned}\n");
 fwrite(STDOUT, "Doublons               : ".(count($files) - $assigned === 0 ? 'aucun' : 'PRÉSENTS')."\n");
 fwrite(STDOUT, "Poids min / max        : {$min} / {$max}\n");
+fwrite(STDOUT, "Shards sous-répertoire : ".count($subdirShards)."\n");
 fwrite(STDOUT, "Écrit dans             : phpunit.xml (zone générée)\n");
 
 foreach ($buckets as $index => $bucket) {
