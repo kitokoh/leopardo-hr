@@ -106,7 +106,7 @@ jobs:
         # triaged, to avoid retroactively blocking unrelated PRs on day one.
       - name: Upload Semgrep SARIF
         if: always()
-        uses: github/codeql-action/upload-sarif@eec0bff2f6c15bf3f1e8a0152f94d17664a06a06 # v4
+        uses: github/codeql-action/upload-sarif@913e1bb775545322a3613f16c3483c0ac3050da5 # v4
         with:
           sarif_file: semgrep-backend.sarif
           category: semgrep-php
