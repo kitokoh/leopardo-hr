@@ -30,6 +30,13 @@ use RuntimeException;
  * `link()` n'écrit `user_id` que si `phone_verified_at` est posé : la contrainte
  * `CHECK` de la migration le refuserait de toute façon (SQLSTATE 23514), mais
  * échouer ici donne un message exploitable plutôt qu'une erreur SQL brute.
+ *
+ * ## Messages d'exception
+ *
+ * Les messages sont des **codes de diagnostic** (préfixe `public_identity_*`),
+ * volontairement sans accent : ce ne sont pas des messages utilisateur (ceux-ci
+ * passent par le catalogue `__()`), et le garde i18n `check-hardcoded-accented-messages.sh`
+ * interdit tout littéral accentué sur cette surface.
  */
 final class PublicIdentityBridge
 {
@@ -59,8 +66,8 @@ final class PublicIdentityBridge
         // l'ADR interdit (§6, avertissement).
         if ($byPhone !== null && $byEmail !== null && $byPhone->id !== $byEmail->id) {
             throw new RuntimeException(
-                'public_identity_conflict: le téléphone et l\'e-mail désignent deux comptes distincts ; '
-                .'une fusion est une opération administrée, jamais un effet de bord d\'inscription.'
+                'public_identity_conflict: le telephone et l email designent deux comptes distincts; '
+                .'une fusion est une operation administree, jamais un effet de bord d inscription.'
             );
         }
 
@@ -85,8 +92,8 @@ final class PublicIdentityBridge
     {
         if ($account->phone_verified_at === null) {
             throw new RuntimeException(
-                'public_identity_unverified_phone: on ne relie jamais un compte à un users '
-                .'sur un téléphone non vérifié (garde anti-prise-de-contrôle).'
+                'public_identity_unverified_phone: on ne relie jamais un compte a un users '
+                .'sur un telephone non verifie (garde anti-prise-de-controle).'
             );
         }
 
@@ -114,7 +121,7 @@ final class PublicIdentityBridge
         $phone = $this->normalizePhone($phoneE164);
 
         if ($phone === null) {
-            throw new RuntimeException('public_identity_invalid_phone: le numéro n\'est pas un E.164 valide.');
+            throw new RuntimeException('public_identity_invalid_phone: le numero n est pas un E.164 valide.');
         }
 
         $account->forceFill([
