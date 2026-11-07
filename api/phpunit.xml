@@ -401,6 +401,7 @@
             <file>tests/Feature/Auth/PasswordPolicyTest.php</file>
             <file>tests/Feature/Auth/PasswordResetLocalizationTest.php</file>
             <file>tests/Feature/Auth/PhoneE164UniquenessTest.php</file>
+            <file>tests/Feature/Auth/PublicPhoneOtpTest.php</file>
             <file>tests/Feature/Auth/RegisterLoginFlowTest.php</file>
             <file>tests/Feature/Auth/RetryTransientDatabaseErrorsTest.php</file>
             <file>tests/Feature/Auth/SanctumTokenHygieneTest.php</file>
