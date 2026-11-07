@@ -10,42 +10,34 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 
 /**
- * Envoi de code OTP par SMS — implementation par defaut (#8738).
+ * Envoi de code OTP par SMS — implementation par defaut (#8738, #9091).
  *
- * ## Decision : « audit-only » plutot qu'un faux fournisseur
+ * ## Transport reel quand il est configure, audit-only sinon
  *
- * Aucun fournisseur SMS de production n'est contractualise pour l'instant
- * (meme posture que `Modules/CRM/.../SmsAdapter`, issue #5727 : « SMS/WhatsApp
- * restent en provider audit-only tant qu'un fournisseur production, des
- * signatures webhook et des quotas par plan ne sont pas actives »). Deux
- * mauvaises options etaient possibles :
+ * Le canal n'a de sens que s'il peut REELLEMENT delivrer. Deux etats, jamais
+ * d'entre-deux :
  *
- *  1. un faux `Sent` qui pretend delivrer — l'utilisateur attend un code qui
- *     n'arrive jamais, et l'equipe ne le sait pas ;
- *  2. refuser le canal SMS entierement — le chemin n'existe pas, donc le jour
- *     ou le fournisseur arrive il faut tout ecrire sous pression.
+ *  - **configure** (`driver = http` + endpoint + cle) : `send()` emet un appel
+ *    HTTP via `HttpSmsTransport` et ne rend un `traceId` QUE si l'appel a
+ *    abouti (2xx). Un echec rend `null`, donc l'appelant replit sur l'e-mail.
+ *  - **non configure** : `isConfigured()` rend `false` AVANT tout envoi, et
+ *    `send()` se contente de tracer le FAIT de la demande (audit-only) en
+ *    rendant `null`.
  *
- * Cette implementation prend la troisieme voie : le transport est **reel quand
- * il est configure**, et **explicitement non configure sinon** (`isConfigured()`
- * rend `false`). L'appelant decouvre donc l'etat AVANT de generer un code et
- * peut replier sur l'e-mail — c'est exactement le comportement exige par
- * l'issue (« SMS, e-mail, ou les deux avec repli »).
+ * ## Ce que #9091 corrige
  *
- * ## Ce qui est deja en place et testable des aujourd'hui
+ * Avant, `send()` rendait un `traceId` des que endpoint + cle etaient non
+ * vides, **sans emettre aucun appel** : le controleur croyait l'envoi reussi
+ * et sautait l'e-mail — le code ne partait nulle part, silencieusement.
+ * Desormais un `traceId` est la preuve d'un appel HTTP abouti.
+ *
+ * ## Ce qui reste vrai
  *
  * - **validation E.164** via `App\Support\PhoneNumber` (source unique) ;
  * - **limitation de debit par numero** (`RateLimiter`, fenetre glissante) :
- *   l'anti-abus ne peut pas attendre le fournisseur, c'est une propriete du
- *   domaine, pas du transport ;
+ *   l'anti-abus est une propriete du domaine, pas du transport ;
  * - **aucune PII dans les traces** : le numero est masque (`+2135****456`),
- *   le code n'est JAMAIS journalise. Le critere d'acceptation de #8738 exige
- *   un test dedie, present dans `LoginCodeSmsChannelTest`.
- *
- * ## Brancher un vrai fournisseur
- *
- * Implementer `SmsCodeSenderContract` et lier l'interface dans le conteneur
- * (`app()->bind(...)`) : ni le controleur ni le domaine ne changent. C'est la
- * raison d'etre du contrat.
+ *   le code n'est JAMAIS journalise.
  */
 final class LogOnlySmsCodeSender implements SmsCodeSenderContract
 {
@@ -61,24 +53,30 @@ final class LogOnlySmsCodeSender implements SmsCodeSenderContract
 
     private const WINDOW_SECONDS = 900;
 
+    public function __construct(
+        private readonly HttpSmsTransport $transport = new HttpSmsTransport,
+    ) {}
+
     public function channel(): string
     {
         return 'sms';
     }
 
     /**
-     * Un transport n'existe que si un DSN de fournisseur est configure.
+     * Fail-closed : un canal n'est configure que si un transport CAPABLE est
+     * branche (`driver = http`) ET que l'endpoint et la cle sont renseignes.
      *
-     * On ne se contente pas de lire `config('sms.driver')` : un driver nomme
-     * sans endpoint ni cle est une configuration a moitie faite, donc un canal
-     * NON configure — le detecter ici evite un envoi qui echouerait plus tard.
+     * Un driver `log` (defaut) ne peut pas delivrer : le declarer configure
+     * ferait sauter l'e-mail pour un code qui n'arrive jamais (#9091).
      */
     public function isConfigured(): bool
     {
+        $driver = config('services.sms_otp.driver');
         $endpoint = config('services.sms_otp.endpoint');
         $key = config('services.sms_otp.api_key');
 
-        return is_string($endpoint) && $endpoint !== ''
+        return $driver === 'http'
+            && is_string($endpoint) && $endpoint !== ''
             && is_string($key) && $key !== '';
     }
 
@@ -102,13 +100,10 @@ final class LogOnlySmsCodeSender implements SmsCodeSenderContract
             return null;
         }
 
-        $traceId = 'otp_sms_'.substr(hash('sha256', $e164.'|'.$locale.'|'.now()->timestamp), 0, 20);
-
         if (! $this->isConfigured()) {
-            // Mode audit-only : on trace le FAIT de l'envoi (canal, trace,
-            // locale) et rien du contenu. Le numero reste masque.
+            // Mode audit-only : on trace le FAIT de la demande (canal, locale)
+            // et rien du contenu. Le numero reste masque.
             Log::info('auth.login_code_sms_audit_only', [
-                'trace_id' => $traceId,
                 'phone' => $this->mask($e164),
                 'locale' => $locale,
             ]);
@@ -116,9 +111,27 @@ final class LogOnlySmsCodeSender implements SmsCodeSenderContract
             return null;
         }
 
-        // Point d'extension du fournisseur reel. Tant qu'il n'existe pas, le
-        // canal se declare non configure : on n'arrive ici que si endpoint +
-        // cle sont renseignes, et l'envoi HTTP serait alors implemente ici.
+        $delivered = $this->transport->deliver(
+            (string) config('services.sms_otp.endpoint'),
+            (string) config('services.sms_otp.api_key'),
+            (string) config('services.sms_otp.from'),
+            $e164,
+            $code,
+            $locale,
+        );
+
+        if (! $delivered) {
+            // L'appel a echoue : RIEN n'est parti. On rend `null` pour que
+            // l'appelant replit sur l'e-mail — jamais de "code fantome".
+            Log::warning('auth.login_code_sms_delivery_failed', [
+                'phone' => $this->mask($e164),
+            ]);
+
+            return null;
+        }
+
+        $traceId = 'otp_sms_'.substr(hash('sha256', $e164.'|'.$locale.'|'.now()->timestamp), 0, 20);
+
         Log::info('auth.login_code_sms_dispatched', [
             'trace_id' => $traceId,
             'phone' => $this->mask($e164),
