@@ -47,8 +47,9 @@ class KioskAttendanceService
         ?int $managerEmployeeId = null,
         ?string $deviceEventId = null,
         ?string $biometricProof = null,
+        bool $biometricVerified = false,
     ): AttendanceLog {
-        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $identifier, $action, $workType, $method, $managerEmployeeId, $deviceEventId, $biometricProof): AttendanceLog {
+        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $identifier, $action, $workType, $method, $managerEmployeeId, $deviceEventId, $biometricProof, $biometricVerified): AttendanceLog {
             // BIO-007 (#6772) : rejeu d'un événement appareil déjà traité →
             // retour du log existant (aucune présence dupliquée).
             if ($deviceEventId !== null && $deviceEventId !== '') {
@@ -95,8 +96,14 @@ class KioskAttendanceService
                 // « fingerprint » du kiosque est une saisie déclarative
                 // (aucune intégration SDK lecteur). Dégradation honnête en
                 // `manual` + audit, en attendant le vérificateur de preuve.
+                // #9170 — `$biometricVerified` : le serveur a DÉJÀ vérifié la
+                // biométrie (vérification faciale 1:1, BIO-004). Dans ce cas
+                // la preuve existe par construction et la méthode ne doit PAS
+                // être dégradée : la rétrograder en `manual` ferait mentir
+                // l'audit sur la méthode réellement employée.
                 $claimedVerification = VerificationMethod::tryFrom($resolvedMethod);
                 if ($claimedVerification !== null && $claimedVerification->isBiometric()
+                    && ! $biometricVerified
                     && ! $this->hasVerifiableBiometricProof($biometricProof)) {
                     $claimedMethod = $resolvedMethod;
                     $resolvedMethod = 'manual';
@@ -221,6 +228,11 @@ class KioskAttendanceService
      * vérifiable et le pointage est dégradé en `manual`. Le champ contrat
      * `biometric_proof` est réservé à cette intégration future : le
      * vérificateur se branchera ici, sans changement de contrat.
+     *
+     * #9170 — ce fail-closed ne concerne QUE la preuve déclarative venue du
+     * device. Une biométrie vérifiée CÔTÉ SERVEUR (vérification faciale 1:1,
+     * BIO-004) n'a pas à passer par ici : elle est signalée par
+     * `$biometricVerified` sur `punch()`, qui court-circuite la dégradation.
      */
     private function hasVerifiableBiometricProof(?string $biometricProof): bool
     {

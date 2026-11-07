@@ -136,6 +136,12 @@ class ModuleRegistryDualReadTest extends TestCase
             'fleet' => false,
             'geo' => false,
             'vtc' => false,
+            // #9170 — même classe de dérive que `fundraising`/`geo`/`vtc`/`trade`
+            // ci-dessus : `farm_os` (BC-37, Farm OS) est déclaré dans
+            // `ModuleRegistry` et dans `Company::FEATURE_KEYS`, donc servi dans
+            // la carte, mais absent de ce snapshot — échec latent masqué par le
+            // fast-path CI #6928. Le snapshot est aligné sur la carte réelle.
+            'farm_os' => false,
             'trade' => false,
         ];
 
