@@ -56,7 +56,8 @@
   "overrides": {
     "postcss": "^8.5.23",
     "sharp": "^0.35.5",
-    "source-map-js": "^1.2.2"
+    "source-map-js": "^1.2.2",
+    "minimatch": "^11.0.1"
   },
   "engines": {
     "node": ">=20.9.0",
