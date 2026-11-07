@@ -8,6 +8,7 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\Marketing\Domain\Contracts\MarketingLeadRepositoryInterface;
 use App\Modules\Marketing\Domain\DTOs\CreateMarketingLeadDTO;
 use App\Modules\Marketing\Domain\Models\MarketingLead;
+use Closure;
 use Illuminate\Support\Collection;
 
 class MarketingLeadRepository implements MarketingLeadRepositoryInterface
@@ -68,10 +69,10 @@ class MarketingLeadRepository implements MarketingLeadRepositoryInterface
      *
      * @template T
      *
-     * @param  callable(): T  $callback
+     * @param  Closure(): T  $callback
      * @return T
      */
-    private function onPublicSchema(callable $callback): mixed
+    private function onPublicSchema(Closure $callback): mixed
     {
         return $this->tenantManager->withinSearchPath('public', $callback);
     }
