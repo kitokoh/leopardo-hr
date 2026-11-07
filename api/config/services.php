@@ -218,6 +218,10 @@ return [
     // replit alors sur l'e-mail au lieu de generer un code qui ne partirat
     // jamais. Voir App\Core\Auth\Infrastructure\Sms\LogOnlySmsCodeSender.
     'sms_otp' => [
+        // `log` (defaut) = audit-only : le canal ne peut pas delivrer, donc
+        // `isConfigured()` rend `false` et l'appelant replit sur l'e-mail.
+        // `http` = transport reel via HttpSmsTransport (#9091).
+        'driver' => env('SMS_OTP_DRIVER', 'log'),
         'endpoint' => env('SMS_OTP_ENDPOINT', ''),
         'api_key' => env('SMS_OTP_API_KEY', ''),
         'from' => env('SMS_OTP_FROM', ''),

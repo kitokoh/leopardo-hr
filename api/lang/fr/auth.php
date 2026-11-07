@@ -28,4 +28,5 @@ return [
     'login_code_invalid' => 'Code de connexion invalide ou expiré. Demandez un nouveau code.',
     'login_code_too_many_attempts' => 'Trop de tentatives. Demandez un nouveau code de connexion.',
     'login_code_password_required' => 'Ce compte requiert une connexion par mot de passe.',
+    'login_code_send_failed' => 'L\'envoi du code de connexion a échoué. Réessayez dans un instant.',
 ];

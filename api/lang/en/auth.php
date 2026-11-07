@@ -28,4 +28,5 @@ return [
     'login_code_invalid' => 'Invalid or expired login code. Request a new code.',
     'login_code_too_many_attempts' => 'Too many attempts. Request a new login code.',
     'login_code_password_required' => 'This account requires a password sign-in.',
+    'login_code_send_failed' => 'Sending the login code failed. Please try again shortly.',
 ];

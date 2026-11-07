@@ -113,14 +113,25 @@ class LoginCodeController extends Controller
         try {
             Mail::to($email)->send(new LoginCodeMail($code, $locale));
         } catch (\Throwable $e) {
-            // Best-effort assumé côté réponse (générique), mais tracé : un
-            // mailer en panne est indiagnosticable sans ce log (#3057).
-            // #7854 : LoginCodeMail est ShouldQueue (file `emails`) — on
-            // attrape ici un échec de mise en file ; le transport se rejoue
-            // côté worker.
+            // #9091 : un echec de livraison ne doit plus etre maquille en
+            // `200 success`. Le code n'est parti par AUCUN canal : on purge
+            // l'entree de cache (un nouvel essai doit produire un NOUVEAU
+            // code, pas rejouer un code que personne n'a recu), on trace, on
+            // alerte, et on rend une erreur explicite.
+            Cache::forget($this->cacheKey($email));
+
             Log::error('auth.login_code_send_failed', [
                 'error' => $e->getMessage(),
             ]);
+            Log::critical('auth.login_code_delivery_failed_alert', [
+                'channel' => 'email',
+            ]);
+
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'LOGIN_CODE_SEND_FAILED',
+                'localized_message' => __('auth.login_code_send_failed'),
+            ], 503);
         }
 
         return $genericResponse;

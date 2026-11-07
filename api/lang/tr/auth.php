@@ -28,4 +28,5 @@ return [
     'login_code_invalid' => 'Giriş kodu geçersiz veya süresi dolmuş. Yeni bir kod isteyin.',
     'login_code_too_many_attempts' => 'Çok fazla deneme. Yeni bir giriş kodu isteyin.',
     'login_code_password_required' => 'Bu hesap parola ile giriş gerektirir.',
+    'login_code_send_failed' => 'Giriş kodu gönderilemedi. Lütfen kısa süre sonra tekrar deneyin.',
 ];
