@@ -73,6 +73,7 @@ return [
     'public_merchant_reply_body' => ':merchant vous a répondu.',
     'public_activity_status_title' => 'Votre commande a avancé',
     'public_activity_status_body' => ':merchant — :reference : :status.',
+    'public_merchant_fallback' => 'Le commerçant',
     // Statuts réels de `OrderStatus` (BC-25) — un statut inconnu est renvoyé
     // tel quel par le service plutôt que masqué.
     'public_status_draft' => 'brouillon',

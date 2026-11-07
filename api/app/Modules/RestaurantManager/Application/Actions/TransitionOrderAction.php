@@ -132,7 +132,7 @@ final class TransitionOrderAction
 
             $this->publicClientNotifier->notifyActivityStatus(
                 clientId: (int) $clientId,
-                merchantName: $merchantName !== '' ? $merchantName : 'Le commerçant',
+                merchantName: $merchantName,
                 vertical: 'restaurant',
                 activityType: 'order',
                 externalRef: (string) $order->reference,

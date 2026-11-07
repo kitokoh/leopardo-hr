@@ -111,7 +111,9 @@ final class PublicNotificationService implements PublicClientNotifier
             titleKey: 'notifications.public_activity_status_title',
             bodyKey: 'notifications.public_activity_status_body',
             replacements: [
-                'merchant' => $merchantName,
+                'merchant' => $merchantName !== ''
+                    ? $merchantName
+                    : (string) __('notifications.public_merchant_fallback'),
                 'reference' => $externalRef,
                 'status' => $this->statusLabel($status),
             ],

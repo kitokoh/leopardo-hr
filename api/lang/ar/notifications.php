@@ -72,6 +72,7 @@ return [
     'public_merchant_reply_body' => 'رد عليك :merchant.',
     'public_activity_status_title' => 'تقدّم طلبك',
     'public_activity_status_body' => ':merchant — :reference: :status.',
+    'public_merchant_fallback' => 'التاجر',
     // قيم `OrderStatus` الحقيقية (BC-25) — الحالة غير المعروفة تُعاد كما هي.
     'public_status_draft' => 'مسودة',
     'public_status_open' => 'تم الاستلام',

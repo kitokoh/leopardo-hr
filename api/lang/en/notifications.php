@@ -72,6 +72,7 @@ return [
     'public_merchant_reply_body' => ':merchant replied to you.',
     'public_activity_status_title' => 'Your order moved forward',
     'public_activity_status_body' => ':merchant — :reference: :status.',
+    'public_merchant_fallback' => 'The merchant',
     // Real `OrderStatus` values (BC-25) — an unknown status is returned as-is.
     'public_status_draft' => 'draft',
     'public_status_open' => 'received',

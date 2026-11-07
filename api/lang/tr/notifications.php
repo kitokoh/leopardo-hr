@@ -72,6 +72,7 @@ return [
     'public_merchant_reply_body' => ':merchant size yanıt verdi.',
     'public_activity_status_title' => 'Siparişiniz ilerledi',
     'public_activity_status_body' => ':merchant — :reference: :status.',
+    'public_merchant_fallback' => 'Satıcı',
     // Gerçek `OrderStatus` değerleri (BC-25) — bilinmeyen durum olduğu gibi döner.
     'public_status_draft' => 'taslak',
     'public_status_open' => 'alındı',
