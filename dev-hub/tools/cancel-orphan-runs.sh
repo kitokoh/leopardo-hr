@@ -57,10 +57,26 @@ strip_ansi() {
 # jamais annulés ici.
 DEFAULT_BRANCH=$(gh api "repos/${REPO}" | strip_ansi | jq -r '.default_branch')
 
+# Run qui EXÉCUTE ce nettoyage (`GITHUB_RUN_ID` dans Actions, vide hors CI).
+# Le workflow se déclenche à la fermeture d'une PR : son propre `head_branch`
+# est donc la branche qui vient d'être mergée/supprimée, et sans exclusion il
+# se classe « orphelin » et s'annule LUI-MÊME. Constaté le 2026-11-07 : le
+# check « Cancel runs on deleted branches » restait `cancelled` sur chaque PR
+# mergée (rendu rouge par `gh pr checks`), alors que le nettoyage avait agi.
+SELF_RUN_ID="${GITHUB_RUN_ID:-}"
+
 # 1. Branches vivantes : existent encore sur le remote.
 mapfile -t LIVE_BRANCHES < <(
     gh api "repos/${REPO}/branches?per_page=100" --paginate | strip_ansi | jq -s -r 'add | .[].name'
 )
+
+# Fail-closed : une lecture vide (API en échec, token sans `contents: read`…)
+# rend TOUTES les branches « mortes » et lancerait une annulation en masse des
+# runs de main et des PR ouvertes. Mieux vaut échouer sans rien toucher.
+if [[ "${#LIVE_BRANCHES[@]}" -eq 0 ]]; then
+  echo "::error::Aucune branche vivante lue (repos/${REPO}/branches vide) — fail-closed : aucun run annulé."
+  exit 1
+fi
 # 2. Têtes de branches des PRs ouvertes (une PR ouverte = travail en cours,
 # ses runs doivent tourner même si la branche a été supprimée par erreur).
 mapfile -t OPEN_PR_HEADS < <(
@@ -89,6 +105,10 @@ CANCELLED_IDS=""
 # version initiale : c'est pourtant l'état majoritaire pendant une saturation.
 for STATUS in queued pending in_progress; do
   while IFS=$'\t' read -r run_id branch; do
+    # Ne jamais annuler le run en cours d'exécution (cf. SELF_RUN_ID).
+    if [[ -n "${SELF_RUN_ID}" && "${run_id}" == "${SELF_RUN_ID}" ]]; then
+      continue
+    fi
     if ! is_protected "${branch}"; then
       CANCELLED=$((CANCELLED + 1))
       if [[ -n "${CANCELLED_IDS}" ]]; then
