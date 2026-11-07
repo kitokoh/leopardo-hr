@@ -5,6 +5,7 @@ use App\Core\Auth\Interfaces\Api\V1\Controllers\AuthController;
 use App\Core\Auth\Interfaces\Api\V1\Controllers\LoginCodeController;
 use App\Core\Auth\Interfaces\Api\V1\Controllers\PasswordResetController;
 use App\Core\Auth\Interfaces\Api\V1\Controllers\PlatformAuthController;
+use App\Core\Auth\Interfaces\Api\V1\Controllers\TenantContextController;
 use App\Core\Auth\Interfaces\Api\V1\Controllers\TwoFactorAuthController;
 use App\Core\Feature\Interfaces\Api\V1\Controllers\FeatureManifestController;
 use App\Http\Controllers\Web\PlatformCompanyController;
@@ -404,6 +405,12 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/auth/2fa/recovery-codes', [TwoFactorAuthController::class, 'recoveryCodes']);
         Route::post('/auth/refresh-token', [AuthController::class, 'refreshToken']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
+        // IAM-L2 (#9092) — sélection du contexte tenant. Une personne membre de
+        // plusieurs entreprises choisit EXPLICITEMENT la sienne ; le jeton est
+        // réémis borné à cette entreprise (mêmes abilities qu'au login).
+        // L'appartenance est vérifiée avant toute réémission (403 sinon).
+        Route::get('/auth/contexts', [TenantContextController::class, 'index']);
+        Route::post('/auth/context', [TenantContextController::class, 'store']);
         Route::post('/client-events', [ClientEventController::class, 'store'])->middleware('throttle:client-analytics');
         Route::get('/notification-preferences', [NotificationPreferenceController::class, 'show']);
         Route::patch('/notification-preferences', [NotificationPreferenceController::class, 'update']);
