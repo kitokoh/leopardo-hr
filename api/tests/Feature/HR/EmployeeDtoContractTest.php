@@ -25,34 +25,30 @@ class EmployeeDtoContractTest extends TestCase
 {
     public function test_update_employee_request_rules_are_all_dto_constructor_params(): void
     {
-        $this->assertRulesCoveredByDto(
-            UpdateEmployeeRequest::class,
-            UpdateEmployeeDTO::class,
-        );
+        // On instancie la requête SANS passer par le conteneur : résoudre un
+        // FormRequest via app() déclenche validateResolved() (et lève une
+        // ValidationException). Ici on ne veut que la liste des règles.
+        $request = UpdateEmployeeRequest::create('/', 'GET');
+        $request->setUserResolver(static fn () => null);
+
+        $this->assertRulesCoveredByDto($request->rules(), UpdateEmployeeDTO::class);
     }
 
     public function test_store_employee_request_rules_are_all_dto_constructor_params(): void
     {
-        $this->assertRulesCoveredByDto(
-            StoreEmployeeRequest::class,
-            CreateEmployeeDTO::class,
-        );
+        $request = StoreEmployeeRequest::create('/', 'GET');
+        $request->setUserResolver(static fn () => null);
+
+        $this->assertRulesCoveredByDto($request->rules(), CreateEmployeeDTO::class);
     }
 
     /**
-     * @param  class-string<\Illuminate\Foundation\Http\FormRequest>  $requestClass
+     * @param  array<string, mixed>  $rules
      * @param  class-string  $dtoClass
      */
-    private function assertRulesCoveredByDto(string $requestClass, string $dtoClass): void
+    private function assertRulesCoveredByDto(array $rules, string $dtoClass): void
     {
-        // On instancie la requête SANS passer par le conteneur : résoudre un
-        // FormRequest via app() déclenche validateResolved() (et lève une
-        // ValidationException). Ici on ne veut que la liste des règles.
-        /** @var \Illuminate\Foundation\Http\FormRequest $request */
-        $request = $requestClass::create('/', 'GET');
-        $request->setUserResolver(static fn () => null);
-
-        $ruleKeys = array_keys($request->rules());
+        $ruleKeys = array_keys($rules);
 
         // On ne garde que les clés de premier niveau : les clés imbriquées
         // (`extra_data.department`, `resource_assignments.*.x`) sont portées
@@ -74,9 +70,8 @@ class EmployeeDtoContractTest extends TestCase
             [],
             $missing,
             sprintf(
-                'Champs validés par %s mais absents du constructeur de %s '
+                'Champs validés par le FormRequest mais absents du constructeur de %s '
                 .'(provoquerait « Unknown named parameter » → 500) : %s',
-                $requestClass,
                 $dtoClass,
                 implode(', ', $missing),
             ),
