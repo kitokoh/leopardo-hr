@@ -334,6 +334,11 @@ return [
     'LAST_SUPER_ADMIN_REQUIRED' => 'İşlem reddedildi: en az bir etkin üst yönetici kalmalıdır.',
     'LAST_PRINCIPAL_REQUIRED' => 'İşlem reddedildi: şirkette en az bir etkin baş yönetici kalmalıdır.',
 
+    // Issue #9095 (IAM-L5) - roles personnalises de tenant.
+    'DELEGATION_FORBIDDEN' => 'Özel rolleri yalnızca bir baş yönetici yönetebilir.',
+    'DELEGATION_EXCEEDS_ACTOR' => 'Özel bir rol, kendinizde olmayan izinleri veremez.',
+    'ROLE_NAME_TAKEN' => 'Bu ada sahip özel bir rol zaten var.',
+
     // Issue #7598 (R1 de l'epique #7597) - acces aux ressources par tenant.
     'RESOURCE_ACCESS_DENIED' => 'Bu kaynağa erişiminiz yok.',
     'RESOURCE_TYPE_UNKNOWN' => 'Bilinmeyen kaynak türü.',

@@ -7,6 +7,7 @@
  * Notifications are available to all authenticated employees.
  */
 
+use App\Core\Auth\Interfaces\Api\V1\Controllers\RoleDefinitionController;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\AttendanceExportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DashboardController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\ExportController;
@@ -68,6 +69,21 @@ ModuleRoutes::tenantModule('', function (): void {
         Route::get('/dashboard/admin', [DashboardController::class, 'adminSummary']);
         Route::get('/company/team-roles', [RoleAssignmentController::class, 'teamRoles']);
         Route::post('/employees/{employee}/assign-role', [RoleAssignmentController::class, 'assign']);
+    });
+
+    // IAM-L5 (#9095) — rôles personnalisés de tenant.
+    //
+    // Surface réservée aux managers (`api.manager`), mais le VRAI garde est le
+    // plafond de délégation appliqué DANS le contrôleur : `permissions ⊆
+    // capabilities(créateur)`, à la création ET à la modification. Un `rh` peut
+    // donc atteindre le contrôleur — et se faire refuser (422) dès qu'il tente
+    // d'accorder une permission qu'il ne détient pas, `delegation.manage`
+    // comprise. C'est ce qui rend le scénario #11 de la matrice testable.
+    Route::middleware('api.manager')->group(function (): void {
+        Route::get('/company/roles', [RoleDefinitionController::class, 'index']);
+        Route::post('/company/roles', [RoleDefinitionController::class, 'store']);
+        Route::put('/company/roles/{role}', [RoleDefinitionController::class, 'update']);
+        Route::delete('/company/roles/{role}', [RoleDefinitionController::class, 'revoke']);
     });
 
     Route::middleware('api.manager:rh,principal')->group(function (): void {
