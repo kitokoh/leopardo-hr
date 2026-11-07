@@ -173,7 +173,7 @@ class PublicIdentityBridgeTest extends TestCase
             'M3 livré : l\'index d\'activités doit exister (public_activity_index).',
         );
 
-        $activitySource = (string) file_get_contents($activityMigrations[0]);
+        $activitySource = (string) file_get_contents((string) ($activityMigrations[0] ?? ''));
 
         foreach (['user_id', 'company_id', 'vertical', 'activity_type', 'external_ref', 'status'] as $column) {
             $this->assertStringContainsString(

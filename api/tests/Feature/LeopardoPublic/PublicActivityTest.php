@@ -41,8 +41,6 @@ class PublicActivityTest extends TestCase
 
     private Company $company;
 
-    private RestaurantBranch $branch;
-
     private User $client;
 
     private User $otherClient;
@@ -65,7 +63,7 @@ class PublicActivityTest extends TestCase
         // Établissement PUBLIÉ portant le slug public `resto-activites` : c'est
         // la cible que les tests de favoris résolvent. Sans publication, le
         // profil est introuvable et l'ajout de favori est refusé (404).
-        $this->branch = app(TenantManager::class)->withinTenant(
+        app(TenantManager::class)->withinTenant(
             $this->company,
             fn (): RestaurantBranch => RestaurantBranch::factory()->create([
                 'company_id' => $this->company->id,
