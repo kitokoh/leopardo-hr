@@ -176,8 +176,8 @@ class PlatformBlogController extends Controller
     {
         // Encodage base64 pour eviter les faux positifs sur la garde des chaines accentuees dans les controleurs (PA2-I18N-007)
         $raw = 'W3sic2x1ZyI6Imd1aWRlLWNvbXBsZXQtZ2VzdGlvbi1yaC1zdGFydHVwIiwidGl0bGUiOiJHdWlkZSBDb21wbGV0OiBHZXN0aW9uIFJIIHBvdXIgU3RhcnR1cHMiLCJleGNlcnB0IjoiRMOpY291dnJleiBjb21tZW50IG1ldHRyZSBlbiBwbGFjZSB1bmUgZ2VzdGlvbiBSSCBlZmZpY2FjZSBkw6hzIGxlIGTDqXBhcnQgZGFucyB2b3RyZSBzdGFydHVwLiIsImNvbnRlbnQiOiIjIyBJbnRyb2R1Y3Rpb25cblxuTGEgZ2VzdGlvbiBkZXMgcmVzc291cmNlcyBodW1haW5lcyBlc3QgY3J1Y2lhbGUgcG91ciBsZSBzdWNjw6hzIGQndW5lIHN0YXJ0dXAuXG5cbiFbTGUgQ3ljbGUgZGUgVmllIENvbGxhYm9yYXRldXIgZW4gNSBQaWxpZXJzIFN0cmF0w6lnaXF1ZXNdKC9ibG9nL3N0YXJ0dXAtcmgtd29ya2Zsb3cuc3ZnIFwiSW5mb2dyYXBoaWUgUkggOiBMZXMgNSDDqXRhcGVzIGR1IGN5Y2xlIGRlIHZpZSBjb2xsYWJvcmF0ZXVyXCIpXG5cbj4gWyFUSVBdICoqQ29uc2VpbCBkZSByZWNydXRldXIgOioqIE5lIHRhcmRleiBwYXMgw6AgZGlnaXRhbGlzZXIgdm90cmUgcmVnaXN0cmUgZHUgcGVyc29ubmVsLiIsImltYWdlIjoiL2Jsb2cvc3RhcnR1cC1yaC5zdmciLCJjYXRlZ29yeSI6IlJIIiwicmVhZGluZ1RpbWUiOjgsImF1dGhvciI6eyJuYW1lIjoiQWhtZWQgQmVuYWxpIiwiYXZhdGFyIjoiL2F2YXRhcnMvYWhtZWQuc3ZnIn0sInRhZ3MiOlsic3RhcnR1cCIsIlJIIiwicmVjcnV0ZW1lbnQiLCJnZXN0aW9uIl0sInN0YXR1cyI6InB1Ymxpc2hlZCJ9LHsic2x1ZyI6ImF1dG9tYXRpc2VyLXBhaWUtZXhjZWwtdmVycy1sb2dpY2llbCIsInRpdGxlIjoiUGFzc2VyIGRlIEV4Y2VsIMOgIHVuIExvZ2ljaWVsIGRlIFBhaWU6IEd1aWRlIFByYXRpcXVlIiwiZXhjZXJwdCI6IkNvbW1lbnQgbWlncmVyIHZvdHJlIGdlc3Rpb24gZGUgcGFpZSBkJ0V4Y2VsIHZlcnMgdW4gbG9naWNpZWwgYXV0b21hdGlzw6kgc2FucyBzdHJlc3MuIiwiY29udGVudCI6IiMjIFBvdXJxdW9pIFBhc3NlciBkZSBFeGNlbD9cblxuRXhjZWwgZXN0IHVuIG91dGlsIHB1aXNzYW50IG1haXMgZmFpbGxpYmxlLlxuXG4hW0NvbXBhcmF0aWYgVGFibGV1ciBNYW51ZWwgdnMgTW90ZXVyIGRlIFBhaWUgQXV0b21hdGlzw6ldKC9ibG9nL3BhaWUtYXV0b21hdGlvbi1jb21wYXJpc29uLnN2ZyBcIsOJdHVkZSBjb21wYXJhdGl2ZSA6IENvw7t0cywgZXJyZXVycyBkZSBjYWxjdWwgZXQgY29uZm9ybWl0w6kgZmlzY2FsZVwiKVxuXG4+IFshV0FSTklOR10gKipBdHRlbnRpb24gYXV4IHJlZHJlc3NlbWVudHMgZmlzY2F1eCA6KiogTGVzIGVycmV1cnMgc3VyIHRhYmxldXIgY2/Du3RlbnQgZW4gbW95ZW5uZSAzIDUwMCDigqwgcGFyIGNvbnRyw7RsZS4iLCJpbWFnZSI6Ii9ibG9nL3BhaWUtZXhjZWwuc3ZnIiwiY2F0ZWdvcnkiOiJQYWllIiwicmVhZGluZ1RpbWUiOjEwLCJhdXRob3IiOnsibmFtZSI6IkplYW4gTWFydGluIiwiYXZhdGFyIjoiL2F2YXRhcnMvamVhbi5zdmcifSwidGFncyI6WyJwYWllIiwiZXhjZWwiLCJhdXRvbWF0aXNhdGlvbiIsIm1pZ3JhdGlvbiJdLCJzdGF0dXMiOiJwdWJsaXNoZWQifSx7InNsdWciOiJwb2ludGFnZS1iaW9tZXRyaXF1ZS1hdmFudGFnZXMiLCJ0aXRsZSI6IlBvaW50YWdlIEJpb23DqXRyaXF1ZTogQXZhbnRhZ2VzIGV0IEltcGzDqW1lbnRhdGlvbiIsImV4Y2VycHQiOiJEw6ljb3V2cmV6IGNvbW1lbnQgbGUgcG9pbnRhZ2UgYmlvbcOpdHJpcXVlIHBldXQgYW3DqWxpb3JlciB2b3RyZSBnZXN0aW9uIFJILiIsImNvbnRlbnQiOiIjIyBRdSdlc3QtY2UgcXVlIGxlIFBvaW50YWdlIEJpb23DqXRyaXF1ZT9cblxuIVtDaGHDrm5lIGRlIENvbmZpYW5jZSBkdSBQb2ludGFnZSBCaW9tw6l0cmlxdWUgJiBNb2JpbGVdKC9ibG9nL2Jpb21ldHJpZS1zZWN1cml0ZS1zY2hlbWEuc3ZnIFwiU2Now6ltYSB0ZWNobmlxdWUgOiBEdSB0ZXJtaW5hbCBiaW9tw6l0cmlxdWUgw6AgbGEgdmFsb3Jpc2F0aW9uIGVuIHBhaWVcIilcblxuPiBbIU5PVEVdICoqR2FyYW50aWUgUkdQRCA6KiogTGVzIGdhYmFyaXRzIGQnZW1wcmVpbnRlcyBvdSB2aXNhZ2VzIGRvaXZlbnQgw6p0cmUgY2hpZmZyw6lzIHNvdXMgZm9ybWUgZGUgdmVjdGV1cnMgbWF0aMOpbWF0aXF1ZXMuIiwiaW1hZ2UiOiIvYmxvZy9iaW9tZXRyaXF1ZS5zdmciLCJjYXRlZ29yeSI6IlRlY2hub2xvZ2llIiwicmVhZGluZ1RpbWUiOjcsImF1dGhvciI6eyJuYW1lIjoiQWhtZWQgQmVuYWxpIiwiYXZhdGFyIjoiL2F2YXRhcnMvYWhtZWQuc3ZnIn0sInRhZ3MiOlsiYmlvbcOpdHJpZSIsInBvaW50YWdlIiwidGVjaG5vbG9naWUiLCJzw6ljdXJpdMOpIl0sInN0YXR1cyI6InB1Ymxpc2hlZCJ9XQ==';
-        $decoded = base64_decode($raw, true);
-        if ($decoded === false) {
+        $decoded = self::decodeBase64OrNull($raw);
+        if ($decoded === null) {
             return [];
         }
 
@@ -185,5 +185,30 @@ class PlatformBlogController extends Controller
         $data = json_decode($decoded, true) ?? [];
 
         return $data;
+    }
+
+    /**
+     * Decode une chaine base64 en preservant le contrat reel `string|false` de
+     * `base64_decode()`.
+     *
+     * Depuis phpstan/phpdoc-parser 2.4.1, PHPStan inferre le type d'un
+     * `base64_decode(<litteral>, true)` comme `string` : il sait que le
+     * litteral est du base64 valide, donc la branche `false` devient
+     * `identical.alwaysFalse` au site d'appel et casse le check requis
+     * `PHPStan — Strict (level 8)` (issue #9140, revelee par #9138).
+     *
+     * Le litteral ci-dessus reste modifiable a la main : la garde doit donc
+     * rester reellement atteignable. En passant par un parametre type `string`,
+     * PHPStan ne peut plus prouver la validite de l'entree et l'union
+     * `string|false` est preservee — sans elargir le type, sans masquer le
+     * resultat et sans ajouter de dette a la baseline.
+     *
+     * @return string|null `null` si l'entree n'est pas du base64 strict valide.
+     */
+    private static function decodeBase64OrNull(string $encoded): ?string
+    {
+        $decoded = base64_decode($encoded, true);
+
+        return $decoded === false ? null : $decoded;
     }
 }
