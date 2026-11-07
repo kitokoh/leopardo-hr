@@ -161,11 +161,27 @@ class PublicIdentityBridgeTest extends TestCase
 
         $activityMigrations = glob(base_path('database/migrations/public/*public_activity_index*'));
 
-        $this->assertSame(
+        // M3 (#9105) est LIVRÉ : l'index d'activités existe désormais. Ce constat
+        // d'audit est donc PÉRIMÉ — il assertait l'ABSENCE d'un mécanisme, et
+        // doit échouer dès que le lot correspondant est livré (c'est son signal
+        // de sortie, cf. en-tête de classe). On inverse l'assertion : elle
+        // vérifie maintenant que l'index EXISTE et porte bien les colonnes de
+        // référence attendues, sans contenu métier.
+        $this->assertNotSame(
             [],
             $activityMigrations ?: [],
-            'ÉCART : aucun index d\'activités. Si cette assertion casse, le lot Activités est livré.',
+            'M3 livré : l\'index d\'activités doit exister (public_activity_index).',
         );
+
+        $activitySource = (string) file_get_contents($activityMigrations[0]);
+
+        foreach (['user_id', 'company_id', 'vertical', 'activity_type', 'external_ref', 'status'] as $column) {
+            $this->assertStringContainsString(
+                "'{$column}'",
+                $activitySource,
+                "public_activity_index doit porter {$column}.",
+            );
+        }
     }
 
     /**
