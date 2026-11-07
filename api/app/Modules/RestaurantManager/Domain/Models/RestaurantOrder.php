@@ -23,6 +23,8 @@ use Illuminate\Support\Str;
  * (uuid) si absentes à la création — la paire (tenant, référence) et
  * (tenant, idempotency_key) sont uniques. Totaux en minor units ; `version`
  * protège les mises à jour concurrentes.
+ *
+ * @property int|null $public_client_id
  */
 class RestaurantOrder extends Model
 {

@@ -66,4 +66,25 @@ return [
     'vtc_ride_cancelled_title' => 'Ride cancelled',
     'vtc_ride_cancelled_body' => 'Your ride :reference was cancelled. Reason: :reason.',
     'vtc_ride_cancelled_driver_body' => 'Ride :reference was cancelled. Reason: :reason.',
+
+    // COULOIR 16 — M3-bis (#9142) — public client's first daily habit.
+    'public_merchant_reply_title' => 'New reply',
+    'public_merchant_reply_body' => ':merchant replied to you.',
+    'public_activity_status_title' => 'Your order moved forward',
+    'public_activity_status_body' => ':merchant — :reference: :status.',
+    // Real `OrderStatus` values (BC-25) — an unknown status is returned as-is.
+    'public_status_draft' => 'draft',
+    'public_status_open' => 'received',
+    'public_status_in_preparation' => 'being prepared',
+    'public_status_ready' => 'ready',
+    'public_status_served' => 'served',
+    'public_status_paid' => 'paid',
+    'public_status_closed' => 'completed',
+    'public_status_cancelled' => 'cancelled',
+    'public_status_refunded' => 'refunded',
+    // Booking statuses (other verticals).
+    'public_status_pending' => 'pending',
+    'public_status_confirmed' => 'confirmed',
+    'public_status_completed' => 'completed',
+    'public_status_rejected' => 'declined',
 ];

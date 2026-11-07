@@ -66,4 +66,25 @@ return [
     'vtc_ride_cancelled_title' => 'Yolculuk iptal edildi',
     'vtc_ride_cancelled_body' => ':reference numaralı yolculuğunuz iptal edildi. Sebep: :reason.',
     'vtc_ride_cancelled_driver_body' => ':reference numaralı yolculuk iptal edildi. Sebep: :reason.',
+
+    // COULOIR 16 — M3-bis (#9142) — genel müşterinin ilk günlük alışkanlığı.
+    'public_merchant_reply_title' => 'Yeni yanıt',
+    'public_merchant_reply_body' => ':merchant size yanıt verdi.',
+    'public_activity_status_title' => 'Siparişiniz ilerledi',
+    'public_activity_status_body' => ':merchant — :reference: :status.',
+    // Gerçek `OrderStatus` değerleri (BC-25) — bilinmeyen durum olduğu gibi döner.
+    'public_status_draft' => 'taslak',
+    'public_status_open' => 'alındı',
+    'public_status_in_preparation' => 'hazırlanıyor',
+    'public_status_ready' => 'hazır',
+    'public_status_served' => 'servis edildi',
+    'public_status_paid' => 'ödendi',
+    'public_status_closed' => 'tamamlandı',
+    'public_status_cancelled' => 'iptal edildi',
+    'public_status_refunded' => 'iade edildi',
+    // Rezervasyon durumları (diğer dikeyler).
+    'public_status_pending' => 'beklemede',
+    'public_status_confirmed' => 'onaylandı',
+    'public_status_completed' => 'tamamlandı',
+    'public_status_rejected' => 'reddedildi',
 ];

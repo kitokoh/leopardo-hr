@@ -7,6 +7,7 @@ namespace App\Modules\Platform\Providers;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Events\CompanyCreated;
 use App\Events\SubscriptionPaid;
+use App\Modules\Platform\Application\Services\PublicNotificationService;
 use App\Modules\Platform\Infrastructure\Services\Consumers\PlatformCompanyCreatedAuditConsumer;
 use App\Modules\Platform\Infrastructure\Services\Consumers\PlatformSubscriptionPaidAuditConsumer;
 use App\Modules\Platform\Infrastructure\Services\PlatformAiSettingsApplier;
@@ -15,6 +16,7 @@ use App\Modules\Platform\Infrastructure\Services\PlatformOutboxConsumerRegistry;
 use App\Modules\Platform\Infrastructure\Services\PlatformOutboxPublisher;
 use App\Modules\Platform\Infrastructure\Services\RecordSchedulerRun;
 use App\Modules\Platform\Infrastructure\Services\ScheduledTaskRunRecorder;
+use App\Shared\Contracts\Notification\PublicClientNotifier;
 use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskStarting;
@@ -28,6 +30,14 @@ class PlatformServiceProvider extends ServiceProvider
     {
         $this->app->singleton(PlatformOutboxPublisher::class);
         $this->app->singleton(PlatformOutboxConsumerRegistry::class);
+
+        // COULOIR 16 — M3-bis (#9142) · Contrat partagé de notification du
+        // client public. Une verticale (BC-25 RESTAURANT, …) dépend de
+        // l'interface `PublicClientNotifier`, jamais de la classe concrète :
+        // la garde d'isolation #5584 interdit l'import croisé
+        // `Modules/X -> Modules/Platform`, et l'arête `BC-25 → BC-01` n'existe
+        // pas. Même inversion que `EmployeeNotifier` (BC-13).
+        $this->app->bind(PublicClientNotifier::class, PublicNotificationService::class);
 
         // #7384 — réglages IA du cockpit : repository (secrets chiffrés) et
         // applier (surcharge de config). Singletons : le repository mémoïse sa

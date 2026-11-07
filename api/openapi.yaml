@@ -4833,6 +4833,120 @@ paths:
           $ref: '#/components/responses/Error401'
         '429':
           $ref: '#/components/responses/Error429'
+  /user/notifications:
+    get:
+      operationId: api_get_user_notifications
+      tags:
+      - User
+      summary: Boîte de notifications du client public (COULOIR 16, M3-bis, #9142)
+      description: >-
+        Notifications IN-APP du client authentifié, les plus récentes d'abord :
+        réponse d'un commerçant et changement de statut d'une commande ou d'une
+        réservation. Le push (FCM/APNs) arrive en M2 avec `public_device_tokens` ;
+        ici tout est in-app. `meta.unread` alimente la pastille de l'onglet sans
+        second appel. Aucune donnée personnelle dans le corps : nom commercial,
+        référence publique et statut traduit uniquement.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 50
+      responses:
+        '200':
+          description: Notifications du client
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PublicNotification'
+                  meta:
+                    type: object
+                    properties:
+                      unread:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /user/notifications/read-all:
+    post:
+      operationId: api_post_user_notifications_read_all
+      tags:
+      - User
+      summary: Marquer toutes les notifications comme lues (COULOIR 16, M3-bis, #9142)
+      description: >-
+        Idempotent : marquer comme lues des notifications déjà lues ne change
+        pas leur date de première lecture — c'est cette date qui mesure
+        l'habitude (retour à J7).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Notifications marquées comme lues
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      updated:
+                        type: integer
+                      unread:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /user/notifications/{notification}/read:
+    post:
+      operationId: api_post_user_notification_read
+      tags:
+      - User
+      summary: Marquer une notification comme lue (COULOIR 16, M3-bis, #9142)
+      description: >-
+        Marque une notification du client comme lue. Une notification qui
+        n'appartient pas au client renvoie 404 et non 403 : un 403 confirmerait
+        l'existence d'une notification qui ne le concerne pas, et permettrait
+        d'énumérer les identifiants.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: notification
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Notification marquée comme lue
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      unread:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Notification introuvable pour ce client
+        '429':
+          $ref: '#/components/responses/Error429'
   /user/google-signin:
     post:
       operationId: api_post_user_google_signin
@@ -63251,6 +63365,35 @@ components:
         result_count:
           type: integer
         searched_at:
+          type: string
+          format: date-time
+          nullable: true
+    PublicNotification:
+      type: object
+      description: >-
+        Notification IN-APP du client public (COULOIR 16, M3-bis, #9142).
+        Aucune donnée personnelle : `title`/`body` sont rendus depuis le
+        catalogue i18n avec le nom commercial, la référence publique et le
+        statut traduit. `data` ne porte que des références — les mêmes
+        identifiants que `public_activity_index`, qui n'autorisent rien.
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum:
+          - merchant_reply
+          - activity_status
+        title:
+          type: string
+        body:
+          type: string
+        data:
+          type: object
+          additionalProperties: true
+        read:
+          type: boolean
+        created_at:
           type: string
           format: date-time
           nullable: true
