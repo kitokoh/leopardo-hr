@@ -7,6 +7,9 @@
  * via email/password ou Google, et gerer son espace personnel.
  */
 
+use App\Core\Auth\Interfaces\Api\V1\Controllers\PublicAccountController;
+use App\Core\Auth\Interfaces\Api\V1\Controllers\PublicDeviceTokenController;
+use App\Core\Auth\Interfaces\Api\V1\Controllers\PublicPhoneOtpController;
 use App\Core\Auth\Interfaces\Api\V1\Controllers\UserAuthController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\CompanyRequestController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyIntegrationRequestController;
@@ -21,6 +24,17 @@ Route::middleware(['throttle:auth-sensitive'])->prefix('user')->group(function (
     Route::post('/register', [UserAuthController::class, 'register']);
     Route::post('/login', [UserAuthController::class, 'login']);
     Route::post('/google-signin', [UserAuthController::class, 'googleSignIn']);
+
+    // COULOIR 16 — M2 (#9104) · OTP par TELEPHONE (parcours critique « Contacter »).
+    //
+    // Distinct de `/auth/login-code/*` (#7490), qui sert le parcours employeur
+    // par e-mail : ici le client saisit un numero, peut ne pas avoir d'e-mail,
+    // et peut deja exister dans `users` (pont d'identite L4, #9094).
+    //
+    // `request` rend TOUJOURS 204 (anti-enumeration) ; `verify` ouvre la
+    // session sous le guard `user_api`. Aucun compte n'est cree par ce chemin.
+    Route::post('/login-code/phone/request', [PublicPhoneOtpController::class, 'request']);
+    Route::post('/login-code/phone/verify', [PublicPhoneOtpController::class, 'verify']);
 });
 
 // Authentifie (user_api guard)
@@ -29,6 +43,27 @@ Route::middleware(['throttle:api', 'auth:user_api'])->prefix('user')->group(func
     Route::patch('/profile', [UserAuthController::class, 'updateProfile']);
     Route::post('/change-password', [UserAuthController::class, 'changePassword']);
     Route::post('/logout', [UserAuthController::class, 'logout']);
+
+    // COULOIR 16 — M2 (#9104) · Cycle de vie du compte public.
+    //
+    // `refresh` : rotation systematique du jeton (l'ancien est revoque dans la
+    // meme transaction, verrou pessimiste #5581). `logout-all` : revocation de
+    // TOUS les appareils (geste « appareil perdu », cas 8 de la matrice).
+    // `DELETE /account` : suppression DIFFEREE de 30 jours, reversible, avec
+    // re-authentification obligatoire — un jeton vole ne doit pas pouvoir
+    // supprimer un compte.
+    Route::post('/refresh', [PublicAccountController::class, 'refresh']);
+    Route::post('/logout-all', [PublicAccountController::class, 'logoutAll']);
+    Route::delete('/account', [PublicAccountController::class, 'destroy']);
+
+    // COULOIR 16 — M2 (#9104) · Jetons d'appareil du grand public (push).
+    //
+    // `public_device_tokens` vit en schema PUBLIC : `device_tokens` est en
+    // schema tenant et ne peut pas servir un client qui converse avec
+    // plusieurs entreprises. Le `user_id` vient du jeton authentifie, jamais
+    // du corps de la requete.
+    Route::post('/device-tokens', [PublicDeviceTokenController::class, 'store']);
+    Route::delete('/device-tokens', [PublicDeviceTokenController::class, 'destroy']);
 
     // #5540 — Statuts personnels cumulables (étudiant/employé/entrepreneur/chercheur d'emploi)
     Route::patch('/personal-statuses', [UserAuthController::class, 'updatePersonalStatuses']);

@@ -29,4 +29,10 @@ return [
     'login_code_too_many_attempts' => 'محاولات كثيرة جدًا. اطلب رمز تسجيل دخول جديدًا.',
     'login_code_password_required' => 'يتطلب هذا الحساب تسجيل الدخول بكلمة مرور.',
     'login_code_send_failed' => 'فشل إرسال رمز تسجيل الدخول. حاول مرة أخرى بعد قليل.',
+
+    // COULOIR 16 — M2 (#9104) · رمز التحقق عبر الهاتف (القناة العامة).
+    'public_phone_otp_invalid' => 'رمز الدخول غير صالح. تحقق من الرمز الذي تلقيته عبر الرسائل القصيرة.',
+    'public_phone_otp_expired' => 'انتهت صلاحية هذا الرمز. اطلب رمزًا جديدًا.',
+    'public_phone_otp_too_many_attempts' => 'محاولات كثيرة جدًا. انتظر قبل طلب رمز جديد.',
+    'public_account_deletion_confirmation_required' => 'أدخل كلمة التأكيد لحذف حسابك.',
 ];

@@ -29,4 +29,10 @@ return [
     'login_code_too_many_attempts' => 'Too many attempts. Request a new login code.',
     'login_code_password_required' => 'This account requires a password sign-in.',
     'login_code_send_failed' => 'Sending the login code failed. Please try again shortly.',
+
+    // COULOIR 16 — M2 (#9104) · Phone OTP (public channel).
+    'public_phone_otp_invalid' => 'Invalid login code. Check the code you received by SMS.',
+    'public_phone_otp_expired' => 'This code has expired. Request a new one.',
+    'public_phone_otp_too_many_attempts' => 'Too many attempts. Please wait before requesting a new code.',
+    'public_account_deletion_confirmation_required' => 'Enter the confirmation word to delete your account.',
 ];

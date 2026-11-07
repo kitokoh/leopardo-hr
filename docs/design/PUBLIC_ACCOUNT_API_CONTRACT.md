@@ -92,19 +92,19 @@ POST /api/v1/user/login
 | 401 | `{error:"INVALID_CREDENTIALS"}` |
 | 423 | `{error:"ACCOUNT_LOCKED", locked_until}` (après `failed_login_attempts`) |
 
-### 2.3 Connexion par code (OTP) — 🆕 **par téléphone**
+### 2.3 Connexion par code (OTP) — ✅ **par téléphone** (livré M2, #9104)
 
 C'est **l'ajout central** : aujourd'hui le code part par e-mail uniquement.
 
 ```http
-POST /api/v1/user/login-code/request
-{ "phone_e164": "+221770000000" }        // 🆕 accepté
+POST /api/v1/user/login-code/phone/request
+{ "phone_e164": "+221770000000" }        // ✅ accepté
 
-→ 204 No Content
+→ 204 No Content                          // TOUJOURS, même si le numéro est inconnu
 ```
 
 ```http
-POST /api/v1/user/login-code/verify
+POST /api/v1/user/login-code/phone/verify
 { "phone_e164": "+221770000000", "code": "123456" }
 
 → 200 {data:{user}, token, token_type, token_expires_at}
@@ -112,6 +112,12 @@ POST /api/v1/user/login-code/verify
 → 410 {error:"CODE_EXPIRED"}
 → 429 {error:"TOO_MANY_ATTEMPTS"}
 ```
+
+> **Livré (M2, #9104).** Routes distinctes de `/auth/login-code/*` (#7490), qui
+> sert le parcours **employeur** par e-mail : ici le client saisit un numéro,
+> peut ne pas avoir d'e-mail, et peut déjà exister dans `users` (pont
+> d'identité L4, #9094). Aucun compte n'est créé par ce chemin — un numéro
+> inconnu rend `410`, jamais un compte fantôme.
 
 **Règles reprises de l'existant** (`LoginCodeController`) :
 
