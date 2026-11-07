@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
 use Throwable;
-use App\Modules\RestaurantManager\Application\Services\RestaurantStockService;
 
 /**
  * RESTO-404 (#6191) / RESTO-411 (#6198) — Transitions d'état d'une commande.
@@ -166,6 +165,4 @@ final class TransitionOrderAction
             'currency' => $order->currency,
         ];
     }
-
-
 }
