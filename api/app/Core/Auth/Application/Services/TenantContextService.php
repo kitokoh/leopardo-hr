@@ -341,8 +341,7 @@ final class TenantContextService
 
         if (DB::getDriverName() !== 'pgsql') {
             /** @var Employee|null $employee */
-            $employee = Employee::withoutGlobalScopes()
-                ->where('company_id', $company->id)
+            $employee = Employee::forCompany($company)
                 ->where('id', $employeeId)
                 ->first();
 
@@ -355,8 +354,7 @@ final class TenantContextService
             DB::statement('SET search_path TO "'.$schema.'",public');
 
             /** @var Employee|null $employee */
-            $employee = Employee::withoutGlobalScopes()
-                ->where('company_id', $company->id)
+            $employee = Employee::forCompany($company)
                 ->where('id', $employeeId)
                 ->first();
 
@@ -375,8 +373,11 @@ final class TenantContextService
         try {
             DB::statement('SET search_path TO "'.$schema.'",public');
 
+            // Parcours cross-tenant assumé : on cherche l'e-mail dans CHAQUE
+            // schéma tenant pour reconstituer les appartenances d'une personne
+            // sans ligne `users` (repli documenté). Wrapper sanctionné #7960.
             /** @var Employee|null $employee */
-            $employee = Employee::withoutGlobalScopes()
+            $employee = Employee::crossTenantForSystemTask('IAM-L2 #9092 — balayage des schemas tenant pour reconstituer les appartenances')
                 ->where('email', $email)
                 ->first();
 
