@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Domain\Models;
 
+use App\Core\Auth\Domain\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -27,6 +29,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $name
  * @property string $email
  * @property string|null $phone
+ * @property string|null $phone_e164 Numero normalise E.164 (#9094) — cle de convergence vers `users`
+ * @property int|null $user_id Pont vers `users` (#9094) — jamais ecrit sans telephone verifie
+ * @property Carbon|null $phone_verified_at
  * @property string $password
  * @property Carbon|null $email_verified_at
  * @property Carbon|null $last_login_at
@@ -46,6 +51,9 @@ class TravelCustomerAccount extends Authenticatable
         'name',
         'email',
         'phone',
+        'phone_e164',
+        'user_id',
+        'phone_verified_at',
         'password',
         'email_verified_at',
         'last_login_at',
@@ -58,6 +66,18 @@ class TravelCustomerAccount extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'phone_verified_at' => 'datetime',
         'last_login_at' => 'datetime',
     ];
+
+    /**
+     * Le `users` converge (#9094). Nullable : le pont n'existe qu'apres
+     * verification du telephone.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
