@@ -409,6 +409,7 @@
             <file>tests/Feature/Auth/SsoConfigureSsrfGuardTest.php</file>
             <file>tests/Feature/Auth/SsoEmailVerifiedTest.php</file>
             <file>tests/Feature/Auth/SsoTwoFactorGuardTest.php</file>
+            <file>tests/Feature/Auth/TenantContextSelectionTest.php</file>
             <file>tests/Feature/Auth/TokenQuotaTest.php</file>
             <file>tests/Feature/Auth/TwoFactorAuthTest.php</file>
         </testsuite>
