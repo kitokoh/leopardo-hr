@@ -57,6 +57,12 @@ jobs:
         with:
           lfs: false
 
+      - name: "Tests du nettoyage (auto-annulation interdite, #9164)"
+        # Garde de non-régression : le script ne doit jamais annuler le run qui
+        # l'exécute, ni les runs d'une branche vivante, et doit échouer sans rien
+        # annuler si la liste des branches est vide (fail-closed).
+        run: bash dev-hub/tools/tests/cancel-orphan-runs.test.sh
+
       - name: Cancel orphan and superseded runs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
