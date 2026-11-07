@@ -335,6 +335,7 @@ return [
     'PLATFORM_PERMISSION_REQUIRED' => 'Votre rôle plateforme ne permet pas cette action (permissions requises : :permissions).',
     'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'Impossible de modifier votre propre rôle plateforme.',
     'LAST_SUPER_ADMIN_REQUIRED' => 'Action refusée : il doit rester au moins un super administrateur actif.',
+    'LAST_PRINCIPAL_REQUIRED' => 'Action refusée : il doit rester au moins un principal actif dans l\'entreprise.',
 
     // Issue #7598 (R1 de l'epique #7597) - acces aux ressources par tenant.
     'RESOURCE_ACCESS_DENIED' => 'Vous n\'avez pas accès à cette ressource.',

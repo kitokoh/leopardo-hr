@@ -13,12 +13,11 @@ use Illuminate\Support\Facades\Hash;
 readonly class UserAuthService
 {
     public function __construct(
-        private readonly GoogleIdentityVerifier $googleIdentityVerifier = new GoogleIdentityVerifier(new OidcIdTokenValidator()),
-    ) {
-    }
+        private readonly GoogleIdentityVerifier $googleIdentityVerifier = new GoogleIdentityVerifier(new OidcIdTokenValidator),
+    ) {}
 
     /**
-     * @return array{user: User, token: string, token_type: string}
+     * @return array{user: User, token: string, token_type: string, token_expires_at: ?string}
      */
     public function register(string $firstName, string $lastName, string $email, string $password, ?string $phone = null): array
     {
@@ -36,7 +35,7 @@ readonly class UserAuthService
     }
 
     /**
-     * @return array{user: User, token: string, token_type: string}
+     * @return array{user: User, token: string, token_type: string, token_expires_at: ?string}
      */
     public function login(string $email, string $password, ?string $deviceName = null): array
     {
@@ -138,18 +137,26 @@ readonly class UserAuthService
     }
 
     /**
-     * @return array{user: User, token: string, token_type: string}
+     * @return array{user: User, token: string, token_type: string, token_expires_at: ?string}
      */
     private function issueToken(User $user, string $deviceName): array
     {
         $user->forceFill(['last_login_at' => now()])->saveQuietly();
 
-        $token = $user->createToken($deviceName)->plainTextToken;
+        // #9093 — tout jeton porte une expiration. Avant, ce chemin (comme les
+        // deux flux Google) créait un jeton SANS échéance : un jeton volé
+        // restait valable indéfiniment. On aligne sur `AuthService::login()`
+        // (config `sanctum.expiration`, 30 jours par défaut).
+        $expirationMinutes = (int) config('sanctum.expiration', 0);
+        $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
+
+        $token = $user->createToken($deviceName, ['*'], $expiresAt)->plainTextToken;
 
         return [
             'user' => $user,
             'token' => $token,
             'token_type' => 'Bearer',
+            'token_expires_at' => $expiresAt?->toIso8601String(),
         ];
     }
 }

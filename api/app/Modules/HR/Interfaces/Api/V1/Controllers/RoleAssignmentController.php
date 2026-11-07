@@ -46,6 +46,20 @@ class RoleAssignmentController extends Controller
         $previousRole = $employee->manager_role;
         $newRole = $validated['manager_role'];
 
+        // #9093 — garde du DERNIER PRINCIPAL, miroir exact de
+        // `PlatformTeamController::activeSuperAdminCount()` (#LAST_SUPER_ADMIN_REQUIRED).
+        // Sans elle, le principal d'un tenant peut se rétrograder lui-même (ou
+        // être rétrogradé) et laisser l'entreprise sans personne capable de
+        // nommer un successeur : auto-verrouillage définitif. Un principal
+        // SUSPENDU ne compte pas — il ne peut plus rouvrir la porte.
+        if ($previousRole === 'principal' && $newRole !== 'principal'
+            && $this->activePrincipalCount((string) $employee->company_id) <= 1) {
+            return response()->json([
+                'error' => 'LAST_PRINCIPAL_REQUIRED',
+                'message' => __('errors.LAST_PRINCIPAL_REQUIRED'),
+            ], 422);
+        }
+
         // Update role
         $employee->role = $newRole ? 'manager' : 'employee';
         $employee->manager_role = $newRole;
@@ -76,6 +90,22 @@ class RoleAssignmentController extends Controller
                 'email_sent' => (bool) $newRole,
             ],
         ]);
+    }
+
+    /**
+     * Nombre de `principal` encore ACTIFS dans l'entreprise. C'est la seule
+     * mesure qui protège contre l'auto-verrouillage : un principal suspendu ne
+     * peut plus nommer de successeur. Calqué sur `activeSuperAdminCount()`.
+     */
+    private function activePrincipalCount(string $companyId): int
+    {
+        return Employee::query()
+            ->where('company_id', $companyId)
+            ->where('manager_role', 'principal')
+            ->where(function ($query): void {
+                $query->where('status', 'active')->orWhereNull('status');
+            })
+            ->count();
     }
 
     /**

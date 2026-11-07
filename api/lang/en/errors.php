@@ -339,6 +339,7 @@ return [
     'PLATFORM_PERMISSION_REQUIRED' => 'Your platform role does not allow this action (required permissions: :permissions).',
     'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'You cannot change your own platform role.',
     'LAST_SUPER_ADMIN_REQUIRED' => 'Action denied: at least one active super administrator must remain.',
+    'LAST_PRINCIPAL_REQUIRED' => 'Action denied: at least one active principal must remain in the company.',
 
     // Issue #7598 (R1 de l'epique #7597) - acces aux ressources par tenant.
     'RESOURCE_ACCESS_DENIED' => 'You do not have access to this resource.',

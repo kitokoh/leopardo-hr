@@ -332,6 +332,7 @@ return [
     'PLATFORM_PERMISSION_REQUIRED' => 'Platform rolünüz bu işleme izin vermiyor (gerekli izinler: :permissions).',
     'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'Kendi platform rolünüzü değiştiremezsiniz.',
     'LAST_SUPER_ADMIN_REQUIRED' => 'İşlem reddedildi: en az bir etkin üst yönetici kalmalıdır.',
+    'LAST_PRINCIPAL_REQUIRED' => 'İşlem reddedildi: şirkette en az bir etkin baş yönetici kalmalıdır.',
 
     // Issue #7598 (R1 de l'epique #7597) - acces aux ressources par tenant.
     'RESOURCE_ACCESS_DENIED' => 'Bu kaynağa erişiminiz yok.',
