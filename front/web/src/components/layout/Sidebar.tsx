@@ -14,6 +14,7 @@ import {
 } from '@/lib/dashboard-nav';
 import type { AppLocale, CopyTree, StoredAuthUser } from '@/lib/i18n';
 import { AccountMenu } from '@/components/layout/AccountMenu';
+import { useFocusTrap } from '@/hooks/use-focus-trap';
 
 /**
  * #7908 — Sidebar gauche UNIFIÉE de l'espace client, TOUJOURS rendue
@@ -273,6 +274,11 @@ export function Sidebar({
   // (`mounted`), il n'y a donc pas de désaccord SSR/hydratation.
   const [openGroups, setOpenGroups] = useState<OpenGroups>(readStoredGroups);
 
+  // #UX-audit — piège de focus + fermeture par Échap sur le tiroir mobile
+  // (WCAG 2.1.1 / 2.1.2 / 2.4.3). Actif uniquement en mode tiroir ouvert.
+  const trapActive = !isDesktop && mobileNavOpen;
+  const sidebarRef = useFocusTrap<HTMLElement>(trapActive, onClose);
+
   const toggleGroup = useCallback((id: NavMenuGroupId) => {
     setOpenGroups((current) => {
       const next = { ...current, [id]: !current[id] };
@@ -308,6 +314,7 @@ export function Sidebar({
 
   return (
     <aside
+      ref={sidebarRef}
       data-testid="dashboard-sidebar"
       id="dashboard-sidebar"
       role={isDesktop ? undefined : 'dialog'}
