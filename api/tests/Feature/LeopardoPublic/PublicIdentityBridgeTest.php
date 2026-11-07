@@ -272,13 +272,18 @@ class PublicIdentityBridgeTest extends TestCase
     }
 
     /**
-     * CAS 8 — Appareil perdu : PARTIEL.
+     * CAS 8 — Appareil perdu : LIVRÉ (M2, #9104).
      *
-     * `POST /user/logout` révoque le jeton COURANT. Aucune route `logout-all`
-     * n'existe : un appareil perdu ne peut pas être révoqué à distance sans
-     * révoquer aussi l'appareil utilisé pour le faire.
+     * `POST /user/logout` révoque le jeton COURANT ; `POST /user/logout-all`
+     * révoque TOUS les appareils — c'est le geste « appareil perdu » du
+     * contrat. Le constat d'origine (« aucune route `logout-all` ») est
+     * inversé : le lot M2 est livré, ce test est le signal de sortie.
+     *
+     * La couverture fonctionnelle de la révocation (tous les jetons révoqués,
+     * y compris celui qui porte la requête) vit dans
+     * `PublicLogoutAllTest` — ici on ne verrouille que l'existence des routes.
      */
-    public function test_case_8_logout_exists_but_logout_all_does_not(): void
+    public function test_case_8_logout_and_logout_all_both_exist(): void
     {
         $uris = collect(app('router')->getRoutes()->getRoutes())
             ->map(static fn ($route): string => $route->uri());
@@ -288,9 +293,9 @@ class PublicIdentityBridgeTest extends TestCase
             'POST /user/logout doit exister (révocation du jeton courant).',
         );
 
-        $this->assertFalse(
+        $this->assertTrue(
             $uris->contains('api/v1/user/logout-all'),
-            'ÉCART : pas de révocation multi-appareils. Si ce test casse, le lot est livré.',
+            'POST /user/logout-all doit exister (révocation multi-appareils, cas 8).',
         );
     }
 }

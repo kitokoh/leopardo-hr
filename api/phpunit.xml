@@ -807,6 +807,7 @@
             <file>tests/Feature/LeopardoPublic/PublicDiscoverableProviderContractTest.php</file>
             <file>tests/Feature/LeopardoPublic/PublicIdentityBridgeServiceTest.php</file>
             <file>tests/Feature/LeopardoPublic/PublicIdentityBridgeTest.php</file>
+            <file>tests/Feature/LeopardoPublic/PublicLogoutAllTest.php</file>
             <file>tests/Feature/LeopardoPublic/PublicNotificationTest.php</file>
             <file>tests/Feature/LeopardoPublic/PublicParcoursEndToEndTest.php</file>
             <file>tests/Feature/LeopardoPublic/PublicSyntheticDataTest.php</file>
