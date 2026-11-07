@@ -57,7 +57,7 @@ class RbacMatrixTest extends TestCase
             ->assertForbidden()
             ->assertJsonPath('error', 'FORBIDDEN')
             ->assertJsonPath('message', 'FORBIDDEN')
-            ->assertJsonPath('localized_message', __('errors.FORBIDDEN', [], 'en'));
+            ->assertJsonPath('localized_message', __('errors.FORBIDDEN'));
     }
 
     public function test_employee_resource_masks_salary_for_foreign_viewer(): void
