@@ -337,6 +337,11 @@ return [
     'LAST_SUPER_ADMIN_REQUIRED' => 'Action refusée : il doit rester au moins un super administrateur actif.',
     'LAST_PRINCIPAL_REQUIRED' => 'Action refusée : il doit rester au moins un principal actif dans l\'entreprise.',
 
+    // Issue #9095 (IAM-L5) - roles personnalises de tenant.
+    'DELEGATION_FORBIDDEN' => 'Seul un principal peut gérer les rôles personnalisés.',
+    'DELEGATION_EXCEEDS_ACTOR' => 'Un rôle personnalisé ne peut pas accorder des permissions que vous ne détenez pas vous-même.',
+    'ROLE_NAME_TAKEN' => 'Un rôle personnalisé portant ce nom existe déjà.',
+
     // Issue #7598 (R1 de l'epique #7597) - acces aux ressources par tenant.
     'RESOURCE_ACCESS_DENIED' => 'Vous n\'avez pas accès à cette ressource.',
     'RESOURCE_TYPE_UNKNOWN' => 'Type de ressource inconnu.',

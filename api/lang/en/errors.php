@@ -341,6 +341,11 @@ return [
     'LAST_SUPER_ADMIN_REQUIRED' => 'Action denied: at least one active super administrator must remain.',
     'LAST_PRINCIPAL_REQUIRED' => 'Action denied: at least one active principal must remain in the company.',
 
+    // Issue #9095 (IAM-L5) - roles personnalises de tenant.
+    'DELEGATION_FORBIDDEN' => 'Only a principal can manage custom roles.',
+    'DELEGATION_EXCEEDS_ACTOR' => 'A custom role cannot grant permissions you do not hold yourself.',
+    'ROLE_NAME_TAKEN' => 'A custom role with this name already exists.',
+
     // Issue #7598 (R1 de l'epique #7597) - acces aux ressources par tenant.
     'RESOURCE_ACCESS_DENIED' => 'You do not have access to this resource.',
     'RESOURCE_TYPE_UNKNOWN' => 'Unknown resource type.',
