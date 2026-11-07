@@ -184,7 +184,8 @@
     "cancel": "Annuler",
     "noResults": "Aucun résultat trouvé.",
     "reload": "Recharger",
-    "search": "Rechercher…"
+    "search": "Rechercher…",
+    "previousPage": "Page précédente"
   },
   "modules": {
     "attendance": "Pointage",
@@ -1993,7 +1994,13 @@
     "home": "Accueil",
     "attendance": "Pointage",
     "absences": "Absences",
-    "approvals": "Validations"
+    "approvals": "Validations",
+    "systemAlerts": "Alertes système",
+    "refreshData": "Actualiser les données",
+    "themeLight": "Mode clair",
+    "themeDark": "Mode sombre",
+    "enableLight": "Activer le mode clair",
+    "enableDark": "Activer le mode sombre"
   },
   "exports": {
     "reportEmployees": "Employes",
