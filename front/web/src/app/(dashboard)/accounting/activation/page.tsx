@@ -277,7 +277,7 @@ export default function AccountingActivationPage() {
             className="overflow-hidden rounded-3xl border border-app-border bg-white shadow-sm"
           >
             <div className="border-b border-app-border px-6 py-5">
-              <p className="text-[11px] font-black uppercase tracking-widest text-amber-600">
+              <p className="text-xs font-black uppercase tracking-widest text-amber-600">
                 {t(locale, 'accountingActivation.wizardStepIndicator')
                   .replace('{current}', String(step))
                   .replace('{total}', String(stepsMeta.length))}
@@ -460,7 +460,7 @@ export default function AccountingActivationPage() {
 
                   <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div className="rounded-2xl border border-app-border p-4">
-                      <dt className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-slate-400">
+                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-400">
                         <Languages className="h-3.5 w-3.5" /> {t(locale, 'accountingActivation.fieldDocumentLanguage')}
                       </dt>
                       <dd className="mt-1 text-sm font-bold text-slate-800">
@@ -470,7 +470,7 @@ export default function AccountingActivationPage() {
                       </dd>
                     </div>
                     <div className="rounded-2xl border border-app-border p-4">
-                      <dt className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-slate-400">
+                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-400">
                         <Coins className="h-3.5 w-3.5" /> {t(locale, 'accountingActivation.fieldCurrency')}
                       </dt>
                       <dd className="mt-1 text-sm font-bold text-slate-800">
@@ -478,7 +478,7 @@ export default function AccountingActivationPage() {
                       </dd>
                     </div>
                     <div className="rounded-2xl border border-app-border p-4">
-                      <dt className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-slate-400">
+                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-400">
                         <Percent className="h-3.5 w-3.5" /> {t(locale, 'accountingActivation.fieldTvaRates')}
                       </dt>
                       <dd className="mt-1 text-sm font-bold text-slate-800">
@@ -491,7 +491,7 @@ export default function AccountingActivationPage() {
                       </dd>
                     </div>
                     <div className="rounded-2xl border border-app-border p-4">
-                      <dt className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-slate-400">
+                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-400">
                         <ListOrdered className="h-3.5 w-3.5" /> {t(locale, 'accountingActivation.fieldNumberSeries')}
                       </dt>
                       <dd className="mt-1 text-sm font-bold text-slate-800">
@@ -503,7 +503,7 @@ export default function AccountingActivationPage() {
                       </dd>
                     </div>
                     <div className="rounded-2xl border border-app-border p-4">
-                      <dt className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-slate-400">
+                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-400">
                         <FileBadge2 className="h-3.5 w-3.5" /> {t(locale, 'accountingActivation.fieldTemplateStyle')}
                       </dt>
                       <dd className="mt-1 text-sm font-bold text-slate-800">
@@ -511,7 +511,7 @@ export default function AccountingActivationPage() {
                       </dd>
                     </div>
                     <div className="rounded-2xl border border-app-border p-4">
-                      <dt className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-slate-400">
+                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-400">
                         <ScrollText className="h-3.5 w-3.5" /> {t(locale, 'accountingActivation.fieldLegalMentions')}
                       </dt>
                       <dd className="mt-1 line-clamp-2 text-sm font-bold text-slate-800">

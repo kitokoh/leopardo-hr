@@ -57,7 +57,7 @@
                   {{ partner.referred_companies_count || 0 }}
                 </td>
                 <td class="px-6 py-4">
-                  <span :class="getStatusClass(partner.application_status)" class="px-2.5 py-1 text-[10px] font-black rounded-full uppercase tracking-tighter">
+                  <span :class="getStatusClass(partner.application_status)" class="px-2.5 py-1 text-xs font-black rounded-full uppercase tracking-tighter">
                     {{ partner.application_status }}
                   </span>
                 </td>
@@ -99,7 +99,7 @@
                 <td class="px-6 py-4 font-black text-slate-900">{{ (payout.amount / 100).toFixed(2) }} {{ payout.currency }}</td>
                 <td class="px-6 py-4 text-sm text-slate-500">{{ formatDate(payout.created_at) }}</td>
                 <td class="px-6 py-4">
-                  <span :class="getStatusClass(payout.status)" class="px-2.5 py-1 text-[10px] font-black rounded-full uppercase tracking-tighter">
+                  <span :class="getStatusClass(payout.status)" class="px-2.5 py-1 text-xs font-black rounded-full uppercase tracking-tighter">
                     {{ payout.status }}
                   </span>
                 </td>

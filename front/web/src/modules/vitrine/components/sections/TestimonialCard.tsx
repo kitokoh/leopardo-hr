@@ -75,7 +75,7 @@ export function TestimonialCard({
 
       <div className="relative bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-8 transition-all duration-300 group-hover:border-emerald-200/50 dark:group-hover:border-emerald-800/50 group-hover:shadow-xl">
         {demo && (
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-amber-100/70 dark:bg-amber-500/10 border border-amber-300/50 dark:border-amber-500/30 text-amber-700 dark:text-amber-400 text-[11px] font-semibold tracking-wide uppercase mb-5">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-amber-100/70 dark:bg-amber-500/10 border border-amber-300/50 dark:border-amber-500/30 text-amber-700 dark:text-amber-400 text-xs font-semibold tracking-wide uppercase mb-5">
             {exampleLabel}
           </span>
         )}

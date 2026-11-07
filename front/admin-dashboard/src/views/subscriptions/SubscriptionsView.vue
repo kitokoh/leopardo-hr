@@ -53,7 +53,7 @@
                   {{ planMeta(plan) }}
                 </p>
               </div>
-              <span :class="['rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest border', plan.is_active ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200']">
+              <span :class="['rounded-full px-3 py-1 text-xs font-black uppercase tracking-widest border', plan.is_active ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200']">
                 {{ plan.is_active ? t('subscriptions.public') : t('subscriptions.archived') }}
               </span>
             </div>
@@ -68,7 +68,7 @@
               <span
                 v-for="feature in enabledFeatures(plan)"
                 :key="feature"
-                class="rounded-lg bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                class="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-black uppercase tracking-wider text-slate-600 dark:bg-slate-800 dark:text-slate-400"
               >
                 {{ feature }}
               </span>
@@ -117,11 +117,11 @@
               <div class="flex items-center justify-between gap-3">
                 <div class="min-w-0 flex-1">
                   <p class="text-sm font-black text-slate-900 dark:text-white truncate uppercase">{{ item.company.name }}</p>
-                  <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                  <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">
                     {{ item.plan.name || t('subscriptions.noPlan') }} · <span :class="item.risk_level === 'high' ? 'text-red-500' : 'text-amber-500'">{{ riskLabel(item.risk_level) }}</span>
                   </p>
                 </div>
-                <router-link class="shrink-0 rounded-lg bg-brand-50 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-brand-600 hover:bg-brand-100 dark:bg-brand-900/30 dark:text-brand-400 transition-colors" :to="`/companies/${item.company.id}`">
+                <router-link class="shrink-0 rounded-lg bg-brand-50 px-3 py-1.5 text-xs font-black uppercase tracking-widest text-brand-600 hover:bg-brand-100 dark:bg-brand-900/30 dark:text-brand-400 transition-colors" :to="`/companies/${item.company.id}`">
                   {{ t('subscriptions.manage') }}
                 </router-link>
               </div>

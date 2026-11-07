@@ -51,7 +51,7 @@
               v-for="option in priorityFilters"
               :key="option.value"
               :class="[
-                'px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-lg border transition',
+                'px-3 py-1 text-xs font-black uppercase tracking-widest rounded-lg border transition',
                 activePriority === option.value
                   ? 'border-brand-400 bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300'
                   : 'border-slate-200 text-slate-500 dark:border-slate-700'
@@ -85,7 +85,7 @@
           >
             <div class="flex items-center justify-between gap-2">
               <p class="truncate text-sm font-bold text-slate-900 dark:text-white">{{ ticket.subject }}</p>
-              <span :class="['shrink-0 rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest', priorityClass(ticket.priority)]">
+              <span :class="['shrink-0 rounded-lg border px-2 py-0.5 text-xs font-black uppercase tracking-widest', priorityClass(ticket.priority)]">
                 {{ priorityLabel(ticket.priority) }}
               </span>
             </div>
@@ -93,10 +93,10 @@
               {{ ticket.company?.name || t('supportTickets.companyUnknown', 'Entreprise inconnue') }}
             </p>
             <div class="mt-2 flex items-center justify-between">
-              <span :class="['rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest', statusClass(ticket.status)]">
+              <span :class="['rounded-lg border px-2 py-0.5 text-xs font-black uppercase tracking-widest', statusClass(ticket.status)]">
                 {{ statusLabel(ticket.status) }}
               </span>
-              <span class="text-[10px] font-semibold text-slate-400">{{ formatDate(ticket.last_message_at) }}</span>
+              <span class="text-xs font-semibold text-slate-400">{{ formatDate(ticket.last_message_at) }}</span>
             </div>
           </button>
         </div>
@@ -162,7 +162,7 @@
                 ]"
               >
                 <p class="whitespace-pre-wrap leading-relaxed">{{ message.body }}</p>
-                <p :class="['mt-1 text-[10px] font-semibold', message.from_platform ? 'text-brand-100' : 'text-slate-400']">
+                <p :class="['mt-1 text-xs font-semibold', message.from_platform ? 'text-brand-100' : 'text-slate-400']">
                   {{ message.author_name || (message.from_platform ? t('supportTickets.teamLeopardo', 'Équipe Leopardo') : t('supportTickets.client', 'Client')) }} · {{ formatDate(message.created_at) }}
                 </p>
               </div>

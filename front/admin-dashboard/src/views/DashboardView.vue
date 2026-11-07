@@ -70,11 +70,11 @@
           <table class="min-w-full divide-y divide-white/5 dark:divide-white/5">
             <thead class="bg-slate-50/80 dark:bg-slate-900/80">
               <tr>
-                <th class="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.client') }}</th>
-                <th class="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.health') }}</th>
-                <th class="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.risk') }}</th>
-                <th class="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">MRR</th>
-                <th class="px-6 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.actions') }}</th>
+                <th class="px-6 py-3 text-left text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.client') }}</th>
+                <th class="px-6 py-3 text-left text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.health') }}</th>
+                <th class="px-6 py-3 text-left text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.risk') }}</th>
+                <th class="px-6 py-3 text-left text-xs font-black uppercase tracking-widest text-slate-400">MRR</th>
+                <th class="px-6 py-3 text-right text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.actions') }}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-white/5 bg-transparent dark:divide-white/5 dark:bg-transparent">
@@ -86,7 +86,7 @@
                     </div>
                     <div class="ml-4">
                       <div class="text-sm font-bold text-slate-900 dark:text-white">{{ item.company.name }}</div>
-                      <div class="text-[10px] font-medium text-slate-400 uppercase tracking-widest">{{ item.company.slug }}</div>
+                      <div class="text-xs font-medium text-slate-400 uppercase tracking-widest">{{ item.company.slug }}</div>
                     </div>
                   </div>
                 </td>
@@ -99,7 +99,7 @@
                         :style="{ width: `${item.health_score}%` }"
                       ></div>
                     </div>
-                    <span class="text-[10px] font-black text-slate-600 dark:text-slate-400">{{ item.health_score }}%</span>
+                    <span class="text-xs font-black text-slate-600 dark:text-slate-400">{{ item.health_score }}%</span>
                   </div>
                 </td>
                 <td class="whitespace-nowrap px-6 py-4">
@@ -132,12 +132,12 @@
               <div class="space-y-1">
                 <h3 class="text-sm font-bold text-slate-950 dark:text-white uppercase tracking-tight">{{ request.company_name }}</h3>
                 <p class="text-xs font-medium text-slate-500 dark:text-slate-400">{{ request.email }}</p>
-                <div class="pt-1 flex items-center text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <div class="pt-1 flex items-center text-xs font-black uppercase tracking-widest text-slate-400">
                   <GlobeAltIcon class="mr-1.5 h-3 w-3" />
                   {{ request.city }}, {{ request.country }}
                 </div>
               </div>
-              <div class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              <div class="text-xs font-black uppercase tracking-widest text-slate-400">
                 {{ formatDate(request.created_at) }}
               </div>
             </div>
@@ -321,7 +321,7 @@ const workflowCards = computed(() => [
     action: t('dashboard.openClientPortfolio'),
     to: '/companies',
     badge: t('dashboard.badgeTenants', ':count tenants').replace(':count', String(companyMetrics.value.total)),
-    badgeClass: 'rounded-lg bg-emerald-500/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-500 dark:bg-brand-900/40 dark:text-brand-300 border border-emerald-500/20 dark:border-brand-800',
+    badgeClass: 'rounded-lg bg-emerald-500/10 px-2.5 py-1 text-xs font-black uppercase tracking-widest text-emerald-500 dark:bg-brand-900/40 dark:text-brand-300 border border-emerald-500/20 dark:border-brand-800',
   },
   {
     title: t('dashboard.processIncomingRequests'),
@@ -329,7 +329,7 @@ const workflowCards = computed(() => [
     action: t('dashboard.viewClientRequests'),
     to: '/support',
     badge: t('dashboard.badgeToProcess', ':count à traiter').replace(':count', String(pendingRequests.value)),
-    badgeClass: 'rounded-lg bg-amber-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800',
+    badgeClass: 'rounded-lg bg-amber-100 px-2.5 py-1 text-xs font-black uppercase tracking-widest text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800',
   },
   {
     title: t('dashboard.monitorAtRiskClients'),
@@ -337,7 +337,7 @@ const workflowCards = computed(() => [
     action: t('dashboard.analyzePriorities'),
     to: '/analytics',
     badge: t('dashboard.badgeRisks', ':count risques').replace(':count', String(summary.value.risk.high + summary.value.risk.medium)),
-    badgeClass: 'rounded-lg bg-red-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-red-700 dark:bg-red-900/40 dark:text-red-300 border border-red-200 dark:border-red-800',
+    badgeClass: 'rounded-lg bg-red-100 px-2.5 py-1 text-xs font-black uppercase tracking-widest text-red-700 dark:bg-red-900/40 dark:text-red-300 border border-red-200 dark:border-red-800',
   },
   {
     title: t('dashboard.manageSubscriptionsRevenue'),
@@ -345,7 +345,7 @@ const workflowCards = computed(() => [
     action: t('dashboard.openSubscriptions'),
     to: '/subscriptions',
     badge: formatCurrency(revenue.value.mrr, revenue.value.currency),
-    badgeClass: 'rounded-lg bg-purple-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border border-purple-200 dark:border-purple-800',
+    badgeClass: 'rounded-lg bg-purple-100 px-2.5 py-1 text-xs font-black uppercase tracking-widest text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border border-purple-200 dark:border-purple-800',
   },
   {
     title: t('dashboard.checkSystemSecurity'),
@@ -353,7 +353,7 @@ const workflowCards = computed(() => [
     action: t('dashboard.openSystem'),
     to: '/system',
     badge: 'Ops',
-    badgeClass: 'rounded-lg bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700',
+    badgeClass: 'rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-black uppercase tracking-widest text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700',
   },
   {
     title: t('dashboard.preparePartnerIntegrations'),
@@ -361,7 +361,7 @@ const workflowCards = computed(() => [
     action: t('dashboard.openWebhooks'),
     to: '/webhooks',
     badge: 'API',
-    badgeClass: 'rounded-lg bg-cyan-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800',
+    badgeClass: 'rounded-lg bg-cyan-100 px-2.5 py-1 text-xs font-black uppercase tracking-widest text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800',
   },
 ])
 
@@ -410,9 +410,9 @@ function formatCurrency(value, currency = 'EUR') {
 
 function riskClass(risk) {
   const classes = {
-    high: 'rounded-lg bg-red-100 dark:bg-red-900/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800',
-    medium: 'rounded-lg bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800',
-    low: 'rounded-lg bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800',
+    high: 'rounded-lg bg-red-100 dark:bg-red-900/30 px-2 py-0.5 text-xs font-black uppercase tracking-widest text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800',
+    medium: 'rounded-lg bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 text-xs font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800',
+    low: 'rounded-lg bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 text-xs font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800',
   }
   return classes[risk] || classes.medium
 }

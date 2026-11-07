@@ -87,7 +87,7 @@ export default function PacksHubPage() {
                     href={withLocaleHref(packsHubCardHref(card.slug), search)}
                     className="group relative flex h-full flex-col rounded-2xl border border-slate-200/80 bg-white/80 p-6 backdrop-blur transition hover:border-emerald-300 hover:shadow-xl dark:border-slate-800/80 dark:bg-slate-900/70 dark:hover:border-emerald-700"
                   >
-                    <span className="absolute right-5 top-5 inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-emerald-700 ring-1 ring-emerald-500/25 dark:text-emerald-300">
+                    <span className="absolute right-5 top-5 inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-emerald-700 ring-1 ring-emerald-500/25 dark:text-emerald-300">
                       {copy.freeBadge}
                     </span>
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400">
@@ -116,7 +116,7 @@ export default function PacksHubPage() {
                   href={withLocaleHref(tradeEntry.href, search)}
                   className="group relative flex h-full flex-col rounded-2xl border border-emerald-300/60 bg-gradient-to-br from-emerald-50/80 to-cyan-50/60 p-6 transition hover:border-emerald-400 hover:shadow-xl dark:border-emerald-800/60 dark:from-emerald-950/30 dark:to-slate-900/60 dark:hover:border-emerald-600"
                 >
-                  <span className="absolute right-5 top-5 inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-emerald-700 ring-1 ring-emerald-500/25 dark:text-emerald-300">
+                  <span className="absolute right-5 top-5 inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-emerald-700 ring-1 ring-emerald-500/25 dark:text-emerald-300">
                     {copy.freeBadge}
                   </span>
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400">

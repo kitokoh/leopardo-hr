@@ -405,7 +405,7 @@ export function SetupInterview({
               <LeoMascot size={64} float />
             </div>
             <header className="mb-6">
-              <p className="text-[11px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+              <p className="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
                 {progressLabel}
               </p>
               <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800" aria-hidden="true">

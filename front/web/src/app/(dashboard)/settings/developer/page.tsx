@@ -293,7 +293,7 @@ export default function DeveloperSettingsPage() {
                       </div>
                       <button
                         onClick={() => handleToggleWebhookActive(webhook)}
-                        className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${
+                        className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${
                           webhook.active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-200 text-slate-600'
                         }`}
                       >
@@ -302,7 +302,7 @@ export default function DeveloperSettingsPage() {
                     </div>
                     <div className="mt-2 flex flex-wrap gap-1">
                       {webhook.events.map((event) => (
-                        <span key={event} className="rounded-full border border-app-border bg-white px-2 py-0.5 text-[10px] font-medium text-slate-600">
+                        <span key={event} className="rounded-full border border-app-border bg-white px-2 py-0.5 text-xs font-medium text-slate-600">
                           {event}
                         </span>
                       ))}

@@ -142,13 +142,13 @@ export default function StatusPage() {
               </span>
             </div>
 
-            <div className="mt-6 overflow-hidden rounded-lg border border-gray-200 bg-white">
+            <div className="mt-6 overflow-x-auto rounded-lg border border-gray-200 bg-white">
               <table className="min-w-full text-sm">
                 <thead className="bg-gray-50 text-left text-xs uppercase tracking-wide text-gray-500">
                   <tr>
-                    <th className="px-4 py-3 font-medium">{labels.componentColumn}</th>
-                    <th className="px-4 py-3 font-medium">{labels.stateColumn}</th>
-                    <th className="px-4 py-3 font-medium">{labels.latencyColumn}</th>
+                    <th scope="col" className="px-4 py-3 font-medium">{labels.componentColumn}</th>
+                    <th scope="col" className="px-4 py-3 font-medium">{labels.stateColumn}</th>
+                    <th scope="col" className="px-4 py-3 font-medium">{labels.latencyColumn}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">

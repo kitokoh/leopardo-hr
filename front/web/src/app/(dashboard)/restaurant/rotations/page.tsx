@@ -311,11 +311,11 @@ export default function RestaurantRotationsPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-slate-200 text-xs font-bold uppercase tracking-wide text-slate-500">
-                  <th className="px-3 py-2">{t(locale, 'restaurant.rotations.name', 'Nom')}</th>
-                  <th className="px-3 py-2">{t(locale, 'restaurant.rotations.startTime', 'Début')}</th>
-                  <th className="px-3 py-2">{t(locale, 'restaurant.rotations.endTime', 'Fin')}</th>
-                  <th className="px-3 py-2">{t(locale, 'restaurant.rotations.break', 'Pause (min)')}</th>
-                  <th className="px-3 py-2" />
+                  <th scope="col" className="px-3 py-2">{t(locale, 'restaurant.rotations.name', 'Nom')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'restaurant.rotations.startTime', 'Début')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'restaurant.rotations.endTime', 'Fin')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'restaurant.rotations.break', 'Pause (min)')}</th>
+                  <th scope="col" className="px-3 py-2" />
                 </tr>
               </thead>
               <tbody>

@@ -23,8 +23,11 @@
       <div class="flex items-center space-x-4">
         <!-- Results per page -->
         <div class="flex items-center space-x-3">
-          <label class="text-sm font-semibold text-slate-500 dark:text-slate-400">Afficher:</label>
+          <!-- Audit UX 2026-11 : <label> orphelin (aucun `for`) — le libellé
+               n'était pas associé au <select>. On le rattache par id. -->
+          <label for="pagination-per-page" class="text-sm font-semibold text-slate-500 dark:text-slate-400">{{ $t('common.perPage', 'Afficher :') }}</label>
           <select
+            id="pagination-per-page"
             :value="perPage"
             @change="$emit('per-page-change', parseInt($event.target.value))"
             class="rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800 text-sm focus:border-brand-500 focus:ring-brand-500 transition-all duration-200"

@@ -229,7 +229,7 @@ export default function CamerasPage() {
                     </span>
                     <span className="min-w-0">
                       <span className="block truncate font-black tracking-tight text-slate-950">{camera.name}</span>
-                      <span className="block font-mono text-[11px] font-bold text-slate-400">#{camera.id}</span>
+                      <span className="block font-mono text-xs font-bold text-slate-400">#{camera.id}</span>
                     </span>
                   </span>
                   {camera.location ? (

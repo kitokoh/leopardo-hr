@@ -285,10 +285,10 @@ export default function RestaurantTeamPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-slate-200 text-xs font-bold uppercase tracking-wide text-slate-500">
-                  <th className="px-3 py-2">{t(locale, 'restaurant.team.employee', 'Employé')}</th>
-                  <th className="px-3 py-2">{t(locale, 'restaurant.team.role', 'Rôle')}</th>
-                  <th className="px-3 py-2">{t(locale, 'restaurant.team.assignedAt', 'Affecté le')}</th>
-                  <th className="px-3 py-2" />
+                  <th scope="col" className="px-3 py-2">{t(locale, 'restaurant.team.employee', 'Employé')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'restaurant.team.role', 'Rôle')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'restaurant.team.assignedAt', 'Affecté le')}</th>
+                  <th scope="col" className="px-3 py-2" />
                 </tr>
               </thead>
               <tbody>

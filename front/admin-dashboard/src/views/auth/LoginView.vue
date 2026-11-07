@@ -28,7 +28,7 @@
         <p class="mt-4 text-center text-slate-400 font-bold tracking-[0.15em] uppercase text-xs">
           Platform Administration • v{{ backendVersion || '4.24' }}
         </p>
-        <p class="mt-2 text-center text-brand-400 font-black uppercase tracking-widest text-[10px]">
+        <p class="mt-2 text-center text-brand-400 font-black uppercase tracking-widest text-xs">
           {{ t('auth.login_subtitle', 'Connectez-vous à votre espace') }}
         </p>
       </div>
@@ -131,7 +131,7 @@
                   type="checkbox"
                   class="h-4 w-4 rounded border-white/10 bg-white/5 dark:bg-slate-900/5 backdrop-blur-xl text-brand-600 focus:ring-brand-500 transition-all duration-300"
                 />
-                <label for="remember-me" class="ml-2 block text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <label for="remember-me" class="ml-2 block text-xs font-black uppercase tracking-widest text-slate-400">
                   {{ t('auth.remember_me', 'Se souvenir de moi') }}
                 </label>
               </div>
@@ -149,7 +149,7 @@
                        — le corps porte le vrai message (localized_message backend ou
                        erreur réseau). Titre neutre pour éviter le doublon trompeur. -->
                   <h3 class="text-xs font-black uppercase tracking-wider text-red-400">{{ t('auth.login_error_title', 'Connexion impossible') }}</h3>
-                  <p class="text-[10px] font-bold text-red-300/80 leading-tight">{{ error }}</p>
+                  <p class="text-xs font-bold text-red-300/80 leading-tight">{{ error }}</p>
                 </div>
               </div>
             </div>
@@ -176,11 +176,11 @@
               >
                 <div class="flex items-center gap-2">
                   <SparklesIcon class="h-4 w-4 shrink-0 text-amber-400" />
-                  <h2 class="text-[10px] font-black uppercase tracking-widest text-amber-300">
+                  <h2 class="text-xs font-black uppercase tracking-widest text-amber-300">
                     {{ t('auth.demo_panel_title', 'Accès démo — choisir un profil') }}
                   </h2>
                 </div>
-                <p class="text-[10px] font-bold leading-tight text-amber-200/70">
+                <p class="text-xs font-bold leading-tight text-amber-200/70">
                   {{ t('auth.demo_panel_hint', 'Environnement de démonstration : sélectionnez un profil pour vous connecter immédiatement. Désactivé en production.') }}
                 </p>
                 <div class="grid gap-2">
@@ -194,9 +194,9 @@
                   >
                     <span class="min-w-0">
                       <span class="block truncate text-xs font-bold text-slate-200">{{ persona.label }}</span>
-                      <span class="block truncate text-[10px] text-slate-500">{{ persona.email }}</span>
+                      <span class="block truncate text-xs text-slate-500">{{ persona.email }}</span>
                     </span>
-                    <span class="ml-2 shrink-0 rounded-full bg-brand-500/15 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-brand-300">
+                    <span class="ml-2 shrink-0 rounded-full bg-brand-500/15 px-2 py-0.5 text-xs font-black uppercase tracking-wider text-brand-300">
                       {{ persona.badge }}
                     </span>
                   </button>
@@ -207,7 +207,7 @@
               <p
                 v-if="demoUnavailable"
                 role="status"
-                class="text-[10px] font-bold leading-tight text-amber-300/80"
+                class="text-xs font-bold leading-tight text-amber-300/80"
               >
                 {{ t('auth.demo.unavailable') }}
               </p>
@@ -218,7 +218,7 @@
       </div>
 
       <!-- Legal & Info Footer -->
-      <div class="flex items-center justify-between px-2 text-[10px] font-black uppercase tracking-widest text-slate-600">
+      <div class="flex items-center justify-between px-2 text-xs font-black uppercase tracking-widest text-slate-600">
         <span>© 2026 Leopardo Systems</span>
         <div class="flex items-center gap-4">
           <span class="hover:text-slate-400 transition-colors cursor-not-allowed">Sécurité</span>

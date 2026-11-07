@@ -509,7 +509,7 @@ export default function CagnottesPage() {
                   <div className="me-auto">
                     <div className="flex items-center gap-2">
                       <h3 className="text-base font-black text-slate-950">{fundraiser.title}</h3>
-                      <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-black ${fundraiser.status === 'active' ? 'bg-teal-100 text-teal-800' : fundraiser.status === 'draft' ? 'bg-slate-100 text-slate-600' : fundraiser.status === 'paused' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-500'}`}>
+                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-black ${fundraiser.status === 'active' ? 'bg-teal-100 text-teal-800' : fundraiser.status === 'draft' ? 'bg-slate-100 text-slate-600' : fundraiser.status === 'paused' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-500'}`}>
                         {fundraiser.status_label}
                       </span>
                     </div>
@@ -522,7 +522,7 @@ export default function CagnottesPage() {
                       {money(fundraiser.collected_amount, fundraiser.currency, locale)}
                       {fundraiser.goal_amount !== null && <span className="text-xs font-bold text-slate-400"> / {money(fundraiser.goal_amount, fundraiser.currency, locale)}</span>}
                     </p>
-                    <p className="text-[11px] font-bold text-slate-400">
+                    <p className="text-xs font-bold text-slate-400">
                       {fundraiser.contributions_count} {t(locale, 'cagnottesModule.contributions')} · {t(locale, 'cagnottesModule.available')} : {money(fundraiser.available_balance, fundraiser.currency, locale)}
                     </p>
                   </div>

@@ -86,8 +86,8 @@ export default function RestaurantReportsPage() {
             {tb.label}
           </button>
         ))}
-        <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm" aria-label="Du" />
-        <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm" aria-label="Au" />
+        <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm" aria-label={t(locale, 'restaurant.reports.from', 'Du')} />
+        <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm" aria-label={t(locale, 'restaurant.reports.to', 'Au')} />
         <button type="button" onClick={() => void exportCsv()} disabled={exporting} className="inline-flex items-center gap-1 rounded-lg bg-slate-800 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50">
           <Download className="h-4 w-4" /> {t(locale, 'restaurant.reports.export', 'Export CSV')}
         </button>

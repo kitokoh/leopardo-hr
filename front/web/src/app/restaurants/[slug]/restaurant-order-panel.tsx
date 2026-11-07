@@ -303,7 +303,7 @@ export default function RestaurantOrderPanel({
 
   const inputClass =
     'w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100';
-  const labelClass = 'text-[10px] font-black uppercase tracking-widest text-slate-500';
+  const labelClass = 'text-xs font-black uppercase tracking-widest text-slate-500';
 
   return (
     <div id="commander" className="grid gap-6 lg:grid-cols-[1fr_360px]">
@@ -669,19 +669,19 @@ export default function RestaurantOrderPanel({
             ) : null}
             <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
               <div>
-                <dt className="text-[10px] font-black uppercase tracking-widest text-emerald-700">
+                <dt className="text-xs font-black uppercase tracking-widest text-emerald-700">
                   {t(locale, 'restaurant.shop.orderRef')}
                 </dt>
                 <dd className="font-mono font-black text-slate-900">{order.reference}</dd>
               </div>
               <div>
-                <dt className="text-[10px] font-black uppercase tracking-widest text-emerald-700">
+                <dt className="text-xs font-black uppercase tracking-widest text-emerald-700">
                   {t(locale, 'restaurant.shop.orderStatus')}
                 </dt>
                 <dd className="font-bold text-slate-800">{tracking?.status ?? order.status}</dd>
               </div>
               <div>
-                <dt className="text-[10px] font-black uppercase tracking-widest text-emerald-700">
+                <dt className="text-xs font-black uppercase tracking-widest text-emerald-700">
                   {t(locale, 'restaurant.shop.total')}
                 </dt>
                 <dd className="font-black text-slate-900">
@@ -699,7 +699,7 @@ export default function RestaurantOrderPanel({
               </p>
             ) : (
               <div className="mt-4 space-y-2">
-                <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700">
+                <p className="text-xs font-black uppercase tracking-widest text-emerald-700">
                   {t(locale, 'restaurant.public.payTitle')}
                 </p>
                 <div className="flex flex-wrap gap-2">

@@ -58,18 +58,18 @@ export default function ComplianceBadge({ compliance, countryCode, locale }: Com
       <span
         role="status"
         title={warning ?? (genericMessage || label)}
-        className={`inline-flex max-w-full items-center gap-1 truncate rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider ring-1 ring-inset ${pill}`}
+        className={`inline-flex max-w-full items-center gap-1 truncate rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider ring-1 ring-inset ${pill}`}
       >
         <Icon className="h-3 w-3 shrink-0" />
         <span className="truncate">{label}</span>
       </span>
       {warning ? (
-        <span className="max-w-full truncate text-[10px] leading-tight text-slate-400" title={warning}>
+        <span className="max-w-full truncate text-xs leading-tight text-slate-400" title={warning}>
           {warning}
         </span>
       ) : null}
       {subText ? (
-        <span className="max-w-full truncate text-[10px] leading-tight text-slate-400" title={subText}>
+        <span className="max-w-full truncate text-xs leading-tight text-slate-400" title={subText}>
           {subText}
         </span>
       ) : null}

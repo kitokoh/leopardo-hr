@@ -61,14 +61,14 @@ export default function LogoutPage() {
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
-            <div className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <div className="flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest text-slate-500">
               <ShieldCheck className="h-3 w-3" />
               <span className="animate-pulse">Sécurisation des données terminée</span>
             </div>
           </div>
         </div>
 
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-600">
+        <p className="text-xs font-black uppercase tracking-widest text-slate-600">
           © 2026 Leopardo Systems • Sécurité Approuvée
         </p>
       </div>

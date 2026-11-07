@@ -302,10 +302,10 @@ export default function FleetVehiclePage() {
               <table className="w-full min-w-[40rem] border-collapse text-sm">
                 <thead>
                   <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
-                    <th className="border-b border-slate-200 px-3 py-2">{t(locale, 'fleet.period')}</th>
-                    <th className="border-b border-slate-200 px-3 py-2">{t(locale, 'fleet.startLocation')}</th>
-                    <th className="border-b border-slate-200 px-3 py-2">{t(locale, 'fleet.endLocation')}</th>
-                    <th className="border-b border-slate-200 px-3 py-2">{t(locale, 'fleet.distance')}</th>
+                    <th scope="col" className="border-b border-slate-200 px-3 py-2">{t(locale, 'fleet.period')}</th>
+                    <th scope="col" className="border-b border-slate-200 px-3 py-2">{t(locale, 'fleet.startLocation')}</th>
+                    <th scope="col" className="border-b border-slate-200 px-3 py-2">{t(locale, 'fleet.endLocation')}</th>
+                    <th scope="col" className="border-b border-slate-200 px-3 py-2">{t(locale, 'fleet.distance')}</th>
                   </tr>
                 </thead>
                 <tbody>

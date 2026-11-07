@@ -142,7 +142,7 @@
           </div>
           <button
             @click="dismissAlert(alert.id)"
-            class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            class="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
           >
             {{ $t('analytics.dismiss') }}
           </button>

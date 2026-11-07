@@ -412,20 +412,20 @@ export default function CameraDetailPage() {
 
               <dl className="space-y-3 text-sm">
                 <div>
-                  <dt className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.detail.streamUrl')}</dt>
+                  <dt className="text-xs font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.detail.streamUrl')}</dt>
                   <dd className="font-mono text-xs break-all text-slate-800">{stream?.stream_url ?? ''}</dd>
                 </div>
                 <div>
-                  <dt className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.detail.streamToken')}</dt>
+                  <dt className="text-xs font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.detail.streamToken')}</dt>
                   <dd className="font-mono text-xs break-all text-slate-800">{stream?.stream_token ?? ''}</dd>
                 </div>
                 <div>
-                  <dt className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.detail.tokenExpiresAt')}</dt>
+                  <dt className="text-xs font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.detail.tokenExpiresAt')}</dt>
                   <dd className="text-slate-800">{formatDate(stream?.token_expires_at)}</dd>
                 </div>
                 {camera?.created_at ? (
                   <div>
-                    <dt className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.detail.createdAt')}</dt>
+                    <dt className="text-xs font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.detail.createdAt')}</dt>
                     <dd className="text-slate-800">{formatDate(camera.created_at)}</dd>
                   </div>
                 ) : null}
@@ -453,7 +453,7 @@ export default function CameraDetailPage() {
                           <span className="font-mono text-xs font-bold text-slate-700">
                             #{permission.employee_id}
                           </span>
-                          <span className="flex flex-wrap items-center gap-1.5 text-[11px] font-bold">
+                          <span className="flex flex-wrap items-center gap-1.5 text-xs font-bold">
                             {permission.can_view ? <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-emerald-700">{t(locale, 'cameras.detail.canView')}</span> : null}
                             {permission.can_share ? <span className="rounded-md bg-cyan-50 px-2 py-0.5 text-cyan-700">{t(locale, 'cameras.detail.canShare')}</span> : null}
                             {permission.can_manage ? <span className="rounded-md bg-slate-100 px-2 py-0.5 text-slate-700">{t(locale, 'cameras.detail.canManage')}</span> : null}
@@ -513,7 +513,7 @@ export default function CameraDetailPage() {
                         </span>
                         <span className="flex items-center gap-2">
                           {token.is_revoked ? (
-                            <span className="rounded-md bg-rose-50 px-2 py-0.5 text-[11px] font-black uppercase text-rose-700">
+                            <span className="rounded-md bg-rose-50 px-2 py-0.5 text-xs font-black uppercase text-rose-700">
                               {t(locale, 'cameras.detail.tokenRevoked')}
                             </span>
                           ) : null}
@@ -572,7 +572,7 @@ export default function CameraDetailPage() {
 
               {newToken ? (
                 <div className="space-y-2 rounded-2xl bg-slate-50 p-4">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.detail.tokenShareUrl')}</p>
+                  <p className="text-xs font-black uppercase tracking-widest text-slate-500">{t(locale, 'cameras.detail.tokenShareUrl')}</p>
                   <p className="font-mono text-xs break-all text-slate-800">{shareUrlFor(newToken) ?? ''}</p>
                   <div className="flex flex-wrap items-center gap-2">
                     <Button
@@ -605,11 +605,11 @@ export default function CameraDetailPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                        <th className="py-2 pr-3">{t(locale, 'cameras.detail.logDate')}</th>
-                        <th className="py-2 pr-3">{t(locale, 'cameras.detail.logAction')}</th>
-                        <th className="py-2 pr-3">{t(locale, 'cameras.detail.logActor')}</th>
-                        <th className="py-2 pr-3">{t(locale, 'cameras.detail.logIp')}</th>
+                      <tr className="text-xs font-black uppercase tracking-widest text-slate-500">
+                        <th scope="col" className="py-2 pr-3">{t(locale, 'cameras.detail.logDate')}</th>
+                        <th scope="col" className="py-2 pr-3">{t(locale, 'cameras.detail.logAction')}</th>
+                        <th scope="col" className="py-2 pr-3">{t(locale, 'cameras.detail.logActor')}</th>
+                        <th scope="col" className="py-2 pr-3">{t(locale, 'cameras.detail.logIp')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">

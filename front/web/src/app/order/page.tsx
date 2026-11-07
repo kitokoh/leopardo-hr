@@ -135,7 +135,7 @@ export default function OrderTrackingPage() {
           className="mb-6 flex flex-wrap items-end gap-3 rounded-3xl border border-white/40 bg-white/80 p-5 shadow-sm backdrop-blur-xl"
         >
           <label className="block min-w-56 flex-1 space-y-1">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <span className="text-xs font-black uppercase tracking-widest text-slate-500">
               {t(locale, 'restaurant.public.referenceLabel')}
             </span>
             <input

@@ -449,17 +449,17 @@ function ProductsPanel() {
         <table className="min-w-full divide-y divide-slate-200 text-sm">
           <thead className="bg-slate-50">
             <tr>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'commerce.products.name', 'Nom')}
               </th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">SKU</th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">SKU</th>
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'commerce.products.price', 'Prix')}
               </th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'commerce.shop.products.online', 'En ligne')}
               </th>
-              <th className="px-4 py-3 text-end font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-end font-semibold text-slate-700">
                 {t(locale, 'commerce.table.actions', 'Actions')}
               </th>
             </tr>
@@ -728,22 +728,22 @@ function OrdersPanel() {
         <table className="min-w-full divide-y divide-slate-200 text-sm">
           <thead className="bg-slate-50">
             <tr>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'commerce.shop.orders.reference', 'Référence')}
               </th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'commerce.shop.orders.customer', 'Client')}
               </th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'commerce.shop.orders.city', 'Ville')}
               </th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'commerce.shop.orders.total', 'Total')}
               </th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">
                 {t(locale, 'commerce.shop.orders.fulfillment', 'Suivi')}
               </th>
-              <th className="px-4 py-3 text-end font-semibold text-slate-700">
+              <th scope="col" className="px-4 py-3 text-end font-semibold text-slate-700">
                 {t(locale, 'commerce.table.actions', 'Actions')}
               </th>
             </tr>
@@ -909,16 +909,16 @@ function OrdersPanel() {
                   <table className="mt-1 min-w-full divide-y divide-slate-200 text-sm">
                     <thead>
                       <tr>
-                        <th className="py-1.5 text-start font-semibold text-slate-600">
+                        <th scope="col" className="py-1.5 text-start font-semibold text-slate-600">
                           {t(locale, 'commerce.products.name', 'Nom')}
                         </th>
-                        <th className="py-1.5 text-start font-semibold text-slate-600">
+                        <th scope="col" className="py-1.5 text-start font-semibold text-slate-600">
                           {t(locale, 'commerce.shop.orders.quantity', 'Quantité')}
                         </th>
-                        <th className="py-1.5 text-start font-semibold text-slate-600">
+                        <th scope="col" className="py-1.5 text-start font-semibold text-slate-600">
                           {t(locale, 'commerce.shop.orders.unitPrice', 'Prix unitaire')}
                         </th>
-                        <th className="py-1.5 text-end font-semibold text-slate-600">
+                        <th scope="col" className="py-1.5 text-end font-semibold text-slate-600">
                           {t(locale, 'commerce.shop.orders.lineTotal', 'Total ligne')}
                         </th>
                       </tr>

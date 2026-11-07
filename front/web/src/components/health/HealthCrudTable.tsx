@@ -206,11 +206,11 @@ export function HealthCrudTable({ config }: { config: HealthCrudConfig }) {
           <thead className="bg-slate-50">
             <tr>
               {config.columns.map((col) => (
-                <th key={col.key} className="px-4 py-3 text-left font-semibold text-slate-700">
+                <th key={col.key} scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">
                   {col.label}
                 </th>
               ))}
-              <th className="px-4 py-3 text-right font-semibold text-slate-700" aria-label="Actions" />
+              <th scope="col" className="px-4 py-3 text-right font-semibold text-slate-700" aria-label={t(locale, 'common.actions', 'Actions')} />
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">

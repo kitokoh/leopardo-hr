@@ -191,7 +191,7 @@ export function NextStepsCard({ locale }: { locale: AppLocale }) {
         type="button"
         onClick={() => persistDismiss(false)}
         data-testid="next-steps-restore"
-        className="mb-4 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-[11px] font-black text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700"
+        className="mb-4 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-black text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700"
       >
         <ListChecks className="h-3.5 w-3.5" aria-hidden="true" />
         {t('restore', 'Prochaines étapes ({n})').replace('{n}', String(pending.length))}
@@ -232,7 +232,7 @@ export function NextStepsCard({ locale }: { locale: AppLocale }) {
             <span className="block text-sm font-black text-slate-900 dark:text-white">
               {t('title', 'Prochaines étapes')}
               {quickStart ? (
-                <span className="ml-2 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-emerald-700">
+                <span className="ml-2 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-black uppercase tracking-widest text-emerald-700">
                   Quick Start
                 </span>
               ) : null}
@@ -285,7 +285,7 @@ export function NextStepsCard({ locale }: { locale: AppLocale }) {
                       <Link
                         href={STEP_ACTIONS[step.step_key]}
                         data-testid={`next-step-open-${step.step_key}`}
-                        className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-black text-slate-600 transition hover:border-emerald-300 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+                        className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-black text-slate-600 transition hover:border-emerald-300 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
                       >
                         {t('open', 'Ouvrir')}
                         <ArrowRight className="h-3 w-3" aria-hidden="true" />
@@ -296,7 +296,7 @@ export function NextStepsCard({ locale }: { locale: AppLocale }) {
                       onClick={() => void mutate(step, 'complete')}
                       disabled={busy}
                       data-testid={`next-step-complete-${step.step_key}`}
-                      className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-black text-emerald-700 transition hover:bg-emerald-100 disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700 transition hover:bg-emerald-100 disabled:opacity-50"
                     >
                       <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
                       {t('complete', 'Marquer comme fait')}
@@ -307,7 +307,7 @@ export function NextStepsCard({ locale }: { locale: AppLocale }) {
                         onClick={() => void mutate(step, 'skip')}
                         disabled={busy}
                         data-testid={`next-step-skip-${step.step_key}`}
-                        className="rounded-xl px-3 py-1.5 text-[11px] font-black text-slate-400 transition hover:text-slate-700 disabled:opacity-50"
+                        className="rounded-xl px-3 py-1.5 text-xs font-black text-slate-400 transition hover:text-slate-700 disabled:opacity-50"
                       >
                         {t('skip', 'Passer')}
                       </button>

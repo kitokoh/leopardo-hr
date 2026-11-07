@@ -84,9 +84,9 @@ export default function AlternativeComparisonPage({ params }: AlternativePagePro
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white">
-                  <th className="px-4 py-3 text-start font-semibold">{ui.tableCriterion}</th>
-                  <th className="px-4 py-3 text-start font-semibold">{page.competitor}</th>
-                  <th className="px-4 py-3 text-start font-semibold text-emerald-700 dark:text-emerald-400">
+                  <th scope="col" className="px-4 py-3 text-start font-semibold">{ui.tableCriterion}</th>
+                  <th scope="col" className="px-4 py-3 text-start font-semibold">{page.competitor}</th>
+                  <th scope="col" className="px-4 py-3 text-start font-semibold text-emerald-700 dark:text-emerald-400">
                     Leopardo
                   </th>
                 </tr>

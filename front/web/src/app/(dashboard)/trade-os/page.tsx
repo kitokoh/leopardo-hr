@@ -157,11 +157,11 @@ export default function TradeDashboardPage() {
         <table className="min-w-full text-sm">
           <thead>
             <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
-              <th className="px-3 py-2">{t(locale, 'trade.columns.reference')}</th>
-              <th className="px-3 py-2">{t(locale, 'trade.columns.title')}</th>
-              <th className="px-3 py-2">{t(locale, 'trade.columns.status')}</th>
-              <th className="px-3 py-2">{t(locale, 'trade.columns.destination')}</th>
-              <th className="px-3 py-2">{t(locale, 'trade.columns.incoterm')}</th>
+              <th scope="col" className="px-3 py-2">{t(locale, 'trade.columns.reference')}</th>
+              <th scope="col" className="px-3 py-2">{t(locale, 'trade.columns.title')}</th>
+              <th scope="col" className="px-3 py-2">{t(locale, 'trade.columns.status')}</th>
+              <th scope="col" className="px-3 py-2">{t(locale, 'trade.columns.destination')}</th>
+              <th scope="col" className="px-3 py-2">{t(locale, 'trade.columns.incoterm')}</th>
             </tr>
           </thead>
           <tbody>

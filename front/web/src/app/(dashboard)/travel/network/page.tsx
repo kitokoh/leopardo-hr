@@ -216,11 +216,11 @@ function RouteStopsPanel({
           <table className="min-w-full divide-y divide-slate-200 text-sm">
             <thead className="bg-slate-50">
               <tr>
-                <th className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.rank', 'Rang')}</th>
-                <th className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.city', 'Ville')}</th>
-                <th className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.isStopover', 'Escale')}</th>
-                <th className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.minDurationMin', 'Min (min)')}</th>
-                <th className="px-4 py-2 text-end font-semibold text-slate-700">{t(locale, 'travel.table.actions', 'Actions')}</th>
+                <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.rank', 'Rang')}</th>
+                <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.city', 'Ville')}</th>
+                <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.isStopover', 'Escale')}</th>
+                <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.minDurationMin', 'Min (min)')}</th>
+                <th scope="col" className="px-4 py-2 text-end font-semibold text-slate-700">{t(locale, 'travel.table.actions', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

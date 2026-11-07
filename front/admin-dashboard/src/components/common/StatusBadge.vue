@@ -38,7 +38,7 @@ const colorClasses = {
 const entry = computed(() => props.map[props.status] || { label: props.status, color: 'gray' })
 const label = computed(() => entry.value.label)
 const classes = computed(() => [
-  'inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-widest',
+  'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-black uppercase tracking-widest',
   colorClasses[entry.value.color] || colorClasses.gray
 ])
 </script>

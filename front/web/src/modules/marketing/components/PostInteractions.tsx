@@ -180,7 +180,7 @@ export function PostInteractions({ postId }: PostInteractionsProps) {
           {comments.map((comment, index) => (
             <li key={`${comment.platform}-${index}`} className="rounded-xl bg-white px-3 py-2">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
                   {comment.platform}
                   {comment.userName ? ` · ${comment.userName}` : ''}
                 </p>
@@ -189,7 +189,7 @@ export function PostInteractions({ postId }: PostInteractionsProps) {
                   data-testid={`post-interactions-suggest-${index}`}
                   onClick={() => void handleSuggest(comment)}
                   disabled={suggesting}
-                  className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-bold text-violet-700 transition hover:bg-violet-50 disabled:opacity-50"
+                  className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold text-violet-700 transition hover:bg-violet-50 disabled:opacity-50"
                 >
                   <Sparkles className="h-3.5 w-3.5" />
                   {suggesting ? t(locale, 'marketing.web.interactions.suggesting') : t(locale, 'marketing.suggestReply')}

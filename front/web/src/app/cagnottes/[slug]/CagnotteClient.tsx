@@ -382,7 +382,7 @@ export default function CagnotteClient({ slug }: { slug: string }) {
                   </div>
                 </details>
               )}
-              <span className="ms-auto inline-flex items-center gap-1 text-[11px] font-bold text-slate-400">
+              <span className="ms-auto inline-flex items-center gap-1 text-xs font-bold text-slate-400">
                 <Share2 className="h-3 w-3" />
                 {t(locale, 'cagnotte.share.hint')}
               </span>
@@ -462,7 +462,7 @@ export default function CagnotteClient({ slug }: { slug: string }) {
                 className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-950 outline-none focus:border-teal-400"
               />
               {(fundraiser.min_amount !== null || fundraiser.max_amount !== null) && (
-                <p className="mt-1 text-[11px] text-slate-400">
+                <p className="mt-1 text-xs text-slate-400">
                   {fundraiser.min_amount !== null && `${t(locale, 'cagnotte.form.min')} ${money(fundraiser.min_amount, fundraiser.currency, locale)}`}
                   {fundraiser.min_amount !== null && fundraiser.max_amount !== null && ' · '}
                   {fundraiser.max_amount !== null && `${t(locale, 'cagnotte.form.max')} ${money(fundraiser.max_amount, fundraiser.currency, locale)}`}
@@ -590,7 +590,7 @@ export default function CagnotteClient({ slug }: { slug: string }) {
           </div>
         )}
 
-        <p className="mt-8 text-center text-[11px] font-bold text-slate-300">{t(locale, 'cagnotte.poweredBy')}</p>
+        <p className="mt-8 text-center text-xs font-bold text-slate-300">{t(locale, 'cagnotte.poweredBy')}</p>
       </div>
     </main>
   );

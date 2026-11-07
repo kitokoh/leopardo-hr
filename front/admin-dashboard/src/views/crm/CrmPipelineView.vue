@@ -51,7 +51,7 @@
           <div v-for="item in pipeline.leads" :key="item.id" class="glass-card dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800">
             <h3 class="font-bold text-slate-900 dark:text-white">{{ item.company_name }}</h3>
             <p class="text-xs text-slate-500 mt-1">{{ item.sector || $t('support.sectorUnknown', 'Secteur non précisé') }}</p>
-            <span class="inline-block mt-2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+            <span class="inline-block mt-2 text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
               {{ formatSource(item.source) }}
             </span>
             <p v-if="item.note" class="text-xs text-slate-400 mt-2 line-clamp-2">{{ item.note }}</p>
@@ -80,7 +80,7 @@
           <div v-for="item in pipeline.trials" :key="item.id" class="glass-card dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-emerald-100 dark:border-emerald-900/50 hover:border-brand-500 transition-colors cursor-pointer" @click="openCompany(item.company.id)">
             <h3 class="font-bold text-slate-900 dark:text-white">{{ item.company_name }}</h3>
             <p class="text-xs text-slate-500 mt-1">{{ item.email }}</p>
-            <span class="inline-block mt-2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+            <span class="inline-block mt-2 text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
               {{ formatSource(item.source) }}
             </span>
             <p v-if="item.note" class="text-xs text-slate-400 mt-2 line-clamp-2">{{ item.note }}</p>
@@ -108,7 +108,7 @@
         <div class="flex-1 p-3 space-y-3 overflow-y-auto">
           <div v-for="item in pipeline.active" :key="item.id" class="glass-card dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-blue-100 dark:border-blue-900/50 hover:border-brand-500 transition-colors cursor-pointer" @click="openCompany(item.company.id)">
             <h3 class="font-bold text-slate-900 dark:text-white">{{ item.company_name }}</h3>
-            <span class="inline-block mt-2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+            <span class="inline-block mt-2 text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
               {{ formatSource(item.source) }}
             </span>
             <p v-if="item.note" class="text-xs text-slate-400 mt-2 line-clamp-2">{{ item.note }}</p>

@@ -332,11 +332,11 @@ export default function AbsencesPage() {
                   ) : null}
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-slate-600">
                     {absence.days_count ?? 0} j
                   </span>
                   <span
-                    className={`rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${
+                    className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${
                       absence.status === 'approved'
                         ? 'bg-emerald-50 text-emerald-700'
                         : absence.status === 'rejected'

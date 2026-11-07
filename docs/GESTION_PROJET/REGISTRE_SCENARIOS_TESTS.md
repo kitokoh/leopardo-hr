@@ -1,3 +1,35 @@
+## 2026-11-07 — #9150 : correctifs UX (accessibilité, états, typographie) — front/web et front/admin-dashboard
+
+**Surface Web admin** : composants et vues de `front/admin-dashboard/src/` modifiés
+(sémantique de tableau, états de chargement/vide/erreur, hiérarchie de titres,
+plancher typographique, `overflow-x-auto`). Aucune route ni contrat API modifié.
+
+**Pourquoi c'est un scénario de test et pas un simple réglage** : les correctifs
+touchent des états que l'œil ne distingue pas d'une panne. Un tableau sans
+`scope` reste lisible à l'écran mais devient inexploitable au lecteur d'écran ;
+un état vide non homogène se confond avec une erreur de chargement ; un `<h1>`
+manquant casse la navigation par titres. Ces régressions sont invisibles en
+revue visuelle — elles doivent être verrouillées par des scénarios.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| tableau de données → chaque `<th>` porte `scope="col"` | le lecteur d'écran annonce des cellules sans en-tête |
+| `DataTable` en chargement → squelette aux dimensions des lignes | le tableau « saute » à l'arrivée des données (CLS) |
+| `DataTable` en erreur → `ErrorState` avec reprise | une panne API se confond avec un tableau vide |
+| `DataTable` vide → `EmptyState` homogène | l'absence de données se confond avec une erreur |
+| page admin → **un seul** `<h1>` | la navigation par titres devient ambiguë |
+| `<label>` de pagination → `for`/`id` associés | le champ n'est pas annoncé à son libellé |
+| tableau large → conteneur `overflow-x-auto` | le tableau déborde et casse la mise en page mobile |
+| texte d'interface → taille ≥ 12 px | micro-polices illisibles (8-11 px) |
+
+**Automatisé** : `front/admin-dashboard` — `eslint .` et `vite build` (garde CSP) ;
+`front/web` — `tsc --noEmit`, `eslint src --max-warnings 0`, `jest --ci`
+(198 suites, 1688 tests), gardes `check:mojibake`, `check:french-copy`,
+`check:orphans`, `check:assets`.
+
+**Non couvert** : vérification lecteur d'écran réelle (NVDA/VoiceOver) et mesure
+Lighthouse — l'audit reste statique.
+
 ## 2026-11-07 — #9142 (Couloir 16, M3-bis) : habitude quotidienne — notification de réponse commerçant et suivi de commande
 
 **Surface API** : 3 routes nouvelles, aucune renommée ni retirée.

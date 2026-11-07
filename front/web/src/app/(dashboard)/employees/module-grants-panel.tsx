@@ -97,10 +97,10 @@ export function ModuleGrantsPanel({ employeeId, locale, onSaved }: Props) {
       data-testid={`team-grants-panel-${employeeId}`}
       className="rounded-2xl border border-app-border bg-white p-4"
     >
-      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
+      <p className="text-xs font-bold uppercase tracking-wider text-slate-600">
         {teamRolesT(locale, 'modulesTitle')}
       </p>
-      <p className="mt-1 text-[11px] text-slate-500">{teamRolesT(locale, 'modulesHint')}</p>
+      <p className="mt-1 text-xs text-slate-500">{teamRolesT(locale, 'modulesHint')}</p>
 
       {error ? <p className="mt-3 text-xs font-medium text-red-600">{error}</p> : null}
 

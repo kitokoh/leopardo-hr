@@ -34,7 +34,7 @@ import { PostInteractions } from '@/modules/marketing/components/PostInteraction
 function statusBadge(status: string) {
   const style = STATUS_STYLES[status] ?? STATUS_STYLES.draft;
   return (
-    <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${style.class}`}>
+    <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${style.class}`}>
       {style.label}
     </span>
   );
@@ -245,7 +245,7 @@ export default function MarketingPage() {
                 {account.connected_platforms && account.connected_platforms.length > 0 ? (
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {account.connected_platforms.map((platform) => (
-                      <span key={platform} className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                      <span key={platform} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-slate-600">
                         {platform}
                       </span>
                     ))}
@@ -256,7 +256,7 @@ export default function MarketingPage() {
                 ) : null}
               </div>
               <div className="flex items-center gap-3">
-                <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${account.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
+                <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${account.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
                   {account.status === 'active' ? 'Actif' : account.status}
                 </span>
                 <button
@@ -400,7 +400,7 @@ export default function MarketingPage() {
                         <p className="line-clamp-2 text-sm font-bold text-slate-950">{post.content}</p>
                         <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
                           {post.target_platforms.map((platform) => (
-                            <span key={platform} className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                            <span key={platform} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-slate-600">
                               {platform}
                             </span>
                           ))}

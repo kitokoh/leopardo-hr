@@ -112,7 +112,7 @@
         </div>
         <span
           :class="[
-            'px-3 py-1 text-[11px] font-black uppercase tracking-widest rounded-lg border shrink-0',
+            'px-3 py-1 text-xs font-black uppercase tracking-widest rounded-lg border shrink-0',
             bankingData.sepa_ready
               ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800'
               : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800'
@@ -191,7 +191,7 @@
         </div>
         <span
           :class="[
-            'px-3 py-1 text-[11px] font-black uppercase tracking-widest rounded-lg border shrink-0',
+            'px-3 py-1 text-xs font-black uppercase tracking-widest rounded-lg border shrink-0',
             authStore.user?.two_fa_enabled
               ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800'
               : 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'

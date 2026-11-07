@@ -201,11 +201,11 @@ export default function FuelSalesPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-slate-200 text-xs font-bold uppercase tracking-wide text-slate-500">
-                  <th className="px-3 py-2">{t(locale, 'fuel.stock.station', 'Station')}</th>
-                  <th className="px-3 py-2">{t(locale, 'fuel.sales.openedAt', 'Ouverte le')}</th>
-                  <th className="px-3 py-2">{t(locale, 'fuel.sales.openingBalance', "Fond d'ouverture")}</th>
-                  <th className="px-3 py-2">{t(locale, 'fuel.team.status', 'Statut')}</th>
-                  <th className="px-3 py-2" />
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.stock.station', 'Station')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.sales.openedAt', 'Ouverte le')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.sales.openingBalance', "Fond d'ouverture")}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.team.status', 'Statut')}</th>
+                  <th scope="col" className="px-3 py-2" />
                 </tr>
               </thead>
               <tbody>
@@ -250,11 +250,11 @@ export default function FuelSalesPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-slate-200 text-xs font-bold uppercase tracking-wide text-slate-500">
-                  <th className="px-3 py-2">{t(locale, 'fuel.stock.station', 'Station')}</th>
-                  <th className="px-3 py-2">{t(locale, 'fuel.stock.product', 'Produit')}</th>
-                  <th className="px-3 py-2">{t(locale, 'fuel.sales.quantity', 'Quantité')}</th>
-                  <th className="px-3 py-2">{t(locale, 'fuel.sales.amount', 'Montant')}</th>
-                  <th className="px-3 py-2">{t(locale, 'fuel.stock.date', 'Date')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.stock.station', 'Station')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.stock.product', 'Produit')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.sales.quantity', 'Quantité')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.sales.amount', 'Montant')}</th>
+                  <th scope="col" className="px-3 py-2">{t(locale, 'fuel.stock.date', 'Date')}</th>
                 </tr>
               </thead>
               <tbody>

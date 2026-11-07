@@ -122,7 +122,7 @@ export default function CrmContactsPage() {
                         {contact.first_name} {contact.last_name}
                       </p>
                       {contact.is_primary && (
-                        <span className="mt-1 inline-flex rounded-full bg-cyan-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-cyan-700">
+                        <span className="mt-1 inline-flex rounded-full bg-cyan-50 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-cyan-700">
                           {t(locale, 'crm.contacts.primary')}
                         </span>
                       )}

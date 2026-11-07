@@ -108,12 +108,12 @@ export default function ModulesPage() {
         aria-label={labels.dashboard.sectionEnterprise}
         className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm md:p-6"
       >
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{labels.dashboard.sectionEnterprise}</p>
+        <p className="text-xs font-black uppercase tracking-widest text-slate-500">{labels.dashboard.sectionEnterprise}</p>
         <div className="mt-3 space-y-2">
           {platformModules.length > 0 ? platformModules.map((module) => (
             <div key={module.key} className="flex items-center justify-between gap-2 text-sm font-bold text-slate-600">
               <span>{labels.dashboard.modules[module.key] ?? module.label}</span>
-              <span className={`rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${
+              <span className={`rounded-lg border px-2 py-0.5 text-xs font-black uppercase tracking-widest ${
                 module.enabled ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-slate-100 text-slate-500'
               }`}>
                 {module.enabled ? (module.state === 'trial' ? 'Trial' : labels.dashboard.present) : 'Lock'}
@@ -130,7 +130,7 @@ export default function ModulesPage() {
           aria-label={business.length > 0 ? labels.dashboard.sectionLocked : labels.dashboard.sectionDiscoverBusiness}
           className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm md:p-6"
         >
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+          <p className="text-xs font-black uppercase tracking-widest text-slate-500">
             {business.length > 0 ? labels.dashboard.sectionLocked : labels.dashboard.sectionDiscoverBusiness}
           </p>
           <div className="mt-3 space-y-1">
@@ -155,7 +155,7 @@ export default function ModulesPage() {
                     {busy ? (
                       <span aria-live="polite">{labels.dashboard.activating}</span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wide">
+                      <span className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-wide">
                         <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                         {labels.dashboard.activate}
                       </span>

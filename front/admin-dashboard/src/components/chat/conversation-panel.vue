@@ -124,7 +124,7 @@
 
             <div
               :class="[
-                'mt-1 flex items-center gap-2 text-[11px]',
+                'mt-1 flex items-center gap-2 text-xs',
                 isMine(message) ? 'text-indigo-200' : 'text-slate-400'
               ]"
             >
@@ -136,7 +136,7 @@
             <div v-if="!message.deleted" class="mt-1 flex flex-wrap gap-2">
               <button
                 type="button"
-                :class="['text-[11px] underline underline-offset-2', isMine(message) ? 'text-indigo-100' : 'text-slate-500 hover:text-slate-700']"
+                :class="['text-xs underline underline-offset-2', isMine(message) ? 'text-indigo-100' : 'text-slate-500 hover:text-slate-700']"
                 @click="$emit('reply', message)"
               >
                 {{ t('chatHub.thread.reply') }}
@@ -144,7 +144,7 @@
               <button
                 v-if="isMine(message)"
                 type="button"
-                :class="['text-[11px] underline underline-offset-2', 'text-indigo-100 hover:text-white']"
+                :class="['text-xs underline underline-offset-2', 'text-indigo-100 hover:text-white']"
                 @click="startEdit(message)"
               >
                 {{ t('chatHub.thread.edit') }}
@@ -152,14 +152,14 @@
               <button
                 v-if="isMine(message) || isGroupAdmin"
                 type="button"
-                :class="['text-[11px] underline underline-offset-2', 'text-indigo-100 hover:text-white']"
+                :class="['text-xs underline underline-offset-2', 'text-indigo-100 hover:text-white']"
                 @click="$emit('delete', message)"
               >
                 {{ t('chatHub.thread.delete') }}
               </button>
               <button
                 v-if="!isMine(message)"
-                :class="['text-[11px] underline underline-offset-2', 'text-slate-500 hover:text-red-600']"
+                :class="['text-xs underline underline-offset-2', 'text-slate-500 hover:text-red-600']"
                 type="button"
                 @click="$emit('report', message)"
               >
@@ -257,7 +257,7 @@
           </button>
         </form>
 
-        <p class="mt-1 text-[11px] text-slate-400">{{ t('chatHub.thread.enterHint') }}</p>
+        <p class="mt-1 text-xs text-slate-400">{{ t('chatHub.thread.enterHint') }}</p>
       </div>
     </template>
   </section>

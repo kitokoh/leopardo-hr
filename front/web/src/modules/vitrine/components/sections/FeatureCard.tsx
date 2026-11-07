@@ -60,7 +60,7 @@ export function FeatureCard({
           {stats && (
             <div className="text-right">
               <div className="text-2xl font-black text-slate-900 dark:text-white">{stats.value}</div>
-              <div className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">{stats.label}</div>
+              <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">{stats.label}</div>
             </div>
           )}
         </div>

@@ -107,10 +107,10 @@ export default function RestaurantReservationsPage() {
         <h3 className="font-bold text-slate-900">{t(locale, 'restaurant.res.new', 'Nouvelle réservation')}</h3>
         <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-6">
           <BranchSelect branches={branches} value={branchId} onChange={setBranchId} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" />
-          <input className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder={t(locale, 'restaurant.res.name', 'Nom du client')} value={form.contact_name} onChange={(e) => setForm({ ...form, contact_name: e.target.value })} aria-label="Nom" />
-          <input className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder={t(locale, 'restaurant.res.phone', 'Téléphone')} value={form.contact_phone} onChange={(e) => setForm({ ...form, contact_phone: e.target.value })} aria-label="Téléphone" />
-          <input type="datetime-local" className="rounded-lg border border-slate-200 px-3 py-2 text-sm" value={form.reserved_at} onChange={(e) => setForm({ ...form, reserved_at: e.target.value })} aria-label="Date" />
-          <input type="number" min={1} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Couverts" value={form.covers} onChange={(e) => setForm({ ...form, covers: e.target.value })} aria-label="Couverts" />
+          <input className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder={t(locale, 'restaurant.res.name', 'Nom du client')} value={form.contact_name} onChange={(e) => setForm({ ...form, contact_name: e.target.value })} aria-label={t(locale, 'restaurant.res.name', 'Nom du client')} />
+          <input className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder={t(locale, 'restaurant.res.phone', 'Téléphone')} value={form.contact_phone} onChange={(e) => setForm({ ...form, contact_phone: e.target.value })} aria-label={t(locale, 'restaurant.res.phone', 'Téléphone')} />
+          <input type="datetime-local" className="rounded-lg border border-slate-200 px-3 py-2 text-sm" value={form.reserved_at} onChange={(e) => setForm({ ...form, reserved_at: e.target.value })} aria-label={t(locale, 'restaurant.res.date', 'Date')} />
+          <input type="number" min={1} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Couverts" value={form.covers} onChange={(e) => setForm({ ...form, covers: e.target.value })} aria-label={t(locale, 'restaurant.res.covers', 'Couverts')} />
           <button type="button" disabled={busy} onClick={() => void create()} className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">
             {t(locale, 'restaurant.res.create', 'Créer')}
           </button>
@@ -121,12 +121,12 @@ export default function RestaurantReservationsPage() {
         <table className="min-w-full divide-y divide-slate-200 text-sm">
           <thead className="bg-slate-50">
             <tr>
-              <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.res.colRef', 'Référence')}</th>
-              <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.res.colContact', 'Client')}</th>
-              <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.res.colWhen', 'Quand')}</th>
-              <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.res.colCovers', 'Couverts')}</th>
-              <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.res.colStatus', 'Statut')}</th>
-              <th className="px-4 py-3 text-right font-semibold text-slate-700" aria-label="Actions" />
+              <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.res.colRef', 'Référence')}</th>
+              <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.res.colContact', 'Client')}</th>
+              <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.res.colWhen', 'Quand')}</th>
+              <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.res.colCovers', 'Couverts')}</th>
+              <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.res.colStatus', 'Statut')}</th>
+              <th scope="col" className="px-4 py-3 text-right font-semibold text-slate-700" aria-label={t(locale, 'common.actions', 'Actions')} />
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">

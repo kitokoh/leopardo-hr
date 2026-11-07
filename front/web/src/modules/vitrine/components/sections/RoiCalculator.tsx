@@ -198,7 +198,7 @@ export function RoiCalculator({
                   <div className="text-2xl font-black text-amber-300">
                     +{monthlyHoursSaved}h
                   </div>
-                  <span className="text-[11px] text-slate-400">par mois</span>
+                  <span className="text-xs text-slate-400">par mois</span>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800">
@@ -209,7 +209,7 @@ export function RoiCalculator({
                   <div className="text-2xl font-black text-emerald-300">
                     +{roiPercentage}%
                   </div>
-                  <span className="text-[11px] text-slate-400">sur 12 mois</span>
+                  <span className="text-xs text-slate-400">sur 12 mois</span>
                 </div>
               </div>
             </div>
@@ -223,7 +223,7 @@ export function RoiCalculator({
                 <span>{ctaText}</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Link>
-              <p className="text-center text-[11px] text-slate-400 mt-3">
+              <p className="text-center text-xs text-slate-400 mt-3">
                 Sans engagement • Aucune carte bancaire requise • Setup en 10 minutes
               </p>
             </div>

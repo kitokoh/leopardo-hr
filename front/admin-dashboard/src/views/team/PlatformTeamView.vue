@@ -35,7 +35,7 @@
           <span class="font-medium text-slate-900 dark:text-white">{{ row.name }}</span>
           <span
             v-if="row.is_self"
-            class="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-600 dark:bg-brand-900/30 dark:text-brand-300"
+            class="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-brand-600 dark:bg-brand-900/30 dark:text-brand-300"
           >
             {{ $t('team.platform.you') }}
           </span>
@@ -62,7 +62,7 @@
               {{ role.label }}
             </option>
           </select>
-          <p v-if="row.is_self" class="mt-1 text-[10px] text-gray-400 dark:text-slate-500">
+          <p v-if="row.is_self" class="mt-1 text-xs text-gray-400 dark:text-slate-500">
             {{ $t('team.platform.selfRoleLocked') }}
           </p>
         </div>

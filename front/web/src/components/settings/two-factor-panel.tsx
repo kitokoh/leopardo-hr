@@ -175,7 +175,7 @@ export function TwoFactorPanel({ locale }: { locale: AppLocale }) {
         <span
           data-testid="two-factor-status-badge"
           className={[
-            'shrink-0 rounded-lg border px-3 py-1 text-[11px] font-black uppercase tracking-widest',
+            'shrink-0 rounded-lg border px-3 py-1 text-xs font-black uppercase tracking-widest',
             status?.enabled
               ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400'
               : 'border-slate-200 bg-slate-100 text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400',

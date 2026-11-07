@@ -222,7 +222,7 @@ export function PaySlipDetailModal({ slip, loading, error, labels, formatCurrenc
                   <p className="text-sm text-slate-500">{labels.columnEmployee}</p>
                   <p className="text-lg font-black text-slate-950">{employeeName}</p>
                 </div>
-                <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${isValidated ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
+                <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${isValidated ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
                   {isValidated ? labels.statusValidated : labels.statusDraft}
                 </span>
               </div>
@@ -268,7 +268,7 @@ export function PaySlipDetailModal({ slip, loading, error, labels, formatCurrenc
               {Array.isArray(slip.lines) && slip.lines.length > 0 && (
                 <div className="mt-5">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">{labels.detailSalaryBreakdown}</h3>
-                  <div className="mt-2 overflow-hidden rounded-2xl border border-app-border">
+                  <div className="mt-2 overflow-x-auto rounded-2xl border border-app-border">
                     <table className="w-full text-sm">
                       <tbody className="divide-y divide-app-border">
                         {slip.lines.map((line) => (

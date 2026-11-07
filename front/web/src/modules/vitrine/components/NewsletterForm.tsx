@@ -85,7 +85,7 @@ export function NewsletterForm() {
           </form>
           {/* #7593 — finalité et base légale au moment de la collecte, version
               discrète sous le formulaire (pas un bloc à part entière). */}
-          <div className="[&_p]:mt-2 [&_p]:text-[11px] [&_p]:leading-snug [&_p]:text-slate-400 dark:[&_p]:text-slate-500">
+          <div className="[&_p]:mt-2 [&_p]:text-xs [&_p]:leading-snug [&_p]:text-slate-400 dark:[&_p]:text-slate-500">
             <FormDataNotice purpose="newsletter" />
           </div>
         </>

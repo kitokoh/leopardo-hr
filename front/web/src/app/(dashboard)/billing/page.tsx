@@ -457,11 +457,11 @@ export default function BillingPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-app-border bg-transparent/50">
-                    <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Numero</th>
-                    <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Montant</th>
-                    <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">Statut</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Echeance</th>
-                    <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Actions</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Numero</th>
+                    <th scope="col" className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Montant</th>
+                    <th scope="col" className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">Statut</th>
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Echeance</th>
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-app-border">
@@ -474,7 +474,7 @@ export default function BillingPage() {
                       </td>
                       <td className="px-4 py-4 text-right tabular-nums text-slate-900">{formatCurrency(invoice.total ?? invoice.amount, invoice.currency)}</td>
                       <td className="px-4 py-4 text-center">
-                        <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${STATUS_LABELS[invoice.status]?.className ?? 'bg-slate-100 text-slate-600'}`}>
+                        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${STATUS_LABELS[invoice.status]?.className ?? 'bg-slate-100 text-slate-600'}`}>
                           {STATUS_LABELS[invoice.status] ? statusLabel(invoice.status, copy) : invoice.status}
                         </span>
                       </td>

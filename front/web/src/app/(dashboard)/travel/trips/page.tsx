@@ -494,14 +494,14 @@ export default function TravelTripsPage() {
         <table className="min-w-full divide-y divide-slate-200 text-sm">
           <thead className="bg-slate-50">
             <tr>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">{t(locale, 'travel.field.code', 'Code')}</th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">{t(locale, 'travel.field.route', 'Ligne')}</th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">{t(locale, 'travel.field.departureDate', 'Départ')}</th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">{t(locale, 'travel.field.arrivalDate', 'Arrivée')}</th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">{t(locale, 'travel.field.means', 'Moyen')}</th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">{t(locale, 'travel.field.totalSeats', 'Places')}</th>
-              <th className="px-4 py-3 text-start font-semibold text-slate-700">{t(locale, 'travel.field.status', 'Statut')}</th>
-              <th className="px-4 py-3 text-end font-semibold text-slate-700">{t(locale, 'travel.table.actions', 'Actions')}</th>
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">{t(locale, 'travel.field.code', 'Code')}</th>
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">{t(locale, 'travel.field.route', 'Ligne')}</th>
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">{t(locale, 'travel.field.departureDate', 'Départ')}</th>
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">{t(locale, 'travel.field.arrivalDate', 'Arrivée')}</th>
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">{t(locale, 'travel.field.means', 'Moyen')}</th>
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">{t(locale, 'travel.field.totalSeats', 'Places')}</th>
+              <th scope="col" className="px-4 py-3 text-start font-semibold text-slate-700">{t(locale, 'travel.field.status', 'Statut')}</th>
+              <th scope="col" className="px-4 py-3 text-end font-semibold text-slate-700">{t(locale, 'travel.table.actions', 'Actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -910,11 +910,11 @@ function TripPricesPanel({
         <table className="min-w-full divide-y divide-slate-200 text-sm">
           <thead className="bg-slate-50">
             <tr>
-              <th className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.class', 'Classe')}</th>
-              <th className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.adultPrice', 'Adulte')}</th>
-              <th className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.childPrice', 'Enfant')}</th>
-              <th className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.currency', 'Devise')}</th>
-              <th className="px-4 py-2 text-end font-semibold text-slate-700">{t(locale, 'travel.table.actions', 'Actions')}</th>
+              <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.class', 'Classe')}</th>
+              <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.adultPrice', 'Adulte')}</th>
+              <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.childPrice', 'Enfant')}</th>
+              <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.currency', 'Devise')}</th>
+              <th scope="col" className="px-4 py-2 text-end font-semibold text-slate-700">{t(locale, 'travel.table.actions', 'Actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -1193,11 +1193,11 @@ function TripManifestPanel({
         <table className="min-w-full divide-y divide-slate-200 text-sm">
           <thead className="bg-slate-50">
             <tr>
-              <th className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.seat', 'Siège')}</th>
-              <th className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.fullName', 'Nom complet')}</th>
-              <th className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.ageCategory', 'Catégorie')}</th>
-              <th className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.class', 'Classe')}</th>
-              <th className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.unitPrice', 'Prix unitaire')}</th>
+              <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.seat', 'Siège')}</th>
+              <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.fullName', 'Nom complet')}</th>
+              <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.ageCategory', 'Catégorie')}</th>
+              <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.class', 'Classe')}</th>
+              <th scope="col" className="px-4 py-2 text-start font-semibold text-slate-700">{t(locale, 'travel.field.unitPrice', 'Prix unitaire')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">

@@ -19,7 +19,7 @@ export function Card({ children, className = '' }: { children: ReactNode; classN
 export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
     <label className="block space-y-1.5">
-      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</span>
+      <span className="text-xs font-black uppercase tracking-widest text-slate-500">{label}</span>
       {children}
       {hint ? <span className="block text-xs text-slate-400">{hint}</span> : null}
     </label>

@@ -86,7 +86,7 @@ export default function CrmAccountsPage() {
     };
 
     return (
-      <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${styles[status] ?? styles.active}`}>
+      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${styles[status] ?? styles.active}`}>
         {status}
       </span>
     );
@@ -148,12 +148,12 @@ export default function CrmAccountsPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="border-b border-slate-100 text-[11px] uppercase tracking-wider text-slate-400">
-                    <th className="pb-3 pr-4 font-bold">{t(locale, 'crm.accounts.colName')}</th>
-                    <th className="pb-3 pr-4 font-bold">{t(locale, 'crm.accounts.colStatus')}</th>
-                    <th className="pb-3 pr-4 font-bold">{t(locale, 'crm.accounts.colEmail')}</th>
-                    <th className="pb-3 pr-4 font-bold">{t(locale, 'crm.accounts.colPhone')}</th>
-                    <th className="pb-3 font-bold">{t(locale, 'crm.accounts.colCreated')}</th>
+                  <tr className="border-b border-slate-100 text-xs uppercase tracking-wider text-slate-400">
+                    <th scope="col" className="pb-3 pr-4 font-bold">{t(locale, 'crm.accounts.colName')}</th>
+                    <th scope="col" className="pb-3 pr-4 font-bold">{t(locale, 'crm.accounts.colStatus')}</th>
+                    <th scope="col" className="pb-3 pr-4 font-bold">{t(locale, 'crm.accounts.colEmail')}</th>
+                    <th scope="col" className="pb-3 pr-4 font-bold">{t(locale, 'crm.accounts.colPhone')}</th>
+                    <th scope="col" className="pb-3 font-bold">{t(locale, 'crm.accounts.colCreated')}</th>
                   </tr>
                 </thead>
                 <tbody>

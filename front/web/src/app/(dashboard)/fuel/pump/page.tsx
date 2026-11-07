@@ -225,7 +225,7 @@ export default function FuelPumpPage() {
           <Card className="py-10 text-center text-sm font-medium text-slate-500">{t(locale, 'fuel.pump.emptyStations')}</Card>
         ) : step === 'station' ? (
           <Card>
-            <p className="mb-3 text-[10px] font-black uppercase tracking-widest text-slate-500">{t(locale, 'fuel.pump.selectStation')}</p>
+            <p className="mb-3 text-xs font-black uppercase tracking-widest text-slate-500">{t(locale, 'fuel.pump.selectStation')}</p>
             <div className="grid gap-2 sm:grid-cols-2">
               {stations.map((station) => (
                 <button
@@ -250,7 +250,7 @@ export default function FuelPumpPage() {
             <button type="button" onClick={reset} className="mb-3 inline-flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-slate-700">
               <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> {t(locale, 'fuel.pump.back')}
             </button>
-            <p className="mb-3 text-[10px] font-black uppercase tracking-widest text-slate-500">{t(locale, 'fuel.pump.selectPump')}</p>
+            <p className="mb-3 text-xs font-black uppercase tracking-widest text-slate-500">{t(locale, 'fuel.pump.selectPump')}</p>
             <div className="grid gap-2 sm:grid-cols-2">
               {pumps.map((pump) => (
                 <button
@@ -270,7 +270,7 @@ export default function FuelPumpPage() {
             <button type="button" onClick={() => setPumpId(null)} className="mb-3 inline-flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-slate-700">
               <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> {t(locale, 'fuel.pump.back')}
             </button>
-            <p className="mb-3 text-[10px] font-black uppercase tracking-widest text-slate-500">{t(locale, 'fuel.pump.selectMeter')}</p>
+            <p className="mb-3 text-xs font-black uppercase tracking-widest text-slate-500">{t(locale, 'fuel.pump.selectMeter')}</p>
             <div className="grid gap-2 sm:grid-cols-2">
               {meters.map((meter) => (
                 <button

@@ -20,7 +20,7 @@ export function Card({ children, className = '' }: { children: ReactNode; classN
 export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
     <label className="block space-y-1.5">
-      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</span>
+      <span className="text-xs font-black uppercase tracking-widest text-slate-500">{label}</span>
       {children}
       {hint ? <span className="block text-xs text-slate-400">{hint}</span> : null}
     </label>
@@ -42,17 +42,20 @@ type ModalProps = {
   open: boolean;
   title: string;
   onClose: () => void;
+  /** Audit UX 2026-11 : libellé du bouton de fermeture, fourni par l'appelant
+   *  (i18n) — la primitive reste sans dépendance à la locale. */
+  closeLabel?: string;
   children: ReactNode;
 };
 
-export function Modal({ open, title, onClose, children }: ModalProps) {
+export function Modal({ open, title, onClose, closeLabel = 'Fermer', children }: ModalProps) {
   if (!open) {
     return null;
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label={title}>
-      <button type="button" aria-label="Fermer" className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm" onClick={onClose} />
+      <button type="button" aria-label={closeLabel} className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm" onClick={onClose} />
       <div className="relative max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-white/20 bg-white p-6 shadow-premium">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-black tracking-tight text-slate-950">{title}</h3>

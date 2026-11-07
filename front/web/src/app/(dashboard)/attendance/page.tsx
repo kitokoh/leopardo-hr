@@ -121,7 +121,7 @@ export default function AttendancePage() {
                   <p className="text-sm font-bold text-slate-950">{item.name ?? 'Mon pointage'}</p>
                   <p className="text-xs text-slate-500">{item.matricule ?? 'Session personnelle'}</p>
                 </div>
-                <div className="flex flex-wrap gap-2 text-[11px] font-bold uppercase tracking-wider">
+                <div className="flex flex-wrap gap-2 text-xs font-bold uppercase tracking-wider">
                   <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">{item.check_in_time ?? 'Pas d entree'}</span>
                   <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">{item.check_out_time ?? 'Pas de sortie'}</span>
                   <span className="rounded-full bg-warning/15 px-3 py-1 text-warning">{item.status ?? 'inconnu'}</span>

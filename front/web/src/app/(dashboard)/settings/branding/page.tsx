@@ -332,7 +332,7 @@ export default function BrandingPage() {
                 <img src={previewLogoUrl} alt="" aria-hidden="true" className="h-9 w-9 rounded-lg border border-slate-200 bg-white object-contain" />
               ) : (
                 <span
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-[11px] font-black text-white"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-xs font-black text-white"
                   style={{ backgroundColor: previewPrimary }}
                 >
                   {(displayName || 'L').trim().charAt(0).toUpperCase()}
@@ -340,7 +340,7 @@ export default function BrandingPage() {
               )}
               <div className="min-w-0">
                 <p className="truncate text-sm font-black text-slate-950">{displayName || i18nT(locale, 'brandingPage.displayName')}</p>
-                <p className="truncate text-[10px] font-black uppercase tracking-widest" style={{ color: previewAccent }}>
+                <p className="truncate text-xs font-black uppercase tracking-widest" style={{ color: previewAccent }}>
                   {modeLabels[brandMode]}
                 </p>
               </div>

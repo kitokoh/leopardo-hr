@@ -182,12 +182,12 @@ export default function RestaurantStockPage() {
           <table className="min-w-full divide-y divide-slate-200 text-sm">
             <thead className="bg-slate-50">
               <tr>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colBranch', 'Branche')}</th>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colIngredient', 'Ingrédient')}</th>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colQty', 'Quantité')}</th>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colCost', 'Coût moyen')}</th>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colThreshold', 'Seuil')}</th>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colAlert', 'Alerte')}</th>
+                <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colBranch', 'Branche')}</th>
+                <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colIngredient', 'Ingrédient')}</th>
+                <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colQty', 'Quantité')}</th>
+                <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colCost', 'Coût moyen')}</th>
+                <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colThreshold', 'Seuil')}</th>
+                <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colAlert', 'Alerte')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -218,7 +218,7 @@ export default function RestaurantStockPage() {
                 onChange={(id) => setPoForm({ ...poForm, branch_id: id === null ? '' : String(id) })}
                 allowEmpty
               />
-              <select className="rounded-lg border border-slate-200 px-3 py-2 text-sm" value={poForm.supplier_id} onChange={(e) => setPoForm({ ...poForm, supplier_id: e.target.value })} aria-label="Fournisseur">
+              <select className="rounded-lg border border-slate-200 px-3 py-2 text-sm" value={poForm.supplier_id} onChange={(e) => setPoForm({ ...poForm, supplier_id: e.target.value })} aria-label={t(locale, 'restaurant.stock.supplier', 'Fournisseur')}>
                 <option value="">{t(locale, 'restaurant.stock.supplierPlaceholder', 'Fournisseur…')}</option>
                 {suppliers.map((s) => (
                   <option key={s.id} value={s.id}>{s.name}</option>
@@ -242,11 +242,11 @@ export default function RestaurantStockPage() {
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-50">
                 <tr>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colRef', 'Référence')}</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colSupplier', 'Fournisseur')}</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colStatus', 'Statut')}</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colTotal', 'Total')}</th>
-                  <th className="px-4 py-3 text-right font-semibold text-slate-700" aria-label="Actions" />
+                  <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colRef', 'Référence')}</th>
+                  <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colSupplier', 'Fournisseur')}</th>
+                  <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colStatus', 'Statut')}</th>
+                  <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colTotal', 'Total')}</th>
+                  <th scope="col" className="px-4 py-3 text-right font-semibold text-slate-700" aria-label={t(locale, 'common.actions', 'Actions')} />
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -299,9 +299,9 @@ export default function RestaurantStockPage() {
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-50">
                 <tr>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colRef', 'Référence')}</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colBranch', 'Branche')}</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colDate', 'Date')}</th>
+                  <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colRef', 'Référence')}</th>
+                  <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colBranch', 'Branche')}</th>
+                  <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colDate', 'Date')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">

@@ -234,7 +234,7 @@ export default function HealthBillingPage() {
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             {statCards.map((card) => (
               <div key={card.label} className="rounded-2xl border border-slate-200/60 bg-white/80 p-4 shadow-sm backdrop-blur-xl">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{card.label}</p>
+                <p className="text-xs font-black uppercase tracking-widest text-slate-500">{card.label}</p>
                 <p className="mt-2 text-xl font-black tracking-tight text-slate-950">{card.value}</p>
               </div>
             ))}
@@ -261,12 +261,12 @@ export default function HealthBillingPage() {
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-50">
                 <tr>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.billing.invoiceNumber', 'N° facture')}</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.billing.invoicePatient', 'Patient')}</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.billing.invoiceTotal', 'Total')}</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.billing.invoicePaid', 'Encaissé')}</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.billing.invoiceStatus', 'Statut')}</th>
-                  <th className="px-4 py-3 text-right font-semibold text-slate-700" aria-label="Actions" />
+                  <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.billing.invoiceNumber', 'N° facture')}</th>
+                  <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.billing.invoicePatient', 'Patient')}</th>
+                  <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.billing.invoiceTotal', 'Total')}</th>
+                  <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.billing.invoicePaid', 'Encaissé')}</th>
+                  <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.billing.invoiceStatus', 'Statut')}</th>
+                  <th scope="col" className="px-4 py-3 text-right font-semibold text-slate-700" aria-label={t(locale, 'common.actions', 'Actions')} />
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">

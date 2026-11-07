@@ -247,11 +247,11 @@ export default function RestaurantHomePage() {
           <table className="mt-3 min-w-full divide-y divide-slate-200 text-sm">
             <thead className="bg-slate-50">
               <tr>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.home.colBranch')}</th>
-                <th className="px-4 py-3 text-right font-semibold text-slate-700">{t(locale, 'restaurant.home.colRevenue')}</th>
-                <th className="px-4 py-3 text-right font-semibold text-slate-700">{t(locale, 'restaurant.home.colOrders')}</th>
-                <th className="px-4 py-3 text-right font-semibold text-slate-700">{t(locale, 'restaurant.home.colOccupancy')}</th>
-                <th className="px-4 py-3 text-right font-semibold text-slate-700">{t(locale, 'restaurant.home.colAlerts')}</th>
+                <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.home.colBranch')}</th>
+                <th scope="col" className="px-4 py-3 text-right font-semibold text-slate-700">{t(locale, 'restaurant.home.colRevenue')}</th>
+                <th scope="col" className="px-4 py-3 text-right font-semibold text-slate-700">{t(locale, 'restaurant.home.colOrders')}</th>
+                <th scope="col" className="px-4 py-3 text-right font-semibold text-slate-700">{t(locale, 'restaurant.home.colOccupancy')}</th>
+                <th scope="col" className="px-4 py-3 text-right font-semibold text-slate-700">{t(locale, 'restaurant.home.colAlerts')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

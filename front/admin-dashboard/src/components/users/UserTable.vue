@@ -17,7 +17,7 @@
             :key="column.key"
             scope="col"
             :class="[
-              'px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400',
+              'px-6 py-4 text-left text-xs font-black uppercase tracking-widest text-slate-400',
               column.sortable ? 'cursor-pointer hover:text-slate-700 dark:hover:text-slate-200 transition-colors' : ''
             ]"
             @click="column.sortable && handleSort(column.key)"
@@ -106,7 +106,7 @@
 
           <!-- Status -->
           <td class="whitespace-nowrap px-6 py-5">
-            <span :class="['px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border', getStatusColor(user.status)]">
+            <span :class="['px-2.5 py-0.5 rounded-lg text-xs font-black uppercase tracking-widest border', getStatusColor(user.status)]">
               {{ getStatusLabel(user.status) }}
             </span>
           </td>

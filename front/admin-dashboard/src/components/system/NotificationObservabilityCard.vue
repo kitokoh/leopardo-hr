@@ -37,15 +37,15 @@
       <!-- Summary -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div class="rounded-xl border border-slate-200/60 dark:border-slate-800/60 p-3">
-          <div class="text-[10px] font-black uppercase tracking-widest text-slate-400">Clients scannés</div>
+          <div class="text-xs font-black uppercase tracking-widest text-slate-400">Clients scannés</div>
           <div class="mt-1 text-sm font-bold text-slate-900 dark:text-white">{{ data?.companies_scanned ?? '—' }}</div>
         </div>
         <div class="rounded-xl border border-slate-200/60 dark:border-slate-800/60 p-3">
-          <div class="text-[10px] font-black uppercase tracking-widest text-slate-400">Événements ({{ data?.window_hours ?? 24 }}h)</div>
+          <div class="text-xs font-black uppercase tracking-widest text-slate-400">Événements ({{ data?.window_hours ?? 24 }}h)</div>
           <div class="mt-1 text-sm font-bold text-slate-900 dark:text-white">{{ data?.totals?.events ?? '—' }}</div>
         </div>
         <div class="rounded-xl border border-slate-200/60 dark:border-slate-800/60 p-3">
-          <div class="text-[10px] font-black uppercase tracking-widest text-slate-400">Échecs</div>
+          <div class="text-xs font-black uppercase tracking-widest text-slate-400">Échecs</div>
           <div
             class="mt-1 text-sm font-bold"
             :class="data?.alerts?.notification_failures ? 'text-red-600' : 'text-slate-900 dark:text-white'"
@@ -54,7 +54,7 @@
           </div>
         </div>
         <div class="rounded-xl border border-slate-200/60 dark:border-slate-800/60 p-3">
-          <div class="text-[10px] font-black uppercase tracking-widest text-slate-400">Taux d'échec</div>
+          <div class="text-xs font-black uppercase tracking-widest text-slate-400">Taux d'échec</div>
           <div class="mt-1 text-sm font-bold text-slate-900 dark:text-white">{{ formatRate(data?.totals?.failure_rate) }}</div>
         </div>
       </div>

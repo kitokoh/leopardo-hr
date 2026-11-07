@@ -20,7 +20,7 @@
              explicitement plutôt que d'afficher des colonnes vides. -->
         <span
           v-if="isScoring"
-          class="inline-flex items-center gap-2 self-center rounded-xl bg-brand-50 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-brand-600 dark:bg-brand-900/30 dark:text-brand-400"
+          class="inline-flex items-center gap-2 self-center rounded-xl bg-brand-50 px-3 py-1.5 text-xs font-black uppercase tracking-widest text-brand-600 dark:bg-brand-900/30 dark:text-brand-400"
         >
           <span class="h-3 w-3 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></span>
           {{ t('companies.scoringPortfolio', 'Calcul des scores en cours…') }}
@@ -28,7 +28,7 @@
         <button
           v-else-if="scoringFailed"
           type="button"
-          class="inline-flex items-center gap-2 self-center rounded-xl bg-amber-50 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-amber-700 transition hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400"
+          class="inline-flex items-center gap-2 self-center rounded-xl bg-amber-50 px-3 py-1.5 text-xs font-black uppercase tracking-widest text-amber-700 transition hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400"
           @click="fetchPortfolio"
         >
           {{ t('companies.scoringUnavailable', 'Scores indisponibles — réessayer') }}
@@ -53,15 +53,15 @@
         <div class="flex gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl w-fit">
           <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30">
             <div class="h-1.5 w-1.5 rounded-full bg-red-500"></div>
-            <span class="text-[10px] font-black uppercase text-red-700 dark:text-red-400">High {{ summary.risk.high }}</span>
+            <span class="text-xs font-black uppercase text-red-700 dark:text-red-400">High {{ summary.risk.high }}</span>
           </div>
           <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/30">
             <div class="h-1.5 w-1.5 rounded-full bg-amber-500"></div>
-            <span class="text-[10px] font-black uppercase text-amber-700 dark:text-amber-400">Med {{ summary.risk.medium }}</span>
+            <span class="text-xs font-black uppercase text-amber-700 dark:text-amber-400">Med {{ summary.risk.medium }}</span>
           </div>
           <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-900/30">
             <div class="h-1.5 w-1.5 rounded-full bg-emerald-500"></div>
-            <span class="text-[10px] font-black uppercase text-emerald-700 dark:text-emerald-400">Low {{ summary.risk.low }}</span>
+            <span class="text-xs font-black uppercase text-emerald-700 dark:text-emerald-400">Low {{ summary.risk.low }}</span>
           </div>
         </div>
       </div>
@@ -71,7 +71,7 @@
            aveugle sur une page tronquee. -->
       <div class="grid grid-cols-1 gap-4 border-b border-slate-200/50 px-6 py-5 dark:border-slate-800/50 sm:grid-cols-3">
         <div class="sm:col-span-2">
-          <label class="ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500" for="companies-search">{{ t('companies.searchLabel', 'Rechercher') }}</label>
+          <label class="ml-1 block text-xs font-black uppercase tracking-widest text-slate-500" for="companies-search">{{ t('companies.searchLabel', 'Rechercher') }}</label>
           <div class="relative mt-1.5">
             <MagnifyingGlassIcon class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input
@@ -85,7 +85,7 @@
           </div>
         </div>
         <div>
-          <label class="ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500" for="companies-status">{{ t('companies.statusLabel', 'Statut') }}</label>
+          <label class="ml-1 block text-xs font-black uppercase tracking-widest text-slate-500" for="companies-status">{{ t('companies.statusLabel', 'Statut') }}</label>
           <select
             id="companies-status"
             v-model="statusFilter"
@@ -126,12 +126,12 @@
         <table class="min-w-full divide-y divide-slate-200/50 dark:divide-slate-800/50">
           <thead class="bg-slate-50/50 dark:bg-slate-900/30">
             <tr>
-              <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{{ t('companies.company') }}</th>
-              <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{{ t('companies.planMrr') }}</th>
-              <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{{ t('companies.healthOp') }}</th>
-              <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{{ t('companies.checkins30d') }}</th>
-              <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{{ t('companies.recommendedAction') }}</th>
-              <th class="px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest text-slate-400">{{ t('companies.management') }}</th>
+              <th class="px-6 py-4 text-left text-xs font-black uppercase tracking-widest text-slate-400">{{ t('companies.company') }}</th>
+              <th class="px-6 py-4 text-left text-xs font-black uppercase tracking-widest text-slate-400">{{ t('companies.planMrr') }}</th>
+              <th class="px-6 py-4 text-left text-xs font-black uppercase tracking-widest text-slate-400">{{ t('companies.healthOp') }}</th>
+              <th class="px-6 py-4 text-left text-xs font-black uppercase tracking-widest text-slate-400">{{ t('companies.checkins30d') }}</th>
+              <th class="px-6 py-4 text-left text-xs font-black uppercase tracking-widest text-slate-400">{{ t('companies.recommendedAction') }}</th>
+              <th class="px-6 py-4 text-right text-xs font-black uppercase tracking-widest text-slate-400">{{ t('companies.management') }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-200/50 dark:divide-slate-800/50">
@@ -143,7 +143,7 @@
                   </div>
                   <div>
                     <div class="font-bold text-slate-900 dark:text-white uppercase tracking-tight">{{ item.company.name }}</div>
-                    <div class="text-[10px] font-black text-slate-400 mt-0.5 uppercase tracking-widest">
+                    <div class="text-xs font-black text-slate-400 mt-0.5 uppercase tracking-widest">
                       {{ item.company.status }} · {{ item.company.country }}
                     </div>
                   </div>
@@ -174,7 +174,7 @@
                 </template>
                 <template v-else>
                   <div class="font-bold text-slate-700 dark:text-slate-300 text-sm">{{ item.attendance_logs_30d ?? 0 }} {{ t('companies.logsUnit', 'logs') }}</div>
-                  <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{{ item.employees_active ?? 0 }} {{ t('companies.activeUnit', 'actifs') }}</div>
+                  <div class="text-xs font-black text-slate-400 uppercase tracking-widest mt-0.5">{{ item.employees_active ?? 0 }} {{ t('companies.activeUnit', 'actifs') }}</div>
                 </template>
               </td>
               <td class="px-6 py-5">
@@ -182,7 +182,7 @@
                   <div class="h-1.5 w-1.5 rounded-full bg-brand-500"></div>
                   <span class="text-sm font-bold text-slate-600 dark:text-slate-400">{{ item.next_action.label }}</span>
                 </div>
-                <span v-else class="text-[10px] font-black text-slate-300 uppercase tracking-widest">{{ t('companies.ras', 'RAS') }}</span>
+                <span v-else class="text-xs font-black text-slate-300 uppercase tracking-widest">{{ t('companies.ras', 'RAS') }}</span>
               </td>
               <td class="whitespace-nowrap px-6 py-5 text-right">
                 <div class="flex items-center justify-end gap-1.5">
@@ -274,7 +274,7 @@
         <div class="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-white/10 shadow-2xl dark:border-slate-800 dark:bg-slate-950 sm:p-0">
           <div class="sticky top-0 z-20 flex items-center justify-between border-b border-slate-100 px-6 py-5 dark:border-slate-800 dark:bg-slate-950/90 backdrop-blur-md">
             <div>
-              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-brand-600 dark:text-brand-400">{{ t('companies.system') }}</p>
+              <p class="text-xs font-black uppercase tracking-[0.3em] text-brand-600 dark:text-brand-400">{{ t('companies.system') }}</p>
               <h2 id="create-client-title" class="text-xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
                 {{ t('companies.provisioningTitle', 'Provisionnement Client') }}
               </h2>
@@ -291,15 +291,15 @@
           <form class="p-8 space-y-8" @submit.prevent="submitCreateClient">
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div class="space-y-1.5">
-                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">{{ t('companies.companyName') }}</label>
+                <label class="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">{{ t('companies.companyName') }}</label>
                 <input v-model.trim="createForm.name" class="form-input" required maxlength="100" placeholder="Ex: TECHCORP ALGERIE" />
               </div>
               <div class="space-y-1.5">
-                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">{{ t('companies.contactEmail') }}</label>
+                <label class="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">{{ t('companies.contactEmail') }}</label>
                 <input v-model.trim="createForm.email" class="form-input" required type="email" maxlength="150" placeholder="contact@techcorp.example" />
               </div>
               <div class="space-y-1.5">
-                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">{{ t('companies.country') }}</label>
+                <label class="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">{{ t('companies.country') }}</label>
                 <select v-model="createForm.country" class="form-input" required>
                   <option v-for="country in countryDefaults" :key="country.country" :value="country.country">
                     {{ country.label }} ({{ country.country }})
@@ -307,7 +307,7 @@
                 </select>
               </div>
               <div class="space-y-1.5">
-                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">{{ t('companies.city') }}</label>
+                <label class="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">{{ t('companies.city') }}</label>
                 <input v-model.trim="createForm.city" class="form-input" required maxlength="100" placeholder="Alger" />
               </div>
             </div>
@@ -316,15 +316,15 @@
             <div class="rounded-2xl border border-brand-100 bg-brand-50/50 p-5 dark:border-brand-900/30 dark:bg-brand-950/20">
               <div class="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <p class="text-[9px] font-black uppercase tracking-widest text-brand-600/70">{{ t('companies.currency') }}</p>
+                  <p class="text-xs font-black uppercase tracking-widest text-brand-600/70">{{ t('companies.currency') }}</p>
                   <p class="mt-1 text-sm font-black text-slate-900 dark:text-white uppercase">{{ selectedCountryDefault.currency }}</p>
                 </div>
                 <div>
-                  <p class="text-[9px] font-black uppercase tracking-widest text-brand-600/70">{{ t('companies.timezone') }}</p>
+                  <p class="text-xs font-black uppercase tracking-widest text-brand-600/70">{{ t('companies.timezone') }}</p>
                   <p class="mt-1 text-sm font-black text-slate-900 dark:text-white">{{ selectedCountryDefault.timezone }}</p>
                 </div>
                 <div>
-                  <p class="text-[9px] font-black uppercase tracking-widest text-brand-600/70">{{ t('companies.defaultLang') }}</p>
+                  <p class="text-xs font-black uppercase tracking-widest text-brand-600/70">{{ t('companies.defaultLang') }}</p>
                   <p class="mt-1 text-sm font-black text-slate-900 dark:text-white uppercase">{{ selectedCountryDefault.language }}</p>
                 </div>
               </div>
@@ -332,15 +332,15 @@
 
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 pt-4">
               <div class="space-y-1.5">
-                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">{{ t('companies.managerFirst') }}</label>
+                <label class="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">{{ t('companies.managerFirst') }}</label>
                 <input v-model.trim="createForm.manager_first_name" class="form-input" required maxlength="100" placeholder="Amina" />
               </div>
               <div class="space-y-1.5">
-                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">{{ t('companies.managerLast') }}</label>
+                <label class="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">{{ t('companies.managerLast') }}</label>
                 <input v-model.trim="createForm.manager_last_name" class="form-input" required maxlength="100" placeholder="Benali" />
               </div>
               <div class="space-y-1.5 sm:col-span-2">
-                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">{{ t('companies.managerEmail') }}</label>
+                <label class="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">{{ t('companies.managerEmail') }}</label>
                 <input v-model.trim="createForm.manager_email" class="form-input" required type="email" maxlength="150" placeholder="manager@techcorp.example" />
               </div>
             </div>
@@ -924,9 +924,9 @@ function hasHealthScore(item) {
 
 function riskClass(risk) {
   const classes = {
-    high: 'rounded-lg bg-red-100 dark:bg-red-900/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800',
-    medium: 'rounded-lg bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800',
-    low: 'rounded-lg bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800',
+    high: 'rounded-lg bg-red-100 dark:bg-red-900/30 px-2 py-0.5 text-xs font-black uppercase tracking-widest text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800',
+    medium: 'rounded-lg bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 text-xs font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800',
+    low: 'rounded-lg bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 text-xs font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800',
   }
   return classes[risk] || classes.medium
 }

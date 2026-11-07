@@ -199,7 +199,7 @@ export default function HealthAdmissionsPage() {
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             {summary.map((item) => (
               <div key={item.label} className="rounded-2xl border border-slate-200/60 bg-white/80 p-4 shadow-sm backdrop-blur-xl">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{item.label}</p>
+                <p className="text-xs font-black uppercase tracking-widest text-slate-500">{item.label}</p>
                 <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">{String(item.value)}</p>
               </div>
             ))}
@@ -225,12 +225,12 @@ export default function HealthAdmissionsPage() {
           <table className="min-w-full divide-y divide-slate-200 text-sm">
             <thead className="bg-slate-50">
               <tr>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.admissions.patient', 'Patient')}</th>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.admissions.department', 'Service')}</th>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.admissions.bed', 'Lit')}</th>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.admissions.admittedAt', 'Admis le')}</th>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.admissions.status', 'Statut')}</th>
-                <th className="px-4 py-3 text-right font-semibold text-slate-700" aria-label="Actions" />
+                <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.admissions.patient', 'Patient')}</th>
+                <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.admissions.department', 'Service')}</th>
+                <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.admissions.bed', 'Lit')}</th>
+                <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.admissions.admittedAt', 'Admis le')}</th>
+                <th scope="col" className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'health.admissions.status', 'Statut')}</th>
+                <th scope="col" className="px-4 py-3 text-right font-semibold text-slate-700" aria-label={t(locale, 'common.actions', 'Actions')} />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

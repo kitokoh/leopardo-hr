@@ -82,7 +82,7 @@
                 <h3 class="text-2xl font-black text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                   {{ request.company_name }}
                 </h3>
-                <span :class="['px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] rounded-lg border', statusClass(request.status)]">
+                <span :class="['px-3 py-1 text-xs font-black uppercase tracking-[0.2em] rounded-lg border', statusClass(request.status)]">
                   {{ statusLabel(request.status) }}
                 </span>
               </div>
@@ -114,7 +114,7 @@
                     <EnvelopeIcon class="h-5 w-5" />
                   </div>
                   <div class="min-w-0 flex-1">
-                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ t('support.emailLabel') }}</p>
+                    <p class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('support.emailLabel') }}</p>
                     <p class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ request.email || request.user?.email || 'N/A' }}</p>
                   </div>
                 </div>
@@ -123,7 +123,7 @@
                     <PhoneIcon class="h-5 w-5" />
                   </div>
                   <div class="min-w-0 flex-1">
-                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ t('support.phoneLabel') }}</p>
+                    <p class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('support.phoneLabel') }}</p>
                     <p class="text-sm font-bold text-slate-900 dark:text-white">{{ request.phone || t('support.notProvided') }}</p>
                   </div>
                 </div>
@@ -132,7 +132,7 @@
                     <UserIcon class="h-5 w-5" />
                   </div>
                   <div class="min-w-0 flex-1">
-                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ t('support.reviewedBy') }}</p>
+                    <p class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('support.reviewedBy') }}</p>
                     <p class="text-sm font-bold text-slate-900 dark:text-white">{{ t('support.systemAdmin') }}</p>
                   </div>
                 </div>
@@ -142,7 +142,7 @@
             <!-- Action Panel -->
             <div class="w-full xl:w-96 space-y-4">
               <div class="space-y-2">
-                <label :for="'notes-' + request.id" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">{{ t('support.internalNotes') }}</label>
+                <label :for="'notes-' + request.id" class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">{{ t('support.internalNotes') }}</label>
                 <textarea
                   :id="'notes-' + request.id"
                   v-model="notesByRequest[request.id]"
