@@ -117,4 +117,3 @@ class User extends Authenticatable implements HasApiTokensContract
         return $this->hasMany(UserEmployeeLink::class, 'user_id');
     }
 }
-

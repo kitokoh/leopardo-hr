@@ -135,7 +135,7 @@ final class PublicPhoneOtpTest extends TestCase
             'phone_e164' => self::PHONE,
         ])->assertStatus(204);
 
-        /** @var array{hash?: string}|null $entry */
+        /** @var array{hash: string, attempts: int, backoff_until: int|null}|null $entry */
         $entry = Cache::get('auth:public_phone_otp:'.hash('sha256', self::PHONE));
 
         $this->assertIsArray($entry);
