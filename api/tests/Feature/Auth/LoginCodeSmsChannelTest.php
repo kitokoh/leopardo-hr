@@ -206,9 +206,13 @@ final class LoginCodeSmsChannelTest extends TestCase
             $response = $this->postJson('/api/v1/auth/login-code/request', ['email' => $email]);
 
             $response->assertOk()->assertJson(['success' => true]);
-            Mail::assertQueued(
-                LoginCodeMail::class,
+            // `LoginCodeMail` est `ShouldQueue` (#7854) : `Mail::fake()` l'EMPILE.
+            // On compte les mises en file plutot que d'utiliser le 3e argument
+            // de `assertQueued` (qui n'en accepte que 2) : le libelle de cas
+            // reste ainsi porte par le message d'echec.
+            $this->assertSame(
                 1,
+                Mail::queued(LoginCodeMail::class)->count(),
                 "Configuration « {$label} » : l'e-mail DOIT partir, sinon le code ne part nulle part (#9091)."
             );
             Http::assertNothingSent();
