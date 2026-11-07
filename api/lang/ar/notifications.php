@@ -66,4 +66,26 @@ return [
     'vtc_ride_cancelled_title' => 'تم إلغاء الرحلة',
     'vtc_ride_cancelled_body' => 'تم إلغاء رحلتك :reference. السبب: :reason.',
     'vtc_ride_cancelled_driver_body' => 'تم إلغاء الرحلة :reference. السبب: :reason.',
+
+    // COULOIR 16 — M3-bis (#9142) — أول عادة يومية للعميل العام.
+    'public_merchant_reply_title' => 'رد جديد',
+    'public_merchant_reply_body' => 'رد عليك :merchant.',
+    'public_activity_status_title' => 'تقدّم طلبك',
+    'public_activity_status_body' => ':merchant — :reference: :status.',
+    'public_merchant_fallback' => 'التاجر',
+    // قيم `OrderStatus` الحقيقية (BC-25) — الحالة غير المعروفة تُعاد كما هي.
+    'public_status_draft' => 'مسودة',
+    'public_status_open' => 'تم الاستلام',
+    'public_status_in_preparation' => 'قيد التحضير',
+    'public_status_ready' => 'جاهز',
+    'public_status_served' => 'تم التقديم',
+    'public_status_paid' => 'مدفوع',
+    'public_status_closed' => 'مكتمل',
+    'public_status_cancelled' => 'ملغى',
+    'public_status_refunded' => 'مسترد',
+    // حالات الحجز (قطاعات أخرى).
+    'public_status_pending' => 'قيد الانتظار',
+    'public_status_confirmed' => 'مؤكَّد',
+    'public_status_completed' => 'مكتمل',
+    'public_status_rejected' => 'مرفوض',
 ];

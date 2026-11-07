@@ -38,6 +38,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $last_message_at
  * @property Carbon|null $employee_last_read_at
  * @property Carbon|null $manager_last_read_at
+ * @property int|null $public_client_id
+ * @property string|null $public_target_slug
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Employee|null $employee

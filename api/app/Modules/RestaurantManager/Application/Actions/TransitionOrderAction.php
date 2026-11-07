@@ -11,9 +11,11 @@ use App\Modules\RestaurantManager\Domain\Enums\OrderItemStatus;
 use App\Modules\RestaurantManager\Domain\Enums\OrderStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
+use App\Shared\Contracts\Notification\PublicClientNotifier;
 use Illuminate\Support\Facades\DB;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
-use App\Modules\RestaurantManager\Application\Services\RestaurantStockService;
+use Throwable;
 
 /**
  * RESTO-404 (#6191) / RESTO-411 (#6198) — Transitions d'état d'une commande.
@@ -33,6 +35,8 @@ final class TransitionOrderAction
         private readonly OrderStateMachine $stateMachine,
         private readonly RestaurantOutboxPublisher $outbox,
         private readonly StockDecrementer $stockDecrementer,
+        private readonly PublicClientNotifier $publicClientNotifier,
+        private readonly LoggerInterface $logger,
     ) {}
 
     public function execute(Employee $actor, RestaurantOrder $order, OrderStatus $target): RestaurantOrder
@@ -91,7 +95,57 @@ final class TransitionOrderAction
             );
         }
 
+        // COULOIR 16 — M3-bis (#9142) · Suivi de commande côté client.
+        //
+        // Le client public suit sa commande depuis l'onglet Activités ; sans
+        // cette notification, il doit rouvrir l'app et deviner. C'est la
+        // seconde moitié de la « première habitude quotidienne ».
+        //
+        // Best-effort : une notification manquée ne doit JAMAIS annuler une
+        // transition d'état déjà commitée. On journalise et on continue.
+        $this->notifyPublicClientOfStatus($order, $target);
+
         return $order;
+    }
+
+    /**
+     * Prévient le client public du nouvel état de sa commande.
+     *
+     * Ne fait rien si la commande n'est pas rattachée à un client public
+     * (`public_client_id` NULL) : une commande passée au comptoir n'a pas de
+     * destinataire, et c'est le cas majoritaire.
+     *
+     * Le nom commercial vient de `Company.name` — une donnée publique. Aucun
+     * nom d'employé, aucun numéro, aucun prix ne traverse l'appel.
+     */
+    private function notifyPublicClientOfStatus(RestaurantOrder $order, OrderStatus $target): void
+    {
+        $clientId = $order->public_client_id;
+
+        if ($clientId === null) {
+            return;
+        }
+
+        try {
+            $merchantName = (string) (DB::table('companies')
+                ->where('id', $order->company_id)
+                ->value('name') ?? '');
+
+            $this->publicClientNotifier->notifyActivityStatus(
+                clientId: (int) $clientId,
+                merchantName: $merchantName,
+                vertical: 'restaurant',
+                activityType: 'order',
+                externalRef: (string) $order->reference,
+                status: $target->value,
+            );
+        } catch (Throwable $e) {
+            $this->logger->warning('public_activity_status_notify_failed', [
+                'order_id' => $order->id,
+                'status' => $target->value,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -112,6 +166,4 @@ final class TransitionOrderAction
             'currency' => $order->currency,
         ];
     }
-
-
 }

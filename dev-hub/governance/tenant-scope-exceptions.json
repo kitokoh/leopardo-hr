@@ -95,6 +95,11 @@
       "model": "App\\Modules\\Platform\\Domain\\Models\\PublicSearchHistory",
       "reason": "Table PLATEFORME (schema public) SANS colonne company_id : l'historique de recherche appartient au client et ne concerne aucun tenant. Aucune coordonnee n'y est stockee (city = ville choisie ou approximative) (#9105). Trait inapplicable.",
       "added": "2026-11-02"
+    },
+    {
+      "model": "App\\Modules\\Platform\\Domain\\Models\\PublicNotification",
+      "reason": "Table PLATEFORME (schema public) SANS colonne company_id : la boite de notifications appartient au CLIENT, pas au commercant, et un client recoit des notifications de plusieurs commercants de plusieurs tenants. company_id n'y est qu'une coordonnee de routage (nom commercial, reference publique), jamais un critere d'isolation : la lecture filtre par user_id, l'identite authentifiee (#9142). Trait inapplicable (meme regime que PublicActivityIndex #9105).",
+      "added": "2026-11-07"
     }
   ],
   "legacy_pending_review": [

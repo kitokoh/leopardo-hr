@@ -15,6 +15,7 @@ use App\Modules\Notification\Domain\Models\ConversationThread;
 use App\Modules\Notification\Infrastructure\Repositories\PublicConversationIndexRepository;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Notification\Infrastructure\Services\ConversationTransactionRunner;
+use App\Modules\Platform\Application\Services\PublicNotificationService;
 use App\Shared\Discovery\PublicProfileLocator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Validation\ValidationException;
@@ -312,6 +313,11 @@ final class PublicConversationService
             body: $trimmed,
         );
 
+        // COULOIR 16 — M3-bis (#9142) : le client est prévenu qu'un commerçant
+        // lui a répondu. Sans cela, il n'a aucune raison de revenir — c'est
+        // exactement la « première habitude quotidienne » de la spec.
+        $this->notifyPublicClient($thread);
+
         return $message;
     }
 
@@ -493,5 +499,81 @@ final class PublicConversationService
         } catch (\Throwable $e) {
             $this->transactions->logNotificationFailure((int) $thread->id, $e->getMessage());
         }
+    }
+
+    /**
+     * COULOIR 16 — M3-bis (#9142) · Prévient le CLIENT qu'un commerçant a répondu.
+     *
+     * C'est le pendant de `notifyTenantManagers()` : le client public n'est pas
+     * un employé, il n'a donc ni `CommunicationService` (préférences, heures
+     * calmes, quotas — des notions de tenant) ni boîte dans un schéma tenant.
+     * Sa boîte vit dans `public_notifications` (schéma `public`), écrite par
+     * `PublicNotificationService`.
+     *
+     * Best-effort, comme l'autre sens : une notification manquée ne doit pas
+     * faire échouer l'écriture du message, qui est la donnée métier.
+     *
+     * Le nom transmis est le nom COMMERCIAL du profil (`display_name`), jamais
+     * le nom de l'employé qui a répondu : le client parle à un commerce.
+     */
+    private function notifyPublicClient(ConversationThread $thread): void
+    {
+        $clientId = $thread->public_client_id;
+
+        if ($clientId === null) {
+            return;
+        }
+
+        try {
+            /** @var User|null $client */
+            $client = User::query()->find($clientId);
+
+            if (! $client instanceof User) {
+                return;
+            }
+
+            $merchantName = $this->merchantDisplayName($thread);
+
+            app(PublicNotificationService::class)->notifyMerchantReply(
+                client: $client,
+                merchantName: $merchantName,
+                threadId: (int) $thread->id,
+                companyId: (string) $thread->company_id,
+            );
+        } catch (\Throwable $e) {
+            $this->transactions->logNotificationFailure((int) $thread->id, $e->getMessage());
+        }
+    }
+
+    /**
+     * Nom commercial du professionnel, avec repli sur le titre du fil.
+     *
+     * Le fil ne persiste que `public_target_slug` (le slug EST l'identifiant
+     * public du profil) — pas le type. On interroge donc les types supportés
+     * par le locator : `locate()` est fail-closed et renvoie `null` pour un
+     * type qui ne correspond pas, donc le premier résultat non nul est le bon.
+     *
+     * Un profil dépublié renvoie `null` partout : on ne bloque pas la
+     * notification pour autant — le titre du fil contient déjà le nom.
+     */
+    private function merchantDisplayName(ConversationThread $thread): string
+    {
+        $slug = $thread->public_target_slug;
+
+        if (is_string($slug) && $slug !== '') {
+            foreach ($this->locator->types() as $type) {
+                $profile = $this->locator->locate($type, $slug);
+
+                if (is_array($profile)) {
+                    $name = trim($profile['display_name']);
+
+                    if ($name !== '') {
+                        return $name;
+                    }
+                }
+            }
+        }
+
+        return $thread->title;
     }
 }

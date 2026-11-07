@@ -66,4 +66,28 @@ return [
     'vtc_ride_cancelled_title' => 'Course annulée',
     'vtc_ride_cancelled_body' => 'Votre course :reference a été annulée. Motif : :reason.',
     'vtc_ride_cancelled_driver_body' => 'La course :reference a été annulée. Motif : :reason.',
+
+    // COULOIR 16 — M3-bis (#9142) — première habitude quotidienne du client public.
+    // Textes simples, sans jargon : le client lit « votre commande », pas « activité ».
+    'public_merchant_reply_title' => 'Nouvelle réponse',
+    'public_merchant_reply_body' => ':merchant vous a répondu.',
+    'public_activity_status_title' => 'Votre commande a avancé',
+    'public_activity_status_body' => ':merchant — :reference : :status.',
+    'public_merchant_fallback' => 'Le commerçant',
+    // Statuts réels de `OrderStatus` (BC-25) — un statut inconnu est renvoyé
+    // tel quel par le service plutôt que masqué.
+    'public_status_draft' => 'brouillon',
+    'public_status_open' => 'reçue',
+    'public_status_in_preparation' => 'en préparation',
+    'public_status_ready' => 'prête',
+    'public_status_served' => 'servie',
+    'public_status_paid' => 'payée',
+    'public_status_closed' => 'terminée',
+    'public_status_cancelled' => 'annulée',
+    'public_status_refunded' => 'remboursée',
+    // Statuts de réservation (autres verticales).
+    'public_status_pending' => 'en attente',
+    'public_status_confirmed' => 'confirmée',
+    'public_status_completed' => 'terminée',
+    'public_status_rejected' => 'refusée',
 ];

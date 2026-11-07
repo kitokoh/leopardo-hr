@@ -13,6 +13,7 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyIntegrationRequestContro
 use App\Modules\HR\Interfaces\Api\V1\Controllers\UserEmployeeLinkController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\PublicConversationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicActivityController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicNotificationController;
 use Illuminate\Support\Facades\Route;
 
 // Public (sans auth, throttle strict)
@@ -95,6 +96,20 @@ Route::middleware(['throttle:shop-public', 'auth:user_api'])->prefix('user')->gr
     Route::get('/search-history', [PublicActivityController::class, 'searchHistory']);
     Route::post('/search-history', [PublicActivityController::class, 'storeSearchHistory']);
     Route::delete('/search-history', [PublicActivityController::class, 'clearSearchHistory']);
+
+    // COULOIR 16 — M3-bis (#9142) · Première habitude quotidienne.
+    //
+    // Boîte de notifications IN-APP du client : réponse d'un commerçant et
+    // changement de statut d'une commande/réservation. Le push (FCM/APNs)
+    // arrive en M2 avec `public_device_tokens` ; ici tout est in-app, donc
+    // aucune porte n'est franchie.
+    //
+    // `read-all` est déclarée AVANT `{notification}/read` : sans cela, le
+    // routeur tenterait de lier « read-all » à un entier et renverrait 404.
+    Route::get('/notifications', [PublicNotificationController::class, 'index']);
+    Route::post('/notifications/read-all', [PublicNotificationController::class, 'markAllRead']);
+    Route::post('/notifications/{notification}/read', [PublicNotificationController::class, 'markRead'])
+        ->whereNumber('notification');
 });
 
 // Manager: lier un utilisateur ordinaire a un employe
