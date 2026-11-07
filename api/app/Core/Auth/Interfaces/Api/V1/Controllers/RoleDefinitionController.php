@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Interfaces\Api\V1\Controllers;
 
-use App\Core\Auth\Infrastructure\Services\RoleDelegationGuard;
 use App\Core\Auth\Domain\Enums\DelegablePermission;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\RoleDelegationGuard;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
