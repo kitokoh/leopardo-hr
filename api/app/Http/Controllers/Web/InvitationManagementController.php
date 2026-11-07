@@ -67,12 +67,19 @@ class InvitationManagementController extends Controller
             return back()->withErrors(['invitation' => 'Cette invitation a deja ete acceptee.']);
         }
 
-        $this->userInvitationService->createAndSend(
+        $token = $this->userInvitationService->createAndSend(
             company: $employee->company,
             employee: $employee,
             invitedByType: 'manager',
             invitedByEmail: $actor->email ?? '',
         );
+
+        // #9114 : garde de course — la vérification `accepted_at` ci-dessus est
+        // faite hors transaction ; le service est l'autorité et renvoie `''`
+        // quand l'invitation a été consommée entre-temps.
+        if ($token === '') {
+            return back()->withErrors(['invitation' => 'Cette invitation a deja ete acceptee.']);
+        }
 
         return back()->with('status', 'Invitation renvoyee a '.$employee->email);
     }

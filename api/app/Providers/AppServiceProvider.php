@@ -15,6 +15,7 @@ use App\Contracts\Queue\OutboundWebhookTransport;
 use App\Core\AI\Domain\Contracts\SpeechToTextPort;
 use App\Core\AI\Infrastructure\Adapters\GroqWhisperAdapter;
 use App\Core\AI\Infrastructure\Adapters\UnavailableSpeechToTextAdapter;
+use App\Core\Auth\Domain\Contracts\InvitationActivationContract;
 use App\Core\Auth\Domain\Contracts\SmsCodeSenderContract;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Sms\LogOnlySmsCodeSender;
@@ -27,6 +28,7 @@ use App\Jobs\Services\HmacWebhookSigner;
 use App\Jobs\Services\HttpOutboundWebhookTransport;
 use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Billing\Domain\Services\EntitlementGuard;
+use App\Modules\HR\Infrastructure\Services\InvitationActivationService;
 use App\Modules\HR\Infrastructure\Services\PiiLifecycleService;
 use App\Modules\Notification\Infrastructure\Services\InAppNotifierAdapter;
 use App\Modules\Payroll\Infrastructure\Services\IslamicCalendarService;
@@ -165,6 +167,15 @@ class AppServiceProvider extends ServiceProvider
         // fournisseur de production n'est contractualise : brancher un vrai
         // fournisseur ne demande que de re-lier cette interface.
         $this->app->singleton(SmsCodeSenderContract::class, LogOnlySmsCodeSender::class);
+
+        // Activation d'invitation employé — contrat dans Core/Auth, implémentation
+        // dans le module HR (garde #8717 : Core ne dépend pas d'un service
+        // concret de module). Une seule règle d'activation pour
+        // `/auth/register` et `/onboarding/invitation/{token}/activate`.
+        $this->app->bind(
+            InvitationActivationContract::class,
+            InvitationActivationService::class,
+        );
 
         // Canonical singleton — tous les nouveaux usages
         $this->app->singleton(TenantManager::class);

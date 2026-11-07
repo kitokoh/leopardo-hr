@@ -29,6 +29,11 @@ class UserInvitationService
      *                                                                                                           ressource voyagent dans l'invitation et sont créés à l'ACTIVATION
      *                                                                                                           (l'employé n'a de session qu'à ce moment-là ; s'il n'active jamais,
      *                                                                                                           aucun accès n'existe).
+     * @return string jeton en clair, ou `''` quand l'invitation est DÉJÀ
+     *                consommée (compte actif) : aucun jeton n'est émis, aucun
+     *                courriel n'est envoyé, rien n'est rouvert. Les appelants
+     *                doivent traiter `''` comme « rien à renvoyer », pas comme
+     *                un envoi réussi.
      */
     public function createAndSend(
         Company $company,
@@ -55,6 +60,18 @@ class UserInvitationService
             $invitation = new UserInvitation;
             $invitation->company_id = $company->id;
             $invitation->employee_id = $employee->id;
+        }
+
+        // Correctif onboarding (audit IAM) — une invitation DÉJÀ CONSOMMÉE ne
+        // doit jamais être rouverte. L'ancien code remettait `accepted_at` à
+        // null et rotationnait le jeton : un resend (ou une ré-invitation d'un
+        // employé existant) produisait un lien valide permettant de RÉÉCRIRE
+        // le mot de passe d'un compte déjà actif — prise de contrôle de compte
+        // par simple connaissance de l'adresse e-mail. On sort sans toucher au
+        // jeton ni envoyer de courriel : le compte est actif, la récupération
+        // passe par le flux « mot de passe oublié ».
+        if ($invitation->accepted_at !== null) {
+            return '';
         }
 
         $invitation->email = $employee->email;
@@ -122,9 +139,18 @@ class UserInvitationService
         return $plainToken;
     }
 
-    public function accept(string $plainToken, string $password): Employee
+    /**
+     * Active une invitation : définit le mot de passe, applique le profil et
+     * le rôle portés par l'invitation, consomme le jeton et matérialise les
+     * accès ressource pré-assignés.
+     *
+     * @param  array{first_name?: string|null, last_name?: string|null, email?: string|null}|null  $profile
+     *                                                                                                       Profil saisi par l'employé à l'activation (`/auth/register`).
+     *                                                                                                       `null` = activation par lien : le profil existant est conservé.
+     */
+    public function accept(string $plainToken, string $password, ?array $profile = null): Employee
     {
-        return DB::transaction(function () use ($plainToken, $password): Employee {
+        return DB::transaction(function () use ($plainToken, $password, $profile): Employee {
             $invitation = UserInvitation::query()
                 ->where('token_hash', hash('sha256', $plainToken))
                 ->lockForUpdate()
@@ -162,9 +188,40 @@ class UserInvitationService
 
                 $acceptedAt = now();
 
+                // Profil saisi à l'activation (`/auth/register`). En activation
+                // par lien, `$profile` est null : le profil existant est
+                // conservé tel quel (aucune régression).
+                if ($profile !== null) {
+                    if (isset($profile['first_name']) && $profile['first_name'] !== '') {
+                        $employee->first_name = $profile['first_name'];
+                    }
+                    if (isset($profile['last_name']) && $profile['last_name'] !== '') {
+                        $employee->last_name = $profile['last_name'];
+                    }
+                    if (isset($profile['email']) && $profile['email'] !== '') {
+                        $employee->email = strtolower(trim($profile['email']));
+                    }
+                }
+
+                // Rôle porté par l'invitation. `manager_role` était ignoré par
+                // `/auth/register` : un RH invité obtenait `role=manager` mais
+                // `manager_role=null`, donc `isHr()` faux et des permissions
+                // erronées dès la première connexion.
+                if ($invitation->role !== '') {
+                    $employee->role = $invitation->role;
+                }
+                if (is_string($invitation->manager_role) && $invitation->manager_role !== '') {
+                    $employee->manager_role = $invitation->manager_role;
+                }
+
                 $employee->password_hash = Hash::make($password);
                 $employee->email_verified_at = $acceptedAt;
                 $employee->invitation_accepted_at = $acceptedAt;
+                // Le statut n'est JAMAIS forcé ici : un employé `suspended` qui
+                // active son invitation resterait suspendu (sinon l'activation
+                // serait un contournement de suspension). Les employés
+                // `archived`/`departed` sont déjà refusés plus haut, et un
+                // employé fraîchement invité porte `active` par défaut.
                 $employee->save();
 
                 // #7601 — les accès pré-assignés à l'invitation prennent effet

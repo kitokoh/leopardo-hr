@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Onboarding\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Contracts\InvitationActivationContract;
 use App\Http\Controllers\Controller;
 use App\Modules\HR\Domain\Models\UserInvitation;
-use App\Modules\HR\Infrastructure\Services\UserInvitationService;
-use Illuminate\Http\JsonResponse;
 use App\Modules\Onboarding\Interfaces\Api\V1\Requests\ActivateInvitationRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
@@ -22,7 +22,9 @@ use Illuminate\Http\Request;
  */
 class OnboardingController extends Controller
 {
-    public function __construct(private readonly UserInvitationService $userInvitationService) {}
+    public function __construct(
+        private readonly InvitationActivationContract $activateInvitation,
+    ) {}
 
     /**
      * GET /onboarding/invitation/{token}
@@ -46,6 +48,19 @@ class OnboardingController extends Controller
 
         if ($invitation->expires_at?->isPast()) {
             return $this->errorResponse('INVITATION_EXPIRED', 410);
+        }
+
+        // Correctif onboarding (audit IAM) — `show` annonçait une invitation
+        // valide pour une société suspendue/expirée : l'utilisateur remplissait
+        // le formulaire puis recevait un 403 à l'activation. On applique ici la
+        // même garde que `accept()` pour que l'écran dise la vérité.
+        $company = \App\Core\Tenant\Domain\Models\Company::query()
+            ->from('public.companies')
+            ->whereKey($invitation->company_id)
+            ->first();
+
+        if ($company !== null && in_array($company->status, ['suspended', 'expired'], true)) {
+            return $this->errorResponse('COMPANY_SUSPENDED', 403);
         }
 
         return new JsonResponse([
@@ -86,11 +101,20 @@ class OnboardingController extends Controller
             return $this->errorResponse('INVITATION_EXPIRED', 410);
         }
 
-        $employee = $this->userInvitationService->accept($token, $validated['password']);
+        $deviceName = (string) $request->input('device_name', 'mobile');
 
-        // Issue a Sanctum token for immediate login after activation
-        $deviceName = $request->input('device_name', 'mobile');
-        $sanctumToken = $employee->createToken($deviceName);
+        // Cas d'usage PARTAGÉ avec `POST /auth/register` : une seule règle
+        // d'activation, un seul endroit où la corriger. Le jeton rendu porte
+        // les abilities tenant (via `AuthService::login`), sinon
+        // `TenantMiddleware` ne peut pas résoudre le contexte et l'employé
+        // fraîchement activé reçoit un 403 sur son dashboard.
+        $result = $this->activateInvitation->activate(
+            plainToken: $token,
+            password: $validated['password'],
+            deviceName: $deviceName,
+        );
+
+        $employee = $result['employee'];
 
         return new JsonResponse([
             'data' => [
@@ -100,10 +124,11 @@ class OnboardingController extends Controller
                     'first_name' => $employee->first_name,
                     'last_name' => $employee->last_name,
                     'role' => $employee->role,
+                    'manager_role' => $employee->manager_role,
                 ],
-                'token' => $sanctumToken->plainTextToken,
+                'token' => $result['token'],
                 'token_type' => 'Bearer',
-                'token_expires_at' => null,
+                'token_expires_at' => $result['token_expires_at'],
             ],
             'message' => 'ACCOUNT_ACTIVATED',
         ], 201);
