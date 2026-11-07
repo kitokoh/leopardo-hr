@@ -29,4 +29,10 @@ return [
     'login_code_too_many_attempts' => 'Trop de tentatives. Demandez un nouveau code de connexion.',
     'login_code_password_required' => 'Ce compte requiert une connexion par mot de passe.',
     'login_code_send_failed' => 'L\'envoi du code de connexion a échoué. Réessayez dans un instant.',
+
+    // COULOIR 16 — M2 (#9104) · OTP par téléphone (canal public).
+    'public_phone_otp_invalid' => 'Code de connexion invalide. Vérifiez le code reçu par SMS.',
+    'public_phone_otp_expired' => 'Ce code a expiré. Demandez un nouveau code.',
+    'public_phone_otp_too_many_attempts' => 'Trop de tentatives. Patientez avant de demander un nouveau code.',
+    'public_account_deletion_confirmation_required' => 'Saisissez le mot de confirmation pour supprimer votre compte.',
 ];

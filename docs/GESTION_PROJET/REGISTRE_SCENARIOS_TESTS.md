@@ -2451,3 +2451,34 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
   - `phpstan-strict.neon` niveau 8 : **0 erreur** ;
   - `pint --test` : **OK** sur tous les fichiers du lot.
 - **Non couvert** : parcours navigateur de bout en bout sur le lien d'invitation recu par email (couvert par les tests de feature, pas par un E2E Playwright).
+
+## Lot 2026-11-07 — M2 Couloir 16 : compte public, OTP téléphone, cycle de vie, jetons push (refs #9104)
+
+- **Composants concernes** :
+  - `api/app/Core/Auth/Interfaces/Api/V1/Controllers/PublicPhoneOtpController.php` (nouveau — OTP par telephone, canal public)
+  - `api/app/Core/Auth/Interfaces/Api/V1/Controllers/PublicAccountController.php` (nouveau — refresh, logout-all, suppression differee)
+  - `api/app/Core/Auth/Interfaces/Api/V1/Controllers/PublicDeviceTokenController.php` (nouveau — jetons d'appareil publics)
+  - `api/app/Core/Auth/Infrastructure/Services/UserAuthService.php` (`loginViaPhone()`)
+  - `api/app/Core/Auth/Domain/Models/User.php` (casts + `HasApiTokensContract` explicite)
+  - `api/routes/modules/user.php` (6 routes sous `throttle:auth-sensitive` / `auth:user_api`)
+  - `api/database/migrations/public/2026_11_07_000300_9104_add_public_account_m2_fields.php` (migration additive)
+  - `api/openapi.yaml` (6 chemins), `api/lang/{fr,en,ar,tr}/auth.php` (4 cles x 4 locales)
+- **Cas couverts** :
+  1. `POST /user/login-code/phone/request` rend **204 dans tous les cas** — numero inconnu, mal forme ou compte suspendu produisent la meme reponse (anti-enumeration) ;
+  2. Si le transport SMS n'est pas configure ou si l'envoi echoue, **aucun code n'est stocke** et aucun faux succes n'est rendu ;
+  3. Le code est **hache au repos**, a usage unique, TTL 10 min, verrou a 5 echecs ;
+  4. Anti-fraude : 3 codes / 15 min par numero, 10 codes / heure par IP, backoff exponentiel (1 / 5 / 15 min) apres 3 echecs ;
+  5. `POST /user/login-code/phone/verify` ouvre la session sous `user_api` et horodate `phone_verified_at` — **aucun compte n'est cree** (numero inconnu → 410) ;
+  6. `POST /user/refresh` fait tourner le jeton via `RefreshTokenAction` (verrou pessimiste #5581, fenetre de grace 0) ;
+  7. `POST /user/logout-all` revoque **tous** les appareils, y compris celui qui porte la requete ;
+  8. `DELETE /user/account` exige une **re-authentification** (mot de passe + mot de confirmation) et planifie une suppression **differee de 30 jours**, reversible ;
+  9. `POST`/`DELETE /user/device-tokens` enregistrent et suppriment un jeton d'appareil ; le `user_id` vient du jeton authentifie, jamais du corps de la requete ;
+  10. **Isolation de guard** : un jeton `user_api` ouvre `/user/me` (200) et **rien** de la surface employe (`/employees` → 401), verifie avec `Auth::forgetGuards()`.
+- **Preuves et gardes verifiees** (`CI=true`, PHP 8.2.35 + PostgreSQL 15.19 + PostGIS 3.3) :
+  - `PublicPhoneOtpTest` : **14 passed / 46 assertions** ;
+  - `phpstan-strict.neon` niveau 8 : **0 erreur** (5 fichiers) ;
+  - `phpstan-modules.neon` : **0 erreur** (3 fichiers) ;
+  - i18n fr/en/ar(RTL)/tr : 4 cles x 4 locales, parite ;
+  - OpenAPI : 6 chemins ajoutes, YAML valide (1438 chemins) ;
+  - migration additive : `users.phone_verified_at` / `deletion_requested_at` / `purge_scheduled_at` + `public_device_tokens`, aucune colonne existante modifiee.
+- **Non couvert** : l'envoi effectif des notifications push (FCM/APNs) — ce lot enregistre et supprime des jetons, il n'envoie rien ; `Pint` n'a pas pu tourner dans le sandbox (phar exige PHP `^8.3.0`), le style est verifie par la CI.

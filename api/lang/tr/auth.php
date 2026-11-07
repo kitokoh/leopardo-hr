@@ -29,4 +29,10 @@ return [
     'login_code_too_many_attempts' => 'Çok fazla deneme. Yeni bir giriş kodu isteyin.',
     'login_code_password_required' => 'Bu hesap parola ile giriş gerektirir.',
     'login_code_send_failed' => 'Giriş kodu gönderilemedi. Lütfen kısa süre sonra tekrar deneyin.',
+
+    // COULOIR 16 — M2 (#9104) · Telefonla OTP (genel kanal).
+    'public_phone_otp_invalid' => 'Geçersiz giriş kodu. SMS ile aldığınız kodu kontrol edin.',
+    'public_phone_otp_expired' => 'Bu kodun süresi doldu. Yeni bir kod isteyin.',
+    'public_phone_otp_too_many_attempts' => 'Çok fazla deneme. Yeni kod istemeden önce bekleyin.',
+    'public_account_deletion_confirmation_required' => 'Hesabınızı silmek için onay kelimesini girin.',
 ];

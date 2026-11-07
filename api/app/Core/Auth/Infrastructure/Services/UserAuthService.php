@@ -74,6 +74,43 @@ readonly class UserAuthService
     }
 
     /**
+     * COULOIR 16 — M2 (#9104) : ouverture de session après vérification d'un
+     * code OTP **par téléphone**.
+     *
+     * Le numéro est déjà normalisé en E.164 et **déjà prouvé** par l'appelant
+     * (`PublicPhoneOtpController::verify()` a consommé le code) : ce service ne
+     * re-vérifie donc pas le code, il ouvre la session. La séparation est
+     * volontaire — la preuve d'identité vit dans le contrôleur, l'émission du
+     * jeton vit ici, comme pour les autres flux.
+     *
+     * Aucun compte n'est créé : un numéro inconnu lève
+     * `InvalidCredentialsException`. Un OTP ne doit jamais être un chemin de
+     * création d'identité silencieux.
+     *
+     * @return array{user: User, token: string, token_type: string, token_expires_at: ?string}
+     */
+    public function loginViaPhone(string $phoneE164, ?string $deviceName = null): array
+    {
+        /** @var User|null $user */
+        $user = User::where('phone_e164', $phoneE164)->first();
+
+        if (! $user) {
+            throw new InvalidCredentialsException;
+        }
+
+        if ($user->locked_until && $user->locked_until->isFuture()) {
+            throw new AccountLockedException($user->locked_until);
+        }
+
+        if ($user->status !== 'active') {
+            // Issue #2618 : compte suspendu = aucun token émis (fail-closed).
+            throw new \App\Exceptions\AccountSuspendedException;
+        }
+
+        return $this->issueToken($user, $deviceName ?? 'Mobile App');
+    }
+
+    /**
      * Google Sign-In vérifié côté serveur (issue #3941).
      *
      * L'identité (google_id, email, nom, avatar) est dérivée des claims du

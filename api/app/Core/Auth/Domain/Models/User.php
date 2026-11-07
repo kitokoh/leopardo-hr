@@ -7,9 +7,12 @@ namespace App\Core\Auth\Domain\Models;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Modules\HR\Domain\Models\UserEmployeeLink;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Carbon;
+use Laravel\Sanctum\Contracts\HasApiTokens as HasApiTokensContract;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -30,9 +33,14 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|null $last_login_at
  * @property int $failed_login_attempts
  * @property Carbon|null $locked_until
+ * @property Carbon|null $phone_verified_at Date de verification du telephone par OTP (M2 #9104)
+ * @property Carbon|null $deletion_requested_at Suppression differee demandee (M2 #9104)
+ * @property Carbon|null $purge_scheduled_at Purge planifiee a 30 jours (M2 #9104)
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder
+ *
+ * @mixin Builder
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static> query()
  * @method static static create(array<string, mixed> $attributes = [])
  * @method static static|null find(mixed $id, array<int, string> $columns = ['*'])
@@ -41,10 +49,10 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static static firstOrCreate(array<string, mixed> $attributes, array<string, mixed> $values = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static> where(string|\Closure|array<mixed> $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
  */
-class User extends Authenticatable
+class User extends Authenticatable implements HasApiTokensContract
 {
-    use \Illuminate\Database\Eloquent\Factories\HasFactory;
     use HasApiTokens;
+    use HasFactory;
 
     protected $table = 'users';
 
@@ -81,6 +89,10 @@ class User extends Authenticatable
         'locked_until' => 'datetime',
         'failed_login_attempts' => 'integer',
         'personal_statuses' => 'array', // #5540 — tableau JSON
+        // COULOIR 16 — M2 (#9104) : cycle de vie du compte public.
+        'phone_verified_at' => 'datetime',
+        'deletion_requested_at' => 'datetime',
+        'purge_scheduled_at' => 'datetime',
     ];
 
     public function getAuthPassword(): string
@@ -105,4 +117,3 @@ class User extends Authenticatable
         return $this->hasMany(UserEmployeeLink::class, 'user_id');
     }
 }
-

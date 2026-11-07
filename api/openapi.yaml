@@ -4947,6 +4947,271 @@ paths:
           description: Notification introuvable pour ce client
         '429':
           $ref: '#/components/responses/Error429'
+  /user/login-code/phone/request:
+    post:
+      operationId: api_post_user_login_code_phone_request
+      tags:
+      - User
+      summary: Demander un code de connexion par téléphone (COULOIR 16, M2, #9104)
+      description: >-
+        Envoie un code à usage unique (6 chiffres) par SMS au numéro fourni.
+        Guard public, throttle `auth-sensitive`.
+
+        **Anti-énumération** : la réponse est TOUJOURS `204`, même si le numéro
+        est inconnu, mal formé, ou si le compte est suspendu. Un corps qui
+        varierait révélerait quels numéros ont un compte.
+
+        **Un code, un canal** : si le transport SMS n'est pas configuré ou si
+        l'envoi échoue, AUCUN code n'est stocké et aucun faux succès n'est
+        rendu — le client réessaie.
+
+        **Anti-fraude** : 3 codes / 15 min par numéro, 10 codes / heure par IP.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - phone_e164
+              properties:
+                phone_e164:
+                  type: string
+                  maxLength: 20
+                  example: '+213555123456'
+                country:
+                  type: string
+                  maxLength: 2
+                  description: Code pays ISO-3166 alpha-2, si le numéro est national.
+                  example: DZ
+      responses:
+        '204':
+          description: Demande acceptée (toujours — anti-énumération)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /user/login-code/phone/verify:
+    post:
+      operationId: api_post_user_login_code_phone_verify
+      tags:
+      - User
+      summary: Vérifier le code reçu par SMS et ouvrir la session (COULOIR 16, M2, #9104)
+      description: >-
+        Vérifie le code à usage unique et rend un jeton `user_api`. Le code est
+        HACHÉ au repos, consommé au premier usage, et verrouillé après 5 échecs.
+        Un backoff exponentiel (1 min, 5 min, 15 min) s'applique après 3 échecs.
+
+        Aucun compte n'est créé : un numéro inconnu rend `410`. Un OTP ne doit
+        jamais être un chemin de création d'identité silencieux.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - phone_e164
+              - code
+              properties:
+                phone_e164:
+                  type: string
+                  maxLength: 20
+                  example: '+213555123456'
+                country:
+                  type: string
+                  maxLength: 2
+                  example: DZ
+                code:
+                  type: string
+                  minLength: 6
+                  maxLength: 6
+                  example: '123456'
+                device_name:
+                  type: string
+                  maxLength: 255
+                  example: iPhone 15
+      responses:
+        '200':
+          description: Session ouverte
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                  token:
+                    type: string
+                  token_type:
+                    type: string
+                    example: Bearer
+                  token_expires_at:
+                    type: string
+                    nullable: true
+        '401':
+          description: Code invalide
+        '410':
+          description: Code expiré ou jamais demandé
+        '429':
+          description: Trop de tentatives
+  /user/refresh:
+    post:
+      operationId: api_post_user_refresh
+      tags:
+      - User
+      summary: Rafraîchir le jeton (COULOIR 16, M2, #9104)
+      description: >-
+        Rotation systématique : un nouveau jeton est créé et l'ancien est
+        supprimé dans la même transaction (verrou pessimiste, #5581). Fenêtre de
+        grâce 0 — pas de réutilisation. Un jeton déjà pivoté rend `409`.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Nouveau jeton
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  token_type:
+                    type: string
+                  token_expires_at:
+                    type: string
+                    nullable: true
+        '401':
+          $ref: '#/components/responses/Error401'
+        '409':
+          description: Jeton déjà pivoté par une requête concurrente
+  /user/logout-all:
+    post:
+      operationId: api_post_user_logout_all
+      tags:
+      - User
+      summary: Révoquer tous les appareils (COULOIR 16, M2, #9104)
+      description: >-
+        Révoque TOUS les jetons de l'utilisateur, y compris celui qui porte la
+        requête. C'est le geste « appareil perdu » du contrat (cas 8 de la
+        matrice de connexion).
+      security:
+      - BearerAuth: []
+      responses:
+        '204':
+          description: Tous les jetons révoqués
+        '401':
+          $ref: '#/components/responses/Error401'
+  /user/account:
+    delete:
+      operationId: api_delete_user_account
+      tags:
+      - User
+      summary: Demander la suppression du compte (COULOIR 16, M2, #9104)
+      description: >-
+        Suppression **différée** de 30 jours, réversible. Ré-authentification
+        obligatoire (mot de passe + mot de confirmation) : un jeton volé ne doit
+        pas pouvoir supprimer un compte. Tous les appareils sont déconnectés
+        immédiatement. Aucune donnée n'est détruite dans cette requête —
+        l'anonymisation conserve les données de facturation (obligation légale).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - password
+              - confirmation
+              properties:
+                password:
+                  type: string
+                confirmation:
+                  type: string
+                  example: SUPPRIMER
+      responses:
+        '202':
+          description: Suppression planifiée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: pending
+                  purge_scheduled_at:
+                    type: string
+        '401':
+          description: Mot de passe incorrect
+        '422':
+          description: Mot de confirmation manquant ou incorrect
+  /user/device-tokens:
+    post:
+      operationId: api_post_user_device_tokens
+      tags:
+      - User
+      summary: Enregistrer un jeton d'appareil (COULOIR 16, M2, #9104)
+      description: >-
+        Enregistre un jeton push pour l'appareil courant. Idempotent : le même
+        jeton met à jour sa ligne. Un appareil qui change de propriétaire est
+        réaffecté au nouveau compte. Le `user_id` vient du jeton authentifié,
+        jamais du corps de la requête.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - token
+              properties:
+                token:
+                  type: string
+                  maxLength: 255
+                platform:
+                  type: string
+                  enum: [ios, android, web, unknown]
+                device_name:
+                  type: string
+                  maxLength: 120
+      responses:
+        '201':
+          description: Jeton enregistré
+        '401':
+          $ref: '#/components/responses/Error401'
+    delete:
+      operationId: api_delete_user_device_tokens
+      tags:
+      - User
+      summary: Supprimer un jeton d'appareil (COULOIR 16, M2, #9104)
+      description: >-
+        Supprime le jeton de CET utilisateur. Un jeton appartenant à un autre
+        compte n'est pas supprimable — la clause `user_id` est dans la requête.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - token
+              properties:
+                token:
+                  type: string
+                  maxLength: 255
+      responses:
+        '204':
+          description: Jeton supprimé
+        '401':
+          $ref: '#/components/responses/Error401'
   /user/google-signin:
     post:
       operationId: api_post_user_google_signin
