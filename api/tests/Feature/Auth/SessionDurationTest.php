@@ -64,7 +64,12 @@ class SessionDurationTest extends TestCase
 
         $response->assertOk();
 
-        $expiresAt = $response->json('data.token_expires_at');
+        // #9093 — `token_expires_at` est exposé à la RACINE de la réponse
+        // (`EmployeeResource::additional()`), pas sous `data` : le test lisait
+        // `data.token_expires_at`, toujours null, et échouait donc sur une
+        // erreur de chemin, pas sur une absence d'expiration. Prouvé par
+        // `IdentityShapesProbeTest` (root_keys=data,token,token_type,token_expires_at).
+        $expiresAt = $response->json('token_expires_at');
         $this->assertIsString($expiresAt);
 
         $expected = now()->addMinutes(43200);

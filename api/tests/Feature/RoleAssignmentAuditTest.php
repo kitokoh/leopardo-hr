@@ -179,4 +179,49 @@ class RoleAssignmentAuditTest extends TestCase
 
         $this->assertSame(0, $count);
     }
+
+    /**
+     * #9093 — garde du DERNIER PRINCIPAL.
+     *
+     * Le principal unique d'une entreprise tente de se rétrograder : sans
+     * garde, l'entreprise se retrouve sans personne capable de nommer un
+     * successeur — auto-verrouillage définitif. Miroir de
+     * `LAST_SUPER_ADMIN_REQUIRED` côté plateforme.
+     */
+    public function test_last_principal_cannot_be_demoted(): void
+    {
+        $company = Company::factory()->create();
+        $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($principal);
+
+        $response = $this->postJson("/api/v1/employees/{$principal->id}/assign-role", [
+            'manager_role' => 'rh',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonPath('error', 'LAST_PRINCIPAL_REQUIRED');
+
+        // Le rôle n'a PAS bougé : la garde refuse AVANT toute écriture.
+        $this->assertSame('principal', $principal->fresh()->manager_role);
+    }
+
+    /**
+     * #9093 — la garde ne bloque que le DERNIER principal : dès qu'un second
+     * principal actif subsiste, la rétrogradation est permise.
+     */
+    public function test_principal_can_be_demoted_when_another_active_principal_remains(): void
+    {
+        $company = Company::factory()->create();
+        $actor = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $other = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($actor);
+
+        $this->postJson("/api/v1/employees/{$other->id}/assign-role", [
+            'manager_role' => 'rh',
+        ])->assertOk();
+
+        $this->assertSame('rh', $other->fresh()->manager_role);
+    }
 }
