@@ -7,7 +7,7 @@ namespace App\Modules\Platform\Application\Services;
 use App\Core\Auth\Domain\Models\User;
 use App\Modules\Platform\Domain\Models\PublicNotification;
 use App\Shared\Contracts\Notification\PublicClientNotifier;
-use Illuminate\Support\Facades\Log;
+use Psr\Log\LoggerInterface;
 use Throwable;
 
 /**
@@ -43,6 +43,8 @@ final class PublicNotificationService implements PublicClientNotifier
 {
     /** Nombre maximal de notifications renvoyées (borne de charge utile). */
     public const MAX_NOTIFICATIONS = 50;
+
+    public function __construct(private readonly LoggerInterface $logger) {}
 
     /**
      * Un commerçant a répondu sur un fil public.
@@ -245,7 +247,7 @@ final class PublicNotificationService implements PublicClientNotifier
         } catch (Throwable $e) {
             // Best-effort : l'écriture métier qui a déclenché la notification
             // ne doit jamais échouer à cause d'elle.
-            Log::warning('public_notification.write_failed', [
+            $this->logger->warning('public_notification.write_failed', [
                 'user_id' => $client->id,
                 'type' => $type,
                 'dedupe_key' => $dedupeKey,

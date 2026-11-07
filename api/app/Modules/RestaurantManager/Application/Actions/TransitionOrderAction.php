@@ -13,7 +13,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use App\Shared\Contracts\Notification\PublicClientNotifier;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Throwable;
 
@@ -36,6 +36,7 @@ final class TransitionOrderAction
         private readonly RestaurantOutboxPublisher $outbox,
         private readonly StockDecrementer $stockDecrementer,
         private readonly PublicClientNotifier $publicClientNotifier,
+        private readonly LoggerInterface $logger,
     ) {}
 
     public function execute(Employee $actor, RestaurantOrder $order, OrderStatus $target): RestaurantOrder
@@ -139,7 +140,7 @@ final class TransitionOrderAction
                 status: $target->value,
             );
         } catch (Throwable $e) {
-            Log::warning('public_activity_status_notify_failed', [
+            $this->logger->warning('public_activity_status_notify_failed', [
                 'order_id' => $order->id,
                 'status' => $target->value,
                 'error' => $e->getMessage(),
