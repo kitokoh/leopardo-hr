@@ -46,6 +46,8 @@ class PublicNotificationTest extends TestCase
 
     private User $otherClient;
 
+    private Employee $manager;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -64,6 +66,8 @@ class PublicNotificationTest extends TestCase
         $this->otherClient = User::factory()->create([
             'email' => 'autre-notifs@example.test',
         ]);
+
+        $this->manager = $this->createManager();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -123,12 +127,7 @@ class PublicNotificationTest extends TestCase
     {
         $thread = $this->createPublicThread($this->client);
 
-        /** @var PublicConversationService $conversations */
-        $conversations = $this->app->make(PublicConversationService::class);
-
-        $manager = $this->createManager();
-
-        $conversations->postFromManager($thread, $manager, 'Bonjour, votre table est prête.');
+        $this->postManagerReply($thread, $this->manager, 'Bonjour, votre table est prête.');
 
         $this->assertDatabaseHas('public_notifications', [
             'user_id' => $this->client->id,
@@ -147,13 +146,8 @@ class PublicNotificationTest extends TestCase
     {
         $thread = $this->createPublicThread($this->client);
 
-        /** @var PublicConversationService $conversations */
-        $conversations = $this->app->make(PublicConversationService::class);
-
-        $manager = $this->createManager();
-
-        $conversations->postFromManager($thread, $manager, 'Première réponse.');
-        $conversations->postFromManager($thread, $manager, 'Deuxième réponse.');
+        $this->postManagerReply($thread, $this->manager, 'Première réponse.');
+        $this->postManagerReply($thread, $this->manager, 'Deuxième réponse.');
 
         // La clé de dédoublonnage est `thread:<id>:reply` : deux réponses sur le
         // même fil ne créent qu'UNE notification tant qu'elle n'est pas lue.
@@ -344,6 +338,26 @@ class PublicNotificationTest extends TestCase
     }
 
     /**
+     * Poste une réponse de manager sur un fil public, DANS le contexte tenant.
+     *
+     * `postFromManager()` écrit dans les tables du tenant (`conversation_threads`,
+     * `conversation_messages`) : sans `withinTenant`, la requête partirait sur le
+     * `search_path` courant et échouerait.
+     */
+    private function postManagerReply(ConversationThread $thread, Employee $manager, string $body): void
+    {
+        /** @var TenantManager $tenants */
+        $tenants = $this->app->make(TenantManager::class);
+
+        $tenants->withinTenant($this->company, function () use ($thread, $manager, $body): void {
+            /** @var PublicConversationService $conversations */
+            $conversations = $this->app->make(PublicConversationService::class);
+
+            $conversations->postFromManager($thread, $manager, $body);
+        });
+    }
+
+    /**
      * Crée un fil public rattaché au client donné, dans le schéma du tenant.
      */
     private function createPublicThread(User $client): ConversationThread
@@ -355,8 +369,11 @@ class PublicNotificationTest extends TestCase
             /** @var ConversationThread $thread */
             $thread = ConversationThread::query()->create([
                 'company_id' => $this->company->id,
-                'employee_id' => $this->createManager()->id,
-                'kind' => 'public',
+                // Aucun employé propriétaire : le fil appartient au tenant, pas
+                // à une personne (`employee_id` nullable depuis #8760).
+                'employee_id' => null,
+                'manager_id' => null,
+                'kind' => ConversationThread::KIND_PUBLIC,
                 'title' => 'Conversation avec Restaurant Notifications',
                 'status' => 'open',
                 'public_client_id' => $client->id,
@@ -432,9 +449,7 @@ class PublicNotificationTest extends TestCase
             /** @var TransitionOrderAction $action */
             $action = $this->app->make(TransitionOrderAction::class);
 
-            $actor = $this->createManager();
-
-            $action->execute($actor, $order, $target);
+            $action->execute($this->manager, $order, $target);
         });
     }
 }
