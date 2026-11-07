@@ -311,6 +311,53 @@ events:
         checked_at: "2026-08-28T08:02:00+00:00"
     deprecation: null
 
+  - name: attendance.recorded
+    version: 1.0.0
+    bc: attendance
+    class: App\Events\AttendanceRecorded
+    description: >-
+      Un événement de présence a été enregistré (check-in, check-out, import
+      externe/offline), quel que soit le mode de vérification (mobile,
+      kiosque, QR, géo, terminal ZKTeco). Contrat versionné ATT-003 (#6768) :
+      toute modification de champ impose une v2 et une nouvelle entrée.
+    consumers:
+      - App\Listeners\AuditLogger
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [attendance.recorded] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [attendance_log_id, employee_id, event_type, occurred_at_utc]
+          properties:
+            attendance_log_id: { type: integer, minimum: 1 }
+            employee_id: { type: integer, minimum: 1 }
+            workplace_id: { type: integer, minimum: 1 }
+            event_type: { type: string, enum: [check_in, check_out] }
+            occurred_at_utc: { type: string, format: date-time }
+            verification_method: { type: string, minLength: 1 }
+            verification_result: { type: string }
+            kiosk_id: { type: integer, minimum: 1 }
+            correlation_id: { type: string, minLength: 1 }
+    sample:
+      event_name: attendance.recorded
+      version: "1.0.0"
+      occurred_at: "2026-08-28T08:02:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data:
+        attendance_log_id: 4242
+        employee_id: 7
+        workplace_id: 3
+        event_type: check_in
+        occurred_at_utc: "2026-08-28T08:02:00+00:00"
+        verification_method: qr
+        correlation_id: "33333333-3333-4333-8333-333333333333"
+    deprecation: null
+
   - name: attendance.checked_out
     version: 1.0.0
     bc: attendance
@@ -495,75 +542,6 @@ events:
       occurred_at: "2026-08-28T13:00:00+00:00"
       company_id: "11111111-1111-4111-8111-111111111111"
       data: { lead_id: 42 }
-    deprecation: null
-
-  - name: catalog.inquiry_received
-    version: 1.0.0
-    bc: catalog
-    class: App\Events\CatalogInquiryReceived
-    description: >-
-      BC-28 CATALOG (C-LEAD #6884) : une demande de devis B2B a été reçue
-      via le formulaire public du catalogue d'un tenant (honeypot/spam
-      filtré, consentement RGPD horodaté, conservation bornée). Consommé
-      par CRM (lead BC-11 source b2b_catalog) et Notification (in-app
-      managers) — contrat cross-BC, jamais d'import direct.
-    consumers:
-      - App\Listeners\CreateCrmLeadFromCatalogInquiry
-    schema:
-      type: object
-      required: [event_name, version, occurred_at, company_id, data]
-      properties:
-        event_name: { type: string, enum: [catalog.inquiry_received] }
-        version: { type: string }
-        occurred_at: { type: string, format: date-time }
-        company_id: { type: string, format: uuid }
-        data:
-          type: object
-          required: [inquiry_id, product_slug]
-          properties:
-            inquiry_id: { type: integer, minimum: 1 }
-            product_slug: { type: string, minLength: 1 }
-            email: { type: string, format: email }
-    sample:
-      event_name: catalog.inquiry_received
-      version: "1.0.0"
-      occurred_at: "2026-09-09T09:00:00+00:00"
-      company_id: "11111111-1111-4111-8111-111111111111"
-      data: { inquiry_id: 7, product_slug: "cnc-3-axes", email: "achat@boussaid.dz" }
-    deprecation: null
-
-  - name: catalog.inquiry_erased
-    version: 1.0.0
-    bc: catalog
-    class: App\Events\CatalogInquiryErased
-    description: >-
-      BC-28 CATALOG (C-RGPD #6889) : une demande de devis B2B a été effacée
-      (droit d'effacement RGPD, canal support tenant, ou purge de rétention
-      expirée). Ne porte que company + email acheteur (jamais le corps).
-      Consommé par CRM (suppression des leads BC-11 source b2b_catalog du
-      même acheteur).
-    consumers:
-      - App\Listeners\EraseCrmLeadsOnCatalogInquiryErased
-    schema:
-      type: object
-      required: [event_name, version, occurred_at, company_id, data]
-      properties:
-        event_name: { type: string, enum: [catalog.inquiry_erased] }
-        version: { type: string }
-        occurred_at: { type: string, format: date-time }
-        company_id: { type: string, format: uuid }
-        data:
-          type: object
-          required: [inquiry_id, email]
-          properties:
-            inquiry_id: { type: integer, minimum: 1 }
-            email: { type: string, format: email }
-    sample:
-      event_name: catalog.inquiry_erased
-      version: "1.0.0"
-      occurred_at: "2026-09-09T10:30:00+00:00"
-      company_id: "11111111-1111-4111-8111-111111111111"
-      data: { inquiry_id: 7, email: "achat@boussaid.dz" }
     deprecation: null
 
   - name: payroll.validated
