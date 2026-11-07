@@ -203,7 +203,8 @@ class RoleAssignmentAuditTest extends TestCase
         $response->assertJsonPath('error', 'LAST_PRINCIPAL_REQUIRED');
 
         // Le rôle n'a PAS bougé : la garde refuse AVANT toute écriture.
-        $this->assertSame('principal', $principal->fresh()->manager_role);
+        $principal->refresh();
+        $this->assertSame('principal', $principal->manager_role);
     }
 
     /**
@@ -222,6 +223,7 @@ class RoleAssignmentAuditTest extends TestCase
             'manager_role' => 'rh',
         ])->assertOk();
 
-        $this->assertSame('rh', $other->fresh()->manager_role);
+        $other->refresh();
+        $this->assertSame('rh', $other->manager_role);
     }
 }
