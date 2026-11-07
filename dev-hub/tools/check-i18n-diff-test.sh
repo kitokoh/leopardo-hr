@@ -203,6 +203,22 @@ var CATALOG = {
 JS
 git -C "$REPO_TECH" add -A
 git -C "$REPO_TECH" commit -q -m "catalogue kiosk i18n.js (#7651)"
+# Cas 1octies — catalogue i18n du module autonome Leopardo Toolbox (mission
+# Toolbox) : copy.ts / tool-options.ts SONT le mécanisme de localisation du
+# module (catalogues inline ×4 fr/en/tr/ar) — même cas que vitrine-locale.ts et
+# le catalogue kiosk ci-dessus. La Toolbox est une surface publique de la
+# vitrine : elle suit la convention vitrine (catalogue inline dans data/).
+mkdir -p "$REPO_TECH/front/web/src/modules/toolbox/data"
+cat > "$REPO_TECH/front/web/src/modules/toolbox/data/copy.ts" <<'TS'
+export const TOOLBOX_LOCALES = ['fr', 'en', 'tr', 'ar'] as const;
+const fr = { title: 'Boite a outils Leopardo', subtitle: 'Des calculateurs gratuits, sans compte.' };
+const en = { title: 'Leopardo Toolbox', subtitle: 'Free calculators, no account needed.' };
+const tr = { title: 'Leopardo Arac Kutusu', subtitle: 'Ucretsiz hesaplayicilar.' };
+const ar = { title: 'Leopardo Araclar', subtitle: 'Hesap gerekmez.' };
+export const CATALOGS = { fr, en, tr, ar };
+TS
+git -C "$REPO_TECH" add -A
+git -C "$REPO_TECH" commit -q -m "catalogue i18n du module Toolbox (mission Toolbox)"
 # Cas 1quinquies — données structurées JSON-LD (#7748) : les clés du
 # vocabulaire schema.org ('@context', '@type'…) sont des constantes
 # techniques, pas du texte utilisateur.
@@ -273,6 +289,8 @@ expect_clean 'per_page=100' "query string d'API (listQuery) — cas #7675"
 expect_clean '.csv,text/csv' "filtre de type de fichier (input accept) — #7776"
 expect_clean 'Acces administrateur' "valeur du catalogue i18n kiosk (#7651)"
 expect_clean 'PIN invalide.' "valeur du catalogue i18n kiosk (#7651)"
+expect_clean 'Boite a outils Leopardo' "valeur du catalogue i18n Toolbox (mission Toolbox)"
+expect_clean 'Free calculators, no account needed.' "valeur du catalogue i18n Toolbox (mission Toolbox)"
 expect_clean '[admin-dashboard] VITE_API_URL is not set' "diagnostic développeur préfixé [composant] (#7842)"
 expect_clean 'system-ui, sans-serif' "pile de polices CSS (font-family d'un avatar SVG local) — #8000"
 expect_clean 'a[href], button:not([disabled])' "sélecteur CSS de focus-trap (mission vitrine)"
@@ -338,6 +356,15 @@ export function Checkout() {
   )
 }
 TSX
+# Contre-contrôle : l'exemption Toolbox est limitée à data/ — un composant du
+# module qui porte une chaîne utilisateur en dur reste signalé.
+mkdir -p "$REPO_TEXT/front/web/src/modules/toolbox/components"
+cat > "$REPO_TEXT/front/web/src/modules/toolbox/components/ToolboxForm.tsx" <<'TSX'
+export function ToolboxForm() {
+  const label = 'Calculer le montant total';
+  return <span>{label}</span>;
+}
+TSX
 git -C "$REPO_TEXT" add -A
 git -C "$REPO_TEXT" commit -q -m "textes utilisateur + code technique"
 run_guard "$REPO_TEXT"
@@ -352,6 +379,7 @@ expect_flagged 'Champ obligatoire' "littéral DANS une expression liée :label"
 expect_flagged 'Votre espace est pret' "littéral de script Next.js"
 expect_flagged 'Recapitulatif du panier' "attribut statique aria-label (TSX)"
 expect_flagged 'Bonjour, le monde' "texte à virgule sans famille générique — pas une pile de polices (#8000)"
+expect_flagged 'Calculer le montant total' "chaîne en dur dans un composant Toolbox (hors data/) — l'exemption est scopée"
 for motif in 'form[key]' 'item.x == null' 'flex items-center' 'companies'; do
   expect_clean "$motif" "motif technique « $motif » (cas 2)"
 done
