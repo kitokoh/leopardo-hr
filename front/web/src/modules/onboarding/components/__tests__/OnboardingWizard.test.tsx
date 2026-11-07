@@ -108,7 +108,7 @@ jest.mock('@/lib/i18n', () => ({
 // #4938 — le rendu QR utilise toCanvas (canvas jsdom non implémenté) → mock.
 jest.mock('qrcode', () => ({
   toCanvas: jest.fn((_canvas, _data, _opts, cb) => cb(null)),
-}));
+}), { virtual: true });
 
 const mockedApiFetch = apiFetch as jest.MockedFunction<typeof apiFetch>;
 

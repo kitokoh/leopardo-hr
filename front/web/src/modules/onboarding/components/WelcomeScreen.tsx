@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
+import { ShieldCheck, Lock } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { LeoMascot } from '@/components/ui/LeoMascot';
 import { type AppLocale, type StoredAuthUser } from '@/lib/i18n';
@@ -116,16 +117,20 @@ export function WelcomeScreen({ locale, onAcknowledged }: Props) {
   );
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-md">
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="first-login-welcome-title"
-        className="w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900 dark:ring-1 dark:ring-slate-800"
+        className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-slate-900/10 dark:bg-slate-900 dark:ring-1 dark:ring-slate-800"
       >
+        {/* Ligne d'accent lumineuse supérieure */}
+        <div className="h-1.5 w-full bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400" />
+
         {/* Bandeau d'accueil : Leo salue le nouvel arrivant. Décoratif
             (aria-hidden dans LeoMascot), la copie reste la seule information. */}
-        <div className="relative flex items-end justify-center bg-gradient-to-b from-emerald-500/15 via-cyan-500/10 to-transparent pt-8 dark:from-emerald-500/10 dark:via-cyan-500/5">
+        <div className="relative flex items-end justify-center bg-gradient-to-b from-emerald-500/15 via-teal-500/10 to-transparent pt-8 dark:from-emerald-500/15 dark:via-cyan-500/5">
+          <div className="absolute top-4 h-28 w-28 rounded-full bg-emerald-500/20 blur-2xl pointer-events-none" />
           <LeoMascot variant="wave" size={132} float />
         </div>
 
@@ -137,14 +142,28 @@ export function WelcomeScreen({ locale, onAcknowledged }: Props) {
             {labels.title}
           </h2>
 
-          <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-slate-600 dark:text-slate-400">{labels.body}</p>
+          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+            {labels.body}
+          </p>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          {/* Cartouches de confiance & sérénité */}
+          <div className="mt-5 mb-2 inline-flex flex-wrap items-center justify-center gap-2 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-slate-100/80 px-2.5 py-1 dark:border-slate-700/80 dark:bg-slate-800/80">
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+              <span>Cloud Sécurisé &amp; RGPD</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-slate-100/80 px-2.5 py-1 dark:border-slate-700/80 dark:bg-slate-800/80">
+              <Lock className="h-3.5 w-3.5 text-amber-500" />
+              <span>Chiffrement AES-256</span>
+            </span>
+          </div>
+
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <button
               type="button"
               disabled={pending}
               onClick={() => void acknowledge('set_password')}
-              className="inline-flex flex-1 items-center justify-center rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-700 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 transition hover:from-emerald-700 hover:to-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 disabled:opacity-60"
+              className="inline-flex flex-1 cursor-pointer items-center justify-center rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-600/25 ring-1 ring-emerald-500/30 transition-all hover:scale-[1.01] hover:from-emerald-500 hover:to-teal-500 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 disabled:opacity-60"
             >
               {labels.ctaStart}
             </button>
@@ -152,7 +171,7 @@ export function WelcomeScreen({ locale, onAcknowledged }: Props) {
               type="button"
               disabled={pending}
               onClick={() => void acknowledge('later')}
-              className="inline-flex flex-1 items-center justify-center rounded-2xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-emerald-300 hover:bg-emerald-50/50 disabled:opacity-60 dark:border-slate-700 dark:text-slate-300 dark:hover:border-emerald-800 dark:hover:bg-emerald-900/20"
+              className="inline-flex flex-1 cursor-pointer items-center justify-center rounded-2xl border border-slate-200 px-5 py-3.5 text-sm font-semibold text-slate-700 transition-all hover:scale-[1.01] hover:border-emerald-300 hover:bg-emerald-50/50 active:scale-[0.99] disabled:opacity-60 dark:border-slate-700 dark:text-slate-300 dark:hover:border-emerald-800 dark:hover:bg-emerald-900/20"
             >
               {labels.ctaLater}
             </button>
