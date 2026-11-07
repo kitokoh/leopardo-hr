@@ -878,6 +878,8 @@
             <file>tests/Feature/Onboarding/OnboardingActivationConvergenceTest.php</file>
             <file>tests/Feature/Onboarding/OnboardingActivationRegressionTest.php</file>
             <file>tests/Feature/Onboarding/OnboardingControllerTest.php</file>
+            <file>tests/Feature/Onboarding/OnboardingLifecycleEdgeCasesTest.php</file>
+            <file>tests/Feature/Onboarding/OnboardingPrincipalLifecycleTest.php</file>
             <file>tests/Feature/Onboarding/OnboardingProgressAlignmentTest.php</file>
             <file>tests/Feature/Onboarding/OnboardingResumeTest.php</file>
             <file>tests/Feature/Onboarding/OnboardingSeedStepsTest.php</file>
