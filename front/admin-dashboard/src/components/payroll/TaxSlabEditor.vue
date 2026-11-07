@@ -26,7 +26,7 @@
             </td>
           </tr>
           <tr v-if="slabs.length === 0">
-            <td colspan="6" class="py-6 text-center text-slate-400">{{ $t('tax_slabs.empty') }}</td>
+            <td colspan="6" class="py-6 text-center text-slate-500 dark:text-slate-400">{{ $t('tax_slabs.empty') }}</td>
           </tr>
         </tbody>
       </table>

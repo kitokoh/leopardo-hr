@@ -315,7 +315,7 @@ export default function MonLogicielPage() {
                             {translate('software.pilot', 'Demander l’accès pilote')}
                           </a>
                         ) : (
-                          <span className="inline-flex flex-1 cursor-not-allowed items-center justify-center rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-400">
+                          <span className="inline-flex flex-1 cursor-not-allowed items-center justify-center rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-500">
                             {translate('software.soon', 'Bientôt disponible')}
                           </span>
                         )}
@@ -357,7 +357,7 @@ export default function MonLogicielPage() {
                   type="button"
                   onClick={closeQr}
                   aria-label={translate('software.close', 'Fermer')}
-                  className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                  className="rounded-full p-1 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
                 >
                   <X className="h-4 w-4" aria-hidden />
                 </button>

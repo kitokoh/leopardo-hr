@@ -8,8 +8,8 @@
   -->
   <div class="flex flex-col items-center justify-center px-6 py-12 text-center">
     <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800">
-      <component :is="icon" v-if="icon" class="h-6 w-6 text-slate-400" aria-hidden="true" />
-      <InboxIcon v-else class="h-6 w-6 text-slate-400" aria-hidden="true" />
+      <component :is="icon" v-if="icon" class="h-6 w-6 text-slate-500 dark:text-slate-400" aria-hidden="true" />
+      <InboxIcon v-else class="h-6 w-6 text-slate-500 dark:text-slate-400" aria-hidden="true" />
     </div>
     <h3 class="mt-4 text-sm font-bold text-slate-900 dark:text-white">
       {{ title || $t('common.emptyTitle', 'Aucun élément') }}

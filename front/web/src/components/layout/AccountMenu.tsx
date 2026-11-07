@@ -112,7 +112,7 @@ export function AccountMenu({
           <span className="block truncate text-sm font-black text-slate-900">{displayName}</span>
           <span className="block truncate text-xs text-slate-500">{user?.email}</span>
         </span>
-        <ChevronsUpDown className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" />
+        <ChevronsUpDown className="h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
       </button>
       {open ? (
         <div
@@ -132,7 +132,7 @@ export function AccountMenu({
               onClick={handleItemNavigate}
               className={MENU_ITEM_CLASS}
             >
-              <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
+              <UserCircle className="h-4 w-4 text-slate-500" aria-hidden="true" />
               {labels.dashboard.userMenuAccount}
             </Link>
             {/* #7727 — encaissements : profils de paiement du tenant (principal). */}
@@ -142,7 +142,7 @@ export function AccountMenu({
               onClick={handleItemNavigate}
               className={MENU_ITEM_CLASS}
             >
-              <Banknote className="h-4 w-4 text-slate-400" aria-hidden="true" />
+              <Banknote className="h-4 w-4 text-slate-500" aria-hidden="true" />
               {paymentProfilesT(locale, 'menuLabel')}
             </Link>
             {/* #7713 — image de marque du tenant. */}
@@ -152,7 +152,7 @@ export function AccountMenu({
               onClick={handleItemNavigate}
               className={MENU_ITEM_CLASS}
             >
-              <Paintbrush className="h-4 w-4 text-slate-400" aria-hidden="true" />
+              <Paintbrush className="h-4 w-4 text-slate-500" aria-hidden="true" />
               {i18nT(locale, 'brandingPage.title')}
             </Link>
             {/* #7759 — tickets support côté client. */}
@@ -163,7 +163,7 @@ export function AccountMenu({
               data-testid="user-menu-support"
               className={MENU_ITEM_CLASS}
             >
-              <LifeBuoy className="h-4 w-4 text-slate-400" aria-hidden="true" />
+              <LifeBuoy className="h-4 w-4 text-slate-500" aria-hidden="true" />
               {supportTicketsT(locale, 'menu_label')}
             </Link>
           </div>
@@ -181,9 +181,9 @@ export function AccountMenu({
               onClick={() => setLanguageOpen((value) => !value)}
               className={`w-full ${MENU_ITEM_CLASS}`}
             >
-              <Globe className="h-4 w-4 text-slate-400" aria-hidden="true" />
+              <Globe className="h-4 w-4 text-slate-500" aria-hidden="true" />
               <span className="flex-1 text-start">{labels.dashboard.language}</span>
-              <span className="text-xs font-bold uppercase text-slate-400">{locale}</span>
+              <span className="text-xs font-bold uppercase text-slate-500">{locale}</span>
             </button>
             {languageOpen ? (
               <div id="dashboard-user-menu-language" data-testid="user-menu-language-panel" className="mt-1 space-y-0.5 ps-4">

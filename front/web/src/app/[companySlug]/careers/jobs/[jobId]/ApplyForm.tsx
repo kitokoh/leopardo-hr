@@ -157,7 +157,7 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
           {resume ? (
             <FileText className="w-4 h-4 text-emerald-700 dark:text-emerald-400 flex-shrink-0" />
           ) : (
-            <Upload className="w-4 h-4 text-slate-400 flex-shrink-0" />
+            <Upload className="w-4 h-4 text-slate-500 flex-shrink-0" />
           )}
           <span className="text-sm text-slate-600 dark:text-slate-400 truncate">
             {resume ? resume.name : copy.form.resumeChoose}

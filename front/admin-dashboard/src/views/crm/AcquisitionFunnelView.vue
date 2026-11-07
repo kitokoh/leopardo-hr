@@ -48,7 +48,7 @@
       <button class="ml-3 underline font-bold" @click="load">{{ $t('funnelStats.retry') }}</button>
     </div>
 
-    <div v-if="isLoading" class="py-12 text-center text-sm font-bold text-slate-400 uppercase tracking-widest">
+    <div v-if="isLoading" class="py-12 text-center text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
       {{ $t('funnelStats.loading') }}
     </div>
 
@@ -81,7 +81,7 @@
         <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">{{ $t('funnelStats.stepsHint') }}</p>
 
         <div v-if="maxJourneys === 0" class="py-8 text-center">
-          <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-300" />
+          <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-500 dark:text-slate-400" />
           <p class="mt-3 text-sm font-medium text-slate-500">{{ $t('funnelStats.empty') }}</p>
         </div>
         <ul v-else class="space-y-3">
@@ -96,7 +96,7 @@
               ></div>
             </div>
             <span class="w-14 text-right text-xs font-bold text-slate-700 dark:text-slate-200">{{ step.journeys }}</span>
-            <span class="w-16 text-right text-xs font-medium text-slate-400">
+            <span class="w-16 text-right text-xs font-medium text-slate-500 dark:text-slate-400">
               {{ step.rate_from_previous === null ? '—' : `${Math.round(step.rate_from_previous * 100)} %` }}
             </span>
           </li>
@@ -109,12 +109,12 @@
         <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">{{ $t('funnelStats.byDayHint') }}</p>
 
         <div v-if="data.by_day.length === 0" class="py-8 text-center">
-          <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-300" />
+          <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-500 dark:text-slate-400" />
           <p class="mt-3 text-sm font-medium text-slate-500">{{ $t('funnelStats.empty') }}</p>
         </div>
         <table v-else class="w-full text-sm">
           <thead>
-            <tr class="text-left text-xs uppercase tracking-widest text-slate-400">
+            <tr class="text-left text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400">
               <th class="pb-3 font-bold">{{ $t('funnelStats.dateColumn') }}</th>
               <th class="pb-3 font-bold">{{ $t('funnelStats.viewsColumn') }}</th>
               <th class="pb-3 font-bold">{{ $t('funnelStats.provisionedColumn') }}</th>
@@ -138,12 +138,12 @@
         <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">{{ $t('funnelStats.bySourceHint') }}</p>
 
         <div v-if="data.by_source.length === 0" class="py-8 text-center">
-          <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-300" />
+          <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-500 dark:text-slate-400" />
           <p class="mt-3 text-sm font-medium text-slate-500">{{ $t('funnelStats.empty') }}</p>
         </div>
         <table v-else class="w-full text-sm">
           <thead>
-            <tr class="text-left text-xs uppercase tracking-widest text-slate-400">
+            <tr class="text-left text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400">
               <th class="pb-3 font-bold">{{ $t('funnelStats.sourceColumn') }}</th>
               <th class="pb-3 font-bold">{{ $t('funnelStats.viewsColumn') }}</th>
               <th class="pb-3 font-bold">{{ $t('funnelStats.provisionedColumn') }}</th>

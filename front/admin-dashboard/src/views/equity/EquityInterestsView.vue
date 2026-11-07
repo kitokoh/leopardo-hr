@@ -61,20 +61,20 @@
       <button class="ml-3 underline font-bold" @click="load">{{ $t('equityInterests.retry') }}</button>
     </div>
 
-    <div v-if="isLoading" class="py-12 text-center text-sm font-bold text-slate-400 uppercase tracking-widest">
+    <div v-if="isLoading" class="py-12 text-center text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
       {{ $t('equityInterests.loading') }}
     </div>
 
     <template v-else>
       <div v-if="leads.length === 0" class="card p-12 text-center">
-        <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-300" />
+        <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-500 dark:text-slate-400" />
         <p class="mt-3 text-sm font-medium text-slate-500">{{ $t('equityInterests.empty') }}</p>
       </div>
 
       <div v-else class="card overflow-hidden">
         <table class="w-full text-sm">
           <thead>
-            <tr class="text-left text-xs uppercase tracking-widest text-slate-400 border-b border-slate-200/60 dark:border-slate-800/60">
+            <tr class="text-left text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400 border-b border-slate-200/60 dark:border-slate-800/60">
               <th class="px-6 py-4 font-bold">{{ $t('equityInterests.columnDate') }}</th>
               <th class="px-6 py-4 font-bold">{{ $t('equityInterests.columnName') }}</th>
               <th class="px-6 py-4 font-bold">{{ $t('equityInterests.columnContact') }}</th>
@@ -92,7 +92,7 @@
                 </td>
                 <td class="px-6 py-4 text-slate-600 dark:text-slate-300">
                   <div>{{ lead.email }}</div>
-                  <div v-if="lead.payload?.phone" class="text-xs text-slate-400">{{ lead.payload.phone }}</div>
+                  <div v-if="lead.payload?.phone" class="text-xs text-slate-500 dark:text-slate-400">{{ lead.payload.phone }}</div>
                 </td>
                 <td class="px-6 py-4">
                   <span class="inline-flex items-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30 px-2.5 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-400">
@@ -105,7 +105,7 @@
                   </span>
                 </td>
                 <td class="px-6 py-4 text-right">
-                  <ChevronDownIcon :class="['h-4 w-4 inline text-slate-400 transition-transform', expandedId === lead.id ? 'rotate-180' : '']" />
+                  <ChevronDownIcon :class="['h-4 w-4 inline text-slate-500 dark:text-slate-400 transition-transform', expandedId === lead.id ? 'rotate-180' : '']" />
                 </td>
               </tr>
 
@@ -114,14 +114,14 @@
                 <td colspan="6" class="px-6 py-5">
                   <div class="grid gap-5 lg:grid-cols-2">
                     <div>
-                      <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">{{ $t('equityInterests.messageLabel') }}</p>
+                      <p class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-2">{{ $t('equityInterests.messageLabel') }}</p>
                       <p class="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{{ lead.payload?.message || '—' }}</p>
-                      <p v-if="lead.country" class="mt-2 text-xs text-slate-400">{{ $t('equityInterests.countryLabel') }} : {{ lead.country }}</p>
-                      <p v-if="lead.locale" class="text-xs text-slate-400">Locale : {{ lead.locale }}</p>
+                      <p v-if="lead.country" class="mt-2 text-xs text-slate-500 dark:text-slate-400">{{ $t('equityInterests.countryLabel') }} : {{ lead.country }}</p>
+                      <p v-if="lead.locale" class="text-xs text-slate-500 dark:text-slate-400">Locale : {{ lead.locale }}</p>
                     </div>
                     <div class="space-y-4">
                       <div>
-                        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">{{ $t('equityInterests.transitionLabel') }}</p>
+                        <p class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-2">{{ $t('equityInterests.transitionLabel') }}</p>
                         <div class="flex flex-wrap gap-2">
                           <button
                             v-for="next in transitionTargets(lead.status)"
@@ -135,7 +135,7 @@
                         </div>
                       </div>
                       <div>
-                        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">{{ $t('equityInterests.noteLabel') }}</p>
+                        <p class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-2">{{ $t('equityInterests.noteLabel') }}</p>
                         <textarea
                           v-model="noteDraft"
                           rows="2"
@@ -160,7 +160,7 @@
 
         <!-- Pagination -->
         <div v-if="meta.last_page > 1" class="flex items-center justify-between px-6 py-4 border-t border-slate-200/60 dark:border-slate-800/60">
-          <p class="text-xs text-slate-400">{{ meta.total }} · {{ $t('equityInterests.pageLabel') }} {{ meta.current_page }}/{{ meta.last_page }}</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">{{ meta.total }} · {{ $t('equityInterests.pageLabel') }} {{ meta.current_page }}/{{ meta.last_page }}</p>
           <div class="flex gap-2">
             <button :disabled="meta.current_page <= 1 || isLoading" @click="goToPage(meta.current_page - 1)" class="btn-secondary py-1.5 px-3 text-xs">‹</button>
             <button :disabled="meta.current_page >= meta.last_page || isLoading" @click="goToPage(meta.current_page + 1)" class="btn-secondary py-1.5 px-3 text-xs">›</button>

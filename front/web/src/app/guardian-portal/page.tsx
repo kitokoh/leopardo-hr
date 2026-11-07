@@ -132,7 +132,7 @@ export default function GuardianPortalPage() {
                     <p className="text-lg font-black tracking-tight text-slate-950">
                       {[payload.guardian.first_name, payload.guardian.last_name].filter(Boolean).join(' ') || '—'}
                     </p>
-                    <p className="text-xs font-bold uppercase tracking-widest text-slate-400">{t(locale, 'edu.guardian.children')}</p>
+                    <p className="text-xs font-bold uppercase tracking-widest text-slate-500">{t(locale, 'edu.guardian.children')}</p>
                   </div>
                 </div>
                 <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-black uppercase tracking-widest text-emerald-700">
@@ -140,7 +140,7 @@ export default function GuardianPortalPage() {
                   RGPD
                 </span>
               </div>
-              <p className="mt-4 rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-400">{t(locale, 'edu.guardian.accessNote')}</p>
+              <p className="mt-4 rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-500">{t(locale, 'edu.guardian.accessNote')}</p>
             </div>
 
             {payload.children.length === 0 ? (
@@ -153,7 +153,7 @@ export default function GuardianPortalPage() {
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
                       <p className="text-lg font-black tracking-tight text-slate-950">{child.display_name}</p>
-                      <p className="font-mono text-xs font-bold text-slate-400">
+                      <p className="font-mono text-xs font-bold text-slate-500">
                         {child.student_number} · {child.relationship_code}
                       </p>
                     </div>
@@ -162,7 +162,7 @@ export default function GuardianPortalPage() {
 
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
                     <div className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4">
-                      <p className="text-xs font-black uppercase tracking-widest text-slate-400">{t(locale, 'edu.guardian.presence')}</p>
+                      <p className="text-xs font-black uppercase tracking-widest text-slate-500">{t(locale, 'edu.guardian.presence')}</p>
                       <div className="mt-2 space-y-1 text-sm">
                         <p className="flex justify-between">
                           <span className="text-slate-500">{t(locale, 'edu.guardian.today')}</span>
@@ -178,11 +178,11 @@ export default function GuardianPortalPage() {
                     </div>
 
                     <div className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4">
-                      <p className="text-xs font-black uppercase tracking-widest text-slate-400">
+                      <p className="text-xs font-black uppercase tracking-widest text-slate-500">
                         {t(locale, 'edu.guardian.reportCards')} <span className="normal-case">({t(locale, 'edu.guardian.publishedOnly')})</span>
                       </p>
                       {child.report_cards.length === 0 ? (
-                        <p className="mt-2 text-sm text-slate-400">—</p>
+                        <p className="mt-2 text-sm text-slate-500">—</p>
                       ) : (
                         <ul className="mt-2 space-y-1 text-sm">
                           {child.report_cards.map((card) => (

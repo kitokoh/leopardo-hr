@@ -76,7 +76,7 @@ export default function CrmPipelinePage() {
       accentClassName="from-violet-500/10 via-white/40 to-purple-500/10"
     >
       {loading && (
-        <div className="flex items-center justify-center gap-3 py-16 text-slate-400">
+        <div className="flex items-center justify-center gap-3 py-16 text-slate-500">
           <div className="h-5 w-5 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
           <span className="text-sm">{t(locale, 'crm.loading')}</span>
         </div>
@@ -97,7 +97,7 @@ export default function CrmPipelinePage() {
       )}
 
       {!loading && !error && opportunities.length === 0 && (
-        <div className="flex flex-col items-center gap-3 rounded-3xl border border-white/20 bg-white/70 p-14 text-slate-400 shadow-premium backdrop-blur-xl">
+        <div className="flex flex-col items-center gap-3 rounded-3xl border border-white/20 bg-white/70 p-14 text-slate-500 shadow-premium backdrop-blur-xl">
           <Inbox className="h-10 w-10" />
           <p className="text-sm">{t(locale, 'crm.pipeline.empty')}</p>
         </div>
@@ -111,7 +111,7 @@ export default function CrmPipelinePage() {
                 <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-black uppercase tracking-wider ${stage.color}`}>
                   {t(locale, `crm.pipeline.stage.${stage.key}`, stage.key)}
                 </span>
-                <span className="text-xs font-bold text-slate-400">{byStage(stage.key).length}</span>
+                <span className="text-xs font-bold text-slate-500">{byStage(stage.key).length}</span>
               </div>
               <div className="space-y-2">
                 {byStage(stage.key).map((opportunity) => (
@@ -119,14 +119,14 @@ export default function CrmPipelinePage() {
                     <p className="text-sm font-semibold text-slate-800">{opportunity.name}</p>
                     <p className="mt-1 text-xs font-bold text-slate-600">{formatAmount(opportunity.amount)}</p>
                     {opportunity.expected_close_at && (
-                      <p className="mt-1 text-xs text-slate-400">
+                      <p className="mt-1 text-xs text-slate-500">
                         {new Date(opportunity.expected_close_at).toLocaleDateString()}
                       </p>
                     )}
                   </div>
                 ))}
                 {byStage(stage.key).length === 0 && (
-                  <p className="py-4 text-center text-xs text-slate-300">—</p>
+                  <p className="py-4 text-center text-xs text-slate-500">—</p>
                 )}
               </div>
             </div>

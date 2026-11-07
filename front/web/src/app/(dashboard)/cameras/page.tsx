@@ -211,7 +211,7 @@ export default function CamerasPage() {
           <Card className="py-10 text-center text-sm font-medium text-slate-500">{t(locale, 'cameras.loading')}</Card>
         ) : cameras.length === 0 ? (
           <Card className="space-y-2 py-10 text-center">
-            <Cctv className="mx-auto h-8 w-8 text-slate-300" aria-hidden="true" />
+            <Cctv className="mx-auto h-8 w-8 text-slate-500" aria-hidden="true" />
             <p className="text-sm font-black text-slate-900">{t(locale, 'cameras.empty')}</p>
             <p className="text-sm text-slate-500">{t(locale, 'cameras.emptyHint')}</p>
           </Card>
@@ -229,7 +229,7 @@ export default function CamerasPage() {
                     </span>
                     <span className="min-w-0">
                       <span className="block truncate font-black tracking-tight text-slate-950">{camera.name}</span>
-                      <span className="block font-mono text-xs font-bold text-slate-400">#{camera.id}</span>
+                      <span className="block font-mono text-xs font-bold text-slate-500">#{camera.id}</span>
                     </span>
                   </span>
                   {camera.location ? (
@@ -239,7 +239,7 @@ export default function CamerasPage() {
                     </span>
                   ) : null}
                   <span className="mt-auto flex items-center justify-between text-xs font-bold">
-                    <span className={camera.is_active === false ? 'text-slate-400' : 'text-emerald-700'}>
+                    <span className={camera.is_active === false ? 'text-slate-500' : 'text-emerald-700'}>
                       {camera.is_active === false ? t(locale, 'cameras.statusInactive') : t(locale, 'cameras.statusActive')}
                     </span>
                     <span className="text-slate-500">{t(locale, 'cameras.open')}</span>

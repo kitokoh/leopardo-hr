@@ -363,7 +363,7 @@ export function PublicInboxSpace() {
           <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white">
             {selectedThread === null ? (
               <div className="flex h-full flex-col items-center justify-center px-6 text-center">
-                <MessageSquare className="h-8 w-8 text-slate-300" aria-hidden="true" />
+                <MessageSquare className="h-8 w-8 text-slate-500" aria-hidden="true" />
                 <p className="mt-3 text-sm font-medium text-slate-800">
                   {publicInboxT(locale, 'threadNotSelected')}
                 </p>
@@ -438,7 +438,7 @@ export function PublicInboxSpace() {
                           </button>
                         </div>
                       ) : messages.length > 0 ? (
-                        <p className="pb-3 text-center text-xs text-slate-400">
+                        <p className="pb-3 text-center text-xs text-slate-500">
                           {publicInboxT(locale, 'noOlder')}
                         </p>
                       ) : null}
@@ -519,7 +519,7 @@ export function PublicInboxSpace() {
                         rows={2}
                         maxLength={CONVERSATION_MESSAGE_MAX}
                         placeholder={publicInboxT(locale, 'composerPlaceholder')}
-                        className="min-h-[2.75rem] flex-1 resize-y rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
+                        className="min-h-[2.75rem] flex-1 resize-y rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                       />
                       <button
                         type="submit"

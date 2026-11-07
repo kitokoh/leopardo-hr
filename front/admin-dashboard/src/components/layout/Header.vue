@@ -17,13 +17,13 @@
             <label for="search" class="sr-only">{{ $t('shell.search', 'Rechercher') }}</label>
             <div class="relative group">
               <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 transition-colors group-focus-within:text-brand-500">
-                <MagnifyingGlassIcon class="h-5 w-5 text-slate-400" />
+                <MagnifyingGlassIcon class="h-5 w-5 text-slate-500 dark:text-slate-400" />
               </div>
               <input
                 id="search"
                 v-model="searchQuery"
                 name="search"
-                class="block w-full rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-100/50 dark:bg-slate-800/50 py-2 pl-10 pr-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:ring-2 focus:ring-brand-500 sm:text-sm sm:leading-6 transition-all duration-200"
+                class="block w-full rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-100/50 dark:bg-slate-800/50 py-2 pl-10 pr-3 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:ring-2 focus:ring-brand-500 sm:text-sm sm:leading-6 transition-all duration-200"
                 :placeholder="$t('shell.search', 'Rechercher') + '...'"
                 type="search"
                 @keyup.enter="handleSearch"

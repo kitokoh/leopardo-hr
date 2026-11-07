@@ -238,7 +238,7 @@ export default function AccountPage() {
         {/* Profil — éditable (#7861). */}
         <div className="rounded-3xl border border-app-border bg-white p-6 shadow-sm">
           <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-800">
-            <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
+            <UserCircle className="h-4 w-4 text-slate-500" aria-hidden="true" />
             {i18nT(locale, 'settingsPage.profileTitle')}
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-500">{i18nT(locale, 'settingsPage.profileSubtitle')}</p>
@@ -299,12 +299,12 @@ export default function AccountPage() {
                 {i18nT(locale, 'settingsPage.email')}
               </span>
               <input type="email" value={user?.email ?? ''} disabled readOnly className={inputClassName} />
-              <span className="mt-1 block text-xs text-slate-400">{i18nT(locale, 'settingsPage.emailLocked')}</span>
+              <span className="mt-1 block text-xs text-slate-500">{i18nT(locale, 'settingsPage.emailLocked')}</span>
             </label>
 
             {user?.company?.name ? (
               <p className="text-xs font-medium text-slate-500">
-                <span className="font-bold uppercase tracking-widest text-slate-400">
+                <span className="font-bold uppercase tracking-widest text-slate-500">
                   {i18nT(locale, 'settingsPage.company')}
                 </span>{' '}
                 — {user.company.name}
@@ -331,7 +331,7 @@ export default function AccountPage() {
         {/* Sécurité — mot de passe. */}
         <div className="rounded-3xl border border-app-border bg-white p-6 shadow-sm">
           <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-800">
-            <KeyRound className="h-4 w-4 text-slate-400" aria-hidden="true" />
+            <KeyRound className="h-4 w-4 text-slate-500" aria-hidden="true" />
             {i18nT(locale, 'settingsPage.passwordTitle')}
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-500">{i18nT(locale, 'settingsPage.passwordSubtitle')}</p>
@@ -360,7 +360,7 @@ export default function AccountPage() {
                 minLength={8}
                 className={inputClassName}
               />
-              <span className="mt-1 block text-xs text-slate-400">{i18nT(locale, 'settingsPage.minLengthHint')}</span>
+              <span className="mt-1 block text-xs text-slate-500">{i18nT(locale, 'settingsPage.minLengthHint')}</span>
             </label>
 
             <label className="block">
@@ -392,7 +392,7 @@ export default function AccountPage() {
       {/* Sécurité — 2FA intégrée (composant partagé avec /settings/security/2fa). */}
       <section className="rounded-3xl border border-app-border bg-white p-6 shadow-sm">
         <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-800">
-          <ShieldCheck className="h-4 w-4 text-slate-400" aria-hidden="true" />
+          <ShieldCheck className="h-4 w-4 text-slate-500" aria-hidden="true" />
           {i18nT(locale, 'settingsPage.twoFactorTitle')}
         </h2>
         <p className="mt-2 text-sm leading-6 text-slate-500">{i18nT(locale, 'settingsPage.twoFactorSubtitle')}</p>
@@ -408,7 +408,7 @@ export default function AccountPage() {
           data-testid="account-billing-card"
         >
           <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-800">
-            <CreditCard className="h-4 w-4 text-slate-400" aria-hidden="true" />
+            <CreditCard className="h-4 w-4 text-slate-500" aria-hidden="true" />
             {i18nT(locale, 'settingsPage.billing.title')}
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-500">{i18nT(locale, 'settingsPage.billing.subtitle')}</p>
@@ -416,7 +416,7 @@ export default function AccountPage() {
           {subscription ? (
             <dl className="mt-5 flex flex-wrap items-center gap-x-10 gap-y-4">
               <div>
-                <dt className="text-xs font-bold uppercase tracking-widest text-slate-400">
+                <dt className="text-xs font-bold uppercase tracking-widest text-slate-500">
                   {i18nT(locale, 'settingsPage.billing.plan')}
                 </dt>
                 <dd className="mt-1 text-sm font-bold text-slate-950" data-testid="account-billing-plan">
@@ -424,7 +424,7 @@ export default function AccountPage() {
                 </dd>
               </div>
               <div>
-                <dt className="text-xs font-bold uppercase tracking-widest text-slate-400">
+                <dt className="text-xs font-bold uppercase tracking-widest text-slate-500">
                   {i18nT(locale, 'settingsPage.billing.status')}
                 </dt>
                 <dd className="mt-1">

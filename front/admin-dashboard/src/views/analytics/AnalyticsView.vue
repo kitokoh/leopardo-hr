@@ -87,11 +87,11 @@
           <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ $t('analytics.recentActivityHint') }}</p>
         </div>
       </div>
-      <div v-if="isLoading" class="py-12 text-center text-sm font-bold text-slate-400 uppercase tracking-widest">
+      <div v-if="isLoading" class="py-12 text-center text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
         {{ $t('analytics.loading') }}
       </div>
       <div v-else-if="activities.length === 0" class="py-12 text-center">
-        <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-300" />
+        <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-500 dark:text-slate-400" />
         <p class="mt-3 text-sm font-medium text-slate-500">{{ $t('analytics.noRecentActivity') }}</p>
       </div>
       <ul v-else class="divide-y divide-slate-200/50 dark:divide-slate-800/50">
@@ -103,7 +103,7 @@
               <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ activity.type }}</p>
             </div>
           </div>
-          <span class="text-xs font-medium text-slate-400 whitespace-nowrap">{{ formatDate(activity.created_at) }}</span>
+          <span class="text-xs font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap">{{ formatDate(activity.created_at) }}</span>
         </li>
       </ul>
     </div>
@@ -134,7 +134,7 @@
           ]"
         >
           <div class="flex items-start space-x-3">
-            <ExclamationTriangleIcon :class="['h-5 w-5 mt-0.5', alert.level === 'critical' ? 'text-red-500' : alert.level === 'warning' ? 'text-amber-500' : 'text-slate-400']" />
+            <ExclamationTriangleIcon :class="['h-5 w-5 mt-0.5', alert.level === 'critical' ? 'text-red-500' : alert.level === 'warning' ? 'text-amber-500' : 'text-slate-500 dark:text-slate-400']" />
             <div>
               <p class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ alert.message || alert.title }}</p>
               <p v-if="alert.description" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ alert.description }}</p>
@@ -142,7 +142,7 @@
           </div>
           <button
             @click="dismissAlert(alert.id)"
-            class="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
           >
             {{ $t('analytics.dismiss') }}
           </button>
@@ -152,7 +152,7 @@
 
     <!-- Sections non disponibles (etat honnete — pas de backend) -->
     <div class="card p-8 border-dashed border-2 border-slate-200 dark:border-slate-800">
-      <h3 class="text-sm font-black uppercase tracking-widest text-slate-400 mb-2">{{ $t('analytics.advancedTitle') }}</h3>
+      <h3 class="text-sm font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-2">{{ $t('analytics.advancedTitle') }}</h3>
       <p class="text-sm text-slate-500 dark:text-slate-400">
         {{ $t('analytics.advancedHint') }}
       </p>

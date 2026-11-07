@@ -77,7 +77,7 @@ export default function CrmHomePage() {
                 <div className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${tile.accent} text-white shadow-lg`}>
                   <Icon className="h-6 w-6" />
                 </div>
-                <ArrowRight className="h-5 w-5 text-slate-300 transition-transform group-hover:translate-x-1 group-hover:text-slate-500" />
+                <ArrowRight className="h-5 w-5 text-slate-500 transition-transform group-hover:translate-x-1 group-hover:text-slate-500" />
               </div>
               <div className="relative mt-4">
                 <h2 className="text-lg font-black text-slate-900">{tile.title}</h2>

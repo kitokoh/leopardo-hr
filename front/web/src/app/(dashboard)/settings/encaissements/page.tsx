@@ -371,7 +371,7 @@ export default function PaymentProfilesPage() {
                     </button>
                   </div>
                   {familyProfiles.length === 0 ? (
-                    <p className="mt-3 rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-3 text-xs text-slate-400">
+                    <p className="mt-3 rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-3 text-xs text-slate-500">
                       {tt('familyEmpty')}
                     </p>
                   ) : (

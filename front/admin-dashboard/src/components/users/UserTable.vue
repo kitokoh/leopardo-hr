@@ -17,7 +17,7 @@
             :key="column.key"
             scope="col"
             :class="[
-              'px-6 py-4 text-left text-xs font-black uppercase tracking-widest text-slate-400',
+              'px-6 py-4 text-left text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400',
               column.sortable ? 'cursor-pointer hover:text-slate-700 dark:hover:text-slate-200 transition-colors' : ''
             ]"
             @click="column.sortable && handleSort(column.key)"
@@ -28,13 +28,13 @@
                 <ChevronUpIcon
                   :class="[
                     'h-3 w-3',
-                    sortBy === column.key && sortOrder === 'asc' ? 'text-brand-500' : 'text-slate-300'
+                    sortBy === column.key && sortOrder === 'asc' ? 'text-brand-500' : 'text-slate-500 dark:text-slate-400'
                   ]"
                 />
                 <ChevronDownIcon
                   :class="[
                     'h-3 w-3 -mt-1',
-                    sortBy === column.key && sortOrder === 'desc' ? 'text-brand-500' : 'text-slate-300'
+                    sortBy === column.key && sortOrder === 'desc' ? 'text-brand-500' : 'text-slate-500 dark:text-slate-400'
                   ]"
                 />
               </div>

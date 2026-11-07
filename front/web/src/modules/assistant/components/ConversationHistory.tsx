@@ -131,7 +131,7 @@ export function ConversationHistory({
                       setDeleteError(false);
                       setConfirmDeleteId(confirming ? null : conversation.id);
                     }}
-                    className="mt-0.5 rounded-lg p-1.5 text-slate-400 transition hover:bg-red-50 hover:text-red-600"
+                    className="mt-0.5 rounded-lg p-1.5 text-slate-500 transition hover:bg-red-50 hover:text-red-600"
                   >
                     <Trash2 className="h-4 w-4" aria-hidden="true" />
                   </button>

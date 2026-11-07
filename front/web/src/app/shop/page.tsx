@@ -402,7 +402,7 @@ export default function ShopPage() {
             <div className="relative max-h-[85vh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-white p-6 shadow-premium sm:rounded-3xl">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-black tracking-tight text-slate-950">{t(locale, 'restaurant.shop.cart')}</h2>
-                <button type="button" onClick={() => setCartOpen(false)} className="rounded-xl px-2 py-1 text-sm font-bold text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+                <button type="button" onClick={() => setCartOpen(false)} className="rounded-xl px-2 py-1 text-sm font-bold text-slate-500 hover:bg-slate-100 hover:text-slate-600">
                   ✕
                 </button>
               </div>
@@ -418,7 +418,7 @@ export default function ShopPage() {
                         <p className="text-xs text-slate-400">{money(product.price_minor, product.currency, locale)}</p>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <button type="button" onClick={() => removeFromCart(product.code)} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100" aria-label={`${t(locale, 'restaurant.shop.remove')} ${product.name}`}>
+                        <button type="button" onClick={() => removeFromCart(product.code)} className="rounded-lg p-1 text-slate-500 hover:bg-slate-100" aria-label={`${t(locale, 'restaurant.shop.remove')} ${product.name}`}>
                           {quantity === 1 ? <Trash2 className="h-4 w-4" aria-hidden="true" /> : <Minus className="h-4 w-4" aria-hidden="true" />}
                         </button>
                         <span className="w-6 text-center text-sm font-black text-slate-800">{quantity}</span>

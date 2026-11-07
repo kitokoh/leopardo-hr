@@ -239,7 +239,7 @@ export default function FuelPumpPage() {
                   </div>
                   <div>
                     <p className="font-black tracking-tight text-slate-950">{station.name}</p>
-                    <p className="font-mono text-xs font-bold text-slate-400">{station.code}</p>
+                    <p className="font-mono text-xs font-bold text-slate-500">{station.code}</p>
                   </div>
                 </button>
               ))}
@@ -293,7 +293,7 @@ export default function FuelPumpPage() {
 
             <div className="mb-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm">
               <p className="font-black tracking-tight text-slate-900">{selectedMeter?.code}</p>
-              <p className="font-mono text-xs text-slate-400">
+              <p className="font-mono text-xs text-slate-500">
                 {t(locale, 'fuel.pump.selectStation')} → {stations.find((s) => s.id === stationId)?.name}
               </p>
             </div>
@@ -310,9 +310,9 @@ export default function FuelPumpPage() {
                 {t(locale, 'fuel.pump.delta')} : {delta.toFixed(2)} l
               </p>
             ) : deltaLoading ? (
-              <p className="mb-4 text-xs text-slate-400">{t(locale, 'edu.common.loading')}</p>
+              <p className="mb-4 text-xs text-slate-500">{t(locale, 'edu.common.loading')}</p>
             ) : saved !== null ? (
-              <p className="mb-4 text-xs text-slate-400">{t(locale, 'fuel.pump.noDelta')}</p>
+              <p className="mb-4 text-xs text-slate-500">{t(locale, 'fuel.pump.noDelta')}</p>
             ) : null}
 
             <div className="space-y-4">
@@ -338,7 +338,7 @@ export default function FuelPumpPage() {
                 />
               </Field>
 
-              <p className="text-xs text-slate-400">{t(locale, 'fuel.pump.offlineHint')}</p>
+              <p className="text-xs text-slate-500">{t(locale, 'fuel.pump.offlineHint')}</p>
 
               <div className="flex flex-wrap gap-2">
                 <Button onClick={() => void submit()} disabled={saving || value.trim() === ''}>

@@ -170,7 +170,7 @@ export default async function ShopPage({ params, searchParams }: ShopPageProps) 
                   className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700"
                 >
                   {category.name}
-                  <span className="ml-2 text-xs text-slate-400">{category.products_count}</span>
+                  <span className="ml-2 text-xs text-slate-500">{category.products_count}</span>
                 </li>
               ))}
             </ul>

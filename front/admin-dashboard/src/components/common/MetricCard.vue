@@ -7,7 +7,7 @@
         </p>
         <p class="mt-2 text-2xl font-black text-slate-900 dark:text-white">
           <template v-if="value === null || value === undefined">
-            <span class="text-slate-400 dark:text-slate-500">{{ unavailableLabel }}</span>
+            <span class="text-slate-500 dark:text-slate-500">{{ unavailableLabel }}</span>
           </template>
           <template v-else>{{ formatted }}</template>
         </p>

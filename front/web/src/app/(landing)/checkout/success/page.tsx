@@ -251,7 +251,7 @@ function SuccessInner() {
                     </span>
                     <button
                       onClick={copySessionId}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                      className="p-1.5 rounded-lg text-slate-500 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                       title={copy.success.copyTitle}
                     >
                       <ClipboardCopy className="w-3.5 h-3.5" />

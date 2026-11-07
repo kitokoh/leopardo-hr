@@ -73,15 +73,15 @@ export default function StatementsPage() {
 
   const renderSection = (sections: Section[] | undefined, label: string) => (
     <div className="mb-4">
-      <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-400">{label}</p>
+      <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">{label}</p>
       {(!sections || sections.length === 0) ? (
-        <p className="text-sm text-slate-400">{t(locale, 'accountingModule.statementEmpty')}</p>
+        <p className="text-sm text-slate-500">{t(locale, 'accountingModule.statementEmpty')}</p>
       ) : (
         <ul className="divide-y divide-app-border rounded-xl border border-app-border">
           {sections.map((section) => (
             <li key={section.class} className="flex items-center justify-between px-4 py-2.5 text-sm">
               <span className="text-slate-600">
-                <span className="mr-2 font-mono text-xs font-bold text-slate-400">{section.class}</span>
+                <span className="mr-2 font-mono text-xs font-bold text-slate-500">{section.class}</span>
                 {section.label}
               </span>
               <span className="font-mono text-xs font-bold text-slate-800">{fmt(section.total)}</span>
@@ -142,7 +142,7 @@ export default function StatementsPage() {
       </div>
 
       {loading ? (
-        <div className="rounded-3xl border border-app-border bg-white p-12 text-center text-sm text-slate-400">{t(locale, 'accountingModule.loading')}</div>
+        <div className="rounded-3xl border border-app-border bg-white p-12 text-center text-sm text-slate-500">{t(locale, 'accountingModule.loading')}</div>
       ) : tab === 'balanceSheet' && bs ? (
         <section className="rounded-3xl border border-app-border bg-white p-6 shadow-sm">
           <div className={`mb-5 flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold ${bs.balanced ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-red-200 bg-red-50 text-red-700'}`}>
@@ -164,7 +164,7 @@ export default function StatementsPage() {
               [t(locale, 'accountingModule.statementResultat'), bs.resultat_net],
             ].map(([label, value]) => (
               <div key={String(label)} className="rounded-xl bg-slate-50 px-4 py-3">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{label}</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{label}</p>
                 <p className="mt-1 font-mono text-sm font-black text-slate-900">{fmt(Number(value))}</p>
               </div>
             ))}
@@ -175,15 +175,15 @@ export default function StatementsPage() {
           {renderSection(income.sections, t(locale, 'accountingModule.statementResultat'))}
           <div className="mt-4 grid grid-cols-3 gap-4 border-t border-app-border pt-4">
             <div className="rounded-xl bg-slate-50 px-4 py-3">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{t(locale, 'accountingModule.ledgerCredit')}</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerCredit')}</p>
               <p className="mt-1 font-mono text-sm font-black text-emerald-700">{fmt(income.total_produits)}</p>
             </div>
             <div className="rounded-xl bg-slate-50 px-4 py-3">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{t(locale, 'accountingModule.ledgerDebit')}</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerDebit')}</p>
               <p className="mt-1 font-mono text-sm font-black text-red-700">{fmt(income.total_charges)}</p>
             </div>
             <div className="rounded-xl bg-slate-50 px-4 py-3">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{t(locale, 'accountingModule.statementResultat')}</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.statementResultat')}</p>
               <p className="mt-1 font-mono text-sm font-black text-slate-900">{fmt(income.resultat_net)}</p>
             </div>
           </div>

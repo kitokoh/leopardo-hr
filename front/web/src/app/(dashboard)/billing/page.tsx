@@ -482,7 +482,7 @@ export default function BillingPage() {
                         {invoice.due_date ? new Date(invoice.due_date).toLocaleDateString(toIntlLocale(locale)) : '—'}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button onClick={() => downloadInvoicePdf(invoice.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-700" title="Telecharger PDF">
+                        <button onClick={() => downloadInvoicePdf(invoice.id)} className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-emerald-700" title="Telecharger PDF">
                           <Download className="h-4 w-4" />
                         </button>
                       </td>

@@ -198,7 +198,7 @@ export default function TrainingPage() {
           <div className="py-12 text-center text-sm text-slate-500">Chargement...</div>
         ) : courses.length === 0 ? (
           <section className="rounded-3xl border border-dashed border-app-border bg-white py-16 text-center">
-            <BookOpen className="mx-auto mb-3 h-12 w-12 text-slate-300" />
+            <BookOpen className="mx-auto mb-3 h-12 w-12 text-slate-500" />
             <p className="text-sm text-slate-500">Aucune formation au catalogue pour le moment.</p>
           </section>
         ) : (
@@ -233,7 +233,7 @@ export default function TrainingPage() {
                         {course.category ? <span className="rounded-full bg-slate-100 px-2 py-0.5">{course.category}</span> : null}
                       </div>
                     </div>
-                    <ChevronDown className={`h-4 w-4 shrink-0 text-slate-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`h-4 w-4 shrink-0 text-slate-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                   </button>
 
                   <AnimatePresence initial={false}>
@@ -245,11 +245,11 @@ export default function TrainingPage() {
                         className="border-t border-app-border"
                       >
                         <div className="space-y-2 p-5">
-                          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-400">Sessions programmees</p>
+                          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">Sessions programmees</p>
                           {sessionsLoading === course.id ? (
-                            <p className="text-sm text-slate-400">Chargement des sessions...</p>
+                            <p className="text-sm text-slate-500">Chargement des sessions...</p>
                           ) : !sessions || sessions.length === 0 ? (
-                            <p className="text-sm text-slate-400">Aucune session pour cette formation.</p>
+                            <p className="text-sm text-slate-500">Aucune session pour cette formation.</p>
                           ) : (
                             sessions.map((session) => (
                               <div key={session.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-app-border bg-transparent px-3 py-2">
@@ -289,7 +289,7 @@ export default function TrainingPage() {
             >
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-black text-slate-950">Nouvelle formation</h2>
-                <button onClick={() => setShowCreateModal(false)} className="text-slate-400 hover:text-slate-600"><X className="h-5 w-5" /></button>
+                <button onClick={() => setShowCreateModal(false)} className="text-slate-500 hover:text-slate-600"><X className="h-5 w-5" /></button>
               </div>
               <div className="space-y-3">
                 <input

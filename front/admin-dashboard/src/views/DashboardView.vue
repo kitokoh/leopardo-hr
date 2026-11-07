@@ -70,11 +70,11 @@
           <table class="min-w-full divide-y divide-white/5 dark:divide-white/5">
             <thead class="bg-slate-50/80 dark:bg-slate-900/80">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.client') }}</th>
-                <th class="px-6 py-3 text-left text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.health') }}</th>
-                <th class="px-6 py-3 text-left text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.risk') }}</th>
-                <th class="px-6 py-3 text-left text-xs font-black uppercase tracking-widest text-slate-400">MRR</th>
-                <th class="px-6 py-3 text-right text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.actions') }}</th>
+                <th class="px-6 py-3 text-left text-xs font-black uppercase tracking-widest text-slate-500">{{ t('dashboard.client') }}</th>
+                <th class="px-6 py-3 text-left text-xs font-black uppercase tracking-widest text-slate-500">{{ t('dashboard.health') }}</th>
+                <th class="px-6 py-3 text-left text-xs font-black uppercase tracking-widest text-slate-500">{{ t('dashboard.risk') }}</th>
+                <th class="px-6 py-3 text-left text-xs font-black uppercase tracking-widest text-slate-500">MRR</th>
+                <th class="px-6 py-3 text-right text-xs font-black uppercase tracking-widest text-slate-500">{{ t('dashboard.actions') }}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-white/5 bg-transparent dark:divide-white/5 dark:bg-transparent">
@@ -117,7 +117,7 @@
             </tbody>
           </table>
           <div v-if="priorityCompanies.length === 0" class="p-8 text-center">
-            <p class="text-sm font-medium text-slate-400">{{ t('dashboard.noPriorityCompanies') }}</p>
+            <p class="text-sm font-medium text-slate-500">{{ t('dashboard.noPriorityCompanies') }}</p>
           </div>
         </div>
       </section>
@@ -143,7 +143,7 @@
             </div>
           </div>
           <div v-if="pendingCompanyRequests.length === 0" class="p-8 text-center">
-            <p class="text-sm font-medium text-slate-400">{{ t('dashboard.noPendingRequests') }}</p>
+            <p class="text-sm font-medium text-slate-500">{{ t('dashboard.noPendingRequests') }}</p>
           </div>
         </div>
         <div class="border-t border-slate-200 dark:border-slate-800 px-6 py-4 bg-surface-bright/20 dark:bg-surface-bright/20 backdrop-blur-md">
@@ -159,15 +159,15 @@
         <h2 class="text-lg font-black tracking-tight text-slate-950 dark:text-white uppercase">{{ t('dashboard.adoption') }}</h2>
         <dl class="mt-4 space-y-4 text-sm">
           <div class="flex items-center justify-between">
-            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.checkins30d') }}</dt>
+            <dt class="text-xs font-black uppercase tracking-widest text-slate-500">{{ t('dashboard.checkins30d') }}</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ adoption.attendance_logs }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.activeEmployees') }}</dt>
+            <dt class="text-xs font-black uppercase tracking-widest text-slate-500">{{ t('dashboard.activeEmployees') }}</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ adoption.active_employees }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.clientsAtRisk') }}</dt>
+            <dt class="text-xs font-black uppercase tracking-widest text-slate-500">{{ t('dashboard.clientsAtRisk') }}</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ summary.risk.high + summary.risk.medium }}</dd>
           </div>
         </dl>
@@ -177,23 +177,23 @@
         <h2 class="text-lg font-black tracking-tight text-slate-950 dark:text-white uppercase">{{ t('dashboard.revenue') }}</h2>
         <dl class="mt-4 space-y-4 text-sm">
           <div class="flex items-center justify-between">
-            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">MRR</dt>
+            <dt class="text-xs font-black uppercase tracking-widest text-slate-500">MRR</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ formatCurrency(revenue.mrr, revenue.currency) }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.collected30d') }}</dt>
+            <dt class="text-xs font-black uppercase tracking-widest text-slate-500">{{ t('dashboard.collected30d') }}</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ formatCurrency(revenue.collected_30d, revenue.currency) }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.overdue') }}</dt>
+            <dt class="text-xs font-black uppercase tracking-widest text-slate-500">{{ t('dashboard.overdue') }}</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ formatCurrency(revenue.overdue_total, revenue.currency) }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">ARPA</dt>
+            <dt class="text-xs font-black uppercase tracking-widest text-slate-500">ARPA</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ formatCurrency(averageRevenuePerAccount, revenue.currency) }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.activeSubscriptions') }}</dt>
+            <dt class="text-xs font-black uppercase tracking-widest text-slate-500">{{ t('dashboard.activeSubscriptions') }}</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ subscriptionMetrics.active }}</dd>
           </div>
         </dl>

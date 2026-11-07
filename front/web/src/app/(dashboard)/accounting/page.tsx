@@ -137,7 +137,7 @@ export default function AccountingHomePage() {
                 <tile.icon className="h-5 w-5" />
               </span>
               <span className="flex-1 text-sm font-bold text-slate-800">{tile.label}</span>
-              <ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-amber-500" />
+              <ArrowRight className="h-4 w-4 text-slate-500 transition group-hover:translate-x-0.5 group-hover:text-amber-500" />
             </Link>
           </motion.div>
         ))}

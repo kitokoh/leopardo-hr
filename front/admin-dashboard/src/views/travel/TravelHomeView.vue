@@ -37,7 +37,7 @@
           >
             <component :is="section.icon" class="h-5 w-5 text-white" />
           </div>
-          <ArrowRightIcon class="h-4 w-4 text-slate-300 transition-all group-hover:translate-x-0.5 group-hover:text-brand-500 dark:text-slate-600" />
+          <ArrowRightIcon class="h-4 w-4 text-slate-500 transition-all group-hover:translate-x-0.5 group-hover:text-brand-500 dark:text-slate-600" />
         </div>
         <h2 class="mt-4 text-sm font-semibold text-slate-900 dark:text-white">
           {{ section.title }}

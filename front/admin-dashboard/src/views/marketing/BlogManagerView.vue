@@ -68,7 +68,7 @@
               <span class="px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
                 {{ article.category }}
               </span>
-              <span class="text-xs text-slate-400 font-medium">
+              <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">
                 {{ article.readingTime }} min de lecture
               </span>
             </div>
@@ -82,7 +82,7 @@
           </div>
 
           <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            <div class="text-xs text-slate-400">
+            <div class="text-xs text-slate-500 dark:text-slate-400">
               Par <strong class="text-slate-700 dark:text-slate-300">{{ article.author.name }}</strong>
             </div>
             <div class="flex items-center gap-2">
@@ -262,7 +262,7 @@
             <span class="text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
               Aperçu en Direct (Rendu Vitrine)
             </span>
-            <span class="text-xs text-slate-400 font-medium">
+            <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">
               Synchronisé
             </span>
           </div>
@@ -281,7 +281,7 @@
               {{ currentArticle.title || "Titre de l’article" }}
             </h2>
 
-            <div class="flex items-center gap-3 text-xs text-slate-400">
+            <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
               <span>Par {{ currentArticle.author.name || 'Auteur' }}</span>
               <span>•</span>
               <span>{{ currentArticle.readingTime || 5 }} min de lecture</span>

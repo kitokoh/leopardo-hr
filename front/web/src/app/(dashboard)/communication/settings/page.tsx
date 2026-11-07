@@ -373,7 +373,7 @@ export default function CommunicationSettingsPage() {
           )}
 
           {activeIntegrations.length === 0 ? (
-            <div className="flex flex-col items-center gap-2 rounded-3xl border border-dashed border-slate-200 bg-white/70 py-12 text-slate-400">
+            <div className="flex flex-col items-center gap-2 rounded-3xl border border-dashed border-slate-200 bg-white/70 py-12 text-slate-500">
               <MailX className="h-8 w-8" />
               <p className="text-sm font-medium">{tc(locale, 'mailbox.empty')}</p>
               <p className="text-xs">{tc(locale, 'mailbox.emptyHint')}</p>

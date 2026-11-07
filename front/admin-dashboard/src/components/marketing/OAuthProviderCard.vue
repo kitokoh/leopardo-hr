@@ -29,7 +29,7 @@
           class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5"
         >
           {{ labelClientSecret }}
-          <span class="ml-1 text-xs font-normal text-slate-400">{{ labelSecretHint }}</span>
+          <span class="ml-1 text-xs font-normal text-slate-500 dark:text-slate-400">{{ labelSecretHint }}</span>
         </label>
         <input
           :id="fieldId(provider, 'client-secret')"

@@ -485,10 +485,10 @@ export function OnboardingWizard({
                         isCompleted
                           ? 'bg-emerald-100 text-emerald-700'
                           : isSkipped
-                            ? 'bg-slate-100 text-slate-400'
+                            ? 'bg-slate-100 text-slate-500'
                             : isActive
                               ? 'bg-teal-700 text-white shadow-lg'
-                              : 'bg-slate-100 text-slate-400'
+                              : 'bg-slate-100 text-slate-500'
                       }`}
                     >
                       {isCompleted ? (
@@ -512,7 +512,7 @@ export function OnboardingWizard({
                       )}
                     </div>
                     {isSkipped && (
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-slate-400">
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-slate-500">
                         {onboarding.skip}
                       </span>
                     )}

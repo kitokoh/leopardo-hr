@@ -149,7 +149,7 @@ export function SharedDocumentView({ token, locale }: { token: string; locale: A
     return (
       <main className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-8 text-center">
-          <Lock className="w-10 h-10 mx-auto text-slate-300 mb-4" aria-hidden="true" />
+          <Lock className="w-10 h-10 mx-auto text-slate-500 mb-4" aria-hidden="true" />
           <h1 className="text-xl font-bold text-slate-900">{t(locale, 'accountingPortal.notFoundTitle')}</h1>
           <p className="mt-2 text-sm text-slate-600">{t(locale, 'accountingPortal.notFoundBody')}</p>
           <Link
@@ -167,7 +167,7 @@ export function SharedDocumentView({ token, locale }: { token: string; locale: A
     return (
       <main className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-8 text-center">
-          <FileText className="w-10 h-10 mx-auto text-slate-300 mb-4" aria-hidden="true" />
+          <FileText className="w-10 h-10 mx-auto text-slate-500 mb-4" aria-hidden="true" />
           <h1 className="text-xl font-bold text-slate-900">{t(locale, 'accountingPortal.errorTitle')}</h1>
           <p className="mt-2 text-sm text-slate-600">{t(locale, 'accountingPortal.errorBody')}</p>
           <button
@@ -250,7 +250,7 @@ export function SharedDocumentView({ token, locale }: { token: string; locale: A
             {t(locale, 'accountingPortal.expiresAt').replace(/:date/, formatDate(info.expires_at, locale))}
           </p>
         ) : null}
-        <p className="mt-2 text-center text-xs text-slate-400">{t(locale, 'accountingPortal.securityNote')}</p>
+        <p className="mt-2 text-center text-xs text-slate-500">{t(locale, 'accountingPortal.securityNote')}</p>
       </div>
     </main>
   );

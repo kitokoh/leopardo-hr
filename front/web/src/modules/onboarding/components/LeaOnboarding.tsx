@@ -312,7 +312,7 @@ export function LeaOnboarding({
           <button
             type="button"
             onClick={onDismiss}
-            className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            className="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-600"
             aria-label={t('later', 'Plus tard')}
           >
             <X className="h-4 w-4" />
@@ -339,7 +339,7 @@ export function LeaOnboarding({
                 placeholder={t('placeholder')}
                 className="w-full resize-none rounded-xl border border-slate-300 p-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
-              <div className="mt-1 flex items-center justify-between text-xs text-slate-400">
+              <div className="mt-1 flex items-center justify-between text-xs text-slate-500">
                 <span>{t('hint.min')}</span>
                 <span>
                   {state.description.length}/{MAX_DESCRIPTION}
@@ -442,7 +442,7 @@ export function LeaOnboarding({
                 <ul className="space-y-2">
                   {summaryRows.map((row) => (
                     <li key={row.key} className="rounded-xl border border-slate-200 p-3">
-                      <div className="mb-1 text-xs uppercase tracking-wide text-slate-400">
+                      <div className="mb-1 text-xs uppercase tracking-wide text-slate-500">
                         {row.label}
                       </div>
                       <div className="flex flex-wrap gap-2">

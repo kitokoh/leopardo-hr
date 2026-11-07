@@ -123,9 +123,9 @@ export default function BalancePage() {
             </thead>
             <tbody className="divide-y divide-app-border">
               {loading ? (
-                <tr><td colSpan={5} className="px-6 py-10 text-center text-sm text-slate-400">{t(locale, 'accountingModule.loading')}</td></tr>
+                <tr><td colSpan={5} className="px-6 py-10 text-center text-sm text-slate-500">{t(locale, 'accountingModule.loading')}</td></tr>
               ) : lines.length === 0 ? (
-                <tr><td colSpan={5} className="px-6 py-10 text-center text-sm text-slate-400">{t(locale, 'accountingModule.balanceEmpty')}</td></tr>
+                <tr><td colSpan={5} className="px-6 py-10 text-center text-sm text-slate-500">{t(locale, 'accountingModule.balanceEmpty')}</td></tr>
               ) : (
                 lines.map((line) => (
                   <tr key={line.account_code} className="transition-colors hover:bg-transparent/60">

@@ -109,7 +109,7 @@
           class="mt-4 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"
           placeholder="500, 1000, 5000"
         />
-        <p class="mt-1 text-xs text-slate-400">{{ $t('fundraising.settings.suggested_hint') }}</p>
+        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ $t('fundraising.settings.suggested_hint') }}</p>
       </section>
 
       <!-- Surface publique -->

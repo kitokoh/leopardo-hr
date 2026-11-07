@@ -61,7 +61,7 @@
             ? t('searchIntel.competitors.stale', 'A revoir (> 90 j)')
             : t('searchIntel.competitors.fresh', 'A jour') }}
         </span>
-        <p class="mt-1 text-xs text-slate-400">{{ formatDate(row.observed_at) }}</p>
+        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ formatDate(row.observed_at) }}</p>
       </template>
       <template #cell-source="{ row }">
         <a
@@ -71,7 +71,7 @@
           rel="noopener noreferrer"
           class="text-xs text-brand-600 hover:underline dark:text-brand-400"
         >{{ row.source_label || row.source_url }}</a>
-        <span v-else class="text-xs text-slate-400">—</span>
+        <span v-else class="text-xs text-slate-500 dark:text-slate-400">—</span>
       </template>
     </DataTable>
   </div>

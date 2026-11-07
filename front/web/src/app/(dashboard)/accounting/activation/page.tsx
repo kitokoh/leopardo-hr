@@ -204,7 +204,7 @@ export default function AccountingActivationPage() {
         subtitle={t(locale, 'accountingActivation.subtitle')}
         accentClassName="bg-gradient-to-br from-amber-100 via-white to-white"
       >
-        <div className="flex items-center justify-center gap-2 rounded-2xl border border-app-border bg-white p-10 text-sm text-slate-400">
+        <div className="flex items-center justify-center gap-2 rounded-2xl border border-app-border bg-white p-10 text-sm text-slate-500">
           <Loader2 className="h-4 w-4 animate-spin" />
           {t(locale, 'accountingActivation.loading')}
         </div>
@@ -254,13 +254,13 @@ export default function AccountingActivationPage() {
                         ? 'bg-amber-500 text-white shadow'
                         : done
                           ? 'bg-emerald-100 text-emerald-700'
-                          : 'bg-slate-100 text-slate-400'
+                          : 'bg-slate-100 text-slate-500'
                     }`}
                   >
                     {done ? <CheckCircle2 className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
                   </div>
                   <span
-                    className={`hidden truncate text-xs font-bold sm:block ${active ? 'text-slate-900' : 'text-slate-400'}`}
+                    className={`hidden truncate text-xs font-bold sm:block ${active ? 'text-slate-900' : 'text-slate-500'}`}
                   >
                     {t(locale, meta.titleKey)}
                   </span>
@@ -325,7 +325,7 @@ export default function AccountingActivationPage() {
                         </option>
                       ))}
                     </select>
-                    <span className="mt-1.5 block text-xs text-slate-400">{t(locale, 'accountingActivation.fieldCurrencyHint')}</span>
+                    <span className="mt-1.5 block text-xs text-slate-500">{t(locale, 'accountingActivation.fieldCurrencyHint')}</span>
                   </label>
                 </>
               )}
@@ -358,14 +358,14 @@ export default function AccountingActivationPage() {
                               placeholder={t(locale, 'accountingActivation.tvaRateValuePlaceholder')}
                               className="w-full rounded-xl border border-app-border bg-white px-3 py-2.5 text-sm outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
                             />
-                            <span className="text-xs font-bold text-slate-400">%</span>
+                            <span className="text-xs font-bold text-slate-500">%</span>
                           </div>
                           <button
                             type="button"
                             onClick={() => removeTvaRate(i)}
                             disabled={form.tva_rates.length <= 1}
                             aria-label={t(locale, 'accountingActivation.removeTvaRate')}
-                            className="rounded-lg p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-600 disabled:opacity-30"
+                            className="rounded-lg p-2 text-slate-500 transition hover:bg-red-50 hover:text-red-600 disabled:opacity-30"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -386,7 +386,7 @@ export default function AccountingActivationPage() {
                     <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600">
                       {t(locale, 'accountingActivation.fieldNumberSeries')}
                     </span>
-                    <p className="mb-2 text-xs text-slate-400">{t(locale, 'accountingActivation.fieldNumberSeriesHint')}</p>
+                    <p className="mb-2 text-xs text-slate-500">{t(locale, 'accountingActivation.fieldNumberSeriesHint')}</p>
                     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                       {DOCUMENT_TYPES.map((docType) => (
                         <label key={docType} className="flex items-center gap-2">
@@ -460,7 +460,7 @@ export default function AccountingActivationPage() {
 
                   <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div className="rounded-2xl border border-app-border p-4">
-                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-400">
+                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-500">
                         <Languages className="h-3.5 w-3.5" /> {t(locale, 'accountingActivation.fieldDocumentLanguage')}
                       </dt>
                       <dd className="mt-1 text-sm font-bold text-slate-800">
@@ -470,7 +470,7 @@ export default function AccountingActivationPage() {
                       </dd>
                     </div>
                     <div className="rounded-2xl border border-app-border p-4">
-                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-400">
+                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-500">
                         <Coins className="h-3.5 w-3.5" /> {t(locale, 'accountingActivation.fieldCurrency')}
                       </dt>
                       <dd className="mt-1 text-sm font-bold text-slate-800">
@@ -478,7 +478,7 @@ export default function AccountingActivationPage() {
                       </dd>
                     </div>
                     <div className="rounded-2xl border border-app-border p-4">
-                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-400">
+                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-500">
                         <Percent className="h-3.5 w-3.5" /> {t(locale, 'accountingActivation.fieldTvaRates')}
                       </dt>
                       <dd className="mt-1 text-sm font-bold text-slate-800">
@@ -491,7 +491,7 @@ export default function AccountingActivationPage() {
                       </dd>
                     </div>
                     <div className="rounded-2xl border border-app-border p-4">
-                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-400">
+                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-500">
                         <ListOrdered className="h-3.5 w-3.5" /> {t(locale, 'accountingActivation.fieldNumberSeries')}
                       </dt>
                       <dd className="mt-1 text-sm font-bold text-slate-800">
@@ -503,7 +503,7 @@ export default function AccountingActivationPage() {
                       </dd>
                     </div>
                     <div className="rounded-2xl border border-app-border p-4">
-                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-400">
+                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-500">
                         <FileBadge2 className="h-3.5 w-3.5" /> {t(locale, 'accountingActivation.fieldTemplateStyle')}
                       </dt>
                       <dd className="mt-1 text-sm font-bold text-slate-800">
@@ -511,7 +511,7 @@ export default function AccountingActivationPage() {
                       </dd>
                     </div>
                     <div className="rounded-2xl border border-app-border p-4">
-                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-400">
+                      <dt className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-500">
                         <ScrollText className="h-3.5 w-3.5" /> {t(locale, 'accountingActivation.fieldLegalMentions')}
                       </dt>
                       <dd className="mt-1 line-clamp-2 text-sm font-bold text-slate-800">

@@ -210,7 +210,7 @@ export default function SmartAttendanceSessionsPage() {
             <label className="mb-1 block text-xs font-bold text-slate-600">{labels.filterEmployee}</label>
             <input
               type="text"
-              className="w-full rounded-xl border border-slate-200 bg-transparent px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
+              className="w-full rounded-xl border border-slate-200 bg-transparent px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
               placeholder={labels.filterEmployeePlaceholder}
               value={pendingFilters.employee_id}
               onChange={(e) => setPendingFilters((f) => ({ ...f, employee_id: e.target.value }))}

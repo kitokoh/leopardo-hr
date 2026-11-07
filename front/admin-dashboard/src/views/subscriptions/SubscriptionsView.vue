@@ -129,7 +129,7 @@
                 <span class="text-brand-500 mr-1">→</span> {{ item.next_action.label }}
               </p>
             </article>
-            <div v-if="priorityClients.length === 0 && !isLoading" class="p-8 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">
+            <div v-if="priorityClients.length === 0 && !isLoading" class="p-8 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
               {{ t('subscriptions.noRisk') }}
             </div>
           </div>

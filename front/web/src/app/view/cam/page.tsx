@@ -135,7 +135,7 @@ export default function PublicCameraViewerPage() {
               <ShieldAlert className="mx-auto h-8 w-8 text-rose-500" aria-hidden="true" />
               <p className="text-sm font-black text-slate-900">{t(locale, 'cameras.viewer.invalidToken')}</p>
               <p className="text-sm text-slate-600">{t(locale, 'cameras.viewer.invalidTokenBody')}</p>
-              <p className="text-xs text-slate-400">{t(locale, 'cameras.viewer.revocationHint')}</p>
+              <p className="text-xs text-slate-500">{t(locale, 'cameras.viewer.revocationHint')}</p>
             </Panel>
           ) : state.kind === 'not_found' ? (
             <Panel className="space-y-2 text-center">
@@ -203,8 +203,8 @@ export default function PublicCameraViewerPage() {
                 ) : null}
               </div>
 
-              <p className="text-xs text-slate-400">{t(locale, 'cameras.detail.webrtcHint')}</p>
-              <p className="text-xs text-slate-400">{t(locale, 'cameras.viewer.revocationHint')}</p>
+              <p className="text-xs text-slate-500">{t(locale, 'cameras.detail.webrtcHint')}</p>
+              <p className="text-xs text-slate-500">{t(locale, 'cameras.viewer.revocationHint')}</p>
             </Panel>
           )}
         </div>

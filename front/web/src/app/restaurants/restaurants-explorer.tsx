@@ -171,7 +171,7 @@ export default function RestaurantsExplorer({
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={t(locale, 'restaurant.public.searchPlaceholder')}
-            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
           />
         </label>
         <label className="block space-y-1">
@@ -184,7 +184,7 @@ export default function RestaurantsExplorer({
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder={t(locale, 'restaurant.public.cityPlaceholder')}
-            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
           />
         </label>
         <label className="block space-y-1">
@@ -215,7 +215,7 @@ export default function RestaurantsExplorer({
             value={cuisine}
             onChange={(e) => setCuisine(e.target.value)}
             placeholder={t(locale, 'restaurant.public.cuisinePlaceholder')}
-            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
           />
         </label>
         <div className="flex flex-wrap items-end gap-2 sm:col-span-2 lg:col-span-5">
@@ -335,7 +335,7 @@ export default function RestaurantsExplorer({
                         <>
                           <Star className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
                           <span className="font-black text-slate-800">{rating}</span>
-                          <span className="text-slate-400">
+                          <span className="text-slate-500">
                             ({restaurant.reviews_count} {t(locale, 'restaurant.public.reviewsSuffix')})
                           </span>
                         </>

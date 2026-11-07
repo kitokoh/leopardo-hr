@@ -257,7 +257,7 @@ export function NextStepsCard({ locale }: { locale: AppLocale }) {
           aria-label={t('dismiss', 'Masquer cette carte')}
           title={t('dismiss', 'Masquer cette carte')}
           data-testid="next-steps-dismiss"
-          className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-50 hover:text-slate-700"
+          className="rounded-lg p-1.5 text-slate-500 transition hover:bg-slate-50 hover:text-slate-700"
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>

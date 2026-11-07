@@ -116,15 +116,15 @@ export default function LedgerPage() {
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-2xl border border-app-border bg-white p-4 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{t(locale, 'accountingModule.ledgerOpening')}</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerOpening')}</p>
           <p className={`mt-1 text-xl font-black ${opening < 0 ? 'text-red-600' : 'text-slate-900'}`}>{fmt(opening)}</p>
         </div>
         <div className="rounded-2xl border border-app-border bg-white p-4 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{t(locale, 'accountingModule.ledgerBalance')}</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerBalance')}</p>
           <p className="mt-1 text-xl font-black text-slate-900">{fmt(entries.at(-1)?.running_balance ?? opening)}</p>
         </div>
         <div className="rounded-2xl border border-app-border bg-white p-4 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{t(locale, 'accountingModule.ledgerPiece')}</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'accountingModule.ledgerPiece')}</p>
           <p className="mt-1 text-xl font-black text-slate-900">{total}</p>
         </div>
       </section>
@@ -145,9 +145,9 @@ export default function LedgerPage() {
             </thead>
             <tbody className="divide-y divide-app-border">
               {loading ? (
-                <tr><td colSpan={7} className="px-6 py-10 text-center text-sm text-slate-400">{t(locale, 'accountingModule.loading')}</td></tr>
+                <tr><td colSpan={7} className="px-6 py-10 text-center text-sm text-slate-500">{t(locale, 'accountingModule.loading')}</td></tr>
               ) : entries.length === 0 ? (
-                <tr><td colSpan={7} className="px-6 py-10 text-center text-sm text-slate-400">{t(locale, 'accountingModule.ledgerEmpty')}</td></tr>
+                <tr><td colSpan={7} className="px-6 py-10 text-center text-sm text-slate-500">{t(locale, 'accountingModule.ledgerEmpty')}</td></tr>
               ) : (
                 entries.map((entry) => (
                   <tr key={entry.id} className="transition-colors hover:bg-transparent/60">

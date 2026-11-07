@@ -302,7 +302,7 @@ export default function RestaurantOrderPanel({
   };
 
   const inputClass =
-    'w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100';
+    'w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100';
   const labelClass = 'text-xs font-black uppercase tracking-widest text-slate-500';
 
   return (
@@ -410,7 +410,7 @@ export default function RestaurantOrderPanel({
                     </p>
                   </div>
                   {review.comment ? <p className="mt-1 text-sm text-slate-600">{review.comment}</p> : null}
-                  {review.date ? <p className="mt-1 text-xs text-slate-400">{review.date}</p> : null}
+                  {review.date ? <p className="mt-1 text-xs text-slate-500">{review.date}</p> : null}
                 </li>
               ))}
             </ul>
@@ -459,7 +459,7 @@ export default function RestaurantOrderPanel({
                   className={inputClass}
                   maxLength={40}
                 />
-                <span className="block text-xs text-slate-400">
+                <span className="block text-xs text-slate-500">
                   {t(locale, 'restaurant.public.reviewOrderRefHint')}
                 </span>
               </label>
@@ -486,7 +486,7 @@ export default function RestaurantOrderPanel({
                     aria-checked={reviewRating === value}
                     aria-label={`${t(locale, 'restaurant.public.reviewRatingLabel')} ${value}`}
                     onClick={() => setReviewRating(value)}
-                    className={`rounded-lg p-1.5 ${value <= reviewRating ? 'text-amber-500' : 'text-slate-300'}`}
+                    className={`rounded-lg p-1.5 ${value <= reviewRating ? 'text-amber-500' : 'text-slate-500'}`}
                   >
                     <Star className="h-6 w-6 fill-current" aria-hidden="true" />
                   </button>
@@ -541,7 +541,7 @@ export default function RestaurantOrderPanel({
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-bold text-slate-800">{product.name}</p>
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-slate-500">
                         {formatMoney(product.price_minor, product.currency, locale)}
                       </p>
                     </div>
@@ -549,7 +549,7 @@ export default function RestaurantOrderPanel({
                       <button
                         type="button"
                         onClick={() => removeFromCart(product.code)}
-                        className="rounded-lg p-1 text-slate-400 hover:bg-slate-100"
+                        className="rounded-lg p-1 text-slate-500 hover:bg-slate-100"
                         aria-label={`${t(locale, 'restaurant.shop.remove')} ${product.name}`}
                       >
                         {quantity === 1 ? (

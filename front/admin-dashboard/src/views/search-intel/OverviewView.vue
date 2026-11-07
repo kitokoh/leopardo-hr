@@ -41,7 +41,7 @@
     </div>
 
     <template v-else-if="data">
-      <p class="mb-4 text-xs text-slate-400">
+      <p class="mb-4 text-xs text-slate-500 dark:text-slate-400">
         {{ t('searchIntel.overview.generatedAt', 'Genere le') }} {{ formatDate(data.generated_at) }}
       </p>
 
@@ -148,7 +148,7 @@
             <span
               :class="integration?.connected
                 ? 'text-emerald-600 dark:text-emerald-400'
-                : 'text-slate-400'"
+                : 'text-slate-500 dark:text-slate-400'"
               class="text-xs font-black uppercase tracking-tight"
             >
               {{ integration?.connected

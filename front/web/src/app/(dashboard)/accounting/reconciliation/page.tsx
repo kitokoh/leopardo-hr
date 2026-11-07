@@ -183,7 +183,7 @@ export default function ReconciliationPage() {
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <label className="flex items-center gap-2 text-sm font-bold text-slate-600">
-          <Landmark className="h-4 w-4 text-slate-400" />
+          <Landmark className="h-4 w-4 text-slate-500" />
           {t(locale, 'bankRecon.statementsTitle')}
           <select
             value={selectedId ?? ''}
@@ -231,22 +231,22 @@ export default function ReconciliationPage() {
             [t(locale, 'bankRecon.gap'), fmt(stats.gap)],
           ].map(([label, value]) => (
             <div key={String(label)} className="rounded-2xl border border-app-border bg-white p-4 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{label}</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{label}</p>
               <p className="mt-1 font-mono text-lg font-black text-slate-900">{value}</p>
             </div>
           ))}
           <div className="rounded-2xl border border-app-border bg-white p-4 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{t(locale, 'bankRecon.matchedLines')} / {t(locale, 'bankRecon.pendingLines')}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'bankRecon.matchedLines')} / {t(locale, 'bankRecon.pendingLines')}</p>
             <p className="mt-1 text-lg font-black text-slate-900">
               {stats.matched} / {stats.pending}
             </p>
           </div>
           <div className="rounded-2xl border border-app-border bg-white p-4 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{t(locale, 'bankRecon.matchedAmount')}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'bankRecon.matchedAmount')}</p>
             <p className="mt-1 font-mono text-lg font-black text-emerald-700">{fmt(stats.matchedAmount)}</p>
           </div>
           <div className="rounded-2xl border border-app-border bg-white p-4 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{t(locale, 'bankRecon.pendingAmount')}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'bankRecon.pendingAmount')}</p>
             <p className="mt-1 font-mono text-lg font-black text-amber-600">{fmt(stats.pendingAmount)}</p>
           </div>
         </section>
@@ -267,11 +267,11 @@ export default function ReconciliationPage() {
             </thead>
             <tbody className="divide-y divide-app-border">
               {detailLoading ? (
-                <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-400">{t(locale, 'bankRecon.loading')}</td></tr>
+                <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">{t(locale, 'bankRecon.loading')}</td></tr>
               ) : !statement ? (
-                <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-400">{t(locale, 'bankRecon.selectStatement')}</td></tr>
+                <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">{t(locale, 'bankRecon.selectStatement')}</td></tr>
               ) : statement.lines.length === 0 ? (
-                <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-400">{t(locale, 'bankRecon.noStatements')}</td></tr>
+                <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">{t(locale, 'bankRecon.noStatements')}</td></tr>
               ) : (
                 statement.lines.map((line) => (
                   <tr key={line.id} className={`transition-colors hover:bg-transparent/60 ${line.status === 'pending' ? 'bg-amber-50/40' : ''}`}>
@@ -320,7 +320,7 @@ export default function ReconciliationPage() {
                           </button>
                         </div>
                       ) : (
-                        <span className="text-xs text-slate-400">#{line.matched_payment_id}</span>
+                        <span className="text-xs text-slate-500">#{line.matched_payment_id}</span>
                       )}
                     </td>
                   </tr>

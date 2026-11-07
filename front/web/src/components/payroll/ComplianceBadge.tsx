@@ -64,12 +64,12 @@ export default function ComplianceBadge({ compliance, countryCode, locale }: Com
         <span className="truncate">{label}</span>
       </span>
       {warning ? (
-        <span className="max-w-full truncate text-xs leading-tight text-slate-400" title={warning}>
+        <span className="max-w-full truncate text-xs leading-tight text-slate-500" title={warning}>
           {warning}
         </span>
       ) : null}
       {subText ? (
-        <span className="max-w-full truncate text-xs leading-tight text-slate-400" title={subText}>
+        <span className="max-w-full truncate text-xs leading-tight text-slate-500" title={subText}>
           {subText}
         </span>
       ) : null}

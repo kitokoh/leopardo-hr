@@ -60,10 +60,10 @@
       </div>
 
       <div v-else-if="requests.length === 0" class="p-20 text-center">
-        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400">
+        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
           <InboxIcon class="h-8 w-8" />
         </div>
-        <p class="mt-4 text-lg font-bold text-slate-400 uppercase tracking-widest">{{ t('support.empty') }}</p>
+        <p class="mt-4 text-lg font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{{ t('support.empty') }}</p>
       </div>
 
       <div v-else class="divide-y divide-slate-200/50 dark:divide-slate-800/50">
@@ -114,7 +114,7 @@
                     <EnvelopeIcon class="h-5 w-5" />
                   </div>
                   <div class="min-w-0 flex-1">
-                    <p class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('support.emailLabel') }}</p>
+                    <p class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">{{ t('support.emailLabel') }}</p>
                     <p class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ request.email || request.user?.email || 'N/A' }}</p>
                   </div>
                 </div>
@@ -123,7 +123,7 @@
                     <PhoneIcon class="h-5 w-5" />
                   </div>
                   <div class="min-w-0 flex-1">
-                    <p class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('support.phoneLabel') }}</p>
+                    <p class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">{{ t('support.phoneLabel') }}</p>
                     <p class="text-sm font-bold text-slate-900 dark:text-white">{{ request.phone || t('support.notProvided') }}</p>
                   </div>
                 </div>
@@ -132,7 +132,7 @@
                     <UserIcon class="h-5 w-5" />
                   </div>
                   <div class="min-w-0 flex-1">
-                    <p class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('support.reviewedBy') }}</p>
+                    <p class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">{{ t('support.reviewedBy') }}</p>
                     <p class="text-sm font-bold text-slate-900 dark:text-white">{{ t('support.systemAdmin') }}</p>
                   </div>
                 </div>
@@ -142,7 +142,7 @@
             <!-- Action Panel -->
             <div class="w-full xl:w-96 space-y-4">
               <div class="space-y-2">
-                <label :for="'notes-' + request.id" class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">{{ t('support.internalNotes') }}</label>
+                <label :for="'notes-' + request.id" class="text-xs font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 ml-1">{{ t('support.internalNotes') }}</label>
                 <textarea
                   :id="'notes-' + request.id"
                   v-model="notesByRequest[request.id]"
@@ -187,7 +187,7 @@
 
       <!-- Pagination / Footer -->
       <div v-if="requests.length > 0" class="border-t border-slate-200/50 dark:border-slate-800/50 px-6 py-4 bg-slate-50/30 dark:bg-slate-900/20 text-center">
-        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">
+        <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
           {{ t('support.showingPrefix') }} {{ requests.length }} / {{ totalRequests }} {{ t('support.showingSuffix') }}
         </p>
       </div>
@@ -371,6 +371,6 @@ onMounted(async () => {
 <style scoped>
 @reference '../../style.css';
 .form-input {
-  @apply block w-full rounded-2xl border border-slate-200 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-400 font-medium;
+  @apply block w-full rounded-2xl border border-slate-200 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-500 font-medium;
 }
 </style>

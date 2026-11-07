@@ -174,7 +174,7 @@ export function SolutionCard({ solutionId, locale, onClose, returnFocusRef }: So
               type="button"
               onClick={onClose}
               aria-label={copy.close}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-slate-300 transition-all hover:bg-white/20 hover:text-white hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-slate-500 transition-all hover:bg-white/20 hover:text-white hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
             >
               <X className="h-5 w-5" aria-hidden="true" />
             </button>

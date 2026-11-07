@@ -61,7 +61,7 @@
                     </span>
                     <ChevronRightIcon
                       v-if="index < breadcrumbs.length - 1"
-                      class="ml-2 h-4 w-4 text-slate-400"
+                      class="ml-2 h-4 w-4 text-slate-500 dark:text-slate-400"
                     />
                   </div>
                 </li>

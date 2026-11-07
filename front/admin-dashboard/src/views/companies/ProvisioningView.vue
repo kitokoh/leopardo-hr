@@ -155,7 +155,7 @@
                   </span>
                 </td>
                 <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
-                  <span v-if="tenant.modules_active.length === 0" class="text-slate-400">—</span>
+                  <span v-if="tenant.modules_active.length === 0" class="text-slate-500 dark:text-slate-400">—</span>
                   <span v-else>{{ tenant.modules_active.length }}</span>
                 </td>
                 <td class="px-6 py-4 text-sm text-slate-500">
