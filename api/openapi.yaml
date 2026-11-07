@@ -24368,6 +24368,62 @@ paths:
                 $ref: '#/components/schemas/LoginResponse'
         '401':
           $ref: '#/components/responses/Error401'
+  /auth/contexts:
+    get:
+      operationId: api_get_auth_contexts
+      tags:
+      - Auth
+      summary: Lister les contextes tenant de l'utilisateur courant
+      description: 'Issue #9092 (IAM-L2) — une personne membre de plusieurs entreprises obtient la liste de SES entreprises (company_id, company_name, role, manager_role, permissions). Remplace le contexte arbitraire choisi par AuthService::findEmployeeInTenantSchemas() (premier schema trouve). Lecture seule, aucune donnee d''un autre tenant.'
+      responses:
+        '200':
+          description: Contextes tenant de l'utilisateur courant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TenantContext'
+        '401':
+          $ref: '#/components/responses/Error401'
+  /auth/context:
+    post:
+      operationId: api_post_auth_context
+      tags:
+      - Auth
+      summary: Selectionner un contexte tenant et reemettre un token borne
+      description: 'Issue #9092 (IAM-L2) — selection EXPLICITE de l''entreprise. L''appartenance est verifiee AVANT toute reemission : une entreprise a laquelle la personne n''appartient pas rend 403 (TENANT_CONTEXT_FORBIDDEN), jamais un token. Le token reemis porte les memes abilities qu''au login (tenant_schema:, tenant_company:, tenant_employee:) — aucune permission n''est elargie par la selection.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - company_id
+              properties:
+                company_id:
+                  type: string
+                  maxLength: 64
+      responses:
+        '200':
+          description: Token borne a l'entreprise choisie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TenantContextToken'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
   /payroll/audit:
     get:
       tags:
@@ -63504,6 +63560,68 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    # Issue #9092 (IAM-L2) — contexte tenant d'une personne multi-entreprises.
+    TenantContext:
+      type: object
+      description: Une entreprise de l'utilisateur courant, avec son role et ses permissions DANS cette entreprise.
+      required:
+      - company_id
+      - company_name
+      - role
+      - permissions
+      properties:
+        company_id:
+          type: string
+          example: 3f1c2b4a-9d8e-4f7a-8b6c-1e2d3f4a5b6c
+        company_name:
+          type: string
+          example: Ctx Alpha
+        role:
+          type: string
+          enum:
+          - employee
+          - manager
+          example: employee
+        manager_role:
+          type: string
+          nullable: true
+          example: principal
+        permissions:
+          type: array
+          items:
+            type: string
+          example:
+          - can_view_dashboard
+          - is_principal
+    TenantContextToken:
+      type: object
+      description: Token Sanctum reemis, borne a l'entreprise choisie (abilities tenant_schema:, tenant_company:, tenant_employee:).
+      required:
+      - token
+      - token_type
+      - company_id
+      properties:
+        token:
+          type: string
+        token_type:
+          type: string
+          example: Bearer
+        token_expires_at:
+          type: string
+          nullable: true
+          example: '2026-12-07T18:37:52+00:00'
+        tenant_schema:
+          type: string
+          example: t_ctx_a
+        company_id:
+          type: string
+        company_name:
+          type: string
+        role:
+          type: string
+        manager_role:
+          type: string
+          nullable: true
     PageWriteRequest:
       type: object
       description: Attributs modifiables d'une Page (BC PAGES, #8728).
