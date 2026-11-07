@@ -154,7 +154,9 @@ class OnboardingPrincipalLifecycleTest extends TestCase
 
         $employee->refresh();
         $this->assertSame('active', $employee->status, 'La réactivation du contrat doit remettre l\'employé actif.');
-        $this->assertSame('active', $contract->fresh()->status);
+        $refreshed = $contract->fresh();
+        $this->assertNotNull($refreshed, 'Le contrat doit toujours exister après activation.');
+        $this->assertSame('active', $refreshed->status);
     }
 
     /** @test */
