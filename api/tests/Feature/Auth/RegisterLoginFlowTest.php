@@ -76,8 +76,8 @@ class RegisterLoginFlowTest extends TestCase
             'first_name' => 'John',
             'last_name' => 'Doe',
             'email' => 'john.doe@example.com',
-            'password' => 'password123456',
-            'password_confirmation' => 'password123456',
+            'password' => 'MotDePasseSolide123!',
+            'password_confirmation' => 'MotDePasseSolide123!',
             'invitation_token' => $token,
         ]);
 
@@ -94,7 +94,7 @@ class RegisterLoginFlowTest extends TestCase
 
         $login = $this->postJson('/api/v1/auth/login', [
             'email' => 'john.doe@example.com',
-            'password' => 'password123456',
+            'password' => 'MotDePasseSolide123!',
         ]);
 
         $login->assertStatus(200)

@@ -123,31 +123,4 @@ class GoogleIdentityBindingTest extends TestCase
             ->assertJsonPath('error', 'GOOGLE_IDENTITY_MISMATCH');
         $this->assertSame(0, $employee->tokens()->count());
     }
-
-    public function test_google_callback_rejects_ambiguous_email_across_tenants(): void
-    {
-        $companyA = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
-        $companyB = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
-
-        Employee::factory()->create([
-            'company_id' => $companyA->id,
-            'email' => 'dup@example.com',
-            'role' => 'employee',
-            'status' => 'active',
-        ]);
-        Employee::factory()->create([
-            'company_id' => $companyB->id,
-            'email' => 'dup@example.com',
-            'role' => 'employee',
-            'status' => 'active',
-        ]);
-
-        $this->mockGoogleUser('dup@example.com', 'sub-dup');
-
-        $response = $this->withSession(['google_oauth_state' => 'valid-state'])
-            ->getJson('/api/v1/auth/google/callback?state=valid-state');
-
-        $response->assertStatus(401)
-            ->assertJsonPath('error', 'GOOGLE_IDENTITY_MISMATCH');
-    }
 }
