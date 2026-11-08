@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Recruitment\Infrastructure\JobBoards;
 
-use Illuminate\Support\Carbon;
-
 /**
  * BC-10 (#9218) — client Adzuna.
  *
@@ -93,7 +91,6 @@ final class AdzunaJobBoardClient extends AbstractHttpJobBoardClient
 
     /**
      * @param  array<string, mixed>  $row
-     * @return JobBoardOffer|null
      */
     private function fromRow(array $row, string $country): ?JobBoardOffer
     {

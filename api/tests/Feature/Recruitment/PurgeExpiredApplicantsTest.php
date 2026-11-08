@@ -48,6 +48,7 @@ final class PurgeExpiredApplicantsTest extends TestCase
         $expired = $this->applicant($company, $job, 'expired@example.com', now()->subDay());
         $alive = $this->applicant($company, $job, 'alive@example.com', now()->addMonths(6));
 
+        // @phpstan-ignore-next-line method.nonObject (artisan() retourne PendingCommand|int)
         $this->artisan('recruitment:purge-expired-applications')->assertSuccessful();
 
         // L'échue part, la vivante reste : c'est tout l'enjeu d'une purge.
@@ -65,6 +66,7 @@ final class PurgeExpiredApplicantsTest extends TestCase
 
         $applicant = $this->applicant($company, $job, 'with-cv@example.com', now()->subDay(), $path);
 
+        // @phpstan-ignore-next-line method.nonObject (artisan() retourne PendingCommand|int)
         $this->artisan('recruitment:purge-expired-applications')->assertSuccessful();
 
         // Supprimer la ligne en laissant le CV serait le pire des deux mondes :
@@ -83,6 +85,7 @@ final class PurgeExpiredApplicantsTest extends TestCase
 
         $applicant = $this->applicant($company, $job, 'dry@example.com', now()->subDay(), $path);
 
+        // @phpstan-ignore-next-line method.nonObject (artisan() retourne PendingCommand|int)
         $this->artisan('recruitment:purge-expired-applications', ['--dry-run' => true])->assertSuccessful();
 
         $this->assertDatabaseHas('applicants', ['id' => $applicant->id]);
@@ -97,6 +100,7 @@ final class PurgeExpiredApplicantsTest extends TestCase
         // Échue il y a 5 jours : dans la marge de 30 jours, donc conservée.
         $applicant = $this->applicant($company, $job, 'grace@example.com', now()->subDays(5));
 
+        // @phpstan-ignore-next-line method.nonObject (artisan() retourne PendingCommand|int)
         $this->artisan('recruitment:purge-expired-applications', ['--grace-days' => 30])->assertSuccessful();
 
         $this->assertDatabaseHas('applicants', ['id' => $applicant->id]);
@@ -116,6 +120,7 @@ final class PurgeExpiredApplicantsTest extends TestCase
 
         $applicant = $this->applicant($company, $job, 'foreign@example.com', now()->subDay(), $foreignPath);
 
+        // @phpstan-ignore-next-line method.nonObject (artisan() retourne PendingCommand|int)
         $this->artisan('recruitment:purge-expired-applications')->assertSuccessful();
 
         // La ligne part (la candidature est bien échue), mais le fichier de
@@ -134,6 +139,7 @@ final class PurgeExpiredApplicantsTest extends TestCase
 
         $applicant = $this->applicant($company, $job, 'traversal@example.com', now()->subDay(), $traversal);
 
+        // @phpstan-ignore-next-line method.nonObject (artisan() retourne PendingCommand|int)
         $this->artisan('recruitment:purge-expired-applications')->assertSuccessful();
 
         $this->assertDatabaseMissing('applicants', ['id' => $applicant->id]);
@@ -148,6 +154,7 @@ final class PurgeExpiredApplicantsTest extends TestCase
         $a = $this->applicant($first, $this->jobFor($first), 'a@example.com', now()->subDay());
         $b = $this->applicant($second, $this->jobFor($second), 'b@example.com', now()->subDay());
 
+        // @phpstan-ignore-next-line method.nonObject (artisan() retourne PendingCommand|int)
         $this->artisan('recruitment:purge-expired-applications')->assertSuccessful();
 
         // La commande tourne hors contexte tenant : elle doit couvrir TOUS les
@@ -174,6 +181,7 @@ final class PurgeExpiredApplicantsTest extends TestCase
             'applied_at' => now()->subYears(5),
         ]);
 
+        // @phpstan-ignore-next-line method.nonObject (artisan() retourne PendingCommand|int)
         $this->artisan('recruitment:purge-expired-applications')->assertSuccessful();
 
         $this->assertDatabaseHas('applicants', ['id' => $applicant->id]);
@@ -182,6 +190,7 @@ final class PurgeExpiredApplicantsTest extends TestCase
     public function test_it_reports_nothing_to_purge_when_the_table_is_clean(): void
     {
         $this->artisan('recruitment:purge-expired-applications')
+            // @phpstan-ignore-next-line method.nonObject
             ->expectsOutputToContain('Aucune candidature expirée à purger.')
             ->assertSuccessful();
     }

@@ -33,12 +33,15 @@ final class GlassdoorJobBoardClient extends AbstractHttpJobBoardClient
         $partnerKey = $credentials['partner_key'] ?? null;
 
         if (! is_string($partnerId) || $partnerId === '' || ! is_string($partnerKey) || $partnerKey === '') {
+            // Les deux identifiants sont requis : Glassdoor refuse la requête
+            // sans eux, et un appel sans identifiants consommerait du quota
+            // pour rien.
             throw JobBoardUnavailableException::rejected('glassdoor', 'partner_id et partner_key sont requis.');
         }
 
         $limit = $this->limitFrom($config);
 
-        $response = $this->request(fn ($http) => $http->get(self::BASE_URL, array_filter([
+        $response = $this->request(fn ($http) => $http->get(self::BASE_URL, [
             'v' => '1',
             'format' => 'json',
             't.p' => $partnerId,
@@ -50,7 +53,7 @@ final class GlassdoorJobBoardClient extends AbstractHttpJobBoardClient
             'useragent' => 'Leopardo-HR/1.0',
             'pn' => '1',
             'ps' => (string) min(50, $limit),
-        ], static fn ($v): bool => $v !== null)));
+        ]));
 
         $rows = $response->json('response.jobListings');
 

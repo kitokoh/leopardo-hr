@@ -77,7 +77,10 @@ final class ClamAvResumeScanner implements ResumeScanner
 
             try {
                 while (! feof($handle)) {
-                    $chunk = fread($handle, $this->chunkSize);
+                    // `max(1, ...)` : `fread` exige une longueur strictement
+                    // positive, et PHPStan ne peut pas prouver que la config
+                    // n'est pas 0 ou négative.
+                    $chunk = fread($handle, max(1, $this->chunkSize));
 
                     if ($chunk === false || $chunk === '') {
                         break;

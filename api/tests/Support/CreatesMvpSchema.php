@@ -1205,10 +1205,12 @@ trait CreatesMvpSchema
         }
 
         // Supprimer les tables SmartAttendance avant les tables MVP (contraintes FK)
-        if (method_exists($this, 'dropSmartAttendanceTables')) {
-            $this->dropSmartAttendanceTables();
-        }
-
+        //
+        // Note : l'ancienne garde `method_exists($this, 'dropSmartAttendanceTables')`
+        // a été retirée. Aucune classe de test ne définit ce hook, et PHPStan
+        // niveau 8 la signalait comme « toujours fausse » dans chaque classe
+        // consommatrice — un bruit qui masquait les vrais findings. Si un jour
+        // un consommateur a besoin de ce hook, il l'appellera explicitement.
         $this->dropMvpTables();
         $this->restoreDefaultSearchPath();
     }

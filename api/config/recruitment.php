@@ -67,4 +67,42 @@ return [
         'port' => (int) env('RECRUITMENT_AV_PORT', 3310),
         'timeout' => (int) env('RECRUITMENT_AV_TIMEOUT', 10),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Identifiants des agrégateurs d'offres (#9218)
+    |--------------------------------------------------------------------------
+    |
+    | Repli utilisé quand rien n'est saisi dans l'écran super admin. La saisie
+    | en base PRIME sur ces valeurs (cf. JobBoardCredentialResolver) : un
+    | opérateur qui a explicitement configuré un connecteur ne doit pas voir ses
+    | identifiants remplacés par un déploiement.
+    |
+    | Ces valeurs sont lues via `config()` et non `env()` : `env()` hors du
+    | répertoire `config/` renvoie null dès que la configuration est mise en
+    | cache (`php artisan config:cache`), ce qui désactiverait silencieusement
+    | tous les connecteurs en production.
+    */
+    'job_boards' => [
+        'adzuna' => [
+            'app_id' => env('RECRUITMENT_JOBBOARD_ADZUNA_APP_ID'),
+            'app_key' => env('RECRUITMENT_JOBBOARD_ADZUNA_APP_KEY'),
+        ],
+        'jooble' => [
+            'api_key' => env('RECRUITMENT_JOBBOARD_JOOBLE_API_KEY'),
+        ],
+        'indeed' => [
+            'publisher_id' => env('RECRUITMENT_JOBBOARD_INDEED_PUBLISHER_ID'),
+            'api_key' => env('RECRUITMENT_JOBBOARD_INDEED_API_KEY'),
+        ],
+        'linkedin' => [
+            'client_id' => env('RECRUITMENT_JOBBOARD_LINKEDIN_CLIENT_ID'),
+            'client_secret' => env('RECRUITMENT_JOBBOARD_LINKEDIN_CLIENT_SECRET'),
+            'access_token' => env('RECRUITMENT_JOBBOARD_LINKEDIN_ACCESS_TOKEN'),
+        ],
+        'glassdoor' => [
+            'partner_id' => env('RECRUITMENT_JOBBOARD_GLASSDOOR_PARTNER_ID'),
+            'partner_key' => env('RECRUITMENT_JOBBOARD_GLASSDOOR_PARTNER_KEY'),
+        ],
+    ],
 ];

@@ -35,7 +35,7 @@ final class JobBoardCredentialResolver
 {
     /**
      * @param  array<string, string>  $stored  identifiants déchiffrés venant de la base
-     * @return array<string, string>  identifiants effectifs (base prioritaire, env en repli)
+     * @return array<string, string> identifiants effectifs (base prioritaire, env en repli)
      */
     public function resolve(string $provider, array $stored): array
     {
@@ -45,7 +45,7 @@ final class JobBoardCredentialResolver
             $value = $stored[$key] ?? null;
 
             if (! is_string($value) || trim($value) === '') {
-                $value = $this->fromEnvironment($provider, $key);
+                $value = $this->fromConfiguration($provider, $key);
             }
 
             if (is_string($value) && trim($value) !== '') {
@@ -62,6 +62,8 @@ final class JobBoardCredentialResolver
      * Sert à l'écran super admin : un connecteur alimenté uniquement par
      * l'environnement doit apparaître comme configuré, sinon l'opérateur
      * croirait devoir saisir des identifiants déjà présents.
+     *
+     * @param  array<string, string>  $stored
      */
     public function isConfigured(string $provider, array $stored): bool
     {
@@ -76,10 +78,18 @@ final class JobBoardCredentialResolver
         return array_diff($required, array_keys($resolved)) === [];
     }
 
-    private function fromEnvironment(string $provider, string $key): ?string
+    /**
+     * Repli sur la configuration.
+     *
+     * On lit `config()` et non `env()` : `env()` hors du répertoire `config/`
+     * renvoie null dès que la configuration est mise en cache
+     * (`php artisan config:cache`), ce qui désactiverait silencieusement tous
+     * les connecteurs en production — exactement le genre de panne qui ne se
+     * voit qu'au moment où on a besoin du connecteur.
+     */
+    private function fromConfiguration(string $provider, string $key): ?string
     {
-        $name = 'RECRUITMENT_JOBBOARD_'.strtoupper($provider).'_'.strtoupper($key);
-        $value = env($name);
+        $value = config("recruitment.job_boards.{$provider}.{$key}");
 
         return is_string($value) && trim($value) !== '' ? trim($value) : null;
     }

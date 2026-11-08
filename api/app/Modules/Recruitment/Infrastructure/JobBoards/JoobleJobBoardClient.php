@@ -33,6 +33,8 @@ final class JoobleJobBoardClient extends AbstractHttpJobBoardClient
         $apiKey = $credentials['api_key'] ?? null;
 
         if (! is_string($apiKey) || $apiKey === '') {
+            // La clé est dans l'URL chez Jooble : sans elle, aucune requête
+            // valide n'est constructible.
             throw JobBoardUnavailableException::rejected('jooble', 'api_key est requis.');
         }
 
@@ -40,11 +42,11 @@ final class JoobleJobBoardClient extends AbstractHttpJobBoardClient
 
         $response = $this->request(fn ($http) => $http->post(
             self::BASE_URL.'/'.$apiKey,
-            array_filter([
+            [
                 'keywords' => $this->keywordsFrom($config) ?? '',
                 'location' => $this->str($config['location'] ?? null) ?? '',
                 'page' => '1',
-            ], static fn ($v): bool => $v !== null),
+            ],
         ));
 
         $rows = $response->json('jobs');

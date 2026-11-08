@@ -96,7 +96,7 @@ final class ResumeScanTest extends TestCase
         // La signature détectée est une information d'exploitation : la
         // révéler à un tiers lui apprendrait ce que notre moteur sait voir.
         $response->assertStatus(422);
-        $this->assertStringNotContainsString('Eicar', $response->getContent());
+        $this->assertStringNotContainsString('Eicar', (string) $response->getContent());
     }
 
     public function test_an_unavailable_scanner_does_not_block_a_legitimate_application(): void

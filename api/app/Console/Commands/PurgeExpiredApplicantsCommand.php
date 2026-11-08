@@ -210,9 +210,13 @@ class PurgeExpiredApplicantsCommand extends Command
     {
         $companyId = $applicant->company_id;
 
-        if ($companyId === null || $companyId === '') {
+        // `company_id` est un entier en base : on le normalise en chaîne pour
+        // la comparaison de préfixe, et on refuse un identifiant absent.
+        if ($companyId === null) {
             return false;
         }
+
+        $companyId = (string) $companyId;
 
         // Rejette toute tentative de remontée de répertoire avant de comparer.
         if (str_contains($path, '..')) {
