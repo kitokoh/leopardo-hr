@@ -146,7 +146,7 @@ class LibraryPublicController extends Controller
             return response()->json(
                 [
                     'error' => 'storage_not_configured',
-                    'message' => 'Le stockage objet n’est pas encore configuré pour cette ressource.',
+                    'message' => __('library.storage_not_configured'),
                 ],
                 501
             );
