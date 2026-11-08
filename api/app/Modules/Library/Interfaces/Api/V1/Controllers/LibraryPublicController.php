@@ -9,9 +9,9 @@ use App\Modules\Library\Domain\Enums\LibraryResourceStatus;
 use App\Modules\Library\Domain\Models\LibraryCategory;
 use App\Modules\Library\Domain\Models\LibraryResource;
 use App\Modules\Library\Domain\Support\LibraryAccessPolicy;
+use App\Modules\Library\Infrastructure\Services\LibraryPublicCache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * Bibliothèque numérique PUBLIQUE (Leopardo Library).
@@ -42,13 +42,7 @@ class LibraryPublicController extends Controller
     public function index(Request $request): JsonResponse
     {
         /** @var array<string, mixed> $snapshot */
-        // tenant-cache:shared — catalogue public GLOBAL Leopardo (company_id NULL),
-        // agrégat cross-tenant voulu : aucune donnée d'un tenant privé n'y entre.
-        $snapshot = Cache::remember(
-            'library:public:snapshot',
-            (int) config('library.public_cache_ttl', 600),
-            fn (): array => $this->buildSnapshot()
-        );
+        $snapshot = LibraryPublicCache::remember(fn (): array => $this->buildSnapshot());
 
         $category = trim((string) $request->query('category', ''));
         $language = trim((string) $request->query('language', ''));

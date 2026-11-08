@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Library\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Library\Application\Actions\TransitionLibraryResourceStatus;
 use App\Modules\Library\Domain\Enums\LibraryResourceStatus;
 use App\Modules\Library\Domain\Models\LibraryResource;
 use App\Modules\Library\Domain\Support\LibrarySlug;
@@ -32,6 +34,10 @@ use Illuminate\Http\Request;
  */
 class LibraryResourceController extends Controller
 {
+    public function __construct(
+        private readonly TransitionLibraryResourceStatus $transition,
+    ) {}
+
     /**
      * GET /library/resources — liste des ressources du tenant.
      */
@@ -58,8 +64,10 @@ class LibraryResourceController extends Controller
     {
         $this->authorize('create', LibraryResource::class);
 
+        /** @var Employee $actor */
+        $actor = $request->user();
         $data = $request->validated();
-        $companyId = (string) $request->user()->company_id;
+        $companyId = (string) $actor->company_id;
 
         $data['slug'] = LibrarySlug::uniqueFor(
             LibraryResource::class,
@@ -67,7 +75,7 @@ class LibraryResourceController extends Controller
             $data['slug'] ?? $this->slugify($data['title']),
         );
         $data['status'] = LibraryResourceStatus::Draft->value;
-        $data['created_by'] = (int) $request->user()->id;
+        $data['created_by'] = (int) $actor->id;
 
         $resource = LibraryResource::query()->create($data);
 
@@ -126,13 +134,11 @@ class LibraryResourceController extends Controller
     {
         $this->authorize('publish', $resource);
 
-        $resource->update([
-            'status' => LibraryResourceStatus::Published->value,
-            'published_by' => (int) $request->user()->id,
-            'published_at' => now(),
-        ]);
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $resource = $this->transition->execute($resource, LibraryResourceStatus::Published, (int) $actor->id);
 
-        return response()->json(['data' => $this->payload($resource->refresh())]);
+        return response()->json(['data' => $this->payload($resource)]);
     }
 
     /**
@@ -142,9 +148,9 @@ class LibraryResourceController extends Controller
     {
         $this->authorize('publish', $resource);
 
-        $resource->update(['status' => LibraryResourceStatus::Draft->value]);
+        $resource = $this->transition->execute($resource, LibraryResourceStatus::Draft);
 
-        return response()->json(['data' => $this->payload($resource->refresh())]);
+        return response()->json(['data' => $this->payload($resource)]);
     }
 
     /**
@@ -154,9 +160,9 @@ class LibraryResourceController extends Controller
     {
         $this->authorize('publish', $resource);
 
-        $resource->update(['status' => LibraryResourceStatus::Archived->value]);
+        $resource = $this->transition->execute($resource, LibraryResourceStatus::Archived);
 
-        return response()->json(['data' => $this->payload($resource->refresh())]);
+        return response()->json(['data' => $this->payload($resource)]);
     }
 
     /**
