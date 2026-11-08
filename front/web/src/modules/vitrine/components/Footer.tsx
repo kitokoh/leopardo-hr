@@ -46,6 +46,8 @@ export function getFooterHref(sectionIndex: number, linkIndex: number): string |
     // LEOPARDO TOOLBOX — catégorie autonome publique (outils gratuits sans compte)
     '1-7': '/toolbox',
     '1-8': '/contact?topic=community',
+    // LEOPARDO LIBRARY — bibliothèque numérique publique (livres, guides, documents)
+    '1-9': '/library',
 
     // ─── Section 2 : Entreprise & Écosystème ───
     '2-0': '/about',
