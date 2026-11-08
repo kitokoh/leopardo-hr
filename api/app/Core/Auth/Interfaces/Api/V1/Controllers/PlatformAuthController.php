@@ -223,7 +223,7 @@ class PlatformAuthController extends Controller
         /** @var SuperAdmin $superAdmin */
         $superAdmin = $request->user('super_admin_api');
 
-        /** @var array{email?: string} $validated */
+        /** @var array{email?: string, name?: string} $validated */
         if (isset($validated['email']) && $validated['email'] !== $superAdmin->email) {
             // #6563 (audit auth I5) : le changement d'email du super-admin
             // exige le mot de passe courant (parité avec les employés) —

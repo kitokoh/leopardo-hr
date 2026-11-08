@@ -48,7 +48,6 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request): JsonResponse
     {
-        /** @var array{email: string, password: string, device_name?: string|null} $validated */
         $result = $this->loginAction->execute(
             email: $request->validated('email'),
             password: $request->validated('password'),
@@ -202,7 +201,6 @@ class AuthController extends Controller
         /** @var Employee $employee */
         $employee = $request->user();
 
-        /** @var array{current_password: string, new_password: string} $validated */
         $tokenResult = $this->changePasswordAction->execute(
             employee: $employee,
             currentPassword: $request->validated('current_password'),

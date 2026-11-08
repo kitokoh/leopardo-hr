@@ -773,7 +773,7 @@ class Employee extends Authenticatable implements HasApiTokensContract
             ->where('email', $this->email)
             ->first();
 
-        /** @var object{employee_id: int|string} $existing */
+        /** @var object{employee_id: int|string}|null $existing */
         if ($existing && (int) $existing->employee_id !== (int) $this->id) {
             return;
         }

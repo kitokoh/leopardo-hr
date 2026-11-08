@@ -69,7 +69,7 @@ class SuperAdminService
         return "otpauth://totp/{$label}?secret={$secret}&issuer={$issuer}&algorithm=SHA1&digits=6&period=30";
     }
 
-    private function google2fa(): ?Google2FA
+    private function google2fa(): ?object
     {
         if (! class_exists(Google2FA::class)) {
             return null;

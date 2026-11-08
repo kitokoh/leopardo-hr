@@ -102,9 +102,9 @@ class TwoFactorAuthController extends Controller
 
         $result = $this->twoFactor->verifyChallenge(
             (string) $validated['challenge_token'],
-            isset($validated['code']) && is_string($validated['code']) ? $validated['code'] : null,
-            isset($validated['recovery_code']) && is_string($validated['recovery_code']) ? $validated['recovery_code'] : null,
-            isset($validated['device_name']) && is_string($validated['device_name']) ? $validated['device_name'] : null,
+            $validated['code'] ?? null,
+            $validated['recovery_code'] ?? null,
+            $validated['device_name'] ?? null,
         );
 
         $response = new JsonResponse([
