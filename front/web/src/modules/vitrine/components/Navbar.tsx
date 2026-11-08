@@ -22,6 +22,7 @@ import { useVitrineLocale } from '../lib/vitrine-locale'
 import { t } from '@/lib/i18n/locale-catalog'
 import type { AppLocale } from '@/lib/i18n'
 import { getEnvConfig } from '../lib/env'
+import { LeopardoBrandMark } from './LeopardoBrandMark'
 
 type Props = {
   /**
@@ -331,17 +332,12 @@ export function Navbar({ overDarkStage = false }: Props) {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 via-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:shadow-amber-500/40 transition-all duration-300 group-hover:scale-105 ring-1 ring-white/20">
-                <span className="text-white font-black text-lg">L</span>
-              </div>
-              <div className="absolute -inset-1 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 blur-lg opacity-0 group-hover:opacity-40 transition-opacity duration-500" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-black text-xl text-slate-900 dark:text-white leading-none">Leopardo</span>
-              <span className="text-xs font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400/90">{copy.nav.brandTagline}</span>
-            </div>
+          <Link href="/" className="flex items-center group">
+            <LeopardoBrandMark
+              size="md"
+              subtitle={copy.nav.brandTagline}
+              tone={overDarkStage && !scrolled ? 'dark' : 'auto'}
+            />
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">

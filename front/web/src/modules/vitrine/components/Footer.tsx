@@ -14,6 +14,7 @@ import { t } from '@/lib/i18n/locale-catalog'
 // Ne réintroduire un réseau social qu'avec un compte officiel réellement actif.
 import { CookieSettingsButton } from '@/modules/vitrine/components/CookieSettingsButton'
 import { NewsletterForm } from './NewsletterForm'
+import { LeopardoBrandMark } from './LeopardoBrandMark'
 import { getEnvConfig } from '../lib/env'
 import { withLocaleHref } from '../lib/locale-href'
 
@@ -101,16 +102,12 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8 lg:gap-10 mb-12">
           {/* Colonne Marque, Mission & Réassurance */}
           <div className="col-span-2">
-            <Link href="/" className="flex items-center gap-2.5 mb-4 group inline-flex">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 via-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-amber-500/20 ring-1 ring-white/20 group-hover:scale-105 transition-transform duration-200">
-                <span className="text-white font-black text-sm">L</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-black text-lg text-white leading-none tracking-tight">Leopardo</span>
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-amber-400/90 mt-0.5">
-                  {copy.nav.brandTagline}
-                </span>
-              </div>
+            <Link href="/" className="flex items-center mb-4 group inline-flex">
+              <LeopardoBrandMark
+                size="md"
+                tone="dark"
+                subtitle={copy.nav.brandTagline}
+              />
             </Link>
 
             {/* Statut opérationnel live */}

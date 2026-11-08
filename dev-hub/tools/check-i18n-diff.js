@@ -125,6 +125,15 @@ const ignorePathFragments = [
   // du blog et interface de redaction BlogManagerView.
   '/vitrine/components/sections/RoiCalculator.tsx',
   '/vitrine/components/sections/BlogArticle.tsx',
+  // Mockup du kiosque ZKTeco pour la vitrine (#9179) : ZKTecoKioskMockup.tsx porte
+  // son catalogue localisé ×4 en inline (isEn/isTr/isAr ternaires, même mécanique
+  // que VerticalsSection.tsx). Ce composant EST le catalogue mockup, pas des chaînes
+  // hardcodées hors i18n. La complétude ×4 reste couverte par validate-and-sync.
+  '/vitrine/components/sections/ZKTecoKioskMockup.tsx',
+  // LeopardoBrandMark (#9179) : contient uniquement le nom de marque "Leopardo",
+  // le sous-titre technique "BUSINESS OS" (non localisable), et des valeurs CSS
+  // drop-shadow (techniques). Aucune chaîne utilisateur à localiser.
+  '/vitrine/components/LeopardoBrandMark.tsx',
   'front/admin-dashboard/src/views/marketing/BlogManagerView.vue',
   // Catalogue i18n du module autonome Leopardo Toolbox (mission Toolbox) :
   // `front/web/src/modules/toolbox/data/copy.ts` et `tool-options.ts` SONT le

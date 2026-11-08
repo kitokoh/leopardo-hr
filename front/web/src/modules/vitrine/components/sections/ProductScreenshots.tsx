@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Monitor, Smartphone, TabletSmartphone } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
+import { ZKTecoKioskMockup } from './ZKTecoKioskMockup';
 
 type ProductScreen = {
   icon: React.ReactNode;
@@ -170,11 +171,13 @@ function MockupFrame({
   gradient,
   screenshotSrc,
   screenshotAlt,
+  locale = 'fr',
 }: {
   type: 'desktop' | 'mobile' | 'kiosk';
   gradient: string;
   screenshotSrc?: string;
   screenshotAlt?: string;
+  locale?: AppLocale;
 }) {
   if (type === 'mobile') {
     return (
@@ -182,13 +185,19 @@ function MockupFrame({
         <div className="absolute inset-0 rounded-[2rem] border-4 border-slate-800 dark:border-slate-600 bg-slate-900 shadow-2xl overflow-hidden">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-slate-800 dark:bg-slate-600 rounded-b-xl z-10" />
           {screenshotSrc ? (
-            <Image
-              src={screenshotSrc}
-              alt={screenshotAlt ?? ''}
-              fill
-              sizes="180px"
-              className="object-cover object-top"
-            />
+            <>
+              <Image
+                src={screenshotSrc}
+                alt={screenshotAlt ?? ''}
+                fill
+                sizes="180px"
+                className="object-cover object-top"
+              />
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-full bg-slate-950/90 border border-violet-400/40 text-[9px] font-mono font-bold text-violet-300 shadow-lg backdrop-blur-md z-20 flex items-center gap-1.5 whitespace-nowrap">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>GPS LIVE</span>
+              </div>
+            </>
           ) : (
             <>
               <div className={`absolute inset-[3px] rounded-[1.7rem] bg-gradient-to-br ${gradient} opacity-20`} />
@@ -207,10 +216,10 @@ function MockupFrame({
   }
 
   if (type === 'kiosk') {
-    return (
-      <div className="relative mx-auto w-[220px] h-[280px]">
-        <div className="absolute inset-0 rounded-2xl border-4 border-slate-700 dark:border-slate-600 bg-slate-900 shadow-2xl overflow-hidden">
-          {screenshotSrc ? (
+    if (screenshotSrc) {
+      return (
+        <div className="relative mx-auto w-[220px] h-[280px]">
+          <div className="absolute inset-0 rounded-2xl border-4 border-slate-700 dark:border-slate-600 bg-slate-900 shadow-2xl overflow-hidden">
             <Image
               src={screenshotSrc}
               alt={screenshotAlt ?? ''}
@@ -218,23 +227,12 @@ function MockupFrame({
               sizes="220px"
               className="object-cover object-top"
             />
-          ) : (
-            <>
-              <div className={`absolute inset-[3px] rounded-xl bg-gradient-to-br ${gradient} opacity-20`} />
-              <div className="absolute inset-[3px] rounded-xl flex flex-col items-center justify-center gap-3 p-4">
-                <div className="w-16 h-16 rounded-full bg-white/15 flex items-center justify-center">
-                  <div className="w-8 h-8 rounded-full bg-white/20" />
-                </div>
-                <div className="w-3/4 h-3 bg-white/20 rounded" />
-                <div className="w-full h-10 bg-white/10 rounded-lg mt-1" />
-                <div className="w-full h-10 bg-white/10 rounded-lg" />
-              </div>
-            </>
-          )}
+          </div>
+          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-12 h-3 bg-slate-700 dark:bg-slate-600 rounded-b-lg" />
         </div>
-        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-12 h-3 bg-slate-700 dark:bg-slate-600 rounded-b-lg" />
-      </div>
-    );
+      );
+    }
+    return <ZKTecoKioskMockup locale={locale} />;
   }
 
   return (
@@ -246,13 +244,19 @@ function MockupFrame({
           <span className="w-2 h-2 rounded-full bg-green-500/60" />
         </div>
         {screenshotSrc ? (
-          <Image
-            src={screenshotSrc}
-            alt={screenshotAlt ?? ''}
-            fill
-            sizes="300px"
-            className="object-cover object-top pt-6"
-          />
+          <>
+            <Image
+              src={screenshotSrc}
+              alt={screenshotAlt ?? ''}
+              fill
+              sizes="300px"
+              className="object-cover object-top pt-6"
+            />
+            <div className="absolute -bottom-1 -right-1 px-2.5 py-1 rounded-full bg-slate-950/90 border border-emerald-400/50 text-[9px] font-mono font-bold text-emerald-300 shadow-xl backdrop-blur-md z-20 flex items-center gap-1.5 whitespace-nowrap">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(52,211,153,0.9)]" />
+              <span>COCKPIT TEMPS RÉEL</span>
+            </div>
+          </>
         ) : (
           <>
             <div className={`absolute inset-[2px] top-6 rounded-b-lg bg-gradient-to-br ${gradient} opacity-15`} />
@@ -325,6 +329,7 @@ export function ProductScreenshots({ locale = 'fr' }: ProductScreenshotsProps) {
                     gradient={screen.gradient}
                     screenshotSrc={screen.screenshotSrc}
                     screenshotAlt={screen.screenshotAlt}
+                    locale={locale}
                   />
                 </div>
 
