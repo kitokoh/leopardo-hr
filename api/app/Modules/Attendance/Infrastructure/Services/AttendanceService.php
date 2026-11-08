@@ -9,6 +9,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Events\AttendanceCheckedIn;
 use App\Events\AttendanceCheckedOut;
+use App\Events\AttendanceRecorded;
 use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Modules\Attendance\Domain\Exceptions\AlreadyCheckedInException;
 use App\Modules\Attendance\Domain\Exceptions\MissingCheckInException;
@@ -20,6 +21,7 @@ use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class AttendanceService
 {
@@ -109,6 +111,7 @@ class AttendanceService
             ]);
 
             AttendanceCheckedIn::dispatch($log);
+            $this->dispatchAttendanceRecorded($log, 'check_in', (string) $log->method, $log->check_in ?? $nowUtc);
             $this->alertManagersIfOutsideGeofence($employee, $log, 'check_in');
 
             return $log;
@@ -199,6 +202,7 @@ class AttendanceService
         $log->save();
 
         AttendanceCheckedOut::dispatch($log);
+        $this->dispatchAttendanceRecorded($log, 'check_out', (string) $log->method, $log->check_out ?? $nowUtc);
         $this->alertManagersIfOutsideGeofence($employee, $log, 'check_out');
 
         return $log;
@@ -276,6 +280,7 @@ class AttendanceService
             // records who/when an external punch closed a session, instead
             // of this path silently bypassing the audit trail.
             AttendanceCheckedOut::dispatch($log);
+            $this->dispatchAttendanceRecorded($log, 'check_out', (string) $log->method, $log->check_out ?? $occurredAt, $externalEventId);
 
             return $log;
         }
@@ -332,6 +337,7 @@ class AttendanceService
         // offline-synced external check-in must leave the same audit trail
         // as a direct mobile check-in.
         AttendanceCheckedIn::dispatch($log);
+        $this->dispatchAttendanceRecorded($log, 'check_in', (string) $log->method, $log->check_in ?? $occurredAt, $externalEventId);
 
         return $log;
     }
@@ -523,6 +529,38 @@ class AttendanceService
                 'employee_id' => $employee->id,
             ], ['app']);
         }
+    }
+
+    /**
+     * ATT-003 (#6768) — publie l'événement versionné `AttendanceRecorded.v1`
+     * à CHAQUE pointage enregistré, quel que soit le flux (mobile, kiosque
+     * offline, import externe). Les événements legacy `AttendanceCheckedIn` /
+     * `AttendanceCheckedOut` restent émis (AuditLogger) ; celui-ci porte le
+     * CONTRAT versionné consommé par Payroll et les projections.
+     *
+     * `workplaceId` et `kioskId` sont null : `attendance_logs` ne porte pas ces
+     * colonnes (le kiosque est identifié par `source_device_code`). Les champs
+     * restent dans le contrat pour une v2 qui les ajouterait.
+     */
+    private function dispatchAttendanceRecorded(
+        AttendanceLog $log,
+        string $eventType,
+        string $verificationMethod,
+        Carbon $occurredAt,
+        ?string $correlationId = null,
+    ): void {
+        AttendanceRecorded::dispatch(
+            companyId: (string) $log->company_id,
+            employeeId: (int) $log->employee_id,
+            workplaceId: null,
+            eventType: $eventType,
+            occurredAtUtc: $occurredAt->copy()->utc()->toIso8601String(),
+            verificationMethod: $verificationMethod,
+            verificationResult: null,
+            kioskId: null,
+            correlationId: $correlationId ?: (string) Str::uuid(),
+            attendanceLogId: (int) $log->id,
+        );
     }
 
     /**
