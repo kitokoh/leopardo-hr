@@ -57,6 +57,28 @@ interface Product {
   is_available: boolean;
 }
 
+/**
+ * #9210 — Type de commande. Le POS web envoyait `order_type: 'dine_in'` et
+ * `covers: 1` en dur : le restaurateur ne pouvait ni vendre a emporter, ni
+ * livrer, ni declarer le nombre de couverts. Ces valeurs sont desormais
+ * choisies en caisse et transmises au serveur.
+ */
+type OrderType = 'dine_in' | 'takeaway' | 'delivery';
+
+const ORDER_TYPE_LABELS: Record<OrderType, string> = {
+  dine_in: 'Sur place',
+  takeaway: 'A emporter',
+  delivery: 'Livraison',
+};
+
+interface RestaurantTable {
+  id: number;
+  label: string;
+  seats: number;
+  zone_id: number | null;
+  is_active?: boolean;
+}
+
 interface OrderItem {
   id: number;
   product_id: number;
@@ -129,6 +151,12 @@ export default function RestaurantPosPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [order, setOrder] = useState<Order | null>(null);
   const [bill, setBill] = useState<Bill | null>(null);
+  // #9210 — choix de caisse : type de commande, table, couverts, code promo.
+  const [orderType, setOrderType] = useState<OrderType>('dine_in');
+  const [tableId, setTableId] = useState<number | null>(null);
+  const [covers, setCovers] = useState(1);
+  const [promotionCode, setPromotionCode] = useState('');
+  const [tables, setTables] = useState<RestaurantTable[]>([]);
   const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -196,6 +224,34 @@ export default function RestaurantPosPage() {
     }
   }, [locale]);
 
+  /**
+   * #9210 — Plan de salle de la succursale : sans lui, une commande `dine_in`
+   * ne peut pas etre rattachee a une table (le serveur la refuse).
+   */
+  const loadTables = useCallback(async () => {
+    if (branchId === null) {
+      setTables([]);
+      return;
+    }
+    try {
+      const res = await apiFetch(`/restaurant/tables?branch_id=${branchId}&per_page=200`, {
+        _cacheBust: true,
+      });
+      const json = (await res.json()) as { data: RestaurantTable[] };
+      const list = (Array.isArray(json.data) ? json.data : []).filter(
+        (table) => table.is_active !== false,
+      );
+      setTables(list);
+      setTableId((current) =>
+        current !== null && list.some((table) => table.id === current) ? current : null,
+      );
+    } catch {
+      // Le plan de salle est secondaire : son echec ne doit pas bloquer la
+      // vente a emporter ni la livraison.
+      setTables([]);
+    }
+  }, [branchId]);
+
   useEffect(() => {
     void loadBranches();
     void loadCatalog();
@@ -204,6 +260,10 @@ export default function RestaurantPosPage() {
   useEffect(() => {
     void loadSession();
   }, [loadSession]);
+
+  useEffect(() => {
+    void loadTables();
+  }, [loadTables]);
 
   const refreshOrder = useCallback(
     async (orderId: number) => {
@@ -249,17 +309,29 @@ export default function RestaurantPosPage() {
     if (branchId === null) {
       return;
     }
+    // #9210 — une commande sur place exige une table (meme regle que
+    // StoreRestaurantOrderRequest) : on le dit avant l'appel plutot que de
+    // laisser le serveur renvoyer une 422 incomprehensible en plein service.
+    if (orderType === 'dine_in' && tableId === null) {
+      setError(t(locale, 'restaurant.pos.tableRequired'));
+      return;
+    }
     void runAction(async () => {
       const res = await apiFetch('/restaurant/orders', {
         method: 'POST',
         _idempotent: true,
-        body: JSON.stringify({ branch_id: branchId, order_type: 'dine_in', covers: 1 }),
+        body: JSON.stringify({
+          branch_id: branchId,
+          order_type: orderType,
+          table_id: orderType === 'dine_in' ? tableId : null,
+          covers: orderType === 'dine_in' ? covers : 1,
+        }),
       });
       const json = (await res.json()) as { data: Order };
       setOrder(json.data);
       setBill(null);
     });
-  }, [branchId, runAction]);
+  }, [branchId, orderType, tableId, covers, runAction, locale]);
 
   const addItem = useCallback(
     (productId: number) => {
@@ -315,11 +387,17 @@ export default function RestaurantPosPage() {
       return;
     }
     void runAction(async () => {
-      const res = await apiFetch(`/restaurant/orders/${order.id}/bill`, { _cacheBust: true });
+      // #9210 — le code promo est transmis au serveur, qui recalcule et borne
+      // la remise (aucun montant n'est accepte du client).
+      const code = promotionCode.trim();
+      const query = code === '' ? '' : `?promotion_code=${encodeURIComponent(code)}`;
+      const res = await apiFetch(`/restaurant/orders/${order.id}/bill${query}`, {
+        _cacheBust: true,
+      });
       const json = (await res.json()) as { data: Bill };
       setBill(json.data);
     });
-  }, [order, runAction]);
+  }, [order, promotionCode, runAction]);
 
   const payCash = useCallback(() => {
     if (order === null || bill === null) {
@@ -489,6 +567,65 @@ export default function RestaurantPosPage() {
               </div>
             ) : order === null ? (
               <div className="space-y-3">
+                {/* #9210 — choix du type de commande, de la table et des couverts. */}
+                <div className="space-y-2 rounded-xl border border-slate-200 bg-white p-3">
+                  <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">
+                    {t(locale, 'restaurant.pos.orderType')}
+                  </label>
+                  <div className="grid grid-cols-3 gap-1">
+                    {(Object.keys(ORDER_TYPE_LABELS) as OrderType[]).map((type) => (
+                      <button
+                        key={type}
+                        type="button"
+                        onClick={() => setOrderType(type)}
+                        className={`rounded-lg px-2 py-1.5 text-xs font-bold transition ${
+                          orderType === type
+                            ? 'bg-emerald-600 text-white'
+                            : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                        }`}
+                      >
+                        {ORDER_TYPE_LABELS[type]}
+                      </button>
+                    ))}
+                  </div>
+
+                  {orderType === 'dine_in' && (
+                    <>
+                      <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">
+                        {t(locale, 'restaurant.pos.table')}
+                      </label>
+                      <select
+                        value={tableId ?? ''}
+                        onChange={(event) =>
+                          setTableId(event.target.value === '' ? null : Number(event.target.value))
+                        }
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium focus:border-emerald-400 focus:outline-none"
+                      >
+                        <option value="">{t(locale, 'restaurant.pos.selectTable')}</option>
+                        {tables.map((table) => (
+                          <option key={table.id} value={table.id}>
+                            {table.label} ({table.seats})
+                          </option>
+                        ))}
+                      </select>
+
+                      <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">
+                        {t(locale, 'restaurant.pos.covers')}
+                      </label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={999}
+                        value={covers}
+                        onChange={(event) =>
+                          setCovers(Math.max(1, Math.min(999, Number(event.target.value) || 1)))
+                        }
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium focus:border-emerald-400 focus:outline-none"
+                      />
+                    </>
+                  )}
+                </div>
+
                 <p className="text-sm text-slate-500">{t(locale, 'restaurant.pos.noOrder')}</p>
                 <button
                   type="button"
@@ -559,6 +696,17 @@ export default function RestaurantPosPage() {
 
                 {isOrderPayable && (
                   <>
+                    {/* #9210 — code promo : la remise est calculee et bornee serveur. */}
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={promotionCode}
+                        onChange={(event) => setPromotionCode(event.target.value)}
+                        placeholder={t(locale, 'restaurant.pos.promotionCode')}
+                        className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium focus:border-emerald-400 focus:outline-none"
+                      />
+                    </div>
+
                     <button
                       type="button"
                       onClick={loadBill}
@@ -578,6 +726,14 @@ export default function RestaurantPosPage() {
                           <span>{t(locale, 'restaurant.pos.tax')}</span>
                           <span className="font-mono">{(bill.tax_minor / 100).toFixed(2)}</span>
                         </div>
+                        {bill.discount_minor > 0 && (
+                          <div className="flex justify-between text-emerald-700">
+                            <span>{t(locale, 'restaurant.pos.discount')}</span>
+                            <span className="font-mono">
+                              -{(bill.discount_minor / 100).toFixed(2)}
+                            </span>
+                          </div>
+                        )}
                         <div className="mt-1 flex justify-between border-t border-emerald-200 pt-1 font-bold text-emerald-800">
                           <span>{t(locale, 'restaurant.pos.total')}</span>
                           <span className="font-mono">{(bill.total_minor / 100).toFixed(2)}</span>
