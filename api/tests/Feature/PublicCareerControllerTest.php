@@ -206,6 +206,8 @@ class PublicCareerControllerTest extends TestCase
             'phone' => '0555000000',
             'cover_letter' => 'I would love to join your team.',
             'source' => 'linkedin',
+            // BC-10 (#9100) — le consentement RGPD est désormais obligatoire.
+            'consent' => true,
         ]);
 
         $response->assertCreated();
@@ -236,6 +238,7 @@ class PublicCareerControllerTest extends TestCase
             'last_name' => 'Candidate',
             'email' => 'nadia@example.com',
             'source' => 'linkedin',
+            'consent' => true,
         ];
 
         // Issue #3860 — la première candidature passe (201), la seconde
@@ -275,6 +278,7 @@ class PublicCareerControllerTest extends TestCase
             'first_name' => 'Nadia',
             'last_name' => 'Candidate',
             'email' => 'nadia@example.com',
+            'consent' => true,
         ];
 
         // Issue #3860 — l'unicité est par poste : le même candidat peut
@@ -296,6 +300,7 @@ class PublicCareerControllerTest extends TestCase
             'first_name' => 'Nadia',
             'last_name' => 'Candidate',
             'email' => 'nadia@example.com',
+            'consent' => true,
         ]);
 
         $response->assertNotFound();

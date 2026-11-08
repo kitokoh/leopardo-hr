@@ -146,6 +146,26 @@ enum PlatformPermission: string
     case PagesManage = 'pages.manage';
 
     /**
+     * BC-10 RECRUITMENT (#9100) — portail public d'offres d'emploi.
+     *
+     * Deux permissions distinctes, et non une seule :
+     *
+     * - `recruitment.view` — lire les offres de tous les tenants et l'état des
+     *   connecteurs d'agrégateurs. C'est un travail d'inventaire : marketing
+     *   (qui pilote la vitrine publique) et finance (qui engage les budgets
+     *   d'acquisition) doivent pouvoir le faire.
+     * - `recruitment.manage` — publier une offre au nom d'un client, configurer
+     *   ou révoquer un connecteur (donc manipuler des secrets d'API). Ce sont
+     *   des gestes qui engagent publiquement la marque et exposent des
+     *   identifiants : réservés à admin/super_admin.
+     *
+     * Les confondre obligerait à donner le droit de publier à quiconque doit
+     * seulement lire — exactement le défaut corrigé sur les offres (#7973).
+     */
+    case RecruitmentView = 'recruitment.view';
+    case RecruitmentManage = 'recruitment.manage';
+
+    /**
      * @return list<string>
      */
     public static function values(): array
@@ -190,6 +210,8 @@ enum PlatformPermission: string
             self::SearchIntelManage => 'Administrer le pilotage Growth & Search Intelligence (campagnes, contenus, intégrations)',
             self::PagesView => 'Consulter les Pages d’établissement (fiche, pièces, domaines)',
             self::PagesManage => 'Modérer les Pages (suspension, vérification)',
+            self::RecruitmentView => 'Consulter le portail public d’offres d’emploi (offres, connecteurs)',
+            self::RecruitmentManage => 'Publier des offres et administrer les connecteurs d’agrégateurs',
         };
     }
 }

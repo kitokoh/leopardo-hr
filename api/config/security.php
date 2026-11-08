@@ -20,6 +20,12 @@ return [
         'market_account_per_minute' => (int) env('RATE_LIMIT_MARKET_ACCOUNT_PER_MINUTE', 10),
         // BC-17 #7814 — soumission d'avis acheteurs marketplace (anti-spam, throttle strict dédié).
         'market_reviews_public_per_minute' => (int) env('RATE_LIMIT_MARKET_REVIEWS_PUBLIC_PER_MINUTE', 5),
+        // BC-10 #9100 — portail public d'offres d'emploi : lecture (liste,
+        // détail, flux XML) et candidature. La candidature a un bucket PLUS
+        // STRICT que la lecture : consulter 60 offres par minute est légitime,
+        // envoyer 60 candidatures par minute ne l'est pas.
+        'public_careers_per_minute' => (int) env('RATE_LIMIT_PUBLIC_CAREERS_PER_MINUTE', 60),
+        'public_careers_apply_per_minute' => (int) env('RATE_LIMIT_PUBLIC_CAREERS_APPLY_PER_MINUTE', 5),
         // Audit fiabilité #6555 — bucket ZKTeco par device (serial_number + IP).
         'zkteco_device_per_minute' => (int) env('RATE_LIMIT_ZKTECO_DEVICE_PER_MINUTE', 120),
         // #6557 — durée du verrou anti-course de l'idempotence (RTMX #5277) :

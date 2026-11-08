@@ -30,6 +30,9 @@ use Illuminate\Support\Carbon;
  * @property string $status
  * @property Carbon|null $published_at
  * @property Carbon|null $closes_at
+ * @property Carbon|null $archived_at
+ * @property bool $published_by_platform
+ * @property int|null $platform_created_by
  * @property string|null $created_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -57,7 +60,10 @@ class JobPosting extends Model
         'status',
         'published_at',
         'closes_at',
+        'archived_at',
         'created_by',
+        'published_by_platform',
+        'platform_created_by',
     ];
 
     protected $casts = [
@@ -66,6 +72,8 @@ class JobPosting extends Model
         'skills_required' => 'array',
         'published_at' => 'datetime',
         'closes_at' => 'datetime',
+        'archived_at' => 'datetime',
+        'published_by_platform' => 'boolean',
     ];
 
     /** @return BelongsTo<Department, $this> */
