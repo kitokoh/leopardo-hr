@@ -1,19 +1,25 @@
 # BC-10 — Portail public d'offres d'emploi : lot d'implémentation
 
-> **Repli documentaire.** Ce lot devait être créé comme issues GitHub. Le token
-> fourni pour cette session est en **lecture seule** : `POST /repos/.../issues`
-> répond `403 Resource not accessible by personal access token` et `git push`
-> répond `Invalid username or token`. Les issues sont donc documentées ici, dans
-> le dépôt, comme le prévoit la méthode de travail (« sinon les documenter dans
-> le dépôt »). Chaque entrée porte le titre, le corps et les critères
-> d'acceptation qui auraient été soumis à GitHub.
+> **Issues GitHub.** Les 6 issues de ce lot ont été créées sur le dépôt :
+>
+> | Issue | Titre |
+> |---|---|
+> | [#9197](https://github.com/kitokoh/leopardo-hr/issues/9197) | Publication d'une offre par le tenant vers le portail public |
+> | [#9198](https://github.com/kitokoh/leopardo-hr/issues/9198) | Publication d'une offre depuis l'espace super admin |
+> | [#9199](https://github.com/kitokoh/leopardo-hr/issues/9199) | Intégration d'API externes d'offres (agrégateurs) |
+> | [#9200](https://github.com/kitokoh/leopardo-hr/issues/9200) | Portail public : liste, détail, candidature, flux XML, branding |
+> | [#9201](https://github.com/kitokoh/leopardo-hr/issues/9201) | Durcissement : RGPD, rate limiting, anti-spam, erreurs |
+> | [#9202](https://github.com/kitokoh/leopardo-hr/issues/9202) | Écrans super admin (connecteurs + offres importées) |
+>
+> Ce document reste la trace du lot dans le dépôt : chaque entrée porte le
+> titre, le corps et les critères d'acceptation soumis à GitHub.
 
 Branche : `bc/bc10-portail-public-offres`
 Spec : `docs/specifications/MODULE_RECRUITMENT_PUBLIC_PORTAL.md`
 
 ---
 
-## #9100 — Publication d'une offre par le tenant vers le portail public
+## #9197 — Publication d'une offre par le tenant vers le portail public
 
 **Contexte.** Le module ATS (BC-10) savait créer une offre (`draft`) mais le
 cycle de vie `draft → published → closed → archived` n'était pas exposé de bout
@@ -36,7 +42,7 @@ public, et `published_at` / `closes_at` n'étaient pas posés.
 
 ---
 
-## #9101 — Publication d'une offre depuis l'espace super admin
+## #9198 — Publication d'une offre depuis l'espace super admin
 
 **Contexte.** La plateforme doit pouvoir publier une offre pour le compte d'une
 entreprise cliente (onboarding, campagne, offre interne) sans se connecter au
@@ -58,7 +64,7 @@ tenant.
 
 ---
 
-## #9102 — Intégration d'API externes d'offres (agrégateurs)
+## #9199 — Intégration d'API externes d'offres (agrégateurs)
 
 **Contexte.** Les agrégateurs (Indeed, LinkedIn, Glassdoor, Adzuna, Jooble, flux
 personnalisé) doivent alimenter notre portail : la plateforme configure un
@@ -88,7 +94,7 @@ connecteur, synchronise, et les offres importées apparaissent sur le portail.
 
 ---
 
-## #9103 — Portail public : liste, détail, candidature, flux XML, branding
+## #9200 — Portail public : liste, détail, candidature, flux XML, branding
 
 **Contexte.** Le portail existait mais n'était pas exploitable : pas d'offres
 agrégées, pas de filtres, pas de consentement, et le flux XML ne portait pas les
@@ -115,7 +121,7 @@ champs exigés par Google Jobs / Indeed.
 
 ---
 
-## #9104 — Durcissement : RGPD, rate limiting, anti-spam, erreurs
+## #9201 — Durcissement : RGPD, rate limiting, anti-spam, erreurs
 
 **Contexte.** Le portail est public et non authentifié : il collecte des données
 personnelles (CV, coordonnées) et constitue une surface d'abus.
@@ -141,7 +147,7 @@ personnelles (CV, coordonnées) et constitue une surface d'abus.
 
 ---
 
-## #9105 — Écrans super admin (connecteurs + offres importées)
+## #9202 — Écrans super admin (connecteurs + offres importées)
 
 **Travail.**
 - `JobSourcesView.vue` : configurer / tester / synchroniser / révoquer, avec
