@@ -15,7 +15,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | ~~`api/app/Services/`~~ — répertoire **supprimé** (2026-08-11, #1728), ne rien y ajouter | `Modules/<Name>/Infrastructure/Services/` |
 | `api/app/Exceptions/` (base `DomainException` partagée, encore étendue par des modules) | `Modules/<Name>/Domain/Exceptions/` |
 
-## Modules existants (39 modules)
+## Modules existants (40 modules)
 
 | Module | Domaine couvert |
 |---|---|
@@ -23,6 +23,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Showcase` | Site vitrine public 1-clic du tenant (BC-27) : moteur de sections + thèmes, publication draft/published, consultation publique isolée 0 donnée interne (#6864/#6865) |
 | `Pages` | Présence publique par établissement (BC PAGES) : agrégat `Page` lié à un `Site`, publication et vérification de propriété indépendantes, contrat de blocs extensible fourni par les BC verticaux (`core.*`, schéma strict, allowlist d'URL, renderer absent ⇒ omission avec télémétrie) (#8723/#8724) |
 | `Catalog` | Catalogue produits B2B des tenants producteurs/fournisseurs (BC-28) : catégories, produits (prix indicatifs minor units + devise), publication, demandes de devis (#6879/#6880) |
+| `Library` | Bibliothèque numérique publique et professionnelle (BC-40, mission Leopardo Library) : catalogue public (livres, guides, manuels, documents), fiche, lecteur, téléchargement à URL temporaire signée, signalement de contenu, gestion des ressources par un tenant (workflow éditorial brouillon → publié → archivé), isolation tenant stricte |
 | `Communication` | Boîte mail connectée + IA (BC-29) : OAuth Gmail serveur, sync des fils, classification IA, relances et réponses assistées — squelette R0 (#7684/#7685), spec `MODULE_COMMUNICATION_EMAIL_IA.md` |
 | `Absence` | Demandes de congés, soldes, approbations |
 | `Attendance` | Pointage, ZKTeco, anomalies, géofencing |

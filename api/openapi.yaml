@@ -37,6 +37,8 @@ servers:
 security:
 - BearerAuth: []
 tags:
+- name: Library
+  description: 'BC-40 LIBRARY (mission Leopardo Library) — bibliothèque numérique publique et professionnelle : catalogue public (livres, guides, manuels, documents), fiche, téléchargement à URL temporaire signée, signalement de contenu, et gestion des ressources par un tenant (workflow éditorial brouillon → publié → archivé).'
 - name: Pages
   description: 'BC PAGES (#8728/#8729/#8730) — pages d''etablissement : CRUD et blocs (tenant), moderation plateforme, rendu public SSR par slug et domaine personnalise.'
 - name: Farm OS
@@ -64175,6 +64177,274 @@ paths:
           description: Domaine inconnu, non verifie, ou Page non publiee (fail-closed)
         '429':
           description: Limite de debit `shop-public` depassee
+  /v1/public/library:
+    get:
+      operationId: api_get_public_library
+      tags:
+      - Library
+      summary: Catalogue public de la bibliothèque (Leopardo Library)
+      description: >-
+        BC-40 LIBRARY — surface PUBLIQUE isolée (aucun auth, throttle
+        `shop-public`). Sert uniquement le catalogue public Leopardo
+        (`company_id` NULL) : catégories + ressources publiées. DTO public
+        strict (jamais company_id, file_key ni meta interne). Filtres
+        optionnels `category`, `language`, `access`, `q`. Cache Redis TTL
+        (`library.public_cache_ttl`, 600 s).
+      parameters:
+      - name: category
+        in: query
+        required: false
+        schema: {type: string}
+      - name: language
+        in: query
+        required: false
+        schema: {type: string}
+      - name: access
+        in: query
+        required: false
+        schema: {type: string, enum: [free, read_only, purchase, subscription, private]}
+      - name: q
+        in: query
+        required: false
+        schema: {type: string}
+      responses:
+        '200':
+          description: Catégories + ressources publiées du catalogue public
+        '429':
+          description: Limite de débit `shop-public` dépassée
+  /v1/public/library/{slug}:
+    get:
+      operationId: api_get_public_library_by_slug
+      tags:
+      - Library
+      summary: Fiche publique d'une ressource de la bibliothèque
+      description: >-
+        BC-40 LIBRARY — surface PUBLIQUE isolée. 404 fail-closed si le slug est
+        inconnu, non publié ou privé d'un tenant. Expose `can_read` /
+        `can_download` (décision serveur) et des ressources liées.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: Fiche publique (métadonnées bibliographiques, licence, capacités d'accès)
+        '404':
+          description: Ressource inconnue, non publiée ou privée d'un tenant (fail-closed)
+        '429':
+          description: Limite de débit `shop-public` dépassée
+  /v1/public/library/{slug}/download:
+    get:
+      operationId: api_get_public_library_by_slug_download
+      tags:
+      - Library
+      summary: URL temporaire signée de téléchargement (ou 403)
+      description: >-
+        BC-40 LIBRARY — le droit de téléchargement est vérifié CÔTÉ SERVEUR. Le
+        fichier n'est jamais exposé par une URL publique permanente : la route
+        renvoie une URL temporaire signée (TTL `library.download_url_ttl`). 403
+        si la licence ou le modèle d'accès l'interdit ; 501 si le stockage
+        objet n'est pas encore configuré (jamais de faux fichier).
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: URL temporaire signée + date d'expiration + format
+        '403':
+          description: Téléchargement non autorisé (licence ou modèle d'accès)
+        '404':
+          description: Ressource inconnue ou non publiée
+        '501':
+          description: Stockage objet non configuré
+  /v1/public/library/{slug}/reports:
+    post:
+      operationId: api_post_public_library_by_slug_reports
+      tags:
+      - Library
+      summary: Signaler un contenu de la bibliothèque
+      description: >-
+        BC-40 LIBRARY — procédure de signalement (droits d'auteur, contenu
+        inapproprié). Surface publique isolée, throttle `shop-public`.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema: {type: string}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  enum: [copyright, inappropriate, broken, other]
+                message: {type: string, maxLength: 2000, nullable: true}
+      responses:
+        '201':
+          description: Signalement enregistré
+        '404':
+          description: Ressource inconnue ou non publiée
+        '422':
+          description: Données invalides
+  /v1/library/resources:
+    get:
+      operationId: api_get_library_resources
+      tags:
+      - Library
+      summary: Liste des ressources de la bibliothèque du tenant
+      description: >-
+        BC-40 LIBRARY — surface TENANT (auth Sanctum + middleware tenant).
+        Isolation garantie par le scope `BelongsToCompany` et la policy
+        `LibraryResourcePolicy`. Filtre optionnel `status`.
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema: {type: string, enum: [draft, pending, published, archived]}
+      responses:
+        '200':
+          description: Ressources du tenant
+        '401':
+          description: Non authentifié
+        '403':
+          description: Non autorisé (policy)
+    post:
+      operationId: api_post_library_resources
+      tags:
+      - Library
+      summary: Créer une ressource (statut brouillon)
+      description: >-
+        BC-40 LIBRARY — toute ressource naît `draft` (aucune publication
+        automatique). Prix en minor units (entier) + devise ISO 4217.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title: {type: string, maxLength: 200}
+                slug: {type: string, maxLength: 210, nullable: true}
+                description: {type: string, maxLength: 20000, nullable: true}
+                document_type: {type: string, nullable: true}
+                language: {type: string, nullable: true}
+                access_model: {type: string, enum: [free, read_only, purchase, subscription, private], nullable: true}
+                price_minor: {type: integer, minimum: 0, nullable: true}
+                currency: {type: string, nullable: true}
+                license_id: {type: string, nullable: true}
+                rights_holder: {type: string, nullable: true}
+                allow_download: {type: boolean, nullable: true}
+      responses:
+        '201':
+          description: Ressource créée (brouillon)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Non autorisé (policy)
+        '422':
+          description: Données invalides
+  /v1/library/resources/{resource}:
+    get:
+      operationId: api_get_library_resources_by_id
+      tags:
+      - Library
+      summary: Détail d'une ressource du tenant
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200': {description: Ressource}
+        '403': {description: Non autorisé (policy)}
+        '404': {description: Ressource inconnue}
+    put:
+      operationId: api_put_library_resources_by_id
+      tags:
+      - Library
+      summary: Modifier une ressource
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        '200': {description: Ressource mise à jour}
+        '403': {description: Non autorisé (policy)}
+        '404': {description: Ressource inconnue}
+        '422': {description: Données invalides}
+    delete:
+      operationId: api_delete_library_resources_by_id
+      tags:
+      - Library
+      summary: Supprimer une ressource
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200': {description: Ressource supprimée}
+        '403': {description: Non autorisé (policy)}
+        '404': {description: Ressource inconnue}
+  /v1/library/resources/{resource}/publish:
+    post:
+      operationId: api_post_library_resources_by_id_publish
+      tags:
+      - Library
+      summary: Publier une ressource
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200': {description: Ressource publiée}
+        '403': {description: Non autorisé (policy)}
+        '404': {description: Ressource inconnue}
+  /v1/library/resources/{resource}/unpublish:
+    post:
+      operationId: api_post_library_resources_by_id_unpublish
+      tags:
+      - Library
+      summary: Dépublier une ressource (retour brouillon)
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200': {description: Ressource dépubliée}
+        '403': {description: Non autorisé (policy)}
+        '404': {description: Ressource inconnue}
+  /v1/library/resources/{resource}/archive:
+    post:
+      operationId: api_post_library_resources_by_id_archive
+      tags:
+      - Library
+      summary: Archiver une ressource
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200': {description: Ressource archivée}
+        '403': {description: Non autorisé (policy)}
+        '404': {description: Ressource inconnue}
 components:
   securitySchemes:
     BearerAuth:

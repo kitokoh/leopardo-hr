@@ -181,6 +181,8 @@ use App\Modules\HR\Domain\Models\Evaluation;
 use App\Modules\HR\Domain\Models\OnboardingStep;
 use App\Modules\HR\Domain\Models\Position;
 use App\Modules\HR\Domain\Models\TrainingCourse;
+use App\Modules\Library\Domain\Models\LibraryResource;
+use App\Modules\Library\Domain\Policies\LibraryResourcePolicy;
 use App\Modules\Marketing\Domain\Models\SocialAccount;
 use App\Modules\Marketing\Domain\Models\SocialPost;
 use App\Modules\Pages\Domain\Models\Page;
@@ -515,6 +517,8 @@ class AuthServiceProvider extends ServiceProvider
         // — Catalog (BC-28 #6880 : socle domaine — catégories & produits B2B)
         Gate::policy(CatalogCategory::class, CatalogCategoryPolicy::class);
         Gate::policy(CatalogProduct::class, CatalogProductPolicy::class);
+        // — Library (Leopardo Library : RBAC des ressources de la bibliothèque)
+        Gate::policy(LibraryResource::class, LibraryResourcePolicy::class);
         // — Pages (BC PAGES #8723/#8725 : présence publique par établissement,
         //   édition tenant d'un côté, vérification de propriété plateforme de
         //   l'autre — les deux axes ne partagent JAMAIS une policy)

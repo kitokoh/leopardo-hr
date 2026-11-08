@@ -4971,6 +4971,107 @@ trait CreatesMvpSchema
             });
         }
 
+        // BC-40 LIBRARY (mission Leopardo Library) — bibliothèque numérique.
+        // Miroir de la migration 2026_11_08_000100_9200 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('library_categories'))) {
+            Schema::create($this->moduleTable('library_categories'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('name', 120);
+                $table->string('slug', 130);
+                $table->string('icon', 40)->nullable();
+                $table->smallInteger('position')->default(0);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'slug'], 'library_categories_company_slug_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('library_authors'))) {
+            Schema::create($this->moduleTable('library_authors'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('name', 150);
+                $table->string('slug', 160);
+                $table->text('bio')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'slug'], 'library_authors_company_slug_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('library_collections'))) {
+            Schema::create($this->moduleTable('library_collections'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('name', 150);
+                $table->string('slug', 160);
+                $table->text('description')->nullable();
+                $table->smallInteger('position')->default(0);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'slug'], 'library_collections_company_slug_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('library_resources'))) {
+            Schema::create($this->moduleTable('library_resources'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('category_id')->nullable();
+                $table->unsignedBigInteger('author_id')->nullable();
+                $table->unsignedBigInteger('collection_id')->nullable();
+                $table->string('title', 200);
+                $table->string('slug', 210);
+                $table->text('description')->nullable();
+                $table->text('excerpt')->nullable();
+                $table->string('document_type', 20)->default('book');
+                $table->char('language', 2)->default('fr');
+                $table->string('access_model', 20)->default('free');
+                $table->string('status', 20)->default('draft');
+                $table->unsignedBigInteger('price_minor')->default(0);
+                $table->char('currency', 3)->default('EUR');
+                $table->string('publisher', 150)->nullable();
+                $table->smallInteger('published_year')->nullable();
+                $table->unsignedInteger('pages')->nullable();
+                $table->string('license_id', 60)->default('proprietary');
+                $table->string('rights_holder', 200)->nullable();
+                $table->boolean('allow_download')->default(false);
+                $table->boolean('allow_redistribution')->default(false);
+                $table->json('geo_restrictions')->nullable();
+                $table->string('file_key', 300)->nullable();
+                $table->string('file_format', 20)->nullable();
+                $table->unsignedBigInteger('file_size')->nullable();
+                $table->boolean('featured')->default(false);
+                $table->boolean('is_new')->default(false);
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->unsignedBigInteger('published_by')->nullable();
+                $table->timestamp('published_at')->nullable();
+                $table->json('meta')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'slug'], 'library_resources_company_slug_unique');
+                $table->index(['company_id', 'status'], 'library_resources_company_status_idx');
+                $table->index(['company_id', 'category_id'], 'library_resources_company_category_idx');
+                $table->index(['company_id', 'access_model'], 'library_resources_company_access_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('library_reports'))) {
+            Schema::create($this->moduleTable('library_reports'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('resource_id');
+                $table->string('reason', 40);
+                $table->text('details')->nullable();
+                $table->string('reporter_email', 200)->nullable();
+                $table->string('status', 20)->default('open');
+                $table->timestamps();
+
+                $table->index(['resource_id', 'status'], 'library_reports_resource_status_idx');
+            });
+        }
+
     }
 
     private function createVerticalParityTables(): void

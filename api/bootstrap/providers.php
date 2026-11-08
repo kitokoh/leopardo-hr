@@ -21,6 +21,7 @@ use App\Modules\Geo\Providers\GeoServiceProvider;
 use App\Modules\HealthManager\Providers\HealthManagerServiceProvider;
 use App\Modules\HospitalityManager\Providers\HospitalityManagerServiceProvider;
 use App\Modules\HR\Providers\HRServiceProvider;
+use App\Modules\Library\Providers\LibraryServiceProvider;
 use App\Modules\Marketing\Providers\MarketingServiceProvider;
 use App\Modules\Notification\Providers\NotificationServiceProvider;
 use App\Modules\Onboarding\Providers\OnboardingServiceProvider;
@@ -111,4 +112,7 @@ return [
     // BC-38 PAIEMENTS (#8680) — socle de paiement interne : registre des types
     // de fournisseur (code) + services ledger / resolver / reconciliation.
     PaiementsServiceProvider::class,
+    // LEOPARDO LIBRARY — bibliothèque numérique publique : socle domaine
+    // (migrations, modèles, policies) + routes publiques/privées.
+    LibraryServiceProvider::class,
 ];

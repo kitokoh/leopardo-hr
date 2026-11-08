@@ -116,3 +116,7 @@
 # BC-39 PAGES (#8723+) — presence publique par etablissement : agregat Page lie a
 # un Site, contrat de blocs extensible fourni par les BC verticaux (#8724).
 /api/app/Modules/Pages/ @kitokoh
+# BC-40 LIBRARY — bibliotheque numerique publique et professionnelle (Leopardo
+# Library) : catalogue, modeles d'acces, workflow editorial, droits d'auteur,
+# lecteur numerique, surface publique isolee + surface tenant.
+/api/app/Modules/Library/ @kitokoh
