@@ -16,6 +16,7 @@ import {
   isExternalOffer,
   CONTRACT_TYPE_LABELS,
   REMOTE_POLICY_LABELS,
+  type PublicJobPosting,
 } from '@/lib/careers-api';
 
 // #4448 : locale SSR. Ces routes (hors groupe `(landing)`) ne passent pas
@@ -89,7 +90,7 @@ export default async function CareersPortalPage({ params, searchParams }: Career
   // Les mélanger dans une seule liste ferait cliquer le visiteur sur un
   // formulaire qui n'existe pas pour lui. On les sépare donc explicitement, et
   // chaque carte dit à quoi elle correspond.
-  const companyJobs = jobs.filter((job) => !isExternalOffer(job));
+  const companyJobs = jobs.filter((job): job is PublicJobPosting => !isExternalOffer(job));
   const externalJobs = jobs.filter(isExternalOffer);
 
   const hasFilters = Boolean(q || contract_type || remote_policy);

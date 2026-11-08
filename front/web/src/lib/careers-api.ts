@@ -29,6 +29,58 @@ export interface PublicJobPosting {
 }
 
 /**
+ * BC-10 (#9100) — projection publique d'une offre AGRÉGÉE, servie par
+ * `ExternalJobOfferResource`. Elle n'appartient à aucun tenant : elle vient
+ * d'un agrégateur configuré par la plateforme et la candidature se fait chez
+ * le partenaire, pas sur notre portail. `origin` est le discriminant qui
+ * permet de distinguer les deux populations sans deviner.
+ */
+export interface PublicExternalJobOffer {
+  id: number;
+  external_id: string;
+  title: string;
+  description: string | null;
+  company_name: string;
+  location: string | null;
+  country: string | null;
+  remote_policy: 'onsite' | 'hybrid' | 'remote';
+  contract_type: 'cdi' | 'cdd' | 'stage' | 'freelance';
+  salary_min: number | string | null;
+  salary_max: number | string | null;
+  currency: string | null;
+  apply_url: string;
+  published_at: string | null;
+  expires_at: string | null;
+  origin: 'external';
+  source?: { provider: string; label: string };
+}
+
+/**
+ * Entrée du catalogue public : une offre de l'entreprise OU une offre
+ * agrégée. Les deux vivent dans la même liste mais n'ont pas la même nature —
+ * `isExternalOffer` est le seul moyen autorisé de les distinguer.
+ */
+export type PublicJobEntry = PublicJobPosting | PublicExternalJobOffer;
+
+/**
+ * Garde de type : `apply_url` n'existe que sur les offres agrégées (une offre
+ * du tenant se candidate sur notre formulaire, elle n'a pas d'URL sortante).
+ */
+export function isExternalOffer(job: PublicJobEntry): job is PublicExternalJobOffer {
+  return 'apply_url' in job;
+}
+
+/**
+ * Filtres acceptés par `GET /public/careers/{slug}` (BC-10 #9100).
+ */
+export interface PublicCareersFilters {
+  q?: string;
+  location?: string;
+  contractType?: string;
+  remotePolicy?: string;
+}
+
+/**
  * Per-tenant branding exposed by `PublicCareerController::companyPayload()`
  * (issue #1325) so the careers portal (issue #1330) can render the client
  * company's identity instead of Leopardo's own — logo, display name and
@@ -148,6 +200,10 @@ export interface SubmitApplicationInput {
   cover_letter?: string;
   source?: 'website' | 'referral' | 'linkedin' | 'agency' | 'other';
   resume?: File | null;
+  /** BC-10 (#9100) — consentement RGPD explicite, obligatoire côté serveur. */
+  consent?: boolean;
+  /** Champ piège anti-spam : toujours vide pour un humain. */
+  website?: string;
 }
 
 export interface SubmitApplicationResult {

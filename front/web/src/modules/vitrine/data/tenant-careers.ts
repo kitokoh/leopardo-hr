@@ -19,6 +19,15 @@ export type TenantCareersCopy = {
   backToJobs: (company: string) => string;
   skillsTitle: string;
   applyTitle: string;
+  externalBadge: string;
+  externalApply: string;
+  externalNotice: string;
+  companyOffersTitle: string;
+  externalOffersTitle: string;
+  searchPlaceholder: string;
+  filterAll: string;
+  clearFilters: string;
+  noResults: string;
   form: {
     firstName: string;
     lastName: string;
@@ -33,6 +42,7 @@ export type TenantCareersCopy = {
     successTitle: string;
     successBody: string;
     genericError: string;
+    consentLabel: string;
   };
 };
 
@@ -93,6 +103,16 @@ const en: TenantCareersCopy = {
   backToJobs: (company) => `Back to jobs at ${company}`,
   skillsTitle: 'Required skills',
   applyTitle: 'Apply for this position',
+  externalBadge: 'Partner offer',
+  externalApply: 'Apply on the partner site',
+  externalNotice:
+    'This offer comes from a partner. Applications are made directly on their site, not on this portal.',
+  companyOffersTitle: 'Company offers',
+  externalOffersTitle: 'Other offers in the region',
+  searchPlaceholder: 'Search a role, a location…',
+  filterAll: 'All',
+  clearFilters: 'Clear filters',
+  noResults: 'No offer matches your search.',
   form: {
     firstName: 'First name',
     lastName: 'Last name',
@@ -108,6 +128,8 @@ const en: TenantCareersCopy = {
     successBody:
       'Thank you for your interest. Our recruiting team will review your profile and get back to you shortly.',
     genericError: 'Something went wrong. Please try again.',
+    consentLabel:
+      'I agree that my data (identity, contact details, resume) may be kept by this company for 24 months in order to review my application. I can request their deletion at any time.',
   },
 };
 
@@ -124,6 +146,16 @@ const tr: TenantCareersCopy = {
   backToJobs: (company) => `${company} ilanlarına geri dön`,
   skillsTitle: 'Aranan beceriler',
   applyTitle: 'Bu pozisyona başvur',
+  externalBadge: 'Partner ilanı',
+  externalApply: 'Partner sitesinde başvur',
+  externalNotice:
+    'Bu ilan bir partnerden geliyor. Başvuru doğrudan partnerin sitesinde yapılır, bu portalda değil.',
+  companyOffersTitle: 'Şirketin ilanları',
+  externalOffersTitle: 'Bölgedeki diğer ilanlar',
+  searchPlaceholder: 'Pozisyon veya yer ara…',
+  filterAll: 'Tümü',
+  clearFilters: 'Filtreleri sıfırla',
+  noResults: 'Aramanızla eşleşen ilan yok.',
   form: {
     firstName: 'Ad',
     lastName: 'Soyad',

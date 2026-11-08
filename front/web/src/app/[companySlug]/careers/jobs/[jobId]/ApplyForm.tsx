@@ -70,6 +70,10 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
       cover_letter: coverLetter || undefined,
       source: 'website',
       resume,
+      // BC-10 (#9100) — le consentement RGPD et le champ piège font partie du
+      // contrat d'API : les omettre ferait rejeter la candidature en 422.
+      consent,
+      website: honeypot,
     });
 
     if (result.success) {
@@ -80,6 +84,8 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
       setPhone('');
       setCoverLetter('');
       setResume(null);
+      setConsent(false);
+      setHoneypot('');
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
