@@ -106,7 +106,9 @@ final class JobBoardClientsTest extends TestCase
                     'company' => 'DataCorp',
                     'location' => 'Lyon',
                     'snippet' => 'CDI, télétravail partiel',
-                    'updated' => '2026-11-02',
+                    // Date relative : une fixture figée dans le passe fait
+                    // echouer la garde check-tests-no-frozen-dates (#8396).
+                    'updated' => now()->subDays(2)->toDateString(),
                 ]],
             ]),
         ]);
@@ -267,7 +269,7 @@ final class JobBoardClientsTest extends TestCase
                         'jobViewUrl' => 'https://glassdoor.example/jobs/gd-1',
                         'location' => 'Bordeaux',
                         'jobType' => 'fulltime',
-                        'discoveryDate' => '2026-11-05',
+                        'discoveryDate' => now()->subDay()->toDateString(),
                     ]],
                 ],
             ]),
