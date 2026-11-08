@@ -219,7 +219,14 @@ class PublicCareerController extends Controller
         return htmlspecialchars((string) $value, ENT_XML1 | ENT_COMPAT, 'UTF-8');
     }
 
-    private function mapContractType(string $contractType): string
+    /**
+     * `?string` et non `string` : `contract_type` est nullable en base (une
+     * offre créée avant l'ajout de la colonne, ou par un import partiel, peut
+     * ne pas en avoir). Un paramètre non nullable faisait échouer TOUT le flux
+     * XML en 500 — une seule offre incomplète suffisait à priver le portail de
+     * son flux Google Jobs.
+     */
+    private function mapContractType(?string $contractType): string
     {
         return match ($contractType) {
             'cdi' => 'FullTime',

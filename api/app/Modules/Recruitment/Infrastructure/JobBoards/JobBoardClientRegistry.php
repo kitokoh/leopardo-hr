@@ -15,8 +15,12 @@ use InvalidArgumentException;
  * `JobBoardUnavailableException` NON rétentive : l'écran super admin affiche
  * alors un message honnête (« pas encore câblé ») au lieu d'un faux succès ou
  * d'offres inventées.
+ *
+ * Non `final` à dessein : les tests substituent un registre qui sert un client
+ * factice, ce qui permet d'exercer la synchronisation (idempotence, clôture des
+ * offres disparues, gestion d'erreur) sans dépendre d'un fournisseur réel.
  */
-final class JobBoardClientRegistry
+class JobBoardClientRegistry
 {
     public function __construct(
         private readonly CustomFeedJobBoardClient $customFeed,
