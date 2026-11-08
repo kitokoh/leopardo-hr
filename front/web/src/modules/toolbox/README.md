@@ -34,6 +34,16 @@ src/modules/toolbox/
 | `convertisseur-unites` | Conversion | facteurs SI exacts | — |
 | `pourcentage` | Calcul | `%`, évolution, remise | — |
 
+## Outils du deuxième lot
+
+| Slug | Catégorie | Formule | Avertissement |
+|---|---|---|---|
+| `regle-de-trois` | Calcul | `X = B × C ÷ A` (directe) / `A × B ÷ C` (inverse) | — |
+| `surface-volume` | Calcul | aires et volumes usuels (π) | théorique |
+| `cbm-poids-volumetrique` | Logistique | `CBM = L × l × H` ; poids taxable = max(réel, volumétrique) | estimation |
+| `marge-prix-vente` | Commerce | marge, taux de marge/marque, coefficient | — |
+| `tva-multi-taux` | Finance | récapitulatif TVA regroupé par taux | estimation |
+
 ## Vérifications
 
 ```bash

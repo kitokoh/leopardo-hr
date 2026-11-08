@@ -4,6 +4,11 @@ import { VatForm } from './tools/VatForm';
 import { NetSalaryForm } from './tools/NetSalaryForm';
 import { UnitConverterForm } from './tools/UnitConverterForm';
 import { PercentForm } from './tools/PercentForm';
+import { RegleDeTroisForm } from './tools/RegleDeTroisForm';
+import { SurfaceVolumeForm } from './tools/SurfaceVolumeForm';
+import { CbmForm } from './tools/CbmForm';
+import { MargeForm } from './tools/MargeForm';
+import { TvaMultiTauxForm } from './tools/TvaMultiTauxForm';
 import type { ToolCopy, ToolboxCopy, ToolboxLocale } from '../data/copy';
 
 interface ToolRendererProps {
@@ -31,6 +36,16 @@ export function ToolRenderer({ slug, copy, common, locale }: ToolRendererProps) 
       return <UnitConverterForm copy={copy} common={common} locale={locale} />;
     case 'pourcentage':
       return <PercentForm copy={copy} common={common} locale={locale} />;
+    case 'regle-de-trois':
+      return <RegleDeTroisForm copy={copy} common={common} locale={locale} />;
+    case 'surface-volume':
+      return <SurfaceVolumeForm copy={copy} common={common} locale={locale} />;
+    case 'cbm-poids-volumetrique':
+      return <CbmForm copy={copy} common={common} locale={locale} />;
+    case 'marge-prix-vente':
+      return <MargeForm copy={copy} common={common} locale={locale} />;
+    case 'tva-multi-taux':
+      return <TvaMultiTauxForm copy={copy} common={common} locale={locale} />;
     default:
       return null;
   }

@@ -1,4 +1,4 @@
-import { TOOLS } from '../data/catalog';
+import { TOOLS, TOOL_CATEGORIES } from '../data/catalog';
 import { getAllToolSlugs, getTool, getToolsByCategory, searchTools } from './registry';
 
 /**
@@ -10,6 +10,26 @@ describe('catalogue', () => {
     expect(slugs).toEqual(
       expect.arrayContaining(['imc', 'tva', 'salaire-net', 'convertisseur-unites', 'pourcentage']),
     );
+  });
+
+  it('contient les 5 outils du deuxième lot', () => {
+    const slugs = getAllToolSlugs();
+    expect(slugs).toEqual(
+      expect.arrayContaining([
+        'regle-de-trois',
+        'surface-volume',
+        'cbm-poids-volumetrique',
+        'marge-prix-vente',
+        'tva-multi-taux',
+      ]),
+    );
+  });
+
+  it('déclare une catégorie connue pour chaque outil', () => {
+    const known = new Set(TOOL_CATEGORIES.map((category) => category.id));
+    for (const tool of TOOLS) {
+      expect(known.has(tool.category)).toBe(true);
+    }
   });
 
   it('a des slugs uniques', () => {

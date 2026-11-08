@@ -26,7 +26,10 @@ Catégorie autonome d'outils numériques universels (calculateurs, convertisseur
 3. **Catalogue** : ajouter une entrée dans `data/catalog.ts` (slug kebab-case,
    catégorie, mots-clés, avertissements, références, version sémantique).
 4. **Copie** : ajouter l'entrée `tools.<slug>` dans les **4** locales de
-   `data/copy.ts` (nom, description, champs, résultats, notes).
+   `data/copy.ts` (nom, description, champs, résultats, notes). Si l'outil
+   introduit une nouvelle catégorie, l'ajouter aussi à `TOOL_CATEGORIES`
+   (`data/catalog.ts`), à `ToolCategoryId`/`ToolIconName` (`types/index.ts`) et
+   à `categories` dans les 4 locales de `data/copy.ts`.
 5. **Formulaire** : créer `components/tools/<Name>Form.tsx` (client) et
    l'enregistrer dans `components/ToolRenderer.tsx`.
 6. **Vérifier** : `npx tsc --noEmit`, `npx eslint src/modules/toolbox --max-warnings 0`,
