@@ -152,7 +152,7 @@ final class JobPostingLifecycleTest extends TestCase
         $response->assertOk();
         $response->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
 
-        $xml = simplexml_load_string($response->getContent());
+        $xml = simplexml_load_string((string) $response->getContent());
         $this->assertNotFalse($xml);
 
         $job = $xml->job[0];
@@ -184,7 +184,7 @@ final class JobPostingLifecycleTest extends TestCase
 
         // Un `&` non échappé rendrait le flux invalide et ferait rejeter
         // TOUTES les offres par Google Jobs, pas seulement celle-ci.
-        $body = $response->getContent();
+        $body = (string) $response->getContent();
         $this->assertStringContainsString('&amp;', $body);
 
         $xml = simplexml_load_string($body);

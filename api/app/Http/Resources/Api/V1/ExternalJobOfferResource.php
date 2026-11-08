@@ -23,6 +23,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class ExternalJobOfferResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         return [
@@ -45,10 +48,14 @@ class ExternalJobOfferResource extends JsonResource
             // l'offre vient d'un partenaire et que la candidature se fait chez
             // lui, pas sur notre portail.
             'origin' => 'external',
-            'source' => $this->whenLoaded('source', fn (): array => [
-                'provider' => $this->source->provider,
-                'label' => $this->source->label,
-            ]),
+            'source' => $this->whenLoaded('source', function (): ?array {
+                $source = $this->source;
+
+                return $source === null ? null : [
+                    'provider' => $source->provider,
+                    'label' => $source->label,
+                ];
+            }),
         ];
     }
 }

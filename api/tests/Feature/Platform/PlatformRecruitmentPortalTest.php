@@ -65,8 +65,8 @@ final class PlatformRecruitmentPortalTest extends TestCase
         $response->assertJsonPath('data.status', 'not_connected');
 
         // Le corps de la réponse ne doit contenir AUCUNE valeur de secret.
-        $this->assertStringNotContainsString('super-secret-key', $response->getContent());
-        $this->assertStringNotContainsString('app-123', $response->getContent());
+        $this->assertStringNotContainsString('super-secret-key', (string) $response->getContent());
+        $this->assertStringNotContainsString('app-123', (string) $response->getContent());
     }
 
     public function test_credentials_are_encrypted_at_rest(): void
@@ -335,8 +335,8 @@ final class PlatformRecruitmentPortalTest extends TestCase
         // `raw_payload` peut contenir des champs internes du fournisseur :
         // il ne doit JAMAIS atteindre un visiteur anonyme.
         $response->assertOk();
-        $this->assertStringNotContainsString('raw_payload', $response->getContent());
-        $this->assertStringNotContainsString('credentials', $response->getContent());
+        $this->assertStringNotContainsString('raw_payload', (string) $response->getContent());
+        $this->assertStringNotContainsString('credentials', (string) $response->getContent());
     }
 
     // ─── Helpers ─────────────────────────────────────────────────────────────

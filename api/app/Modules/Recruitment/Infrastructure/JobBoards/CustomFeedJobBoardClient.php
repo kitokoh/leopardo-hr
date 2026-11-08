@@ -65,7 +65,7 @@ final class CustomFeedJobBoardClient implements JobBoardClient
             throw JobBoardUnavailableException::transport('custom_feed', 'HTTP '.$response->status().'.');
         }
 
-        $body = $response->body();
+        $body = (string) $response->body();
         $limit = $this->limitFrom($config);
 
         $offers = str_starts_with(ltrim($body), '{') || str_starts_with(ltrim($body), '[')

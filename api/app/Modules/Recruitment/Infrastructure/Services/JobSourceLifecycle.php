@@ -265,7 +265,7 @@ final class JobSourceLifecycle
             'status' => $source?->status->value ?? JobSourceStatus::NotConnected->value,
             'status_label' => ($source->status ?? JobSourceStatus::NotConnected)->label(),
             'has_credentials' => $source !== null && $this->hasStoredCredentials($source),
-            'offers_imported' => $source?->offers_imported ?? 0,
+            'offers_imported' => $source->offers_imported ?? 0,
             'last_synced_at' => $source?->last_synced_at?->toIso8601String(),
             'last_error' => $source?->last_error,
             'credential_keys' => self::credentialKeysFor($provider),
