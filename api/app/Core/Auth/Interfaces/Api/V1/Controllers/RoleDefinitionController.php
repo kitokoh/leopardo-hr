@@ -82,6 +82,7 @@ class RoleDefinitionController extends Controller
             return response()->json(['message' => __('errors.UNAUTHENTICATED')], 401);
         }
 
+        /** @var array{permissions: list<string>, name: string, vertical?: string|null} $validated */
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:80'],
             'permissions' => ['required', 'array', 'min:1'],
@@ -89,7 +90,6 @@ class RoleDefinitionController extends Controller
             'vertical' => ['nullable', 'string', 'max:40'],
         ]);
 
-        /** @var array{permissions: list<string>, name: string, vertical?: string|null} $validated */
         /** @var list<string> $permissions */
         $permissions = array_values(array_unique($validated['permissions']));
 
@@ -179,12 +179,12 @@ class RoleDefinitionController extends Controller
             return response()->json(['message' => __('errors.NOT_FOUND')], 404);
         }
 
+        /** @var array{permissions: list<string>} $validated */
         $validated = $request->validate([
             'permissions' => ['required', 'array', 'min:1'],
             'permissions.*' => ['string', Rule::in(DelegablePermission::keys())],
         ]);
 
-        /** @var array{permissions: list<string>} $validated */
         /** @var list<string> $permissions */
         $permissions = array_values(array_unique($validated['permissions']));
 

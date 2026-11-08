@@ -47,13 +47,13 @@ class PublicDeviceTokenController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        /** @var array{token: string, platform?: string|null, device_name?: string|null} $validated */
         $validated = $request->validate([
             'token' => ['required', 'string', 'max:255'],
             'platform' => ['nullable', 'string', 'in:'.implode(',', self::PLATFORMS)],
             'device_name' => ['nullable', 'string', 'max:120'],
         ]);
 
-        /** @var array{token: string, platform?: string|null, device_name?: string|null} $validated */
         /** @var User $user */
         $user = $request->user('user_api');
 

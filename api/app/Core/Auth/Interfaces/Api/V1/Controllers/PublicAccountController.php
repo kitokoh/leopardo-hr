@@ -100,12 +100,12 @@ class PublicAccountController extends Controller
      */
     public function destroy(Request $request): JsonResponse
     {
+        /** @var array{password: string, confirmation: string} $validated */
         $validated = $request->validate([
             'password' => ['required', 'string'],
             'confirmation' => ['required', 'string'],
         ]);
 
-        /** @var array{password: string, confirmation: string} $validated */
         /** @var User $user */
         $user = $request->user('user_api');
 
