@@ -45,7 +45,6 @@ export interface ToolboxCopy {
     result: string;
     copy: string;
     copied: string;
-    reset: string;
     reference: string;
     version: string;
     backToCatalog: string;
@@ -100,7 +99,6 @@ const fr: ToolboxCopy = {
     result: 'Résultat',
     copy: 'Copier',
     copied: 'Copié',
-    reset: 'Réinitialiser',
     reference: 'Référence',
     version: 'Version du calcul',
     backToCatalog: 'Retour à tous les outils',
@@ -382,7 +380,6 @@ const en: ToolboxCopy = {
     result: 'Result',
     copy: 'Copy',
     copied: 'Copied',
-    reset: 'Reset',
     reference: 'Reference',
     version: 'Calculation version',
     backToCatalog: 'Back to all tools',
@@ -660,7 +657,6 @@ const tr: ToolboxCopy = {
     result: 'Sonuç',
     copy: 'Kopyala',
     copied: 'Kopyalandı',
-    reset: 'Sıfırla',
     reference: 'Kaynak',
     version: 'Hesaplama sürümü',
     backToCatalog: 'Tüm araçlara dön',
@@ -935,7 +931,6 @@ const ar: ToolboxCopy = {
     result: 'النتيجة',
     copy: 'نسخ',
     copied: 'تم النسخ',
-    reset: 'إعادة تعيين',
     reference: 'المرجع',
     version: 'إصدار الحساب',
     backToCatalog: 'العودة إلى كل الأدوات',

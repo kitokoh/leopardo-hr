@@ -303,7 +303,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       sections: [
 
         { title: 'Produit', links: ['Fonctionnalités', 'Tarifs', 'Intégrations', 'API', 'Changelog', 'Télécharger', 'Application mobile', 'Employés', 'Comptabilité', 'Marketing', 'Trouver un pro'] },
-        { title: 'Ressources', links: ['Documentation', 'Guides', 'Blog', 'Études de cas', 'Témoignages', 'Comparer', 'Packs offerts', 'Outils', 'Communauté'] },
+        { title: 'Ressources', links: ['Documentation', 'Guides', 'Blog', 'Études de cas', 'Témoignages', 'Comparer', 'Packs offerts', 'Outils', 'Communauté', 'Bibliothèque'] },
         { title: 'Entreprise', links: ['À propos', 'Contact', 'Carrières', 'Kit presse', 'Vidéos', 'Devenir actionnaire'] },
         { title: 'Légal', links: ['Confidentialité (RGPD)', 'CGU', 'Mentions légales'] },
 
@@ -468,7 +468,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       sections: [
 
         { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog', 'Download', 'Mobile app', 'Employees', 'Accounting', 'Marketing', 'Find a pro'] },
-        { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Case studies', 'Testimonials', 'Compare', 'Free packs', 'Tools', 'Community'] },
+        { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Case studies', 'Testimonials', 'Compare', 'Free packs', 'Tools', 'Community', 'Library'] },
         { title: 'Company', links: ['About', 'Contact', 'Careers', 'Brand assets', 'Videos', 'Become a shareholder'] },
         { title: 'Legal', links: ['Privacy (GDPR)', 'Terms', 'Legal notice'] },
 
@@ -633,7 +633,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       sections: [
 
         { title: 'Ürün', links: ['Özellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Değişiklikler', 'İndir', 'Mobil uygulama', 'Çalışanlar', 'Muhasebe', 'Pazarlama', 'Profesyonel bul'] },
-        { title: 'Kaynaklar', links: ['Dokümantasyon', 'Rehberler', 'Blog', 'Vaka çalışmaları', 'Referanslar', 'Karşılaştır', 'Ücretsiz paketler', 'Araçlar', 'Topluluk'] },
+        { title: 'Kaynaklar', links: ['Dokümantasyon', 'Rehberler', 'Blog', 'Vaka çalışmaları', 'Referanslar', 'Karşılaştır', 'Ücretsiz paketler', 'Araçlar', 'Topluluk', 'Kütüphane'] },
         { title: 'Şirket', links: ['Hakkımızda', 'İletişim', 'Kariyer', 'Marka', 'Videolar', 'Ortak olun'] },
         { title: 'Yasal', links: ['Gizlilik (KVKK/GDPR)', 'Kullanım Koşulları', 'Yasal bildirim'] },
 
@@ -798,7 +798,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       sections: [
 
         { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'تحميل', 'تطبيق الجوال', 'الموظفون', 'المحاسبة', 'التسويق', 'ابحث عن مهني'] },
-        { title: 'الموارد', links: ['التوثيق', 'أدلة', 'المدونة', 'دراسات الحالة', 'الشهادات', 'قارن', 'حزم مجانية', 'أدوات', 'المجتمع'] },
+        { title: 'الموارد', links: ['التوثيق', 'أدلة', 'المدونة', 'دراسات الحالة', 'الشهادات', 'قارن', 'حزم مجانية', 'أدوات', 'المجتمع', 'المكتبة'] },
         { title: 'الشركة', links: ['من نحن', 'اتصل بنا', 'الوظائف', 'الهوية', 'فيديوهات', 'كن مساهماً'] },
         { title: 'قانوني', links: ['الخصوصية (GDPR)', 'الشروط', 'الإشعارات القانونية'] },
 

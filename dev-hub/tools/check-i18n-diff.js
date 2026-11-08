@@ -147,6 +147,22 @@ const ignorePathFragments = [
   // signalé (contre-contrôle dans check-i18n-diff-test.sh). La complétude des
   // 4 langues reste couverte par les tests du module.
   '/toolbox/data/',
+  // Catalogue i18n du module autonome Leopardo Library (mission Leopardo
+  // Library) : `front/web/src/modules/library/data/copy.ts` EST le mécanisme de
+  // localisation du module (catalogue inline ×4 fr/en/tr/ar, typé, accédé via
+  // getLibraryCopy(locale)) et `data/catalog.ts` porte les DONNÉES du catalogue
+  // (titres, auteurs, descriptions de livres — contenu, pas des chaînes d'UI à
+  // traduire) — exactement le même cas que /toolbox/data/ et /vitrine/data/.
+  // La Library est une surface PUBLIQUE de la vitrine : elle suit la convention
+  // vitrine (catalogue inline dans data/). L'exemption est scopée à data/ : un
+  // composant du module qui porterait une chaîne en dur reste signalé. La
+  // complétude des 4 langues reste couverte par les tests du module.
+  '/library/data/',
+  // Route de téléchargement de la Library : message opérationnel français
+  // (stockage objet non configuré → 501), même pattern que les routes forms
+  // pré-existantes (contact/signup/newsletter/demo, PA2-MKT-007) — la
+  // localisation de ces messages de réponse est un follow-up documenté.
+  '/library/[slug]/download/route.ts',
 ];
 
 // Lines that already route text through a translation mechanism — never
