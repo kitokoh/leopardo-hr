@@ -899,3 +899,618 @@ events:
         computed_balance: 120000
         difference: 5000
     deprecation: null
+
+  - name: crm.campaign_started
+    version: 1.0.0
+    bc: crm
+    class: App\Modules\CRM\Domain\Events\CampaignStarted
+    description: Demarrage d'une campagne CRM (#5724). Evenement de decouplage CRM vers canaux (email #5726, WhatsApp #5725, SMS #5727) : les canaux ecoutent pour prendre en charge les envois pending. Aucun couplage direct inter-modules.
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [crm.campaign_started] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [campaign_id, channel, audience_size]
+          properties:
+            campaign_id: { type: integer, minimum: 1 }
+            channel: { type: string, minLength: 1 }
+            audience_size: { type: integer, minimum: 0 }
+    sample:
+      event_name: crm.campaign_started
+      version: "1.0.0"
+      occurred_at: "2026-11-08T09:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { campaign_id: 77, channel: email, audience_size: 1200 }
+    deprecation: null
+
+  - name: crm.campaign_finished
+    version: 1.0.0
+    bc: crm
+    class: App\Modules\CRM\Domain\Events\CampaignFinished
+    description: Fin (finish ou cancel) d'une campagne CRM (#5724).
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [crm.campaign_finished] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [campaign_id, status]
+          properties:
+            campaign_id: { type: integer, minimum: 1 }
+            status: { type: string, enum: [finished, cancelled] }
+    sample:
+      event_name: crm.campaign_finished
+      version: "1.0.0"
+      occurred_at: "2026-11-08T10:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { campaign_id: 77, status: finished }
+    deprecation: null
+
+  - name: crm.consent_revoked
+    version: 1.0.0
+    bc: crm
+    class: App\Modules\CRM\Domain\Events\CrmConsentRevoked
+    description: Retrait d'un consentement CRM (#5722). Dispatche par CommunicationConsentService::withdraw() ; ecoute par PropagateConsentRevocation qui annule les envois de campagne en attente du contact concerne (aucun envoi sans consentement requis).
+    consumers:
+      - App\Listeners\PropagateConsentRevocation
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [crm.consent_revoked] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [contact_id, channel, purpose]
+          properties:
+            contact_id: { type: integer, minimum: 1 }
+            channel: { type: string, minLength: 1 }
+            purpose: { type: string, minLength: 1 }
+    sample:
+      event_name: crm.consent_revoked
+      version: "1.0.0"
+      occurred_at: "2026-11-08T09:15:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { contact_id: 512, channel: sms, purpose: marketing }
+    deprecation: null
+
+  - name: crm.task_overdue
+    version: 1.0.0
+    bc: crm
+    class: App\Events\CrmTaskOverdue
+    description: Tache CRM en retard (relance interne, #5720). Payload scalaire (aucun modele CRM dans l'evenement) pour permettre au module Notification de creer la notification sans import inter-module. company_id est un UUID (#8930).
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [crm.task_overdue] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [task_id, title]
+          properties:
+            task_id: { type: integer, minimum: 1 }
+            assignee_id: { type: integer, minimum: 1 }
+            title: { type: string, minLength: 1 }
+            due_at: { type: string, format: date-time }
+    sample:
+      event_name: crm.task_overdue
+      version: "1.0.0"
+      occurred_at: "2026-11-08T08:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { task_id: 903, assignee_id: 44, title: "Relancer le devis", due_at: "2026-11-07T17:00:00+00:00" }
+    deprecation: null
+
+  - name: billing.invoice_paid
+    version: 1.0.0
+    bc: billing
+    class: App\Events\InvoicePaid
+    description: Une facture plateforme vient de transiter vers paid (#7763). Dispatche UNIQUEMENT par Invoice::transitionTo() lors d'une transition REELLE vers paid (jamais sur la re-transition idempotente paid vers paid des webhooks rejoues) — point unique de la machine a etats, commun aux providers Stripe et Chargily.
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [billing.invoice_paid] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [invoice_id]
+          properties:
+            invoice_id: { type: integer, minimum: 1 }
+    sample:
+      event_name: billing.invoice_paid
+      version: "1.0.0"
+      occurred_at: "2026-11-08T07:30:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { invoice_id: 2048 }
+    deprecation: null
+
+  - name: solutions.solution_activated
+    version: 1.0.0
+    bc: solutions
+    class: App\Events\SolutionActivated
+    description: Une solution sectorielle vient d'etre activee pour un tenant (BC-25). Emis par App\Core\Solutions\SolutionActivator UNIQUEMENT lors d'une activation reelle (jamais sur already_active). Point d'extension permettant a chaque module d'installer ses donnees d'amorcage sans que le core ne reference le moindre App\Modules\*.
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [solutions.solution_activated] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [solution]
+          properties:
+            solution: { type: string, minLength: 1 }
+    sample:
+      event_name: solutions.solution_activated
+      version: "1.0.0"
+      occurred_at: "2026-11-08T06:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { solution: travel_agency }
+    deprecation: null
+
+  - name: travel.event_published
+    version: 1.0.0
+    bc: travel
+    class: App\Modules\TravelAgency\Domain\Events\TravelEventPublished
+    description: Publication d'un evenement de domaine TravelAgency sur le bus tenant-scope (#6066 TRAVEL-414). Consomme par le worker travel-outbox-dispatch APRES commit — chaque evenement travel.*.v1 persiste d'abord dans travel_outbox_events (idempotence par tenant), puis est dispatche dans le contexte de sa compagnie. payload_redacted ne contient jamais de secret ni de PII.
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [travel.event_published] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [event_type]
+          properties:
+            event_type: { type: string, minLength: 1 }
+            payload_redacted: { type: object }
+    sample:
+      event_name: travel.event_published
+      version: "1.0.0"
+      occurred_at: "2026-11-08T05:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { event_type: travel.booking.confirmed.v1, payload_redacted: { booking_id: 3312 } }
+    deprecation: null
+
+  - name: fuel.delivery_received
+    version: 1.0.0
+    bc: fuelstation
+    class: App\Modules\FuelStation\Domain\Events\FuelDeliveryReceived
+    description: Une livraison de carburant a ete receptionnee a la station (FuelStation). Porte le modele FuelDelivery (SerializesModels).
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [fuel.delivery_received] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [delivery_id, station_id, product_type, quantity_minor]
+          properties:
+            delivery_id: { type: integer, minimum: 1 }
+            station_id: { type: integer, minimum: 1 }
+            product_type: { type: string, minLength: 1 }
+            quantity_minor: { type: integer, minimum: 0 }
+    sample:
+      event_name: fuel.delivery_received
+      version: "1.0.0"
+      occurred_at: "2026-11-08T04:30:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { delivery_id: 8801, station_id: 12, product_type: diesel, quantity_minor: 2000000 }
+    deprecation: null
+
+  - name: fuel.incident_reported
+    version: 1.0.0
+    bc: fuelstation
+    class: App\Modules\FuelStation\Domain\Events\FuelIncidentReported
+    description: Un incident a ete declare a la station (FuelStation). Porte le modele FuelIncident (SerializesModels).
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [fuel.incident_reported] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [incident_id, station_id, severity, status]
+          properties:
+            incident_id: { type: integer, minimum: 1 }
+            station_id: { type: integer, minimum: 1 }
+            severity: { type: string, minLength: 1 }
+            status: { type: string, minLength: 1 }
+    sample:
+      event_name: fuel.incident_reported
+      version: "1.0.0"
+      occurred_at: "2026-11-08T04:45:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { incident_id: 640, station_id: 12, severity: high, status: reported }
+    deprecation: null
+
+  - name: fuel.incident_resolved
+    version: 1.0.0
+    bc: fuelstation
+    class: App\Modules\FuelStation\Domain\Events\FuelIncidentResolved
+    description: Un incident de station a ete resolu (FuelStation). Porte le modele FuelIncident (SerializesModels).
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [fuel.incident_resolved] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [incident_id, station_id, status]
+          properties:
+            incident_id: { type: integer, minimum: 1 }
+            station_id: { type: integer, minimum: 1 }
+            status: { type: string, minLength: 1 }
+    sample:
+      event_name: fuel.incident_resolved
+      version: "1.0.0"
+      occurred_at: "2026-11-08T06:20:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { incident_id: 640, station_id: 12, status: resolved }
+    deprecation: null
+
+  - name: fuel.maintenance_task_completed
+    version: 1.0.0
+    bc: fuelstation
+    class: App\Modules\FuelStation\Domain\Events\FuelMaintenanceTaskCompleted
+    description: Une tache de maintenance de station a ete terminee (FuelStation). Porte le modele FuelMaintenanceTask (SerializesModels).
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [fuel.maintenance_task_completed] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [task_id, station_id, status]
+          properties:
+            task_id: { type: integer, minimum: 1 }
+            station_id: { type: integer, minimum: 1 }
+            status: { type: string, minLength: 1 }
+    sample:
+      event_name: fuel.maintenance_task_completed
+      version: "1.0.0"
+      occurred_at: "2026-11-08T06:40:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { task_id: 2210, station_id: 12, status: completed }
+    deprecation: null
+
+  - name: fuel.station_alert
+    version: 1.0.0
+    bc: fuelstation
+    class: App\Events\FuelStationAlert
+    description: Alerte de station a notifier aux managers (FuelStation). Porte la collection des managers destinataires, une cle de template et un payload scalaire ; categorie par defaut fuel.
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [fuel.station_alert] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [template_key, category]
+          properties:
+            template_key: { type: string, minLength: 1 }
+            category: { type: string, minLength: 1 }
+            payload: { type: object }
+    sample:
+      event_name: fuel.station_alert
+      version: "1.0.0"
+      occurred_at: "2026-11-08T07:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { template_key: fuel.stock.low, category: fuel, payload: { tank_id: 3 } }
+    deprecation: null
+
+  - name: fuel.stock_reconciliation_completed
+    version: 1.0.0
+    bc: fuelstation
+    class: App\Modules\FuelStation\Domain\Events\FuelStockReconciliationCompleted
+    description: Un rapprochement de stock carburant a ete cloture (FuelStation). Porte le modele FuelStockReconciliation (SerializesModels).
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [fuel.stock_reconciliation_completed] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [reconciliation_id, station_id, product_type, status]
+          properties:
+            reconciliation_id: { type: integer, minimum: 1 }
+            station_id: { type: integer, minimum: 1 }
+            product_type: { type: string, minLength: 1 }
+            status: { type: string, minLength: 1 }
+    sample:
+      event_name: fuel.stock_reconciliation_completed
+      version: "1.0.0"
+      occurred_at: "2026-11-08T07:10:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { reconciliation_id: 415, station_id: 12, product_type: diesel, status: completed }
+    deprecation: null
+
+  - name: fuel.stock_variance_detected
+    version: 1.0.0
+    bc: fuelstation
+    class: App\Modules\FuelStation\Domain\Events\FuelStockVarianceDetected
+    description: Un ecart de stock carburant au-dela de la tolerance a ete detecte lors d'un rapprochement (FuelStation). Porte le modele FuelStockReconciliation (SerializesModels).
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [fuel.stock_variance_detected] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [reconciliation_id, station_id, variance_minor]
+          properties:
+            reconciliation_id: { type: integer, minimum: 1 }
+            station_id: { type: integer, minimum: 1 }
+            variance_minor: { type: integer }
+    sample:
+      event_name: fuel.stock_variance_detected
+      version: "1.0.0"
+      occurred_at: "2026-11-08T07:12:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { reconciliation_id: 415, station_id: 12, variance_minor: -35000 }
+    deprecation: null
+
+  - name: retail.online_order_confirmed
+    version: 1.0.0
+    bc: retail
+    class: App\Events\RetailOnlineOrderConfirmed
+    description: Une commande en ligne Retail vient d'etre confirmee. Payload scalaire (aucun modele dans l'evenement) ; les champs de contact client sont des identifiants ou libelles, jamais de PII en clair dans le catalogue.
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [retail.online_order_confirmed] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [order_id, reference, total_minor, currency]
+          properties:
+            order_id: { type: integer, minimum: 1 }
+            reference: { type: string, minLength: 1 }
+            total_minor: { type: integer, minimum: 0 }
+            currency: { type: string, minLength: 3, maxLength: 3 }
+            cod_amount_minor: { type: integer, minimum: 0 }
+            delivery_city: { type: string }
+    sample:
+      event_name: retail.online_order_confirmed
+      version: "1.0.0"
+      occurred_at: "2026-11-08T08:30:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { order_id: 7712, reference: CMD-2026-7712, total_minor: 450000, currency: DZD, cod_amount_minor: 450000, delivery_city: Alger }
+    deprecation: null
+
+  - name: retail.online_order_delivery_created
+    version: 1.0.0
+    bc: retail
+    class: App\Events\RetailOnlineOrderDeliveryCreated
+    description: Une livraison a ete creee pour une commande en ligne Retail. Payload scalaire (aucun modele dans l'evenement).
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [retail.online_order_delivery_created] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [order_id, order_reference, delivery_reference, delivery_status]
+          properties:
+            order_id: { type: integer, minimum: 1 }
+            order_reference: { type: string, minLength: 1 }
+            delivery_reference: { type: string, minLength: 1 }
+            delivery_status: { type: string, minLength: 1 }
+    sample:
+      event_name: retail.online_order_delivery_created
+      version: "1.0.0"
+      occurred_at: "2026-11-08T08:35:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { order_id: 7712, order_reference: CMD-2026-7712, delivery_reference: LIV-2026-0042, delivery_status: pending }
+    deprecation: null
+
+  - name: vtc.ride_requested
+    version: 1.0.0
+    bc: vtc
+    class: App\Modules\Vtc\Domain\Events\VtcRideRequested
+    description: Une course VTC a ete demandee par un passager. Payload scalaire (aucun modele dans l'evenement) ; passenger_user_id est un identifiant, jamais de PII en clair.
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [vtc.ride_requested] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [ride_id, reference]
+          properties:
+            ride_id: { type: integer, minimum: 1 }
+            reference: { type: string, minLength: 1 }
+            passenger_user_id: { type: integer, minimum: 1 }
+    sample:
+      event_name: vtc.ride_requested
+      version: "1.0.0"
+      occurred_at: "2026-11-08T09:05:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { ride_id: 5501, reference: VTC-2026-5501, passenger_user_id: 812 }
+    deprecation: null
+
+  - name: vtc.ride_accepted
+    version: 1.0.0
+    bc: vtc
+    class: App\Modules\Vtc\Domain\Events\VtcRideAccepted
+    description: Une course VTC a ete acceptee par un chauffeur. Payload scalaire (aucun modele dans l'evenement).
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [vtc.ride_accepted] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [ride_id, reference, driver_id]
+          properties:
+            ride_id: { type: integer, minimum: 1 }
+            reference: { type: string, minLength: 1 }
+            driver_id: { type: integer, minimum: 1 }
+    sample:
+      event_name: vtc.ride_accepted
+      version: "1.0.0"
+      occurred_at: "2026-11-08T09:06:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { ride_id: 5501, reference: VTC-2026-5501, driver_id: 233 }
+    deprecation: null
+
+  - name: vtc.ride_cancelled
+    version: 1.0.0
+    bc: vtc
+    class: App\Modules\Vtc\Domain\Events\VtcRideCancelled
+    description: Une course VTC a ete annulee. Payload scalaire (aucun modele dans l'evenement) ; cancelled_by indique l'acteur (passenger, driver, system).
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [vtc.ride_cancelled] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [ride_id, reference, reason, cancelled_by]
+          properties:
+            ride_id: { type: integer, minimum: 1 }
+            reference: { type: string, minLength: 1 }
+            reason: { type: string, minLength: 1 }
+            cancelled_by: { type: string, enum: [passenger, driver, system] }
+    sample:
+      event_name: vtc.ride_cancelled
+      version: "1.0.0"
+      occurred_at: "2026-11-08T09:08:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { ride_id: 5501, reference: VTC-2026-5501, reason: no_driver_available, cancelled_by: system }
+    deprecation: null
+
+  - name: vtc.ride_completed
+    version: 1.0.0
+    bc: vtc
+    class: App\Modules\Vtc\Domain\Events\VtcRideCompleted
+    description: Une course VTC est arrivee a son terme. Payload scalaire (aucun modele dans l'evenement).
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [vtc.ride_completed] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [ride_id, reference, driver_id, currency]
+          properties:
+            ride_id: { type: integer, minimum: 1 }
+            reference: { type: string, minLength: 1 }
+            driver_id: { type: integer, minimum: 1 }
+            final_price_minor: { type: integer, minimum: 0 }
+            currency: { type: string, minLength: 3, maxLength: 3 }
+    sample:
+      event_name: vtc.ride_completed
+      version: "1.0.0"
+      occurred_at: "2026-11-08T09:40:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { ride_id: 5501, reference: VTC-2026-5501, driver_id: 233, final_price_minor: 180000, currency: DZD }
+    deprecation: null
+
+  - name: vtc.ride_expired
+    version: 1.0.0
+    bc: vtc
+    class: App\Modules\Vtc\Domain\Events\VtcRideExpired
+    description: Une course VTC a expire faute de chauffeur dans le delai. Payload scalaire (aucun modele dans l'evenement).
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [vtc.ride_expired] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [ride_id, reference, reason]
+          properties:
+            ride_id: { type: integer, minimum: 1 }
+            reference: { type: string, minLength: 1 }
+            reason: { type: string, minLength: 1 }
+    sample:
+      event_name: vtc.ride_expired
+      version: "1.0.0"
+      occurred_at: "2026-11-08T09:10:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { ride_id: 5502, reference: VTC-2026-5502, reason: no_driver_available }
+    deprecation: null
