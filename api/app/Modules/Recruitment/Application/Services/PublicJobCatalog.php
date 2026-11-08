@@ -81,10 +81,20 @@ final class PublicJobCatalog
             ->visible()
             ->with('source:id,provider,label');
 
+        // Correspondance de pays STRICTE, sans repli sur `country IS NULL`.
+        //
+        // Un repli « ou pays inconnu » ferait apparaître TOUTES les offres
+        // agrégées sans pays sur la page de CHAQUE entreprise cliente — une
+        // offre « Indeed » sans localisation s'afficherait chez un cabinet
+        // algérien comme chez une PME turque. Une offre dont le pays est
+        // inconnu n'est pas une offre « de partout » : elle n'est rattachable à
+        // aucune page tenant, et reste visible sur la page plateforme.
         if ($country !== null && $country !== '') {
-            $query->where(function ($q) use ($country): void {
-                $q->where('country', $country)->orWhereNull('country');
-            });
+            $query->where('country', $country);
+        } else {
+            // Entreprise sans pays renseigné : aucune offre agrégée ne peut lui
+            // être rattachée de façon défendable.
+            return collect();
         }
 
         $this->applyFilters($query, $filters);
