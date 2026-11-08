@@ -595,6 +595,7 @@ export default function RestaurantPosPage() {
                         {t(locale, 'restaurant.pos.table')}
                       </label>
                       <select
+                        aria-label={t(locale, 'restaurant.pos.table')}
                         value={tableId ?? ''}
                         onChange={(event) =>
                           setTableId(event.target.value === '' ? null : Number(event.target.value))
