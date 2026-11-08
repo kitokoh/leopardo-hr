@@ -50,6 +50,13 @@ final class LibraryAccessPolicy
             return false;
         }
 
+        // `read_only` = consultation en ligne uniquement : le téléchargement
+        // est TOUJOURS refusé, même si `allow_download` a été coché par erreur
+        // côté administration. La règle du modèle d'accès prime.
+        if ($resource->access_model === LibraryAccessModel::ReadOnly) {
+            return false;
+        }
+
         return $this->canRead($resource);
     }
 

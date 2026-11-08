@@ -64260,6 +64260,41 @@ paths:
           description: Ressource inconnue ou non publiée
         '501':
           description: Stockage objet non configuré
+  /v1/public/library/{slug}/file:
+    get:
+      operationId: api_get_public_library_by_slug_file
+      tags:
+      - Library
+      summary: Flux protégé du fichier (disque local privé)
+      description: >-
+        BC-40 LIBRARY — sert le fichier en flux depuis un disque HORS webroot,
+        uniquement pour le driver de stockage local (le stockage objet renvoie
+        directement l'URL présignée de `/download`). Double garde : signature
+        HMAC valide et non expirée, puis `LibraryAccessPolicy` revérifiée. 403
+        si la signature est invalide/expirée ou le téléchargement interdit ;
+        501 si le stockage n'est pas configuré.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema: {type: string}
+      - name: expires
+        in: query
+        required: true
+        schema: {type: integer}
+      - name: signature
+        in: query
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: Flux binaire du document (Content-Disposition attachment)
+        '403':
+          description: Signature invalide/expirée ou téléchargement non autorisé
+        '404':
+          description: Ressource inconnue ou non publiée
+        '501':
+          description: Stockage non configuré
   /v1/public/library/{slug}/reports:
     post:
       operationId: api_post_public_library_by_slug_reports
@@ -64445,6 +64480,41 @@ paths:
         '200': {description: Ressource archivée}
         '403': {description: Non autorisé (policy)}
         '404': {description: Ressource inconnue}
+  /v1/library/resources/{resource}/file:
+    post:
+      operationId: api_post_library_resources_by_id_file
+      tags:
+      - Library
+      summary: Téléverser le fichier d'une ressource
+      description: >-
+        BC-40 LIBRARY — téléversement depuis le back-office. Validation du type
+        MIME RÉEL (PDF, EPUB, TXT, HTML) et de la taille (`library.max_upload_mb`),
+        clé de stockage isolée par tenant et non devinable. 413 si le fichier
+        dépasse la limite ; 422 si le type n'est pas autorisé ; 501 si le
+        stockage n'est pas configuré.
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200': {description: Fichier enregistré, métadonnées mises à jour}
+        '403': {description: Non autorisé (policy)}
+        '404': {description: Ressource inconnue}
+        '413': {description: Fichier trop volumineux}
+        '422': {description: Type de fichier non autorisé}
+        '501': {description: Stockage non configuré}
 components:
   securitySchemes:
     BearerAuth:
