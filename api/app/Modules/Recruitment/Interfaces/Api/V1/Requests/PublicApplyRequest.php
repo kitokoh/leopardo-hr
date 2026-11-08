@@ -33,6 +33,26 @@ class PublicApplyRequest extends FormRequest
             'resume_url' => ['nullable', 'url', 'max:500', new NotPrivateUrl()],
             'resume' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'source' => 'nullable|in:website,linkedin,referral,agency,other',
+            // BC-10 (#9100) — RGPD : le consentement explicite est OBLIGATOIRE.
+            // Sans lui, la candidature est rejetée en 422 : conserver les
+            // données personnelles d'un candidat sans base légale documentée
+            // serait une non-conformité, pas un simple défaut d'UX.
+            'consent' => ['required', 'accepted'],
+            // Anti-spam : champ piège invisible côté formulaire. Un bot le
+            // remplit, un humain ne le voit pas. `prohibited` rejette toute
+            // valeur non vide sans révéler le mécanisme.
+            'website' => ['nullable', 'prohibited'],
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'consent.accepted' => 'Le consentement au traitement de vos données est requis pour candidater.',
+            'website.prohibited' => 'Candidature refusée.',
         ];
     }
 }

@@ -995,6 +995,48 @@ trait CreatesMvpSchema
 
             $table->unique(['source', 'event_id']);
         });
+        // BC-10 (#9100) — sources d'offres d'emploi externes (agrégateurs) et
+        // offres importées. Tables PUBLIQUES : une offre importée n'appartient
+        // à aucun tenant (miroir de la migration
+        // public/2026_11_08_000001_9100_create_job_sources_tables).
+        Schema::create('job_sources', function (Blueprint $table): void {
+            $table->id();
+            $table->string('provider', 40)->unique();
+            $table->string('label', 120);
+            $table->string('status', 20)->default('not_connected');
+            $table->text('credentials_encrypted')->nullable();
+            $table->jsonb('config')->nullable();
+            $table->timestampTz('last_synced_at')->nullable();
+            $table->string('last_error', 500)->nullable();
+            $table->unsignedInteger('offers_imported')->default(0);
+            $table->timestampsTz();
+        });
+
+        Schema::create('external_job_offers', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedBigInteger('source_id');
+            $table->string('external_id', 191);
+            $table->string('title', 200);
+            $table->text('description')->nullable();
+            $table->string('company_name', 200);
+            $table->string('location', 200)->nullable();
+            $table->string('country', 2)->nullable();
+            $table->string('remote_policy', 20)->default('onsite');
+            $table->string('contract_type', 20)->default('cdi');
+            $table->decimal('salary_min', 12, 2)->nullable();
+            $table->decimal('salary_max', 12, 2)->nullable();
+            $table->string('currency', 3)->nullable();
+            $table->string('apply_url', 500);
+            $table->timestampTz('published_at')->nullable();
+            $table->timestampTz('expires_at')->nullable();
+            $table->string('status', 20)->default('published');
+            $table->jsonb('raw_payload')->nullable();
+            $table->timestampsTz();
+
+            $table->unique(['source_id', 'external_id']);
+            $table->index(['status', 'published_at']);
+        });
+
         Schema::create('super_admins', function (Blueprint $table): void {
             $table->increments('id');
             $table->string('name', 100);
@@ -1491,6 +1533,53 @@ trait CreatesMvpSchema
 
     private function createPostSprintModuleTables(): void
     {
+        // BC-10 (#9100) — sources d'offres d'emploi externes (agrégateurs) et
+        // offres importées. Tables PUBLIQUES (préfixe explicite : le search_path
+        // de la fixture pointe sur `shared_tenants`) — une offre importée
+        // n'appartient à aucun tenant. Miroir de la migration
+        // public/2026_11_08_000001_9100_create_job_sources_tables.
+        if (! Schema::hasTable('public.job_sources')) {
+            Schema::create('public.job_sources', function (Blueprint $table): void {
+                $table->id();
+                $table->string('provider', 40)->unique();
+                $table->string('label', 120);
+                $table->string('status', 20)->default('not_connected');
+                $table->text('credentials_encrypted')->nullable();
+                $table->jsonb('config')->nullable();
+                $table->timestampTz('last_synced_at')->nullable();
+                $table->string('last_error', 500)->nullable();
+                $table->unsignedInteger('offers_imported')->default(0);
+                $table->timestampsTz();
+            });
+        }
+
+        if (! Schema::hasTable('public.external_job_offers')) {
+            Schema::create('public.external_job_offers', function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('source_id');
+                $table->string('external_id', 191);
+                $table->string('title', 200);
+                $table->text('description')->nullable();
+                $table->string('company_name', 200);
+                $table->string('location', 200)->nullable();
+                $table->string('country', 2)->nullable();
+                $table->string('remote_policy', 20)->default('onsite');
+                $table->string('contract_type', 20)->default('cdi');
+                $table->decimal('salary_min', 12, 2)->nullable();
+                $table->decimal('salary_max', 12, 2)->nullable();
+                $table->string('currency', 3)->nullable();
+                $table->string('apply_url', 500);
+                $table->timestampTz('published_at')->nullable();
+                $table->timestampTz('expires_at')->nullable();
+                $table->string('status', 20)->default('published');
+                $table->jsonb('raw_payload')->nullable();
+                $table->timestampsTz();
+
+                $table->unique(['source_id', 'external_id']);
+                $table->index(['status', 'published_at']);
+            });
+        }
+
         // #8729 (BC PAGES) — journal de modération APPEND-ONLY.
         // La garde #5443 exige toute migration tenant récente ici : sans cette
         // table, chaque décision de modération échoue en
@@ -3272,7 +3361,12 @@ trait CreatesMvpSchema
                 $table->string('status', 20)->default('draft');
                 $table->timestampTz('published_at')->nullable();
                 $table->timestampTz('closes_at')->nullable();
+                // BC-10 (#9100) — archivage et traçabilité de la publication
+                // plateforme (miroir de la migration tenant 2026_11_08_000002).
+                $table->timestampTz('archived_at')->nullable();
                 $table->unsignedInteger('created_by')->nullable();
+                $table->boolean('published_by_platform')->default(false);
+                $table->unsignedBigInteger('platform_created_by')->nullable();
                 $table->timestamps();
             });
         }
@@ -3293,6 +3387,10 @@ trait CreatesMvpSchema
                 $table->unsignedTinyInteger('rating')->nullable();
                 $table->text('notes')->nullable();
                 $table->timestampTz('applied_at')->nullable();
+                // BC-10 (#9100) — RGPD : consentement horodaté + fin de
+                // conservation (miroir de la migration tenant 2026_11_08_000002).
+                $table->timestampTz('consent_given_at')->nullable();
+                $table->timestampTz('retention_until')->nullable();
                 $table->timestamps();
             });
         }
@@ -6162,6 +6260,9 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "interviews"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "applicants"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "job_postings"'.$cascade);
+        // BC-10 (#9100) — tables publiques du portail d'offres.
+        DB::statement('DROP TABLE IF EXISTS "external_job_offers"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "job_sources"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "pay_slip_lines"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ledger_entries"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_confirmations"'.$cascade);

@@ -331,11 +331,17 @@ Route::prefix('v1')->group(function (): void {
     // Google Jobs / Indeed XML feed, and candidate application submission.
     // Tenant is resolved from {companySlug}, not from Sanctum, since visitors
     // have no account. See feat(recruitment): ATS Backend - APIs Publiques.
+    //
+    // BC-10 (#9100) — la candidature a son PROPRE bucket, plus strict que la
+    // lecture : un visiteur qui consulte 60 offres par minute est légitime, un
+    // visiteur qui envoie 60 candidatures par minute ne l'est pas.
     Route::middleware(['throttle:public-careers'])->prefix('public/careers')->group(function (): void {
         Route::get('/{companySlug}', [PublicCareerController::class, 'index']);
         Route::get('/{companySlug}/feed.xml', [PublicCareerController::class, 'feed']);
         Route::get('/{companySlug}/jobs/{jobPosting}', [PublicCareerController::class, 'show'])->whereNumber('jobPosting');
-        Route::post('/{companySlug}/jobs/{jobPosting}/apply', [CandidateApplicationController::class, 'store'])->whereNumber('jobPosting');
+        Route::post('/{companySlug}/jobs/{jobPosting}/apply', [CandidateApplicationController::class, 'store'])
+            ->whereNumber('jobPosting')
+            ->middleware('throttle:public-careers-apply');
     });
 
     // Issue #4217 (audit 360° 2026-08-16) — registre multi-pays canonique
@@ -626,6 +632,11 @@ Route::prefix('v1')->group(function (): void {
 
     // Platform (super-admin, hors module)
     Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('platform')->group(function (): void {
+        // BC-10 (#9100) — portail public d'offres : publication plateforme et
+        // connecteurs d'agrégateurs. Chargé ICI pour hériter du préfixe
+        // `platform` et du guard `super_admin_api`.
+        require __DIR__.'/modules/recruitment_platform.php';
+
         Route::get('/auth/me', [PlatformAuthController::class, 'me']);
         Route::patch('/auth/profile', [PlatformAuthController::class, 'updateProfile']);
         Route::post('/auth/change-password', [PlatformAuthController::class, 'changePassword']);

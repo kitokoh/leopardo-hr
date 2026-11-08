@@ -45,6 +45,13 @@ class CandidateApplicationController extends Controller
                 $resumePath = $request->file('resume')->store("recruitment/{$company->id}/resumes", 'local');
             }
 
+            // BC-10 (#9100) — RGPD : on horodate le consentement et on fixe la
+            // fin de conservation. La durée est configurable
+            // (`recruitment.applicant_retention_days`, 365 j par défaut) :
+            // une durée codée en dur serait impossible à ajuster par pays.
+            $retentionDays = (int) config('recruitment.applicant_retention_days', 365);
+            $consentAt = now();
+
             // Issue #3860 — pas de doublon (job_posting_id, email) : le
             // double-clic, le spam ou un retry ne doivent pas créer plusieurs
             // candidatures. Garde applicative dans l'Action + index unique en
@@ -62,7 +69,9 @@ class CandidateApplicationController extends Controller
                         'cover_letter' => $validated['cover_letter'] ?? null,
                         'source' => $validated['source'] ?? 'website',
                         'status' => 'new',
-                        'applied_at' => now(),
+                        'applied_at' => $consentAt,
+                        'consent_given_at' => $consentAt,
+                        'retention_until' => $consentAt->copy()->addDays($retentionDays),
                     ],
                 );
             } catch (ApplicantAlreadyAppliedException) {
