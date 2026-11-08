@@ -178,6 +178,20 @@ Clé `discovery.offlineCacheNotice` ajoutée aux **4 langues** (fr, en, ar RTL, 
 
 ---
 
+## 6 bis. État CI des PR (relevé le 8 novembre 2026)
+
+| PR | lot | échecs | note |
+|---|---|---|---|
+| **#9183** | B7 | **0** | le seul « échec » listé est le **premier** run de gouvernance, remplacé par deux runs `success` (03:11 et 03:21) |
+| **#9185** | matrice de connexion | **0** | 18 checks, tous verts |
+| **#9186** | M4 | **0** | 55 checks ; `Public image weight budget (blocking)` → **success** ; `i18n ×4` → **success** ; `Governance Gates` → **success** |
+
+**Deux portes de gouvernance ont dû être satisfaites** en cours de route, chacune révélant une exigence réelle du dépôt :
+1. `Check PR/issue governance` exige `Closes #NNNN` — l'issue #9184 existait déjà pour ce travail, elle a été liée.
+2. `Governance Gates` exige une entrée de journal quand la surface **mobile** (`SCENARIOS_TEST_MOBILE_FLUTTER.md`) **et** **web** (`SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md`) change. Les deux entrées ont été ajoutées, en distinguant honnêtement ce qui change (la PWA) de ce qui ne change pas (aucun écran Flutter ne consomme la clé).
+
+---
+
 ## 7. Fichiers livrés
 
 | fichier | rôle |
