@@ -73,6 +73,9 @@ enum PlatformRole: string
                 // BC PAGES (#8729) — le support instruit les litiges de
                 // propriété : il LIT la fiche et les pièces, il ne suspend pas.
                 PlatformPermission::PagesView,
+                // BC-10 (#9100) — le support lit les offres pour répondre aux
+                // questions des clients ; il ne publie pas en leur nom.
+                PlatformPermission::RecruitmentView,
             ],
             self::Finance => [
                 PlatformPermission::CompaniesView,
@@ -93,6 +96,10 @@ enum PlatformRole: string
                 // dépenses réelles qui concernent finance ; la création de
                 // campagnes reste à marketing/admin.
                 PlatformPermission::SearchIntelView,
+                // BC-10 (#9100) — LECTURE seule : finance engage les budgets
+                // d'acquisition, donc suit les offres ; publier au nom d'un
+                // client reste à admin.
+                PlatformPermission::RecruitmentView,
             ],
             self::Ops => [
                 PlatformPermission::CompaniesView,
@@ -114,6 +121,9 @@ enum PlatformRole: string
                 // BC PAGES (#8729) — ops diagnostique une Page cassée ou un
                 // domaine en échec : lecture seule, comme pour GSI.
                 PlatformPermission::PagesView,
+                // BC-10 (#9100) — ops diagnostique un connecteur d'agrégateur
+                // en erreur : lecture seule, comme pour GSI et Pages.
+                PlatformPermission::RecruitmentView,
             ],
             self::Marketing => [
                 PlatformPermission::CompaniesView,
@@ -133,6 +143,12 @@ enum PlatformRole: string
                 // travailler sans compte admin.
                 PlatformPermission::SearchIntelView,
                 PlatformPermission::SearchIntelManage,
+                // BC-10 (#9100) — le rôle marketing pilote la vitrine publique
+                // et les campagnes de recrutement : il LIT les offres et les
+                // connecteurs. Publier au nom d'un client engage la marque
+                // publiquement — cela reste à admin/super_admin, comme pour
+                // Marketing OS.
+                PlatformPermission::RecruitmentView,
             ],
         };
     }

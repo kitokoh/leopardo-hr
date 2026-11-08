@@ -19,6 +19,15 @@ export type TenantCareersCopy = {
   backToJobs: (company: string) => string;
   skillsTitle: string;
   applyTitle: string;
+  externalBadge: string;
+  externalApply: string;
+  externalNotice: string;
+  companyOffersTitle: string;
+  externalOffersTitle: string;
+  searchPlaceholder: string;
+  filterAll: string;
+  clearFilters: string;
+  noResults: string;
   form: {
     firstName: string;
     lastName: string;
@@ -33,6 +42,7 @@ export type TenantCareersCopy = {
     successTitle: string;
     successBody: string;
     genericError: string;
+    consentLabel: string;
   };
 };
 
@@ -50,6 +60,16 @@ const fr: TenantCareersCopy = {
   backToJobs: (company) => `Retour aux offres chez ${company}`,
   skillsTitle: 'Compétences recherchées',
   applyTitle: 'Postuler à cette offre',
+  externalBadge: 'Offre partenaire',
+  externalApply: 'Postuler sur le site partenaire',
+  externalNotice:
+    'Cette offre provient d’un partenaire. La candidature se fait directement sur son site, pas sur ce portail.',
+  companyOffersTitle: 'Offres de l’entreprise',
+  externalOffersTitle: 'Autres offres dans la région',
+  searchPlaceholder: 'Rechercher un poste, un lieu…',
+  filterAll: 'Tous',
+  clearFilters: 'Réinitialiser les filtres',
+  noResults: 'Aucune offre ne correspond à votre recherche.',
   form: {
     firstName: 'Prénom',
     lastName: 'Nom',
@@ -65,6 +85,8 @@ const fr: TenantCareersCopy = {
     successBody:
       'Merci pour votre intérêt. Notre équipe recrutement va étudier votre profil et vous recontactera rapidement.',
     genericError: 'Une erreur est survenue. Merci de réessayer.',
+    consentLabel:
+      'J’accepte que mes données (identité, coordonnées, CV) soient conservées par cette entreprise pendant 24 mois afin d’étudier ma candidature. Je peux demander leur suppression à tout moment.',
   },
 };
 
@@ -81,6 +103,16 @@ const en: TenantCareersCopy = {
   backToJobs: (company) => `Back to jobs at ${company}`,
   skillsTitle: 'Required skills',
   applyTitle: 'Apply for this position',
+  externalBadge: 'Partner offer',
+  externalApply: 'Apply on the partner site',
+  externalNotice:
+    'This offer comes from a partner. Applications are made directly on their site, not on this portal.',
+  companyOffersTitle: 'Company offers',
+  externalOffersTitle: 'Other offers in the region',
+  searchPlaceholder: 'Search a role, a location…',
+  filterAll: 'All',
+  clearFilters: 'Clear filters',
+  noResults: 'No offer matches your search.',
   form: {
     firstName: 'First name',
     lastName: 'Last name',
@@ -96,6 +128,8 @@ const en: TenantCareersCopy = {
     successBody:
       'Thank you for your interest. Our recruiting team will review your profile and get back to you shortly.',
     genericError: 'Something went wrong. Please try again.',
+    consentLabel:
+      'I agree that my data (identity, contact details, resume) may be kept by this company for 24 months in order to review my application. I can request their deletion at any time.',
   },
 };
 
@@ -112,6 +146,16 @@ const tr: TenantCareersCopy = {
   backToJobs: (company) => `${company} ilanlarına geri dön`,
   skillsTitle: 'Aranan beceriler',
   applyTitle: 'Bu pozisyona başvur',
+  externalBadge: 'Partner ilanı',
+  externalApply: 'Partner sitesinde başvur',
+  externalNotice:
+    'Bu ilan bir partnerden geliyor. Başvuru doğrudan partnerin sitesinde yapılır, bu portalda değil.',
+  companyOffersTitle: 'Şirketin ilanları',
+  externalOffersTitle: 'Bölgedeki diğer ilanlar',
+  searchPlaceholder: 'Pozisyon veya yer ara…',
+  filterAll: 'Tümü',
+  clearFilters: 'Filtreleri sıfırla',
+  noResults: 'Aramanızla eşleşen ilan yok.',
   form: {
     firstName: 'Ad',
     lastName: 'Soyad',
@@ -127,6 +171,8 @@ const tr: TenantCareersCopy = {
     successBody:
       'İlginiz için teşekkürler. İşe alım ekibimiz profilinizi inceleyip kısa süre içinde size dönecektir.',
     genericError: 'Bir şeyler ters gitti. Lütfen tekrar deneyin.',
+    consentLabel:
+      'Kimlik, iletişim ve özgeçmiş bilgilerimin başvurumu değerlendirmek amacıyla bu şirket tarafından 24 ay saklanmasını kabul ediyorum. Silinmesini her zaman talep edebilirim.',
   },
 };
 
@@ -143,6 +189,16 @@ const ar: TenantCareersCopy = {
   backToJobs: (company) => `العودة إلى وظائف ${company}`,
   skillsTitle: 'المهارات المطلوبة',
   applyTitle: 'قدّم لهذه الوظيفة',
+  externalBadge: 'عرض من شريك',
+  externalApply: 'التقديم على موقع الشريك',
+  externalNotice:
+    'هذا العرض صادر عن شريك. يتم التقديم مباشرة على موقعه، وليس على هذه البوابة.',
+  companyOffersTitle: 'عروض الشركة',
+  externalOffersTitle: 'عروض أخرى في المنطقة',
+  searchPlaceholder: 'ابحث عن وظيفة أو موقع…',
+  filterAll: 'الكل',
+  clearFilters: 'إعادة تعيين الفلاتر',
+  noResults: 'لا يوجد عرض يطابق بحثك.',
   form: {
     firstName: 'الاسم الأول',
     lastName: 'الاسم الأخير',
@@ -158,6 +214,8 @@ const ar: TenantCareersCopy = {
     successBody:
       'شكراً لاهتمامك. سيقوم فريق التوظيف بمراجعة ملفك والتواصل معك قريباً.',
     genericError: 'حدث خطأ ما. يرجى المحاولة مرة أخرى.',
+    consentLabel:
+      'أوافق على احتفاظ هذه الشركة ببياناتي (الهوية ومعلومات الاتصال والسيرة الذاتية) لمدة 24 شهرًا لدراسة طلبي. ويمكنني طلب حذفها في أي وقت.',
   },
 };
 

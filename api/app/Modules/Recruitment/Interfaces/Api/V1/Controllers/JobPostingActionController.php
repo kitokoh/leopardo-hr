@@ -9,11 +9,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ApplicantResource;
 use App\Http\Resources\Api\V1\InterviewResource;
 use App\Http\Resources\Api\V1\JobPostingResource;
+use App\Modules\Recruitment\Application\Actions\ArchiveJobPostingAction;
 use App\Modules\Recruitment\Application\Actions\CancelInterviewAction;
 use App\Modules\Recruitment\Application\Actions\CloseJobPostingAction;
 use App\Modules\Recruitment\Application\Actions\DeleteApplicantAction;
 use App\Modules\Recruitment\Application\Actions\DeleteJobPostingAction;
 use App\Modules\Recruitment\Application\Actions\PublishJobPostingAction;
+use App\Modules\Recruitment\Application\Actions\ReopenJobPostingAction;
 use App\Modules\Recruitment\Application\Actions\SubmitInterviewFeedbackAction;
 use App\Modules\Recruitment\Application\Actions\UpdateApplicantAction;
 use App\Modules\Recruitment\Domain\Exceptions\JobPostingStateTransitionException;
@@ -56,6 +58,51 @@ class JobPostingActionController extends Controller
 
         try {
             $job = app(CloseJobPostingAction::class)->execute($job);
+        } catch (JobPostingStateTransitionException $e) {
+            return response()->json(['message' => __('errors.'.$e->translationKey)], 422);
+        }
+
+        return (new JobPostingResource($job))->response();
+    }
+
+    /**
+     * BC-10 (#9100) — archivage : sort l'offre du portail sans la supprimer.
+     * Seule une offre CLÔTURÉE peut être archivée (voir l'Action).
+     */
+    public function archive(Request $request, int $jobPosting): JsonResponse
+    {
+        /** @var Employee $user */
+        $user = $request->user();
+        if (! $user->hasManagerRole('principal', 'rh')) {
+            abort(403);
+        }
+
+        $job = JobPosting::where('company_id', $user->company_id)->findOrFail($jobPosting);
+
+        try {
+            $job = app(ArchiveJobPostingAction::class)->execute($job);
+        } catch (JobPostingStateTransitionException $e) {
+            return response()->json(['message' => __('errors.'.$e->translationKey)], 422);
+        }
+
+        return (new JobPostingResource($job))->response();
+    }
+
+    /**
+     * BC-10 (#9100) — republication d'une offre clôturée ou archivée.
+     */
+    public function reopen(Request $request, int $jobPosting): JsonResponse
+    {
+        /** @var Employee $user */
+        $user = $request->user();
+        if (! $user->hasManagerRole('principal', 'rh')) {
+            abort(403);
+        }
+
+        $job = JobPosting::where('company_id', $user->company_id)->findOrFail($jobPosting);
+
+        try {
+            $job = app(ReopenJobPostingAction::class)->execute($job);
         } catch (JobPostingStateTransitionException $e) {
             return response()->json(['message' => __('errors.'.$e->translationKey)], 422);
         }

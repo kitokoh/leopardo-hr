@@ -361,4 +361,7 @@ return [
     'PAGE_SLUG_RESERVED' => 'هذا العنوان محجوز من المنصة. اختر عنوانًا آخر.',
     'PAGE_SLUG_TAKEN' => 'هذا العنوان مستخدم بالفعل.',
     'PAGE_BLOCKS_INVALID' => 'محتوى الصفحة يحتوي على كتل غير صالحة.',
+
+    // BC-10 (#9199) — موصلات مجمّعات عروض العمل.
+    'JOB_SOURCE_PROVIDER_UNSUPPORTED' => 'مزوّد غير مدعوم: :provider.',
 ];

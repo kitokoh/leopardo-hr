@@ -125,6 +125,10 @@ ModuleRoutes::tenantModule('', function (): void {
         // expédier les mêmes noms que le routeur.
         Route::post('/recruitment/jobs/{jobPosting}/publish', [JobPostingActionController::class, 'publish'])->whereNumber('jobPosting');
         Route::post('/recruitment/jobs/{jobPosting}/close', [JobPostingActionController::class, 'close'])->whereNumber('jobPosting');
+        // BC-10 (#9100) — cycle de vie complet : archivage (sortie du portail
+        // sans suppression) et republication d'une offre clôturée/archivée.
+        Route::post('/recruitment/jobs/{jobPosting}/archive', [JobPostingActionController::class, 'archive'])->whereNumber('jobPosting');
+        Route::post('/recruitment/jobs/{jobPosting}/reopen', [JobPostingActionController::class, 'reopen'])->whereNumber('jobPosting');
         Route::delete('/recruitment/jobs/{jobPosting}', [JobPostingActionController::class, 'destroy'])->whereNumber('jobPosting');
         Route::get('/recruitment/applicants/{applicant}', [JobPostingActionController::class, 'showApplicant'])->whereNumber('applicant');
         Route::patch('/recruitment/applicants/{applicant}/status', [JobPostingActionController::class, 'updateApplicantStatus'])->whereNumber('applicant');

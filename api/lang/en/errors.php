@@ -369,4 +369,7 @@ return [
     'PAGE_SLUG_RESERVED' => 'This address is reserved by the platform. Choose another one.',
     'PAGE_SLUG_TAKEN' => 'This address is already in use.',
     'PAGE_BLOCKS_INVALID' => 'The page content contains invalid blocks.',
+
+    // BC-10 (#9199) — job board aggregator connectors.
+    'JOB_SOURCE_PROVIDER_UNSUPPORTED' => 'Unsupported provider: :provider.',
 ];
