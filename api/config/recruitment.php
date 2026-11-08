@@ -34,4 +34,37 @@ return [
     | à chaque requête.
     */
     'feed_cache_minutes' => (int) env('RECRUITMENT_FEED_CACHE_MINUTES', 15),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Analyse antivirus des CV (#9217)
+    |--------------------------------------------------------------------------
+    |
+    | Le CV déposé par un candidat est ensuite téléchargeable par un recruteur :
+    | un document piégé est un vecteur d'attaque classique contre le poste de
+    | travail de celui qui l'ouvre. La validation par type MIME et taille ne
+    | regarde que l'enveloppe, jamais le contenu.
+    |
+    | `driver` :
+    |   - `clamav` — analyse réelle via clamd (INSTREAM).
+    |   - `none`   — aucun moteur. Le verdict est alors explicitement
+    |                `unavailable`, JAMAIS `clean` : un CV non analysé ne doit
+    |                pas être présenté comme vérifié.
+    |
+    | `policy` :
+    |   - `reject`     (défaut) — un CV infecté est refusé (422) et supprimé.
+    |   - `quarantine` — le CV infecté est conservé et marqué, pour analyse
+    |                    manuelle par l'équipe sécurité.
+    |
+    | Un scanner INDISPONIBLE n'est jamais un motif de rejet : une panne
+    | d'infrastructure ne doit pas empêcher un candidat de postuler. Le verdict
+    | est persisté, donc auditable.
+    */
+    'antivirus' => [
+        'driver' => env('RECRUITMENT_AV_DRIVER', 'none'),
+        'policy' => env('RECRUITMENT_AV_POLICY', 'reject'),
+        'host' => env('RECRUITMENT_AV_HOST', '127.0.0.1'),
+        'port' => (int) env('RECRUITMENT_AV_PORT', 3310),
+        'timeout' => (int) env('RECRUITMENT_AV_TIMEOUT', 10),
+    ],
 ];

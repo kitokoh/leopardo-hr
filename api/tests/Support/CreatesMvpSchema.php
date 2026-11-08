@@ -3391,6 +3391,12 @@ trait CreatesMvpSchema
                 // conservation (miroir de la migration tenant 2026_11_08_000002).
                 $table->timestampTz('consent_given_at')->nullable();
                 $table->timestampTz('retention_until')->nullable();
+                // BC-10 (#9217) — verdict antivirus du CV (miroir de la
+                // migration tenant 2026_11_09_000001).
+                $table->string('resume_scan_status', 20)->nullable();
+                $table->string('resume_scan_engine', 40)->nullable();
+                $table->string('resume_scan_signature', 200)->nullable();
+                $table->timestampTz('resume_scanned_at')->nullable();
                 $table->timestamps();
             });
         }
