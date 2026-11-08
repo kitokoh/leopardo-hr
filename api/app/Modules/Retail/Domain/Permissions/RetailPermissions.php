@@ -198,9 +198,15 @@ final class RetailPermissions
             return false;
         }
 
+        if (! $actor->isResourceTypeScoped(self::RESOURCE_TYPE)) {
+            // Scoping non active : comportement historique, direction seule.
+            // Fail-closed : un employe non-manager n'obtient rien.
+            return $actor->hasManagerRole('principal', 'rh');
+        }
+
         $accessible = $actor->accessibleResourceIds(self::RESOURCE_TYPE, $minLevel);
 
-        // `null` = aucune restriction (principal, ou scoping non active).
+        // `null` = aucune restriction (principal, ou lecture `rh`).
         if ($accessible === null) {
             return true;
         }
