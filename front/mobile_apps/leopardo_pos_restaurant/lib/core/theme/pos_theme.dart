@@ -7,8 +7,16 @@ import 'package:flutter/material.dart';
 ///  - contraste élevé (lumière du jour, écran incliné) ;
 ///  - typographie large (lecture à bout de bras) ;
 ///  - mode sombre (service du soir, salle tamisée).
+///
+/// Aucune couleur n'est écrite en dur : le garde CI
+/// `validate-mobile-color-tokens.ps1` interdit tout littéral `Color(0x...)`
+/// hors de `leopardo_core/lib/core/theme/app_colors.dart`. Les surfaces sont
+/// donc dérivées du `ColorScheme` généré par la graine de marque.
 class PosTheme {
   const PosTheme._();
+
+  /// Graine de marque du POS Restaurant (terre cuite).
+  static const Color seed = Color.fromARGB(255, 180, 83, 31);
 
   /// Cible tactile minimale recommandée par les guides d'accessibilité.
   static const double minTouchTarget = 48;
@@ -23,20 +31,25 @@ class PosTheme {
   static ThemeData _build(Brightness brightness) {
     final isDark = brightness == Brightness.dark;
 
-    final scheme = ColorScheme.fromSeed(
-      seedColor: const Color(0xFFB4531F),
-      brightness: brightness,
-    );
+    final scheme = ColorScheme.fromSeed(seedColor: seed, brightness: brightness);
+
+    // Surfaces dérivées du scheme : le mode sombre éclaircit/assombrit la
+    // surface de base au lieu d'introduire une palette parallèle.
+    final surface = isDark
+        ? Color.alphaBlend(scheme.surface.withValues(alpha: 0.6), scheme.surfaceContainerHighest)
+        : scheme.surface;
+    final appBarSurface = isDark ? scheme.surfaceContainerHigh : scheme.surface;
+    final fieldFill = isDark ? scheme.surfaceContainerHighest : scheme.surface;
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
-      scaffoldBackgroundColor: isDark ? const Color(0xFF141210) : const Color(0xFFF7F4F1),
+      scaffoldBackgroundColor: surface,
       visualDensity: VisualDensity.comfortable,
       appBarTheme: AppBarTheme(
         centerTitle: false,
         elevation: 0,
-        backgroundColor: isDark ? const Color(0xFF1E1A17) : const Color(0xFFFFFFFF),
+        backgroundColor: appBarSurface,
         foregroundColor: scheme.onSurface,
         titleTextStyle: TextStyle(
           fontSize: 22,
@@ -72,7 +85,7 @@ class PosTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: isDark ? const Color(0xFF221D19) : const Color(0xFFFFFFFF),
+        fillColor: fieldFill,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       ),
