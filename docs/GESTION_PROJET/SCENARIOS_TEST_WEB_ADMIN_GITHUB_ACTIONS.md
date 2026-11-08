@@ -934,3 +934,23 @@ Le merge `8890f8ba3` a écrasé `front/admin-dashboard/src/i18n/locales/*.json` 
 - **Le seuil de catégories par ville** reste éditable via `GET`/`PUT /admin/platform/discovery/settings` livré en M1 (#9102) : ce lot ne le touche pas, il ne fait que consommer les catégories déjà exposées.
 - **Scénarios admin existants valides tels quels** : les 6 scénarios de la note précédente (titres de dashboard, compteurs, tunnels d'activation, réglages, équipe plateforme, non-régression de surface) restent inchangés.
 - **Vérification** : `I18N_VALIDATION_OK (4 locales)`, parité ×4 verte, et `git diff --exit-code` propre après les trois syncs (web, mobile, backend).
+
+## Note de surface 2026-11-08 — BC-10 : deux écrans super admin du portail d'offres (issues #9198/#9199/#9202, PR #9203)
+
+**Deux écrans du dashboard admin sont ajoutés** par le lot BC-10 (portail public d'offres d'emploi) :
+
+- **`JobSourcesView.vue`** — configuration des connecteurs d'agrégateurs (Indeed, LinkedIn, Glassdoor, Adzuna, Jooble, flux personnalisé). Actions : configurer, tester, synchroniser (synchrone ou en file), révoquer. L'état de chaque connecteur est affiché honnêtement : `not_connected` est un état de premier rang, pas une erreur.
+- **`ImportedOffersView.vue`** — les offres réellement importées, avec leur provenance. C'est le contrôle qui rend visible un connecteur « connecté » qui ne remonte aucune offre.
+
+**Routes admin** : les deux écrans sont servis sous `recruitment.view` (lecture) ; les gestes d'écriture (configurer, tester, synchroniser, révoquer) exigent `recruitment.manage`. Aucune permission `settings.manage` n'est modifiée.
+
+**Scénarios à vérifier** :
+
+1. **Aucun secret pré-rempli** — le formulaire de configuration ne réaffiche jamais un secret existant ; seul un booléen `has_credentials` indique qu'une configuration existe.
+2. **Verdict de test relayé** — le message affiché après « tester » est celui du serveur, y compris quand le fournisseur répond qu'il n'est pas câblé (aucune promesse d'accès non vérifié).
+3. **Connecteur sans offre visible** — un connecteur `connected` qui n'a importé aucune offre est distinguable à l'écran (c'est la raison d'être de `ImportedOffersView`).
+4. **Synchronisation idempotente** — relancer une synchronisation n'affiche pas de doublons dans la liste des offres importées.
+5. **Panne fournisseur** — un connecteur en `error` reste affiché avec son état, sans casser les autres écrans.
+6. **Aucune régression de surface** — les écrans existants du dashboard ne sont pas touchés ; `git diff` sur `front/admin-dashboard/src/` ne contient que des additions (les deux nouvelles vues et leurs routes).
+
+**Vérification** : `npx tsc --noEmit` exit 0 sur `front/web` ; les deux vues sont en Vue 3 + TypeScript et n'introduisent aucune dépendance nouvelle.
