@@ -20,8 +20,8 @@ interface JobBoardClient
      * @param  array<string, mixed>  $config  filtres d'import (pays, catégories, limite)
      * @return list<JobBoardOffer>
      *
-     * @throws JobBoardUnavailableException  le fournisseur n'est pas joignable
-     *                                       ou n'est pas encore câblé
+     * @throws JobBoardUnavailableException le fournisseur n'est pas joignable
+     *                                      ou n'est pas encore câblé
      */
     public function fetch(array $credentials, array $config): array;
 }

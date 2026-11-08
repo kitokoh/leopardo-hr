@@ -39,7 +39,7 @@ final class CustomFeedJobBoardClient implements JobBoardClient
 
         // Garde SSRF : mêmes règles que la candidature publique (#5588).
         $validator = Validator::make(['feed_url' => $url], [
-            'feed_url' => ['required', 'url', 'max:500', new NotPrivateUrl()],
+            'feed_url' => ['required', 'url', 'max:500', new NotPrivateUrl],
         ]);
 
         if ($validator->fails()) {

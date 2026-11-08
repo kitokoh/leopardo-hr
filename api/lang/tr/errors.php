@@ -361,4 +361,7 @@ return [
     'PAGE_SLUG_RESERVED' => 'Bu adres platform tarafından ayrılmıştır. Başka bir adres seçin.',
     'PAGE_SLUG_TAKEN' => 'Bu adres zaten kullanılıyor.',
     'PAGE_BLOCKS_INVALID' => 'Sayfa içeriği geçersiz bloklar içeriyor.',
+
+    // BC-10 (#9199) — iş ilanı toplayıcı bağlantıları.
+    'JOB_SOURCE_PROVIDER_UNSUPPORTED' => 'Desteklenmeyen sağlayıcı: :provider.',
 ];

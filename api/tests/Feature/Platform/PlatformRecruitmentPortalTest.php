@@ -9,7 +9,6 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Recruitment\Domain\Enums\JobSourceStatus;
 use App\Modules\Recruitment\Domain\Models\ExternalJobOffer;
-use App\Modules\Recruitment\Domain\Models\JobPosting;
 use App\Modules\Recruitment\Domain\Models\JobSource;
 use App\Modules\Recruitment\Infrastructure\JobBoards\JobBoardClientRegistry;
 use App\Modules\Recruitment\Infrastructure\JobBoards\JobBoardOffer;

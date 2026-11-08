@@ -10,7 +10,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ExternalJobOfferResource;
 use App\Http\Resources\Api\V1\JobPostingResource;
 use App\Modules\Recruitment\Application\Services\PublicJobCatalog;
-use App\Modules\Recruitment\Domain\Models\ExternalJobOffer;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
 use App\Shared\Support\TenantCache;
 use Illuminate\Http\JsonResponse;

@@ -200,7 +200,7 @@ final class PlatformJobSourceController
     {
         return new JsonResponse([
             'error' => 'UNSUPPORTED_PROVIDER',
-            'message' => "Fournisseur non supporté : {$provider}.",
+            'message' => __('errors.JOB_SOURCE_PROVIDER_UNSUPPORTED', ['provider' => $provider]),
             'supported' => JobSourceLifecycle::PROVIDERS,
         ], 404);
     }
