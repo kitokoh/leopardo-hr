@@ -143,7 +143,7 @@ paths:
         gestion (`principal`, `rh`) basculent en mode gestion et voient toutes
         les annonces du tenant, filtrables par `?status=`.
       security:
-      - bearerAuth: []
+      - BearerAuth: []
       parameters:
       - name: status
         in: query
@@ -176,7 +176,7 @@ paths:
         prix à partir du type et de l'emplacement d'annonce. Requiert la
         capacité `create` sur TravelAdvert.
       security:
-      - bearerAuth: []
+      - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -235,7 +235,7 @@ paths:
         statut, pour l'écran de modération. Réservé aux rôles gestion
         (`principal`, `rh`) ; 403 sinon.
       security:
-      - bearerAuth: []
+      - BearerAuth: []
       parameters:
       - name: status
         in: query
@@ -267,7 +267,7 @@ paths:
         BC-24 TRAVEL — renvoie l'annonce si elle appartient au tenant de
         l'appelant ; 404 uniforme sinon (pas de fuite inter-tenant).
       security:
-      - bearerAuth: []
+      - BearerAuth: []
       parameters:
       - $ref: '#/components/parameters/TravelAdvertId'
       responses:
@@ -288,7 +288,7 @@ paths:
       - TravelAgency
       summary: Supprimer une annonce voyage
       security:
-      - bearerAuth: []
+      - BearerAuth: []
       parameters:
       - $ref: '#/components/parameters/TravelAdvertId'
       responses:
@@ -308,7 +308,7 @@ paths:
         BC-24 TRAVEL — enregistre le paiement de l'annonce et la fait passer en
         statut `paid`, en attente de validation.
       security:
-      - bearerAuth: []
+      - BearerAuth: []
       parameters:
       - $ref: '#/components/parameters/TravelAdvertId'
       responses:
@@ -335,7 +335,7 @@ paths:
         BC-24 TRAVEL — modération : passe l'annonce payée en `validated` et
         calcule sa date d'expiration. Réservé aux rôles gestion.
       security:
-      - bearerAuth: []
+      - BearerAuth: []
       parameters:
       - $ref: '#/components/parameters/TravelAdvertId'
       responses:
@@ -362,7 +362,7 @@ paths:
         BC-24 TRAVEL — modération : passe l'annonce en `rejected` avec un motif
         obligatoire. Réservé aux rôles gestion.
       security:
-      - bearerAuth: []
+      - BearerAuth: []
       parameters:
       - $ref: '#/components/parameters/TravelAdvertId'
       requestBody:
@@ -402,7 +402,7 @@ paths:
         BC-24 TRAVEL — prolonge une annonce expirée d'une nouvelle période de
         validité (nouveau paiement requis).
       security:
-      - bearerAuth: []
+      - BearerAuth: []
       parameters:
       - $ref: '#/components/parameters/TravelAdvertId'
       responses:
