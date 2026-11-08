@@ -7,7 +7,14 @@
  * testées). Cette séparation est la règle structurante du module.
  */
 
-export type ToolCategoryId = 'calcul' | 'conversion' | 'finance' | 'sante' | 'travail';
+export type ToolCategoryId =
+  | 'calcul'
+  | 'conversion'
+  | 'finance'
+  | 'sante'
+  | 'travail'
+  | 'logistique'
+  | 'commerce';
 
 export type ToolIconName =
   | 'calculator'
@@ -15,7 +22,12 @@ export type ToolIconName =
   | 'receipt'
   | 'heart-pulse'
   | 'briefcase'
-  | 'percent';
+  | 'percent'
+  | 'divide'
+  | 'shapes'
+  | 'truck'
+  | 'trending-up'
+  | 'layers';
 
 export interface ToolCategory {
   id: ToolCategoryId;

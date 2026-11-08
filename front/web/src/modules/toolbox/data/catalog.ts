@@ -15,6 +15,8 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
   { id: 'finance', icon: 'receipt' },
   { id: 'sante', icon: 'heart-pulse' },
   { id: 'travail', icon: 'briefcase' },
+  { id: 'logistique', icon: 'truck' },
+  { id: 'commerce', icon: 'trending-up' },
 ];
 
 export const TOOLS: ToolDefinition[] = [
@@ -68,5 +70,52 @@ export const TOOLS: ToolDefinition[] = [
     keywords: ['pourcentage', 'pourcent', 'evolution', 'variation', 'remise', 'augmentation'],
     warnings: [],
     references: [],
+  },
+  {
+    slug: 'regle-de-trois',
+    category: 'calcul',
+    icon: 'divide',
+    version: '1.0.0',
+    keywords: ['regle', 'trois', 'proportion', 'proportionnalite', 'ratio', 'produit en croix'],
+    warnings: [],
+    references: [],
+  },
+  {
+    slug: 'surface-volume',
+    category: 'calcul',
+    icon: 'shapes',
+    version: '1.0.0',
+    keywords: ['surface', 'aire', 'volume', 'geometrie', 'cercle', 'carre', 'cylindre', 'sphere'],
+    warnings: ['theoretical'],
+    references: [],
+  },
+  {
+    slug: 'cbm-poids-volumetrique',
+    category: 'logistique',
+    icon: 'truck',
+    version: '1.0.0',
+    keywords: ['cbm', 'volume', 'poids', 'volumetrique', 'transport', 'colis', 'logistique', 'fret'],
+    warnings: ['estimate'],
+    references: [],
+  },
+  {
+    slug: 'marge-prix-vente',
+    category: 'commerce',
+    icon: 'trending-up',
+    version: '1.0.0',
+    keywords: ['marge', 'marque', 'prix', 'vente', 'coefficient', 'commerce', 'rentabilite'],
+    warnings: [],
+    references: [],
+  },
+  {
+    slug: 'tva-multi-taux',
+    category: 'finance',
+    icon: 'layers',
+    version: '1.0.0',
+    keywords: ['tva', 'vat', 'multi', 'taux', 'facture', 'recapitulatif', 'ht', 'ttc'],
+    warnings: ['estimate'],
+    references: [
+      { labelKey: 'frVatRates', url: 'https://www.impots.gouv.fr/professionnel/les-taux-de-tva' },
+    ],
   },
 ];

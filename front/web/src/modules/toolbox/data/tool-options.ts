@@ -107,3 +107,71 @@ export const UNIT_LABELS: Record<string, string> = {
   f: '°F',
   k: 'K',
 };
+
+/** Libellés des formes géométriques (outil `surface-volume`). */
+export const SHAPE_LABELS: Record<ToolboxLocale, Record<string, string>> = {
+  fr: {
+    carre: 'Carré',
+    rectangle: 'Rectangle',
+    triangle: 'Triangle',
+    cercle: 'Cercle',
+    cube: 'Cube',
+    'pave-droit': 'Pavé droit',
+    cylindre: 'Cylindre',
+    sphere: 'Sphère',
+  },
+  en: {
+    carre: 'Square',
+    rectangle: 'Rectangle',
+    triangle: 'Triangle',
+    cercle: 'Circle',
+    cube: 'Cube',
+    'pave-droit': 'Rectangular box',
+    cylindre: 'Cylinder',
+    sphere: 'Sphere',
+  },
+  tr: {
+    carre: 'Kare',
+    rectangle: 'Dikdörtgen',
+    triangle: 'Üçgen',
+    cercle: 'Daire',
+    cube: 'Küp',
+    'pave-droit': 'Dikdörtgen prizma',
+    cylindre: 'Silindir',
+    sphere: 'Küre',
+  },
+  ar: {
+    carre: 'مربع',
+    rectangle: 'مستطيل',
+    triangle: 'مثلث',
+    cercle: 'دائرة',
+    cube: 'مكعب',
+    'pave-droit': 'متوازي مستطيلات',
+    cylindre: 'أسطوانة',
+    sphere: 'كرة',
+  },
+};
+
+/** Libellés des modes de transport (outil `cbm-poids-volumetrique`). */
+export const FREIGHT_MODE_LABELS: Record<ToolboxLocale, Record<string, string>> = {
+  fr: {
+    aerien: 'Aérien (167 kg/m³)',
+    routier: 'Routier (333 kg/m³)',
+    maritime: 'Maritime (1000 kg/m³)',
+  },
+  en: {
+    aerien: 'Air (167 kg/m³)',
+    routier: 'Road (333 kg/m³)',
+    maritime: 'Sea (1000 kg/m³)',
+  },
+  tr: {
+    aerien: 'Hava (167 kg/m³)',
+    routier: 'Kara (333 kg/m³)',
+    maritime: 'Deniz (1000 kg/m³)',
+  },
+  ar: {
+    aerien: 'جوي (167 كغ/م³)',
+    routier: 'بري (333 كغ/م³)',
+    maritime: 'بحري (1000 كغ/م³)',
+  },
+};

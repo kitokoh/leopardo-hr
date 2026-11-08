@@ -80,6 +80,8 @@ const fr: ToolboxCopy = {
     finance: 'Finance',
     sante: 'Santé',
     travail: 'Travail',
+    logistique: 'Logistique',
+    commerce: 'Commerce',
   },
   warnings: {
     estimate:
@@ -176,6 +178,117 @@ const fr: ToolboxCopy = {
         'Remise : A × (1 − B ÷ 100).',
       ],
     },
+    'regle-de-trois': {
+      name: 'Règle de trois',
+      description:
+        'Trouvez la quatrième valeur d’une proportion (produit en croix), en proportionnalité directe ou inverse.',
+      fields: { mode: 'Type de proportion', a: 'A', b: 'B (correspond à A)', c: 'C' },
+      options: {
+        direct: 'Directe : A → B, donc C → ?',
+        inverse: 'Inverse : A → B, donc ? → C',
+      },
+      results: { value: 'Valeur recherchée' },
+      notes: [
+        'Directe : X = B × C ÷ A.',
+        'Inverse : X = A × B ÷ C.',
+        'A = 0 (directe) ou C = 0 (inverse) rend le calcul indéfini.',
+      ],
+    },
+    'surface-volume': {
+      name: 'Surfaces et volumes',
+      description:
+        'Calculez l’aire et le volume des formes usuelles : carré, rectangle, triangle, cercle, cube, pavé droit, cylindre, sphère.',
+      fields: {
+        shape: 'Forme',
+        a: 'Côté',
+        length: 'Longueur',
+        width: 'Largeur',
+        height: 'Hauteur',
+        base: 'Base',
+        radius: 'Rayon',
+      },
+      results: { area: 'Aire', volume: 'Volume' },
+      notes: [
+        'Toutes les dimensions doivent être dans la même unité : l’aire est en unité², le volume en unité³.',
+        'Cercle : π × r². Cylindre : π × r² × h. Sphère : 4/3 × π × r³.',
+        'Résultat théorique : il ne constitue pas un métré officiel ni une validation de sécurité.',
+      ],
+    },
+    'cbm-poids-volumetrique': {
+      name: 'CBM et poids volumétrique',
+      description:
+        'Calculez le volume (CBM) d’un colis, son poids volumétrique et le poids taxable selon le mode de transport.',
+      fields: {
+        length: 'Longueur (cm)',
+        width: 'Largeur (cm)',
+        height: 'Hauteur (cm)',
+        quantity: 'Nombre de colis',
+        weight: 'Poids réel total (kg)',
+        mode: 'Mode de transport',
+      },
+      results: {
+        unitCbm: 'CBM par colis',
+        totalCbm: 'CBM total',
+        volumetricWeight: 'Poids volumétrique',
+        chargeableWeight: 'Poids taxable',
+      },
+      notes: [
+        'CBM = longueur × largeur × hauteur (en mètres).',
+        'Poids volumétrique = CBM × facteur du mode (aérien 167, routier 333, maritime 1000 kg/m³).',
+        'Poids taxable = le plus élevé du poids réel et du poids volumétrique.',
+        'Résultat indicatif : le poids taxable réel dépend du contrat transporteur.',
+      ],
+    },
+    'marge-prix-vente': {
+      name: 'Marge et prix de vente',
+      description:
+        'Calculez la marge, le taux de marge, le taux de marque et le coefficient, ou déduisez un prix de vente.',
+      fields: {
+        mode: 'Calcul',
+        cost: 'Prix d’achat (PA)',
+        price: 'Prix de vente (PV)',
+        rate: 'Taux (%)',
+      },
+      options: {
+        'from-cost-price': 'Marge depuis PA et PV',
+        'from-margin': 'Prix de vente depuis un taux de marge',
+        'from-markup': 'Prix de vente depuis un taux de marque',
+      },
+      results: {
+        margin: 'Marge',
+        marginRate: 'Taux de marge',
+        markupRate: 'Taux de marque',
+        coefficient: 'Coefficient',
+        price: 'Prix de vente',
+      },
+      notes: [
+        'Taux de marge = (PV − PA) ÷ PA × 100 (rapporté au coût).',
+        'Taux de marque = (PV − PA) ÷ PV × 100 (rapporté au prix de vente).',
+        'PV depuis un taux de marque : PA ÷ (1 − taux ÷ 100) — indéfini si le taux atteint 100 %.',
+      ],
+    },
+    'tva-multi-taux': {
+      name: 'TVA multi-taux',
+      description:
+        'Récapitulez la TVA d’une facture à plusieurs lignes et plusieurs taux, regroupée par taux.',
+      fields: {
+        amount: 'Montant HT',
+        rate: 'Taux (%)',
+        addLine: 'Ajouter une ligne',
+        removeLine: 'Supprimer',
+      },
+      results: {
+        totalHt: 'Total HT',
+        totalVat: 'Total TVA',
+        totalTtc: 'Total TTC',
+        byRate: 'Détail par taux',
+      },
+      notes: [
+        'Chaque ligne : TVA = montant HT × taux ÷ 100.',
+        'Les lignes sont regroupées par taux, comme sur une facture.',
+        'Résultat indicatif : il ne remplace pas une facture ni une déclaration de TVA.',
+      ],
+    },
   },
 };
 
@@ -202,6 +315,8 @@ const en: ToolboxCopy = {
     finance: 'Finance',
     sante: 'Health',
     travail: 'Work',
+    logistique: 'Logistics',
+    commerce: 'Commerce',
   },
   warnings: {
     estimate:
@@ -295,6 +410,117 @@ const en: ToolboxCopy = {
         'Discount: A × (1 − B ÷ 100).',
       ],
     },
+    'regle-de-trois': {
+      name: 'Rule of three',
+      description:
+        'Find the fourth value of a proportion (cross-multiplication), in direct or inverse proportionality.',
+      fields: { mode: 'Proportion type', a: 'A', b: 'B (matches A)', c: 'C' },
+      options: {
+        direct: 'Direct: A → B, so C → ?',
+        inverse: 'Inverse: A → B, so ? → C',
+      },
+      results: { value: 'Value sought' },
+      notes: [
+        'Direct: X = B × C ÷ A.',
+        'Inverse: X = A × B ÷ C.',
+        'A = 0 (direct) or C = 0 (inverse) makes the calculation undefined.',
+      ],
+    },
+    'surface-volume': {
+      name: 'Areas and volumes',
+      description:
+        'Compute the area and volume of common shapes: square, rectangle, triangle, circle, cube, rectangular box, cylinder, sphere.',
+      fields: {
+        shape: 'Shape',
+        a: 'Side',
+        length: 'Length',
+        width: 'Width',
+        height: 'Height',
+        base: 'Base',
+        radius: 'Radius',
+      },
+      results: { area: 'Area', volume: 'Volume' },
+      notes: [
+        'All dimensions must use the same unit: the area is in unit², the volume in unit³.',
+        'Circle: π × r². Cylinder: π × r² × h. Sphere: 4/3 × π × r³.',
+        'Theoretical result: it is not an official quantity survey nor a safety validation.',
+      ],
+    },
+    'cbm-poids-volumetrique': {
+      name: 'CBM and volumetric weight',
+      description:
+        'Compute a parcel volume (CBM), its volumetric weight and the chargeable weight for the transport mode.',
+      fields: {
+        length: 'Length (cm)',
+        width: 'Width (cm)',
+        height: 'Height (cm)',
+        quantity: 'Number of parcels',
+        weight: 'Total actual weight (kg)',
+        mode: 'Transport mode',
+      },
+      results: {
+        unitCbm: 'CBM per parcel',
+        totalCbm: 'Total CBM',
+        volumetricWeight: 'Volumetric weight',
+        chargeableWeight: 'Chargeable weight',
+      },
+      notes: [
+        'CBM = length × width × height (in metres).',
+        'Volumetric weight = CBM × mode factor (air 167, road 333, sea 1000 kg/m³).',
+        'Chargeable weight = the higher of actual weight and volumetric weight.',
+        'Indicative result: the real chargeable weight depends on the carrier contract.',
+      ],
+    },
+    'marge-prix-vente': {
+      name: 'Margin and selling price',
+      description:
+        'Compute the margin, margin rate, markup rate and coefficient, or derive a selling price.',
+      fields: {
+        mode: 'Calculation',
+        cost: 'Purchase price (cost)',
+        price: 'Selling price',
+        rate: 'Rate (%)',
+      },
+      options: {
+        'from-cost-price': 'Margin from cost and price',
+        'from-margin': 'Selling price from a margin rate',
+        'from-markup': 'Selling price from a markup rate',
+      },
+      results: {
+        margin: 'Margin',
+        marginRate: 'Margin rate',
+        markupRate: 'Markup rate',
+        coefficient: 'Coefficient',
+        price: 'Selling price',
+      },
+      notes: [
+        'Margin rate = (price − cost) ÷ cost × 100 (relative to cost).',
+        'Markup rate = (price − cost) ÷ price × 100 (relative to selling price).',
+        'Price from a markup rate: cost ÷ (1 − rate ÷ 100) — undefined when the rate reaches 100%.',
+      ],
+    },
+    'tva-multi-taux': {
+      name: 'Multi-rate VAT',
+      description:
+        'Summarise the VAT of an invoice with several lines and several rates, grouped by rate.',
+      fields: {
+        amount: 'Net amount',
+        rate: 'Rate (%)',
+        addLine: 'Add a line',
+        removeLine: 'Remove',
+      },
+      results: {
+        totalHt: 'Total net',
+        totalVat: 'Total VAT',
+        totalTtc: 'Total gross',
+        byRate: 'Breakdown by rate',
+      },
+      notes: [
+        'Each line: VAT = net amount × rate ÷ 100.',
+        'Lines are grouped by rate, as on an invoice.',
+        'Indicative result: it does not replace an invoice or a VAT return.',
+      ],
+    },
   },
 };
 
@@ -321,6 +547,8 @@ const tr: ToolboxCopy = {
     finance: 'Finans',
     sante: 'Sağlık',
     travail: 'İş',
+    logistique: 'Lojistik',
+    commerce: 'Ticaret',
   },
   warnings: {
     estimate:
@@ -413,6 +641,117 @@ const tr: ToolboxCopy = {
         'İndirim: A × (1 − B ÷ 100).',
       ],
     },
+    'regle-de-trois': {
+      name: 'Üç kuralı',
+      description:
+        'Bir orantının dördüncü değerini bulun (içler dışlar çarpımı), doğru veya ters orantıyla.',
+      fields: { mode: 'Orantı türü', a: 'A', b: 'B (A’ya karşılık gelir)', c: 'C' },
+      options: {
+        direct: 'Doğru: A → B, yani C → ?',
+        inverse: 'Ters: A → B, yani ? → C',
+      },
+      results: { value: 'Aranan değer' },
+      notes: [
+        'Doğru: X = B × C ÷ A.',
+        'Ters: X = A × B ÷ C.',
+        'A = 0 (doğru) veya C = 0 (ters) hesaplamayı tanımsız kılar.',
+      ],
+    },
+    'surface-volume': {
+      name: 'Alan ve hacim',
+      description:
+        'Yaygın şekillerin alanını ve hacmini hesaplayın: kare, dikdörtgen, üçgen, daire, küp, dikdörtgen prizma, silindir, küre.',
+      fields: {
+        shape: 'Şekil',
+        a: 'Kenar',
+        length: 'Uzunluk',
+        width: 'Genişlik',
+        height: 'Yükseklik',
+        base: 'Taban',
+        radius: 'Yarıçap',
+      },
+      results: { area: 'Alan', volume: 'Hacim' },
+      notes: [
+        'Tüm ölçüler aynı birimde olmalıdır: alan birim², hacim birim³ cinsindendir.',
+        'Daire: π × r². Silindir: π × r² × h. Küre: 4/3 × π × r³.',
+        'Teorik sonuç: resmi bir metraj veya güvenlik doğrulaması değildir.',
+      ],
+    },
+    'cbm-poids-volumetrique': {
+      name: 'CBM ve hacimsel ağırlık',
+      description:
+        'Bir kolinin hacmini (CBM), hacimsel ağırlığını ve taşıma moduna göre ücretlendirilebilir ağırlığını hesaplayın.',
+      fields: {
+        length: 'Uzunluk (cm)',
+        width: 'Genişlik (cm)',
+        height: 'Yükseklik (cm)',
+        quantity: 'Koli sayısı',
+        weight: 'Toplam gerçek ağırlık (kg)',
+        mode: 'Taşıma modu',
+      },
+      results: {
+        unitCbm: 'Koli başına CBM',
+        totalCbm: 'Toplam CBM',
+        volumetricWeight: 'Hacimsel ağırlık',
+        chargeableWeight: 'Ücretlendirilebilir ağırlık',
+      },
+      notes: [
+        'CBM = uzunluk × genişlik × yükseklik (metre cinsinden).',
+        'Hacimsel ağırlık = CBM × mod faktörü (hava 167, kara 333, deniz 1000 kg/m³).',
+        'Ücretlendirilebilir ağırlık = gerçek ağırlık ile hacimsel ağırlığın büyüğü.',
+        'Gösterge niteliğinde sonuç: gerçek ağırlık taşıyıcı sözleşmesine bağlıdır.',
+      ],
+    },
+    'marge-prix-vente': {
+      name: 'Marj ve satış fiyatı',
+      description:
+        'Marjı, marj oranını, kâr oranını ve katsayıyı hesaplayın veya bir satış fiyatı türetin.',
+      fields: {
+        mode: 'Hesaplama',
+        cost: 'Alış fiyatı (maliyet)',
+        price: 'Satış fiyatı',
+        rate: 'Oran (%)',
+      },
+      options: {
+        'from-cost-price': 'Maliyet ve fiyattan marj',
+        'from-margin': 'Marj oranından satış fiyatı',
+        'from-markup': 'Kâr oranından satış fiyatı',
+      },
+      results: {
+        margin: 'Marj',
+        marginRate: 'Marj oranı',
+        markupRate: 'Kâr oranı',
+        coefficient: 'Katsayı',
+        price: 'Satış fiyatı',
+      },
+      notes: [
+        'Marj oranı = (fiyat − maliyet) ÷ maliyet × 100 (maliyete göre).',
+        'Kâr oranı = (fiyat − maliyet) ÷ fiyat × 100 (satış fiyatına göre).',
+        'Kâr oranından fiyat: maliyet ÷ (1 − oran ÷ 100) — oran %100’e ulaşırsa tanımsız.',
+      ],
+    },
+    'tva-multi-taux': {
+      name: 'Çok oranlı KDV',
+      description:
+        'Birden çok satır ve oran içeren bir faturanın KDV’sini orana göre gruplayarak özetleyin.',
+      fields: {
+        amount: 'Net tutar',
+        rate: 'Oran (%)',
+        addLine: 'Satır ekle',
+        removeLine: 'Kaldır',
+      },
+      results: {
+        totalHt: 'Toplam net',
+        totalVat: 'Toplam KDV',
+        totalTtc: 'Toplam brüt',
+        byRate: 'Orana göre döküm',
+      },
+      notes: [
+        'Her satır: KDV = net tutar × oran ÷ 100.',
+        'Satırlar faturadaki gibi orana göre gruplanır.',
+        'Gösterge niteliğinde sonuç: fatura veya KDV beyannamesi yerine geçmez.',
+      ],
+    },
   },
 };
 
@@ -438,6 +777,8 @@ const ar: ToolboxCopy = {
     finance: 'مالية',
     sante: 'صحة',
     travail: 'عمل',
+    logistique: 'اللوجستيك',
+    commerce: 'التجارة',
   },
   warnings: {
     estimate: 'نتيجة إرشادية: هذا التقدير لا يحل محل وثيقة رسمية (قسيمة راتب، عرض سعر، فاتورة).',
@@ -523,6 +864,117 @@ const ar: ToolboxCopy = {
         'نسبة من أ: أ × ب ÷ 100.',
         'التغيّر: (ب − أ) ÷ أ × 100.',
         'الخصم: أ × (1 − ب ÷ 100).',
+      ],
+    },
+    'regle-de-trois': {
+      name: 'قاعدة الثلاثة',
+      description:
+        'أوجد القيمة الرابعة في تناسب (الضرب التبادلي)، بتناسب طردي أو عكسي.',
+      fields: { mode: 'نوع التناسب', a: 'أ', b: 'ب (يقابل أ)', c: 'ج' },
+      options: {
+        direct: 'طردي: أ → ب، إذن ج → ؟',
+        inverse: 'عكسي: أ → ب، إذن ؟ → ج',
+      },
+      results: { value: 'القيمة المطلوبة' },
+      notes: [
+        'طردي: س = ب × ج ÷ أ.',
+        'عكسي: س = أ × ب ÷ ج.',
+        'أ = 0 (طردي) أو ج = 0 (عكسي) يجعل الحساب غير معرّف.',
+      ],
+    },
+    'surface-volume': {
+      name: 'المساحات والأحجام',
+      description:
+        'احسب مساحة وحجم الأشكال الشائعة: المربع، المستطيل، المثلث، الدائرة، المكعب، متوازي المستطيلات، الأسطوانة، الكرة.',
+      fields: {
+        shape: 'الشكل',
+        a: 'الضلع',
+        length: 'الطول',
+        width: 'العرض',
+        height: 'الارتفاع',
+        base: 'القاعدة',
+        radius: 'نصف القطر',
+      },
+      results: { area: 'المساحة', volume: 'الحجم' },
+      notes: [
+        'يجب أن تكون جميع الأبعاد بالوحدة نفسها: المساحة بوحدة² والحجم بوحدة³.',
+        'الدائرة: π × نق². الأسطوانة: π × نق² × ع. الكرة: 4/3 × π × نق³.',
+        'نتيجة نظرية: لا تُعد قياسًا رسميًا ولا تحققًا من السلامة.',
+      ],
+    },
+    'cbm-poids-volumetrique': {
+      name: 'الحجم والوزن الحجمي',
+      description:
+        'احسب حجم الطرد (CBM) ووزنه الحجمي والوزن الخاضع للفوترة حسب وسيلة النقل.',
+      fields: {
+        length: 'الطول (سم)',
+        width: 'العرض (سم)',
+        height: 'الارتفاع (سم)',
+        quantity: 'عدد الطرود',
+        weight: 'الوزن الفعلي الإجمالي (كغ)',
+        mode: 'وسيلة النقل',
+      },
+      results: {
+        unitCbm: 'الحجم لكل طرد',
+        totalCbm: 'الحجم الإجمالي',
+        volumetricWeight: 'الوزن الحجمي',
+        chargeableWeight: 'الوزن الخاضع للفوترة',
+      },
+      notes: [
+        'الحجم = الطول × العرض × الارتفاع (بالمتر).',
+        'الوزن الحجمي = الحجم × معامل الوسيلة (جوي 167، بري 333، بحري 1000 كغ/م³).',
+        'الوزن الخاضع للفوترة = الأكبر بين الوزن الفعلي والوزن الحجمي.',
+        'نتيجة إرشادية: الوزن الفعلي يعتمد على عقد الناقل.',
+      ],
+    },
+    'marge-prix-vente': {
+      name: 'الهامش وسعر البيع',
+      description:
+        'احسب الهامش ونسبة الهامش ونسبة الربح والمعامل، أو استنتج سعر بيع.',
+      fields: {
+        mode: 'الحساب',
+        cost: 'سعر الشراء (التكلفة)',
+        price: 'سعر البيع',
+        rate: 'النسبة (%)',
+      },
+      options: {
+        'from-cost-price': 'الهامش من التكلفة وسعر البيع',
+        'from-margin': 'سعر البيع من نسبة الهامش',
+        'from-markup': 'سعر البيع من نسبة الربح',
+      },
+      results: {
+        margin: 'الهامش',
+        marginRate: 'نسبة الهامش',
+        markupRate: 'نسبة الربح',
+        coefficient: 'المعامل',
+        price: 'سعر البيع',
+      },
+      notes: [
+        'نسبة الهامش = (سعر البيع − التكلفة) ÷ التكلفة × 100 (بالنسبة للتكلفة).',
+        'نسبة الربح = (سعر البيع − التكلفة) ÷ سعر البيع × 100 (بالنسبة لسعر البيع).',
+        'سعر البيع من نسبة الربح: التكلفة ÷ (1 − النسبة ÷ 100) — غير معرّف إذا بلغت النسبة 100٪.',
+      ],
+    },
+    'tva-multi-taux': {
+      name: 'ضريبة القيمة المضافة متعددة المعدلات',
+      description:
+        'لخّص ضريبة القيمة المضافة لفاتورة بعدة أسطر ومعدلات، مجمّعة حسب المعدل.',
+      fields: {
+        amount: 'المبلغ الصافي',
+        rate: 'المعدل (%)',
+        addLine: 'إضافة سطر',
+        removeLine: 'حذف',
+      },
+      results: {
+        totalHt: 'الإجمالي الصافي',
+        totalVat: 'إجمالي الضريبة',
+        totalTtc: 'الإجمالي مع الضريبة',
+        byRate: 'التفصيل حسب المعدل',
+      },
+      notes: [
+        'كل سطر: الضريبة = المبلغ الصافي × المعدل ÷ 100.',
+        'تُجمَّع الأسطر حسب المعدل، كما في الفاتورة.',
+        'نتيجة إرشادية: لا تحل محل فاتورة أو تصريح ضريبي.',
       ],
     },
   },
