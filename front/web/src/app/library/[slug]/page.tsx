@@ -45,11 +45,10 @@ interface ResourcePageProps {
 
 export async function generateMetadata({ params }: ResourcePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const resource = getResource(slug);
-  if (!resource) return { title: 'Leopardo Library' };
-
   const locale = await getSsrLocale();
   const copy = getLibraryCopy(locale);
+  const resource = getResource(slug);
+  if (!resource) return { title: copy.meta.title };
 
   return {
     title: `${slug} — ${copy.home.title}`,

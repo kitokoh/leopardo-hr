@@ -6,7 +6,6 @@ namespace Tests\Feature\Library;
 
 use App\Modules\Library\Domain\Enums\LibraryAccessModel;
 use App\Modules\Library\Domain\Enums\LibraryResourceStatus;
-use App\Modules\Library\Domain\Models\LibraryCategory;
 use App\Modules\Library\Domain\Models\LibraryResource;
 use App\Modules\Library\Domain\Support\LibraryAccessPolicy;
 use Tests\RefreshTenantDatabase;
