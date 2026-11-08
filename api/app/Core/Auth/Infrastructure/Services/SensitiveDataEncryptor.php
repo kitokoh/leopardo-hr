@@ -35,6 +35,11 @@ class SensitiveDataEncryptor
         return str_starts_with($value, self::ENCRYPTED_PREFIX);
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  list<string>  $sensitiveFields
+     * @return array<string, mixed>
+     */
     public function encryptArray(array $data, array $sensitiveFields): array
     {
         foreach ($sensitiveFields as $field) {
@@ -46,6 +51,11 @@ class SensitiveDataEncryptor
         return $data;
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  list<string>  $sensitiveFields
+     * @return array<string, mixed>
+     */
     public function decryptArray(array $data, array $sensitiveFields): array
     {
         foreach ($sensitiveFields as $field) {

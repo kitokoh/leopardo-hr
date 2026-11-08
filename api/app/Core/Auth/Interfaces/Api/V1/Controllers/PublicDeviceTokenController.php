@@ -53,6 +53,7 @@ class PublicDeviceTokenController extends Controller
             'device_name' => ['nullable', 'string', 'max:120'],
         ]);
 
+        /** @var array{token: string, platform?: string|null, device_name?: string|null} $validated */
         /** @var User $user */
         $user = $request->user('user_api');
 

@@ -69,7 +69,7 @@ class SuperAdminService
         return "otpauth://totp/{$label}?secret={$secret}&issuer={$issuer}&algorithm=SHA1&digits=6&period=30";
     }
 
-    private function google2fa(): ?object
+    private function google2fa(): ?Google2FA
     {
         if (! class_exists(Google2FA::class)) {
             return null;
@@ -86,7 +86,9 @@ class SuperAdminService
         $hash = hash_hmac('sha1', $binaryCounter, $key, true);
         $offset = ord(substr($hash, -1)) & 0x0F;
         $chunk = substr($hash, $offset, 4);
-        $value = unpack('N', $chunk)[1] & 0x7FFFFFFF;
+        /** @var array{1: int} $unpacked */
+        $unpacked = unpack('N', $chunk);
+        $value = $unpacked[1] & 0x7FFFFFFF;
 
         return str_pad((string) ($value % 1000000), 6, '0', STR_PAD_LEFT);
     }
@@ -103,7 +105,7 @@ class SuperAdminService
         $encoded = '';
         foreach (str_split($bits, 5) as $chunk) {
             $chunk = str_pad($chunk, 5, '0', STR_PAD_RIGHT);
-            $encoded .= $alphabet[bindec($chunk)];
+            $encoded .= $alphabet[(int) bindec($chunk)];
         }
 
         return $encoded;
@@ -129,7 +131,7 @@ class SuperAdminService
                 continue;
             }
 
-            $decoded .= chr(bindec($chunk));
+            $decoded .= chr((int) bindec($chunk));
         }
 
         return $decoded;
