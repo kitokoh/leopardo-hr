@@ -13,7 +13,7 @@ void main() {
 
   group('Cart', () {
     test('ajoute un produit et incrémente la ligne existante', () {
-      var cart = const Cart().addProduct(bissap).addProduct(bissap).addProduct(the);
+      final cart = const Cart().addProduct(bissap).addProduct(bissap).addProduct(the);
 
       expect(cart.lines.length, 2);
       expect(cart.lines.first.quantity, 2);

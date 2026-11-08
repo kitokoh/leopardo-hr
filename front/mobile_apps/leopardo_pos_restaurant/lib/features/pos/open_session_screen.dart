@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/pos_theme.dart';
 import 'pos_controller.dart';
+import 'pos_screen.dart';
 
 /// Écran d'ouverture de caisse (#9214).
 ///

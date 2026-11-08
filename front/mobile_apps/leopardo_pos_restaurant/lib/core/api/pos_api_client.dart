@@ -103,10 +103,12 @@ class PosApiClient {
           'covers': cart.covers,
           'note': cart.note,
           'lines': cart.lines
-              .map((line) => {
-                    'product_id': line.product.id,
-                    'quantity': line.quantity,
-                  })
+              .map(
+                (line) => {
+                  'product_id': line.product.id,
+                  'quantity': line.quantity,
+                },
+              )
               .toList(),
         },
       );

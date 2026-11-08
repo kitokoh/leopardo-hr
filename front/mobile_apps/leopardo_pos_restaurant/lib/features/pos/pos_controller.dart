@@ -63,10 +63,14 @@ class PosState {
 }
 
 /// Contrôleur de la caisse : charge le catalogue, gère le panier, encaisse.
-class PosController extends StateNotifier<PosState> {
-  PosController(this._api) : super(const PosState());
+///
+/// Riverpod 3 : `Notifier` remplace `StateNotifier` (retiré de l'API publique
+/// en 3.x). Le comportement est identique, l'API est celle du framework.
+class PosController extends Notifier<PosState> {
+  PosApiClient get _api => ref.read(posApiClientProvider);
 
-  final PosApiClient _api;
+  @override
+  PosState build() => const PosState();
 
   /// Charge catalogue + plan de salle (réseau, puis cache).
   Future<void> bootstrap({required int branchId}) async {
@@ -202,6 +206,4 @@ class PosController extends StateNotifier<PosState> {
   }
 }
 
-final posControllerProvider = StateNotifierProvider<PosController, PosState>((ref) {
-  return PosController(ref.watch(posApiClientProvider));
-});
+final posControllerProvider = NotifierProvider<PosController, PosState>(PosController.new);
