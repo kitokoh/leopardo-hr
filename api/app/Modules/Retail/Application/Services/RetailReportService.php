@@ -13,7 +13,6 @@ use App\Modules\Retail\Domain\Models\RetailPosRefund;
 use App\Modules\Retail\Domain\Models\RetailPosSession;
 use App\Modules\Retail\Domain\Models\RetailProduct;
 use App\Modules\Retail\Domain\Models\RetailStockLevel;
-use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Carbon;
 
 /**
@@ -29,13 +28,12 @@ use Illuminate\Support\Carbon;
  * garde premiere de chaque requete. Les bornes de dates sont inclusives sur
  * la journee entiere (`from` 00:00:00, `to` 23:59:59).
  *
- * Pas de facade Laravel (purete de couche Application, garde #6568) : la
- * connexion est injectee via ConnectionInterface.
+ * Pas de facade Laravel (purete de couche Application, garde #6568) : les
+ * requetes passent par les modeles Eloquent du module, jamais par la facade
+ * `DB`.
  */
 final class RetailReportService
 {
-    public function __construct(private readonly ConnectionInterface $connection) {}
-
     /**
      * Rapport de ventes : CA, nombre de tickets, panier moyen, repartition
      * par moyen de paiement, remboursements.
@@ -115,11 +113,13 @@ final class RetailReportService
             ->limit(max(1, min(100, $limit)))
             ->get();
 
-        return $rows->map(static fn ($row): array => [
-            'product_id' => (int) $row->product_id,
-            'product_name' => (string) $row->product_name,
-            'quantity_sold' => (float) $row->quantity_sold,
-            'revenue_minor' => (int) $row->revenue_minor,
+        // Les alias d'agregation ne sont pas des attributs declares du modele :
+        // on les lit via getAttribute() pour rester lisible par PHPStan.
+        return $rows->map(static fn (RetailOrderItem $row): array => [
+            'product_id' => (int) $row->getAttribute('product_id'),
+            'product_name' => (string) $row->getAttribute('product_name'),
+            'quantity_sold' => (float) $row->getAttribute('quantity_sold'),
+            'revenue_minor' => (int) $row->getAttribute('revenue_minor'),
         ])->all();
     }
 
