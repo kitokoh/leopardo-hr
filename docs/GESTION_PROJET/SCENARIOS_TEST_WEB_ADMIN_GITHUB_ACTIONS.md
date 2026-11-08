@@ -2,6 +2,27 @@
 
 ## Journal des mises à jour de surface (`front/web/`)
 
+- **2026-11-08 (#9106, mission Couloir 16 / M4 hors ligne)** — surface **PWA publique** modifiée :
+  `front/web/src/app/decouvrir/discovery-explorer.tsx` (restitution hors ligne) et nouveau
+  `front/web/src/lib/offline/public-discovery-cache.ts`. Aucun contrat d'API touché : le cache ne
+  persiste que la **dernière recherche réussie** (`GET /public/discover`), déjà couverte côté API.
+  - **Scénarios à couvrir** : une recherche réussie puis une coupure réseau affiche les résultats
+    **en cache** et **le dit** (« Réseau indisponible — voici votre dernière recherche »), jamais
+    l'erreur sèche ; sans cache, l'erreur reste honnête (jamais un faux succès vide) ; une recherche
+    par **proximité** (`near`) n'écrit ni ne lit le cache — la position ne survit pas à la session ;
+    `localStorage` absent (SSR, navigation privée), plein (`QuotaExceededError`) ou corrompu →
+    dégradation vers « pas de cache », jamais un plantage ; une entrée d'un schéma antérieur est
+    **purgée** au lieu d'être reparsée à chaque chargement.
+  - **Protection** : `/decouvrir` est une route **publique** (point d'arrivée des QR codes) — elle
+    n'est pas dans `PROTECTED_PREFIXES` et ne doit pas l'être. Le cache ne contient **aucune donnée
+    personnelle** : ni position, ni identifiant de session.
+  - **Couverture frontend du lot** : `public-discovery-cache.test.ts` (8 cas), `discovery-explorer.test.tsx`
+    (14 cas, dont 2 nouveaux), `lighthouse-public-route.test.ts` (3 cas) et le parcours e2e
+    `leopardo-public-parcours.spec.ts` → « hors ligne : la dernière recherche réussie est restituée
+    depuis le cache » (1 passed, chromium). **Aucune surface admin/manager existante n'est modifiée.**
+  - **Poids** : nouveau job CI **bloquant** `image-budget` (`lighthouse.yml`) — mesure les images
+    versionnées de `front/web/public/**` (17 fichiers, 650,3 Ko) et échoue au-delà des plafonds.
+
 - **2026-10-20 (#8760, mission Leopardo Public / BC-13 COMMS)** — nouvelle surface **web dashboard** :
   `front/web/src/app/(dashboard)/demandes-publiques/` (boîte de réception des demandes publiques du
   tenant). Elle consomme le contrat pro `/api/v1/conversations/public` (`auth:sanctum` + `tenant`),
