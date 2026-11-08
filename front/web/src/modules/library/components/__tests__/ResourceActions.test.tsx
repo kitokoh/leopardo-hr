@@ -21,6 +21,8 @@ const readerCopy = {
   resume: 'Reprendre',
   lastPosition: 'Dernière position',
   close: 'Fermer',
+  loading: 'Chargement du document…',
+  error: 'Impossible de charger le document.',
 };
 
 const copy = {
