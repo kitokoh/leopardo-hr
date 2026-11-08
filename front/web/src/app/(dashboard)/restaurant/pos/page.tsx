@@ -13,6 +13,7 @@ import {
   type KeyValueStorage,
 } from '@/lib/offline/pos-offline';
 import { t } from '@/lib/i18n/locale-catalog';
+import { RESTAURANT_POS_FR } from '@/lib/i18n/restaurant-pos';
 import { getPreferredLocale } from '@/lib/i18n';
 
 /**
@@ -66,9 +67,9 @@ interface Product {
 type OrderType = 'dine_in' | 'takeaway' | 'delivery';
 
 const ORDER_TYPE_LABELS: Record<OrderType, string> = {
-  dine_in: 'Sur place',
-  takeaway: 'A emporter',
-  delivery: 'Livraison',
+  dine_in: RESTAURANT_POS_FR.orderTypeDineIn,
+  takeaway: RESTAURANT_POS_FR.orderTypeTakeaway,
+  delivery: RESTAURANT_POS_FR.orderTypeDelivery,
 };
 
 interface RestaurantTable {
