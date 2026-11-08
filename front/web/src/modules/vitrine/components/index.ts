@@ -1,5 +1,6 @@
 // Layout Components
 export { Navbar } from './Navbar';
+export { LeopardoBrandMark } from './LeopardoBrandMark';
 export { Footer } from './Footer';
 export { MainLayout } from './layout/MainLayout';
 
