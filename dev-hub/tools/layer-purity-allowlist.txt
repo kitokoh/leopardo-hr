@@ -22,12 +22,10 @@ api/app/Modules/Billing/Application/Actions/VerifyTrialSignup.php:21:use Illumin
 api/app/Modules/Billing/Application/Actions/VerifyTrialSignup.php:22:use Illuminate\Support\Facades\Hash;
 api/app/Modules/Billing/Application/Actions/VerifyTrialSignup.php:23:use Illuminate\Support\Facades\Log;
 api/app/Modules/Billing/Application/Actions/VerifyTrialSignup.php:24:use Illuminate\Support\Facades\Mail;
-api/app/Modules/CRM/Application/Actions/AutomationActions/CreateTaskAction.php:10:use Illuminate\Support\Facades\Log;
-api/app/Modules/CRM/Application/Actions/AutomationActions/CreateTaskAction.php:11:use Illuminate\Support\Facades\Schema;
+api/app/Modules/CRM/Application/Actions/AutomationActions/CreateTaskAction.php:10:use Illuminate\Support\Facades\Schema;
 api/app/Modules/CRM/Application/Actions/AutomationActions/CreateTaskAction.php:9:use Illuminate\Support\Facades\DB;
 api/app/Modules/CRM/Application/Actions/AutomationActions/HttpWebhookAction.php:10:use Illuminate\Support\Facades\Log;
 api/app/Modules/CRM/Application/Actions/AutomationActions/HttpWebhookAction.php:9:use Illuminate\Support\Facades\Http;
-api/app/Modules/CRM/Application/Actions/AutomationActions/SendWhatsAppAction.php:12:use Illuminate\Support\Facades\Log;
 api/app/Modules/CRM/Application/Actions/ConvertLeadAction.php:16:use Illuminate\Support\Facades\DB;
 api/app/Modules/CRM/Application/Queries/SearchCrmQuery.php:11:use Illuminate\Support\Facades\Schema;
 api/app/Modules/CRM/Application/Services/CampaignService.php:16:use Illuminate\Support\Facades\Auth;
@@ -36,9 +34,9 @@ api/app/Modules/CRM/Application/Services/CampaignService.php:18:use Illuminate\S
 api/app/Modules/CRM/Application/Services/CommunicationConsentService.php:14:use Illuminate\Support\Facades\Auth;
 api/app/Modules/CRM/Application/Services/CrmDashboardReadModel.php:7:use Illuminate\Support\Facades\DB;
 api/app/Modules/CRM/Application/Services/CrmDashboardReadModel.php:8:use Illuminate\Support\Facades\Schema;
-api/app/Modules/CRM/Application/Services/CrmEmailService.php:15:use Illuminate\Support\Facades\Auth;
-api/app/Modules/CRM/Application/Services/CrmEmailService.php:16:use Illuminate\Support\Facades\DB;
-api/app/Modules/CRM/Application/Services/CrmEmailService.php:17:use Illuminate\Support\Facades\Schema;
+api/app/Modules/CRM/Application/Services/CrmEmailService.php:16:use Illuminate\Support\Facades\Auth;
+api/app/Modules/CRM/Application/Services/CrmEmailService.php:17:use Illuminate\Support\Facades\DB;
+api/app/Modules/CRM/Application/Services/CrmEmailService.php:20:use Illuminate\Support\Facades\Schema;
 api/app/Modules/CRM/Application/Services/SegmentService.php:13:use Illuminate\Support\Facades\Auth;
 api/app/Modules/CRM/Application/Services/SegmentService.php:14:use Illuminate\Support\Facades\DB;
 api/app/Modules/EdgeSync/Application/Actions/PushEdgeRecords.php:9:use Illuminate\Support\Facades\DB;
@@ -66,7 +64,7 @@ api/app/Modules/RestaurantManager/Application/Actions/CreateDeliveryAction.php:1
 api/app/Modules/RestaurantManager/Application/Actions/CreateMarketplaceOrderAction.php:19:use Illuminate\Support\Facades\DB;
 api/app/Modules/RestaurantManager/Application/Actions/CreateOrderAction.php:13:use Illuminate\Support\Facades\DB;
 api/app/Modules/RestaurantManager/Application/Actions/CreditLoyaltyPointsAction.php:12:use Illuminate\Support\Facades\DB;
-api/app/Modules/RestaurantManager/Application/Actions/ExportRestaurantReportAction.php:11:use Illuminate\Support\Facades\URL;
+api/app/Modules/RestaurantManager/Application/Actions/ExportRestaurantReportAction.php:10:use Illuminate\Support\Facades\URL;
 api/app/Modules/RestaurantManager/Application/Actions/ExportRestaurantReportAction.php:9:use Illuminate\Support\Facades\Storage;
 api/app/Modules/RestaurantManager/Application/Actions/InventoryCountAction.php:12:use Illuminate\Support\Facades\DB;
 api/app/Modules/RestaurantManager/Application/Actions/OpenPosSessionAction.php:12:use Illuminate\Support\Facades\DB;
