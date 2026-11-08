@@ -16,7 +16,6 @@
 DELETE /v1/travel/advert-positions/{param}
 DELETE /v1/travel/advert-prices/{param}
 DELETE /v1/travel/advert-types/{param}
-DELETE /v1/travel/adverts/{param}
 DELETE /v1/travel/articles/{param}
 DELETE /v1/travel/cancellation-policies/{param}
 DELETE /v1/travel/carriers/{param}
@@ -47,9 +46,6 @@ DELETE /v1/travel/webhook-subscriptions/{param}
 GET /v1/travel/advert-positions
 GET /v1/travel/advert-prices
 GET /v1/travel/advert-types
-GET /v1/travel/adverts
-GET /v1/travel/adverts/manage
-GET /v1/travel/adverts/{param}
 GET /v1/travel/article-categories
 GET /v1/travel/articles
 GET /v1/travel/articles/{param}
@@ -131,11 +127,6 @@ GET /v1/travel/webhook-subscriptions
 POST /v1/travel/advert-positions
 POST /v1/travel/advert-prices
 POST /v1/travel/advert-types
-POST /v1/travel/adverts
-POST /v1/travel/adverts/{param}/pay
-POST /v1/travel/adverts/{param}/reject
-POST /v1/travel/adverts/{param}/renew
-POST /v1/travel/adverts/{param}/validate
 POST /v1/travel/article-categories
 POST /v1/travel/articles
 POST /v1/travel/articles/{param}/comments
