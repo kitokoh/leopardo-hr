@@ -28,7 +28,7 @@ export const TOOLS: ToolDefinition[] = [
     keywords: ['imc', 'bmi', 'poids', 'taille', 'sante', 'corpulence', 'obesite'],
     warnings: ['notAdvice'],
     references: [
-      { labelKey: 'toolbox.ref.whoBmi', url: 'https://www.who.int/health-topics/obesity' },
+      { labelKey: 'whoBmi', url: 'https://www.who.int/health-topics/obesity' },
     ],
   },
   {
@@ -39,7 +39,7 @@ export const TOOLS: ToolDefinition[] = [
     keywords: ['tva', 'vat', 'ht', 'ttc', 'taxe', 'facture', 'france'],
     warnings: [],
     references: [
-      { labelKey: 'toolbox.ref.frVatRates', url: 'https://www.impots.gouv.fr/professionnel/les-taux-de-tva' },
+      { labelKey: 'frVatRates', url: 'https://www.impots.gouv.fr/professionnel/les-taux-de-tva' },
     ],
   },
   {
@@ -59,7 +59,7 @@ export const TOOLS: ToolDefinition[] = [
     keywords: ['conversion', 'unites', 'longueur', 'masse', 'volume', 'surface', 'vitesse', 'temperature'],
     warnings: [],
     references: [
-      { labelKey: 'toolbox.ref.siBrochure', url: 'https://www.bipm.org/en/publications/si-brochure' },
+      { labelKey: 'siBrochure', url: 'https://www.bipm.org/en/publications/si-brochure' },
     ],
   },
   {

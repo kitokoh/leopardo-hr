@@ -7,6 +7,7 @@ import { getSiteUrl } from '@/lib/site';
 import { getAllCaseStudySlugs } from '@/modules/vitrine/lib/case-studies';
 import { getAlternativePages } from '@/modules/vitrine/data/alternatives';
 import { TOOLS } from '@/modules/toolbox/data/catalog';
+import { getAllResourceSlugs } from '@/modules/library/lib/registry';
 
 const siteUrl = getSiteUrl();
 const locales = ['fr', 'en', 'tr', 'ar'] as const;
@@ -164,6 +165,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
+  // LEOPARDO LIBRARY — bibliothèque numérique publique (`/library`), indexable
+  // et accessible sans authentification. Les slugs viennent du catalogue du
+  // module (`getAllResourceSlugs`) : ajouter une ressource publiée l'expose
+  // automatiquement au sitemap.
+  const libraryPages: MetadataRoute.Sitemap = [
+    page('/library', 'weekly', 0.7),
+    ...getAllResourceSlugs().map((slug) => page(`/library/${slug}`, 'monthly', 0.6)),
+  ];
+
   const allStatic = [
     ...staticPages,
     ...caseStudyPages,
@@ -171,6 +181,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...alternativePages,
     ...toolboxPages,
     ...careersPages,
+    ...libraryPages,
   ];
 
   // Blog posts: source réelle = src/modules/vitrine/data/blog (getBlogPosts).
