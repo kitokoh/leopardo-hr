@@ -115,12 +115,14 @@ final class RetailReportService
 
         // Les alias d'agregation ne sont pas des attributs declares du modele :
         // on les lit via getAttribute() pour rester lisible par PHPStan.
-        return $rows->map(static fn (RetailOrderItem $row): array => [
+        // array_values() est explicite : la collection indexe par la cle du
+        // modele, or le contrat de sortie est une LISTE (PHPStan niveau 8).
+        return array_values($rows->map(static fn (RetailOrderItem $row): array => [
             'product_id' => (int) $row->getAttribute('product_id'),
             'product_name' => (string) $row->getAttribute('product_name'),
             'quantity_sold' => (float) $row->getAttribute('quantity_sold'),
             'revenue_minor' => (int) $row->getAttribute('revenue_minor'),
-        ])->all();
+        ])->all());
     }
 
     /**
@@ -150,7 +152,7 @@ final class RetailReportService
             $query->where('location_id', $locationId);
         }
 
-        return $query->orderByDesc('closed_at')->get()->map(static fn (RetailPosSession $session): array => [
+        return array_values($query->orderByDesc('closed_at')->get()->map(static fn (RetailPosSession $session): array => [
             'id' => $session->id,
             'location_id' => $session->location_id,
             'opened_at' => $session->opened_at?->toIso8601String(),
@@ -160,7 +162,7 @@ final class RetailReportService
             'counted_cash_minor' => $session->counted_cash_minor,
             'variance_minor' => $session->variance_minor,
             'variance_reason' => $session->variance_reason,
-        ])->all();
+        ])->all());
     }
 
     /**
@@ -233,7 +235,19 @@ final class RetailReportService
         $lines = $report['lines'] ?? null;
 
         if (is_array($lines) && $lines !== []) {
-            return $this->rowsToCsv($lines);
+            // `$report` est un array<string, mixed> : on ne fait confiance a
+            // aucune forme implicite, chaque ligne doit etre un tableau.
+            $rows = [];
+            foreach ($lines as $line) {
+                if (is_array($line)) {
+                    /** @var array<string, mixed> $line */
+                    $rows[] = $line;
+                }
+            }
+
+            if ($rows !== []) {
+                return $this->rowsToCsv($rows);
+            }
         }
 
         // Rapport agrege : une ligne par cle scalaire.
@@ -266,7 +280,9 @@ final class RetailReportService
 
         foreach ($rows as $row) {
             fputcsv($handle, array_map(
-                static fn ($value): string => is_scalar($value) || $value === null ? (string) $value : json_encode($value),
+                static fn ($value): string => is_scalar($value) || $value === null
+                    ? (string) $value
+                    : (json_encode($value) ?: ''),
                 $row,
             ));
         }

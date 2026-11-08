@@ -40443,6 +40443,307 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Validation422'
+  /retail/pos/sessions/{session}/cash-movements:
+    get:
+      operationId: api_get_retail_pos_sessions_by_session_cash_movements
+      tags:
+      - Retail
+      summary: Lister les mouvements de tiroir-caisse d'une session POS (membres du tenant)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Mouvements d'especes de la session (ordre chronologique)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      operationId: api_post_retail_pos_sessions_by_session_cash_movements
+      tags:
+      - Retail
+      summary: Enregistrer un mouvement de tiroir-caisse (gestion principal/rh)
+      description: 'BC-17 #9212 : entree, sortie ou prelevement d''especes sur une
+        session ouverte. Le motif est OBLIGATOIRE (un mouvement d''especes sans
+        motif est un trou d''audit) et l''attendu de cloture integre les mouvements
+        (un prelevement pour la banque n''est plus un manquant).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              - amount_minor
+              - reason
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - in
+                  - out
+                  - drop
+                amount_minor:
+                  type: integer
+                  minimum: 1
+                  description: Montant en minor units (strictement positif)
+                reason:
+                  type: string
+                  maxLength: 255
+      responses:
+        '201':
+          description: Mouvement de caisse enregistre
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/pos/orders/{order}/refund:
+    post:
+      operationId: api_post_retail_pos_orders_by_order_refund
+      tags:
+      - Retail
+      summary: Rembourser une commande POS (gestion principal/rh)
+      description: 'BC-17 #9208 : remboursement total ou partiel, motif OBLIGATOIRE,
+        cumul borne par le total reellement encaisse (422 au-dela). `online` passe
+        par le remboursement marketplace (#7812), seuls cash, card et mobile sont
+        acceptes ici. `idempotency_key` evite un double remboursement sur retry.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - amount_minor
+              - reason
+              - method
+              properties:
+                amount_minor:
+                  type: integer
+                  minimum: 1
+                  description: Montant rembourse en minor units (strictement positif)
+                reason:
+                  type: string
+                  maxLength: 255
+                method:
+                  type: string
+                  enum:
+                  - cash
+                  - card
+                  - mobile
+                restock_lines:
+                  type: array
+                  nullable: true
+                  description: Articles rendus, remis en stock (mouvements return)
+                  items:
+                    type: object
+                    required:
+                    - product_id
+                    - quantity
+                    properties:
+                      product_id:
+                        type: integer
+                      quantity:
+                        type: number
+                        exclusiveMinimum: 0
+                idempotency_key:
+                  type: string
+                  nullable: true
+                  maxLength: 64
+      responses:
+        '201':
+          description: Remboursement enregistre
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/reports/sales:
+    get:
+      operationId: api_get_retail_reports_sales
+      tags:
+      - Retail
+      summary: Rapport de ventes POS (retail.reports)
+      description: 'BC-17 #9209 : CA, nombre de tickets, panier moyen et repartition
+        par moyen de paiement. Agregations serveur bornees par tenant et emplacement.
+        `?format=csv` exporte le rapport en CSV.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: location_id
+        in: query
+        schema:
+          type: integer
+      - name: format
+        in: query
+        schema:
+          type: string
+          enum:
+          - json
+          - csv
+      responses:
+        '200':
+          description: Rapport agrege des ventes, ou CSV si format=csv
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /retail/reports/top-products:
+    get:
+      operationId: api_get_retail_reports_top_products
+      tags:
+      - Retail
+      summary: Rapport des produits les plus vendus (retail.reports)
+      description: 'BC-17 #9209 : quantites et CA par produit, tries par CA decroissant.
+        `?format=csv` exporte le rapport en CSV.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: location_id
+        in: query
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: format
+        in: query
+        schema:
+          type: string
+          enum:
+          - json
+          - csv
+      responses:
+        '200':
+          description: Lignes produit (quantite vendue, CA), ou CSV si format=csv
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /retail/reports/sessions:
+    get:
+      operationId: api_get_retail_reports_sessions
+      tags:
+      - Retail
+      summary: Rapport des clotures de caisse (retail.reports)
+      description: 'BC-17 #9209 : par session fermee, fonds d''ouverture, attendu,
+        compte et ecart signe. `?format=csv` exporte le rapport en CSV.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: location_id
+        in: query
+        schema:
+          type: integer
+      - name: format
+        in: query
+        schema:
+          type: string
+          enum:
+          - json
+          - csv
+      responses:
+        '200':
+          description: Lignes de cloture de caisse, ou CSV si format=csv
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /retail/reports/stock-valuation:
+    get:
+      operationId: api_get_retail_reports_stock_valuation
+      tags:
+      - Retail
+      summary: Valorisation du stock au cout et au prix de vente (retail.reports)
+      description: 'BC-17 #9209 : quantite, valeur au cout et valeur au prix de vente
+        par emplacement, plus la marge latente. `?format=csv` exporte les lignes.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: location_id
+        in: query
+        schema:
+          type: integer
+      - name: format
+        in: query
+        schema:
+          type: string
+          enum:
+          - json
+          - csv
+      responses:
+        '200':
+          description: Valorisation agregee et lignes par produit
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
 
   /retail/products/{product}/publish-online:
     post:
