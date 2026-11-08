@@ -23,8 +23,7 @@ final class ServiceOrderNotificationConsumer implements RestaurantOutboxConsumer
 {
     public function __construct(
         private readonly CommunicationServiceInterface $communication,
-    ) {
-    }
+    ) {}
 
     public function supports(string $eventType): bool
     {
@@ -64,6 +63,4 @@ final class ServiceOrderNotificationConsumer implements RestaurantOutboxConsumer
             ], ['app', 'push']);
         }
     }
-
-
 }

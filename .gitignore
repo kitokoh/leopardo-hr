@@ -129,3 +129,4 @@ dev-hub/sdk/python/leopardo_client.py
 
 # Vercel CLI local link metadata (jamais committe — IDs de projet/orga)
 .vercel/
+api/phpstan.ci.neon

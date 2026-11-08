@@ -7,6 +7,7 @@ namespace Tests\Feature\Travel;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
+use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
 use App\Modules\TravelAgency\Domain\Models\TravelCity;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelRoute;
@@ -15,7 +16,6 @@ use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
 
 /**
  * TRAVEL-804 (#6095) — Recherche flexible (dates ± N jours).
@@ -164,7 +164,6 @@ class TravelFlexibleSearchTest extends TestCase
         });
     }
 
-
     public function test_flexible_search_groups_results_by_date(): void
     {
         /** @var Company $company */
@@ -190,7 +189,6 @@ class TravelFlexibleSearchTest extends TestCase
         $this->assertSame(now()->addDay()->toDateString(), $data[1]['date']);
         $this->assertSame(9000, $data[1]['trips'][0]['prices'][0]['adult_price_minor'] ?? null);
     }
-
 
     public function test_flexible_search_excludes_out_of_window_dates(): void
     {

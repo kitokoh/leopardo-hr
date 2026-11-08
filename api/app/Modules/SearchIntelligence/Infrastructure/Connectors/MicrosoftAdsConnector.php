@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\SearchIntelligence\Infrastructure\Connectors;
 
-use App\Modules\SearchIntelligence\Domain\Contracts\IntegrationMetricsClient;
 use App\Modules\SearchIntelligence\Domain\Contracts\IntegrationMetricRow;
+use App\Modules\SearchIntelligence\Domain\Contracts\IntegrationMetricsClient;
 use App\Modules\SearchIntelligence\Domain\Enums\MetricSource;
 use App\Modules\SearchIntelligence\Domain\Exceptions\IntegrationSyncException;
 use Illuminate\Support\Facades\Http;
@@ -105,67 +105,67 @@ final class MicrosoftAdsConnector extends AbstractGoogleConnector implements Int
         // Microsoft expose un flux asynchrone (Submit → Poll → Download). On
         // soumet la demande, puis on interroge l'état : le résultat direct
         // n'existe pas, contrairement aux API Google.
-            $response = Http::withToken($token)
-                ->timeout(self::TIMEOUT_SECONDS)
-                ->acceptJson()
-                ->post($url, [
-                    'ReportRequest' => [
-                        'Type' => 'CampaignPerformanceReportRequest',
-                        'Aggregation' => 'Daily',
-                        'ExcludeColumnHeaders' => false,
-                        'ExcludeReportFooter' => true,
-                        'ExcludeReportHeader' => true,
-                        'Format' => 'Csv',
-                        'ReturnOnlyCompleteData' => false,
-                        'Scope' => [
-                            'AccountIds' => [(int) $customerId],
-                        ],
-                        'Columns' => [
-                            'CampaignId',
-                            'CampaignName',
-                            'TimePeriod',
-                            'Spend',
-                            'Impressions',
-                            'Clicks',
-                            'Conversions',
-                            'Revenue',
-                        ],
-                        'Time' => [
-                            'CustomDateRangeStart' => ['Year' => (int) $from->format('Y'), 'Month' => (int) $from->format('n'), 'Day' => (int) $from->format('j')],
-                            'CustomDateRangeEnd' => ['Year' => (int) $to->format('Y'), 'Month' => (int) $to->format('n'), 'Day' => (int) $to->format('j')],
-                        ],
+        $response = Http::withToken($token)
+            ->timeout(self::TIMEOUT_SECONDS)
+            ->acceptJson()
+            ->post($url, [
+                'ReportRequest' => [
+                    'Type' => 'CampaignPerformanceReportRequest',
+                    'Aggregation' => 'Daily',
+                    'ExcludeColumnHeaders' => false,
+                    'ExcludeReportFooter' => true,
+                    'ExcludeReportHeader' => true,
+                    'Format' => 'Csv',
+                    'ReturnOnlyCompleteData' => false,
+                    'Scope' => [
+                        'AccountIds' => [(int) $customerId],
                     ],
-                ]);
+                    'Columns' => [
+                        'CampaignId',
+                        'CampaignName',
+                        'TimePeriod',
+                        'Spend',
+                        'Impressions',
+                        'Clicks',
+                        'Conversions',
+                        'Revenue',
+                    ],
+                    'Time' => [
+                        'CustomDateRangeStart' => ['Year' => (int) $from->format('Y'), 'Month' => (int) $from->format('n'), 'Day' => (int) $from->format('j')],
+                        'CustomDateRangeEnd' => ['Year' => (int) $to->format('Y'), 'Month' => (int) $to->format('n'), 'Day' => (int) $to->format('j')],
+                    ],
+                ],
+            ]);
 
-            if ($response->status() === 401 || $response->status() === 403) {
-                throw IntegrationSyncException::unauthorized($this->provider());
-            }
+        if ($response->status() === 401 || $response->status() === 403) {
+            throw IntegrationSyncException::unauthorized($this->provider());
+        }
 
-            if ($response->status() === 429) {
-                throw IntegrationSyncException::quotaExceeded($this->provider());
-            }
+        if ($response->status() === 429) {
+            throw IntegrationSyncException::quotaExceeded($this->provider());
+        }
 
-            if ($response->serverError()) {
-                throw IntegrationSyncException::transport($this->provider(), 'HTTP '.$response->status());
-            }
+        if ($response->serverError()) {
+            throw IntegrationSyncException::transport($this->provider(), 'HTTP '.$response->status());
+        }
 
-            if (! $response->successful()) {
-                throw IntegrationSyncException::malformed($this->provider(), 'HTTP '.$response->status());
-            }
+        if (! $response->successful()) {
+            throw IntegrationSyncException::malformed($this->provider(), 'HTTP '.$response->status());
+        }
 
-            $payload = $response->json();
+        $payload = $response->json();
 
-            if (! is_array($payload)) {
-                throw IntegrationSyncException::malformed($this->provider(), 'réponse non JSON');
-            }
+        if (! is_array($payload)) {
+            throw IntegrationSyncException::malformed($this->provider(), 'réponse non JSON');
+        }
 
-            $reportRequestId = $payload['ReportRequestId'] ?? null;
+        $reportRequestId = $payload['ReportRequestId'] ?? null;
 
-            if (! is_string($reportRequestId) || $reportRequestId === '') {
-                throw IntegrationSyncException::malformed($this->provider(), 'ReportRequestId absent');
-            }
+        if (! is_string($reportRequestId) || $reportRequestId === '') {
+            throw IntegrationSyncException::malformed($this->provider(), 'ReportRequestId absent');
+        }
 
-            return $this->downloadReport($token, $reportRequestId);
+        return $this->downloadReport($token, $reportRequestId);
     }
 
     /**

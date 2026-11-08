@@ -46,4 +46,3 @@ class LoanPolicy
             && $actor->hasManagerRole('principal', 'comptable');
     }
 }
-

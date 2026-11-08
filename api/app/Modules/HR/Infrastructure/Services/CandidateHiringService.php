@@ -12,7 +12,6 @@ use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
 use App\Modules\HR\Domain\Exceptions\CandidateAlreadyHiredException;
 use App\Modules\HR\Domain\Exceptions\OnboardingIncompleteException;
 use App\Modules\HR\Domain\Models\OnboardingStep;
-use App\Modules\HR\Infrastructure\Services\EmployeeService;
 use App\Modules\Recruitment\Domain\Models\Applicant;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;

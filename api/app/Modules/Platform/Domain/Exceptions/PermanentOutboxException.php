@@ -12,6 +12,4 @@ namespace App\Modules\Platform\Domain\Exceptions;
  * reste inspectable (status failed + last_error) et rejouable via
  * `platform:outbox-replay` après correction.
  */
-final class PermanentOutboxException extends \RuntimeException
-{
-}
+final class PermanentOutboxException extends \RuntimeException {}

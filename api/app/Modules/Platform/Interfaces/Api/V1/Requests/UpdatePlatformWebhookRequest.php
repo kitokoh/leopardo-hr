@@ -25,7 +25,7 @@ class UpdatePlatformWebhookRequest extends FormRequest
     {
         return ['url' => ['sometimes', 'url', 'max:500'],
             'events' => ['sometimes', 'array', 'min:1'],
-            'events.*' => ['string', 'in:' . implode(',', self::EVENTS)],
+            'events.*' => ['string', 'in:'.implode(',', self::EVENTS)],
             'active' => ['sometimes', 'boolean']];
     }
 }

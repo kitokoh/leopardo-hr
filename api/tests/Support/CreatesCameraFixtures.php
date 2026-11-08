@@ -2,8 +2,8 @@
 
 namespace Tests\Support;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -46,6 +46,7 @@ trait CreatesCameraFixtures
             'manager_role' => $managerRole,
             'status' => 'active',
         ])->save();
+
         return $sensitiveEmployee1;
     }
 
@@ -60,6 +61,7 @@ trait CreatesCameraFixtures
             'role' => 'employee',
             'status' => 'active',
         ])->save();
+
         return $sensitiveEmployee0;
     }
 
@@ -71,4 +73,3 @@ trait CreatesCameraFixtures
         return ['Authorization' => 'Bearer '.$token];
     }
 }
-

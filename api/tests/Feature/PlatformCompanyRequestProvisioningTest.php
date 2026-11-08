@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Mail\UserInvitationMail;
+use App\Core\Auth\Domain\Models\User;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
-use App\Core\Auth\Domain\Models\User;
+use App\Mail\UserInvitationMail;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -169,4 +169,3 @@ class PlatformCompanyRequestProvisioningTest extends TestCase
         Schema::dropIfExists('users');
     }
 }
-

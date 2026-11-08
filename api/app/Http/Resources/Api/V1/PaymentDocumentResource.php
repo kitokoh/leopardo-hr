@@ -36,4 +36,3 @@ class PaymentDocumentResource extends JsonResource
         ];
     }
 }
-

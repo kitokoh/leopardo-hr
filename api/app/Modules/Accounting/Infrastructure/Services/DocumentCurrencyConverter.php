@@ -9,7 +9,6 @@ use App\Modules\Accounting\Application\DTOs\ConvertedTotals;
 use App\Modules\Accounting\Domain\Contracts\CurrencyRateProviderInterface;
 use App\Modules\Accounting\Domain\Exceptions\CurrencyRateUnavailableException;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
-use App\Modules\Accounting\Infrastructure\Services\AccountingCurrencies;
 
 /**
  * Conversion multi-devises des montants comptables — issue #5270.

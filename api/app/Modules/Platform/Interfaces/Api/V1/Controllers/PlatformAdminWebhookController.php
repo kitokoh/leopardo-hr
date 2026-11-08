@@ -10,9 +10,9 @@ use App\Http\Resources\Api\V1\WebhookEndpointResource;
 use App\Jobs\DispatchWebhook;
 use App\Modules\Billing\Domain\Models\WebhookDelivery;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
-use Illuminate\Http\JsonResponse;
 use App\Modules\Platform\Interfaces\Api\V1\Requests\StorePlatformWebhookRequest;
 use App\Modules\Platform\Interfaces\Api\V1\Requests\UpdatePlatformWebhookRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Str;
@@ -63,7 +63,7 @@ class PlatformAdminWebhookController extends Controller
      */
     public function store(StorePlatformWebhookRequest $request): JsonResponse
     {
-$validated = $request->validated();
+        $validated = $request->validated();
 
         $webhook = WebhookEndpoint::create([
             'company_id' => $validated['company_id'],
@@ -83,7 +83,7 @@ $validated = $request->validated();
      */
     public function update(UpdatePlatformWebhookRequest $request, WebhookEndpoint $webhookEndpoint): WebhookEndpointResource
     {
-$validated = $request->validated();
+        $validated = $request->validated();
 
         $webhookEndpoint->update($validated);
         if (! empty($validated['active'])) {

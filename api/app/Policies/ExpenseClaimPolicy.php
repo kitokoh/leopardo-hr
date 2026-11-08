@@ -49,4 +49,3 @@ class ExpenseClaimPolicy
         return $actor->id === $expense->employee_id && $expense->status === 'draft';
     }
 }
-

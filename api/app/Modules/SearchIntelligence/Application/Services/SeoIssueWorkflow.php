@@ -31,7 +31,7 @@ final class SeoIssueWorkflow
      * @param  string|null  $reason  justification — OBLIGATOIRE pour `dismissed`
      *
      * @throws InvalidTransitionException si la transition n'est pas permise ou
-     *         si l'écartement est demandé sans justification.
+     *                                    si l'écartement est demandé sans justification.
      */
     public function transition(SeoIssue $issue, SeoIssueStatus $target, ?int $actorId, ?string $reason = null): SeoIssue
     {

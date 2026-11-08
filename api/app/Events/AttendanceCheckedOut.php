@@ -15,4 +15,3 @@ class AttendanceCheckedOut
 
     public function __construct(public readonly AttendanceLog $log) {}
 }
-

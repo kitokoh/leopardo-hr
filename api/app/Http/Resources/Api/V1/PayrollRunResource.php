@@ -46,4 +46,3 @@ class PayrollRunResource extends JsonResource
         ];
     }
 }
-

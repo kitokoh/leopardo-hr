@@ -27,8 +27,7 @@ final class RestaurantPurchaseOrderService
 {
     public function __construct(
         private readonly RestaurantStockMovementService $stockMovements,
-    ) {
-    }
+    ) {}
 
     /**
      * Recalcule le total du bon (minor units) depuis ses lignes.

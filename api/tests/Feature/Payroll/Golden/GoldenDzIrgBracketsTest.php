@@ -22,20 +22,20 @@ class GoldenDzIrgBracketsTest extends TestCase
     public static function irgProvider(): array
     {
         return [
-            'SMIG 20 000'    => [20000.0, 0.0],
-            'borne 20 001'   => [20001.0, 0.0],
-            'borne 40 000'   => [40000.0, 3100.0],
-            'borne 40 001'   => [40001.0, 3100.27],
+            'SMIG 20 000' => [20000.0, 0.0],
+            'borne 20 001' => [20001.0, 0.0],
+            'borne 40 000' => [40000.0, 3100.0],
+            'borne 40 001' => [40001.0, 3100.27],
             'assiette 54 600' => [54600.0, 7042.0],
-            'milieu 50 000'  => [50000.0, 5800.0],
-            'borne 80 000'   => [80000.0, 13900.0],
-            'borne 80 001'   => [80001.0, 13900.3],
+            'milieu 50 000' => [50000.0, 5800.0],
+            'borne 80 000' => [80000.0, 13900.0],
+            'borne 80 001' => [80001.0, 13900.3],
             'milieu 100 000' => [100000.0, 19900.0],
-            'borne 160 000'  => [160000.0, 37900.0],
-            'borne 160 001'  => [160001.0, 37900.33],
-            'borne 320 000'  => [320000.0, 90700.0],
-            'borne 320 001'  => [320001.0, 90700.35],
-            'haut 350 000'   => [350000.0, 101200.0],
+            'borne 160 000' => [160000.0, 37900.0],
+            'borne 160 001' => [160001.0, 37900.33],
+            'borne 320 000' => [320000.0, 90700.0],
+            'borne 320 001' => [320001.0, 90700.35],
+            'haut 350 000' => [350000.0, 101200.0],
             'tranche 35 % max (500 000)' => [500000.0, 153700.0],
         ];
     }
@@ -43,16 +43,16 @@ class GoldenDzIrgBracketsTest extends TestCase
     #[DataProvider('irgProvider')]
     public function test_golden_dz_irg(float $grossTaxable, float $expected): void
     {
-        $this->assertSame($expected, (new AlgeriaPayrollRules())->calculateIncomeTax($grossTaxable));
+        $this->assertSame($expected, (new AlgeriaPayrollRules)->calculateIncomeTax($grossTaxable));
     }
 
     public static function cnasProvider(): array
     {
         return [
-            'zéro'         => [0.0, [0.0, 0.0]],
-            'SMIG 20 000'  => [20000.0, [1800.0, 5200.0]],
+            'zéro' => [0.0, [0.0, 0.0]],
+            'SMIG 20 000' => [20000.0, [1800.0, 5200.0]],
             'moyen 60 000' => [60000.0, [5400.0, 15600.0]],
-            'décimal'      => [123456.78, [11111.11, 32098.76]],
+            'décimal' => [123456.78, [11111.11, 32098.76]],
             // #5149 — aucun plafond légal CNAS en DZ (DZ_COMPLIANCE.md §2) :
             // un million de dinars reste cotisé à 9 % / 26 % intégralement.
             'sans plafond 1 000 000' => [1000000.0, [90000.0, 260000.0]],
@@ -65,7 +65,7 @@ class GoldenDzIrgBracketsTest extends TestCase
     #[DataProvider('cnasProvider')]
     public function test_golden_dz_cnas(float $gross, array $expected): void
     {
-        $charges = (new AlgeriaPayrollRules())->calculateSocialCharges($gross);
+        $charges = (new AlgeriaPayrollRules)->calculateSocialCharges($gross);
 
         $this->assertSame($expected[0], $charges['employee']);
         $this->assertSame($expected[1], $charges['employer']);

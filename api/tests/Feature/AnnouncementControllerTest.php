@@ -7,10 +7,10 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Notification\Domain\Models\CompanyAnnouncement;
 use App\Modules\Notification\Domain\Models\Notification;
 use Illuminate\Support\Carbon;
+use Illuminate\Testing\PendingCommand;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
-use Illuminate\Testing\PendingCommand;
 
 class AnnouncementControllerTest extends TestCase
 {

@@ -31,4 +31,3 @@ class InvoicePolicy
             && $actor->hasManagerRole('principal');
     }
 }
-

@@ -45,8 +45,7 @@ class PlatformHrReportController extends Controller
         private readonly GenerateAbsenteeismReportAction $absenteeism,
         private readonly GeneratePayrollSummaryReportAction $payrollSummary,
         private readonly GenerateTrainingProgressReportAction $trainingProgress,
-    ) {
-    }
+    ) {}
 
     public function generate(Request $request): JsonResponse
     {

@@ -15,4 +15,3 @@ class AbsenceRejected
 
     public function __construct(public readonly Absence $absence) {}
 }
-

@@ -36,7 +36,7 @@ final class CreateCrmExport
         // L'entité doit être disponible (socle V0) — sinon l'export échouerait
         // en tâche de fond sans message clair.
         if (! $this->entityTableExists($dto->entity)) {
-            throw new CrmExportEntityUnavailableException();
+            throw new CrmExportEntityUnavailableException;
         }
 
         $job = CrmExportJob::query()->create([

@@ -49,4 +49,3 @@ class TrainingPolicy
         return $actor->isManager();
     }
 }
-

@@ -84,6 +84,7 @@ class PublicPhoneOtpController extends Controller
             'country' => ['nullable', 'string', 'size:2'],
         ]);
 
+        /** @var array{phone_e164: string, country?: string|null} $validated */
         $phone = PhoneNumber::toE164(
             (string) $validated['phone_e164'],
             isset($validated['country']) ? (string) $validated['country'] : null,
@@ -172,6 +173,7 @@ class PublicPhoneOtpController extends Controller
             'device_name' => ['nullable', 'string', 'max:255'],
         ]);
 
+        /** @var array{phone_e164: string, country?: string|null, code: string, device_name?: string|null} $validated */
         $phone = PhoneNumber::toE164(
             (string) $validated['phone_e164'],
             isset($validated['country']) ? (string) $validated['country'] : null,

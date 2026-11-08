@@ -34,4 +34,3 @@ class JobPostingResource extends JsonResource
         ];
     }
 }
-

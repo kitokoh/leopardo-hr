@@ -9,7 +9,6 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\SalaryComponent;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
-use Illuminate\Console\Command;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -160,7 +159,7 @@ class PayrollBenchmarkSeeder extends Seeder
         );
 
         $this->command?->info(sprintf(
-            "Benchmark prêt : %d employés, run %s → %s (id %s).",
+            'Benchmark prêt : %d employés, run %s → %s (id %s).',
             Employee::query()->where('company_id', $company->id)->count(),
             $periodStart,
             $periodEnd,

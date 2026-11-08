@@ -124,7 +124,6 @@ class TravelTouristSiteApiTest extends TestCase
         $this->getJson('/api/v1/travel/tourist-sites/'.$siteB->id)->assertStatus(404);
     }
 
-
     private function principal(Company $company): Employee
     {
         /** @var Employee $employee */
@@ -139,13 +138,11 @@ class TravelTouristSiteApiTest extends TestCase
         return $employee;
     }
 
-
     private function activateTravel(Company $company): void
     {
         $company->setFeature('travelagency', true);
         $company->save();
     }
-
 
     public function test_site_can_be_created_and_searched_by_city(): void
     {
@@ -173,7 +170,6 @@ class TravelTouristSiteApiTest extends TestCase
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.name', 'Chutes de la Lobé');
     }
-
 
     public function test_site_of_another_tenant_returns_404(): void
     {

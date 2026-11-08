@@ -6,12 +6,11 @@ namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\AI\Workflows\PreparePayrollWorkflow;
 use App\AI\Workflows\WeeklyReportWorkflow;
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
-use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 use App\Modules\Platform\Interfaces\Api\V1\Requests\PreparePayrollReportRequest;
 use App\Modules\Platform\Interfaces\Api\V1\Requests\WeeklyReportRequest;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class AIWorkflowController extends Controller
 {

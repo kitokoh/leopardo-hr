@@ -34,19 +34,20 @@ class LinkPartnerToNewCompany
 
         $referrerId = Cookie::get('leopardo_referrer_id');
 
-        if (!$referrerId) {
+        if (! $referrerId) {
             return;
         }
 
         $partner = Partner::find($referrerId);
 
-        if (!$partner || $partner->status !== 'active') {
+        if (! $partner || $partner->status !== 'active') {
             return;
         }
 
         // Anti-auto-referral
         if ($event->company->email === $partner->user->email) {
             Log::warning("Auto-referral attempt blocked for partner {$partner->id} on company {$event->company->id}");
+
             return;
         }
 
@@ -64,4 +65,3 @@ class LinkPartnerToNewCompany
         Log::info("Company {$event->company->id} linked to partner {$partner->id}");
     }
 }
-

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Core\Tenant\Domain\Models\Company;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -24,9 +24,13 @@ class HrAppRoutesTest extends TestCase
     use CreatesMvpSchema;
 
     private Company $company;
+
     private Employee $principal;
+
     private Employee $hrManager;
+
     private Employee $regularEmployee;
+
     private Employee $marketingManager;
 
     protected function setUp(): void
@@ -45,51 +49,51 @@ class HrAppRoutesTest extends TestCase
     private function seedTestData(): void
     {
         $this->company = Company::query()->create([
-            'name'         => 'Test Company',
-            'slug'         => 'test-company',
-            'sector'       => 'tech',
-            'country'      => 'DZ',
-            'city'         => 'Alger',
-            'email'        => 'company@test.hr',
-            'schema_name'  => 'shared_tenants',
+            'name' => 'Test Company',
+            'slug' => 'test-company',
+            'sector' => 'tech',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'company@test.hr',
+            'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
-            'status'       => 'active',
+            'status' => 'active',
         ]);
 
         $base = [
-            'company_id'    => $this->company->id,
+            'company_id' => $this->company->id,
             'password_hash' => Hash::make('password123'),
-            'status'        => 'active',
-            'first_name'    => 'Test',
-            'last_name'     => 'User',
-            'gender'        => 'M',
-            'date_of_birth' => '1990-01-01',
+            'status' => 'active',
+            'first_name' => 'Test',
+            'last_name' => 'User',
+            'gender' => 'M',
+            'date_of_birth' => Carbon::now()->subYears(35)->toDateString(),
             'contract_type' => 'cdi',
-            'contract_start'=> '2023-01-01',
-            'salary_type'   => 'monthly',
+            'contract_start' => Carbon::now()->subYears(3)->toDateString(),
+            'salary_type' => 'monthly',
         ];
 
         $this->principal = Employee::query()->forceCreate(array_merge($base, [
-            'email'        => 'principal@test.hr',
-            'role'         => 'manager',
+            'email' => 'principal@test.hr',
+            'role' => 'manager',
             'manager_role' => 'principal',
         ]));
 
         $this->hrManager = Employee::query()->forceCreate(array_merge($base, [
-            'email'        => 'rh@test.hr',
-            'role'         => 'manager',
+            'email' => 'rh@test.hr',
+            'role' => 'manager',
             'manager_role' => 'rh',
         ]));
 
         $this->regularEmployee = Employee::query()->forceCreate(array_merge($base, [
-            'email'        => 'employee@test.hr',
-            'role'         => 'employee',
+            'email' => 'employee@test.hr',
+            'role' => 'employee',
             'manager_role' => null,
         ]));
 
         $this->marketingManager = Employee::query()->forceCreate(array_merge($base, [
-            'email'        => 'marketing@test.hr',
-            'role'         => 'manager',
+            'email' => 'marketing@test.hr',
+            'role' => 'manager',
             'manager_role' => 'marketing',
         ]));
     }
@@ -167,15 +171,15 @@ class HrAppRoutesTest extends TestCase
     {
         $response = $this->actingAs($this->hrManager, 'sanctum')
             ->postJson('/api/v1/hr/employees', [
-                'first_name'     => 'Jean',
-                'last_name'      => 'Dupont',
-                'email'          => 'jean.dupont@test.hr',
-                'gender'         => 'M',
-                'date_of_birth'  => '1995-06-15',
-                'contract_type'  => 'cdi',
+                'first_name' => 'Jean',
+                'last_name' => 'Dupont',
+                'email' => 'jean.dupont@test.hr',
+                'gender' => 'M',
+                'date_of_birth' => Carbon::now()->subYears(30)->toDateString(),
+                'contract_type' => 'cdi',
                 'contract_start' => '2026-01-01',
-                'salary_type'    => 'monthly',
-                'salary_base'    => 50000,
+                'salary_type' => 'monthly',
+                'salary_base' => 50000,
             ]);
 
         $response->assertCreated();
@@ -187,24 +191,24 @@ class HrAppRoutesTest extends TestCase
         // Even if HR sends manager_role in the payload, it should be ignored
         $response = $this->actingAs($this->hrManager, 'sanctum')
             ->postJson('/api/v1/hr/employees', [
-                'first_name'     => 'Evil',
-                'last_name'      => 'Hr',
-                'email'          => 'evil.hr@test.hr',
-                'gender'         => 'M',
-                'date_of_birth'  => '1990-01-01',
-                'contract_type'  => 'cdi',
+                'first_name' => 'Evil',
+                'last_name' => 'Hr',
+                'email' => 'evil.hr@test.hr',
+                'gender' => 'M',
+                'date_of_birth' => Carbon::now()->subYears(35)->toDateString(),
+                'contract_type' => 'cdi',
                 'contract_start' => '2026-01-01',
-                'salary_type'    => 'monthly',
-                'role'           => 'manager',         // should be stripped
-                'manager_role'   => 'comptable',       // should be stripped
+                'salary_type' => 'monthly',
+                'role' => 'manager',         // should be stripped
+                'manager_role' => 'comptable',       // should be stripped
             ]);
 
         $response->assertCreated();
         // Role must always be 'employee' regardless of input
         $response->assertJsonPath('data.role', 'employee');
         $this->assertDatabaseHas('employees', [
-            'email'        => 'evil.hr@test.hr',
-            'role'         => 'employee',
+            'email' => 'evil.hr@test.hr',
+            'role' => 'employee',
             'manager_role' => null,
         ]);
     }
@@ -213,14 +217,14 @@ class HrAppRoutesTest extends TestCase
     {
         $response = $this->actingAs($this->regularEmployee, 'sanctum')
             ->postJson('/api/v1/hr/employees', [
-                'first_name'     => 'Test',
-                'last_name'      => 'Employee',
-                'email'          => 'test@test.hr',
-                'gender'         => 'M',
-                'date_of_birth'  => '1990-01-01',
-                'contract_type'  => 'cdi',
+                'first_name' => 'Test',
+                'last_name' => 'Employee',
+                'email' => 'test@test.hr',
+                'gender' => 'M',
+                'date_of_birth' => Carbon::now()->subYears(35)->toDateString(),
+                'contract_type' => 'cdi',
                 'contract_start' => '2026-01-01',
-                'salary_type'    => 'monthly',
+                'salary_type' => 'monthly',
             ]);
 
         $response->assertForbidden();
@@ -240,4 +244,3 @@ class HrAppRoutesTest extends TestCase
         ]);
     }
 }
-

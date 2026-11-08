@@ -117,5 +117,3 @@ class TenantCacheService
         return "tenant:{$companyId}:{$key}";
     }
 }
-
-

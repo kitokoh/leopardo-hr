@@ -50,4 +50,3 @@ class ContractResource extends JsonResource
         ];
     }
 }
-

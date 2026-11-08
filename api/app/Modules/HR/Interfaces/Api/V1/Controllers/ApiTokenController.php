@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -20,7 +20,7 @@ class ApiTokenController extends Controller
         }
 
         return response()->json([
-            'data' => $user->tokens()->select('id', 'name', 'abilities', 'last_used_at', 'created_at')->get()
+            'data' => $user->tokens()->select('id', 'name', 'abilities', 'last_used_at', 'created_at')->get(),
         ]);
     }
 
@@ -44,7 +44,7 @@ class ApiTokenController extends Controller
                 'name' => $token->accessToken->name,
                 'token' => $token->plainTextToken, // Seule fois où le token est renvoyé en clair
                 'created_at' => $token->accessToken->created_at,
-            ]
+            ],
         ], 201);
     }
 

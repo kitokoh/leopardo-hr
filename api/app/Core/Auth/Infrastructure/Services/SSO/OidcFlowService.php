@@ -123,6 +123,7 @@ final class OidcFlowService
             throw new \RuntimeException('SSO_USER_NOT_FOUND: aucun employé actif avec cet email ('.$email.').');
         }
 
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = $result['employee'];
         if ((string) $employee->company_id !== $companyId) {
             // Révoquer le token créé par loginViaEmail avant de lever l'erreur.

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
+use App\Http\Controllers\Controller;
 use App\Modules\Platform\Infrastructure\Services\CompanyProvisioningService;
 use App\Support\CountryDefaults;
 use Illuminate\Http\JsonResponse;
@@ -204,4 +204,3 @@ class PlatformCompanyRequestController extends Controller
         return $result['company'];
     }
 }
-

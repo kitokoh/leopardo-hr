@@ -12,7 +12,6 @@ use App\Modules\RestaurantManager\Application\Consumers\ServiceOrderNotification
 use App\Modules\RestaurantManager\Application\Observers\RestaurantOrderObserver;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent;
-use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use Mockery;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;

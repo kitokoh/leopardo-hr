@@ -38,6 +38,7 @@ class UserAuthController extends Controller
             'phone' => ['nullable', 'string', 'max:20'],
         ]);
 
+        /** @var array{first_name: string, last_name: string, email: string, password: string, phone?: string|null} $validated */
         $result = $this->userAuthService->register(
             firstName: $validated['first_name'],
             lastName: $validated['last_name'],
@@ -61,6 +62,7 @@ class UserAuthController extends Controller
             'device_name' => ['nullable', 'string', 'max:255'],
         ]);
 
+        /** @var array{email: string, password: string, device_name?: string|null} $validated */
         $result = $this->userAuthService->login(
             email: $validated['email'],
             password: $validated['password'],
@@ -81,6 +83,7 @@ class UserAuthController extends Controller
             'device_name' => ['nullable', 'string', 'max:255'],
         ]);
 
+        /** @var array{id_token: string, device_name?: string|null} $validated */
         $result = $this->userAuthService->googleSignIn(
             idToken: $validated['id_token'],
             deviceName: $validated['device_name'] ?? null,
@@ -141,6 +144,7 @@ class UserAuthController extends Controller
         /** @var User $user */
         $user = $request->user('user_api');
 
+        /** @var array{statuses: array<int, string>} $validated */
         // Déduplique et réindexe
         $statuses = array_values(array_unique($validated['statuses']));
 
@@ -167,6 +171,7 @@ class UserAuthController extends Controller
             'q' => ['required', 'string', 'min:2', 'max:100'],
         ]);
 
+        /** @var array{q: string} $validated */
         $query = trim($validated['q']);
 
         // Requête sur la table public.companies (multi-tenant global)
@@ -198,6 +203,7 @@ class UserAuthController extends Controller
         /** @var User $user */
         $user = $request->user('user_api');
 
+        /** @var array{current_password: string, new_password: string} $validated */
         if ($user->password_hash && ! Hash::check($validated['current_password'], $user->password_hash)) {
             return new JsonResponse([
                 'error' => 'INVALID_CURRENT_PASSWORD',

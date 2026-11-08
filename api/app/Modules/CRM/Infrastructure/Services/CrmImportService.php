@@ -12,7 +12,6 @@ use App\Modules\CRM\Domain\Enums\CrmImportStatus;
 use App\Modules\CRM\Domain\Exceptions\CrmImportException;
 use App\Modules\CRM\Domain\Models\CrmImport;
 use App\Modules\CRM\Infrastructure\Jobs\CrmImportCommitJob;
-use App\Modules\CRM\Infrastructure\Services\CsvParser;
 use Illuminate\Http\UploadedFile;
 
 /**
@@ -34,8 +33,7 @@ final class CrmImportService
     public function __construct(
         private readonly CrmImportRepositoryInterface $imports,
         private readonly CsvParser $parser,
-    ) {
-    }
+    ) {}
 
     /**
      * Upload + preview : parse le fichier et crée la session en statut

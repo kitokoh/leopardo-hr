@@ -12,9 +12,9 @@ use App\Modules\Marketing\Infrastructure\Services\SocialPublishingService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Testing\PendingCommand;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use Illuminate\Testing\PendingCommand;
 
 class PublishScheduledPostJobTest extends TestCase
 {

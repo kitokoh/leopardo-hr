@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\EdgeSync\Providers;
 
+use App\Modules\EdgeSync\Console\Commands\EdgeSyncDaemonCommand;
+use App\Modules\EdgeSync\Console\Commands\MonitorEdgeNodesCommand;
 use App\Modules\EdgeSync\Infrastructure\Services\CloudDeltaBuilder;
 use App\Modules\EdgeSync\Infrastructure\Services\EdgeLicenseService;
 use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
-use App\Modules\EdgeSync\Console\Commands\EdgeSyncDaemonCommand;
-use App\Modules\EdgeSync\Console\Commands\MonitorEdgeNodesCommand;
 use Illuminate\Support\ServiceProvider;
 
 class EdgeSyncServiceProvider extends ServiceProvider
@@ -25,14 +25,14 @@ class EdgeSyncServiceProvider extends ServiceProvider
         ]);
 
         $this->mergeConfigFrom(
-            __DIR__ . '/../../../../config/edge.php',
+            __DIR__.'/../../../../config/edge.php',
             'edge'
         );
     }
 
     public function boot(): void
     {
-        $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
         // EdgeSync migrations live in the central api/database/migrations/tenant/ directory
         // (2026_06_29_000001_create_edge_sync_tables.php) alongside all other modules.
         // The module-local database/migrations/ directory has been removed to eliminate

@@ -2,15 +2,15 @@
 
 namespace Tests\Feature\Contracts;
 
-use App\Modules\Planning\Domain\Models\Absence;
-use App\Modules\Planning\Domain\Models\AbsenceType;
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
+use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Planning\Domain\Models\AbsenceType;
 use Illuminate\Support\Carbon;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -329,4 +329,3 @@ class ApiListQueryContractTest extends TestCase
         return [$run, $slip];
     }
 }
-

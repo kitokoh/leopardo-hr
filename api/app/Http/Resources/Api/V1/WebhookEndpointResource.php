@@ -25,4 +25,3 @@ class WebhookEndpointResource extends JsonResource
         ];
     }
 }
-

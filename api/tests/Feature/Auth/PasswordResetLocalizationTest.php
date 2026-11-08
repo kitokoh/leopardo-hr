@@ -38,13 +38,13 @@ class PasswordResetLocalizationTest extends TestCase
             ->postJson('/api/v1/auth/forgot-password', ['email' => 'nobody@example.com']);
 
         $response->assertOk()
-            ->assertJsonPath('localized_message', "Si un compte existe pour cet email, un lien de réinitialisation a été envoyé.");
+            ->assertJsonPath('localized_message', 'Si un compte existe pour cet email, un lien de réinitialisation a été envoyé.');
     }
 
     public function test_forgot_password_message_key_is_translated_in_all_supported_locales(): void
     {
         $expected = [
-            'fr' => "Si un compte existe pour cet email, un lien de réinitialisation a été envoyé.",
+            'fr' => 'Si un compte existe pour cet email, un lien de réinitialisation a été envoyé.',
             'en' => 'If an account exists for this email, a reset link has been sent.',
             'tr' => 'Bu e-posta icin bir hesap varsa, bir sifirlama baglantisi gonderildi.',
             'ar' => 'إذا كان هناك حساب لهذا البريد الإلكتروني، فقد تم إرسال رابط إعادة التعيين.',

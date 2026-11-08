@@ -59,6 +59,7 @@ class PlatformAuthController extends Controller
         // balayage de mots de passe — un compteur d'échecs par (email + IP)
         // bloque la source fautive sans permettre un verrouillage DoS du
         // compte depuis des IP différentes.
+        /** @var array{email: string, password: string, device_name?: string|null, two_fa_code?: string|null} $validated */
         $accountKey = 'platform_login_'.strtolower($validated['email']);
         $attemptKey = $accountKey.':'.$request->ip();
         $lockKey = $accountKey.':lock';
@@ -152,7 +153,9 @@ class PlatformAuthController extends Controller
                 ], 202); // 202 Accepted but further action needed
             }
 
-            if (! $this->superAdminService->verifyCode($superAdmin, $validated['two_fa_code'])) {
+            /** @var string $twoFaCode */
+            $twoFaCode = $validated['two_fa_code'];
+            if (! $this->superAdminService->verifyCode($superAdmin, $twoFaCode)) {
                 return new JsonResponse([
                     'error' => 'INVALID_2FA_CODE',
                     'message' => __('auth.twofa_code_invalid'),
@@ -160,7 +163,9 @@ class PlatformAuthController extends Controller
             }
         }
 
-        $token = $superAdmin->createToken($validated['device_name'] ?? 'platform-api')->plainTextToken;
+        /** @var string|null $deviceName */
+        $deviceName = $validated['device_name'] ?? null;
+        $token = $superAdmin->createToken($deviceName ?? 'platform-api')->plainTextToken;
 
         return new JsonResponse([
             'data' => [
@@ -218,6 +223,7 @@ class PlatformAuthController extends Controller
         /** @var SuperAdmin $superAdmin */
         $superAdmin = $request->user('super_admin_api');
 
+        /** @var array{email?: string, name?: string} $validated */
         if (isset($validated['email']) && $validated['email'] !== $superAdmin->email) {
             // #6563 (audit auth I5) : le changement d'email du super-admin
             // exige le mot de passe courant (parité avec les employés) —
@@ -226,6 +232,7 @@ class PlatformAuthController extends Controller
                 'current_password' => ['required', 'string'],
             ]);
 
+            /** @var array{current_password: string} $passwordCheck */
             if (! Hash::check($passwordCheck['current_password'], $superAdmin->password_hash)) {
                 return new JsonResponse([
                     'error' => 'INVALID_PASSWORD',

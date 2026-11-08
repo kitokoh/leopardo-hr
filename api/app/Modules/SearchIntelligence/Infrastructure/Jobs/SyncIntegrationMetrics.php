@@ -57,8 +57,7 @@ final class SyncIntegrationMetrics implements ShouldQueue
         public readonly int $integrationId,
         public readonly ?string $from = null,
         public readonly ?string $to = null,
-    ) {
-    }
+    ) {}
 
     public function handle(): void
     {
