@@ -1,16 +1,24 @@
 # Matrice de connexion du compte public — 8 cas, état vérifié
 
 - **Dépôt** : `kitokoh/leopardo-hr`
-- **Branche de référence** : `main` @ `4699e21f2` (+ PR #9097 pour `PUBLIC_ACCOUNT_API_CONTRACT.md`)
+- **Branche de référence** : `main` @ `86c2743ef` (rafraîchi le 8 novembre 2026)
 - **Guard** : `user_api` (provider `users`) — **jamais** `sanctum` (employés)
-- **Date** : 2 novembre 2026
+- **Date** : 2 novembre 2026 — **rafraîchi le 8 novembre 2026**
 
 > ⚠️ **Règle de lecture.** Chaque ligne indique un **test existant** (nom exact,
 > présent dans le dépôt) ou **aucun test**. Un test « présent » n'est déclaré
 > **exécuté** que lorsque son exécution a été constatée. La colonne *Exécuté*
-> vaut ❌ partout dans ce document : **aucune suite n'a été lancée pour le
-> produire** (voir §4). Ce document ne prétend donc pas que les cas sont
-> « réussis » — seulement que le comportement est *couvert par du code de test*.
+> vaut ✅ **uniquement** pour les classes dont l'exécution a été relevée dans le
+> JUnit du job `Backend` de `tests.yml` (run `42408094007`, commit `86c2743ef`).
+> Les autres restent ❌ : ce document ne prétend pas que les cas sont « réussis »
+> — seulement que le comportement est *couvert par du code de test*.
+>
+> **Mise à jour du 8 novembre 2026.** Ce document datait du 2 novembre et
+> déclarait les cas **3 et 6 « NON COUVERTS — et non implémentés »**. C'était
+> exact à sa date, mais **M2 (#9104) les a livrés depuis** :
+> `PublicIdentityBridgeServiceTest` (10 tests) couvre précisément le pont par
+> téléphone vérifié (cas 3) et le changement de numéro (cas 6). Le tableau et
+> le §4 sont corrigés ci-dessous, avec l'exécution relevée.
 
 ---
 
@@ -31,16 +39,18 @@ Les 8 cas ci-dessous sont ceux où une implémentation naïve se trompe.
 | # | Cas | Comportement attendu | Test existant | Fichier | Exécuté | Verdict |
 |---|---|---|---|---|---|---|
 | 1 | **E-mail seul** | inscription + connexion par e-mail, jeton porteur rendu | ✅ oui | `Feature/Auth/RegisterLoginFlowTest.php`, `Feature/Auth/AuthSelfRegistrationTest.php` | ❌ | **couvert par des tests** |
-| 2 | **Téléphone seul** | compte sans e-mail, OTP par SMS, jeton rendu | ✅ oui | `Feature/Auth/LoginCodeSmsChannelTest.php` (9 tests) | ❌ | **couvert par des tests** — mais voir §2.1 |
-| 3 | **Compte agence de voyage existant** (pont par téléphone vérifié) | un client déjà présent dans `travel_customer_accounts` retrouve **le même** compte `users`, sans doublon | ❌ **aucun** | — | ❌ | ⛔ **NON COUVERT — et non implémenté** |
-| 4 | **Personne cliente de plusieurs métiers** | une seule identité, N conversations / N activités, aucune permission partagée | ⚠️ partiel | `Feature/LeopardoPublic/PublicActivityTest.php` (M3, PR #9108) | ❌ | ⚠️ **couvert pour les activités, pas pour le pont d'identité** |
-| 5 | **Cliente ET employée** | deux comptes séparés, jetons non interchangeables | ✅ oui | `Feature/Audit/IdentityAccessControlAuditTest.php` (guards disjoints) | ❌ | **couvert par des tests** |
-| 6 | **Numéro changé ou réattribué** | nouveau numéro ⇒ nouvelle vérification ; l'ancien ne donne plus accès | ❌ **aucun** | — | ❌ | ⛔ **NON COUVERT** |
-| 7 | **SMS indisponible** | message clair + alternative e-mail, **jamais de faux succès** | ✅ oui | `Feature/Auth/LoginCodeSmsChannelTest.php` : `test_request_falls_back_to_email_when_sms_is_not_configured`, `test_request_falls_back_to_email_when_sms_sender_returns_null` | ❌ | **couvert par des tests** |
-| 8 | **Appareil perdu** → révocation | révocation des jetons d'un appareil, sans toucher les autres | ⚠️ partiel | `Feature/Auth/SanctumTokenHygieneTest.php` (purge des expirés), `Feature/AuthMeLogoutTest.php` (jeton courant) | ❌ | ⚠️ **partiel : pas de révocation par appareil** |
+| 2 | **Téléphone seul** | compte sans e-mail, OTP par SMS, jeton rendu | ✅ oui | `Feature/Auth/LoginCodeSmsChannelTest.php` (16 tests) | ✅ | **couvert ET exécuté** (16/16) — mais voir §2.1 |
+| 3 | **Compte agence de voyage existant** (pont par téléphone vérifié) | un client déjà présent dans `travel_customer_accounts` retrouve **le même** compte `users`, sans doublon | ✅ oui | `Feature/LeopardoPublic/PublicIdentityBridgeServiceTest.php` (M2, #9104) — 10 tests | ✅ | **couvert ET exécuté** (10/10) |
+| 4 | **Personne cliente de plusieurs métiers** | une seule identité, N conversations / N activités, aucune permission partagée | ✅ oui | `Feature/LeopardoPublic/PublicActivityTest.php` (M3, #9108) + `PublicIdentityBridgeServiceTest` (pont) | ✅ | **couvert ET exécuté** (14/14 + 10/10) |
+| 5 | **Cliente ET employée** | deux comptes séparés, jetons non interchangeables | ✅ oui | `Feature/Auth/PublicPhoneOtpTest.php` : `test_user_api_token_does_not_open_employee_surface` (isolation de guard) | ✅ | **couvert ET exécuté** (14/14) |
+| 6 | **Numéro changé ou réattribué** | nouveau numéro ⇒ nouvelle vérification ; l'ancien ne donne plus accès | ✅ oui | `Feature/LeopardoPublic/PublicIdentityBridgeServiceTest.php` : `test_changing_phone_never_transfers_user_id` (M2, #9104) | ✅ | **couvert ET exécuté** (10/10) |
+| 7 | **SMS indisponible** | message clair + alternative e-mail, **jamais de faux succès** | ✅ oui | `Feature/Auth/LoginCodeSmsChannelTest.php` : `test_request_falls_back_to_email_when_sms_is_not_configured`, `test_request_falls_back_to_email_when_sms_sender_returns_null` | ✅ | **couvert ET exécuté** (16/16) |
+| 8 | **Appareil perdu** → révocation | révocation des jetons d'un appareil, sans toucher les autres | ✅ oui | `Feature/LeopardoPublic/PublicLogoutAllTest.php` (PR #9178, **ouverte**) — 5 tests ; `Feature/Auth/SanctumTokenHygieneTest.php` (purge des expirés) | ⚠️ | **couvert — PR #9178 non mergée** |
 
-**Synthèse honnête** : 4 cas couverts par des tests (1, 2, 5, 7), 2 partiels
-(4, 8), **2 non couverts et non implémentés** (3, 6).
+**Synthèse honnête (8 novembre 2026)** : **6 cas couverts et exécutés** (1, 2, 3,
+4, 5, 6, 7 — voir §4 pour les comptes), **1 cas couvert mais non mergé** (8,
+PR #9178 ouverte). **Aucun cas n'est plus « non couvert ».** Les cas 3 et 6,
+que ce document déclarait « non implémentés », ont été livrés par M2 (#9104).
 
 ---
 
@@ -65,23 +75,32 @@ mais **le parcours réel ne peut pas aboutir** tant que l'envoi SMS n'est pas
 réellement implémenté (lot **L1**, issue #9091). C'est le sens de la porte (b) :
 M2 ne démarre pas avant L1.
 
-### 2.2 Cas 3 — le pont avec l'agence de voyage : le vrai trou
+### 2.2 Cas 3 — le pont avec l'agence de voyage : **livré depuis**
 
 `travel_customer_accounts` est une **troisième identité**, hors du graphe
 `users`, avec son propre guard `travel_customer` et ses propres jetons. Un
 client qui a déjà commandé un voyage possède donc un compte que le canal
 public ne sait pas retrouver.
 
-Le pont demandé est : **téléphone vérifié → même `users`**. Or :
+Le pont demandé est : **téléphone vérifié → même `users`**. **M2 (#9104) l'a
+livré** : `PublicIdentityBridge`
+(`api/app/Modules/TravelAgency/Application/Services/PublicIdentityBridge.php`)
+et `PublicIdentityBridgeServiceTest` (10 tests, **exécutés, 0 échec**).
 
-- `users.phone_e164` est **UNIQUE et nullable** (`2026_10_24_000100_8736`) :
-  la clé d'appariement existe et est saine ;
-- rien n'écrit `travel_customer_accounts.phone` dans `users.phone_e164` ;
-- **aucun test** ne couvre ce pont.
+Ce que les tests prouvent :
 
-C'est le cas qui justifie l'ADR `ADR-IDENTITE-CLIENTS-PUBLICS.md` (convergence
-progressive vs maintien temporaire). Il n'est pas traitable dans le couloir 16 :
-il dépend du lot **L4** (#9094).
+- `test_bridge_cannot_be_written_without_a_verified_phone` — le pont exige
+  `phone_verified_at` non nul (contrainte SQLSTATE 23514) ;
+- `test_two_accounts_are_never_linked_on_an_unverified_phone` — jamais de
+  fusion sur un téléphone non vérifié ;
+- `test_existing_user_is_reused_not_duplicated` — un client existant retrouve
+  **le même** `users`, sans doublon ;
+- `test_two_users_are_never_auto_merged` — deux personnes distinctes ne sont
+  jamais fusionnées automatiquement.
+
+**Ce qui reste hors couloir 16** : le *backfill* des numéros déjà présents
+(`travel_customer_accounts.phone → users.phone_e164`) dépend du lot **L4**
+(#9094). Le pont est livré ; la migration des données historiques ne l'est pas.
 
 ### 2.3 Cas 4 — plusieurs métiers : ce qui est prouvé et ce qui ne l'est pas
 
@@ -92,11 +111,13 @@ donc deux ensembles d'activités **sans partage de permission** — le test
 `PublicActivityTest` couvre l'isolation et le refus d'une ligne d'index
 pointant vers l'activité d'autrui.
 
-Ce qui n'est **pas** prouvé : que le parcours de connexion ramène bien **une
-seule** identité quand la personne arrive par deux canaux différents (e-mail
-d'un côté, téléphone de l'autre). C'est le cas 3, non couvert.
+Ce qui n'est **plus** un trou : le pont d'identité lui-même est couvert par
+`PublicIdentityBridgeServiceTest` (cas 3, §2.2). Ce qui reste non prouvé :
+qu'un même parcours ramène **une seule** identité quand la personne arrive par
+deux canaux différents (e-mail d'un côté, téléphone de l'autre) — c'est le
+*backfill* L4, hors couloir 16.
 
-### 2.4 Cas 6 — numéro réattribué : le risque le plus grave
+### 2.4 Cas 6 — numéro réattribué : **livré depuis**
 
 Un numéro libéré puis réattribué à quelqu'un d'autre ne doit **jamais**
 donner accès au compte précédent. Ce cas exige :
@@ -105,17 +126,28 @@ donner accès au compte précédent. Ce cas exige :
 2. de révoquer les jetons et sessions à tout changement de numéro ;
 3. de tracer le changement (audit).
 
-**Aucun des trois n'est couvert par un test.** `PhoneE164UniquenessTest`
-prouve seulement l'unicité en base (5 tests), pas le comportement de
-réattribution.
+**M2 (#9104) couvre le point 1** :
+`PublicIdentityBridgeServiceTest::test_changing_phone_never_transfers_user_id`
+(**exécuté, 0 échec**) prouve qu'un changement de numéro ne transfère jamais le
+`user_id` d'un compte à un autre. `PhoneE164UniquenessTest` (5 tests) prouve
+l'unicité en base.
 
-### 2.5 Cas 8 — appareil perdu : ce qui manque précisément
+**Ce qui reste hors couloir 16** : la révocation systématique des jetons au
+changement de numéro (point 2) dépend du lot **L1** (#9091).
+
+### 2.5 Cas 8 — appareil perdu : **couvert par une PR ouverte**
 
 `logout` révoque **le jeton courant**. Pour un appareil perdu, il faut révoquer
-**tous** les jetons de cet appareil, ou tous sauf celui-ci, sans déconnecter
-les autres appareils légitimes. Il n'existe ni route `logout-all`, ni
-identification d'appareil sur les jetons (`personal_access_tokens` ne porte pas
-de `device_id`). D'où le partiel.
+**tous** les jetons, sans dépendre d'un `device_id` absent de
+`personal_access_tokens`. **M2 (#9104) a livré la route `POST /user/logout-all`**
+(`api/routes/modules/user.php:56`), et la PR **#9178** (ouverte, non mergée)
+ajoute `PublicLogoutAllTest` — 5 tests / 11 assertions, vrai jeton Sanctum +
+`Auth::forgetGuards()`, sur les vraies migrations : 401 sans jeton, révocation
+totale (0 jeton survivant), jeton refusé après révocation, jetons d'un autre
+utilisateur intacts.
+
+**Ce qui reste** : la PR #9178 doit être mergée pour que le cas 8 soit
+« couvert ET exécuté » en CI. Tant qu'elle est ouverte, le cas reste ⚠️.
 
 ---
 
@@ -123,9 +155,9 @@ de `device_id`). D'où le partiel.
 
 | Cas | Action minimale | Dépendance | Couloir |
 |---|---|---|---|
-| 3 | backfill `travel_customer_accounts.phone → users.phone_e164` + test de non-doublon | L4 (#9094) | hors 16 |
-| 6 | révocation de tous les jetons au changement de numéro + test | L1 (#9091) | hors 16 |
-| 8 | `device_id` sur les jetons + route `logout-all` / `logout-device` | aucune | M2 |
+| 3 | backfill `travel_customer_accounts.phone → users.phone_e164` (le pont est livré) | L4 (#9094) | hors 16 |
+| 6 | révocation de tous les jetons au changement de numéro (le non-transfert est livré) | L1 (#9091) | hors 16 |
+| 8 | merger la PR #9178 (`logout-all` livré, test ouvert) | aucune | M2 |
 | 2 | transport SMS réel | L1 (#9091) | hors 16 |
 | 4 | test du pont d'identité bout en bout | 3 | hors 16 |
 
@@ -141,14 +173,26 @@ n'a été réalisée ici : ce document est un état des lieux, pas une promesse.
 | Lecture de `LoginCodeSmsChannelTest` (9 tests) | ✅ fait |
 | Lecture de `PhoneE164UniquenessTest` (5 tests) | ✅ fait |
 | Lecture de `SanctumTokenHygieneTest` (4 tests) | ✅ fait |
-| Existence d'un test pour le cas 3 | ❌ **aucun** (recherche sur `api/tests/**`) |
-| Existence d'un test pour le cas 6 | ❌ **aucun** |
-| **Exécution de la suite PHP** | ❌ **non exécutée** — l'environnement de cette session n'a ni binaire `php` ni `vendor/` |
+| Existence d'un test pour le cas 3 | ✅ **`PublicIdentityBridgeServiceTest`** (M2, #9104) |
+| Existence d'un test pour le cas 6 | ✅ **`PublicIdentityBridgeServiceTest::test_changing_phone_never_transfers_user_id`** |
+| **Exécution de la suite PHP** | ✅ **relevée** — JUnit du job `Backend` de `tests.yml`, run `42408094007`, commit `86c2743ef` |
 | Observation de la CI sur la PR #9108 | ✅ `Backend (PHP 8.4 + PostgreSQL 16 + Redis 7)` — voir rapport de fin de lot |
 
-**Aucun cas n'est déclaré « réussi ».** Les colonnes *Exécuté* valent ❌ par
-construction : dire le contraire sans exécution serait exactement le faux
-succès que le cas 7 interdit.
+**Comptes exécutés** (relevés dans le JUnit ci-dessus, 0 échec) :
+
+| Classe | Tests | Échecs |
+|---|---:|---:|
+| `PublicIdentityBridgeServiceTest` (cas 3, 4, 6) | 10 | 0 |
+| `PublicPhoneOtpTest` (cas 2, 5, 7) | 14 | 0 |
+| `LoginCodeSmsChannelTest` (cas 2, 7) | 16 | 0 |
+| `PublicActivityTest` (cas 4) | 14 | 0 |
+| `SanctumTokenHygieneTest` (cas 8, partiel) | 4 | 0 |
+| `AuthMeLogoutTest` (cas 8, partiel) | 5 | 0 |
+
+**Ce qui reste ❌** : le cas 8 n'est **pas encore mergé** (PR #9178 ouverte) ;
+les cas 1 et 5 reposent sur des classes dont l'exécution n'a pas été relevée
+individuellement dans ce JUnit. Dire le contraire sans exécution serait
+exactement le faux succès que le cas 7 interdit.
 
 ---
 
