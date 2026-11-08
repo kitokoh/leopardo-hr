@@ -47,9 +47,9 @@ final class SeoPageScanner
      * Scanne une URL et persiste le résultat.
      *
      * @return array{page: SeoPage, analysis: PageAnalysis}|null `null` si la
-     *         page n'a pas pu être récupérée (réseau) — dans ce cas AUCUNE
-     *         écriture n'a lieu : on ne déclare pas « page cassée » pour un
-     *         timeout local.
+     *                                                           page n'a pas pu être récupérée (réseau) — dans ce cas AUCUNE
+     *                                                           écriture n'a lieu : on ne déclare pas « page cassée » pour un
+     *                                                           timeout local.
      */
     public function scan(string $url): ?array
     {

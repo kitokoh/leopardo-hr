@@ -24,8 +24,7 @@ class RestaurantReportExportController extends Controller
 {
     public function __construct(
         private readonly RestaurantReportExportService $exports,
-    ) {
-    }
+    ) {}
 
     public function export(Request $request): JsonResponse
     {

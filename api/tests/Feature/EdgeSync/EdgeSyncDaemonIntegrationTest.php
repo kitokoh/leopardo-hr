@@ -57,7 +57,7 @@ class EdgeSyncDaemonIntegrationTest extends TestCase
             'status' => 'active',
         ]);
 
-        $edgeToken = 'integration-edge-token-' . Str::random(16);
+        $edgeToken = 'integration-edge-token-'.Str::random(16);
         /** @var \App\Modules\EdgeSync\Domain\Models\EdgeNode $node */
         $node = EdgeNode::forceCreate([
             'id' => (string) Str::uuid(),
@@ -164,7 +164,7 @@ class EdgeSyncDaemonIntegrationTest extends TestCase
 
         while (microtime(true) < $deadline) {
             $context = stream_context_create(['http' => ['timeout' => 1]]);
-            $result = @file_get_contents($baseUrl . '/api/v1/edge/health', false, $context);
+            $result = @file_get_contents($baseUrl.'/api/v1/edge/health', false, $context);
 
             if ($result !== false) {
                 return;

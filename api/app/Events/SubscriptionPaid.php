@@ -11,7 +11,5 @@ class SubscriptionPaid
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public Payment $payment)
-    {}
+    public function __construct(public Payment $payment) {}
 }
-

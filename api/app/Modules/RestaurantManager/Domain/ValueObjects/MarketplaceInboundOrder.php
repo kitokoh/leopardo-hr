@@ -26,6 +26,5 @@ final class MarketplaceInboundOrder
         public readonly string $currency,
         public readonly ?string $note = null,
         public readonly ?string $branchCode = null,
-    ) {
-    }
+    ) {}
 }

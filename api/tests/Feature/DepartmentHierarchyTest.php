@@ -34,9 +34,8 @@ class DepartmentHierarchyTest extends TestCase
         $dept = Department::query()->create([
             'name' => 'R&D',
         ]);
-            $dept->company_id = $company->id;
-            $dept->save();
-
+        $dept->company_id = $company->id;
+        $dept->save();
 
         /** @var \App\Core\Auth\Domain\Models\Employee $manager */
         $manager = Employee::factory()->create([
@@ -86,9 +85,8 @@ class DepartmentHierarchyTest extends TestCase
         $deptA = Department::query()->create([
             'name' => 'Dept A',
         ]);
-            $deptA->company_id = $companyA->id;
-            $deptA->save();
-
+        $deptA->company_id = $companyA->id;
+        $deptA->save();
 
         /** @var \App\Core\Auth\Domain\Models\Employee $managerB */
         $managerB = Employee::factory()->create([
@@ -112,9 +110,8 @@ class DepartmentHierarchyTest extends TestCase
         $dept = Department::query()->create([
             'name' => 'Ops',
         ]);
-            $dept->company_id = $company->id;
-            $dept->save();
-
+        $dept->company_id = $company->id;
+        $dept->save();
 
         /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create([

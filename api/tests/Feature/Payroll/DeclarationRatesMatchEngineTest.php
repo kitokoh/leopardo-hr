@@ -48,8 +48,8 @@ class DeclarationRatesMatchEngineTest extends TestCase
     /**
      * @dataProvider declarationConstantProvider
      *
-     * @param class-string $generatorClass
-     * @param class-string $rulesClass
+     * @param  class-string  $generatorClass
+     * @param  class-string  $rulesClass
      */
     public function test_generator_constant_matches_country_rules(
         string $generatorClass,

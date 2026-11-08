@@ -35,9 +35,9 @@ class IdempotencyStore
 
     /**
      * @return array{state: 'started', id: int}
-     *       | array{state: 'replay', status: int, body: array<string, mixed>}
-     *       | array{state: 'in_progress'}
-     *       | array{state: 'conflict'}
+     *                                          | array{state: 'replay', status: int, body: array<string, mixed>}
+     *                                          | array{state: 'in_progress'}
+     *                                          | array{state: 'conflict'}
      */
     public function begin(string $scope, string $key, string $requestHash): array
     {

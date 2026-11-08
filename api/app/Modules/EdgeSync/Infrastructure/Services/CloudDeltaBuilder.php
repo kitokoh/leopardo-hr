@@ -57,7 +57,7 @@ class CloudDeltaBuilder
     {
         $since = $node->last_sync_at ?? Carbon::createFromTimestamp(0);
         $delta = [
-            'since'    => $since->toIso8601String(),
+            'since' => $since->toIso8601String(),
             'entities' => [],
         ];
 

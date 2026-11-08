@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Interfaces\Api\V1\Controllers;
 
-use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Exceptions\TwoFactorException;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\SSO\OidcFlowService;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOService;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOValidationNotImplementedException;

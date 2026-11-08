@@ -64,6 +64,7 @@ class EmployeeTenantIsolationTest extends TestCase
             'manager_role' => $managerRole,
             'status' => 'active',
         ])->save();
+
         return $sensitiveEmployee1;
     }
 
@@ -80,6 +81,7 @@ class EmployeeTenantIsolationTest extends TestCase
             'role' => 'employee',
             'status' => 'active',
         ])->save();
+
         return $sensitiveEmployee0;
     }
 

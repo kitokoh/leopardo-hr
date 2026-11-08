@@ -10,6 +10,4 @@ namespace App\Modules\Payroll\Domain\Exceptions;
  * l'avance a déjà été déclarée payée (conflit), soit elle n'existe plus dans
  * la societe de l'acteur. L'interface distingue les deux cas (404 vs 422).
  */
-class SalaryAdvancePaymentStateException extends \RuntimeException
-{
-}
+class SalaryAdvancePaymentStateException extends \RuntimeException {}

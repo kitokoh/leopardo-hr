@@ -22,7 +22,7 @@ class ManagerRoleLocalizationTest extends TestCase
         $this->app->setLocale('fr');
 
         try {
-            (new EnsureManagerRoleMiddleware())->handle(
+            (new EnsureManagerRoleMiddleware)->handle(
                 Request::create('/api/v1/test', 'GET'),
                 fn () => response('ok')
             );
@@ -39,7 +39,7 @@ class ManagerRoleLocalizationTest extends TestCase
         $this->app->setLocale('en');
 
         try {
-            (new EnsureManagerRoleMiddleware())->handle(
+            (new EnsureManagerRoleMiddleware)->handle(
                 Request::create('/api/v1/test', 'GET'),
                 fn () => response('ok')
             );
@@ -54,7 +54,7 @@ class ManagerRoleLocalizationTest extends TestCase
         $this->app->setLocale('en');
 
         try {
-            (new EnsureAIAnalyticsAccess())->handle(
+            (new EnsureAIAnalyticsAccess)->handle(
                 Request::create('/api/v1/ai/analytics', 'GET'),
                 fn () => response('ok')
             );

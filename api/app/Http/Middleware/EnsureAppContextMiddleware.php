@@ -33,17 +33,17 @@ class EnsureAppContextMiddleware
      * @var array<string, list<string>>
      */
     private const APP_ROLE_MAP = [
-        'manager'   => ['principal'],
-        'rh'        => ['rh'],
+        'manager' => ['principal'],
+        'rh' => ['rh'],
         'comptable' => ['comptable'],
         'marketing' => ['marketing'],
-        'dept'      => ['dept'],
-        'employee'  => ['employee', 'manager'], // employee app accessible to all authenticated
+        'dept' => ['dept'],
+        'employee' => ['employee', 'manager'], // employee app accessible to all authenticated
     ];
 
     /**
-     * @param Closure(Request): Response $next
-     * @param string ...$allowedContexts   Accepted X-App-Context values for this route group
+     * @param  Closure(Request): Response  $next
+     * @param  string  ...$allowedContexts  Accepted X-App-Context values for this route group
      */
     public function handle(Request $request, Closure $next, string ...$allowedContexts): Response
     {
@@ -57,7 +57,7 @@ class EnsureAppContextMiddleware
         // Unknown app context
         if (! isset(self::APP_ROLE_MAP[$appContext])) {
             return response()->json([
-                'error'   => 'UNKNOWN_APP_CONTEXT',
+                'error' => 'UNKNOWN_APP_CONTEXT',
                 'message' => "Unknown app context '{$appContext}'.",
             ], 400);
         }
@@ -65,7 +65,7 @@ class EnsureAppContextMiddleware
         // Requested route is not available from this app
         if ($allowedContexts !== [] && ! in_array($appContext, $allowedContexts, true)) {
             return response()->json([
-                'error'   => 'APP_CONTEXT_MISMATCH',
+                'error' => 'APP_CONTEXT_MISMATCH',
                 'message' => 'This endpoint is not available in your app.',
             ], 403);
         }
@@ -86,9 +86,9 @@ class EnsureAppContextMiddleware
 
         if (! in_array($userRole, $allowedRoles, true)) {
             return response()->json([
-                'error'   => 'APP_ROLE_MISMATCH',
+                'error' => 'APP_ROLE_MISMATCH',
                 'message' => "Your role '{$userRole}' is not allowed to use the '{$appContext}' app.",
-                'your_role'    => $userRole,
+                'your_role' => $userRole,
                 'required_for' => $appContext,
             ], 403);
         }

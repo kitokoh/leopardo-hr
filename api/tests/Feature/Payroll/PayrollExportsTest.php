@@ -20,7 +20,6 @@ class PayrollExportsTest extends TestCase
 {
     use \Tests\RefreshTenantDatabase;
 
-
     private function seededRun(): array
     {
         $company = Company::factory()->create();
@@ -70,7 +69,7 @@ class PayrollExportsTest extends TestCase
     {
         [$run] = $this->seededRun();
 
-        $csv = (new PayrollJournalGenerator())->generate($run);
+        $csv = (new PayrollJournalGenerator)->generate($run);
         $lines = array_map('str_getcsv', explode("\n", trim($csv)));
 
         // En-tête + 2 bulletins + ligne TOTAL.
@@ -91,7 +90,7 @@ class PayrollExportsTest extends TestCase
     {
         [$run] = $this->seededRun();
 
-        $csv = (new CnasDeclarationGenerator())->generate($run);
+        $csv = (new CnasDeclarationGenerator)->generate($run);
         $lines = array_map('str_getcsv', explode("\n", trim($csv)));
 
         $this->assertCount(4, $lines);

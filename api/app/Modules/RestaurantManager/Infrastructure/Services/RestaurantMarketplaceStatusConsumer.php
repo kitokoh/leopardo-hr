@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Infrastructure\Services;
 
-use App\Modules\RestaurantManager\Domain\Contracts\DeliveryAppAdapter;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantOutboxConsumer;
 use App\Modules\RestaurantManager\Domain\Enums\OrderSource;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantMarketplaceEvent;
@@ -27,8 +26,7 @@ final class RestaurantMarketplaceStatusConsumer implements RestaurantOutboxConsu
 {
     public function __construct(
         private readonly DeliveryAppRegistry $registry,
-    ) {
-    }
+    ) {}
 
     public function supports(string $eventType): bool
     {

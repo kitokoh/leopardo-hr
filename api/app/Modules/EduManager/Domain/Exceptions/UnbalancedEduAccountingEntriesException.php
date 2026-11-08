@@ -13,6 +13,4 @@ use RuntimeException;
  * celle des crédits avant persistance (garde de dernier recours — les
  * générateurs produisent toujours des lignes équilibrées).
  */
-final class UnbalancedEduAccountingEntriesException extends RuntimeException
-{
-}
+final class UnbalancedEduAccountingEntriesException extends RuntimeException {}

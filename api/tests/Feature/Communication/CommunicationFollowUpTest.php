@@ -22,10 +22,10 @@ use Illuminate\Http\Client\Request as ClientRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Testing\PendingCommand;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use Illuminate\Testing\PendingCommand;
 
 /**
  * BC-29 COMMUNICATION (R4, #7689) — moteur de relances automatiques :

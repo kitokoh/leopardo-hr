@@ -140,6 +140,7 @@ final class CsvParser
                     count($header),
                     count($cells)
                 ));
+
                 continue;
             }
 
@@ -228,6 +229,7 @@ final class CsvParser
 
             if (substr_count($line, '"') % 2 === 1) {
                 $buffer = $line; // champ entre guillemets multi-lignes
+
                 continue;
             }
 

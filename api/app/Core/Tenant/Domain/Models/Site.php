@@ -353,11 +353,13 @@ class Site extends Model
         foreach ($hours as $day => $ranges) {
             if (! in_array((int) $day, self::ISO_WEEKDAYS, true) || (string) (int) $day !== (string) $day) {
                 $errors[] = "jour ISO invalide: {$day}";
+
                 continue;
             }
 
             if (! is_array($ranges)) {
                 $errors[] = "jour {$day}: liste de plages attendue";
+
                 continue;
             }
 
@@ -368,11 +370,13 @@ class Site extends Model
 
                 if (! is_string($opens) || preg_match($timePattern, $opens) !== 1) {
                     $errors[] = "jour {$day} plage {$index}: 'opens' doit être HH:MM";
+
                     continue;
                 }
 
                 if (! is_string($closes) || preg_match($timePattern, $closes) !== 1) {
                     $errors[] = "jour {$day} plage {$index}: 'closes' doit être HH:MM";
+
                     continue;
                 }
 

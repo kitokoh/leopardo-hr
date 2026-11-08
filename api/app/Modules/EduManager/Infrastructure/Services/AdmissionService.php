@@ -149,7 +149,7 @@ class AdmissionService
             ->max('student_number');
 
         do {
-            ++$sequence;
+            $sequence++;
             $number = 'E-'.str_pad((string) $sequence, 6, '0', STR_PAD_LEFT);
         } while (EduStudent::query()
             ->withoutGlobalScopes()

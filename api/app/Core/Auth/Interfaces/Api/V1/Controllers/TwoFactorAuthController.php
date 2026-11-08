@@ -53,6 +53,7 @@ class TwoFactorAuthController extends Controller
         /** @var Employee $employee */
         $employee = $request->user();
 
+        /** @var array{code: string} $validated */
         $result = $this->twoFactor->confirm($employee, (string) $validated['code']);
 
         return new JsonResponse(['data' => $result], 201);
@@ -67,6 +68,7 @@ class TwoFactorAuthController extends Controller
         /** @var Employee $employee */
         $employee = $request->user();
 
+        /** @var array{code: string} $validated */
         $this->twoFactor->disable($employee, (string) $validated['code']);
 
         return new JsonResponse(['data' => ['enabled' => false]]);
@@ -92,6 +94,7 @@ class TwoFactorAuthController extends Controller
             'remember_device' => ['sometimes', 'boolean'],
         ]);
 
+        /** @var array{challenge_token: string, code?: string|null, recovery_code?: string|null, device_name?: string|null, remember_device?: bool} $validated */
         if ((($validated['code'] ?? null) === null || $validated['code'] === '')
             && (($validated['recovery_code'] ?? null) === null || $validated['recovery_code'] === '')) {
             throw TwoFactorException::invalidCode();
@@ -99,9 +102,9 @@ class TwoFactorAuthController extends Controller
 
         $result = $this->twoFactor->verifyChallenge(
             (string) $validated['challenge_token'],
-            isset($validated['code']) && is_string($validated['code']) ? $validated['code'] : null,
-            isset($validated['recovery_code']) && is_string($validated['recovery_code']) ? $validated['recovery_code'] : null,
-            isset($validated['device_name']) && is_string($validated['device_name']) ? $validated['device_name'] : null,
+            $validated['code'] ?? null,
+            $validated['recovery_code'] ?? null,
+            $validated['device_name'] ?? null,
         );
 
         $response = new JsonResponse([

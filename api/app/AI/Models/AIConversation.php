@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\AI\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Auth\Domain\Models\User;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property int $token_count
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class AIConversation extends Model

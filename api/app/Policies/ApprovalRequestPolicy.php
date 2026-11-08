@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use App\Modules\Attendance\Domain\Models\ApprovalRequest;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Attendance\Domain\Models\ApprovalRequest;
 
 class ApprovalRequestPolicy
 {
@@ -42,4 +42,3 @@ class ApprovalRequestPolicy
             && $request->status === 'pending';
     }
 }
-

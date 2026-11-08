@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use Closure;
 use Illuminate\Http\JsonResponse;
@@ -316,5 +316,3 @@ class TenantMiddleware
         return (bool) preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $schema);
     }
 }
-
-

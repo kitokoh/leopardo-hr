@@ -47,4 +47,3 @@ class SetLocale
         return Language::DEFAULT;
     }
 }
-

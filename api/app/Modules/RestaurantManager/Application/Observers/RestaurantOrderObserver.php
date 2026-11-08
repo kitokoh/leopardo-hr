@@ -24,8 +24,7 @@ final class RestaurantOrderObserver
 
     public function __construct(
         private readonly RestaurantOutboxPublisher $outbox,
-    ) {
-    }
+    ) {}
 
     public function updated(RestaurantOrder $order): void
     {

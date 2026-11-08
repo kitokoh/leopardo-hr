@@ -129,6 +129,7 @@ class TrainingController extends Controller
 
         return TrainingSessionResource::collection($sessions)->response();
     }
+
     public function indexSessions(Request $request, TrainingCourse $trainingCourse): JsonResponse
     {
         /** @var Employee $user */
@@ -297,6 +298,7 @@ class TrainingController extends Controller
 
         return (new TrainingEnrollmentResource($trainingEnrollment->fresh()))->response();
     }
+
     /**
      * #4933 — suppression d'un cours (et de ses sessions/inscriptions).
      * Réservée aux rôles principal/rh.

@@ -35,4 +35,3 @@ class SchedulePolicy
             && $actor->hasManagerRole('principal', 'rh');
     }
 }
-

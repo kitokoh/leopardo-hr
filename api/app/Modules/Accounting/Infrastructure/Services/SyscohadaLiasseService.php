@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Accounting\Infrastructure\Services;
 
-use App\Modules\Accounting\Domain\Enums\AccountClass;
 use App\Modules\Accounting\Domain\Models\AccountingJournalEntry;
 use InvalidArgumentException;
 

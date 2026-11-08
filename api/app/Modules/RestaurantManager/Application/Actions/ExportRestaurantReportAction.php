@@ -7,8 +7,8 @@ namespace App\Modules\RestaurantManager\Application\Actions;
 use App\Modules\RestaurantManager\Application\Services\RestaurantReportService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 
 /**
  * RESTO-702 (#6215) — Export CSV idempotent d'un rapport restaurant.
@@ -26,8 +26,7 @@ final class ExportRestaurantReportAction
 
     public function __construct(
         private readonly RestaurantReportService $reports,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{filename: string, download_url: string}

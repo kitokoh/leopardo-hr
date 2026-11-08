@@ -33,13 +33,13 @@ final class CrmExportSource
 
     public function tableFor(string $entity): string
     {
-        return self::TABLE_BY_ENTITY[$entity] ?? throw new CrmExportEntityUnavailableException();
+        return self::TABLE_BY_ENTITY[$entity] ?? throw new CrmExportEntityUnavailableException;
     }
 
     public function assertAvailable(string $entity): void
     {
         if (! isset(self::TABLE_BY_ENTITY[$entity]) || ! Schema::hasTable(self::TABLE_BY_ENTITY[$entity])) {
-            throw new CrmExportEntityUnavailableException();
+            throw new CrmExportEntityUnavailableException;
         }
     }
 

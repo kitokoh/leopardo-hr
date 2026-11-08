@@ -102,7 +102,7 @@ class PhoneE164UniquenessTest extends TestCase
         // plus courte tronquerait silencieusement un numero long.
         /** @var object{character_maximum_length: int|string|null}|null $row */
         $row = DB::selectOne(
-            "SELECT character_maximum_length FROM information_schema.columns "
+            'SELECT character_maximum_length FROM information_schema.columns '
             ."WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'phone_e164'"
         );
 

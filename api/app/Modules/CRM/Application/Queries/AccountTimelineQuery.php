@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\CRM\Application\Queries;
 
-use App\Modules\CRM\Domain\Models\CrmActivity;
 use App\Modules\CRM\Domain\Models\CrmAccount;
+use App\Modules\CRM\Domain\Models\CrmActivity;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Collection as SupportCollection;
 
 /**
  * Issue #5720 — Timeline d'un account CRM (append-only, cursor pagination).

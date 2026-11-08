@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\HR\Domain\Contracts\ApplicantPipelineReaderInterface;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Payroll\Domain\Models\EmployeeLoan;
 use App\Modules\HR\Domain\Models\TrainingEnrollment;
+use App\Modules\Payroll\Domain\Models\EmployeeLoan;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -97,7 +97,7 @@ class AdvancedReportController extends Controller
 
         return response()->json([
             'data' => [
-                'by_department'    => $byDepartment,
+                'by_department' => $byDepartment,
                 'by_contract_type' => $byContractType,
             ],
         ]);
@@ -124,11 +124,10 @@ class AdvancedReportController extends Controller
 
         return response()->json([
             'data' => [
-                'year'                        => $year,
-                'active_loans_total'          => $loanCosts,
-                'training_enrollments_count'  => $trainingCost,
+                'year' => $year,
+                'active_loans_total' => $loanCosts,
+                'training_enrollments_count' => $trainingCost,
             ],
         ]);
     }
 }
-

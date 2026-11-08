@@ -22,7 +22,7 @@ final class DeliveryStateMachineTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->machine = new DeliveryStateMachine();
+        $this->machine = new DeliveryStateMachine;
     }
 
     /**

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Jobs\GeneratePaymentDocumentJob;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Jobs\GeneratePaymentDocumentJob;
 use App\Modules\Payroll\Domain\Models\PaymentDocument;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
@@ -162,9 +162,8 @@ class PaymentDocumentControllerTest extends TestCase
             'validation_status' => 'manager_approved',
             'amount_remaining' => 15000,
         ]);
-            $advance->status = 'approved';
-            $advance->save();
-
+        $advance->status = 'approved';
+        $advance->save();
 
         Sanctum::actingAs($manager);
 
@@ -234,4 +233,3 @@ class PaymentDocumentControllerTest extends TestCase
         return [$run, $slip];
     }
 }
-

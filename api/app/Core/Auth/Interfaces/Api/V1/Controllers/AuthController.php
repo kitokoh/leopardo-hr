@@ -184,6 +184,7 @@ class AuthController extends Controller
 
         /** @var Employee $employee */
         $employee = $request->user();
+        /** @var array{language: string} $validated */
         $employee->preferred_language = strtolower($validated['language']);
         $employee->save();
 
@@ -420,7 +421,7 @@ class AuthController extends Controller
                 'first_name' => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
                 'last_name' => $googleUser->offsetGet('family_name') ?? '',
                 'email' => $googleUser->getEmail(),
-                'password_hash' => Hash::make(str()->random(24)),
+                'password_hash' => Hash::make(Str::random(24)),
                 'google_id' => (string) $googleUser->getId(),
             ]);
 
@@ -462,9 +463,12 @@ class AuthController extends Controller
 
         // #9093 — le jeton Google portait une expiration nulle : un jeton volé
         // restait valable indéfiniment. On aligne sur `AuthService::login()`.
+        /** @var int $expirationMinutes */
         $expirationMinutes = (int) config('sanctum.expiration', 0);
         $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
-        $token = $employee->createToken($outcome['token_name'], ['*'], $expiresAt);
+        /** @var string $tokenName */
+        $tokenName = $outcome['token_name'];
+        $token = $employee->createToken($tokenName, ['*'], $expiresAt);
 
         return (new EmployeeResource($employee))
             ->additional([
@@ -553,9 +557,11 @@ class AuthController extends Controller
             ]);
         }
 
+        /** @var string $tokenName */
         $tokenName = $outcome['token_name'];
         // #9093 — même correctif que le callback : le flux mobile Google
         // émettait un jeton sans échéance.
+        /** @var int $expirationMinutes */
         $expirationMinutes = (int) config('sanctum.expiration', 0);
         $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
         $token = $employee->createToken($tokenName, ['*'], $expiresAt);

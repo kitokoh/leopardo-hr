@@ -20,7 +20,7 @@ interface ChannelAdapterContract
      * @param  array<string, mixed>  $settings  configuration non sensible du canal
      * @return array{provider_message_id: string, status: string, cost?: float}
      *
-     * @throws CrmProviderException  erreur fournisseur (retryable ou non)
+     * @throws CrmProviderException erreur fournisseur (retryable ou non)
      */
     public function send(string $toAddress, ?string $body, ?string $templateName, array $settings): array;
 

@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\Hash;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -92,4 +92,3 @@ class AuthLoginGuardrailsTest extends TestCase
         $response->assertJsonPath('error', 'ACCOUNT_SUSPENDED');
     }
 }
-

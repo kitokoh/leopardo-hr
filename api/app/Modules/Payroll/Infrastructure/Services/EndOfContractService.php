@@ -35,13 +35,12 @@ class EndOfContractService
      * Solde de tout compte à une date donnée (défaut : aujourd'hui).
      *
      * @param  array{departure_reason?: string|null, notice_served?: bool}  $context
-     *         Issue #1943 — conditionnement du préavis : l'indemnité
-     *         compensatrice n'est due que si l'employeur licencie un CDI
-     *         (hors faute lourde) et dispense du préavis. Sans contexte
-     *         explicite, le défaut est PRUDENT : pas de préavis calculé
-     *         (un CDD à terme naturel, une démission ou une faute lourde ne
-     *         doivent jamais payer de préavis — surpaie silencieuse sinon).
-     *
+     *                                                                                Issue #1943 — conditionnement du préavis : l'indemnité
+     *                                                                                compensatrice n'est due que si l'employeur licencie un CDI
+     *                                                                                (hors faute lourde) et dispense du préavis. Sans contexte
+     *                                                                                explicite, le défaut est PRUDENT : pas de préavis calculé
+     *                                                                                (un CDD à terme naturel, une démission ou une faute lourde ne
+     *                                                                                doivent jamais payer de préavis — surpaie silencieuse sinon).
      * @return array{
      *   employee_id: int,
      *   end_date: string,

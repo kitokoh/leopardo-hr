@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Billing\Domain\Models\Feature;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
@@ -398,4 +398,3 @@ class FeatureManifestApiTest extends TestCase
         $this->assertEquals($this->user->id, $meta['generated_for_user']);
     }
 }
-

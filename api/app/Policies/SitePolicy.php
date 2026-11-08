@@ -35,4 +35,3 @@ class SitePolicy
             && $actor->hasManagerRole('principal');
     }
 }
-
