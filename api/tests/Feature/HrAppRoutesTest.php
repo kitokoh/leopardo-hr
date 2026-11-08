@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -66,9 +67,9 @@ class HrAppRoutesTest extends TestCase
             'first_name' => 'Test',
             'last_name' => 'User',
             'gender' => 'M',
-            'date_of_birth' => '1990-01-01',
+            'date_of_birth' => Carbon::now()->subYears(35)->toDateString(),
             'contract_type' => 'cdi',
-            'contract_start' => '2023-01-01',
+            'contract_start' => Carbon::now()->subYears(3)->toDateString(),
             'salary_type' => 'monthly',
         ];
 
@@ -174,7 +175,7 @@ class HrAppRoutesTest extends TestCase
                 'last_name' => 'Dupont',
                 'email' => 'jean.dupont@test.hr',
                 'gender' => 'M',
-                'date_of_birth' => '1995-06-15',
+                'date_of_birth' => Carbon::now()->subYears(30)->toDateString(),
                 'contract_type' => 'cdi',
                 'contract_start' => '2026-01-01',
                 'salary_type' => 'monthly',
@@ -194,7 +195,7 @@ class HrAppRoutesTest extends TestCase
                 'last_name' => 'Hr',
                 'email' => 'evil.hr@test.hr',
                 'gender' => 'M',
-                'date_of_birth' => '1990-01-01',
+                'date_of_birth' => Carbon::now()->subYears(35)->toDateString(),
                 'contract_type' => 'cdi',
                 'contract_start' => '2026-01-01',
                 'salary_type' => 'monthly',
@@ -220,7 +221,7 @@ class HrAppRoutesTest extends TestCase
                 'last_name' => 'Employee',
                 'email' => 'test@test.hr',
                 'gender' => 'M',
-                'date_of_birth' => '1990-01-01',
+                'date_of_birth' => Carbon::now()->subYears(35)->toDateString(),
                 'contract_type' => 'cdi',
                 'contract_start' => '2026-01-01',
                 'salary_type' => 'monthly',
