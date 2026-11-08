@@ -236,6 +236,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantMenuItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderPayment;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPosSession;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantPrintJob;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPurchaseOrder;
@@ -263,6 +264,7 @@ use App\Modules\RestaurantManager\Policies\RestaurantMenuPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantOrderPaymentPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantOrderPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantPosSessionPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantPrintJobPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantProductIngredientPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantProductPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantPurchaseOrderPolicy;
@@ -635,6 +637,11 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(RestaurantHour::class, RestaurantHourPolicy::class);
         Gate::policy(RestaurantSupplier::class, RestaurantSupplierPolicy::class);
         Gate::policy(RestaurantPosSession::class, RestaurantPosSessionPolicy::class);
+        // REST-OS-4 (#6229) — travaux d'impression restaures au point unique
+        // (PA2-ARCH-008 / garde #6575). L'enregistrement vivait dans
+        // RestaurantManagerServiceProvider : il n'etait tolere que parce que
+        // le garde se taisait faute de ripgrep sur le runner.
+        Gate::policy(RestaurantPrintJob::class, RestaurantPrintJobPolicy::class);
         Gate::policy(RestaurantOrder::class, RestaurantOrderPolicy::class);
         Gate::policy(RestaurantOrderPayment::class, RestaurantOrderPaymentPolicy::class);
         Gate::policy(RestaurantRefund::class, RestaurantRefundPolicy::class);
