@@ -70,9 +70,9 @@ class CandidateApplicationController extends Controller
                     // requête : rien à nettoyer, rien n'a été persisté.
                     return new JsonResponse([
                         'error' => 'RESUME_REJECTED',
-                        'message' => 'Le fichier joint a été refusé par l\'analyse de sécurité.',
+                        'message' => __('errors.RESUME_REJECTED'),
                         'errors' => [
-                            'resume' => ['Le fichier joint a été refusé par l\'analyse de sécurité.'],
+                            'resume' => [__('errors.RESUME_REJECTED')],
                         ],
                     ], 422);
                 }

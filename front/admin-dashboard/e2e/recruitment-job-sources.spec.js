@@ -17,6 +17,14 @@ import { expect, test } from '@playwright/test'
  *    quand le serveur dit le contraire.
  *
  * Aucun backend réel : toutes les réponses sont simulées via `page.route`.
+ *
+ * ⚠️ Les motifs de `page.route` incluent TOUJOURS `/platform` : sans ce
+ * préfixe, `\/recruitment\/sources$` attrape aussi la **navigation** vers la
+ * page `/recruitment/sources` du SPA. Playwright la sert alors avec du JSON :
+ * la page n'est jamais rendue, et les assertions ne testent plus que le corps
+ * de la réponse HTTP (un `getByText('Non connecté')` matchait le JSON brut et
+ * passait au vert sans qu'aucun écran n'existe). Le motif doit désigner
+ * l'API, jamais l'URL de la route.
  */
 test.describe('Recruitment — sources d’offres (super admin)', () => {
   test.setTimeout(60_000)
@@ -137,7 +145,7 @@ test.describe('Recruitment — sources d’offres (super admin)', () => {
   test('liste les six fournisseurs, y compris ceux non configurés', async ({ page }) => {
     await authenticate(page)
 
-    await page.route(/\/recruitment\/sources(?:\?.*)?$/, async (route) => {
+    await page.route(/\/platform\/recruitment\/sources(?:\?.*)?$/, async (route) => {
       if (handleOptions(route)) return
       await fulfillJson(route, { data: sources })
     })
@@ -154,7 +162,7 @@ test.describe('Recruitment — sources d’offres (super admin)', () => {
   test('affiche not_connected comme un état de premier rang', async ({ page }) => {
     await authenticate(page)
 
-    await page.route(/\/recruitment\/sources(?:\?.*)?$/, async (route) => {
+    await page.route(/\/platform\/recruitment\/sources(?:\?.*)?$/, async (route) => {
       if (handleOptions(route)) return
       await fulfillJson(route, { data: sources })
     })
@@ -171,7 +179,7 @@ test.describe('Recruitment — sources d’offres (super admin)', () => {
   test('affiche le motif d’erreur d’un connecteur refusé', async ({ page }) => {
     await authenticate(page)
 
-    await page.route(/\/recruitment\/sources(?:\?.*)?$/, async (route) => {
+    await page.route(/\/platform\/recruitment\/sources(?:\?.*)?$/, async (route) => {
       if (handleOptions(route)) return
       await fulfillJson(route, { data: sources })
     })
@@ -186,7 +194,7 @@ test.describe('Recruitment — sources d’offres (super admin)', () => {
   test('ne pré-remplit jamais un secret dans le formulaire', async ({ page }) => {
     await authenticate(page)
 
-    await page.route(/\/recruitment\/sources(?:\?.*)?$/, async (route) => {
+    await page.route(/\/platform\/recruitment\/sources(?:\?.*)?$/, async (route) => {
       if (handleOptions(route)) return
       await fulfillJson(route, { data: sources })
     })
@@ -211,12 +219,12 @@ test.describe('Recruitment — sources d’offres (super admin)', () => {
   test('ne prétend pas que l’accès fournisseur est vérifié après un simple test', async ({ page }) => {
     await authenticate(page)
 
-    await page.route(/\/recruitment\/sources(?:\?.*)?$/, async (route) => {
+    await page.route(/\/platform\/recruitment\/sources(?:\?.*)?$/, async (route) => {
       if (handleOptions(route)) return
       await fulfillJson(route, { data: sources })
     })
 
-    await page.route(/\/recruitment\/sources\/adzuna\/test(?:\?.*)?$/, async (route) => {
+    await page.route(/\/platform\/recruitment\/sources\/adzuna\/test(?:\?.*)?$/, async (route) => {
       if (handleOptions(route)) return
       // Le serveur dit explicitement que l'accès n'est PAS prouvé.
       await fulfillJson(route, {
@@ -241,7 +249,7 @@ test.describe('Recruitment — sources d’offres (super admin)', () => {
   test('désactive la synchronisation quand aucun identifiant n’est enregistré', async ({ page }) => {
     await authenticate(page)
 
-    await page.route(/\/recruitment\/sources(?:\?.*)?$/, async (route) => {
+    await page.route(/\/platform\/recruitment\/sources(?:\?.*)?$/, async (route) => {
       if (handleOptions(route)) return
       await fulfillJson(route, { data: sources })
     })
@@ -257,7 +265,7 @@ test.describe('Recruitment — sources d’offres (super admin)', () => {
   test('affiche le compteur d’offres importées', async ({ page }) => {
     await authenticate(page)
 
-    await page.route(/\/recruitment\/sources(?:\?.*)?$/, async (route) => {
+    await page.route(/\/platform\/recruitment\/sources(?:\?.*)?$/, async (route) => {
       if (handleOptions(route)) return
       await fulfillJson(route, { data: sources })
     })

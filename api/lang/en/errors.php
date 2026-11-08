@@ -372,4 +372,7 @@ return [
 
     // BC-10 (#9199) — job board aggregator connectors.
     'JOB_SOURCE_PROVIDER_UNSUPPORTED' => 'Unsupported provider: :provider.',
+
+    // BC-10 (#9217) — resume rejected by the antivirus scan.
+    'RESUME_REJECTED' => 'The attached file was rejected by the security scan.',
 ];

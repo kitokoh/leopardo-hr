@@ -19,6 +19,6 @@ final class ResumeRejectedException extends RuntimeException
 {
     public function __construct(public readonly ResumeScanVerdict $verdict)
     {
-        parent::__construct('Le fichier joint a été refusé par l\'analyse de sécurité.');
+        parent::__construct(__('errors.RESUME_REJECTED'));
     }
 }
