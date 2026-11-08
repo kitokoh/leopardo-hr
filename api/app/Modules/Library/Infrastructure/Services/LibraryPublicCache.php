@@ -35,10 +35,12 @@ final class LibraryPublicCache
     /**
      * Lit le snapshot public depuis le cache, ou le construit via $builder.
      *
-     * @param  callable(): array<string, mixed>  $builder
-     * @return array<string, mixed>
+     * @template TCacheValue
+     *
+     * @param  \Closure(): TCacheValue  $builder
+     * @return TCacheValue
      */
-    public static function remember(callable $builder): array
+    public static function remember(\Closure $builder): mixed
     {
         // tenant-cache:shared — catalogue public GLOBAL Leopardo (company_id NULL),
         // agrégat cross-tenant voulu : aucune donnée d'un tenant privé n'y entre.
