@@ -1,29 +1,34 @@
 # LEOPARDO TOOLBOX — Rapport final
 
-> **Date** : 2026-11-05 · **Branche** : `feat/vitrine-toolbox` · **Commit de base** : `dd7522d7` (main)
-> **Statut** : implémentation locale **terminée et vérifiée** ; **publication GitHub bloquée** (token invalide).
+> **Date** : 2026-11-05 (lot 1) · **Mise à jour** : 2026-11-08 (lot 2)
+> **Branches** : `feat/vitrine-toolbox` (lot 1) → `feat/vitrine-toolbox-lot2` (lot 2)
+> **Statut** : ✅ **livré et mergé dans `main`** — vérifié sur l'état distant réel.
 
 ---
 
-## 1. ⚠️ Blocage bloquant : token GitHub invalide
+## 1. ✅ Publication GitHub — débloquée et terminée
 
-Le token fourni pour la session (`ghp_YKOw…`) est **rejeté** :
+> **Mise à jour du 2026-11-08** : le blocage décrit dans la version initiale de ce
+> rapport (token invalide) a été **levé** avec un token valide. La publication a
+> été menée à son terme.
 
 | Vérification | Résultat |
 |---|---|
-| `GET https://api.github.com/repos/kitokoh/leopardo-hr` avec `Authorization: Bearer <token>` | `401 Bad credentials` |
-| `GET https://api.github.com/user` avec `Authorization: token <token>` | `401 Bad credentials` |
-| `git push https://x-access-token:<token>@github.com/...` | `Invalid username or token` |
-| `git clone` **sans** token (dépôt public) | ✅ succès |
+| `GET https://api.github.com/user` | ✅ 200 — authentifié comme **`kitokoh`** |
+| Permissions sur `kitokoh/leopardo-hr` | ✅ `admin: true`, `push: true` |
+| Branche `feat/vitrine-toolbox` poussée | ✅ |
+| PR [#9159](https://github.com/kitokoh/leopardo-hr/pull/9159) | ✅ **merged** — commit `29a5e8863037d9d12feef3612f8a7143b4523d23` |
+| Issues #9152–#9155 | ✅ créées puis fermées automatiquement par la PR |
+| `main` distant | ✅ `29a5e8863…` puis `410e63e5b…` (lot 2) |
 
-**Conséquences** : les issues GitHub **n'ont pas été créées**, les commits **n'ont pas
-été poussés**, la branche **n'a pas été mergée dans `main`**. Tout le travail est
-commité **localement** sur `feat/vitrine-toolbox` (3 commits).
+**Lot 2 (2026-11-08)** : 5 outils supplémentaires livrés via la PR
+[#9182](https://github.com/kitokoh/leopardo-hr/pull/9182), mergée au commit
+`410e63e5b48a069d7e5c17971243dc1f120043b4`. Issue #9181 fermée automatiquement.
 
-**Pour débloquer** : fournir un token avec le scope `repo` (et `workflow` si les
-workflows CI doivent être modifiés). Les commandes à exécuter sont prêtes :
-`git push -u origin feat/vitrine-toolbox`, puis création des issues depuis
-`docs/leopardo-toolbox/02_issues_proposees.md`.
+> ⚠️ **Aucun token n'a jamais été commité** dans ce dépôt : les seules occurrences
+> de `ghp_` dans l'historique sont des **placeholders tronqués** (`ghp_…`),
+> conformes à la convention anti-secret de `SECURITY.md`. Vérifié par
+> `git log --all -S "<token complet>"` → aucun résultat.
 
 ---
 
@@ -97,7 +102,8 @@ front/web/src/modules/vitrine/lib/vitrine-locale.ts   # libellé « Outils » ×
 | Typecheck | `npx tsc --noEmit` | ✅ 0 erreur |
 | Lint (module + routes) | `npx eslint src/modules/toolbox src/app/toolbox --max-warnings 0` | ✅ 0 avertissement |
 | Lint (tout `src`) | `npx eslint src --max-warnings 0` | ✅ 0 avertissement |
-| Tests Toolbox | `npx jest src/modules/toolbox` | ✅ **74 tests, 6 suites, 0 échec** |
+| Tests Toolbox (lot 1) | `npx jest src/modules/toolbox` | ✅ **74 tests, 6 suites, 0 échec** |
+| Tests Toolbox (lot 1 + lot 2) | `npx jest src/modules/toolbox` | ✅ **145 tests, 12 suites, 0 échec** |
 | Tests projet (complet) | `npx jest --maxWorkers=2` | ✅ **1758 tests passés, 0 échec** (2 suites tuées par OOM puis relancées seules : ✅ passent) |
 | Garde mojibake | `node scripts/check-mojibake.mjs` | ✅ passe |
 | Garde copie FR | `node scripts/check-french-copy.mjs` | ✅ passe |
@@ -140,19 +146,19 @@ de plus de mémoire).
 
 ## 7. Limites connues
 
-1. **Publication GitHub bloquée** (token invalide) — voir §1.
-2. **Build complet non terminé localement** (OOM environnement) — à confirmer en CI.
-3. **Pas de persistance** des favoris/historique (décision issue 5 non tranchée).
-4. **Pas d'administration** des métadonnées (décision issue 6 non tranchée).
-5. **Devises non incluses** dans le lot 1 (taux statiques à documenter — lot 2).
-6. **Salaire net = estimation** : aucun barème fiscal codé en dur, par choix
+1. **Build complet non terminé localement** (OOM environnement, limite cgroup 2 Go)
+   — non lié au code Toolbox ; à confirmer en CI.
+2. **Pas de persistance** des favoris/historique (décision #9156 non tranchée).
+3. **Pas d'administration** des métadonnées (décision #9157 non tranchée).
+4. **4 outils restent en backlog** (#9158) : devises, dates, âge, taux horaire.
+5. **Salaire net = estimation** : aucun barème fiscal codé en dur, par choix
    (éviter de présenter un calcul légal non vérifié).
 
 ## 8. Prochaines étapes
 
-1. **Fournir un token GitHub valide** → pousser la branche, créer les 7 issues,
-   ouvrir la PR, merger dans `main`.
-2. Confirmer le build complet en CI.
-3. Trancher les décisions 5 (persistance) et 6 (administration) — validation
+1. ✅ ~~Fournir un token GitHub valide~~ — fait ; branche poussée, issues créées,
+   PR mergées dans `main` (#9159, #9182).
+2. Confirmer le build complet en CI (le sandbox est limité à 2 Go).
+3. Trancher les décisions #9156 (persistance) et #9157 (administration) — validation
    explicite requise avant toute modification serveur.
-4. Implémenter le lot 2 d'outils (issue 7).
+4. Implémenter le lot 3 d'outils (#9158 : devises, dates, âge, taux horaire).
