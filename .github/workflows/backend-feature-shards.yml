@@ -2,14 +2,29 @@ name: Backend Feature Shards (B7)
 
 # POURQUOI CE WORKFLOW EXISTE
 # ---------------------------
-# La suite Feature complete depasse la limite de 5 h du runner GitHub Actions :
-# le job `Backend` de tests.yml est annule avant la fin, donc AUCUN run ne
-# produit de verdict complet (constat B7). Ce workflow decoupe la suite en
-# shards independants, chacun sous la limite, et agrege leurs verdicts.
+# Constat B7 (2026-11-07) : la suite Feature complete depassait la limite de
+# 5 h du runner GitHub Actions, donc aucun run ne produisait de verdict complet.
 #
-# Il ne remplace PAS tests.yml : il le complete. Le job `Backend` de tests.yml
-# reste la reference pour la suite entiere ; ce workflow donne un verdict
-# exploitable quand la suite entiere ne tient pas dans le runner.
+# MESURE 2026-11-08 — LE CONSTAT B7 EST PARTIELLEMENT PERIME
+# ----------------------------------------------------------
+# Le job `Backend` de tests.yml TERMINE desormais en ~82 min sur un push main
+# (run 42408094007 : 4947,98 s, 8610 passed, 147 failed pre-existants). La suite
+# n'a donc plus besoin d'etre decoupee pour tenir dans le runner.
+#
+# MESURE 2026-11-08 — CE WORKFLOW PRODUIT DES FAUX ECHECS
+# -------------------------------------------------------
+# Compare a la suite complete sur le meme commit (run 42408094079 vs
+# 42408094007) : sur 254 tests en ERREUR dans les shards, 229 PASSENT dans la
+# suite complete. Signatures : 209 `statement timeout` (SQLSTATE 57014) et
+# 19 `relation "public.companies" does not exist` (42P01) — absentes de la
+# suite complete. Cause : 77 jobs lances SANS `max-parallel` saturent les
+# ressources ; le `statement_timeout = '300s'` (setup-backend-db) transforme
+# la contention en erreurs. Ce workflow n'est donc PAS une source de verdict.
+#
+# DECISION : ce workflow devient un DIAGNOSTIC MANUEL (`workflow_dispatch`).
+# Il ne se declenche plus sur PR ni sur push : il ne doit ni concurrencer
+# tests.yml (qui donne le verdict) ni produire de faux rouges. `max-parallel`
+# est plafonne pour borner la contention quand on le lance a la main.
 #
 # MECANISME DE DECOUPAGE (mesure, pas suppose)
 # -------------------------------------------
@@ -31,17 +46,9 @@ name: Backend Feature Shards (B7)
 # `php dev-tools/generate-feature-shards.php` (idempotent, `--check` en garde).
 
 on:
+  # Diagnostic MANUEL uniquement (cf. en-tete) : ne concurrence plus tests.yml
+  # et ne produit plus de faux rouges sur les PR.
   workflow_dispatch:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'api/**'
-      - '.github/workflows/backend-feature-shards.yml'
-  push:
-    branches: [main]
-    paths:
-      - 'api/**'
-      - '.github/workflows/backend-feature-shards.yml'
 
 permissions:
   contents: read
@@ -57,6 +64,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      # Plafond de concurrence : 77 jobs simultanes saturent les ressources et
+      # transforment la contention en faux echecs (cf. en-tete). 6 borne le
+      # rayon d'action quand le workflow est lance a la main.
+      max-parallel: 6
       matrix:
         shard:
           - FeatureRoot1
