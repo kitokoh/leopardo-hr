@@ -334,6 +334,11 @@ return [
     'LAST_SUPER_ADMIN_REQUIRED' => 'تم رفض الإجراء: يجب أن يبقى مسؤول أعلى نشط واحد على الأقل.',
     'LAST_PRINCIPAL_REQUIRED' => 'تم رفض الإجراء: يجب أن يبقى مدير رئيسي نشط واحد على الأقل في الشركة.',
 
+    // Issue #9095 (IAM-L5) - roles personnalises de tenant.
+    'DELEGATION_FORBIDDEN' => 'يمكن للمدير الرئيسي فقط إدارة الأدوار المخصصة.',
+    'DELEGATION_EXCEEDS_ACTOR' => 'لا يمكن لدور مخصص منح صلاحيات لا تملكها أنت.',
+    'ROLE_NAME_TAKEN' => 'يوجد بالفعل دور مخصص بهذا الاسم.',
+
     // Issue #7598 (R1 de l'epique #7597) - acces aux ressources par tenant.
     'RESOURCE_ACCESS_DENIED' => 'لا تملك صلاحية الوصول إلى هذا المورد.',
     'RESOURCE_TYPE_UNKNOWN' => 'نوع المورد غير معروف.',

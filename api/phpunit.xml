@@ -392,6 +392,7 @@
         <testsuite name="Auth">
             <file>tests/Feature/Auth/AccountLockoutNotificationTest.php</file>
             <file>tests/Feature/Auth/AuthLoginDefensiveTest.php</file>
+            <file>tests/Feature/Auth/CustomRoleDelegationTest.php</file>
             <file>tests/Feature/Auth/ForgotPasswordNoEnumerationTest.php</file>
             <file>tests/Feature/Auth/GoogleIdentityBindingTest.php</file>
             <file>tests/Feature/Auth/GoogleIdentityMultiTenantTest.php</file>
