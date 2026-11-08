@@ -4852,7 +4852,14 @@
       "uncategorized": "Kategorisiz",
       "loadError": "Satış noktası yüklenemedi.",
       "loading": "Satış noktası yükleniyor…",
-      "actionError": "İşlem başarısız, tekrar deneyin."
+      "actionError": "İşlem başarısız, tekrar deneyin.",
+      "orderType": "Sipariş türü",
+      "table": "Masa",
+      "selectTable": "Masa seçin",
+      "tableRequired": "Yerinde sipariş için bir masa seçin.",
+      "covers": "Kişi sayısı",
+      "promotionCode": "Promosyon kodu (isteğe bağlı)",
+      "discount": "İndirim"
     },
     "kitchenTitle": "Mutfak ekranı",
     "kitchenSubtitle": "Gerçek zamanlı sipariş kuyruğu — hazırlık ve teslim",
