@@ -28,9 +28,9 @@ class EdgeLicenseFailClosedTest extends TestCase
         // Payload « valide » forgé à la main (aucune signature réelle).
         $header = base64_encode(json_encode(['typ' => 'JWT', 'alg' => 'none']));
         $body = base64_encode(json_encode([
-            'iss'          => 'https://attacker.example',
+            'iss' => 'https://attacker.example',
             'edge_node_id' => '00000000-0000-0000-0000-000000000000',
-            'exp'          => now()->addDays(30)->timestamp,
+            'exp' => now()->addDays(30)->timestamp,
         ]));
 
         $this->postJson('/api/v1/edge-node/validate-license', [

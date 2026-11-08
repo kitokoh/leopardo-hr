@@ -70,9 +70,8 @@ class ConversationControllerTest extends TestCase
             'currency' => 'DZD',
             'reason' => 'Urgence familiale',
         ]);
-            $advance->status = 'pending';
-            $advance->save();
-
+        $advance->status = 'pending';
+        $advance->save();
 
         Sanctum::actingAs($employee);
 
@@ -102,9 +101,8 @@ class ConversationControllerTest extends TestCase
             'currency' => 'DZD',
             'reason' => 'Autre employe',
         ]);
-            $advance->status = 'pending';
-            $advance->save();
-
+        $advance->status = 'pending';
+        $advance->save();
 
         Sanctum::actingAs($employee);
 

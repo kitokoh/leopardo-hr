@@ -9,7 +9,6 @@ use App\Modules\CRM\Domain\Enums\CrmAutomationActionType;
 use App\Modules\CRM\Domain\Enums\CrmChannelType;
 use App\Modules\CRM\Domain\Models\CrmChannel;
 use App\Modules\CRM\Infrastructure\Services\CrmChannelService;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Action : envoyer un message WhatsApp via le canal configuré (issue #5728).

@@ -31,4 +31,3 @@ class LeaveAccrualResource extends JsonResource
         ];
     }
 }
-

@@ -30,7 +30,7 @@ class PublicApplyRequest extends FormRequest
             // (rejet des IP privées/réservées/loopback, hôtes locaux).
             // Inerte aujourd'hui (jamais fetché) mais un futur job de parsing
             // de CV ne devra pas pouvoir lire le réseau interne.
-            'resume_url' => ['nullable', 'url', 'max:500', new NotPrivateUrl()],
+            'resume_url' => ['nullable', 'url', 'max:500', new NotPrivateUrl],
             'resume' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'source' => 'nullable|in:website,linkedin,referral,agency,other',
         ];

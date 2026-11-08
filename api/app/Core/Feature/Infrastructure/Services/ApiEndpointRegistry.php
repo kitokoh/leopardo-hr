@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Feature\Infrastructure\Services;
 
-use App\Contracts\FeatureDetectorInterface;
 use App\Contracts\ApiEndpointRegistryInterface;
+use App\Contracts\FeatureDetectorInterface;
 use App\Exceptions\FeatureSynchronizationException;
 use App\Modules\Billing\Domain\Models\Feature;
 use Carbon\Carbon;

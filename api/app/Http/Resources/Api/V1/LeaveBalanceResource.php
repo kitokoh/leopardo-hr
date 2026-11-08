@@ -28,4 +28,3 @@ class LeaveBalanceResource extends JsonResource
         ];
     }
 }
-

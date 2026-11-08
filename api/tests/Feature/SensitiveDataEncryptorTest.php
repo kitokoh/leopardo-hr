@@ -90,4 +90,3 @@ class SensitiveDataEncryptorTest extends TestCase
         $this->assertSame(['name' => 'John'], $result);
     }
 }
-

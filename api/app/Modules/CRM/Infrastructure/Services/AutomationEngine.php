@@ -10,9 +10,7 @@ use App\Modules\CRM\Domain\Exceptions\CrmAutomationEmergencyStoppedException;
 use App\Modules\CRM\Domain\Models\CrmAutomation;
 use App\Modules\CRM\Domain\Models\CrmAutomationRun;
 use App\Modules\CRM\Domain\Models\CrmAutomationState;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Throwable;
 
 /**
@@ -225,7 +223,7 @@ final class AutomationEngine
     private function assertNotEmergencyStopped(): void
     {
         if ($this->isEmergencyStopped()) {
-            throw new CrmAutomationEmergencyStoppedException();
+            throw new CrmAutomationEmergencyStoppedException;
         }
     }
 }

@@ -19,6 +19,5 @@ final class MarketplaceOrderItem
         public readonly string $name,
         public readonly float $quantity,
         public readonly ?int $unitPriceMinor = null,
-    ) {
-    }
+    ) {}
 }

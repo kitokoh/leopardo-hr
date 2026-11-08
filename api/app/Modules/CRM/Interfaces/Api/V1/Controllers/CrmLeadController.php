@@ -12,7 +12,6 @@ use App\Modules\CRM\Domain\Models\CrmLead;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\ConvertLeadRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Resources\CrmLeadResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 /**
  * #5717 — API de conversion lead → account/contact/opportunity.
@@ -22,9 +21,7 @@ use Illuminate\Http\Request;
  */
 class CrmLeadController extends Controller
 {
-    public function __construct(private readonly ConvertLeadAction $convertLead)
-    {
-    }
+    public function __construct(private readonly ConvertLeadAction $convertLead) {}
 
     public function convert(ConvertLeadRequest $request, CrmLead $crmLead): JsonResponse
     {

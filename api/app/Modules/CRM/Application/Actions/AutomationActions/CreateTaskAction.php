@@ -7,7 +7,6 @@ namespace App\Modules\CRM\Application\Actions\AutomationActions;
 use App\Modules\CRM\Domain\Contracts\AutomationActionContract;
 use App\Modules\CRM\Domain\Enums\CrmAutomationActionType;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 

@@ -174,10 +174,10 @@ $generated .= "          propres shards). Chaque testsuite liste explicitement s
 $generated .= "          c'est le seul mécanisme que paratest honore (cf. en-tête du\n";
 $generated .= "          générateur).\n";
 $generated .= "\n";
-$generated .= "          Fichiers : ".count($files)." — poids cumulé : {$totalTests} méthodes.\n";
+$generated .= '          Fichiers : '.count($files)." — poids cumulé : {$totalTests} méthodes.\n";
 $generated .= "          Équilibrage : panier le plus léger {$min}, le plus lourd {$max}.\n";
 $generated .= "\n";
-$generated .= "          Suivent un shard par sous-répertoire de tests/Feature ("
+$generated .= '          Suivent un shard par sous-répertoire de tests/Feature ('
     .count($subdirShards)." shards), chacun listant ses <file> récursivement.\n";
 $generated .= "        -->\n";
 
@@ -237,11 +237,11 @@ if ($check) {
 $updated = substr($phpunit, 0, $beginPos).$generated.substr($phpunit, $endPos);
 file_put_contents($phpunitPath, $updated);
 
-fwrite(STDOUT, "Fichiers énumérés      : ".count($files)."\n");
+fwrite(STDOUT, 'Fichiers énumérés      : '.count($files)."\n");
 fwrite(STDOUT, "Fichiers affectés      : {$assigned}\n");
-fwrite(STDOUT, "Doublons               : ".(count($files) - $assigned === 0 ? 'aucun' : 'PRÉSENTS')."\n");
+fwrite(STDOUT, 'Doublons               : '.(count($files) - $assigned === 0 ? 'aucun' : 'PRÉSENTS')."\n");
 fwrite(STDOUT, "Poids min / max        : {$min} / {$max}\n");
-fwrite(STDOUT, "Shards sous-répertoire : ".count($subdirShards)."\n");
+fwrite(STDOUT, 'Shards sous-répertoire : '.count($subdirShards)."\n");
 fwrite(STDOUT, "Écrit dans             : phpunit.xml (zone générée)\n");
 
 foreach ($buckets as $index => $bucket) {

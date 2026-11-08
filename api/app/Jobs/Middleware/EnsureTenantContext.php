@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Jobs\Middleware;
 
 use App\Contracts\Queue\TenantScopedJob;
-use App\Core\Tenant\TenantManager;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\TenantManager;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -94,4 +94,3 @@ final class EnsureTenantContext
         });
     }
 }
-

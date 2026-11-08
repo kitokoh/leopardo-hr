@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Onboarding;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\HR\Domain\Models\OnboardingStep;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;

@@ -69,7 +69,7 @@ final class HrReadToolCatalog implements AIToolCatalog
             ),
             new AIToolDefinition(
                 name: 'team_absences_recent',
-                description: "Absences récentes du périmètre du manager sur une période (défaut : 30 derniers jours), avec statuts et agrégats. Sortie non nominative (identifiants employés uniquement).",
+                description: 'Absences récentes du périmètre du manager sur une période (défaut : 30 derniers jours), avec statuts et agrégats. Sortie non nominative (identifiants employés uniquement).',
                 inputSchema: [
                     'type' => 'object',
                     'properties' => [

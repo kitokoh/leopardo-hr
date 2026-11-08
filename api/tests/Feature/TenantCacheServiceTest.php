@@ -66,4 +66,3 @@ class TenantCacheServiceTest extends TestCase
         $this->assertNull($this->service->get(99, 'nonexistent'));
     }
 }
-

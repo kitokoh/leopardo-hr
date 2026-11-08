@@ -188,9 +188,6 @@ class TenantPaymentProfileApiTest extends TestCase
 
     // ── Routage des encaissements Accounting ────────────────────────────────
 
-    /**
-     * @return AccountingDocument
-     */
     private function invoice(Company $company): AccountingDocument
     {
         /** @var AccountingContact $contact */

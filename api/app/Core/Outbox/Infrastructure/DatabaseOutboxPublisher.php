@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
-use Throwable;
 
 /**
  * #8209 — Implementation unique de l'outbox transactionnel.

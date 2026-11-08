@@ -7,7 +7,6 @@ namespace Tests\Feature\Restaurant;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantReservation;
-use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 

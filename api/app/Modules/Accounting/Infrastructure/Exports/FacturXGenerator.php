@@ -48,8 +48,11 @@ final class FacturXGenerator
     public const PROFILE_BASIC = 'urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0:1.0';
 
     private const NS_RSM = 'urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100';
+
     private const NS_RAM = 'urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100';
+
     private const NS_QDT = 'urn:un:unece:uncefact:data:standard:QualifiedDataType:100';
+
     private const NS_UDT = 'urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100';
 
     /**

@@ -45,7 +45,6 @@ final class CrmChannelService
      * Envoie un message via le canal du tenant courant.
      *
      * @param  array<string, mixed>  $options  contact_id, purpose, template_parameters…
-     * @return CrmChannelMessage
      *
      * @throws CrmChannelNotFoundException
      * @throws CrmConsentRequiredException

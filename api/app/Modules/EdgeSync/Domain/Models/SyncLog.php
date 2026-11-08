@@ -15,18 +15,19 @@ use Illuminate\Support\Carbon;
  *
  * @property string $id
  * @property string $edge_node_id
- * @property string $direction    push|pull|bidirectional
- * @property string $status       pending|running|success|partial|failed
- * @property int    $records_sent
- * @property int    $records_received
- * @property int    $conflicts_detected
- * @property int    $conflicts_resolved
+ * @property string $direction push|pull|bidirectional
+ * @property string $status pending|running|success|partial|failed
+ * @property int $records_sent
+ * @property int $records_received
+ * @property int $conflicts_detected
+ * @property int $conflicts_resolved
  * @property string|null $error_message
  * @property array<string,mixed> $summary
  * @property Carbon $started_at
  * @property Carbon|null $finished_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class SyncLog extends Model
@@ -48,8 +49,8 @@ class SyncLog extends Model
     ];
 
     protected $casts = [
-        'summary'     => 'array',
-        'started_at'  => 'datetime',
+        'summary' => 'array',
+        'started_at' => 'datetime',
         'finished_at' => 'datetime',
     ];
 

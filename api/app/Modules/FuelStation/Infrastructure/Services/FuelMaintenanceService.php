@@ -35,7 +35,6 @@ final class FuelMaintenanceService
 
     /**
      * @param  array<string, mixed>  $data
-     *
      * @return array{incident: FuelIncident, replayed: bool}
      */
     public function createIncident(Employee $actor, FuelStation $station, array $data): array

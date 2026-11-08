@@ -56,8 +56,8 @@ class TokenAutoRefreshMiddleware
         }
 
         $refreshWindowMinutes = (int) config('sanctum.auto_refresh_window', 1440);
-        $expiresAt             = $createdAt->copy()->addMinutes($expirationMinutes);
-        $refreshThreshold      = $expiresAt->copy()->subMinutes($refreshWindowMinutes);
+        $expiresAt = $createdAt->copy()->addMinutes($expirationMinutes);
+        $refreshThreshold = $expiresAt->copy()->subMinutes($refreshWindowMinutes);
 
         if (now()->lt($refreshThreshold)) {
             return $response;
@@ -79,8 +79,8 @@ class TokenAutoRefreshMiddleware
         // Si une requête concurrente a déjà pivoté le token, lockForUpdate()
         // bloque jusqu'à la fin de l'autre transaction, puis find() retourne
         // null (le token est supprimé) — on sort proprement sans doublon.
-        $tokenId       = $currentToken->getKey();
-        $newExpiresAt  = now()->addMinutes($expirationMinutes);
+        $tokenId = $currentToken->getKey();
+        $newExpiresAt = now()->addMinutes($expirationMinutes);
 
         /** @var array{plain_token: string, expires_at: string}|null $rotated */
         $rotated = DB::transaction(static function () use ($user, $currentToken, $tokenId, $newExpiresAt): ?array {
@@ -102,7 +102,7 @@ class TokenAutoRefreshMiddleware
 
             return [
                 'plain_token' => $newToken->plainTextToken,
-                'expires_at'  => $newExpiresAt->toIso8601String(),
+                'expires_at' => $newExpiresAt->toIso8601String(),
             ];
         });
 
@@ -127,8 +127,8 @@ class TokenAutoRefreshMiddleware
             if (is_array($body)) {
                 $body['_auth'] = [
                     'token_refreshed' => true,
-                    'token'           => $rotated['plain_token'],
-                    'expires_at'      => $rotated['expires_at'],
+                    'token' => $rotated['plain_token'],
+                    'expires_at' => $rotated['expires_at'],
                 ];
                 $response->setContent((string) json_encode($body));
             }

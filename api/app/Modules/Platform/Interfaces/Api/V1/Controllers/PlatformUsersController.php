@@ -41,8 +41,7 @@ class PlatformUsersController extends Controller
         private readonly ListPlatformUsersAction $list,
         private readonly ShowPlatformUserAction $show,
         private readonly SetPlatformUserActiveAction $setActive,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): JsonResponse
     {

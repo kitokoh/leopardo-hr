@@ -51,7 +51,7 @@ final class KioskFaceVerificationTest extends TestCase
         $this->enrollments = app(BiometricEnrollmentLifecycleService::class);
 
         // Instance scriptable unique pour tout le test (défaut : verified).
-        $this->faceAdapter = new FakeFaceVerificationAdapter();
+        $this->faceAdapter = new FakeFaceVerificationAdapter;
         $this->faceAdapter->setDefaultStatus(FaceVerificationStatus::Verified);
         $this->app->instance(FaceVerificationPort::class, $this->faceAdapter);
 
@@ -150,7 +150,7 @@ final class KioskFaceVerificationTest extends TestCase
         // Défaut fail-closed : aucun fournisseur branché → le flux refuse.
         $this->app->instance(
             FaceVerificationPort::class,
-            new \App\Core\AI\Infrastructure\Adapters\UnavailableFaceVerificationAdapter()
+            new \App\Core\AI\Infrastructure\Adapters\UnavailableFaceVerificationAdapter
         );
         $this->enrollActiveFaceTemplate();
         [$deviceCode, $syncToken] = $this->registerKiosk();

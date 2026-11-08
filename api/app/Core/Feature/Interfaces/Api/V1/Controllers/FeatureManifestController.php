@@ -32,9 +32,9 @@ class FeatureManifestController extends Controller
             $user = Auth::user();
 
             Log::info('Feature manifest requested', [
-                'user_id'        => $user->id,
+                'user_id' => $user->id,
                 'mobile_version' => $mobileVersion,
-                'user_agent'     => $request->userAgent(),
+                'user_agent' => $request->userAgent(),
             ]);
 
             /** @var array<string, mixed> $manifest */
@@ -43,32 +43,32 @@ class FeatureManifestController extends Controller
             /** @var array<int|string, mixed> $features */
             $features = is_array($manifest['features'] ?? null) ? $manifest['features'] : [];
 
-            $manifest['features']       = $this->filterFeaturesByPermissions($features, $user);
+            $manifest['features'] = $this->filterFeaturesByPermissions($features, $user);
             $manifest['total_features'] = count($manifest['features']);
-            $manifest['user_id']        = $user->id;
-            $manifest['user_role']      = $user->role ?? 'employee';
+            $manifest['user_id'] = $user->id;
+            $manifest['user_role'] = $user->role ?? 'employee';
 
             return response()->json([
                 'success' => true,
-                'data'    => $manifest,
-                'meta'    => [
+                'data' => $manifest,
+                'meta' => [
                     'generated_for_user' => $user->id,
-                    'mobile_version'     => $mobileVersion,
-                    'api_version'        => config('app.api_version', 'v1'),
-                    'cache_ttl'          => 3600,
+                    'mobile_version' => $mobileVersion,
+                    'api_version' => config('app.api_version', 'v1'),
+                    'cache_ttl' => 3600,
                 ],
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to generate feature manifest', [
-                'user_id'        => Auth::id(),
+                'user_id' => Auth::id(),
                 'mobile_version' => $request->query('mobile_version'),
-                'error'          => $e->getMessage(),
+                'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to generate feature manifest',
-                'error'   => app()->environment('local') ? $e->getMessage() : 'Internal server error',
+                'error' => app()->environment('local') ? $e->getMessage() : 'Internal server error',
             ], 500);
         }
     }
@@ -82,22 +82,22 @@ class FeatureManifestController extends Controller
             $features = $this->registry->getCompatibleFeatures($version);
 
             /** @var array<int|string, mixed> $featuresArray */
-            $featuresArray    = $features->map(fn (mixed $feature): mixed => $feature->toManifestArray())->toArray();
+            $featuresArray = $features->map(fn (mixed $feature): mixed => $feature->toManifestArray())->toArray();
             $filteredFeatures = $this->filterFeaturesByPermissions($featuresArray, $user);
 
             return response()->json([
                 'success' => true,
-                'data'    => [
+                'data' => [
                     'mobile_version' => $version,
                     'total_features' => count($filteredFeatures),
-                    'features'       => $filteredFeatures,
+                    'features' => $filteredFeatures,
                 ],
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to get compatible features', [
                 'user_id' => Auth::id(),
                 'version' => $version,
-                'error'   => $e->getMessage(),
+                'error' => $e->getMessage(),
             ]);
 
             return response()->json([
@@ -170,7 +170,7 @@ class FeatureManifestController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data'    => $result,
+                'data' => $result,
                 'message' => 'Synchronization completed successfully',
             ]);
         } catch (\Exception $e) {
@@ -181,15 +181,14 @@ class FeatureManifestController extends Controller
     }
 
     /**
-     * @param array<int|string, mixed> $features
-     * @param Employee|Authenticatable $user
+     * @param  array<int|string, mixed>  $features
      * @return array<int|string, mixed>
      */
     private function filterFeaturesByPermissions(array $features, Employee|Authenticatable $user): array
     {
         return array_values(array_filter($features, function (mixed $feature) use ($user): bool {
             /** @var array<string, mixed> $featureArr */
-            $featureArr          = is_array($feature) ? $feature : [];
+            $featureArr = is_array($feature) ? $feature : [];
             $requiredPermissions = is_array($featureArr['permissions'] ?? null)
                 ? $featureArr['permissions']
                 : [];
@@ -203,7 +202,7 @@ class FeatureManifestController extends Controller
     }
 
     /**
-     * @param array<int|string, mixed> $requiredPermissions
+     * @param  array<int|string, mixed>  $requiredPermissions
      */
     private function userHasFeaturePermissions(Employee|Authenticatable $user, array $requiredPermissions): bool
     {

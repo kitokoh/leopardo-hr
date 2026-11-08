@@ -14,7 +14,6 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCount;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCountItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPurchaseOrder;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantPurchaseOrderItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantSupplier;
 use Laravel\Sanctum\Sanctum;

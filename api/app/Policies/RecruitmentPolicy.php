@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
 
 class RecruitmentPolicy
@@ -45,4 +45,3 @@ class RecruitmentPolicy
         return $actor->hasManagerRole('principal', 'rh');
     }
 }
-

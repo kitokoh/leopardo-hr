@@ -21,7 +21,7 @@ final class PiiRedactionProcessorTest extends TestCase
     {
         parent::setUp();
 
-        $this->processor = new PiiRedactionProcessor();
+        $this->processor = new PiiRedactionProcessor;
     }
 
     public function test_it_redacts_values_under_sensitive_keys(): void
@@ -114,7 +114,7 @@ final class PiiRedactionProcessorTest extends TestCase
 
     public function test_redacting_json_formatter_masks_secrets_in_serialized_output(): void
     {
-        $formatter = new RedactingJsonFormatter();
+        $formatter = new RedactingJsonFormatter;
 
         $out = $formatter->format($this->record([
             'password' => 'hunter2',

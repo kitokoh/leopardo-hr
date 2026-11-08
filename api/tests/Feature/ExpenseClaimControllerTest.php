@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -176,12 +176,12 @@ class ExpenseClaimControllerTest extends TestCase
         ]);
 
         $claim = ExpenseClaim::create([
-            'company_id'   => $company->id,
-            'employee_id'  => $employee->id,
-            'title'        => 'Frais de deplacement',
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'title' => 'Frais de deplacement',
             'total_amount' => 3000,
-            'currency'     => 'DZD',
-            'status'       => 'submitted',
+            'currency' => 'DZD',
+            'status' => 'submitted',
             'submitted_at' => now(),
         ]);
 
@@ -205,12 +205,12 @@ class ExpenseClaimControllerTest extends TestCase
         ]);
 
         $claim = ExpenseClaim::create([
-            'company_id'   => $company->id,
-            'employee_id'  => $employee->id,
-            'title'        => 'Frais divers',
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'title' => 'Frais divers',
             'total_amount' => 1000,
-            'currency'     => 'DZD',
-            'status'       => 'submitted',
+            'currency' => 'DZD',
+            'status' => 'submitted',
             'submitted_at' => now(),
         ]);
 
@@ -233,12 +233,12 @@ class ExpenseClaimControllerTest extends TestCase
         ]);
 
         $claim = ExpenseClaim::create([
-            'company_id'   => $company->id,
-            'employee_id'  => $coworker->id,
-            'title'        => 'Taxi',
+            'company_id' => $company->id,
+            'employee_id' => $coworker->id,
+            'title' => 'Taxi',
             'total_amount' => 800,
-            'currency'     => 'DZD',
-            'status'       => 'submitted',
+            'currency' => 'DZD',
+            'status' => 'submitted',
             'submitted_at' => now(),
         ]);
 
@@ -261,12 +261,12 @@ class ExpenseClaimControllerTest extends TestCase
         ]);
 
         $claim = ExpenseClaim::create([
-            'company_id'   => $company->id,
-            'employee_id'  => $coworker->id,
-            'title'        => 'Repas client',
+            'company_id' => $company->id,
+            'employee_id' => $coworker->id,
+            'title' => 'Repas client',
             'total_amount' => 2500,
-            'currency'     => 'DZD',
-            'status'       => 'submitted',
+            'currency' => 'DZD',
+            'status' => 'submitted',
             'submitted_at' => now(),
         ]);
 
@@ -289,12 +289,12 @@ class ExpenseClaimControllerTest extends TestCase
         ]);
 
         $claim = ExpenseClaim::create([
-            'company_id'   => $company->id,
-            'employee_id'  => $employee->id,
-            'title'        => 'Hotel conference',
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'title' => 'Hotel conference',
             'total_amount' => 15000,
-            'currency'     => 'DZD',
-            'status'       => 'submitted',
+            'currency' => 'DZD',
+            'status' => 'submitted',
             'submitted_at' => now(),
         ]);
 
@@ -316,12 +316,12 @@ class ExpenseClaimControllerTest extends TestCase
         ]);
 
         $claim = ExpenseClaim::create([
-            'company_id'   => $company->id,
-            'employee_id'  => $employee->id,
-            'title'        => 'Formation externe',
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'title' => 'Formation externe',
             'total_amount' => 8000,
-            'currency'     => 'DZD',
-            'status'       => 'submitted',
+            'currency' => 'DZD',
+            'status' => 'submitted',
             'submitted_at' => now(),
         ]);
 
@@ -341,12 +341,12 @@ class ExpenseClaimControllerTest extends TestCase
         ]);
 
         $claim = ExpenseClaim::create([
-            'company_id'   => $company->id,
-            'employee_id'  => $employee->id,
-            'title'        => 'Achat fournitures',
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'title' => 'Achat fournitures',
             'total_amount' => 500,
-            'currency'     => 'DZD',
-            'status'       => 'submitted',
+            'currency' => 'DZD',
+            'status' => 'submitted',
             'submitted_at' => now(),
         ]);
 
@@ -371,12 +371,12 @@ class ExpenseClaimControllerTest extends TestCase
         ]);
 
         $claim = ExpenseClaim::create([
-            'company_id'   => $company->id,
-            'employee_id'  => $employee->id,
-            'title'        => 'Deplacement Alger',
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'title' => 'Deplacement Alger',
             'total_amount' => 4500,
-            'currency'     => 'DZD',
-            'status'       => 'draft',
+            'currency' => 'DZD',
+            'status' => 'draft',
         ]);
 
         Sanctum::actingAs($foreignEmployee);
@@ -385,4 +385,3 @@ class ExpenseClaimControllerTest extends TestCase
             ->assertNotFound();
     }
 }
-

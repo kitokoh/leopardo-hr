@@ -48,7 +48,7 @@ class SendPushNotificationJob implements ShouldQueue, TenantScopedJob
      */
     public function middleware(): array
     {
-        return [new EnsureTenantContext()];
+        return [new EnsureTenantContext];
     }
 
     public function handle(PushNotificationService $pushService): void
@@ -71,5 +71,4 @@ class SendPushNotificationJob implements ShouldQueue, TenantScopedJob
             'exception' => $e->getMessage(),
         ]);
     }
-
 }

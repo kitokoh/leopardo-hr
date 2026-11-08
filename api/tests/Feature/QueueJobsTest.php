@@ -8,7 +8,6 @@ use App\Jobs\GeneratePaymentDocumentJob;
 use App\Jobs\ProcessBulkPaymentJob;
 use App\Jobs\ProcessPayrollBatchJob;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 

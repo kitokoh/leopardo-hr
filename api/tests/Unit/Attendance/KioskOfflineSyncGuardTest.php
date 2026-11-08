@@ -38,7 +38,7 @@ final class KioskOfflineSyncGuardTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->guard = new KioskOfflineSyncGuard();
+        $this->guard = new KioskOfflineSyncGuard;
     }
 
     public function test_legacy_null_envelope_passes_without_integrity_requirement(): void
@@ -156,7 +156,7 @@ final class KioskOfflineSyncGuardTest extends TestCase
     private function kioskWithAckedCounter(int $ackedEventCounter): AttendanceKiosk
     {
         // Modèle non persisté : la garde ne lit que `acked_event_counter`.
-        $kiosk = new AttendanceKiosk();
+        $kiosk = new AttendanceKiosk;
         $kiosk->forceFill([
             'device_code' => AttendanceKiosk::hashDeviceCode(self::DEVICE_CODE),
             'acked_event_counter' => $ackedEventCounter,

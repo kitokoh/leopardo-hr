@@ -33,7 +33,7 @@ class SeedDefaultStepsTest extends TestCase
         $this->assertCount(10, $steps);
         $this->assertSame(
             ['company_info', 'first_department', 'first_employee', 'first_attendance', 'invite_manager',
-             'configure_schedules', 'first_report', 'configure_payroll', 'install_kiosk', 'activate_geofence'],
+                'configure_schedules', 'first_report', 'configure_payroll', 'install_kiosk', 'activate_geofence'],
             $steps->pluck('step_key')->all()
         );
         /** @var OnboardingStep $firstStep */

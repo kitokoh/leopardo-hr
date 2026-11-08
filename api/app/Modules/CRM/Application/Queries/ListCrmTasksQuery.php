@@ -18,8 +18,6 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 class ListCrmTasksQuery
 {
     /**
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, \App\Modules\CRM\Domain\Models\CrmTask>
-     *
      * @param  array{
      *     status?: string,
      *     overdue?: bool,
@@ -29,6 +27,7 @@ class ListCrmTasksQuery
      *     per_page?: int,
      *     page?: int,
      * }  $input
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, \App\Modules\CRM\Domain\Models\CrmTask>
      */
     public function execute(array $input): LengthAwarePaginator
     {

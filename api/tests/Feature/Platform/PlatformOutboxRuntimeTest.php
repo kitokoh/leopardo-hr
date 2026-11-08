@@ -176,7 +176,8 @@ class PlatformOutboxRuntimeTest extends TestCase
 
     public function test_transient_failure_retries_with_backoff(): void
     {
-        $this->registry->register(new class implements PlatformOutboxConsumer {
+        $this->registry->register(new class implements PlatformOutboxConsumer
+        {
             public function supports(string $eventType): bool
             {
                 return $eventType === 'platform.test.transient';
@@ -205,7 +206,8 @@ class PlatformOutboxRuntimeTest extends TestCase
 
     public function test_permanent_failure_goes_to_dead_letter(): void
     {
-        $this->registry->register(new class implements PlatformOutboxConsumer {
+        $this->registry->register(new class implements PlatformOutboxConsumer
+        {
             public function supports(string $eventType): bool
             {
                 return $eventType === 'platform.test.permanent';
@@ -240,7 +242,8 @@ class PlatformOutboxRuntimeTest extends TestCase
     public function test_replay_command_reprocesses_dead_lettered_events(): void
     {
         // 1. Dead-letter via un consommateur permanent (bascule mutable).
-        $consumer = new class implements PlatformOutboxConsumer {
+        $consumer = new class implements PlatformOutboxConsumer
+        {
             public bool $shouldFail = true;
 
             public function supports(string $eventType): bool
@@ -283,7 +286,8 @@ class PlatformOutboxRuntimeTest extends TestCase
 
     public function test_stale_processing_lease_is_reclaimed_after_worker_crash(): void
     {
-        $this->registry->register(new class implements PlatformOutboxConsumer {
+        $this->registry->register(new class implements PlatformOutboxConsumer
+        {
             public function supports(string $eventType): bool
             {
                 return $eventType === 'platform.test.lease';

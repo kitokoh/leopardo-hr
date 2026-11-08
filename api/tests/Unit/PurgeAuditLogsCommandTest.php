@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Testing\PendingCommand;
 use Tests\TestCase;
-
-use App\Core\Tenant\Domain\Models\Company;
 
 /**
  * audit:purge — rétention RGPD des audit logs (issue #1474).

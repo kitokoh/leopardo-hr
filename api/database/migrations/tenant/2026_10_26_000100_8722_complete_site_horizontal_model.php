@@ -80,14 +80,14 @@ return new class extends Migration
         // inventée d'entrer en base même par un INSERT direct.
         DB::statement('ALTER TABLE sites DROP CONSTRAINT IF EXISTS sites_gps_source_allowed');
         DB::statement(
-            "ALTER TABLE sites ADD CONSTRAINT sites_gps_source_allowed "
+            'ALTER TABLE sites ADD CONSTRAINT sites_gps_source_allowed '
             ."CHECK (gps_source IS NULL OR gps_source IN ('manual', 'provider', 'verified'))"
         );
 
         // Un point « vérifié » sans date de vérification n'est pas vérifiable.
         DB::statement('ALTER TABLE sites DROP CONSTRAINT IF EXISTS sites_gps_verified_requires_date');
         DB::statement(
-            "ALTER TABLE sites ADD CONSTRAINT sites_gps_verified_requires_date "
+            'ALTER TABLE sites ADD CONSTRAINT sites_gps_verified_requires_date '
             ."CHECK (gps_source <> 'verified' OR gps_verified_at IS NOT NULL)"
         );
 
@@ -95,9 +95,9 @@ return new class extends Migration
         // physiquement, mais une valeur hors bornes casse toute carte en aval.
         DB::statement('ALTER TABLE sites DROP CONSTRAINT IF EXISTS sites_gps_bounds');
         DB::statement(
-            "ALTER TABLE sites ADD CONSTRAINT sites_gps_bounds "
-            ."CHECK ((gps_lat IS NULL OR (gps_lat >= -90 AND gps_lat <= 90)) "
-            ."AND (gps_lng IS NULL OR (gps_lng >= -180 AND gps_lng <= 180)))"
+            'ALTER TABLE sites ADD CONSTRAINT sites_gps_bounds '
+            .'CHECK ((gps_lat IS NULL OR (gps_lat >= -90 AND gps_lat <= 90)) '
+            .'AND (gps_lng IS NULL OR (gps_lng >= -180 AND gps_lng <= 180)))'
         );
 
         // Index de recherche par pays/ville : c'est la requête réelle de la

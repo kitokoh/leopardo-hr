@@ -9,6 +9,4 @@ namespace App\Modules\Payroll\Domain\Exceptions;
  * pour le pays — #1767). L'Action a restaure `draft` ; l'interface répond
  * 422 `payroll.zero_slips_generated` (jamais de validation à vide).
  */
-class PayrollRunZeroSlipsException extends \RuntimeException
-{
-}
+class PayrollRunZeroSlipsException extends \RuntimeException {}

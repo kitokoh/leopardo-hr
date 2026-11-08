@@ -43,7 +43,7 @@ final class BiometricIsolationMatrixTest extends TestCase
         parent::setUp();
 
         // Défaut : moteur facial scriptable (Verified) pour le flux verify-face.
-        $faceAdapter = new FakeFaceVerificationAdapter();
+        $faceAdapter = new FakeFaceVerificationAdapter;
         $faceAdapter->setDefaultStatus(FaceVerificationStatus::Verified);
         $this->app->instance(FaceVerificationPort::class, $faceAdapter);
     }

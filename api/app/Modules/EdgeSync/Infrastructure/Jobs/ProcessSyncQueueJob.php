@@ -6,8 +6,8 @@ namespace App\Modules\EdgeSync\Infrastructure\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
-use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
+use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -22,8 +22,10 @@ class ProcessSyncQueueJob implements ShouldQueue, TenantScopedJob
     use Queueable;
     use SerializesModels;
 
-    public int $tries   = 3;
+    public int $tries = 3;
+
     public int $timeout = 120;
+
     public int $backoff = 30;
 
     private ?string $resolvedCompanyId = null;
@@ -46,7 +48,7 @@ class ProcessSyncQueueJob implements ShouldQueue, TenantScopedJob
      */
     public function middleware(): array
     {
-        return [new EnsureTenantContext()];
+        return [new EnsureTenantContext];
     }
 
     public function handle(SyncEngineService $syncEngine): void
@@ -76,7 +78,7 @@ class ProcessSyncQueueJob implements ShouldQueue, TenantScopedJob
     {
         Log::error('[EdgeSync] ProcessSyncQueueJob failed permanently', [
             'edge_node_id' => $this->edgeNodeId,
-            'error'        => $exception->getMessage(),
+            'error' => $exception->getMessage(),
         ]);
     }
 }

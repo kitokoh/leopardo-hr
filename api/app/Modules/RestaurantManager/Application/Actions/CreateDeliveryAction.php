@@ -31,8 +31,7 @@ final class CreateDeliveryAction
 
     public function __construct(
         private readonly RestaurantOutboxPublisher $outbox,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{zone_id?: int|null}  $data

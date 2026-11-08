@@ -186,7 +186,7 @@ class CrmChannelController extends Controller
     {
         $channel = CrmChannel::query()->where('id', $channelId)->first();
         if ($channel === null) {
-            throw new CrmChannelNotFoundException();
+            throw new CrmChannelNotFoundException;
         }
 
         return $channel;

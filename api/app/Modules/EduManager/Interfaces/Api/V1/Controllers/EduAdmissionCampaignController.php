@@ -24,9 +24,7 @@ class EduAdmissionCampaignController extends Controller
 {
     use ChecksEduSolution;
 
-    public function __construct(private readonly EduAdmissionFollowupService $followups)
-    {
-    }
+    public function __construct(private readonly EduAdmissionFollowupService $followups) {}
 
     public function followUp(StoreEduAdmissionFollowupRequest $request, EduAdmission $admission): JsonResponse
     {

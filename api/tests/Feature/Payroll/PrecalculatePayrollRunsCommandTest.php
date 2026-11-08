@@ -9,8 +9,8 @@ use App\Jobs\ProcessPayrollBatchJob;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Queue;
-use Tests\TestCase;
 use Illuminate\Testing\PendingCommand;
+use Tests\TestCase;
 
 /**
  * PA2-PAY-012 — nightly progressive payroll pre-calculation.

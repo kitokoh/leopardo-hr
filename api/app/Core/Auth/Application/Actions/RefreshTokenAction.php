@@ -34,8 +34,8 @@ final class RefreshTokenAction
         $currentToken = $user->currentAccessToken();
 
         $expirationMinutes = (int) config('sanctum.expiration', 0);
-        $expiresAt         = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
-        $tokenId           = $currentToken->getKey();
+        $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
+        $tokenId = $currentToken->getKey();
 
         /** @var array{token: string, token_type: string, token_expires_at: ?string} $result */
         $result = DB::transaction(static function () use ($user, $currentToken, $tokenId, $expiresAt): array {
@@ -58,8 +58,8 @@ final class RefreshTokenAction
             $fresh->delete();
 
             return [
-                'token'            => $newToken->plainTextToken,
-                'token_type'       => 'Bearer',
+                'token' => $newToken->plainTextToken,
+                'token_type' => 'Bearer',
                 'token_expires_at' => $expiresAt?->toIso8601String(),
             ];
         });

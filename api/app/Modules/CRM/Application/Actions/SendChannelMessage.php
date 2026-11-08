@@ -28,7 +28,7 @@ final class SendChannelMessage
             ->first();
 
         if ($channel === null) {
-            throw new CrmChannelNotFoundException();
+            throw new CrmChannelNotFoundException;
         }
 
         return $this->service->send(

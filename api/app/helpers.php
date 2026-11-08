@@ -16,7 +16,6 @@ if (! function_exists('currentCompany')) {
     }
 }
 
-
 if (! function_exists('correlation_id')) {
     /**
      * Identifiant de corrélation de la requête/job en cours (issue #1874).
@@ -43,7 +42,6 @@ if (! function_exists('correlation_id')) {
     }
 }
 
-
 if (! function_exists('resolveTableSchema')) {
     /**
      * Résout le schéma où `DB::table($table)` trouverait la table, en suivant
@@ -60,12 +58,12 @@ if (! function_exists('resolveTableSchema')) {
     function resolveTableSchema(string $table): ?string
     {
         $row = \Illuminate\Support\Facades\DB::selectOne(
-            "SELECT t.table_schema
+            'SELECT t.table_schema
                FROM information_schema.tables t
               WHERE t.table_name = ?
                 AND t.table_schema = ANY (current_schemas(false))
               ORDER BY array_position(current_schemas(false), t.table_schema)
-              LIMIT 1",
+              LIMIT 1',
             [$table]
         );
 
@@ -95,11 +93,11 @@ if (! function_exists('schemaHasColumn')) {
         }
 
         $row = \Illuminate\Support\Facades\DB::selectOne(
-            "SELECT 1
+            'SELECT 1
                FROM information_schema.columns
               WHERE table_schema = ?
                 AND table_name = ?
-                AND column_name = ?",
+                AND column_name = ?',
             [$schema, $table, $column]
         );
 

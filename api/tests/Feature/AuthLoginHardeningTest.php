@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\Hash;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -57,7 +57,7 @@ class AuthLoginHardeningTest extends TestCase
         // l'état legacy équivalent : un hash corrompu/absent sémantiquement
         // (invité SSO, seed incomplet) → Hash::check ne doit pas lever
         // (TypeError → 500) mais renvoyer 401.
-                $sensitiveEmployee2 = new Employee([
+        $sensitiveEmployee2 = new Employee([
             'email' => 'broken-hash@company.test',
         ]);
         $sensitiveEmployee2->forceFill(['password_hash' => 'legacy-broken-hash'])->save();

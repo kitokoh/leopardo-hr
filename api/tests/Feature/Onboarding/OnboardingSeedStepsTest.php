@@ -23,7 +23,7 @@ class OnboardingSeedStepsTest extends TestCase
         /** @var Company $company */
         $company = Company::factory()->create();
 
-        (new SeedDefaultSteps())->execute((string) $company->id);
+        (new SeedDefaultSteps)->execute((string) $company->id);
 
         $steps = OnboardingStep::where('company_id', $company->id)->get();
 
@@ -37,7 +37,7 @@ class OnboardingSeedStepsTest extends TestCase
 
         $this->assertSame(
             ['activate_geofence', 'company_info', 'configure_payroll', 'configure_schedules', 'first_attendance',
-             'first_department', 'first_employee', 'first_report', 'install_kiosk', 'invite_manager'],
+                'first_department', 'first_employee', 'first_report', 'install_kiosk', 'invite_manager'],
             $steps->pluck('step_key')->sort()->values()->all()
         );
     }
@@ -46,7 +46,7 @@ class OnboardingSeedStepsTest extends TestCase
     {
         /** @var Company $company */
         $company = Company::factory()->create();
-        $action = new SeedDefaultSteps();
+        $action = new SeedDefaultSteps;
 
         $action->execute((string) $company->id);
         $action->execute((string) $company->id);

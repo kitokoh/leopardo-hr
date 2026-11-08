@@ -271,4 +271,3 @@ class FeatureRegistryIntegrationTest extends TestCase
         $this->assertEquals(2, $stats['by_status']['inactive']);
     }
 }
-
