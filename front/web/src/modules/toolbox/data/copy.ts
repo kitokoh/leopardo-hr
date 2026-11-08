@@ -289,6 +289,54 @@ const fr: ToolboxCopy = {
         'Résultat indicatif : il ne remplace pas une facture ni une déclaration de TVA.',
       ],
     },
+    'convertisseur-devises': {
+      name: 'Convertisseur de devises (estimation)',
+      description:
+        'Convertissez un montant entre devises avec des taux de référence statiques, hors ligne.',
+      fields: { amount: 'Montant', from: 'Devise source', to: 'Devise cible' },
+      results: { converted: 'Montant converti', rate: 'Taux appliqué' },
+      notes: [
+        'Les taux sont des constantes de référence documentées, pas un taux de marché en temps réel.',
+        'Conversion via l’euro comme pivot : montant × taux source ÷ taux cible.',
+        'Résultat indicatif : ne remplace pas un taux bancaire ni une facture.',
+      ],
+    },
+    'duree-entre-dates': {
+      name: 'Durée entre deux dates',
+      description:
+        'Calculez la durée calendaire exacte entre deux dates, en années, mois et jours.',
+      fields: { from: 'Date de début', to: 'Date de fin' },
+      results: { years: 'Années', months: 'Mois', days: 'Jours', totalDays: 'Total en jours' },
+      notes: [
+        'Décomposition calendaire exacte (années entières, puis mois, puis jours), pas une division par 365,25.',
+        'Le jour est borné à la longueur du mois d’arrivée (31 janv. + 1 mois = 28/29 févr.).',
+      ],
+    },
+    age: {
+      name: 'Âge (années, mois, jours)',
+      description: 'Calculez un âge exact en années, mois et jours à une date de référence.',
+      fields: { birthDate: 'Date de naissance', referenceDate: 'Date de référence' },
+      results: { years: 'Années', months: 'Mois', days: 'Jours', totalDays: 'Total en jours' },
+      notes: [
+        'Différence calendaire exacte, pas une division par 365,25.',
+        'Une date de naissance dans le futur n’a pas d’âge : le résultat est vide.',
+      ],
+    },
+    'taux-horaire': {
+      name: 'Taux horaire / salaire mensuel',
+      description: 'Convertissez un salaire mensuel brut en taux horaire, et inversement.',
+      fields: { mode: 'Sens de la conversion', monthlyGross: 'Salaire brut mensuel', hoursPerWeek: 'Heures par semaine' },
+      options: {
+        'monthly-to-hourly': 'Brut mensuel → taux horaire',
+        'hourly-to-monthly': 'Taux horaire → brut mensuel',
+      },
+      results: { hourly: 'Taux horaire', monthly: 'Salaire mensuel brut' },
+      notes: [
+        'Formule : taux horaire = brut mensuel ÷ (heures par semaine × 52 ÷ 12).',
+        'Le diviseur est le nombre moyen d’heures par mois sur l’année (52 semaines).',
+        'Résultat approximatif : il ne remplace pas un bulletin de paie.',
+      ],
+    },
   },
 };
 
@@ -519,6 +567,53 @@ const en: ToolboxCopy = {
         'Each line: VAT = net amount × rate ÷ 100.',
         'Lines are grouped by rate, as on an invoice.',
         'Indicative result: it does not replace an invoice or a VAT return.',
+      ],
+    },
+    'convertisseur-devises': {
+      name: 'Currency converter (estimate)',
+      description: 'Convert an amount between currencies using static, offline reference rates.',
+      fields: { amount: 'Amount', from: 'Source currency', to: 'Target currency' },
+      results: { converted: 'Converted amount', rate: 'Applied rate' },
+      notes: [
+        'Rates are documented reference constants, not a real-time market rate.',
+        'Conversion via the euro as pivot: amount × source rate ÷ target rate.',
+        'Indicative result: it does not replace a bank rate or an invoice.',
+      ],
+    },
+    'duree-entre-dates': {
+      name: 'Duration between two dates',
+      description:
+        'Compute the exact calendar duration between two dates, in years, months and days.',
+      fields: { from: 'Start date', to: 'End date' },
+      results: { years: 'Years', months: 'Months', days: 'Days', totalDays: 'Total days' },
+      notes: [
+        'Exact calendar breakdown (whole years, then months, then days), not a division by 365.25.',
+        'The day is clamped to the length of the target month (31 Jan + 1 month = 28/29 Feb).',
+      ],
+    },
+    age: {
+      name: 'Age (years, months, days)',
+      description: 'Compute an exact age in years, months and days at a reference date.',
+      fields: { birthDate: 'Date of birth', referenceDate: 'Reference date' },
+      results: { years: 'Years', months: 'Months', days: 'Days', totalDays: 'Total days' },
+      notes: [
+        'Exact calendar difference, not a division by 365.25.',
+        'A birth date in the future has no age: the result is empty.',
+      ],
+    },
+    'taux-horaire': {
+      name: 'Hourly rate / monthly salary',
+      description: 'Convert a monthly gross salary into an hourly rate, and back.',
+      fields: { mode: 'Conversion direction', monthlyGross: 'Monthly gross salary', hoursPerWeek: 'Hours per week' },
+      options: {
+        'monthly-to-hourly': 'Monthly gross → hourly rate',
+        'hourly-to-monthly': 'Hourly rate → monthly gross',
+      },
+      results: { hourly: 'Hourly rate', monthly: 'Monthly gross salary' },
+      notes: [
+        'Formula: hourly rate = monthly gross ÷ (hours per week × 52 ÷ 12).',
+        'The divisor is the average number of hours per month over the year (52 weeks).',
+        'Approximate result: it does not replace a payslip.',
       ],
     },
   },
@@ -752,6 +847,52 @@ const tr: ToolboxCopy = {
         'Gösterge niteliğinde sonuç: fatura veya KDV beyannamesi yerine geçmez.',
       ],
     },
+    'convertisseur-devises': {
+      name: 'Döviz çevirici (tahmini)',
+      description: 'Statik, çevrimdışı referans kurlarıyla bir tutarı dövizler arasında çevirin.',
+      fields: { amount: 'Tutar', from: 'Kaynak döviz', to: 'Hedef döviz' },
+      results: { converted: 'Çevrilen tutar', rate: 'Uygulanan kur' },
+      notes: [
+        'Kurlar belgelenmiş referans sabitleridir, gerçek zamanlı piyasa kuru değildir.',
+        'Euro pivot üzerinden çevrim: tutar × kaynak kur ÷ hedef kur.',
+        'Gösterge niteliğinde sonuç: banka kuru veya fatura yerine geçmez.',
+      ],
+    },
+    'duree-entre-dates': {
+      name: 'İki tarih arasındaki süre',
+      description: 'İki tarih arasındaki tam takvim süresini yıl, ay ve gün olarak hesaplayın.',
+      fields: { from: 'Başlangıç tarihi', to: 'Bitiş tarihi' },
+      results: { years: 'Yıl', months: 'Ay', days: 'Gün', totalDays: 'Toplam gün' },
+      notes: [
+        'Tam takvim ayrıştırması (önce tam yıl, sonra ay, sonra gün), 365,25’e bölme değil.',
+        'Gün, varış ayının uzunluğuna sınırlanır (31 Oca + 1 ay = 28/29 Şub).',
+      ],
+    },
+    age: {
+      name: 'Yaş (yıl, ay, gün)',
+      description: 'Bir referans tarihte tam yaşı yıl, ay ve gün olarak hesaplayın.',
+      fields: { birthDate: 'Doğum tarihi', referenceDate: 'Referans tarihi' },
+      results: { years: 'Yıl', months: 'Ay', days: 'Gün', totalDays: 'Toplam gün' },
+      notes: [
+        'Tam takvim farkı, 365,25’e bölme değil.',
+        'Gelecekteki bir doğum tarihinin yaşı yoktur: sonuç boştur.',
+      ],
+    },
+    'taux-horaire': {
+      name: 'Saatlik ücret / aylık maaş',
+      description: 'Aylık brüt maaşı saatlik ücrete çevirin ve tersini yapın.',
+      fields: { mode: 'Dönüşüm yönü', monthlyGross: 'Aylık brüt maaş', hoursPerWeek: 'Haftalık saat' },
+      options: {
+        'monthly-to-hourly': 'Aylık brüt → saatlik ücret',
+        'hourly-to-monthly': 'Saatlik ücret → aylık brüt',
+      },
+      results: { hourly: 'Saatlik ücret', monthly: 'Aylık brüt maaş' },
+      notes: [
+        'Formül: saatlik ücret = aylık brüt ÷ (haftalık saat × 52 ÷ 12).',
+        'Bölen, yıl boyunca (52 hafta) aylık ortalama saat sayısıdır.',
+        'Yaklaşık sonuç: bordro yerine geçmez.',
+      ],
+    },
   },
 };
 
@@ -975,6 +1116,52 @@ const ar: ToolboxCopy = {
         'كل سطر: الضريبة = المبلغ الصافي × المعدل ÷ 100.',
         'تُجمَّع الأسطر حسب المعدل، كما في الفاتورة.',
         'نتيجة إرشادية: لا تحل محل فاتورة أو تصريح ضريبي.',
+      ],
+    },
+    'convertisseur-devises': {
+      name: 'محوّل العملات (تقديري)',
+      description: 'حوّل مبلغًا بين العملات باستخدام أسعار مرجعية ثابتة دون اتصال.',
+      fields: { amount: 'المبلغ', from: 'العملة المصدر', to: 'العملة الهدف' },
+      results: { converted: 'المبلغ المحوّل', rate: 'السعر المطبّق' },
+      notes: [
+        'الأسعار ثوابت مرجعية موثّقة، وليست سعر سوق في الوقت الحقيقي.',
+        'التحويل عبر اليورو كنقطة ارتكاز: المبلغ × سعر المصدر ÷ سعر الهدف.',
+        'نتيجة إرشادية: لا تحل محل سعر بنكي أو فاتورة.',
+      ],
+    },
+    'duree-entre-dates': {
+      name: 'المدة بين تاريخين',
+      description: 'احسب المدة التقويمية الدقيقة بين تاريخين بالسنوات والأشهر والأيام.',
+      fields: { from: 'تاريخ البداية', to: 'تاريخ النهاية' },
+      results: { years: 'سنوات', months: 'أشهر', days: 'أيام', totalDays: 'الإجمالي بالأيام' },
+      notes: [
+        'تفكيك تقويمي دقيق (سنوات كاملة ثم أشهر ثم أيام)، وليس قسمة على 365.25.',
+        'يُقيَّد اليوم بطول شهر الوصول (31 يناير + شهر = 28/29 فبراير).',
+      ],
+    },
+    age: {
+      name: 'العمر (سنوات، أشهر، أيام)',
+      description: 'احسب العمر الدقيق بالسنوات والأشهر والأيام عند تاريخ مرجعي.',
+      fields: { birthDate: 'تاريخ الميلاد', referenceDate: 'التاريخ المرجعي' },
+      results: { years: 'سنوات', months: 'أشهر', days: 'أيام', totalDays: 'الإجمالي بالأيام' },
+      notes: [
+        'فرق تقويمي دقيق، وليس قسمة على 365.25.',
+        'تاريخ ميلاد في المستقبل ليس له عمر: النتيجة فارغة.',
+      ],
+    },
+    'taux-horaire': {
+      name: 'الأجر بالساعة / الراتب الشهري',
+      description: 'حوّل راتبًا شهريًا إجماليًا إلى أجر بالساعة، والعكس.',
+      fields: { mode: 'اتجاه التحويل', monthlyGross: 'الراتب الشهري الإجمالي', hoursPerWeek: 'الساعات أسبوعيًا' },
+      options: {
+        'monthly-to-hourly': 'الشهري الإجمالي ← الأجر بالساعة',
+        'hourly-to-monthly': 'الأجر بالساعة ← الشهري الإجمالي',
+      },
+      results: { hourly: 'الأجر بالساعة', monthly: 'الراتب الشهري الإجمالي' },
+      notes: [
+        'الصيغة: الأجر بالساعة = الراتب الشهري ÷ (الساعات أسبوعيًا × 52 ÷ 12).',
+        'المقسوم عليه هو متوسط عدد الساعات شهريًا على مدار السنة (52 أسبوعًا).',
+        'نتيجة تقريبية: لا تحل محل كشف الراتب.',
       ],
     },
   },
