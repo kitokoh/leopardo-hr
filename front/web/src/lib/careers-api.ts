@@ -73,11 +73,13 @@ async function careersFetch(path: string, init?: RequestInit): Promise<Response>
  */
 export async function getPublicJobPostings(
   companySlug: string,
-  filters?: { location?: string; contractType?: string }
-): Promise<PublicJobPosting[] | null> {
+  filters?: PublicCareersFilters
+): Promise<PublicJobEntry[] | null> {
   const params = new URLSearchParams();
   if (filters?.location) params.set('location', filters.location);
   if (filters?.contractType) params.set('contract_type', filters.contractType);
+  if (filters?.remotePolicy) params.set('remote_policy', filters.remotePolicy);
+  if (filters?.q) params.set('q', filters.q);
   params.set('per_page', '100');
 
   const query = params.toString();
@@ -91,7 +93,7 @@ export async function getPublicJobPostings(
     throw new Error(`Failed to load job postings for ${companySlug}: HTTP ${response.status}`);
   }
 
-  const payload = (await response.json()) as PaginatedResponse<PublicJobPosting>;
+  const payload = (await response.json()) as PaginatedResponse<PublicJobEntry>;
   return payload.data;
 }
 
@@ -172,6 +174,8 @@ export async function submitPublicApplication(
   if (input.phone) formData.set('phone', input.phone);
   if (input.cover_letter) formData.set('cover_letter', input.cover_letter);
   formData.set('source', input.source ?? 'website');
+  formData.set('consent', input.consent ? '1' : '0');
+  if (input.website) formData.set('website', input.website);
   if (input.resume) formData.set('resume', input.resume);
 
   const response = await fetch(

@@ -13,6 +13,7 @@ import { getTenantCareersCopy, tenantCareersMetaTitle, tenantCareersMetaDescript
 import {
   getPublicCareersCompany,
   getPublicJobPostings,
+  isExternalOffer,
   CONTRACT_TYPE_LABELS,
   REMOTE_POLICY_LABELS,
 } from '@/lib/careers-api';
@@ -33,7 +34,7 @@ async function resolveCareersLocale(
 
 interface CareersPortalPageProps {
   params: Promise<{ companySlug: string }>;
-  searchParams: Promise<{ lang?: string }>;
+  searchParams: Promise<{ lang?: string; q?: string; contract_type?: string; remote_policy?: string }>;
 }
 
 export async function generateMetadata({ params, searchParams }: CareersPortalPageProps): Promise<Metadata> {
@@ -62,9 +63,13 @@ export async function generateMetadata({ params, searchParams }: CareersPortalPa
 
 export default async function CareersPortalPage({ params, searchParams }: CareersPortalPageProps) {
   const { companySlug } = await params;
-  const { lang } = await searchParams;
+  const { lang, q, contract_type, remote_policy } = await searchParams;
   const [jobs, company] = await Promise.all([
-    getPublicJobPostings(companySlug),
+    getPublicJobPostings(companySlug, {
+      q,
+      contractType: contract_type,
+      remotePolicy: remote_policy,
+    }),
     getPublicCareersCompany(companySlug),
   ]);
   const locale = await resolveCareersLocale(lang);
@@ -77,6 +82,18 @@ export default async function CareersPortalPage({ params, searchParams }: Career
   const brandColor = company?.primary_color ?? '#10B981';
   const displayName = company?.display_name ?? copy.fallbackCompanyName;
 
+  // BC-10 (#9100) — deux populations distinctes, présentées séparément.
+  //
+  // Les offres du tenant et les offres agrégées n'ont pas la même nature : les
+  // premières se candidatent ICI, les secondes renvoient chez le partenaire.
+  // Les mélanger dans une seule liste ferait cliquer le visiteur sur un
+  // formulaire qui n'existe pas pour lui. On les sépare donc explicitement, et
+  // chaque carte dit à quoi elle correspond.
+  const companyJobs = jobs.filter((job) => !isExternalOffer(job));
+  const externalJobs = jobs.filter(isExternalOffer);
+
+  const hasFilters = Boolean(q || contract_type || remote_policy);
+
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
       <CareersNavbar />
@@ -88,7 +105,9 @@ export default async function CareersPortalPage({ params, searchParams }: Career
           itemListElement: jobs.map((job, index) => ({
             '@type': 'ListItem',
             position: index + 1,
-            url: `${SITE_URL}/${companySlug}/careers/jobs/${job.id}`,
+            url: isExternalOffer(job)
+              ? job.apply_url
+              : `${SITE_URL}/${companySlug}/careers/jobs/${job.id}`,
           })),
         }}
       />
@@ -127,51 +146,177 @@ export default async function CareersPortalPage({ params, searchParams }: Career
 
       <section className="py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Filtres : un simple formulaire GET, sans JavaScript. Le portail est
+              public et indexé — il doit rester utilisable et partageable même
+              sans hydratation, et chaque filtre produit une URL partageable. */}
+          <form method="get" className="mb-8 flex flex-wrap items-end gap-3">
+            {lang && <input type="hidden" name="lang" value={lang} />}
+            <div className="flex-1 min-w-[200px]">
+              <label htmlFor="careers-q" className="sr-only">{copy.searchPlaceholder}</label>
+              <input
+                id="careers-q"
+                name="q"
+                type="search"
+                defaultValue={q ?? ''}
+                placeholder={copy.searchPlaceholder}
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm text-slate-900 dark:text-white"
+              />
+            </div>
+            <div>
+              <label htmlFor="careers-contract" className="sr-only">Contract</label>
+              <select
+                id="careers-contract"
+                name="contract_type"
+                defaultValue={contract_type ?? ''}
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2.5 text-sm text-slate-900 dark:text-white"
+              >
+                <option value="">{copy.filterAll}</option>
+                {Object.entries(CONTRACT_TYPE_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>{label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="careers-remote" className="sr-only">Remote</label>
+              <select
+                id="careers-remote"
+                name="remote_policy"
+                defaultValue={remote_policy ?? ''}
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2.5 text-sm text-slate-900 dark:text-white"
+              >
+                <option value="">{copy.filterAll}</option>
+                {Object.entries(REMOTE_POLICY_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>{label}</option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="submit"
+              className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white"
+              style={{ backgroundColor: brandColor }}
+            >
+              {copy.searchPlaceholder.split(' ')[0]}
+            </button>
+            {hasFilters && (
+              <Link
+                href={`/${companySlug}/careers${lang ? `?lang=${lang}` : ''}`}
+                className="text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+              >
+                {copy.clearFilters}
+              </Link>
+            )}
+          </form>
+
           {jobs.length === 0 ? (
             <div className="text-center py-16 text-slate-500 dark:text-slate-400">
-              {copy.noJobsYet}
+              {hasFilters ? copy.noResults : copy.noJobsYet}
             </div>
           ) : (
-            <div className="space-y-4">
-              {jobs.map((job) => (
-                <Link
-                  key={job.id}
-                  href={`/${companySlug}/careers/jobs/${job.id}`}
-                  className="group block p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-emerald-500/40 hover:shadow-lg transition-all"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <h2 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
-                        {job.title}
-                      </h2>
-                      {job.description && (
-                        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 mb-3 line-clamp-2">
-                          {job.description}
-                        </p>
-                      )}
-                      <div className="flex flex-wrap gap-3 text-xs text-slate-500 dark:text-slate-400">
-                        {job.department && (
-                          <span className="flex items-center gap-1">
-                            <Briefcase className="w-3 h-3" />
-                            {job.department.name}
-                          </span>
-                        )}
-                        {job.location && (
-                          <span className="flex items-center gap-1">
-                            <MapPin className="w-3 h-3" />
-                            {job.location}
-                          </span>
-                        )}
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {CONTRACT_TYPE_LABELS[job.contract_type]} - {REMOTE_POLICY_LABELS[job.remote_policy]}
-                        </span>
-                      </div>
-                    </div>
-                    <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-emerald-500 transition-colors flex-shrink-0 mt-1" />
+            <div className="space-y-10">
+              {companyJobs.length > 0 && (
+                <div>
+                  {externalJobs.length > 0 && (
+                    <h2 className="mb-4 text-sm font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      {copy.companyOffersTitle}
+                    </h2>
+                  )}
+                  <div className="space-y-4">
+                    {companyJobs.map((job) => (
+                      <Link
+                        key={job.id}
+                        href={`/${companySlug}/careers/jobs/${job.id}`}
+                        className="group block p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-emerald-500/40 hover:shadow-lg transition-all"
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
+                              {job.title}
+                            </h3>
+                            {job.description && (
+                              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 mb-3 line-clamp-2">
+                                {job.description}
+                              </p>
+                            )}
+                            <div className="flex flex-wrap gap-3 text-xs text-slate-500 dark:text-slate-400">
+                              {job.department && (
+                                <span className="flex items-center gap-1">
+                                  <Briefcase className="w-3 h-3" />
+                                  {job.department.name}
+                                </span>
+                              )}
+                              {job.location && (
+                                <span className="flex items-center gap-1">
+                                  <MapPin className="w-3 h-3" />
+                                  {job.location}
+                                </span>
+                              )}
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {CONTRACT_TYPE_LABELS[job.contract_type]} - {REMOTE_POLICY_LABELS[job.remote_policy]}
+                              </span>
+                            </div>
+                          </div>
+                          <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-emerald-500 transition-colors flex-shrink-0 mt-1" />
+                        </div>
+                      </Link>
+                    ))}
                   </div>
-                </Link>
-              ))}
+                </div>
+              )}
+
+              {/* Offres agrégées : lien SORTANT explicite. `rel="noopener
+                  noreferrer nofollow"` — on ne transmet pas notre referer au
+                  partenaire et on ne lui cède pas de jus SEO. */}
+              {externalJobs.length > 0 && (
+                <div>
+                  <h2 className="mb-4 text-sm font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    {copy.externalOffersTitle}
+                  </h2>
+                  <div className="space-y-4">
+                    {externalJobs.map((job) => (
+                      <a
+                        key={`ext-${job.id}`}
+                        href={job.apply_url}
+                        target="_blank"
+                        rel="noopener noreferrer nofollow"
+                        className="group block p-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 hover:border-slate-400 transition-all"
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                                {job.title}
+                              </h3>
+                              <span className="rounded-full bg-slate-200 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-400">
+                                {copy.externalBadge}
+                              </span>
+                            </div>
+                            <p className="mt-1 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                              {job.company_name}
+                            </p>
+                            <div className="mt-2 flex flex-wrap gap-3 text-xs text-slate-500 dark:text-slate-400">
+                              {job.location && (
+                                <span className="flex items-center gap-1">
+                                  <MapPin className="w-3 h-3" />
+                                  {job.location}
+                                </span>
+                              )}
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {CONTRACT_TYPE_LABELS[job.contract_type]} - {REMOTE_POLICY_LABELS[job.remote_policy]}
+                              </span>
+                            </div>
+                            <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+                              {copy.externalNotice}
+                            </p>
+                          </div>
+                          <ArrowRight className="w-5 h-5 text-slate-400 flex-shrink-0 mt-1" />
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

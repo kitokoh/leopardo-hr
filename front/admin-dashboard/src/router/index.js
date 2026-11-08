@@ -414,6 +414,32 @@ const routes = [
           icon: 'ArrowTrendingUpIcon'
         }
       },
+      // BC-10 (#9100) — portail public d'offres d'emploi.
+      // Deux vues : les connecteurs d'agrégateurs (configurer, tester,
+      // synchroniser, révoquer) et les offres réellement importées. La seconde
+      // est le contrôle de la première : un connecteur « connecté » qui ne
+      // remonte aucune offre est un mensonge silencieux, et cette table le rend
+      // visible.
+      {
+        path: '/recruitment/sources',
+        name: 'recruitment-sources',
+        component: () => import('@/views/recruitment/JobSourcesView.vue'),
+        meta: {
+          title: 'navigation.recruitmentSources',
+          icon: 'BriefcaseIcon',
+          permission: 'recruitment.view'
+        }
+      },
+      {
+        path: '/recruitment/offers',
+        name: 'recruitment-offers',
+        component: () => import('@/views/recruitment/ImportedOffersView.vue'),
+        meta: {
+          title: 'navigation.recruitmentOffers',
+          icon: 'DocumentTextIcon',
+          permission: 'recruitment.view'
+        }
+      },
       // GSI-10 (#8521) — section « Growth & Search Intelligence ».
       // Sept vues, toutes en import paresseux : le bundle initial ne paie pas
       // un module que la majorite des administrateurs n'ouvre jamais.

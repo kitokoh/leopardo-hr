@@ -27,6 +27,12 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
   const [phone, setPhone] = useState('');
   const [coverLetter, setCoverLetter] = useState('');
   const [resume, setResume] = useState<File | null>(null);
+  // BC-10 (#9100) — consentement RGPD : décoché par défaut. Un consentement
+  // pré-coché n'est pas un consentement (RGPD art. 4.11 : il doit être un acte
+  // positif clair), et le backend le rejetterait de toute façon.
+  const [consent, setConsent] = useState(false);
+  // Champ piège anti-spam : masqué en CSS, jamais rempli par un humain.
+  const [honeypot, setHoneypot] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -172,6 +178,43 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
         </label>
         {fieldErrors.resume?.[0] && (
           <p className="mt-1.5 text-xs text-red-600 dark:text-red-400">{fieldErrors.resume[0]}</p>
+        )}
+      </div>
+
+      {/* Champ piège anti-spam : hors écran et hors tabulation, donc invisible
+          et inatteignable pour un humain, mais rempli par un bot qui parcourt
+          le DOM. `aria-hidden` évite qu'un lecteur d'écran le lise. */}
+      <div aria-hidden="true" className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
+        <label htmlFor="apply-website">Site web</label>
+        <input
+          id="apply-website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+        />
+      </div>
+
+      {/* BC-10 (#9100) — consentement RGPD explicite. Le texte dit la finalité
+          et la durée, pas seulement « j'accepte » : un consentement éclairé
+          doit permettre au candidat de savoir ce qu'il autorise. */}
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            required
+            checked={consent}
+            onChange={(e) => setConsent(e.target.checked)}
+            className="mt-0.5 h-4 w-4 flex-shrink-0 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+          />
+          <span className="text-xs text-slate-600 dark:text-slate-400">
+            {copy.form.consentLabel}
+          </span>
+        </label>
+        {fieldErrors.consent?.[0] && (
+          <p className="mt-1.5 text-xs text-red-600 dark:text-red-400">{fieldErrors.consent[0]}</p>
         )}
       </div>
 
