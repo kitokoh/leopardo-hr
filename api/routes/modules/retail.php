@@ -24,6 +24,7 @@ use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailOnlineSettingsControl
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailOrderController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailPosSessionController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailProductController;
+use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailReportController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailStockController;
 use Illuminate\Support\Facades\Route;
 
@@ -95,6 +96,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // numerotation legale par tenant (FAC-YYYY-NNNNNN, immuable).
         Route::get('/pos/orders/{order}/receipt', [RetailOrderController::class, 'receipt'])->whereNumber('order');
         Route::get('/orders/{order}/invoice', [RetailOrderController::class, 'invoice'])->whereNumber('order');
+
+        // Rapports de vente (#9209) : la verticale Retail n'en avait AUCUN.
+        // Agregations serveur, bornees par tenant ; `?format=csv` exporte.
+        // RBAC `retail.reports` (direction, ou niveau manage sur une boutique).
+        Route::get('/reports/sales', [RetailReportController::class, 'sales']);
+        Route::get('/reports/top-products', [RetailReportController::class, 'topProducts']);
+        Route::get('/reports/sessions', [RetailReportController::class, 'sessions']);
+        Route::get('/reports/stock-valuation', [RetailReportController::class, 'stockValuation']);
 
         // Boutique en ligne Leopardo Marché (#7807) : réglages publics du
         // vendeur (create-or-update, RetailOnlineSettingsPolicy).
