@@ -19,7 +19,7 @@ return [
     | purge RGPD calculable sans interprétation. Configurable parce qu'une durée
     | codée en dur serait impossible à ajuster par pays.
     */
-    'applicant_retention_days' => (int) env('RECRUITMENT_APPLICANT_RETENTION_DAYS', 365),
+    'applicant_retention_days' => (int) env('RECRUITMENT_APPLICANT_RETENTION_DAYS', 730),
 
     /*
     | Nombre maximal d'offres importées par synchronisation d'un agrégateur.
