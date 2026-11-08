@@ -1208,6 +1208,33 @@
         "BC-20",
         "BC-27"
       ]
+    },
+    {
+      "code": "BC-40",
+      "name": "LIBRARY",
+      "context": "Library",
+      "responsibility": "Bibliotheque numerique publique et professionnelle (Leopardo Library) : catalogue declaratif de livres/documents (categories, auteurs, collections), modeles d'acces (gratuit, lecture seule, achat a l'unite, abonnement, prive tenant), workflow editorial (brouillon -> en attente -> publie -> archive), droits d'auteur et protection des contenus (licence, detenteur, restrictions de telechargement/geo, signalement et retrait), lecteur numerique et espace utilisateur, surface publique isolee (sans auth) et surface tenant (gestion). Isolation tenant stricte : le catalogue public Leopardo (company_id NULL) est distinct des contenus prives d'un tenant.",
+      "owner": "Agent BC-LIBRARY",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Library",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/library.php",
+        "api/routes/modules/library_public.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [],
+      "dependencies": [
+        "BC-02",
+        "BC-03"
+      ]
     }
   ]
 }

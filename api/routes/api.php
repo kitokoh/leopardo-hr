@@ -570,7 +570,8 @@ Route::prefix('v1')->group(function (): void {
     // routes tenant-scoped derrière le feature flag `pharmacy` (fail-closed).
     require __DIR__.'/modules/pharmacy.php';
     require __DIR__.'/modules/catalog.php';
-
+    // LEOPARDO LIBRARY — gestion des ressources par un tenant (surface privée).
+    require __DIR__.'/modules/library.php';
     // BC PAGES (#8728) — surface tenant : CRUD établissements/Pages, blocs,
     // publication et aperçu privé. La surface publique est #8730.
     require __DIR__.'/modules/pages.php';
@@ -587,6 +588,8 @@ Route::prefix('v1')->group(function (): void {
 
     // C-PUBLIC #6882 — catalogue public (routes isolées, sans auth)
     require __DIR__.'/modules/catalog_public.php';
+    // LEOPARDO LIBRARY — bibliothèque numérique publique (routes isolées, sans auth)
+    require __DIR__.'/modules/library_public.php';
     // BC-17 #7807/#7808 — marketplace publique Leopardo Marché (routes isolées, sans auth)
     require __DIR__.'/modules/market_public.php';
     // BC-36 P2-01 #8802 — fiche publique des entreprises de commerce (routes isolées, sans auth)

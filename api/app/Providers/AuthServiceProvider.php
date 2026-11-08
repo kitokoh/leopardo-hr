@@ -20,6 +20,8 @@ use App\Modules\Catalog\Domain\Models\CatalogProduct;
 use App\Modules\Catalog\Domain\Policies\CatalogCategoryPolicy;
 use App\Modules\Catalog\Domain\Policies\CatalogProductPolicy;
 use App\Modules\Communication\Domain\Models\CommunicationCategory;
+use App\Modules\Library\Domain\Models\LibraryResource;
+use App\Modules\Library\Domain\Policies\LibraryResourcePolicy;
 use App\Modules\Communication\Domain\Models\CommunicationContactProposal;
 use App\Modules\Communication\Domain\Models\CommunicationFollowUp;
 use App\Modules\Communication\Domain\Models\CommunicationFollowUpOptOut;
@@ -515,6 +517,8 @@ class AuthServiceProvider extends ServiceProvider
         // — Catalog (BC-28 #6880 : socle domaine — catégories & produits B2B)
         Gate::policy(CatalogCategory::class, CatalogCategoryPolicy::class);
         Gate::policy(CatalogProduct::class, CatalogProductPolicy::class);
+        // — Library (Leopardo Library : RBAC des ressources de la bibliothèque)
+        Gate::policy(LibraryResource::class, LibraryResourcePolicy::class);
         // — Pages (BC PAGES #8723/#8725 : présence publique par établissement,
         //   édition tenant d'un côté, vérification de propriété plateforme de
         //   l'autre — les deux axes ne partagent JAMAIS une policy)

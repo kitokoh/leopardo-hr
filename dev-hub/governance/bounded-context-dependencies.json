@@ -9,6 +9,12 @@
   },
   "edges": [
     {
+      "from": "BC-40",
+      "to": "BC-03",
+      "baseline": false,
+      "note": "LIBRARY → IDENTITY — la policy LibraryResourcePolicy s'appuie sur l'Employé comme acteur RBAC (hasManagerRole) pour autoriser la gestion/publication des ressources d'un tenant. Aucun contenu privé n'est exposé : le catalogue public Leopardo (company_id NULL) est servi sans acteur. Arrête identique à BC-39 → BC-03."
+    },
+    {
       "from": "BC-36",
       "to": "BC-02",
       "baseline": false,
