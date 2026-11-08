@@ -26,6 +26,14 @@
 #               `<!-- external-checks-report -->` plutôt que d'écrire sur stdout.
 #
 # Sortie : 0 toujours (c'est un rapport, pas un gate) — sauf erreur d'usage (2).
+#
+# Issue #9189 : le rapport ne concerne qu'une PR **ouverte**. Le SHA d'un commit
+# de `main` est associe a sa PR **fusionnee** (`/commits/<sha>/pulls` ->
+# `state=closed`) : sans ce garde, l'appelant `workflow_run` rafraichissait le
+# commentaire d'une PR fermee (~22 runs par push main, mesure 2026-11-08). Une
+# PR non ouverte sort donc en 0 SANS commenter, et le workflow ne demarre plus
+# pour un run de `push`.
+# Tests : dev-hub/tools/tests/report-external-checks.test.sh
 # ============================================================
 set -uo pipefail
 
@@ -78,7 +86,17 @@ if [[ "${PR}" =~ ^[0-9a-f]{7,40}$ ]]; then
   PR="${resolved}"
 fi
 
-head_sha="$(api "https://api.github.com/repos/${REPO}/pulls/${PR}" | jq -r .head.sha)"
+# Issue #9189 — une PR fermee n'est pas une cible de rapport. Ce garde est un
+# filet INDEPENDANT du declencheur : il couvre aussi un appel manuel
+# (`report-external-checks.sh 9187`) et tout futur appelant.
+pr_json="$(api "https://api.github.com/repos/${REPO}/pulls/${PR}")"
+pr_state="$(printf '%s' "${pr_json}" | jq -r '.state // empty' 2>/dev/null)"
+if [[ "${pr_state}" != "open" ]]; then
+  echo "PR #${PR} n'est pas ouverte (state=${pr_state:-inconnu}) — rien à rapporter : un rapport sur une PR fermée n'informe personne (#9189)."
+  exit 0
+fi
+
+head_sha="$(printf '%s' "${pr_json}" | jq -r .head.sha)"
 checks="$(api "https://api.github.com/repos/${REPO}/commits/${head_sha}/check-runs?per_page=100")"
 
 declare -a req_bad=() ext_bad=() repo_bad=() pending=()
