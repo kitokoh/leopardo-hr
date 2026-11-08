@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\SearchIntelligence\Infrastructure\Connectors;
 
-use App\Modules\SearchIntelligence\Domain\Contracts\IntegrationMetricsClient;
 use App\Modules\SearchIntelligence\Domain\Contracts\IntegrationMetricRow;
+use App\Modules\SearchIntelligence\Domain\Contracts\IntegrationMetricsClient;
 use App\Modules\SearchIntelligence\Domain\Enums\MetricSource;
 use App\Modules\SearchIntelligence\Domain\Exceptions\IntegrationSyncException;
 use Illuminate\Support\Facades\Http;

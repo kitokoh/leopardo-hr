@@ -43,6 +43,7 @@ class EduAdmissionPolicy
     {
         return $this->view($actor, $admission);
     }
+
     /** B3: relance du dossier (batch3) — même périmètre que view. */
     public function followUp(Employee $actor, EduAdmission $admission): bool
     {
@@ -54,5 +55,4 @@ class EduAdmissionPolicy
     {
         return $this->view($actor, $admission);
     }
-
 }

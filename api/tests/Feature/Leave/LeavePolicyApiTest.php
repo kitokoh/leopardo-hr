@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Leave;
 
-use App\Modules\Planning\Domain\Models\AbsenceType;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Modules\Planning\Domain\Models\LeaveAccrual;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeavePolicy;

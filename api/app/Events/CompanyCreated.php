@@ -11,7 +11,5 @@ class CompanyCreated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public Company $company)
-    {}
+    public function __construct(public Company $company) {}
 }
-

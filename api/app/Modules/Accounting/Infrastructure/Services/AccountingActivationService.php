@@ -12,7 +12,6 @@ use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
-use App\Modules\Accounting\Infrastructure\Services\SequentialDocumentNumbering;
 
 /**
  * Activation guidée du module Comptabilité — issue #5288.

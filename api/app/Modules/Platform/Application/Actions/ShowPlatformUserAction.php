@@ -15,8 +15,7 @@ final class ShowPlatformUserAction
 {
     public function __construct(
         private readonly PlatformUserDirectoryService $directory,
-    ) {
-    }
+    ) {}
 
     public function execute(int $userId): ?\stdClass
     {

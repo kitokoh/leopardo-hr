@@ -238,9 +238,7 @@ final class LedgerConsumer implements CrmOutboxConsumer
 {
     public int $applied = 0;
 
-    public function __construct(private readonly string $eventType)
-    {
-    }
+    public function __construct(private readonly string $eventType) {}
 
     public function supports(string $eventType): bool
     {
@@ -276,9 +274,7 @@ final class FlakyConsumer implements CrmOutboxConsumer
 {
     private int $calls = 0;
 
-    public function __construct(private readonly string $eventType)
-    {
-    }
+    public function __construct(private readonly string $eventType) {}
 
     public function supports(string $eventType): bool
     {
@@ -297,9 +293,7 @@ final class FlakyConsumer implements CrmOutboxConsumer
 
 final class PermanentFailConsumer implements CrmOutboxConsumer
 {
-    public function __construct(private readonly string $eventType)
-    {
-    }
+    public function __construct(private readonly string $eventType) {}
 
     public function supports(string $eventType): bool
     {

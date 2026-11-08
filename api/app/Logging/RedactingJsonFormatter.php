@@ -25,7 +25,7 @@ final class RedactingJsonFormatter extends JsonFormatter
     {
         parent::__construct();
 
-        $this->redactor = new PiiRedactionProcessor();
+        $this->redactor = new PiiRedactionProcessor;
     }
 
     public function format(LogRecord $record): string

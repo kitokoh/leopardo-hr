@@ -30,4 +30,3 @@ class InterviewResource extends JsonResource
         ];
     }
 }
-

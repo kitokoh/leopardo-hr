@@ -365,4 +365,7 @@ return [
     'PAGE_SLUG_RESERVED' => 'Cette adresse est réservée par la plateforme. Choisissez-en une autre.',
     'PAGE_SLUG_TAKEN' => 'Cette adresse est déjà utilisée.',
     'PAGE_BLOCKS_INVALID' => 'Le contenu de la page contient des blocs invalides.',
+
+    // BC-10 (#9199) — connecteurs d'agrégateurs d'offres.
+    'JOB_SOURCE_PROVIDER_UNSUPPORTED' => 'Fournisseur non supporté : :provider.',
 ];

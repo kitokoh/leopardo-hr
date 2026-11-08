@@ -24,8 +24,7 @@ final readonly class IntegrationMetricRow
         public int $clicks = 0,
         public int $conversions = 0,
         public int $revenueCents = 0,
-    ) {
-    }
+    ) {}
 
     /** Le relevé ne porte aucune mesure : il n'a pas à être stocké. */
     public function isEmpty(): bool

@@ -40,6 +40,7 @@ final class IntegrationConnectorsTest extends TestCase
         $this->day1 = now()->subDays(2)->toDateString();
         $this->day2 = now()->subDays(1)->toDateString();
     }
+
     public function test_gsc_normalises_rows_into_daily_metrics(): void
     {
         Http::fake([

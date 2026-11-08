@@ -6,7 +6,6 @@ namespace Tests\Feature\Billing;
 
 use App\Core\Tenant\Domain\Enums\PlatformRole;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
-use App\Modules\Billing\Domain\Models\PaymentGatewaySetting;
 use App\Modules\Billing\Infrastructure\Services\GatewaySettingsService;
 use App\Modules\Billing\Infrastructure\Services\StripeService;
 use App\Shared\Contracts\Payments\PaymentGatewayConfigProviderInterface;

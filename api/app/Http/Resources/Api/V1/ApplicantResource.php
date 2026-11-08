@@ -32,4 +32,3 @@ class ApplicantResource extends JsonResource
         ];
     }
 }
-

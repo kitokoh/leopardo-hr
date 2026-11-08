@@ -22,9 +22,7 @@ use Illuminate\Http\Request;
  */
 class CrmDedupController extends Controller
 {
-    public function __construct(private readonly CrmDeduplicationService $service)
-    {
-    }
+    public function __construct(private readonly CrmDeduplicationService $service) {}
 
     public function suggestions(Request $request): JsonResponse
     {

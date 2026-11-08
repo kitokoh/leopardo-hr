@@ -2,9 +2,9 @@
 
 namespace App\Policies;
 
-use App\Modules\Payroll\Domain\Models\Commission;
 use App\Core\Auth\Domain\Models\User;
 use App\Modules\Billing\Domain\Models\Partner;
+use App\Modules\Payroll\Domain\Models\Commission;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class CommissionPolicy
@@ -17,7 +17,7 @@ class CommissionPolicy
     public function view(User $user, Commission $commission): bool
     {
         $partner = Partner::where('user_id', $user->id)->first();
+
         return $partner && $commission->partner_id === $partner->id;
     }
 }
-

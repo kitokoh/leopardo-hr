@@ -44,7 +44,7 @@ class DemoSuperAdminSyncTest extends TestCase
         putenv('DISABLE_DEMO_SEEDING=true');
         config(['demo.password' => 'password123']);
 
-        (new DemoCompanyOnceSeeder())->run();
+        (new DemoCompanyOnceSeeder)->run();
 
         $row = DB::table('super_admins')->where('email', 'admin@leopardo-rh.com')->first();
         $this->assertNotNull($row);
@@ -69,7 +69,7 @@ class DemoSuperAdminSyncTest extends TestCase
         );
 
         putenv('DISABLE_DEMO_SEEDING=true');
-        (new DemoCompanyOnceSeeder())->run();
+        (new DemoCompanyOnceSeeder)->run();
 
         $row = DB::table('super_admins')->where('email', 'custom-admin@leopardo-rh.com')->first();
         $this->assertNotNull($row);
@@ -84,7 +84,7 @@ class DemoSuperAdminSyncTest extends TestCase
         $this->seed(SuperAdminSeeder::class);
 
         putenv('DISABLE_DEMO_SEEDING=true');
-        (new DemoCompanyOnceSeeder())->run();
+        (new DemoCompanyOnceSeeder)->run();
 
         $row = DB::table('super_admins')->where('email', 'admin@leopardo-rh.com')->first();
         $this->assertNotNull($row);

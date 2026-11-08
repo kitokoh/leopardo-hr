@@ -42,4 +42,3 @@ class ScheduleResource extends JsonResource
         return array_values(array_diff([1, 2, 3, 4, 5, 6, 7], $workDays));
     }
 }
-

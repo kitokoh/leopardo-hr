@@ -57,7 +57,7 @@ class TravelConnectionApiTest extends TestCase
      */
     private function fixtures(Company $company, ?string $leg2Departure = '11:00:00'): array
     {
-        return app(TenantManager::class)->withinTenant($company, function () use ($company, $leg2Departure): array {
+        return app(TenantManager::class)->withinTenant($company, function () use ($leg2Departure): array {
             $cityA = TravelCity::factory()->create();
             $cityB = TravelCity::factory()->create();
             $cityC = TravelCity::factory()->create();

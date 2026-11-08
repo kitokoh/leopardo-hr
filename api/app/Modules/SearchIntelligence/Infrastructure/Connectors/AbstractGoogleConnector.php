@@ -30,8 +30,7 @@ abstract class AbstractGoogleConnector
 
     public function __construct(
         private readonly ?string $tokenEndpoint = null,
-    ) {
-    }
+    ) {}
 
     /**
      * Fournisseur servi par ce connecteur (`gsc`, `ga4`, `google_ads`, `ms_ads`).

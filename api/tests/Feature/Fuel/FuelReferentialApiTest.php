@@ -174,7 +174,6 @@ class FuelReferentialApiTest extends TestCase
         $this->deleteJson('/api/v1/fuel-station/stations/'.$station->id)->assertStatus(404);
     }
 
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -195,7 +194,6 @@ class FuelReferentialApiTest extends TestCase
         ]);
         $this->companyB = $companyB;
     }
-
 
     protected function tearDown(): void
     {
@@ -219,14 +217,12 @@ class FuelReferentialApiTest extends TestCase
         return $station;
     }
 
-
     public function test_unauthenticated_gets_401(): void
     {
         $this->getJson('/api/v1/fuel-station/stations')->assertStatus(401);
         $this->getJson('/api/v1/fuel-station/products')->assertStatus(401);
         $this->postJson('/api/v1/fuel-station/stations', [])->assertStatus(401);
     }
-
 
     public function test_operator_cannot_access_referential(): void
     {
@@ -245,7 +241,6 @@ class FuelReferentialApiTest extends TestCase
         $this->postJson('/api/v1/fuel-station/stations', [])->assertStatus(403);
         $this->getJson('/api/v1/fuel-station/products')->assertStatus(200);
     }
-
 
     public function test_manager_crud_stations_and_sites(): void
     {
@@ -289,7 +284,6 @@ class FuelReferentialApiTest extends TestCase
             'status' => 'active',
         ])->assertStatus(422);
     }
-
 
     public function test_manager_crud_equipment_and_products(): void
     {
@@ -349,7 +343,6 @@ class FuelReferentialApiTest extends TestCase
             'status' => 'inactive',
         ])->assertOk()->assertJsonPath('data.status', 'inactive');
     }
-
 
     public function test_same_code_allowed_in_another_company(): void
     {

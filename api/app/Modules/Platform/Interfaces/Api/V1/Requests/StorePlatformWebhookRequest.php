@@ -26,7 +26,7 @@ class StorePlatformWebhookRequest extends FormRequest
         return ['company_id' => ['required', 'uuid', 'exists:companies,id'],
             'url' => ['required', 'url', 'max:500'],
             'events' => ['required', 'array', 'min:1'],
-            'events.*' => ['string', 'in:' . implode(',', self::EVENTS)],
+            'events.*' => ['string', 'in:'.implode(',', self::EVENTS)],
             'active' => ['sometimes', 'boolean']];
     }
 }

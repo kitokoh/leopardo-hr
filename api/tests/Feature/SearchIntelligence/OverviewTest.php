@@ -6,8 +6,8 @@ namespace Tests\Feature\SearchIntelligence;
 
 use App\Core\Tenant\Domain\Enums\PlatformRole;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
-use App\Modules\SearchIntelligence\Domain\Enums\ContentStatus;
 use App\Modules\SearchIntelligence\Domain\Enums\CampaignStatus;
+use App\Modules\SearchIntelligence\Domain\Enums\ContentStatus;
 use App\Modules\SearchIntelligence\Domain\Models\Campaign;
 use App\Modules\SearchIntelligence\Domain\Models\CampaignMetric;
 use App\Modules\SearchIntelligence\Domain\Models\ContentItem;

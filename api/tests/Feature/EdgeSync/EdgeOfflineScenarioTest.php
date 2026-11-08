@@ -4,11 +4,11 @@ namespace Tests\Feature\EdgeSync;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\EdgeSync\Infrastructure\Services\CloudDeltaBuilder;
-use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
 use App\Modules\EdgeSync\Infrastructure\Jobs\ProcessSyncQueueJob;
+use App\Modules\EdgeSync\Infrastructure\Services\CloudDeltaBuilder;
+use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 

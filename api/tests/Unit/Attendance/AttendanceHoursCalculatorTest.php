@@ -27,7 +27,7 @@ class AttendanceHoursCalculatorTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->calculator = new AttendanceHoursCalculator();
+        $this->calculator = new AttendanceHoursCalculator;
     }
 
     public function test_golden_manual_calculation_late_5_hours_8_5_overtime_0_5(): void

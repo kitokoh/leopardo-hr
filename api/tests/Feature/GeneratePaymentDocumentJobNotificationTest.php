@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Jobs\GeneratePaymentDocumentJob;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Jobs\GeneratePaymentDocumentJob;
 use App\Modules\Payroll\Domain\Models\PaymentDocument;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Illuminate\Support\Facades\Storage;
@@ -41,9 +41,8 @@ class GeneratePaymentDocumentJobNotificationTest extends TestCase
             'validation_status' => 'payment_declared',
             'amount_remaining' => 15000,
         ]);
-            $advance->status = 'approved';
-            $advance->save();
-
+        $advance->status = 'approved';
+        $advance->save();
 
         $document = PaymentDocument::query()->create([
             'company_id' => $company->id,

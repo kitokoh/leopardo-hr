@@ -574,4 +574,3 @@ class FeatureDetector implements FeatureDetectorInterface
         return $baseSchema;
     }
 }
-

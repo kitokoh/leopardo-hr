@@ -95,7 +95,6 @@ class PublishScheduledPostJob implements ShouldQueue, TenantScopedJob
         return [new EnsureTenantContext];
     }
 
-    
     public function handle(SocialPublishingService $publishingService): void
     {
         // Le scope tenant courant est deja etabli par EnsureTenantContext,

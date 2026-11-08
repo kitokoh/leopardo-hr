@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\RestaurantManager\Console\Commands;
 
 use App\Modules\RestaurantManager\Domain\Enums\ReservationStatus;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantReservation;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 

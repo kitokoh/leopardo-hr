@@ -23,8 +23,7 @@ final class LoyaltyOrderPaidConsumer implements RestaurantOutboxConsumer
 
     public function __construct(
         private readonly CreditLoyaltyPointsAction $creditLoyaltyPoints,
-    ) {
-    }
+    ) {}
 
     public function supports(string $eventType): bool
     {

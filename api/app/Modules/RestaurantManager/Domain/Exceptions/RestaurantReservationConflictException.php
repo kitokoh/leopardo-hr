@@ -13,6 +13,4 @@ use RuntimeException;
  * (critère d'acceptation RESTO-601). Le contrôleur traduit cette exception
  * en HTTP 409.
  */
-final class RestaurantReservationConflictException extends RuntimeException
-{
-}
+final class RestaurantReservationConflictException extends RuntimeException {}

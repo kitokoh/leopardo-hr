@@ -238,4 +238,3 @@ class FeatureSeeder extends Seeder
         $this->command->info('Features seeded successfully!');
     }
 }
-

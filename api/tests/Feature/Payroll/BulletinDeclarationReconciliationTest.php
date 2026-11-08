@@ -45,7 +45,7 @@ class BulletinDeclarationReconciliationTest extends TestCase
      * la déclaration). Le contrat couvre toute la période (factory sinon
      * aléatoire → prorata flaky, cf. #1966).
      *
-     * @param array<string, mixed> $employeeExtra
+     * @param  array<string, mixed>  $employeeExtra
      */
     /**
      * @param  array<string, mixed>  $employeeExtra

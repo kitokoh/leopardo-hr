@@ -9,6 +9,4 @@ namespace App\Modules\Payroll\Domain\Exceptions;
  * enregistrées, #2555). L'Action a restaure le statut `draft` (recalculable) ;
  * l'interface répond 422 `payroll.calculation_failed`.
  */
-class PayrollRunCalculationRulesException extends \RuntimeException
-{
-}
+class PayrollRunCalculationRulesException extends \RuntimeException {}

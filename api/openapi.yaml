@@ -133,6 +133,294 @@ tags:
   description: 'BC-36 TRADE — verticale International Trade OS (TRADE-001 #8476 → TRADE-011 #8486, spec docs/specifications/VERTICAL_TRADE_OS.md) : noyau commercial partagé (profils professionnels, catalogue, demandes de prix, offres, commandes, transport, coûts rendus, documents) avec vues acheteur et vendeur sur les MÊMES objets. RBAC par opération, deny-by-default (TradeRoleResolver : purchase / sales / logistics / admin).'
 
 paths:
+  /v1/travel/adverts:
+    get:
+      operationId: api_get_travel_adverts
+      tags:
+      - TravelAgency
+      summary: Liste des annonces voyage (publique ou gestion)
+      description: >-
+        BC-24 TRAVEL (#6416) — mode public par défaut : seules les annonces
+        VISIBLES (payées + validées + non expirées) sont renvoyées. Les rôles
+        gestion (`principal`, `rh`) basculent en mode gestion et voient toutes
+        les annonces du tenant, filtrables par `?status=`.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        description: Filtre de statut (mode gestion uniquement)
+        schema:
+          type: string
+          enum: [draft, submitted, paid, validated, rejected, expired, archived]
+      responses:
+        '200':
+          description: Liste des annonces
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelAdvert'
+        '401':
+          description: Non authentifié
+    post:
+      operationId: api_post_travel_adverts
+      tags:
+      - TravelAgency
+      summary: Soumettre une annonce voyage
+      description: >-
+        BC-24 TRAVEL — crée une annonce en statut `submitted` et calcule son
+        prix à partir du type et de l'emplacement d'annonce. Requiert la
+        capacité `create` sur TravelAdvert.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [advert_type_id, advert_position_id, title, content]
+              properties:
+                advert_type_id:
+                  type: integer
+                advert_position_id:
+                  type: integer
+                title:
+                  type: string
+                  maxLength: 255
+                content:
+                  type: string
+                image_asset_id:
+                  type: integer
+                  nullable: true
+                validity_days:
+                  type: integer
+                  minimum: 1
+                  default: 30
+      responses:
+        '201':
+          description: Annonce créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      status:
+                        type: string
+                      price_minor:
+                        type: integer
+                      currency:
+                        type: string
+        '403':
+          description: Capacité `create` refusée
+        '422':
+          description: Validation échouée
+  /v1/travel/adverts/manage:
+    get:
+      operationId: api_get_travel_adverts_manage
+      tags:
+      - TravelAgency
+      summary: Liste admin des annonces (modération)
+      description: >-
+        TRAVEL-914 (#6422) — toutes les annonces du tenant quel que soit leur
+        statut, pour l'écran de modération. Réservé aux rôles gestion
+        (`principal`, `rh`) ; 403 sinon.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [draft, submitted, paid, validated, rejected, expired, archived]
+      responses:
+        '200':
+          description: Liste admin des annonces
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelAdvert'
+        '403':
+          description: Rôle gestion requis
+  /v1/travel/adverts/{travelAdvert}:
+    get:
+      operationId: api_get_travel_adverts_by_id
+      tags:
+      - TravelAgency
+      summary: Détail d'une annonce voyage
+      description: >-
+        BC-24 TRAVEL — renvoie l'annonce si elle appartient au tenant de
+        l'appelant ; 404 uniforme sinon (pas de fuite inter-tenant).
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/TravelAdvertId'
+      responses:
+        '200':
+          description: Annonce
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelAdvert'
+        '404':
+          description: Annonce introuvable pour ce tenant
+    delete:
+      operationId: api_delete_travel_adverts_by_id
+      tags:
+      - TravelAgency
+      summary: Supprimer une annonce voyage
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/TravelAdvertId'
+      responses:
+        '204':
+          description: Annonce supprimée
+        '403':
+          description: Suppression refusée
+        '404':
+          description: Annonce introuvable pour ce tenant
+  /v1/travel/adverts/{travelAdvert}/pay:
+    post:
+      operationId: api_post_travel_adverts_pay
+      tags:
+      - TravelAgency
+      summary: Payer une annonce voyage
+      description: >-
+        BC-24 TRAVEL — enregistre le paiement de l'annonce et la fait passer en
+        statut `paid`, en attente de validation.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/TravelAdvertId'
+      responses:
+        '200':
+          description: Paiement enregistré
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelAdvert'
+        '404':
+          description: Annonce introuvable pour ce tenant
+        '409':
+          description: Statut incompatible avec le paiement
+  /v1/travel/adverts/{travelAdvert}/validate:
+    post:
+      operationId: api_post_travel_adverts_validate
+      tags:
+      - TravelAgency
+      summary: Valider une annonce voyage
+      description: >-
+        BC-24 TRAVEL — modération : passe l'annonce payée en `validated` et
+        calcule sa date d'expiration. Réservé aux rôles gestion.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/TravelAdvertId'
+      responses:
+        '200':
+          description: Annonce validée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelAdvert'
+        '403':
+          description: Rôle gestion requis
+        '404':
+          description: Annonce introuvable pour ce tenant
+  /v1/travel/adverts/{travelAdvert}/reject:
+    post:
+      operationId: api_post_travel_adverts_reject
+      tags:
+      - TravelAgency
+      summary: Rejeter une annonce voyage
+      description: >-
+        BC-24 TRAVEL — modération : passe l'annonce en `rejected` avec un motif
+        obligatoire. Réservé aux rôles gestion.
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/TravelAdvertId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  maxLength: 500
+      responses:
+        '200':
+          description: Annonce rejetée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelAdvert'
+        '403':
+          description: Rôle gestion requis
+        '404':
+          description: Annonce introuvable pour ce tenant
+        '422':
+          description: Motif manquant
+  /v1/travel/adverts/{travelAdvert}/renew:
+    post:
+      operationId: api_post_travel_adverts_renew
+      tags:
+      - TravelAgency
+      summary: Renouveler une annonce voyage
+      description: >-
+        BC-24 TRAVEL — prolonge une annonce expirée d'une nouvelle période de
+        validité (nouveau paiement requis).
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/TravelAdvertId'
+      responses:
+        '200':
+          description: Annonce renouvelée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelAdvert'
+        '404':
+          description: Annonce introuvable pour ce tenant
+        '409':
+          description: Annonce non expirée
   /public/fundraisers/{slug}:
     get:
       operationId: api_get_public_fundraisers_by_slug
@@ -28478,6 +28766,59 @@ paths:
           description: Offre cloturee
         '401':
           $ref: '#/components/responses/Error401'
+  /recruitment/jobs/{jobPosting}/archive:
+    post:
+      operationId: api_post_recruitment_jobs_by_jobPosting_archive
+      tags:
+      - Recruitment
+      summary: Archiver une offre
+      description: |
+        BC-10 (#9197) - transition terminale du cycle de vie. Une offre archivee
+        n'est plus listee sur le portail public ni dans le flux XML, et ne peut
+        plus etre republiee directement.
+      parameters:
+      - name: jobPosting
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Offre archivee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition invalide depuis le statut courant
+  /recruitment/jobs/{jobPosting}/reopen:
+    post:
+      operationId: api_post_recruitment_jobs_by_jobPosting_reopen
+      tags:
+      - Recruitment
+      summary: Reouvrir une offre cloturee
+      description: |
+        BC-10 (#9197) - repasse une offre `closed` en `published` et repose
+        `published_at`. Refusee en 409 si l'offre est `archived`.
+      parameters:
+      - name: jobPosting
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Offre reouverte
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition invalide depuis le statut courant
   /recruitment/jobs/{jobPosting}/applicants:
     get:
       operationId: api_get_recruitment_jobs_by_jobPosting_applicants
@@ -54842,6 +55183,354 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+  # --- BC-10 (#9198/#9199) - portail public d'offres : gestes plateforme -----
+  # Publication d'une offre pour le compte d'un tenant et configuration des
+  # connecteurs d'agregateurs. Toutes ces routes sont sous le guard
+  # `auth:super_admin_api` : un token employe recoit 401, pas 403.
+  /v1/platform/recruitment/jobs:
+    get:
+      operationId: api_get_v1_platform_recruitment_jobs
+      tags: [Recruitment]
+      summary: Lister les offres publiees par la plateforme
+      description: |
+        BC-10 (#9198) - vue plateforme de toutes les offres, tous tenants
+        confondus. Permission requise : `recruitment.view`.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: company_id
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, published, closed, archived]
+      responses:
+        '200':
+          description: Liste des offres
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_v1_platform_recruitment_jobs
+      tags: [Recruitment]
+      summary: Creer une offre pour le compte d'un tenant
+      description: |
+        BC-10 (#9198) - la plateforme cree l'offre DANS le contexte du tenant
+        cible (`withinTenant`). Permission requise : `recruitment.manage`.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [company_id, title]
+              properties:
+                company_id:
+                  type: string
+                title:
+                  type: string
+                  maxLength: 255
+                description:
+                  type: string
+                  nullable: true
+                location:
+                  type: string
+                  nullable: true
+                remote_policy:
+                  type: string
+                  enum: [onsite, hybrid, remote]
+                contract_type:
+                  type: string
+                  enum: [cdi, cdd, stage, freelance]
+                salary_range_min:
+                  type: integer
+                  nullable: true
+                salary_range_max:
+                  type: integer
+                  nullable: true
+                currency:
+                  type: string
+                  nullable: true
+                skills_required:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Offre creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Donnees invalides
+  /v1/platform/recruitment/jobs/{companyId}/{jobPosting}/publish:
+    post:
+      operationId: api_post_v1_platform_recruitment_jobs_publish
+      tags: [Recruitment]
+      summary: Publier une offre pour le compte d'un tenant
+      description: |
+        BC-10 (#9198) - pose `published_at` et rend l'offre visible sur le
+        portail public du tenant. Permission requise : `recruitment.manage`.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: jobPosting
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Offre publiee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition invalide depuis le statut courant
+  /v1/platform/recruitment/jobs/{companyId}/{jobPosting}/close:
+    post:
+      operationId: api_post_v1_platform_recruitment_jobs_close
+      tags: [Recruitment]
+      summary: Cloturer une offre pour le compte d'un tenant
+      description: |
+        BC-10 (#9198) - retire immediatement l'offre du portail public et du
+        flux XML. Permission requise : `recruitment.manage`.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: jobPosting
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Offre cloturee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition invalide depuis le statut courant
+  /v1/platform/recruitment/offers:
+    get:
+      operationId: api_get_v1_platform_recruitment_offers
+      tags: [Recruitment]
+      summary: Lister les offres importees des agregateurs
+      description: |
+        BC-10 (#9199) - offres reellement importees, avec leur provenance.
+        C'est le controle qui rend visible un connecteur "connecte" qui ne
+        remonte aucune offre. Permission requise : `recruitment.view`.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: source_id
+          in: query
+          schema:
+            type: integer
+        - name: country
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Liste des offres importees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /v1/platform/recruitment/sources:
+    get:
+      operationId: api_get_v1_platform_recruitment_sources
+      tags: [Recruitment]
+      summary: Etat des connecteurs d'agregateurs
+      description: |
+        BC-10 (#9199) - etat de chaque connecteur (`not_connected`,
+        `connected`, `error`). Les secrets ne sont JAMAIS exposes : seul un
+        booleen `has_credentials` indique qu'une configuration existe.
+        Permission requise : `recruitment.view`.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Etat des connecteurs
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /v1/platform/recruitment/sources/{provider}:
+    parameters:
+      - name: provider
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [indeed, linkedin, glassdoor, adzuna, jooble, custom_feed]
+    put:
+      operationId: api_put_v1_platform_recruitment_sources
+      tags: [Recruitment]
+      summary: Configurer un connecteur d'agregateur
+      description: |
+        BC-10 (#9199) - enregistre les acces du fournisseur. Les secrets sont
+        chiffres au repos (`credentials_encrypted`) et ne sont jamais renvoyes
+        en clair. Permission requise : `recruitment.manage`.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                  nullable: true
+                feed_url:
+                  type: string
+                  nullable: true
+                  description: Obligatoire pour le fournisseur `custom_feed`.
+                credentials:
+                  type: object
+                  additionalProperties: true
+                  description: Chiffre au repos, jamais renvoye par l'API.
+                country:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Connecteur configure
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Donnees invalides
+    delete:
+      operationId: api_delete_v1_platform_recruitment_sources
+      tags: [Recruitment]
+      summary: Revoquer un connecteur d'agregateur
+      description: |
+        BC-10 (#9199) - supprime la configuration et les secrets. Les offres
+        deja importees sont conservees mais ne sont plus rafraichies.
+        Permission requise : `recruitment.manage`.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Connecteur revoque
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /v1/platform/recruitment/sources/{provider}/test:
+    post:
+      operationId: api_post_v1_platform_recruitment_sources_test
+      tags: [Recruitment]
+      summary: Tester l'acces a un connecteur
+      description: |
+        BC-10 (#9199) - le verdict renvoye est celui du serveur. Un fournisseur
+        sans API publique ouverte repond honnetement qu'il n'est pas cable
+        plutot que de pretendre avoir verifie l'acces. Permission requise :
+        `recruitment.manage`.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [indeed, linkedin, glassdoor, adzuna, jooble, custom_feed]
+      responses:
+        '200':
+          description: Verdict du test
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /v1/platform/recruitment/sources/{provider}/sync:
+    post:
+      operationId: api_post_v1_platform_recruitment_sources_sync
+      tags: [Recruitment]
+      summary: Synchroniser un connecteur (synchrone)
+      description: |
+        BC-10 (#9199) - import synchrone : l'ecran affiche le resultat reel.
+        L'upsert est idempotent sur `(source_id, external_id)` : une seconde
+        execution n'importe pas deux fois la meme offre. Permission requise :
+        `recruitment.manage`.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [indeed, linkedin, glassdoor, adzuna, jooble, custom_feed]
+      responses:
+        '200':
+          description: Resultat de la synchronisation
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /v1/platform/recruitment/sources/{provider}/queue-sync:
+    post:
+      operationId: api_post_v1_platform_recruitment_sources_queue_sync
+      tags: [Recruitment]
+      summary: Synchroniser un connecteur (en file)
+      description: |
+        BC-10 (#9199) - variante asynchrone pour les gros volumes : la
+        synchronisation est empilee et le portail n'attend pas le fournisseur.
+        Permission requise : `recruitment.manage`.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [indeed, linkedin, glassdoor, adzuna, jooble, custom_feed]
+      responses:
+        '202':
+          description: Synchronisation empilee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+
   /farm/settings:
     get:
       tags: [FarmSettings]
@@ -63776,6 +64465,13 @@ components:
       scheme: bearer
       bearerFormat: Sanctum
   parameters:
+    TravelAdvertId:
+      name: travelAdvert
+      in: path
+      required: true
+      description: Identifiant de l'annonce voyage (BC-24 TRAVEL).
+      schema:
+        type: integer
     PageId:
       name: page
       in: path
@@ -63965,6 +64661,45 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    # BC-24 TRAVEL — annonce du portail agence (TRAVEL-401..404, #6416/#6422).
+    TravelAdvert:
+      type: object
+      description: Annonce voyage d'un tenant (contenu public redacté).
+      required:
+      - id
+      - title
+      - status
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+          description: Contenu public redacté (jamais le contenu brut).
+        status:
+          type: string
+          enum: [draft, submitted, paid, validated, rejected, expired, archived]
+        price_minor:
+          type: integer
+          description: Prix en unité mineure de la devise.
+        currency:
+          type: string
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+        validated_at:
+          type: string
+          format: date-time
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        visible:
+          type: boolean
+          description: Présent sur la fiche détail uniquement.
     # Issue #9092 (IAM-L2) — contexte tenant d'une personne multi-entreprises.
     TenantContext:
       type: object

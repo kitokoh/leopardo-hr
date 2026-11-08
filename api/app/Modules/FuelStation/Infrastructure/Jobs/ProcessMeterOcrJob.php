@@ -40,7 +40,7 @@ use Throwable;
  * Unique : une seule exécution par demande (`uniqueId`), lock relâché à la
  * fin du traitement.
  */
-class ProcessMeterOcrJob implements ShouldQueue, ShouldBeUnique, TenantScopedJob
+class ProcessMeterOcrJob implements ShouldBeUnique, ShouldQueue, TenantScopedJob
 {
     use Dispatchable;
     use InteractsWithQueue;

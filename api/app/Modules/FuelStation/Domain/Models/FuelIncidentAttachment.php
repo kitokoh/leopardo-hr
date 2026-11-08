@@ -7,7 +7,6 @@ namespace App\Modules\FuelStation\Domain\Models;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 
 /**
  * Pièce jointe d'incident FuelStation — FUEL-010 (issue #5804).
@@ -59,6 +58,4 @@ class FuelIncidentAttachment extends Model
             'uploaded_by' => 'integer',
         ];
     }
-
-
 }

@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Evaluations;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\HR\Domain\Models\Evaluation;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
@@ -214,4 +214,3 @@ class EvaluationWorkflowTest extends TestCase
         return [$company, $manager, $employee];
     }
 }
-

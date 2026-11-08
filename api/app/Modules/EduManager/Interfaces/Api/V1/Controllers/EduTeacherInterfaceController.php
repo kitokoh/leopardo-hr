@@ -29,9 +29,7 @@ use Illuminate\Http\Request;
  */
 class EduTeacherInterfaceController extends Controller
 {
-    public function __construct(private readonly EduGradeService $grades)
-    {
-    }
+    public function __construct(private readonly EduGradeService $grades) {}
 
     private function assertSolutionActive(): void
     {
