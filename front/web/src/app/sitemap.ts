@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getBlogPosts, type BlogPost } from '@/modules/vitrine/data/blog';
 import { getAllPublicRestaurantSlugs } from '@/lib/restaurants-public-api';
+import { getPublicCareersDirectory } from '@/lib/careers-directory-api';
 import { getEnvConfig } from '@/modules/vitrine/lib/env';
 import { getSiteUrl } from '@/lib/site';
 import { getAllCaseStudySlugs } from '@/modules/vitrine/lib/case-studies';
@@ -150,12 +151,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...TOOLS.map((tool) => page(`/toolbox/${tool.slug}`, 'monthly', 0.6)),
   ];
 
+  // BC-10 (#9220) — portails carrières par tenant. Seules les entreprises
+  // ayant AU MOINS une offre publiée sont déclarées : publier une page
+  // carrières vide enverrait les robots vers une page sans contenu, ce que
+  // Google pénalise. `lastmod` = date de la dernière offre publiée, jamais
+  // `now()` — un lastmod qui bouge à chaque requête fait churner le crawl sans
+  // qu'aucun contenu n'ait changé.
+  const careersPages: MetadataRoute.Sitemap = (await getPublicCareersDirectory()).map((entry) => ({
+    url: `${siteUrl}/${entry.slug}/careers`,
+    ...(entry.last_published_at ? { lastModified: new Date(entry.last_published_at) } : {}),
+    changeFrequency: 'daily' as const,
+    priority: 0.6,
+  }));
+
   const allStatic = [
     ...staticPages,
     ...caseStudyPages,
     ...restaurantPages,
     ...alternativePages,
     ...toolboxPages,
+    ...careersPages,
   ];
 
   // Blog posts: source réelle = src/modules/vitrine/data/blog (getBlogPosts).

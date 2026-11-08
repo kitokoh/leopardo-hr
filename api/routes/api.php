@@ -86,6 +86,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogController;
 use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\CandidateApplicationController;
 use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\PublicCareerController;
+use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\PublicCareersDirectoryController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryAppWebhookController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKioskController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
@@ -336,6 +337,10 @@ Route::prefix('v1')->group(function (): void {
     // lecture : un visiteur qui consulte 60 offres par minute est légitime, un
     // visiteur qui envoie 60 candidatures par minute ne l'est pas.
     Route::middleware(['throttle:public-careers'])->prefix('public/careers')->group(function (): void {
+        // BC-10 (#9220) — annuaire des portails carrières ayant au moins une
+        // offre publiée. Déclaré AVANT `/{companySlug}` : sinon « careers »
+        // serait capté comme un slug d'entreprise.
+        Route::get('/', [PublicCareersDirectoryController::class, 'index']);
         Route::get('/{companySlug}', [PublicCareerController::class, 'index']);
         Route::get('/{companySlug}/feed.xml', [PublicCareerController::class, 'feed']);
         Route::get('/{companySlug}/jobs/{jobPosting}', [PublicCareerController::class, 'show'])->whereNumber('jobPosting');
