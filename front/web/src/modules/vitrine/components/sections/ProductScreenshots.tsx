@@ -171,11 +171,13 @@ function MockupFrame({
   gradient,
   screenshotSrc,
   screenshotAlt,
+  locale = 'fr',
 }: {
   type: 'desktop' | 'mobile' | 'kiosk';
   gradient: string;
   screenshotSrc?: string;
   screenshotAlt?: string;
+  locale?: AppLocale;
 }) {
   if (type === 'mobile') {
     return (
