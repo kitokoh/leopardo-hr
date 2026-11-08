@@ -31,7 +31,7 @@ class SsoConfigureRequest extends FormRequest
      */
     public function rules(): array
     {
-        $endpoint = ['nullable', 'string', 'max:2048', new PublicEndpointUrl()];
+        $endpoint = ['nullable', 'string', 'max:2048', new PublicEndpointUrl];
 
         return [
             'provider' => 'required|string|in:saml,oidc',

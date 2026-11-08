@@ -87,3 +87,7 @@
 #92400E
 #334155
 #E2E8F0
+
+# Micro-gemme de la marque Leopardo (#9179) — yellow-200, effet décoratif SVG
+# sur le brand mark (LeopardoBrandMark.tsx) ; pas un token d'UI.
+#fef08a

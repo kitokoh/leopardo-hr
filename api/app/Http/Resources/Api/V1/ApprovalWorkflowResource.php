@@ -28,4 +28,3 @@ class ApprovalWorkflowResource extends JsonResource
         ];
     }
 }
-

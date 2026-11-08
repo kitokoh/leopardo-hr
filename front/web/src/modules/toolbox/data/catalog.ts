@@ -28,7 +28,7 @@ export const TOOLS: ToolDefinition[] = [
     keywords: ['imc', 'bmi', 'poids', 'taille', 'sante', 'corpulence', 'obesite'],
     warnings: ['notAdvice'],
     references: [
-      { labelKey: 'toolbox.ref.whoBmi', url: 'https://www.who.int/health-topics/obesity' },
+      { labelKey: 'whoBmi', url: 'https://www.who.int/health-topics/obesity' },
     ],
   },
   {
@@ -39,7 +39,7 @@ export const TOOLS: ToolDefinition[] = [
     keywords: ['tva', 'vat', 'ht', 'ttc', 'taxe', 'facture', 'france'],
     warnings: [],
     references: [
-      { labelKey: 'toolbox.ref.frVatRates', url: 'https://www.impots.gouv.fr/professionnel/les-taux-de-tva' },
+      { labelKey: 'frVatRates', url: 'https://www.impots.gouv.fr/professionnel/les-taux-de-tva' },
     ],
   },
   {
@@ -59,7 +59,7 @@ export const TOOLS: ToolDefinition[] = [
     keywords: ['conversion', 'unites', 'longueur', 'masse', 'volume', 'surface', 'vitesse', 'temperature'],
     warnings: [],
     references: [
-      { labelKey: 'toolbox.ref.siBrochure', url: 'https://www.bipm.org/en/publications/si-brochure' },
+      { labelKey: 'siBrochure', url: 'https://www.bipm.org/en/publications/si-brochure' },
     ],
   },
   {
@@ -117,5 +117,41 @@ export const TOOLS: ToolDefinition[] = [
     references: [
       { labelKey: 'frVatRates', url: 'https://www.impots.gouv.fr/professionnel/les-taux-de-tva' },
     ],
+  },
+  {
+    slug: 'convertisseur-devises',
+    category: 'conversion',
+    icon: 'arrow-left-right',
+    version: '1.0.0',
+    keywords: ['devise', 'devises', 'currency', 'change', 'taux', 'conversion', 'eur', 'usd', 'dzd'],
+    warnings: ['estimate'],
+    references: [],
+  },
+  {
+    slug: 'duree-entre-dates',
+    category: 'calcul',
+    icon: 'calculator',
+    version: '1.0.0',
+    keywords: ['duree', 'dates', 'jours', 'mois', 'annees', 'intervalle', 'calendaire'],
+    warnings: [],
+    references: [],
+  },
+  {
+    slug: 'age',
+    category: 'calcul',
+    icon: 'calculator',
+    version: '1.0.0',
+    keywords: ['age', 'naissance', 'anniversaire', 'annees', 'mois', 'jours'],
+    warnings: [],
+    references: [],
+  },
+  {
+    slug: 'taux-horaire',
+    category: 'travail',
+    icon: 'briefcase',
+    version: '1.0.0',
+    keywords: ['taux', 'horaire', 'salaire', 'brut', 'mensuel', 'heures', 'paie', 'travail'],
+    warnings: ['estimate'],
+    references: [],
   },
 ];

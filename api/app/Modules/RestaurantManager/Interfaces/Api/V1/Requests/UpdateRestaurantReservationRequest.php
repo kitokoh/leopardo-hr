@@ -8,7 +8,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
 
 /**
  * RESTO-601 (#6206) — Mise à jour d'une réservation (en attente uniquement).
@@ -46,6 +45,4 @@ class UpdateRestaurantReservationRequest extends FormRequest
             'idempotency_key' => ['prohibited'],
         ];
     }
-
-
 }

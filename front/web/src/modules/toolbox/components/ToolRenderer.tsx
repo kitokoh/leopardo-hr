@@ -9,6 +9,10 @@ import { SurfaceVolumeForm } from './tools/SurfaceVolumeForm';
 import { CbmForm } from './tools/CbmForm';
 import { MargeForm } from './tools/MargeForm';
 import { TvaMultiTauxForm } from './tools/TvaMultiTauxForm';
+import { ConvertisseurDevisesForm } from './tools/ConvertisseurDevisesForm';
+import { DureeEntreDatesForm } from './tools/DureeEntreDatesForm';
+import { AgeForm } from './tools/AgeForm';
+import { TauxHoraireForm } from './tools/TauxHoraireForm';
 import type { ToolCopy, ToolboxCopy, ToolboxLocale } from '../data/copy';
 
 interface ToolRendererProps {
@@ -46,6 +50,14 @@ export function ToolRenderer({ slug, copy, common, locale }: ToolRendererProps) 
       return <MargeForm copy={copy} common={common} locale={locale} />;
     case 'tva-multi-taux':
       return <TvaMultiTauxForm copy={copy} common={common} locale={locale} />;
+    case 'convertisseur-devises':
+      return <ConvertisseurDevisesForm copy={copy} common={common} locale={locale} />;
+    case 'duree-entre-dates':
+      return <DureeEntreDatesForm copy={copy} common={common} locale={locale} />;
+    case 'age':
+      return <AgeForm copy={copy} common={common} locale={locale} />;
+    case 'taux-horaire':
+      return <TauxHoraireForm copy={copy} common={common} locale={locale} />;
     default:
       return null;
   }

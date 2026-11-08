@@ -995,6 +995,48 @@ trait CreatesMvpSchema
 
             $table->unique(['source', 'event_id']);
         });
+        // BC-10 (#9100) — sources d'offres d'emploi externes (agrégateurs) et
+        // offres importées. Tables PUBLIQUES : une offre importée n'appartient
+        // à aucun tenant (miroir de la migration
+        // public/2026_11_08_000001_9100_create_job_sources_tables).
+        Schema::create('job_sources', function (Blueprint $table): void {
+            $table->id();
+            $table->string('provider', 40)->unique();
+            $table->string('label', 120);
+            $table->string('status', 20)->default('not_connected');
+            $table->text('credentials_encrypted')->nullable();
+            $table->jsonb('config')->nullable();
+            $table->timestampTz('last_synced_at')->nullable();
+            $table->string('last_error', 500)->nullable();
+            $table->unsignedInteger('offers_imported')->default(0);
+            $table->timestampsTz();
+        });
+
+        Schema::create('external_job_offers', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedBigInteger('source_id');
+            $table->string('external_id', 191);
+            $table->string('title', 200);
+            $table->text('description')->nullable();
+            $table->string('company_name', 200);
+            $table->string('location', 200)->nullable();
+            $table->string('country', 2)->nullable();
+            $table->string('remote_policy', 20)->default('onsite');
+            $table->string('contract_type', 20)->default('cdi');
+            $table->decimal('salary_min', 12, 2)->nullable();
+            $table->decimal('salary_max', 12, 2)->nullable();
+            $table->string('currency', 3)->nullable();
+            $table->string('apply_url', 500);
+            $table->timestampTz('published_at')->nullable();
+            $table->timestampTz('expires_at')->nullable();
+            $table->string('status', 20)->default('published');
+            $table->jsonb('raw_payload')->nullable();
+            $table->timestampsTz();
+
+            $table->unique(['source_id', 'external_id']);
+            $table->index(['status', 'published_at']);
+        });
+
         Schema::create('super_admins', function (Blueprint $table): void {
             $table->increments('id');
             $table->string('name', 100);
@@ -1491,6 +1533,53 @@ trait CreatesMvpSchema
 
     private function createPostSprintModuleTables(): void
     {
+        // BC-10 (#9100) — sources d'offres d'emploi externes (agrégateurs) et
+        // offres importées. Tables PUBLIQUES (préfixe explicite : le search_path
+        // de la fixture pointe sur `shared_tenants`) — une offre importée
+        // n'appartient à aucun tenant. Miroir de la migration
+        // public/2026_11_08_000001_9100_create_job_sources_tables.
+        if (! Schema::hasTable('public.job_sources')) {
+            Schema::create('public.job_sources', function (Blueprint $table): void {
+                $table->id();
+                $table->string('provider', 40)->unique();
+                $table->string('label', 120);
+                $table->string('status', 20)->default('not_connected');
+                $table->text('credentials_encrypted')->nullable();
+                $table->jsonb('config')->nullable();
+                $table->timestampTz('last_synced_at')->nullable();
+                $table->string('last_error', 500)->nullable();
+                $table->unsignedInteger('offers_imported')->default(0);
+                $table->timestampsTz();
+            });
+        }
+
+        if (! Schema::hasTable('public.external_job_offers')) {
+            Schema::create('public.external_job_offers', function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('source_id');
+                $table->string('external_id', 191);
+                $table->string('title', 200);
+                $table->text('description')->nullable();
+                $table->string('company_name', 200);
+                $table->string('location', 200)->nullable();
+                $table->string('country', 2)->nullable();
+                $table->string('remote_policy', 20)->default('onsite');
+                $table->string('contract_type', 20)->default('cdi');
+                $table->decimal('salary_min', 12, 2)->nullable();
+                $table->decimal('salary_max', 12, 2)->nullable();
+                $table->string('currency', 3)->nullable();
+                $table->string('apply_url', 500);
+                $table->timestampTz('published_at')->nullable();
+                $table->timestampTz('expires_at')->nullable();
+                $table->string('status', 20)->default('published');
+                $table->jsonb('raw_payload')->nullable();
+                $table->timestampsTz();
+
+                $table->unique(['source_id', 'external_id']);
+                $table->index(['status', 'published_at']);
+            });
+        }
+
         // #8729 (BC PAGES) — journal de modération APPEND-ONLY.
         // La garde #5443 exige toute migration tenant récente ici : sans cette
         // table, chaque décision de modération échoue en
@@ -3272,7 +3361,12 @@ trait CreatesMvpSchema
                 $table->string('status', 20)->default('draft');
                 $table->timestampTz('published_at')->nullable();
                 $table->timestampTz('closes_at')->nullable();
+                // BC-10 (#9100) — archivage et traçabilité de la publication
+                // plateforme (miroir de la migration tenant 2026_11_08_000002).
+                $table->timestampTz('archived_at')->nullable();
                 $table->unsignedInteger('created_by')->nullable();
+                $table->boolean('published_by_platform')->default(false);
+                $table->unsignedBigInteger('platform_created_by')->nullable();
                 $table->timestamps();
             });
         }
@@ -3293,6 +3387,10 @@ trait CreatesMvpSchema
                 $table->unsignedTinyInteger('rating')->nullable();
                 $table->text('notes')->nullable();
                 $table->timestampTz('applied_at')->nullable();
+                // BC-10 (#9100) — RGPD : consentement horodaté + fin de
+                // conservation (miroir de la migration tenant 2026_11_08_000002).
+                $table->timestampTz('consent_given_at')->nullable();
+                $table->timestampTz('retention_until')->nullable();
                 $table->timestamps();
             });
         }
@@ -4873,6 +4971,107 @@ trait CreatesMvpSchema
             });
         }
 
+        // BC-40 LIBRARY (mission Leopardo Library) — bibliothèque numérique.
+        // Miroir de la migration 2026_11_08_000100_9200 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('library_categories'))) {
+            Schema::create($this->moduleTable('library_categories'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('name', 120);
+                $table->string('slug', 130);
+                $table->string('icon', 40)->nullable();
+                $table->smallInteger('position')->default(0);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'slug'], 'library_categories_company_slug_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('library_authors'))) {
+            Schema::create($this->moduleTable('library_authors'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('name', 150);
+                $table->string('slug', 160);
+                $table->text('bio')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'slug'], 'library_authors_company_slug_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('library_collections'))) {
+            Schema::create($this->moduleTable('library_collections'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('name', 150);
+                $table->string('slug', 160);
+                $table->text('description')->nullable();
+                $table->smallInteger('position')->default(0);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'slug'], 'library_collections_company_slug_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('library_resources'))) {
+            Schema::create($this->moduleTable('library_resources'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('category_id')->nullable();
+                $table->unsignedBigInteger('author_id')->nullable();
+                $table->unsignedBigInteger('collection_id')->nullable();
+                $table->string('title', 200);
+                $table->string('slug', 210);
+                $table->text('description')->nullable();
+                $table->text('excerpt')->nullable();
+                $table->string('document_type', 20)->default('book');
+                $table->char('language', 2)->default('fr');
+                $table->string('access_model', 20)->default('free');
+                $table->string('status', 20)->default('draft');
+                $table->unsignedBigInteger('price_minor')->default(0);
+                $table->char('currency', 3)->default('EUR');
+                $table->string('publisher', 150)->nullable();
+                $table->smallInteger('published_year')->nullable();
+                $table->unsignedInteger('pages')->nullable();
+                $table->string('license_id', 60)->default('proprietary');
+                $table->string('rights_holder', 200)->nullable();
+                $table->boolean('allow_download')->default(false);
+                $table->boolean('allow_redistribution')->default(false);
+                $table->json('geo_restrictions')->nullable();
+                $table->string('file_key', 300)->nullable();
+                $table->string('file_format', 20)->nullable();
+                $table->unsignedBigInteger('file_size')->nullable();
+                $table->boolean('featured')->default(false);
+                $table->boolean('is_new')->default(false);
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->unsignedBigInteger('published_by')->nullable();
+                $table->timestamp('published_at')->nullable();
+                $table->json('meta')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'slug'], 'library_resources_company_slug_unique');
+                $table->index(['company_id', 'status'], 'library_resources_company_status_idx');
+                $table->index(['company_id', 'category_id'], 'library_resources_company_category_idx');
+                $table->index(['company_id', 'access_model'], 'library_resources_company_access_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('library_reports'))) {
+            Schema::create($this->moduleTable('library_reports'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('resource_id');
+                $table->string('reason', 40);
+                $table->text('details')->nullable();
+                $table->string('reporter_email', 200)->nullable();
+                $table->string('status', 20)->default('open');
+                $table->timestamps();
+
+                $table->index(['resource_id', 'status'], 'library_reports_resource_status_idx');
+            });
+        }
+
     }
 
     private function createVerticalParityTables(): void
@@ -6162,6 +6361,9 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "interviews"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "applicants"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "job_postings"'.$cascade);
+        // BC-10 (#9100) — tables publiques du portail d'offres.
+        DB::statement('DROP TABLE IF EXISTS "external_job_offers"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "job_sources"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "pay_slip_lines"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ledger_entries"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_confirmations"'.$cascade);

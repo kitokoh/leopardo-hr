@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\AI\Interfaces\Api\V1\Controllers;
 
 use App\AI\AgentRunner;
-use App\Core\Auth\Domain\Models\Employee;
 use App\AI\Orchestrator;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

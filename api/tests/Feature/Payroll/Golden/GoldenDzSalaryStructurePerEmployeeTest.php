@@ -77,7 +77,7 @@ class GoldenDzSalaryStructurePerEmployeeTest extends TestCase
             'employee_count' => 0,
         ]);
 
-        (new PayrollCalculator())->calculateRun($run);
+        (new PayrollCalculator)->calculateRun($run);
 
         $slips = $run->paySlips()->get()->keyBy('employee_id');
 

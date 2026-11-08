@@ -33,6 +33,7 @@ export { BlogArticle, type BlogArticleProps } from './BlogArticle';
 // Social Proof Components
 export { SocialProofMetrics, type SocialProofMetricsProps } from './SocialProofMetrics';
 export { ProductScreenshots, type ProductScreenshotsProps } from './ProductScreenshots';
+export { ZKTecoKioskMockup } from './ZKTecoKioskMockup';
 export { WhyLeopardoSection } from './WhyLeopardoSection';
 export { TrustedBrands, type TrustedBrandsProps } from './TrustedBrands';
 export { ProductDemoVideo, type ProductDemoVideoProps } from './ProductDemoVideo';

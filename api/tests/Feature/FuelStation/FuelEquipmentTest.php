@@ -68,7 +68,6 @@ class FuelEquipmentTest extends TestCase
         return $pump;
     }
 
-
     private function meter(Company $company, FuelStation $station, FuelPump $pump, string $code = 'C-04-A'): FuelMeterRegister
     {
         /** @var FuelMeterRegister $meter */

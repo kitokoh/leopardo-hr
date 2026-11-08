@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Absences;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
 use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Facades\Hash;
@@ -702,4 +702,3 @@ class AbsenceStoreTest extends TestCase
         $response->assertJsonPath('data.status', 'pending');
     }
 }
-

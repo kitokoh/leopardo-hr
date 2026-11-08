@@ -55,6 +55,7 @@ class LoginCodeController extends Controller
             'email' => ['required', 'email', 'max:255'],
         ]);
 
+        /** @var array{email: string} $validated */
         $email = strtolower(trim((string) $validated['email']));
 
         // Réponse générique dans TOUS les cas : ne jamais révéler si un compte
@@ -150,6 +151,7 @@ class LoginCodeController extends Controller
             'code' => ['required', 'string', 'size:6'],
         ]);
 
+        /** @var array{email: string, code: string} $validated */
         $email = strtolower(trim((string) $validated['email']));
         $key = $this->cacheKey($email);
 
@@ -202,6 +204,7 @@ class LoginCodeController extends Controller
             return $this->invalidCodeResponse();
         }
 
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = $result['employee'];
 
         // Un compte 2FA ne contourne JAMAIS son challenge par le canal OTP :

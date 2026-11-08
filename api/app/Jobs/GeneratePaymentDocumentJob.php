@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
-use App\Jobs\Middleware\EnsureTenantContext;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Payroll\Domain\Models\PaymentDocument;
 use App\Modules\Payroll\Domain\Models\PaySlip;
@@ -58,7 +58,7 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
      */
     public function middleware(): array
     {
-        return [new EnsureTenantContext()];
+        return [new EnsureTenantContext];
     }
 
     public function handle(CommunicationService $communicationService): void
@@ -301,5 +301,4 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
             // non bloquant
         }
     }
-
 }

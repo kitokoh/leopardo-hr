@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Database\Seeders\DemoDzSeeder;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use Database\Seeders\DemoDzSeeder;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -21,7 +21,7 @@ class DemoDzSeederTest extends TestCase
 
     public function test_demo_dz_seeder_creates_realistic_closed_payroll(): void
     {
-        (new DemoDzSeeder())->run(employeeCount: 5);
+        (new DemoDzSeeder)->run(employeeCount: 5);
 
         /** @var Company $company */
         $company = Company::query()->where('slug', DemoDzSeeder::COMPANY_SLUG)->firstOrFail();
@@ -54,8 +54,8 @@ class DemoDzSeederTest extends TestCase
 
     public function test_demo_dz_seeder_is_idempotent(): void
     {
-        (new DemoDzSeeder())->run(employeeCount: 5);
-        (new DemoDzSeeder())->run(employeeCount: 5);
+        (new DemoDzSeeder)->run(employeeCount: 5);
+        (new DemoDzSeeder)->run(employeeCount: 5);
 
         /** @var Company $company */
         $company = Company::query()->where('slug', DemoDzSeeder::COMPANY_SLUG)->firstOrFail();

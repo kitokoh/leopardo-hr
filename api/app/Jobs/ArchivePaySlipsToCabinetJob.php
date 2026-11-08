@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
-use App\Core\Auth\Domain\Models\AuditLog;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator;
@@ -58,7 +58,7 @@ class ArchivePaySlipsToCabinetJob implements ShouldQueue, TenantScopedJob
      */
     public function middleware(): array
     {
-        return [new EnsureTenantContext()];
+        return [new EnsureTenantContext];
     }
 
     public function tenantCompanyId(): ?string
@@ -230,7 +230,6 @@ class ArchivePaySlipsToCabinetJob implements ShouldQueue, TenantScopedJob
         ]);
     }
 
-
     /**
      * #4205 : épuisement des retries — log d'alerte (archivage cabinet).
      */
@@ -241,5 +240,4 @@ class ArchivePaySlipsToCabinetJob implements ShouldQueue, TenantScopedJob
             'exception' => $e->getMessage(),
         ]);
     }
-
 }

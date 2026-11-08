@@ -25,4 +25,3 @@ class TaskCommentResource extends JsonResource
         ];
     }
 }
-

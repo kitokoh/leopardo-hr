@@ -85,10 +85,11 @@ return new class extends Migration
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_assessments_coefficient_check') "
                     ."THEN ALTER TABLE \"{$schema}\".\"edu_assessments\" ADD CONSTRAINT edu_assessments_coefficient_check "
                     .'CHECK (coefficient > 0); END IF; END $$'
-                );                DB::statement(
+                );
+                DB::statement(
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_assessments_id_company_unique') "
                     ."THEN ALTER TABLE \"{$schema}\".\"edu_assessments\" ADD CONSTRAINT edu_assessments_id_company_unique "
-                    ."UNIQUE (id, company_id); END IF; END $$"
+                    .'UNIQUE (id, company_id); END IF; END $$'
                 );
 
             }
@@ -133,10 +134,11 @@ return new class extends Migration
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_grades_status_check') "
                     ."THEN ALTER TABLE \"{$schema}\".\"edu_grades\" ADD CONSTRAINT edu_grades_status_check "
                     ."CHECK (status IN ('draft','published','corrected')); END IF; END $$"
-                );                DB::statement(
+                );
+                DB::statement(
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_grades_id_company_unique') "
                     ."THEN ALTER TABLE \"{$schema}\".\"edu_grades\" ADD CONSTRAINT edu_grades_id_company_unique "
-                    ."UNIQUE (id, company_id); END IF; END $$"
+                    .'UNIQUE (id, company_id); END IF; END $$'
                 );
 
             }

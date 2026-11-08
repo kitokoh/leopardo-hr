@@ -91,4 +91,3 @@ class TraccarServiceTest extends TestCase
         Http::assertSent(fn (Request $request): bool => str_starts_with($request->url(), 'https://traccar.test/api/reports/events?deviceId=77'));
     }
 }
-

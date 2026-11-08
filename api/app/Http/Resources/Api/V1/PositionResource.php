@@ -25,4 +25,3 @@ class PositionResource extends JsonResource
         ];
     }
 }
-

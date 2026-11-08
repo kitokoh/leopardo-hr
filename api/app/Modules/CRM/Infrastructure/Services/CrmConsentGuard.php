@@ -35,7 +35,7 @@ final class CrmConsentGuard
                 return;
             }
 
-            throw new CrmConsentRequiredException();
+            throw new CrmConsentRequiredException;
         }
 
         $optIn = DB::table('crm_contact_consents')
@@ -47,7 +47,7 @@ final class CrmConsentGuard
             ->exists();
 
         if (! $optIn) {
-            throw new CrmConsentRequiredException();
+            throw new CrmConsentRequiredException;
         }
     }
 

@@ -49,7 +49,7 @@ return new class extends Migration
         });
 
         DB::statement(
-            "COMMENT ON COLUMN schedules.site_id IS "
+            'COMMENT ON COLUMN schedules.site_id IS '
             ."'#8450 — Établissement de la rotation. NULL = rotation valable pour tout le tenant (comportement historique).'"
         );
     }

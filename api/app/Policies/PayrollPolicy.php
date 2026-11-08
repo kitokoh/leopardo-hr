@@ -59,4 +59,3 @@ class PayrollPolicy
         return $actor->company_id === $run->company_id && $actor->hasManagerRole('principal', 'rh');
     }
 }
-

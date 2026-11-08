@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Security;
 
-use App\Modules\Planning\Domain\Models\AbsenceType;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Planning\Domain\Models\AbsenceType;
 use Illuminate\Support\Str;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -101,4 +101,3 @@ class CrossTenantValidationTest extends TestCase
         return $employee;
     }
 }
-

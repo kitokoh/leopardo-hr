@@ -80,7 +80,7 @@ class RetailAndEduManagerActivationTest extends TestCase
         $result = app(SolutionActivator::class)->activate($company, 'retail');
 
         $this->assertSame('activated', $result['status']);
-        
+
         $freshCompany = $company->fresh();
         $this->assertNotNull($freshCompany);
         $this->assertTrue($freshCompany->hasFeature('retail'));

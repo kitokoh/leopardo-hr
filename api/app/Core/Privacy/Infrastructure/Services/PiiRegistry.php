@@ -19,9 +19,7 @@ final class PiiRegistry
     /**
      * @param  array<string, mixed>  $config  (config('pii'))
      */
-    public function __construct(private readonly array $config)
-    {
-    }
+    public function __construct(private readonly array $config) {}
 
     public function version(): string
     {

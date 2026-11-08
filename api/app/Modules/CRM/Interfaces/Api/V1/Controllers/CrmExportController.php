@@ -71,18 +71,18 @@ class CrmExportController extends Controller
         $job = $this->jobOrFail($export);
 
         if ($job->status !== 'completed') {
-            throw new CrmExportNotReadyException();
+            throw new CrmExportNotReadyException;
         }
 
         if ($job->expires_at !== null && $job->expires_at->isPast()) {
             $job->forceFill(['status' => 'expired'])->save();
 
-            throw new CrmExportExpiredException();
+            throw new CrmExportExpiredException;
         }
 
         $path = (string) $job->file_path;
         if ($path === '' || ! Storage::disk('private')->exists($path)) {
-            throw new CrmExportNotReadyException();
+            throw new CrmExportNotReadyException;
         }
 
         Log::info('CRM export: telechargement', [
@@ -102,7 +102,7 @@ class CrmExportController extends Controller
     {
         $job = CrmExportJob::query()->where('id', $exportId)->first();
         if ($job === null) {
-            throw new CrmExportNotFoundException();
+            throw new CrmExportNotFoundException;
         }
 
         return $job;

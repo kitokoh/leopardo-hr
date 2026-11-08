@@ -13,6 +13,4 @@ use RuntimeException;
  * violé (stock négatif, delta nul). Le contrôleur la traduit en HTTP 422
  * avec un message sûr (aucune donnée interne exposée).
  */
-final class RestaurantStockException extends RuntimeException
-{
-}
+final class RestaurantStockException extends RuntimeException {}

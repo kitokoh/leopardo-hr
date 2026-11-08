@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Contracts\ApiEndpointRegistryInterface;
-use App\Contracts\FeatureRegistryInterface;
 use App\Modules\Billing\Domain\Models\Feature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;

@@ -31,4 +31,3 @@ class LoanResource extends JsonResource
         ];
     }
 }
-

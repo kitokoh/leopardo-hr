@@ -5,8 +5,14 @@
  *
  * POURQUOI CE SCRIPT EXISTE
  * -------------------------
- * La suite Feature dépasse la limite de 5 h du runner GitHub Actions, donc
- * aucun run ne produit de verdict complet. Le découpage ne peut PAS se faire :
+ * Constat B7 (2026-11-07) : la suite Feature dépassait la limite de 5 h du
+ * runner GitHub Actions, donc aucun run ne produisait de verdict complet.
+ *
+ * MESURE 2026-11-08 : le job `Backend` de tests.yml TERMINE désormais en ~82 min
+ * (run 42408094007 : 4947,98 s). Le découpage n'est donc plus nécessaire pour
+ * tenir dans le runner ; il reste un outil de DIAGNOSTIC manuel.
+ *
+ * Le découpage ne peut PAS se faire :
  *   - par `--filter` regex de nom de classe : 0 test sélectionné, SILENCIEUSEMENT
  *     (mesuré : 6 min 40 s pour zéro test) ;
  *   - par glob de fichiers : paratest refuse (`Too many arguments, expected
@@ -18,6 +24,12 @@
  * entrée `<file>` par fichier. Vérifié en exécution réelle sous paratest
  * (`--testsuite=FeatureRootA --parallel` → 3 tests annoncés, 3 testcases au
  * JUnit, exit 0).
+ *
+ * AVERTISSEMENT (mesuré 2026-11-08) : lancer les 77 shards SANS plafond de
+ * concurrence produit des FAUX échecs — 229 tests en erreur dans les shards
+ * passent dans la suite complète (209 `statement timeout`, 19 table absente).
+ * Le workflow plafonne donc `max-parallel` et ne se déclenche plus que
+ * manuellement.
  *
  * CE SCRIPT
  * ---------
@@ -162,10 +174,10 @@ $generated .= "          propres shards). Chaque testsuite liste explicitement s
 $generated .= "          c'est le seul mécanisme que paratest honore (cf. en-tête du\n";
 $generated .= "          générateur).\n";
 $generated .= "\n";
-$generated .= "          Fichiers : ".count($files)." — poids cumulé : {$totalTests} méthodes.\n";
+$generated .= '          Fichiers : '.count($files)." — poids cumulé : {$totalTests} méthodes.\n";
 $generated .= "          Équilibrage : panier le plus léger {$min}, le plus lourd {$max}.\n";
 $generated .= "\n";
-$generated .= "          Suivent un shard par sous-répertoire de tests/Feature ("
+$generated .= '          Suivent un shard par sous-répertoire de tests/Feature ('
     .count($subdirShards)." shards), chacun listant ses <file> récursivement.\n";
 $generated .= "        -->\n";
 
@@ -225,11 +237,11 @@ if ($check) {
 $updated = substr($phpunit, 0, $beginPos).$generated.substr($phpunit, $endPos);
 file_put_contents($phpunitPath, $updated);
 
-fwrite(STDOUT, "Fichiers énumérés      : ".count($files)."\n");
+fwrite(STDOUT, 'Fichiers énumérés      : '.count($files)."\n");
 fwrite(STDOUT, "Fichiers affectés      : {$assigned}\n");
-fwrite(STDOUT, "Doublons               : ".(count($files) - $assigned === 0 ? 'aucun' : 'PRÉSENTS')."\n");
+fwrite(STDOUT, 'Doublons               : '.(count($files) - $assigned === 0 ? 'aucun' : 'PRÉSENTS')."\n");
 fwrite(STDOUT, "Poids min / max        : {$min} / {$max}\n");
-fwrite(STDOUT, "Shards sous-répertoire : ".count($subdirShards)."\n");
+fwrite(STDOUT, 'Shards sous-répertoire : '.count($subdirShards)."\n");
 fwrite(STDOUT, "Écrit dans             : phpunit.xml (zone générée)\n");
 
 foreach ($buckets as $index => $bucket) {

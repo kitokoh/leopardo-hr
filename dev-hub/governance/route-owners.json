@@ -6,7 +6,7 @@
     "platform_guard_middleware": "Authenticate:super_admin_api",
     "tenant_middleware": "TenantMiddleware",
     "baseline": "route:list sur main 8b3609f — 913 routes (109 platform, 678 tenant, 126 public), audit 2026-08-28 ; 6 fichiers modules post-consolidation déclarés le 2026-09-05 (travelagency, restaurantmanager, fuel_station, edu_manager, delivery, solutions)",
-    "updated": "2026-10-26"
+    "updated": "2026-11-08"
   },
   "scope_by_default": "tenant",
   "route_files": {
@@ -35,6 +35,8 @@
     "api/routes/modules/hr_app.php": "tenant",
     "api/routes/modules/hr_extended.php": "tenant",
     "api/routes/modules/integrations.php": "tenant",
+    "api/routes/modules/library.php": "tenant",
+    "api/routes/modules/library_public.php": "public",
     "api/routes/modules/market_public.php": "public",
     "api/routes/modules/marketing.php": "tenant",
     "api/routes/modules/pages.php": "tenant",
@@ -44,6 +46,7 @@
     "api/routes/modules/payroll_engine.php": "tenant",
     "api/routes/modules/pharmacy.php": "tenant",
     "api/routes/modules/planning.php": "tenant",
+    "api/routes/modules/recruitment_platform.php": "mixed",
     "api/routes/modules/restaurantmanager.php": "tenant",
     "api/routes/modules/retail.php": "tenant",
     "api/routes/modules/rh.php": "tenant",

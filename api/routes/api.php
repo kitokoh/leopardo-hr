@@ -331,11 +331,17 @@ Route::prefix('v1')->group(function (): void {
     // Google Jobs / Indeed XML feed, and candidate application submission.
     // Tenant is resolved from {companySlug}, not from Sanctum, since visitors
     // have no account. See feat(recruitment): ATS Backend - APIs Publiques.
+    //
+    // BC-10 (#9100) — la candidature a son PROPRE bucket, plus strict que la
+    // lecture : un visiteur qui consulte 60 offres par minute est légitime, un
+    // visiteur qui envoie 60 candidatures par minute ne l'est pas.
     Route::middleware(['throttle:public-careers'])->prefix('public/careers')->group(function (): void {
         Route::get('/{companySlug}', [PublicCareerController::class, 'index']);
         Route::get('/{companySlug}/feed.xml', [PublicCareerController::class, 'feed']);
         Route::get('/{companySlug}/jobs/{jobPosting}', [PublicCareerController::class, 'show'])->whereNumber('jobPosting');
-        Route::post('/{companySlug}/jobs/{jobPosting}/apply', [CandidateApplicationController::class, 'store'])->whereNumber('jobPosting');
+        Route::post('/{companySlug}/jobs/{jobPosting}/apply', [CandidateApplicationController::class, 'store'])
+            ->whereNumber('jobPosting')
+            ->middleware('throttle:public-careers-apply');
     });
 
     // Issue #4217 (audit 360° 2026-08-16) — registre multi-pays canonique
@@ -570,7 +576,8 @@ Route::prefix('v1')->group(function (): void {
     // routes tenant-scoped derrière le feature flag `pharmacy` (fail-closed).
     require __DIR__.'/modules/pharmacy.php';
     require __DIR__.'/modules/catalog.php';
-
+    // LEOPARDO LIBRARY — gestion des ressources par un tenant (surface privée).
+    require __DIR__.'/modules/library.php';
     // BC PAGES (#8728) — surface tenant : CRUD établissements/Pages, blocs,
     // publication et aperçu privé. La surface publique est #8730.
     require __DIR__.'/modules/pages.php';
@@ -587,6 +594,8 @@ Route::prefix('v1')->group(function (): void {
 
     // C-PUBLIC #6882 — catalogue public (routes isolées, sans auth)
     require __DIR__.'/modules/catalog_public.php';
+    // LEOPARDO LIBRARY — bibliothèque numérique publique (routes isolées, sans auth)
+    require __DIR__.'/modules/library_public.php';
     // BC-17 #7807/#7808 — marketplace publique Leopardo Marché (routes isolées, sans auth)
     require __DIR__.'/modules/market_public.php';
     // BC-36 P2-01 #8802 — fiche publique des entreprises de commerce (routes isolées, sans auth)
@@ -626,6 +635,11 @@ Route::prefix('v1')->group(function (): void {
 
     // Platform (super-admin, hors module)
     Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('platform')->group(function (): void {
+        // BC-10 (#9100) — portail public d'offres : publication plateforme et
+        // connecteurs d'agrégateurs. Chargé ICI pour hériter du préfixe
+        // `platform` et du guard `super_admin_api`.
+        require __DIR__.'/modules/recruitment_platform.php';
+
         Route::get('/auth/me', [PlatformAuthController::class, 'me']);
         Route::patch('/auth/profile', [PlatformAuthController::class, 'updateProfile']);
         Route::post('/auth/change-password', [PlatformAuthController::class, 'changePassword']);

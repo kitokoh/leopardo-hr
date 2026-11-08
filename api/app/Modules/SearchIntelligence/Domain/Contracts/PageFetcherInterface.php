@@ -23,8 +23,8 @@ interface PageFetcherInterface
      * Récupère une page.
      *
      * @return array{status: int, body: string}|null `null` si la requête n'a
-     *         pas abouti (DNS, timeout, TLS…) — distinct d'un statut HTTP
-     *         d'erreur, qui reste une réponse observée.
+     *                                               pas abouti (DNS, timeout, TLS…) — distinct d'un statut HTTP
+     *                                               d'erreur, qui reste une réponse observée.
      */
     public function fetch(string $url): ?array;
 }

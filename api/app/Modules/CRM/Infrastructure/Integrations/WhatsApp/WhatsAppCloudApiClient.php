@@ -107,7 +107,7 @@ final class WhatsAppCloudApiClient
     private function request(string $method, string $path, array $payload, string $accessToken): Response
     {
         if ($accessToken === '') {
-            throw new CrmChannelNotConfiguredException();
+            throw new CrmChannelNotConfiguredException;
         }
 
         $url = 'https://graph.facebook.com/'.self::GRAPH_VERSION.$path;

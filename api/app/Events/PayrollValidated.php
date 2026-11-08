@@ -15,4 +15,3 @@ class PayrollValidated
 
     public function __construct(public readonly Payroll $payroll) {}
 }
-

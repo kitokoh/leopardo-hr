@@ -600,6 +600,16 @@ class AppServiceProvider extends ServiceProvider
                 ->by('public-careers:'.$request->ip());
         });
 
+        // BC-10 (#9100) — bucket STRICT dédié à la candidature publique, en
+        // plus du `public-careers` du groupe. Un visiteur qui consulte 60
+        // offres par minute est légitime ; un visiteur qui envoie 60
+        // candidatures par minute ne l'est pas. Séparer les deux évite de
+        // choisir entre brider la lecture et laisser passer le spam.
+        RateLimiter::for('public-careers-apply', function (Request $request) {
+            return Limit::perMinute((int) config('security.rate_limits.public_careers_apply_per_minute', 5))
+                ->by('public-careers-apply:'.$request->ip());
+        });
+
         // EDU-013 (#5829) : consommation des liens du portail guardian (route
         // publique). Bucket dédié par token + IP — 10/min borne l'énumération
         // et le bruteforce sans affamer le flux légitime (un lien est à usage

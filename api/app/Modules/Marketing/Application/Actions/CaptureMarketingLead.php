@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Marketing\Application\Actions;
 
-use App\Modules\Marketing\Domain\DTOs\CreateMarketingLeadDTO;
 use App\Modules\Marketing\Domain\Contracts\MarketingLeadRepositoryInterface;
+use App\Modules\Marketing\Domain\DTOs\CreateMarketingLeadDTO;
 use App\Modules\Marketing\Domain\Models\MarketingLead;
 
 /**

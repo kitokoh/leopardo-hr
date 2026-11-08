@@ -18,7 +18,7 @@ class PiiHmacLookupServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new PiiHmacLookupService();
+        $this->service = new PiiHmacLookupService;
     }
 
     public function test_hash_is_deterministic(): void
@@ -96,7 +96,7 @@ class PiiHmacLookupServiceTest extends TestCase
         $this->assertSame('', $this->service->mask(''));
     }
 
-    public function test_isHashed_detects_hex_digest(): void
+    public function test_is_hashed_detects_hex_digest(): void
     {
         $digest = $this->service->hash('client@exemple.fr');
 

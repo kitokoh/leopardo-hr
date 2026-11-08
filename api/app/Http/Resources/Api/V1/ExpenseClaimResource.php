@@ -37,4 +37,3 @@ class ExpenseClaimResource extends JsonResource
         ];
     }
 }
-

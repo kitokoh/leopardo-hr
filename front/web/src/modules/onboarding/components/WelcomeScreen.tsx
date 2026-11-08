@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from 'react';
 import { ShieldCheck, Lock } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { LeoMascot } from '@/components/ui/LeoMascot';
+import { LeopardoBrandMark } from '@/modules/vitrine/components/LeopardoBrandMark';
 import { type AppLocale, type StoredAuthUser } from '@/lib/i18n';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 
@@ -135,6 +136,9 @@ export function WelcomeScreen({ locale, onAcknowledged }: Props) {
         </div>
 
         <div className="p-8 pt-5 text-center">
+          <div className="mb-4 flex justify-center">
+            <LeopardoBrandMark size="sm" variant="full" />
+          </div>
           <h2
             id="first-login-welcome-title"
             className="text-2xl font-black tracking-tight text-slate-900 dark:text-white"

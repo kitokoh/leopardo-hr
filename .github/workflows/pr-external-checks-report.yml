@@ -25,6 +25,20 @@ name: PR External Checks Report
 # `workflow_run` ci-dessous, qui se produit quand les checks du depot
 # terminent — c'est-a-dire au bon moment, une fois, et sans annuler le run
 # precedent.
+#
+# Issue #9189 — le declencheur `workflow_run` ne regardait PAS d'ou venait le
+# run source : sur `main`, il partait donc pour des runs de `push`, ou il n'y a
+# aucune PR a rapporter. Mesure du 2026-11-08 (`runs?branch=main`) : **22 a 23
+# runs par commit de main** (41e4b030 : 22, 60201181 : 23, 86c2743e : 23) pour
+# un seul commentaire de synthese — soit ~20 spin-ups de runner par push. Pire :
+# le SHA d'un commit de `main` EST associe a sa PR **fusionnee**
+# (`/commits/<sha>/pulls` -> #9187 `state=closed`), donc le rapport rafraichissait
+# le commentaire d'une PR fermee que personne ne relit.
+#
+# Regle : un rapport de PR ne se produit que pour un run issu d'une
+# `pull_request`. Le filtre vit dans le `if` du job (une seule condition, plutot
+# qu'un `paths`/branche qui laisserait passer les reruns), et le script refuse
+# en plus toute PR qui n'est pas ouverte (filet pour les appels manuels).
 on:
   pull_request:
     types: [opened, reopened, ready_for_review]
@@ -55,13 +69,24 @@ jobs:
     name: Rapport d'état des checks (#7480)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: github.repository == 'kitokoh/leopardo-hr'
+    # `github.event.workflow_run.event` est vide hors `workflow_run` : la
+    # premiere branche couvre le declencheur `pull_request`, la seconde les runs
+    # de PR termines. Un run de `push` (donc sur `main`) n'a aucune PR a
+    # rapporter — il ne doit plus demarrer du tout (#9189).
+    if: >-
+      github.repository == 'kitokoh/leopardo-hr'
+      && (github.event_name == 'pull_request' || github.event.workflow_run.event == 'pull_request')
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 1
           lfs: false
+
+      - name: Tests de la garde (#9189)
+        # Zéro réseau : faux `curl`, fixtures en dur. Rouge sur le script d'avant
+        # le correctif (commentaire publié sur une PR fusionnée), vert après.
+        run: bash dev-hub/tools/tests/report-external-checks.test.sh
 
       - name: Publier / actualiser le rapport
         shell: bash

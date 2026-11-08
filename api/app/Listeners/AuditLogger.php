@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Listeners;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Events\AbsenceApproved;
 use App\Events\AbsenceRejected;
 use App\Events\AbsenceRequested;
 use App\Events\AttendanceCheckedIn;
 use App\Events\AttendanceCheckedOut;
 use App\Events\EmployeeArchived;
-use App\Events\EmployeeDeparted;
 use App\Events\EmployeeCreated;
+use App\Events\EmployeeDeparted;
 use App\Events\EmployeeRoleAssigned;
 use App\Events\PayrollValidated;
-use App\Core\Auth\Domain\Models\AuditLog;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
@@ -129,4 +129,3 @@ class AuditLogger implements ShouldQueue
         return array_keys(self::EVENT_MAP);
     }
 }
-

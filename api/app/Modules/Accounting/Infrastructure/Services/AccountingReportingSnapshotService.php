@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Infrastructure\Services;
 
 use App\Modules\Accounting\Domain\Models\AccountingReportingSnapshot;
-use App\Modules\Accounting\Infrastructure\Services\AccountingDashboardService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;

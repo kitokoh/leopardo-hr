@@ -35,7 +35,7 @@ final class CrmQuotaService
         }
 
         if ($channel->used_this_month >= $quota) {
-            throw new CrmQuotaExceededException();
+            throw new CrmQuotaExceededException;
         }
     }
 

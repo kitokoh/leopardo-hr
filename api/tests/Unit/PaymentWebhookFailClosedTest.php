@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use App\Modules\Billing\Infrastructure\Services\StripeService;
 use App\Modules\Billing\Infrastructure\Services\ChargilyService;
-use Tests\TestCase;
+use App\Modules\Billing\Infrastructure\Services\StripeService;
 use ReflectionProperty;
+use Tests\TestCase;
 
 /**
  * Issues #2614/#2615 — fail-closed des webhooks de paiement.

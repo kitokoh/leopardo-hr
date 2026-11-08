@@ -27,7 +27,7 @@ return new class extends Migration
         // more than one application process during a migration. PostgreSQL's
         // atomic IF NOT EXISTS keeps the retry idempotent without swallowing
         // unrelated schema errors.
-        $quotedSchema = '"' . str_replace('"', '""', $schema) . '"';
+        $quotedSchema = '"'.str_replace('"', '""', $schema).'"';
         DB::statement("ALTER TABLE {$quotedSchema}.\"languages\" ADD COLUMN IF NOT EXISTS \"updated_at\" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP");
         DB::statement("ALTER TABLE {$quotedSchema}.\"languages\" ADD COLUMN IF NOT EXISTS \"name_native\" VARCHAR(50) NOT NULL DEFAULT ''");
     }

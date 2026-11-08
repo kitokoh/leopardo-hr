@@ -32,8 +32,7 @@ class EdgeDaemonSyncClient
         private readonly string $edgeToken,
         private readonly int $batchSize = 100,
         private readonly int $timeoutSeconds = 30,
-    ) {
-    }
+    ) {}
 
     /**
      * Run one full push+pull cycle and record it as a SyncLog.
@@ -41,14 +40,14 @@ class EdgeDaemonSyncClient
     public function sync(): SyncLog
     {
         $log = SyncLog::create([
-            'edge_node_id'       => $this->edgeNodeId,
-            'direction'          => 'bidirectional',
-            'status'             => 'running',
-            'records_sent'       => 0,
-            'records_received'   => 0,
+            'edge_node_id' => $this->edgeNodeId,
+            'direction' => 'bidirectional',
+            'status' => 'running',
+            'records_sent' => 0,
+            'records_received' => 0,
             'conflicts_detected' => 0,
             'conflicts_resolved' => 0,
-            'started_at'         => now(),
+            'started_at' => now(),
         ]);
 
         try {
@@ -56,22 +55,22 @@ class EdgeDaemonSyncClient
             $pullResult = $this->pull();
 
             $log->update([
-                'status'           => 'success',
-                'records_sent'     => $pushResult['sent'],
+                'status' => 'success',
+                'records_sent' => $pushResult['sent'],
                 'records_received' => $pullResult['received'],
-                'summary'          => ['push' => $pushResult, 'pull' => $pullResult],
-                'finished_at'      => now(),
+                'summary' => ['push' => $pushResult, 'pull' => $pullResult],
+                'finished_at' => now(),
             ]);
         } catch (\Throwable $e) {
             Log::error('[EdgeSync Daemon] Edge -> Cloud sync failed', [
                 'edge_node_id' => $this->edgeNodeId,
-                'error'        => $e->getMessage(),
+                'error' => $e->getMessage(),
             ]);
 
             $log->update([
-                'status'        => 'failed',
+                'status' => 'failed',
                 'error_message' => $e->getMessage(),
-                'finished_at'   => now(),
+                'finished_at' => now(),
             ]);
         }
 
@@ -97,9 +96,9 @@ class EdgeDaemonSyncClient
 
         $records = $pending->map(static fn (SyncQueue $item) => [
             'entity_type' => $item->entity_type,
-            'entity_id'   => $item->entity_id,
-            'operation'   => $item->operation,
-            'payload'     => $item->payload,
+            'entity_id' => $item->entity_id,
+            'operation' => $item->operation,
+            'payload' => $item->payload,
         ])->all();
 
         $response = Http::withToken($this->edgeToken)
@@ -111,14 +110,14 @@ class EdgeDaemonSyncClient
         if ($response->failed()) {
             Log::warning('[EdgeSync Daemon] Push to Cloud failed', [
                 'edge_node_id' => $this->edgeNodeId,
-                'status'       => $response->status(),
-                'body'         => $response->body(),
+                'status' => $response->status(),
+                'body' => $response->body(),
             ]);
 
             foreach ($pending as $item) {
                 $newStatus = $item->attempt_count + 1 >= 5 ? 'failed' : 'pending';
                 $item->update([
-                    'status'        => $newStatus,
+                    'status' => $newStatus,
                     'attempt_count' => $item->attempt_count + 1,
                 ]);
             }
@@ -154,15 +153,15 @@ class EdgeDaemonSyncClient
             } else {
                 Log::warning('[EdgeSync Daemon] Record rejected by Cloud, will retry', [
                     'edge_node_id' => $this->edgeNodeId,
-                    'entity_type'  => $item->entity_type,
-                    'entity_id'    => $item->entity_id,
-                    'operation'    => $item->operation,
-                    'status'       => $itemStatus,
+                    'entity_type' => $item->entity_type,
+                    'entity_id' => $item->entity_id,
+                    'operation' => $item->operation,
+                    'status' => $itemStatus,
                 ]);
 
                 $newStatus = $item->attempt_count + 1 >= 5 ? 'failed' : 'pending';
                 $item->update([
-                    'status'        => $newStatus,
+                    'status' => $newStatus,
                     'attempt_count' => $item->attempt_count + 1,
                 ]);
             }
@@ -186,8 +185,8 @@ class EdgeDaemonSyncClient
         if ($response->failed()) {
             Log::warning('[EdgeSync Daemon] Pull from Cloud failed', [
                 'edge_node_id' => $this->edgeNodeId,
-                'status'       => $response->status(),
-                'body'         => $response->body(),
+                'status' => $response->status(),
+                'body' => $response->body(),
             ]);
 
             return ['received' => 0];

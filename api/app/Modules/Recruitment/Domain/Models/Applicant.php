@@ -26,8 +26,11 @@ use Illuminate\Support\Carbon;
  * @property string|null $rating
  * @property string|null $notes
  * @property Carbon|null $applied_at
+ * @property Carbon|null $consent_given_at
+ * @property Carbon|null $retention_until
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class Applicant extends Model
@@ -50,10 +53,14 @@ class Applicant extends Model
         'rating',
         'notes',
         'applied_at',
+        'consent_given_at',
+        'retention_until',
     ];
 
     protected $casts = [
         'applied_at' => 'datetime',
+        'consent_given_at' => 'datetime',
+        'retention_until' => 'datetime',
     ];
 
     /** @return BelongsTo<JobPosting, $this> */

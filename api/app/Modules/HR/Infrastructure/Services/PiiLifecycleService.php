@@ -29,8 +29,7 @@ final class PiiLifecycleService
 {
     public function __construct(
         private readonly PiiRegistry $registry,
-    ) {
-    }
+    ) {}
 
     public function classify(string $key): ?PiiSensitivity
     {

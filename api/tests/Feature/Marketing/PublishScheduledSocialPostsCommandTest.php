@@ -9,9 +9,9 @@ use App\Modules\Marketing\Domain\Models\SocialAccount;
 use App\Modules\Marketing\Domain\Models\SocialPost;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Testing\PendingCommand;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use Illuminate\Testing\PendingCommand;
 
 class PublishScheduledSocialPostsCommandTest extends TestCase
 {

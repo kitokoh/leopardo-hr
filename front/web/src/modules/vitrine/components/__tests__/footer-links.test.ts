@@ -6,6 +6,8 @@ describe('getFooterHref', () => {
     expect(getFooterHref(0, 0)).toBe('/#fonctionnalites')
     expect(getFooterHref(1, 8)).toBe('/contact?topic=community')
     expect(getFooterHref(1, 7)).toBe('/toolbox')
+    // LEOPARDO LIBRARY — bibliothèque numérique publique
+    expect(getFooterHref(1, 9)).toBe('/library')
   })
 
   it('links previously-orphan pages from the footer (#8075)', () => {

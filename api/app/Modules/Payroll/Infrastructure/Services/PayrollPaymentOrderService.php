@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
-use Throwable;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\PayrollPaymentOrder;
 use App\Modules\Payroll\Domain\Models\PayrollPaymentOrderItem;
@@ -14,6 +13,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 /**
  * Issue #5239 — Phase C : ordre de virement.

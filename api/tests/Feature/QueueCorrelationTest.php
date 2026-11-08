@@ -30,7 +30,7 @@ class QueueCorrelationTest extends TestCase
     {
         app()->instance('correlation_id', 'corr-api-12345');
 
-        Queue::push(new CorrelationProbeJob());
+        Queue::push(new CorrelationProbeJob);
 
         $this->assertSame('corr-api-12345', CorrelationProbeJob::$capturedCorrelation);
     }
@@ -39,7 +39,7 @@ class QueueCorrelationTest extends TestCase
     {
         app()->forgetInstance('correlation_id');
 
-        Queue::push(new CorrelationProbeJob());
+        Queue::push(new CorrelationProbeJob);
 
         $captured = CorrelationProbeJob::$capturedCorrelation;
 
@@ -54,7 +54,7 @@ class QueueCorrelationTest extends TestCase
     {
         app()->instance('correlation_id', 'corr-clear-me');
 
-        Queue::push(new CorrelationProbeJob());
+        Queue::push(new CorrelationProbeJob);
 
         $this->assertFalse(app()->bound('correlation_id'), 'Le contexte doit être nettoyé après traitement');
     }
