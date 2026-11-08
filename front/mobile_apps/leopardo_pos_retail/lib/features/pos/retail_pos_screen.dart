@@ -59,17 +59,17 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
             ),
           IconButton(
             tooltip: 'Mouvement de caisse',
-            onPressed: state.sessionOpen ? () => _openCashMovement(context) : null,
+            onPressed: state.sessionOpen ? _openCashMovement : null,
             icon: const Icon(Icons.account_balance_wallet_outlined),
           ),
           IconButton(
             tooltip: 'Remboursement',
-            onPressed: state.lastOrderId != null ? () => _openRefund(context) : null,
+            onPressed: state.lastOrderId != null ? _openRefund : null,
             icon: const Icon(Icons.undo),
           ),
           IconButton(
             tooltip: 'Cloture de caisse',
-            onPressed: state.sessionOpen ? () => _openClose(context) : null,
+            onPressed: state.sessionOpen ? _openClose : null,
             icon: const Icon(Icons.lock_outline),
           ),
         ],
@@ -135,7 +135,7 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
     );
   }
 
-  Future<void> _openCashMovement(BuildContext context) async {
+  Future<void> _openCashMovement() async {
     final movement = await showModalBottomSheet<RetailCashMovement>(
       context: context,
       isScrollControlled: true,
@@ -152,12 +152,14 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    final messenger = ScaffoldMessenger.of(context);
+
+    messenger.showSnackBar(
       SnackBar(content: Text(ok ? 'Mouvement enregistre.' : 'Mouvement refuse.')),
     );
   }
 
-  Future<void> _openRefund(BuildContext context) async {
+  Future<void> _openRefund() async {
     final refund = await showModalBottomSheet<RetailRefund>(
       context: context,
       isScrollControlled: true,
@@ -174,12 +176,14 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    final messenger = ScaffoldMessenger.of(context);
+
+    messenger.showSnackBar(
       SnackBar(content: Text(ok ? 'Remboursement enregistre.' : 'Remboursement refuse.')),
     );
   }
 
-  Future<void> _openClose(BuildContext context) async {
+  Future<void> _openClose() async {
     final state = ref.read(retailPosControllerProvider);
     final session = state.session;
 
@@ -206,8 +210,10 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
       return;
     }
 
+    final messenger = ScaffoldMessenger.of(context);
+
     if (closed == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         const SnackBar(content: Text('Cloture refusee.')),
       );
 
@@ -219,7 +225,7 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
       expectedCashMinor: closed.expectedCashMinor,
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    messenger.showSnackBar(
       SnackBar(
         content: Text(
           variance == 0

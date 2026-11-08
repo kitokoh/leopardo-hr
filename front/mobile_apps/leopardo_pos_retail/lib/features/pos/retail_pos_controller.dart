@@ -102,10 +102,14 @@ class RetailPosState {
 }
 
 /// Controleur de la caisse : charge le catalogue, gere le panier, encaisse.
-class RetailPosController extends StateNotifier<RetailPosState> {
-  RetailPosController(this._api) : super(const RetailPosState());
+///
+/// Riverpod 3 : `Notifier` remplace `StateNotifier` (retire de l'API publique
+/// en 3.x). Le comportement est identique, l'API est celle du framework.
+class RetailPosController extends Notifier<RetailPosState> {
+  RetailApiClient get _api => ref.read(retailApiClientProvider);
 
-  final RetailApiClient _api;
+  @override
+  RetailPosState build() => const RetailPosState();
 
   /// Charge catalogue + session locale (reseau, puis cache).
   Future<void> bootstrap({required int locationId}) async {
@@ -378,6 +382,4 @@ class RetailPosController extends StateNotifier<RetailPosState> {
 }
 
 final retailPosControllerProvider =
-    StateNotifierProvider<RetailPosController, RetailPosState>((ref) {
-  return RetailPosController(ref.watch(retailApiClientProvider));
-});
+    NotifierProvider<RetailPosController, RetailPosState>(RetailPosController.new);
