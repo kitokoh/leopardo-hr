@@ -28,4 +28,5 @@ ModuleRoutes::tenantModule('library', function (): void {
     Route::post('/resources/{resource}/publish', [LibraryResourceController::class, 'publish'])->whereNumber('resource');
     Route::post('/resources/{resource}/unpublish', [LibraryResourceController::class, 'unpublish'])->whereNumber('resource');
     Route::post('/resources/{resource}/archive', [LibraryResourceController::class, 'archive'])->whereNumber('resource');
+    Route::post('/resources/{resource}/file', [LibraryResourceController::class, 'uploadFile'])->whereNumber('resource');
 });

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Library\Providers;
 
+use App\Modules\Library\Domain\Contracts\LibraryFileStorage;
+use App\Modules\Library\Infrastructure\Storage\ObjectStorageLibraryFiles;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -17,12 +19,20 @@ use Illuminate\Support\ServiceProvider;
  * Le module est volontairement autonome : il ne dépend d'aucun module métier
  * (RH, paiement, tenant) au premier périmètre. L'isolation tenant est assurée
  * par le trait `BelongsToCompany` (scope global) et la policy.
+ *
+ * Stockage des fichiers : le module ne dépend que du contrat
+ * `LibraryFileStorage` ; l'adaptateur concret (S3-compatible ou disque local
+ * privé) est choisi par configuration (`library.storage_disk`).
  */
 class LibraryServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        // Aucun service à binder au premier périmètre.
+        $this->app->singleton(LibraryFileStorage::class, function (): ObjectStorageLibraryFiles {
+            return new ObjectStorageLibraryFiles(
+                (string) config('library.storage_disk', 'library'),
+            );
+        });
     }
 
     public function boot(): void

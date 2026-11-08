@@ -9,9 +9,12 @@ use App\Modules\Library\Domain\Enums\LibraryResourceStatus;
 use App\Modules\Library\Domain\Models\LibraryCategory;
 use App\Modules\Library\Domain\Models\LibraryResource;
 use App\Modules\Library\Domain\Support\LibraryAccessPolicy;
+use App\Modules\Library\Infrastructure\Services\LibraryFileService;
 use App\Modules\Library\Infrastructure\Services\LibraryPublicCache;
+use App\Modules\Library\Infrastructure\Services\LibrarySearchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Bibliothèque numérique PUBLIQUE (Leopardo Library).
@@ -20,6 +23,7 @@ use Illuminate\Http\Request;
  *   GET /public/library                       → catalogue public
  *   GET /public/library/{slug}                → fiche publique
  *   GET /public/library/{slug}/download       → URL temporaire signée (ou 403)
+ *   GET /public/library/{slug}/file           → flux protégé (disque local)
  *
  * DTO public STRICT — jamais de modèles internes : seuls titre, slug,
  * description, auteur, catégorie, langue, type, modèle d'accès, licence et
@@ -35,6 +39,11 @@ use Illuminate\Http\Request;
  */
 class LibraryPublicController extends Controller
 {
+    public function __construct(
+        private readonly LibraryFileService $files,
+        private readonly LibrarySearchService $search,
+    ) {}
+
     /**
      * GET /public/library — catalogue public (catégories + ressources publiées).
      * Filtres optionnels : `?category=`, `?language=`, `?access=`, `?q=`.
@@ -44,38 +53,23 @@ class LibraryPublicController extends Controller
         /** @var array<string, mixed> $snapshot */
         $snapshot = LibraryPublicCache::remember(fn (): array => $this->buildSnapshot());
 
-        $category = trim((string) $request->query('category', ''));
-        $language = trim((string) $request->query('language', ''));
-        $access = trim((string) $request->query('access', ''));
-        $query = trim((string) $request->query('q', ''));
+        $filters = [
+            'query' => trim((string) $request->query('q', '')),
+            'category' => trim((string) $request->query('category', '')),
+            'language' => trim((string) $request->query('language', '')),
+            'access' => trim((string) $request->query('access', '')),
+            'type' => trim((string) $request->query('type', '')),
+            'free_only' => $request->boolean('free_only'),
+        ];
 
-        $resources = $snapshot['resources'];
-
-        if ($category !== '') {
-            $resources = array_values(array_filter(
-                $resources,
-                fn (array $item): bool => ($item['category']['slug'] ?? null) === $category
-            ));
-        }
-        if ($language !== '') {
-            $resources = array_values(array_filter(
-                $resources,
-                fn (array $item): bool => $item['language'] === $language
-            ));
-        }
-        if ($access !== '') {
-            $resources = array_values(array_filter(
-                $resources,
-                fn (array $item): bool => $item['access_model'] === $access
-            ));
-        }
-        if ($query !== '') {
-            $needle = mb_strtolower($query);
-            $resources = array_values(array_filter(
-                $resources,
-                fn (array $item): bool => str_contains(mb_strtolower($item['title'].' '.$item['author']), $needle)
-            ));
-        }
+        // Recherche PLEIN TEXTE côté serveur (titre/description/extrait/éditeur/
+        // détenteur des droits) + filtres, sur le catalogue public uniquement.
+        // Le snapshot en cache ne sert qu'aux catégories : la recherche doit
+        // rester exacte et ne pas dépendre d'un snapshot périmé.
+        $resources = array_map(
+            fn (LibraryResource $resource): array => $this->resourcePayload($resource),
+            $this->search->search($filters),
+        );
 
         return response()->json([
             'data' => [
@@ -91,15 +85,7 @@ class LibraryPublicController extends Controller
      */
     public function show(string $slug): JsonResponse
     {
-        $resource = LibraryResource::query()
-            ->whereNull('company_id')
-            ->where('slug', $slug)
-            ->where('status', LibraryResourceStatus::Published->value)
-            ->first();
-
-        if (! $resource instanceof LibraryResource) {
-            abort(404);
-        }
+        $resource = $this->findPublished($slug);
 
         $policy = new LibraryAccessPolicy;
 
@@ -108,7 +94,14 @@ class LibraryPublicController extends Controller
                 ...$this->resourcePayload($resource),
                 'can_read' => $policy->canRead($resource),
                 'can_download' => $policy->canDownload($resource),
-                'related' => $this->relatedPayload($resource),
+                'related' => array_map(
+                    fn (LibraryResource $item): array => [
+                        'slug' => $item->slug,
+                        'title' => $item->title,
+                        'access_model' => $item->access_model->value,
+                    ],
+                    $this->search->related($resource),
+                ),
             ],
         ]);
     }
@@ -117,20 +110,95 @@ class LibraryPublicController extends Controller
      * GET /public/library/{slug}/download — URL temporaire signée.
      *
      * ⚠️ GARDE CÔTÉ SERVEUR : le droit de téléchargement est vérifié ici. Le
-     * fichier n'est JAMAIS exposé par une URL publique permanente. Si le
-     * stockage objet n'est pas configuré, on renvoie 501 plutôt que de servir
+     * fichier n'est JAMAIS exposé par une URL publique permanente.
+     *
+     * Deux voies selon le driver de stockage :
+     *  - S3-compatible → URL présignée native (TTL `library.download_url_ttl`) ;
+     *  - disque local privé → URL interne signée HMAC vers `/file`, servie par
+     *    un flux protégé (le fichier n'est jamais dans le webroot).
+     *
+     * Si le stockage n'est pas configuré, on renvoie 501 plutôt que de servir
      * un faux fichier.
      */
     public function download(string $slug): JsonResponse
     {
-        $resource = LibraryResource::query()
-            ->whereNull('company_id')
-            ->where('slug', $slug)
-            ->where('status', LibraryResourceStatus::Published->value)
-            ->first();
+        $resource = $this->findPublished($slug);
 
-        if (! $resource instanceof LibraryResource) {
-            abort(404);
+        $policy = new LibraryAccessPolicy;
+
+        if (! $policy->canDownload($resource)) {
+            return response()->json(
+                ['error' => 'download_forbidden', 'reason' => $resource->access_model->value],
+                403
+            );
+        }
+
+        if ($resource->file_key === null || ! $this->files->isConfigured()) {
+            return response()->json(
+                [
+                    'error' => 'storage_not_configured',
+                    'message' => __('library.storage_not_configured'),
+                ],
+                501
+            );
+        }
+
+        $ttl = (int) config('library.download_url_ttl', 300);
+        $resolved = $this->files->resolve($resource, $ttl);
+
+        // Voie 1 : URL présignée native du stockage objet.
+        if (is_string($resolved['url']) && $resolved['url'] !== '') {
+            return response()->json([
+                'data' => [
+                    'url' => $resolved['url'],
+                    'expires_at' => now()->addSeconds($ttl)->toIso8601String(),
+                    'format' => $resolved['format'],
+                    'size' => $resolved['size'],
+                ],
+            ]);
+        }
+
+        // Voie 2 : disque local privé → URL interne signée (HMAC).
+        $expiresAt = now()->addSeconds($ttl);
+        $signature = hash_hmac(
+            'sha256',
+            $resource->slug.'|'.$expiresAt->timestamp,
+            (string) config('app.key')
+        );
+
+        return response()->json([
+            'data' => [
+                'url' => '/public/library/'.$resource->slug.'/file?expires='.$expiresAt->timestamp.'&signature='.$signature,
+                'expires_at' => $expiresAt->toIso8601String(),
+                'format' => $resolved['format'],
+                'size' => $resolved['size'],
+            ],
+        ]);
+    }
+
+    /**
+     * GET /public/library/{slug}/file — flux protégé du fichier.
+     *
+     * Réservé au driver local (le stockage objet sert directement l'URL
+     * présignée). Double garde : signature HMAC valide ET non expirée, puis
+     * `LibraryAccessPolicy` revérifiée. Le fichier est streamé depuis un disque
+     * hors webroot — jamais d'URL publique permanente.
+     */
+    public function file(Request $request, string $slug): StreamedResponse|JsonResponse
+    {
+        $resource = $this->findPublished($slug);
+
+        $expires = (int) $request->query('expires', 0);
+        $signature = (string) $request->query('signature', '');
+
+        $expected = hash_hmac(
+            'sha256',
+            $resource->slug.'|'.$expires,
+            (string) config('app.key')
+        );
+
+        if ($signature === '' || ! hash_equals($expected, $signature) || $expires < now()->timestamp) {
+            return response()->json(['error' => 'invalid_or_expired_signature'], 403);
         }
 
         $policy = new LibraryAccessPolicy;
@@ -142,7 +210,10 @@ class LibraryPublicController extends Controller
             );
         }
 
-        if ($resource->file_key === null) {
+        $resolved = $this->files->resolve($resource, 60);
+        $stream = $resolved['stream'];
+
+        if (! is_resource($stream)) {
             return response()->json(
                 [
                     'error' => 'storage_not_configured',
@@ -152,18 +223,46 @@ class LibraryPublicController extends Controller
             );
         }
 
-        // URL temporaire signée (TTL `library.download_url_ttl`).
-        $ttl = (int) config('library.download_url_ttl', 300);
-        $expiresAt = now()->addSeconds($ttl);
-        $signature = hash_hmac('sha256', $resource->slug.'|'.$expiresAt->timestamp, (string) config('app.key'));
+        $format = (string) ($resolved['format'] ?? 'bin');
+        $filename = $resource->slug.'.'.$format;
 
-        return response()->json([
-            'data' => [
-                'url' => '/public/library/'.$resource->slug.'/file?expires='.$expiresAt->timestamp.'&signature='.$signature,
-                'expires_at' => $expiresAt->toIso8601String(),
-                'format' => $resource->file_format,
-            ],
+        return response()->streamDownload(function () use ($stream): void {
+            fpassthru($stream);
+            fclose($stream);
+        }, $filename, [
+            'Content-Type' => $this->mimeFor($format),
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, no-store',
         ]);
+    }
+
+    /**
+     * Résout une ressource publiée du catalogue public, ou 404.
+     */
+    private function findPublished(string $slug): LibraryResource
+    {
+        $resource = LibraryResource::query()
+            ->whereNull('company_id')
+            ->where('slug', $slug)
+            ->where('status', LibraryResourceStatus::Published->value)
+            ->first();
+
+        if (! $resource instanceof LibraryResource) {
+            abort(404);
+        }
+
+        return $resource;
+    }
+
+    private function mimeFor(string $format): string
+    {
+        return match ($format) {
+            'pdf' => 'application/pdf',
+            'epub' => 'application/epub+zip',
+            'txt' => 'text/plain; charset=UTF-8',
+            'html' => 'text/html; charset=UTF-8',
+            default => 'application/octet-stream',
+        };
     }
 
     /**
@@ -232,29 +331,4 @@ class LibraryPublicController extends Controller
         ];
     }
 
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private function relatedPayload(LibraryResource $resource): array
-    {
-        if ($resource->category_id === null) {
-            return [];
-        }
-
-        return LibraryResource::query()
-            ->whereNull('company_id')
-            ->where('status', LibraryResourceStatus::Published->value)
-            ->where('category_id', $resource->category_id)
-            ->where('id', '!=', $resource->id)
-            ->orderBy('title')
-            ->limit(3)
-            ->get()
-            ->map(fn (LibraryResource $item): array => [
-                'slug' => $item->slug,
-                'title' => $item->title,
-                'access_model' => $item->access_model->value,
-            ])
-            ->values()
-            ->all();
-    }
 }

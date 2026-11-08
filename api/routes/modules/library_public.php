@@ -34,6 +34,8 @@ Route::middleware(['throttle:shop-public'])
             ->name('library.public.show');
         Route::get('/{slug}/download', [LibraryPublicController::class, 'download'])
             ->name('library.public.download');
+        Route::get('/{slug}/file', [LibraryPublicController::class, 'file'])
+            ->name('library.public.file');
         Route::post('/{slug}/reports', [LibraryReportController::class, 'store'])
             ->name('library.public.reports.store');
     });
