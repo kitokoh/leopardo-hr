@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Listeners;
 
-use App\Core\Auth\Domain\Models\Employee;
 use App\Events\CrmTaskOverdue;
 use App\Modules\Notification\Domain\Models\Notification;
 

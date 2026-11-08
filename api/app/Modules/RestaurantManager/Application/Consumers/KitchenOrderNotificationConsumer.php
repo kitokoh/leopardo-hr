@@ -24,8 +24,7 @@ final class KitchenOrderNotificationConsumer implements RestaurantOutboxConsumer
 {
     public function __construct(
         private readonly CommunicationServiceInterface $communication,
-    ) {
-    }
+    ) {}
 
     public function supports(string $eventType): bool
     {
@@ -65,6 +64,4 @@ final class KitchenOrderNotificationConsumer implements RestaurantOutboxConsumer
             ], ['app', 'push']);
         }
     }
-
-
 }

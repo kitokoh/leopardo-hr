@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use App\Modules\Planning\Domain\Models\Absence;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Planning\Domain\Models\Absence;
 
 class AbsencePolicy
 {
@@ -47,4 +47,3 @@ class AbsencePolicy
         return $actor->id === $absence->employee_id && $absence->status === 'pending';
     }
 }
-

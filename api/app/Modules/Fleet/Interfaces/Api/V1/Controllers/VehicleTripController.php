@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Fleet\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\VehicleTripResource;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Fleet\Domain\Models\VehicleTrip;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -47,4 +47,3 @@ class VehicleTripController extends Controller
         return (new VehicleTripResource($trip))->response();
     }
 }
-

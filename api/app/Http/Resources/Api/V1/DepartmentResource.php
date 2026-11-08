@@ -30,4 +30,3 @@ class DepartmentResource extends JsonResource
         ];
     }
 }
-

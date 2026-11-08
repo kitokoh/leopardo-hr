@@ -27,4 +27,3 @@ class SalaryStructureResource extends JsonResource
         ];
     }
 }
-

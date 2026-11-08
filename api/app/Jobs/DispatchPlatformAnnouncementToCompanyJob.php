@@ -119,5 +119,4 @@ class DispatchPlatformAnnouncementToCompanyJob implements ShouldQueue, TenantSco
             'exception' => $e->getMessage(),
         ]);
     }
-
 }

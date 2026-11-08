@@ -6,8 +6,8 @@ namespace Tests\Feature\Auth;
 
 use App\Core\Auth\Domain\Exceptions\TwoFactorException;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Auth\Infrastructure\Services\TwoFactorAuthService;
 use App\Core\Auth\Infrastructure\Services\TotpService;
+use App\Core\Auth\Infrastructure\Services\TwoFactorAuthService;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanySetting;
 use Illuminate\Support\Facades\Cache;

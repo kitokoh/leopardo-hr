@@ -9,7 +9,6 @@ use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\UpdateRestaurantCancellationPolicyRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 /**
  * RESTO-603 (#6208) — Politique d'annulation configurable par branche.

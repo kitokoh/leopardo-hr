@@ -28,4 +28,3 @@ class SubscriptionResource extends JsonResource
         ];
     }
 }
-

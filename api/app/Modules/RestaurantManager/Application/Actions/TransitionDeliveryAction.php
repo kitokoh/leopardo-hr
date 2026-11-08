@@ -35,8 +35,7 @@ final class TransitionDeliveryAction
     public function __construct(
         private readonly DeliveryStateMachine $stateMachine,
         private readonly RestaurantOutboxPublisher $outbox,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{rider_id?: int|null, delivered_to_contact?: string|null}  $data

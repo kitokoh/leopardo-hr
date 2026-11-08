@@ -167,6 +167,7 @@ class QueueObservabilityApiTest extends TestCase
             'email' => fake()->unique()->safeEmail(),
         ]);
         $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
+
         return $superAdmin;
     }
 

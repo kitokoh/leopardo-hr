@@ -23,7 +23,7 @@ interface AutomationActionContract
     /**
      * @param  array<string, mixed>  $config
      * @param  array<string, mixed>  $context
-     * @return array<string, mixed>  description de l'effet simulé
+     * @return array<string, mixed> description de l'effet simulé
      */
     public function simulate(array $config, array $context): array;
 }

@@ -127,7 +127,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read Site|null $site
  * @property-read Collection<int, EmployeeDocument>|null $employeeDocuments
  *
- * @mixin Builder
+ * @mixin Builder<static>
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static> query()
  * @method static static create(array<string, mixed> $attributes = [])
@@ -259,7 +259,7 @@ class Employee extends Authenticatable implements HasApiTokensContract
 
     public function getAuthPassword(): string
     {
-        return $this->password_hash;
+        return (string) $this->password_hash;
     }
 
     public function isManager(): bool
@@ -701,6 +701,7 @@ class Employee extends Authenticatable implements HasApiTokensContract
         return $this->belongsTo(Employee::class, 'manager_id');
     }
 
+    /** @return HasOne<OnboardingProgress, $this> */
     public function onboardingProgress(): HasOne
     {
         return $this->hasOne(OnboardingProgress::class);
@@ -772,6 +773,7 @@ class Employee extends Authenticatable implements HasApiTokensContract
             ->where('email', $this->email)
             ->first();
 
+        /** @var object{employee_id: int|string} $existing */
         if ($existing && (int) $existing->employee_id !== (int) $this->id) {
             return;
         }
@@ -809,6 +811,7 @@ class Employee extends Authenticatable implements HasApiTokensContract
             return Schema::hasTable('user_lookups');
         }
 
+        /** @var object{table_name: string|null}|null $table */
         $table = DB::selectOne("select to_regclass('public.user_lookups') as table_name");
 
         return $table?->table_name !== null;

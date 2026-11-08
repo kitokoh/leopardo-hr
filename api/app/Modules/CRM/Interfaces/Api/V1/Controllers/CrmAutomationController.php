@@ -173,7 +173,7 @@ class CrmAutomationController extends Controller
     {
         $model = CrmAutomation::query()->where('id', $automationId)->first();
         if ($model === null) {
-            throw new CrmAutomationNotFoundException();
+            throw new CrmAutomationNotFoundException;
         }
 
         return $model;

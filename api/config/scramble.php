@@ -2,7 +2,6 @@
 
 use Dedoc\Scramble\Scramble;
 use Illuminate\Routing\Route;
-use Illuminate\Support\Str;
 
 return [
     /*

@@ -16,8 +16,7 @@ final class SetPlatformUserActiveAction
 {
     public function __construct(
         private readonly PlatformUserDirectoryService $directory,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{status: 'not_found'}|array{status: 'self_disable'}|array{status: 'updated', row: \stdClass}

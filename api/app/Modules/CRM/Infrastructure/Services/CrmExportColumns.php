@@ -16,7 +16,7 @@ use App\Modules\CRM\Domain\Enums\CrmExportEntity;
 final class CrmExportColumns
 {
     /**
-     * @return array<string, array<string, string>>  entity → {colonnes autorisées → label}
+     * @return array<string, array<string, string>> entity → {colonnes autorisées → label}
      */
     public static function manifest(): array
     {

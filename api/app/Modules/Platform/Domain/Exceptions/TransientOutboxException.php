@@ -11,6 +11,4 @@ namespace App\Modules\Platform\Domain\Exceptions;
  * indisponible, timeout…). Le dispatcher re-tente avec backoff exponentiel,
  * borné par MAX_ATTEMPTS (au-delà : dead-letter).
  */
-final class TransientOutboxException extends \RuntimeException
-{
-}
+final class TransientOutboxException extends \RuntimeException {}

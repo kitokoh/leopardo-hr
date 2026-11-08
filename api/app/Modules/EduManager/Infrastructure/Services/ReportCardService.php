@@ -49,11 +49,11 @@ final class ReportCardService
     /**
      * Génère (ou régénère) le bulletin draft d'un élève pour une période.
      *
-     * @throws InvalidArgumentException  libellé de période vide / période
-     *                                   inversée (start >= end) / bulletin
-     *                                   existant non-draft (immuable)
-     * @throws ModelNotFoundException    année scolaire ou classe absente du
-     *                                   tenant de l'élève
+     * @throws InvalidArgumentException libellé de période vide / période
+     *                                  inversée (start >= end) / bulletin
+     *                                  existant non-draft (immuable)
+     * @throws ModelNotFoundException année scolaire ou classe absente du
+     *                                tenant de l'élève
      */
     public function generate(
         EduStudent $student,
@@ -148,7 +148,7 @@ final class ReportCardService
     /**
      * Valide un brouillon : draft → validated (traçabilité acteur/date).
      *
-     * @throws InvalidArgumentException  le bulletin n'est pas un brouillon
+     * @throws InvalidArgumentException le bulletin n'est pas un brouillon
      */
     public function validate(EduReportCard $card, int $actorId): void
     {
@@ -173,7 +173,7 @@ final class ReportCardService
      * ensemble ; un bulletin publié est immuable (toute régénération est
      * refusée par `generate()`).
      *
-     * @throws InvalidArgumentException  le bulletin n'est pas validé
+     * @throws InvalidArgumentException le bulletin n'est pas validé
      */
     public function publish(EduReportCard $card, int $actorId): void
     {

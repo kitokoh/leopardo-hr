@@ -46,7 +46,6 @@ class EdgeLicense extends Model
     // licence (issueLicense) passe par forceFill — voir EdgeLicenseService.
     use BelongsToCompany;
     use HasFactory;
-
     use HasUuids;
 
     protected $table = 'edge_licenses';

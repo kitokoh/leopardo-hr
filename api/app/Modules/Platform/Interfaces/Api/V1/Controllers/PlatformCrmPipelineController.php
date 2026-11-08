@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
+use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 
@@ -89,4 +89,3 @@ class PlatformCrmPipelineController extends Controller
         return $diff > 0 ? (int) $diff : 0;
     }
 }
-

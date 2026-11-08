@@ -27,4 +27,3 @@ class CabinetShareResource extends JsonResource
         ];
     }
 }
-

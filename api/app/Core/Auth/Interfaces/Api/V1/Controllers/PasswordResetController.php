@@ -41,6 +41,7 @@ class PasswordResetController
             'email' => ['required', 'email', 'max:255'],
         ]);
 
+        /** @var array{email: string} $validated */
         $email = strtolower(trim($validated['email']));
 
         [$employee] = $this->resolveEmployeeAnywhere($email);
@@ -97,6 +98,7 @@ class PasswordResetController
             'password' => PasswordPolicy::required(), // #7995 — politique unique
         ]);
 
+        /** @var array{email: string, token: string, password: string} $validated */
         $email = strtolower(trim($validated['email']));
         $tokenHash = hash('sha256', $validated['token']);
 

@@ -26,6 +26,5 @@ final class DeliveryAppOrderPayload
         public readonly ?string $customerPhone = null,
         public readonly ?string $customerAddress = null,
         public readonly ?string $note = null,
-    ) {
-    }
+    ) {}
 }

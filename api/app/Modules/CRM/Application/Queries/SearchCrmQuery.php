@@ -55,7 +55,7 @@ class SearchCrmQuery
         $status = $input['status'] ?? null;
         $ownerId = isset($input['owner_id']) ? (int) $input['owner_id'] : null;
 
-        $rows = new Collection();
+        $rows = new Collection;
 
         if ($type === null || $type === 'account') {
             foreach ($this->searchAccounts($pattern, $status, $ownerId) as $account) {

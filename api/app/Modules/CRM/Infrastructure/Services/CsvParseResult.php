@@ -23,6 +23,5 @@ final readonly class CsvParseResult
         public array $errors,
         public int $validCount,
         public int $errorCount,
-    ) {
-    }
+    ) {}
 }

@@ -88,7 +88,7 @@ return new class extends Migration
                 DB::statement(
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'hospitality_reservations_dates_check') "
                     ."THEN ALTER TABLE \"{$schema}\".\"hospitality_reservations\" ADD CONSTRAINT hospitality_reservations_dates_check "
-                    ."CHECK (check_out > check_in); END IF; END $$"
+                    .'CHECK (check_out > check_in); END IF; END $$'
                 );
             }
         }

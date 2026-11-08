@@ -28,4 +28,3 @@ class SalaryComponentResource extends JsonResource
         ];
     }
 }
-

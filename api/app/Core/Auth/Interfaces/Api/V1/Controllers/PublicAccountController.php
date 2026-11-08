@@ -105,6 +105,7 @@ class PublicAccountController extends Controller
             'confirmation' => ['required', 'string'],
         ]);
 
+        /** @var array{password: string, confirmation: string} $validated */
         /** @var User $user */
         $user = $request->user('user_api');
 

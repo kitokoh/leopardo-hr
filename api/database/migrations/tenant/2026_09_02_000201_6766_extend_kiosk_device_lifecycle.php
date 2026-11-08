@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * BIO-005 (#6766) + BIO-006 (#6767) — cycle de vie & matrice de méthodes des

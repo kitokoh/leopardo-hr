@@ -45,6 +45,7 @@ class EmployeeImportRaceTest extends TestCase
             'manager_role' => 'principal',
             'status' => 'active',
         ])->save();
+
         return $sensitiveEmployee1;
     }
 

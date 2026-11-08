@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
 use Illuminate\Support\Facades\Artisan;
 use Tests\Support\CreatesMvpSchema;
@@ -81,4 +81,3 @@ class BackfillNotificationPreferencesCommandTest extends TestCase
         $this->assertSame(1, NotificationPreference::query()->where('employee_id', $employee->id)->count());
     }
 }
-

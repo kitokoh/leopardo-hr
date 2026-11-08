@@ -35,4 +35,3 @@ class PositionPolicy
             && $actor->hasManagerRole('principal', 'rh');
     }
 }
-

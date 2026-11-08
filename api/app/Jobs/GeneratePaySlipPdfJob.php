@@ -183,5 +183,4 @@ class GeneratePaySlipPdfJob implements ShouldQueue, TenantScopedJob
             'exception' => $e->getMessage(),
         ]);
     }
-
 }

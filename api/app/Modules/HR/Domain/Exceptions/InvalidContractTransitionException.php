@@ -12,6 +12,4 @@ use RuntimeException;
  *
  * Traduite en 422 par le controller, jamais en 500.
  */
-final class InvalidContractTransitionException extends RuntimeException
-{
-}
+final class InvalidContractTransitionException extends RuntimeException {}

@@ -6,9 +6,9 @@ namespace App\Modules\FuelStation\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
-use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
+use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Modules\FuelStation\Domain\Models\FuelShift;
 use App\Modules\FuelStation\Infrastructure\Services\FuelShiftPresenceService;
 use App\Modules\FuelStation\Infrastructure\Services\FuelShiftService;
@@ -140,8 +140,6 @@ class FuelPresenceController extends Controller
             ],
         ]);
     }
-
-
 
     private function assertSolutionActive(): void
     {

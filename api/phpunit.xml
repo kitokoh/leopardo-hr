@@ -713,7 +713,7 @@
             <file>tests/Feature/FuelStation/FuelStationLot6Test.php</file>
             <file>tests/Feature/FuelStation/FuelStationMigrationTest.php</file>
             <file>tests/Feature/FuelStation/FuelStationReferentialTest.php</file>
-            <file>tests/Feature/FuelStation/MeterOcrFeatureTest.php</file>
+            <file>tests/Feature/FuelStation/FuelMeterOcrFeatureTest.php</file>
             <file>tests/Feature/FuelStation/SolutionManifestTest.php</file>
         </testsuite>
         <testsuite name="Fundraising">

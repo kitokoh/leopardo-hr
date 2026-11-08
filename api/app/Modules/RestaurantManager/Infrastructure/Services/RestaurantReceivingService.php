@@ -25,8 +25,7 @@ final class RestaurantReceivingService
 {
     public function __construct(
         private readonly RestaurantStockMovementService $stockMovements,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array<int, array{ingredient_id: int, quantity: string, unit_price_minor: int}>  $items

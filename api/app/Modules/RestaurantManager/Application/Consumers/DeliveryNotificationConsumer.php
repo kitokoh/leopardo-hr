@@ -23,8 +23,7 @@ final class DeliveryNotificationConsumer implements RestaurantOutboxConsumer
 {
     public function __construct(
         private readonly CommunicationServiceInterface $communication,
-    ) {
-    }
+    ) {}
 
     public function supports(string $eventType): bool
     {

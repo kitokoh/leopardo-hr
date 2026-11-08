@@ -5118,7 +5118,7 @@ parameters:
 			message: '#^Call to an undefined static method Illuminate\\Support\\Facades\\Queue\:\:pushed\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
-			path: tests/Feature/FuelStation/MeterOcrFeatureTest.php
+			path: tests/Feature/FuelStation/FuelMeterOcrFeatureTest.php
 
 		-
 			message: '#^Offset ''currency'' might not exist on array\<mixed\>\|null\.$#'

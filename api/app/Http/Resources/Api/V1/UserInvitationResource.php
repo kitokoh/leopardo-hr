@@ -44,4 +44,3 @@ class UserInvitationResource extends JsonResource
         return 'pending';
     }
 }
-
