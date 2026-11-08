@@ -7,8 +7,10 @@ namespace Tests\Feature\Retail;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\EmployeeResourceAssignment;
+use App\Modules\Retail\Domain\Enums\RetailPosSessionStatus;
 use App\Modules\Retail\Domain\Models\RetailCashMovement;
 use App\Modules\Retail\Domain\Models\RetailPosRefund;
+use App\Modules\Retail\Domain\Models\RetailPosSession;
 use App\Modules\Retail\Domain\Models\RetailStockLevel;
 use App\Modules\Retail\Domain\Permissions\RetailPermissions;
 use Laravel\Sanctum\Sanctum;
@@ -134,6 +136,28 @@ class RetailPosRbacAndReportsTest extends TestCase
             ->json('data');
     }
 
+    /**
+     * Reutilise la session `open` de l'emplacement si elle existe, sinon en
+     * ouvre une. La contrainte d'unicite (tenant, emplacement, statut=open)
+     * interdit deux sessions ouvertes simultanement.
+     *
+     * @return array<string, mixed>
+     */
+    private function openSessionFor(Employee $actor, int $locationId, int $openingCashMinor = 0): array
+    {
+        $existing = RetailPosSession::query()
+            ->where('company_id', $this->company->id)
+            ->where('location_id', $locationId)
+            ->where('status', RetailPosSessionStatus::Open)
+            ->first();
+
+        if ($existing !== null) {
+            return $existing->toArray();
+        }
+
+        return $this->openSession($actor, $locationId, $openingCashMinor);
+    }
+
     private function seedStock(Employee $actor, int $locationId, int $productId, float $quantity): void
     {
         $this->actingAsUser($actor);
@@ -162,7 +186,9 @@ class RetailPosRbacAndReportsTest extends TestCase
      */
     private function completedOrder(Employee $actor, int $locationId, int $productId, float $quantity = 2): array
     {
-        $session = $this->openSession($actor, $locationId);
+        // Une seule session `open` par (tenant, emplacement) : on reutilise la
+        // session deja ouverte si elle existe, sinon on en ouvre une.
+        $session = $this->openSessionFor($actor, $locationId);
 
         $order = $this->postJson('/api/v1/retail/pos/orders', [
             'pos_session_id' => (int) $session['id'],
@@ -386,7 +412,7 @@ class RetailPosRbacAndReportsTest extends TestCase
         ])->assertStatus(422);
 
         // Commande brouillon → 422 (service).
-        $session = $this->openSession($this->principal, (int) $location['id']);
+        $session = $this->openSessionFor($this->principal, (int) $location['id']);
         $draft = $this->postJson('/api/v1/retail/pos/orders', [
             'pos_session_id' => (int) $session['id'],
             'lines' => [['product_id' => (int) $product['id'], 'quantity' => 1]],
