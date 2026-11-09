@@ -6,31 +6,53 @@ import type { ToolCategoryId, ToolDefinition } from '../types';
  *
  * Fonctions PURES (aucun accès réseau, aucun état) : elles sont testées
  * directement et utilisées par les routes `/toolbox` et `/toolbox/[slug]`.
+ *
+ * Deux notions distinctes (décision #9157) :
+ * - **résolution** (`getTool`) : un slug connu est toujours résolu, même si
+ *   l'outil est désactivé — un lien partagé ne casse jamais ;
+ * - **catalogue** (`getCatalogTools`, `searchTools`, `getAllToolSlugs`) : seuls
+ *   les outils `enabled` (défaut `true`) sont exposés, donc indexés.
  */
 
-/** Retourne la définition d'un outil, ou `null` si le slug est inconnu. */
+/** Vrai si l'outil est actif dans le catalogue public (défaut : actif). */
+export function isToolEnabled(tool: ToolDefinition): boolean {
+  return tool.enabled !== false;
+}
+
+/** Outils actifs du catalogue, dans l'ordre de déclaration. */
+export function getCatalogTools(): ToolDefinition[] {
+  return TOOLS.filter(isToolEnabled);
+}
+
+/**
+ * Retourne la définition d'un outil, ou `null` si le slug est inconnu.
+ *
+ * Résolution **indépendante** de `enabled` : un outil désactivé reste
+ * accessible par son URL directe (pas de 404 sur un lien partagé).
+ */
 export function getTool(slug: string): ToolDefinition | null {
   return TOOLS.find((tool) => tool.slug === slug) ?? null;
 }
 
-/** Tous les slugs (utilisé par `generateStaticParams`). */
+/** Slugs des outils ACTIFS (utilisé par `generateStaticParams` et le sitemap). */
 export function getAllToolSlugs(): string[] {
-  return TOOLS.map((tool) => tool.slug);
+  return getCatalogTools().map((tool) => tool.slug);
 }
 
-/** Outils d'une catégorie, dans l'ordre du catalogue. */
+/** Outils actifs d'une catégorie, dans l'ordre du catalogue. */
 export function getToolsByCategory(category: ToolCategoryId): ToolDefinition[] {
-  return TOOLS.filter((tool) => tool.category === category);
+  return getCatalogTools().filter((tool) => tool.category === category);
 }
 
 /**
  * Recherche plein-texte simple sur le slug et les mots-clés (insensible à la
- * casse et aux accents). Une requête vide retourne tout le catalogue.
+ * casse et aux accents). Une requête vide retourne tout le catalogue actif.
  */
 export function searchTools(query: string): ToolDefinition[] {
   const needle = normalize(query);
-  if (needle === '') return [...TOOLS];
-  return TOOLS.filter((tool) => {
+  const catalog = getCatalogTools();
+  if (needle === '') return catalog;
+  return catalog.filter((tool) => {
     const haystack = [tool.slug, ...tool.keywords].map(normalize).join(' ');
     return haystack.includes(needle);
   });
