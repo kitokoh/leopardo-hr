@@ -259,6 +259,12 @@ jobs:
           # test ne tourneraient jamais dessus. Même patron que les autres.
           - name: leopardo_public
             path: front/mobile_apps/leopardo_public
+          # Caisses tablette POS (#9271) : livrees en #9214/#9215 mais absentes
+          # de la matrice — une regression de compilation y passait au vert.
+          - name: leopardo_pos_retail
+            path: front/mobile_apps/leopardo_pos_retail
+          - name: leopardo_pos_restaurant
+            path: front/mobile_apps/leopardo_pos_restaurant
 
     steps:
       - name: Checkout code
@@ -400,6 +406,13 @@ jobs:
           - name: leopardo_public
             path: front/mobile_apps/leopardo_public
             artifact: leopardo-public-debug-apk
+          # Caisses tablette POS (#9271).
+          - name: leopardo_pos_retail
+            path: front/mobile_apps/leopardo_pos_retail
+            artifact: leopardo-pos-retail-debug-apk
+          - name: leopardo_pos_restaurant
+            path: front/mobile_apps/leopardo_pos_restaurant
+            artifact: leopardo-pos-restaurant-debug-apk
 
     steps:
       - name: Checkout code

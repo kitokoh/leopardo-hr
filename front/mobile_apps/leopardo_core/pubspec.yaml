@@ -39,7 +39,11 @@ dependencies:
   sentry_flutter: ^10.3.0
   uuid: ^4.5.1
   url_launcher: ^6.3.3
-  mobile_scanner: ^7.5.0
+  # Epingle a 7.4.4 (dernier stable) : 7.5.0 casse le build Kotlin Android
+  # (MobileScanner.kt:167 et :243, "Bitmap? but Bitmap was expected") et fait
+  # echouer le check "Smoke build leopardo_employee (debug APK)". Voir
+  # docs/ci/SMOKE_MOBILE_SCANNER_750.md. A depinner des que le plugin corrige.
+  mobile_scanner: "7.4.4"
   flutter_blue_plus: ^1.35.0
 
 dev_dependencies:
