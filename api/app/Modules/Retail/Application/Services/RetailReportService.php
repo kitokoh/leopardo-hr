@@ -168,6 +168,14 @@ final class RetailReportService
     /**
      * Valorisation du stock : quantite, valeur au cout, valeur au prix de vente.
      *
+     * #9269 — le cout utilise est le COUT MOYEN PONDERE du niveau
+     * (`avg_cost_minor`, alimente par les entrees) quand il est connu, avec
+     * repli explicite sur le cout CATALOGUE du produit sinon. Chaque ligne
+     * expose `cost_source` (`average` | `catalog`) : sans ce champ, un rapport
+     * melangeant les deux methodes serait indiscernable d'un rapport
+     * homogene, et une hausse de prix fournisseur semblerait revaloriser le
+     * stock deja detenu.
+     *
      * @return array<string, mixed>
      */
     public function stockValuationReport(string $companyId, ?int $locationId = null): array
@@ -196,7 +204,12 @@ final class RetailReportService
             }
 
             $quantity = (float) $level->quantity;
-            $costMinor = (int) round($quantity * (int) $product->cost_minor);
+
+            $averageCost = $level->avg_cost_minor;
+            $costSource = $averageCost !== null ? 'average' : 'catalog';
+            $unitCostMinor = $averageCost !== null ? (int) $averageCost : (int) $product->cost_minor;
+
+            $costMinor = (int) round($quantity * $unitCostMinor);
             $retailMinor = (int) round($quantity * (int) $product->price_minor);
 
             $costValueMinor += $costMinor;
@@ -207,6 +220,8 @@ final class RetailReportService
                 'product_name' => (string) $product->name,
                 'location_id' => (int) $level->location_id,
                 'quantity' => $quantity,
+                'unit_cost_minor' => $unitCostMinor,
+                'cost_source' => $costSource,
                 'cost_value_minor' => $costMinor,
                 'retail_value_minor' => $retailMinor,
             ];
