@@ -182,7 +182,9 @@ final class LibrarySemanticScorerTest extends TestCase
             'gestion de stock',
         );
 
+        // PHPStan rejette assertIsFloat() sur une valeur dont le type est déjà
+        // déclaré float (docblock de la méthode) : la condition est toujours
+        // vraie. Le typage statique EST la garantie ; on garde la borne.
         $this->assertGreaterThan(0.0, $score);
-        $this->assertIsFloat($score);
     }
 }
