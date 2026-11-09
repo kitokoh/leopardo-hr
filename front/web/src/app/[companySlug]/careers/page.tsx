@@ -38,6 +38,28 @@ interface CareersPortalPageProps {
   searchParams: Promise<{ lang?: string; q?: string; contract_type?: string; remote_policy?: string }>;
 }
 
+/**
+ * BC-10 (#9220) — contrat interne → `employmentType` Schema.org.
+ *
+ * Google Jobs attend les valeurs normalisées de schema.org (`FULL_TIME`,
+ * `CONTRACTOR`, `INTERN`…), pas nos codes internes (`cdi`, `cdd`…). Envoyer
+ * `cdi` ferait ignorer le champ, et l'annonce perdrait son type de contrat.
+ */
+function mapEmploymentType(contractType: string | null): string {
+  switch (contractType) {
+    case 'cdi':
+      return 'FULL_TIME';
+    case 'cdd':
+      return 'CONTRACTOR';
+    case 'stage':
+      return 'INTERN';
+    case 'freelance':
+      return 'TEMPORARY';
+    default:
+      return 'FULL_TIME';
+  }
+}
+
 export async function generateMetadata({ params, searchParams }: CareersPortalPageProps): Promise<Metadata> {
   const { companySlug } = await params;
   const { lang } = await searchParams;
@@ -112,6 +134,52 @@ export default async function CareersPortalPage({ params, searchParams }: Career
           })),
         }}
       />
+
+      {/* BC-10 (#9220) — les offres AGRÉGÉES n'avaient pas de `JobPosting`
+          structuré : elles apparaissaient dans l'`ItemList` mais restaient
+          non indexables comme annonces par Google Jobs. On émet donc un
+          `JobPosting` par offre agrégée, avec `hiringOrganization` = l'entreprise
+          partenaire (et non le tenant, qui n'embauche pas pour ce poste) et
+          `url` = l'URL de candidature du partenaire.
+
+          `directApply: false` est explicite : la candidature se fait chez le
+          partenaire, pas sur notre page. L'omettre laisserait Google croire à
+          une candidature directe et dégraderait l'annonce. */}
+      {externalJobs.length > 0 && (
+        <JsonLd
+          data={{
+            '@context': 'https://schema.org',
+            // `@graph` plutôt qu'un tableau racine : `JsonLd` sérialise un
+            // OBJET, et un document JSON-LD dont la racine est un tableau est
+            // valide mais moins bien toléré par certains crawlers.
+            '@graph': externalJobs.map((job) => ({
+              '@type': 'JobPosting',
+              title: job.title,
+              description: job.description ?? job.title,
+              datePosted: job.published_at ?? undefined,
+              validThrough: job.expires_at ?? undefined,
+              employmentType: mapEmploymentType(job.contract_type),
+              hiringOrganization: {
+                '@type': 'Organization',
+                name: job.company_name,
+              },
+              jobLocation: {
+                '@type': 'Place',
+                address: {
+                  '@type': 'PostalAddress',
+                  addressLocality: job.location ?? undefined,
+                  addressCountry: job.country ?? undefined,
+                },
+              },
+              ...(job.remote_policy === 'remote'
+                ? { jobLocationType: 'TELECOMMUTE' }
+                : {}),
+              url: job.apply_url,
+              directApply: false,
+            })),
+          }}
+        />
+      )}
 
       {/* Issue #1330: branding dynamique selon le tenant — logo + couleur
           principale de l'entreprise cliente, avec repli sur les couleurs

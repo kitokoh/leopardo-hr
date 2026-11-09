@@ -382,7 +382,14 @@ final class PlatformRecruitmentPortalTest extends TestCase
             /** @param list<JobBoardOffer> $offers */
             public function __construct(private readonly array $offers)
             {
-                parent::__construct(app(\App\Modules\Recruitment\Infrastructure\JobBoards\CustomFeedJobBoardClient::class));
+                parent::__construct(
+                    app(\App\Modules\Recruitment\Infrastructure\JobBoards\CustomFeedJobBoardClient::class),
+                    app(\App\Modules\Recruitment\Infrastructure\JobBoards\AdzunaJobBoardClient::class),
+                    app(\App\Modules\Recruitment\Infrastructure\JobBoards\JoobleJobBoardClient::class),
+                    app(\App\Modules\Recruitment\Infrastructure\JobBoards\IndeedJobBoardClient::class),
+                    app(\App\Modules\Recruitment\Infrastructure\JobBoards\LinkedInJobBoardClient::class),
+                    app(\App\Modules\Recruitment\Infrastructure\JobBoards\GlassdoorJobBoardClient::class),
+                );
             }
 
             public function for(string $provider): \App\Modules\Recruitment\Infrastructure\JobBoards\JobBoardClient
@@ -407,7 +414,14 @@ final class PlatformRecruitmentPortalTest extends TestCase
         {
             public function __construct(private readonly JobBoardUnavailableException $exception)
             {
-                parent::__construct(app(\App\Modules\Recruitment\Infrastructure\JobBoards\CustomFeedJobBoardClient::class));
+                parent::__construct(
+                    app(\App\Modules\Recruitment\Infrastructure\JobBoards\CustomFeedJobBoardClient::class),
+                    app(\App\Modules\Recruitment\Infrastructure\JobBoards\AdzunaJobBoardClient::class),
+                    app(\App\Modules\Recruitment\Infrastructure\JobBoards\JoobleJobBoardClient::class),
+                    app(\App\Modules\Recruitment\Infrastructure\JobBoards\IndeedJobBoardClient::class),
+                    app(\App\Modules\Recruitment\Infrastructure\JobBoards\LinkedInJobBoardClient::class),
+                    app(\App\Modules\Recruitment\Infrastructure\JobBoards\GlassdoorJobBoardClient::class),
+                );
             }
 
             public function for(string $provider): \App\Modules\Recruitment\Infrastructure\JobBoards\JobBoardClient

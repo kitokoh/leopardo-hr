@@ -470,3 +470,17 @@ Schedule::command('scheduler:catch-up --report')
     ->everyFifteenMinutes()
     ->withoutOverlapping()
     ->onOneServer();
+
+// BC-10 RECRUITMENT (#9216) — purge RGPD des candidatures échues.
+//
+// Le portail public annonce 24 mois de conservation au candidat et
+// `CandidateApplicationController` horodate `retention_until` à chaque dépôt.
+// Sans cette entrée, la durée était annoncée et stockée mais jamais appliquée.
+//
+// Quotidienne et non horaire : la purge n'a aucune contrainte de fraîcheur
+// (une candidature échue depuis un jour de plus ne change rien), et un passage
+// nocturne évite de concurrencer les écritures de candidatures en journée.
+Schedule::command('recruitment:purge-expired-applications')
+    ->dailyAt('03:30')
+    ->withoutOverlapping()
+    ->onOneServer();

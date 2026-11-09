@@ -2525,3 +2525,18 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
   - OpenAPI : 6 chemins ajoutes, YAML valide (1438 chemins) ;
   - migration additive : `users.phone_verified_at` / `deletion_requested_at` / `purge_scheduled_at` + `public_device_tokens`, aucune colonne existante modifiee.
 - **Non couvert** : l'envoi effectif des notifications push (FCM/APNs) — ce lot enregistre et supprime des jetons, il n'envoie rien ; `Pint` n'a pas pu tourner dans le sandbox (phar exige PHP `^8.3.0`), le style est verifie par la CI.
+
+## 2026-11-09 — BC-10 RECRUITMENT (suite) : annuaire public des portails carrières (#9220)
+
+**Contrat concerné** — `GET /api/v1/public/careers` (**nouveau**) : annuaire des entreprises ayant AU MOINS une offre publiée, consommé par le sitemap pour déclarer les pages carrières.
+
+**Pourquoi cet endpoint** — sans lui, le sitemap devait soit deviner les slugs (impossible), soit ne rien déclarer : les pages carrières restaient invisibles pour Google Jobs.
+
+**Ce que l'endpoint ne fait pas, délibérément** — il ne liste pas TOUS les tenants, seulement ceux qui ont une offre publiée : déclarer au sitemap une page carrières vide enverrait les robots vers une page sans contenu, ce que Google pénalise. Il n'expose que `slug`, `name`, `country` et `last_published_at` — c'est un index de crawl, pas un annuaire commercial.
+
+**`lastmod`** — la date de la dernière offre publiée, jamais `now()` : un `lastmod` qui change à chaque requête fait churner le crawl sans qu'aucun contenu n'ait bougé.
+
+**Isolation** — les offres vivent dans le schéma partagé `shared_tenants` (ADR-0028) et sont filtrées par `company_id` via `TenantManager::withinTenant`, jamais par une requête non qualifiée dépendant du `search_path` courant. Un tenant dont le contexte ne peut pas être résolu (migration en cours, schéma incohérent) est **ignoré** sans casser l'annuaire entier.
+
+- Scénarios à vérifier : **offre publiée** — l'entreprise apparaît dans l'annuaire ; **aucune offre publiée** — l'entreprise est absente ; **offre clôturée** — l'entreprise disparaît si c'était sa seule offre ; **tenant suspendu ou expiré** — absent ; **contexte irrésoluble** — ignoré, les autres restent déclarés ; **`lastmod` stable** — deux requêtes consécutives sans nouvelle publication rendent la même date.
+- Couverture : `api/tests/Feature/PublicCareerControllerTest.php` (19 tests sur le lot BC-10), `front/web/src/app/__tests__/sitemap.test.ts`.

@@ -45,6 +45,16 @@ jest.doMock('@/lib/restaurants-public-api', () => ({
   getAllPublicRestaurantSlugs: async () => ['chez-fatou', 'la-brasserie-du-port'],
 }));
 
+// BC-10 (#9220) : les portails carrières par tenant viennent de l'annuaire
+// public — mocké ici (pas de réseau en test). Seules les entreprises ayant au
+// moins une offre publiée y figurent.
+jest.doMock('@/lib/careers-directory-api', () => ({
+  getPublicCareersDirectory: async () => [
+    { slug: 'techcorp-algerie', name: 'TechCorp', country: 'DZ', last_published_at: '2026-11-01T10:00:00Z' },
+    { slug: 'pharmaplus-casablanca', name: 'PharmaPlus', country: 'MA', last_published_at: null },
+  ],
+}));
+
 describe('sitemap integrity (#3807)', () => {
   let urls: string[];
   let entries: Array<{ url: string; lastModified?: unknown; alternates?: { languages?: Record<string, string> } }>;
