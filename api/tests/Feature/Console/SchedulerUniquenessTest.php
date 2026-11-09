@@ -103,6 +103,67 @@ class SchedulerUniquenessTest extends TestCase
     }
 
     /**
+     * BC-10 (#9244) — la purge RGPD des candidatures DOIT rester planifiée.
+     *
+     * `PurgeExpiredApplicantsTest` couvre la logique de la commande, mais rien
+     * ne verrouillait son ENTRÉE dans le planning. Une régression qui retirerait
+     * (ou renommerait) la ligne de `routes/console.php` passait donc inaperçue :
+     * la purge ne s'exécuterait plus et les candidatures échues resteraient
+     * stockées indéfiniment — une non-conformité RGPD **silencieuse**, le pire
+     * des cas puisqu'aucune alerte ne se déclenche.
+     *
+     * Le test introspecte le planning RÉEL (`schedule:list`), pas le fichier
+     * source : il attrape aussi bien la suppression de l'entrée qu'une faute de
+     * frappe dans le nom de la commande.
+     */
+    public function test_the_gdpr_applicant_purge_stays_scheduled(): void
+    {
+        $names = $this->scheduledCommandNames();
+
+        $this->assertContains(
+            'recruitment:purge-expired-applications',
+            $names,
+            'La purge RGPD des candidatures doit rester planifiée (BC-10 #9244) : '
+            .'sans elle, la conservation de 24 mois annoncée au candidat n\'est jamais appliquée.'
+        );
+    }
+
+    /**
+     * BC-10 (#9244) — la purge porte le verrou anti-recouvrement.
+     *
+     * Une purge qui se superpose à elle-même (exécution longue sur un gros
+     * volume, ou scheduler relancé) peut supprimer deux fois la même ligne et
+     * fausser les compteurs journalisés. `withoutOverlapping` est la garantie
+     * que l'opération reste idempotente en pratique.
+     */
+    public function test_the_gdpr_applicant_purge_carries_the_overlap_lock(): void
+    {
+        // Peuple le scheduler (même chemin que `schedule:list`).
+        $this->scheduledCommandNames();
+
+        /** @var Schedule $schedule */
+        $schedule = app(Schedule::class);
+
+        $locked = [];
+        foreach ($schedule->events() as $event) {
+            if (! $event->withoutOverlapping) {
+                continue;
+            }
+
+            $name = $this->commandName($event);
+            if ($name !== null) {
+                $locked[] = $name;
+            }
+        }
+
+        $this->assertContains(
+            'recruitment:purge-expired-applications',
+            $locked,
+            'La purge RGPD des candidatures doit planifier withoutOverlapping() (BC-10 #9244).'
+        );
+    }
+
+    /**
      * Noms de commandes artisan réellement planifiés (une entrée par ligne de
      * `schedule:list`, options exclues).
      *
