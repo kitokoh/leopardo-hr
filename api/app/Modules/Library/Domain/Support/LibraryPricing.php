@@ -47,8 +47,10 @@ final class LibraryPricing
         $bestPrice = $basePriceMinor;
 
         foreach ($wholesaleTiers as $tier) {
-            $minQty = (int) ($tier['min_qty'] ?? 0);
-            $unitPrice = (int) ($tier['unit_price_minor'] ?? 0);
+            // Le type du tableau est garanti par la signature : pas de `??`,
+            // que PHPStan rejette comme toujours vrai (nullCoalesce.offset).
+            $minQty = $tier['min_qty'];
+            $unitPrice = $tier['unit_price_minor'];
 
             if ($minQty < 1) {
                 throw new InvalidArgumentException('Un palier doit démarrer à une quantité au moins égale à 1.');
