@@ -6,18 +6,21 @@ namespace App\Modules\Retail\Domain\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Retail\Domain\Models\RetailStockLevel;
+use App\Modules\Retail\Domain\Permissions\RetailPermissions;
 
 /**
  * RBAC des niveaux de stock et mouvements du module Retail (BC-17 RETAIL, #7673).
  *
- * Lecture (niveaux, mouvements, alertes) ouverte aux membres du tenant
- * (scope `company_id` vérifié) ; écriture (enregistrement d'un mouvement,
- * seuls les mouvements modifient les quantités — RetailStockService)
- * réservée au responsable du tenant (sous-rôles `principal`/`rh`).
- * deny-by-default : aucun rôle = refus (fail-closed, pattern Catalog #6880).
+ * #9207 — permission `retail.stock` reellement appliquee : enregistrer un
+ * mouvement (reception, inventaire, casse) est un geste de VENDEUR (direction,
+ * ou niveau `operate` sur au moins une boutique assignee). Lecture (niveaux,
+ * mouvements, alertes) ouverte aux membres du tenant (scope `company_id`
+ * verifie). deny-by-default : aucun role = refus (fail-closed).
  */
 class RetailStockLevelPolicy
 {
+    public function __construct(private readonly RetailPermissions $permissions = new RetailPermissions) {}
+
     public function viewAny(Employee $actor): bool
     {
         return true;
@@ -29,10 +32,10 @@ class RetailStockLevelPolicy
     }
 
     /**
-     * Enregistrer un mouvement de stock (seule voie d'écriture des quantités).
+     * Enregistrer un mouvement de stock (seule voie d'ecriture des quantites).
      */
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh');
+        return $this->permissions->canOperateStock($actor);
     }
 }

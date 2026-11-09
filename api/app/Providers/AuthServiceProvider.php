@@ -284,6 +284,7 @@ use App\Modules\Retail\Domain\Models\RetailOrder;
 use App\Modules\Retail\Domain\Models\RetailPosSession;
 use App\Modules\Retail\Domain\Models\RetailProduct;
 use App\Modules\Retail\Domain\Models\RetailStockLevel;
+use App\Modules\Retail\Domain\Permissions\RetailPermissions;
 use App\Modules\Retail\Domain\Policies\RetailCategoryPolicy;
 use App\Modules\Retail\Domain\Policies\RetailLocationPolicy;
 use App\Modules\Retail\Domain\Policies\RetailOnlineSettingsPolicy;
@@ -688,5 +689,17 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('restaurant.server', [RestaurantPermissions::class, 'canServe']);
         Gate::define('restaurant.kitchen', [RestaurantPermissions::class, 'canWorkKitchen']);
         Gate::define('restaurant.rider', [RestaurantPermissions::class, 'canDeliver']);
+
+        // #9207 — capacites `retail.*` : les permissions du manifest Retail
+        // etaient PUREMENT DECLARATIVES (aucune policy ne les consommait, et
+        // toutes les ecritures exigeaient `principal`/`rh` — un vendeur ne
+        // pouvait donc pas tenir la caisse sans recevoir la paie et les RH).
+        // Source unique : RetailPermissions::can() (fail-closed).
+        Gate::define('retail.pos', [RetailPermissions::class, 'canOperatePos']);
+        Gate::define('retail.orders', [RetailPermissions::class, 'canOperateOrders']);
+        Gate::define('retail.catalog', [RetailPermissions::class, 'canManageCatalog']);
+        Gate::define('retail.stock', [RetailPermissions::class, 'canOperateStock']);
+        Gate::define('retail.settings', [RetailPermissions::class, 'canManageSettings']);
+        Gate::define('retail.reports', [RetailPermissions::class, 'canViewReports']);
     }
 }

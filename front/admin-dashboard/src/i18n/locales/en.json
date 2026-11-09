@@ -4852,7 +4852,14 @@
       "uncategorized": "Uncategorized",
       "loadError": "Unable to load the point of sale.",
       "loading": "Loading point of sale…",
-      "actionError": "Action failed, please retry."
+      "actionError": "Action failed, please retry.",
+      "orderType": "Order type",
+      "table": "Table",
+      "selectTable": "Select a table",
+      "tableRequired": "Select a table for a dine-in order.",
+      "covers": "Covers",
+      "promotionCode": "Promo code (optional)",
+      "discount": "Discount"
     },
     "kitchenTitle": "Kitchen display",
     "kitchenSubtitle": "Real-time order queue — preparation and pickup",
