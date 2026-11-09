@@ -64828,6 +64828,106 @@ paths:
         '200': {description: 'Fichier enregistré, métadonnées mises à jour'}
         '403': {description: Non autorisé (policy)}
         '404': {description: Ressource inconnue}
+  /v1/library/progress:
+    get:
+      operationId: api_get_library_progress
+      tags:
+      - Library
+      summary: Mes progressions de lecture
+      description: >-
+        BC-40 LIBRARY — progression de lecture persistée côté serveur. Retourne
+        les progressions de l'employé AUTHENTIFIÉ uniquement, les plus récentes
+        d'abord (200 max). `company_id` et `employee_id` viennent de la session,
+        jamais du payload : aucune progression d'un autre employé ou d'un autre
+        tenant n'est lisible.
+      responses:
+        '200':
+          description: Liste des progressions de l'employé courant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LibraryReadingProgress'
+        '401': {description: Non authentifié}
+  /v1/library/progress/{slug}:
+    get:
+      operationId: api_get_library_progress_by_slug
+      tags:
+      - Library
+      summary: Ma progression sur une ressource
+      description: >-
+        BC-40 LIBRARY — progression de l'employé authentifié sur la ressource
+        identifiée par son slug. La ressource est résolue dans le périmètre
+        VISIBLE par le tenant (catalogue public publié ou ressource propre au
+        tenant) ; un slug d'un autre tenant renvoie 404, jamais une fuite.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: Progression courante, ou `null` si aucune
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    oneOf:
+                    - $ref: '#/components/schemas/LibraryReadingProgress'
+                    - type: 'null'
+        '401': {description: Non authentifié}
+        '404': {description: Ressource inconnue ou non visible par le tenant}
+    put:
+      operationId: api_put_library_progress_by_slug
+      tags:
+      - Library
+      summary: Enregistrer ma position de lecture
+      description: >-
+        BC-40 LIBRARY — enregistre la position de l'employé authentifié. La page
+        est bornée à `[1, total_pages]` côté serveur ; l'écriture est idempotente
+        sur `(company_id, employee_id, resource_id)`. `employee_id` et
+        `company_id` ne sont PAS acceptés dans le payload.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema: {type: string}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [page]
+              properties:
+                page:
+                  type: integer
+                  minimum: 1
+                  maximum: 1000000
+                total_pages:
+                  type: integer
+                  minimum: 1
+                  maximum: 1000000
+                  nullable: true
+      responses:
+        '200':
+          description: Progression enregistrée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/LibraryReadingProgress'
+        '401': {description: Non authentifié}
+        '404': {description: Ressource inconnue ou non visible par le tenant}
+        '422': {description: Payload invalide}
         '413': {description: Fichier trop volumineux}
         '422': {description: Type de fichier non autorisé}
         '501': {description: Stockage non configuré}
@@ -65047,6 +65147,31 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    # BC-40 LIBRARY — progression de lecture persistée (donnée personnelle).
+    LibraryReadingProgress:
+      type: object
+      description: >-
+        Progression de lecture d'un employé sur une ressource. Donnée
+        PERSONNELLE : seul le propriétaire y accède, jamais un autre employé
+        ni un autre tenant.
+      required:
+      - resource_id
+      - page
+      properties:
+        resource_id:
+          type: integer
+        page:
+          type: integer
+          minimum: 1
+          description: Page courante (1-indexée), bornée à `[1, total_pages]`.
+        total_pages:
+          type: integer
+          nullable: true
+          description: Total connu au moment de l'écriture, `null` si inconnu.
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     # BC-24 TRAVEL — annonce du portail agence (TRAVEL-401..404, #6416/#6422).
     TravelAdvert:
       type: object
