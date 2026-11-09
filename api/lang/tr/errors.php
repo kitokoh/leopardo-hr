@@ -364,4 +364,7 @@ return [
 
     // BC-10 (#9199) — iş ilanı toplayıcı bağlantıları.
     'JOB_SOURCE_PROVIDER_UNSUPPORTED' => 'Desteklenmeyen sağlayıcı: :provider.',
+
+    // BC-10 (#9217) — CV antivirus taraması tarafından reddedildi.
+    'RESUME_REJECTED' => 'Ekli dosya güvenlik taraması tarafından reddedildi.',
 ];

@@ -82,20 +82,17 @@ class QueueTenantContextArchitectureTest extends TestCase
         // contexte : une erreur silencieuse au lieu d'une erreur franche.
         \App\Modules\SearchIntelligence\Infrastructure\Jobs\SyncIntegrationMetrics::class => 'job plateforme (#7649) : `integrations` est globale (aucune colonne company_id), aucun tenant à établir',
 
-        // Job PLATEFORME (BC-10 RECRUITMENT, #7649) : les connecteurs
-        // d'agrégateurs d'offres sont configurés par la PLATEFORME depuis la
-        // console super admin, pas par société. Les deux tables qu'il touche
-        // sont globales et sans colonne `company_id` :
-        //   - `public.job_sources` (JobSource, `$table = 'public.job_sources'`) ;
-        //   - `public.external_job_offers` (ExternalJobOffer,
-        //     `$table = 'public.external_job_offers'`), écrites par `upsert`
-        //     sur la clé métier `(source_id, external_id)`.
-        // Le job n'a donc aucun tenant à établir : `tenantCompanyId()`
-        // n'aurait rien à retourner, et lui imposer `EnsureTenantContext`
-        // positionnerait un `search_path` sans société — pire que l'absence de
-        // contexte (erreur silencieuse au lieu d'une erreur franche). Même
-        // décision que `SyncIntegrationMetrics` ci-dessus.
-        \App\Modules\Recruitment\Infrastructure\Jobs\SyncExternalJobOffersJob::class => 'job plateforme (BC-10 RECRUITMENT, #7649) : `job_sources` et `external_job_offers` sont globales (aucune colonne company_id), aucun tenant à établir',
+        // Job PLATEFORME (BC-10, #9218) : `job_sources` et
+        // `external_job_offers` vivent dans le schéma `public` et n'ont PAS de
+        // colonne `company_id` — un connecteur d'agrégateur est configuré une
+        // fois pour l'installation, pas par société, et les offres qu'il
+        // importe n'appartiennent à aucun tenant (elles sont rattachées à une
+        // page carrières par PAYS, cf. `PublicJobCatalog`). Le job n'a donc
+        // aucun tenant à établir : `tenantCompanyId()` n'aurait rien à
+        // retourner, et lui imposer `EnsureTenantContext` positionnerait un
+        // `search_path` sans société — une erreur silencieuse au lieu d'une
+        // erreur franche.
+        \App\Modules\Recruitment\Infrastructure\Jobs\SyncExternalJobOffersJob::class => 'job plateforme (BC-10 #9218) : `job_sources`/`external_job_offers` sont publiques (aucune colonne company_id), aucun tenant à établir',
     ];
 
     public function test_every_queued_job_touching_tenant_data_uses_ensure_tenant_context(): void
