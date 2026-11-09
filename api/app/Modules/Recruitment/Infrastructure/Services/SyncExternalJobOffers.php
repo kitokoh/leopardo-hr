@@ -9,6 +9,7 @@ use App\Modules\Recruitment\Domain\Enums\JobSourceStatus;
 use App\Modules\Recruitment\Domain\Models\ExternalJobOffer;
 use App\Modules\Recruitment\Domain\Models\JobSource;
 use App\Modules\Recruitment\Infrastructure\JobBoards\JobBoardClientRegistry;
+use App\Modules\Recruitment\Infrastructure\JobBoards\JobBoardCredentialResolver;
 use App\Modules\Recruitment\Infrastructure\JobBoards\JobBoardOffer;
 use App\Modules\Recruitment\Infrastructure\JobBoards\JobBoardUnavailableException;
 use Illuminate\Support\Carbon;
@@ -41,6 +42,7 @@ final class SyncExternalJobOffers
     public function __construct(
         private readonly JobBoardClientRegistry $registry,
         private readonly JobSourceLifecycle $lifecycle,
+        private readonly JobBoardCredentialResolver $credentials,
     ) {}
 
     /**
@@ -48,7 +50,14 @@ final class SyncExternalJobOffers
      */
     public function execute(JobSource $source, ?int $actorId = null): array
     {
-        $credentials = $this->lifecycle->credentialsFor($source);
+        // BC-10 (#9218) — les identifiants viennent de la base (saisie super
+        // admin, chiffrée) avec repli sur l'environnement, clé par clé. Cela
+        // permet de provisionner un connecteur par infrastructure as code sans
+        // passer par l'écran, tout en laissant la saisie explicite primer.
+        $credentials = $this->credentials->resolve(
+            $source->provider,
+            $this->lifecycle->credentialsFor($source),
+        );
 
         if ($credentials === []) {
             return $this->fail(
