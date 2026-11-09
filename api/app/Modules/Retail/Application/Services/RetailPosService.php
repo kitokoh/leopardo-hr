@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace App\Modules\Retail\Application\Services;
 
+use App\Modules\Retail\Domain\Enums\RetailCashMovementType;
 use App\Modules\Retail\Domain\Enums\RetailOrderSource;
 use App\Modules\Retail\Domain\Enums\RetailOrderStatus;
 use App\Modules\Retail\Domain\Enums\RetailPaymentMethod;
 use App\Modules\Retail\Domain\Enums\RetailPosSessionStatus;
 use App\Modules\Retail\Domain\Enums\RetailProductStatus;
 use App\Modules\Retail\Domain\Enums\RetailStockReasonCode;
+use App\Modules\Retail\Domain\Models\RetailCashMovement;
 use App\Modules\Retail\Domain\Models\RetailLocation;
 use App\Modules\Retail\Domain\Models\RetailOrder;
 use App\Modules\Retail\Domain\Models\RetailOrderItem;
 use App\Modules\Retail\Domain\Models\RetailOrderPayment;
+use App\Modules\Retail\Domain\Models\RetailPosRefund;
 use App\Modules\Retail\Domain\Models\RetailPosSession;
 use App\Modules\Retail\Domain\Models\RetailProduct;
 use App\Modules\Retail\Domain\Models\RetailStockLevel;
@@ -371,7 +374,24 @@ final class RetailPosService
                     ->where('status', 'captured')
                     ->sum('amount_minor');
 
-                $expected = $locked->opening_cash_minor + $cashCaptured;
+                // #9208 — les remboursements CASH sortent de la caisse.
+                $cashRefunded = (int) RetailPosRefund::query()
+                    ->where('company_id', $companyId)
+                    ->where('pos_session_id', (int) $locked->id)
+                    ->where('method', RetailPaymentMethod::Cash->value)
+                    ->sum('amount_minor');
+
+                // #9212 — mouvements de tiroir : `in` credite, `out`/`drop`
+                // debitent (RetailCashMovementType::sign()).
+                $movementDelta = 0;
+                foreach (RetailCashMovement::query()
+                    ->where('company_id', $companyId)
+                    ->where('pos_session_id', (int) $locked->id)
+                    ->get() as $movement) {
+                    $movementDelta += $movement->type->sign() * (int) $movement->amount_minor;
+                }
+
+                $expected = $locked->opening_cash_minor + $cashCaptured - $cashRefunded + $movementDelta;
                 $variance = $countedCashMinor - $expected;
 
                 $locked->forceFill([
@@ -390,6 +410,197 @@ final class RetailPosService
         );
 
         return $closed;
+    }
+
+    /**
+     * Rembourse une commande ENCAISSEE (#9208), totalement ou partiellement.
+     *
+     * Avant cette methode, le POS ne savait qu'ANNULER une commande : le stock
+     * etait restaure mais l'argent restait encaisse. Un commercant ne pouvait
+     * donc pas rendre 5 EUR a un client qui rapporte un article.
+     *
+     * Gardes :
+     *  - la commande doit etre `completed` (on ne rembourse pas un brouillon) ;
+     *  - `amountMinor` strictement positif ;
+     *  - le CUMUL des remboursements ne peut depasser le total encaisse (422) ;
+     *  - `reason` obligatoire (un remboursement sans motif est un trou d'audit) ;
+     *  - `idempotencyKey` absorbe les doubles soumissions (rejeu hors-ligne).
+     *
+     * Restauration de stock : `$restockLines` (liste `product_id`/`quantity`)
+     * remet en stock les articles rendus. Si `null` ET que le remboursement
+     * solde la commande, TOUTES les lignes sont remises en stock ; un
+     * remboursement partiel sans detail de lignes ne touche pas au stock
+     * (comportement documente, jamais devine).
+     *
+     * @param  list<array{product_id: int, quantity: float}>|null  $restockLines
+     *
+     * @throws ValidationException 422 (commande non encaissee, montant invalide, cumul depasse).
+     */
+    public function refundOrder(
+        RetailOrder $order,
+        int $amountMinor,
+        string $reason,
+        RetailPaymentMethod $method,
+        ?array $restockLines = null,
+        ?string $idempotencyKey = null,
+        ?int $userId = null,
+    ): RetailOrder {
+        $companyId = (string) $order->company_id;
+
+        /** @var RetailOrder $updated */
+        $updated = $this->connection->transaction(
+            function () use ($order, $companyId, $amountMinor, $reason, $method, $restockLines, $idempotencyKey, $userId): RetailOrder {
+                if ($idempotencyKey !== null) {
+                    $existing = RetailPosRefund::query()
+                        ->where('company_id', $companyId)
+                        ->where('idempotency_key', $idempotencyKey)
+                        ->exists();
+
+                    if ($existing) {
+                        return $order->refresh();
+                    }
+                }
+
+                if ($order->status !== RetailOrderStatus::Completed) {
+                    throw ValidationException::withMessages([
+                        'order' => 'Only completed orders can be refunded.',
+                    ]);
+                }
+
+                if ($amountMinor <= 0) {
+                    throw ValidationException::withMessages([
+                        'amount_minor' => 'The refund amount must be strictly positive.',
+                    ]);
+                }
+
+                if (trim($reason) === '') {
+                    throw ValidationException::withMessages([
+                        'reason' => 'A refund reason is required.',
+                    ]);
+                }
+
+                $alreadyRefunded = (int) RetailPosRefund::query()
+                    ->where('company_id', $companyId)
+                    ->where('order_id', (int) $order->id)
+                    ->sum('amount_minor');
+
+                if ($alreadyRefunded + $amountMinor > (int) $order->total_minor) {
+                    throw ValidationException::withMessages([
+                        'amount_minor' => 'The cumulative refunds cannot exceed the order total.',
+                    ]);
+                }
+
+                RetailPosRefund::query()->create([
+                    'company_id' => $companyId,
+                    'order_id' => (int) $order->id,
+                    'pos_session_id' => $order->pos_session_id,
+                    'method' => $method->value,
+                    'amount_minor' => $amountMinor,
+                    'currency' => $order->currency,
+                    'reason' => $reason,
+                    'user_id' => $userId,
+                    'refunded_at' => Carbon::now(),
+                    'idempotency_key' => $idempotencyKey,
+                ]);
+
+                $isFullRefund = $alreadyRefunded + $amountMinor >= (int) $order->total_minor;
+                $lines = $restockLines;
+
+                if ($lines === null && $isFullRefund) {
+                    $lines = [];
+                    foreach ($order->items()->orderBy('line_index')->get() as $item) {
+                        $lines[] = [
+                            'product_id' => (int) $item->product_id,
+                            'quantity' => (float) $item->quantity,
+                        ];
+                    }
+                }
+
+                if ($lines !== null && $lines !== []) {
+                    $location = $this->orderLocation($order);
+
+                    foreach ($lines as $line) {
+                        /** @var RetailProduct $product */
+                        $product = RetailProduct::query()
+                            ->where('company_id', $companyId)
+                            ->findOrFail((int) $line['product_id']);
+
+                        $this->stockService->applyMovement(
+                            location: $location,
+                            product: $product,
+                            quantityDelta: (float) $line['quantity'],
+                            reasonCode: RetailStockReasonCode::Return,
+                            referenceType: 'retail_order',
+                            referenceId: (int) $order->id,
+                            note: 'Stock restored on refund of order '.$order->reference.'.',
+                            userId: $userId,
+                        );
+                    }
+                }
+
+                return $order->refresh();
+            }
+        );
+
+        return $updated;
+    }
+
+    /**
+     * Enregistre un mouvement de tiroir-caisse sur une session OUVERTE (#9212).
+     *
+     * Sans cette trace, l'ecart de cloture etait inexplicable : un prelevement
+     * pour la banque ressemblait a un manquant. `reason` est obligatoire.
+     *
+     * @throws ValidationException 422 (session fermee, montant invalide, motif vide).
+     */
+    public function recordCashMovement(
+        RetailPosSession $session,
+        RetailCashMovementType $type,
+        int $amountMinor,
+        string $reason,
+        ?int $userId = null,
+    ): RetailCashMovement {
+        $companyId = (string) $session->company_id;
+
+        /** @var RetailCashMovement $movement */
+        $movement = $this->connection->transaction(
+            function () use ($session, $companyId, $type, $amountMinor, $reason, $userId): RetailCashMovement {
+                /** @var RetailPosSession $locked */
+                $locked = RetailPosSession::query()
+                    ->where('company_id', $companyId)
+                    ->lockForUpdate()
+                    ->findOrFail((int) $session->id);
+
+                if ($locked->status !== RetailPosSessionStatus::Open) {
+                    throw ValidationException::withMessages([
+                        'session' => 'The POS session is not open.',
+                    ]);
+                }
+
+                if ($amountMinor <= 0) {
+                    throw ValidationException::withMessages([
+                        'amount_minor' => 'The cash movement amount must be strictly positive.',
+                    ]);
+                }
+
+                if (trim($reason) === '') {
+                    throw ValidationException::withMessages([
+                        'reason' => 'A cash movement reason is required.',
+                    ]);
+                }
+
+                return RetailCashMovement::query()->create([
+                    'company_id' => $companyId,
+                    'pos_session_id' => (int) $locked->id,
+                    'type' => $type->value,
+                    'amount_minor' => $amountMinor,
+                    'reason' => $reason,
+                    'user_id' => $userId,
+                ]);
+            }
+        );
+
+        return $movement;
     }
 
     /**

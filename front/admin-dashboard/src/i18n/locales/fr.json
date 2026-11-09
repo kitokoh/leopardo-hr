@@ -4852,7 +4852,14 @@
       "uncategorized": "Sans catégorie",
       "loadError": "Impossible de charger le point de vente.",
       "loading": "Chargement du point de vente…",
-      "actionError": "Action impossible, réessayez."
+      "actionError": "Action impossible, réessayez.",
+      "orderType": "Type de commande",
+      "table": "Table",
+      "selectTable": "Sélectionner une table",
+      "tableRequired": "Sélectionnez une table pour une commande sur place.",
+      "covers": "Couverts",
+      "promotionCode": "Code promo (optionnel)",
+      "discount": "Remise"
     },
     "kitchenTitle": "Écran cuisine",
     "kitchenSubtitle": "File de commandes en temps réel — préparation et mise à disposition",
