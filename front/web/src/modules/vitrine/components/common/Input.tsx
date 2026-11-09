@@ -57,6 +57,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Inp
           transition={{ duration: 0.2 }}
           id={inputId}
           ref={ref}
+          required={required}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
           className={`

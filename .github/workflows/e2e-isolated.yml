@@ -130,10 +130,22 @@ jobs:
         working-directory: front/admin-dashboard
         run: npm ci
 
+      # #9230 — le build DOIT porter la dérogation `VITE_ALLOW_DIRECT_API_IN_PROD`.
+      #
+      # `src/services/api-base-url.js` refuse par défaut un build de production
+      # qui appelle un fournisseur en direct (#8707) : l'exception est levée au
+      # chargement du module, donc AVANT `app.mount('#app')` → Vue ne montait
+      # jamais → page blanche → les 15 tests du job échouaient, y compris
+      # `/login` (`#email` introuvable) et les gardes d'authentification.
+      #
+      # La dérogation est ici légitime : l'API est un backend ÉPHÉMÈRE propre au
+      # job, et ce bundle n'est jamais déployé — figer son URL n'a aucune
+      # conséquence. C'est exactement le cas d'usage prévu par la garde.
       - name: Build admin-dashboard (API isolée embarquée)
         working-directory: front/admin-dashboard
         env:
           VITE_API_URL: http://127.0.0.1:8000/api/v1
+          VITE_ALLOW_DIRECT_API_IN_PROD: 'true'
         run: npm run build
 
       - name: Install Playwright
@@ -144,6 +156,7 @@ jobs:
         working-directory: front/admin-dashboard
         env:
           VITE_API_URL: http://127.0.0.1:8000/api/v1
+          VITE_ALLOW_DIRECT_API_IN_PROD: 'true'
         run: |
           nohup npm run preview -- --host 127.0.0.1 --port 4173 > /tmp/preview.log 2>&1 &
           for i in $(seq 1 30); do
