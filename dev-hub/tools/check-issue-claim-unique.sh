@@ -24,7 +24,12 @@ set -uo pipefail
 
 REPO="${1:?usage: check-issue-claim-unique.sh <owner/repo>}"
 
-PRS_JSON=$(gh api "repos/${REPO}/pulls" -f state=open -f per_page=100 \
+# `gh api` bascule en POST des qu'un champ `-f` est fourni : sans `--method GET`
+# la commande faisait un POST /pulls (creation de PR) et le `--jq` iterait sur
+# les VALEURS de l'objet d'erreur renvoye -> liste de chaines ->
+# « AttributeError: 'str' object has no attribute 'get' ». Le garde sortait
+# alors en erreur silencieuse (|| true) sans jamais verifier les collisions.
+PRS_JSON=$(gh api --method GET "repos/${REPO}/pulls" -f state=open -f per_page=100 \
   --jq '[.[] | {number, title, user: .user.login, body: (.body // "")}]')
 
 OUTPUT=$(PRS_JSON="$PRS_JSON" python3 - "$REPO" 2>&1 <<'PYEOF' || true
@@ -37,6 +42,13 @@ ref_re = re.compile(
     r"[:\s]*#(\d+)",
     re.IGNORECASE,
 )
+
+if not isinstance(prs, list) or not all(isinstance(pr, dict) for pr in prs):
+    # Fail-closed : un garde qui ne peut pas lire les PR ne doit pas affirmer
+    # qu'il n'y a pas de collision.
+    print("::error::Garde anti-doublon : reponse GitHub inattendue (liste de PR attendue).")
+    print("RESULT=FAIL")
+    sys.exit(1)
 
 claims = {}   # issue -> {pr -> author}
 for pr in prs:
