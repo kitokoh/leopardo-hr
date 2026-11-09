@@ -5,9 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/pos/pos_barcode_scanner.dart';
 import 'package:leopardo_core/core/pos/pos_config.dart';
 import 'package:leopardo_core/core/pos/pos_esc_pos.dart';
+import 'package:leopardo_core/core/pos/pos_history.dart';
 import 'package:leopardo_core/core/pos/pos_input.dart';
+import 'package:leopardo_core/core/pos/pos_numeric_keypad.dart';
 import 'package:leopardo_core/core/pos/pos_printer_screen.dart';
 import 'package:leopardo_core/core/pos/pos_settings_screen.dart';
+import 'package:leopardo_core/core/pos/pos_states.dart';
 import 'package:leopardo_core/core/pos/pos_ticket.dart';
 import 'package:leopardo_core/core/pos/pos_widgets.dart';
 
@@ -16,8 +19,6 @@ import '../../core/models/retail_models.dart';
 import '../../core/theme/retail_theme.dart';
 import 'cash_movement_sheet.dart';
 import 'close_session_sheet.dart';
-import 'numeric_keypad.dart';
-import 'pos_states.dart';
 import 'refund_sheet.dart';
 import 'retail_pos_controller.dart';
 import 'retail_pos_stock_screen.dart';
@@ -206,6 +207,12 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
               icon: const Icon(Icons.inventory_2_outlined),
             ),
             IconButton(
+              key: const Key('pos-open-history'),
+              tooltip: 'Historique des ventes',
+              onPressed: _openHistory,
+              icon: const Icon(Icons.history),
+            ),
+            IconButton(
               key: const Key('pos-open-settings'),
               tooltip: 'Reglages de la tablette',
               onPressed: _openSettings,
@@ -389,6 +396,21 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
     );
   }
 
+  /// Ouvre l'historique des ventes et permet de reimprimer un ticket (#9268).
+  Future<void> _openHistory() async {
+    final state = ref.read(retailPosControllerProvider);
+
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => PosSalesHistoryScreen(
+          history: state.history,
+          printer: ref.read(retailPrinterProvider),
+          shopName: 'Leopardo Retail',
+        ),
+      ),
+    );
+  }
+
   /// Ouvre les reglages de la tablette (#9263), proteges par PIN.
   Future<void> _openSettings() async {
     final store = ref.read(retailLocalStoreProvider);
@@ -401,6 +423,8 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
           initialConfig: current,
           locationLabel: 'Emplacement',
           pinHash: ref.read(retailPinHashProvider),
+          printerName: store.printer?.name,
+          onOpenPrinter: _openPrinterPicker,
           onSave: (config) async {
             await store.saveConfig(config);
             ref.invalidate(retailConfigProvider);

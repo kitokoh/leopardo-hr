@@ -146,7 +146,8 @@ class PosAppConfig {
 /// une reponse inattendue du serveur — le vendeur ne doit pas deviner.
 enum PosHealthStatus {
   ok('Connexion reussie'),
-  invalidUrl('Adresse invalide — verifiez le format (ex. https://api.exemple.com)'),
+  invalidUrl(
+      'Adresse invalide — verifiez le format (ex. https://api.exemple.com)'),
   unreachable('Serveur injoignable — verifiez le reseau et l\u2019adresse'),
   timeout('Le serveur ne repond pas (delai depasse)'),
   serverError('Le serveur repond mais signale une erreur');
@@ -193,16 +194,19 @@ Future<PosHealthResult> checkPosBackendHealth({
     final statusCode = await performRequest(healthUri);
 
     if (statusCode >= 200 && statusCode < 400) {
-      return PosHealthResult(status: PosHealthStatus.ok, httpStatus: statusCode);
+      return PosHealthResult(
+          status: PosHealthStatus.ok, httpStatus: statusCode);
     }
 
     if (statusCode == 401 || statusCode == 403) {
       // Le endpoint existe mais exige une authentification : l'adresse est
       // bonne, le reste de la configuration se fera au premier appel.
-      return PosHealthResult(status: PosHealthStatus.ok, httpStatus: statusCode);
+      return PosHealthResult(
+          status: PosHealthStatus.ok, httpStatus: statusCode);
     }
 
-    return PosHealthResult(status: PosHealthStatus.serverError, httpStatus: statusCode);
+    return PosHealthResult(
+        status: PosHealthStatus.serverError, httpStatus: statusCode);
   } on PosHealthTimeout {
     return const PosHealthResult(status: PosHealthStatus.timeout);
   } catch (_) {
@@ -259,7 +263,8 @@ class PosPinCode {
   }
 
   /// Compare une saisie a une empreinte stockee.
-  static bool matches(String pin, {required String storedHash, required String salt}) =>
+  static bool matches(String pin,
+          {required String storedHash, required String salt}) =>
       storedHash == hash(pin, salt: salt);
 
   /// Le PIN est-il encore celui d'usine ? (invite a le changer)

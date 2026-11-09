@@ -212,6 +212,7 @@ class PosEscPosGenerator {
     String? ticketNumber,
     DateTime? printedAt,
     String? operatorName,
+    bool reprint = false,
   }) {
     final bytes = <int>[];
 
@@ -219,7 +220,21 @@ class PosEscPosGenerator {
     bytes.addAll(const [0x1B, 0x40]);
     bytes.addAll(const [0x1B, 0x37, 0x02]);
 
-    _appendWrapped(bytes, shopName.toUpperCase(), align: PosReceiptAlign.center, bold: bold);
+    _appendWrapped(bytes, shopName.toUpperCase(),
+        align: PosReceiptAlign.center, bold: bold);
+
+    // Un duplicata doit se voir au premier coup d'oeil : sans cette mention,
+    // deux tickets identiques circulent et la caisse ne peut plus dire lequel
+    // est l'original. C'est aussi la trace qu'un ticket a ete reimprime.
+    if (reprint) {
+      bytes.add(0x0A);
+      _appendWrapped(
+        bytes,
+        '*** REIMPRESSION ***',
+        align: PosReceiptAlign.center,
+        bold: true,
+      );
+    }
 
     if (shopAddress != null && shopAddress.trim().isNotEmpty) {
       _appendWrapped(bytes, shopAddress, align: PosReceiptAlign.center);
@@ -231,7 +246,8 @@ class PosEscPosGenerator {
     final printed = printedAt ?? DateTime.now();
 
     if (ticketNumber != null && ticketNumber.isNotEmpty) {
-      _appendRow(bytes, 'Ticket n\u00b0$ticketNumber', align: PosReceiptAlign.left);
+      _appendRow(bytes, 'Ticket n\u00b0$ticketNumber',
+          align: PosReceiptAlign.left);
     }
 
     _appendRow(
@@ -241,7 +257,8 @@ class PosEscPosGenerator {
     );
 
     if (operatorName != null && operatorName.trim().isNotEmpty) {
-      _appendRow(bytes, 'Vendeur : ${operatorName.trim()}', align: PosReceiptAlign.left);
+      _appendRow(bytes, 'Vendeur : ${operatorName.trim()}',
+          align: PosReceiptAlign.left);
     }
 
     _appendSeparator(bytes);
@@ -252,7 +269,8 @@ class PosEscPosGenerator {
           ? line.name.substring(0, _columns - 4)
           : line.name;
       _appendRow(bytes, name, align: PosReceiptAlign.left);
-      _appendRightAmount(bytes,
+      _appendRightAmount(
+          bytes,
           '${line.quantity} x ${_formatAmount(line.unitPriceMinor)}',
           _formatAmount(line.totalMinor));
 
@@ -265,7 +283,8 @@ class PosEscPosGenerator {
 
     if (receipt.discountMinor > 0) {
       _appendSeparator(bytes);
-      _appendRightAmount(bytes, 'Remise', '-${_formatAmount(receipt.discountMinor)}');
+      _appendRightAmount(
+          bytes, 'Remise', '-${_formatAmount(receipt.discountMinor)}');
     }
 
     if (receipt.tipMinor > 0) {
@@ -275,7 +294,8 @@ class PosEscPosGenerator {
     _appendSeparator(bytes);
 
     _appendRow(bytes, 'TOTAL', align: PosReceiptAlign.left, bold: true);
-    _appendRightAmount(bytes, '', _formatAmount(receipt.totalMinor), bold: true);
+    _appendRightAmount(bytes, '', _formatAmount(receipt.totalMinor),
+        bold: true);
 
     if (receipt.voidedLines.isNotEmpty) {
       _appendSeparator(bytes);
@@ -295,7 +315,8 @@ class PosEscPosGenerator {
     _appendSeparator(bytes);
 
     // Pied de ticket.
-    _appendWrapped(bytes, 'Merci de votre visite !', align: PosReceiptAlign.center);
+    _appendWrapped(bytes, 'Merci de votre visite !',
+        align: PosReceiptAlign.center);
 
     // Blancs avant decoupe.
     for (var i = 0; i < feedLines; i++) {
@@ -313,7 +334,8 @@ class PosEscPosGenerator {
   /// Imprime un texte en le coupant proprement sur [width.columns].
   void _appendWrapped(List<int> out, String text,
       {required PosReceiptAlign align, bool bold = false}) {
-    final words = text.split(RegExp(r'\s+')).where((word) => word.isNotEmpty).toList();
+    final words =
+        text.split(RegExp(r'\s+')).where((word) => word.isNotEmpty).toList();
 
     if (words.isEmpty) {
       out.add(0x0A);
@@ -374,15 +396,17 @@ class PosEscPosGenerator {
     final available = _columns - amount.length - 1;
 
     if (available <= 0) {
-      _appendRow(out, '$label $amount', align: PosReceiptAlign.left, bold: bold);
+      _appendRow(out, '$label $amount',
+          align: PosReceiptAlign.left, bold: bold);
       return;
     }
 
-    final fitted = label.length > available ? label.substring(0, available) : label;
+    final fitted =
+        label.length > available ? label.substring(0, available) : label;
     final padding = _columns - fitted.length - amount.length;
 
-    _appendRow(out, fitted + (' ' * padding) + amount, align: PosReceiptAlign.left,
-        bold: bold);
+    _appendRow(out, fitted + (' ' * padding) + amount,
+        align: PosReceiptAlign.left, bold: bold);
   }
 
   /// Separatrice `- - - - - -` pleine largeur.
@@ -442,12 +466,15 @@ enum PosPrinterStatus {
 
   final String label;
 
-  bool get isConnected => this == PosPrinterStatus.connected || this == PosPrinterStatus.printing;
+  bool get isConnected =>
+      this == PosPrinterStatus.connected || this == PosPrinterStatus.printing;
 }
 
 /// Resultat d'une impression : le message a afficher a l'operateur.
 class PosPrintOutcome {
-  const PosPrintOutcome.success() : success = true, message = 'Ticket imprime.';
+  const PosPrintOutcome.success()
+      : success = true,
+        message = 'Ticket imprime.';
   const PosPrintOutcome.failure(this.message) : success = false;
 
   final bool success;
@@ -464,8 +491,7 @@ class PosPrinterDevice {
   bool get hasName => name.trim().isNotEmpty;
 
   @override
-  bool operator ==(Object other) =>
-      other is PosPrinterDevice && other.id == id;
+  bool operator ==(Object other) => other is PosPrinterDevice && other.id == id;
 
   @override
   int get hashCode => id.hashCode;

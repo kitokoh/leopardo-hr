@@ -115,7 +115,8 @@ PosMatchQuality matchQuality({
 
   // Le code-barres se compare **avant** normalisation : un code est une suite
   // de chiffres, et une correspondance partielle ramenerait le mauvais article.
-  if (barcode != null && barcode.trim().toLowerCase() == query.trim().toLowerCase()) {
+  if (barcode != null &&
+      barcode.trim().toLowerCase() == query.trim().toLowerCase()) {
     return PosMatchQuality.barcodeExact;
   }
 
@@ -180,7 +181,8 @@ List<T> rankPosItems<T extends PosSearchable>({
   // `List.sort` n'est pas garanti stable en Dart : on trie par (score, index
   // d'origine) pour preserver explicitement l'ordre d'entree a qualite egale.
   final indexed = <({int index, PosSearchHit<T> hit})>[
-    for (var index = 0; index < hits.length; index++) (index: index, hit: hits[index]),
+    for (var index = 0; index < hits.length; index++)
+      (index: index, hit: hits[index]),
   ];
 
   indexed.sort((a, b) {
@@ -230,7 +232,8 @@ class PosItemAffinity {
         'last_used_at': lastUsedAt?.toIso8601String(),
       };
 
-  factory PosItemAffinity.fromJson(Map<String, dynamic> json) => PosItemAffinity(
+  factory PosItemAffinity.fromJson(Map<String, dynamic> json) =>
+      PosItemAffinity(
         itemId: (json['item_id'] as num).toInt(),
         favourite: (json['favourite'] as bool?) ?? false,
         usageCount: (json['usage_count'] as num?)?.toInt() ?? 0,
@@ -274,7 +277,8 @@ class PosAffinityRegistry {
   }
 
   PosAffinityRegistry _withEntry(PosItemAffinity entry) {
-    final updated = Map<int, PosItemAffinity>.of(entries)..[entry.itemId] = entry;
+    final updated = Map<int, PosItemAffinity>.of(entries)
+      ..[entry.itemId] = entry;
 
     if (updated.length > maxEntries) {
       // On oublie d'abord les non-favoris les moins utilises : un favori
@@ -338,7 +342,9 @@ class PosAffinityRegistry {
 
   /// Les articles recemment utilises, du plus recent au plus ancien.
   List<int> recentItemIds({int limit = 12}) {
-    final used = entries.values.where((entry) => entry.lastUsedAt != null).toList()
+    final used = entries.values
+        .where((entry) => entry.lastUsedAt != null)
+        .toList()
       ..sort((a, b) => b.lastUsedAt!.compareTo(a.lastUsedAt!));
 
     return [for (final entry in used.take(limit)) entry.itemId];

@@ -27,7 +27,8 @@ void main() {
       expect(find.text('Imprimante Bar'), findsOneWidget);
     });
 
-    testWidgets('affiche un message quand aucune imprimante n est trouvee', (tester) async {
+    testWidgets('affiche un message quand aucune imprimante n est trouvee',
+        (tester) async {
       final service = FakePosPrinterService();
 
       await tester.pumpWidget(wrap(PosPrinterPickerScreen(service: service)));
@@ -67,7 +68,8 @@ void main() {
       final service = FakePosPrinterService(
         printers: const [PosPrinterDevice(id: 'AA:BB', name: 'Caisse 1')],
       );
-      await service.select(const PosPrinterDevice(id: 'AA:BB', name: 'Caisse 1'));
+      await service
+          .select(const PosPrinterDevice(id: 'AA:BB', name: 'Caisse 1'));
       await service.connect();
 
       await tester.pumpWidget(
@@ -113,7 +115,8 @@ void main() {
         failOnPrint: true,
         failMessage: 'Papier manquant.',
       );
-      await service.select(const PosPrinterDevice(id: 'AA:BB', name: 'Caisse 1'));
+      await service
+          .select(const PosPrinterDevice(id: 'AA:BB', name: 'Caisse 1'));
       await service.connect();
 
       await tester.pumpWidget(
@@ -176,7 +179,8 @@ void main() {
       expect(find.text('Completez les choix obligatoires'), findsOneWidget);
     });
 
-    testWidgets('active la validation apres le choix obligatoire', (tester) async {
+    testWidgets('active la validation apres le choix obligatoire',
+        (tester) async {
       await tester.pumpWidget(
         wrap(const Scaffold(
           body: PosOptionSheet(

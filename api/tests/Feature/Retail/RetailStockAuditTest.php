@@ -136,6 +136,18 @@ class RetailStockAuditTest extends TestCase
         return $level;
     }
 
+    /**
+     * Cout moyen pondere courant, lu via le helper `level()`.
+     *
+     * Le type de retour explicite (`?int`) evite que PHPStan ne replie la
+     * valeur en constante et ne declare l'assertion « toujours vraie »
+     * (method.alreadyNarrowedType, niveau 8).
+     */
+    private function avgCost(int $locationId, int $productId): ?int
+    {
+        return $this->level($locationId, $productId)->avg_cost_minor;
+    }
+
     // ── #9268 — transferts ────────────────────────────────────────────────
 
     public function test_transfer_creates_two_linked_movements(): void
@@ -168,10 +180,18 @@ class RetailStockAuditTest extends TestCase
             ->get();
 
         $this->assertCount(2, $movements);
-        $this->assertSame('transfer_out', $movements[0]->reason_code->value);
-        $this->assertSame('transfer_in', $movements[1]->reason_code->value);
-        $this->assertSame(-20.0, (float) $movements[0]->quantity_delta);
-        $this->assertSame(20.0, (float) $movements[1]->quantity_delta);
+
+        // `Collection::offsetGet()` rend `TValue|null` : on prouve l'existence
+        // avant de lire les proprietes (PHPStan strict niveau 8).
+        $out = $movements[0] ?? null;
+        $in = $movements[1] ?? null;
+        $this->assertInstanceOf(RetailInventoryMovement::class, $out);
+        $this->assertInstanceOf(RetailInventoryMovement::class, $in);
+
+        $this->assertSame('transfer_out', $out->reason_code->value);
+        $this->assertSame('transfer_in', $in->reason_code->value);
+        $this->assertSame(-20.0, (float) $out->quantity_delta);
+        $this->assertSame(20.0, (float) $in->quantity_delta);
 
         // Les niveaux suivent : 30 restants a l'entrepot, 20 en boutique.
         $this->assertSame(30.0, (float) $this->level((int) $warehouse['id'], (int) $product['id'])->quantity);
@@ -264,7 +284,7 @@ class RetailStockAuditTest extends TestCase
             'unit_cost_minor' => 1_000,
         ])->assertStatus(201);
 
-        $this->assertSame(1_000, $this->level((int) $store['id'], (int) $product['id'])->avg_cost_minor);
+        $this->assertSame(1_000, $this->avgCost((int) $store['id'], (int) $product['id']));
 
         // 10 unites a 2 000 -> (10*1000 + 10*2000) / 20 = 1 500.
         $this->postMovement($this->principalA, (int) $store['id'], (int) $product['id'], [
@@ -272,7 +292,7 @@ class RetailStockAuditTest extends TestCase
             'unit_cost_minor' => 2_000,
         ])->assertStatus(201);
 
-        $this->assertSame(1_500, $this->level((int) $store['id'], (int) $product['id'])->avg_cost_minor);
+        $this->assertSame(1_500, $this->avgCost((int) $store['id'], (int) $product['id']));
 
         // Sortie de 5 : la moyenne NE BOUGE PAS (cout moyen pondere, pas FIFO).
         $this->postMovement($this->principalA, (int) $store['id'], (int) $product['id'], [
@@ -280,7 +300,7 @@ class RetailStockAuditTest extends TestCase
             'reason_code' => 'sale',
         ])->assertStatus(201);
 
-        $this->assertSame(1_500, $this->level((int) $store['id'], (int) $product['id'])->avg_cost_minor);
+        $this->assertSame(1_500, $this->avgCost((int) $store['id'], (int) $product['id']));
     }
 
     public function test_entry_without_unit_cost_does_not_invent_a_cost(): void
@@ -294,7 +314,7 @@ class RetailStockAuditTest extends TestCase
 
         // Aucun cout fourni : le cout moyen reste inconnu (null), il n'est
         // pas invente a partir du cout catalogue.
-        $this->assertNull($this->level((int) $store['id'], (int) $product['id'])->avg_cost_minor);
+        $this->assertNull($this->avgCost((int) $store['id'], (int) $product['id']));
     }
 
     public function test_stock_valuation_uses_average_cost_and_reports_its_source(): void

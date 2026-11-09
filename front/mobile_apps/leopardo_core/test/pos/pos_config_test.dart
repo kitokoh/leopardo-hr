@@ -5,7 +5,8 @@ import 'package:leopardo_core/core/pos/pos_config.dart';
 void main() {
   group('PosAppConfig.normalizeBaseUrl', () {
     test('n ajoute pas de scheme s il manque', () {
-      expect(PosAppConfig.normalizeBaseUrl('api.leopardo.app'), 'https://api.leopardo.app');
+      expect(PosAppConfig.normalizeBaseUrl('api.leopardo.app'),
+          'https://api.leopardo.app');
     });
 
     test('garde un scheme deja present', () {
@@ -16,11 +17,13 @@ void main() {
     });
 
     test('retire le slash final', () {
-      expect(PosAppConfig.normalizeBaseUrl('https://api.leopardo.app/'), 'https://api.leopardo.app');
+      expect(PosAppConfig.normalizeBaseUrl('https://api.leopardo.app/'),
+          'https://api.leopardo.app');
     });
 
     test('ignore les espaces parasites', () {
-      expect(PosAppConfig.normalizeBaseUrl('  https://api.leopardo.app  '), 'https://api.leopardo.app');
+      expect(PosAppConfig.normalizeBaseUrl('  https://api.leopardo.app  '),
+          'https://api.leopardo.app');
     });
 
     test('laisse une saisie vide telle quelle', () {
@@ -140,8 +143,12 @@ void main() {
     test('matches verifie une saisie', () {
       final stored = PosPinCode.hash('4821', salt: 'tablette-01');
 
-      expect(PosPinCode.matches('4821', storedHash: stored, salt: 'tablette-01'), isTrue);
-      expect(PosPinCode.matches('0000', storedHash: stored, salt: 'tablette-01'), isFalse);
+      expect(
+          PosPinCode.matches('4821', storedHash: stored, salt: 'tablette-01'),
+          isTrue);
+      expect(
+          PosPinCode.matches('0000', storedHash: stored, salt: 'tablette-01'),
+          isFalse);
     });
   });
 }
