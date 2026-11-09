@@ -904,10 +904,10 @@ packages:
     dependency: "direct main"
     description:
       name: mobile_scanner
-      sha256: "175c62fc813c2bd762757359a2088f8cbdb72020cf85d4cd27fc4d3fe59be058"
+      sha256: "9d1ae480f28c1588dc6e6292ad35d2e0b7d7920c32cc61bf50a3281cd2ad6fde"
       url: "https://pub.dev"
     source: hosted
-    version: "7.5.0"
+    version: "7.4.4"
   native_toolchain_c:
     dependency: transitive
     description:
