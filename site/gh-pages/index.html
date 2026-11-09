@@ -38,10 +38,19 @@
       <a href="#apps" data-i18n="nav.apps">Apps</a>
       <a href="#demo" data-i18n="nav.demo">Live demo</a>
       <a href="#businessos" data-i18n="nav.businessos">Business OS</a>
-      <a href="recette/" data-i18n="nav.recette">QA report</a>
+      <a href="recette/" data-i18n="nav.recette">QA portal</a>
       <a class="btn btn-ghost" href="https://leopardo-prod.vercel.app/restaurateur" target="_blank" rel="noopener" data-i18n="nav.cta">Get the free pack</a>
       <button class="btn lang-toggle" id="langToggle" aria-label="Switch language">FR</button>
     </div>
+  </div>
+  <div class="container subnav" aria-label="Recette">
+    <span class="subnav-label" data-i18n="subnav.label">QA portal:</span>
+    <a href="recette/" data-i18n="subnav.home">Overview</a>
+    <a href="recette/profils/" data-i18n="subnav.profiles">By profile</a>
+    <a href="recette/modules/" data-i18n="subnav.modules">By module</a>
+    <a href="recette/recap.html" data-i18n="subnav.recap">Summary</a>
+    <a href="recette/tests-ia-leopardo-hr.md" data-i18n="subnav.md">Markdown</a>
+    <a href="recette/prompt-agent-testeur.md" data-i18n="subnav.prompt">AI prompt</a>
   </div>
 </nav>
 
@@ -216,7 +225,8 @@
 <script>
 const I18N = {
   en: {
-    "nav.suite":"The suite","nav.packs":"Free packs","nav.apps":"Apps","nav.demo":"Live demo","nav.businessos":"Business OS","nav.recette":"QA report","nav.cta":"Get the free pack",
+    "nav.suite":"The suite","nav.packs":"Free packs","nav.apps":"Apps","nav.demo":"Live demo","nav.businessos":"Business OS","nav.recette":"QA portal","nav.cta":"Get the free pack",
+    "subnav.label":"QA portal:","subnav.home":"Overview","subnav.profiles":"By profile","subnav.modules":"By module","subnav.recap":"Summary","subnav.md":"Markdown","subnav.prompt":"AI prompt",
     "hero.eyebrow":"Business OS · Cloud or self-hosted",
     "hero.title":"The <span class=\"teal\">Business OS</span> for field-based companies",
     "hero.sub":"Leopardo replaces Excel, WhatsApp and paper with one app — HR &amp; payroll, attendance, leave, CRM, accounting and operations, on web, mobile and kiosks.",
@@ -277,7 +287,8 @@ const I18N = {
     "lang.toggleAria":"Switch the site to French"
   },
   fr: {
-    "nav.suite":"La suite","nav.packs":"Packs offerts","nav.apps":"Apps","nav.demo":"Démo live","nav.businessos":"Business OS","nav.recette":"Recette","nav.cta":"Recevoir le pack offert",
+    "nav.suite":"La suite","nav.packs":"Packs offerts","nav.apps":"Apps","nav.demo":"Démo live","nav.businessos":"Business OS","nav.recette":"Portail recette","nav.cta":"Recevoir le pack offert",
+    "subnav.label":"Portail recette :","subnav.home":"Vue d'ensemble","subnav.profiles":"Par profil","subnav.modules":"Par module","subnav.recap":"Récapitulatif","subnav.md":"Markdown","subnav.prompt":"Prompt IA",
     "hero.eyebrow":"Business OS · Cloud ou auto-hébergé",
     "hero.title":"Le <span class=\"teal\">Business OS</span> des entreprises de terrain",
     "hero.sub":"Leopardo remplace Excel, WhatsApp et le papier par une seule application — RH &amp; paie, pointage, absences, CRM, comptabilité et opérations, sur web, mobile et bornes.",

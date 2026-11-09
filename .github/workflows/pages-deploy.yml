@@ -5,9 +5,13 @@ name: Deploy Landing - GitHub Pages
 # sous `site/gh-pages/`. Objectif fondateur : « ne garder que main » (#6815).
 # Contenu identique à l'ancienne branche (mêmes chemins relatifs).
 #
-# Ajout : le cahier de recette `docs/recette/tests-ia-leopardo-hr.md` est rendu
-# en HTML et publié sous `/recette/` du même site Pages, afin que les testeurs
-# IA et humains disposent d'une page lisible (tableaux, colonnes à remplir).
+# Ajout : le portail de recette `docs/recette/` (multi-pages : accueil, une page
+# par profil utilisateur, une page par module, une fiche de résultats par cas
+# d'usage, récapitulatif) est publié sous `/recette/` du même site Pages, afin
+# que les testeurs IA et humains disposent d'un portail organisé et navigable.
+# Le portail est généré par `docs/recette/build_portal.py` (source de vérité :
+# la taxonomie profils × modules × cas d'usage). Le Markdown et le prompt de
+# l'agent testeur sont également publiés sous `/recette/`.
 
 on:
   push:
@@ -46,20 +50,15 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Markdown renderer
-        run: pip install --quiet 'markdown==3.11.2'
-
-      - name: Assemble site (landing + cahier de recette)
+      - name: Assemble site (landing + portail de recette)
         run: |
           set -euo pipefail
           rm -rf _site
           cp -r site/gh-pages _site
+          # Régénère le portail depuis la taxonomie (source de vérité) puis le publie.
+          python3 docs/recette/build_portal.py --out docs/recette
           mkdir -p _site/recette
-          cp docs/recette/tests-ia-leopardo-hr.md _site/recette/tests-ia-leopardo-hr.md
-          cp docs/recette/prompt-agent-testeur.md _site/recette/prompt-agent-testeur.md
-          python3 docs/recette/build_pages.py \
-            docs/recette/tests-ia-leopardo-hr.md \
-            _site/recette/index.html
+          cp -r docs/recette/. _site/recette/
           # L'onglet « Recette » est déjà présent dans le menu principal de
           # site/gh-pages/index.html (lien relatif vers recette/), donc aucune
           # injection de lien n'est nécessaire ici.

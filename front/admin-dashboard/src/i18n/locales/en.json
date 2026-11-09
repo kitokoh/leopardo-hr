@@ -9522,7 +9522,8 @@
     "conversationBack": "Back",
     "conversationStart": "Start a conversation",
     "conversationStarted": "Your message was sent to the professional.",
-    "conversationStartBody": "Hello, I would like to get in touch."
+    "conversationStartBody": "Hello, I would like to get in touch.",
+    "offlineCacheNotice": "No network — showing your last search. Results may be out of date."
   },
   "publicInbox": {
     "pageTitle": "Public requests",

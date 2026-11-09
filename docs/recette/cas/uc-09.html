@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UC-09 — Multilingue et RTL (fr / en / tr / ar) — Portail de recette Leopardo</title>
+<link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">L</span>
+      <span class="brand-text">Portail de recette <small>leopardo-hr</small></span>
+    </a>
+    <nav class="mainnav">
+      <a href="../index.html">Accueil</a>
+      <a href="../profils/index.html">Profils</a>
+      <a href="../modules/index.html">Modules</a>
+      <a href="../recap.html">Récapitulatif</a>
+      <a href="../tests-ia-leopardo-hr.md">Markdown</a>
+      <a href="../prompt-agent-testeur.md">Prompt IA</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <h1 class="page-title">UC-09 — Multilingue et RTL (fr / en / tr / ar)</h1>
+  <p class="page-sub">Fiche de résultats du cas d&#x27;usage.</p>
+  
+<nav class="breadcrumb"><a href="../index.html">Portail</a> <span class="sep">›</span> <a href="profils/index.html">Profils</a> <span class="sep">›</span> <a href="../profils/employe.html">Employé</a> <span class="sep">›</span> <span aria-current="page">UC-09</span></nav>
+<div class="uc-head">
+  <div class="uc-id">UC-09</div>
+  <div class="uc-head-main">
+    <h2 class="uc-title">Multilingue et RTL (fr / en / tr / ar)</h2>
+    <div class="chips">
+      <span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">UI/UX</span>
+      <span class="badge badge-done">✔ exécuté</span>
+      <span class="chip">Profil : <a href="../profils/employe.html">Employé</a> · <a href="../profils/superviseur-kiosque.html">Superviseur / Kiosque</a></span>
+      <span class="chip">Module : <a href="../modules/i18n.html">Multilingue &amp; RTL</a></span>
+    </div>
+  </div>
+</div>
+
+<div class="uc-grid">
+  <section class="panel">
+    <h3>Description / préconditions</h3>
+    <p>Vérifier la cohérence i18n sur les surfaces web et kiosque, y compris l&#x27;arabe en RTL.</p>
+    <p class="muted"><strong>Prérequis :</strong> Accès web + kiosque local ; langues supportées : <code>fr</code>, <code>en</code>, <code>tr</code>, <code>ar</code>.</p>
+  </section>
+  <section class="panel">
+    <h3>Résultat attendu</h3>
+    <p>Les quatre langues s&#x27;appliquent sans rechargement cassé ; le RTL est correct ; aucune clé brute ni débordement ; les libellés métier restent compréhensibles.</p>
+  </section>
+</div>
+
+<section class="panel">
+  <h3>Étapes de test</h3>
+  <ol class="steps"><li>Sur l&#x27;espace web, changer la langue en <code>en</code> et vérifier l&#x27;absence de texte résiduel.</li><li>Passer en <code>tr</code> et vérifier l&#x27;affichage.</li><li>Passer en <code>ar</code> et vérifier l&#x27;inversion RTL.</li><li>Refaire le test sur le kiosque via son sélecteur de langue.</li><li>Vérifier qu&#x27;aucune clé de traduction brute n&#x27;apparaît.</li></ol>
+</section>
+
+<section class="panel">
+  <h3>Fiche de résultats</h3>
+  <div class="table-wrap">
+    <table class="result-table">
+      <thead>
+        <tr>
+          <th class="col-note">Note IA (/5)</th>
+          <th>Observation IA</th>
+          <th class="col-note">Note humaine (/5)</th>
+          <th>Observation humaine</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="center"><span class="note note-good">5/5</span></td>
+          <td class="obs">API : <code>GET /auth/me</code> expose <code>language</code> et <code>is_rtl</code> ; <code>PATCH /auth/language {language:&quot;ar&quot;}</code> → <strong>200</strong>, puis <code>is_rtl=true</code> confirmé sur <code>/auth/me</code>. Kiosque : bascule en <code>ar</code> → <code>dir=&quot;rtl&quot;</code>, <code>lang=&quot;ar&quot;</code>. Aucune clé de traduction brute détectée dans le DOM (<code>[]</code>). Tests kiosque <code>npm test</code> → <strong>40 tests OK</strong> (i18n 4 langues / 228 clés, parité + usage vérifiés).</td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+          <td class="human-cell"><span class="muted">Réservé à l'évaluation humaine</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel eval-panel" data-uc="UC-09">
+  <h3>Votre évaluation (saisie locale)</h3>
+  <p class="muted">Cette saisie est enregistrée dans votre navigateur (localStorage) et peut être exportée en JSON.
+  Elle ne modifie pas les colonnes IA/humaine du document versionné.</p>
+  <div class="eval-form">
+    <label>Votre note (/5)
+      <select class="eval-note">
+        <option value="">—</option>
+        <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+      </select>
+    </label>
+    <label class="eval-obs-label">Votre observation
+      <textarea class="eval-obs" rows="3" placeholder="Décrivez factuellement ce que vous avez observé…"></textarea>
+    </label>
+    <div class="eval-actions">
+      <button class="btn btn-primary eval-save" type="button">Enregistrer</button>
+      <button class="btn btn-ghost eval-export" type="button">Exporter mes évaluations (JSON)</button>
+      <span class="eval-status muted"></span>
+    </div>
+  </div>
+</section>
+
+<p class="uc-nav">
+  <a class="btn-back" href="../index.html">← Portail</a>
+  <a class="btn-back" href="../profils/employe.html">← Profil Employé</a>
+  <a class="btn-back" href="../modules/i18n.html">← Module Multilingue &amp; RTL</a>
+</p>
+
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <p>Portail de recette <strong>leopardo-hr</strong> — dépôt
+      <a href="https://github.com/Kitokoh/leopardo-hr" target="_blank" rel="noopener">Kitokoh/leopardo-hr</a>.
+      Colonnes « Note IA » / « Observation IA » remplies par le testeur IA ;
+      colonnes « Note humaine » / « Observation humaine » réservées à l'évaluation humaine.</p>
+  </div>
+</footer>
+<script src="../assets/portal.js"></script>
+</body>
+</html>

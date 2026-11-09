@@ -159,6 +159,58 @@ test.describe('Leopardo Public — parcours visiteur', () => {
 
     await expect(page.locator('a[href="/restaurants/leopardo-tajine"]')).toHaveCount(0);
   });
+
+  /**
+   * M4 (#9106) — parcours hors ligne : avion → cache affiché → retour en ligne.
+   *
+   * Critère d'acceptation : « parcours hors ligne testé (avion → cache affiché →
+   * retour en ligne → sync) ». Avant ce correctif, une recherche réussie puis
+   * une coupure réseau affichaient « Impossible de charger les résultats » —
+   * alors que la réponse précédente était encore en mémoire.
+   *
+   * ⚠️ Le premier rendu de `/decouvrir` est SERVEUR : on ne peut pas le figer
+   * par `page.route()`. Le test porte donc sur la recherche CLIENTE (soumise
+   * depuis le formulaire), qui est bien un fetch navigateur — c'est exactement
+   * le chemin que le cache hors ligne couvre.
+   */
+  test('hors ligne : la dernière recherche réussie est restituée depuis le cache', async ({ page }) => {
+    // 1. Une recherche réussit : elle est mise en cache.
+    await mockDiscover(page, [publicItem()]);
+    await page.goto('/decouvrir');
+
+    const search = page.getByRole('searchbox');
+    await search.fill('tajine');
+    await search.press('Enter');
+
+    await expect(page.getByText('Leopardo Tajine')).toBeVisible();
+
+    // 2. Le réseau tombe (mode avion).
+    await page.route(DISCOVER_URL, (route: Route) => route.abort('failed'));
+
+    // 3. Une nouvelle recherche échoue : le cache prend le relais.
+    await search.fill('tajine');
+    await search.press('Enter');
+
+    // ⚠️ `apiFetch` réessaie 2 fois avec un backoff de 3 s puis 6 s (cold-start
+    // Render) : l'échec n'est définitif qu'après ~9 s. Le délai par défaut de
+    // 5 s expirerait AVANT que le cache ne prenne le relais — on l'allonge.
+    const cacheTimeout = { timeout: 20_000 };
+
+    // Les résultats en cache reviennent, et l'écran DIT qu'ils viennent du cache.
+    await expect(page.getByText('Leopardo Tajine')).toBeVisible(cacheTimeout);
+    await expect(page.getByText(/réseau indisponible/i)).toBeVisible(cacheTimeout);
+    // Jamais l'erreur sèche : le cache a pris le relais.
+    await expect(page.getByText(/impossible de charger/i)).toHaveCount(0);
+
+    // 4. Retour en ligne : une recherche fraîche reprend, et l'avis de cache disparaît.
+    await page.unroute(DISCOVER_URL);
+    await mockDiscover(page, [publicItem({ name: 'Leopardo Tajine (frais)' })]);
+    await search.fill('tajine');
+    await search.press('Enter');
+
+    await expect(page.getByText('Leopardo Tajine (frais)')).toBeVisible(cacheTimeout);
+    await expect(page.getByText(/réseau indisponible/i)).toHaveCount(0);
+  });
 });
 
 test.describe('Leopardo Public — fiches publiques Retail et VTC (P1-02)', () => {
