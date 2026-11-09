@@ -1,11 +1,17 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/pos/pos_barcode_scanner.dart';
+import 'package:leopardo_core/core/pos/pos_config.dart';
+import 'package:leopardo_core/core/pos/pos_esc_pos.dart';
 import 'package:leopardo_core/core/pos/pos_input.dart';
+import 'package:leopardo_core/core/pos/pos_printer_screen.dart';
+import 'package:leopardo_core/core/pos/pos_settings_screen.dart';
 import 'package:leopardo_core/core/pos/pos_ticket.dart';
 import 'package:leopardo_core/core/pos/pos_widgets.dart';
 
+import '../../core/api/retail_api_client.dart';
 import '../../core/models/retail_models.dart';
 import '../../core/theme/retail_theme.dart';
 import 'cash_movement_sheet.dart';
@@ -14,6 +20,7 @@ import 'numeric_keypad.dart';
 import 'pos_states.dart';
 import 'refund_sheet.dart';
 import 'retail_pos_controller.dart';
+import 'retail_pos_providers.dart';
 
 /// Caisse tablette Retail — disposition 3 colonnes (#9215).
 ///
@@ -187,6 +194,12 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
               icon: const Icon(Icons.receipt_long),
             ),
             IconButton(
+              key: const Key('pos-open-settings'),
+              tooltip: 'Reglages de la tablette',
+              onPressed: _openSettings,
+              icon: const Icon(Icons.settings_outlined),
+            ),
+            IconButton(
               tooltip: 'Mouvement de caisse',
               onPressed: state.sessionOpen ? _openCashMovement : null,
               icon: const Icon(Icons.account_balance_wallet_outlined),
@@ -355,10 +368,139 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
       isScrollControlled: true,
       builder: (_) => PosReceiptPreview(
         receipt: state.receipt,
+        onPrint: () => _printReceipt(state.receipt),
         onConfirm: () {
           Navigator.of(context).pop();
           _pay(RetailPaymentMethod.cash);
         },
+      ),
+    );
+  }
+
+  /// Ouvre les reglages de la tablette (#9263), proteges par PIN.
+  Future<void> _openSettings() async {
+    final store = ref.read(retailLocalStoreProvider);
+    final current = ref.read(retailConfigProvider) ??
+        const PosAppConfig(apiBaseUrl: 'https://api.leopardo.app/api/v1');
+
+    await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => PosSettingsScreen(
+          initialConfig: current,
+          locationLabel: 'Emplacement',
+          pinHash: ref.read(retailPinHashProvider),
+          onSave: (config) async {
+            await store.saveConfig(config);
+            ref.invalidate(retailConfigProvider);
+          },
+          onPinChanged: (pin) async {
+            await store.savePinHash(PosPinCode.hash(pin, salt: 'leopardo-pos'));
+            ref.invalidate(retailPinHashProvider);
+          },
+          probe: (url) => checkPosBackendHealth(
+            apiBaseUrl: url,
+            performRequest: (uri) async {
+              final dio = Dio(
+                BaseOptions(
+                  connectTimeout: const Duration(seconds: 8),
+                  receiveTimeout: const Duration(seconds: 8),
+                ),
+              );
+
+              try {
+                final response = await dio.get<dynamic>(uri.toString());
+
+                return response.statusCode ?? 0;
+              } on DioException catch (error) {
+                final status = error.response?.statusCode;
+
+                if (status != null) {
+                  return status;
+                }
+
+                if (error.type == DioExceptionType.connectionTimeout ||
+                    error.type == DioExceptionType.receiveTimeout) {
+                  throw const PosHealthTimeout();
+                }
+
+                rethrow;
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Ouvre le choix de l'imprimante (#9264).
+  Future<void> _openPrinterPicker() async {
+    final store = ref.read(retailLocalStoreProvider);
+    final service = ref.read(retailPrinterProvider);
+
+    await Navigator.of(context).push<PosPrinterDevice>(
+      MaterialPageRoute(
+        builder: (_) => PosPrinterPickerScreen(
+          service: service,
+          onSelected: (device) async {
+            await store.savePrinter(id: device.id, name: device.name);
+          },
+        ),
+      ),
+    );
+  }
+
+  /// Imprime le ticket sur l'imprimante thermique (#9264).
+  Future<void> _printReceipt(PosReceipt receipt) async {
+    final service = ref.read(retailPrinterProvider);
+
+    if (service.selectedPrinter == null) {
+      final go = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Aucune imprimante'),
+          content: const Text(
+            'Aucune imprimante n\u2019est configuree sur cette tablette. '
+            'Voulez-vous en choisir une maintenant ?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Plus tard'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Choisir'),
+            ),
+          ],
+        ),
+      );
+
+      if (go != true || !mounted) {
+        return;
+      }
+
+      await _openPrinterPicker();
+
+      if (!mounted || service.selectedPrinter == null) {
+        return;
+      }
+    }
+
+    final bytes = const PosEscPosGenerator().render(
+      receipt: receipt,
+      shopName: 'Leopardo Retail',
+    );
+
+    final outcome = await service.print(bytes);
+
+    if (!mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(outcome.message),
+        backgroundColor: outcome.success ? null : Theme.of(context).colorScheme.error,
       ),
     );
   }

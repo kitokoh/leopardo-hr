@@ -232,12 +232,17 @@ class PosReceiptPreview extends StatelessWidget {
     this.currencySuffix = '',
     this.onConfirm,
     this.confirmLabel = 'Encaisser',
+    this.onPrint,
   });
 
   final PosReceipt receipt;
   final String currencySuffix;
   final VoidCallback? onConfirm;
   final String confirmLabel;
+
+  /// Imprime le ticket (#9264). Null = pas d'imprimante configuree, le
+  /// bouton n'apparait pas plutot que d'echouer au tap.
+  final VoidCallback? onPrint;
 
   @override
   Widget build(BuildContext context) {
@@ -276,21 +281,39 @@ class PosReceiptPreview extends StatelessWidget {
                   for (final line in receipt.lines)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Text(
-                              '${line.quantity} × ${line.name}',
-                              style: const TextStyle(fontSize: 16),
-                            ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  '${line.quantity} × ${line.name}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              ),
+                              Text(
+                                formatPosMinor(line.totalMinor, suffix: currencySuffix),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            formatPosMinor(line.totalMinor, suffix: currencySuffix),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                          // Options du plat : le client doit retrouver sur son
+                          // ticket exactement ce qu'il a commande.
+                          for (final option in line.options)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16, top: 2),
+                              child: Text(
+                                '+ $option',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: scheme.onSurfaceVariant,
+                                ),
+                              ),
                             ),
-                          ),
                         ],
                       ),
                     ),
@@ -363,6 +386,15 @@ class PosReceiptPreview extends StatelessWidget {
             Text(
               'Note : ${receipt.note}',
               style: textTheme.bodyMedium,
+            ),
+          ],
+          if (onPrint != null) ...[
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              key: const Key('pos-receipt-print'),
+              onPressed: onPrint,
+              icon: const Icon(Icons.print_outlined),
+              label: const Text('Imprimer le ticket'),
             ),
           ],
           if (onConfirm != null) ...[
