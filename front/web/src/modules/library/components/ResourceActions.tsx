@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { BookOpen, Download, Heart, Lock, ShoppingCart, Star } from 'lucide-react';
 import { LibraryReader } from './LibraryReader';
 import { PdfReader } from './PdfReader';
+import { EpubReader } from './EpubReader';
 import { loadFavorites, loadProgress, toggleFavorite, type ReadingProgress } from '../lib/progress';
 import type { AccessCapabilities } from '../lib/access';
 
@@ -14,6 +15,8 @@ interface ResourceActionsProps {
   pages: string[];
   /** URL du fichier PDF (présignée ou route interne signée), si disponible. */
   pdfUrl?: string;
+  /** URL du fichier EPUB (présignée ou route interne signée), si disponible. */
+  epubUrl?: string;
   capabilities: AccessCapabilities;
   copy: {
     readOnline: string;
@@ -41,6 +44,8 @@ interface ResourceActionsProps {
       close: string;
       loading: string;
       error: string;
+      prev: string;
+      next: string;
     };
   };
 }
@@ -53,7 +58,7 @@ interface ResourceActionsProps {
  * capacités d'accès sont calculées côté serveur et passées en props — le
  * bouton de téléchargement n'apparaît QUE si la licence et l'accès l'autorisent.
  */
-export function ResourceActions({ slug, title, pages, pdfUrl, capabilities, copy }: ResourceActionsProps) {
+export function ResourceActions({ slug, title, pages, pdfUrl, epubUrl, capabilities, copy }: ResourceActionsProps) {
   const [reading, setReading] = useState(false);
   const [favorite, setFavorite] = useState(false);
   const [progress, setProgress] = useState<ReadingProgress | null>(null);
@@ -64,9 +69,12 @@ export function ResourceActions({ slug, title, pages, pdfUrl, capabilities, copy
   }, [slug]);
 
   // Lecture possible si le droit est acquis ET qu'il y a un contenu : soit un
-  // PDF (lecteur pdf.js), soit un contenu texte paginé (lecteur simple).
+  // EPUB (lecteur epub.js), soit un PDF (lecteur pdf.js), soit un contenu texte
+  // paginé (lecteur simple). L'EPUB est prioritaire : c'est le format de
+  // référence pour un livre numérique (mise en page fluide, accessibilité).
+  const hasEpub = typeof epubUrl === 'string' && epubUrl !== '';
   const hasPdf = typeof pdfUrl === 'string' && pdfUrl !== '';
-  const canRead = capabilities.canRead && (pages.length > 0 || hasPdf);
+  const canRead = capabilities.canRead && (pages.length > 0 || hasPdf || hasEpub);
 
   return (
     <div className="space-y-4">
@@ -135,11 +143,21 @@ export function ResourceActions({ slug, title, pages, pdfUrl, capabilities, copy
         </p>
       )}
 
-      {!canRead && pages.length === 0 && !hasPdf && (
+      {!canRead && pages.length === 0 && !hasPdf && !hasEpub && (
         <p className="text-sm text-slate-500 dark:text-slate-400">{copy.notAvailable}</p>
       )}
 
-      {reading && canRead && hasPdf && (
+      {reading && canRead && hasEpub && (
+        <EpubReader
+          slug={slug}
+          title={title}
+          fileUrl={epubUrl as string}
+          initialProgress={progress}
+          copy={copy.reader}
+        />
+      )}
+
+      {reading && canRead && !hasEpub && hasPdf && (
         <PdfReader
           slug={slug}
           title={title}
@@ -149,7 +167,7 @@ export function ResourceActions({ slug, title, pages, pdfUrl, capabilities, copy
         />
       )}
 
-      {reading && canRead && !hasPdf && (
+      {reading && canRead && !hasEpub && !hasPdf && (
         <LibraryReader
           slug={slug}
           title={title}

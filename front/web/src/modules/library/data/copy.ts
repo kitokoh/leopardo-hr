@@ -97,6 +97,10 @@ export interface LibraryCopy {
     notAvailable: string;
     loading: string;
     error: string;
+    /** Navigation chapitre précédent (lecteur EPUB). */
+    prev: string;
+    /** Navigation chapitre suivant (lecteur EPUB). */
+    next: string;
   };
   account: {
     title: string;
@@ -227,6 +231,8 @@ const fr: LibraryCopy = {
     notAvailable: 'Lecture en ligne non disponible pour cette ressource.',
     loading: 'Chargement du document…',
     error: 'Impossible de charger le document.',
+    prev: 'Chapitre précédent',
+    next: 'Chapitre suivant',
   },
   account: {
     title: 'Mon espace',
@@ -358,6 +364,8 @@ const en: LibraryCopy = {
     notAvailable: 'Online reading is not available for this resource.',
     loading: 'Loading document…',
     error: 'Unable to load the document.',
+    prev: 'Previous chapter',
+    next: 'Next chapter',
   },
   account: {
     title: 'My space',
@@ -489,6 +497,8 @@ const tr: LibraryCopy = {
     notAvailable: 'Bu kaynak için çevrimiçi okuma mevcut değil.',
     loading: 'Belge yükleniyor…',
     error: 'Belge yüklenemedi.',
+    prev: 'Önceki bölüm',
+    next: 'Sonraki bölüm',
   },
   account: {
     title: 'Alanım',
@@ -620,6 +630,8 @@ const ar: LibraryCopy = {
     notAvailable: 'القراءة عبر الإنترنت غير متاحة لهذا المورد.',
     loading: 'جارٍ تحميل المستند…',
     error: 'تعذر تحميل المستند.',
+    prev: 'الفصل السابق',
+    next: 'الفصل التالي',
   },
   account: {
     title: 'مساحتي',
