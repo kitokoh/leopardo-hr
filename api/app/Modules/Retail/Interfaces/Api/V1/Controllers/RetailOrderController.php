@@ -13,9 +13,11 @@ use App\Modules\Retail\Domain\Enums\RetailPaymentMethod;
 use App\Modules\Retail\Domain\Models\RetailOrder;
 use App\Modules\Retail\Domain\Models\RetailOrderItem;
 use App\Modules\Retail\Domain\Models\RetailOrderPayment;
+use App\Modules\Retail\Domain\Models\RetailPosRefund;
 use App\Modules\Retail\Domain\Models\RetailPosSession;
 use App\Modules\Retail\Infrastructure\Services\RetailDocumentPdfRenderer;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\CancelRetailOrderRequest;
+use App\Modules\Retail\Interfaces\Api\V1\Requests\RefundRetailOrderRequest;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\StoreRetailOrderPaymentRequest;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\StoreRetailOrderRequest;
 use Illuminate\Http\JsonResponse;
@@ -179,6 +181,49 @@ class RetailOrderController extends Controller
     }
 
     /**
+     * Rembourse une commande encaissee (#9208), totalement ou partiellement.
+     *
+     * Avant ce correctif, le POS ne savait qu'ANNULER une commande : le stock
+     * etait restaure mais l'argent restait encaisse. Le remboursement est
+     * borne par le total encaisse (cumul), exige un motif et absorbe les
+     * rejeux par cle d'idempotence.
+     */
+    public function refund(RefundRetailOrderRequest $request, RetailOrder $order): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($order->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('refund', $order);
+
+        /** @var list<array{product_id: int, quantity: float}>|null $restockLines */
+        $restockLines = $request->filled('restock_lines')
+            ? array_map(
+                static fn (array $line): array => [
+                    'product_id' => (int) $line['product_id'],
+                    'quantity' => (float) $line['quantity'],
+                ],
+                (array) $request->input('restock_lines'),
+            )
+            : null;
+
+        $refunded = $this->posService->refundOrder(
+            order: $order,
+            amountMinor: $request->integer('amount_minor'),
+            reason: (string) $request->input('reason'),
+            method: RetailPaymentMethod::from((string) $request->input('method')),
+            restockLines: $restockLines,
+            idempotencyKey: $request->filled('idempotency_key') ? (string) $request->input('idempotency_key') : null,
+            userId: (int) $actor->id,
+        );
+
+        return response()->json(['data' => $this->receiptPayload($refunded)], 201);
+    }
+
+    /**
      * GET /retail/pos/orders/{order}/receipt — ticket de caisse PDF
      * imprimable (rouleau 80 mm) d'une vente POS encaissée (#7813).
      * Fail-closed : autre tenant → 404 ; commande non `completed` ou hors
@@ -299,10 +344,27 @@ class RetailOrderController extends Controller
                 'reference' => $payment->reference,
             ])->all();
 
+        // #9208 — les remboursements font partie du ticket : le caissier doit
+        // voir ce qui a deja ete rendu sur cette commande.
+        $refunds = RetailPosRefund::query()
+            ->where('company_id', (string) $order->company_id)
+            ->where('order_id', (int) $order->id)
+            ->orderBy('id')
+            ->get()
+            ->map(static fn (RetailPosRefund $refund): array => [
+                'id' => $refund->id,
+                'method' => $refund->method->value,
+                'amount_minor' => $refund->amount_minor,
+                'currency' => $refund->currency,
+                'reason' => $refund->reason,
+                'refunded_at' => $refund->refunded_at?->toIso8601String(),
+            ])->all();
+
         return [
             ...$this->orderPayload($order),
             'items' => $items,
             'payments' => $payments,
+            'refunds' => $refunds,
         ];
     }
 }

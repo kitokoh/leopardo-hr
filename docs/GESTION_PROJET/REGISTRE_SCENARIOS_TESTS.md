@@ -1,3 +1,46 @@
+## 2026-11-08 — Remédiation POS (BC-17 RETAIL + BC-25 RESTAURANT) : RBAC retail, remboursements, tiroir-caisse, rapports, deux apps tablette (refs #9207–#9215)
+
+**Surface API** : 7 nouvelles routes sous `/v1/retail` (groupe auth tenant + flag
+`retail`) — `GET|POST /retail/pos/sessions/{session}/cash-movements`,
+`POST /retail/pos/orders/{order}/refund`, `GET /retail/reports/{sales,top-products,sessions,stock-valuation}`.
+Toutes documentées dans `api/openapi.yaml` (0 nouvelle route non couverte).
+
+**Surface mobile** : deux applications Flutter natives offline-first ajoutées
+sous `front/mobile_apps/` — `leopardo_pos_restaurant` (caisse restaurant :
+ouverture de caisse, plan de salle, caisse 3 colonnes) et `leopardo_pos_retail`
+(caisse retail : session, panier, encaissement multi-moyens, remboursement,
+tiroir-caisse). Base locale Hive + file d'encaissement idempotente.
+
+**Pourquoi c'est un scénario de test et pas un simple ajout de routes** : ces
+routes portent de l'argent (remboursement, écart de caisse) et des permissions
+qui n'existaient pas. Une régression sur le RBAC ou sur le cumul des
+remboursements ne se voit pas à l'écran — elle se voit dans la caisse.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| vendeur assigné `retail_location` niveau `operate` → ouvre une caisse et encaisse | le caissier ne peut pas travailler sans recevoir la paie et les RH |
+| vendeur sans assignation → **403** sur `retail.pos` (fail-closed) | un employé hors boutique accède à la caisse |
+| gérant assigné `manage` → voit les rapports de **sa** boutique | un gérant lit les chiffres d'une autre boutique |
+| remboursement partiel répété → cumul borné au total encaissé (**422** au-delà) | remboursement au-delà du montant vendu (perte sèche) |
+| remboursement sans `reason` → **422** | trou d'audit sur les sorties d'espèces |
+| remboursement avec `idempotency_key` rejoué → un seul remboursement | double remboursement sur retry réseau |
+| mouvement de tiroir `in|out|drop` → `expected_cash_minor` recalculé | écart de caisse faux à la clôture |
+| `restock_lines` fourni → stock remis, mouvements `return` tracés | stock fantôme après un retour |
+| rapport `?format=csv` → export téléchargeable | le commerçant ne peut pas sortir ses chiffres |
+| isolation tenant → un rapport du tenant B n'apparaît pas chez A | fuite inter-tenants sur les chiffres de vente |
+| tablette hors ligne → encaissement mis en file puis rejoué à la reconnexion | vente perdue en cas de coupure réseau |
+
+**Automatisé** : `api/tests/Feature/Retail/RetailPosRbacAndReportsTest.php` —
+**20 tests** (RBAC vendeur/gérant, remboursements, mouvements de caisse,
+rapports, isolation tenant) ; `phpstan-strict.neon` niveau 8 : **0 erreur** ;
+`pint --test` : OK ; garde de couverture OpenAPI : **0 nouvelle non couverte** ;
+`flutter analyze` + `flutter test` sur les deux apps tablette
+(`leopardo_pos_restaurant`, `leopardo_pos_retail`) : **0 issue**, **41 tests**.
+
+**Non couvert** : le scan code-barres natif (caméra) et l'impression ESC/POS
+côté tablette retail — les deux apps encaissent hors ligne et impriment via le
+pont existant, mais le scan caméra reste à câbler.
+
 ## 2026-11-07 — #9150 : correctifs UX (accessibilité, états, typographie) — front/web et front/admin-dashboard
 
 **Surface Web admin** : composants et vues de `front/admin-dashboard/src/` modifiés

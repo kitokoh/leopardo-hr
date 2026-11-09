@@ -24,6 +24,7 @@ use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailOnlineSettingsControl
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailOrderController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailPosSessionController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailProductController;
+use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailReportController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailStockController;
 use Illuminate\Support\Facades\Route;
 
@@ -73,17 +74,36 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/pos/sessions/{session}', [RetailPosSessionController::class, 'show'])->whereNumber('session');
         Route::post('/pos/sessions/{session}/close', [RetailPosSessionController::class, 'close'])->whereNumber('session');
 
+        // #9212 — mouvements de tiroir-caisse : entree / sortie / prelevement
+        // d'especes. L'attendu de cloture les integre (un prelevement pour la
+        // banque ne ressemble plus a un manquant).
+        Route::get('/pos/sessions/{session}/cash-movements', [RetailPosSessionController::class, 'cashMovements'])->whereNumber('session');
+        Route::post('/pos/sessions/{session}/cash-movements', [RetailPosSessionController::class, 'storeCashMovement'])->whereNumber('session');
+
         Route::get('/pos/orders', [RetailOrderController::class, 'index']);
         Route::post('/pos/orders', [RetailOrderController::class, 'store']);
         Route::get('/pos/orders/{order}', [RetailOrderController::class, 'show'])->whereNumber('order');
         Route::post('/pos/orders/{order}/payments', [RetailOrderController::class, 'addPayment'])->whereNumber('order');
         Route::post('/pos/orders/{order}/cancel', [RetailOrderController::class, 'cancel'])->whereNumber('order');
 
+        // #9208 — remboursement en caisse (total ou partiel, motif obligatoire,
+        // cumul borne par le total encaisse). Avant ce correctif, le POS ne
+        // savait qu'annuler : le stock revenait mais l'argent restait encaisse.
+        Route::post('/pos/orders/{order}/refund', [RetailOrderController::class, 'refund'])->whereNumber('order');
+
         // Documents de vente (#7813) : ticket de caisse PDF imprimable
         // (ventes POS encaissees) et facture PDF (POS + commandes web) avec
         // numerotation legale par tenant (FAC-YYYY-NNNNNN, immuable).
         Route::get('/pos/orders/{order}/receipt', [RetailOrderController::class, 'receipt'])->whereNumber('order');
         Route::get('/orders/{order}/invoice', [RetailOrderController::class, 'invoice'])->whereNumber('order');
+
+        // Rapports de vente (#9209) : la verticale Retail n'en avait AUCUN.
+        // Agregations serveur, bornees par tenant ; `?format=csv` exporte.
+        // RBAC `retail.reports` (direction, ou niveau manage sur une boutique).
+        Route::get('/reports/sales', [RetailReportController::class, 'sales']);
+        Route::get('/reports/top-products', [RetailReportController::class, 'topProducts']);
+        Route::get('/reports/sessions', [RetailReportController::class, 'sessions']);
+        Route::get('/reports/stock-valuation', [RetailReportController::class, 'stockValuation']);
 
         // Boutique en ligne Leopardo Marché (#7807) : réglages publics du
         // vendeur (create-or-update, RetailOnlineSettingsPolicy).

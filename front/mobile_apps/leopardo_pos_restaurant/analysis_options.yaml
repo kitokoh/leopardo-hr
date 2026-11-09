@@ -1,0 +1,21 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-raw-types: true
+  errors:
+    # Une caisse ne doit pas se construire sur du code mort.
+    unused_import: error
+    unused_local_variable: error
+    dead_code: error
+  exclude:
+    - build/**
+
+linter:
+  rules:
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - prefer_final_locals
+    - avoid_print
+    - require_trailing_commas
