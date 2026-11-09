@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UC-24 — Campagnes et vitrine (Marketing) — Portail de recette Leopardo</title>
+<link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">L</span>
+      <span class="brand-text">Portail de recette <small>leopardo-hr</small></span>
+    </a>
+    <nav class="mainnav">
+      <a href="../index.html">Accueil</a>
+      <a href="../profils/index.html">Profils</a>
+      <a href="../modules/index.html">Modules</a>
+      <a href="../recap.html">Récapitulatif</a>
+      <a href="../tests-ia-leopardo-hr.md">Markdown</a>
+      <a href="../prompt-agent-testeur.md">Prompt IA</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <h1 class="page-title">UC-24 — Campagnes et vitrine (Marketing)</h1>
+  <p class="page-sub">Fiche de résultats du cas d&#x27;usage.</p>
+  
+<nav class="breadcrumb"><a href="../index.html">Portail</a> <span class="sep">›</span> <a href="profils/index.html">Profils</a> <span class="sep">›</span> <a href="../profils/marketing.html">Marketing</a> <span class="sep">›</span> <span aria-current="page">UC-24</span></nav>
+<div class="uc-head">
+  <div class="uc-id">UC-24</div>
+  <div class="uc-head-main">
+    <h2 class="uc-title">Campagnes et vitrine (Marketing)</h2>
+    <div class="chips">
+      <span class="badge" style="background:#2563eb1a;color:#2563eb;border-color:#2563eb33">Fonctionnel</span>
+      <span class="badge badge-todo">◻ à exécuter</span>
+      <span class="chip">Profil : <a href="../profils/marketing.html">Marketing</a></span>
+      <span class="chip">Module : <a href="../modules/marketing.html">Vitrine &amp; acquisition</a></span>
+    </div>
+  </div>
+</div>
+
+<div class="uc-grid">
+  <section class="panel">
+    <h3>Description / préconditions</h3>
+    <p>Vérifier la gestion des campagnes, des annonces et de la vitrine publique.</p>
+    <p class="muted"><strong>Prérequis :</strong> Compte marketing plateforme ; permissions <code>CrmView</code>, <code>AnnouncementsManage</code>, <code>ShowcaseManage</code>.</p>
+  </section>
+  <section class="panel">
+    <h3>Résultat attendu</h3>
+    <p>Les annonces et campagnes sont gérées, la vitrine reflète les publications, les limites de rôle sont respectées.</p>
+  </section>
+</div>
+
+<section class="panel">
+  <h3>Étapes de test</h3>
+  <ol class="steps"><li>Créer une annonce et la publier.</li><li>Vérifier son affichage sur la vitrine publique.</li><li>Créer une campagne et suivre ses métriques.</li><li>Tenter une publication engageant la marque et vérifier la limite de rôle.</li><li>Dépublier l&#x27;annonce.</li></ol>
+</section>
+
+<section class="panel">
+  <h3>Fiche de résultats</h3>
+  <div class="table-wrap">
+    <table class="result-table">
+      <thead>
+        <tr>
+          <th class="col-note">Note IA (/5)</th>
+          <th>Observation IA</th>
+          <th class="col-note">Note humaine (/5)</th>
+          <th>Observation humaine</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="center"><span class="note note-empty">—</span></td>
+          <td class="obs"><span class="muted">Non exécuté — à réaliser par le testeur IA.</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+          <td class="human-cell"><span class="muted">Réservé à l'évaluation humaine</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel eval-panel" data-uc="UC-24">
+  <h3>Votre évaluation (saisie locale)</h3>
+  <p class="muted">Cette saisie est enregistrée dans votre navigateur (localStorage) et peut être exportée en JSON.
+  Elle ne modifie pas les colonnes IA/humaine du document versionné.</p>
+  <div class="eval-form">
+    <label>Votre note (/5)
+      <select class="eval-note">
+        <option value="">—</option>
+        <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+      </select>
+    </label>
+    <label class="eval-obs-label">Votre observation
+      <textarea class="eval-obs" rows="3" placeholder="Décrivez factuellement ce que vous avez observé…"></textarea>
+    </label>
+    <div class="eval-actions">
+      <button class="btn btn-primary eval-save" type="button">Enregistrer</button>
+      <button class="btn btn-ghost eval-export" type="button">Exporter mes évaluations (JSON)</button>
+      <span class="eval-status muted"></span>
+    </div>
+  </div>
+</section>
+
+<p class="uc-nav">
+  <a class="btn-back" href="../index.html">← Portail</a>
+  <a class="btn-back" href="../profils/marketing.html">← Profil Marketing</a>
+  <a class="btn-back" href="../modules/marketing.html">← Module Vitrine &amp; acquisition</a>
+</p>
+
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <p>Portail de recette <strong>leopardo-hr</strong> — dépôt
+      <a href="https://github.com/Kitokoh/leopardo-hr" target="_blank" rel="noopener">Kitokoh/leopardo-hr</a>.
+      Colonnes « Note IA » / « Observation IA » remplies par le testeur IA ;
+      colonnes « Note humaine » / « Observation humaine » réservées à l'évaluation humaine.</p>
+  </div>
+</footer>
+<script src="../assets/portal.js"></script>
+</body>
+</html>

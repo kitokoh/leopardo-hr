@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UC-03 — Pointage au kiosque biométrique (mode secours matricule) — Portail de recette Leopardo</title>
+<link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">L</span>
+      <span class="brand-text">Portail de recette <small>leopardo-hr</small></span>
+    </a>
+    <nav class="mainnav">
+      <a href="../index.html">Accueil</a>
+      <a href="../profils/index.html">Profils</a>
+      <a href="../modules/index.html">Modules</a>
+      <a href="../recap.html">Récapitulatif</a>
+      <a href="../tests-ia-leopardo-hr.md">Markdown</a>
+      <a href="../prompt-agent-testeur.md">Prompt IA</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <h1 class="page-title">UC-03 — Pointage au kiosque biométrique (mode secours matricule)</h1>
+  <p class="page-sub">Fiche de résultats du cas d&#x27;usage.</p>
+  
+<nav class="breadcrumb"><a href="../index.html">Portail</a> <span class="sep">›</span> <a href="profils/index.html">Profils</a> <span class="sep">›</span> <a href="../profils/superviseur-kiosque.html">Superviseur / Kiosque</a> <span class="sep">›</span> <span aria-current="page">UC-03</span></nav>
+<div class="uc-head">
+  <div class="uc-id">UC-03</div>
+  <div class="uc-head-main">
+    <h2 class="uc-title">Pointage au kiosque biométrique (mode secours matricule)</h2>
+    <div class="chips">
+      <span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">UI/UX</span>
+      <span class="badge badge-done">✔ exécuté</span>
+      <span class="chip">Profil : <a href="../profils/superviseur-kiosque.html">Superviseur / Kiosque</a> · <a href="../profils/employe.html">Employé</a></span>
+      <span class="chip">Module : <a href="../modules/kiosque.html">Kiosque &amp; EdgeSync</a></span>
+    </div>
+  </div>
+</div>
+
+<div class="uc-grid">
+  <section class="panel">
+    <h3>Description / préconditions</h3>
+    <p>Tester la borne d&#x27;entrée sans matériel biométrique, via le formulaire de secours par matricule.</p>
+    <p class="muted"><strong>Prérequis :</strong> <code>front/zkteco-kiosk/index.html</code> servi en local, matricule d&#x27;un employé de démo, API joignable.</p>
+  </section>
+  <section class="panel">
+    <h3>Résultat attendu</h3>
+    <p>Le pointage par matricule aboutit avec un retour visuel explicite ; un matricule inconnu produit un message lisible et non un plantage ; le passage en arabe inverse correctement la mise en page.</p>
+  </section>
+</div>
+
+<section class="panel">
+  <h3>Étapes de test</h3>
+  <ol class="steps"><li>Servir le dossier <code>front/zkteco-kiosk</code> et ouvrir <code>index.html</code>.</li><li>Vérifier l&#x27;écran d&#x27;accueil de la borne et le sélecteur de langue.</li><li>Utiliser le formulaire de secours « matricule » avec un identifiant valide.</li><li>Valider et observer le retour visuel (succès / erreur).</li><li>Rejouer avec un matricule inexistant.</li><li>Basculer la langue en <code>ar</code> et vérifier le rendu RTL.</li></ol>
+</section>
+
+<section class="panel">
+  <h3>Fiche de résultats</h3>
+  <div class="table-wrap">
+    <table class="result-table">
+      <thead>
+        <tr>
+          <th class="col-note">Note IA (/5)</th>
+          <th>Observation IA</th>
+          <th class="col-note">Note humaine (/5)</th>
+          <th>Observation humaine</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="center"><span class="note note-good">4/5</span></td>
+          <td class="obs">Kiosque servi par le pont local (<code>bridge.py</code>, port 8037) et piloté dans Chromium headless. Écran d&#x27;accueil chargé : titre « TechCorp Algerie SARL », « Entree principale », indicateur « Connection OK — auto sync active », sélecteur de langue (FR/EN/TR/AR), 5 onglets (Punch, Employee, Announcements, Leave, QR Code). Sélection d&#x27;un employé de démo (Karim Aouad, DZ-EMP-003) puis pointage via <code>POST /local/punch</code> → <strong>201</strong>, <code>sync_status=queued</code>, <code>external_event_id</code> généré. Matricule inconnu (<code>UNKNOWN-999</code>) → <strong>201</strong> mis en file (comportement *offline-first*). Bascule en <code>ar</code> → <code>document.documentElement.dir = &quot;rtl&quot;</code>, <code>lang=&quot;ar&quot;</code> (RTL effectif). Aucun plantage.</td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+          <td class="human-cell"><span class="muted">Réservé à l'évaluation humaine</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel eval-panel" data-uc="UC-03">
+  <h3>Votre évaluation (saisie locale)</h3>
+  <p class="muted">Cette saisie est enregistrée dans votre navigateur (localStorage) et peut être exportée en JSON.
+  Elle ne modifie pas les colonnes IA/humaine du document versionné.</p>
+  <div class="eval-form">
+    <label>Votre note (/5)
+      <select class="eval-note">
+        <option value="">—</option>
+        <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+      </select>
+    </label>
+    <label class="eval-obs-label">Votre observation
+      <textarea class="eval-obs" rows="3" placeholder="Décrivez factuellement ce que vous avez observé…"></textarea>
+    </label>
+    <div class="eval-actions">
+      <button class="btn btn-primary eval-save" type="button">Enregistrer</button>
+      <button class="btn btn-ghost eval-export" type="button">Exporter mes évaluations (JSON)</button>
+      <span class="eval-status muted"></span>
+    </div>
+  </div>
+</section>
+
+<p class="uc-nav">
+  <a class="btn-back" href="../index.html">← Portail</a>
+  <a class="btn-back" href="../profils/superviseur-kiosque.html">← Profil Superviseur / Kiosque</a>
+  <a class="btn-back" href="../modules/kiosque.html">← Module Kiosque &amp; EdgeSync</a>
+</p>
+
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <p>Portail de recette <strong>leopardo-hr</strong> — dépôt
+      <a href="https://github.com/Kitokoh/leopardo-hr" target="_blank" rel="noopener">Kitokoh/leopardo-hr</a>.
+      Colonnes « Note IA » / « Observation IA » remplies par le testeur IA ;
+      colonnes « Note humaine » / « Observation humaine » réservées à l'évaluation humaine.</p>
+  </div>
+</footer>
+<script src="../assets/portal.js"></script>
+</body>
+</html>

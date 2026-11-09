@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau récapitulatif — Portail de recette Leopardo</title>
+<link rel="stylesheet" href="assets/portal.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">L</span>
+      <span class="brand-text">Portail de recette <small>leopardo-hr</small></span>
+    </a>
+    <nav class="mainnav">
+      <a href="index.html">Accueil</a>
+      <a href="profils/index.html">Profils</a>
+      <a href="modules/index.html">Modules</a>
+      <a href="recap.html">Récapitulatif</a>
+      <a href="tests-ia-leopardo-hr.md">Markdown</a>
+      <a href="prompt-agent-testeur.md">Prompt IA</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <h1 class="page-title">Tableau récapitulatif</h1>
+  <p class="page-sub">Moyenne des notes IA, total et cas bloquants.</p>
+  
+<nav class="breadcrumb"><a href="index.html">Portail</a> <span class="sep">›</span> <span aria-current="page">Récapitulatif</span></nav>
+<div class="stats stats-recap">
+  <div class="stat"><span class="stat-num">14</span><span class="stat-label">cas notés (IA)</span></div>
+  <div class="stat"><span class="stat-num">60</span><span class="stat-label">total des notes IA</span></div>
+  <div class="stat"><span class="stat-num">4.29</span><span class="stat-label">moyenne IA /5</span></div>
+  <div class="stat"><span class="stat-num">1</span><span class="stat-label">cas bloquants (≤2)</span></div>
+</div>
+<div class="table-wrap">
+  <table class="data-table">
+    <thead><tr><th>ID</th><th>Cas d'usage</th><th>Type</th><th>Statut</th><th class="center">Note IA (/5)</th><th class="center">Note humaine (/5)</th></tr></thead>
+    <tbody>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-01.html">UC-01</a></td>
+          <td><a class="uc-link" href="cas/uc-01.html">Connexion d&#x27;un employé à l&#x27;espace client web</a></td>
+          <td>Fonctionnel</td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">4/5</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-02.html">UC-02</a></td>
+          <td><a class="uc-link" href="cas/uc-02.html">Pointage entrée / sortie (API, employé)</a></td>
+          <td>API</td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">5/5</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-03.html">UC-03</a></td>
+          <td><a class="uc-link" href="cas/uc-03.html">Pointage au kiosque biométrique (mode secours matricule)</a></td>
+          <td>UI/UX</td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">4/5</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-04.html">UC-04</a></td>
+          <td><a class="uc-link" href="cas/uc-04.html">Demande d&#x27;absence et approbation manager</a></td>
+          <td>Fonctionnel</td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">5/5</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-05.html">UC-05</a></td>
+          <td><a class="uc-link" href="cas/uc-05.html">Consultation du bulletin de paie (self-service employé)</a></td>
+          <td>Sécurité</td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">4/5</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-06.html">UC-06</a></td>
+          <td><a class="uc-link" href="cas/uc-06.html">Préparation de paie (Manager Comptable)</a></td>
+          <td>Fonctionnel</td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">5/5</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-07.html">UC-07</a></td>
+          <td><a class="uc-link" href="cas/uc-07.html">Gestion du dossier employé (création, modification, archivage)</a></td>
+          <td>Fonctionnel</td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-bad">2/5</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-08.html">UC-08</a></td>
+          <td><a class="uc-link" href="cas/uc-08.html">Isolation multi-tenant</a></td>
+          <td>Sécurité</td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">5/5</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-09.html">UC-09</a></td>
+          <td><a class="uc-link" href="cas/uc-09.html">Multilingue et RTL (fr / en / tr / ar)</a></td>
+          <td>UI/UX</td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">5/5</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-10.html">UC-10</a></td>
+          <td><a class="uc-link" href="cas/uc-10.html">Kiosque en mode dégradé / synchronisation Edge</a></td>
+          <td>Résilience</td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">4/5</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-11.html">UC-11</a></td>
+          <td><a class="uc-link" href="cas/uc-11.html">CRM client (comptes, contacts, opportunités)</a></td>
+          <td>Fonctionnel</td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">5/5</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-12.html">UC-12</a></td>
+          <td><a class="uc-link" href="cas/uc-12.html">Vitrine publique et demande d&#x27;essai</a></td>
+          <td>Fonctionnel</td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">4/5</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-13.html">UC-13</a></td>
+          <td><a class="uc-link" href="cas/uc-13.html">Observabilité et santé de la plateforme</a></td>
+          <td>API</td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">4/5</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-14.html">UC-14</a></td>
+          <td><a class="uc-link" href="cas/uc-14.html">Solution verticale « Agence de voyage » (boutique publique)</a></td>
+          <td>Sécurité</td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">4/5</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-15.html">UC-15</a></td>
+          <td><a class="uc-link" href="cas/uc-15.html">Connexion Manager Principal et tableau de bord</a></td>
+          <td>Fonctionnel</td>
+          <td><span class="badge badge-todo">◻ à exécuter</span></td>
+          <td class="center"><span class="note note-empty">—</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-16.html">UC-16</a></td>
+          <td><a class="uc-link" href="cas/uc-16.html">Gestion des départements et des équipes</a></td>
+          <td>Fonctionnel</td>
+          <td><span class="badge badge-todo">◻ à exécuter</span></td>
+          <td class="center"><span class="note note-empty">—</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-17.html">UC-17</a></td>
+          <td><a class="uc-link" href="cas/uc-17.html">Attribution de rôles et invitations</a></td>
+          <td>Sécurité</td>
+          <td><span class="badge badge-todo">◻ à exécuter</span></td>
+          <td class="center"><span class="note note-empty">—</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-18.html">UC-18</a></td>
+          <td><a class="uc-link" href="cas/uc-18.html">Validation des heures supplémentaires et du planning</a></td>
+          <td>Fonctionnel</td>
+          <td><span class="badge badge-todo">◻ à exécuter</span></td>
+          <td class="center"><span class="note note-empty">—</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-19.html">UC-19</a></td>
+          <td><a class="uc-link" href="cas/uc-19.html">Génération et téléchargement d&#x27;un bulletin PDF</a></td>
+          <td>Fonctionnel</td>
+          <td><span class="badge badge-todo">◻ à exécuter</span></td>
+          <td class="center"><span class="note note-empty">—</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-20.html">UC-20</a></td>
+          <td><a class="uc-link" href="cas/uc-20.html">Console Super Admin — gestion des entreprises</a></td>
+          <td>Fonctionnel</td>
+          <td><span class="badge badge-todo">◻ à exécuter</span></td>
+          <td class="center"><span class="note note-empty">—</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-21.html">UC-21</a></td>
+          <td><a class="uc-link" href="cas/uc-21.html">Impersonation encadrée (Support)</a></td>
+          <td>Sécurité</td>
+          <td><span class="badge badge-todo">◻ à exécuter</span></td>
+          <td class="center"><span class="note note-empty">—</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-22.html">UC-22</a></td>
+          <td><a class="uc-link" href="cas/uc-22.html">Facturation et abonnements (Finance)</a></td>
+          <td>Fonctionnel</td>
+          <td><span class="badge badge-todo">◻ à exécuter</span></td>
+          <td class="center"><span class="note note-empty">—</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-23.html">UC-23</a></td>
+          <td><a class="uc-link" href="cas/uc-23.html">Kill switch et nœuds Edge (Ops)</a></td>
+          <td>Résilience</td>
+          <td><span class="badge badge-todo">◻ à exécuter</span></td>
+          <td class="center"><span class="note note-empty">—</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-24.html">UC-24</a></td>
+          <td><a class="uc-link" href="cas/uc-24.html">Campagnes et vitrine (Marketing)</a></td>
+          <td>Fonctionnel</td>
+          <td><span class="badge badge-todo">◻ à exécuter</span></td>
+          <td class="center"><span class="note note-empty">—</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-25.html">UC-25</a></td>
+          <td><a class="uc-link" href="cas/uc-25.html">Recrutement et offres d&#x27;emploi</a></td>
+          <td>Fonctionnel</td>
+          <td><span class="badge badge-todo">◻ à exécuter</span></td>
+          <td class="center"><span class="note note-empty">—</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="cas/uc-26.html">UC-26</a></td>
+          <td><a class="uc-link" href="cas/uc-26.html">Bibliothèque / Showcase public</a></td>
+          <td>UI/UX</td>
+          <td><span class="badge badge-todo">◻ à exécuter</span></td>
+          <td class="center"><span class="note note-empty">—</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+        </tr></tbody>
+  </table>
+</div>
+<p class="muted">La colonne « Note humaine (/5) » reste volontairement vide : elle est réservée à l'évaluation humaine.</p>
+
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <p>Portail de recette <strong>leopardo-hr</strong> — dépôt
+      <a href="https://github.com/Kitokoh/leopardo-hr" target="_blank" rel="noopener">Kitokoh/leopardo-hr</a>.
+      Colonnes « Note IA » / « Observation IA » remplies par le testeur IA ;
+      colonnes « Note humaine » / « Observation humaine » réservées à l'évaluation humaine.</p>
+  </div>
+</footer>
+<script src="assets/portal.js"></script>
+</body>
+</html>
