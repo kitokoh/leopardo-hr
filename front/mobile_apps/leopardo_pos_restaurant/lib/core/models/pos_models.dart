@@ -131,6 +131,8 @@ class Cart {
     this.tableId,
     this.covers = 1,
     this.note,
+    this.discountMinor = 0,
+    this.tipMinor = 0,
   });
 
   final List<CartLine> lines;
@@ -139,16 +141,42 @@ class Cart {
   final int covers;
   final String? note;
 
+  /// Remise accordee sur la commande (unites mineures, jamais negative).
+  final int discountMinor;
+
+  /// Pourboire laisse par le client (unites mineures, jamais negatif).
+  ///
+  /// Le pourboire n'est **pas** une remise : il s'ajoute au total et ne
+  /// reduit jamais l'addition. Il est porte separement pour que le serveur
+  /// puisse l'annoncer au client et que la cloture de caisse le distingue.
+  final int tipMinor;
+
   int get subtotalMinor =>
       lines.fold(0, (sum, line) => sum + line.lineTotalMinor);
+
+  /// Total net avant pourboire : jamais negatif, meme si la remise depasse
+  /// le sous-total (une caisse ne rend pas d'argent par accident).
+  int get netMinor {
+    final net = subtotalMinor - discountMinor;
+
+    return net < 0 ? 0 : net;
+  }
+
+  /// Total a payer : net + pourboire.
+  int get totalMinor => netMinor + tipMinor;
 
   int get itemCount => lines.fold(0, (sum, line) => sum + line.quantity);
 
   bool get isEmpty => lines.isEmpty;
 
+  /// Une remise superieure au sous-total est refusee (garde-fou de saisie).
+  bool get discountValid => discountMinor <= subtotalMinor;
+
   /// `dine_in` exige une table (même règle que `StoreRestaurantOrderRequest`).
   bool get isValid =>
-      lines.isNotEmpty && (orderType != OrderType.dineIn || tableId != null);
+      lines.isNotEmpty &&
+      discountValid &&
+      (orderType != OrderType.dineIn || tableId != null);
 
   Cart copyWith({
     List<CartLine>? lines,
@@ -156,6 +184,8 @@ class Cart {
     int? tableId,
     int? covers,
     String? note,
+    int? discountMinor,
+    int? tipMinor,
   }) =>
       Cart(
         lines: lines ?? this.lines,
@@ -163,6 +193,8 @@ class Cart {
         tableId: tableId ?? this.tableId,
         covers: covers ?? this.covers,
         note: note ?? this.note,
+        discountMinor: discountMinor ?? this.discountMinor,
+        tipMinor: tipMinor ?? this.tipMinor,
       );
 
   /// Ajoute un produit (ou incrémente la ligne existante).
@@ -205,6 +237,8 @@ class Cart {
         'table_id': tableId,
         'covers': covers,
         'note': note,
+        'discount_minor': discountMinor,
+        'tip_minor': tipMinor,
       };
 
   factory Cart.fromJson(Map<String, dynamic> json) => Cart(
@@ -218,5 +252,125 @@ class Cart {
         tableId: (json['table_id'] as num?)?.toInt(),
         covers: (json['covers'] as num?)?.toInt() ?? 1,
         note: json['note'] as String?,
+        discountMinor: (json['discount_minor'] as num?)?.toInt() ?? 0,
+        tipMinor: (json['tip_minor'] as num?)?.toInt() ?? 0,
+      );
+}
+
+/// Un **moyen de paiement** accepte en salle.
+///
+/// `wireValue` est le contrat du backend (`StoreRestaurantPaymentRequest`) :
+/// ne pas le renommer sans migrer l'API.
+enum PosPaymentMethod {
+  cash('cash', 'Especes'),
+  card('card', 'Carte'),
+  mobileMoney('mobile_money', 'Mobile Money');
+
+  const PosPaymentMethod(this.wireValue, this.label);
+
+  final String wireValue;
+  final String label;
+}
+
+/// Une **part de paiement** d'une addition partagee (#9214).
+///
+/// Un groupe de clients demande souvent a payer separement : deux cartes et
+/// un peu d'especes, ou une part par convive. Chaque part porte son moyen et
+/// son montant ; la somme des parts doit egaler le total de l'addition.
+class PaymentSplit {
+  const PaymentSplit({required this.method, required this.amountMinor});
+
+  final PosPaymentMethod method;
+  final int amountMinor;
+
+  bool get isValid => amountMinor > 0;
+
+  Map<String, dynamic> toJson() => {
+        'method': method.wireValue,
+        'amount_minor': amountMinor,
+      };
+
+  factory PaymentSplit.fromJson(Map<String, dynamic> json) => PaymentSplit(
+        method: PosPaymentMethod.values.firstWhere(
+          (method) => method.wireValue == json['method'],
+          orElse: () => PosPaymentMethod.cash,
+        ),
+        amountMinor: (json['amount_minor'] as num?)?.toInt() ?? 0,
+      );
+}
+
+/// Repartition d'une addition entre plusieurs moyens de paiement.
+///
+/// Regle de caisse : la somme des parts doit **exactement** egaler le total.
+/// Un reste non couvert laisserait une addition ouverte ; un excedent
+/// reviendrait a rendre de la monnaie qu'on n'a pas encaissee.
+class SplitPayment {
+  const SplitPayment({this.splits = const []});
+
+  final List<PaymentSplit> splits;
+
+  int get paidMinor => splits.fold(0, (sum, split) => sum + split.amountMinor);
+
+  /// Reste a couvrir pour un total donne (jamais negatif).
+  int remainingMinor(int totalMinor) {
+    final remaining = totalMinor - paidMinor;
+
+    return remaining < 0 ? 0 : remaining;
+  }
+
+  /// La repartition couvre-t-elle exactement le total ?
+  bool covers(int totalMinor) => splits.isNotEmpty && paidMinor == totalMinor;
+
+  /// Depasse-t-elle le total ?
+  bool exceeds(int totalMinor) => paidMinor > totalMinor;
+
+  SplitPayment add(PaymentSplit split) =>
+      SplitPayment(splits: [...splits, split]);
+
+  SplitPayment removeAt(int index) {
+    if (index < 0 || index >= splits.length) {
+      return this;
+    }
+
+    final updated = [...splits]..removeAt(index);
+
+    return SplitPayment(splits: updated);
+  }
+
+  /// Repartit un total en [parts] parts egales, le reste allant a la premiere.
+  ///
+  /// La repartition entiere evite les centimes perdus : `100 / 3` donne
+  /// `34, 33, 33` et non `33, 33, 33` avec un centime orphelin.
+  static SplitPayment equalParts({
+    required int totalMinor,
+    required int parts,
+    PosPaymentMethod method = PosPaymentMethod.cash,
+  }) {
+    if (parts <= 0 || totalMinor <= 0) {
+      return const SplitPayment();
+    }
+
+    final base = totalMinor ~/ parts;
+    final remainder = totalMinor % parts;
+
+    return SplitPayment(
+      splits: [
+        for (var index = 0; index < parts; index++)
+          PaymentSplit(
+            method: method,
+            amountMinor: index == 0 ? base + remainder : base,
+          ),
+      ],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'splits': splits.map((split) => split.toJson()).toList(),
+      };
+
+  factory SplitPayment.fromJson(Map<String, dynamic> json) => SplitPayment(
+        splits: ((json['splits'] as List<dynamic>?) ?? [])
+            .map((raw) => PaymentSplit.fromJson(raw as Map<String, dynamic>))
+            .toList(),
       );
 }

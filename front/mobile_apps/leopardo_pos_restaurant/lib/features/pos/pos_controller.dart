@@ -137,6 +137,28 @@ class PosController extends Notifier<PosState> {
     state = state.copyWith(cart: state.cart.copyWith(covers: covers.clamp(1, 999)));
   }
 
+  /// Applique une remise (unites mineures, bornee a zero).
+  ///
+  /// La validite (remise <= sous-total) est verifiee par `Cart.isValid` : on
+  /// ne bloque pas la saisie, on empeche seulement l'encaissement.
+  void setDiscount(int discountMinor) {
+    state = state.copyWith(
+      cart: state.cart.copyWith(discountMinor: discountMinor < 0 ? 0 : discountMinor),
+    );
+  }
+
+  /// Applique un pourboire (unites mineures, borne a zero).
+  void setTip(int tipMinor) {
+    state = state.copyWith(
+      cart: state.cart.copyWith(tipMinor: tipMinor < 0 ? 0 : tipMinor),
+    );
+  }
+
+  /// Efface le message d'erreur affiche.
+  void clearError() {
+    state = state.copyWith(clearError: true);
+  }
+
   void clearCart() {
     state = state.copyWith(cart: const Cart());
   }
@@ -175,7 +197,7 @@ class PosController extends Notifier<PosState> {
 
       final outcome = await _api.pay(
         orderId: orderId,
-        amountMinor: state.cart.subtotalMinor,
+        amountMinor: state.cart.totalMinor,
         method: method,
       );
 
