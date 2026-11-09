@@ -84,7 +84,8 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
   void _toggle(PosOptionGroup group, PosOption option) {
     setState(() {
       final existingIndex = _selections.indexWhere(
-        (selection) => selection.groupId == group.id && selection.optionId == option.id,
+        (selection) =>
+            selection.groupId == group.id && selection.optionId == option.id,
       );
 
       if (existingIndex != -1) {
@@ -96,25 +97,29 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
       if (group.maxSelections <= 1) {
         // Choix unique : la nouvelle option remplace l'ancienne du groupe.
         _selections.removeWhere((selection) => selection.groupId == group.id);
-        _selections.add(PosOptionSelection(groupId: group.id, optionId: option.id));
+        _selections
+            .add(PosOptionSelection(groupId: group.id, optionId: option.id));
 
         return;
       }
 
-      final currentInGroup =
-          _selections.where((selection) => selection.groupId == group.id).length;
+      final currentInGroup = _selections
+          .where((selection) => selection.groupId == group.id)
+          .length;
 
       if (currentInGroup >= group.maxSelections) {
         // Plafond atteint : on remplace la plus ancienne du groupe plutot que
         // d'ignorer le geste (un tap sans effet laisse croire a un bug).
-        final oldest = _selections.indexWhere((selection) => selection.groupId == group.id);
+        final oldest = _selections
+            .indexWhere((selection) => selection.groupId == group.id);
 
         if (oldest != -1) {
           _selections.removeAt(oldest);
         }
       }
 
-      _selections.add(PosOptionSelection(groupId: group.id, optionId: option.id));
+      _selections
+          .add(PosOptionSelection(groupId: group.id, optionId: option.id));
     });
   }
 
@@ -122,7 +127,8 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
   void _setQuantity(PosOptionGroup group, PosOption option, int quantity) {
     setState(() {
       final index = _selections.indexWhere(
-        (selection) => selection.groupId == group.id && selection.optionId == option.id,
+        (selection) =>
+            selection.groupId == group.id && selection.optionId == option.id,
       );
 
       if (index == -1) {
@@ -144,7 +150,8 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
   }
 
   bool _isSelected(PosOptionGroup group, PosOption option) => _selections.any(
-        (selection) => selection.groupId == group.id && selection.optionId == option.id,
+        (selection) =>
+            selection.groupId == group.id && selection.optionId == option.id,
       );
 
   int _quantityOf(PosOptionGroup group, PosOption option) {
@@ -188,7 +195,8 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                       const SizedBox(height: 4),
                       Text(
                         'Choisissez les options',
-                        style: TextStyle(fontSize: 15, color: scheme.onSurfaceVariant),
+                        style: TextStyle(
+                            fontSize: 15, color: scheme.onSurfaceVariant),
                       ),
                     ],
                   ),
@@ -222,7 +230,8 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                   children: [
                     Text(
                       'Total de la ligne',
-                      style: TextStyle(fontSize: 16, color: scheme.onSurfaceVariant),
+                      style: TextStyle(
+                          fontSize: 16, color: scheme.onSurfaceVariant),
                     ),
                     Text(
                       _formatAmount(total),
@@ -242,7 +251,8 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                       alignment: Alignment.centerRight,
                       child: Text(
                         'dont ${_formatAmount(_additionalMinor)} d\u2019options',
-                        style: TextStyle(fontSize: 14, color: scheme.onSurfaceVariant),
+                        style: TextStyle(
+                            fontSize: 15, color: scheme.onSurfaceVariant),
                       ),
                     ),
                   ),
@@ -255,15 +265,19 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                     onPressed: _isValid
                         ? () => Navigator.of(context).pop(
                               PosOptionSelectionResult(
-                                selections: List<PosOptionSelection>.from(_selections),
+                                selections:
+                                    List<PosOptionSelection>.from(_selections),
                                 additionalMinor: _additionalMinor,
                               ),
                             )
                         : null,
                     icon: const Icon(Icons.check),
                     label: Text(
-                      _isValid ? 'Ajouter au panier' : 'Completez les choix obligatoires',
-                      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                      _isValid
+                          ? 'Ajouter au panier'
+                          : 'Completez les choix obligatoires',
+                      style: const TextStyle(
+                          fontSize: 17, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ),
@@ -275,7 +289,8 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
     );
   }
 
-  Widget _buildGroup(BuildContext context, PosOptionGroup group, ColorScheme scheme) {
+  Widget _buildGroup(
+      BuildContext context, PosOptionGroup group, ColorScheme scheme) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Column(
@@ -294,7 +309,8 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
               const SizedBox(width: 8),
               if (group.required)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: scheme.errorContainer,
                     borderRadius: BorderRadius.circular(6),
@@ -302,7 +318,9 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                   child: Text(
                     'Obligatoire',
                     style: TextStyle(
-                      fontSize: 12,
+                      // 14 px reste lisible et tient dans la pastille ; en
+                      // dessous, le mot devient illisible a bout de bras.
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: scheme.onErrorContainer,
                     ),
@@ -312,7 +330,8 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                 const SizedBox(width: 8),
                 Text(
                   'jusqu\u2019a ${group.maxSelections}',
-                  style: TextStyle(fontSize: 13, color: scheme.onSurfaceVariant),
+                  style:
+                      TextStyle(fontSize: 15, color: scheme.onSurfaceVariant),
                 ),
               ],
             ],
@@ -388,7 +407,8 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                 ),
                 Text(
                   '$quantity',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 IconButton(
                   key: Key('pos-option-plus-${group.id}-${option.id}'),

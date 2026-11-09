@@ -36,7 +36,8 @@ class PosBarcodeScannerScreen extends StatefulWidget {
   final double cardRadius;
 
   @override
-  State<PosBarcodeScannerScreen> createState() => _PosBarcodeScannerScreenState();
+  State<PosBarcodeScannerScreen> createState() =>
+      _PosBarcodeScannerScreenState();
 }
 
 class _PosBarcodeScannerScreenState extends State<PosBarcodeScannerScreen> {

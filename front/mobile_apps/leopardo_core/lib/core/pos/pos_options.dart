@@ -84,7 +84,8 @@ class PosOptionGroup {
   /// Un groupe obligatoire doit avoir au moins une selection ; aucun groupe
   /// ne peut depasser [maxSelections] selections au total (toutes quantites
   /// confondues, une option supplementaire comptant pour une selection).
-  bool isSatisfiedBy(List<PosOptionSelection> selections, {bool forQuantity = false}) {
+  bool isSatisfiedBy(List<PosOptionSelection> selections,
+      {bool forQuantity = false}) {
     final mine =
         selections.where((selection) => selection.groupId == id).toList();
 

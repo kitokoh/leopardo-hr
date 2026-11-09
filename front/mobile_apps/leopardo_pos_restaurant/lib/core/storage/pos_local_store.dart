@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:leopardo_core/core/pos/pos_config.dart';
+import 'package:leopardo_core/core/pos/pos_history.dart';
 import 'package:leopardo_core/core/pos/pos_search.dart';
 import 'package:leopardo_core/core/pos/pos_ticket.dart';
 
@@ -41,6 +43,16 @@ class PosLocalStore {
       await Hive.openBox<dynamic>(_metaBox),
     );
   }
+
+  /// Construit un store sur des boites deja ouvertes (tests widget).
+  @visibleForTesting
+  factory PosLocalStore.fromBoxes({
+    required Box<dynamic> catalog,
+    required Box<dynamic> floor,
+    required Box<dynamic> cart,
+    required Box<dynamic> meta,
+  }) =>
+      PosLocalStore._(catalog, floor, cart, meta);
 
   // ── Configuration runtime (#9263) ────────────────────────────────────────
 
@@ -89,6 +101,33 @@ class PosLocalStore {
     }
 
     return (id: id, name: name is String ? name : id);
+  }
+
+  // ── Historique des ventes (#9268) ────────────────────────────────────────
+
+  /// Enregistre l'historique des ventes de la tablette.
+  Future<void> saveSalesHistory(PosSalesHistory history) async {
+    await _meta.put('sales_history', jsonEncode(history.toJson()));
+  }
+
+  PosSalesHistory readSalesHistory() {
+    final raw = _meta.get('sales_history');
+
+    if (raw is! String) {
+      return const PosSalesHistory();
+    }
+
+    try {
+      return PosSalesHistory.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (_) {
+      return const PosSalesHistory();
+    }
+  }
+
+  /// Ecrit une valeur brute dans l'historique (tests : ecriture partielle).
+  @visibleForTesting
+  Future<void> saveSalesHistoryRaw(String raw) async {
+    await _meta.put('sales_history', raw);
   }
 
   // ── Catalogue ────────────────────────────────────────────────────────────

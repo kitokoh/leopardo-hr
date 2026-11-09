@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:leopardo_core/core/pos/pos_config.dart';
+import 'package:leopardo_core/core/pos/pos_history.dart';
 import 'package:leopardo_core/core/pos/pos_search.dart';
 import 'package:leopardo_core/core/pos/pos_ticket.dart';
 
@@ -42,6 +44,20 @@ class RetailLocalStore {
       await Hive.openBox<dynamic>(_metaBox),
     );
   }
+
+  /// Construit un store sur des boites deja ouvertes.
+  ///
+  /// Sert aux tests widget : ils ont besoin d'un vrai store (l'ecran de
+  /// caisse lit sa configuration et son historique au demarrage) sans passer
+  /// par `Hive.initFlutter`, qui exige un chemin de plateforme.
+  @visibleForTesting
+  factory RetailLocalStore.fromBoxes({
+    required Box<dynamic> catalog,
+    required Box<dynamic> cart,
+    required Box<dynamic> session,
+    required Box<dynamic> meta,
+  }) =>
+      RetailLocalStore._(catalog, cart, session, meta);
 
   // ── Catalogue ────────────────────────────────────────────────────────────
 
@@ -239,6 +255,39 @@ class RetailLocalStore {
     }
 
     return (id: id, name: name is String ? name : id);
+  }
+
+  // ── Historique des ventes (#9268) ────────────────────────────────────────
+
+  /// Enregistre l'historique des ventes de la tablette.
+  ///
+  /// Borne a [PosSalesHistory.maxRecords] par le modele : la tablette n'est
+  /// pas le back-office, elle couvre la journee de service.
+  Future<void> saveSalesHistory(PosSalesHistory history) async {
+    await _meta.put('sales_history', jsonEncode(history.toJson()));
+  }
+
+  PosSalesHistory readSalesHistory() {
+    final raw = _meta.get('sales_history');
+
+    if (raw is! String) {
+      return const PosSalesHistory();
+    }
+
+    try {
+      return PosSalesHistory.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (_) {
+      return const PosSalesHistory();
+    }
+  }
+
+  /// Ecrit une valeur brute dans l'historique.
+  ///
+  /// Reserve aux tests : permet de simuler une ecriture partielle (coupure de
+  /// courant en pleine vente) et de verifier que la caisse repart quand meme.
+  @visibleForTesting
+  Future<void> saveSalesHistoryRaw(String raw) async {
+    await _meta.put('sales_history', raw);
   }
 
   /// Decode une liste JSON en ignorant les entrees corrompues.
