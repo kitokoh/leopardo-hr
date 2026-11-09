@@ -3,7 +3,8 @@ import { headers } from 'next/headers';
 import { cache } from 'react';
 import { normalizeLocale } from '@/lib/locale-core';
 import { SITE_URL } from '@/lib/site-url';
-import { TOOLS, TOOL_CATEGORIES } from '@/modules/toolbox/data/catalog';
+import { TOOL_CATEGORIES } from '@/modules/toolbox/data/catalog';
+import { getCatalogTools } from '@/modules/toolbox/lib/registry';
 import { getToolboxCopy } from '@/modules/toolbox/data/copy';
 import { ToolboxCatalog, type CatalogItem } from '@/modules/toolbox/components/ToolboxCatalog';
 
@@ -54,7 +55,7 @@ export default async function ToolboxPage() {
   const locale = await getSsrLocale();
   const copy = getToolboxCopy(locale);
 
-  const items: CatalogItem[] = TOOLS.map((tool) => {
+  const items: CatalogItem[] = getCatalogTools().map((tool) => {
     const toolCopy = copy.tools[tool.slug];
     return {
       slug: tool.slug,

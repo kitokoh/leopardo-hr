@@ -58,4 +58,15 @@ export interface ToolDefinition {
   keywords: string[];
   warnings: ToolWarningId[];
   references: ToolReference[];
+  /**
+   * Outil actif dans le catalogue public (défaut : `true`).
+   *
+   * Un outil `enabled: false` est **masqué** du catalogue (`/toolbox`), de la
+   * recherche et du sitemap, mais reste **résolvable par slug direct**
+   * (`/toolbox/<slug>`) : un lien partagé ne casse pas. C'est le seul bénéfice
+   * réel d'une table administrable, obtenu sans base de données — le masquage
+   * passe par une PR, donc reste revu (décision #9157,
+   * `docs/DECISIONS/2026-11-09-toolbox-administration-metadonnees.md`).
+   */
+  enabled?: boolean;
 }
