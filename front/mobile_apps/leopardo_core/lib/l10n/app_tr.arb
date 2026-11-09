@@ -6731,6 +6731,7 @@
   "discoveryGeounsupported": "Bu cihazda konum kullanılamıyor.",
   "discoveryNoresults": "Aramanızla eşleşen profesyonel yok.",
   "discoveryLoaderror": "Sonuçlar yüklenemedi. Tekrar deneyin.",
+  "discoveryOfflinecachenotice": "Ağ bağlantısı yok — son aramanız gösteriliyor. Sonuçlar eski olabilir.",
   "discoveryRetry": "Tekrar dene",
   "discoveryLoading": "Yükleniyor…",
   "discoveryPrevious": "Önceki",

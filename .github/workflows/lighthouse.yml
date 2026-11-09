@@ -43,6 +43,37 @@ env:
   NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
 
 jobs:
+  # Couloir 16 (M4, #9106) — garde BLOQUANTE du poids des images publiques.
+  #
+  # Le critère d'acceptation n°1 de M4 est « budget de poids écrit dans le dépôt
+  # ET vérifié en CI ». Le job `lighthouse` ci-dessous est volontairement
+  # non bloquant (PA2-QA-008) : un score qui baisse sur une page marketing ne
+  # doit pas bloquer un merge sans rapport. Mais un budget de POIDS n'est pas un
+  # score : c'est une contrainte dure sur les marchés à forfait data limité
+  # (PUBLIC_APP_BUDGETS.md §4). Il est donc vérifié ici, séparément, et BLOQUE.
+  #
+  # Ce job ne mesure que les images VERSIONNÉES (front/web/public/**). Les
+  # images de commerces viennent de l'API à l'exécution et relèvent du pipeline
+  # d'images côté service, pas d'un contrôle de fichiers.
+  image-budget:
+    timeout-minutes: 10
+    name: Public image weight budget (blocking)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '20.x'
+
+      - name: Check public image weight budget
+        working-directory: front/web
+        run: node scripts/check-public-image-budget.mjs --report
+
   lighthouse:
     timeout-minutes: 30
     runs-on: ubuntu-latest

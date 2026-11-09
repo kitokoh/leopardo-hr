@@ -9529,7 +9529,8 @@
     "conversationBack": "Retour",
     "conversationStart": "Démarrer une conversation",
     "conversationStarted": "Votre message a été envoyé au professionnel.",
-    "conversationStartBody": "Bonjour, je souhaite vous contacter."
+    "conversationStartBody": "Bonjour, je souhaite vous contacter.",
+    "offlineCacheNotice": "Réseau indisponible — voici votre dernière recherche. Les résultats peuvent être périmés."
   },
   "publicInbox": {
     "pageTitle": "Demandes publiques",

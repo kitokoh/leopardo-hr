@@ -13,6 +13,7 @@ import {
   type PublicDiscoveryMeta,
 } from '@/lib/public-discovery-api';
 import { startConversation } from '@/lib/public-conversation-api';
+import { readLastSearch, saveLastSearch } from '@/lib/offline/public-discovery-cache';
 import ContactDialog from './contact-dialog';
 
 /**
@@ -134,6 +135,12 @@ export default function DiscoveryExplorer({
   const [startedSlug, setStartedSlug] = useState<string | null>(null);
   /** Slug dont l'ouverture de conversation a échoué. */
   const [startErrorSlug, setStartErrorSlug] = useState<string | null>(null);
+  /**
+   * M4 (#9106) — true quand les résultats affichés viennent du cache hors ligne
+   * et non du réseau. L'écran doit le DIRE : afficher des résultats périmés
+   * sans le signaler ferait croire à une recherche fraîche.
+   */
+  const [fromCache, setFromCache] = useState(false);
 
   /**
    * #8760 — Démarrer une conversation depuis une fiche publique.
@@ -205,15 +212,37 @@ export default function DiscoveryExplorer({
         data?: PublicDiscoveryItem[];
         meta?: PublicDiscoveryMeta;
       };
-      setItems(Array.isArray(json.data) ? json.data : []);
-      setMeta(json.meta ?? null);
+      const nextItems = Array.isArray(json.data) ? json.data : [];
+      const nextMeta = json.meta ?? null;
+      setItems(nextItems);
+      setMeta(nextMeta);
       setPage(params.page);
+      setFromCache(false);
       if (typeof window !== 'undefined' && !params.near) {
         // URL partageable/crawlable — sans near (position = donnée volatile).
         window.history.replaceState(null, '', directoryHref(params));
+        // M4 (#9106) — on ne met en cache QUE la recherche sans proximité :
+        // la position ne doit pas survivre à la session.
+        saveLastSearch(
+          { q: params.q, city: params.city, type: params.type, page: params.page },
+          nextItems,
+          nextMeta,
+        );
       }
     } catch {
-      setError(true);
+      // M4 (#9106) — réseau indisponible : on restitue la dernière recherche
+      // réussie plutôt que d'afficher une erreur sèche. Jamais pour une
+      // recherche par proximité (le cache ne porte pas de position).
+      const cached = params.near ? null : readLastSearch();
+      if (cached) {
+        setItems(cached.items);
+        setMeta(cached.meta);
+        setPage(cached.query.page);
+        setFromCache(true);
+        setError(false);
+      } else {
+        setError(true);
+      }
     } finally {
       setLoading(false);
     }
@@ -341,6 +370,12 @@ export default function DiscoveryExplorer({
       )}
 
       {loading && <p className="py-8 text-center text-sm text-slate-500">{t(locale, 'discovery.loading')}</p>}
+
+      {!loading && fromCache && (
+        <p className="mb-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          {t(locale, 'discovery.offlineCacheNotice')}
+        </p>
+      )}
 
       {!loading && error && (
         <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">

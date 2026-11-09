@@ -8489,6 +8489,7 @@
     "geoUnsupported": "Bu cihazda konum kullanılamıyor.",
     "noResults": "Aramanızla eşleşen profesyonel yok.",
     "loadError": "Sonuçlar yüklenemedi. Tekrar deneyin.",
+    "offlineCacheNotice": "Ağ bağlantısı yok — son aramanız gösteriliyor. Sonuçlar eski olabilir.",
     "retry": "Tekrar dene",
     "loading": "Yükleniyor…",
     "previous": "Önceki",

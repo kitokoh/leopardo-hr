@@ -6731,6 +6731,7 @@
   "discoveryGeounsupported": "Geolocation is not available on this device.",
   "discoveryNoresults": "No professional matches your search.",
   "discoveryLoaderror": "Unable to load results. Please try again.",
+  "discoveryOfflinecachenotice": "No network — showing your last search. Results may be out of date.",
   "discoveryRetry": "Retry",
   "discoveryLoading": "Loading…",
   "discoveryPrevious": "Previous",

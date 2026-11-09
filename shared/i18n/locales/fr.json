@@ -8489,6 +8489,7 @@
     "geoUnsupported": "La géolocalisation n'est pas disponible sur cet appareil.",
     "noResults": "Aucun professionnel ne correspond à votre recherche.",
     "loadError": "Impossible de charger les résultats. Réessayez.",
+    "offlineCacheNotice": "Réseau indisponible — voici votre dernière recherche. Les résultats peuvent être périmés.",
     "retry": "Réessayer",
     "loading": "Chargement…",
     "previous": "Précédent",

@@ -6731,6 +6731,7 @@
   "discoveryGeounsupported": "تحديد الموقع غير متاح على هذا الجهاز.",
   "discoveryNoresults": "لا يوجد مهني يطابق بحثك.",
   "discoveryLoaderror": "تعذر تحميل النتائج. حاول مرة أخرى.",
+  "discoveryOfflinecachenotice": "لا يوجد اتصال — هذه نتائج بحثك الأخير. قد تكون النتائج قديمة.",
   "discoveryRetry": "إعادة المحاولة",
   "discoveryLoading": "جارٍ التحميل…",
   "discoveryPrevious": "السابق",

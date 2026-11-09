@@ -6731,6 +6731,7 @@
   "discoveryGeounsupported": "La géolocalisation n'est pas disponible sur cet appareil.",
   "discoveryNoresults": "Aucun professionnel ne correspond à votre recherche.",
   "discoveryLoaderror": "Impossible de charger les résultats. Réessayez.",
+  "discoveryOfflinecachenotice": "Réseau indisponible — voici votre dernière recherche. Les résultats peuvent être périmés.",
   "discoveryRetry": "Réessayer",
   "discoveryLoading": "Chargement…",
   "discoveryPrevious": "Précédent",

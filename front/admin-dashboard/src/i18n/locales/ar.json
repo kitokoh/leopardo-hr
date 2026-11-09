@@ -9529,7 +9529,8 @@
     "conversationBack": "رجوع",
     "conversationStart": "بدء محادثة",
     "conversationStarted": "تم إرسال رسالتك إلى المهني.",
-    "conversationStartBody": "مرحبًا، أرغب في التواصل معكم."
+    "conversationStartBody": "مرحبًا، أرغب في التواصل معكم.",
+    "offlineCacheNotice": "لا يوجد اتصال — هذه نتائج بحثك الأخير. قد تكون النتائج قديمة."
   },
   "publicInbox": {
     "pageTitle": "الطلبات العامة",
