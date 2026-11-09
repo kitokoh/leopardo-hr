@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:leopardo_core/core/pos/pos_barcode_scanner.dart';
+import 'package:leopardo_core/core/pos/pos_input.dart';
+import 'package:leopardo_core/core/pos/pos_ticket.dart';
+import 'package:leopardo_core/core/pos/pos_widgets.dart';
 
 import '../../core/models/retail_models.dart';
 import '../../core/theme/retail_theme.dart';
-import 'barcode_scanner_screen.dart';
 import 'cash_movement_sheet.dart';
 import 'close_session_sheet.dart';
 import 'numeric_keypad.dart';
@@ -35,6 +39,12 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
   final _searchController = TextEditingController();
   final _searchFocus = FocusNode();
 
+  /// Detecteur de douchette materielle (USB / Bluetooth).
+  ///
+  /// Une douchette « tape » le code puis Entree, tres vite : sans ce filtre,
+  /// le code atterrit dans le champ de recherche au lieu d'ajouter l'article.
+  final _hardwareScanner = PosHardwareScannerDetector();
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -42,112 +52,87 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final state = ref.watch(retailPosControllerProvider);
-    final notifier = ref.read(retailPosControllerProvider.notifier);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Caisse'),
-        actions: [
-          PosConnectionChip(
-            offline: state.offline,
-            pending: state.pendingOperations,
-          ),
-          const SizedBox(width: 8),
-          IconButton(
-            tooltip: 'Mouvement de caisse',
-            onPressed: state.sessionOpen ? _openCashMovement : null,
-            icon: const Icon(Icons.account_balance_wallet_outlined),
-          ),
-          IconButton(
-            tooltip: 'Remboursement',
-            onPressed: state.lastOrderId != null ? _openRefund : null,
-            icon: const Icon(Icons.undo),
-          ),
-          IconButton(
-            tooltip: 'Cloture de caisse',
-            onPressed: state.sessionOpen ? _openClose : null,
-            icon: const Icon(Icons.lock_outline),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: Column(
-        children: [
-          if (state.offline || state.pendingOperations > 0)
-            PosOfflineBanner(
-              pendingOperations: state.pendingOperations,
-              onSync: notifier.flushQueue,
-              syncing: state.loading,
-            ),
-          if (state.error != null)
-            PosErrorBanner(
-              message: state.error!,
-              onDismiss: notifier.clearError,
-            ),
-          Expanded(
-            child: state.loading && state.products.isEmpty
-                ? const PosLoadingState()
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _CategoryRail(
-                        categories: state.categories,
-                        selectedId: state.selectedCategoryId,
-                        onSelect: notifier.selectCategory,
-                      ),
-                      const VerticalDivider(width: 1),
-                      Expanded(
-                        flex: 3,
-                        child: _ProductGrid(
-                          products: state.visibleProducts,
-                          searchController: _searchController,
-                          searchFocus: _searchFocus,
-                          onSearch: notifier.setSearchQuery,
-                          onScan: notifier.scanBarcode,
-                          onOpenScanner: _openScanner,
-                          onPick: notifier.addProduct,
-                          onClearSearch: () {
-                            _searchController.clear();
-                            notifier.setSearchQuery('');
-                          },
-                        ),
-                      ),
-                      const VerticalDivider(width: 1),
-                      SizedBox(
-                        width: 400,
-                        child: _CartPanel(
-                          state: state,
-                          onRemove: notifier.removeProduct,
-                          onSetQuantity: notifier.setQuantity,
-                          onSetDiscount: notifier.setDiscount,
-                          onClear: notifier.clearCart,
-                          onPay: _pay,
-                        ),
-                      ),
-                    ],
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Ouvre le scanner camera et ajoute l'article lu.
+  /// Traite une touche : douchette d'abord, raccourci ensuite.
   ///
-  /// Le scan est le geste le plus frequent en boutique : il est accessible
-  /// depuis la barre de recherche ET depuis la barre d'actions rapides.
-  Future<void> _openScanner() async {
-    final code = await Navigator.of(context).push<String>(
-      MaterialPageRoute<String>(builder: (_) => const BarcodeScannerScreen()),
-    );
-
-    if (code == null || !mounted) {
-      return;
+  /// On ne consomme la touche que si elle a produit un effet : sinon la frappe
+  /// normale doit continuer vers le champ de recherche.
+  KeyEventResult _onKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent) {
+      return KeyEventResult.ignored;
     }
 
+    final character = event.character;
+
+    if (character != null && character.isNotEmpty) {
+      final scanned = _hardwareScanner.feed(
+        PosKeyStroke(character: character, at: DateTime.now()),
+      );
+
+      if (scanned != null) {
+        _handleScan(scanned);
+
+        return KeyEventResult.handled;
+      }
+    }
+
+    final shortcut = posShortcutFor(event.logicalKey.keyLabel);
+
+    if (shortcut == null) {
+      return KeyEventResult.ignored;
+    }
+
+    _runShortcut(shortcut);
+
+    return KeyEventResult.handled;
+  }
+
+  void _runShortcut(PosShortcut shortcut) {
+    final notifier = ref.read(retailPosControllerProvider.notifier);
+    final state = ref.read(retailPosControllerProvider);
+
+    switch (shortcut) {
+      case PosShortcut.scan:
+        _openScanner();
+      case PosShortcut.pay:
+        if (!state.cart.isEmpty) {
+          _pay(RetailPaymentMethod.cash);
+        }
+      case PosShortcut.park:
+        _openPark();
+      case PosShortcut.recall:
+        _openRecall();
+      case PosShortcut.receipt:
+        _openReceipt();
+      case PosShortcut.dismiss:
+        _searchController.clear();
+        notifier.setSearchQuery('');
+        _searchFocus.unfocus();
+      case PosShortcut.removeLastLine:
+        if (state.cart.lines.isNotEmpty) {
+          notifier.removeProduct(state.cart.lines.last.product.id);
+        }
+      case PosShortcut.incrementLastLine:
+        if (state.cart.lines.isNotEmpty) {
+          final line = state.cart.lines.last;
+          notifier.setQuantity(line.product.id, line.quantity + 1);
+        }
+      case PosShortcut.decrementLastLine:
+        if (state.cart.lines.isNotEmpty) {
+          final line = state.cart.lines.last;
+          notifier.setQuantity(line.product.id, line.quantity - 1);
+        }
+      case PosShortcut.discount:
+        if (!state.cart.isEmpty) {
+          _openDiscountSheet();
+        }
+      case PosShortcut.tip:
+        // Le pourboire n'existe pas en retail : le raccourci est sans effet.
+        break;
+    }
+  }
+
+  /// Ajoute l'article correspondant a un code scanne (camera ou douchette).
+  void _handleScan(String code) {
     final notifier = ref.read(retailPosControllerProvider.notifier);
     final found = notifier.scanBarcode(code);
 
@@ -155,17 +140,264 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
       return;
     }
 
-    final messenger = ScaffoldMessenger.of(context);
-
-    messenger.showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
+        duration: const Duration(seconds: 2),
         content: Text(
-          found
-              ? 'Article ajoute au panier.'
-              : 'Aucun article pour le code $code.',
+          found ? 'Article ajoute au panier.' : 'Aucun article pour le code $code.',
         ),
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(retailPosControllerProvider);
+    final notifier = ref.read(retailPosControllerProvider.notifier);
+
+    return Focus(
+      autofocus: true,
+      onKeyEvent: _onKey,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Caisse'),
+          actions: [
+            PosConnectionChip(
+              offline: state.offline,
+              pending: state.pendingOperations,
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              tooltip: 'Mettre en attente (F6)',
+              onPressed: state.cart.isEmpty ? null : _openPark,
+              icon: Badge(
+                isLabelVisible: state.parked.length > 0,
+                label: Text('${state.parked.length}'),
+                child: const Icon(Icons.pause_circle_outline),
+              ),
+            ),
+            IconButton(
+              tooltip: 'Rappeler une commande (F7)',
+              onPressed: _openRecall,
+              icon: const Icon(Icons.playlist_play),
+            ),
+            IconButton(
+              tooltip: 'Apercu du ticket (F8)',
+              onPressed: state.cart.isEmpty ? null : _openReceipt,
+              icon: const Icon(Icons.receipt_long),
+            ),
+            IconButton(
+              tooltip: 'Mouvement de caisse',
+              onPressed: state.sessionOpen ? _openCashMovement : null,
+              icon: const Icon(Icons.account_balance_wallet_outlined),
+            ),
+            IconButton(
+              tooltip: 'Remboursement',
+              onPressed: state.lastOrderId != null ? _openRefund : null,
+              icon: const Icon(Icons.undo),
+            ),
+            IconButton(
+              tooltip: 'Cloture de caisse',
+              onPressed: state.sessionOpen ? _openClose : null,
+              icon: const Icon(Icons.lock_outline),
+            ),
+            const SizedBox(width: 8),
+          ],
+        ),
+        body: Column(
+          children: [
+            // Bandeau de synchronisation : progression, echecs, action
+            // manuelle. Une file muette laisse le vendeur dans le doute.
+            if (state.offline || state.pendingOperations > 0 || state.sync.total > 0)
+              PosSyncBanner(
+                progress: state.sync,
+                onSyncNow: notifier.flushQueue,
+                onDismissConflicts: notifier.clearError,
+              ),
+            if (state.error != null)
+              PosErrorBanner(
+                message: state.error!,
+                onDismiss: notifier.clearError,
+              ),
+            Expanded(
+              child: state.loading && state.products.isEmpty
+                  ? const PosLoadingState()
+                  : Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _CategoryRail(
+                          categories: state.categories,
+                          selectedId: state.selectedCategoryId,
+                          onSelect: notifier.selectCategory,
+                        ),
+                        const VerticalDivider(width: 1),
+                        Expanded(
+                          flex: 3,
+                          child: _ProductGrid(
+                            products: state.visibleProducts,
+                            recentProducts: state.recentProducts,
+                            favouritesOnly: state.showFavouritesOnly,
+                            favouriteIds: {
+                              for (final product in state.products)
+                                if (state.affinity.isFavourite(product.id)) product.id,
+                            },
+                            searchController: _searchController,
+                            searchFocus: _searchFocus,
+                            onSearch: notifier.setSearchQuery,
+                            onScan: notifier.scanBarcode,
+                            onOpenScanner: _openScanner,
+                            onPick: notifier.addProduct,
+                            onToggleFavourite: notifier.toggleFavourite,
+                            onToggleFavouritesOnly: notifier.toggleFavouritesOnly,
+                            onClearSearch: () {
+                              _searchController.clear();
+                              notifier.setSearchQuery('');
+                            },
+                          ),
+                        ),
+                        const VerticalDivider(width: 1),
+                        SizedBox(
+                          width: 400,
+                          child: _CartPanel(
+                            state: state,
+                            onRemove: notifier.removeProduct,
+                            onSetQuantity: notifier.setQuantity,
+                            onSetDiscount: notifier.setDiscount,
+                            onClear: notifier.clearCart,
+                            onPay: _pay,
+                            onVoid: _voidLine,
+                            onReceipt: _openReceipt,
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Ouvre le scanner camera partage et ajoute l'article lu.
+  Future<void> _openScanner() async {
+    final code = await Navigator.of(context).push<String>(
+      MaterialPageRoute<String>(
+        builder: (_) => PosBarcodeScannerScreen(
+          accentColor: Theme.of(context).colorScheme.primary,
+          cardRadius: RetailTheme.cardRadius,
+        ),
+      ),
+    );
+
+    if (code == null || !mounted) {
+      return;
+    }
+
+    _handleScan(code);
+  }
+
+  /// Met la commande en cours de cote.
+  Future<void> _openPark() async {
+    final label = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => const PosParkTicketSheet(),
+    );
+
+    if (label == null || !mounted) {
+      return;
+    }
+
+    final ok = ref.read(retailPosControllerProvider.notifier).parkCurrentTicket(label);
+
+    if (!mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(ok ? 'Commande mise en attente.' : 'Mise en attente impossible.'),
+      ),
+    );
+  }
+
+  /// Rappelle une commande mise de cote.
+  Future<void> _openRecall() async {
+    final state = ref.read(retailPosControllerProvider);
+
+    final id = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => PosRecallTicketSheet(tickets: state.parked),
+    );
+
+    if (id == null || !mounted) {
+      return;
+    }
+
+    final ok = ref.read(retailPosControllerProvider.notifier).recallTicket(id);
+
+    if (!mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(ok ? 'Commande rappelee.' : 'Rappel impossible.')),
+    );
+  }
+
+  /// Apercu du ticket avant encaissement.
+  Future<void> _openReceipt() async {
+    final state = ref.read(retailPosControllerProvider);
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => PosReceiptPreview(
+        receipt: state.receipt,
+        onConfirm: () {
+          Navigator.of(context).pop();
+          _pay(RetailPaymentMethod.cash);
+        },
+      ),
+    );
+  }
+
+  /// Annule une ligne avec un motif obligatoire.
+  Future<void> _voidLine(RetailCartLine line) async {
+    final result = await showModalBottomSheet<({PosVoidReason reason, String comment})>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => PosVoidReasonSheet(itemName: line.product.name),
+    );
+
+    if (result == null || !mounted) {
+      return;
+    }
+
+    ref.read(retailPosControllerProvider.notifier).voidLine(
+          productId: line.product.id,
+          reason: result.reason,
+          comment: result.comment.isEmpty ? null : result.comment,
+        );
+  }
+
+  /// Ouvre la remise depuis un raccourci clavier.
+  Future<void> _openDiscountSheet() async {
+    final state = ref.read(retailPosControllerProvider);
+
+    final value = await showModalBottomSheet<int>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => _DiscountSheet(
+        subtotalMinor: state.cart.subtotalMinor,
+        currentDiscountMinor: state.cart.discountMinor,
+      ),
+    );
+
+    if (value != null) {
+      ref.read(retailPosControllerProvider.notifier).setDiscount(value);
+    }
   }
 
   Future<void> _pay(RetailPaymentMethod method) async {
@@ -392,26 +624,39 @@ class _CategoryTile extends StatelessWidget {
 class _ProductGrid extends StatelessWidget {
   const _ProductGrid({
     required this.products,
+    required this.recentProducts,
+    required this.favouritesOnly,
+    required this.favouriteIds,
     required this.searchController,
     required this.searchFocus,
     required this.onSearch,
     required this.onScan,
     required this.onOpenScanner,
     required this.onPick,
+    required this.onToggleFavourite,
+    required this.onToggleFavouritesOnly,
     required this.onClearSearch,
   });
 
   final List<RetailProduct> products;
+  final List<RetailProduct> recentProducts;
+  final bool favouritesOnly;
+  final Set<int> favouriteIds;
   final TextEditingController searchController;
   final FocusNode searchFocus;
   final void Function(String) onSearch;
   final bool Function(String) onScan;
   final VoidCallback onOpenScanner;
   final void Function(RetailProduct) onPick;
+  final void Function(int) onToggleFavourite;
+  final VoidCallback onToggleFavouritesOnly;
   final VoidCallback onClearSearch;
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final searching = searchController.text.trim().isNotEmpty;
+
     return Column(
       children: [
         Padding(
@@ -446,6 +691,18 @@ class _ProductGrid extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
+              // Filtre « favoris » : un appui, et la grille ne montre plus que
+              // les articles epingles.
+              FilterChip(
+                selected: favouritesOnly,
+                onSelected: (_) => onToggleFavouritesOnly(),
+                avatar: Icon(
+                  favouritesOnly ? Icons.star : Icons.star_border,
+                  size: 20,
+                ),
+                label: const Text('Favoris'),
+              ),
+              const SizedBox(width: 10),
               // Le scan camera est une action de premier plan : bouton plein,
               // pas une icone perdue dans un menu.
               FilledButton.icon(
@@ -456,21 +713,65 @@ class _ProductGrid extends StatelessWidget {
             ],
           ),
         ),
+        // Bandeau « recents » : les articles habituels, accessibles en un
+        // appui sans rien taper. Masque des qu'une recherche est en cours.
+        if (!searching && recentProducts.isNotEmpty)
+          SizedBox(
+            height: 56,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 8, top: 6, bottom: 6),
+                  child: Center(
+                    child: Text(
+                      'Recents',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ),
+                for (final product in recentProducts)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8, top: 6, bottom: 6),
+                    child: ActionChip(
+                      avatar: const Icon(Icons.history, size: 18),
+                      label: Text(product.name),
+                      onPressed: () => onPick(product),
+                    ),
+                  ),
+              ],
+            ),
+          ),
         Expanded(
           child: products.isEmpty
               ? PosEmptyState(
-                  icon: Icons.inventory_2_outlined,
-                  title: 'Aucun article',
-                  message: searchController.text.isEmpty
-                      ? 'Ce rayon ne contient aucun article disponible.'
-                      : 'Aucun article ne correspond a « ${searchController.text} ».',
-                  action: searchController.text.isEmpty
-                      ? null
-                      : OutlinedButton.icon(
+                  icon: favouritesOnly
+                      ? Icons.star_border
+                      : Icons.inventory_2_outlined,
+                  title: favouritesOnly ? 'Aucun favori' : 'Aucun article',
+                  message: searching
+                      ? 'Aucun article ne correspond a « ${searchController.text} ».'
+                      : favouritesOnly
+                          ? 'Appuyez longuement sur un article pour l\'epingler ici.'
+                          : 'Ce rayon ne contient aucun article disponible.',
+                  action: searching
+                      ? OutlinedButton.icon(
                           onPressed: onClearSearch,
                           icon: const Icon(Icons.close),
                           label: const Text('Effacer la recherche'),
-                        ),
+                        )
+                      : (favouritesOnly
+                          ? OutlinedButton.icon(
+                              onPressed: onToggleFavouritesOnly,
+                              icon: const Icon(Icons.grid_view),
+                              label: const Text('Voir tous les articles'),
+                            )
+                          : null),
                 )
               : GridView.builder(
                   padding: const EdgeInsets.all(12),
@@ -484,7 +785,12 @@ class _ProductGrid extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final product = products[index];
 
-                    return _ProductTile(product: product, onPick: onPick);
+                    return _ProductTile(
+                      product: product,
+                      isFavourite: favouriteIds.contains(product.id),
+                      onPick: onPick,
+                      onToggleFavourite: onToggleFavourite,
+                    );
                   },
                 ),
         ),
@@ -495,10 +801,17 @@ class _ProductGrid extends StatelessWidget {
 
 /// Une tuile produit : nom, prix formate, indicateur de scannabilite.
 class _ProductTile extends StatelessWidget {
-  const _ProductTile({required this.product, required this.onPick});
+  const _ProductTile({
+    required this.product,
+    required this.isFavourite,
+    required this.onPick,
+    required this.onToggleFavourite,
+  });
 
   final RetailProduct product;
+  final bool isFavourite;
   final void Function(RetailProduct) onPick;
+  final void Function(int) onToggleFavourite;
 
   @override
   Widget build(BuildContext context) {
@@ -506,22 +819,35 @@ class _ProductTile extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: '${product.name}, ${formatMinor(product.priceMinor)}',
+      label: '${product.name}, ${formatMinor(product.priceMinor)}'
+          '${isFavourite ? ', favori' : ''}',
       child: Card(
         child: InkWell(
           borderRadius: BorderRadius.circular(RetailTheme.cardRadius),
           onTap: () => onPick(product),
+          // Appui long : epingle l'article en favori. C'est le geste qui
+          // construit la grille du vendeur au fil des jours.
+          onLongPress: () => onToggleFavourite(product.id),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  product.name,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        product.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    if (isFavourite)
+                      Icon(Icons.star, size: 20, color: scheme.tertiary),
+                  ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -556,6 +882,8 @@ class _CartPanel extends StatelessWidget {
     required this.onSetDiscount,
     required this.onClear,
     required this.onPay,
+    required this.onVoid,
+    required this.onReceipt,
   });
 
   final RetailPosState state;
@@ -564,6 +892,8 @@ class _CartPanel extends StatelessWidget {
   final void Function(int) onSetDiscount;
   final VoidCallback onClear;
   final Future<void> Function(RetailPaymentMethod) onPay;
+  final Future<void> Function(RetailCartLine) onVoid;
+  final Future<void> Function() onReceipt;
 
   @override
   Widget build(BuildContext context) {
@@ -607,10 +937,33 @@ class _CartPanel extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final line = cart.lines[index];
 
-                    return _CartLineTile(
-                      line: line,
-                      onRemove: onRemove,
-                      onSetQuantity: onSetQuantity,
+                    // Balayage vers la gauche = retirer la ligne ; appui long
+                    // = menu d'actions (quantite, annulation motivee).
+                    return PosSwipeableLine(
+                      isFavourite: state.affinity.isFavourite(line.product.id),
+                      onRemove: () => onRemove(line.product.id),
+                      onAction: (action) {
+                        switch (action) {
+                          case PosLineAction.increase:
+                            onSetQuantity(line.product.id, line.quantity + 1);
+                          case PosLineAction.decrease:
+                            onSetQuantity(line.product.id, line.quantity - 1);
+                          case PosLineAction.setQuantity:
+                            _editQuantity(context, line);
+                          case PosLineAction.remove:
+                            onRemove(line.product.id);
+                          case PosLineAction.toggleFavourite:
+                            // L'epinglage est gere par la grille produit ; ici
+                            // on retire simplement la ligne.
+                            onRemove(line.product.id);
+                        }
+                      },
+                      child: _CartLineTile(
+                        line: line,
+                        onRemove: onRemove,
+                        onSetQuantity: onSetQuantity,
+                        onVoid: () => onVoid(line),
+                      ),
                     );
                   },
                 ),
@@ -624,17 +977,36 @@ class _CartPanel extends StatelessWidget {
               _TotalRow(label: 'Sous-total', value: cart.subtotalMinor),
               if (cart.discountMinor > 0)
                 _TotalRow(label: 'Remise', value: -cart.discountMinor),
+              if (state.voidedLines.isNotEmpty)
+                _TotalRow(
+                  label: 'Annule (${state.voidedLines.length})',
+                  value: -state.receipt.voidedMinor,
+                ),
               const SizedBox(height: 8),
               _TotalRow(label: 'Total', value: cart.totalMinor, emphasized: true),
               const SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed: cart.isEmpty ? null : () => _openDiscount(context),
-                icon: const Icon(Icons.percent),
-                label: Text(
-                  cart.discountMinor > 0
-                      ? 'Remise : ${formatMinor(cart.discountMinor)}'
-                      : 'Appliquer une remise',
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: cart.isEmpty ? null : () => _openDiscount(context),
+                      icon: const Icon(Icons.percent),
+                      label: Text(
+                        cart.discountMinor > 0
+                            ? 'Remise : ${formatMinor(cart.discountMinor)}'
+                            : 'Remise',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: cart.isEmpty ? null : onReceipt,
+                      icon: const Icon(Icons.receipt_long),
+                      label: const Text('Ticket'),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
               FilledButton.icon(
@@ -682,6 +1054,22 @@ class _CartPanel extends StatelessWidget {
       onSetDiscount(value);
     }
   }
+
+  /// Saisie de quantite au pave numerique depuis le menu de ligne.
+  Future<void> _editQuantity(BuildContext context, RetailCartLine line) async {
+    final value = await showModalBottomSheet<int>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => _QuantitySheet(
+        productName: line.product.name,
+        initialQuantity: line.quantity,
+      ),
+    );
+
+    if (value != null) {
+      onSetQuantity(line.product.id, value);
+    }
+  }
 }
 
 /// Une ligne du panier : quantite ajustable au doigt, total de ligne visible.
@@ -690,11 +1078,13 @@ class _CartLineTile extends StatelessWidget {
     required this.line,
     required this.onRemove,
     required this.onSetQuantity,
+    required this.onVoid,
   });
 
   final RetailCartLine line;
   final void Function(int) onRemove;
   final void Function(int, int) onSetQuantity;
+  final VoidCallback onVoid;
 
   @override
   Widget build(BuildContext context) {
@@ -722,6 +1112,12 @@ class _CartLineTile extends StatelessWidget {
             tooltip: 'Ajouter un',
             onPressed: () => onSetQuantity(line.product.id, line.quantity + 1),
             icon: const Icon(Icons.add_circle_outline),
+          ),
+          // Annulation motivee : la ligne sort du total mais reste tracee.
+          IconButton(
+            tooltip: 'Annuler la ligne (motif)',
+            onPressed: onVoid,
+            icon: const Icon(Icons.block),
           ),
           SizedBox(
             width: 76,

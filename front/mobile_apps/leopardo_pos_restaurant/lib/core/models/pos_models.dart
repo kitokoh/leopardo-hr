@@ -30,6 +30,8 @@ class PosProduct {
     required this.priceMinor,
     this.categoryId,
     this.available = true,
+    this.sku,
+    this.barcode,
   });
 
   final int id;
@@ -38,12 +40,21 @@ class PosProduct {
   final int? categoryId;
   final bool available;
 
+  /// Reference interne optionnelle (code plat).
+  final String? sku;
+
+  /// Code-barres optionnel : les boissons et produits emballes en portent un,
+  /// ce qui permet de les scanner au lieu de les chercher dans le menu.
+  final String? barcode;
+
   factory PosProduct.fromJson(Map<String, dynamic> json) => PosProduct(
         id: (json['id'] as num).toInt(),
         name: (json['name'] as String?) ?? 'Produit',
         priceMinor: (json['price_minor'] as num?)?.toInt() ?? 0,
         categoryId: (json['category_id'] as num?)?.toInt(),
         available: (json['available'] as bool?) ?? true,
+        sku: json['sku'] as String?,
+        barcode: json['barcode'] as String?,
       );
 
   Map<String, dynamic> toJson() => {
@@ -52,6 +63,8 @@ class PosProduct {
         'price_minor': priceMinor,
         'category_id': categoryId,
         'available': available,
+        'sku': sku,
+        'barcode': barcode,
       };
 }
 
@@ -226,6 +239,28 @@ class Cart {
       updated.removeAt(index);
     } else {
       updated[index] = line.withQuantity(line.quantity - 1);
+    }
+
+    return copyWith(lines: updated);
+  }
+
+  /// Fixe la quantite d'une ligne ; la retire si la quantite tombe a zero.
+  ///
+  /// Sert au pave numerique et aux raccourcis : saisir « 12 » directement est
+  /// plus rapide que taper 12 fois « + ».
+  Cart setQuantity(int productId, int quantity) {
+    final index = lines.indexWhere((line) => line.product.id == productId);
+
+    if (index == -1) {
+      return this;
+    }
+
+    final updated = [...lines];
+
+    if (quantity <= 0) {
+      updated.removeAt(index);
+    } else {
+      updated[index] = updated[index].withQuantity(quantity);
     }
 
     return copyWith(lines: updated);

@@ -1,30 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-import '../../core/theme/retail_theme.dart';
-
-/// Ecran de **scan code-barres natif** du POS Retail (#9215).
+/// **Ecran de scan code-barres** partage par les deux caisses POS.
 ///
-/// Le vendeur pointe la camera sur le code-barres de l'article : le code lu
-/// est renvoye a l'appelant, qui l'ajoute au panier. C'est le geste central
-/// d'une caisse de commerce — sans lui, le vendeur doit taper un code a la
-/// main a chaque article, ce qui est intenable en boutique.
+/// Il vivait dans `leopardo_pos_retail` uniquement ; l'app Restaurant en a
+/// besoin aussi (boissons et produits emballes portent un code-barres). Le
+/// deplacer ici evite d'en maintenir deux copies qui divergeraient — c'est
+/// exactement ce que le garde CI `check-mobile-core-duplication.py` interdit.
 ///
-/// Regles d'usage reel :
+/// Regles d'usage reel, apprises sur une caisse :
 ///  - **un seul scan par ouverture** : on ferme des la premiere lecture, sinon
 ///    la camera continue de lire le meme code et ajoute N fois l'article ;
 ///  - **anti-rebond** : un code identique relu dans la meme seconde est ignore
 ///    (les douchettes et la camera lisent plusieurs fois par seconde) ;
 ///  - **permission refusee** : on le dit clairement et on propose la saisie
 ///    manuelle, plutot que d'afficher un ecran noir muet.
-class BarcodeScannerScreen extends StatefulWidget {
-  const BarcodeScannerScreen({super.key});
+///
+/// Le widget ne connait ni le catalogue ni le panier : il renvoie une chaine
+/// via `Navigator.pop`. C'est ce qui le rend reutilisable tel quel.
+class PosBarcodeScannerScreen extends StatefulWidget {
+  const PosBarcodeScannerScreen({
+    super.key,
+    this.title = 'Scanner un code-barres',
+    this.hint = 'Placez le code-barres dans le cadre.',
+    this.accentColor,
+    this.cardRadius = 14,
+  });
+
+  final String title;
+  final String hint;
+
+  /// Couleur d'accent du viseur (celle du theme de l'app appelante).
+  final Color? accentColor;
+
+  final double cardRadius;
 
   @override
-  State<BarcodeScannerScreen> createState() => _BarcodeScannerScreenState();
+  State<PosBarcodeScannerScreen> createState() => _PosBarcodeScannerScreenState();
 }
 
-class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
+class _PosBarcodeScannerScreenState extends State<PosBarcodeScannerScreen> {
   final _controller = MobileScannerController(
     detectionSpeed: DetectionSpeed.noDuplicates,
     formats: const [
@@ -97,10 +112,11 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final accent = widget.accentColor ?? scheme.primary;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scanner un code-barres'),
+        title: Text(widget.title),
         actions: [
           IconButton(
             tooltip: 'Lampe',
@@ -120,7 +136,10 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
           MobileScanner(
             controller: _controller,
             onDetect: _onDetect,
-            errorBuilder: (context, error) => _ScannerError(error: error),
+            errorBuilder: (context, error) => _ScannerError(
+              error: error,
+              cardRadius: widget.cardRadius,
+            ),
           ),
           // Viseur : un cadre net au centre, lisible a bout de bras.
           IgnorePointer(
@@ -129,8 +148,8 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                 width: 320,
                 height: 200,
                 decoration: BoxDecoration(
-                  border: Border.all(color: scheme.primary, width: 4),
-                  borderRadius: BorderRadius.circular(RetailTheme.cardRadius),
+                  border: Border.all(color: accent, width: 4),
+                  borderRadius: BorderRadius.circular(widget.cardRadius),
                 ),
               ),
             ),
@@ -145,7 +164,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Placez le code-barres dans le cadre.',
+                    widget.hint,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 18,
@@ -174,9 +193,10 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
 /// On explique et on propose une porte de sortie : une caisse bloquee sur un
 /// ecran noir ne peut plus vendre.
 class _ScannerError extends StatelessWidget {
-  const _ScannerError({required this.error});
+  const _ScannerError({required this.error, required this.cardRadius});
 
   final MobileScannerException error;
+  final double cardRadius;
 
   @override
   Widget build(BuildContext context) {
