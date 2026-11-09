@@ -56,6 +56,8 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/social-marketing',
   '/restaurant',
   '/showcase',
+  // BC-40 LIBRARY (#9241) — administration de la bibliothèque du tenant.
+  '/library-admin',
   // FUND-090 : gestion des cagnottes (route protégée tenant).
   '/fundraising',
   // BC-19 (#7425) — mur de caméras + détail : même gate cosmétique de session
@@ -235,6 +237,7 @@ export const config = {
     '/social-marketing/:path*',
     '/restaurant/:path*', // BC-25 portail client (split /restaurant → /restaurateur)
     '/showcase/:path*', // BC-27 site vitrine tenant (management) — gate session
+    '/library-admin/:path*', // BC-40 (#9241) administration bibliothèque — gate session
     '/fundraising/:path*', // FUND-090 gestion des cagnottes (espace tenant) — gate session
     '/cameras/:path*', // BC-19 mur de caméras + détail (#7425) — gate session
     '/fleet/:path*', // #7400 flotte & véhicules de service (module horizontal)

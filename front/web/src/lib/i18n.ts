@@ -119,6 +119,8 @@ export type CopyTree = {
       reports: string; partner: string; billing: string; integrations: string;
       marketing: string; accounting: string; crm: string; restaurant: string;
       restaurant_kitchen: string; edu_manager: string; travel: string; travel_portal: string; fuel: string; fleet: string; showcase: string; fundraising: string;
+      /** BC-40 (#9241) — administration de la bibliothèque du tenant */
+      library: string;
       /** BC-30 (#7792) — verticale HealthManager (hôpitaux & cliniques) */
       health: string; health_patients: string; health_appointments: string;
       health_admissions: string; health_billing: string; health_referential: string;
@@ -834,6 +836,7 @@ const copy: Record<AppLocale, CopyTree> = {
         fuel: 'Station-service',
         fleet: 'Flotte',
         showcase: 'Site vitrine',
+        library: 'Bibliothèque',
         fundraising: 'Cagnottes',
         cameras: 'Caméras',
         commerce: 'Commerce',
@@ -1565,6 +1568,7 @@ const copy: Record<AppLocale, CopyTree> = {
         fuel: 'محطة وقود',
         fleet: 'الأسطول',
         showcase: 'موقع التعريف',
+        library: 'المكتبة',
         fundraising: 'حملات التضامن',
         cameras: 'الكاميرات',
         commerce: 'التجارة',
@@ -2292,6 +2296,7 @@ const copy: Record<AppLocale, CopyTree> = {
         fuel: 'Akaryakıt istasyonu',
         fleet: 'Filo',
         showcase: 'Tanıtım sitesi',
+        library: 'Kütüphane',
         fundraising: 'Kampanyalar',
         cameras: 'Kameralar',
         commerce: 'Ticaret',
@@ -3019,6 +3024,7 @@ const copy: Record<AppLocale, CopyTree> = {
         fuel: 'Fuel station',
         fleet: 'Fleet',
         showcase: 'Showcase site',
+        library: 'Library',
         fundraising: 'Fundraisers',
         cameras: 'Cameras',
         commerce: 'Commerce',
