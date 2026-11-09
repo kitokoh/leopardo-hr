@@ -2283,6 +2283,46 @@ trait CreatesMvpSchema
             });
         }
 
+        // BC-17 RETAIL #9208 — remboursements POS (total ou partiel, motif
+        // obligatoire). Miroir de la migration 2026_11_08_000901_9208.
+        if (! Schema::hasTable($this->moduleTable('retail_pos_refunds'))) {
+            Schema::create($this->moduleTable('retail_pos_refunds'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('order_id');
+                $table->unsignedBigInteger('pos_session_id')->nullable();
+                $table->string('method', 20);
+                $table->unsignedBigInteger('amount_minor');
+                $table->char('currency', 3)->default('XOF');
+                $table->string('reason', 255);
+                $table->unsignedBigInteger('user_id')->nullable();
+                $table->timestamp('refunded_at')->nullable();
+                $table->string('idempotency_key', 64)->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'idempotency_key'], 'retail_pos_refunds_company_idempotency_key_unique');
+                $table->index(['company_id', 'order_id'], 'retail_pos_refunds_company_order_idx');
+                $table->index(['company_id', 'pos_session_id'], 'retail_pos_refunds_company_session_idx');
+            });
+        }
+
+        // BC-17 RETAIL #9212 — mouvements de tiroir-caisse (in|out|drop).
+        // Miroir de la migration 2026_11_08_000901_9208.
+        if (! Schema::hasTable($this->moduleTable('retail_cash_movements'))) {
+            Schema::create($this->moduleTable('retail_cash_movements'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('pos_session_id');
+                $table->string('type', 10);
+                $table->unsignedBigInteger('amount_minor');
+                $table->string('reason', 255);
+                $table->unsignedBigInteger('user_id')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'pos_session_id'], 'retail_cash_movements_company_session_idx');
+            });
+        }
+
         // BC-17 RETAIL #7812 — intents de paiement en ligne du checkout
         // marketplace. Miroir de la migration 2026_09_19_000501_7812 (garde #5443).
         if (! Schema::hasTable($this->moduleTable('retail_online_payment_intents'))) {

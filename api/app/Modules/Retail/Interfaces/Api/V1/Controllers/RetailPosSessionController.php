@@ -7,9 +7,12 @@ namespace App\Modules\Retail\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Retail\Application\Services\RetailPosService;
+use App\Modules\Retail\Domain\Enums\RetailCashMovementType;
+use App\Modules\Retail\Domain\Models\RetailCashMovement;
 use App\Modules\Retail\Domain\Models\RetailLocation;
 use App\Modules\Retail\Domain\Models\RetailPosSession;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\CloseRetailPosSessionRequest;
+use App\Modules\Retail\Interfaces\Api\V1\Requests\StoreRetailCashMovementRequest;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\StoreRetailPosSessionRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -125,6 +128,75 @@ class RetailPosSessionController extends Controller
         );
 
         return response()->json(['data' => $this->payload($closed)]);
+    }
+
+    /**
+     * Enregistre un mouvement de tiroir-caisse (#9212) : entree, sortie ou
+     * prelevement d'especes sur une session ouverte. Sans cette trace, l'ecart
+     * de cloture etait inexplicable (un prelevement pour la banque ressemblait
+     * a un manquant).
+     */
+    public function storeCashMovement(StoreRetailCashMovementRequest $request, RetailPosSession $session): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($session->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('close', $session);
+
+        $movement = $this->posService->recordCashMovement(
+            session: $session,
+            type: RetailCashMovementType::from((string) $request->input('type')),
+            amountMinor: $request->integer('amount_minor'),
+            reason: (string) $request->input('reason'),
+            userId: (int) $actor->id,
+        );
+
+        return response()->json(['data' => $this->cashMovementPayload($movement)], 201);
+    }
+
+    /**
+     * Liste des mouvements de tiroir-caisse d'une session (#9212).
+     */
+    public function cashMovements(Request $request, RetailPosSession $session): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($session->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('view', $session);
+
+        $movements = RetailCashMovement::query()
+            ->where('company_id', (string) $actor->company_id)
+            ->where('pos_session_id', (int) $session->id)
+            ->orderBy('id')
+            ->get()
+            ->map(fn (RetailCashMovement $movement): array => $this->cashMovementPayload($movement))
+            ->all();
+
+        return response()->json(['data' => $movements]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function cashMovementPayload(RetailCashMovement $movement): array
+    {
+        return [
+            'id' => $movement->id,
+            'pos_session_id' => $movement->pos_session_id,
+            'type' => $movement->type->value,
+            'amount_minor' => $movement->amount_minor,
+            'reason' => $movement->reason,
+            'user_id' => $movement->user_id,
+            'created_at' => $movement->created_at?->toIso8601String(),
+        ];
     }
 
     /**
