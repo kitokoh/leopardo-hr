@@ -82,6 +82,10 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/mon-logiciel',
   // BC-17 — espace vendeur (produits, stock, caisse) : zone dashboard.
   '/commerce',
+  // BC-40 LIBRARY (#9224) — back-office de la bibliothèque du tenant :
+  // même gate cosmétique de session que le reste de la zone dashboard (la
+  // garde réelle reste l'API : policy + scope BelongsToCompany).
+  '/library-admin',
 
   // #7759 — tickets support côté client (zone dashboard).
   '/support',
@@ -255,6 +259,7 @@ export const config = {
     '/trade-os/:path*', // BC-36 TRADE (TRADE-009/#8484) espace International Trade OS — gate session
     '/chat/:path*', // BOS-CHAT (#8751) messagerie horizontale — gate session
     '/demandes-publiques/:path*', // BOS-CHAT (#8760) boîte de réception publique — gate session
+    '/library-admin/:path*', // BC-40 LIBRARY (#9224) back-office bibliothèque — gate session
     // Vitrine landing — ?lang= → en-tête x-vitrine-lang (issue #4004).
     // Routes statiques (exactes) + préfixes dynamiques (source
     // VITRINE_LANG_PREFIXES, garde protected-prefixes.test.ts).

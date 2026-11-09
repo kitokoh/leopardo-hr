@@ -98,6 +98,10 @@ export const PROTECTED_PREFIXES = [
   // envoyés par des CLIENTS depuis la passerelle Leopardo Public. Contenu
   // commercial et données personnelles de tiers : jamais servis sans session.
   '/demandes-publiques',
+  // BC-40 LIBRARY (#9224) — back-office de la bibliothèque du tenant
+  // (ressources, fichiers, cycle éditorial, droits) : données tenant, jamais
+  // servies sans session. Le catalogue PUBLIC vit sous /library (hors liste).
+  '/library-admin',
 ] as const;
 
 /**
