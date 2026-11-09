@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Riverpod 3 : `ProviderListenable` n'est plus exporte par l'entree principale,
 // il vit dans `misc.dart` (cf. migration 2.0 -> 3.0).
-import 'package:flutter_riverpod/misc.dart' show ProviderListenable;
+import 'package:flutter_riverpod/misc.dart' show ProviderBase;
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
@@ -29,7 +29,11 @@ class StockScreen extends ConsumerStatefulWidget {
   });
 
   /// Provider du repository de stock (retail ou restaurant).
-  final ProviderListenable<StockDataSource> repositoryProvider;
+  ///
+  /// `ProviderBase` (et non `ProviderListenable`) : il faut a la fois
+  /// `ref.read` (ProviderListenable) et `ref.invalidate` (ProviderOrFamily).
+  /// `Provider<StockRepository>` y est assignable par covariance.
+  final ProviderBase<StockDataSource> repositoryProvider;
 
   /// Emplacement courant (tablette POS) ; null = tous les emplacements.
   final int? locationId;
@@ -653,7 +657,10 @@ String _fmt(double value) {
 
 // ── Providers locaux (autoDispose : chaque onglet recharge à l'ouverture) ──
 
-ProviderListenable<Future<List<StockLevel>>> _levelsProvider(
+/// Riverpod 3 : `FutureProvider<T>` expose un `AsyncValue<T>` (et non un
+/// `Future<T>` comme en 2.x). On retourne le type CONCRET, pas
+/// `ProviderListenable`, car `ref.invalidate` exige un `ProviderOrFamily`.
+FutureProvider<List<StockLevel>> _levelsProvider(
   StockDataSource repository,
   int? locationId,
   bool belowThresholdOnly,
@@ -666,7 +673,7 @@ ProviderListenable<Future<List<StockLevel>>> _levelsProvider(
   });
 }
 
-ProviderListenable<Future<List<StockMovement>>> _movementsProvider(
+FutureProvider<List<StockMovement>> _movementsProvider(
   StockDataSource repository,
   int? locationId,
 ) {
@@ -675,7 +682,7 @@ ProviderListenable<Future<List<StockMovement>>> _movementsProvider(
   });
 }
 
-ProviderListenable<Future<List<StockAlert>>> _alertsProvider(
+FutureProvider<List<StockAlert>> _alertsProvider(
   StockDataSource repository,
   int? locationId,
 ) {
