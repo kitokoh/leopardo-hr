@@ -1,280 +1,157 @@
-import {
-  fetchServerProgress,
-  fromServer,
-  mergeWithServer,
-  pushProgress,
-  shouldPush,
-  syncProgress,
-  type ServerProgress,
-  type SyncOptions,
-} from './progress-sync';
-import { loadProgress, saveProgress, type ReadingProgress } from './progress';
+import { canSyncProgress, pushProgress, pullProgress, persistProgress } from '../lib/progress-sync';
+import { getProgressFor } from '../lib/progress';
 
 /**
- * Tests de la synchronisation serveur de la progression (#9242).
+ * Tests de la synchronisation de progression (local + serveur).
  *
- * Le point critique est la FUSION : la position la plus récente gagne, et une
- * position locale plus ancienne ne doit jamais écraser une lecture faite sur un
- * autre appareil.
+ * ⚠️ Le comportement critique est le REPLI : quelle que soit la panne serveur
+ * (réseau, 401, 500, JSON invalide), la progression locale doit rester
+ * intacte et aucune exception ne doit remonter au lecteur.
  */
 
-const entry = (slug: string, page: number, updatedAt: number, totalPages = 100): ReadingProgress => ({
-  slug,
-  page,
-  totalPages,
-  updatedAt,
+jest.mock('@/lib/api-client', () => ({
+  apiFetch: jest.fn(),
+}));
+
+jest.mock('@/lib/auth-session', () => ({
+  getStoredUser: jest.fn(),
+}));
+
+const { apiFetch } = require('@/lib/api-client') as { apiFetch: jest.Mock };
+const { getStoredUser } = require('@/lib/auth-session') as { getStoredUser: jest.Mock };
+
+const entry = { slug: 'livre-test', page: 4, totalPages: 20, updatedAt: 1_700_000_000_000 };
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  window.localStorage.clear();
 });
 
-describe('fromServer', () => {
-  it('convertit une entrée serveur en entrée locale', () => {
-    const server: ServerProgress = {
-      slug: 'guide',
-      page: 12,
-      total_pages: 200,
-      updated_at: '2026-11-09T10:00:00+00:00',
-    };
-
-    const local = fromServer(server);
-
-    expect(local.slug).toBe('guide');
-    expect(local.page).toBe(12);
-    expect(local.totalPages).toBe(200);
-    expect(local.updatedAt).toBe(Date.parse('2026-11-09T10:00:00+00:00'));
+describe('progress-sync — canSyncProgress', () => {
+  it('est faux pour un visiteur anonyme', () => {
+    getStoredUser.mockReturnValue(null);
+    expect(canSyncProgress()).toBe(false);
   });
 
-  it('traite un horodatage absent comme 0 (jamais NaN)', () => {
-    const local = fromServer({ slug: 'x', page: 1, total_pages: 0, updated_at: null });
-    expect(local.updatedAt).toBe(0);
-    expect(Number.isNaN(local.updatedAt)).toBe(false);
+  it('est vrai pour un utilisateur connecté', () => {
+    getStoredUser.mockReturnValue({ id: 1, name: 'Test' });
+    expect(canSyncProgress()).toBe(true);
   });
 });
 
-describe('mergeWithServer', () => {
-  it('retient la version la plus récente par slug', () => {
-    const local = [entry('a', 5, 1000)];
-    const server = [entry('a', 9, 2000)];
+describe('progress-sync — pushProgress', () => {
+  it('n’appelle pas l’API pour un visiteur anonyme', async () => {
+    getStoredUser.mockReturnValue(null);
 
-    expect(mergeWithServer(local, server)).toEqual([entry('a', 9, 2000)]);
+    await expect(pushProgress(entry)).resolves.toBe(false);
+    expect(apiFetch).not.toHaveBeenCalled();
   });
 
-  it('conserve la version locale quand elle est plus récente', () => {
-    const local = [entry('a', 9, 3000)];
-    const server = [entry('a', 5, 1000)];
+  it('envoie la position et retourne true si le serveur accepte', async () => {
+    getStoredUser.mockReturnValue({ id: 1 });
+    apiFetch.mockResolvedValue({ ok: true });
 
-    expect(mergeWithServer(local, server)).toEqual([entry('a', 9, 3000)]);
-  });
+    await expect(pushProgress(entry)).resolves.toBe(true);
 
-  it('unit les slugs présents d’un seul côté', () => {
-    const merged = mergeWithServer([entry('local', 1, 1000)], [entry('serveur', 2, 2000)]);
-
-    expect(merged.map((item) => item.slug).sort()).toEqual(['local', 'serveur']);
-  });
-
-  it('trie du plus récent au plus ancien', () => {
-    const merged = mergeWithServer(
-      [entry('vieux', 1, 1000)],
-      [entry('recent', 1, 5000), entry('moyen', 1, 3000)],
+    expect(apiFetch).toHaveBeenCalledWith(
+      '/library/progress/livre-test',
+      expect.objectContaining({ method: 'PUT' }),
     );
-
-    expect(merged.map((item) => item.slug)).toEqual(['recent', 'moyen', 'vieux']);
+    const body = JSON.parse(apiFetch.mock.calls[0][1].body);
+    expect(body).toEqual({ page: 4, total_pages: 20 });
   });
 
-  it('ne duplique jamais un slug', () => {
-    const merged = mergeWithServer([entry('a', 1, 1000), entry('a', 2, 2000)], [entry('a', 3, 3000)]);
-    expect(merged).toHaveLength(1);
+  it('envoie total_pages null quand le total est inconnu', async () => {
+    getStoredUser.mockReturnValue({ id: 1 });
+    apiFetch.mockResolvedValue({ ok: true });
+
+    await pushProgress({ ...entry, totalPages: 0 });
+
+    const body = JSON.parse(apiFetch.mock.calls[0][1].body);
+    expect(body.total_pages).toBeNull();
+  });
+
+  it('retourne false sans lever si le réseau échoue', async () => {
+    getStoredUser.mockReturnValue({ id: 1 });
+    apiFetch.mockRejectedValue(new Error('network down'));
+
+    await expect(pushProgress(entry)).resolves.toBe(false);
+  });
+
+  it('retourne false si le serveur répond en erreur', async () => {
+    getStoredUser.mockReturnValue({ id: 1 });
+    apiFetch.mockResolvedValue({ ok: false, status: 500 });
+
+    await expect(pushProgress(entry)).resolves.toBe(false);
   });
 });
 
-describe('shouldPush', () => {
-  it('pousse quand le serveur ne connaît pas la ressource', () => {
-    expect(shouldPush(entry('a', 1, 1000), null)).toBe(true);
+describe('progress-sync — pullProgress', () => {
+  it('retourne null pour un visiteur anonyme', async () => {
+    getStoredUser.mockReturnValue(null);
+    await expect(pullProgress('livre-test')).resolves.toBeNull();
+    expect(apiFetch).not.toHaveBeenCalled();
   });
 
-  it('pousse quand le local est strictement plus récent', () => {
-    expect(shouldPush(entry('a', 1, 2000), entry('a', 1, 1000))).toBe(true);
-  });
-
-  it('ne pousse pas quand le serveur est plus récent', () => {
-    expect(shouldPush(entry('a', 1, 1000), entry('a', 1, 2000))).toBe(false);
-  });
-
-  it('ne pousse pas quand les horodatages sont identiques', () => {
-    expect(shouldPush(entry('a', 1, 1000), entry('a', 1, 1000))).toBe(false);
-  });
-});
-
-describe('fetchServerProgress', () => {
-  const options = (fetchImpl: typeof fetch): SyncOptions => ({
-    baseUrl: 'https://api.test/api/v1',
-    token: 'jeton',
-    fetchImpl,
-  });
-
-  it('convertit la réponse du serveur', async () => {
-    const fetchImpl = jest.fn().mockResolvedValue({
+  it('écrit la position serveur en local et la retourne', async () => {
+    getStoredUser.mockReturnValue({ id: 1 });
+    apiFetch.mockResolvedValue({
       ok: true,
       json: async () => ({
-        data: [{ slug: 'guide', page: 3, total_pages: 50, updated_at: '2026-11-09T10:00:00Z' }],
+        data: {
+          resource_id: 7,
+          page: 12,
+          total_pages: 30,
+          updated_at: '2026-11-09T10:00:00+00:00',
+        },
       }),
-    }) as unknown as typeof fetch;
+    });
 
-    const result = await fetchServerProgress(options(fetchImpl));
+    const result = await pullProgress('livre-test');
 
-    expect(result).toHaveLength(1);
-    expect(result[0].slug).toBe('guide');
-    expect(result[0].page).toBe(3);
+    expect(result?.page).toBe(12);
+    expect(result?.totalPages).toBe(30);
+    expect(getProgressFor('livre-test')?.page).toBe(12);
   });
 
-  it('envoie le jeton d’authentification', async () => {
-    const fetchImpl = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ data: [] }),
-    }) as unknown as typeof fetch;
+  it('retourne null si le serveur n’a aucune progression', async () => {
+    getStoredUser.mockReturnValue({ id: 1 });
+    apiFetch.mockResolvedValue({ ok: true, json: async () => ({ data: null }) });
 
-    await fetchServerProgress(options(fetchImpl));
-
-    const [, init] = (fetchImpl as jest.Mock).mock.calls[0];
-    expect(init.headers.Authorization).toBe('Bearer jeton');
+    await expect(pullProgress('livre-test')).resolves.toBeNull();
   });
 
-  it('retourne un tableau vide sur une réponse non-ok', async () => {
-    const fetchImpl = jest.fn().mockResolvedValue({ ok: false }) as unknown as typeof fetch;
-    expect(await fetchServerProgress(options(fetchImpl))).toEqual([]);
+  it('retourne null sans lever si le réseau échoue', async () => {
+    getStoredUser.mockReturnValue({ id: 1 });
+    apiFetch.mockRejectedValue(new Error('offline'));
+
+    await expect(pullProgress('livre-test')).resolves.toBeNull();
   });
 
-  it('retourne un tableau vide sur une erreur réseau', async () => {
-    const fetchImpl = jest.fn().mockRejectedValue(new Error('offline')) as unknown as typeof fetch;
-    expect(await fetchServerProgress(options(fetchImpl))).toEqual([]);
-  });
+  it('retourne null si la réponse n’est pas exploitable', async () => {
+    getStoredUser.mockReturnValue({ id: 1 });
+    apiFetch.mockResolvedValue({ ok: true, json: async () => ({ data: { page: 'x' } }) });
 
-  it('retourne un tableau vide si la charge utile est malformée', async () => {
-    const fetchImpl = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ data: 'pas un tableau' }),
-    }) as unknown as typeof fetch;
-
-    expect(await fetchServerProgress(options(fetchImpl))).toEqual([]);
+    await expect(pullProgress('livre-test')).resolves.toBeNull();
   });
 });
 
-describe('pushProgress', () => {
-  const options = (fetchImpl: typeof fetch): SyncOptions => ({
-    baseUrl: 'https://api.test/api/v1',
-    token: 'jeton',
-    fetchImpl,
+describe('progress-sync — persistProgress', () => {
+  it('écrit toujours en local, même si le serveur échoue', () => {
+    getStoredUser.mockReturnValue({ id: 1 });
+    apiFetch.mockRejectedValue(new Error('offline'));
+
+    persistProgress(entry);
+
+    expect(getProgressFor('livre-test')?.page).toBe(4);
   });
 
-  it('envoie un PUT avec la page et le total', async () => {
-    const fetchImpl = jest.fn().mockResolvedValue({ ok: true }) as unknown as typeof fetch;
+  it('écrit en local pour un visiteur anonyme sans appeler l’API', () => {
+    getStoredUser.mockReturnValue(null);
 
-    const ok = await pushProgress(entry('guide', 7, 1000, 40), options(fetchImpl));
+    persistProgress(entry);
 
-    expect(ok).toBe(true);
-    const [url, init] = (fetchImpl as jest.Mock).mock.calls[0];
-    expect(url).toBe('https://api.test/api/v1/library/progress/guide');
-    expect(init.method).toBe('PUT');
-    expect(JSON.parse(init.body)).toEqual({ page: 7, total_pages: 40 });
-  });
-
-  it('encode le slug dans l’URL', async () => {
-    const fetchImpl = jest.fn().mockResolvedValue({ ok: true }) as unknown as typeof fetch;
-
-    await pushProgress(entry('guide été', 1, 1000), options(fetchImpl));
-
-    const [url] = (fetchImpl as jest.Mock).mock.calls[0];
-    expect(url).toContain('guide%20%C3%A9t%C3%A9');
-  });
-
-  it('retourne false sur une réponse non-ok', async () => {
-    const fetchImpl = jest.fn().mockResolvedValue({ ok: false }) as unknown as typeof fetch;
-    expect(await pushProgress(entry('a', 1, 1000), options(fetchImpl))).toBe(false);
-  });
-
-  it('retourne false sur une erreur réseau (jamais d’exception)', async () => {
-    const fetchImpl = jest.fn().mockRejectedValue(new Error('offline')) as unknown as typeof fetch;
-    expect(await pushProgress(entry('a', 1, 1000), options(fetchImpl))).toBe(false);
-  });
-});
-
-describe('syncProgress', () => {
-  beforeEach(() => {
-    window.localStorage.clear();
-  });
-
-  it('fusionne, persiste localement et pousse les positions plus récentes', async () => {
-    saveProgress(entry('local-recent', 5, 5000));
-    saveProgress(entry('serveur-recent', 1, 1000));
-
-    const fetchImpl = jest.fn(async (url: string, init?: RequestInit) => {
-      if (!init || init.method !== 'PUT') {
-        return {
-          ok: true,
-          json: async () => ({
-            data: [
-              { slug: 'serveur-recent', page: 9, total_pages: 100, updated_at: new Date(9000).toISOString() },
-            ],
-          }),
-        };
-      }
-      return { ok: true };
-    }) as unknown as typeof fetch;
-
-    const merged = await syncProgress({
-      baseUrl: 'https://api.test/api/v1',
-      token: 'jeton',
-      fetchImpl,
-    });
-
-    // La position serveur plus récente a remplacé la locale.
-    const serveurRecent = merged.find((item) => item.slug === 'serveur-recent');
-    expect(serveurRecent?.page).toBe(9);
-
-    // La position locale plus récente a été conservée.
-    const localRecent = merged.find((item) => item.slug === 'local-recent');
-    expect(localRecent?.page).toBe(5);
-
-    // Le localStorage reflète la fusion.
-    const persisted = loadProgress();
-    expect(persisted.find((item) => item.slug === 'serveur-recent')?.page).toBe(9);
-
-    // Seule la position locale plus récente a été poussée.
-    const puts = (fetchImpl as jest.Mock).mock.calls.filter(([, init]) => init?.method === 'PUT');
-    expect(puts).toHaveLength(1);
-    expect(puts[0][0]).toContain('local-recent');
-  });
-
-  it('ne pousse rien quand le serveur est à jour', async () => {
-    saveProgress(entry('a', 1, 1000));
-
-    const fetchImpl = jest.fn(async (_url: string, init?: RequestInit) => {
-      if (!init || init.method !== 'PUT') {
-        return {
-          ok: true,
-          json: async () => ({
-            data: [{ slug: 'a', page: 1, total_pages: 100, updated_at: new Date(9000).toISOString() }],
-          }),
-        };
-      }
-      return { ok: true };
-    }) as unknown as typeof fetch;
-
-    await syncProgress({ baseUrl: 'https://api.test/api/v1', token: 'jeton', fetchImpl });
-
-    const puts = (fetchImpl as jest.Mock).mock.calls.filter(([, init]) => init?.method === 'PUT');
-    expect(puts).toHaveLength(0);
-  });
-
-  it('reste fonctionnel hors ligne (aucune exception)', async () => {
-    saveProgress(entry('a', 3, 1000));
-
-    const fetchImpl = jest.fn().mockRejectedValue(new Error('offline')) as unknown as typeof fetch;
-
-    const merged = await syncProgress({
-      baseUrl: 'https://api.test/api/v1',
-      token: 'jeton',
-      fetchImpl,
-    });
-
-    expect(merged.find((item) => item.slug === 'a')?.page).toBe(3);
+    expect(getProgressFor('livre-test')?.page).toBe(4);
+    expect(apiFetch).not.toHaveBeenCalled();
   });
 });

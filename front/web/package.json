@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.0",
-    "epubjs": "^0.3.93",
+    "fflate": "^0.8.3",
     "framer-motion": "^14.9.0",
     "gsap": "^3.15.0",
     "lucide-react": "^1.66.0",
@@ -60,8 +60,7 @@
     "postcss": "^8.5.23",
     "sharp": "^0.35.5",
     "source-map-js": "^1.2.2",
-    "minimatch": "^11.0.1",
-    "@xmldom/xmldom": "^0.8.10"
+    "minimatch": "^11.0.1"
   },
   "engines": {
     "node": ">=20.9.0",

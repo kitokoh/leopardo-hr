@@ -67,6 +67,9 @@ const PROTECTED_PREFIXES = [
   // messages du tenant ne doivent pas rester dans le cache du navigateur.
   '/chat',
   '/demandes-publiques',
+  // BC-40 LIBRARY (#9224) — back-office bibliothèque du tenant : jamais
+  // pré-caché (données tenant, contenu éditorial en cours).
+  '/library-admin',
 ];
 
 function isProtectedPath(url) {

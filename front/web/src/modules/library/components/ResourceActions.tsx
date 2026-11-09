@@ -6,6 +6,7 @@ import { LibraryReader } from './LibraryReader';
 import { PdfReader } from './PdfReader';
 import { EpubReader } from './EpubReader';
 import { loadFavorites, loadProgress, toggleFavorite, type ReadingProgress } from '../lib/progress';
+import { normalizeFileFormat, type LibraryFileFormat } from '../lib/reader-contract';
 import type { AccessCapabilities } from '../lib/access';
 
 interface ResourceActionsProps {
@@ -13,10 +14,14 @@ interface ResourceActionsProps {
   title: string;
   /** Pages de contenu lisible en ligne (vide si non disponible). */
   pages: string[];
-  /** URL du fichier PDF (présignée ou route interne signée), si disponible. */
-  pdfUrl?: string;
-  /** URL du fichier EPUB (présignée ou route interne signée), si disponible. */
-  epubUrl?: string;
+  /** URL du fichier (présignée ou route interne signée), si disponible. */
+  fileUrl?: string;
+  /**
+   * Format RÉEL du fichier, tel que renvoyé par l'API (`file_format`, dérivé du
+   * MIME vérifié côté serveur). C'est lui — jamais l'extension d'une URL — qui
+   * choisit le lecteur : `pdf` → pdf.js, `epub` → EpubReader, sinon texte.
+   */
+  fileFormat?: string | null;
   capabilities: AccessCapabilities;
   copy: {
     readOnline: string;
@@ -44,8 +49,6 @@ interface ResourceActionsProps {
       close: string;
       loading: string;
       error: string;
-      prev: string;
-      next: string;
     };
   };
 }
@@ -58,10 +61,20 @@ interface ResourceActionsProps {
  * capacités d'accès sont calculées côté serveur et passées en props — le
  * bouton de téléchargement n'apparaît QUE si la licence et l'accès l'autorisent.
  */
-export function ResourceActions({ slug, title, pages, pdfUrl, epubUrl, capabilities, copy }: ResourceActionsProps) {
+export function ResourceActions({
+  slug,
+  title,
+  pages,
+  fileUrl,
+  fileFormat,
+  capabilities,
+  copy,
+}: ResourceActionsProps) {
   const [reading, setReading] = useState(false);
   const [favorite, setFavorite] = useState(false);
   const [progress, setProgress] = useState<ReadingProgress | null>(null);
+  // Repli : si le rendu du format échoue, on retombe sur le lecteur texte.
+  const [fallbackToText, setFallbackToText] = useState(false);
 
   useEffect(() => {
     setFavorite(loadFavorites().includes(slug));
@@ -69,12 +82,14 @@ export function ResourceActions({ slug, title, pages, pdfUrl, epubUrl, capabilit
   }, [slug]);
 
   // Lecture possible si le droit est acquis ET qu'il y a un contenu : soit un
-  // EPUB (lecteur epub.js), soit un PDF (lecteur pdf.js), soit un contenu texte
-  // paginé (lecteur simple). L'EPUB est prioritaire : c'est le format de
-  // référence pour un livre numérique (mise en page fluide, accessibilité).
-  const hasEpub = typeof epubUrl === 'string' && epubUrl !== '';
-  const hasPdf = typeof pdfUrl === 'string' && pdfUrl !== '';
-  const canRead = capabilities.canRead && (pages.length > 0 || hasPdf || hasEpub);
+  // fichier (PDF/EPUB), soit un contenu texte paginé (lecteur simple).
+  const hasFile = typeof fileUrl === 'string' && fileUrl !== '';
+  const format: LibraryFileFormat | null = hasFile ? normalizeFileFormat(fileFormat) : null;
+  const canRead = capabilities.canRead && (pages.length > 0 || hasFile);
+
+  // Sélection du lecteur : format réel d'abord, repli texte ensuite.
+  const useFileReader = hasFile && !fallbackToText && (format === 'pdf' || format === 'epub');
+  const useTextReader = !useFileReader && pages.length > 0;
 
   return (
     <div className="space-y-4">
@@ -143,31 +158,33 @@ export function ResourceActions({ slug, title, pages, pdfUrl, epubUrl, capabilit
         </p>
       )}
 
-      {!canRead && pages.length === 0 && !hasPdf && !hasEpub && (
+      {!canRead && pages.length === 0 && !hasFile && (
         <p className="text-sm text-slate-500 dark:text-slate-400">{copy.notAvailable}</p>
       )}
 
-      {reading && canRead && hasEpub && (
-        <EpubReader
-          slug={slug}
-          title={title}
-          fileUrl={epubUrl as string}
-          initialProgress={progress}
-          copy={copy.reader}
-        />
-      )}
-
-      {reading && canRead && !hasEpub && hasPdf && (
+      {reading && canRead && useFileReader && format === 'pdf' && (
         <PdfReader
           slug={slug}
           title={title}
-          fileUrl={pdfUrl as string}
+          fileUrl={fileUrl as string}
           initialProgress={progress}
           copy={copy.reader}
+          onFallback={() => setFallbackToText(true)}
         />
       )}
 
-      {reading && canRead && !hasEpub && !hasPdf && (
+      {reading && canRead && useFileReader && format === 'epub' && (
+        <EpubReader
+          slug={slug}
+          title={title}
+          fileUrl={fileUrl as string}
+          initialProgress={progress}
+          copy={copy.reader}
+          onFallback={() => setFallbackToText(true)}
+        />
+      )}
+
+      {reading && canRead && useTextReader && (
         <LibraryReader
           slug={slug}
           title={title}

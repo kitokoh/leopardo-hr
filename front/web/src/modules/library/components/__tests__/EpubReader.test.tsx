@@ -1,76 +1,73 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { EpubReader } from '../EpubReader';
 
 /**
- * Tests du lecteur EPUB (#9239).
+ * Tests du lecteur EPUB.
  *
- * epub.js est chargé dynamiquement : en environnement de test, l'import échoue
- * (pas de DOM de rendu de livre). Le contrat vérifié ici est celui qui compte
- * pour l'utilisateur : l'état de chargement s'affiche, puis l'erreur est
- * présentée proprement — jamais un écran blanc ni une exception non gérée.
+ * Sous jsdom, `fetch` échoue : on vérifie donc le comportement de l'interface
+ * AVANT chargement (barre d'outils, navigation, recherche) et l'état d'erreur
+ * propre — jamais un écran blanc ni une exception non gérée. L'extraction
+ * elle-même est couverte par `lib/epub.test.ts` sur de vraies archives ZIP.
  */
-
-// epub.js n'a pas de rendu utilisable sous jsdom : on force l'échec du
-// chargement pour vérifier le chemin d'erreur (le chemin nominal est couvert
-// par la spec e2e, qui exécute un vrai navigateur).
-jest.mock('epubjs', () => {
-  throw new Error('epubjs indisponible en environnement de test');
-});
 
 const copy = {
   page: 'Page',
   of: 'sur',
+  zoomIn: 'Zoom avant',
+  zoomOut: 'Zoom arrière',
   fullscreen: 'Plein écran',
   exitFullscreen: 'Quitter le plein écran',
+  search: 'Rechercher',
+  searchPlaceholder: 'Rechercher…',
+  noMatches: 'Aucun résultat.',
   lastPosition: 'Dernière position',
   close: 'Fermer',
   loading: 'Chargement du document…',
   error: 'Impossible de charger le document.',
-  prev: 'Chapitre précédent',
-  next: 'Chapitre suivant',
 };
 
 describe('EpubReader', () => {
-  it('affiche le titre de la ressource', () => {
+  it('affiche la barre d’outils et l’état de chargement', () => {
     render(<EpubReader slug="s" title="Mon EPUB" fileUrl="/x.epub" copy={copy} />);
+
     expect(screen.getByText('Mon EPUB')).toBeInTheDocument();
+    expect(screen.getByLabelText('Zoom avant')).toBeInTheDocument();
+    expect(screen.getByLabelText('Zoom arrière')).toBeInTheDocument();
+    expect(screen.getByLabelText('Plein écran')).toBeInTheDocument();
+    expect(screen.getByLabelText('Rechercher')).toBeInTheDocument();
   });
 
-  it('affiche l’état de chargement au montage', () => {
+  it('bascule en plein écran au clic', () => {
     render(<EpubReader slug="s" title="Mon EPUB" fileUrl="/x.epub" copy={copy} />);
-    expect(screen.getByText(copy.loading)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText('Plein écran'));
+    expect(screen.getByLabelText('Quitter le plein écran')).toBeInTheDocument();
   });
 
-  it('expose les boutons de navigation avec un libellé accessible', () => {
+  it('ouvre et referme le panneau de recherche', () => {
     render(<EpubReader slug="s" title="Mon EPUB" fileUrl="/x.epub" copy={copy} />);
-    expect(screen.getByLabelText(copy.prev)).toBeInTheDocument();
-    expect(screen.getByLabelText(copy.next)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText('Rechercher'));
+    expect(screen.getByPlaceholderText('Rechercher…')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText('Fermer'));
+    expect(screen.queryByPlaceholderText('Rechercher…')).not.toBeInTheDocument();
   });
 
-  it('désactive la navigation tant que le livre n’est pas chargé', () => {
+  it('affiche un état d’erreur propre si le fichier ne peut pas être chargé', async () => {
     render(<EpubReader slug="s" title="Mon EPUB" fileUrl="/x.epub" copy={copy} />);
-    expect(screen.getByLabelText(copy.prev)).toBeDisabled();
-    expect(screen.getByLabelText(copy.next)).toBeDisabled();
+
+    expect(await screen.findByText('Impossible de charger le document.')).toBeInTheDocument();
   });
 
-  it('affiche la dernière position quand une progression est fournie', () => {
+  it('appelle onFallback quand le chargement échoue', async () => {
+    const onFallback = jest.fn();
     render(
-      <EpubReader
-        slug="s"
-        title="Mon EPUB"
-        fileUrl="/x.epub"
-        initialProgress={{ slug: 's', page: 4, totalPages: 10, updatedAt: 1 }}
-        copy={copy}
-      />,
+      <EpubReader slug="s" title="Mon EPUB" fileUrl="/x.epub" copy={copy} onFallback={onFallback} />,
     );
-    expect(screen.getByText(new RegExp(copy.lastPosition))).toBeInTheDocument();
-  });
 
-  it('ne plante pas si le chargement échoue (erreur présentée, pas d’exception)', async () => {
-    render(<EpubReader slug="s" title="Mon EPUB" fileUrl="/x.epub" copy={copy} />);
-    // Laisse l'effet asynchrone se terminer (l'import échoue en test).
-    await screen.findByText(copy.error);
-    expect(screen.getByText(copy.error)).toBeInTheDocument();
+    await screen.findByText('Impossible de charger le document.');
+    expect(onFallback).toHaveBeenCalled();
   });
 });

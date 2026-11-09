@@ -8,6 +8,9 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Library\Application\Actions\TransitionLibraryResourceStatus;
 use App\Modules\Library\Application\Actions\UploadLibraryResourceFile;
+use App\Modules\Library\Application\Queries\ListLibraryResourcesQuery;
+use App\Modules\Library\Domain\Enums\LibraryAccessModel;
+use App\Modules\Library\Domain\Enums\LibraryDocumentType;
 use App\Modules\Library\Domain\Enums\LibraryResourceStatus;
 use App\Modules\Library\Domain\Models\LibraryResource;
 use App\Modules\Library\Domain\Support\LibrarySlug;
@@ -17,6 +20,7 @@ use App\Modules\Library\Interfaces\Api\V1\Requests\UpdateLibraryResourceRequest;
 use App\Modules\Library\Interfaces\Api\V1\Requests\UploadLibraryResourceFileRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use RuntimeException;
 
 /**
@@ -43,24 +47,45 @@ class LibraryResourceController extends Controller
         private readonly TransitionLibraryResourceStatus $transition,
         private readonly UploadLibraryResourceFile $uploadFile,
         private readonly LibraryFileService $files,
+        private readonly ListLibraryResourcesQuery $listResources,
     ) {}
 
     /**
-     * GET /library/resources — liste des ressources du tenant.
+     * GET /library/resources — liste paginée et filtrée des ressources du tenant.
+     *
+     * Filtres allowlistés : `status`, `access_model`, `document_type`,
+     * `language`, `q` (recherche titre/slug/éditeur/détenteur). Pagination
+     * `per_page` (1–100, défaut 20) + `page`. L'isolation tenant est portée par
+     * le scope `BelongsToCompany` : aucune ressource d'un autre tenant n'est
+     * listée, et le catalogue public (`company_id` NULL) n'apparaît pas ici.
      */
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', LibraryResource::class);
 
-        $query = LibraryResource::query()->orderByDesc('updated_at');
+        $validated = $request->validate([
+            'status' => ['nullable', 'string', Rule::in($this->enumValues(LibraryResourceStatus::cases()))],
+            'access_model' => ['nullable', 'string', Rule::in($this->enumValues(LibraryAccessModel::cases()))],
+            'document_type' => ['nullable', 'string', Rule::in($this->enumValues(LibraryDocumentType::cases()))],
+            'language' => ['nullable', 'string', 'size:2'],
+            'q' => ['nullable', 'string', 'max:200'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'page' => ['nullable', 'integer', 'min:1'],
+        ]);
 
-        $status = trim((string) $request->query('status', ''));
-        if ($status !== '') {
-            $query->where('status', $status);
-        }
+        $paginator = $this->listResources->execute($validated);
 
         return response()->json([
-            'data' => $query->get()->map(fn (LibraryResource $resource): array => $this->payload($resource))->all(),
+            'data' => array_map(
+                fn (LibraryResource $resource): array => $this->payload($resource),
+                $paginator->items(),
+            ),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+                'last_page' => $paginator->lastPage(),
+            ],
         ]);
     }
 
@@ -250,5 +275,19 @@ class LibraryResourceController extends Controller
         $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9]+/', '-', $value) ?? '', '-'));
 
         return $slug === '' ? 'ressource' : $slug;
+    }
+
+    /**
+     * Valeurs d'un enum, pour les règles `Rule::in` (allowlist fail-closed).
+     *
+     * @param  array<int, \BackedEnum>  $cases
+     * @return array<int, string>
+     */
+    private function enumValues(array $cases): array
+    {
+        return array_map(
+            static fn (\BackedEnum $case): string => (string) $case->value,
+            $cases,
+        );
     }
 }

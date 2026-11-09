@@ -358,3 +358,13 @@ Vérifié : `node shared/i18n/sync/sync-mobile.js` → `I18N_SYNC_MOBILE_OK`, `n
 **Scénarios automatisés** (`front/mobile_apps/leopardo_public/test/activity_models_test.dart`, 11 cas) : désérialisation d'une activité complète ; **statut absent jamais inventé** ; date invalide tolérée sans lever ; section sans type reste vide ; favori indisponible conservé et marqué ; nom vide normalisé en `null` ; entrée d'historique sans coordonnée ; **parité des 12 clés M3 sur les 4 locales** (repli sur la clé brute = échec) ; arabe bien RTL.
 
 **Vérification** : `I18N_VALIDATION_OK (4 locales)` et parité ×4 vertes après `sync-mobile.js`. Aucun test Flutter exécuté dans la sandbox (SDK absent) — la CI fait foi pour cette surface, comme pour les notes précédentes.
+
+## Note de conservation 2026-11-09 — mutualisation POS : scanner déplacé dans le core partagé (PR #9262)
+
+**Le scanner de codes-barres de la caisse Retail est mutualisé dans `leopardo_core`** : `front/mobile_apps/leopardo_pos_retail/lib/features/pos/barcode_scanner_screen.dart` → `front/mobile_apps/leopardo_core/lib/core/pos/pos_barcode_scanner.dart` (renommage + extraction de la logique partagée des deux caisses — Retail et Restaurant — dans `pos_input`, `pos_search`, `pos_sync`, `pos_ticket`, `pos_widgets`).
+
+- Aucun changement de comportement métier : la logique de scan est déplacée, pas réécrite ; la caisse Retail consomme désormais le composant partagé.
+- Scénarios existants valides tels quels ; la surface est couverte par les jobs CI de compilation (smoke build debug APK).
+- Vérification : CI (smoke build + tests Dart dans les jobs de compilation).
+
+**Scénarios automatisés** : `front/mobile_apps/leopardo_core/test/pos/pos_input_test.dart` (saisie, bornage, virgule) — exécutés dans les jobs de compilation CI.

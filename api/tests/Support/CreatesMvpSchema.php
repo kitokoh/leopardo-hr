@@ -7821,5 +7821,32 @@ trait CreatesMvpSchema
                 $table->index(['company_id', 'marketing_asset_id']);
             });
         }
+
+        // BC-40 LIBRARY (#9225) — progression de lecture persistée côté serveur.
+        // Miroir de la migration tenant
+        // 2026_11_09_000100_9231_create_library_reading_progress.php.
+        // Garde de parité #5443 (Hygiene Guards) : toute table tenant récente
+        // doit être déclarée ici sous peine de « relation ... does not exist »
+        // dans les tests utilisant CreatesMvpSchema.
+        if (! Schema::hasTable($this->moduleTable('library_reading_progress'))) {
+            Schema::create($this->moduleTable('library_reading_progress'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('employee_id');
+                $table->unsignedBigInteger('resource_id');
+                $table->unsignedInteger('page')->default(1);
+                $table->unsignedInteger('total_pages')->nullable();
+                $table->timestamps();
+
+                $table->unique(
+                    ['company_id', 'employee_id', 'resource_id'],
+                    'library_reading_progress_company_employee_resource_unique',
+                );
+                $table->index(
+                    ['company_id', 'employee_id', 'updated_at'],
+                    'library_reading_progress_recent_idx',
+                );
+            });
+        }
     }
 }

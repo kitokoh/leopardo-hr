@@ -15,7 +15,7 @@
  * `BelongsToCompany` et la policy `LibraryResourcePolicy`.
  */
 
-use App\Modules\Library\Interfaces\Api\V1\Controllers\LibraryProgressController;
+use App\Modules\Library\Interfaces\Api\V1\Controllers\LibraryReadingProgressController;
 use App\Modules\Library\Interfaces\Api\V1\Controllers\LibraryResourceController;
 use App\Support\Routing\ModuleRoutes;
 use Illuminate\Support\Facades\Route;
@@ -31,12 +31,9 @@ ModuleRoutes::tenantModule('library', function (): void {
     Route::post('/resources/{resource}/archive', [LibraryResourceController::class, 'archive'])->whereNumber('resource');
     Route::post('/resources/{resource}/file', [LibraryResourceController::class, 'uploadFile'])->whereNumber('resource');
 
-    // Progression de lecture persistée côté serveur (#9242). Une ligne par
-    // (employé, ressource) : un PUT répété met à jour, il ne crée pas
-    // d'historique. Le localStorage reste la source de vérité pour les
-    // visiteurs anonymes — ces routes exigent l'authentification.
-    Route::get('/progress', [LibraryProgressController::class, 'index']);
-    Route::get('/progress/{slug}', [LibraryProgressController::class, 'show']);
-    Route::put('/progress/{slug}', [LibraryProgressController::class, 'update']);
-    Route::delete('/progress/{slug}', [LibraryProgressController::class, 'destroy']);
+    // Progression de lecture persistée côté serveur (par employé, par tenant).
+    // Le slug identifie la ressource ; l'employé vient de la session.
+    Route::get('/progress', [LibraryReadingProgressController::class, 'index']);
+    Route::get('/progress/{slug}', [LibraryReadingProgressController::class, 'show']);
+    Route::put('/progress/{slug}', [LibraryReadingProgressController::class, 'update']);
 });

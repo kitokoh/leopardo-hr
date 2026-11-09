@@ -11,7 +11,8 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
-import { clampProgress, progressPercent, saveProgress, type ReadingProgress } from '../lib/progress';
+import { clampProgress, progressPercent, type ReadingProgress } from '../lib/progress';
+import { persistProgress } from '../lib/progress-sync';
 
 interface LibraryReaderProps {
   slug: string;
@@ -59,14 +60,14 @@ export function LibraryReader({ slug, title, pages, initialProgress, copy }: Lib
     (next: number) => {
       const clamped = clampProgress(next, total);
       setPage(clamped);
-      saveProgress({ slug, page: clamped, totalPages: total, updatedAt: Date.now() });
+      persistProgress({ slug, page: clamped, totalPages: total, updatedAt: Date.now() });
     },
     [slug, total],
   );
 
   // Enregistre la position à l'ouverture (reprise de lecture).
   useEffect(() => {
-    saveProgress({ slug, page, totalPages: total, updatedAt: Date.now() });
+    persistProgress({ slug, page, totalPages: total, updatedAt: Date.now() });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
