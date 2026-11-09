@@ -263,6 +263,23 @@ class PosReceiptLine {
   int get totalMinor => unitPriceMinor * quantity;
 
   bool get hasOptions => options.isNotEmpty;
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'quantity': quantity,
+        'unitPriceMinor': unitPriceMinor,
+        'options': options,
+      };
+
+  factory PosReceiptLine.fromJson(Map<String, dynamic> json) => PosReceiptLine(
+        name: json['name'] as String? ?? '',
+        quantity: (json['quantity'] as num?)?.toInt() ?? 0,
+        unitPriceMinor: (json['unitPriceMinor'] as num?)?.toInt() ?? 0,
+        options: [
+          for (final option in (json['options'] as List<dynamic>?) ?? const [])
+            option as String,
+        ],
+      );
 }
 
 /// Un ticket pret a etre montre au client.
@@ -316,6 +333,34 @@ class PosReceipt {
       lines.isNotEmpty &&
       discountMinor <= subtotalMinor &&
       voidedLines.every((line) => line.isValid);
+
+  Map<String, dynamic> toJson() => {
+        'lines': [for (final line in lines) line.toJson()],
+        'discountMinor': discountMinor,
+        'tipMinor': tipMinor,
+        'voidedLines': [for (final line in voidedLines) line.toJson()],
+        'tableLabel': tableLabel,
+        'covers': covers,
+        'orderTypeLabel': orderTypeLabel,
+        'note': note,
+      };
+
+  factory PosReceipt.fromJson(Map<String, dynamic> json) => PosReceipt(
+        lines: [
+          for (final raw in (json['lines'] as List<dynamic>?) ?? const [])
+            PosReceiptLine.fromJson(raw as Map<String, dynamic>),
+        ],
+        discountMinor: (json['discountMinor'] as num?)?.toInt() ?? 0,
+        tipMinor: (json['tipMinor'] as num?)?.toInt() ?? 0,
+        voidedLines: [
+          for (final raw in (json['voidedLines'] as List<dynamic>?) ?? const [])
+            PosVoidedLine.fromJson(raw as Map<String, dynamic>),
+        ],
+        tableLabel: json['tableLabel'] as String?,
+        covers: (json['covers'] as num?)?.toInt(),
+        orderTypeLabel: json['orderTypeLabel'] as String?,
+        note: json['note'] as String?,
+      );
 }
 
 /// Etat d'une operation de la file hors ligne, vu par l'operateur.

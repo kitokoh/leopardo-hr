@@ -31,6 +31,8 @@ class PosSettingsScreen extends StatefulWidget {
     this.pinHash,
     this.pinSalt = 'leopardo-pos',
     this.onPinChanged,
+    this.printerName,
+    this.onOpenPrinter,
   });
 
   /// Configuration courante (pre-remplit le formulaire).
@@ -53,6 +55,16 @@ class PosSettingsScreen extends StatefulWidget {
 
   /// Appele quand le PIN est change.
   final Future<void> Function(String newPin)? onPinChanged;
+
+  /// Nom de l'imprimante actuellement configuree (null = aucune).
+  final String? printerName;
+
+  /// Ouvre l'ecran de choix de l'imprimante.
+  ///
+  /// L'acces existait uniquement depuis l'apercu du ticket : un gerant qui
+  /// installe une tablette neuve devait ouvrir une vente fictive pour
+  /// appairer l'imprimante. Il est ici, a sa place, derriere le meme PIN.
+  final Future<void> Function()? onOpenPrinter;
 
   @override
   State<PosSettingsScreen> createState() => _PosSettingsScreenState();
@@ -360,6 +372,51 @@ class _PosSettingsScreenState extends State<PosSettingsScreen> {
                   label: Text(
                     _saving ? 'Enregistrement...' : 'Enregistrer',
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              const Divider(),
+              const SizedBox(height: 16),
+              Text(
+                'Imprimante',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: scheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                widget.printerName == null
+                    ? 'Aucune imprimante configuree : les tickets ne peuvent pas etre imprimes.'
+                    : 'Imprimante configuree : ${widget.printerName}.',
+                style: TextStyle(fontSize: 15, color: scheme.onSurfaceVariant),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 52,
+                child: OutlinedButton.icon(
+                  key: const Key('pos-settings-printer'),
+                  onPressed: widget.onOpenPrinter == null
+                      ? null
+                      : () async {
+                          await widget.onOpenPrinter!();
+
+                          if (!mounted) {
+                            return;
+                          }
+
+                          // Le nom affiche vient du parent : on reconstruit
+                          // pour refleter un choix qui vient de changer.
+                          setState(() {});
+                        },
+                  icon: const Icon(Icons.print_outlined),
+                  label: Text(
+                    widget.printerName == null
+                        ? 'Choisir une imprimante'
+                        : 'Changer d\u2019imprimante',
+                    style: const TextStyle(fontSize: 16),
                   ),
                 ),
               ),

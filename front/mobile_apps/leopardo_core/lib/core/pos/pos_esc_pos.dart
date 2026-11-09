@@ -212,6 +212,7 @@ class PosEscPosGenerator {
     String? ticketNumber,
     DateTime? printedAt,
     String? operatorName,
+    bool reprint = false,
   }) {
     final bytes = <int>[];
 
@@ -220,6 +221,19 @@ class PosEscPosGenerator {
     bytes.addAll(const [0x1B, 0x37, 0x02]);
 
     _appendWrapped(bytes, shopName.toUpperCase(), align: PosReceiptAlign.center, bold: bold);
+
+    // Un duplicata doit se voir au premier coup d'oeil : sans cette mention,
+    // deux tickets identiques circulent et la caisse ne peut plus dire lequel
+    // est l'original. C'est aussi la trace qu'un ticket a ete reimprime.
+    if (reprint) {
+      bytes.add(0x0A);
+      _appendWrapped(
+        bytes,
+        '*** REIMPRESSION ***',
+        align: PosReceiptAlign.center,
+        bold: true,
+      );
+    }
 
     if (shopAddress != null && shopAddress.trim().isNotEmpty) {
       _appendWrapped(bytes, shopAddress, align: PosReceiptAlign.center);
