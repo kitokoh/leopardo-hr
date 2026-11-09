@@ -137,7 +137,8 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
           slug={resource.slug}
           title={slug}
           pages={pages}
-          pdfUrl={resource.fileFormat === 'pdf' ? resource.fileUrl : undefined}
+          fileUrl={resource.fileUrl}
+          fileFormat={resource.fileFormat}
           capabilities={capabilities}
           copy={{
             readOnline: copy.detail.readOnline,
