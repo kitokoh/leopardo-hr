@@ -368,4 +368,9 @@ return [
 
     // BC-10 (#9199) — connecteurs d'agrégateurs d'offres.
     'JOB_SOURCE_PROVIDER_UNSUPPORTED' => 'Fournisseur non supporté : :provider.',
+
+    // BC-10 (#9217) — CV refusé par l'analyse antivirus. Le message reste
+    // générique : la signature détectée est une information d'exploitation,
+    // pas une information candidat.
+    'RESUME_REJECTED' => 'Le fichier joint a été refusé par l\'analyse de sécurité.',
 ];
