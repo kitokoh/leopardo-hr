@@ -95,6 +95,8 @@ export interface LibraryCopy {
     lastPosition: string;
     close: string;
     notAvailable: string;
+    loading: string;
+    error: string;
   };
   account: {
     title: string;
@@ -223,6 +225,8 @@ const fr: LibraryCopy = {
     lastPosition: 'Dernière position enregistrée',
     close: 'Fermer',
     notAvailable: 'Lecture en ligne non disponible pour cette ressource.',
+    loading: 'Chargement du document…',
+    error: 'Impossible de charger le document.',
   },
   account: {
     title: 'Mon espace',
@@ -352,6 +356,8 @@ const en: LibraryCopy = {
     lastPosition: 'Last saved position',
     close: 'Close',
     notAvailable: 'Online reading is not available for this resource.',
+    loading: 'Loading document…',
+    error: 'Unable to load the document.',
   },
   account: {
     title: 'My space',
@@ -481,6 +487,8 @@ const tr: LibraryCopy = {
     lastPosition: 'Kaydedilen son konum',
     close: 'Kapat',
     notAvailable: 'Bu kaynak için çevrimiçi okuma mevcut değil.',
+    loading: 'Belge yükleniyor…',
+    error: 'Belge yüklenemedi.',
   },
   account: {
     title: 'Alanım',
@@ -610,6 +618,8 @@ const ar: LibraryCopy = {
     lastPosition: 'آخر موضع محفوظ',
     close: 'إغلاق',
     notAvailable: 'القراءة عبر الإنترنت غير متاحة لهذا المورد.',
+    loading: 'جارٍ تحميل المستند…',
+    error: 'تعذر تحميل المستند.',
   },
   account: {
     title: 'مساحتي',

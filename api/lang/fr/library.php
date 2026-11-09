@@ -10,4 +10,8 @@ return [
     'storage_not_configured' => 'Le stockage objet n’est pas encore configuré pour cette ressource.',
     'download_not_allowed' => 'Le téléchargement de cette ressource n’est pas autorisé.',
     'resource_not_found' => 'Ressource introuvable ou non publiée.',
+    'library_file_type_not_allowed' => 'Ce type de fichier n’est pas autorisé (PDF, EPUB, TXT ou HTML uniquement).',
+    'library_file_too_large' => 'Le fichier dépasse la taille maximale autorisée.',
+    'library_storage_not_configured' => 'Le stockage des fichiers n’est pas configuré.',
+    'library_storage_write_failed' => 'L’enregistrement du fichier a échoué.',
 ];
