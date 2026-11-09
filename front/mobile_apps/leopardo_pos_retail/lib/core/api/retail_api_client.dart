@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:leopardo_core/core/pos/pos_sync.dart';
+import 'package:leopardo_core/core/pos/pos_ticket.dart';
 
 import '../models/retail_models.dart';
 import '../offline/retail_offline_queue.dart';
@@ -230,21 +232,79 @@ class RetailApiClient {
     }
   }
 
-  /// Rejoue la file d'attente. Retourne le nombre d'operations reussies.
-  Future<int> flushQueue() async {
-    var succeeded = 0;
+  /// Rejoue la file d'attente hors ligne, avec progression et gestion des
+  /// conflits.
+  ///
+  /// Le moteur partage (`PosSyncEngine`) decide du sort de chaque operation :
+  ///  - **2xx** : retiree de la file ;
+  ///  - **echec reseau / 5xx / 429** : conservee, retentee avec un delai
+  ///    croissant (on ne martele pas le serveur pendant une coupure) ;
+  ///  - **4xx metier** : conservee mais **plus rejouee**, et remontee a
+  ///    l'operateur — reessayer un remboursement refuse ne fera que le refuser
+  ///    encore, en masquant le vrai probleme.
+  ///
+  /// [onProgress] est appele apres chaque operation pour alimenter le bandeau.
+  Future<PosSyncProgress> flushQueueWithProgress({
+    void Function(int synced, int total)? onProgress,
+  }) async {
+    const engine = PosSyncEngine();
+    final pending = queue.pending();
+    final total = pending.length;
 
-    for (final operation in queue.pending()) {
+    if (total == 0) {
+      return const PosSyncProgress();
+    }
+
+    final operations = <PosSyncOperation>[];
+    var synced = 0;
+
+    for (final operation in pending) {
+      final current = PosSyncOperation(
+        idempotencyKey: operation.idempotencyKey,
+        attempts: operation.attempts,
+        lastAttemptAt: operation.createdAt,
+        lastError: operation.lastError,
+      );
+
+      // Une operation deja classee en conflit n'est plus rejouee.
+      if (current.state == PosSyncOpState.conflict) {
+        operations.add(current);
+        continue;
+      }
+
       try {
         await dio.post<Map<String, dynamic>>(operation.endpoint, data: operation.payload);
         await queue.remove(operation.idempotencyKey);
-        succeeded++;
+        synced++;
+        operations.add(
+          engine.applyOutcome(current, statusCode: 200, at: DateTime.now()),
+        );
       } on DioException catch (error) {
-        await queue.recordFailure(operation.idempotencyKey, error.message ?? 'network');
+        final statusCode = error.response?.statusCode;
+        final message = error.message ?? 'network';
+
+        await queue.recordFailure(operation.idempotencyKey, message);
+        operations.add(
+          engine.applyOutcome(
+            current,
+            statusCode: statusCode,
+            error: message,
+            at: DateTime.now(),
+          ),
+        );
       }
+
+      onProgress?.call(synced, total);
     }
 
-    return succeeded;
+    return engine.summarize(operations).progress;
+  }
+
+  /// Rejoue la file d'attente hors ligne (compatibilite).
+  Future<int> flushQueue() async {
+    final progress = await flushQueueWithProgress();
+
+    return progress.synced;
   }
 }
 

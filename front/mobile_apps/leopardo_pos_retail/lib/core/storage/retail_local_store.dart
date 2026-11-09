@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:leopardo_core/core/pos/pos_search.dart';
+import 'package:leopardo_core/core/pos/pos_ticket.dart';
 
 import '../models/retail_models.dart';
 
@@ -137,6 +139,53 @@ class RetailLocalStore {
     final raw = _meta.get('location_id');
 
     return raw is num ? raw.toInt() : null;
+  }
+
+  // ── Affinites (favoris + recents) ────────────────────────────────────────
+
+  /// Favoris et articles recemment vendus.
+  ///
+  /// Persistes : c'est ce qui fait remonter les articles habituels en tete de
+  /// grille des le premier service du matin, sans que le vendeur ait a les
+  /// rechercher.
+  Future<void> saveAffinity(PosAffinityRegistry registry) async {
+    await _meta.put('affinity', jsonEncode(registry.toJson()));
+  }
+
+  PosAffinityRegistry readAffinity() {
+    final raw = _meta.get('affinity');
+
+    if (raw is! String) {
+      return const PosAffinityRegistry();
+    }
+
+    try {
+      return PosAffinityRegistry.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (_) {
+      return const PosAffinityRegistry();
+    }
+  }
+
+  // ── Commandes en attente ─────────────────────────────────────────────────
+
+  /// Commandes mises de cote : elles doivent survivre a un redemarrage, sinon
+  /// la mise en attente ne sert a rien.
+  Future<void> saveParkedTickets(PosParkedTickets tickets) async {
+    await _meta.put('parked_tickets', jsonEncode(tickets.toJson()));
+  }
+
+  PosParkedTickets readParkedTickets() {
+    final raw = _meta.get('parked_tickets');
+
+    if (raw is! String) {
+      return const PosParkedTickets();
+    }
+
+    try {
+      return PosParkedTickets.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (_) {
+      return const PosParkedTickets();
+    }
   }
 
   /// Decode une liste JSON en ignorant les entrees corrompues.
