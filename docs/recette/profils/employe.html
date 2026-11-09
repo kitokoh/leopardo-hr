@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Employé — Portail de recette Leopardo</title>
+<link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">L</span>
+      <span class="brand-text">Portail de recette <small>leopardo-hr</small></span>
+    </a>
+    <nav class="mainnav">
+      <a href="../index.html">Accueil</a>
+      <a href="../profils/index.html">Profils</a>
+      <a href="../modules/index.html">Modules</a>
+      <a href="../recap.html">Récapitulatif</a>
+      <a href="../tests-ia-leopardo-hr.md">Markdown</a>
+      <a href="../prompt-agent-testeur.md">Prompt IA</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <h1 class="page-title">Employé</h1>
+  <p class="page-sub">Profil utilisateur — cas d&#x27;usage associés.</p>
+  
+<nav class="breadcrumb"><a href="../index.html">Portail</a> <span class="sep">›</span> <a href="index.html">Profils</a> <span class="sep">›</span> <span aria-current="page">Employé</span></nav>
+<div class="profile-head" style="--accent:#2563eb">
+  <div class="profile-icon">👤</div>
+  <div>
+    <p class="profile-desc">Collaborateur de base : self-service, pointage, congés, bulletins de paie.</p>
+    <div class="chips"><span class="chip">App mobile Employee</span><span class="chip">Espace client web</span><span class="chip">Kiosque biométrique</span></div>
+  </div>
+</div>
+<div class="two-col">
+  <div class="panel">
+    <h3>Comptes de démonstration</h3>
+    <ul class="plain"><li>Karim Aouad — karim.aouad@example.com (TechCorp DZ)</li><li>Youssef Bennani — pharmaplus (MA)</li><li>Aziz Khelifi — digitalflow (TN)</li></ul>
+  </div>
+  <div class="panel">
+    <h3>Synthèse</h3>
+    <p><strong>6</strong> cas d'usage · <strong>6</strong> exécutés.</p>
+    <p class="muted">Mot de passe commun des comptes de démo : <code>password123</code>.</p>
+  </div>
+</div>
+<h2 class="section-title">Cas d'usage à tester pour ce profil</h2>
+<div class="table-wrap">
+  <table class="data-table">
+    <thead><tr><th>ID</th><th>Cas d'usage</th><th>Module(s)</th><th>Type</th><th>Statut</th><th class="center">Note IA</th></tr></thead>
+    <tbody>
+        <tr>
+          <td><a class="uc-link" href="../cas/uc-01.html">UC-01</a></td>
+          <td><a class="uc-link" href="../cas/uc-01.html">Connexion d&#x27;un employé à l&#x27;espace client web</a></td>
+          <td>Authentification &amp; IAM</td>
+          <td><span class="badge" style="background:#2563eb1a;color:#2563eb;border-color:#2563eb33">Fonctionnel</span></td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">4/5</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="../cas/uc-02.html">UC-02</a></td>
+          <td><a class="uc-link" href="../cas/uc-02.html">Pointage entrée / sortie (API, employé)</a></td>
+          <td>Pointage (Attendance)</td>
+          <td><span class="badge" style="background:#0d94881a;color:#0d9488;border-color:#0d948833">API</span></td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">5/5</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="../cas/uc-03.html">UC-03</a></td>
+          <td><a class="uc-link" href="../cas/uc-03.html">Pointage au kiosque biométrique (mode secours matricule)</a></td>
+          <td>Kiosque &amp; EdgeSync</td>
+          <td><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">UI/UX</span></td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">4/5</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="../cas/uc-04.html">UC-04</a></td>
+          <td><a class="uc-link" href="../cas/uc-04.html">Demande d&#x27;absence et approbation manager</a></td>
+          <td>Congés &amp; absences</td>
+          <td><span class="badge" style="background:#2563eb1a;color:#2563eb;border-color:#2563eb33">Fonctionnel</span></td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">5/5</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="../cas/uc-05.html">UC-05</a></td>
+          <td><a class="uc-link" href="../cas/uc-05.html">Consultation du bulletin de paie (self-service employé)</a></td>
+          <td>Paie (Payroll)</td>
+          <td><span class="badge" style="background:#be123c1a;color:#be123c;border-color:#be123c33">Sécurité</span></td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">4/5</span></td>
+        </tr>
+        <tr>
+          <td><a class="uc-link" href="../cas/uc-09.html">UC-09</a></td>
+          <td><a class="uc-link" href="../cas/uc-09.html">Multilingue et RTL (fr / en / tr / ar)</a></td>
+          <td>Multilingue &amp; RTL</td>
+          <td><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">UI/UX</span></td>
+          <td><span class="badge badge-done">✔ exécuté</span></td>
+          <td class="center"><span class="note note-good">5/5</span></td>
+        </tr></tbody>
+  </table>
+</div>
+<p><a class="btn-back" href="index.html">← Retour aux profils</a></p>
+
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <p>Portail de recette <strong>leopardo-hr</strong> — dépôt
+      <a href="https://github.com/Kitokoh/leopardo-hr" target="_blank" rel="noopener">Kitokoh/leopardo-hr</a>.
+      Colonnes « Note IA » / « Observation IA » remplies par le testeur IA ;
+      colonnes « Note humaine » / « Observation humaine » réservées à l'évaluation humaine.</p>
+  </div>
+</footer>
+<script src="../assets/portal.js"></script>
+</body>
+</html>
