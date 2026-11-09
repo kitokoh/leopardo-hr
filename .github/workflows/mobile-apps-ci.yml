@@ -259,6 +259,14 @@ jobs:
           # test ne tourneraient jamais dessus. Même patron que les autres.
           - name: leopardo_public
             path: front/mobile_apps/leopardo_public
+          # #9271 — les deux apps POS tablette (retail + restaurant) n'étaient
+          # NI analysées NI testées NI compilées en CI : une régression de
+          # compilation dans une caisse passait au vert. Même leçon que
+          # leopardo_public, appliquée aux caisses.
+          - name: leopardo_pos_retail
+            path: front/mobile_apps/leopardo_pos_retail
+          - name: leopardo_pos_restaurant
+            path: front/mobile_apps/leopardo_pos_restaurant
 
     steps:
       - name: Checkout code
@@ -400,6 +408,13 @@ jobs:
           - name: leopardo_public
             path: front/mobile_apps/leopardo_public
             artifact: leopardo-public-debug-apk
+          # #9271 — les caisses tablette doivent aussi être compilées en CI.
+          - name: leopardo_pos_retail
+            path: front/mobile_apps/leopardo_pos_retail
+            artifact: leopardo-pos-retail-debug-apk
+          - name: leopardo_pos_restaurant
+            path: front/mobile_apps/leopardo_pos_restaurant
+            artifact: leopardo-pos-restaurant-debug-apk
 
     steps:
       - name: Checkout code

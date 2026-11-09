@@ -14,6 +14,7 @@ import 'numeric_keypad.dart';
 import 'pos_states.dart';
 import 'refund_sheet.dart';
 import 'retail_pos_controller.dart';
+import 'retail_pos_stock_screen.dart';
 
 /// Caisse tablette Retail — disposition 3 colonnes (#9215).
 ///
@@ -185,6 +186,17 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
               tooltip: 'Apercu du ticket (F8)',
               onPressed: state.cart.isEmpty ? null : _openReceipt,
               icon: const Icon(Icons.receipt_long),
+            ),
+            IconButton(
+              tooltip: 'Stock',
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => RetailPosStockScreen(
+                    locationId: widget.locationId,
+                  ),
+                ),
+              ),
+              icon: const Icon(Icons.inventory_2_outlined),
             ),
             IconButton(
               tooltip: 'Mouvement de caisse',
