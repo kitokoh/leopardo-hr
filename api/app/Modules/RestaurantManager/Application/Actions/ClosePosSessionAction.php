@@ -125,9 +125,10 @@ final class ClosePosSessionAction
 
         $byProvider = [];
         foreach ($payments as $payment) {
-            $code = $payment->provider_code instanceof \BackedEnum
-                ? (string) $payment->provider_code->value
-                : (string) $payment->provider_code;
+            // `provider_code` est casté en PaymentProvider (BackedEnum) par le
+            // modèle : le test `instanceof BackedEnum` serait toujours vrai et
+            // PHPStan le rejette. On lit directement la valeur scalaire.
+            $code = (string) $payment->provider_code->value;
             $byProvider[$code] = ($byProvider[$code] ?? 0)
                 + (int) $payment->amount_minor
                 + (int) ($payment->tip_minor ?? 0);
