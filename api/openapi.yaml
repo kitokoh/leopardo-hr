@@ -64751,6 +64751,65 @@ paths:
         '200': {description: Ressource supprimée}
         '403': {description: Non autorisé (policy)}
         '404': {description: Ressource inconnue}
+  /v1/library/progress:
+    get:
+      operationId: api_get_library_progress
+      tags:
+      - Library
+      summary: Progression de lecture de l'utilisateur courant
+      description: |
+        Retourne la position de lecture persistée pour chaque ressource lue par
+        l'utilisateur authentifié du tenant courant (#9242). La progression est
+        scopée utilisateur + ressource : un utilisateur ne voit jamais celle d'un
+        autre, et l'isolation tenant est appliquée par le middleware.
+      responses:
+        '200': {description: Liste des progressions de l'utilisateur}
+        '401': {description: Non authentifié}
+  /v1/library/progress/{slug}:
+    get:
+      operationId: api_get_library_progress_by_slug
+      tags:
+      - Library
+      summary: Progression de lecture pour une ressource
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200': {description: Progression enregistrée}
+        '404': {description: Aucune progression pour cette ressource}
+    put:
+      operationId: api_put_library_progress_by_slug
+      tags:
+      - Library
+      summary: Enregistrer la progression de lecture
+      description: |
+        Persiste la position de lecture (page, pourcentage, horodatage) pour la
+        ressource identifiée par son slug. Idempotent : un même appel réécrit la
+        position courante.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200': {description: Progression enregistrée}
+        '401': {description: Non authentifié}
+        '422': {description: Charge utile invalide}
+    delete:
+      operationId: api_delete_library_progress_by_slug
+      tags:
+      - Library
+      summary: Réinitialiser la progression de lecture
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '204': {description: Progression supprimée}
+        '401': {description: Non authentifié}
   /v1/library/resources/{resource}/publish:
     post:
       operationId: api_post_library_resources_by_id_publish
