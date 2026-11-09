@@ -28,6 +28,9 @@ class LibraryFileServiceTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    /**
+     * @param  array<string, mixed>  $overrides
+     */
     private function resource(array $overrides = []): LibraryResource
     {
         /** @var LibraryResource $resource */

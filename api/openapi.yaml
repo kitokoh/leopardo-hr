@@ -64509,7 +64509,7 @@ paths:
                   type: string
                   format: binary
       responses:
-        '200': {description: Fichier enregistré, métadonnées mises à jour}
+        '200': {description: 'Fichier enregistré, métadonnées mises à jour'}
         '403': {description: Non autorisé (policy)}
         '404': {description: Ressource inconnue}
         '413': {description: Fichier trop volumineux}

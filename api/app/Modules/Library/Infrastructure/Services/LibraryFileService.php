@@ -96,9 +96,9 @@ final class LibraryFileService
      * Résout l'accès au fichier d'une ressource.
      *
      * @return array{url: string|null, stream: resource|null, format: string|null, size: int|null}
-     *         `url` = URL présignée (S3) ; `stream` = flux pour la route interne
-     *         signée (disque local). L'un des deux est non-null si le fichier
-     *         existe.
+     *                                                                                             `url` = URL présignée (S3) ; `stream` = flux pour la route interne
+     *                                                                                             signée (disque local). L'un des deux est non-null si le fichier
+     *                                                                                             existe.
      */
     public function resolve(LibraryResource $resource, int $ttlSeconds): array
     {

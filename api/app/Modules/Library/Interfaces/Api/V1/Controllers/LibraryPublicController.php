@@ -330,5 +330,4 @@ class LibraryPublicController extends Controller
                 : null,
         ];
     }
-
 }
