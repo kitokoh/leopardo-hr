@@ -23,7 +23,6 @@ jest.mock('../api-client', () => {
   return { ...actual, apiFetch: jest.fn() };
 });
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { apiFetch } = require('../api-client') as { apiFetch: jest.Mock };
 
 const resource: LibraryResource = {
