@@ -284,7 +284,11 @@ class RetailStockAuditTest extends TestCase
             'unit_cost_minor' => 1_000,
         ])->assertStatus(201);
 
-        $this->assertSame(1_000, $this->avgCost((int) $store['id'], (int) $product['id']));
+        // Chaque lecture passe par une variable locale : PHPStan propage la
+        // constante d'un `assertSame` au meme appel d'expression et declarerait
+        // la seconde assertion « toujours vraie » (niveau 8).
+        $afterFirstEntry = $this->avgCost((int) $store['id'], (int) $product['id']);
+        $this->assertSame(1_000, $afterFirstEntry);
 
         // 10 unites a 2 000 -> (10*1000 + 10*2000) / 20 = 1 500.
         $this->postMovement($this->principalA, (int) $store['id'], (int) $product['id'], [
@@ -292,7 +296,8 @@ class RetailStockAuditTest extends TestCase
             'unit_cost_minor' => 2_000,
         ])->assertStatus(201);
 
-        $this->assertSame(1_500, $this->avgCost((int) $store['id'], (int) $product['id']));
+        $afterSecondEntry = $this->avgCost((int) $store['id'], (int) $product['id']);
+        $this->assertSame(1_500, $afterSecondEntry);
 
         // Sortie de 5 : la moyenne NE BOUGE PAS (cout moyen pondere, pas FIFO).
         $this->postMovement($this->principalA, (int) $store['id'], (int) $product['id'], [
@@ -300,7 +305,8 @@ class RetailStockAuditTest extends TestCase
             'reason_code' => 'sale',
         ])->assertStatus(201);
 
-        $this->assertSame(1_500, $this->avgCost((int) $store['id'], (int) $product['id']));
+        $afterExit = $this->avgCost((int) $store['id'], (int) $product['id']);
+        $this->assertSame(1_500, $afterExit);
     }
 
     public function test_entry_without_unit_cost_does_not_invent_a_cost(): void
