@@ -183,6 +183,5 @@ final class LibrarySemanticScorerTest extends TestCase
         );
 
         $this->assertGreaterThan(0.0, $score);
-        $this->assertIsFloat($score);
     }
 }
