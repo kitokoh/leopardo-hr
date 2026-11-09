@@ -9,6 +9,7 @@ use App\Modules\Recruitment\Domain\Contracts\ResumeScanner;
 use App\Modules\Recruitment\Infrastructure\Antivirus\ClamAvResumeScanner;
 use App\Modules\Recruitment\Infrastructure\Antivirus\NullResumeScanner;
 use Illuminate\Support\ServiceProvider;
+use Psr\Log\LoggerInterface;
 
 class RecruitmentServiceProvider extends ServiceProvider
 {
@@ -37,6 +38,7 @@ class RecruitmentServiceProvider extends ServiceProvider
         $this->app->singleton(ResumeScanService::class, fn ($app): ResumeScanService => new ResumeScanService(
             scanner: $app->make(ResumeScanner::class),
             policy: (string) config('recruitment.antivirus.policy', ResumeScanService::POLICY_REJECT),
+            logger: $app->make(LoggerInterface::class),
         ));
     }
 

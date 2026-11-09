@@ -7,7 +7,7 @@ namespace App\Modules\Recruitment\Application\Services;
 use App\Modules\Recruitment\Domain\Contracts\ResumeScanner;
 use App\Modules\Recruitment\Domain\Exceptions\ResumeRejectedException;
 use App\Modules\Recruitment\Domain\ValueObjects\ResumeScanVerdict;
-use Illuminate\Support\Facades\Log;
+use Psr\Log\LoggerInterface;
 
 /**
  * BC-10 (#9217) — applique la politique de sécurité à un verdict de scan.
@@ -33,6 +33,13 @@ use Illuminate\Support\Facades\Log;
  * défaut : une panne d'infrastructure ne doit pas empêcher un candidat de
  * postuler. Le verdict est persisté, donc auditable, et le recruteur voit que
  * le fichier n'a pas été analysé.
+ *
+ * ## Pourquoi un logger injecté et non la facade `Log`
+ *
+ * La couche Application ne touche pas les facades Laravel (garde #6568,
+ * `check-layer-purity.sh`) : `Illuminate\Support\Facades\Log` y est interdit.
+ * Le logger PSR-3 est injecté — c'est le patron déjà utilisé par
+ * `PublicNotificationService` et `LeaOnboardingOrchestrator`.
  */
 final class ResumeScanService
 {
@@ -43,6 +50,7 @@ final class ResumeScanService
     public function __construct(
         private readonly ResumeScanner $scanner,
         private readonly string $policy,
+        private readonly LoggerInterface $logger,
     ) {}
 
     /**
@@ -56,7 +64,7 @@ final class ResumeScanService
     {
         $verdict = $this->scanner->scan($absolutePath, $originalName);
 
-        Log::info('recruitment.resume_scan.verdict', [
+        $this->logger->info('recruitment.resume_scan.verdict', [
             'original_name' => $originalName,
             'status' => $verdict->status,
             'engine' => $verdict->engine,
