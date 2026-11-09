@@ -34,7 +34,8 @@ void main() {
     ],
   );
 
-  const options = PosProductOptions(groups: [cuisson, accompagnement, supplements]);
+  const options =
+      PosProductOptions(groups: [cuisson, accompagnement, supplements]);
 
   group('PosOptionsPricing.additionalMinor', () {
     test('additionne les prix des options selectionnees', () {
@@ -122,7 +123,8 @@ void main() {
     test('un groupe obligatoire exige une selection', () {
       expect(cuisson.isSatisfiedBy(const []), isFalse);
       expect(
-        cuisson.isSatisfiedBy(const [PosOptionSelection(groupId: 1, optionId: 11)]),
+        cuisson.isSatisfiedBy(
+            const [PosOptionSelection(groupId: 1, optionId: 11)]),
         isTrue,
       );
     });
@@ -135,7 +137,8 @@ void main() {
       );
 
       expect(
-        limited.isSatisfiedBy(const [PosOptionSelection(groupId: 4, optionId: 41)]),
+        limited.isSatisfiedBy(
+            const [PosOptionSelection(groupId: 4, optionId: 41)]),
         isFalse,
       );
     });

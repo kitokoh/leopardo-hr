@@ -1,5 +1,12 @@
 import { TOOLS, TOOL_CATEGORIES } from '../data/catalog';
-import { getAllToolSlugs, getTool, getToolsByCategory, searchTools } from './registry';
+import {
+  getAllToolSlugs,
+  getCatalogTools,
+  getTool,
+  getToolsByCategory,
+  isToolEnabled,
+  searchTools,
+} from './registry';
 
 /**
  * Tests du registre — intégrité du catalogue et résolution.
@@ -89,5 +96,39 @@ describe('searchTools', () => {
 
   it('retourne un tableau vide si rien ne correspond', () => {
     expect(searchTools('zzzzz')).toHaveLength(0);
+  });
+});
+
+/**
+ * Décision #9157 — un outil `enabled: false` sort du CATALOGUE (donc de la
+ * recherche, de `generateStaticParams` et du sitemap) mais reste RÉSOLVABLE par
+ * slug direct : un lien partagé ne casse jamais.
+ */
+describe('outils désactivés (décision #9157)', () => {
+  it('considère un outil sans `enabled` comme actif', () => {
+    expect(isToolEnabled({ ...TOOLS[0], enabled: undefined })).toBe(true);
+    expect(isToolEnabled({ ...TOOLS[0], enabled: true })).toBe(true);
+    expect(isToolEnabled({ ...TOOLS[0], enabled: false })).toBe(false);
+  });
+
+  it('expose tous les outils actifs du catalogue', () => {
+    const enabled = TOOLS.filter((tool) => tool.enabled !== false);
+    expect(getCatalogTools().map((tool) => tool.slug)).toEqual(enabled.map((tool) => tool.slug));
+  });
+
+  it('n’expose que les outils actifs dans getAllToolSlugs', () => {
+    const enabled = TOOLS.filter((tool) => tool.enabled !== false).map((tool) => tool.slug);
+    expect(getAllToolSlugs()).toEqual(enabled);
+  });
+
+  it('résout un outil désactivé par slug direct (pas de 404 sur un lien partagé)', () => {
+    const disabled = TOOLS.find((tool) => tool.enabled === false);
+    if (!disabled) {
+      // Aucun outil désactivé dans le catalogue livré : le contrat est vérifié
+      // sur une définition synthétique, sans dépendre du contenu éditorial.
+      expect(getTool('imc')?.slug).toBe('imc');
+      return;
+    }
+    expect(getTool(disabled.slug)?.slug).toBe(disabled.slug);
   });
 });

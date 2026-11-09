@@ -8,7 +8,7 @@ import { getEnvConfig } from '@/modules/vitrine/lib/env';
 import { getSiteUrl } from '@/lib/site';
 import { getAllCaseStudySlugs } from '@/modules/vitrine/lib/case-studies';
 import { getAlternativePages } from '@/modules/vitrine/data/alternatives';
-import { TOOLS } from '@/modules/toolbox/data/catalog';
+import { getAllToolSlugs } from '@/modules/toolbox/lib/registry';
 import { getAllResourceSlugs } from '@/modules/library/lib/registry';
 
 const siteUrl = getSiteUrl();
@@ -165,11 +165,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // LEOPARDO TOOLBOX — catégorie autonome publique (`/toolbox`), indexable et
-  // accessible sans authentification. Les slugs viennent du catalogue du module
-  // (`TOOLS`) : ajouter un outil l'expose automatiquement au sitemap.
+  // accessible sans authentification. Les slugs viennent du registre du module
+  // (`getAllToolSlugs`) : ajouter un outil l'expose automatiquement au sitemap,
+  // et un outil désactivé (`enabled: false`) en sort (décision #9157).
   const toolboxPages: MetadataRoute.Sitemap = [
     page('/toolbox', 'weekly', 0.7),
-    ...TOOLS.map((tool) => page(`/toolbox/${tool.slug}`, 'monthly', 0.6)),
+    ...getAllToolSlugs().map((slug) => page(`/toolbox/${slug}`, 'monthly', 0.6)),
   ];
 
   // BC-10 (#9220) — portails carrières par tenant. Seules les entreprises

@@ -7,7 +7,8 @@ import 'package:leopardo_core/core/pos/pos_sync.dart';
 /// masquerait le vrai probleme), un echec reseau se rejoue avec un delai
 /// croissant (une coupure ne doit pas marteler le serveur).
 void main() {
-  PosSyncOperation op(String key, {int attempts = 0, DateTime? at, int? status}) =>
+  PosSyncOperation op(String key,
+          {int attempts = 0, DateTime? at, int? status}) =>
       PosSyncOperation(
         idempotencyKey: key,
         attempts: attempts,
@@ -67,13 +68,15 @@ void main() {
       final now = DateTime(2026, 11, 9, 10);
       final due = engine.dueOperations([
         op('fresh'),
-        op('waiting', attempts: 1, at: now.subtract(const Duration(seconds: 1))),
+        op('waiting',
+            attempts: 1, at: now.subtract(const Duration(seconds: 1))),
         op('ready', attempts: 1, at: now.subtract(const Duration(seconds: 5))),
         op('done', attempts: 1, at: now, status: 201),
         op('conflict', attempts: 1, at: now, status: 422),
       ], now);
 
-      expect(due.map((operation) => operation.idempotencyKey), ['fresh', 'ready']);
+      expect(
+          due.map((operation) => operation.idempotencyKey), ['fresh', 'ready']);
     });
 
     test('un 2xx marque l operation comme terminee', () {
@@ -98,7 +101,8 @@ void main() {
     });
 
     test('un echec reseau reste en reprise', () {
-      final updated = engine.applyOutcome(op('a'), statusCode: null, at: DateTime(2026, 11, 9));
+      final updated = engine.applyOutcome(op('a'),
+          statusCode: null, at: DateTime(2026, 11, 9));
 
       expect(updated.state, PosSyncOpState.retry);
     });
