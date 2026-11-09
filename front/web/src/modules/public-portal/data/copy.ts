@@ -31,6 +31,13 @@ export interface PublicPortalCopy {
     closeMenu: string;
     openMenu: string;
     language: string;
+    /** Endonymes du sélecteur de langue (non traduits : chaque langue s'écrit dans sa propre langue). */
+    languageNames: {
+      fr: string;
+      en: string;
+      tr: string;
+      ar: string;
+    };
     skipToContent: string;
     backToPortal: string;
     footerTagline: string;
@@ -139,6 +146,7 @@ const fr: PublicPortalCopy = {
     closeMenu: 'Fermer le menu',
     openMenu: 'Ouvrir le menu',
     language: 'Langue',
+    languageNames: { fr: 'Français', en: 'English', tr: 'Türkçe', ar: 'العربية' },
     skipToContent: 'Aller au contenu principal',
     backToPortal: 'Retour au portail',
     footerTagline: 'Trouvez un professionnel près de chez vous et contactez-le directement.',
@@ -258,6 +266,7 @@ const en: PublicPortalCopy = {
     closeMenu: 'Close menu',
     openMenu: 'Open menu',
     language: 'Language',
+    languageNames: { fr: 'Français', en: 'English', tr: 'Türkçe', ar: 'العربية' },
     skipToContent: 'Skip to main content',
     backToPortal: 'Back to the portal',
     footerTagline: 'Find a professional near you and contact them directly.',
@@ -375,6 +384,7 @@ const tr: PublicPortalCopy = {
     closeMenu: 'Menüyü kapat',
     openMenu: 'Menüyü aç',
     language: 'Dil',
+    languageNames: { fr: 'Français', en: 'English', tr: 'Türkçe', ar: 'العربية' },
     skipToContent: 'Ana içeriğe geç',
     backToPortal: 'Portala dön',
     footerTagline: 'Yakınınızdaki bir uzmanı bulun ve doğrudan iletişime geçin.',
@@ -492,6 +502,7 @@ const ar: PublicPortalCopy = {
     closeMenu: 'إغلاق القائمة',
     openMenu: 'فتح القائمة',
     language: 'اللغة',
+    languageNames: { fr: 'Français', en: 'English', tr: 'Türkçe', ar: 'العربية' },
     skipToContent: 'الانتقال إلى المحتوى الرئيسي',
     backToPortal: 'العودة إلى البوابة',
     footerTagline: 'اعثر على مهني قريب منك وتواصل معه مباشرة.',

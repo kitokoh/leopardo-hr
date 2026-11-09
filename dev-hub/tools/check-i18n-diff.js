@@ -158,6 +158,19 @@ const ignorePathFragments = [
   // composant du module qui porterait une chaîne en dur reste signalé. La
   // complétude des 4 langues reste couverte par les tests du module.
   '/library/data/',
+  // Catalogue i18n du module autonome Leopardo Public Portal (mission portail
+  // grand public) : `front/web/src/modules/public-portal/data/copy.ts` EST le
+  // mécanisme de localisation du module (catalogue inline ×4 fr/en/tr/ar,
+  // typé, accédé via getPublicPortalCopy(locale)) — exactement le même cas que
+  // /toolbox/data/ et /library/data/ ci-dessus. Le portail est une surface
+  // PUBLIQUE de la vitrine : il suit la convention vitrine (catalogue inline
+  // dans data/) plutôt que le catalogue partagé shared/i18n (propagé au
+  // backend et au mobile, où le portail public n'existe pas). L'exemption est
+  // scopée à data/ : un composant du module qui porterait une chaîne en dur
+  // reste signalé (contre-contrôle dans check-i18n-diff-test.sh). La
+  // complétude des 4 langues reste couverte par les tests du module
+  // (data/copy.test.ts).
+  '/public-portal/data/',
   // Route de téléchargement de la Library : message opérationnel français
   // (stockage objet non configuré → 501), même pattern que les routes forms
   // pré-existantes (contact/signup/newsletter/demo, PA2-MKT-007) — la

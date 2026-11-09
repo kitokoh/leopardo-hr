@@ -30,12 +30,7 @@ interface PublicPortalNavProps {
   copy: PublicPortalCopy['chrome'];
 }
 
-const LOCALES = [
-  { value: 'fr', label: 'Français' },
-  { value: 'en', label: 'English' },
-  { value: 'tr', label: 'Türkçe' },
-  { value: 'ar', label: 'العربية' },
-] as const;
+const LOCALE_VALUES = ['fr', 'en', 'tr', 'ar'] as const;
 
 export function PublicPortalNav({ locale, copy }: PublicPortalNavProps) {
   const pathname = usePathname();
@@ -105,9 +100,9 @@ export function PublicPortalNav({ locale, copy }: PublicPortalNavProps) {
             }}
             className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm font-medium text-slate-700"
           >
-            {LOCALES.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
+            {LOCALE_VALUES.map((value) => (
+              <option key={value} value={value}>
+                {copy.languageNames[value]}
               </option>
             ))}
           </select>
