@@ -217,6 +217,11 @@ class RetailPosController extends Notifier<RetailPosState> {
     }
   }
 
+  /// Efface le message d'erreur affiche (bandeau ferme par le vendeur).
+  void clearError() {
+    state = state.copyWith(clearError: true);
+  }
+
   void setSearchQuery(String query) {
     state = state.copyWith(searchQuery: query);
   }
