@@ -1,4 +1,8 @@
-import { buildDiscoveryQuery, DISCOVERY_MAX_PER_PAGE } from '@/lib/public-discovery-api';
+import {
+  buildDiscoveryQuery,
+  DISCOVERY_MAX_PER_PAGE,
+  searchPublicDiscovery,
+} from '@/lib/public-discovery-api';
 
 /**
  * SUPERAPP-P0 (#8611) — contrat de la passerelle publique `/decouvrir`.
@@ -42,5 +46,59 @@ describe('buildDiscoveryQuery', () => {
   it('omits page=1 (canonical first page)', () => {
     expect(buildDiscoveryQuery({ page: 1 })).not.toContain('page=');
     expect(buildDiscoveryQuery({ page: 3 })).toContain('page=3');
+  });
+});
+
+/**
+ * #8761 — régression : `normalizeMeta` reconstruisait l'objet `meta` champ par
+ * champ et oubliait `action_urls`. Le premier rendu SSR (celui que voient les
+ * crawlers et les visiteurs avant toute interaction) perdait donc les
+ * destinations d'action, et les CTA « Réserver » / « Commander » affichaient
+ * « indisponible » alors que le backend les déclarait.
+ */
+describe('searchPublicDiscovery — meta normalization', () => {
+  const originalFetch = global.fetch;
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+    jest.restoreAllMocks();
+  });
+
+  it('preserves action_urls and actions from the public payload', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        data: [{ type: 'restaurant', slug: 'chez-fatima', name: 'Chez Fatima' }],
+        meta: {
+          total: 1,
+          per_page: 20,
+          page: 1,
+          last_page: 1,
+          types: ['restaurant'],
+          radius_km: null,
+          actions: { restaurant: ['booking', 'contact'] },
+          action_urls: { restaurant: { booking: '/restaurants/{slug}#reserver' } },
+        },
+      }),
+    }) as unknown as typeof fetch;
+
+    const result = await searchPublicDiscovery({});
+
+    expect(result).not.toBeNull();
+    expect(result?.meta.actions).toEqual({ restaurant: ['booking', 'contact'] });
+    expect(result?.meta.action_urls).toEqual({
+      restaurant: { booking: '/restaurants/{slug}#reserver' },
+    });
+  });
+
+  it('leaves action_urls undefined when the payload omits it (fail-closed)', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: [], meta: { total: 0, types: [] } }),
+    }) as unknown as typeof fetch;
+
+    const result = await searchPublicDiscovery({});
+
+    expect(result?.meta.action_urls).toBeUndefined();
   });
 });

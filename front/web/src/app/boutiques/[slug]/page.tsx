@@ -102,7 +102,7 @@ export default async function ShopPage({ params, searchParams }: ShopPageProps) 
   }
 
   return (
-    <main
+    <div
       dir={dir}
       className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/40 to-teal-50/40 px-4 py-10"
     >
@@ -177,6 +177,6 @@ export default async function ShopPage({ params, searchParams }: ShopPageProps) 
           </section>
         ) : null}
       </div>
-    </main>
+    </div>
   );
 }

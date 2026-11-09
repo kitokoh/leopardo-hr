@@ -131,6 +131,14 @@ function normalizeMeta(
     radius_km: meta?.radius_km ?? null,
     actions:
       meta?.actions && typeof meta.actions === 'object' ? meta.actions : undefined,
+    // #8761 — les destinations d'action doivent survivre à la normalisation :
+    // sans cette ligne, le SSR perdait `action_urls` et TOUS les CTA
+    // « Réserver » / « Commander » retombaient sur « indisponible » au premier
+    // rendu (le client les récupérait seulement après une recherche AJAX).
+    action_urls:
+      meta?.action_urls && typeof meta.action_urls === 'object'
+        ? meta.action_urls
+        : undefined,
   };
 }
 
@@ -165,4 +173,75 @@ export async function searchPublicDiscovery(
   } catch {
     return null;
   }
+}
+
+/**
+ * Chemins d'annuaire par type canonique — miroir des pages servies par
+ * `src/app/{boutiques,operateurs,entreprises,stay}`.
+ *
+ * Un type absent de cette table n'a pas d'annuaire : ses fiches ne sont donc
+ * pas déclarées au sitemap (mieux vaut une fiche non listée qu'une URL 404).
+ */
+const VERTICAL_PATHS: Record<string, string> = {
+  retail_shop: '/boutiques',
+  vtc_operator: '/operateurs',
+  trade_company: '/entreprises',
+  hospitality_property: '/stay',
+};
+
+/**
+ * Collecte les fiches publiques des verticales pour le sitemap.
+ *
+ * ## Pourquoi
+ *
+ * `/boutiques/{slug}`, `/operateurs/{slug}`, `/entreprises/{slug}` et
+ * `/stay/{slug}` étaient servies mais déclarées NULLE PART : elles
+ * n'apparaissaient dans aucun sitemap et n'étaient liées par aucun index, donc
+ * invisibles pour le crawl. On les énumère ici via le MÊME contrat public que
+ * les annuaires (`GET /api/v1/public/discover`), page par page.
+ *
+ * ## Garanties
+ *
+ * - **Best-effort** : une verticale indisponible (API down, 5xx) renvoie une
+ *   liste vide — le sitemap reste servi, jamais de throw.
+ * - **Borné** : `maxPages` par verticale évite qu'un catalogue géant ne fasse
+ *   exploser le temps de génération du sitemap.
+ * - **Dédupliqué** : un slug n'est émis qu'une fois par verticale.
+ * - **Fail-closed** : seuls les profils que le backend déclare publiés
+ *   apparaissent (le filtre opt-in reste côté serveur).
+ */
+export async function collectVerticalProfilePages(
+  siteUrl: string,
+  maxPages = 10,
+): Promise<Array<{ url: string; changeFrequency: 'daily'; priority: number }>> {
+  const pages: Array<{ url: string; changeFrequency: 'daily'; priority: number }> = [];
+
+  for (const [type, basePath] of Object.entries(VERTICAL_PATHS)) {
+    const seen = new Set<string>();
+
+    for (let page = 1; page <= maxPages; page += 1) {
+      const result = await searchPublicDiscovery({ type, page, per_page: 50 });
+      if (!result || result.items.length === 0) {
+        break;
+      }
+
+      for (const item of result.items) {
+        if (!item.slug || seen.has(item.slug)) {
+          continue;
+        }
+        seen.add(item.slug);
+        pages.push({
+          url: `${siteUrl}${basePath}/${item.slug}`,
+          changeFrequency: 'daily',
+          priority: 0.6,
+        });
+      }
+
+      if (page >= (result.meta.last_page ?? 1)) {
+        break;
+      }
+    }
+  }
+
+  return pages;
 }
