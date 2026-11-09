@@ -114,7 +114,10 @@ class PublicPortalEndToEndTest extends TestCase
         $feed = $this->get("/api/v1/public/careers/{$company->slug}/feed.xml");
         $feed->assertOk();
 
-        $xml = simplexml_load_string($feed->getContent());
+        $body = $feed->getContent();
+        $this->assertIsString($body, 'Le flux doit avoir un corps.');
+
+        $xml = simplexml_load_string($body);
         $this->assertNotFalse($xml, 'Le flux doit être un XML valide.');
         $this->assertCount(1, $xml->job);
     }
