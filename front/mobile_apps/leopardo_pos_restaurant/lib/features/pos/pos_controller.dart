@@ -3,6 +3,8 @@ import 'package:leopardo_core/core/pos/pos_search.dart';
 import 'package:leopardo_core/core/pos/pos_ticket.dart';
 
 import '../../core/api/pos_api_client.dart';
+import 'package:leopardo_core/core/pos/pos_options.dart';
+
 import '../../core/models/pos_models.dart';
 
 /// Adapte un [PosProduct] a l'interface de recherche partagee.
@@ -152,7 +154,10 @@ class PosState {
             PosReceiptLine(
               name: line.product.name,
               quantity: line.quantity,
-              unitPriceMinor: line.product.priceMinor,
+              // Prix unitaire options comprises : c'est ce que le client a
+              // accepte, et ce que l'apercu et l'imprimante doivent montrer.
+              unitPriceMinor: line.unitPriceMinor,
+              options: line.optionLabels,
             ),
         ],
         discountMinor: cart.discountMinor,
@@ -283,6 +288,29 @@ class PosController extends Notifier<PosState> {
 
   void addProduct(PosProduct product) {
     final cart = state.cart.addProduct(product);
+
+    state = state.copyWith(cart: cart);
+    _persistCart(cart);
+  }
+
+  /// Ajoute un plat avec ses options choisies (#9265).
+  ///
+  /// Deux lignes du meme plat avec des options differentes restent **deux
+  /// lignes distinctes** : un « Poulet saignant + frites » et un
+  /// « Poulet bien cuit + riz » ne peuvent pas fusionner.
+  void addProductWithOptions(PosProduct product, List<PosOptionSelection> selections) {
+    if (selections.isEmpty) {
+      addProduct(product);
+
+      return;
+    }
+
+    final cart = state.cart.copyWith(
+      lines: [
+        ...state.cart.lines,
+        CartLine(product: product, quantity: 1, selections: selections),
+      ],
+    );
 
     state = state.copyWith(cart: cart);
     _persistCart(cart);

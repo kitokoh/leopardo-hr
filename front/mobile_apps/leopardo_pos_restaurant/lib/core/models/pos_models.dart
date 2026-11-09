@@ -4,6 +4,8 @@
 /// en `dart test` sans moteur graphique, et sérialisables en JSON pour Hive.
 library;
 
+import 'package:leopardo_core/core/pos/pos_options.dart';
+
 /// Une catégorie du menu (regroupement de produits).
 class PosCategory {
   const PosCategory({required this.id, required this.name});
@@ -32,6 +34,7 @@ class PosProduct {
     this.available = true,
     this.sku,
     this.barcode,
+    this.options = const PosProductOptions(),
   });
 
   final int id;
@@ -47,6 +50,9 @@ class PosProduct {
   /// ce qui permet de les scanner au lieu de les chercher dans le menu.
   final String? barcode;
 
+  /// Groups d'options de ce plat (cuisson, accompagnement, supplements) (#9265).
+  final PosProductOptions options;
+
   factory PosProduct.fromJson(Map<String, dynamic> json) => PosProduct(
         id: (json['id'] as num).toInt(),
         name: (json['name'] as String?) ?? 'Produit',
@@ -55,6 +61,7 @@ class PosProduct {
         available: (json['available'] as bool?) ?? true,
         sku: json['sku'] as String?,
         barcode: json['barcode'] as String?,
+        options: PosProductOptions.fromJson(json['options'] as Map<String, dynamic>?),
       );
 
   Map<String, dynamic> toJson() => {
@@ -65,6 +72,7 @@ class PosProduct {
         'available': available,
         'sku': sku,
         'barcode': barcode,
+        if (options.groups.isNotEmpty) 'options': options.toJson(),
       };
 }
 
@@ -99,24 +107,70 @@ class PosTable {
 
 /// Une ligne du panier en cours.
 class CartLine {
-  const CartLine({required this.product, required this.quantity});
+  const CartLine({
+    required this.product,
+    required this.quantity,
+    this.selections = const [],
+  });
 
   final PosProduct product;
   final int quantity;
 
-  int get lineTotalMinor => product.priceMinor * quantity;
+  /// Options choisies pour cette ligne (cuisson, supplements...) (#9265).
+  final List<PosOptionSelection> selections;
+
+  /// Prix unitaire **options comprises** : c'est ce que le client paie par
+  /// unite, et ce qui doit apparaitre sur le panier et le ticket.
+  int get unitPriceMinor =>
+      product.priceMinor +
+      PosOptionsPricing.additionalMinor(
+        productOptions: product.options,
+        selections: selections,
+      );
+
+  int get lineTotalMinor => unitPriceMinor * quantity;
+
+  /// Options resolues en libelles lisibles, pour le panier et le ticket.
+  List<String> get optionLabels {
+    final labels = <String>[];
+
+    for (final selection in selections) {
+      final group = product.options.groupById(selection.groupId);
+      final option = group?.optionById(selection.optionId);
+
+      if (option == null) {
+        continue;
+      }
+
+      final base = '${group!.name} : ${option.name}';
+
+      labels.add(
+        selection.quantity > 1 ? '$base x${selection.quantity}' : base,
+      );
+    }
+
+    return labels;
+  }
 
   CartLine withQuantity(int newQuantity) =>
-      CartLine(product: product, quantity: newQuantity);
+      CartLine(product: product, quantity: newQuantity, selections: selections);
+
+  CartLine withSelections(List<PosOptionSelection> newSelections) =>
+      CartLine(product: product, quantity: quantity, selections: newSelections);
 
   Map<String, dynamic> toJson() => {
         'product': product.toJson(),
         'quantity': quantity,
+        if (selections.isNotEmpty)
+          'selections': selections.map((selection) => selection.toJson()).toList(),
       };
 
   factory CartLine.fromJson(Map<String, dynamic> json) => CartLine(
         product: PosProduct.fromJson(json['product'] as Map<String, dynamic>),
         quantity: (json['quantity'] as num).toInt(),
+        selections: ((json['selections'] as List<dynamic>?) ?? [])
+            .map((raw) => PosOptionSelection.fromJson(raw as Map<String, dynamic>))
+            .toList(),
       );
 }
 
