@@ -26,7 +26,9 @@ dependencies:
   uuid: ^4.5.1
   leopardo_core:
     path: ../leopardo_core
-  mobile_scanner: ^7.5.0
+  # Epingle a 7.4.4 : 7.5.0 casse le build Kotlin Android (meme motif que
+  # leopardo_core, voir docs/ci/SMOKE_MOBILE_SCANNER_750.md).
+  mobile_scanner: "7.4.4"
 
 dev_dependencies:
   flutter_test:
