@@ -2540,3 +2540,14 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 
 - Scénarios à vérifier : **offre publiée** — l'entreprise apparaît dans l'annuaire ; **aucune offre publiée** — l'entreprise est absente ; **offre clôturée** — l'entreprise disparaît si c'était sa seule offre ; **tenant suspendu ou expiré** — absent ; **contexte irrésoluble** — ignoré, les autres restent déclarés ; **`lastmod` stable** — deux requêtes consécutives sans nouvelle publication rendent la même date.
 - Couverture : `api/tests/Feature/PublicCareerControllerTest.php` (19 tests sur le lot BC-10), `front/web/src/app/__tests__/sitemap.test.ts`.
+
+## 2026-11-09 — BC-10 RECRUITMENT (suite #9222) : purge RGPD, antivirus des CV, connecteurs reels, E2E admin
+
+**Contrats concernes** — `GET /api/v1/public/careers` (deja decrit ci-dessus) plus trois surfaces internes : la commande `recruitment:purge-expired-applicants`, le contrat `ResumeScanner` (ClamAV / `NullResumeScanner`), et les connecteurs d'agregateurs (`JobBoardClients`) executes par `SyncExternalJobOffersJob`.
+
+- **Purge RGPD** — efface les candidatures dont la date d'expiration est depassee et **rien d'autre** : candidatures en cours, offres publiees et comptes candidats restent intacts. La commande est idempotente (deux passes consecutives ne suppriment pas davantage).
+- **Antivirus** — un CV infecte est refuse (422) sous la politique `reject` (defaut) et le fichier est supprime ; sous `quarantine` il est conserve et la candidature acceptee. Un scanner **indisponible** n'est jamais un motif de rejet : le verdict `unavailable` est persiste et le recruteur voit que le fichier n'a pas ete analyse. Un driver inconnu retombe sur `none` (jamais sur `clean`).
+- **Connecteurs** — la synchronisation est idempotente (rejouer ne duplique aucune offre, ne supprime aucune offre existante) et met a jour `last_synced_at` / `last_error` de facon honnete ; les identifiants chiffres ne sont jamais serialises (`has_credentials` booleen).
+- **E2E admin** — `front/admin-dashboard/e2e/recruitment-job-sources.spec.js` : creation, test de connexion, edition, suppression. Les mocks n'interceptent plus que `**/api/**` — un mock global capturait la navigation SPA elle-meme et la page affichait du JSON brut.
+- Couverture : `PurgeExpiredApplicantsTest`, `ResumeScanTest`, `PlatformRecruitmentPortalTest`, `JobBoardClientsTest` (unit), `recruitment-job-sources.spec.js` (7/7 en local).
+- Non couvert : l'analyse contre un vrai ClamAV (faux scanner dans les tests) et l'envoi reel vers les agregateurs (reponses HTTP simulees).
