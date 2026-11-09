@@ -242,7 +242,7 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                       alignment: Alignment.centerRight,
                       child: Text(
                         'dont ${_formatAmount(_additionalMinor)} d\u2019options',
-                        style: TextStyle(fontSize: 14, color: scheme.onSurfaceVariant),
+                        style: TextStyle(fontSize: 15, color: scheme.onSurfaceVariant),
                       ),
                     ),
                   ),
@@ -302,7 +302,9 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                   child: Text(
                     'Obligatoire',
                     style: TextStyle(
-                      fontSize: 12,
+                      // 14 px reste lisible et tient dans la pastille ; en
+                      // dessous, le mot devient illisible a bout de bras.
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: scheme.onErrorContainer,
                     ),
@@ -312,7 +314,7 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                 const SizedBox(width: 8),
                 Text(
                   'jusqu\u2019a ${group.maxSelections}',
-                  style: TextStyle(fontSize: 13, color: scheme.onSurfaceVariant),
+                  style: TextStyle(fontSize: 15, color: scheme.onSurfaceVariant),
                 ),
               ],
             ],

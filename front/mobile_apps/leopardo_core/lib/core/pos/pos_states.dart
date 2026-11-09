@@ -290,7 +290,9 @@ class PosQuickAction extends StatelessWidget {
                   label,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 13,
+                    // 15 px : plancher de lisibilite a 60 cm, la distance
+                    // reelle d'un vendeur debout devant la tablette.
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: enabled ? scheme.onSurface : scheme.outline,
                   ),
