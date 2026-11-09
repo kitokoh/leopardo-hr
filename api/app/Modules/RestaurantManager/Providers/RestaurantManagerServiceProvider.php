@@ -40,7 +40,6 @@ use App\Modules\RestaurantManager\Domain\Contracts\RestaurantReservationReposito
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantStockLevelRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Manifests\RestaurantManagerManifest;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantPrintJob;
 use App\Modules\RestaurantManager\Infrastructure\Printing\EscPosCustomerReceiptRenderer;
 use App\Modules\RestaurantManager\Infrastructure\Printing\EscPosOrderTicketRenderer;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantBranchRepository;
@@ -69,10 +68,8 @@ use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublis
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantProfileResolver;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantPublicActivityProvider;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
-use App\Modules\RestaurantManager\Policies\RestaurantPrintJobPolicy;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -304,9 +301,8 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         RestaurantOrder::observe(RestaurantOrderObserver::class);
 
         // REST-OS-4 (Mission Leopardo Restaurant OS) — Policy des travaux
-        // d'impression (reimpression = geste operationnel de la succursale),
-        // enregistree explicitement (fail-closed : sans Policy, tout est refuse).
-        Gate::policy(RestaurantPrintJob::class, RestaurantPrintJobPolicy::class);
+        // d'impression : enregistree dans le POINT UNIQUE
+        // (AuthServiceProvider, PA2-ARCH-008, garde #6575) et non ici.
 
         // #7976 — l'activation standard d'une verticale passe par
         // `SolutionActivator` avec le code de solution `restaurant`
