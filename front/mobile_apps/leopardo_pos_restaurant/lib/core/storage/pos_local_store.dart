@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:leopardo_core/core/pos/pos_config.dart';
+import 'package:leopardo_core/core/pos/pos_history.dart';
 import 'package:leopardo_core/core/pos/pos_search.dart';
 import 'package:leopardo_core/core/pos/pos_ticket.dart';
 
@@ -89,6 +90,27 @@ class PosLocalStore {
     }
 
     return (id: id, name: name is String ? name : id);
+  }
+
+  // ── Historique des ventes (#9268) ────────────────────────────────────────
+
+  /// Enregistre l'historique des ventes de la tablette.
+  Future<void> saveSalesHistory(PosSalesHistory history) async {
+    await _meta.put('sales_history', jsonEncode(history.toJson()));
+  }
+
+  PosSalesHistory readSalesHistory() {
+    final raw = _meta.get('sales_history');
+
+    if (raw is! String) {
+      return const PosSalesHistory();
+    }
+
+    try {
+      return PosSalesHistory.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (_) {
+      return const PosSalesHistory();
+    }
   }
 
   // ── Catalogue ────────────────────────────────────────────────────────────
