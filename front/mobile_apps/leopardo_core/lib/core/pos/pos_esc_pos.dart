@@ -154,8 +154,6 @@ class PosEscPosEncoding {
 
   /// Encode une chaine en octets imprimables, decoupe si besoin.
   static List<int> encodeLine(String text) {
-    const replacement = 0x3F;
-
     final bytes = <int>[];
 
     for (final rune in text.runes) {
