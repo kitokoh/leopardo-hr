@@ -242,13 +242,27 @@ class PosReceiptLine {
     required this.name,
     required this.quantity,
     required this.unitPriceMinor,
+    this.options = const [],
   });
 
   final String name;
   final int quantity;
+
+  /// Prix unitaire **options comprises** : c'est ce que le client paie par
+  /// unite, et ce qui doit apparaitre sur le ticket.
   final int unitPriceMinor;
 
+  /// Options choisies, deja resolues en libelles lisibles
+  /// (ex. « Cuisson : Saignant », « + Fromage »).
+  ///
+  /// Le ticket ne connait pas les identifiants du menu : il recoit du texte
+  /// pret a imprimer, ce qui evite de faire dependre le noyau du modele
+  /// metier de chaque app.
+  final List<String> options;
+
   int get totalMinor => unitPriceMinor * quantity;
+
+  bool get hasOptions => options.isNotEmpty;
 }
 
 /// Un ticket pret a etre montre au client.
