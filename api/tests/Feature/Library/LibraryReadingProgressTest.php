@@ -109,7 +109,7 @@ class LibraryReadingProgressTest extends TestCase
             ->get();
 
         $this->assertCount(1, $rows);
-        $this->assertSame(11, $rows->first()->page);
+        $this->assertSame(11, $rows->firstOrFail()->page);
     }
 
     public function test_page_is_clamped_to_the_document_bounds(): void
@@ -130,8 +130,8 @@ class LibraryReadingProgressTest extends TestCase
         $this->action()->execute($resource, 1, 5, 20);
         $this->action()->execute($resource, 2, 15, 20);
 
-        $this->assertSame(5, LibraryReadingProgress::query()->where('employee_id', 1)->first()->page);
-        $this->assertSame(15, LibraryReadingProgress::query()->where('employee_id', 2)->first()->page);
+        $this->assertSame(5, LibraryReadingProgress::query()->where('employee_id', 1)->firstOrFail()->page);
+        $this->assertSame(15, LibraryReadingProgress::query()->where('employee_id', 2)->firstOrFail()->page);
     }
 
     public function test_progress_is_isolated_per_tenant(): void

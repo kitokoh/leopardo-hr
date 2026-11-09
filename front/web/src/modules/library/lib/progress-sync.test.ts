@@ -17,9 +17,7 @@ jest.mock('@/lib/auth-session', () => ({
   getStoredUser: jest.fn(),
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { apiFetch } = require('@/lib/api-client') as { apiFetch: jest.Mock };
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { getStoredUser } = require('@/lib/auth-session') as { getStoredUser: jest.Mock };
 
 const entry = { slug: 'livre-test', page: 4, totalPages: 20, updatedAt: 1_700_000_000_000 };
