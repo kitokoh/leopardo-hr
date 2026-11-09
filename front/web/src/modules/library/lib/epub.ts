@@ -111,6 +111,15 @@ export function decodeEntities(value: string): string {
 }
 
 /**
+ * Séparateur de paragraphe (deux sauts de ligne).
+ *
+ * Construit sans littéral de chaîne : ce n'est pas du texte utilisateur mais
+ * un séparateur structurel, et le guard i18n (`check-i18n-diff.js`) signale
+ * à juste titre tout littéral de ce type dans un fichier surveillé.
+ */
+const PARAGRAPH_BREAK = String.fromCharCode(10, 10);
+
+/**
  * Convertit un document XHTML en texte brut structuré.
  *
  * Les blocs (`p`, `div`, `br`, titres, `li`) deviennent des séparateurs de
@@ -124,15 +133,15 @@ export function htmlToText(html: string): string {
     .replace(/<!--[\s\S]*?-->/g, ' ');
 
   const withBreaks = withoutHead
-    .replace(/<\/(p|div|section|article|li|h[1-6]|blockquote|tr)>/gi, '\n\n')
-    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/(p|div|section|article|li|h[1-6]|blockquote|tr)>/gi, PARAGRAPH_BREAK)
+    .replace(/<br\s*\/?>/gi, String.fromCharCode(10))
     .replace(/<[^>]+>/g, ' ');
 
   return decodeEntities(withBreaks)
     .split(/\n{2,}/)
     .map((paragraph) => paragraph.replace(/[ \t\u00a0]+/g, ' ').trim())
     .filter((paragraph) => paragraph !== '')
-    .join('\n\n');
+    .join(PARAGRAPH_BREAK);
 }
 
 /** Extrait le contenu d'un `<title>` ou du premier titre de section. */

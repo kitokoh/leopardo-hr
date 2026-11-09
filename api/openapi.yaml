@@ -64828,6 +64828,9 @@ paths:
         '200': {description: 'Fichier enregistré, métadonnées mises à jour'}
         '403': {description: Non autorisé (policy)}
         '404': {description: Ressource inconnue}
+        '413': {description: Fichier trop volumineux}
+        '422': {description: Type de fichier non autorisé}
+        '501': {description: Stockage non configuré}
   /v1/library/progress:
     get:
       operationId: api_get_library_progress
@@ -64878,9 +64881,10 @@ paths:
                 type: object
                 properties:
                   data:
-                    oneOf:
+                    type: object
+                    nullable: true
+                    allOf:
                     - $ref: '#/components/schemas/LibraryReadingProgress'
-                    - type: 'null'
         '401': {description: Non authentifié}
         '404': {description: Ressource inconnue ou non visible par le tenant}
     put:
@@ -64928,9 +64932,6 @@ paths:
         '401': {description: Non authentifié}
         '404': {description: Ressource inconnue ou non visible par le tenant}
         '422': {description: Payload invalide}
-        '413': {description: Fichier trop volumineux}
-        '422': {description: Type de fichier non autorisé}
-        '501': {description: Stockage non configuré}
 components:
   securitySchemes:
     BearerAuth:
