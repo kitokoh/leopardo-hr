@@ -85,7 +85,8 @@ class _PosSettingsScreenState extends State<PosSettingsScreen> {
   @override
   void initState() {
     super.initState();
-    _urlController = TextEditingController(text: widget.initialConfig.apiBaseUrl);
+    _urlController =
+        TextEditingController(text: widget.initialConfig.apiBaseUrl);
     _locationController = TextEditingController(
       text: widget.initialConfig.locationOrBranchId?.toString() ?? '',
     );
@@ -153,7 +154,8 @@ class _PosSettingsScreenState extends State<PosSettingsScreen> {
     final location = int.tryParse(locationText);
 
     if (url.isEmpty) {
-      setState(() => _saveError = 'L\u2019adresse de l\u2019API est obligatoire.');
+      setState(
+          () => _saveError = 'L\u2019adresse de l\u2019API est obligatoire.');
 
       return;
     }
@@ -264,7 +266,8 @@ class _PosSettingsScreenState extends State<PosSettingsScreen> {
                   key: const Key('pos-settings-unlock'),
                   onPressed: _unlock,
                   icon: const Icon(Icons.lock_open),
-                  label: const Text('Deverrouiller', style: TextStyle(fontSize: 17)),
+                  label: const Text('Deverrouiller',
+                      style: TextStyle(fontSize: 17)),
                 ),
               ),
             ],
@@ -295,7 +298,8 @@ class _PosSettingsScreenState extends State<PosSettingsScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Adresse de l\u2019API',
                   hintText: 'https://api.leopardo.app/api/v1',
-                  helperText: 'Sans slash final. Le https est ajoute si absent.',
+                  helperText:
+                      'Sans slash final. Le https est ajoute si absent.',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.cloud_outlined),
                 ),
@@ -371,7 +375,8 @@ class _PosSettingsScreenState extends State<PosSettingsScreen> {
                   icon: const Icon(Icons.save_outlined),
                   label: Text(
                     _saving ? 'Enregistrement...' : 'Enregistrer',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -447,7 +452,8 @@ class _PosSettingsScreenState extends State<PosSettingsScreen> {
                       ? null
                       : () => _openPinChange(context),
                   icon: const Icon(Icons.password),
-                  label: const Text('Changer le code', style: TextStyle(fontSize: 16)),
+                  label: const Text('Changer le code',
+                      style: TextStyle(fontSize: 16)),
                 ),
               ),
             ],

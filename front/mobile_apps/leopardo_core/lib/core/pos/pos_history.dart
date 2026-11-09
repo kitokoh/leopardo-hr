@@ -104,7 +104,10 @@ class PosSalesHistory {
 
   /// Ajoute une vente en tete et tronque au plafond.
   PosSalesHistory add(PosSaleRecord record) {
-    final updated = [record, ...records.where((existing) => existing.id != record.id)];
+    final updated = [
+      record,
+      ...records.where((existing) => existing.id != record.id)
+    ];
 
     return PosSalesHistory(
       records: updated.length > maxRecords
@@ -128,8 +131,10 @@ class PosSalesHistory {
   ///
   /// C'est la recherche la plus utile au comptoir : le client se souvient du
   /// montant (« c'etait 45 euros »), rarement de l'heure exacte.
-  List<PosSaleRecord> byTotal(int totalMinor) =>
-      [for (final record in records) if (record.totalMinor == totalMinor) record];
+  List<PosSaleRecord> byTotal(int totalMinor) => [
+        for (final record in records)
+          if (record.totalMinor == totalMinor) record
+      ];
 
   /// Ventes d'une journee donnee (comparaison sur la date locale).
   List<PosSaleRecord> onDay(DateTime day) => [
@@ -263,7 +268,8 @@ class _PosSalesHistoryScreenState extends State<PosSalesHistoryScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(outcome.message),
-        backgroundColor: outcome.success ? null : Theme.of(context).colorScheme.error,
+        backgroundColor:
+            outcome.success ? null : Theme.of(context).colorScheme.error,
       ),
     );
   }
@@ -326,7 +332,9 @@ class _PosSalesHistoryScreenState extends State<PosSalesHistoryScreen> {
                             ? scheme.tertiaryContainer
                             : scheme.primaryContainer,
                         child: Icon(
-                          record.queued ? Icons.cloud_upload_outlined : Icons.check,
+                          record.queued
+                              ? Icons.cloud_upload_outlined
+                              : Icons.check,
                           color: record.queued
                               ? scheme.onTertiaryContainer
                               : scheme.onPrimaryContainer,
@@ -357,7 +365,8 @@ class _PosSalesHistoryScreenState extends State<PosSalesHistoryScreen> {
                             ? const SizedBox(
                                 width: 22,
                                 height: 22,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
                               )
                             : const Icon(Icons.print_outlined),
                       ),

@@ -206,7 +206,8 @@ class PosConnectionChip extends StatelessWidget {
           Icon(
             degraded ? Icons.cloud_off : Icons.cloud_done,
             size: 18,
-            color: degraded ? scheme.onErrorContainer : scheme.onPrimaryContainer,
+            color:
+                degraded ? scheme.onErrorContainer : scheme.onPrimaryContainer,
           ),
           const SizedBox(width: 8),
           Text(
@@ -215,7 +216,9 @@ class PosConnectionChip extends StatelessWidget {
                 : 'En ligne',
             style: TextStyle(
               fontWeight: FontWeight.w600,
-              color: degraded ? scheme.onErrorContainer : scheme.onPrimaryContainer,
+              color: degraded
+                  ? scheme.onErrorContainer
+                  : scheme.onPrimaryContainer,
             ),
           ),
         ],
@@ -269,7 +272,9 @@ class PosQuickAction extends StatelessWidget {
       enabled: enabled,
       label: label,
       child: Material(
-        color: enabled ? scheme.surfaceContainerHighest : scheme.surfaceContainerLow,
+        color: enabled
+            ? scheme.surfaceContainerHighest
+            : scheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(posCardRadius),
         child: InkWell(
           onTap: enabled ? onTap : null,

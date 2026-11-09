@@ -35,7 +35,8 @@ void main() {
 
     testWidgets('reste lisible sans message ni action', (tester) async {
       await tester.pumpWidget(
-        wrap(const PosEmptyState(icon: Icons.star_border, title: 'Aucun favori')),
+        wrap(const PosEmptyState(
+            icon: Icons.star_border, title: 'Aucun favori')),
       );
 
       expect(find.text('Aucun favori'), findsOneWidget);
@@ -44,13 +45,15 @@ void main() {
 
   group('PosOfflineBanner', () {
     testWidgets('rassure quand rien n attend le reseau', (tester) async {
-      await tester.pumpWidget(wrap(const PosOfflineBanner(pendingOperations: 0)));
+      await tester
+          .pumpWidget(wrap(const PosOfflineBanner(pendingOperations: 0)));
 
       expect(find.textContaining('la vente continue'), findsOneWidget);
     });
 
     testWidgets('annonce le nombre d operations en attente', (tester) async {
-      await tester.pumpWidget(wrap(const PosOfflineBanner(pendingOperations: 3)));
+      await tester
+          .pumpWidget(wrap(const PosOfflineBanner(pendingOperations: 3)));
 
       expect(find.textContaining('3 operation(s) en attente'), findsOneWidget);
       expect(find.textContaining("Rien n'est perdu"), findsOneWidget);
@@ -67,7 +70,8 @@ void main() {
       expect(synced, 1);
     });
 
-    testWidgets('desactive le bouton pendant une synchronisation', (tester) async {
+    testWidgets('desactive le bouton pendant une synchronisation',
+        (tester) async {
       await tester.pumpWidget(
         wrap(PosOfflineBanner(
           pendingOperations: 2,
@@ -106,7 +110,8 @@ void main() {
       expect(find.text('En ligne'), findsOneWidget);
     });
 
-    testWidgets('affiche Hors ligne avec le nombre d operations', (tester) async {
+    testWidgets('affiche Hors ligne avec le nombre d operations',
+        (tester) async {
       await tester.pumpWidget(
         wrap(const PosConnectionChip(offline: true, pending: 4)),
       );
@@ -134,8 +139,10 @@ void main() {
             children: [
               Text(value, key: const Key('value')),
               PosNumericKeypad(
-                onDigit: (digit) => setState(() => value = applyNumericKey(value, digit)),
-                onBackspace: () => setState(() => value = applyBackspace(value)),
+                onDigit: (digit) =>
+                    setState(() => value = applyNumericKey(value, digit)),
+                onBackspace: () =>
+                    setState(() => value = applyBackspace(value)),
                 onClear: () => setState(() {
                   value = '';
                   cleared++;
@@ -180,7 +187,8 @@ void main() {
       expect(validated, 1);
     });
 
-    testWidgets('desactive la validation quand elle est interdite', (tester) async {
+    testWidgets('desactive la validation quand elle est interdite',
+        (tester) async {
       await tester.pumpWidget(
         wrap(PosNumericKeypad(
           onDigit: (_) {},
@@ -198,7 +206,8 @@ void main() {
       expect(button.onPressed, isNull);
     });
 
-    testWidgets('les touches respectent la cible tactile de 48 dp', (tester) async {
+    testWidgets('les touches respectent la cible tactile de 48 dp',
+        (tester) async {
       await tester.pumpWidget(
         wrap(PosNumericKeypad(
           onDigit: (_) {},
@@ -228,7 +237,8 @@ void main() {
 
     testWidgets('affiche la valeur saisie et son suffixe', (tester) async {
       await tester.pumpWidget(
-        wrap(const PosNumericField(value: '1500', label: 'Montant', suffix: 'FCFA')),
+        wrap(const PosNumericField(
+            value: '1500', label: 'Montant', suffix: 'FCFA')),
       );
 
       expect(find.text('1500'), findsOneWidget);
@@ -249,7 +259,8 @@ void main() {
 
       await tester.pumpWidget(
         wrap(PosSettingsScreen(
-          initialConfig: const PosAppConfig(apiBaseUrl: 'https://api.leopardo.app/api/v1'),
+          initialConfig:
+              const PosAppConfig(apiBaseUrl: 'https://api.leopardo.app/api/v1'),
           onSave: (_) async {},
           probe: (_) async => const PosHealthResult(status: PosHealthStatus.ok),
           onOpenPrinter: () async => opened++,
@@ -258,7 +269,8 @@ void main() {
 
       await unlock(tester);
 
-      expect(find.textContaining('Aucune imprimante configuree'), findsOneWidget);
+      expect(
+          find.textContaining('Aucune imprimante configuree'), findsOneWidget);
 
       await tester.tap(find.byKey(const Key('pos-settings-printer')));
       await tester.pumpAndSettle();
@@ -269,7 +281,8 @@ void main() {
     testWidgets('affiche l imprimante configuree', (tester) async {
       await tester.pumpWidget(
         wrap(PosSettingsScreen(
-          initialConfig: const PosAppConfig(apiBaseUrl: 'https://api.leopardo.app/api/v1'),
+          initialConfig:
+              const PosAppConfig(apiBaseUrl: 'https://api.leopardo.app/api/v1'),
           onSave: (_) async {},
           probe: (_) async => const PosHealthResult(status: PosHealthStatus.ok),
           printerName: 'Imprimante Caisse 1',
@@ -287,7 +300,8 @@ void main() {
         (tester) async {
       await tester.pumpWidget(
         wrap(PosSettingsScreen(
-          initialConfig: const PosAppConfig(apiBaseUrl: 'https://api.leopardo.app/api/v1'),
+          initialConfig:
+              const PosAppConfig(apiBaseUrl: 'https://api.leopardo.app/api/v1'),
           onSave: (_) async {},
           probe: (_) async => const PosHealthResult(status: PosHealthStatus.ok),
         )),

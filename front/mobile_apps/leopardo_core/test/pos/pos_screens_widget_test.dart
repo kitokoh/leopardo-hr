@@ -15,7 +15,8 @@ void main() {
 
   /// Les feuilles de caisse sont hautes : sur la surface de test par defaut
   /// (800x600) elles debordent, ce qui masquerait le comportement teste.
-  Future<void> withTabletSurface(WidgetTester tester, Future<void> Function() body) async {
+  Future<void> withTabletSurface(
+      WidgetTester tester, Future<void> Function() body) async {
     tester.view.physicalSize = const Size(1200, 2000);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
@@ -23,17 +24,23 @@ void main() {
     await body();
   }
 
-  PosReceipt receipt({int quantity = 2, int unitPrice = 1500, int discount = 0, int tip = 0}) =>
+  PosReceipt receipt(
+          {int quantity = 2,
+          int unitPrice = 1500,
+          int discount = 0,
+          int tip = 0}) =>
       PosReceipt(
         lines: [
-          PosReceiptLine(name: 'Cafe', quantity: quantity, unitPriceMinor: unitPrice),
+          PosReceiptLine(
+              name: 'Cafe', quantity: quantity, unitPriceMinor: unitPrice),
         ],
         discountMinor: discount,
         tipMinor: tip,
       );
 
   group('PosBarcodeScannerScreen', () {
-    testWidgets('affiche le titre, la consigne et le repli manuel', (tester) async {
+    testWidgets('affiche le titre, la consigne et le repli manuel',
+        (tester) async {
       await tester.pumpWidget(
         wrap(const PosBarcodeScannerScreen(
           title: 'Scanner un article',
@@ -97,7 +104,8 @@ void main() {
       expect(find.text('30,00'), findsNWidgets(3));
     });
 
-    testWidgets('affiche la remise en negatif et le pourboire a part', (tester) async {
+    testWidgets('affiche la remise en negatif et le pourboire a part',
+        (tester) async {
       await tester.pumpWidget(
         wrap(PosReceiptPreview(receipt: receipt(discount: 500, tip: 200))),
       );
@@ -166,7 +174,8 @@ void main() {
       expect(printed, 1);
     });
 
-    testWidgets('masque l impression quand elle n est pas branchee', (tester) async {
+    testWidgets('masque l impression quand elle n est pas branchee',
+        (tester) async {
       await tester.pumpWidget(wrap(PosReceiptPreview(receipt: receipt())));
 
       expect(find.byKey(const Key('pos-receipt-print')), findsNothing);
@@ -201,7 +210,8 @@ void main() {
         await tester.tap(find.text('Client au comptoir'));
         await tester.pumpAndSettle();
 
-        await tester.tap(find.widgetWithText(FilledButton, 'Mettre en attente'));
+        await tester
+            .tap(find.widgetWithText(FilledButton, 'Mettre en attente'));
         await tester.pumpAndSettle();
 
         expect(parked, 'Client au comptoir');
@@ -237,7 +247,8 @@ void main() {
   });
 
   group('PosRecallTicketSheet', () {
-    PosParkedTicket ticket({String id = 't1', String label = 'Client au comptoir'}) =>
+    PosParkedTicket ticket(
+            {String id = 't1', String label = 'Client au comptoir'}) =>
         PosParkedTicket(
           id: id,
           label: label,
@@ -247,7 +258,8 @@ void main() {
           totalMinor: 4500,
         );
 
-    testWidgets('affiche un etat vide quand rien n est en attente', (tester) async {
+    testWidgets('affiche un etat vide quand rien n est en attente',
+        (tester) async {
       await withTabletSurface(tester, () async {
         await tester.pumpWidget(
           wrap(const PosRecallTicketSheet(tickets: PosParkedTickets())),
@@ -257,7 +269,8 @@ void main() {
       });
     });
 
-    testWidgets('liste les commandes en attente avec leur total', (tester) async {
+    testWidgets('liste les commandes en attente avec leur total',
+        (tester) async {
       await withTabletSurface(tester, () async {
         await tester.pumpWidget(
           wrap(PosRecallTicketSheet(
@@ -353,7 +366,8 @@ void main() {
           wrap(Builder(
             builder: (context) => ElevatedButton(
               onPressed: () async {
-                result = await showModalBottomSheet<({PosVoidReason reason, String comment})>(
+                result = await showModalBottomSheet<
+                    ({PosVoidReason reason, String comment})>(
                   context: context,
                   builder: (_) => const PosVoidReasonSheet(itemName: 'Cafe'),
                 );
@@ -378,13 +392,15 @@ void main() {
       });
     });
 
-    testWidgets('bloque la validation tant que le motif Autre n est pas precise',
+    testWidgets(
+        'bloque la validation tant que le motif Autre n est pas precise',
         (tester) async {
       await withTabletSurface(tester, () async {
         await tester.pumpWidget(
           wrap(Builder(
             builder: (context) => ElevatedButton(
-              onPressed: () => showModalBottomSheet<({PosVoidReason reason, String comment})>(
+              onPressed: () => showModalBottomSheet<
+                  ({PosVoidReason reason, String comment})>(
                 context: context,
                 builder: (_) => const PosVoidReasonSheet(itemName: 'Cafe'),
               ),
@@ -411,7 +427,8 @@ void main() {
   });
 
   group('PosSyncBanner', () {
-    testWidgets('affiche la progression et permet de synchroniser', (tester) async {
+    testWidgets('affiche la progression et permet de synchroniser',
+        (tester) async {
       var synced = 0;
 
       await tester.pumpWidget(
@@ -428,7 +445,8 @@ void main() {
       expect(synced, 1);
     });
 
-    testWidgets('signale les conflits et propose de les ecarter', (tester) async {
+    testWidgets('signale les conflits et propose de les ecarter',
+        (tester) async {
       var dismissed = 0;
 
       await tester.pumpWidget(
