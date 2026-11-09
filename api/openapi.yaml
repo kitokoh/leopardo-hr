@@ -6522,6 +6522,20 @@ paths:
           description: Bounce enregistré
         '503':
           description: 'Secret non configuré (fail-closed, #2616/#2667)'
+  /public/careers:
+    get:
+      operationId: api_get_public_careers
+      tags:
+      - Careers
+      summary: Annuaire des portails carrières (entreprises avec offres publiées)
+      description: |
+        BC-10 (#9220) — rend les entreprises ayant AU MOINS une offre publiée,
+        pour que le sitemap puisse déclarer leurs pages carrières. Les
+        entreprises sans offre publiée sont omises : déclarer une page
+        carrières vide enverrait les robots vers une page sans contenu.
+      responses:
+        '200':
+          description: Liste des portails carrières actifs
   /public/careers/{companySlug}:
     get:
       operationId: api_get_public_careers_by_companySlug
