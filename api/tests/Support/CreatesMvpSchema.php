@@ -2171,6 +2171,25 @@ trait CreatesMvpSchema
             });
         }
 
+        // BC-17 RETAIL #9268 — transferts de stock inter-emplacements.
+        // Miroir de la migration 2026_11_09_000201_9268 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('retail_stock_transfers'))) {
+            Schema::create($this->moduleTable('retail_stock_transfers'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('from_location_id');
+                $table->unsignedBigInteger('to_location_id');
+                $table->unsignedBigInteger('product_id');
+                $table->decimal('quantity', 12, 3);
+                $table->text('note')->nullable();
+                $table->unsignedBigInteger('user_id')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'product_id'], 'retail_stock_transfers_company_product_idx');
+                $table->index(['company_id', 'created_at'], 'retail_stock_transfers_company_created_idx');
+            });
+        }
+
         // BC-17 RETAIL #7674 — POS v1 du module vendeur generique.
         // Miroir de la migration 2026_09_19_000303_7674 (garde #5443).
         if (! Schema::hasTable($this->moduleTable('retail_pos_sessions'))) {
