@@ -30,6 +30,15 @@ export function Textarea({
   const textareaId = id || generatedId;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // #9232 — parité d'accessibilité avec `Input` : un champ en erreur doit être
+  // annoncé comme tel (`aria-invalid`) et son message d'erreur rattaché
+  // (`aria-describedby`), sinon un lecteur d'écran lit le champ sans jamais
+  // signaler l'erreur. Le `role="alert"` fait annoncer le message à son
+  // apparition, sans déplacer le focus.
+  const errorId = `${textareaId}-error`;
+  const helperId = `${textareaId}-helper`;
+  const describedBy = error ? errorId : helperText ? helperId : undefined;
+
   useEffect(() => {
     if (!autoResize || !textareaRef.current) return;
 
@@ -67,6 +76,9 @@ export function Textarea({
         transition={{ duration: 0.2 }}
         ref={textareaRef}
         id={textareaId}
+        required={required}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={describedBy}
         className={`
           w-full px-4 py-2.5 text-sm font-medium resize-none
           bg-white dark:bg-slate-900
@@ -84,6 +96,8 @@ export function Textarea({
 
       {error && (
         <motion.div
+          id={errorId}
+          role="alert"
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center gap-1.5 mt-2 text-sm text-red-600 dark:text-red-400"
@@ -94,7 +108,7 @@ export function Textarea({
       )}
 
       {helperText && !error && (
-        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{helperText}</p>
+        <p id={helperId} className="mt-2 text-sm text-slate-500 dark:text-slate-400">{helperText}</p>
       )}
     </div>
   );
