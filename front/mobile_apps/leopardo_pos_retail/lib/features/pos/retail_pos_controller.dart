@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:leopardo_core/core/pos/pos_history.dart';
 import 'package:leopardo_core/core/pos/pos_search.dart';
 import 'package:leopardo_core/core/pos/pos_ticket.dart';
 
@@ -51,6 +52,7 @@ class RetailPosState {
     this.voidedLines = const [],
     this.sync = const PosSyncProgress(),
     this.showFavouritesOnly = false,
+    this.history = const PosSalesHistory(),
   });
 
   final List<RetailCategory> categories;
@@ -80,6 +82,9 @@ class RetailPosState {
 
   /// Filtre « favoris seulement ».
   final bool showFavouritesOnly;
+
+  /// Historique des ventes de la tablette (#9268), pour la reimpression.
+  final PosSalesHistory history;
 
   bool get sessionOpen => session != null;
 
@@ -173,6 +178,7 @@ class RetailPosState {
     List<PosVoidedLine>? voidedLines,
     PosSyncProgress? sync,
     bool? showFavouritesOnly,
+    PosSalesHistory? history,
   }) =>
       RetailPosState(
         categories: categories ?? this.categories,
@@ -193,6 +199,7 @@ class RetailPosState {
         voidedLines: voidedLines ?? this.voidedLines,
         sync: sync ?? this.sync,
         showFavouritesOnly: showFavouritesOnly ?? this.showFavouritesOnly,
+        history: history ?? this.history,
       );
 }
 
@@ -225,6 +232,7 @@ class RetailPosController extends Notifier<RetailPosState> {
       pendingOperations: _api.queue.length,
       affinity: affinity,
       parked: parked,
+      history: _api.store.readSalesHistory(),
       sync: PosSyncProgress(total: _api.queue.length),
       loading: false,
     );
@@ -550,6 +558,20 @@ class RetailPosController extends Notifier<RetailPosState> {
         affinity = affinity.recordUse(line.product.id);
       }
 
+      // Historique local (#9268) : ecrit AVANT de vider le panier, et y
+      // compris quand la vente part en file hors ligne — c'est justement le
+      // cas ou le vendeur a le plus besoin de retrouver la trace.
+      final history = state.history.add(
+        PosSaleRecord(
+          id: 'retail-sale-${DateTime.now().microsecondsSinceEpoch}',
+          receipt: state.receipt,
+          paidAt: DateTime.now(),
+          orderId: orderId,
+          paymentLabel: method.label,
+          queued: outcome.queued,
+        ),
+      );
+
       state = state.copyWith(
         cart: const RetailCart(),
         voidedLines: const [],
@@ -558,10 +580,12 @@ class RetailPosController extends Notifier<RetailPosState> {
         pendingOperations: _api.queue.length,
         lastOrderId: orderId,
         affinity: affinity,
+        history: history,
         sync: state.sync.copyWith(total: _api.queue.length),
       );
       _persistCart(const RetailCart());
       _api.store.saveAffinity(affinity).catchError((Object _) {});
+      _api.store.saveSalesHistory(history).catchError((Object _) {});
 
       return true;
     } on RetailOfflineException catch (error) {
