@@ -160,7 +160,7 @@ class RestaurantPosSessionTest extends TestCase
         ])->assertStatus(201)->json('data.id');
 
         // Encaissement confirmé de 2000 + pourboire 300 → expected = 12300.
-        app(TenantManager::class)->withinTenant($company, function () use ($sessionId): void {
+        app(TenantManager::class)->withinTenant($company, function () use ($company, $sessionId): void {
             RestaurantOrderPayment::query()->create([
                 'company_id' => $company->id,
                 'order_id' => 1,
