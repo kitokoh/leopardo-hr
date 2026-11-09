@@ -39995,9 +39995,10 @@ paths:
       tags:
       - Retail
       summary: Transferer du stock entre deux emplacements (atomique)
-      description: Cree les deux mouvements transfer_out et transfer_in dans une
-        seule transaction, lies par le meme reference_id. Un stock source
-        insuffisant annule tout (422) : jamais de sortie sans entree.
+      description: >-
+        Cree les deux mouvements transfer_out et transfer_in dans une seule
+        transaction, lies par le meme reference_id. Un stock source insuffisant
+        annule tout (422), jamais de sortie sans entree.
       security:
       - BearerAuth: []
       requestBody:

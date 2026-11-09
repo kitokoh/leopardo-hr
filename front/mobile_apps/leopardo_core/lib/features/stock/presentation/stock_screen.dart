@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// Riverpod 3 : `ProviderListenable` n'est plus exporte par l'entree principale,
+// il vit dans `misc.dart` (cf. migration 2.0 -> 3.0).
+import 'package:flutter_riverpod/misc.dart' show ProviderListenable;
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
