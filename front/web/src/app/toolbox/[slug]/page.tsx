@@ -4,9 +4,8 @@ import { headers } from 'next/headers';
 import { cache } from 'react';
 import { normalizeLocale } from '@/lib/locale-core';
 import { SITE_URL } from '@/lib/site-url';
-import { TOOLS } from '@/modules/toolbox/data/catalog';
 import { getToolboxCopy } from '@/modules/toolbox/data/copy';
-import { getTool } from '@/modules/toolbox/lib/registry';
+import { getAllToolSlugs, getTool } from '@/modules/toolbox/lib/registry';
 import { ToolShell } from '@/modules/toolbox/components/ToolShell';
 import { ToolRenderer } from '@/modules/toolbox/components/ToolRenderer';
 
@@ -27,7 +26,7 @@ const getSsrLocale = cache(async () => {
 });
 
 export function generateStaticParams() {
-  return TOOLS.map((tool) => ({ slug: tool.slug }));
+  return getAllToolSlugs().map((slug) => ({ slug }));
 }
 
 interface ToolPageProps {

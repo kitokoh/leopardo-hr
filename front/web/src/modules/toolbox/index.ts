@@ -8,5 +8,12 @@
 export { TOOLS, TOOL_CATEGORIES } from './data/catalog';
 export { getToolboxCopy, getToolCopy, TOOLBOX_LOCALES } from './data/copy';
 export type { ToolboxLocale, ToolboxCopy, ToolCopy } from './data/copy';
-export { getTool, getToolsByCategory, getAllToolSlugs, searchTools } from './lib/registry';
+export {
+  getTool,
+  getCatalogTools,
+  getToolsByCategory,
+  getAllToolSlugs,
+  searchTools,
+  isToolEnabled,
+} from './lib/registry';
 export type { ToolDefinition, ToolCategory, ToolCategoryId, ToolWarningId } from './types';
