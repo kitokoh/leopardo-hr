@@ -9522,7 +9522,8 @@
     "conversationBack": "Geri",
     "conversationStart": "Konuşma başlat",
     "conversationStarted": "Mesajınız profesyonel gönderildi.",
-    "conversationStartBody": "Merhaba, sizinle iletişime geçmek istiyorum."
+    "conversationStartBody": "Merhaba, sizinle iletişime geçmek istiyorum.",
+    "offlineCacheNotice": "Ağ bağlantısı yok — son aramanız gösteriliyor. Sonuçlar eski olabilir."
   },
   "publicInbox": {
     "pageTitle": "Genel talepler",
