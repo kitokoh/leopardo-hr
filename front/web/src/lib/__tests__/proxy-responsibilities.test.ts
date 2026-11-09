@@ -86,6 +86,38 @@ describe('proxy — convention Next 16 + responsabilités préservées (#7305)',
       const res = proxy(request('/pricing'));
       expect(res.status).toBe(200);
     });
+
+    /**
+     * #8762 — régression : le gate comparait `pathname.startsWith(prefix)`.
+     * Le préfixe protégé `/restaurant` (portail client BC-25) capturait donc
+     * `/restaurants` et `/restaurants/{slug}`, c'est-à-dire l'ANNUAIRE PUBLIC
+     * des restaurants (RESTO-903) et ses fiches : une page publique indexable
+     * répondait 307 vers `/auth/login` pour tout visiteur anonyme.
+     *
+     * Le matching doit être par SEGMENT : égalité exacte ou `/préfixe/…`.
+     */
+    it('ne capture pas une route publique dont le nom prolonge un préfixe protégé', () => {
+      for (const path of ['/restaurants', '/restaurants/chez-fatima']) {
+        const res = proxy(request(path));
+        expect(res.status).toBe(200);
+        expect(res.headers.get('location')).toBeNull();
+      }
+    });
+
+    it('protège toujours le préfixe exact et ses vrais sous-segments', () => {
+      // `/restaurant` (racine du portail client BC-25) a sa propre règle : un
+      // visiteur anonyme est renvoyé vers la vitrine « Je suis restaurateur »,
+      // pas vers le login. Les sous-segments, eux, passent par le gate.
+      const root = proxy(request('/restaurant'));
+      expect(root.status).toBe(307);
+      expect(root.headers.get('location')).toBe(`${base}/restaurateur`);
+
+      for (const path of ['/restaurant/kitchen', '/restaurant/pos/42']) {
+        const res = proxy(request(path));
+        expect(res.status).toBe(307);
+        expect(res.headers.get('location')).toBe(`${base}/auth/login`);
+      }
+    });
   });
 
   describe('③ /signup accessible sans offre (#7488)', () => {

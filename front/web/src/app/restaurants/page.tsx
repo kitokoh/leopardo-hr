@@ -65,7 +65,7 @@ export default async function RestaurantsPage({ searchParams }: RestaurantsPageP
   });
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50/40 to-orange-50/40 px-4 py-10">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50/40 to-orange-50/40 px-4 py-10">
       <div className="mx-auto max-w-5xl">
         <header className="mb-8">
           <h1 className="text-3xl font-black tracking-tight text-slate-950">
@@ -84,6 +84,6 @@ export default async function RestaurantsPage({ searchParams }: RestaurantsPageP
           initialQuery={query}
         />
       </div>
-    </main>
+    </div>
   );
 }

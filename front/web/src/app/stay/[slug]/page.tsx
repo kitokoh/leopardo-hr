@@ -123,7 +123,7 @@ export default async function StayPage({ params, searchParams }: StayPageProps) 
   }
 
   return (
-    <main dir={dir} className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6">
+    <div dir={dir} className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6">
       <JsonLd data={stayJsonLd(property)} />
 
       <header className="border-b border-slate-200 pb-6">
@@ -197,6 +197,6 @@ export default async function StayPage({ params, searchParams }: StayPageProps) 
         locale={locale}
         roomTypes={property.room_types}
       />
-    </main>
+    </div>
   );
 }

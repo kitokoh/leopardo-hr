@@ -91,7 +91,7 @@ export default async function OperatorPage({ params, searchParams }: OperatorPag
   }
 
   return (
-    <main
+    <div
       dir={dir}
       className="min-h-screen bg-gradient-to-br from-slate-50 via-sky-50/40 to-indigo-50/40 px-4 py-10"
     >
@@ -137,6 +137,6 @@ export default async function OperatorPage({ params, searchParams }: OperatorPag
           </div>
         </header>
       </div>
-    </main>
+    </div>
   );
 }

@@ -135,7 +135,7 @@ export default async function RestaurantPage({ params, searchParams }: Restauran
   const typeLabel = establishmentTypeLabel(locale, restaurant.establishment_type);
 
   return (
-    <main
+    <div
       dir={dir}
       className="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50/40 to-orange-50/40 px-4 py-10"
     >
@@ -218,6 +218,6 @@ export default async function RestaurantPage({ params, searchParams }: Restauran
           initialReviewsMeta={reviews?.meta ?? null}
         />
       </div>
-    </main>
+    </div>
   );
 }

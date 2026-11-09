@@ -107,7 +107,21 @@ export function proxy(request: NextRequest) {
   // est accessible SANS `?plan=`. Le paramètre reste accepté (campagnes qui
   // ciblent une offre : le formulaire affiche alors le rappel de l'offre),
   // mais rien ne redirige plus vers `/pricing#plans` (règle #7238 abrogée).
-  const isDashboard = DASHBOARD_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+  // #8762 — matching par SEGMENT, pas par préfixe brut.
+  //
+  // `pathname.startsWith('/restaurant')` capturait aussi `/restaurants` et
+  // `/restaurants/{slug}` : l'annuaire public des restaurants (RESTO-903) et
+  // ses fiches étaient donc redirigés vers `/auth/login` pour tout visiteur
+  // anonyme — une page publique indexable qui répond 307 vers le login. Le
+  // même piège guettait toute future paire de routes dont l'une est le préfixe
+  // littéral de l'autre (`/trade` vs `/trade-os`, `/shop` vs `/showcase`…).
+  //
+  // On exige donc soit l'égalité exacte, soit un vrai sous-segment (`/x/…`).
+  // C'est la règle déjà appliquée par `protected-prefixes.test.ts` : le proxy
+  // et son test de garde partagent désormais la même sémantique.
+  const isDashboard = DASHBOARD_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
 
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
 

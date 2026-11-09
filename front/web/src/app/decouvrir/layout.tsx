@@ -1,9 +1,10 @@
-import type { Metadata } from 'next'
+import type { Metadata } from 'next';
+import PublicPortalLayout from '@/modules/public-portal/components/PublicPortalLayout';
 
 /**
  * Layout de la surface publique `/decouvrir` (couloir 16, #9103).
  *
- * ## Rôle unique : déclarer le manifeste de l'app grand public
+ * ## Rôle 1 : déclarer le manifeste de l'app grand public
  *
  * Le layout racine (`src/app/layout.tsx`) déclare `manifest: '/manifest'`, qui
  * décrit le produit RH. Sans ce layout, installer la PWA depuis `/decouvrir`
@@ -12,6 +13,12 @@ import type { Metadata } from 'next'
  * On ne touche PAS au layout racine : le produit RH garde son manifeste, et
  * les autres surfaces (`/restaurants`, `/travel`, …) ne changent pas de
  * comportement. Seule la route publique déclare le sien.
+ *
+ * ## Rôle 2 : poser le chrome du portail public
+ *
+ * `/decouvrir` est la page d'accueil du portail : elle doit porter l'en-tête
+ * (navigation entre verticales, sélecteur de langue) et le pied de page
+ * communs, exactement comme les annuaires `/boutiques`, `/operateurs`, …
  *
  * ## Pourquoi `metadata` et pas un `<link>` manuel
  *
@@ -23,8 +30,6 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   manifest: '/decouvrir/manifest.webmanifest',
-}
+};
 
-export default function DecouvrirLayout({ children }: { children: React.ReactNode }) {
-  return children
-}
+export default PublicPortalLayout;

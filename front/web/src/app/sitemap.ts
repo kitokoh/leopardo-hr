@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getBlogPosts, type BlogPost } from '@/modules/vitrine/data/blog';
 import { getAllPublicRestaurantSlugs } from '@/lib/restaurants-public-api';
+import { collectVerticalProfilePages } from '@/lib/public-discovery-api';
 import { getPublicCareersDirectory } from '@/lib/careers-directory-api';
 import { getEnvConfig } from '@/modules/vitrine/lib/env';
 import { getSiteUrl } from '@/lib/site';
@@ -95,6 +96,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     page('/packs/agence-de-voyage', 'monthly', 0.6),
     // RESTO-903 (#7748) : annuaire public des restaurants (page SSR indexable).
     page('/restaurants', 'daily', 0.8),
+    // PORTAIL PUBLIC — les annuaires des autres verticales n'existaient pas
+    // (seules leurs fiches `/{verticale}/{slug}` étaient servies) : les fiches
+    // étaient donc orphelines pour le crawl et la verticale n'était pas
+    // parcourable. Chaque annuaire est une page SSR indexable alimentée par
+    // `GET /api/v1/public/discover?type=…`.
+    page('/decouvrir', 'daily', 0.9),
+    page('/boutiques', 'daily', 0.7),
+    page('/operateurs', 'daily', 0.7),
+    page('/entreprises', 'daily', 0.7),
+    page('/stay', 'daily', 0.7),
     page('/privacy', 'yearly', 0.4, false),
     page('/terms', 'yearly', 0.4, false),
     // #7593 — mentions légales (page FR, comme privacy/terms).
@@ -134,6 +145,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'daily' as const,
     priority: 0.7,
   }));
+
+  // PORTAIL PUBLIC — fiches des autres verticales. Elles étaient servies mais
+  // JAMAIS déclarées : `/boutiques/{slug}`, `/operateurs/{slug}`,
+  // `/entreprises/{slug}` et `/stay/{slug}` n'apparaissaient dans aucun
+  // sitemap, donc n'étaient découvertes que par lien externe. On les collecte
+  // via le même contrat public que les annuaires, page par page, en
+  // best-effort (une verticale indisponible ne casse pas le sitemap).
+  const verticalPages: MetadataRoute.Sitemap = await collectVerticalProfilePages(siteUrl);
 
   // #7869 : pages comparatives /alternatives/[slug] (statiques, indexables).
   const alternativePages: MetadataRoute.Sitemap = getAlternativePages('fr').map((p) => ({
@@ -178,6 +197,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticPages,
     ...caseStudyPages,
     ...restaurantPages,
+    ...verticalPages,
     ...alternativePages,
     ...toolboxPages,
     ...careersPages,
