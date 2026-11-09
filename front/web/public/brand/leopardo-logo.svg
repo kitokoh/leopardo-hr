@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 64" width="240" height="64" role="img" aria-label="Leopardo Business OS">
+  <title>Leopardo — logo principal (fond clair)</title>
+  <defs>
+    <linearGradient id="leoAccent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="55%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="leoInk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+  <!-- Emblème -->
+  <g transform="translate(0,0)">
+    <rect x="0" y="0" width="64" height="64" rx="14" fill="#0b1326"/>
+    <path d="M15 44V17.5h8V37h14v7H15Z" fill="#ffffff"/>
+    <path d="M38 17.5h14v7h-7V44h-7V17.5Z" fill="url(#leoAccent)"/>
+    <circle cx="38" cy="24.5" r="1.5" fill="#fef08a"/>
+  </g>
+  <!-- Logotype -->
+  <text x="80" y="34" font-family="Inter, system-ui, sans-serif" font-size="26" font-weight="900" letter-spacing="-0.5" fill="url(#leoInk)">Leopardo</text>
+  <text x="81" y="50" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="800" letter-spacing="2.2" fill="#d97706">BUSINESS OS</text>
+</svg>
