@@ -102,7 +102,7 @@ class TravelMobileApiTest extends TestCase
         $this->assertTrue($consumer->supports('travel.booking.pending.v1'));
         $this->assertFalse($consumer->supports('travel.trip.published.v1'));
 
-        $consumer->handle([
+        $consumer->handle('travel.booking.pending.v1', [
             'company_id' => $company->id,
             'event_id' => 77,
             'event_type' => 'travel.booking.pending.v1',
