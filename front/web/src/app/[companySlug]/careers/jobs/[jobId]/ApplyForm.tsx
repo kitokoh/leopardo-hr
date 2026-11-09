@@ -113,8 +113,13 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* BC-10 (#9257) — `role="alert"` : sans lui, l'échec global de
+          soumission apparaissait visuellement mais n'était jamais annoncé. */}
       {status === 'error' && errorMessage && (
-        <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-3">
+        <div
+          role="alert"
+          className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-3"
+        >
           <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
           <p className="text-sm font-semibold text-red-900 dark:text-red-100">{errorMessage}</p>
         </div>
@@ -161,11 +166,22 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
         error={fieldErrors.cover_letter?.[0]}
       />
 
+      {/* BC-10 (#9257) — le libellé du CV était un `<label>` SANS `htmlFor` :
+          il n'était rattaché à aucun contrôle, donc le champ fichier n'avait
+          aucun nom accessible (annoncé « bouton » sans dire qu'il attend un
+          CV). Il devient un `<span>` de légende, et le `<label>` qui enveloppe
+          l'input porte le nom accessible via `htmlFor`/`id`. */}
       <div>
-        <label className="block text-sm font-semibold text-slate-900 dark:text-white mb-2">
+        <span
+          id="apply-resume-legend"
+          className="block text-sm font-semibold text-slate-900 dark:text-white mb-2"
+        >
           {copy.form.resumeLabel}
-        </label>
-        <label className="flex items-center gap-3 px-4 py-3 rounded-xl border border-dashed border-slate-300 dark:border-slate-600 cursor-pointer hover:border-emerald-500/50 transition-colors">
+        </span>
+        <label
+          htmlFor="apply-resume"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl border border-dashed border-slate-300 dark:border-slate-600 cursor-pointer hover:border-emerald-500/50 transition-colors"
+        >
           {resume ? (
             <FileText className="w-4 h-4 text-emerald-700 dark:text-emerald-400 flex-shrink-0" />
           ) : (
@@ -176,14 +192,25 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
           </span>
           <input
             ref={fileInputRef}
+            id="apply-resume"
             type="file"
             accept=".pdf,.doc,.docx"
             className="sr-only"
+            aria-describedby={
+              fieldErrors.resume?.[0] ? 'apply-resume-error' : 'apply-resume-legend'
+            }
+            aria-invalid={fieldErrors.resume?.[0] ? true : undefined}
             onChange={handleFileChange}
           />
         </label>
         {fieldErrors.resume?.[0] && (
-          <p className="mt-1.5 text-xs text-red-600 dark:text-red-400">{fieldErrors.resume[0]}</p>
+          <p
+            id="apply-resume-error"
+            role="alert"
+            className="mt-1.5 text-xs text-red-600 dark:text-red-400"
+          >
+            {fieldErrors.resume[0]}
+          </p>
         )}
       </div>
 
@@ -206,13 +233,20 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
       {/* BC-10 (#9100) — consentement RGPD explicite. Le texte dit la finalité
           et la durée, pas seulement « j'accepte » : un consentement éclairé
           doit permettre au candidat de savoir ce qu'il autorise. */}
+      {/* BC-10 (#9257) — l'erreur de consentement n'était rattachée à rien :
+          un lecteur d'écran annonçait « case à cocher » sans jamais dire
+          pourquoi la soumission avait échoué. `aria-describedby` la relie à
+          la case, `role="alert"` la fait annoncer dès son apparition. */}
       <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4">
         <label className="flex items-start gap-3 cursor-pointer">
           <input
+            id="apply-consent"
             type="checkbox"
             required
             checked={consent}
             onChange={(e) => setConsent(e.target.checked)}
+            aria-describedby={fieldErrors.consent?.[0] ? 'apply-consent-error' : undefined}
+            aria-invalid={fieldErrors.consent?.[0] ? true : undefined}
             className="mt-0.5 h-4 w-4 flex-shrink-0 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
           />
           <span className="text-xs text-slate-600 dark:text-slate-400">
@@ -220,7 +254,13 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
           </span>
         </label>
         {fieldErrors.consent?.[0] && (
-          <p className="mt-1.5 text-xs text-red-600 dark:text-red-400">{fieldErrors.consent[0]}</p>
+          <p
+            id="apply-consent-error"
+            role="alert"
+            className="mt-1.5 text-xs text-red-600 dark:text-red-400"
+          >
+            {fieldErrors.consent[0]}
+          </p>
         )}
       </div>
 

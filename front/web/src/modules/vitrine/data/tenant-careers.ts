@@ -76,7 +76,10 @@ const fr: TenantCareersCopy = {
     email: 'Email',
     phoneOptional: 'Téléphone (optionnel)',
     coverLetterOptional: 'Lettre de motivation (optionnel)',
-    resumeLabel: 'CV (PDF, optionnel)',
+    // BC-10 (#9257) — le backend accepte `pdf,doc,docx` (PublicApplyRequest).
+    // Le libellé annonçait « PDF » seul : un candidat avec un .docx croyait
+    // devoir convertir son fichier, alors qu'il était accepté tel quel.
+    resumeLabel: 'CV (PDF, DOC ou DOCX, optionnel)',
     resumeChoose: 'Choisir un fichier (max 5 Mo)',
     resumeTooBig: 'Le fichier ne doit pas dépasser 5 Mo.',
     submit: 'Envoyer ma candidature',
@@ -119,7 +122,7 @@ const en: TenantCareersCopy = {
     email: 'Email',
     phoneOptional: 'Phone (optional)',
     coverLetterOptional: 'Cover letter (optional)',
-    resumeLabel: 'Resume (PDF, optional)',
+    resumeLabel: 'Resume (PDF, DOC or DOCX, optional)',
     resumeChoose: 'Choose a file (max 5 MB)',
     resumeTooBig: 'The file must not exceed 5 MB.',
     submit: 'Submit my application',
@@ -162,7 +165,7 @@ const tr: TenantCareersCopy = {
     email: 'E-posta',
     phoneOptional: 'Telefon (isteğe bağlı)',
     coverLetterOptional: 'Ön yazı (isteğe bağlı)',
-    resumeLabel: 'Özgeçmiş (PDF, isteğe bağlı)',
+    resumeLabel: 'Özgeçmiş (PDF, DOC veya DOCX, isteğe bağlı)',
     resumeChoose: 'Dosya seçin (en fazla 5 MB)',
     resumeTooBig: 'Dosya 5 MB sınırını aşmamalıdır.',
     submit: 'Başvurumu gönder',
@@ -205,7 +208,7 @@ const ar: TenantCareersCopy = {
     email: 'البريد الإلكتروني',
     phoneOptional: 'الهاتف (اختياري)',
     coverLetterOptional: 'خطاب التقديم (اختياري)',
-    resumeLabel: 'السيرة الذاتية (PDF، اختياري)',
+    resumeLabel: 'السيرة الذاتية (PDF أو DOC أو DOCX، اختياري)',
     resumeChoose: 'اختر ملفاً (بحد أقصى 5 ميغابايت)',
     resumeTooBig: 'يجب ألا يتجاوز الملف 5 ميغابايت.',
     submit: 'إرسال طلبي',
