@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:leopardo_core/core/pos/pos_numeric_keypad.dart';
 
 import '../../core/models/pos_models.dart';
 import '../../core/theme/pos_theme.dart';
@@ -71,7 +72,7 @@ class _AmountEntrySheetState extends State<AmountEntrySheet> {
             ),
           ),
           const SizedBox(height: 12),
-          _Keypad(
+          PosNumericKeypad(
             onDigit: (digit) => setState(() {
               if (_input.length < 9 && !(_input.isEmpty && digit == '0')) {
                 _input = '$_input$digit';
@@ -95,101 +96,7 @@ class _AmountEntrySheetState extends State<AmountEntrySheet> {
   }
 }
 
-/// Pave numerique tactile local (cibles 64 dp).
-class _Keypad extends StatelessWidget {
-  const _Keypad({
-    required this.onDigit,
-    required this.onBackspace,
-    required this.onClear,
-  });
 
-  final ValueChanged<String> onDigit;
-  final VoidCallback onBackspace;
-  final VoidCallback onClear;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        for (final row in const [
-          ['1', '2', '3'],
-          ['4', '5', '6'],
-          ['7', '8', '9'],
-        ])
-          Row(
-            children: [
-              for (final digit in row)
-                Expanded(child: _Key(label: digit, onTap: () => onDigit(digit))),
-            ],
-          ),
-        Row(
-          children: [
-            Expanded(
-              child: _Key(
-                label: 'C',
-                icon: Icons.backspace_outlined,
-                onTap: onClear,
-              ),
-            ),
-            Expanded(child: _Key(label: '0', onTap: () => onDigit('0'))),
-            Expanded(
-              child: _Key(
-                label: '<',
-                icon: Icons.keyboard_backspace,
-                onTap: onBackspace,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _Key extends StatelessWidget {
-  const _Key({required this.label, required this.onTap, this.icon});
-
-  final String label;
-  final VoidCallback onTap;
-  final IconData? icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.all(4),
-      child: Material(
-        color: scheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            constraints: const BoxConstraints(minHeight: 64),
-            alignment: Alignment.center,
-            child: icon != null
-                ? Icon(icon, size: 26, color: scheme.onSurface)
-                : Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w700,
-                      color: scheme.onSurface,
-                    ),
-                  ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Feuille de **paiement partage** (#9214).
-///
-/// Le serveur repartit l'addition entre plusieurs moyens de paiement. La
-/// validation n'est possible que si les parts couvrent **exactement** le
-/// total : ni reste, ni excedent.
 class SplitPaymentSheet extends StatefulWidget {
   const SplitPaymentSheet({super.key, required this.totalMinor});
 
@@ -293,7 +200,7 @@ class _SplitPaymentSheetState extends State<SplitPaymentSheet> {
               ),
             ),
             const SizedBox(height: 8),
-            _Keypad(
+            PosNumericKeypad(
               onDigit: (digit) => setState(() {
                 if (_input.length < 9 && !(_input.isEmpty && digit == '0')) {
                   _input = '$_input$digit';

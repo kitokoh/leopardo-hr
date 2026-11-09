@@ -80,7 +80,9 @@ class PosSyncOperation {
       return PosSyncOpState.idle;
     }
 
-    if (lastStatusCode != null && lastStatusCode! >= 200 && lastStatusCode! < 300) {
+    if (lastStatusCode != null &&
+        lastStatusCode! >= 200 &&
+        lastStatusCode! < 300) {
       return PosSyncOpState.done;
     }
 
@@ -126,13 +128,16 @@ class PosSyncRunResult {
 /// tentative ; il renvoie l'etat suivant et la progression a afficher. C'est ce
 /// qui rend la regle testable sans reseau ni Hive.
 class PosSyncEngine {
-  const PosSyncEngine({this.maxAttempts = 8, this.baseDelay = const Duration(seconds: 2)});
+  const PosSyncEngine(
+      {this.maxAttempts = 8, this.baseDelay = const Duration(seconds: 2)});
 
   final int maxAttempts;
   final Duration baseDelay;
 
   /// Quelles operations sont dues a cet instant ?
-  List<PosSyncOperation> dueOperations(List<PosSyncOperation> operations, DateTime now) => [
+  List<PosSyncOperation> dueOperations(
+          List<PosSyncOperation> operations, DateTime now) =>
+      [
         for (final operation in operations)
           if (operation.state != PosSyncOpState.done &&
               operation.state != PosSyncOpState.conflict &&
@@ -147,7 +152,8 @@ class PosSyncEngine {
     String? error,
     required DateTime at,
   }) {
-    final updated = operation.afterAttempt(statusCode: statusCode, error: error, at: at);
+    final updated =
+        operation.afterAttempt(statusCode: statusCode, error: error, at: at);
 
     // Au-dela du plafond de tentatives, on ne rejoue plus : l'operation passe
     // en conflit pour que l'operateur la voie, plutot que de tourner en boucle
@@ -169,7 +175,8 @@ class PosSyncEngine {
   }
 
   /// Construit le resultat d'un cycle complet.
-  PosSyncRunResult summarize(List<PosSyncOperation> operations, {bool running = false}) {
+  PosSyncRunResult summarize(List<PosSyncOperation> operations,
+      {bool running = false}) {
     var synced = 0;
     var failed = 0;
     var conflicts = 0;

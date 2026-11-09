@@ -2551,3 +2551,15 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 - **E2E admin** — `front/admin-dashboard/e2e/recruitment-job-sources.spec.js` : creation, test de connexion, edition, suppression. Les mocks n'interceptent plus que `**/api/**` — un mock global capturait la navigation SPA elle-meme et la page affichait du JSON brut.
 - Couverture : `PurgeExpiredApplicantsTest`, `ResumeScanTest`, `PlatformRecruitmentPortalTest`, `JobBoardClientsTest` (unit), `recruitment-job-sources.spec.js` (7/7 en local).
 - Non couvert : l'analyse contre un vrai ClamAV (faux scanner dans les tests) et l'envoi reel vers les agregateurs (reponses HTTP simulees).
+
+## 2026-11-09 — Kit de marque (#9194) : tokens officiels synchronisés web + mobile
+
+**Surface concernée** — `front/mobile_apps/leopardo_core/lib/core/theme/app_colors.dart` (thème partagé de toutes les apps Flutter) et `front/web/src/modules/vitrine/lib/brand-tokens.ts`.
+
+**Pourquoi** — la règle APV **L.07** impose que `docs/REFERENTIEL_PRODUIT/COULEURS.md`, `app_colors.dart` et les configurations Tailwind bougent **ensemble** : un token déclaré côté web mais absent du mobile produit deux rendus divergents de la même marque. Le garde `check-design-token-sync.sh` échoue dans ce cas.
+
+**Ce qui est ajouté** — quatre tokens de surface sombre (`brandSurfaceVariant`, `brandOnSurfaceVariant`, `brandAmberLight`, `brandAmberDeep`), alignés sur les valeurs déjà déclarées dans `COULEURS.md` et `brand-tokens.ts`. Aucune couleur existante n'est modifiée : les accents historiques des écrans de pointage restent à l'identique.
+
+- Scénarios à vérifier : **parité des hexadécimaux** — chaque token de `brand-tokens.ts` a son équivalent dans `app_colors.dart` et dans `COULEURS.md` ; **aucune régression visuelle** — les constantes préexistantes (`mobileMint`, `mobileLavender`, accents de statut) sont inchangées ; **thème sombre** — les nouveaux tokens sont consommés via `Theme.of(context).brightness`, jamais en dur dans un widget.
+- Couverture : `front/web/src/modules/vitrine/lib/brand-tokens.test.ts` (parité et valeurs), `dev-hub/tools/check-design-token-sync.sh` (garde CI), `dev-hub/tools/check-web-design-tokens.sh` (tout hexadécimal doit être déclaré dans `COULEURS.md`).
+- Non couvert : le rendu visuel réel des apps Flutter (pas de golden test sur ces quatre tokens) — la vérification est statique.

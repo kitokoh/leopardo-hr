@@ -60,6 +60,10 @@ class LibraryPublicController extends Controller
             'access' => trim((string) $request->query('access', '')),
             'type' => trim((string) $request->query('type', '')),
             'free_only' => $request->boolean('free_only'),
+            // Mode sémantique (#9240) : re-classement des candidats par score
+            // pondéré. Le filtre SQL reste appliqué — le scoring affine, il ne
+            // remplace pas la borne.
+            'semantic' => $request->boolean('semantic'),
         ];
 
         // Recherche PLEIN TEXTE côté serveur (titre/description/extrait/éditeur/

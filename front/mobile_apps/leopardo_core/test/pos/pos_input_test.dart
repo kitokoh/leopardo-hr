@@ -24,7 +24,8 @@ void main() {
       expect(scanned, isNull);
 
       scanned = detector.feed(
-        PosKeyStroke(character: '\n', at: start.add(const Duration(milliseconds: 140))),
+        PosKeyStroke(
+            character: '\n', at: start.add(const Duration(milliseconds: 140))),
       );
 
       expect(scanned, '6001234567890');
@@ -45,7 +46,8 @@ void main() {
       }
 
       scanned = detector.feed(
-        PosKeyStroke(character: '\n', at: start.add(const Duration(seconds: 5))),
+        PosKeyStroke(
+            character: '\n', at: start.add(const Duration(seconds: 5))),
       );
 
       // Les frappes lentes vident le tampon : seule la derniere reste, trop
@@ -59,7 +61,8 @@ void main() {
 
       detector.feed(PosKeyStroke(character: '1', at: start));
       final scanned = detector.feed(
-        PosKeyStroke(character: '\n', at: start.add(const Duration(milliseconds: 10))),
+        PosKeyStroke(
+            character: '\n', at: start.add(const Duration(milliseconds: 10))),
       );
 
       expect(scanned, isNull);
@@ -79,7 +82,8 @@ void main() {
       }
 
       detector.feed(
-        PosKeyStroke(character: '\n', at: start.add(const Duration(milliseconds: 50))),
+        PosKeyStroke(
+            character: '\n', at: start.add(const Duration(milliseconds: 50))),
       );
 
       expect(detector.buffer, isEmpty);

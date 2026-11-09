@@ -1,16 +1,26 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/pos/pos_barcode_scanner.dart';
+import 'package:leopardo_core/core/pos/pos_config.dart';
+import 'package:leopardo_core/core/pos/pos_esc_pos.dart';
+import 'package:leopardo_core/core/pos/pos_history.dart';
 import 'package:leopardo_core/core/pos/pos_input.dart';
+import 'package:leopardo_core/core/pos/pos_option_sheet.dart';
+import 'package:leopardo_core/core/pos/pos_printer_screen.dart';
+import 'package:leopardo_core/core/pos/pos_settings_screen.dart';
+import 'package:leopardo_core/core/pos/pos_states.dart';
 import 'package:leopardo_core/core/pos/pos_ticket.dart';
 import 'package:leopardo_core/core/pos/pos_widgets.dart';
 
+import '../../core/api/pos_api_client.dart';
 import '../../core/models/pos_models.dart';
 import '../../core/theme/pos_theme.dart';
 import 'floor_plan.dart';
 import 'payment_sheets.dart';
 import 'pos_controller.dart';
+import 'pos_providers.dart';
 
 /// Écran principal de la caisse tablette Restaurant (#9214).
 ///
@@ -142,6 +152,124 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     );
   }
 
+  /// Tap sur un produit du menu : ouvre la feuille d'options quand le plat en
+  /// a (cuisson, accompagnement, supplements) ; sinon ajout direct.
+  ///
+  /// Le backend recalculant les totaux, les options sont portees par la
+  /// ligne : le serveur encaisse le montant que le client a accepte.
+  Future<void> _onProductTap(PosProduct product) async {
+    final controller = ref.read(posControllerProvider.notifier);
+
+    if (product.options.isEmpty) {
+      controller.addProduct(product);
+
+      return;
+    }
+
+    final result = await showPosOptionSheet(
+      context: context,
+      productName: product.name,
+      basePriceMinor: product.priceMinor,
+      productOptions: product.options,
+    );
+
+    if (result == null || !mounted) {
+      return;
+    }
+
+    controller.addProductWithOptions(product, result.selections);
+  }
+
+  /// Ouvre l'historique des ventes et permet de reimprimer un ticket (#9268).
+  Future<void> _openHistory() async {
+    final state = ref.read(posControllerProvider);
+
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => PosSalesHistoryScreen(
+          history: state.history,
+          printer: ref.read(posPrinterProvider),
+          shopName: 'Leopardo Restaurant',
+        ),
+      ),
+    );
+  }
+
+  /// Protege par PIN : un vendeur ne doit pas pouvoir detourner la caisse
+  /// vers un autre serveur au milieu du service.
+  Future<void> _openSettings() async {
+    final store = ref.read(posLocalStoreProvider);
+    final current = ref.read(posConfigProvider) ??
+        const PosAppConfig(apiBaseUrl: 'https://api.leopardo.app/api/v1');
+
+    await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => PosSettingsScreen(
+          initialConfig: current,
+          locationLabel: 'Succursale',
+          pinHash: ref.read(posPinHashProvider),
+          printerName: store.printer?.name,
+          onOpenPrinter: _openPrinterPicker,
+          onSave: (config) async {
+            await store.saveConfig(config);
+            ref.invalidate(posConfigProvider);
+          },
+          onPinChanged: (pin) async {
+            await store.savePinHash(PosPinCode.hash(pin, salt: 'leopardo-pos'));
+            ref.invalidate(posPinHashProvider);
+          },
+          probe: (url) => checkPosBackendHealth(
+            apiBaseUrl: url,
+            performRequest: (uri) async {
+              final dio = Dio(
+                BaseOptions(
+                  connectTimeout: const Duration(seconds: 8),
+                  receiveTimeout: const Duration(seconds: 8),
+                ),
+              );
+
+              try {
+                final response = await dio.get<dynamic>(uri.toString());
+
+                return response.statusCode ?? 0;
+              } on DioException catch (error) {
+                final status = error.response?.statusCode;
+
+                if (status != null) {
+                  return status;
+                }
+
+                if (error.type == DioExceptionType.connectionTimeout ||
+                    error.type == DioExceptionType.receiveTimeout) {
+                  throw const PosHealthTimeout();
+                }
+
+                rethrow;
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Ouvre le choix de l'imprimante (#9264).
+  Future<void> _openPrinterPicker() async {
+    final store = ref.read(posLocalStoreProvider);
+    final service = ref.read(posPrinterProvider);
+
+    await Navigator.of(context).push<PosPrinterDevice>(
+      MaterialPageRoute(
+        builder: (_) => PosPrinterPickerScreen(
+          service: service,
+          onSelected: (device) async {
+            await store.savePrinter(id: device.id, name: device.name);
+          },
+        ),
+      ),
+    );
+  }
+
   /// Ouvre le scanner camera partage (boissons et produits emballes).
   Future<void> _openScanner() async {
     final code = await Navigator.of(context).push<String>(
@@ -223,10 +351,71 @@ class _PosScreenState extends ConsumerState<PosScreen> {
       isScrollControlled: true,
       builder: (_) => PosReceiptPreview(
         receipt: state.receipt,
+        onPrint: () => _printReceipt(state.receipt),
         onConfirm: () {
           Navigator.of(context).pop();
           _pay(context, ref.read(posControllerProvider.notifier), 'cash');
         },
+      ),
+    );
+  }
+
+  /// Imprime le ticket sur l'imprimante thermique (#9264).
+  ///
+  /// Sans imprimante configuree, on propose d'en choisir une au lieu de
+  /// laisser l'operateur devant un echec incomprehensible.
+  Future<void> _printReceipt(PosReceipt receipt) async {
+    final service = ref.read(posPrinterProvider);
+
+    if (service.selectedPrinter == null) {
+      final go = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Aucune imprimante'),
+          content: const Text(
+            'Aucune imprimante n\u2019est configuree sur cette tablette. '
+            'Voulez-vous en choisir une maintenant ?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Plus tard'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Choisir'),
+            ),
+          ],
+        ),
+      );
+
+      if (go != true || !mounted) {
+        return;
+      }
+
+      await _openPrinterPicker();
+
+      if (!mounted || service.selectedPrinter == null) {
+        return;
+      }
+    }
+
+    final bytes = const PosEscPosGenerator().render(
+      receipt: receipt,
+      shopName: 'Leopardo Restaurant',
+      ticketNumber: receipt.tableLabel,
+    );
+
+    final outcome = await service.print(bytes);
+
+    if (!mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(outcome.message),
+        backgroundColor: outcome.success ? null : Theme.of(context).colorScheme.error,
       ),
     );
   }
@@ -303,7 +492,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
         appBar: AppBar(
           title: const Text('Caisse — Restaurant'),
           actions: [
-            _StatusChip(state: state),
+            PosConnectionChip(offline: state.offline, pending: state.pendingOperations),
             const SizedBox(width: 8),
             IconButton(
               tooltip: 'Scanner un article (F2)',
@@ -329,6 +518,18 @@ class _PosScreenState extends ConsumerState<PosScreen> {
               onPressed: state.cart.isEmpty ? null : _openReceipt,
               icon: const Icon(Icons.receipt_long),
             ),
+            IconButton(
+              key: const Key('pos-open-history'),
+              tooltip: 'Historique des ventes',
+              onPressed: _openHistory,
+              icon: const Icon(Icons.history),
+            ),
+            IconButton(
+              key: const Key('pos-open-settings'),
+              tooltip: 'Reglages de la tablette',
+              onPressed: _openSettings,
+              icon: const Icon(Icons.settings_outlined),
+            ),
             const SizedBox(width: 8),
           ],
         ),
@@ -343,7 +544,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                 onDismissConflicts: controller.clearError,
               ),
             if (state.error != null)
-              _ErrorBanner(
+              PosErrorBanner(
                 message: state.error!,
                 onDismiss: controller.clearError,
               ),
@@ -363,8 +564,11 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                           flex: 3,
                           child: _ProductGrid(
                             products: state.visibleProducts
-                                .where((product) => _selectedCategoryId == null ||
-                                    product.categoryId == _selectedCategoryId)
+                                .where(
+                                  (product) =>
+                                      _selectedCategoryId == null ||
+                                      product.categoryId == _selectedCategoryId,
+                                )
                                 .toList(),
                             recentProducts: state.recentProducts,
                             favouritesOnly: state.showFavouritesOnly,
@@ -376,7 +580,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                             onSearch: controller.setSearchQuery,
                             onScan: controller.scanBarcode,
                             onOpenScanner: _openScanner,
-                            onTap: controller.addProduct,
+                            onTap: _onProductTap,
                             onToggleFavourite: controller.toggleFavourite,
                             onToggleFavouritesOnly: controller.toggleFavouritesOnly,
                             onClearSearch: () {
@@ -477,85 +681,6 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                   : 'Paiement partagé encaissé.')
               : (state.error ?? 'Paiement partagé refusé.'),
         ),
-      ),
-    );
-  }
-}
-
-/// Bandeau d'état : en ligne / hors ligne / file d'attente.
-class _StatusChip extends StatelessWidget {
-  const _StatusChip({required this.state});
-
-  final PosState state;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final offline = state.offline || state.pendingOperations > 0;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: offline ? scheme.errorContainer : scheme.primaryContainer,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            offline ? Icons.cloud_off : Icons.cloud_done,
-            size: 18,
-            color: offline ? scheme.onErrorContainer : scheme.onPrimaryContainer,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            offline ? 'Hors ligne' : 'En ligne',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: offline ? scheme.onErrorContainer : scheme.onPrimaryContainer,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Bandeau d'erreur lisible à distance.
-class _ErrorBanner extends StatelessWidget {
-  const _ErrorBanner({required this.message, required this.onDismiss});
-
-  final String message;
-  final VoidCallback onDismiss;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      color: scheme.errorContainer,
-      child: Row(
-        children: [
-          Icon(Icons.error_outline, color: scheme.onErrorContainer),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              message,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: scheme.onErrorContainer,
-              ),
-            ),
-          ),
-          IconButton(
-            tooltip: 'Fermer',
-            onPressed: onDismiss,
-            icon: Icon(Icons.close, color: scheme.onErrorContainer),
-          ),
-        ],
       ),
     );
   }
@@ -986,8 +1111,27 @@ class _CartPanel extends StatelessWidget {
                       },
                       child: ListTile(
                         title: Text(line.product.name),
-                        subtitle: Text(
-                          '${line.quantity} × ${_formatMinor(line.product.priceMinor)}',
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${line.quantity} × ${_formatMinor(line.product.priceMinor)}',
+                            ),
+                            // Options du plat : affichees sous la ligne pour que
+                            // le serveur et le client voient la cuisson, les
+                            // supplements choisis et leur coût (unités mineures).
+                            for (final option in line.optionLabels)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 2),
+                                child: Text(
+                                  '  + $option',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,

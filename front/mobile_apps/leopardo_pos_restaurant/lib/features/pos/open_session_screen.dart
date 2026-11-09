@@ -105,10 +105,16 @@ class _OpenSessionScreenState extends ConsumerState<OpenSessionScreen> {
                     ),
                   ],
                   const SizedBox(height: 12),
-                  const Text(
+                  Text(
                     'L\'ouverture de caisse nécessite une connexion réseau.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 13, color: Colors.grey),
+                    // Couleur du theme, pas un gris en dur : le garde CI
+                    // validate-mobile-color-tokens refuse les litteraux, et
+                    // un gris fixe devient illisible en mode sombre.
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),

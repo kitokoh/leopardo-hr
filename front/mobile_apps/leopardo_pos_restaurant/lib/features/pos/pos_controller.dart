@@ -1,8 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:leopardo_core/core/pos/pos_history.dart';
 import 'package:leopardo_core/core/pos/pos_search.dart';
 import 'package:leopardo_core/core/pos/pos_ticket.dart';
 
 import '../../core/api/pos_api_client.dart';
+import 'package:leopardo_core/core/pos/pos_options.dart';
+
 import '../../core/models/pos_models.dart';
 
 /// Adapte un [PosProduct] a l'interface de recherche partagee.
@@ -49,6 +52,7 @@ class PosState {
     this.voidedLines = const [],
     this.sync = const PosSyncProgress(),
     this.showFavouritesOnly = false,
+    this.history = const PosSalesHistory(),
   });
 
   final List<PosCategory> categories;
@@ -79,6 +83,9 @@ class PosState {
 
   /// Filtre « favoris seulement ».
   final bool showFavouritesOnly;
+
+  /// Historique des ventes de la tablette (#9268), pour la reimpression.
+  final PosSalesHistory history;
 
   bool get sessionOpen => sessionId != null;
 
@@ -152,7 +159,10 @@ class PosState {
             PosReceiptLine(
               name: line.product.name,
               quantity: line.quantity,
-              unitPriceMinor: line.product.priceMinor,
+              // Prix unitaire options comprises : c'est ce que le client a
+              // accepte, et ce que l'apercu et l'imprimante doivent montrer.
+              unitPriceMinor: line.unitPriceMinor,
+              options: line.optionLabels,
             ),
         ],
         discountMinor: cart.discountMinor,
@@ -182,6 +192,7 @@ class PosState {
     List<PosVoidedLine>? voidedLines,
     PosSyncProgress? sync,
     bool? showFavouritesOnly,
+    PosSalesHistory? history,
   }) =>
       PosState(
         categories: categories ?? this.categories,
@@ -200,6 +211,7 @@ class PosState {
         voidedLines: voidedLines ?? this.voidedLines,
         sync: sync ?? this.sync,
         showFavouritesOnly: showFavouritesOnly ?? this.showFavouritesOnly,
+        history: history ?? this.history,
       );
 }
 
@@ -232,6 +244,7 @@ class PosController extends Notifier<PosState> {
       pendingOperations: _api.queue.length,
       affinity: affinity,
       parked: parked,
+      history: _api.store.readSalesHistory(),
       sync: PosSyncProgress(total: _api.queue.length),
       loading: false,
     );
@@ -283,6 +296,29 @@ class PosController extends Notifier<PosState> {
 
   void addProduct(PosProduct product) {
     final cart = state.cart.addProduct(product);
+
+    state = state.copyWith(cart: cart);
+    _persistCart(cart);
+  }
+
+  /// Ajoute un plat avec ses options choisies (#9265).
+  ///
+  /// Deux lignes du meme plat avec des options differentes restent **deux
+  /// lignes distinctes** : un « Poulet saignant + frites » et un
+  /// « Poulet bien cuit + riz » ne peuvent pas fusionner.
+  void addProductWithOptions(PosProduct product, List<PosOptionSelection> selections) {
+    if (selections.isEmpty) {
+      addProduct(product);
+
+      return;
+    }
+
+    final cart = state.cart.copyWith(
+      lines: [
+        ...state.cart.lines,
+        CartLine(product: product, quantity: 1, selections: selections),
+      ],
+    );
 
     state = state.copyWith(cart: cart);
     _persistCart(cart);
@@ -532,6 +568,19 @@ class PosController extends Notifier<PosState> {
         affinity = affinity.recordUse(line.product.id);
       }
 
+      // Historique local (#9268) : ecrit avant de vider le panier, y compris
+      // quand la vente part en file hors ligne.
+      final history = state.history.add(
+        PosSaleRecord(
+          id: 'restaurant-sale-${DateTime.now().microsecondsSinceEpoch}',
+          receipt: state.receipt,
+          paidAt: DateTime.now(),
+          orderId: orderId,
+          paymentLabel: method,
+          queued: outcome.queued,
+        ),
+      );
+
       state = state.copyWith(
         cart: const Cart(),
         voidedLines: const [],
@@ -539,10 +588,12 @@ class PosController extends Notifier<PosState> {
         offline: outcome.queued,
         pendingOperations: _api.queue.length,
         affinity: affinity,
+        history: history,
         sync: state.sync.copyWith(total: _api.queue.length),
       );
       _persistCart(const Cart());
       _api.store.saveAffinity(affinity).catchError((Object _) {});
+      _api.store.saveSalesHistory(history).catchError((Object _) {});
 
       return true;
     } on PosOfflineException catch (error) {

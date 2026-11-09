@@ -35,9 +35,12 @@ void main() {
     barcode: '6001234567890',
     categoryId: 3,
   );
-  const the = _Item(id: 2, name: 'The a la menthe', sku: 'SKU-THE-01', categoryId: 3);
-  const cafe = _Item(id: 3, name: 'Cafe noir', sku: 'SKU-CAFE-01', categoryId: 4);
-  const theGlace = _Item(id: 4, name: 'The glace citron', sku: 'SKU-THE-02', categoryId: 3);
+  const the =
+      _Item(id: 2, name: 'The a la menthe', sku: 'SKU-THE-01', categoryId: 3);
+  const cafe =
+      _Item(id: 3, name: 'Cafe noir', sku: 'SKU-CAFE-01', categoryId: 4);
+  const theGlace =
+      _Item(id: 4, name: 'The glace citron', sku: 'SKU-THE-02', categoryId: 3);
 
   group('normalizePosQuery', () {
     test('met en minuscules et retire les accents', () {
@@ -54,14 +57,16 @@ void main() {
   group('matchQuality', () {
     test('un code-barres exact gagne sur tout le reste', () {
       expect(
-        matchQuality(query: '6001234567890', name: bissap.name, barcode: bissap.barcode),
+        matchQuality(
+            query: '6001234567890', name: bissap.name, barcode: bissap.barcode),
         PosMatchQuality.barcodeExact,
       );
     });
 
     test('un code-barres partiel ne matche pas', () {
       expect(
-        matchQuality(query: '600123', name: bissap.name, barcode: bissap.barcode),
+        matchQuality(
+            query: '600123', name: bissap.name, barcode: bissap.barcode),
         PosMatchQuality.none,
       );
     });
@@ -95,7 +100,8 @@ void main() {
     });
 
     test('une saisie vide matche tout', () {
-      expect(matchQuality(query: '', name: cafe.name), PosMatchQuality.namePrefix);
+      expect(
+          matchQuality(query: '', name: cafe.name), PosMatchQuality.namePrefix);
     });
 
     test('un accent oublie trouve quand meme l article', () {
@@ -217,7 +223,8 @@ void main() {
       }
 
       expect(registry.isFavourite(999), isTrue);
-      expect(registry.entries.length, lessThanOrEqualTo(PosAffinityRegistry.maxEntries));
+      expect(registry.entries.length,
+          lessThanOrEqualTo(PosAffinityRegistry.maxEntries));
     });
   });
 }
