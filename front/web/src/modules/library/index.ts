@@ -40,3 +40,25 @@ export {
   toggleFavorite,
   type ReadingProgress,
 } from './lib/progress';
+export {
+  canSyncProgress,
+  pushProgress,
+  pullProgress,
+  persistProgress,
+  type ServerProgress,
+} from './lib/progress-sync';
+export {
+  parseEpub,
+  htmlToText,
+  decodeEntities,
+  resolveHref,
+  EpubParseError,
+  type EpubChapter,
+  type EpubContent,
+} from './lib/epub';
+export {
+  normalizeFileFormat,
+  type DocumentReaderProps,
+  type ReaderCopy,
+  type LibraryFileFormat,
+} from './lib/reader-contract';

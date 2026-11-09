@@ -12,30 +12,16 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
-import { clampProgress, progressPercent, saveProgress, type ReadingProgress } from '../lib/progress';
+import { clampProgress, progressPercent } from '../lib/progress';
+import { persistProgress } from '../lib/progress-sync';
+import type { DocumentReaderProps } from '../lib/reader-contract';
 
-interface PdfReaderProps {
-  slug: string;
-  title: string;
-  /** URL du PDF (présignée ou route interne signée). */
-  fileUrl: string;
-  initialProgress?: ReadingProgress | null;
-  copy: {
-    page: string;
-    of: string;
-    zoomIn: string;
-    zoomOut: string;
-    fullscreen: string;
-    exitFullscreen: string;
-    search: string;
-    searchPlaceholder: string;
-    noMatches: string;
-    lastPosition: string;
-    close: string;
-    loading: string;
-    error: string;
-  };
-}
+/**
+ * Props du lecteur PDF — le contrat COMMUN des lecteurs de documents
+ * (`DocumentReaderProps`), partagé avec `EpubReader`. Le point d'entrée
+ * (`ResourceActions`) choisit l'implémentation selon le format réel.
+ */
+type PdfReaderProps = DocumentReaderProps;
 
 /**
  * Lecteur PDF (pdf.js) — navigation, zoom, plein écran, recherche dans le
@@ -48,7 +34,7 @@ interface PdfReaderProps {
  * Le fichier n'est jamais téléchargé en entier par l'interface : pdf.js fait
  * des requêtes HTTP Range sur l'URL fournie (présignée ou signée côté serveur).
  */
-export function PdfReader({ slug, title, fileUrl, initialProgress, copy }: PdfReaderProps) {
+export function PdfReader({ slug, title, fileUrl, initialProgress, copy, onFallback }: PdfReaderProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const docRef = useRef<any>(null);
@@ -86,6 +72,8 @@ export function PdfReader({ slug, title, fileUrl, initialProgress, copy }: PdfRe
         if (!cancelled) {
           setError(true);
           setLoading(false);
+          // Repli : l'appelant peut basculer sur le lecteur texte.
+          onFallback?.();
         }
       }
     })();
@@ -95,7 +83,7 @@ export function PdfReader({ slug, title, fileUrl, initialProgress, copy }: PdfRe
       docRef.current?.destroy?.();
       docRef.current = null;
     };
-  }, [fileUrl]);
+  }, [fileUrl, onFallback]);
 
   // Rendu de la page courante.
   useEffect(() => {
@@ -131,7 +119,7 @@ export function PdfReader({ slug, title, fileUrl, initialProgress, copy }: PdfRe
     (next: number) => {
       const clamped = clampProgress(next, total);
       setPage(clamped);
-      saveProgress({ slug, page: clamped, totalPages: total, updatedAt: Date.now() });
+      persistProgress({ slug, page: clamped, totalPages: total, updatedAt: Date.now() });
     },
     [slug, total],
   );
@@ -139,7 +127,7 @@ export function PdfReader({ slug, title, fileUrl, initialProgress, copy }: PdfRe
   // Enregistre la position à l'ouverture (reprise de lecture).
   useEffect(() => {
     if (total > 0) {
-      saveProgress({ slug, page, totalPages: total, updatedAt: Date.now() });
+      persistProgress({ slug, page, totalPages: total, updatedAt: Date.now() });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [total]);

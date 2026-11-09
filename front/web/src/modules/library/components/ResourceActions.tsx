@@ -4,7 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { BookOpen, Download, Heart, Lock, ShoppingCart, Star } from 'lucide-react';
 import { LibraryReader } from './LibraryReader';
 import { PdfReader } from './PdfReader';
+import { EpubReader } from './EpubReader';
 import { loadFavorites, loadProgress, toggleFavorite, type ReadingProgress } from '../lib/progress';
+import { normalizeFileFormat, type LibraryFileFormat } from '../lib/reader-contract';
 import type { AccessCapabilities } from '../lib/access';
 
 interface ResourceActionsProps {
@@ -12,8 +14,14 @@ interface ResourceActionsProps {
   title: string;
   /** Pages de contenu lisible en ligne (vide si non disponible). */
   pages: string[];
-  /** URL du fichier PDF (présignée ou route interne signée), si disponible. */
-  pdfUrl?: string;
+  /** URL du fichier (présignée ou route interne signée), si disponible. */
+  fileUrl?: string;
+  /**
+   * Format RÉEL du fichier, tel que renvoyé par l'API (`file_format`, dérivé du
+   * MIME vérifié côté serveur). C'est lui — jamais l'extension d'une URL — qui
+   * choisit le lecteur : `pdf` → pdf.js, `epub` → EpubReader, sinon texte.
+   */
+  fileFormat?: string | null;
   capabilities: AccessCapabilities;
   copy: {
     readOnline: string;
@@ -53,10 +61,20 @@ interface ResourceActionsProps {
  * capacités d'accès sont calculées côté serveur et passées en props — le
  * bouton de téléchargement n'apparaît QUE si la licence et l'accès l'autorisent.
  */
-export function ResourceActions({ slug, title, pages, pdfUrl, capabilities, copy }: ResourceActionsProps) {
+export function ResourceActions({
+  slug,
+  title,
+  pages,
+  fileUrl,
+  fileFormat,
+  capabilities,
+  copy,
+}: ResourceActionsProps) {
   const [reading, setReading] = useState(false);
   const [favorite, setFavorite] = useState(false);
   const [progress, setProgress] = useState<ReadingProgress | null>(null);
+  // Repli : si le rendu du format échoue, on retombe sur le lecteur texte.
+  const [fallbackToText, setFallbackToText] = useState(false);
 
   useEffect(() => {
     setFavorite(loadFavorites().includes(slug));
@@ -64,9 +82,14 @@ export function ResourceActions({ slug, title, pages, pdfUrl, capabilities, copy
   }, [slug]);
 
   // Lecture possible si le droit est acquis ET qu'il y a un contenu : soit un
-  // PDF (lecteur pdf.js), soit un contenu texte paginé (lecteur simple).
-  const hasPdf = typeof pdfUrl === 'string' && pdfUrl !== '';
-  const canRead = capabilities.canRead && (pages.length > 0 || hasPdf);
+  // fichier (PDF/EPUB), soit un contenu texte paginé (lecteur simple).
+  const hasFile = typeof fileUrl === 'string' && fileUrl !== '';
+  const format: LibraryFileFormat | null = hasFile ? normalizeFileFormat(fileFormat) : null;
+  const canRead = capabilities.canRead && (pages.length > 0 || hasFile);
+
+  // Sélection du lecteur : format réel d'abord, repli texte ensuite.
+  const useFileReader = hasFile && !fallbackToText && (format === 'pdf' || format === 'epub');
+  const useTextReader = !useFileReader && pages.length > 0;
 
   return (
     <div className="space-y-4">
@@ -135,21 +158,33 @@ export function ResourceActions({ slug, title, pages, pdfUrl, capabilities, copy
         </p>
       )}
 
-      {!canRead && pages.length === 0 && !hasPdf && (
+      {!canRead && pages.length === 0 && !hasFile && (
         <p className="text-sm text-slate-500 dark:text-slate-400">{copy.notAvailable}</p>
       )}
 
-      {reading && canRead && hasPdf && (
+      {reading && canRead && useFileReader && format === 'pdf' && (
         <PdfReader
           slug={slug}
           title={title}
-          fileUrl={pdfUrl as string}
+          fileUrl={fileUrl as string}
           initialProgress={progress}
           copy={copy.reader}
+          onFallback={() => setFallbackToText(true)}
         />
       )}
 
-      {reading && canRead && !hasPdf && (
+      {reading && canRead && useFileReader && format === 'epub' && (
+        <EpubReader
+          slug={slug}
+          title={title}
+          fileUrl={fileUrl as string}
+          initialProgress={progress}
+          copy={copy.reader}
+          onFallback={() => setFallbackToText(true)}
+        />
+      )}
+
+      {reading && canRead && useTextReader && (
         <LibraryReader
           slug={slug}
           title={title}

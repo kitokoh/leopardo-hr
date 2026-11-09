@@ -15,6 +15,7 @@
  * `BelongsToCompany` et la policy `LibraryResourcePolicy`.
  */
 
+use App\Modules\Library\Interfaces\Api\V1\Controllers\LibraryReadingProgressController;
 use App\Modules\Library\Interfaces\Api\V1\Controllers\LibraryResourceController;
 use App\Support\Routing\ModuleRoutes;
 use Illuminate\Support\Facades\Route;
@@ -29,4 +30,10 @@ ModuleRoutes::tenantModule('library', function (): void {
     Route::post('/resources/{resource}/unpublish', [LibraryResourceController::class, 'unpublish'])->whereNumber('resource');
     Route::post('/resources/{resource}/archive', [LibraryResourceController::class, 'archive'])->whereNumber('resource');
     Route::post('/resources/{resource}/file', [LibraryResourceController::class, 'uploadFile'])->whereNumber('resource');
+
+    // Progression de lecture persistée côté serveur (par employé, par tenant).
+    // Le slug identifie la ressource ; l'employé vient de la session.
+    Route::get('/progress', [LibraryReadingProgressController::class, 'index']);
+    Route::get('/progress/{slug}', [LibraryReadingProgressController::class, 'show']);
+    Route::put('/progress/{slug}', [LibraryReadingProgressController::class, 'update']);
 });

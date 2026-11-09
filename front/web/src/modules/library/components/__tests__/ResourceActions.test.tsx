@@ -105,3 +105,105 @@ describe('ResourceActions', () => {
     expect(screen.getByRole('button', { name: /Retirer des favoris/ })).toBeInTheDocument();
   });
 });
+
+/**
+ * Sélection du lecteur par FORMAT RÉEL (`file_format` renvoyé par l'API).
+ *
+ * Le point critique : c'est la valeur serveur qui décide, jamais l'extension
+ * d'une URL. Un format inconnu retombe sur le lecteur texte — jamais un écran
+ * blanc.
+ */
+describe('ResourceActions — sélection du lecteur', () => {
+  it('monte le lecteur PDF pour un format `pdf`', async () => {
+    render(
+      <ResourceActions
+        slug="s"
+        title="T"
+        pages={['Repli texte.']}
+        fileUrl="/f"
+        fileFormat="pdf"
+        capabilities={freeCaps}
+        copy={copy}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /Lire en ligne/ }));
+
+    // Le lecteur PDF est monté : sa barre d'outils est présente (le lecteur
+    // texte, lui, n'a ni zoom ni plein écran).
+    expect(screen.getByLabelText('Zoom avant')).toBeInTheDocument();
+    expect(screen.getByLabelText('Plein écran')).toBeInTheDocument();
+
+    // pdf.js est indisponible sous jsdom : le lecteur appelle `onFallback` et
+    // le lecteur texte prend le relais — on attend la fin de l'effet pour ne
+    // pas laisser d'état mis à jour après la fin du test.
+    expect(await screen.findByText('Repli texte.')).toBeInTheDocument();
+  });
+
+  it('retombe sur le lecteur texte si le rendu EPUB échoue', async () => {
+    render(
+      <ResourceActions
+        slug="s"
+        title="T"
+        pages={['Repli texte.']}
+        fileUrl="/f"
+        fileFormat="epub"
+        capabilities={freeCaps}
+        copy={copy}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /Lire en ligne/ }));
+
+    // Sous jsdom, `fetch` échoue : le lecteur EPUB appelle `onFallback` et le
+    // lecteur texte prend le relais — jamais d'écran blanc.
+    expect(await screen.findByText('Repli texte.')).toBeInTheDocument();
+  });
+
+  it('retombe sur le lecteur texte pour un format inconnu', () => {
+    render(
+      <ResourceActions
+        slug="s"
+        title="T"
+        pages={['Contenu texte.']}
+        fileUrl="/f"
+        fileFormat="docx"
+        capabilities={freeCaps}
+        copy={copy}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /Lire en ligne/ }));
+
+    expect(screen.getByText('Contenu texte.')).toBeInTheDocument();
+  });
+
+  it('ne devine pas le format depuis l’extension de l’URL', () => {
+    render(
+      <ResourceActions
+        slug="s"
+        title="T"
+        pages={['Contenu texte.']}
+        fileUrl="/livre.pdf"
+        fileFormat={null}
+        capabilities={freeCaps}
+        copy={copy}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /Lire en ligne/ }));
+
+    // Format serveur absent → lecteur texte, pas pdf.js.
+    expect(screen.getByText('Contenu texte.')).toBeInTheDocument();
+  });
+
+  it('utilise le lecteur texte quand aucun fichier n’est disponible', () => {
+    render(
+      <ResourceActions slug="s" title="T" pages={['Contenu texte.']} capabilities={freeCaps} copy={copy} />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /Lire en ligne/ }));
+
+    expect(screen.getByText('Contenu texte.')).toBeInTheDocument();
+  });
+});
