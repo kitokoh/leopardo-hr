@@ -9,8 +9,9 @@ use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ApplicantResource;
 use App\Modules\Recruitment\Application\Actions\CreateApplicantAction;
+use App\Modules\Recruitment\Application\Services\ResumeScanService;
 use App\Modules\Recruitment\Domain\Exceptions\ApplicantAlreadyAppliedException;
-use App\Modules\Recruitment\Domain\Models\Applicant;
+use App\Modules\Recruitment\Domain\Exceptions\ResumeRejectedException;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
 use App\Modules\Recruitment\Interfaces\Api\V1\Requests\PublicApplyRequest;
 use Illuminate\Http\JsonResponse;
@@ -20,10 +21,15 @@ use Illuminate\Http\JsonResponse;
  * the careers portal for candidates to submit an application for a
  * published job posting. Creates the Applicant record and stores the
  * uploaded resume, if any.
+ *
+ * BC-10 (#9217) — le CV est analysé AVANT d'être rangé (cf. `store()`).
  */
 class CandidateApplicationController extends Controller
 {
-    public function __construct(private readonly TenantManager $tenantManager) {}
+    public function __construct(
+        private readonly TenantManager $tenantManager,
+        private readonly ResumeScanService $resumeScanService,
+    ) {}
 
     /**
      * POST /api/v1/public/careers/{companySlug}/jobs/{jobPosting}/apply
@@ -41,15 +47,45 @@ class CandidateApplicationController extends Controller
             $validated = $request->validated();
 
             $resumePath = null;
+            $scanVerdict = null;
+
             if ($request->hasFile('resume')) {
-                $resumePath = $request->file('resume')->store("recruitment/{$company->id}/resumes", 'local');
+                $file = $request->file('resume');
+
+                // BC-10 (#9217) — analyse antivirus AVANT le stockage définitif.
+                //
+                // L'ordre compte : on analyse le fichier temporaire, et si la
+                // politique le refuse, rien n'a encore été écrit dans le
+                // répertoire du tenant. Analyser après `store()` obligerait à
+                // supprimer un fichier déjà rangé — et laisserait une fenêtre
+                // pendant laquelle un document malveillant serait à sa place
+                // définitive, téléchargeable par un recruteur.
+                try {
+                    $scanVerdict = $this->resumeScanService->inspect(
+                        $file->getRealPath(),
+                        $file->getClientOriginalName(),
+                    );
+                } catch (ResumeRejectedException) {
+                    // Le fichier temporaire est détruit par PHP en fin de
+                    // requête : rien à nettoyer, rien n'a été persisté.
+                    return new JsonResponse([
+                        'error' => 'RESUME_REJECTED',
+                        'message' => __('errors.RESUME_REJECTED'),
+                        'errors' => [
+                            'resume' => [__('errors.RESUME_REJECTED')],
+                        ],
+                    ], 422);
+                }
+
+                $resumePath = $file->store("recruitment/{$company->id}/resumes", 'local');
             }
 
             // BC-10 (#9100) — RGPD : on horodate le consentement et on fixe la
             // fin de conservation. La durée est configurable
-            // (`recruitment.applicant_retention_days`, 365 j par défaut) :
-            // une durée codée en dur serait impossible à ajuster par pays.
-            $retentionDays = (int) config('recruitment.applicant_retention_days', 365);
+            // (`recruitment.applicant_retention_days`, 730 j par défaut, soit
+            // les 24 mois annoncés au candidat) : une durée codée en dur serait
+            // impossible à ajuster par pays.
+            $retentionDays = (int) config('recruitment.applicant_retention_days', 730);
             $consentAt = now();
 
             // Issue #3860 — pas de doublon (job_posting_id, email) : le
@@ -66,6 +102,14 @@ class CandidateApplicationController extends Controller
                         'email' => $validated['email'],
                         'phone' => $validated['phone'] ?? null,
                         'resume_path' => $resumePath ?? ($validated['resume_url'] ?? null),
+                        // BC-10 (#9217) — le verdict est persisté, y compris
+                        // `unavailable` : un CV non analysé doit rester
+                        // distinguable d'un CV vérifié, et re-scannable après
+                        // mise à jour de la base virale.
+                        'resume_scan_status' => $scanVerdict?->status,
+                        'resume_scan_engine' => $scanVerdict?->engine,
+                        'resume_scan_signature' => $scanVerdict?->signature,
+                        'resume_scanned_at' => $scanVerdict !== null ? $consentAt : null,
                         'cover_letter' => $validated['cover_letter'] ?? null,
                         'source' => $validated['source'] ?? 'website',
                         'status' => 'new',

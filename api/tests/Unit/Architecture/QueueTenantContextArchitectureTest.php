@@ -81,6 +81,18 @@ class QueueTenantContextArchitectureTest extends TestCase
         // `search_path` sans société, ce qui serait pire que l'absence de
         // contexte : une erreur silencieuse au lieu d'une erreur franche.
         \App\Modules\SearchIntelligence\Infrastructure\Jobs\SyncIntegrationMetrics::class => 'job plateforme (#7649) : `integrations` est globale (aucune colonne company_id), aucun tenant à établir',
+
+        // Job PLATEFORME (BC-10, #9218) : `job_sources` et
+        // `external_job_offers` vivent dans le schéma `public` et n'ont PAS de
+        // colonne `company_id` — un connecteur d'agrégateur est configuré une
+        // fois pour l'installation, pas par société, et les offres qu'il
+        // importe n'appartiennent à aucun tenant (elles sont rattachées à une
+        // page carrières par PAYS, cf. `PublicJobCatalog`). Le job n'a donc
+        // aucun tenant à établir : `tenantCompanyId()` n'aurait rien à
+        // retourner, et lui imposer `EnsureTenantContext` positionnerait un
+        // `search_path` sans société — une erreur silencieuse au lieu d'une
+        // erreur franche.
+        \App\Modules\Recruitment\Infrastructure\Jobs\SyncExternalJobOffersJob::class => 'job plateforme (BC-10 #9218) : `job_sources`/`external_job_offers` sont publiques (aucune colonne company_id), aucun tenant à établir',
     ];
 
     public function test_every_queued_job_touching_tenant_data_uses_ensure_tenant_context(): void
