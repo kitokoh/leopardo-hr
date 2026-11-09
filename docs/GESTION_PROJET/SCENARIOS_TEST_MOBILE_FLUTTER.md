@@ -5,6 +5,18 @@
 
 ## Journal des mises à jour de surface (`front/mobile_apps/`)
 
+- **2026-11-08 (#9106, mission Couloir 16 / M4 hors ligne)** — `leopardo_core/lib/l10n/app_{fr,en,ar,tr}.arb` :
+  clé `discovery.offlineCacheNotice` ajoutée **côté web** (`shared/i18n/locales/*.json`) puis propagée
+  mécaniquement par `shared/i18n/sync/sync-mobile.js`. **Aucune surface fonctionnelle mobile modifiée** :
+  aucun écran Flutter ne consomme encore cette clé, aucun contrat d'API touché, aucune dépendance changée.
+  Le changement de fond est **web** (`front/web/src/lib/offline/public-discovery-cache.ts` : cache de la
+  dernière recherche publique, restitué hors ligne et signalé à l'écran), traité dans
+  `SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md`. Aucun nouveau scénario mobile requis ; les scénarios
+  existants restent valides. Vérifié : `I18N_SYNC_MOBILE_OK`, `I18N_VALIDATION_OK (4 locales)`,
+  `check-i18n-catalog-parity.sh` → **vert**. Distinction importante : le cache hors ligne de la recherche
+  publique n'existe **que sur la PWA** — l'app Flutter `leopardo_public` n'a pas encore d'écran de
+  découverte, et ce lot ne prétend donc pas le contraire.
+
 - **2026-10-20 (#8760, mission Leopardo Public / BC-13 COMMS)** — `leopardo_core/lib/l10n/app_{fr,en,ar,tr}.arb` :
   namespace `publicInbox` (33 clés) ajouté **côté web** (`shared/i18n/locales/*.json`) puis propagé
   mécaniquement par `shared/i18n/sync/sync-mobile.js`. **Aucune surface fonctionnelle mobile modifiée** :

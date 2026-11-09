@@ -8482,6 +8482,7 @@
     "geoUnsupported": "Geolocation is not available on this device.",
     "noResults": "No professional matches your search.",
     "loadError": "Unable to load results. Please try again.",
+    "offlineCacheNotice": "No network — showing your last search. Results may be out of date.",
     "retry": "Retry",
     "loading": "Loading…",
     "previous": "Previous",
