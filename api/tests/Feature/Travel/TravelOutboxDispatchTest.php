@@ -231,7 +231,7 @@ class TravelOutboxDispatchTest extends TestCase
 
         self::assertSame(200, TravelOutboxEvent::query()->where('status', TravelOutboxEvent::STATUS_PUBLISHED)->count(), 'zéro perte');
         self::assertSame(0, TravelOutboxEvent::query()->where('status', TravelOutboxEvent::STATUS_FAILED)->count());
-        self::assertSame(200, $consumer->appliedCount(), 'zéro doublon');
+        self::assertSame(200, $consumer->applied, 'zéro doublon');
         self::assertLessThan(10.0, $elapsed, 'pic traité dans la fenêtre bornée');
     }
 

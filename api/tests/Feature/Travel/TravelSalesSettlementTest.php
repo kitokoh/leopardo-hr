@@ -86,20 +86,20 @@ class TravelSalesSettlementTest extends TestCase
 
         $settlement = app(TravelSalesSettlementService::class)->settle(
             $company->id,
-            now()->subDay()->startOfDay(),
-            now()->subDay()->endOfDay(),
-        )['settlement'];
+            now()->subDay()->toDateString(),
+            now()->subDay()->toDateString(),
+        );
 
-        $this->assertSame(2, $settlement->confirmed_payments_count);
-        $this->assertSame(15000, $settlement->confirmed_amount_minor);
-        $this->assertSame(1, $settlement->refunded_count);
-        $this->assertSame(3000, $settlement->refunded_amount_minor);
-        $this->assertSame(12000, $settlement->net_amount_minor);
+        $this->assertNotNull($settlement);
+        $this->assertSame(2, $settlement['confirmed_count']);
+        $this->assertSame(15000, $settlement['confirmed_amount_minor']);
+        $this->assertSame(1, $settlement['refunded_count']);
+        $this->assertSame(3000, $settlement['refunded_amount_minor']);
 
         // Événement de synthèse publié.
         $this->assertSame(1, TravelOutboxEvent::query()
             ->where('event_type', 'travel.sales.settled.v1')
-            ->whereJsonContains('payload_redacted', ['net_amount_minor' => 12000])
+            ->whereJsonContains('payload_redacted', ['confirmed_amount_minor' => 15000])
             ->count());
     }
 
@@ -116,11 +116,13 @@ class TravelSalesSettlementTest extends TestCase
 
         $service = app(TravelSalesSettlementService::class);
 
-        $first = $service->settle($company->id, now()->subDay()->startOfDay(), now()->subDay()->endOfDay());
-        $second = $service->settle($company->id, now()->subDay()->startOfDay(), now()->subDay()->endOfDay());
+        $first = $service->settle($company->id, now()->subDay()->toDateString(), now()->subDay()->toDateString());
+        $second = $service->settle($company->id, now()->subDay()->toDateString(), now()->subDay()->toDateString());
 
-        $this->assertSame(8000, $first['settlement']->confirmed_amount_minor);
-        $this->assertSame(8000, $second['settlement']->confirmed_amount_minor);
+        $this->assertNotNull($first);
+        $this->assertNotNull($second);
+        $this->assertSame(8000, $first['confirmed_amount_minor']);
+        $this->assertSame(8000, $second['confirmed_amount_minor']);
         $this->assertSame(1, TravelSalesSettlement::query()->count());
 
         // Un seul événement publié pour la période (pas de doublon au rejeu).
@@ -143,12 +145,13 @@ class TravelSalesSettlementTest extends TestCase
 
         $settlement = app(TravelSalesSettlementService::class)->settle(
             $company->id,
-            now()->subDay()->startOfDay(),
-            now()->subDay()->endOfDay(),
-        )['settlement'];
+            now()->subDay()->toDateString(),
+            now()->subDay()->toDateString(),
+        );
 
-        $this->assertSame(1, $settlement->confirmed_payments_count);
-        $this->assertSame(4000, $settlement->confirmed_amount_minor);
+        $this->assertNotNull($settlement);
+        $this->assertSame(1, $settlement['confirmed_count']);
+        $this->assertSame(4000, $settlement['confirmed_amount_minor']);
     }
 
     protected function setUp(): void

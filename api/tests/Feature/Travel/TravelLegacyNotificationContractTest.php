@@ -90,7 +90,8 @@ class TravelLegacyNotificationContractTest extends TestCase
         $this->assertNotEmpty($consumer);
 
         foreach ($consumer as $c) {
-            $c->handle([
+            // Contrat TravelOutboxConsumer (#6066) : handle(string $eventType, array $payload).
+            $c->handle('travel.booking.confirmed.v1', [
                 'company_id' => $company->id,
                 'event_id' => 999,
                 'event_type' => 'travel.booking.confirmed.v1',
