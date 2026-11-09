@@ -95,6 +95,14 @@ class AppColors {
   static const Color mobileMint = Color(0xFF4EDEA3);
   static const Color mobileLavender = Color(0xFFDAE2FD);
 
+  // Tokens de marque officiels (kit #9194) — surfaces sombres et accents
+  // declares dans docs/REFERENTIEL_PRODUIT/COULEURS.md (regle APV L.07 :
+  // COULEURS.md, app_colors.dart et les configs Tailwind bougent ensemble).
+  static const Color brandSurfaceVariant = Color(0xFF2D3449);
+  static const Color brandOnSurfaceVariant = Color(0xFFBBCABF);
+  static const Color brandAmberLight = Color(0xFFFCD34D);
+  static const Color brandAmberDeep = Color(0xFFD97706);
+
   // Accents statut ecrans pointage (valeurs historiques distinctes des
   // couleurs semantiques generiques success/warning/danger/info ci-dessus ;
   // conservees a l'identique pour ne pas changer le rendu visuel existant).

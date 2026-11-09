@@ -1,8 +1,4 @@
-import 'package:flutter/material.dart';
-
-import '../../core/theme/retail_theme.dart';
-
-/// **Pave numerique tactile** de caisse (#9215).
+/// **Pave numerique tactile** de caisse, partage par les deux apps POS.
 ///
 /// Une caisse se pilote au doigt, pas au clavier systeme : ouvrir le clavier
 /// virtuel d'Android masque la moitie de l'ecran et fait perdre le panier de
@@ -11,6 +7,15 @@ import '../../core/theme/retail_theme.dart';
 /// Il sert a deux choses, qui partagent la meme ergonomie :
 ///  - saisir une **quantite** (le vendeur tape `12` puis valide) ;
 ///  - saisir un **montant** (fonds de caisse, remboursement, mouvement).
+///
+/// Il vivait en double : une version complete dans `leopardo_pos_retail`, une
+/// version reduite (`_Keypad`) dans `leopardo_pos_restaurant`. Les deux apps
+/// utilisent desormais celle-ci.
+library;
+
+import 'package:flutter/material.dart';
+
+/// **Pave numerique tactile** de caisse.
 class PosNumericKeypad extends StatelessWidget {
   const PosNumericKeypad({
     super.key,
@@ -90,6 +95,7 @@ class PosNumericKeypad extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: FilledButton(
+              key: const Key('pos-keypad-validate'),
               onPressed: validateEnabled ? onValidate : null,
               child: Text(validateLabel),
             ),
@@ -228,6 +234,3 @@ int parseMinorUnits(String input) {
 
   return value < 0 ? 0 : value;
 }
-
-/// Cible tactile minimale du POS, exposee pour les tests et les widgets.
-const double posMinTouchTarget = RetailTheme.minTouchTarget;

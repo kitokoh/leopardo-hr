@@ -6,7 +6,8 @@ import 'package:leopardo_core/core/pos/pos_ticket.dart';
 void main() {
   PosReceipt buildReceipt() => const PosReceipt(
         lines: [
-          PosReceiptLine(name: 'Jus de bissap', quantity: 2, unitPriceMinor: 1500),
+          PosReceiptLine(
+              name: 'Jus de bissap', quantity: 2, unitPriceMinor: 1500),
           PosReceiptLine(
             name: 'Poulet braise',
             quantity: 1,

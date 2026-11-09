@@ -6,6 +6,7 @@ namespace App\Modules\Library\Infrastructure\Services;
 
 use App\Modules\Library\Domain\Enums\LibraryResourceStatus;
 use App\Modules\Library\Domain\Models\LibraryResource;
+use App\Modules\Library\Domain\Support\LibrarySemanticScorer;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -17,6 +18,12 @@ use Illuminate\Database\Eloquent\Builder;
  *    quand l'extension est disponible — repli `ILIKE` simple sinon) ;
  *  - filtres catégorie / langue / modèle d'accès / type de document ;
  *  - tri par pertinence simple (titre > extrait > description).
+ *
+ * Mode `semantic` (#9240) : quand `?semantic=1` est demandé, le pré-filtre SQL
+ * reste le même (il borne le jeu de candidats et évite de charger tout le
+ * catalogue), puis les candidats sont RE-CLASSÉS par `LibrarySemanticScorer`
+ * (scoring lexical pondéré par champ, sans dépendance externe). Le scoring
+ * sémantique ne remplace pas le filtre : il l'affine.
  *
  * Recommandations : même catégorie d'abord, puis même langue, en excluant la
  * ressource courante. Aucun moteur de reco externe, aucun profilage.
@@ -30,7 +37,7 @@ final class LibrarySearchService
     /**
      * Recherche filtrée sur le catalogue public.
      *
-     * @param  array{query?: string, category?: string, language?: string, access?: string, type?: string, free_only?: bool}  $filters
+     * @param  array{query?: string, category?: string, language?: string, access?: string, type?: string, free_only?: bool, semantic?: bool}  $filters
      * @return array<int, LibraryResource>
      */
     public function search(array $filters, int $limit = 60): array
@@ -66,7 +73,43 @@ final class LibrarySearchService
             $this->applyFullText($query, $needle);
         }
 
-        return $query->limit($limit)->get()->all();
+        $results = $query->limit($limit)->get()->all();
+
+        // Mode sémantique (#9240) : re-classement des candidats par score
+        // pondéré. Le filtre SQL a déjà borné le jeu de candidats — on ne
+        // charge jamais tout le catalogue pour le scorer en mémoire.
+        if (($filters['semantic'] ?? false) === true && mb_strlen($needle) >= $minLength) {
+            return $this->rankSemantically($results, $needle);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Re-classe des candidats par pertinence sémantique (#9240).
+     *
+     * @param  array<int, LibraryResource>  $candidates
+     * @return array<int, LibraryResource>
+     */
+    private function rankSemantically(array $candidates, string $needle): array
+    {
+        $ranked = LibrarySemanticScorer::rank(
+            $candidates,
+            $needle,
+            static fn (LibraryResource $resource): array => [
+                'title' => $resource->title,
+                'excerpt' => $resource->excerpt,
+                'description' => $resource->description,
+                'rights_holder' => $resource->rights_holder,
+                'publisher' => $resource->publisher,
+                'category' => $resource->category?->name,
+            ],
+        );
+
+        return array_map(
+            static fn (array $entry): LibraryResource => $entry['item'],
+            $ranked,
+        );
     }
 
     /**

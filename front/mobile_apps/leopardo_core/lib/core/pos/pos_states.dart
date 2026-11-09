@@ -1,13 +1,27 @@
-import 'package:flutter/material.dart';
-
-import '../../core/theme/retail_theme.dart';
-
-/// Etats d'interface partages du POS Retail (#9215).
+/// **Etats d'interface** partages par les deux caisses POS.
 ///
 /// Une caisse passe sa journee dans trois etats qui ne sont pas des cas
 /// d'exception : **vide** (rien a vendre / panier vide), **hors ligne**, et
 /// **en erreur**. Les traiter comme des cas normaux, avec un message utile et
 /// une action, evite les ecrans muets qui font croire a une panne.
+///
+/// Ces widgets vivaient en double dans `leopardo_pos_retail` et
+/// `leopardo_pos_restaurant` : deux copies du meme bandeau d'erreur, qui
+/// divergeaient a chaque correction. Ils sont ici, une seule fois, et les
+/// deux apps les importent.
+///
+/// Toutes les couleurs viennent du `ColorScheme` de l'app appelante : aucun
+/// litteral hex, ce qui respecte le garde CI
+/// `validate-mobile-color-tokens.ps1`.
+library;
+
+import 'package:flutter/material.dart';
+
+/// Cible tactile minimale (guides d'accessibilite).
+const double posMinTouchTarget = 48;
+
+/// Rayon des cartes du POS.
+const double posCardRadius = 14;
 
 /// Etat vide : dit ce qui manque ET quoi faire ensuite.
 class PosEmptyState extends StatelessWidget {
@@ -137,6 +151,7 @@ class PosErrorBanner extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
 
     return Container(
+      key: const Key('pos-error-banner'),
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       color: scheme.errorContainer,
@@ -179,6 +194,7 @@ class PosConnectionChip extends StatelessWidget {
     final degraded = offline || pending > 0;
 
     return Container(
+      key: const Key('pos-connection-chip'),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
         color: degraded ? scheme.errorContainer : scheme.primaryContainer,
@@ -190,14 +206,19 @@ class PosConnectionChip extends StatelessWidget {
           Icon(
             degraded ? Icons.cloud_off : Icons.cloud_done,
             size: 18,
-            color: degraded ? scheme.onErrorContainer : scheme.onPrimaryContainer,
+            color:
+                degraded ? scheme.onErrorContainer : scheme.onPrimaryContainer,
           ),
           const SizedBox(width: 8),
           Text(
-            degraded ? (pending > 0 ? 'Hors ligne ($pending)' : 'Hors ligne') : 'En ligne',
+            degraded
+                ? (pending > 0 ? 'Hors ligne ($pending)' : 'Hors ligne')
+                : 'En ligne',
             style: TextStyle(
               fontWeight: FontWeight.w600,
-              color: degraded ? scheme.onErrorContainer : scheme.onPrimaryContainer,
+              color: degraded
+                  ? scheme.onErrorContainer
+                  : scheme.onPrimaryContainer,
             ),
           ),
         ],
@@ -251,11 +272,13 @@ class PosQuickAction extends StatelessWidget {
       enabled: enabled,
       label: label,
       child: Material(
-        color: enabled ? scheme.surfaceContainerHighest : scheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(RetailTheme.cardRadius),
+        color: enabled
+            ? scheme.surfaceContainerHighest
+            : scheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(posCardRadius),
         child: InkWell(
           onTap: enabled ? onTap : null,
-          borderRadius: BorderRadius.circular(RetailTheme.cardRadius),
+          borderRadius: BorderRadius.circular(posCardRadius),
           child: Container(
             constraints: const BoxConstraints(minHeight: 64, minWidth: 96),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -272,7 +295,9 @@ class PosQuickAction extends StatelessWidget {
                   label,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 13,
+                    // 15 px : plancher de lisibilite a 60 cm, la distance
+                    // reelle d'un vendeur debout devant la tablette.
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: enabled ? scheme.onSurface : scheme.outline,
                   ),

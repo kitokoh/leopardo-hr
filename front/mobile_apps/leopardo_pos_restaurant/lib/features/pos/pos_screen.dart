@@ -5,10 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/pos/pos_barcode_scanner.dart';
 import 'package:leopardo_core/core/pos/pos_config.dart';
 import 'package:leopardo_core/core/pos/pos_esc_pos.dart';
+import 'package:leopardo_core/core/pos/pos_history.dart';
 import 'package:leopardo_core/core/pos/pos_input.dart';
 import 'package:leopardo_core/core/pos/pos_option_sheet.dart';
 import 'package:leopardo_core/core/pos/pos_printer_screen.dart';
 import 'package:leopardo_core/core/pos/pos_settings_screen.dart';
+import 'package:leopardo_core/core/pos/pos_states.dart';
 import 'package:leopardo_core/core/pos/pos_ticket.dart';
 import 'package:leopardo_core/core/pos/pos_widgets.dart';
 
@@ -178,8 +180,21 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     controller.addProductWithOptions(product, result.selections);
   }
 
-  /// Ouvre les reglages de la tablette (#9263).
-  ///
+  /// Ouvre l'historique des ventes et permet de reimprimer un ticket (#9268).
+  Future<void> _openHistory() async {
+    final state = ref.read(posControllerProvider);
+
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => PosSalesHistoryScreen(
+          history: state.history,
+          printer: ref.read(posPrinterProvider),
+          shopName: 'Leopardo Restaurant',
+        ),
+      ),
+    );
+  }
+
   /// Protege par PIN : un vendeur ne doit pas pouvoir detourner la caisse
   /// vers un autre serveur au milieu du service.
   Future<void> _openSettings() async {
@@ -193,6 +208,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
           initialConfig: current,
           locationLabel: 'Succursale',
           pinHash: ref.read(posPinHashProvider),
+          printerName: store.printer?.name,
+          onOpenPrinter: _openPrinterPicker,
           onSave: (config) async {
             await store.saveConfig(config);
             ref.invalidate(posConfigProvider);
@@ -475,7 +492,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
         appBar: AppBar(
           title: const Text('Caisse — Restaurant'),
           actions: [
-            _StatusChip(state: state),
+            PosConnectionChip(offline: state.offline, pending: state.pendingOperations),
             const SizedBox(width: 8),
             IconButton(
               tooltip: 'Scanner un article (F2)',
@@ -502,6 +519,12 @@ class _PosScreenState extends ConsumerState<PosScreen> {
               icon: const Icon(Icons.receipt_long),
             ),
             IconButton(
+              key: const Key('pos-open-history'),
+              tooltip: 'Historique des ventes',
+              onPressed: _openHistory,
+              icon: const Icon(Icons.history),
+            ),
+            IconButton(
               key: const Key('pos-open-settings'),
               tooltip: 'Reglages de la tablette',
               onPressed: _openSettings,
@@ -521,7 +544,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                 onDismissConflicts: controller.clearError,
               ),
             if (state.error != null)
-              _ErrorBanner(
+              PosErrorBanner(
                 message: state.error!,
                 onDismiss: controller.clearError,
               ),
@@ -658,85 +681,6 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                   : 'Paiement partagé encaissé.')
               : (state.error ?? 'Paiement partagé refusé.'),
         ),
-      ),
-    );
-  }
-}
-
-/// Bandeau d'état : en ligne / hors ligne / file d'attente.
-class _StatusChip extends StatelessWidget {
-  const _StatusChip({required this.state});
-
-  final PosState state;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final offline = state.offline || state.pendingOperations > 0;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: offline ? scheme.errorContainer : scheme.primaryContainer,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            offline ? Icons.cloud_off : Icons.cloud_done,
-            size: 18,
-            color: offline ? scheme.onErrorContainer : scheme.onPrimaryContainer,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            offline ? 'Hors ligne' : 'En ligne',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: offline ? scheme.onErrorContainer : scheme.onPrimaryContainer,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Bandeau d'erreur lisible à distance.
-class _ErrorBanner extends StatelessWidget {
-  const _ErrorBanner({required this.message, required this.onDismiss});
-
-  final String message;
-  final VoidCallback onDismiss;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      color: scheme.errorContainer,
-      child: Row(
-        children: [
-          Icon(Icons.error_outline, color: scheme.onErrorContainer),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              message,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: scheme.onErrorContainer,
-              ),
-            ),
-          ),
-          IconButton(
-            tooltip: 'Fermer',
-            onPressed: onDismiss,
-            icon: Icon(Icons.close, color: scheme.onErrorContainer),
-          ),
-        ],
       ),
     );
   }
