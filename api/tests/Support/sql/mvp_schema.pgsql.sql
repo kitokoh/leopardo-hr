@@ -330,6 +330,10 @@ CREATE TABLE shared_tenants.employees (
     last_name varchar(100) NOT NULL DEFAULT '',
     preferred_name varchar(100) NULL,
     email varchar(150) NOT NULL,
+    -- #6531 (2026_08_31_000006) : identite Google (sub) liee a l'employe.
+    -- La fixture pgsql ne l'avait pas alors que le chemin sqlite avait ete
+    -- resynchronise en #8004 : 16 tests Google SSO echouaient en 42703.
+    google_id varchar(255) NULL,
     personal_email varchar(150) NULL,
     recovery_email varchar(150) NULL,
     phone varchar(30) NULL,
@@ -387,6 +391,8 @@ CREATE TABLE shared_tenants.employees (
 
 CREATE UNIQUE INDEX employees_email_unique ON shared_tenants.employees (email);
 CREATE UNIQUE INDEX employees_company_id_matricule_unique ON shared_tenants.employees (company_id, matricule);
+-- #6531 : PostgreSQL autorise plusieurs NULL sur un index unique.
+CREATE UNIQUE INDEX employees_google_id_unique ON shared_tenants.employees (google_id);
 
 CREATE TABLE shared_tenants.attendance_logs (
     id serial PRIMARY KEY,
@@ -1282,3 +1288,25 @@ CREATE TABLE IF NOT EXISTS public.platform_oauth_configs (
     redirect_uri varchar(500) NULL,
     updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Module Marketing Phase 1 (migration 2026_07_16_000001) : connexion d'un
+-- tenant a un profil d'agregateur de publication. Absente de la fixture pgsql
+-- alors que le chemin sqlite l'avait : 42P01 « relation social_accounts does
+-- not exist » sur les tests de connexion sociale.
+CREATE TABLE IF NOT EXISTS shared_tenants.social_accounts (
+    id serial PRIMARY KEY,
+    company_id uuid NOT NULL,
+    provider varchar(30) NOT NULL DEFAULT 'ayrshare',
+    provider_profile_ref text NOT NULL,
+    connected_platforms jsonb NULL,
+    display_name varchar(120) NULL,
+    status varchar(20) NOT NULL DEFAULT 'active',
+    last_error text NULL,
+    connected_at timestamptz NULL,
+    created_by integer NULL,
+    created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX social_accounts_company_id_index ON shared_tenants.social_accounts (company_id);
+CREATE UNIQUE INDEX social_accounts_company_id_provider_unique ON shared_tenants.social_accounts (company_id, provider);
