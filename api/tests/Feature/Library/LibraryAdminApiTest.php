@@ -229,13 +229,10 @@ class LibraryAdminApiTest extends TestCase
         Sanctum::actingAs($this->manager($companyA));
 
         // Refus sûr : la ressource d'un autre tenant n'est jamais modifiable.
-        // Selon que le contexte tenant est posé ou non, la résolution échoue en
-        // 404 (scope `BelongsToCompany`) ou la policy refuse en 403 — dans les
-        // deux cas AUCUNE écriture n'a lieu. On vérifie donc le refus ET
-        // l'absence de modification, pas un code précis.
-        $response = $this->putJson('/api/v1/library/resources/'.$foreign->id, ['title' => 'Piraté']);
-
-        $this->assertContains($response->status(), [403, 404], 'Un autre tenant doit être refusé (403) ou introuvable (404).');
+        // La route est scopée par `BelongsToCompany`, donc la ressource d'un
+        // autre tenant n'est pas résolue : 404 déterministe (garde #5585).
+        $this->putJson('/api/v1/library/resources/'.$foreign->id, ['title' => 'Piraté'])
+            ->assertStatus(404);
 
         $this->assertSame(
             $foreign->title,
