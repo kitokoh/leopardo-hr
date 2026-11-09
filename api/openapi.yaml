@@ -40576,7 +40576,8 @@ paths:
                         type: integer
                       quantity:
                         type: number
-                        exclusiveMinimum: 0
+                        minimum: 0
+                        exclusiveMinimum: true
                 idempotency_key:
                   type: string
                   nullable: true
