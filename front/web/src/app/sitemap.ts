@@ -3,6 +3,7 @@ import { getBlogPosts, type BlogPost } from '@/modules/vitrine/data/blog';
 import { getAllPublicRestaurantSlugs } from '@/lib/restaurants-public-api';
 import { collectVerticalProfilePages } from '@/lib/public-discovery-api';
 import { getPublicCareersDirectory } from '@/lib/careers-directory-api';
+import { getPublicJobPostings, isExternalOffer, type PublicJobPosting } from '@/lib/careers-api';
 import { getEnvConfig } from '@/modules/vitrine/lib/env';
 import { getSiteUrl } from '@/lib/site';
 import { getAllCaseStudySlugs } from '@/modules/vitrine/lib/case-studies';
@@ -184,6 +185,39 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
+  // BC-10 (#9245) — pages de DÉTAIL d'offre.
+  //
+  // Le sitemap déclarait les portails carrières mais pas les offres
+  // elles-mêmes : or c'est la page de détail qui porte le JSON-LD
+  // `JobPosting` (titre, lieu, salaire, `datePosted`, `validThrough`) que
+  // Google Jobs lit pour indexer une annonce. Sans elle au sitemap, les
+  // annonces restaient hors du crawl — le portail était visible, les offres
+  // non. C'est exactement l'inverse de l'objectif d'un portail d'emploi.
+  //
+  // Seules les offres du TENANT sont déclarées : une offre agrégée n'a pas de
+  // page chez nous (elle renvoie chez le partenaire), donc l'inscrire
+  // enverrait les robots vers une URL inexistante.
+  const careersJobPages: MetadataRoute.Sitemap = (
+    await Promise.all(
+      (await getPublicCareersDirectory()).map(async (entry) => {
+        const jobs = await getPublicJobPostings(entry.slug);
+
+        if (jobs === null) {
+          return [];
+        }
+
+        return jobs
+          .filter((job): job is PublicJobPosting => !isExternalOffer(job))
+          .map((job) => ({
+            url: `${siteUrl}/${entry.slug}/careers/jobs/${job.id}`,
+            ...(job.created_at ? { lastModified: new Date(job.created_at) } : {}),
+            changeFrequency: 'weekly' as const,
+            priority: 0.7,
+          }));
+      })
+    )
+  ).flat();
+
   // LEOPARDO LIBRARY — bibliothèque numérique publique (`/library`), indexable
   // et accessible sans authentification. Les slugs viennent du catalogue du
   // module (`getAllResourceSlugs`) : ajouter une ressource publiée l'expose
@@ -201,6 +235,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...alternativePages,
     ...toolboxPages,
     ...careersPages,
+    ...careersJobPages,
     ...libraryPages,
   ];
 

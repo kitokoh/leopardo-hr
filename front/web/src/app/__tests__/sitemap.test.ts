@@ -55,6 +55,29 @@ jest.doMock('@/lib/careers-directory-api', () => ({
   ],
 }));
 
+// BC-10 (#9245) : les pages de DÉTAIL d'offre viennent de l'API publique —
+// mockées ici (pas de réseau en test). Le jeu de données couvre les deux
+// populations : une offre du tenant (page chez nous, à déclarer) et une offre
+// agrégée (renvoie chez le partenaire, à NE PAS déclarer).
+jest.doMock('@/lib/careers-api', () => ({
+  isExternalOffer: (job: { apply_url?: unknown }) => 'apply_url' in job,
+  getPublicJobPostings: async (slug: string) => {
+    if (slug === 'techcorp-algerie') {
+      return [
+        { id: 42, title: 'Ingénieur DevOps', created_at: '2026-11-02T09:00:00Z' },
+        {
+          id: 99,
+          title: 'Offre agrégée',
+          apply_url: 'https://partner.example/jobs/99',
+          created_at: '2026-11-03T09:00:00Z',
+        },
+      ];
+    }
+
+    return [];
+  },
+}));
+
 describe('sitemap integrity (#3807)', () => {
   let urls: string[];
   let entries: Array<{ url: string; lastModified?: unknown; alternates?: { languages?: Record<string, string> } }>;
@@ -96,6 +119,18 @@ describe('sitemap integrity (#3807)', () => {
     expect(urls).toContain('https://www.leopardo-rh.com/restaurants');
     expect(urls).toContain('https://www.leopardo-rh.com/restaurants/chez-fatou');
     expect(urls).toContain('https://www.leopardo-rh.com/restaurants/la-brasserie-du-port');
+  });
+
+  it('BC-10 (#9245) : publie les pages de DÉTAIL d’offre du tenant', () => {
+    // C'est la page de détail qui porte le JSON-LD `JobPosting` lu par Google
+    // Jobs : sans elle au sitemap, les annonces restaient hors du crawl.
+    expect(urls).toContain('https://www.leopardo-rh.com/techcorp-algerie/careers/jobs/42');
+  });
+
+  it('BC-10 (#9245) : ne publie PAS les offres agrégées (pas de page chez nous)', () => {
+    // Une offre agrégée renvoie chez le partenaire : l'inscrire enverrait les
+    // robots vers une URL inexistante sur notre domaine.
+    expect(urls.some((url) => url.includes('/careers/jobs/99'))).toBe(false);
   });
 
   it('ne publie pas de lastModified volatil sur les pages statiques', () => {
