@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { BookOpen, Download, Heart, Lock, ShoppingCart, Star } from 'lucide-react';
 import { LibraryReader } from './LibraryReader';
+import { PdfReader } from './PdfReader';
 import { loadFavorites, loadProgress, toggleFavorite, type ReadingProgress } from '../lib/progress';
 import type { AccessCapabilities } from '../lib/access';
 
@@ -11,6 +12,8 @@ interface ResourceActionsProps {
   title: string;
   /** Pages de contenu lisible en ligne (vide si non disponible). */
   pages: string[];
+  /** URL du fichier PDF (présignée ou route interne signée), si disponible. */
+  pdfUrl?: string;
   capabilities: AccessCapabilities;
   copy: {
     readOnline: string;
@@ -36,6 +39,8 @@ interface ResourceActionsProps {
       resume: string;
       lastPosition: string;
       close: string;
+      loading: string;
+      error: string;
     };
   };
 }
@@ -48,7 +53,7 @@ interface ResourceActionsProps {
  * capacités d'accès sont calculées côté serveur et passées en props — le
  * bouton de téléchargement n'apparaît QUE si la licence et l'accès l'autorisent.
  */
-export function ResourceActions({ slug, title, pages, capabilities, copy }: ResourceActionsProps) {
+export function ResourceActions({ slug, title, pages, pdfUrl, capabilities, copy }: ResourceActionsProps) {
   const [reading, setReading] = useState(false);
   const [favorite, setFavorite] = useState(false);
   const [progress, setProgress] = useState<ReadingProgress | null>(null);
@@ -58,7 +63,10 @@ export function ResourceActions({ slug, title, pages, capabilities, copy }: Reso
     setProgress(loadProgress().find((item) => item.slug === slug) ?? null);
   }, [slug]);
 
-  const canRead = capabilities.canRead && pages.length > 0;
+  // Lecture possible si le droit est acquis ET qu'il y a un contenu : soit un
+  // PDF (lecteur pdf.js), soit un contenu texte paginé (lecteur simple).
+  const hasPdf = typeof pdfUrl === 'string' && pdfUrl !== '';
+  const canRead = capabilities.canRead && (pages.length > 0 || hasPdf);
 
   return (
     <div className="space-y-4">
@@ -127,11 +135,21 @@ export function ResourceActions({ slug, title, pages, capabilities, copy }: Reso
         </p>
       )}
 
-      {!canRead && pages.length === 0 && (
+      {!canRead && pages.length === 0 && !hasPdf && (
         <p className="text-sm text-slate-500 dark:text-slate-400">{copy.notAvailable}</p>
       )}
 
-      {reading && canRead && (
+      {reading && canRead && hasPdf && (
+        <PdfReader
+          slug={slug}
+          title={title}
+          fileUrl={pdfUrl as string}
+          initialProgress={progress}
+          copy={copy.reader}
+        />
+      )}
+
+      {reading && canRead && !hasPdf && (
         <LibraryReader
           slug={slug}
           title={title}

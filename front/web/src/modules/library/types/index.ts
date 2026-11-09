@@ -90,6 +90,16 @@ export interface LibraryResource {
   excerpt?: string;
   /** Contenu intégral lisible en ligne (œuvres courtes du domaine public). */
   content?: string;
+  /**
+   * URL du fichier lisible en ligne (PDF/EPUB), si un fichier est disponible.
+   *
+   * ⚠️ Ne JAMAIS y mettre une URL publique permanente d'un contenu protégé :
+   * cette valeur provient d'une URL présignée ou d'une route interne signée
+   * délivrée par l'API après vérification des droits.
+   */
+  fileUrl?: string;
+  /** Format du fichier disponible (`pdf`, `epub`, `txt`, `html`). */
+  fileFormat?: string;
   /** Mots-clés de recherche (non traduits, minuscules). */
   keywords: string[];
   /** Mise en avant éditoriale (sélection). */

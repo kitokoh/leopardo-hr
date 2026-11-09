@@ -7,13 +7,17 @@ namespace App\Modules\Library\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Library\Application\Actions\TransitionLibraryResourceStatus;
+use App\Modules\Library\Application\Actions\UploadLibraryResourceFile;
 use App\Modules\Library\Domain\Enums\LibraryResourceStatus;
 use App\Modules\Library\Domain\Models\LibraryResource;
 use App\Modules\Library\Domain\Support\LibrarySlug;
+use App\Modules\Library\Infrastructure\Services\LibraryFileService;
 use App\Modules\Library\Interfaces\Api\V1\Requests\StoreLibraryResourceRequest;
 use App\Modules\Library\Interfaces\Api\V1\Requests\UpdateLibraryResourceRequest;
+use App\Modules\Library\Interfaces\Api\V1\Requests\UploadLibraryResourceFileRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use RuntimeException;
 
 /**
  * Gestion des ressources de la bibliothèque par un tenant (surface privée).
@@ -27,6 +31,7 @@ use Illuminate\Http\Request;
  *   POST   /library/resources/{resource}/publish   → publier
  *   POST   /library/resources/{resource}/unpublish → dépublier
  *   POST   /library/resources/{resource}/archive   → archiver
+ *   POST   /library/resources/{resource}/file      → téléverser le fichier
  *
  * Workflow éditorial : brouillon → en attente → publié → archivé. Aucune
  * publication automatique. L'isolation tenant est garantie par le scope
@@ -36,6 +41,8 @@ class LibraryResourceController extends Controller
 {
     public function __construct(
         private readonly TransitionLibraryResourceStatus $transition,
+        private readonly UploadLibraryResourceFile $uploadFile,
+        private readonly LibraryFileService $files,
     ) {}
 
     /**
@@ -166,6 +173,51 @@ class LibraryResourceController extends Controller
     }
 
     /**
+     * POST /library/resources/{resource}/file — téléverser le fichier.
+     *
+     * Validation MIME réelle + taille + clé de stockage isolée par tenant
+     * (voir `LibraryFileService`). Si le stockage n'est pas configuré, on
+     * renvoie 501 avec un message clair — jamais de faux fichier.
+     */
+    public function uploadFile(UploadLibraryResourceFileRequest $request, LibraryResource $resource): JsonResponse
+    {
+        $this->authorize('update', $resource);
+
+        if (! $this->files->isConfigured()) {
+            return response()->json(
+                [
+                    'error' => 'storage_not_configured',
+                    'message' => __('library.storage_not_configured'),
+                ],
+                501
+            );
+        }
+
+        $file = $request->file('file');
+
+        if ($file === null) {
+            return response()->json(['error' => 'file_required'], 422);
+        }
+
+        try {
+            $resource = $this->uploadFile->execute($resource, $file);
+        } catch (RuntimeException $exception) {
+            $code = $exception->getMessage();
+            $status = $code === 'library_file_too_large' ? 413 : 422;
+
+            return response()->json(
+                [
+                    'error' => $code,
+                    'message' => __('library.'.$code),
+                ],
+                $status
+            );
+        }
+
+        return response()->json(['data' => $this->payload($resource)]);
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private function payload(LibraryResource $resource): array
@@ -187,6 +239,9 @@ class LibraryResourceController extends Controller
             'featured' => $resource->featured,
             'is_new' => $resource->is_new,
             'published_at' => $resource->published_at?->toIso8601String(),
+            'file_format' => $resource->file_format,
+            'file_size' => $resource->file_size,
+            'has_file' => $resource->file_key !== null,
         ];
     }
 

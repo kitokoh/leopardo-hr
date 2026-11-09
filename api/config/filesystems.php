@@ -57,6 +57,31 @@ return [
             'report' => false,
         ],
 
+        // BC-40 LIBRARY — fichiers de la bibliothèque numérique.
+        //
+        // Racine HORS webroot : un document de bibliothèque n'est JAMAIS servi
+        // statiquement. L'accès passe par `LibraryAccessPolicy` + URL présignée
+        // (driver s3) ou route interne signée (driver local).
+        //
+        // `LIBRARY_STORAGE_DRIVER=s3` bascule sur un stockage objet
+        // S3-compatible (AWS, MinIO, Scaleway, OVH…) : les credentials sont
+        // ceux du disque `s3` ci-dessous, le bucket est `LIBRARY_STORAGE_BUCKET`
+        // (repli sur `AWS_BUCKET`).
+        'library' => [
+            'driver' => env('LIBRARY_STORAGE_DRIVER', 'local') === 's3' ? 's3' : 'local',
+            'root' => storage_path('app/library'),
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('LIBRARY_STORAGE_BUCKET', env('AWS_BUCKET')),
+            'url' => env('AWS_URL'),
+            'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'visibility' => 'private',
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
