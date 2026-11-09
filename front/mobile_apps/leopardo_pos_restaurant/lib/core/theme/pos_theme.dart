@@ -83,16 +83,45 @@ class PosTheme {
         minVerticalPadding: 14,
         contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 6),
       ),
+      // Accessibilite : le serveur peut agrandir le texte de la tablette
+      // (service du soir, salle tamisee). On borne l'echelle pour ne pas
+      // casser la mise en page 3 colonnes, mais on la laisse agir.
+      textTheme: _scaledTextTheme(ThemeData(brightness: brightness).textTheme),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          minimumSize: const Size(minTouchTarget, minTouchTarget),
+        ),
+      ),
+      chipTheme: ChipThemeData(
+        labelStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+      ),
+      dividerTheme: DividerThemeData(color: scheme.outlineVariant, thickness: 1),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: fieldFill,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        labelStyle: const TextStyle(fontSize: 16),
+        hintStyle: const TextStyle(fontSize: 16),
       ),
       snackBarTheme: const SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         insetPadding: EdgeInsets.all(20),
+        contentTextStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
       ),
     );
   }
+
+  /// Typographie de caisse : plancher de lisibilite a 15 px.
+  ///
+  /// Les styles Material par defaut descendent a 11-12 px (labels, captions),
+  /// illisibles sur une tablette posee a 60 cm. On releve le plancher sans
+  /// toucher aux tailles deja grandes.
+  static TextTheme _scaledTextTheme(TextTheme base) => base.copyWith(
+        bodySmall: base.bodySmall?.copyWith(fontSize: 15),
+        labelSmall: base.labelSmall?.copyWith(fontSize: 15),
+        labelMedium: base.labelMedium?.copyWith(fontSize: 15),
+      );
 }

@@ -11,6 +11,8 @@ analyzer:
     dead_code: error
   exclude:
     - build/**
+    - android/**
+    - ios/**
 
 linter:
   rules:
