@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UC-21 — Impersonation encadrée (Support) — Portail de recette Leopardo</title>
+<link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">L</span>
+      <span class="brand-text">Portail de recette <small>leopardo-hr</small></span>
+    </a>
+    <nav class="mainnav">
+      <a href="../index.html">Accueil</a>
+      <a href="../profils/index.html">Profils</a>
+      <a href="../modules/index.html">Modules</a>
+      <a href="../recap.html">Récapitulatif</a>
+      <a href="../tests-ia-leopardo-hr.md">Markdown</a>
+      <a href="../prompt-agent-testeur.md">Prompt IA</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <h1 class="page-title">UC-21 — Impersonation encadrée (Support)</h1>
+  <p class="page-sub">Fiche de résultats du cas d&#x27;usage.</p>
+  
+<nav class="breadcrumb"><a href="../index.html">Portail</a> <span class="sep">›</span> <a href="profils/index.html">Profils</a> <span class="sep">›</span> <a href="../profils/support.html">Support</a> <span class="sep">›</span> <span aria-current="page">UC-21</span></nav>
+<div class="uc-head">
+  <div class="uc-id">UC-21</div>
+  <div class="uc-head-main">
+    <h2 class="uc-title">Impersonation encadrée (Support)</h2>
+    <div class="chips">
+      <span class="badge" style="background:#be123c1a;color:#be123c;border-color:#be123c33">Sécurité</span>
+      <span class="badge badge-todo">◻ à exécuter</span>
+      <span class="chip">Profil : <a href="../profils/support.html">Support</a></span>
+      <span class="chip">Module : <a href="../modules/platform.html">Plateforme &amp; observabilité</a></span>
+    </div>
+  </div>
+</div>
+
+<div class="uc-grid">
+  <section class="panel">
+    <h3>Description / préconditions</h3>
+    <p>Vérifier qu&#x27;un agent support peut impersonner un utilisateur de façon tracée et limitée.</p>
+    <p class="muted"><strong>Prérequis :</strong> Compte support plateforme ; permission <code>Impersonate</code>.</p>
+  </section>
+  <section class="panel">
+    <h3>Résultat attendu</h3>
+    <p>L&#x27;impersonation est possible, clairement signalée, réversible, et journalisée ; aucune action sensible non autorisée n&#x27;est permise.</p>
+  </section>
+</div>
+
+<section class="panel">
+  <h3>Étapes de test</h3>
+  <ol class="steps"><li>Depuis la console, lancer une impersonation d&#x27;un utilisateur d&#x27;entreprise.</li><li>Vérifier l&#x27;accès au contexte de l&#x27;utilisateur.</li><li>Contrôler la présence d&#x27;un bandeau/indicateur d&#x27;impersonation.</li><li>Terminer l&#x27;impersonation et vérifier le retour au compte support.</li><li>Vérifier la trace d&#x27;audit de l&#x27;opération.</li></ol>
+</section>
+
+<section class="panel">
+  <h3>Fiche de résultats</h3>
+  <div class="table-wrap">
+    <table class="result-table">
+      <thead>
+        <tr>
+          <th class="col-note">Note IA (/5)</th>
+          <th>Observation IA</th>
+          <th class="col-note">Note humaine (/5)</th>
+          <th>Observation humaine</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="center"><span class="note note-empty">—</span></td>
+          <td class="obs"><span class="muted">Non exécuté — à réaliser par le testeur IA.</span></td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+          <td class="human-cell"><span class="muted">Réservé à l'évaluation humaine</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel eval-panel" data-uc="UC-21">
+  <h3>Votre évaluation (saisie locale)</h3>
+  <p class="muted">Cette saisie est enregistrée dans votre navigateur (localStorage) et peut être exportée en JSON.
+  Elle ne modifie pas les colonnes IA/humaine du document versionné.</p>
+  <div class="eval-form">
+    <label>Votre note (/5)
+      <select class="eval-note">
+        <option value="">—</option>
+        <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+      </select>
+    </label>
+    <label class="eval-obs-label">Votre observation
+      <textarea class="eval-obs" rows="3" placeholder="Décrivez factuellement ce que vous avez observé…"></textarea>
+    </label>
+    <div class="eval-actions">
+      <button class="btn btn-primary eval-save" type="button">Enregistrer</button>
+      <button class="btn btn-ghost eval-export" type="button">Exporter mes évaluations (JSON)</button>
+      <span class="eval-status muted"></span>
+    </div>
+  </div>
+</section>
+
+<p class="uc-nav">
+  <a class="btn-back" href="../index.html">← Portail</a>
+  <a class="btn-back" href="../profils/support.html">← Profil Support</a>
+  <a class="btn-back" href="../modules/platform.html">← Module Plateforme &amp; observabilité</a>
+</p>
+
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <p>Portail de recette <strong>leopardo-hr</strong> — dépôt
+      <a href="https://github.com/Kitokoh/leopardo-hr" target="_blank" rel="noopener">Kitokoh/leopardo-hr</a>.
+      Colonnes « Note IA » / « Observation IA » remplies par le testeur IA ;
+      colonnes « Note humaine » / « Observation humaine » réservées à l'évaluation humaine.</p>
+  </div>
+</footer>
+<script src="../assets/portal.js"></script>
+</body>
+</html>

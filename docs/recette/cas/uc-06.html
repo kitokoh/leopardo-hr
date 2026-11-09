@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UC-06 — Préparation de paie (Manager Comptable) — Portail de recette Leopardo</title>
+<link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">L</span>
+      <span class="brand-text">Portail de recette <small>leopardo-hr</small></span>
+    </a>
+    <nav class="mainnav">
+      <a href="../index.html">Accueil</a>
+      <a href="../profils/index.html">Profils</a>
+      <a href="../modules/index.html">Modules</a>
+      <a href="../recap.html">Récapitulatif</a>
+      <a href="../tests-ia-leopardo-hr.md">Markdown</a>
+      <a href="../prompt-agent-testeur.md">Prompt IA</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <h1 class="page-title">UC-06 — Préparation de paie (Manager Comptable)</h1>
+  <p class="page-sub">Fiche de résultats du cas d&#x27;usage.</p>
+  
+<nav class="breadcrumb"><a href="../index.html">Portail</a> <span class="sep">›</span> <a href="profils/index.html">Profils</a> <span class="sep">›</span> <a href="../profils/manager-comptable.html">Manager Comptable</a> <span class="sep">›</span> <span aria-current="page">UC-06</span></nav>
+<div class="uc-head">
+  <div class="uc-id">UC-06</div>
+  <div class="uc-head-main">
+    <h2 class="uc-title">Préparation de paie (Manager Comptable)</h2>
+    <div class="chips">
+      <span class="badge" style="background:#2563eb1a;color:#2563eb;border-color:#2563eb33">Fonctionnel</span>
+      <span class="badge badge-done">✔ exécuté</span>
+      <span class="chip">Profil : <a href="../profils/manager-comptable.html">Manager Comptable</a></span>
+      <span class="chip">Module : <a href="../modules/payroll.html">Paie (Payroll)</a></span>
+    </div>
+  </div>
+</div>
+
+<div class="uc-grid">
+  <section class="panel">
+    <h3>Description / préconditions</h3>
+    <p>Vérifier qu&#x27;un manager comptable peut lancer une simulation de paie et consulter les structures salariales.</p>
+    <p class="muted"><strong>Prérequis :</strong> Compte <code>lina.haddad@example.com</code> (<code>manager_role=comptable</code>) ; endpoints <code>/api/v1/salary-structures</code>, <code>POST /api/v1/payroll/simulate</code>.</p>
+  </section>
+  <section class="panel">
+    <h3>Résultat attendu</h3>
+    <p>Le manager comptable obtient une simulation cohérente et détaillée ; l&#x27;employé simple reçoit 403 ; l&#x27;opération est tracée. Aucune donnée d&#x27;un autre tenant n&#x27;apparaît.</p>
+  </section>
+</div>
+
+<section class="panel">
+  <h3>Étapes de test</h3>
+  <ol class="steps"><li>Appeler <code>GET /api/v1/salary-structures</code> et vérifier la liste.</li><li>Appeler <code>POST /api/v1/payroll/simulate</code> avec un employé et une période.</li><li>Relever le détail du calcul (brut, cotisations, net).</li><li>Rejouer avec un compte employé simple et vérifier le refus.</li><li>Vérifier la présence d&#x27;une trace d&#x27;audit.</li></ol>
+</section>
+
+<section class="panel">
+  <h3>Fiche de résultats</h3>
+  <div class="table-wrap">
+    <table class="result-table">
+      <thead>
+        <tr>
+          <th class="col-note">Note IA (/5)</th>
+          <th>Observation IA</th>
+          <th class="col-note">Note humaine (/5)</th>
+          <th>Observation humaine</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="center"><span class="note note-good">5/5</span></td>
+          <td class="obs"><code>GET /salary-structures</code> (comptable) → <strong>200</strong>, structures DZ listées (base_salary, currency DZD). <code>POST /payroll/simulate</code> (gross_salary=180000, country_code=DZ) → <strong>200</strong>, détail complet : <code>gross</code>, <code>country_code</code>, bloc <code>compliance</code> (niveau « pilot », avertissement de validation légale, source <code>docs/payroll/DZ_COMPLIANCE.md</code>), <code>correlation_id</code>. Même appel avec le jeton employé → <strong>403 <code>MANAGER_REQUIRED</code></strong> (contrôle de rôle effectif).</td>
+          <td class="center human-cell"><span class="muted">—</span></td>
+          <td class="human-cell"><span class="muted">Réservé à l'évaluation humaine</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel eval-panel" data-uc="UC-06">
+  <h3>Votre évaluation (saisie locale)</h3>
+  <p class="muted">Cette saisie est enregistrée dans votre navigateur (localStorage) et peut être exportée en JSON.
+  Elle ne modifie pas les colonnes IA/humaine du document versionné.</p>
+  <div class="eval-form">
+    <label>Votre note (/5)
+      <select class="eval-note">
+        <option value="">—</option>
+        <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+      </select>
+    </label>
+    <label class="eval-obs-label">Votre observation
+      <textarea class="eval-obs" rows="3" placeholder="Décrivez factuellement ce que vous avez observé…"></textarea>
+    </label>
+    <div class="eval-actions">
+      <button class="btn btn-primary eval-save" type="button">Enregistrer</button>
+      <button class="btn btn-ghost eval-export" type="button">Exporter mes évaluations (JSON)</button>
+      <span class="eval-status muted"></span>
+    </div>
+  </div>
+</section>
+
+<p class="uc-nav">
+  <a class="btn-back" href="../index.html">← Portail</a>
+  <a class="btn-back" href="../profils/manager-comptable.html">← Profil Manager Comptable</a>
+  <a class="btn-back" href="../modules/payroll.html">← Module Paie (Payroll)</a>
+</p>
+
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <p>Portail de recette <strong>leopardo-hr</strong> — dépôt
+      <a href="https://github.com/Kitokoh/leopardo-hr" target="_blank" rel="noopener">Kitokoh/leopardo-hr</a>.
+      Colonnes « Note IA » / « Observation IA » remplies par le testeur IA ;
+      colonnes « Note humaine » / « Observation humaine » réservées à l'évaluation humaine.</p>
+  </div>
+</footer>
+<script src="../assets/portal.js"></script>
+</body>
+</html>

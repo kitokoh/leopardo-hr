@@ -1,4 +1,4 @@
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import DiscoveryExplorer from '../discovery-explorer';
 import type { PublicDiscoveryItem, PublicDiscoveryMeta } from '@/lib/public-discovery-api';
 
@@ -260,5 +260,53 @@ describe('DiscoveryExplorer', () => {
     // Libellés lisibles (i18n), pas `retail_shop` / `vtc_operator`.
     expect(screen.getByText('Boutique')).toBeInTheDocument();
     expect(screen.getByText('VTC / taxi')).toBeInTheDocument();
+  });
+
+  /**
+   * M4 (#9106) — hors ligne : la dernière recherche réussie est restituée.
+   *
+   * Critère d'acceptation : « cache de la dernière recherche ; écran hors ligne
+   * qui affiche le cache ». Avant ce correctif, une recherche réussie puis une
+   * coupure réseau affichaient « Impossible de charger les résultats » — alors
+   * que la réponse précédente était encore en mémoire.
+   */
+  it('restores the last search from cache when the network fails', async () => {
+    const { apiFetch } = jest.requireMock('@/lib/api-client') as { apiFetch: jest.Mock };
+    const { saveLastSearch } = jest.requireActual('@/lib/offline/public-discovery-cache');
+
+    // Une recherche a réussi plus tôt : elle est en cache.
+    saveLastSearch({ q: 'coiffeur', city: 'Dakar', type: '', page: 1 }, items, meta);
+
+    // Puis le réseau tombe.
+    apiFetch.mockRejectedValueOnce(new Error('offline'));
+
+    render(<DiscoveryExplorer {...baseProps} initialItems={[]} />);
+
+    const input = screen.getByRole('searchbox');
+    fireEvent.change(input, { target: { value: 'coiffeur' } });
+    fireEvent.submit(input.closest('form') as HTMLFormElement);
+
+    // Les résultats en cache reviennent, et l'écran DIT qu'ils viennent du cache.
+    expect(await screen.findByText('Chez Fatima')).toBeInTheDocument();
+    expect(screen.getByText(/réseau indisponible/i)).toBeInTheDocument();
+    // Jamais l'erreur sèche : le cache a pris le relais.
+    expect(screen.queryByText(/impossible de charger/i)).not.toBeInTheDocument();
+  });
+
+  it('shows the error state when the network fails and nothing is cached', async () => {
+    const { apiFetch } = jest.requireMock('@/lib/api-client') as { apiFetch: jest.Mock };
+    const { clearLastSearch } = jest.requireActual('@/lib/offline/public-discovery-cache');
+
+    clearLastSearch();
+    apiFetch.mockRejectedValueOnce(new Error('offline'));
+
+    render(<DiscoveryExplorer {...baseProps} initialItems={[]} />);
+
+    const input = screen.getByRole('searchbox');
+    fireEvent.change(input, { target: { value: 'coiffeur' } });
+    fireEvent.submit(input.closest('form') as HTMLFormElement);
+
+    // Sans cache, l'erreur reste honnête — jamais un faux succès vide.
+    expect(await screen.findByText(/impossible de charger/i)).toBeInTheDocument();
   });
 });
