@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature\Restaurant;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\RestaurantManager\Domain\Contracts\SolutionManifest;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantCategory;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantMenu;
@@ -244,7 +244,11 @@ class RestaurantRbacMatrixTest extends TestCase
      */
     public function test_permission_constants_match_manifest_declarations(): void
     {
-        $manifest = app(SolutionManifest::class);
+        // BOS-014 (#8201) : le contrat local déprécié n'est plus lié au
+        // conteneur. Le manifest est résolu par le catalogue central, et
+        // `permissions()` y est une map `code => libellé` (BOS-013) : ce sont
+        // les CLÉS qui doivent correspondre aux constantes documentaires.
+        $manifest = app(SolutionCatalogue::class)->resolve('restaurantmanager');
 
         $constants = [
             RestaurantPermissions::MANAGE,
@@ -256,33 +260,63 @@ class RestaurantRbacMatrixTest extends TestCase
         ];
         sort($constants);
 
-        $declared = $manifest->permissions();
+        $declared = array_keys($manifest->permissions());
         sort($declared);
 
         $this->assertSame($constants, $declared);
     }
 
     /**
-     * Le mapping permission → rôles requis (requiresManagerRoles) suit
-     * exactement la matrice docs/architecture/RBAC_RESTAURANT_MATRIX.md.
+     * Le mapping permission → rôles requis (`requiresManagerRoles`) est un
+     * PLANCHER de direction, pas la matrice complète.
+     *
+     * REST-OS-6 (#8642) / garde #7600 : `requiresManagerRoles()` ne peut
+     * lister que des valeurs **assignables** de `manager_role`
+     * (`principal`, `rh`, `dept`, `comptable`, `superviseur`, `marketing`).
+     * Les rôles opérationnels de la matrice (`manager`, `server`, `kitchen`,
+     * `rider`) ne sont PAS des `manager_role` : ils passent par l'assignation
+     * de ressource (`employee_resource_assignments`, épique #7597) et par les
+     * méthodes `can*()`. Les exiger ici réintroduirait des motifs morts,
+     * refusés par `check-manager-role-enum.sh`.
+     *
+     * Ce test verrouille donc le plancher réel, et vérifie séparément que
+     * la matrice documentée reste cohérente avec lui.
      */
     public function test_requires_manager_roles_matches_matrix(): void
     {
         $permissions = new RestaurantPermissions;
 
-        $this->assertSame(['principal', 'rh'], $permissions->requiresManagerRoles(RestaurantPermissions::MANAGE));
-        $this->assertSame(['principal', 'rh', 'manager'], $permissions->requiresManagerRoles(RestaurantPermissions::MANAGER));
-
+        // Plancher de direction : identique pour toutes les permissions
+        // opérationnelles — la différenciation est ressource-scopée.
         foreach ([
+            RestaurantPermissions::MANAGE,
+            RestaurantPermissions::MANAGER,
             RestaurantPermissions::SERVER,
             RestaurantPermissions::KITCHEN,
             RestaurantPermissions::RIDER,
             RestaurantPermissions::REPORTS,
         ] as $permission) {
             $this->assertSame(
-                ['principal', 'rh', 'manager', 'server', 'kitchen', 'rider'],
+                ['principal', 'rh'],
                 $permissions->requiresManagerRoles($permission),
+                "Le plancher de direction de « {$permission} » doit rester principal/rh.",
             );
+        }
+
+        // Aucun rôle opérationnel ne doit apparaître dans le plancher : ce
+        // sont des valeurs de `manager_role` inexistantes (garde #7600).
+        $assignable = ['principal', 'rh', 'dept', 'comptable', 'superviseur', 'marketing'];
+        foreach ([
+            RestaurantPermissions::MANAGE,
+            RestaurantPermissions::MANAGER,
+            RestaurantPermissions::SERVER,
+            RestaurantPermissions::KITCHEN,
+            RestaurantPermissions::RIDER,
+            RestaurantPermissions::REPORTS,
+        ] as $permission) {
+            foreach ($permissions->requiresManagerRoles($permission) as $role) {
+                $this->assertContains($role, $assignable);
+            }
         }
 
         // Fail-closed : permission inconnue → aucun rôle requis.

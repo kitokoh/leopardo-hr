@@ -95,11 +95,45 @@ final class ClosePosSessionAction
                 'counted_cash_minor' => $counted,
                 'variance_minor' => $variance,
                 'variance_reason' => $reason,
+                // RESTO-412 (#6199) — ventilation des encaissements confirmés
+                // par moyen de paiement. Le consommateur Accounting doit
+                // rapprocher la caisse par canal (espèces vs carte vs mobile
+                // money) : un total unique ne le permet pas, et un écart de
+                // caisse ne peut pas être imputé à un moyen plutôt qu'un autre.
+                // Les clés sont les `provider_code` réellement présents sur la
+                // session — aucune clé vide n'est inventée.
+                'payments_confirmed_minor' => $this->confirmedPaymentsByProvider($session),
                 'cogs_minor' => $this->cogs->calculateForSession($session),
             ],
         );
 
         return $session;
+    }
+
+    /**
+     * Encaissements confirmés de la session, ventilés par moyen de paiement.
+     *
+     * @return array<string, int> `provider_code` => somme (montant + pourboire)
+     */
+    private function confirmedPaymentsByProvider(RestaurantPosSession $session): array
+    {
+        $payments = RestaurantOrderPayment::query()
+            ->where('company_id', $session->company_id)
+            ->where('pos_session_id', $session->id)
+            ->where('status', PaymentStatus::CONFIRMED->value)
+            ->get(['provider_code', 'amount_minor', 'tip_minor']);
+
+        $byProvider = [];
+        foreach ($payments as $payment) {
+            $code = $payment->provider_code instanceof \BackedEnum
+                ? (string) $payment->provider_code->value
+                : (string) $payment->provider_code;
+            $byProvider[$code] = ($byProvider[$code] ?? 0)
+                + (int) $payment->amount_minor
+                + (int) ($payment->tip_minor ?? 0);
+        }
+
+        return $byProvider;
     }
 
     /**
