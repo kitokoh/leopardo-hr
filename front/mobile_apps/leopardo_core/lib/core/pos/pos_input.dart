@@ -21,7 +21,10 @@ class PosKeyStroke {
 
   bool get isEnter => character == '\n' || character == '\r';
 
-  bool get isDigit => character.length == 1 && character.codeUnitAt(0) >= 0x30 && character.codeUnitAt(0) <= 0x39;
+  bool get isDigit =>
+      character.length == 1 &&
+      character.codeUnitAt(0) >= 0x30 &&
+      character.codeUnitAt(0) <= 0x39;
 }
 
 /// Detecteur de scan materiel.
@@ -65,7 +68,8 @@ class PosHardwareScannerDetector {
   String? feed(PosKeyStroke stroke) {
     if (stroke.isEnter) {
       final code = _buffer.toString().trim();
-      final looksLikeScan = code.length >= minLength && code.length <= maxLength;
+      final looksLikeScan =
+          code.length >= minLength && code.length <= maxLength;
 
       reset();
 

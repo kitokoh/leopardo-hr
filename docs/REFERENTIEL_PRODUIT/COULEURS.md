@@ -131,3 +131,44 @@ Voir `docs/REFERENTIEL_PRODUIT/STATUTS.md` pour l'association statut ↔ couleur
   s'appliquent au mobile et aux thèmes sombres via `Theme.of(context).brightness`. Ne pas
   annoncer « dark partout » ni « dark optionnel » : la règle dépend de la surface
   (aligné le 2026-09-09 sur PA2-MOB-012).
+
+## Tokens de marque officiels (kit #9194)
+
+> Source de vérité **code** : `front/web/src/modules/vitrine/lib/brand-tokens.ts`.
+> Guide d'usage : `docs/brand/BRAND_GUIDELINES.md`.
+> Ces valeurs sont déclarées ici parce que le garde `check-web-design-tokens.sh`
+> (#7062) refuse tout hexadécimal absent de ce fichier.
+
+### Surfaces sombres — `BRAND_SURFACE`
+
+| Rôle | Hex | Token | Usage |
+|---|---|---|---|
+| Fond principal | `#0B1326` | `BRAND_SURFACE.base` | Fond de l'application en thème sombre, fond des SVG de marque |
+| Fond élevé | `#31394D` | `BRAND_SURFACE.bright` | Cartes, panneaux, surfaces au-dessus du fond |
+| Fond alternatif | `#2D3449` | `BRAND_SURFACE.variant` | Surface alternée (zébrage, sections) |
+| Teinte d'accent | `#4EDEA3` | `BRAND_SURFACE.tint` | Accent luminescent sur fond sombre |
+
+### Texte sur surface sombre — `BRAND_ON_SURFACE`
+
+| Rôle | Hex | Token | Usage |
+|---|---|---|---|
+| Texte principal | `#DAE2FD` | `BRAND_ON_SURFACE.base` | Corps de texte sur fond sombre |
+| Texte secondaire | `#BBCABF` | `BRAND_ON_SURFACE.variant` | Légendes, métadonnées |
+
+### Accent ambre — `BRAND_AMBER`
+
+| Step | Hex | Usage |
+|---|---|---|
+| 300 | `#FCD34D` | Accent clair, dégradé de l'emblème |
+| 400 | `#FBBF24` | Accent principal du slogan « BUSINESS OS » |
+| 500 | `#F59E0B` | Finance / avertissement (voir tableaux ci-dessus) |
+| 600 | `#D97706` | Accent profond, bordure de l'emblème |
+| 700 | `#B45309` | Texte ambre sur fond clair |
+
+### Règle d'usage
+
+1. **Importer le token**, jamais réécrire l'hexadécimal dans un composant.
+2. Un nouveau besoin de couleur → d'abord l'ajouter ici **et** dans
+   `brand-tokens.ts`, puis l'utiliser.
+3. Une couleur purement utilitaire et ponctuelle peut être tolérée dans
+   `dev-hub/tools/web-design-hex-allowlist.txt` — avec sa raison et son fichier.

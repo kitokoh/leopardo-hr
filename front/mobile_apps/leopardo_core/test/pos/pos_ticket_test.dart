@@ -97,7 +97,8 @@ void main() {
   });
 
   group('PosParkedTickets', () {
-    PosParkedTicket ticket(String id, DateTime at, {int total = 1000}) => PosParkedTicket(
+    PosParkedTicket ticket(String id, DateTime at, {int total = 1000}) =>
+        PosParkedTicket(
           id: id,
           label: 'Commande $id',
           payload: const {'lines': []},
@@ -115,7 +116,8 @@ void main() {
     });
 
     test('rappelle un ticket et le retire de la file', () {
-      final parked = const PosParkedTickets().park(ticket('a', DateTime(2026, 11, 9, 10)));
+      final parked =
+          const PosParkedTickets().park(ticket('a', DateTime(2026, 11, 9, 10)));
       final result = parked.recall('a');
 
       expect(result.ticket!.id, 'a');
@@ -123,7 +125,8 @@ void main() {
     });
 
     test('rappeler un ticket inconnu ne change rien', () {
-      final parked = const PosParkedTickets().park(ticket('a', DateTime(2026, 11, 9, 10)));
+      final parked =
+          const PosParkedTickets().park(ticket('a', DateTime(2026, 11, 9, 10)));
       final result = parked.recall('zzz');
 
       expect(result.ticket, isNull);
@@ -178,7 +181,8 @@ void main() {
     });
 
     test('le pourboire s ajoute au total et n est pas une remise', () {
-      const receipt = PosReceipt(lines: lines, discountMinor: 200, tipMinor: 500);
+      const receipt =
+          PosReceipt(lines: lines, discountMinor: 200, tipMinor: 500);
 
       expect(receipt.netMinor, 3500);
       expect(receipt.totalMinor, 4000);
@@ -289,15 +293,18 @@ void main() {
 
   group('posSyncStatusFor', () {
     test('un 2xx est synchronise', () {
-      expect(posSyncStatusFor(statusCode: 201, attempts: 1), PosSyncStatus.synced);
+      expect(
+          posSyncStatusFor(statusCode: 201, attempts: 1), PosSyncStatus.synced);
     });
 
     test('un 4xx est un conflit', () {
-      expect(posSyncStatusFor(statusCode: 409, attempts: 1), PosSyncStatus.conflict);
+      expect(posSyncStatusFor(statusCode: 409, attempts: 1),
+          PosSyncStatus.conflict);
     });
 
     test('un echec reseau est un nouvel essai', () {
-      expect(posSyncStatusFor(statusCode: null, attempts: 1), PosSyncStatus.retrying);
+      expect(posSyncStatusFor(statusCode: null, attempts: 1),
+          PosSyncStatus.retrying);
     });
   });
 }
