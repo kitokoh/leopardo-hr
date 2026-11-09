@@ -64653,19 +64653,75 @@ paths:
       description: >-
         BC-40 LIBRARY — surface TENANT (auth Sanctum + middleware tenant).
         Isolation garantie par le scope `BelongsToCompany` et la policy
-        `LibraryResourcePolicy`. Filtre optionnel `status`.
+        `LibraryResourcePolicy`. Le catalogue public (`company_id` NULL) n'est
+        jamais listé ici.
+
+        Filtres allowlistés : `status`, `access_model`, `document_type`,
+        `language` (ISO 639-1, 2 lettres) et `q` (recherche titre / slug /
+        éditeur / détenteur des droits). Une valeur hors registre est refusée
+        en 422 — jamais injectée en SQL.
+
+        Pagination : `per_page` (1–100, défaut 20) et `page` (défaut 1). La
+        réponse porte `data` (tableau) et `meta` (current_page, per_page,
+        total, last_page). Tri fixe `updated_at DESC, id DESC`.
       parameters:
       - name: status
         in: query
         required: false
         schema: {type: string, enum: [draft, pending, published, archived]}
+      - name: access_model
+        in: query
+        required: false
+        schema: {type: string, enum: [free, read_only, purchase, subscription, private]}
+      - name: document_type
+        in: query
+        required: false
+        schema: {type: string, enum: [book, ebook, guide, manual, report, article]}
+      - name: language
+        in: query
+        required: false
+        description: Code ISO 639-1 (2 lettres minuscules).
+        schema: {type: string, minLength: 2, maxLength: 2}
+      - name: q
+        in: query
+        required: false
+        description: Recherche insensible à la casse sur titre, slug, éditeur et détenteur des droits.
+        schema: {type: string, maxLength: 200}
+      - name: per_page
+        in: query
+        required: false
+        schema: {type: integer, minimum: 1, maximum: 100, default: 20}
+      - name: page
+        in: query
+        required: false
+        schema: {type: integer, minimum: 1, default: 1}
       responses:
         '200':
-          description: Ressources du tenant
+          description: Page de ressources du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  meta:
+                    type: object
+                    required: [current_page, per_page, total, last_page]
+                    properties:
+                      current_page: {type: integer}
+                      per_page: {type: integer}
+                      total: {type: integer}
+                      last_page: {type: integer}
         '401':
           description: Non authentifié
         '403':
           description: Non autorisé (policy)
+        '422':
+          description: Paramètre de filtre ou de pagination invalide
     post:
       operationId: api_post_library_resources
       tags:

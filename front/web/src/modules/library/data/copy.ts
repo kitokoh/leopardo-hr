@@ -13,6 +13,11 @@
 export const LIBRARY_LOCALES = ['fr', 'en', 'tr', 'ar'] as const;
 export type LibraryLocale = (typeof LIBRARY_LOCALES)[number];
 
+import type { LibraryAdminCopy } from './admin-copy';
+import { ADMIN_COPY } from './admin-copy';
+
+export type { LibraryAdminCopy };
+
 export interface LibraryCopy {
   meta: { title: string; description: string };
   nav: { label: string };
@@ -122,6 +127,8 @@ export interface LibraryCopy {
     backToLibrary: string;
     loading: string;
   };
+  /** Back-office `/library-admin` (BC-40 LIBRARY) — copie dédiée. */
+  admin: LibraryAdminCopy;
 }
 
 const fr: LibraryCopy = {
@@ -254,6 +261,7 @@ const fr: LibraryCopy = {
     backToLibrary: 'Retour à la bibliothèque',
     loading: 'Chargement…',
   },
+  admin: ADMIN_COPY.fr,
 };
 
 const en: LibraryCopy = {
@@ -385,6 +393,7 @@ const en: LibraryCopy = {
     backToLibrary: 'Back to the library',
     loading: 'Loading…',
   },
+  admin: ADMIN_COPY.en,
 };
 
 const tr: LibraryCopy = {
@@ -516,6 +525,7 @@ const tr: LibraryCopy = {
     backToLibrary: 'Kütüphaneye dön',
     loading: 'Yükleniyor…',
   },
+  admin: ADMIN_COPY.tr,
 };
 
 const ar: LibraryCopy = {
@@ -647,6 +657,7 @@ const ar: LibraryCopy = {
     backToLibrary: 'العودة إلى المكتبة',
     loading: 'جارٍ التحميل…',
   },
+  admin: ADMIN_COPY.ar,
 };
 
 const CATALOGS: Record<LibraryLocale, LibraryCopy> = { fr, en, tr, ar };
