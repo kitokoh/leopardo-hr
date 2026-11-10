@@ -8,6 +8,7 @@ use App\Console\Commands\GenerateMonthlyInvoices;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Mail\InvoiceIssuedMail;
+use App\Modules\Billing\Domain\Enums\InvoiceStatus;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Support\Facades\Artisan;
@@ -61,7 +62,16 @@ class GenerateMonthlyInvoicesTest extends TestCase
         $this->assertSame($subscription->id, $invoice->subscription_id);
         $this->assertSame(now()->format('Y-m'), $invoice->period);
         $this->assertSame('LEO-'.now()->format('Y').'-0001', $invoice->number);
-        $this->assertSame('pending', $invoice->status);
+        // `sent` et non `pending` : la machine à états DEP-BC21 (#6248) a
+        // remplacé `pending` par `sent` le 2026-08-30, et `InvoiceStatus`
+        // n'expose plus aucun cas `Pending`. La migration #6549 avait ajouté
+        // `pending` à la contrainte CHECK pour débloquer la commande ; elle
+        // reste en base (additive, jamais retirée) mais plus aucun code ne
+        // l'écrit. `transitionTo()` traiterait d'ailleurs `pending` comme
+        // `Draft` (`tryFrom()` → null → `?? Draft`), donc l'assertion
+        // verrouillait un statut que la machine à états ne sait pas
+        // représenter (#9098).
+        $this->assertSame(InvoiceStatus::Sent->value, $invoice->status);
 
         // Période suivante avancée.
         $this->assertNotNull($subscription->refresh()->current_period_end);
@@ -121,7 +131,9 @@ class GenerateMonthlyInvoicesTest extends TestCase
             'tax_amount' => 0,
             'total' => 99.00,
             'currency' => 'EUR',
-            'status' => 'pending',
+            // `sent` : statut réellement écrit par la commande depuis DEP-BC21
+            // (#6248) — `pending` n'existe plus dans `InvoiceStatus` (#9098).
+            'status' => InvoiceStatus::Sent->value,
             'due_date' => now()->addDays(30),
         ]);
 
@@ -164,7 +176,9 @@ class GenerateMonthlyInvoicesTest extends TestCase
             'tax_amount' => 0,
             'total' => 29.00,
             'currency' => 'EUR',
-            'status' => 'pending',
+            // `sent` : statut réellement écrit par la commande depuis DEP-BC21
+            // (#6248) — `pending` n'existe plus dans `InvoiceStatus` (#9098).
+            'status' => InvoiceStatus::Sent->value,
             'due_date' => now()->addDays(30),
         ]);
 
