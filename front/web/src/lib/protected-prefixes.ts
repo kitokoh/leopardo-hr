@@ -38,6 +38,10 @@ export const PROTECTED_PREFIXES = [
   // sections, thème, publication). Le site PUBLIC rendu vit sous
   // `/vitrine/{slug}` (hors de cette liste : il est public par nature).
   '/showcase',
+  // BC-40 LIBRARY (#9241) — administration de la bibliothèque du tenant
+  // (création, métadonnées, upload, workflow éditorial). Le CATALOGUE public
+  // rendu vit sous `/library` (hors de cette liste : il est public par nature).
+  '/library-admin',
   // FUND-090 : gestion des cagnottes (espace tenant connecté).
   '/fundraising',
   // BC-19 DEVICE (#7425) — mur de caméras (`/cameras`) et détail caméra

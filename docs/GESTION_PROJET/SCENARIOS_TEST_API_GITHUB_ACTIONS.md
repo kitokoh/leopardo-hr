@@ -2631,6 +2631,24 @@ Les scenarios existants restent valides tels quels : le perimetre des routes, le
 - Couverture : `api/tests/Feature/Retail/RetailPosRbacAndReportsTest.php` (RBAC des six Gates, isolation multi-boutiques, remboursement idempotent et borné, mouvements de caisse, les quatre rapports JSON + CSV). Migrations miroir dans `CreatesMvpSchema` (`retail_pos_refunds`, `retail_cash_movements`). Apps tablette `leopardo_pos_restaurant` / `leopardo_pos_retail` : file d'attente hors-ligne idempotente (`Hive`), `flutter analyze` et `flutter test` verts. Couverture des routes : **0 nouvelle non couverte** (`api/openapi.yaml` documente les 7 opérations).
 - **Hors périmètre de ce lot** : synchronisation temps réel multi-caisses, impression matérielle (le ticket reste un PDF), et téléversement d'un certificat de caisse pour les fiscalisations locales.
 
+## 2026-11-09 — BC-40 LIBRARY : progression de lecture, lecteur EPUB, recherche sémantique et administration (#9239–#9242)
+
+**Contrats concernés** — la bibliothèque du tenant exposait déjà création, édition, upload et workflow éditorial, mais **aucune interface** : un administrateur devait appeler l'API à la main, et la progression de lecture ne survivait pas au changement d'appareil.
+
+**Surfaces nouvelles** (auth Sanctum + middleware `tenant` + `ModuleRoutes::tenantModule`) : `GET /api/v1/library/progress` (liste des progressions de l'utilisateur courant), `GET|PUT|DELETE /api/v1/library/progress/{slug}` (lire, enregistrer, réinitialiser la position de lecture d'une ressource).
+
+**Décisions** — la progression est **scopée utilisateur + ressource** : un utilisateur ne voit jamais celle d'un autre, et l'isolation tenant est appliquée par le middleware (aucune requête ne peut franchir `company_id`). Le `PUT` est **idempotent** (un même appel réécrit la position courante, pas d'accumulation de lignes). Côté web, le repli hors ligne est **silencieux** : `localStorage` prend le relais quand l'API est injoignable, puis la synchronisation reprend au retour du réseau — aucune perte d'action, aucun doublon.
+
+**Recherche sémantique** — `LibrarySemanticScorer` + `LibrarySearchService` : le score est **borné au catalogue public** (`company_id` NULL, ressources publiées). Un brouillon de tenant n'entre jamais dans le corpus, donc aucune fuite de contenu non publié par le classement.
+
+**Lecteur EPUB** — `epubjs` est chargé en **import dynamique** : le bundle des routes publiques ne paie pas la dépendance. L'override `@xmldom/xmldom` → `^0.8.10` corrige la CVE transitive (injection XML via sérialisation CDATA, récursion non contrôlée).
+
+**Administration** — écran `(dashboard)/library-admin` : liste avec statut et présence de fichier, formulaire de création/édition, upload multipart (le `Content-Type` n'est jamais posé à la main, la frontière serait cassée) et les trois transitions brouillon → publié → archivé. Le RBAC est vérifié **côté serveur** (`LibraryResourcePolicy`, miroir exact dans la navigation) : masquer un bouton ne protège rien, un 403 est affiché tel quel.
+
+- Scénarios à vérifier : **progression** — un utilisateur enregistre sa position, la retrouve sur un second appareil, et ne voit jamais celle d'un collègue ; **isolation tenant** — un utilisateur du tenant A reçoit 404 sur une ressource du tenant B ; **idempotence** — deux `PUT` successifs sur le même slug laissent une seule ligne ; **hors ligne** — la position est conservée localement puis synchronisée au retour du réseau ; **recherche** — un brouillon n'apparaît jamais dans les résultats, même avec un terme exact de son titre ; **administration** — un rôle non autorisé reçoit 403 sur création/édition/publication, et l'upload d'un fichier non conforme est refusé sur le **contenu réel**, pas l'extension.
+- Couverture : `api/tests/Unit/Library/LibrarySemanticScorerTest.php` (14 tests, 24 assertions) ; Jest front `src/modules/library/**` + `src/lib/__tests__/library-admin-api.test.ts` (**119 tests**) ; `npx tsc --noEmit` : exit 0 ; `eslint --max-warnings 0` : exit 0 ; couverture des routes : **0 nouvelle non couverte** (`api/openapi.yaml` documente les 4 opérations de progression).
+- **Hors périmètre de ce lot** : paiement à l'unité (BC-38) et vente en gros (BC-17) — arbitrage produit requis (passerelle, TVA, facturation) ; interface d'administration des licences et des ayants droit.
+
 ## 2026-11-09 — BC-17 STOCK multi-tenant : transferts, coût moyen, idempotence et mobile optionnel (#9268–#9275)
 
 **Contrats concernés** — la gestion de stock était correctement architecturée (point d'écriture unique, transaction + `SELECT … FOR UPDATE`, stock jamais négatif, journal immuable) mais trois garanties métier manquaient côté Retail, et le mobile n'existait pas du tout.

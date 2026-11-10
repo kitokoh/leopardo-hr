@@ -23,6 +23,8 @@ const readerCopy = {
   close: 'Fermer',
   loading: 'Chargement du document…',
   error: 'Impossible de charger le document.',
+  prev: 'Chapitre précédent',
+  next: 'Chapitre suivant',
 };
 
 const copy = {
