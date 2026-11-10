@@ -151,11 +151,19 @@ describe('#7301 — la réponse n’attend pas un cold start', () => {
   });
 
   it('renvoie `pending` (et poursuit l’écriture) quand l’API dépasse le budget', async () => {
-    // Réponse plus lente que le budget de 60 ms : la réponse part sans attendre.
+    // #9313 — l'écriture met 400 ms, soit ~6,7× le budget de 60 ms. L'écart est
+    // large à dessein : ce test ne mesure PAS de vitesse, il vérifie que la
+    // réponse ne dépend PAS de l'écriture.
+    const PERSIST_DELAY_MS = 400;
+    let fetchSettled = false;
+
     fetchMock.mockImplementation(
       () =>
         new Promise((resolve) => {
-          setTimeout(() => resolve(jsonResponse(201)), 150);
+          setTimeout(() => {
+            fetchSettled = true;
+            resolve(jsonResponse(201));
+          }, PERSIST_DELAY_MS);
         })
     );
 
@@ -164,12 +172,28 @@ describe('#7301 — la réponse n’attend pas un cold start', () => {
       type: 'signup',
       email: 'lead@example.com',
     });
-    const elapsed = Date.now() - startedAt;
 
+    // #9313 — assertion CAUSALE, pas temporelle. L'ancienne version affirmait
+    // `elapsed < 120` ms pour un budget de 60 ms, soit une marge de 2× : sur un
+    // runner qui exécute 244 suites en parallèle, la boucle d'évènements retarde
+    // couramment le timer du budget de 100–200 ms et le test échouait au hasard
+    // (mesuré : 221 ms, alors que `persisted` valait bien `pending`).
+    //
+    // La propriété qui compte est indépendante de la charge : au moment où la
+    // réponse est rendue, le `fetch` de persistance n'a pas encore abouti. Si
+    // l'implémentation attendait l'écriture — la régression que ce test existe
+    // pour attraper — `fetchSettled` serait déjà `true`.
     expect(result.persisted).toBe('pending');
-    expect(elapsed).toBeLessThan(120);
+    expect(fetchSettled).toBe(false);
+
+    // Garde de sécurité : la réponse doit tout de même être rendue nettement
+    // avant la fin de l'écriture (marge 6×, contre 2× auparavant), pour qu'une
+    // implémentation qui attendrait l'écriture ne puisse pas passer.
+    expect(Date.now() - startedAt).toBeLessThan(PERSIST_DELAY_MS);
+
     // L'écriture se poursuit malgré la réponse déjà envoyée.
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, PERSIST_DELAY_MS + 200));
+    expect(fetchSettled).toBe(true);
     expect(persistCalls().length).toBeGreaterThan(0);
   });
 
