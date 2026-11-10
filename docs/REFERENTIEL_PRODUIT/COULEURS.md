@@ -172,3 +172,24 @@ Voir `docs/REFERENTIEL_PRODUIT/STATUTS.md` pour l'association statut ↔ couleur
    `brand-tokens.ts`, puis l'utiliser.
 3. Une couleur purement utilitaire et ponctuelle peut être tolérée dans
    `dev-hub/tools/web-design-hex-allowlist.txt` — avec sa raison et son fichier.
+
+## Portail grand public — surfaces sombres et erreur (Couloir 16, M1, documentée le 2026-11-10)
+
+Le portail grand public (`front/web/src/modules/public-portal/data/design-tokens.ts`)
+est la seule surface bi-thème du produit. Son mode sombre a besoin de deux
+surfaces plus profondes que `slate-900` et d'une couleur d'erreur lisible sur
+fond sombre, absentes de la palette ci-dessus.
+
+| Rôle | Hex | Token | Usage |
+|---|---|---|---|
+| Fond sombre profond | `#020617` | `PUBLIC_COLORS.surfaceDark` | Fond de page du portail en thème sombre (slate-950) |
+| Carte sombre | `#0B1220` | `PUBLIC_COLORS.cardDark` | Surface des cartes en thème sombre, légèrement au-dessus du fond |
+| Erreur sur fond sombre | `#DC2626` | `PUBLIC_COLORS.error` | Message d'erreur réseau, contraste AA sur fond clair |
+
+### Règle d'usage
+
+Ces trois valeurs vivent dans `design-tokens.ts` (référence normative partagée
+Web ↔ Flutter) et sont répercutées dans `app_colors.dart` côté mobile. Elles ne
+doivent jamais être réécrites en littéral dans un composant : la garde
+`check-web-design-tokens.sh` (Web) et `validate-mobile-color-tokens.ps1`
+(Flutter) le refusent.
