@@ -37,6 +37,7 @@ import {
 import { apiFetch } from '@/lib/api-client';
 import type { AppLocale } from '@/lib/i18n';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
+import { svgToDataUrl } from '@/lib/safe-svg';
 
 type TwoFaStatus = {
   enabled: boolean;
@@ -65,6 +66,10 @@ export function TwoFactorPanel({ locale }: { locale: AppLocale }) {
   // Désactivation
   const [disableCode, setDisableCode] = useState('');
   const [disabling, setDisabling] = useState(false);
+
+  // #9351 (audit sécurité 2026-11-10, F9) — le SVG du QR est converti en data
+  // URL et rendu dans un `<img>` : plus d'injection de balisage dans le DOM.
+  const qrCodeDataUrl = enrollData ? svgToDataUrl(enrollData.qr_code_svg) : null;
 
   const loadStatus = useCallback(async () => {
     setIsLoading(true);
@@ -286,11 +291,21 @@ export function TwoFactorPanel({ locale }: { locale: AppLocale }) {
             <h3 className="mb-3 text-sm font-bold text-slate-900 dark:text-white">
               {i18nT(locale, 'settingsPage.twoFa.scanTitle')}
             </h3>
-            {enrollData.qr_code_svg ? (
-              <div
-                className="mx-auto w-fit rounded-2xl bg-white p-3 shadow"
-                dangerouslySetInnerHTML={{ __html: enrollData.qr_code_svg }}
-              />
+            {qrCodeDataUrl ? (
+              // #9351 (audit sécurité 2026-11-10, F9) — plus de
+              // `dangerouslySetInnerHTML` : le SVG est rendu dans un `<img>`,
+              // donc dans un contexte isolé où aucun script ne s'exécute.
+              // Voir `src/lib/safe-svg.ts`.
+              <div className="mx-auto w-fit rounded-2xl bg-white p-3 shadow">
+                {/* eslint-disable-next-line @next/next/no-img-element -- data URL générée localement, pas d'optimisation Next possible */}
+                <img
+                  src={qrCodeDataUrl}
+                  alt={i18nT(locale, 'settingsPage.twoFa.scanTitle')}
+                  width={192}
+                  height={192}
+                  className="h-48 w-48"
+                />
+              </div>
             ) : (
               <p className="break-all font-mono text-sm text-slate-500">{enrollData.qr_code_url}</p>
             )}

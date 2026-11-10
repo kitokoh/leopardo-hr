@@ -253,6 +253,12 @@ final class EloquentNearestSearch implements NearestSearchInterface
      * Qualifie et quote un identifiant de colonne (segments validés par
      * allowlist regex — aucune injection d'identifiant possible).
      *
+     * #9350 (audit sécurité 2026-11-10, F8) — c'est le SEUL point de
+     * construction d'identifiant SQL du service. Toute nouvelle méthode qui
+     * interpolerait un nom de colonne sans passer par ici rouvrirait la
+     * faille : le test `EloquentNearestSearchIdentifierTest` verrouille
+     * l'invariant (un nom contenant `"` ou `;` lève).
+     *
      * @param  Builder<Model>  $query
      */
     private function wrapColumn(Builder $query, string $column): string
@@ -272,9 +278,24 @@ final class EloquentNearestSearch implements NearestSearchInterface
         return implode('.', array_map(static fn (string $part): string => '"'.$part.'"', $parts));
     }
 
-    /** Re-lit le nom de colonne non quoté pour whereBetween (Eloquent quote). */
+    /**
+     * Re-lit le nom de colonne non quoté pour `whereBetween` (Eloquent quote).
+     *
+     * #9350 — la valeur d'entrée est TOUJOURS le résultat de `wrapColumn()`,
+     * donc déjà validée par l'allowlist. On revalide malgré tout ici : la
+     * fonction est le second chemin par lequel un identifiant atteint le SQL,
+     * et un futur appelant pourrait l'invoquer directement.
+     */
     private function rawIdentifier(string $wrapped): string
     {
-        return str_replace('"', '', $wrapped);
+        $raw = str_replace('"', '', $wrapped);
+
+        foreach (explode('.', $raw) as $part) {
+            if (! preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $part)) {
+                throw new InvalidArgumentException("Identifiant de colonne géographique invalide : « {$wrapped} ».");
+            }
+        }
+
+        return $raw;
     }
 }

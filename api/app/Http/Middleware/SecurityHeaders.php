@@ -37,6 +37,36 @@ class SecurityHeaders
 
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
+        // #9352 (audit sécurité 2026-11-10, F10) — deux en-têtes cross-origin
+        // manquaient :
+        //  - `Cross-Origin-Resource-Policy: same-site` : empêche un site tiers
+        //    d'embarquer une réponse de l'API (fuite de contenu par inclusion) ;
+        //  - `Cross-Origin-Opener-Policy: same-origin` : isole le contexte de
+        //    navigation, donc coupe l'accès à `window.opener` depuis une
+        //    fenêtre tierce (Spectre / tabnabbing).
+        $response->headers->set('Cross-Origin-Resource-Policy', 'same-site');
+
+        if (! $response->headers->has('Cross-Origin-Opener-Policy')) {
+            $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
+        }
+
+        // #9352 — CSP minimale sur les réponses NON-HTML de l'API. Elle
+        // n'interdit rien d'utile (une réponse JSON n'a aucune ressource à
+        // charger) mais ferme deux usages détournés : exécution de script si
+        // un client force un rendu HTML, et cadrage (`frame-ancestors`). On ne
+        // l'applique PAS aux réponses HTML/Blade, dont la CSP est gérée par la
+        // couche applicative. Et comme pour `Referrer-Policy`, un endpoint qui
+        // a déjà posé sa propre CSP (portail document, vitrine) est respecté.
+        $contentType = (string) $response->headers->get('Content-Type', '');
+
+        if (! str_contains($contentType, 'text/html')
+            && ! $response->headers->has('Content-Security-Policy')
+        ) {
+            $response->headers->set(
+                'Content-Security-Policy',
+                "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+            );
+        }
         // Référence #5521 : un endpoint peut poser sa propre politique plus
         // stricte (ex. portail document partagé → no-referrer, l'URL porte un
         // token) — le défaut du middleware ne doit pas l'écraser.
