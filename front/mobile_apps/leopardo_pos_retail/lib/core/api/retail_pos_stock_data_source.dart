@@ -125,8 +125,7 @@ class RetailPosStockDataSource implements StockDataSource {
       );
     }
 
-    final key =
-        idempotencyKey ??
+    final key = idempotencyKey ??
         movementKey(
           locationId: locationId,
           productId: productId,
@@ -226,14 +225,14 @@ class RetailPosStockDataSource implements StockDataSource {
 
     if (data is List) {
       return data
-          .whereType<Map>()
+          .whereType<Map<dynamic, dynamic>>()
           .map((e) => e.cast<String, dynamic>())
           .toList();
     }
 
     if (data is Map && data['data'] is List) {
       return (data['data'] as List)
-          .whereType<Map>()
+          .whereType<Map<dynamic, dynamic>>()
           .map((e) => e.cast<String, dynamic>())
           .toList();
     }

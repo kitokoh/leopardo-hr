@@ -345,9 +345,8 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
       return;
     }
 
-    final ok = ref
-        .read(retailPosControllerProvider.notifier)
-        .parkCurrentTicket(label);
+    final ok =
+        ref.read(retailPosControllerProvider.notifier).parkCurrentTicket(label);
 
     if (!mounted) {
       return;
@@ -423,8 +422,7 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
   /// Ouvre les reglages de la tablette (#9263), proteges par PIN.
   Future<void> _openSettings() async {
     final store = ref.read(retailLocalStoreProvider);
-    final current =
-        ref.read(retailConfigProvider) ??
+    final current = ref.read(retailConfigProvider) ??
         const PosAppConfig(apiBaseUrl: 'https://api.leopardo.app/api/v1');
 
     await Navigator.of(context).push<bool>(
@@ -546,9 +544,8 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(outcome.message),
-        backgroundColor: outcome.success
-            ? null
-            : Theme.of(context).colorScheme.error,
+        backgroundColor:
+            outcome.success ? null : Theme.of(context).colorScheme.error,
       ),
     );
   }
@@ -557,18 +554,16 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
   Future<void> _voidLine(RetailCartLine line) async {
     final result =
         await showModalBottomSheet<({PosVoidReason reason, String comment})>(
-          context: context,
-          isScrollControlled: true,
-          builder: (_) => PosVoidReasonSheet(itemName: line.product.name),
-        );
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => PosVoidReasonSheet(itemName: line.product.name),
+    );
 
     if (result == null || !mounted) {
       return;
     }
 
-    ref
-        .read(retailPosControllerProvider.notifier)
-        .voidLine(
+    ref.read(retailPosControllerProvider.notifier).voidLine(
           productId: line.product.id,
           reason: result.reason,
           comment: result.comment.isEmpty ? null : result.comment,
@@ -608,8 +603,8 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
         content: Text(
           ok
               ? (state.offline
-                    ? 'Encaissement enregistre hors ligne — sera synchronise.'
-                    : 'Encaissement valide.')
+                  ? 'Encaissement enregistre hors ligne — sera synchronise.'
+                  : 'Encaissement valide.')
               : (state.error ?? 'Encaissement refuse.'),
         ),
       ),
@@ -692,12 +687,11 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
       return;
     }
 
-    final closed = await ref
-        .read(retailPosControllerProvider.notifier)
-        .closeSession(
-          countedCashMinor: result.countedCashMinor,
-          varianceReason: result.varianceReason,
-        );
+    final closed =
+        await ref.read(retailPosControllerProvider.notifier).closeSession(
+              countedCashMinor: result.countedCashMinor,
+              varianceReason: result.varianceReason,
+            );
 
     if (!mounted) {
       return;
@@ -966,8 +960,8 @@ class _ProductGrid extends StatelessWidget {
                   message: searching
                       ? 'Aucun article ne correspond a « ${searchController.text} ».'
                       : favouritesOnly
-                      ? 'Appuyez longuement sur un article pour l\'epingler ici.'
-                      : 'Ce rayon ne contient aucun article disponible.',
+                          ? 'Appuyez longuement sur un article pour l\'epingler ici.'
+                          : 'Ce rayon ne contient aucun article disponible.',
                   action: searching
                       ? OutlinedButton.icon(
                           onPressed: onClearSearch,
@@ -975,12 +969,12 @@ class _ProductGrid extends StatelessWidget {
                           label: const Text('Effacer la recherche'),
                         )
                       : (favouritesOnly
-                            ? OutlinedButton.icon(
-                                onPressed: onToggleFavouritesOnly,
-                                icon: const Icon(Icons.grid_view),
-                                label: const Text('Voir tous les articles'),
-                              )
-                            : null),
+                          ? OutlinedButton.icon(
+                              onPressed: onToggleFavouritesOnly,
+                              icon: const Icon(Icons.grid_view),
+                              label: const Text('Voir tous les articles'),
+                            )
+                          : null),
                 )
               : GridView.builder(
                   padding: const EdgeInsets.all(12),
@@ -1028,8 +1022,7 @@ class _ProductTile extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label:
-          '${product.name}, ${formatMinor(product.priceMinor)}'
+      label: '${product.name}, ${formatMinor(product.priceMinor)}'
           '${isFavourite ? ', favori' : ''}',
       child: Card(
         child: InkWell(
@@ -1145,7 +1138,8 @@ class _CartPanel extends StatelessWidget {
               ? const PosEmptyState(
                   icon: Icons.shopping_cart_outlined,
                   title: 'Panier vide',
-                  message: 'Scannez un code-barres ou touchez un article pour commencer.',
+                  message:
+                      'Scannez un code-barres ou touchez un article pour commencer.',
                 )
               : ListView.separated(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -1210,9 +1204,8 @@ class _CartPanel extends StatelessWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: cart.isEmpty
-                          ? null
-                          : () => _openDiscount(context),
+                      onPressed:
+                          cart.isEmpty ? null : () => _openDiscount(context),
                       icon: const Icon(Icons.percent),
                       label: Text(
                         cart.discountMinor > 0
@@ -1417,9 +1410,8 @@ class _QuantitySheetState extends State<_QuantitySheet> {
                 setState(() => _input = applyNumericKey(_input, digit)),
             onBackspace: () => setState(() => _input = applyBackspace(_input)),
             onClear: () => setState(() => _input = ''),
-            onValidate: quantity > 0
-                ? () => Navigator.of(context).pop(quantity)
-                : null,
+            onValidate:
+                quantity > 0 ? () => Navigator.of(context).pop(quantity) : null,
             validateLabel: 'Valider la quantite',
             validateEnabled: quantity > 0,
           ),
@@ -1444,9 +1436,8 @@ class _DiscountSheet extends StatefulWidget {
 }
 
 class _DiscountSheetState extends State<_DiscountSheet> {
-  late String _input = widget.currentDiscountMinor > 0
-      ? '${widget.currentDiscountMinor}'
-      : '';
+  late String _input =
+      widget.currentDiscountMinor > 0 ? '${widget.currentDiscountMinor}' : '';
 
   @override
   Widget build(BuildContext context) {
@@ -1482,9 +1473,8 @@ class _DiscountSheetState extends State<_DiscountSheet> {
                 setState(() => _input = applyNumericKey(_input, digit)),
             onBackspace: () => setState(() => _input = applyBackspace(_input)),
             onClear: () => setState(() => _input = ''),
-            onValidate: exceeds
-                ? null
-                : () => Navigator.of(context).pop(discount),
+            onValidate:
+                exceeds ? null : () => Navigator.of(context).pop(discount),
             validateLabel: 'Appliquer la remise',
             validateEnabled: !exceeds,
           ),
