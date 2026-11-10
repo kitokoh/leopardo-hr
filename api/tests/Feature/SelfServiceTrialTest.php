@@ -13,6 +13,7 @@ use App\Modules\Billing\Application\Actions\RequestTrialSignup;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Queue;
 use RuntimeException;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -501,12 +502,17 @@ class SelfServiceTrialTest extends TestCase
         );
     }
 
-    // Issue #3057 / #4949 / #5162 — l'échec d'envoi de l'OTP ne doit jamais
-    // répondre « Code envoyé » : le lead est conservé (ligne pending) mais
-    // l'état est honnête → 503 TRIAL_OTP_SEND_FAILED, jamais un 200.
-    // (Contract aligné sur le changement #4874 : chemin legacy → 503 localisé.)
+    // Issue #3057 / #4949 / #5162 / #9305 — l'échec d'envoi de l'OTP ne doit
+    // jamais répondre « Code envoyé » : le lead est conservé (ligne pending) et
+    // l'état reste honnête. Depuis #9305, l'honnêteté ne se traduit PLUS par un
+    // 503 : le serveur bascule sur le parcours guidé, qui provisionne un espace
+    // SANS dépendre du mailer et renvoie `workflow: guided_trial` +
+    // `otp_sent: false` — le client n'affiche donc pas d'écran OTP pour un code
+    // jamais parti, et le prospect n'est plus perdu à cause d'un e-mail.
     public function test_signup_reports_honest_state_when_otp_email_fails(): void
     {
+        Queue::fake();
+
         Mail::shouldReceive('to')
             ->once()
             ->andThrow(new \RuntimeException('smtp unavailable'));
@@ -519,12 +525,21 @@ class SelfServiceTrialTest extends TestCase
             'country' => 'DZ',
         ]);
 
-        $response->assertStatus(503)
-            ->assertJsonPath('success', false)
-            ->assertJsonPath('error', 'TRIAL_OTP_SEND_FAILED');
+        // Jamais un 503 : le repli guidé provisionne malgré le mailer KO.
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.workflow', 'guided_trial')
+            ->assertJsonPath('data.otp_sent', false)
+            ->assertJsonPath('data.status', 'provisioning_sandbox');
 
         // La demande est bien conservée malgré l'échec du mail.
         $this->assertDatabaseHas('company_requests', [
+            'email' => 'founder.otp.fail@newtech.dz',
+            'status' => 'pending',
+        ]);
+
+        // L'espace est réellement en cours de provisioning (ligne de suivi).
+        $this->assertDatabaseHas('trial_provisionings', [
             'email' => 'founder.otp.fail@newtech.dz',
             'status' => 'pending',
         ]);
@@ -555,28 +570,41 @@ class SelfServiceTrialTest extends TestCase
             ->assertJsonPath('success', false);
     }
 
-    public function test_self_service_otp_send_failure_returns_503_trial_otp_send_failed(): void
+    public function test_self_service_otp_send_failure_falls_back_to_guided_trial(): void
     {
-        // Issue #5162 / #4949 : le parcours self_service (OTP) échouait en
-        // prod avec 503 TRIAL_OTP_SEND_FAILED (envoi impossible). Le contrat
-        // honnête : si l'email OTP ne part pas (mailer KO), la réponse est
-        // 503 TRIAL_OTP_SEND_FAILED — JAMAIS un 200 « code envoyé ».
+        // Issue #5162 / #4949 / #9305 : le parcours self_service (OTP) échouait
+        // en prod avec 503 TRIAL_OTP_SEND_FAILED (envoi impossible) — le
+        // prospect perdait son essai. Le contrat honnête reste « jamais un 200
+        // code envoyé pour un code jamais parti », mais il ne se traduit plus
+        // par un 503 : le serveur bascule sur le parcours guidé et provisionne
+        // l'espace, en marquant `otp_sent: false` pour que le client n'affiche
+        // pas d'écran OTP.
         // L'action réelle renvoie false quand le transport échoue (même
         // pattern que le test #3057 frère : Mail::shouldReceive(...)->andThrow).
+        Queue::fake();
+
         Mail::shouldReceive('to')
             ->once()
             ->andThrow(new \RuntimeException('mailgun api down'));
 
         $response = $this->postJson('/api/v1/trial/signup', [
-            'email' => 'otp.503@newtech.dz',
-            'company' => 'OTP 503',
+            'email' => 'otp.fallback@newtech.dz',
+            'company' => 'OTP Fallback',
             'country' => 'DZ',
             'requestedWorkflow' => 'self_service',
         ]);
 
-        $response->assertStatus(503)
-            ->assertJsonPath('error', 'TRIAL_OTP_SEND_FAILED')
-            ->assertJsonPath('success', false);
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.workflow', 'guided_trial')
+            ->assertJsonPath('data.otp_sent', false)
+            ->assertJsonPath('data.status', 'provisioning_sandbox')
+            ->assertJsonStructure(['data' => ['provisioning_token']]);
+
+        $this->assertDatabaseHas('trial_provisionings', [
+            'email' => 'otp.fallback@newtech.dz',
+            'status' => 'pending',
+        ]);
     }
 
     public function test_five_bad_otps_lock_the_email(): void
