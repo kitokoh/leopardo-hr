@@ -267,6 +267,93 @@ describe('EmployeesPage (#7862) — page unique de gestion d’équipe', () => {
     expect(await screen.findByRole('status')).toHaveTextContent('Invitation révoquée.');
   });
 
+  // #9322 — mailer KO : l'invitation existe en base mais n'est pas partie.
+  // Le manager doit pouvoir transmettre le lien lui-même, sinon le
+  // collaborateur reste enfermé dehors et la mission échoue.
+  it('affiche le lien d activation quand le courriel d invitation n a pas pu partir', async () => {
+    const activationUrl = 'https://app.leopardo.dz/activate/jeton-de-test';
+
+    mockedApiFetch.mockImplementation(async (url: string, options?: RequestInit) => {
+      const method = (options?.method ?? 'GET').toUpperCase();
+
+      if (url.startsWith('/employees?') && method === 'GET') {
+        return { ok: true, json: async () => employeesPayload } as Response;
+      }
+
+      if (url === '/invitations' && method === 'GET') {
+        return { ok: true, json: async () => invitationsPayload } as Response;
+      }
+
+      if (url === '/employees' && method === 'POST') {
+        return {
+          ok: true,
+          json: async () => ({
+            data: {
+              id: 13,
+              invitation_mail_sent: false,
+              invitation_activation_url: activationUrl,
+              invitation_expires_at: '2026-11-17T09:00:00+00:00',
+            },
+          }),
+        } as Response;
+      }
+
+      return { ok: true, json: async () => ({ data: [] }) } as Response;
+    });
+
+    render(<EmployeesPage />);
+    await screen.findByText('Amina Cherif');
+
+    await userEvent.click(screen.getByRole('button', { name: /Ajouter un collaborateur/i }));
+    await userEvent.type(screen.getByLabelText(/Prénom/i), 'Yacine');
+    await userEvent.type(screen.getByLabelText(/^Nom/i), 'Meziane');
+    await userEvent.type(screen.getByLabelText(/Email/i), 'yacine@acme.dz');
+    await userEvent.click(screen.getByRole('button', { name: /Enregistrer/i }));
+
+    const banner = await screen.findByTestId('invitation-activation-link');
+    expect(banner).toHaveTextContent("Le courriel d'invitation n'a pas pu partir");
+    expect(screen.getByTestId('invitation-activation-url')).toHaveTextContent(activationUrl);
+
+    // Jamais de faux « invitation envoyée » quand rien n'est parti.
+    expect(screen.queryByText('Invitation envoyée au collaborateur.')).toBeNull();
+  });
+
+  it('n affiche pas de lien quand le courriel est parti', async () => {
+    mockedApiFetch.mockImplementation(async (url: string, options?: RequestInit) => {
+      const method = (options?.method ?? 'GET').toUpperCase();
+
+      if (url.startsWith('/employees?') && method === 'GET') {
+        return { ok: true, json: async () => employeesPayload } as Response;
+      }
+
+      if (url === '/invitations' && method === 'GET') {
+        return { ok: true, json: async () => invitationsPayload } as Response;
+      }
+
+      if (url === '/employees' && method === 'POST') {
+        return {
+          ok: true,
+          json: async () => ({ data: { id: 13, invitation_mail_sent: true } }),
+        } as Response;
+      }
+
+      return { ok: true, json: async () => ({ data: [] }) } as Response;
+    });
+
+    render(<EmployeesPage />);
+    await screen.findByText('Amina Cherif');
+
+    await userEvent.click(screen.getByRole('button', { name: /Ajouter un collaborateur/i }));
+    await userEvent.type(screen.getByLabelText(/Prénom/i), 'Sara');
+    await userEvent.type(screen.getByLabelText(/^Nom/i), 'Belkacem');
+    await userEvent.type(screen.getByLabelText(/Email/i), 'sara@acme.dz');
+    await userEvent.click(screen.getByRole('button', { name: /Enregistrer/i }));
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Invitation envoyée au collaborateur.');
+    // Garde-fou #9114/#9117 : aucun jeton en clair exposé sur un envoi réussi.
+    expect(screen.queryByTestId('invitation-activation-link')).toBeNull();
+  });
+
   it('charge la composition des modules délégués (GET) et envoie le jeu COMPLET en PUT', async () => {
     render(<EmployeesPage />);
     await screen.findByText('Amina Cherif');

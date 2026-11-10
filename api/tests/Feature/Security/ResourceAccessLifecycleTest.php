@@ -101,7 +101,7 @@ class ResourceAccessLifecycleTest extends TestCase
                 ['resource_type' => 'camera', 'resource_id' => $cameraA, 'access_level' => 'manage'],
                 ['resource_type' => 'camera', 'resource_id' => $cameraB, 'access_level' => 'view'],
             ],
-        );
+        )->token;
 
         // Avant activation : AUCUNE assignation (l'invité n'a pas de session).
         $this->assertSame(0, $invitee->resourceAssignments()->count());

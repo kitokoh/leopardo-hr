@@ -3475,7 +3475,13 @@
     "moduleCrm": "CRM",
     "moduleShowcase": "Tanıtım sitesi",
     "moduleHr": "İK (ekip, mesai, bordro)",
-    "moduleBillingView": "Faturalama (salt okunur)"
+    "moduleBillingView": "Faturalama (salt okunur)",
+    "activationLinkTitle": "Davet e-postası gönderilemedi",
+    "activationLinkBody": "Bu bağlantıyı çalışma arkadaşınıza iletin: şifresini belirleyip hesabını etkinleştirmesini sağlar. {date} tarihinde sona erer.",
+    "activationLinkCopy": "Bağlantıyı kopyala",
+    "activationLinkCopied": "Bağlantı kopyalandı.",
+    "activationLinkCopyFailed": "Kopyalanamadı: bağlantıyı seçip elle kopyalayın.",
+    "mailNotDelivered": "E-posta ile gönderilmedi"
   },
   "attendanceBreakFailure": "Mola onaylanmadı",
   "attendanceBreakHint": "Oturumu kapatır ve molayı başlatır",

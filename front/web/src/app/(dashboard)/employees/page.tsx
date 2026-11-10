@@ -68,6 +68,18 @@ type InvitationRecord = {
 
 type InvitationsPayload = { data?: InvitationRecord[] };
 
+/**
+ * #9322 — issu d'une réponse qui a émis une invitation. Quand le transport
+ * mail est KO (#9318), l'API renvoie le lien d'activation pour que le manager
+ * puisse le transmettre lui-même — sans quoi le collaborateur existe mais reste
+ * enfermé dehors.
+ */
+type ActivationLinkNotice = {
+  url: string;
+  email: string;
+  expiresAt?: string | null;
+};
+
 type DepartmentRecord = { id: number; name: string };
 
 type DepartmentsPayload = { data?: DepartmentRecord[] };
@@ -125,6 +137,10 @@ export default function EmployeesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+
+  // #9322 — lien d'activation à relayer manuellement (mailer KO).
+  const [activationLink, setActivationLink] = useState<ActivationLinkNotice | null>(null);
+  const [copiedActivationLink, setCopiedActivationLink] = useState(false);
 
   // ── Recherche / pagination ────────────────────────────────────────────
   const [searchDraft, setSearchDraft] = useState('');
@@ -369,10 +385,18 @@ export default function EmployeesPage() {
     setNotice(null);
 
     try {
-      await apiFetch('/employees', {
+      const response = await apiFetch('/employees', {
         method: 'POST',
         body: JSON.stringify(payload),
       });
+
+      // #9322 : le backend signale l'issue réelle de l'envoi. Un `false` (ou la
+      // présence du lien) signifie que l'e-mail n'est pas parti : on affiche le
+      // lien au lieu d'annoncer une invitation « envoyée ».
+      const created = (await response.json().catch(() => null)) as
+        | { data?: { invitation_activation_url?: string | null; invitation_expires_at?: string | null } }
+        | null;
+      const fallbackUrl = created?.data?.invitation_activation_url ?? null;
 
       setFirstName('');
       setLastName('');
@@ -380,7 +404,20 @@ export default function EmployeesPage() {
       setDepartment('');
       setRoleOption('employee');
       setShowAddForm(false);
-      setNotice(teamRolesT(locale, 'addSuccess'));
+      setCopiedActivationLink(false);
+
+      if (fallbackUrl) {
+        setActivationLink({
+          url: fallbackUrl,
+          email: payload.email,
+          expiresAt: created?.data?.invitation_expires_at ?? null,
+        });
+        setNotice(null);
+      } else {
+        setActivationLink(null);
+        setNotice(teamRolesT(locale, 'addSuccess'));
+      }
+
       await reload(page, search);
       await confirmOnboardingStep('first_employee');
     } catch (err) {
@@ -413,16 +450,59 @@ export default function EmployeesPage() {
   const handleResend = async (invitation: InvitationRecord) => {
     setError(null);
     setNotice(null);
+    setCopiedActivationLink(false);
     setBusyInvitationId(invitation.id);
 
     try {
-      await apiFetch(`/invitations/${invitation.id}/resend`, { method: 'POST' });
+      const response = await apiFetch(`/invitations/${invitation.id}/resend`, { method: 'POST' });
+
+      // #9322 — même règle qu'à la création : le backend ne renvoie
+      // `activation_url` que lorsque le courriel n'est pas parti.
+      const resent = (await response.json().catch(() => null)) as
+        | { data?: { activation_url?: string | null; expires_at?: string | null; email?: string | null } }
+        | null;
+      const fallbackUrl = resent?.data?.activation_url ?? null;
+
+      if (fallbackUrl) {
+        setActivationLink({
+          url: fallbackUrl,
+          email: resent?.data?.email ?? invitation.email ?? '',
+          expiresAt: resent?.data?.expires_at ?? invitation.expires_at ?? null,
+        });
+        // Le renvoi a fait tourner le jeton : on recharge la liste pour ne pas
+        // afficher des dates d'envoi périmées.
+        await loadInvitations();
+        return;
+      }
+
+      setActivationLink(null);
       setNotice(teamRolesT(locale, 'resendSuccess'));
       await loadInvitations();
     } catch (err) {
       setError(teamRolesErrorMessage(locale, err));
     } finally {
       setBusyInvitationId(null);
+    }
+  };
+
+  /**
+   * #9322 — copie du lien d'activation. `navigator.clipboard` peut être absent
+   * (contexte non sécurisé, iframe sans permission) : on le dit au lieu de
+   * laisser le manager croire que c'est copié.
+   */
+  const handleCopyActivationLink = async () => {
+    if (!activationLink) return;
+
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        await navigator.clipboard.writeText(activationLink.url);
+      } else {
+        throw new Error('clipboard-unavailable');
+      }
+      setCopiedActivationLink(true);
+      setNotice(teamRolesT(locale, 'activationLinkCopied'));
+    } catch {
+      setError(teamRolesT(locale, 'activationLinkCopyFailed'));
     }
   };
 
@@ -485,6 +565,48 @@ export default function EmployeesPage() {
           className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800"
         >
           {notice}
+        </div>
+      ) : null}
+
+      {activationLink ? (
+        <div
+          data-testid="invitation-activation-link"
+          role="status"
+          className="space-y-2 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+        >
+          <p className="font-bold">{teamRolesT(locale, 'activationLinkTitle')}</p>
+          <p className="text-xs">
+            {interpolate(teamRolesT(locale, 'activationLinkBody'), {
+              date: activationLink.expiresAt
+                ? new Date(activationLink.expiresAt).toLocaleDateString(toIntlLocale(locale))
+                : '—',
+            })}
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <code
+              data-testid="invitation-activation-url"
+              className="min-w-0 flex-1 truncate rounded-xl border border-amber-200 bg-white px-3 py-2 font-mono text-xs text-slate-800"
+            >
+              {activationLink.url}
+            </code>
+            <button
+              type="button"
+              onClick={() => void handleCopyActivationLink()}
+              data-testid="invitation-activation-copy"
+              className="rounded-xl bg-amber-600 px-3 py-2 text-xs font-bold text-white transition hover:bg-amber-700"
+            >
+              {copiedActivationLink
+                ? teamRolesT(locale, 'activationLinkCopied')
+                : teamRolesT(locale, 'activationLinkCopy')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setActivationLink(null)}
+              className="rounded-xl border border-amber-300 px-3 py-2 text-xs font-bold text-amber-800 transition hover:bg-amber-100"
+            >
+              {teamRolesT(locale, 'cancel')}
+            </button>
+          </div>
         </div>
       ) : null}
 

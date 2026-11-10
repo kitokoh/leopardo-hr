@@ -320,9 +320,34 @@ class EmployeeController extends Controller
         $employee = $this->employeeService->create(CreateEmployeeDTO::fromRequest($request), $actor);
         $employee->loadMissing('schedule:id,name,start_time,end_time,break_minutes,late_tolerance_minutes');
 
-        return (new EmployeeResource($employee))
-            ->response()
-            ->setStatusCode(201);
+        $response = (new EmployeeResource($employee))->response()->setStatusCode(201);
+
+        // #9322 — quand `send_invitation` est demandé et que le transport mail
+        // n'a pas pu délivrer le courriel (#9318), le manager doit pouvoir
+        // transmettre le lien lui-même : sinon le collaborateur existe mais
+        // n'a aucun moyen d'activer son compte, et le manager ne peut pas
+        // démarrer avec son équipe. Le lien n'est JAMAIS ajouté à un envoi
+        // réussi (#9114 / #9117 : le jeton en clair n'est pas un canal de
+        // reprise de compte).
+        $dispatch = $this->employeeService->lastInvitationDispatch();
+
+        if ($dispatch !== null && $dispatch->token !== '') {
+            /** @var array<string, mixed> $body */
+            $body = (array) json_decode((string) $response->getContent(), true);
+            /** @var array<string, mixed> $data */
+            $data = is_array($body['data'] ?? null) ? $body['data'] : [];
+            $data['invitation_mail_sent'] = $dispatch->mailSent;
+
+            if ($dispatch->hasFallbackLink()) {
+                $data['invitation_activation_url'] = $dispatch->activationUrl;
+                $data['invitation_expires_at'] = $dispatch->invitation?->expires_at?->toIso8601String();
+            }
+
+            $body['data'] = $data;
+            $response->setContent((string) json_encode($body));
+        }
+
+        return $response;
     }
 
     /**

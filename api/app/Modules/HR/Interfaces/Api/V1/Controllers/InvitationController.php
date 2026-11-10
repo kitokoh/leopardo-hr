@@ -60,7 +60,7 @@ class InvitationController extends Controller
         /** @var Employee $employee */
         $employee = Employee::query()->findOrFail($invitation->employee_id);
 
-        $this->userInvitationService->createAndSend(
+        $dispatch = $this->userInvitationService->createAndSend(
             company: $employee->company,
             employee: $employee,
             invitedByType: 'manager',
@@ -71,13 +71,26 @@ class InvitationController extends Controller
         // may have updated the row, changing updated_at and last_sent_at).
         $invitation->refresh();
 
-        return new JsonResponse([
-            'data' => [
-                'id' => $invitation->id,
-                'email' => $employee->email,
-                'resent_at' => now()->toIso8601String(),
-            ],
-        ]);
+        $payload = [
+            'id' => $invitation->id,
+            'email' => $employee->email,
+            'resent_at' => now()->toIso8601String(),
+            // #9322 : dire la vérité sur l'envoi. Un resend dont le courriel
+            // échoue ne doit plus s'afficher comme un succès complet.
+            'mail_sent' => $dispatch->mailSent,
+        ];
+
+        // #9322 — le transport mail peut être KO (#9318) : l'invitation reste
+        // valide en base mais doit alors être TRANSMISSIBLE. On expose le lien
+        // uniquement dans ce cas (`hasFallbackLink()`), jamais sur un envoi
+        // réussi : le jeton en clair ne doit pas devenir un canal de reprise de
+        // compte (#9114 / #9117).
+        if ($dispatch->hasFallbackLink()) {
+            $payload['activation_url'] = $dispatch->activationUrl;
+            $payload['expires_at'] = $invitation->expires_at?->toIso8601String();
+        }
+
+        return new JsonResponse(['data' => $payload]);
     }
 
     /**

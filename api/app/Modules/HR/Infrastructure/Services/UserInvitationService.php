@@ -10,9 +10,11 @@ use App\Core\Tenant\Domain\Models\EmployeeResourceAssignment;
 use App\Core\Tenant\Infrastructure\Services\ResourceTypeRegistry;
 use App\Core\Tenant\TenantManager;
 use App\Mail\UserInvitationMail;
+use App\Modules\HR\Application\DTOs\UserInvitationDispatchResult;
 use App\Modules\HR\Domain\Models\UserInvitation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -29,11 +31,12 @@ class UserInvitationService
      *                                                                                                           ressource voyagent dans l'invitation et sont créés à l'ACTIVATION
      *                                                                                                           (l'employé n'a de session qu'à ce moment-là ; s'il n'active jamais,
      *                                                                                                           aucun accès n'existe).
-     * @return string jeton en clair, ou `''` quand l'invitation est DÉJÀ
-     *                consommée (compte actif) : aucun jeton n'est émis, aucun
-     *                courriel n'est envoyé, rien n'est rouvert. Les appelants
-     *                doivent traiter `''` comme « rien à renvoyer », pas comme
-     *                un envoi réussi.
+     * @return UserInvitationDispatchResult jeton en clair, lien d'activation et
+     *                                      issue de l'envoi (#9322). `token === ''`
+     *                                      signifie invitation DÉJÀ consommée (compte
+     *                                      actif) : aucun jeton n'est émis, aucun
+     *                                      courriel n'est envoyé, rien n'est rouvert —
+     *                                      à traiter comme « rien à renvoyer ».
      */
     public function createAndSend(
         Company $company,
@@ -41,7 +44,7 @@ class UserInvitationService
         string $invitedByType,
         string $invitedByEmail,
         array $resourceAssignments = [],
-    ): string {
+    ): UserInvitationDispatchResult {
         $plainToken = Str::random(64);
 
         // Match on (company_id, employee_id) uniquement : si l'email de
@@ -71,7 +74,7 @@ class UserInvitationService
         // jeton ni envoyer de courriel : le compte est actif, la récupération
         // passe par le flux « mot de passe oublié ».
         if ($invitation->accepted_at !== null) {
-            return '';
+            return UserInvitationDispatchResult::alreadyAccepted();
         }
 
         $invitation->email = $employee->email;
@@ -125,6 +128,8 @@ class UserInvitationService
             ? $frontendUrl.'/activate/'.$plainToken
             : route('invitation.activate.show', ['token' => $plainToken]);
 
+        $mailSent = true;
+
         try {
             Mail::to($employee->email)->send(new UserInvitationMail(
                 company: $company,
@@ -133,10 +138,37 @@ class UserInvitationService
                 invitedByEmail: $invitedByEmail,
             ));
         } catch (\Throwable $e) {
+            $mailSent = false;
             report($e);
+
+            // #9322 : le flux principal ne doit pas échouer (#1776), mais
+            // l'échec ne doit plus être INVISIBLE. On trace des identifiants et
+            // la classe d'erreur — jamais le jeton ni le lien (le lien EST la
+            // credential d'activation).
+            Log::warning('User invitation mail NOT delivered: activation link must be relayed manually', [
+                'invitation_id' => $invitation->id,
+                'employee_id' => $employee->id,
+                'company_id' => $company->id,
+                'mailer' => (string) config('mail.default'),
+                'error' => $e::class,
+            ]);
         }
 
-        return $plainToken;
+        // #9322 — l'issue de l'envoi est persistée : sans ce drapeau, un resend
+        // raté s'afficherait comme un succès dans `GET /invitations` et le
+        // manager n'aurait aucune raison de relayer le lien lui-même.
+        $invitation->metadata = array_merge($invitation->metadata ?? [], [
+            'last_mail_delivered' => $mailSent,
+            'last_mail_at' => now()->toIso8601String(),
+        ]);
+        $invitation->save();
+
+        return new UserInvitationDispatchResult(
+            token: $plainToken,
+            activationUrl: $activationUrl,
+            mailSent: $mailSent,
+            invitation: $invitation,
+        );
     }
 
     /**

@@ -67,7 +67,7 @@ class InvitationManagementController extends Controller
             return back()->withErrors(['invitation' => 'Cette invitation a deja ete acceptee.']);
         }
 
-        $token = $this->userInvitationService->createAndSend(
+        $dispatch = $this->userInvitationService->createAndSend(
             company: $employee->company,
             employee: $employee,
             invitedByType: 'manager',
@@ -75,10 +75,19 @@ class InvitationManagementController extends Controller
         );
 
         // #9114 : garde de course — la vérification `accepted_at` ci-dessus est
-        // faite hors transaction ; le service est l'autorité et renvoie `''`
-        // quand l'invitation a été consommée entre-temps.
-        if ($token === '') {
+        // faite hors transaction ; le service est l'autorité et renvoie un jeton
+        // vide quand l'invitation a été consommée entre-temps.
+        if ($dispatch->token === '') {
             return back()->withErrors(['invitation' => 'Cette invitation a deja ete acceptee.']);
+        }
+
+        // #9322 : mailer KO ⇒ annoncer « renvoyée » serait un mensonge et
+        // laisserait le collaborateur sans moyen d'activer. On remonte le lien
+        // pour que le manager le transmette lui-même.
+        if ($dispatch->hasFallbackLink()) {
+            return back()
+                ->with('status', 'Le courriel n a pas pu partir. Transmettez ce lien a '.$employee->email.'.')
+                ->with('invitation_activation_url', $dispatch->activationUrl);
         }
 
         return back()->with('status', 'Invitation renvoyee a '.$employee->email);
