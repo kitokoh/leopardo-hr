@@ -62,11 +62,18 @@ export default async function PublicPortalLayout({
   const locale = await getSsrLocale();
   const copy = getPublicPortalCopy(locale);
   const homeCopy = getPublicHomeCopy(locale);
+  // La CSP du proxy est en `strict-dynamic` + nonce : un `<script>` inline
+  // SANS nonce est bloqué par le navigateur. Sans cette ligne, le thème
+  // n'était jamais appliqué avant le paint et le mode sombre ne fonctionnait
+  // pas du tout (vérifié en capture : erreur CSP sur `/`).
+  const cspNonce = (await headers()).get('x-nonce') ?? undefined;
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-      {/* Anti-FOUC : applique le thème avant le premier paint. */}
-      <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      {/* Anti-FOUC : applique le thème avant le premier paint.
+          `nonce` est OBLIGATOIRE : la CSP du proxy est en `strict-dynamic`,
+          un script inline sans nonce est bloqué. */}
+      <script nonce={cspNonce} dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
 
       <PublicPortalNav locale={locale} copy={copy.chrome} />
 

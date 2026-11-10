@@ -76,6 +76,17 @@ describe('public-portal — page d’accueil grand public (#9357)', () => {
     expect(themeToggle).toContain('localStorage');
   });
 
+  it('donne un nonce CSP au script inline du thème', () => {
+    // La CSP du proxy est en `strict-dynamic` : un `<script>` inline sans
+    // nonce est BLOQUÉ par le navigateur. Sans cette garde, le thème n'est
+    // jamais appliqué et le mode sombre ne fonctionne pas — régression
+    // constatée en capture avant correction.
+    expect(layout).toContain("get('x-nonce')");
+    // Assertion littérale plutôt qu'une regex : le JSX contient des
+    // accolades et des antislashs, une regex y est illisible et fragile.
+    expect(layout).toContain('nonce={cspNonce}');
+  });
+
   it('déclare le manifeste de l’app grand public sur la racine', () => {
     expect(homeLayout).toContain('/decouvrir/manifest.webmanifest');
   });
