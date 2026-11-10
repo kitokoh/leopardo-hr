@@ -152,38 +152,41 @@ describe('#7301 — la réponse n’attend pas un cold start', () => {
 
   it('renvoie `pending` (et poursuit l’écriture) quand l’API dépasse le budget', async () => {
     // Réponse plus lente que le budget de 60 ms : la réponse part sans attendre.
+    //
+    // #9314 — on horodate le moment où l'API *répond réellement*, pour pouvoir
+    // affirmer le contrat en RELATIF (voir plus bas) au lieu d'une durée murale.
+    let apiResolvedAt = 0;
     fetchMock.mockImplementation(
       () =>
         new Promise((resolve) => {
-          setTimeout(() => resolve(jsonResponse(201)), 150);
+          setTimeout(() => {
+            apiResolvedAt = Date.now();
+            resolve(jsonResponse(201));
+          }, 150);
         })
     );
 
-    // Horloge simulée : la mesure ne dépend plus de la charge du runner CI.
-    // En temps réel, `elapsed` valait 221 ms sur un runner saturé (budget 60 ms)
-    // et le test échouait alors que le comportement était correct — un flake,
-    // pas une régression. Ici le budget et la réponse sont avancés
-    // explicitement : la seule chose vérifiée est l'ORDRE des événements.
-    jest.useFakeTimers();
-    try {
-      const pending = leadCapture.captureMarketingLead(fakeRequest(), {
-        type: 'signup',
-        email: 'lead@example.com',
-      });
+    const startedAt = Date.now();
+    const result = await leadCapture.captureMarketingLead(fakeRequest(), {
+      type: 'signup',
+      email: 'lead@example.com',
+    });
+    const elapsed = Date.now() - startedAt;
 
-      // Franchit le budget (60 ms) sans atteindre la réponse (150 ms) : la
-      // capture doit rendre la main AVANT que l'API ait répondu.
-      await jest.advanceTimersByTimeAsync(80);
-      const result = await pending;
-
-      expect(result.persisted).toBe('pending');
-
-      // L'écriture se poursuit malgré la réponse déjà envoyée.
-      await jest.advanceTimersByTimeAsync(200);
-      expect(persistCalls().length).toBeGreaterThan(0);
-    } finally {
-      jest.useRealTimers();
-    }
+    expect(result.persisted).toBe('pending');
+    // #9314 — le contrat n'est PAS « la réponse revient en moins de 120 ms »
+    // (durée murale : sur un runner CI saturé, `setTimeout(60)` peut tirer à
+    // 221 ms et faire échouer ce test alors que le comportement est correct).
+    // Le contrat est : **la capture a rendu la main AVANT que l'API n'ait
+    // répondu**. C'est relatif au même run, donc insensible à la charge.
+    expect(apiResolvedAt).toBe(0);
+    // Garde-fou de non-régression : on n'a pas attendu la réponse de test
+    // (150 ms). Marge large (≈2×) : ce n'est plus une mesure de précision
+    // mais la détection d'une régression franche (attente bloquante).
+    expect(elapsed).toBeLessThan(300);
+    // L'écriture se poursuit malgré la réponse déjà envoyée.
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    expect(persistCalls().length).toBeGreaterThan(0);
   });
 
   it('renvoie `failed` quand toutes les tentatives échouent dans le budget', async () => {
