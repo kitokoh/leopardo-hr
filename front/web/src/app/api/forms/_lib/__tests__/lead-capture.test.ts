@@ -159,18 +159,31 @@ describe('#7301 — la réponse n’attend pas un cold start', () => {
         })
     );
 
-    const startedAt = Date.now();
-    const result = await leadCapture.captureMarketingLead(fakeRequest(), {
-      type: 'signup',
-      email: 'lead@example.com',
-    });
-    const elapsed = Date.now() - startedAt;
+    // Horloge simulée : la mesure ne dépend plus de la charge du runner CI.
+    // En temps réel, `elapsed` valait 221 ms sur un runner saturé (budget 60 ms)
+    // et le test échouait alors que le comportement était correct — un flake,
+    // pas une régression. Ici le budget et la réponse sont avancés
+    // explicitement : la seule chose vérifiée est l'ORDRE des événements.
+    jest.useFakeTimers();
+    try {
+      const pending = leadCapture.captureMarketingLead(fakeRequest(), {
+        type: 'signup',
+        email: 'lead@example.com',
+      });
 
-    expect(result.persisted).toBe('pending');
-    expect(elapsed).toBeLessThan(120);
-    // L'écriture se poursuit malgré la réponse déjà envoyée.
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    expect(persistCalls().length).toBeGreaterThan(0);
+      // Franchit le budget (60 ms) sans atteindre la réponse (150 ms) : la
+      // capture doit rendre la main AVANT que l'API ait répondu.
+      await jest.advanceTimersByTimeAsync(80);
+      const result = await pending;
+
+      expect(result.persisted).toBe('pending');
+
+      // L'écriture se poursuit malgré la réponse déjà envoyée.
+      await jest.advanceTimersByTimeAsync(200);
+      expect(persistCalls().length).toBeGreaterThan(0);
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it('renvoie `failed` quand toutes les tentatives échouent dans le budget', async () => {
