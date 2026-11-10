@@ -17,44 +17,40 @@ use Illuminate\Support\Facades\DB;
  * chemin d'écriture qui contourne `RetailStockService` pouvait donc :
  *   - rendre un stock négatif (casse la valorisation et la réconciliation) ;
  *   - écrire un `reason_code` hors énumération (le cast Eloquent lève alors
- *     `ValueError` à la lecture → une ligne illisible fait échouer TOUTE la
- *     page de journal) ;
+ *     à la lecture → une ligne illisible fait échouer TOUTE la page de
+ *     journal) ;
  *   - créer un transfert source = destination (mouvement sans effet) ou de
  *     quantité nulle/négative.
  *
- * Migration additive et idempotente (même garde `pg_constraint` que la
- * Pharmacie) : rejouable sans erreur.
+ * Gardes F-17 : `schemaTableExists()`, migration additive et idempotente
+ * (même garde `pg_constraint` que la Pharmacie) — rejouable sans erreur.
  */
 return new class extends Migration
 {
     public function up(): void
     {
-        // Stock jamais négatif.
-        DB::statement(
-            "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'retail_stock_levels_quantity_check') "
-            .'THEN ALTER TABLE retail_stock_levels ADD CONSTRAINT retail_stock_levels_quantity_check '
-            .'CHECK (quantity >= 0); END IF; END $$'
+        $this->addCheck(
+            table: 'retail_stock_levels',
+            constraint: 'retail_stock_levels_quantity_check',
+            expression: 'quantity >= 0',
         );
 
-        // reason_code toujours dans l'énumération applicative.
-        DB::statement(
-            "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'retail_inventory_movements_reason_code_check') "
-            .'THEN ALTER TABLE retail_inventory_movements ADD CONSTRAINT retail_inventory_movements_reason_code_check '
-            ."CHECK (reason_code IN ('purchase','sale','adjustment','return','transfer_in','transfer_out','loss')) "
-            .'END IF; END $$'
+        $this->addCheck(
+            table: 'retail_inventory_movements',
+            constraint: 'retail_inventory_movements_reason_code_check',
+            expression: "reason_code IN ('purchase','sale','adjustment','return','transfer_in','transfer_out','loss')",
         );
 
-        // Un transfert déplace réellement quelque chose, vers un autre lieu.
-        DB::statement(
-            "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'retail_stock_transfers_distinct_locations_check') "
-            .'THEN ALTER TABLE retail_stock_transfers ADD CONSTRAINT retail_stock_transfers_distinct_locations_check '
-            .'CHECK (from_location_id <> to_location_id); END IF; END $$'
+        $this->addCheck(
+            table: 'retail_stock_transfers',
+            constraint: 'retail_stock_transfers_distinct_locations_check',
+            expression: 'from_location_id <> to_location_id',
         );
 
-        DB::statement(
-            "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'retail_stock_transfers_quantity_check') "
-            .'THEN ALTER TABLE retail_stock_transfers ADD CONSTRAINT retail_stock_transfers_quantity_check '
-            .'CHECK (quantity > 0); END IF; END $$'
+        $this->addCheck(
+            table: 'retail_stock_transfers',
+            constraint: 'retail_stock_transfers_quantity_check',
+            expression: 'quantity > 0',
         );
     }
 
@@ -64,5 +60,25 @@ return new class extends Migration
         DB::statement('ALTER TABLE retail_inventory_movements DROP CONSTRAINT IF EXISTS retail_inventory_movements_reason_code_check');
         DB::statement('ALTER TABLE retail_stock_transfers DROP CONSTRAINT IF EXISTS retail_stock_transfers_distinct_locations_check');
         DB::statement('ALTER TABLE retail_stock_transfers DROP CONSTRAINT IF EXISTS retail_stock_transfers_quantity_check');
+    }
+
+    /**
+     * Ajoute une contrainte CHECK de façon idempotente, en qualifiant la table
+     * par son schéma réel (même pattern que la migration Pharmacie #7800).
+     */
+    private function addCheck(string $table, string $constraint, string $expression): void
+    {
+        if (! schemaTableExists($table)) {
+            return;
+        }
+
+        $schema = resolveTableSchema($table);
+        $qualified = $schema !== null ? "\"{$schema}\".\"{$table}\"" : "\"{$table}\"";
+
+        DB::statement(
+            "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = '{$constraint}') "
+            ."THEN ALTER TABLE {$qualified} ADD CONSTRAINT {$constraint} "
+            ."CHECK ({$expression}); END IF; END $$"
+        );
     }
 };

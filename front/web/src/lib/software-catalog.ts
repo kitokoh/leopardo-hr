@@ -394,17 +394,16 @@ export function visibleSoftware(access: ClientModuleAccess[]): SoftwareApp[] {
  * Elle est EXPLICITE et volontairement étroite : seules les verticales dont
  * l'application mobile embarque réellement un écran de stock y figurent.
  *  - `restaurant` → `manager` : `leopardo_manager` embarque
- *    `features/restaurant/screens/restaurant_stock_screen.dart` ;
- *  - `commerce`   → `pos_retail` : `leopardo_pos_retail` embarque
- *    `features/pos/retail_pos_stock_screen.dart`.
+ *    `features/restaurant/screens/restaurant_stock_screen.dart`.
  *
- * Un tenant sans verticale de stock (voyage, santé, éducation, carburant,
- * indépendant…) n'obtient donc AUCUNE entrée : c'est ce qui garantit qu'un
- * tenant non concerné ne voit jamais l'accès.
+ * Aucune autre verticale n'a d'app mobile de stock DANS LE CATALOGUE :
+ * `commerce-pos` (Retail) n'expose qu'une cible web, et `leopardo_pos_retail`
+ * n'a aucun canal de distribution public (absent de la matrice
+ * `mobile-distribute*.yml`). Un tenant Commerce n'obtient donc rien — état
+ * honnête (règle #6697), pas un oubli.
  */
 const MOBILE_STOCK_APPS: { moduleKeys: ClientModuleKey[]; slug: string }[] = [
   { moduleKeys: ['restaurant'], slug: 'manager' },
-  { moduleKeys: ['commerce'], slug: 'pos_retail' },
 ];
 
 /**
@@ -425,7 +424,11 @@ export function mobileSoftware(access: ClientModuleAccess[]): SoftwareApp[] {
 
   return MOBILE_STOCK_APPS.filter((entry) => entry.moduleKeys.some((key) => enabled.has(key)))
     .map((entry) => TENANT_SOFTWARE.find((app) => app.slug === entry.slug))
-    .filter((app): app is SoftwareApp => !!app && mobileTargetOf(app) !== null);
+    .filter((app): app is SoftwareApp => !!app && mobileTargetOf(app) !== null)
+    // #9300 — un canal en échec ou d'état inconnu n'est JAMAIS proposé
+    // (règle d'honnêteté #6697, source de vérité #8628). Sans cette
+    // condition, la carte de profil enverrait vers un build inexistant.
+    .filter((app) => isDistributionHealthy(app.slug));
 }
 
 /** Première cible mobile cliquable d'une app, ou `null`. */
