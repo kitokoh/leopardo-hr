@@ -335,6 +335,14 @@ jobs:
 
       - name: Run PHPStan on modules
         working-directory: api
+        # #9345 (audit securite 2026-11-10, F3) — `SESSION_ENCRYPT` vaut
+        # desormais `true` par defaut : Larastan boote l'application et le
+        # gestionnaire de session exige alors un APP_KEY, sinon l'analyse
+        # s'arrete sur « No application encryption key has been specified ».
+        # Cle FACTICE, sans valeur de secret : elle ne sert qu'a satisfaire le
+        # boot du conteneur pendant l'analyse statique.
+        env:
+          APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
         run: vendor/bin/phpstan analyse --configuration=phpstan-modules.neon --memory-limit=3G --no-progress
 
   # Audit §2.3 / Plan P1: phpstan-strict.neon existed in the repo (level 8 on
@@ -400,6 +408,11 @@ jobs:
       - name: Run PHPStan (strict, blocking on delta vs baseline)
         if: needs.detect-changes.outputs.api_changed == 'true'
         working-directory: api
+        # #9345 (audit securite 2026-11-10, F3) — meme raison que le job
+        # `phpstan-modules` : cle FACTICE pour satisfaire le boot Larastan
+        # quand `SESSION_ENCRYPT=true`.
+        env:
+          APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
         run: vendor/bin/phpstan analyse --configuration=phpstan-strict.neon --memory-limit=3G --no-progress
 
   module-structure-check:
