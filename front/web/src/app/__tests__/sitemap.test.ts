@@ -78,6 +78,17 @@ jest.doMock('@/lib/careers-api', () => ({
   },
 }));
 
+// #9357 : les fiches des verticales (`/boutiques/{slug}`, `/operateurs/{slug}`,
+// `/entreprises/{slug}`, `/stay/{slug}`) viennent du contrat public de
+// découverte — mocké ici (aucun réseau en test). Sans ce mock, le test tapait
+// l'API réelle et le sitemap dépassait le budget de build.
+jest.doMock('@/lib/public-discovery-api', () => ({
+  collectVerticalProfilePages: async (siteUrl: string) => [
+    { url: `${siteUrl}/boutiques/atelier-du-cuir`, changeFrequency: 'daily', priority: 0.6 },
+    { url: `${siteUrl}/entreprises/transports-benali`, changeFrequency: 'daily', priority: 0.6 },
+  ],
+}));
+
 describe('sitemap integrity (#3807)', () => {
   let urls: string[];
   let entries: Array<{ url: string; lastModified?: unknown; alternates?: { languages?: Record<string, string> } }>;
@@ -136,6 +147,14 @@ describe('sitemap integrity (#3807)', () => {
   it('ne publie pas de lastModified volatil sur les pages statiques', () => {
     const pricing = entries.find((entry) => entry.url.endsWith('/pricing'));
     expect(pricing?.lastModified).toBeUndefined();
+  });
+
+  it('#9357 : publie les fiches des verticales (auparavant orphelines)', () => {
+    // `/boutiques/{slug}`, `/operateurs/{slug}`, `/entreprises/{slug}` et
+    // `/stay/{slug}` étaient servies mais déclarées NULLE PART : invisibles
+    // pour le crawl. Elles doivent désormais figurer au sitemap.
+    expect(urls).toContain('https://www.leopardo-rh.com/boutiques/atelier-du-cuir');
+    expect(urls).toContain('https://www.leopardo-rh.com/entreprises/transports-benali');
   });
 
   it('chaque entrée porte des alternates hreflang localisées', () => {

@@ -330,44 +330,61 @@ class AppColors {
 
   /// emerald-50 — fond des puces et badges clairs.
   static const Color publicEmerald50 = Color(0xFFECFDF5);
+
   /// emerald-100 — fond des icônes de catégorie (mode clair).
   static const Color publicEmerald100 = Color(0xFFD1FAE5);
+
   /// emerald-400 — primaire du mode sombre.
   static const Color publicEmerald400 = Color(0xFF34D399);
+
   /// emerald-500 — CTA sur fond sombre.
   static const Color publicEmerald500 = Color(0xFF10B981);
+
   /// emerald-600 — CTA principal du mode clair.
   static const Color publicEmerald600 = Color(0xFF059669);
+
   /// emerald-700 — liens et texte d'accent (mode clair).
   static const Color publicEmerald700 = Color(0xFF047857);
 
   /// slate-50 — fond du mode clair.
   static const Color publicSlate50 = Color(0xFFF8FAFC);
+
   /// slate-100 — surfaces alternées (mode clair).
   static const Color publicSlate100 = Color(0xFFF1F5F9);
+
   /// slate-200 — bordures (mode clair).
   static const Color publicSlate200 = Color(0xFFE2E8F0);
+
   /// slate-400 — texte secondaire (mode sombre).
   static const Color publicSlate400 = Color(0xFF94A3B8);
+
   /// slate-500 — texte secondaire (mode clair).
   static const Color publicSlate500 = Color(0xFF64748B);
+
   /// slate-600 — corps de texte (mode clair).
   static const Color publicSlate600 = Color(0xFF475569);
+
   /// slate-900 — texte principal (mode clair) et fond des blocs sombres.
   static const Color publicSlate900 = Color(0xFF0F172A);
+
   /// slate-950 — fond du mode sombre.
   static const Color publicSlate950 = Color(0xFF020617);
 
   /// Surface des cartes en mode sombre (entre slate-950 et slate-900).
   static const Color publicSurfaceDark = Color(0xFF0B1220);
+
   /// Surface alternée en mode sombre (slate-800).
   static const Color publicSurfaceDarkAlt = Color(0xFF1E293B);
+
   /// Bordure en mode sombre (slate-700).
   static const Color publicBorderDark = Color(0xFF334155);
+
   /// Texte principal en mode sombre (slate-100).
   static const Color publicTextDark = Color(0xFFF1F5F9);
+
   /// Erreur (red-600) — aligné sur `text-red-600` du web.
   static const Color publicError = Color(0xFFDC2626);
+
   /// Erreur en mode sombre (red-400).
   static const Color publicErrorDark = Color(0xFFF87171);
 }

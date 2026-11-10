@@ -133,9 +133,6 @@ class PublicTheme {
     final roundedXl = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(radiusXl),
     );
-    final rounded2xl = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(radius2xl),
-    );
 
     return base.copyWith(
       // Typographie : le web utilise Inter (next/font). On garde la police
@@ -187,7 +184,7 @@ class PublicTheme {
       ),
 
       cardTheme: CardThemeData(
-        color: isDark ? const AppColors.publicSurfaceDark : Colors.white,
+        color: isDark ? AppColors.publicSurfaceDark : Colors.white,
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
@@ -237,8 +234,11 @@ class PublicTheme {
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: isDark ? const AppColors.publicSurfaceDark : Colors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        fillColor: isDark ? AppColors.publicSurfaceDark : Colors.white,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         hintStyle: TextStyle(color: scheme.onSurfaceVariant),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusXl),
@@ -255,18 +255,14 @@ class PublicTheme {
       ),
 
       chipTheme: base.chipTheme.copyWith(
-        backgroundColor: isDark ? const AppColors.publicSurfaceDark : Colors.white,
-        selectedColor: isDark
-            ? emerald500.withValues(alpha: 0.18)
-            : emerald50,
+        backgroundColor: isDark ? AppColors.publicSurfaceDark : Colors.white,
+        selectedColor: isDark ? emerald500.withValues(alpha: 0.18) : emerald50,
         side: BorderSide(color: scheme.outlineVariant),
         labelStyle: TextStyle(
           fontWeight: FontWeight.w600,
           color: scheme.onSurface,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(999),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
       ),
 
       dividerTheme: DividerThemeData(
@@ -277,9 +273,7 @@ class PublicTheme {
 
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: isDark ? slate950 : Colors.white,
-        indicatorColor: isDark
-            ? emerald500.withValues(alpha: 0.18)
-            : emerald50,
+        indicatorColor: isDark ? emerald500.withValues(alpha: 0.18) : emerald50,
         elevation: 0,
         labelTextStyle: WidgetStateProperty.resolveWith(
           (states) => TextStyle(
@@ -304,13 +298,11 @@ class PublicTheme {
       snackBarTheme: base.snackBarTheme.copyWith(
         behavior: SnackBarBehavior.floating,
         shape: roundedXl,
-        backgroundColor: isDark ? const AppColors.publicSurfaceDarkAlt : slate900,
+        backgroundColor: isDark ? AppColors.publicSurfaceDarkAlt : slate900,
         contentTextStyle: const TextStyle(color: Colors.white),
       ),
 
-      progressIndicatorTheme: ProgressIndicatorThemeData(
-        color: scheme.primary,
-      ),
+      progressIndicatorTheme: ProgressIndicatorThemeData(color: scheme.primary),
 
       listTileTheme: ListTileThemeData(
         shape: roundedXl,

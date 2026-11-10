@@ -69,8 +69,9 @@ void main() {
 
     test('la navigation basse signale l’onglet actif par la couleur ET la graisse', () {
       final theme = PublicTheme.light();
-      final selected = theme.navigationBarTheme.labelTextStyle
-          ?.resolve({WidgetState.selected});
+      final selected = theme.navigationBarTheme.labelTextStyle?.resolve({
+        WidgetState.selected,
+      });
       final unselected = theme.navigationBarTheme.labelTextStyle?.resolve({});
 
       expect(selected?.fontWeight, FontWeight.w700);

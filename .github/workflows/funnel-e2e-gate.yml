@@ -30,7 +30,8 @@ on:
       - 'front/web/src/modules/onboarding/**'
       - 'front/web/src/app/api/forms/signup/**'
       - 'front/web/src/app/api/forms/funnel-event/**'
-      - 'front/web/src/app/(landing)/signup/**'
+      # #9358 : `(landing)/signup` → `business/signup` (déplacement vitrine).
+      - 'front/web/src/app/business/signup/**'
       - 'front/web/e2e/funnel-tracking.spec.ts'
 
 permissions:
