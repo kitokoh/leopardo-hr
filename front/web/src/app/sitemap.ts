@@ -141,7 +141,40 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // casse JAMAIS le sitemap (liste vide) — les pages statiques restent servies.
   // Pas de variantes ?lang= : le contenu du profil (menu, description) vient
   // du restaurateur et n'est pas localisé par le catalogue.
-  const restaurantPages: MetadataRoute.Sitemap = (await getAllPublicRestaurantSlugs()).map((slug) => ({
+  // #9357 — BUDGET GLOBAL DE GÉNÉRATION.
+  //
+  // Next abandonne une route statique qui dépasse 60 s (`Failed to build
+  // /sitemap.xml/route ... took more than 60 seconds`) et fait échouer TOUT le
+  // build. Or le sitemap agrège quatre sources réseau indépendantes
+  // (restaurants, verticales, annuaire carrières, offres par tenant) : en les
+  // attendant en série, la latence s'additionne et le budget explose dès que
+  // l'API publique est lente.
+  //
+  // Deux règles, appliquées ici :
+  //   1. les sources sont interrogées EN PARALLÈLE (latence = max, pas somme) ;
+  //   2. chacune est bornée par `budget()` : au-delà, on publie un repli vide
+  //      plutôt que de bloquer. Un sitemap amputé reste infiniment plus utile
+  //      qu'un build rouge — c'est la garantie « best-effort » du contrat.
+  const budget = <T,>(promise: Promise<T>, fallback: T, ms = 15_000): Promise<T> =>
+    Promise.race([
+      promise,
+      new Promise<T>((resolve) => {
+        // `unref` : ne retient pas la boucle d'événements du worker de build.
+        const timer = setTimeout(() => resolve(fallback), ms);
+        if (typeof timer === 'object' && 'unref' in timer) timer.unref();
+      }),
+    ]);
+
+  const [restaurantSlugs, verticalPages, careersDirectory] = await Promise.all([
+    budget(getAllPublicRestaurantSlugs(), [] as string[]),
+    budget<MetadataRoute.Sitemap>(collectVerticalProfilePages(siteUrl), []),
+    budget(
+      getPublicCareersDirectory(),
+      [] as Awaited<ReturnType<typeof getPublicCareersDirectory>>,
+    ),
+  ]);
+
+  const restaurantPages: MetadataRoute.Sitemap = restaurantSlugs.map((slug) => ({
     url: `${siteUrl}/restaurants/${slug}`,
     changeFrequency: 'daily' as const,
     priority: 0.7,
@@ -153,7 +186,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // sitemap, donc n'étaient découvertes que par lien externe. On les collecte
   // via le même contrat public que les annuaires, page par page, en
   // best-effort (une verticale indisponible ne casse pas le sitemap).
-  const verticalPages: MetadataRoute.Sitemap = await collectVerticalProfilePages(siteUrl);
+  // #9357 : collecté plus haut, en parallèle et sous budget.
 
   // #7869 : pages comparatives /alternatives/[slug] (statiques, indexables).
   const alternativePages: MetadataRoute.Sitemap = getAlternativePages('fr').map((p) => ({
@@ -179,7 +212,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Google pénalise. `lastmod` = date de la dernière offre publiée, jamais
   // `now()` — un lastmod qui bouge à chaque requête fait churner le crawl sans
   // qu'aucun contenu n'ait changé.
-  const careersPages: MetadataRoute.Sitemap = (await getPublicCareersDirectory()).map((entry) => ({
+  const careersPages: MetadataRoute.Sitemap = careersDirectory.map((entry) => ({
     url: `${siteUrl}/${entry.slug}/careers`,
     ...(entry.last_published_at ? { lastModified: new Date(entry.last_published_at) } : {}),
     changeFrequency: 'daily' as const,
@@ -198,10 +231,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Seules les offres du TENANT sont déclarées : une offre agrégée n'a pas de
   // page chez nous (elle renvoie chez le partenaire), donc l'inscrire
   // enverrait les robots vers une URL inexistante.
+  // #9357 — BORNÉ ET SOUS BUDGET.
+  //
+  // Cette boucle fait un appel réseau PAR TENANT : sans borne, un annuaire de
+  // 200 entreprises = 200 requêtes, et le sitemap dépasse les 60 s de Next.
+  // On plafonne à `MAX_CAREERS_TENANTS` (les portails les plus récents sont
+  // ceux qui intéressent le crawl) et chaque appel est borné par `budget()`.
+  const MAX_CAREERS_TENANTS = 25;
   const careersJobPages: MetadataRoute.Sitemap = (
     await Promise.all(
-      (await getPublicCareersDirectory()).map(async (entry) => {
-        const jobs = await getPublicJobPostings(entry.slug);
+      careersDirectory.slice(0, MAX_CAREERS_TENANTS).map(async (entry) => {
+        const jobs = await budget(getPublicJobPostings(entry.slug), null, 8_000);
 
         if (jobs === null) {
           return [];
