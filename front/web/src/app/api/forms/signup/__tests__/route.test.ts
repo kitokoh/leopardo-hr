@@ -290,6 +290,11 @@ describe('#7251 — repli sur le parcours guidé si la vérification e-mail est 
             provisioning_token: provisioningToken,
           },
         }),
+      )
+      // #9308 — le repli n'est accepté qu'après confirmation RÉELLE du
+      // provisioning : `/trial/status` doit répondre `ready`.
+      .mockResolvedValueOnce(
+        backendResponse({ success: true, data: { status: 'ready' } }),
       );
 
     const response = await POST(
@@ -305,6 +310,55 @@ describe('#7251 — repli sur le parcours guidé si la vérification e-mail est 
     expect(payload.data.nextStep).toBe('tracking');
     expect(payload.data.provisioning_token).toBe(provisioningToken);
   });
+
+  it("#9308 — refuse un faux succès quand le provisioning reste bloqué en `pending`", async () => {
+    // File non consommée (aucun worker) : le POST guidé répond bien
+    // `provisioning_sandbox`, mais `/trial/status` reste `pending` pour
+    // toujours. La route ne doit JAMAIS rendre `success:true` dans ce cas —
+    // le prospect attendrait un espace qui n'arrive pas.
+    const provisioningToken = 'c'.repeat(64);
+
+    fetchMock.mockImplementation(async (url: string) => {
+      if (String(url).includes('/trial/signup')) {
+        const body = JSON.parse(
+          String((fetchMock.mock.calls.at(-1)?.[1] as RequestInit).body),
+        ) as { requestedWorkflow?: string };
+
+        if (body.requestedWorkflow === 'self_service') {
+          return backendResponse({ success: false, error: 'TRIAL_OTP_SEND_FAILED' }, 503);
+        }
+
+        return backendResponse({
+          success: true,
+          data: {
+            status: 'provisioning_sandbox',
+            email: 'fondateur@techcorp.dz',
+            provisioning_token: provisioningToken,
+          },
+        });
+      }
+
+      // `/trial/status` : jamais prêt.
+      return backendResponse({
+        success: true,
+        data: { status: 'pending', provisioned_at: null },
+      });
+    });
+
+    const response = await POST(
+      makeRequest({ email: 'fondateur@techcorp.dz', company: 'TechCorp', country: 'DZ' }),
+    );
+    const payload = (await response.json()) as {
+      success: boolean;
+      error?: string;
+      data?: { nextStep?: string };
+    };
+
+    expect(response.status).toBe(503);
+    expect(payload.success).toBe(false);
+    expect(payload.error).toBe('PROVISIONING_NOT_READY');
+    expect(payload.data?.nextStep).toBe('contact_support');
+  }, 30_000);
 
   it('ne relance pas en guided_trial sur une erreur de validation', async () => {
     fetchMock.mockResolvedValueOnce(
