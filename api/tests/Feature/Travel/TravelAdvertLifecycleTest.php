@@ -175,8 +175,12 @@ class TravelAdvertLifecycleTest extends TestCase
         $this->postJson("/api/v1/travel/adverts/{$advertId}/pay", ['provider' => 'cash'])->assertOk();
         $this->assertSame(1, TravelPayment::query()->where('advert_id', $advertId)->count());
 
-        // Validation par un agent (non travel.manage) → 403.
-        $this->login($company, role: 'manager', managerRole: 'agent');
+        // Validation par un manager sans droit gestion (rôle métier valide,
+        // hors principal/rh) → 403. `dept` et non `agent` : `agent` n'est pas
+        // un rôle de la contrainte `employees_manager_role_check` (#9098) —
+        // l'insertion échouait en SQLSTATE 23514 avant même d'atteindre le
+        // 403, si bien que le test ne vérifiait pas ce qu'il annonçait.
+        $this->login($company, role: 'manager', managerRole: 'dept');
         $this->postJson("/api/v1/travel/adverts/{$advertId}/validate", ['approved' => true])
             ->assertStatus(403);
 
