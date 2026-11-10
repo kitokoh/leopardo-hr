@@ -39,6 +39,8 @@ use Illuminate\Support\Carbon;
  * @property LibraryResourceStatus $status
  * @property int $price_minor
  * @property string $currency
+ * @property array<int, array{min_qty: int, unit_price_minor: int}>|null $wholesale_tiers
+ * @property string|null $vat_rate
  * @property string|null $publisher
  * @property int|null $published_year
  * @property int|null $pages
@@ -84,6 +86,8 @@ class LibraryResource extends Model
         'status',
         'price_minor',
         'currency',
+        'wholesale_tiers',
+        'vat_rate',
         'publisher',
         'published_year',
         'pages',
@@ -117,6 +121,8 @@ class LibraryResource extends Model
             'featured' => 'boolean',
             'is_new' => 'boolean',
             'geo_restrictions' => 'array',
+            'wholesale_tiers' => 'array',
+            'vat_rate' => 'float',
             'meta' => 'array',
             'published_at' => 'datetime',
         ];

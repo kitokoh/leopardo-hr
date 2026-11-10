@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Modules\Paiements\Providers;
 
 use App\Modules\Paiements\Domain\Contracts\PaymentOperationsInterface;
+use App\Modules\Paiements\Infrastructure\Services\CashInGateway;
 use App\Modules\Paiements\Infrastructure\Services\FeeRuleResolver;
 use App\Modules\Paiements\Infrastructure\Services\LedgerService;
 use App\Modules\Paiements\Infrastructure\Services\PaymentService;
 use App\Modules\Paiements\Infrastructure\Services\ProviderResolver;
 use App\Modules\Paiements\Infrastructure\Services\ProviderTypeRegistry;
 use App\Modules\Paiements\Infrastructure\Services\ReconciliationService;
+use App\Shared\Contracts\Payments\CashInGatewayInterface;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -38,6 +40,11 @@ class PaiementsServiceProvider extends ServiceProvider
         // Inversion de dependance : la couche Application depend de l'interface
         // du Domain, jamais de l'implementation Infrastructure.
         $this->app->alias(PaymentService::class, PaymentOperationsInterface::class);
+
+        // #9238 — contrat PARTAGE consomme par les verticales qui encaissent
+        // (Library aujourd'hui). Il delegue a PaymentService : une seule voie
+        // d'ecriture comptable, un seul ledger.
+        $this->app->bind(CashInGatewayInterface::class, CashInGateway::class);
     }
 
     public function boot(): void

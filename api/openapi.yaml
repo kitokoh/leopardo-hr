@@ -65034,6 +65034,187 @@ paths:
         '401': {description: Non authentifié}
         '404': {description: Ressource inconnue ou non visible par le tenant}
         '422': {description: Payload invalide}
+  /v1/library/purchases:
+    get:
+      operationId: api_get_library_purchases
+      tags:
+      - Library
+      summary: Mes achats de la bibliothèque
+      description: >-
+        BC-40 LIBRARY / BC-38 PAIEMENTS (#9238) — ventes de l'employé
+        AUTHENTIFIÉ uniquement, les plus récentes d'abord (200 max).
+        `company_id` et `employee_id` viennent de la session, jamais du
+        client : aucune vente d'un autre employé ou d'un autre tenant n'est
+        lisible.
+      responses:
+        '200':
+          description: Liste des achats de l'employé courant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LibraryPurchase'
+        '401': {description: Non authentifié}
+        '403': {description: Non autorisé (policy)}
+  /v1/library/resources/{resource}/purchases:
+    post:
+      operationId: api_post_library_resources_by_id_purchases
+      tags:
+      - Library
+      summary: Acheter une ressource (unités et paliers de gros)
+      description: >-
+        BC-40 LIBRARY (#9238) — crée une vente au statut `pending` ; un achat
+        en attente n'ouvre AUCUN droit. La quantité est bornée à `[1, 1000]`
+        et le prix est calculé CÔTÉ SERVEUR (prix unitaire + palier de gros de
+        la ressource), jamais envoyé par le client. `idempotency_key` rend
+        l'appel rejouable : la même clé retombe sur la même vente
+        (`UNIQUE (company_id, idempotency_key)`). La ressource doit être
+        vendable (`access_model = purchase`, publiée) et visible par le
+        tenant ; sinon 422 `RESOURCE_NOT_FOR_SALE` / 404.
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema: {type: integer}
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  minimum: 1
+                  maximum: 1000
+                  default: 1
+                idempotency_key:
+                  type: string
+                  maxLength: 191
+      responses:
+        '201':
+          description: Vente créée (statut `pending`, aucun accès)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/LibraryPurchase'
+        '401': {description: Non authentifié}
+        '404': {description: Ressource inconnue ou non visible par le tenant}
+        '422': {description: Ressource non vendable ou quantité hors bornes}
+  /v1/library/purchases/{purchase}/confirm:
+    post:
+      operationId: api_post_library_purchases_by_id_confirm
+      tags:
+      - Library
+      summary: Confirmer un achat après paiement
+      description: >-
+        BC-40 LIBRARY / BC-38 PAIEMENTS (#9238) — point de reprise IDEMPOTENT
+        après retour du fournisseur de paiement. Le statut de la transaction
+        est relu CÔTÉ SERVEUR via `CashInGatewayInterface::transactionStatus`
+        : un `pending`/`processing` n'ouvre aucun droit (409), seul un
+        paiement constaté passe la vente en `paid`, alloue le numéro de
+        facture du tenant et ouvre l'accès. Rejouer la confirmation ne
+        crédite ni ne facture deux fois.
+      parameters:
+      - name: purchase
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200':
+          description: Vente confirmée (statut `paid`) ou déjà confirmée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/LibraryPurchase'
+        '403': {description: Achat d'un autre employé/tenant (policy)}
+        '404': {description: Achat inconnu}
+        '409': {description: Paiement non constaté (aucun droit accordé)}
+  /v1/library/resources/{resource}/access:
+    get:
+      operationId: api_get_library_resources_by_id_access
+      tags:
+      - Library
+      summary: Mes droits réels sur une ressource
+      description: >-
+        BC-40 LIBRARY (#9238) — les droits sont calculés CÔTÉ SERVEUR par
+        `LibraryAccessPolicy` à partir du contexte de session (tenant,
+        achat constaté) ; le client ne les déduit jamais lui-même. Une
+        ressource `read_only` répond `can_download = false` même si
+        `allow_download` a été coché côté administration.
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200':
+          description: Droits calculés pour l'employé courant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      slug: {type: string}
+                      access_model:
+                        type: string
+                        enum: [free, read_only, purchase, subscription, private]
+                      can_read: {type: boolean}
+                      can_download: {type: boolean}
+                      requires_purchase: {type: boolean}
+                      price_minor: {type: integer}
+                      currency: {type: string}
+        '401': {description: Non authentifié}
+        '404': {description: Ressource inconnue ou non visible par le tenant}
+  /v1/library/resources/{resource}/download:
+    get:
+      operationId: api_get_library_resources_by_id_download
+      tags:
+      - Library
+      summary: Lien de téléchargement d'une ressource achetée
+      description: >-
+        BC-40 LIBRARY (#9238) — même garde que la surface publique, mais avec
+        le contexte d'achat de l'employé : c'est la voie qui rend un contenu
+        payant réellement consommable. 403 `download_forbidden` si le modèle
+        d'accès ou la licence l'interdit ; 501 si le stockage n'est pas
+        configuré ; l'URL renvoyée est temporaire et signée (TTL
+        `library.download_url_ttl`), jamais permanente.
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200':
+          description: URL temporaire signée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url: {type: string}
+                      format: {type: string}
+                      size: {type: integer}
+        '401': {description: Non authentifié}
+        '403': {description: Téléchargement non autorisé}
+        '404': {description: Ressource inconnue ou non visible par le tenant}
+        '501': {description: Stockage non configuré}
 components:
   securitySchemes:
     BearerAuth:
@@ -65272,6 +65453,63 @@ components:
           nullable: true
           description: Total connu au moment de l'écriture, `null` si inconnu.
         updated_at:
+          type: string
+          format: date-time
+          nullable: true
+    # BC-40 LIBRARY / BC-38 PAIEMENTS (#9238) — vente à l'unité et en gros.
+    LibraryPurchase:
+      type: object
+      description: >-
+        Vente d'une ressource de la bibliothèque. Les montants sont en unité
+        mineure de la devise et FIGÉS au moment de l'achat : un changement de
+        prix du catalogue ne réécrit jamais une vente passée. Le numéro de
+        facture n'est alloué qu'à la confirmation du paiement.
+      required:
+      - id
+      - resource_id
+      - quantity
+      - total_minor
+      - currency
+      - status
+      properties:
+        id:
+          type: integer
+        resource_id:
+          type: integer
+        quantity:
+          type: integer
+          minimum: 1
+        unit_price_minor:
+          type: integer
+          description: Prix unitaire appliqué (palier de gros inclus).
+        total_minor:
+          type: integer
+          description: Total TTC facturé.
+        net_minor:
+          type: integer
+          description: Part hors taxe.
+        vat_minor:
+          type: integer
+          description: Part de TVA (arrondi porté ici).
+        vat_rate:
+          type: number
+          description: Taux de TVA appliqué, figé à la vente.
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        status:
+          type: string
+          enum: [pending, paid, refunded, cancelled]
+        invoice_number:
+          type: string
+          nullable: true
+          description: Numéro séquentiel par tenant, `null` tant que non payé.
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
           type: string
           format: date-time
           nullable: true

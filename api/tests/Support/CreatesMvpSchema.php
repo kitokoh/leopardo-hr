@@ -7867,5 +7867,38 @@ trait CreatesMvpSchema
                 );
             });
         }
+
+        // BC-40 LIBRARY / BC-38 PAIEMENTS (#9238) — vente à l'unité et en gros.
+        // Miroir de la migration tenant
+        // 2026_11_10_000600_9238_create_library_purchases.php.
+        // Garde de parité #5443 (Hygiene Guards).
+        if (! Schema::hasTable($this->moduleTable('library_purchases'))) {
+            Schema::create($this->moduleTable('library_purchases'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('employee_id');
+                $table->unsignedBigInteger('resource_id');
+                $table->unsignedInteger('quantity')->default(1);
+                $table->unsignedBigInteger('unit_price_minor');
+                $table->unsignedBigInteger('total_minor');
+                $table->unsignedBigInteger('net_minor');
+                $table->unsignedBigInteger('vat_minor')->default(0);
+                $table->decimal('vat_rate', 5, 4)->default(0);
+                $table->char('currency', 3);
+                $table->string('status', 20)->default('pending');
+                $table->string('idempotency_key', 191);
+                $table->unsignedBigInteger('payment_transaction_id')->nullable()->index();
+                $table->string('payment_reference', 191)->nullable();
+                $table->string('invoice_number', 40)->nullable();
+                $table->timestamp('paid_at')->nullable();
+                $table->timestamp('refunded_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'idempotency_key'], 'library_purchases_company_idempotency_unique');
+                $table->unique(['company_id', 'invoice_number'], 'library_purchases_company_invoice_unique');
+                $table->index(['company_id', 'employee_id', 'resource_id'], 'library_purchases_buyer_idx');
+                $table->index(['company_id', 'resource_id', 'status'], 'library_purchases_access_idx');
+            });
+        }
     }
 }

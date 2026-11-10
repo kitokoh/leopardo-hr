@@ -15,6 +15,7 @@
  * `BelongsToCompany` et la policy `LibraryResourcePolicy`.
  */
 
+use App\Modules\Library\Interfaces\Api\V1\Controllers\LibraryPurchaseController;
 use App\Modules\Library\Interfaces\Api\V1\Controllers\LibraryReadingProgressController;
 use App\Modules\Library\Interfaces\Api\V1\Controllers\LibraryResourceController;
 use App\Support\Routing\ModuleRoutes;
@@ -30,6 +31,14 @@ ModuleRoutes::tenantModule('library', function (): void {
     Route::post('/resources/{resource}/unpublish', [LibraryResourceController::class, 'unpublish'])->whereNumber('resource');
     Route::post('/resources/{resource}/archive', [LibraryResourceController::class, 'archive'])->whereNumber('resource');
     Route::post('/resources/{resource}/file', [LibraryResourceController::class, 'uploadFile'])->whereNumber('resource');
+
+    // Achat à l'unité / vente en gros (BC-38, #9238). `confirm` est idempotent
+    // et ne fait jamais confiance au client : le paiement est relu en base.
+    Route::get('/purchases', [LibraryPurchaseController::class, 'index']);
+    Route::post('/resources/{resource}/purchases', [LibraryPurchaseController::class, 'store'])->whereNumber('resource');
+    Route::post('/purchases/{purchase}/confirm', [LibraryPurchaseController::class, 'confirm'])->whereNumber('purchase');
+    Route::get('/resources/{resource}/access', [LibraryPurchaseController::class, 'access'])->whereNumber('resource');
+    Route::get('/resources/{resource}/download', [LibraryPurchaseController::class, 'download'])->whereNumber('resource');
 
     // Progression de lecture persistée côté serveur (par employé, par tenant).
     // Le slug identifie la ressource ; l'employé vient de la session.
