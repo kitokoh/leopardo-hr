@@ -63,6 +63,7 @@ final class JournalPostingService
 
     public function __construct(
         private readonly ?ChartAccountResolver $resolver = null,
+        private readonly ?JournalResolver $journals = null,
     ) {}
 
     /**
@@ -106,6 +107,7 @@ final class JournalPostingService
             piece: $piece,
             description: $description.' '.$piece,
             lines: $lines,
+            journalCode: $this->journalCodeForDocument($document, $resolver),
         );
     }
 
@@ -161,6 +163,7 @@ final class JournalPostingService
             piece: $piece,
             description: $description,
             lines: $lines,
+            journalCode: $this->journalCodeForPayment((string) $payment->company_id, $method, $resolver),
         );
     }
 
@@ -362,6 +365,58 @@ final class JournalPostingService
             ->exists();
     }
 
+    /**
+     * Journal d'un document : résolu par le type de document (vente → journal
+     * des ventes, achat → journal des achats), plus par le préfixe du compte.
+     */
+    private function journalCodeForDocument(AccountingDocument $document, ChartAccountResolver $resolver): string
+    {
+        $type = DocumentType::tryFrom((string) $document->type) ?? DocumentType::Invoice;
+
+        return $this->journalResolver()->forDocumentType(
+            $this->journalsFor((string) $document->company_id, $resolver),
+            $type,
+        );
+    }
+
+    /**
+     * Journal d'un paiement : journal de caisse pour les espèces, journal de
+     * banque sinon.
+     */
+    private function journalCodeForPayment(string $companyId, PaymentMethod $method, ChartAccountResolver $resolver): string
+    {
+        return $this->journalResolver()->forPaymentMethod(
+            $this->journalsFor($companyId, $resolver),
+            $method,
+        );
+    }
+
+    /**
+     * Journaux actifs du tenant, provisionnés à la volée si l'entreprise a été
+     * créée avant l'introduction de l'entité journal (#9370). Évite un script
+     * de migration de données et garantit qu'un posting ne peut pas échouer
+     * faute de journal.
+     *
+     * @return list<\App\Modules\Accounting\Domain\Models\AccountingJournal>
+     */
+    private function journalsFor(string $companyId, ChartAccountResolver $resolver): array
+    {
+        $journals = $this->journalResolver()->journalsFor($companyId);
+
+        if ($journals !== []) {
+            return $journals;
+        }
+
+        $this->journalResolver()->seedDefaults($companyId, $resolver->country(), $resolver);
+
+        return $this->journalResolver()->journalsFor($companyId);
+    }
+
+    private function journalResolver(): JournalResolver
+    {
+        return $this->journals ?? new JournalResolver;
+    }
+
     private function guardPeriodOpen(Carbon $entryDate): void
     {
         $period = $entryDate->format('Y-m');
@@ -381,6 +436,7 @@ final class JournalPostingService
         string $piece,
         string $description,
         array $lines,
+        string $journalCode = 'OD',
     ): int {
         $debit = round((float) array_sum(array_column($lines, 'debit')), 2);
         $credit = round((float) array_sum(array_column($lines, 'credit')), 2);
@@ -391,7 +447,7 @@ final class JournalPostingService
 
         $period = $entryDate->format('Y-m');
 
-        return DB::transaction(function () use ($companyId, $sourceType, $sourceId, $entryDate, $period, $piece, $description, $lines): int {
+        return DB::transaction(function () use ($companyId, $sourceType, $sourceId, $entryDate, $period, $piece, $description, $lines, $journalCode): int {
             $count = 0;
 
             foreach ($lines as $line) {
@@ -405,6 +461,7 @@ final class JournalPostingService
                     [
                         'entry_date' => $entryDate,
                         'period' => $period,
+                        'journal_code' => $journalCode,
                         'account_label' => $line['account_label'],
                         'debit' => round($line['debit'], 2),
                         'credit' => round($line['credit'], 2),

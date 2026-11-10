@@ -46,6 +46,8 @@ final class AccountingJournalController extends Controller
             'entries' => $entries->map(static fn (AccountingJournalEntry $entry): array => [
                 'id' => $entry->id,
                 'date' => $entry->entry_date->toDateString(),
+                // #9370 — le journal est une donnée, plus une déduction à l'export.
+                'journal_code' => $entry->journal_code,
                 'piece' => $entry->piece,
                 'description' => $entry->description,
                 'account_code' => $entry->account_code,

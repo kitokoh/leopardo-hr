@@ -383,10 +383,12 @@ class FecExportTest extends TestCase
             $this->assertSame('20260805', $row['PieceDate']);
         }
 
-        // Paiement : trésorerie.
+        // Paiement : trésorerie. #9370 — le journal est désormais une entité
+        // paramétrable : un virement produit `BQ` (journal de banque) et non
+        // plus le code générique `TR` déduit du seul `source_type=payment`.
         foreach ($this->rowsForPiece($rows, 'PAY-') as $row) {
-            $this->assertSame('TR', $row['JournalCode']);
-            $this->assertSame('Journal de trésorerie', $row['JournalLib']);
+            $this->assertSame('BQ', $row['JournalCode']);
+            $this->assertSame('Journal de banque', $row['JournalLib']);
             $this->assertSame('20260810', $row['EcritureDate']);
             $this->assertSame('20260810', $row['PieceDate']);
         }

@@ -82,6 +82,17 @@ return [
         'bank_payment_exists' => 'Seçilen ödeme mevcut değil.',
     ],
 
+    // Yevmiye türü etiketleri (#9370)
+    'journal_types' => [
+        'sale' => 'Satış günlüğü',
+        'purchase' => 'Alış günlüğü',
+        'bank' => 'Banka günlüğü',
+        'cash' => 'Kasa günlüğü',
+        'payroll' => 'Personel günlüğü',
+        'misc' => 'Muhtelif kayıtlar',
+        'opening' => 'Açılış günlüğü',
+    ],
+
     'errors' => [
         'gateway_checkout_failed' => 'Ödeme sağlayıcısı geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.',
         'fiscal_year_invalid' => 'Geçersiz mali yıl.',
@@ -90,6 +101,11 @@ return [
         'wf_requires_lines' => 'Bir belgenin en az bir satırı olmalıdır.',
         'wf_contact_not_found' => 'Bu şirket için cari hesap bulunamadı.',
         'wf_contact_type_mismatch' => 'Cari hesap türü belgenin yönüyle uyumlu değil: alış faturası tedarikçi, satış faturası müşteri gerektirir.',
+        'journal_code_taken' => 'Bu yevmiye kodu bu şirket için zaten mevcut.',
+        'journal_has_entries' => 'Bu yevmiyede kayıtlar var: silmek yerine devre dışı bırakın.',
+        'journal_code_required' => 'Yevmiye kodu gereklidir.',
+        'journal_code_format' => 'Yevmiye kodu 2 ila 6 alfanümerik karakter olmalıdır.',
+        'journal_type_invalid' => 'Geçersiz yevmiye türü.',
         'wf_send_draft_only' => 'Yalnızca taslak gönderilebilir.',
         'wf_send_no_lines' => 'Satırı olmayan bir belge gönderilemez.',
         'wf_send_requires_contact' => 'Fatura veya iade faturası göndermek için müşteri iletişimi gereklidir.',

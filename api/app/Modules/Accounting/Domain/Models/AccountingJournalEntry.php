@@ -18,12 +18,14 @@ use Illuminate\Support\Carbon;
  * @property string|null $company_id
  * @property Carbon $entry_date
  * @property string $period
+ * @property string|null $journal_code
  * @property string $source_type
  * @property int $source_id
  * @property string $account_code
  * @property string $account_label
  * @property float $debit
  * @property float $credit
+ * @property string|null $piece
  * @property string|null $description
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -40,6 +42,7 @@ class AccountingJournalEntry extends Model
         'company_id',
         'entry_date',
         'period',
+        'journal_code',
         'source_type',
         'source_id',
         'account_code',

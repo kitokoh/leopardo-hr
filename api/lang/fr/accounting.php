@@ -82,6 +82,17 @@ return [
         'year_between' => 'L\'année doit être comprise entre 2000 et 2100.',
     ],
 
+    // Libellés des natures de journal (#9370)
+    'journal_types' => [
+        'sale' => 'Journal des ventes',
+        'purchase' => 'Journal des achats',
+        'bank' => 'Journal de banque',
+        'cash' => 'Journal de caisse',
+        'payroll' => 'Journal de paie',
+        'misc' => 'Opérations diverses',
+        'opening' => 'Journal d\'ouverture',
+    ],
+
     // Erreurs métier (issue #5227)
     'errors' => [
         'gateway_checkout_failed' => 'La passerelle de paiement est temporairement indisponible. Réessayez plus tard.',
@@ -91,6 +102,11 @@ return [
         'wf_requires_lines' => 'Un document doit avoir au moins une ligne.',
         'wf_contact_not_found' => 'Tiers introuvable pour cette entreprise.',
         'wf_contact_type_mismatch' => 'Le type de tiers est incompatible avec le sens du document : une facture d\'achat exige un fournisseur, une facture de vente un client.',
+        'journal_code_taken' => 'Ce code de journal existe déjà pour cette entreprise.',
+        'journal_has_entries' => 'Ce journal porte des écritures : désactivez-le au lieu de le supprimer.',
+        'journal_code_required' => 'Le code du journal est requis.',
+        'journal_code_format' => 'Le code du journal doit contenir 2 à 6 caractères alphanumériques.',
+        'journal_type_invalid' => 'Nature de journal invalide.',
         'wf_send_draft_only' => 'Seul un brouillon peut être envoyé.',
         'wf_send_no_lines' => 'Impossible d\'envoyer un document sans ligne.',
         'wf_send_requires_contact' => 'Un contact client est requis pour envoyer une facture ou un avoir.',

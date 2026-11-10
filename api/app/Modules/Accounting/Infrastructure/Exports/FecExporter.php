@@ -6,6 +6,7 @@ namespace App\Modules\Accounting\Infrastructure\Exports;
 
 use App\Modules\Accounting\Domain\Enums\DocumentType;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
+use App\Modules\Accounting\Domain\Models\AccountingJournal;
 use App\Modules\Accounting\Domain\Models\AccountingJournalEntry;
 use App\Support\CsvCellSanitizer;
 
@@ -39,6 +40,13 @@ final class FecExporter
      * @var array<string, string|null>
      */
     private array $documentTypes = [];
+
+    /**
+     * Cache des libellés de journal (clé company#code).
+     *
+     * @var array<string, string|null>
+     */
+    private array $journalLabels = [];
 
     /** Libellés lisibles des journaux FEC (fr). */
     private const JOURNAL_LIB = [
@@ -158,6 +166,9 @@ final class FecExporter
     private function buildRow(AccountingJournalEntry $entry, int $ecritureNum, string $currency): array
     {
         $journalCode = $this->journalCode($entry);
+        $journalLabel = $entry->journal_code !== null
+            ? $this->journalLabel($entry, $journalCode)
+            : (self::JOURNAL_LIB[$journalCode] ?? 'Opérations diverses');
         $debit = $entry->debit > 0.0 ? number_format($entry->debit, 2, ',', '') : '';
         $credit = $entry->credit > 0.0 ? number_format($entry->credit, 2, ',', '') : '';
         $amount = $debit !== '' ? $debit : $credit;
@@ -165,7 +176,7 @@ final class FecExporter
 
         return [
             $this->cell($journalCode),
-            $this->cell(self::JOURNAL_LIB[$journalCode] ?? 'Opérations diverses'),
+            $this->cell($journalLabel),
             $this->cell((string) $ecritureNum),
             $this->cell($date),
             $this->cell($entry->account_code),
@@ -181,20 +192,50 @@ final class FecExporter
     }
 
     /**
+     * Libellé du journal tel que paramétré par le tenant (entité #9370), avec
+     * repli sur les libellés FEC standards pour les codes connus et, en dernier
+     * recours, le code lui-même — jamais un libellé inventé.
+     */
+    private function journalLabel(AccountingJournalEntry $entry, string $journalCode): string
+    {
+        $key = $entry->company_id.'#'.$journalCode;
+
+        if (array_key_exists($key, $this->journalLabels)) {
+            return $this->journalLabels[$key] ?? (self::JOURNAL_LIB[$journalCode] ?? $journalCode);
+        }
+
+        $label = AccountingJournal::query()
+            ->withoutGlobalScopes()
+            ->where('company_id', $entry->company_id)
+            ->where('code', $journalCode)
+            ->value('label');
+
+        $this->journalLabels[$key] = is_string($label) && $label !== '' ? $label : null;
+
+        return $this->journalLabels[$key] ?? (self::JOURNAL_LIB[$journalCode] ?? $journalCode);
+    }
+
+    /**
      * Journal FEC d'une écriture.
      *
-     * #9367 — le type de document source fait désormais foi : une facture
-     * d'achat va en `AC` quel que soit le préfixe de son compte (un tenant
-     * turc poste `153`, un tenant PCG `607`), et une facture de vente va en
-     * `VE` y compris pour sa ligne client. L'ancienne heuristique sur le
-     * préfixe de compte classait `411` en `VE` mais `120` en `OD`, et séparait
-     * une même facture de son encaissement.
+     * #9367/#9370 — `journal_code` (entité journal) et le type de document
+     * source font foi : une facture d'achat va en `AC` quel que soit le préfixe
+     * de son compte (un tenant turc poste `153`, un tenant PCG `607`) et une
+     * facture de vente va en `VE` y compris pour sa ligne client. L'ancienne
+     * heuristique sur le préfixe de compte classait `411` en `VE` mais `120` en
+     * `OD`, et séparait une même facture de son encaissement.
      *
-     * Priorité : source explicite (document/paiement) → préfixe de compte
-     * (filet de sécurité pour les écritures historiques).
+     * Priorité : `journal_code` → source explicite (document/paiement) →
+     * préfixe de compte (filet de sécurité pour les écritures historiques).
      */
     private function journalCode(AccountingJournalEntry $entry): string
     {
+        // #9370 — la colonne `journal_code` fait foi dès qu'elle est renseignée :
+        // le journal est une entité paramétrable, plus une déduction à la lecture.
+        if (is_string($entry->journal_code) && $entry->journal_code !== '') {
+            return $entry->journal_code;
+        }
+
         if ($entry->source_type === 'payment') {
             return 'TR';
         }

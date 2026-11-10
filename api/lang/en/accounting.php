@@ -82,6 +82,17 @@ return [
         'bank_payment_exists' => 'The selected payment does not exist.',
     ],
 
+    // Journal nature labels (#9370)
+    'journal_types' => [
+        'sale' => 'Sales journal',
+        'purchase' => 'Purchase journal',
+        'bank' => 'Bank journal',
+        'cash' => 'Cash journal',
+        'payroll' => 'Payroll journal',
+        'misc' => 'General journal',
+        'opening' => 'Opening journal',
+    ],
+
     'errors' => [
         'gateway_checkout_failed' => 'The payment gateway is temporarily unavailable. Please try again later.',
         'fiscal_year_invalid' => 'Invalid fiscal year.',
@@ -90,6 +101,11 @@ return [
         'wf_requires_lines' => 'A document must have at least one line.',
         'wf_contact_not_found' => 'Contact not found for this company.',
         'wf_contact_type_mismatch' => 'The contact type does not match the document direction: a purchase invoice requires a supplier, a sales invoice requires a customer.',
+        'journal_code_taken' => 'This journal code already exists for this company.',
+        'journal_has_entries' => 'This journal holds entries: deactivate it instead of deleting it.',
+        'journal_code_required' => 'The journal code is required.',
+        'journal_code_format' => 'The journal code must be 2 to 6 alphanumeric characters.',
+        'journal_type_invalid' => 'Invalid journal nature.',
         'wf_send_draft_only' => 'Only a draft can be sent.',
         'wf_send_no_lines' => 'Cannot send a document without lines.',
         'wf_send_requires_contact' => 'A client contact is required to send an invoice or a credit note.',

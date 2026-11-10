@@ -24,6 +24,7 @@ use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingDocumentContr
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingFecController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingFiscalYearController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingJournalController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingJournalSettingsController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingLedgerController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingLetteringController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingReportController;
@@ -106,6 +107,13 @@ ModuleRoutes::tenantModule('accounting', function (): void {
         Route::post('/journal/periods/{period}/close', [AccountingJournalController::class, 'closePeriod']);
         Route::post('/documents/{document}/journal', [AccountingJournalController::class, 'postDocument'])->whereNumber('document');
 
+        // Journaux comptables (issue #9370) — le journal est une entité
+        // paramétrable : code FEC, libellé, nature et compte de trésorerie par
+        // défaut. Lecture large, écriture réservée au principal (paramétrage
+        // structurant : il conditionne tout l'export FEC).
+        Route::get('/journals', [AccountingJournalSettingsController::class, 'index']);
+        Route::post('/journals/seed', [AccountingJournalSettingsController::class, 'seed']);
+
         // Tableaux de bord comptables (issue #5395) — synthèse + export CSV impayés.
         Route::get('/dashboard', [AccountingDashboardController::class, 'show']);
         Route::get('/dashboard/export', [AccountingDashboardController::class, 'export']);
@@ -122,6 +130,15 @@ ModuleRoutes::tenantModule('accounting', function (): void {
         // Lettrage des comptes de tiers (équilibre Σ débits = Σ crédits).
         Route::post('/journal/lettering', [AccountingLetteringController::class, 'store']);
         Route::delete('/journal/lettering/{letter}', [AccountingLetteringController::class, 'destroy']);
+    });
+
+    // Paramétrage des journaux (issue #9370) — réservé au propriétaire :
+    // le code de journal conditionne la colonne JournalCode de l'export FEC,
+    // donc la conformité de la liasse remise à l'administration.
+    Route::middleware('api.manager:principal,module:accounting')->group(function (): void {
+        Route::post('/journals', [AccountingJournalSettingsController::class, 'store']);
+        Route::put('/journals/{journal}', [AccountingJournalSettingsController::class, 'update'])->whereNumber('journal');
+        Route::delete('/journals/{journal}', [AccountingJournalSettingsController::class, 'destroy'])->whereNumber('journal');
     });
 
     // ── Rapports (issue #5271) + conversion (issue #5270) — RBAC
