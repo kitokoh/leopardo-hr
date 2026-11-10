@@ -17,9 +17,9 @@ use App\Core\AI\Infrastructure\Adapters\GroqWhisperAdapter;
 use App\Core\AI\Infrastructure\Adapters\UnavailableSpeechToTextAdapter;
 use App\Core\Auth\Domain\Contracts\InvitationActivationContract;
 use App\Core\Auth\Domain\Contracts\SmsCodeSenderContract;
-use App\Core\Security\InsecureConfigurationGuard;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Sms\LogOnlySmsCodeSender;
+use App\Core\Security\InsecureConfigurationGuard;
 use App\Core\Notifications\Contracts\InAppNotifier;
 use App\Core\Outbox\Contracts\OutboxPublisher;
 use App\Core\Outbox\Infrastructure\DatabaseOutboxPublisher;
@@ -258,12 +258,12 @@ class AppServiceProvider extends ServiceProvider
         // développement connue.
         //
         // Le contrôle est volontairement limité au runtime de service
-        // (`! runningInConsole()`) : les étapes de BUILD (composer install →
-        // `artisan package:discover`, `config:cache`, migrations de CI) n'ont
-        // pas de secret de production à disposition et ne doivent pas échouer
-        // ici — c'est le rôle du déploiement. Un serveur réel (php-fpm,
-        // Octane) n'est pas en console : il est donc bien couvert.
-        if (! $this->app->runningInConsole()) {
+        // (`runningInConsole() === false`) : les étapes de BUILD (composer
+        // install → `artisan package:discover`, `config:cache`, migrations de
+        // CI) n'ont pas de secret de production à disposition et ne doivent
+        // pas échouer ici — c'est le rôle du déploiement. Un serveur réel
+        // (php-fpm, Octane) n'est pas en console : il est donc bien couvert.
+        if ($this->app->runningInConsole() === false) {
             InsecureConfigurationGuard::check(
                 (string) $this->app->environment(),
                 config('database.connections.pgsql.password') !== null
