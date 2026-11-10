@@ -3475,7 +3475,13 @@
     "moduleCrm": "CRM",
     "moduleShowcase": "Showcase website",
     "moduleHr": "HR (team, attendance, payroll)",
-    "moduleBillingView": "Billing (read-only)"
+    "moduleBillingView": "Billing (read-only)",
+    "activationLinkTitle": "The invitation email could not be sent",
+    "activationLinkBody": "Forward this link to your team member: it lets them set their password and activate their account. It expires on {date}.",
+    "activationLinkCopy": "Copy the link",
+    "activationLinkCopied": "Link copied.",
+    "activationLinkCopyFailed": "Copy failed: select the link and copy it manually.",
+    "mailNotDelivered": "Not sent by email"
   },
   "attendanceBreakFailure": "Break not confirmed",
   "attendanceBreakHint": "Closes the session and starts a break",

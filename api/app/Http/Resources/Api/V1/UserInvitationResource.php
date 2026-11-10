@@ -28,7 +28,27 @@ class UserInvitationResource extends JsonResource
             'accepted_at' => $this->accepted_at?->toIso8601String(),
             'last_sent_at' => $this->last_sent_at?->toIso8601String(),
             'status' => $this->status(),
+            // #9322 : le dernier envoi a-t-il réellement abouti ? `null` quand
+            // aucune tentative n'est connue (invitation antérieure au drapeau).
+            // Lu depuis `metadata` — jamais depuis le jeton, qui n'est jamais
+            // persisté en clair.
+            'mail_delivered' => $this->lastMailDelivered(),
         ];
+    }
+
+    /**
+     * #9322 — issue de la dernière tentative d'envoi, telle que persistée par
+     * `UserInvitationService::createAndSend()`.
+     */
+    private function lastMailDelivered(): ?bool
+    {
+        $metadata = $this->metadata;
+
+        if (! is_array($metadata) || ! array_key_exists('last_mail_delivered', $metadata)) {
+            return null;
+        }
+
+        return (bool) $metadata['last_mail_delivered'];
     }
 
     private function status(): string

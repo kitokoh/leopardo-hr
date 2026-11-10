@@ -3475,7 +3475,13 @@
     "moduleCrm": "CRM",
     "moduleShowcase": "Site vitrine",
     "moduleHr": "RH (équipe, pointage, paie)",
-    "moduleBillingView": "Facturation (lecture)"
+    "moduleBillingView": "Facturation (lecture)",
+    "activationLinkTitle": "Le courriel d'invitation n'a pas pu partir",
+    "activationLinkBody": "Transmettez ce lien au collaborateur : il lui permet de définir son mot de passe et d'activer son compte. Il expire le {date}.",
+    "activationLinkCopy": "Copier le lien",
+    "activationLinkCopied": "Lien copié.",
+    "activationLinkCopyFailed": "Copie impossible : sélectionnez le lien et copiez-le manuellement.",
+    "mailNotDelivered": "Non envoyé par e-mail"
   },
   "attendanceBreakFailure": "Pause non confirmée",
   "attendanceBreakHint": "Ferme la session et marque une pause",

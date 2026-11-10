@@ -73,7 +73,7 @@ class OnboardingLifecycleEdgeCasesTest extends TestCase
             employee: $employee,
             invitedByType: 'manager',
             invitedByEmail: $this->manager->email,
-        );
+        )->token;
 
         $invitation = UserInvitation::query()
             ->where('company_id', $this->company->id)
@@ -167,7 +167,7 @@ class OnboardingLifecycleEdgeCasesTest extends TestCase
             employee: $employee,
             invitedByType: 'manager',
             invitedByEmail: $this->manager->email,
-        );
+        )->token;
         $this->assertNotSame('', $newToken, 'Un resend sur une invitation ouverte doit émettre un jeton.');
 
         $this->postJson("/api/v1/onboarding/invitation/{$newToken}/activate", [

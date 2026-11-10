@@ -59,6 +59,15 @@ export const TEAM_ROLES_FR = {
   invitationExpired: 'Expirée',
   invitationNone: 'Aucune invitation',
   invitationSentAt: 'Envoyée le {date}',
+  // #9322 — le transport mail peut être KO (#9318) : l'invitation reste
+  // valide mais doit alors être transmise à la main par le manager.
+  activationLinkTitle: "Le courriel d'invitation n'a pas pu partir",
+  activationLinkBody:
+    "Transmettez ce lien au collaborateur : il lui permet de définir son mot de passe et d'activer son compte. Il expire le {date}.",
+  activationLinkCopy: 'Copier le lien',
+  activationLinkCopied: 'Lien copié.',
+  activationLinkCopyFailed: 'Copie impossible : sélectionnez le lien et copiez-le manuellement.',
+  mailNotDelivered: 'Non envoyé par e-mail',
   expiresAt: 'Expire le {date}',
   resend: "Renvoyer l'invitation",
   resendSuccess: 'Invitation renvoyée.',

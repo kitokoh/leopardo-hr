@@ -3475,7 +3475,13 @@
     "moduleCrm": "إدارة علاقات العملاء",
     "moduleShowcase": "الموقع التعريفي",
     "moduleHr": "الموارد البشرية (الفريق، الحضور، الرواتب)",
-    "moduleBillingView": "الفوترة (قراءة فقط)"
+    "moduleBillingView": "الفوترة (قراءة فقط)",
+    "activationLinkTitle": "تعذّر إرسال بريد الدعوة",
+    "activationLinkBody": "أرسل هذا الرابط إلى المتعاون: يتيح له تعيين كلمة مروره وتنشيط حسابه. تنتهي صلاحيته في {date}.",
+    "activationLinkCopy": "نسخ الرابط",
+    "activationLinkCopied": "تم نسخ الرابط.",
+    "activationLinkCopyFailed": "تعذّر النسخ: حدّد الرابط وانسخه يدويًا.",
+    "mailNotDelivered": "لم يُرسل بالبريد الإلكتروني"
   },
   "attendanceBreakFailure": "لم يتم تأكيد الاستراحة",
   "attendanceBreakHint": "يغلق الجلسة ويبدأ الاستراحة",

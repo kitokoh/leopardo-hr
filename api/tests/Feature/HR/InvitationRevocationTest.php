@@ -62,7 +62,7 @@ class InvitationRevocationTest extends TestCase
             employee: $invitee,
             invitedByType: 'manager',
             invitedByEmail: $inviter->email,
-        );
+        )->token;
 
         /** @var UserInvitation $invitation */
         $invitation = UserInvitation::query()

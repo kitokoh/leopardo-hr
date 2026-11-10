@@ -67,7 +67,7 @@ class OnboardingActivationConvergenceTest extends TestCase
             employee: $employee,
             invitedByType: 'manager',
             invitedByEmail: $this->manager->email,
-        );
+        )->token;
 
         $invitation = UserInvitation::query()
             ->where('company_id', $this->company->id)

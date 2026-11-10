@@ -13,6 +13,7 @@ use App\Events\EmployeeCreated;
 use App\Events\EmployeeRoleAssigned;
 use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
 use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
+use App\Modules\HR\Application\DTOs\UserInvitationDispatchResult;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -20,6 +21,18 @@ use Illuminate\Support\Str;
 
 class EmployeeService
 {
+    /**
+     * #9322 — issue de l'invitation éventuellement émise par le dernier `create()`.
+     *
+     * `create()` doit continuer à retourner l'`Employee` (4 appelants), mais le
+     * manager qui crée un collaborateur a besoin de savoir si le courriel est
+     * parti — sinon il ne peut pas relayer le lien quand le mailer est KO. Ce
+     * champ est REMIS À ZÉRO à chaque `create()` et lu IMMÉDIATEMENT après par
+     * le contrôleur demandeur ; il ne sert à rien d'autre et n'est jamais
+     * exposé tel quel.
+     */
+    private ?UserInvitationDispatchResult $lastInvitationDispatch = null;
+
     public function __construct(
         private readonly UserInvitationService $userInvitationService,
         private readonly TenantCacheService $tenantCache,
@@ -29,6 +42,7 @@ class EmployeeService
     {
         /** @var array<string, mixed> $payload */
         $payload = $dto->toArray();
+        $this->lastInvitationDispatch = null;
         $sendInvitation = (bool) Arr::pull($payload, 'send_invitation', false);
         /** @var list<array{resource_type: string, resource_id: int, access_level: string}> $resourceAssignments */
         $resourceAssignments = (array) Arr::pull($payload, 'resource_assignments', []);
@@ -99,7 +113,7 @@ class EmployeeService
         if ($sendInvitation || ! $providedPassword) {
             $company = $employee->company;
             if ($company && $actor) {
-                $this->userInvitationService->createAndSend(
+                $this->lastInvitationDispatch = $this->userInvitationService->createAndSend(
                     company: $company,
                     employee: $employee,
                     invitedByType: 'manager',
@@ -121,6 +135,16 @@ class EmployeeService
         }
 
         return $employee;
+    }
+
+    /**
+     * #9322 — issue de l'invitation émise par le dernier `create()` du même
+     * service (`null` si aucune invitation n'a été demandée). À lire juste
+     * après `create()`, comme le ferait un retour secondaire.
+     */
+    public function lastInvitationDispatch(): ?UserInvitationDispatchResult
+    {
+        return $this->lastInvitationDispatch;
     }
 
     public function update(Employee $actor, Employee $employee, UpdateEmployeeDTO $dto): Employee

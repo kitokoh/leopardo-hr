@@ -506,7 +506,7 @@ class PlatformCompanyController extends Controller
         $superAdmin = $request->user('super_admin_web') ?? $request->user('super_admin_api');
 
         DB::statement('SET search_path TO public');
-        $token = $invitationService->createAndSend(
+        $dispatch = $invitationService->createAndSend(
             company: $company,
             employee: $managerEmployee,
             invitedByType: 'super_admin',
@@ -516,10 +516,18 @@ class PlatformCompanyController extends Controller
         // #9114 : une invitation déjà consommée n'émet plus de jeton (le compte
         // est actif). Annoncer « renvoyée » dans ce cas ferait croire au
         // super-admin qu'un courriel est parti alors que rien n'a été envoyé.
-        if ($token === '') {
+        if ($dispatch->token === '') {
             return back()->withErrors([
                 'resend' => 'Invitation deja acceptee : ce manager est deja actif. Utiliser "mot de passe oublie" si necessaire.',
             ]);
+        }
+
+        // #9322 : même faille côté super-admin — l'espace existe, le manager
+        // n'a aucun chemin de connexion si le transport mail est KO.
+        if ($dispatch->hasFallbackLink()) {
+            return back()
+                ->with('status', 'Le courriel n a pas pu partir. Transmettez ce lien au manager.')
+                ->with('invitation_activation_url', $dispatch->activationUrl);
         }
 
         return back()->with('status', 'Invitation manager renvoyee.');

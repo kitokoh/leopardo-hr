@@ -66,7 +66,7 @@ class OnboardingActivationRegressionTest extends TestCase
             employee: $employee,
             invitedByType: 'manager',
             invitedByEmail: $this->manager->email,
-        );
+        )->token;
 
         $invitation = UserInvitation::query()
             ->where('company_id', $this->company->id)
@@ -140,7 +140,9 @@ class OnboardingActivationRegressionTest extends TestCase
             invitedByEmail: $this->manager->email,
         );
 
-        $this->assertSame('', $returned, 'Aucun jeton ne doit être émis pour une invitation consommée.');
+        $this->assertSame('', $returned->token, 'Aucun jeton ne doit être émis pour une invitation consommée.');
+        $this->assertFalse($returned->mailSent, 'Aucun courriel ne doit être annoncé envoyé pour une invitation consommée.');
+        $this->assertFalse($returned->hasFallbackLink(), 'Aucun lien ne doit être exposé pour une invitation consommée.');
 
         $invitation->refresh();
         $this->assertSame($acceptedAt, $invitation->accepted_at?->toIso8601String());
