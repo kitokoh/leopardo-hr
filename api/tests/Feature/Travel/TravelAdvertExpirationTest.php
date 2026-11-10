@@ -168,8 +168,12 @@ class TravelAdvertExpirationTest extends TestCase
         $advert = $this->makePublishedAdvert($company, now()->subDay());
         Artisan::call('travel:expire-adverts');
 
-        // Un agent ne peut pas renouveler.
-        $this->login($company, managerRole: 'agent');
+        // Un manager sans droit gestion ne peut pas renouveler. `dept` et non
+        // `agent` : `agent` n'est pas un rôle de la contrainte
+        // `employees_manager_role_check` (#9098) — l'insertion échouait en
+        // SQLSTATE 23514 avant d'atteindre le 403, si bien que le test ne
+        // vérifiait pas ce qu'il annonçait.
+        $this->login($company, managerRole: 'dept');
         $this->postJson("/api/v1/travel/adverts/{$advert->id}/renew", ['provider' => 'cash'])
             ->assertStatus(403);
 
