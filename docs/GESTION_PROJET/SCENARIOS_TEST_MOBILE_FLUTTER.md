@@ -359,6 +359,16 @@ Vérifié : `node shared/i18n/sync/sync-mobile.js` → `I18N_SYNC_MOBILE_OK`, `n
 
 **Vérification** : `I18N_VALIDATION_OK (4 locales)` et parité ×4 vertes après `sync-mobile.js`. Aucun test Flutter exécuté dans la sandbox (SDK absent) — la CI fait foi pour cette surface, comme pour les notes précédentes.
 
+## Note de conservation 2026-11-09 — mutualisation POS : scanner déplacé dans le core partagé (PR #9262)
+
+**Le scanner de codes-barres de la caisse Retail est mutualisé dans `leopardo_core`** : `front/mobile_apps/leopardo_pos_retail/lib/features/pos/barcode_scanner_screen.dart` → `front/mobile_apps/leopardo_core/lib/core/pos/pos_barcode_scanner.dart` (renommage + extraction de la logique partagée des deux caisses — Retail et Restaurant — dans `pos_input`, `pos_search`, `pos_sync`, `pos_ticket`, `pos_widgets`).
+
+- Aucun changement de comportement métier : la logique de scan est déplacée, pas réécrite ; la caisse Retail consomme désormais le composant partagé.
+- Scénarios existants valides tels quels ; la surface est couverte par les jobs CI de compilation (smoke build debug APK).
+- Vérification : CI (smoke build + tests Dart dans les jobs de compilation).
+
+**Scénarios automatisés** : `front/mobile_apps/leopardo_core/test/pos/pos_input_test.dart` (saisie, bornage, virgule) — exécutés dans les jobs de compilation CI.
+
 ## Note de conservation 2026-11-09 — socle stock mobile partage (issues #9272, #9273, #9274, #9275, PR #9277)
 
 **Le mobile gagne des surfaces stock, sans jamais devenir le seul chemin.** Le socle vit dans `leopardo_core` (`lib/models/stock_models.dart`, `lib/features/stock/data/stock_repository.dart`, `lib/features/stock/presentation/stock_screen.dart`) : une seule implementation pour les deux verticales, aucune copie par app (garde `check-mobile-duplicated-drift.sh`).

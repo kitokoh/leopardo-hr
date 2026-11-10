@@ -114,7 +114,7 @@ describe('dashboard-nav — menu une ligne + sous-menus de groupe (#7328/#7724)'
 
   it('groupes cibles du catalogue : Finance, Clients & croissance, Opérations', () => {
     expect(navGroupKeys('finance')).toEqual(['accounting']);
-    expect(navGroupKeys('growth')).toEqual(['crm', 'marketing', 'showcase', 'fundraising', 'partner']);
+    expect(navGroupKeys('growth')).toEqual(['crm', 'marketing', 'showcase', 'library', 'fundraising', 'partner']);
     expect(navGroupKeys('operations')).toEqual(['fleet', 'cameras']);
   });
 

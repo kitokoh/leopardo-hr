@@ -66,9 +66,7 @@ class RetailPosStockDataSource implements StockDataSource {
       options: Options(receiveTimeout: _readTimeout),
     );
 
-    return _list(response.data)
-        .map((raw) => StockLevel.fromJson(raw))
-        .toList();
+    return _list(response.data).map((raw) => StockLevel.fromJson(raw)).toList();
   }
 
   @override
@@ -105,9 +103,7 @@ class RetailPosStockDataSource implements StockDataSource {
       options: Options(receiveTimeout: _readTimeout),
     );
 
-    return _list(response.data)
-        .map((raw) => StockAlert.fromJson(raw))
-        .toList();
+    return _list(response.data).map((raw) => StockAlert.fromJson(raw)).toList();
   }
 
   @override
@@ -129,7 +125,8 @@ class RetailPosStockDataSource implements StockDataSource {
       );
     }
 
-    final key = idempotencyKey ??
+    final key =
+        idempotencyKey ??
         movementKey(
           locationId: locationId,
           productId: productId,
@@ -228,7 +225,10 @@ class RetailPosStockDataSource implements StockDataSource {
     final data = payload['data'];
 
     if (data is List) {
-      return data.whereType<Map>().map((e) => e.cast<String, dynamic>()).toList();
+      return data
+          .whereType<Map>()
+          .map((e) => e.cast<String, dynamic>())
+          .toList();
     }
 
     if (data is Map && data['data'] is List) {

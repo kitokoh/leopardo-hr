@@ -1,3 +1,20 @@
+## 2026-11-09 — BC-17 STOCK multi-tenant : clés i18n du stock mobile dans le catalogue admin (refs #9272–#9275, PR #9277)
+
+**Surface Web admin** : `front/admin-dashboard/src/i18n/locales/{fr,en,ar,tr}.json` — ajout du bloc `stockMobile*` (46 clés par locale). Aucune route, aucun composant, aucun contrat API modifié : c'est un **catalogue de libellés**, pas une vue.
+
+**Pourquoi c'est un scénario de test et pas un simple ajout de traductions** : ces clés sont la contrepartie web de l'écran stock mobile. La règle produit du lot est que **le mobile reste une option** — chaque opération de stock exposée sur mobile doit avoir une surface web documentée. Si une clé `stockMobile*` disparaît ou se désynchronise d'une locale, la parité web/mobile se casse silencieusement : l'écran mobile retombe sur la clé brute (ou sur l'anglais) sans qu'aucun test d'écran ne le voie.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| les 4 locales portent le même jeu de clés `stockMobile*` | une locale retombe sur la clé brute à l'écran |
+| une clé `stockMobile*` retirée du catalogue canonique | l'écran mobile affiche `stockMobileSave` au lieu de « Enregistrer » |
+| arabe toujours RTL avec les nouvelles clés | la mise en page du stock se casse en arabe |
+| `check-mobile-stock-parity.sh` voit chaque endpoint mobile documenté | un endpoint mobile de stock sans surface web passe inaperçu |
+
+**Automatisé** : `shared/i18n` — parité ×4 (littéraux + clés) ; `front/admin-dashboard` — `eslint .` et `vite build` ; `dev-hub/tools/check-mobile-stock-parity.sh` (parité web/mobile du stock).
+
+**Non couvert** : revue visuelle des libellés par un locuteur natif — l'audit reste statique.
+
 ## 2026-11-08 — Remédiation POS (BC-17 RETAIL + BC-25 RESTAURANT) : RBAC retail, remboursements, tiroir-caisse, rapports, deux apps tablette (refs #9207–#9215)
 
 **Surface API** : 7 nouvelles routes sous `/v1/retail` (groupe auth tenant + flag
