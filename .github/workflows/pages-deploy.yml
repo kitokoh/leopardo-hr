@@ -56,9 +56,17 @@ jobs:
           rm -rf _site
           cp -r site/gh-pages _site
           # Régénère le portail depuis la taxonomie (source de vérité) puis le publie.
+          # `build_portal.py` lit `docs/recette/notes-humaines.json` (notes humaines
+          # versionnées) et les intègre au rendu statique ; il ne l'écrase jamais.
           python3 docs/recette/build_portal.py --out docs/recette
           mkdir -p _site/recette
           cp -r docs/recette/. _site/recette/
+          # Le fichier de notes humaines doit être publié : le portail le lit en
+          # `fetch()` pour rafraîchir les colonnes « Note humaine » côté navigateur.
+          test -f _site/recette/notes-humaines.json || {
+            echo "::error::notes-humaines.json manquant dans l'artefact Pages"; exit 1; }
+          python3 -c "import json,sys; d=json.load(open('_site/recette/notes-humaines.json')); sys.exit(0 if isinstance(d.get('notes'), dict) else 1)" \
+            || { echo "::error::notes-humaines.json invalide (clé 'notes' absente)"; exit 1; }
           # L'onglet « Recette » est déjà présent dans le menu principal de
           # site/gh-pages/index.html (lien relatif vers recette/), donc aucune
           # injection de lien n'est nécessaire ici.

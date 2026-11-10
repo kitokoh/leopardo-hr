@@ -6,7 +6,7 @@
 <title>UC-01 — Connexion d&#x27;un employé à l&#x27;espace client web — Portail de recette Leopardo</title>
 <link rel="stylesheet" href="../assets/portal.css">
 </head>
-<body>
+<body data-notes-url="../notes-humaines.json">
 <header class="topbar">
   <div class="wrap topbar-inner">
     <a class="brand" href="../index.html">
@@ -74,33 +74,61 @@
         <tr>
           <td class="center"><span class="note note-good">4/5</span></td>
           <td class="obs">Exécuté contre l&#x27;API locale reconstruite. <code>POST /api/v1/auth/login</code> (karim.aouad@example.com / password123) → <strong>200</strong>, jeton Sanctum retourné (<code>token_type</code>, <code>token_expires_at</code>), <code>data.role = &quot;employee&quot;</code>. <code>GET /api/v1/auth/me</code> avec le jeton → <strong>200</strong> (profil complet, session valide). Mauvais mot de passe → <strong>401</strong> (pas de fuite). L&#x27;UI web Next.js n&#x27;a pas pu être servie : <code>next build</code> est tué par la limite mémoire de l&#x27;environnement (2 Go, exit 137) — le parcours visuel (redirection, F5, déconnexion) n&#x27;a donc pas été observé dans un navigateur. Le socle d&#x27;authentification est conforme.</td>
-          <td class="center human-cell"><span class="muted">—</span></td>
-          <td class="human-cell"><span class="muted">Réservé à l'évaluation humaine</span></td>
+          <td class="center human-cell" data-human-note="UC-01"><span class="muted">—</span></td>
+          <td class="human-cell" data-human-obs="UC-01"><span class="muted">Non renseignée — éditable ci-dessous.</span></td>
         </tr>
       </tbody>
     </table>
   </div>
 </section>
 
-<section class="panel eval-panel" data-uc="UC-01">
-  <h3>Votre évaluation (saisie locale)</h3>
-  <p class="muted">Cette saisie est enregistrée dans votre navigateur (localStorage) et peut être exportée en JSON.
-  Elle ne modifie pas les colonnes IA/humaine du document versionné.</p>
+<section class="panel eval-panel" data-uc="UC-01"
+         data-repo="Kitokoh/leopardo-hr" data-branch="main"
+         data-path="docs/recette/notes-humaines.json" data-notes-url="../notes-humaines.json">
+  <h3>Votre évaluation humaine</h3>
+  <p class="muted">Les notes saisies ici sont <strong>enregistrées dans le dépôt</strong>
+  (<code>docs/recette/notes-humaines.json</code>) via l'API GitHub : elles sont donc versionnées et visibles par tous.
+  Un jeton personnel GitHub est requis ; il reste stocké <strong>uniquement dans votre navigateur</strong>.</p>
+
+  <details class="token-box">
+    <summary>Configurer mon jeton GitHub</summary>
+    <div class="token-body">
+      <p class="muted small">Créez un token sur
+        <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">github.com/settings/tokens</a>
+        avec le scope <code>repo</code> (token classique) ou la permission
+        <code>Contents: Read and write</code> (token fin). Il n'est envoyé qu'à
+        <code>api.github.com</code> et n'est jamais écrit dans le dépôt.</p>
+      <label>Jeton GitHub
+        <input type="password" class="gh-token" autocomplete="off" spellcheck="false"
+               placeholder="ghp_… ou github_pat_…">
+      </label>
+      <label>Votre nom (affiché comme auteur)
+        <input type="text" class="gh-author" autocomplete="off" placeholder="ex. Amina T.">
+      </label>
+      <div class="eval-actions">
+        <button class="btn btn-primary token-save" type="button">Enregistrer le jeton</button>
+        <button class="btn btn-ghost token-clear" type="button">Effacer le jeton</button>
+        <span class="token-status muted"></span>
+      </div>
+    </div>
+  </details>
+
   <div class="eval-form">
-    <label>Votre note (/5)
+    <label>Note humaine (/5)
       <select class="eval-note">
         <option value="">—</option>
         <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
       </select>
     </label>
-    <label class="eval-obs-label">Votre observation
+    <label class="eval-obs-label">Observation humaine
       <textarea class="eval-obs" rows="3" placeholder="Décrivez factuellement ce que vous avez observé…"></textarea>
     </label>
     <div class="eval-actions">
-      <button class="btn btn-primary eval-save" type="button">Enregistrer</button>
-      <button class="btn btn-ghost eval-export" type="button">Exporter mes évaluations (JSON)</button>
+      <button class="btn btn-primary eval-save" type="button">Enregistrer dans le dépôt</button>
+      <a class="btn btn-ghost" href="https://github.com/Kitokoh/leopardo-hr/edit/main/docs/recette/notes-humaines.json" target="_blank" rel="noopener">Éditer sur GitHub</a>
       <span class="eval-status muted"></span>
     </div>
+    <p class="eval-meta muted small"></p>
   </div>
 </section>
 

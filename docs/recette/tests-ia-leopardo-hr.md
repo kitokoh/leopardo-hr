@@ -686,4 +686,5 @@ La bibliothèque s'affiche correctement, la navigation est fluide, le cache publ
 
 **Cas notés (IA) :** 14 · **Total des notes IA :** 60 · **Moyenne IA :** 4.29 / 5 · **Cas bloquants (≤2) :** 1
 
-> La colonne « Note humaine (/5) » reste volontairement vide : elle est réservée à l'évaluation humaine.
+> La colonne « Note humaine (/5) » est renseignée par les testeurs humains depuis le portail
+> (ou directement dans `docs/recette/notes-humaines.json`) ; elle est versionnée dans le dépôt.

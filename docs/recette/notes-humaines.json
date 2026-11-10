@@ -1,0 +1,167 @@
+{
+  "_meta": {
+    "description": "Notes humaines du portail de recette leopardo-hr. Modifiable depuis le portail (jeton GitHub requis) ou directement sur GitHub.",
+    "schema_version": 1,
+    "repo": "Kitokoh/leopardo-hr",
+    "path": "docs/recette/notes-humaines.json",
+    "updated_at": ""
+  },
+  "notes": {
+    "UC-01": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-02": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-03": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-04": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-05": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-06": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-07": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-08": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-09": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-10": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-11": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-12": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-13": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-14": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-15": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-16": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-17": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-18": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-19": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-20": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-21": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-22": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-23": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-24": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-25": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    },
+    "UC-26": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": ""
+    }
+  }
+}
