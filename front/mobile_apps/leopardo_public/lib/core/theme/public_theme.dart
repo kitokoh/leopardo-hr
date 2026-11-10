@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:leopardo_core/core/theme/app_colors.dart';
 
 /// Thème de l'application grand public Leopardo (`leopardo_public`).
 ///
@@ -12,11 +13,18 @@ import 'package:flutter/material.dart';
 ///
 /// ## Source unique des tokens
 ///
-/// Les valeurs ci-dessous sont la copie exacte de `front/web/tailwind.config.ts`
-/// (palette `emerald` / `slate`) et des classes utilisées par le portail web.
-/// Toute modification doit être faite **des deux côtés** : c'est le prix d'un
-/// langage visuel commun entre deux stacks. La table de correspondance est
-/// documentée token par token pour rendre la dérive visible en revue.
+/// Les couleurs ne sont PAS définies ici : elles vivent dans
+/// `leopardo_core/lib/core/theme/app_colors.dart` (tokens `public*`), seule
+/// source autorisée côté mobile — la garde
+/// `dev-hub/tools/validate-mobile-color-tokens.ps1` rejette tout littéral
+/// `Color(0x...)` hors de ce fichier. Les constantes ci-dessous sont des
+/// alias de lecture vers `AppColors`.
+///
+/// Les valeurs de `AppColors.public*` sont la copie exacte de
+/// `front/web/tailwind.config.ts` (palette `emerald` / `slate`). Toute
+/// modification doit être faite **des deux côtés** : c'est le prix d'un
+/// langage visuel commun entre deux stacks. La table de correspondance
+/// ci-dessous rend la dérive visible en revue.
 ///
 /// | Token Flutter        | Source web                          |
 /// |----------------------|-------------------------------------|
@@ -38,22 +46,25 @@ import 'package:flutter/material.dart';
 class PublicTheme {
   const PublicTheme._();
 
-  // ── Palette (miroir de tailwind.config.ts) ──────────────────────────────
-  static const Color emerald50 = Color(0xFFECFDF5);
-  static const Color emerald100 = Color(0xFFD1FAE5);
-  static const Color emerald400 = Color(0xFF34D399);
-  static const Color emerald500 = Color(0xFF10B981);
-  static const Color emerald600 = Color(0xFF059669);
-  static const Color emerald700 = Color(0xFF047857);
+  // ── Palette ─────────────────────────────────────────────────────────────
+  // Les valeurs vivent dans `AppColors` (source unique côté mobile, gardée par
+  // `dev-hub/tools/validate-mobile-color-tokens.ps1`). Ces alias ne sont que
+  // des raccourcis de lecture : ils ne redéfinissent AUCUNE couleur.
+  static const Color emerald50 = AppColors.publicEmerald50;
+  static const Color emerald100 = AppColors.publicEmerald100;
+  static const Color emerald400 = AppColors.publicEmerald400;
+  static const Color emerald500 = AppColors.publicEmerald500;
+  static const Color emerald600 = AppColors.publicEmerald600;
+  static const Color emerald700 = AppColors.publicEmerald700;
 
-  static const Color slate50 = Color(0xFFF8FAFC);
-  static const Color slate100 = Color(0xFFF1F5F9);
-  static const Color slate200 = Color(0xFFE2E8F0);
-  static const Color slate400 = Color(0xFF94A3B8);
-  static const Color slate500 = Color(0xFF64748B);
-  static const Color slate600 = Color(0xFF475569);
-  static const Color slate900 = Color(0xFF0F172A);
-  static const Color slate950 = Color(0xFF020617);
+  static const Color slate50 = AppColors.publicSlate50;
+  static const Color slate100 = AppColors.publicSlate100;
+  static const Color slate200 = AppColors.publicSlate200;
+  static const Color slate400 = AppColors.publicSlate400;
+  static const Color slate500 = AppColors.publicSlate500;
+  static const Color slate600 = AppColors.publicSlate600;
+  static const Color slate900 = AppColors.publicSlate900;
+  static const Color slate950 = AppColors.publicSlate950;
 
   // ── Rayons (rounded-xl / rounded-2xl) ───────────────────────────────────
   static const double radiusXl = 12;
@@ -74,7 +85,7 @@ class PublicTheme {
       onSurfaceVariant: slate600,
       outline: slate200,
       outlineVariant: slate200,
-      error: Color(0xFFDC2626),
+      error: AppColors.publicError,
       onError: Colors.white,
     );
 
@@ -86,17 +97,17 @@ class PublicTheme {
     const scheme = ColorScheme.dark(
       primary: emerald400,
       onPrimary: slate950,
-      primaryContainer: Color(0xFF064E3B),
+      primaryContainer: AppColors.publicEmerald700,
       onPrimaryContainer: emerald100,
       secondary: emerald500,
       onSecondary: slate950,
       surface: slate950,
-      onSurface: Color(0xFFF1F5F9),
-      surfaceContainerHighest: Color(0xFF1E293B),
+      onSurface: AppColors.publicTextDark,
+      surfaceContainerHighest: AppColors.publicSurfaceDarkAlt,
       onSurfaceVariant: slate400,
-      outline: Color(0xFF334155),
-      outlineVariant: Color(0xFF1E293B),
-      error: Color(0xFFF87171),
+      outline: AppColors.publicBorderDark,
+      outlineVariant: AppColors.publicSurfaceDarkAlt,
+      error: AppColors.publicErrorDark,
       onError: slate950,
     );
 
@@ -176,7 +187,7 @@ class PublicTheme {
       ),
 
       cardTheme: CardThemeData(
-        color: isDark ? const Color(0xFF0B1220) : Colors.white,
+        color: isDark ? const AppColors.publicSurfaceDark : Colors.white,
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
@@ -226,7 +237,7 @@ class PublicTheme {
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: isDark ? const Color(0xFF0B1220) : Colors.white,
+        fillColor: isDark ? const AppColors.publicSurfaceDark : Colors.white,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         hintStyle: TextStyle(color: scheme.onSurfaceVariant),
         border: OutlineInputBorder(
@@ -244,7 +255,7 @@ class PublicTheme {
       ),
 
       chipTheme: base.chipTheme.copyWith(
-        backgroundColor: isDark ? const Color(0xFF0B1220) : Colors.white,
+        backgroundColor: isDark ? const AppColors.publicSurfaceDark : Colors.white,
         selectedColor: isDark
             ? emerald500.withValues(alpha: 0.18)
             : emerald50,
@@ -293,7 +304,7 @@ class PublicTheme {
       snackBarTheme: base.snackBarTheme.copyWith(
         behavior: SnackBarBehavior.floating,
         shape: roundedXl,
-        backgroundColor: isDark ? const Color(0xFF1E293B) : slate900,
+        backgroundColor: isDark ? const AppColors.publicSurfaceDarkAlt : slate900,
         contentTextStyle: const TextStyle(color: Colors.white),
       ),
 
