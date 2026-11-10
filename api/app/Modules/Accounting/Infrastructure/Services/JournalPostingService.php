@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Accounting\Infrastructure\Services;
 
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Enums\DocumentType;
 use App\Modules\Accounting\Domain\Enums\PaymentMethod;
@@ -20,53 +21,49 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Journal comptable — écritures débit/crédit dérivées des documents et des
- * paiements (issue #5234). Plan de comptes PCF/SYSCOHADA simplifié (Phase A,
- * non paramétrable) :
+ * paiements (issue #5234, refonte #9367/#9368).
  *
- *   - 411  Clients                     (créances)
- *   - 70   Ventes de produits
- *   - 709  Rabais, remises et ristournes (avoirs)
- *   - 4457 TVA collectée
- *   - 512  Banques / 53 Caisse         (mouvement de trésorerie)
+ * Les comptes ne sont **plus codés en dur** : ils sont résolus par
+ * {@see ChartAccountResolver}, qui applique la priorité
+ * plan comptable du tenant → registre pays (PCG / SYSCOHADA / Tekdüzen /
+ * UK / US / CA) → repli PCG. Un tenant turc poste donc sur `120`/`600`/`391`,
+ * un tenant OHADA sur `411`/`706`/`44571`, un tenant PCG sur `411`/`706`/`4457`
+ * — et le grand livre reste aligné sur le plan comptable provisionné.
+ *
+ * Schémas d'écriture :
+ *   - Vente        : 411 Clients (D, TTC) / 7xx Ventes (C, HT) / 445x TVA collectée (C, taxe)
+ *   - Avoir vente  : 709 Rabais (D, HT) + 445x TVA (D, taxe) / 411 Clients (C, TTC)
+ *   - Achat        : 607 Achats (D, HT) + 445x TVA déductible (D, taxe) / 401 Fournisseurs (C, TTC)
+ *   - Avoir achat  : 401 Fournisseurs (D, TTC) / 607 Achats (C, HT) + 445x TVA déductible (C, taxe)
+ *   - Encaissement : 512 Banque ou 53 Caisse (D) / 411 Clients (C)
+ *   - Décaissement : 401 Fournisseurs (D) / 512 Banque ou 53 Caisse (C)
  *
  * Règles métier :
- *   - Seuls `invoice` et `credit_note` (statut ≠ draft/cancelled) produisent
- *     des écritures — proforma/devis/BL sont sans impact comptable, et le
- *     `receipt` est la preuve d'encaissement : c'est le PAIEMENT qui porte le
- *     mouvement de trésorerie (pas de double comptage).
+ *   - Seuls les documents à impact comptable produisent des écritures
+ *     (proforma / devis / BL n'en produisent pas ; un `receipt` est la preuve
+ *     d'encaissement — c'est le PAIEMENT qui porte la trésorerie, pas de double
+ *     comptage) ;
  *   - Chaque posting est équilibré (Σ débit = Σ crédit) et idempotent
- *     (updateOrCreate sur la clé source+compte) : un re-posting rafraîchit
- *     les montants sans jamais dupliquer.
- *   - Une période clôturée est figée : tout posting daté dans une période
- *     close lève `PeriodClosedException`.
+ *     (updateOrCreate sur la clé source+compte) : un re-posting rafraîchit les
+ *     montants sans jamais dupliquer ;
+ *   - Une période clôturée est figée : tout posting daté dans une période close
+ *     lève `PeriodClosedException`.
  */
 final class JournalPostingService
 {
-    private const ACCOUNT_RECEIVABLE = ['411', 'Clients'];
-
-    private const ACCOUNT_SALES = ['70', 'Ventes de produits'];
-
-    private const ACCOUNT_DISCOUNT = ['709', 'Rabais, remises et ristournes'];
-
-    private const ACCOUNT_VAT = ['4457', 'TVA collectée'];
-
-    private const ACCOUNT_BANK = ['512', 'Banques'];
-
-    private const ACCOUNT_CASH = ['53', 'Caisse'];
-
     private const TOLERANCE = 0.005;
 
-    /** @var array<string, array{string, string}> */
-    private const ACCOUNT_BY_METHOD = [
-        'cash' => self::ACCOUNT_CASH,
-        'bank_transfer' => self::ACCOUNT_BANK,
-        'check' => self::ACCOUNT_BANK,
-        'card' => self::ACCOUNT_BANK,
-        // #5272 (ADR-0017) — paiement en ligne : trésorerie banque.
-        'online_chargily' => self::ACCOUNT_BANK,
-        'online_stripe' => self::ACCOUNT_BANK,
-        'other' => self::ACCOUNT_BANK,
+    /** Types de documents portant une écriture comptable. */
+    public const POSTABLE_TYPES = [
+        DocumentType::Invoice->value,
+        DocumentType::CreditNote->value,
+        DocumentType::PurchaseInvoice->value,
+        DocumentType::PurchaseCreditNote->value,
     ];
+
+    public function __construct(
+        private readonly ?ChartAccountResolver $resolver = null,
+    ) {}
 
     /**
      * Passe (ou re-passe) un document comptable : écritures équilibrées,
@@ -75,7 +72,7 @@ final class JournalPostingService
      */
     public function postDocument(AccountingDocument $document): int
     {
-        if (! in_array($document->type, [DocumentType::Invoice->value, DocumentType::CreditNote->value], true)) {
+        if (! in_array($document->type, self::POSTABLE_TYPES, true)) {
             return 0;
         }
 
@@ -85,27 +82,39 @@ final class JournalPostingService
 
         $this->guardPeriodOpen($document->issue_date);
 
-        $lines = $document->type === DocumentType::Invoice->value
-            ? $this->invoiceLines($document)
-            : $this->creditNoteLines($document);
+        $resolver = $this->resolverFor((string) $document->company_id);
+
+        [$lines, $description] = match ($document->type) {
+            DocumentType::Invoice->value => [$this->salesInvoiceLines($document, $resolver), 'Facture'],
+            DocumentType::CreditNote->value => [$this->salesCreditNoteLines($document, $resolver), 'Avoir'],
+            DocumentType::PurchaseInvoice->value => [$this->purchaseInvoiceLines($document, $resolver), 'Facture fournisseur'],
+            DocumentType::PurchaseCreditNote->value => [$this->purchaseCreditNoteLines($document, $resolver), 'Avoir fournisseur'],
+            default => [[], ''],
+        };
+
+        if ($lines === []) {
+            return 0;
+        }
 
         $piece = (string) $document->number;
-        $description = ($document->type === DocumentType::Invoice->value ? 'Facture' : 'Avoir').' '.$piece;
 
         return $this->postLines(
             companyId: (string) $document->company_id,
             sourceType: 'document',
-            sourceId: $document->id,
+            sourceId: (int) $document->id,
             entryDate: $document->issue_date,
             piece: $piece,
-            description: $description,
+            description: $description.' '.$piece,
             lines: $lines,
         );
     }
 
     /**
-     * Passe (ou re-passe) un paiement : mouvement de trésorerie
-     * (512/53 ↔ 411). Les paiements `pending` (promesses) ne sont pas passés.
+     * Passe (ou re-passe) un paiement : mouvement de trésorerie.
+     *
+     * Un paiement rattaché à un document d'achat est un **décaissement**
+     * (401 → trésorerie) ; sinon c'est un encaissement (trésorerie → 411).
+     * Les paiements `pending` (promesses) ne sont pas passés.
      */
     public function postPayment(AccountingPayment $payment): int
     {
@@ -120,21 +129,34 @@ final class JournalPostingService
 
         $this->guardPeriodOpen($entryDate);
 
-        $method = PaymentMethod::tryFrom((string) $payment->method) ?? PaymentMethod::Other;
-        $treasury = self::ACCOUNT_BY_METHOD[$method->value];
+        $resolver = $this->resolverFor((string) $payment->company_id);
 
-        $lines = [
-            ['account' => $treasury[0], 'account_label' => $treasury[1], 'debit' => (float) $payment->amount, 'credit' => 0.0],
-            ['account' => self::ACCOUNT_RECEIVABLE[0], 'account_label' => self::ACCOUNT_RECEIVABLE[1], 'debit' => 0.0, 'credit' => (float) $payment->amount],
-        ];
+        $method = PaymentMethod::tryFrom((string) $payment->method) ?? PaymentMethod::Other;
+        $treasury = $resolver->entry($resolver->treasuryFamilyFor($method->value));
+
+        $isDisbursement = $this->paymentTargetsPurchase($payment);
+        $thirdParty = $resolver->entry($isDisbursement ? 'suppliers' : 'clients');
+
+        $amount = (float) $payment->amount;
+
+        $lines = $isDisbursement
+            ? [
+                ['account' => $thirdParty['code'], 'account_label' => $thirdParty['label'], 'debit' => $amount, 'credit' => 0.0],
+                ['account' => $treasury['code'], 'account_label' => $treasury['label'], 'debit' => 0.0, 'credit' => $amount],
+            ]
+            : [
+                ['account' => $treasury['code'], 'account_label' => $treasury['label'], 'debit' => $amount, 'credit' => 0.0],
+                ['account' => $thirdParty['code'], 'account_label' => $thirdParty['label'], 'debit' => 0.0, 'credit' => $amount],
+            ];
 
         $piece = 'PAY-'.$payment->id;
-        $description = 'Encaissement '.$method->value.($payment->reference !== null ? ' ('.$payment->reference.')' : '');
+        $description = ($isDisbursement ? 'Décaissement ' : 'Encaissement ').$method->value
+            .($payment->reference !== null ? ' ('.$payment->reference.')' : '');
 
         return $this->postLines(
             companyId: (string) $payment->company_id,
             sourceType: 'payment',
-            sourceId: $payment->id,
+            sourceId: (int) $payment->id,
             entryDate: $entryDate,
             piece: $piece,
             description: $description,
@@ -147,9 +169,7 @@ final class JournalPostingService
      *
      * @return Collection<int, AccountingJournalEntry>
      *
-     * Issue #6562 — limit optionnel pour borner les reponses volumineuses
-     * (journal comptable entier = lenteur/DoS). L'export CSV appelle sans
-     * limit (flux complet voulu).
+     * Issue #6562 — limit optionnel pour borner les réponses volumineuses.
      */
     public function entriesForPeriod(string $period, ?int $limit = null): Collection
     {
@@ -210,27 +230,136 @@ final class JournalPostingService
     }
 
     /**
-     * @return list<array{account: string, account_label: string, debit: float, credit: float}>
+     * Résolveur de comptes pour une entreprise — injection explicite si le
+     * conteneur en fournit un (tests de résolution pure), sinon résolution par
+     * le plan comptable du tenant puis le pays.
      */
-    private function invoiceLines(AccountingDocument $document): array
+    private function resolverFor(string $companyId): ChartAccountResolver
     {
-        return [
-            ['account' => self::ACCOUNT_RECEIVABLE[0], 'account_label' => self::ACCOUNT_RECEIVABLE[1], 'debit' => (float) $document->total_ttc, 'credit' => 0.0],
-            ['account' => self::ACCOUNT_SALES[0], 'account_label' => self::ACCOUNT_SALES[1], 'debit' => 0.0, 'credit' => (float) $document->subtotal_ht],
-            ['account' => self::ACCOUNT_VAT[0], 'account_label' => self::ACCOUNT_VAT[1], 'debit' => 0.0, 'credit' => (float) $document->tax_amount],
-        ];
+        if ($this->resolver !== null) {
+            return $this->resolver;
+        }
+
+        /** @var Company|null $company */
+        $company = Company::query()->withoutGlobalScopes()->find($companyId);
+
+        return $company !== null
+            ? ChartAccountResolver::forCompany($company)
+            : ChartAccountResolver::forCountry(null);
     }
 
     /**
      * @return list<array{account: string, account_label: string, debit: float, credit: float}>
      */
-    private function creditNoteLines(AccountingDocument $document): array
+    private function salesInvoiceLines(AccountingDocument $document, ChartAccountResolver $resolver): array
     {
-        return [
-            ['account' => self::ACCOUNT_DISCOUNT[0], 'account_label' => self::ACCOUNT_DISCOUNT[1], 'debit' => (float) $document->subtotal_ht, 'credit' => 0.0],
-            ['account' => self::ACCOUNT_VAT[0], 'account_label' => self::ACCOUNT_VAT[1], 'debit' => (float) $document->tax_amount, 'credit' => 0.0],
-            ['account' => self::ACCOUNT_RECEIVABLE[0], 'account_label' => self::ACCOUNT_RECEIVABLE[1], 'debit' => 0.0, 'credit' => (float) $document->total_ttc],
+        $revenue = $resolver->entry('sales_revenue');
+        $thirdParty = $resolver->entry('clients');
+        $vat = $resolver->entry('vat_collected');
+
+        $lines = [
+            ['account' => $thirdParty['code'], 'account_label' => $thirdParty['label'], 'debit' => (float) $document->total_ttc, 'credit' => 0.0],
+            ['account' => $revenue['code'], 'account_label' => $revenue['label'], 'debit' => 0.0, 'credit' => (float) $document->subtotal_ht],
         ];
+
+        $tax = (float) $document->tax_amount;
+        if ($tax > 0.0) {
+            $lines[] = ['account' => $vat['code'], 'account_label' => $vat['label'], 'debit' => 0.0, 'credit' => $tax];
+        }
+
+        return $lines;
+    }
+
+    /**
+     * Avoir de vente : rabais + TVA au débit, client au crédit.
+     *
+     * @return list<array{account: string, account_label: string, debit: float, credit: float}>
+     */
+    private function salesCreditNoteLines(AccountingDocument $document, ChartAccountResolver $resolver): array
+    {
+        $discount = $resolver->entry('sales_discount');
+        $thirdParty = $resolver->entry('clients');
+        $vat = $resolver->entry('vat_collected');
+
+        $lines = [
+            ['account' => $discount['code'], 'account_label' => $discount['label'], 'debit' => (float) $document->subtotal_ht, 'credit' => 0.0],
+        ];
+
+        $tax = (float) $document->tax_amount;
+        if ($tax > 0.0) {
+            $lines[] = ['account' => $vat['code'], 'account_label' => $vat['label'], 'debit' => $tax, 'credit' => 0.0];
+        }
+
+        $lines[] = ['account' => $thirdParty['code'], 'account_label' => $thirdParty['label'], 'debit' => 0.0, 'credit' => (float) $document->total_ttc];
+
+        return $lines;
+    }
+
+    /**
+     * Facture d'achat : charge + TVA déductible au débit, fournisseur au crédit.
+     *
+     * @return list<array{account: string, account_label: string, debit: float, credit: float}>
+     */
+    private function purchaseInvoiceLines(AccountingDocument $document, ChartAccountResolver $resolver): array
+    {
+        $charge = $resolver->entry('purchases');
+        $thirdParty = $resolver->entry('suppliers');
+        $vat = $resolver->entry('vat_deductible');
+
+        $lines = [
+            ['account' => $charge['code'], 'account_label' => $charge['label'], 'debit' => (float) $document->subtotal_ht, 'credit' => 0.0],
+        ];
+
+        $tax = (float) $document->tax_amount;
+        if ($tax > 0.0) {
+            $lines[] = ['account' => $vat['code'], 'account_label' => $vat['label'], 'debit' => $tax, 'credit' => 0.0];
+        }
+
+        $lines[] = ['account' => $thirdParty['code'], 'account_label' => $thirdParty['label'], 'debit' => 0.0, 'credit' => (float) $document->total_ttc];
+
+        return $lines;
+    }
+
+    /**
+     * Avoir fournisseur : fournisseur au débit, charge + TVA déductible au crédit.
+     *
+     * @return list<array{account: string, account_label: string, debit: float, credit: float}>
+     */
+    private function purchaseCreditNoteLines(AccountingDocument $document, ChartAccountResolver $resolver): array
+    {
+        $charge = $resolver->entry('purchase_discount');
+        $thirdParty = $resolver->entry('suppliers');
+        $vat = $resolver->entry('vat_deductible');
+
+        $lines = [
+            ['account' => $thirdParty['code'], 'account_label' => $thirdParty['label'], 'debit' => (float) $document->total_ttc, 'credit' => 0.0],
+            ['account' => $charge['code'], 'account_label' => $charge['label'], 'debit' => 0.0, 'credit' => (float) $document->subtotal_ht],
+        ];
+
+        $tax = (float) $document->tax_amount;
+        if ($tax > 0.0) {
+            $lines[] = ['account' => $vat['code'], 'account_label' => $vat['label'], 'debit' => 0.0, 'credit' => $tax];
+        }
+
+        return $lines;
+    }
+
+    /**
+     * Un paiement porte-t-il sur un document d'achat (= décaissement) ?
+     */
+    private function paymentTargetsPurchase(AccountingPayment $payment): bool
+    {
+        $documentId = $payment->document_id ?? null;
+
+        if ($documentId === null) {
+            return false;
+        }
+
+        return AccountingDocument::query()
+            ->withoutGlobalScopes()
+            ->whereKey($documentId)
+            ->whereIn('type', [DocumentType::PurchaseInvoice->value, DocumentType::PurchaseCreditNote->value])
+            ->exists();
     }
 
     private function guardPeriodOpen(Carbon $entryDate): void

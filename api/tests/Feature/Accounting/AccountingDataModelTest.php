@@ -219,7 +219,12 @@ class AccountingDataModelTest extends TestCase
     public function test_enum_values_match_domain_contract(): void
     {
         $this->assertSame(['customer', 'supplier', 'both'], ContactType::values());
-        $this->assertSame(['invoice', 'proforma', 'quote', 'credit_note', 'delivery_note', 'receipt'], DocumentType::values());
+        // #9367 — les types achats complètent la matrice vente.
+        $this->assertSame(
+            ['invoice', 'proforma', 'quote', 'credit_note', 'delivery_note', 'receipt', 'purchase_invoice', 'purchase_credit_note'],
+            DocumentType::values(),
+        );
+        $this->assertSame(['purchase_invoice', 'purchase_credit_note'], DocumentType::purchaseValues());
         $this->assertSame(['draft', 'sent', 'partially_paid', 'paid', 'cancelled', 'overdue'], DocumentStatus::values());
         $this->assertSame(['cash', 'bank_transfer', 'check', 'card', 'other', 'online_chargily', 'online_stripe'], PaymentMethod::values());
         $this->assertSame(['pending', 'recorded', 'matched'], PaymentStatus::values());

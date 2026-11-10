@@ -202,8 +202,10 @@ class FecExportTest extends TestCase
 
         $rows = $this->parseFecRows($csv);
         $this->assertCount(3, $rows);
-        // Facture : 411 et 70 → VE ; 4457 (TVA) ni 6xx ni 7xx/411 → OD.
-        $this->assertSame(['VE', 'OD'], array_values(array_unique(array_column($rows, 'JournalCode'))));
+        // #9374 — toutes les lignes d'une facture partagent le MÊME journal :
+        // le type de document source fait foi. Avant, la ligne de TVA (4457)
+        // tombait en OD et la pièce était éclatée sur deux journaux.
+        $this->assertSame(['VE'], array_values(array_unique(array_column($rows, 'JournalCode'))));
         $this->assertSame('DZD', $rows[0]['Devise']);
     }
 
@@ -371,11 +373,12 @@ class FecExportTest extends TestCase
         $rows = $this->parseFecRows($response->getContent());
         $this->assertCount(5, $rows);
 
-        // Facture : 411 et 70 → VE, 4457 → OD (ni 6xx ni 7xx/411).
+        // #9374 — la facture entière (client, produit, TVA) vit sur le journal
+        // des ventes : le type de document source fait foi, plus le préfixe du
+        // compte. L'éclatement 4457 → OD cassait la pièce à l'import.
         foreach ($this->rowsForPiece($rows, 'FAC-2026-0001') as $row) {
-            $expectedCode = in_array($row['CompteNum'], ['411', '70'], true) ? 'VE' : 'OD';
-            $this->assertSame($expectedCode, $row['JournalCode']);
-            $this->assertSame($expectedCode === 'VE' ? 'Journal des ventes' : 'Opérations diverses', $row['JournalLib']);
+            $this->assertSame('VE', $row['JournalCode']);
+            $this->assertSame('Journal des ventes', $row['JournalLib']);
             $this->assertSame('20260805', $row['EcritureDate']);
             $this->assertSame('20260805', $row['PieceDate']);
         }

@@ -88,6 +88,8 @@ return [
         'payment_amount_positive' => 'The payment amount must be strictly positive.',
         'wf_invalid_type' => 'Invalid document type.',
         'wf_requires_lines' => 'A document must have at least one line.',
+        'wf_contact_not_found' => 'Contact not found for this company.',
+        'wf_contact_type_mismatch' => 'The contact type does not match the document direction: a purchase invoice requires a supplier, a sales invoice requires a customer.',
         'wf_send_draft_only' => 'Only a draft can be sent.',
         'wf_send_no_lines' => 'Cannot send a document without lines.',
         'wf_send_requires_contact' => 'A client contact is required to send an invoice or a credit note.',

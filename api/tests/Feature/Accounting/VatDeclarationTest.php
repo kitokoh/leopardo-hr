@@ -108,9 +108,12 @@ class VatDeclarationTest extends TestCase
 
     /**
      * Scénario golden août 2026 (calculé à la main) :
-     *  - collectée : facture 19 % (1000/190/1190) + facture 9 % (5000/450/5450)
+     *  - collectée brute : facture 19 % (1000/190/1190) + facture 9 % (5000/450/5450)
      *    + reçu 19 % (200/38/238) ;
-     *  - déductible : avoir 19 % (300/57/357) ;
+     *  - l'avoir de vente 19 % (300/57/357) ANNULÉ de la TVA collectée →
+     *    net 19 % : 900/171/1071, total collecté 5900/621/6521 ;
+     *  - déductible : facture d'ACHAT 19 % (300/57/357) — #9367, la TVA
+     *    déductible vient des achats, plus des avoirs clients ;
      *  - exclus : proforma, brouillon, annulé, document hors période.
      */
     private function seedGoldenAugust(Company $company): void
@@ -148,6 +151,16 @@ class VatDeclarationTest extends TestCase
             'type' => DocumentType::CreditNote->value,
             'number' => 'AVOIR-2026-0001',
             'issue_date' => '2026-08-25',
+            'subtotal_ht' => 300.0,
+            'tax_amount' => 57.0,
+            'total_ttc' => 357.0,
+            'tva_rate' => 19.0,
+        ]);
+        // #9367 — TVA déductible : une vraie facture d'achat fournisseur.
+        $this->document($company, [
+            'type' => DocumentType::PurchaseInvoice->value,
+            'number' => 'FAC-F-2026-0001',
+            'issue_date' => '2026-08-10',
             'subtotal_ht' => 300.0,
             'tax_amount' => 57.0,
             'total_ttc' => 357.0,
@@ -201,27 +214,27 @@ class VatDeclarationTest extends TestCase
         $response->assertJsonPath('data.period.to', '2026-08-31');
         $response->assertJsonPath('data.currency', 'DZD');
 
-        // Collectée : 6200 / 678 / 6878.
-        $response->assertJsonPath('data.collected.base', 6200);
-        $response->assertJsonPath('data.collected.tax', 678);
-        $response->assertJsonPath('data.collected.total', 6878);
+        // Collectée nette des avoirs : 5900 / 621 / 6521.
+        $response->assertJsonPath('data.collected.base', 5900);
+        $response->assertJsonPath('data.collected.tax', 621);
+        $response->assertJsonPath('data.collected.total', 6521);
         $response->assertJsonCount(2, 'data.collected.by_rate');
         $response->assertJsonPath('data.collected.by_rate.0.rate', 9);
         $response->assertJsonPath('data.collected.by_rate.0.base', 5000);
         $response->assertJsonPath('data.collected.by_rate.0.tax', 450);
         $response->assertJsonPath('data.collected.by_rate.1.rate', 19);
-        $response->assertJsonPath('data.collected.by_rate.1.base', 1200);
-        $response->assertJsonPath('data.collected.by_rate.1.tax', 228);
+        $response->assertJsonPath('data.collected.by_rate.1.base', 900);
+        $response->assertJsonPath('data.collected.by_rate.1.tax', 171);
 
-        // Déductible : 300 / 57 / 357.
+        // Déductible (facture d'achat) : 300 / 57 / 357.
         $response->assertJsonPath('data.deductible.base', 300);
         $response->assertJsonPath('data.deductible.tax', 57);
         $response->assertJsonPath('data.deductible.total', 357);
 
-        // Net : 5900 / 621 / 6521.
-        $response->assertJsonPath('data.net.base', 5900);
-        $response->assertJsonPath('data.net.tax', 621);
-        $response->assertJsonPath('data.net.total', 6521);
+        // Net : 5600 / 564 / 6164.
+        $response->assertJsonPath('data.net.base', 5600);
+        $response->assertJsonPath('data.net.tax', 564);
+        $response->assertJsonPath('data.net.total', 6164);
     }
 
     public function test_vat_declaration_empty_period_returns_zeros(): void
@@ -255,9 +268,9 @@ class VatDeclarationTest extends TestCase
         $this->assertStringContainsString('periode,2026-08,devise,DZD', $csv);
         $this->assertStringContainsString('type,taux,assiette_ht,taxe,total_ttc', $csv);
         $this->assertStringContainsString('collectee,9,5000,450,5450', $csv);
-        $this->assertStringContainsString('collectee,19,1200,228,1428', $csv);
+        $this->assertStringContainsString('collectee,19,900,171,1071', $csv);
         $this->assertStringContainsString('deductible,19,300,57,357', $csv);
-        $this->assertStringContainsString('net,,5900,621,6521', $csv);
+        $this->assertStringContainsString('net,,5600,564,6164', $csv);
     }
 
     public function test_vat_declaration_is_tenant_scoped(): void
@@ -272,8 +285,8 @@ class VatDeclarationTest extends TestCase
         $response = $this->getJson('/api/v1/accounting/reports/vat-declaration?period=2026-08');
 
         $response->assertStatus(200);
-        $response->assertJsonPath('data.collected.base', 6200);
-        $response->assertJsonPath('data.collected.tax', 678);
+        $response->assertJsonPath('data.collected.base', 5900);
+        $response->assertJsonPath('data.collected.tax', 621);
     }
 
     public function test_principal_can_access_vat_declaration(): void

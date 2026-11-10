@@ -88,6 +88,8 @@ return [
         'payment_amount_positive' => 'Ödeme tutarı kesinlikle pozitif olmalıdır.',
         'wf_invalid_type' => 'Geçersiz belge türü.',
         'wf_requires_lines' => 'Bir belgenin en az bir satırı olmalıdır.',
+        'wf_contact_not_found' => 'Bu şirket için cari hesap bulunamadı.',
+        'wf_contact_type_mismatch' => 'Cari hesap türü belgenin yönüyle uyumlu değil: alış faturası tedarikçi, satış faturası müşteri gerektirir.',
         'wf_send_draft_only' => 'Yalnızca taslak gönderilebilir.',
         'wf_send_no_lines' => 'Satırı olmayan bir belge gönderilemez.',
         'wf_send_requires_contact' => 'Fatura veya iade faturası göndermek için müşteri iletişimi gereklidir.',

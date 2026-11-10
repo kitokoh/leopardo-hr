@@ -34,11 +34,28 @@ use Illuminate\Support\Facades\DB;
  */
 final class VatDeclarationService
 {
-    /** Types de documents générant de la TVA collectée. */
+    /**
+     * Types de documents générant de la TVA collectée.
+     *
+     * #9367 : les avoirs de vente ne sont plus comptés ici — ils ne collectent
+     * pas de TVA, ils en **annulent**. Voir `CREDIT_TYPES`.
+     */
     private const COLLECTED_TYPES = [DocumentType::Invoice, DocumentType::Receipt];
 
-    /** Types de documents générant de la TVA déductible. */
-    private const DEDUCTIBLE_TYPES = [DocumentType::CreditNote];
+    /**
+     * Types de documents générant de la TVA déductible.
+     *
+     * #9367 : la TVA déductible provient des **factures d'achat** (colonne
+     * `deductible`) ; les avoirs clients ne sont pas une TVA déductible. Les
+     * avoirs fournisseurs annulent de la TVA déductible (voir `PURCHASE_CREDIT_TYPES`).
+     */
+    private const DEDUCTIBLE_TYPES = [DocumentType::PurchaseInvoice];
+
+    /** Avoirs de vente : annulent de la TVA collectée. */
+    private const SALES_CREDIT_TYPES = [DocumentType::CreditNote];
+
+    /** Avoirs d'achat : annulent de la TVA déductible. */
+    private const PURCHASE_CREDIT_TYPES = [DocumentType::PurchaseCreditNote];
 
     /**
      * Déclaration TVA d'une période mensuelle (format YYYY-MM).
@@ -49,8 +66,18 @@ final class VatDeclarationService
     {
         [$from, $to] = $this->periodBounds($period);
 
-        $collected = $this->aggregate($company->id, self::COLLECTED_TYPES, $from, $to);
-        $deductible = $this->aggregate($company->id, self::DEDUCTIBLE_TYPES, $from, $to);
+        // #9367 — collected = ventes − avoirs de vente ; deductible = achats −
+        // avoirs d'achat. Avant, la TVA déductible était approximée par les
+        // avoirs **clients**, ce qui n'a aucun sens comptable.
+        $collected = $this->subtract(
+            $this->aggregate($company->id, self::COLLECTED_TYPES, $from, $to),
+            $this->aggregate($company->id, self::SALES_CREDIT_TYPES, $from, $to),
+        );
+
+        $deductible = $this->subtract(
+            $this->aggregate($company->id, self::DEDUCTIBLE_TYPES, $from, $to),
+            $this->aggregate($company->id, self::PURCHASE_CREDIT_TYPES, $from, $to),
+        );
 
         return [
             'period' => [
@@ -150,6 +177,48 @@ final class VatDeclarationService
             'tax' => $sum('tax'),
             'total' => $sum('total'),
             'by_rate' => $byRate,
+        ];
+    }
+
+    /**
+     * Soustraction d'une agrégation d'avoirs d'une agrégation de factures.
+     *
+     * Les taux présents seulement dans les avoirs (cas d'un avoir sur un taux
+     * qu'aucune facture de la période n'utilise) sont conservés en négatif :
+     * les masquer fausserait le net déclaré.
+     *
+     * @param  array{base: float, tax: float, total: float, by_rate: array<int, array{rate: float, base: float, tax: float, total: float}>}  $invoices
+     * @param  array{base: float, tax: float, total: float, by_rate: array<int, array{rate: float, base: float, tax: float, total: float}>}  $credits
+     * @return array{base: float, tax: float, total: float, by_rate: array<int, array{rate: float, base: float, tax: float, total: float}>}
+     */
+    private function subtract(array $invoices, array $credits): array
+    {
+        /** @var array<string, array{rate: float, base: float, tax: float, total: float}> $byRate */
+        $byRate = [];
+
+        foreach ($invoices['by_rate'] as $row) {
+            $key = number_format($row['rate'], 4, '.', '');
+            $byRate[$key] = ['rate' => $row['rate'], 'base' => $row['base'], 'tax' => $row['tax'], 'total' => $row['total']];
+        }
+
+        foreach ($credits['by_rate'] as $row) {
+            $key = number_format($row['rate'], 4, '.', '');
+            $current = $byRate[$key] ?? ['rate' => $row['rate'], 'base' => 0.0, 'tax' => 0.0, 'total' => 0.0];
+            $byRate[$key] = [
+                'rate' => $row['rate'],
+                'base' => round($current['base'] - $row['base'], 2),
+                'tax' => round($current['tax'] - $row['tax'], 2),
+                'total' => round($current['total'] - $row['total'], 2),
+            ];
+        }
+
+        ksort($byRate, SORT_NUMERIC);
+
+        return [
+            'base' => round($invoices['base'] - $credits['base'], 2),
+            'tax' => round($invoices['tax'] - $credits['tax'], 2),
+            'total' => round($invoices['total'] - $credits['total'], 2),
+            'by_rate' => array_values($byRate),
         ];
     }
 

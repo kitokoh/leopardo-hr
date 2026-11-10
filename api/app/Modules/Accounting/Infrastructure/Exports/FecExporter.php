@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Accounting\Infrastructure\Exports;
 
+use App\Modules\Accounting\Domain\Enums\DocumentType;
+use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingJournalEntry;
 use App\Support\CsvCellSanitizer;
 
@@ -30,6 +32,14 @@ use App\Support\CsvCellSanitizer;
  */
 final class FecExporter
 {
+    /**
+     * Cache des types de document pendant l'export (clé company#document) :
+     * une facture porte plusieurs lignes, on ne requête pas une fois par ligne.
+     *
+     * @var array<string, string|null>
+     */
+    private array $documentTypes = [];
+
     /** Libellés lisibles des journaux FEC (fr). */
     private const JOURNAL_LIB = [
         'AC' => 'Journal des achats',
@@ -171,11 +181,17 @@ final class FecExporter
     }
 
     /**
-     * Journal FEC d'une écriture :
-     *   - TR (trésorerie) pour les paiements ;
-     *   - AC (achats) pour un document sur compte 6xx ;
-     *   - VE (ventes) pour un document sur compte 7xx ou 411 ;
-     *   - OD (opérations diverses) sinon.
+     * Journal FEC d'une écriture.
+     *
+     * #9367 — le type de document source fait désormais foi : une facture
+     * d'achat va en `AC` quel que soit le préfixe de son compte (un tenant
+     * turc poste `153`, un tenant PCG `607`), et une facture de vente va en
+     * `VE` y compris pour sa ligne client. L'ancienne heuristique sur le
+     * préfixe de compte classait `411` en `VE` mais `120` en `OD`, et séparait
+     * une même facture de son encaissement.
+     *
+     * Priorité : source explicite (document/paiement) → préfixe de compte
+     * (filet de sécurité pour les écritures historiques).
      */
     private function journalCode(AccountingJournalEntry $entry): string
     {
@@ -184,6 +200,18 @@ final class FecExporter
         }
 
         if ($entry->source_type === 'document') {
+            $type = $this->documentTypeFor((int) $entry->source_id, (string) $entry->company_id);
+
+            if ($type !== null) {
+                if (in_array($type, [DocumentType::PurchaseInvoice->value, DocumentType::PurchaseCreditNote->value], true)) {
+                    return 'AC';
+                }
+
+                if (in_array($type, [DocumentType::Invoice->value, DocumentType::CreditNote->value], true)) {
+                    return 'VE';
+                }
+            }
+
             if (str_starts_with($entry->account_code, '6')) {
                 return 'AC';
             }
@@ -194,6 +222,27 @@ final class FecExporter
         }
 
         return 'OD';
+    }
+
+    /**
+     * Type du document source, mémorisé le temps de l'export (une facture =
+     * plusieurs lignes → une seule requête par document).
+     */
+    private function documentTypeFor(int $documentId, string $companyId): ?string
+    {
+        $key = $companyId.'#'.$documentId;
+
+        if (array_key_exists($key, $this->documentTypes)) {
+            return $this->documentTypes[$key];
+        }
+
+        $type = AccountingDocument::query()
+            ->withoutGlobalScopes()
+            ->where('company_id', $companyId)
+            ->whereKey($documentId)
+            ->value('type');
+
+        return $this->documentTypes[$key] = is_string($type) ? $type : null;
     }
 
     /**

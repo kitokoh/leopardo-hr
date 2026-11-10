@@ -89,6 +89,8 @@ return [
         'payment_amount_positive' => 'Le montant du paiement doit être strictement positif.',
         'wf_invalid_type' => 'Type de document invalide.',
         'wf_requires_lines' => 'Un document doit avoir au moins une ligne.',
+        'wf_contact_not_found' => 'Tiers introuvable pour cette entreprise.',
+        'wf_contact_type_mismatch' => 'Le type de tiers est incompatible avec le sens du document : une facture d\'achat exige un fournisseur, une facture de vente un client.',
         'wf_send_draft_only' => 'Seul un brouillon peut être envoyé.',
         'wf_send_no_lines' => 'Impossible d\'envoyer un document sans ligne.',
         'wf_send_requires_contact' => 'Un contact client est requis pour envoyer une facture ou un avoir.',

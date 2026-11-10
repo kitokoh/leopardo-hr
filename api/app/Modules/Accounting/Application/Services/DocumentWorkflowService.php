@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Application\Services;
 
 use App\Modules\Accounting\Domain\Contracts\DocumentNumberingInterface;
+use App\Modules\Accounting\Domain\Enums\ContactType;
 use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Enums\DocumentType;
 use App\Modules\Accounting\Domain\Enums\PaymentMethod;
@@ -14,6 +15,7 @@ use App\Modules\Accounting\Domain\Exceptions\DeliveryNoteRequiresDeliveryDateExc
 use App\Modules\Accounting\Domain\Exceptions\DocumentNotFullyPaidException;
 use App\Modules\Accounting\Domain\Exceptions\DocumentWorkflowException;
 use App\Modules\Accounting\Domain\Exceptions\InvalidDocumentTransitionException;
+use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
@@ -131,6 +133,13 @@ class DocumentWorkflowService
 
         $companyId ??= $this->currentCompanyId();
 
+        // #9367 — cohérence du tiers : un document d'achat doit référencer un
+        // fournisseur, un document de vente un client. Sans cette garde, une
+        // facture fournisseur pouvait être rattachée à un client et le posting
+        // créditait 401 pour une contrepartie qui n'existe pas au grand livre
+        // auxiliaire.
+        $this->assertContactMatchesType($type, $payload['contact_id'] ?? null, $companyId);
+
         $lines = $payload['lines'] ?? [];
         if ($lines === []) {
             throw new DocumentWorkflowException(__('accounting.errors.wf_requires_lines'));
@@ -218,7 +227,7 @@ class DocumentWorkflowService
             throw new DocumentWorkflowException(__('accounting.errors.wf_send_no_lines'));
         }
 
-        if (in_array($document->type, [DocumentType::Invoice->value, DocumentType::CreditNote->value], true)
+        if (in_array($document->type, [DocumentType::Invoice->value, DocumentType::CreditNote->value, DocumentType::PurchaseInvoice->value, DocumentType::PurchaseCreditNote->value], true)
             && $document->contact_id === null) {
             throw new DocumentWorkflowException(__('accounting.errors.wf_send_requires_contact'));
         }
@@ -318,12 +327,18 @@ class DocumentWorkflowService
      */
     public function createCreditNote(AccountingDocument $source, array $payload): AccountingDocument
     {
-        if ($source->type !== DocumentType::Invoice->value) {
+        // #9367 — un avoir suit le sens de son document source : avoir de
+        // vente sur une facture de vente, avoir d'achat sur une facture d'achat.
+        $isPurchase = $source->type === DocumentType::PurchaseInvoice->value;
+
+        if (! in_array($source->type, [DocumentType::Invoice->value, DocumentType::PurchaseInvoice->value], true)) {
             throw new DocumentWorkflowException(__('accounting.errors.wf_credit_note_requires_invoice'));
         }
         $this->assertStatus($source, [DocumentStatus::Sent, DocumentStatus::PartiallyPaid, DocumentStatus::Paid, DocumentStatus::Overdue], __('accounting.errors.wf_source_invoice_not_issuable'));
 
-        $payload['type'] = DocumentType::CreditNote->value;
+        $payload['type'] = $isPurchase
+            ? DocumentType::PurchaseCreditNote->value
+            : DocumentType::CreditNote->value;
         $payload['contact_id'] = $source->contact_id;
         $payload['metadata'] = array_merge(
             is_array($payload['metadata'] ?? null) ? $payload['metadata'] : [],
@@ -396,7 +411,8 @@ class DocumentWorkflowService
             throw new DocumentNotFullyPaidException($totalTtc, $paidAmount);
         }
 
-        if ($document->type === DocumentType::CreditNote->value && $document->source_document_id === null) {
+        if (in_array($document->type, [DocumentType::CreditNote->value, DocumentType::PurchaseCreditNote->value], true)
+            && $document->source_document_id === null) {
             throw new CreditNoteRequiresSourceInvoiceException;
         }
 
@@ -410,6 +426,42 @@ class DocumentWorkflowService
     {
         if (! in_array(DocumentStatus::tryFrom($document->status), $allowed, true)) {
             throw new DocumentWorkflowException($message);
+        }
+    }
+
+    /**
+     * Le tiers référencé est-il compatible avec le sens du document ?
+     *
+     * #9367 — un document d'achat exige un `supplier`/`both`, un document de
+     * vente exige un `customer`/`both`. Les types sans contrepartie exigée
+     * (devis, proforma, BL) ne sont pas contrôlés : ils peuvent rester
+     * orphelins tant qu'ils ne sont pas émis.
+     */
+    private function assertContactMatchesType(DocumentType $type, mixed $contactId, string $companyId): void
+    {
+        if ($contactId === null || $contactId === '') {
+            return;
+        }
+
+        if (! $type->isPostable()) {
+            return;
+        }
+
+        /** @var AccountingContact|null $contact */
+        $contact = AccountingContact::query()
+            ->where('company_id', $companyId)
+            ->find((int) $contactId);
+
+        if ($contact === null) {
+            throw new DocumentWorkflowException(__('accounting.errors.wf_contact_not_found'));
+        }
+
+        $allowed = $type->isPurchase()
+            ? [ContactType::Supplier->value, ContactType::Both->value]
+            : [ContactType::Customer->value, ContactType::Both->value];
+
+        if (! in_array((string) $contact->type, $allowed, true)) {
+            throw new DocumentWorkflowException(__('accounting.errors.wf_contact_type_mismatch'));
         }
     }
 

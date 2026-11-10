@@ -242,7 +242,7 @@ class AccountingLedgerTest extends TestCase
         $response->assertJsonPath('meta.totals.difference', 0);
         $response->assertJsonCount(4, 'data');
 
-        // Ordre par code : 411, 4457, 512, 70.
+        // Ordre par code : 411, 4457, 512, 706.
         $response->assertJsonPath('data.0.account_code', '411');
         $response->assertJsonPath('data.0.account_label', 'Clients');
         $response->assertJsonPath('data.0.total_debit', 1190);
@@ -252,7 +252,7 @@ class AccountingLedgerTest extends TestCase
         $response->assertJsonPath('data.1.balance', -190);
         $response->assertJsonPath('data.2.account_code', '512');
         $response->assertJsonPath('data.2.balance', 500);
-        $response->assertJsonPath('data.3.account_code', '70');
+        $response->assertJsonPath('data.3.account_code', '706');
         $response->assertJsonPath('data.3.total_debit', 0);
         $response->assertJsonPath('data.3.total_credit', 1000);
         $response->assertJsonPath('data.3.balance', -1000);

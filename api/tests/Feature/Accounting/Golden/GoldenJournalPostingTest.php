@@ -161,7 +161,7 @@ class GoldenJournalPostingTest extends TestCase
         self::assertSame(0.0, $lines[1]['debit']);
         self::assertSame(1900.0, $lines[1]['credit']);
 
-        self::assertSame('70', $lines[2]['account_code']);
+        self::assertSame('706', $lines[2]['account_code']);
         self::assertSame(0.0, $lines[2]['debit']);
         self::assertSame(10000.0, $lines[2]['credit']);
 
