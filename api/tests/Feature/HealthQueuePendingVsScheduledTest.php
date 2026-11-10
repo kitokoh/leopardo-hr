@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Core\Tenant\Domain\Models\SuperAdmin;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -38,6 +42,30 @@ class HealthQueuePendingVsScheduledTest extends TestCase
         Config::set('queue.default', 'database');
 
         DB::table('jobs')->delete();
+
+        $this->actingAsSuperAdmin();
+    }
+
+    /**
+     * #8125 — la matrice `checks` n'est renvoyée qu'à un super admin
+     * plateforme : sans authentification, `/health` se limite à
+     * `status`/`version`/`timestamp` et toutes les assertions
+     * `checks.queue.*` de ce fichier lisaient `null`.
+     *
+     * Même convention que `HealthEndpointTest::actingAsSuperAdmin()` :
+     * `super_admins` vit dans le schéma partagé `public`, que
+     * `RefreshTenantDatabase` ne réinitialise pas — un e-mail fixe heurte
+     * `super_admins_email_unique` dès le deuxième test du run.
+     */
+    private function actingAsSuperAdmin(): void
+    {
+        $superAdmin = new SuperAdmin([
+            'name' => 'Platform Admin',
+            'email' => 'admin-health-queue-'.Str::random(12).'@leopardo.test',
+        ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
+
+        Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
     }
 
     public function test_a_scheduled_job_is_not_counted_as_pending(): void
