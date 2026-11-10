@@ -1,3 +1,29 @@
+## 2026-11-10 — BC-02 TENANT : audit de l'espace locataire — navigation des verticales, panneau verrouillé, hub Paramètres (issues #9328/#9329/#9330, PR #9335)
+
+**Surface** : `front/web/src/lib/client-features.ts` (matrice `MANAGER_MODULE_ROLES`), `front/web/src/app/(dashboard)/layout.tsx` (`FeatureLockedPanel`), `front/web/src/app/(dashboard)/settings/page.tsx` (ex-redirection), `front/web/src/components/layout/Sidebar.tsx`, plus le namespace i18n `settingsHub` propagé aux 4 catalogues `shared/i18n/locales` et régénéré vers le web, le backend et les ARB mobile. **Aucune route, aucun contrôleur, aucune migration.**
+
+**Pourquoi ce sont des scénarios de test et pas une simple retouche d'UI** : les trois défauts partagent la même forme — un invariant est **écrit** quelque part (une matrice, un commentaire, une redirection) et le **comportement réel** s'en écarte silencieusement, sans erreur ni test rouge. C'est exactement la classe de régression qu'une suite de tests doit intercepter, parce qu'aucune ne se voit à l'écran d'un développeur qui a les droits.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| un tenant active la verticale Commerce et son responsable est `manager_role = dept` → la carte métier apparaît et `/commerce` s'ouvre | le refus par défaut (#7762) **cache** le métier : accès serveur réel, aucune porte de navigation (le symptôme exact de #9328) |
+| le même tenant **sans** la verticale active → la carte reste absente (`reason = feature_locked`) | ouvrir la matrice rendrait visibles des modules non souscrits : le flag tenant doit rester la seconde barrière |
+| `edu_manager` et `health*` restent `role_locked` pour un `dept` | « ouvrir les verticales » déborderait sur les verticales de direction — moindre privilège perdu |
+| une verticale ajoutée au catalogue `CLIENT_MODULES` sans entrée dans la matrice → test rouge | c'est la dérive qui a produit #9328 ; sans garde, la prochaine verticale rejoue le même scénario |
+| module bloqué par le RôLE → badge de rôle, CTA vers `/employees`, **aucun** lien `/contact?topic=upgrade` | on propose à un utilisateur d'**acheter** un module que son entreprise possède déjà (#9329) |
+| module bloqué par le PLAN/flag → parcours commercial conservé (`/contact?topic=upgrade`) | la correction inverse casserait le seul chemin légitime de montée en gamme |
+| `data-reason` expose `role_locked` vs `feature_locked` | les deux causes deviennent indiscernables dans l'analytics : on ne peut plus mesurer laquelle domine |
+| employé → 5 tuiles personnelles du hub (dont `/modules`), aucune tuile d'administration | le hub propose des liens qui aboutissent sur « accès réservé », ou masque ce à quoi il a droit (#9330) |
+| `dept` → + Équipe et Modules, mais **ni** encaissements, ni facturation, ni intégrations, ni image de marque | une tuile dont la page cible refuse le rôle est un faux lien (les gardes réelles divergent de la matrice) |
+| `rh` → + image de marque ; `principal` → tout | la garde `principal|rh` du PATCH branding n'est pas la même que celle des encaissements (`principal` seul) |
+| aucun groupe du hub n'est rendu vide | un en-tête « Plateforme » sans tuile pour un employé |
+| les 11 tuiles ont des destinations distinctes | deux tuiles vers la même route = doublon découvert depuis deux endroits |
+| `/settings/*` marque l'entrée sidebar active | aucune entrée n'était active sur `/settings/branding` : l'utilisateur perd le fil |
+
+**Automatisé** : `front/web/src/lib/__tests__/client-features-manager-matrix.test.ts` (10 cas — garde anti-orphelin, verticales direction fermées, flag tenant comme seconde barrière) ; `front/web/src/app/(dashboard)/__tests__/layout-feature-locked-panel.test.tsx` (3 cas — branche rôle, branche plan, distinction analytics) ; `front/web/src/lib/i18n/__tests__/settings-hub.test.ts` (7 cas — filtrage par rôle, pas de groupe vide, pas de doublon) ; `check-i18n-catalog-parity.sh`, `shared/i18n/validators/validate.js` et `check-i18n-diff.js` (parité ×4 et zéro chaîne en dur).
+
+**Non couvert** : aucun test d'intégration bout-en-bout sur les 4 verticales réelles (il faudrait un tenant de chaque type provisionné) ; la suite Flutter ne tourne pas dans le sandbox — la parité des sous-rôles web/mobile est spécifiée en #9334 mais pas encore verrouillée par un test.
+
 ## 2026-11-10 — BC-31 TRAVEL : garde de collision de routes réparée, 17 redéclarations supprimées (issue #9098, PR #9321)
 
 **Surface API** : `api/routes/modules/travelagency.php` — **aucune route ajoutée ni retirée** (282 clés `(méthode, URI)` avant/après, identiques). 17 déclarations **dupliquées** dans le même groupe `travel` sont supprimées, et `api/tests/Feature/Security/RouteCollisionGuardTest.php` est corrigé.

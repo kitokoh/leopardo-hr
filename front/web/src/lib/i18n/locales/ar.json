@@ -1,6 +1,6 @@
 {
-  "_version": "1.0.0",
-  "_updated_at": "2026-10-20T00:00:00Z",
+  "_version": "1.0.1",
+  "_updated_at": "2026-11-10T13:00:00Z",
   "_locale": "ar",
   "app": {
     "title": "ليوباردو — حزمة الأعمال"
@@ -512,6 +512,37 @@
     "leave_balance_used": "{days} مستخدمة",
     "see_absences": "عرض إجازاتي",
     "leave_balance_unknown": "إجازة"
+  },
+  "settingsHub": {
+    "title": "الإعدادات",
+    "subtitle": "كل إعدادات مساحتك في مكان واحد.",
+    "menuLabel": "الإعدادات",
+    "groupAccount": "حسابي",
+    "groupCompany": "الشركة",
+    "groupPlatform": "المنصة",
+    "tileAccountTitle": "حسابي",
+    "tileAccountBody": "الملف الشخصي والبريد وكلمة المرور.",
+    "tileSecurityTitle": "الأمان والتحقق بخطوتين",
+    "tileSecurityBody": "التحقق بخطوتين ورموز الاحتياط.",
+    "tileNotificationsTitle": "الإشعارات",
+    "tileNotificationsBody": "ما تستلمه وعلى أي قناة.",
+    "tileDevicesTitle": "الأجهزة المتصلة",
+    "tileDevicesBody": "الجلسات النشطة وتسجيل الخروج عن بعد.",
+    "tileBrandingTitle": "الهوية البصرية",
+    "tileBrandingBody": "الشعار والألوان واسم الشركة المعروض.",
+    "tileTeamTitle": "الفريق والأدوار",
+    "tileTeamBody": "الدعوة وتعيين الأدوار والوصول إلى الوحدات.",
+    "tilePaymentsTitle": "التحصيلات",
+    "tilePaymentsBody": "حسابات الدفع والآيبان والدفع عبر الهاتف.",
+    "tileModulesTitle": "الوحدات والخطة",
+    "tileModulesBody": "تفعيل وحدة ومعرفة ما هو مشمول.",
+    "tileIntegrationsTitle": "التكاملات",
+    "tileIntegrationsBody": "مفاتيح الواجهة والويب هوك والموصلات.",
+    "tileBillingTitle": "الاشتراك والفواتير",
+    "tileBillingBody": "الخطة الحالية والفواتير ووسيلة الدفع.",
+    "tileCompanyTitle": "بطاقة الشركة",
+    "tileCompanyBody": "الاسم القانوني والمنطقة الزمنية والعملة.",
+    "notAdminHint": "بعض البطاقات مخفية: إنها مخصصة للمدير الرئيسي."
   },
   "marketing": {
     "oauth": {

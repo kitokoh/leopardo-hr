@@ -1,6 +1,6 @@
 {
-  "_version": "1.0.0",
-  "_updated_at": "2026-10-20T00:00:00Z",
+  "_version": "1.0.1",
+  "_updated_at": "2026-11-10T13:00:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo — Business Suite"
@@ -512,6 +512,37 @@
     "leave_balance_used": "{days} used",
     "see_absences": "View my absences",
     "leave_balance_unknown": "Leave"
+  },
+  "settingsHub": {
+    "title": "Settings",
+    "subtitle": "Every setting for your workspace, in one place.",
+    "menuLabel": "Settings",
+    "groupAccount": "My account",
+    "groupCompany": "Company",
+    "groupPlatform": "Platform",
+    "tileAccountTitle": "My account",
+    "tileAccountBody": "Profile, email and password.",
+    "tileSecurityTitle": "Security and 2FA",
+    "tileSecurityBody": "Two-factor authentication and backup codes.",
+    "tileNotificationsTitle": "Notifications",
+    "tileNotificationsBody": "What you receive, and on which channel.",
+    "tileDevicesTitle": "Connected devices",
+    "tileDevicesBody": "Active sessions and remote sign-out.",
+    "tileBrandingTitle": "Brand identity",
+    "tileBrandingBody": "Logo, colours and the displayed company name.",
+    "tileTeamTitle": "Team and roles",
+    "tileTeamBody": "Invite people, assign roles and module access.",
+    "tilePaymentsTitle": "Payments",
+    "tilePaymentsBody": "Payment accounts, IBAN and mobile money.",
+    "tileModulesTitle": "Modules and plan",
+    "tileModulesBody": "Activate a module and see what is included.",
+    "tileIntegrationsTitle": "Integrations",
+    "tileIntegrationsBody": "API keys, webhooks and connectors.",
+    "tileBillingTitle": "Subscription and invoices",
+    "tileBillingBody": "Current plan, invoices and payment method.",
+    "tileCompanyTitle": "Company profile",
+    "tileCompanyBody": "Legal name, time zone and currency.",
+    "notAdminHint": "Some tiles are hidden: they are reserved for the principal manager."
   },
   "marketing": {
     "oauth": {

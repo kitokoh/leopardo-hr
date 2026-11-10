@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-import { ChevronDown, CreditCard, LayoutGrid, Plug, X } from 'lucide-react';
+import { ChevronDown, CreditCard, LayoutGrid, Plug, Settings, X } from 'lucide-react';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import type { ClientModuleAccess } from '@/lib/client-features';
 import {
@@ -401,6 +401,16 @@ export function Sidebar({
         {/* ── Section Plateforme (#7908) ── */}
         <nav data-testid="dashboard-platform-nav" aria-label={labels.dashboard.sectionPlatform} className="space-y-0.5">
           <SidebarSectionTitle>{labels.dashboard.sectionPlatform}</SidebarSectionTitle>
+          <Link
+            href="/settings"
+            onClick={handleNavigate}
+            data-testid="sidebar-settings-link"
+            aria-current={pathname === '/settings' || pathname.startsWith('/settings/') ? 'page' : undefined}
+            className={sidebarLinkClass(pathname === '/settings' || pathname.startsWith('/settings/'))}
+          >
+            <Settings className="h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
+            <span className="truncate">{labels.dashboard.settings}</span>
+          </Link>
           <Link
             href="/modules"
             onClick={handleNavigate}

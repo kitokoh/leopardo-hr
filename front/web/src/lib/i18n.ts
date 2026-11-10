@@ -86,6 +86,12 @@ export type CopyTree = {
     featureLockedPlanRoleTitle: string;
     featureLockedPlanRoleBody: string;
     featureLockedCta: string;
+    /** #9329 — variantes quand la cause est le RÔLE, pas le plan. */
+    featureLockedRoleBadge: string;
+    featureLockedRoleHint: string;
+    featureLockedRoleCta: string;
+    featureLockedRoleSideTitle: string;
+    featureLockedRoleSideBody: string;
     /** #7322 — auto-activation d'un module horizontal depuis « Modules & plan » */
     activate: string;
     activating: string;
@@ -788,6 +794,11 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlanRoleTitle: 'Plan & rôle',
       featureLockedPlanRoleBody: "Les modules visibles dans cet espace sont calculés depuis les droits, le plan de l'entreprise et le rôle utilisateur.",
       featureLockedCta: "Demander l'activation",
+      featureLockedRoleBadge: 'Accès non accordé à votre rôle',
+      featureLockedRoleHint: "Ce n'est pas un module à acheter : votre entreprise y a déjà accès. Demandez au manager principal (ou aux RH) de vous accorder ce module depuis Équipe → Droits, puis rechargez la page.",
+      featureLockedRoleCta: "Voir mes droits d'équipe",
+      featureLockedRoleSideTitle: 'Qui peut me débloquer ?',
+      featureLockedRoleSideBody: "Le manager principal de votre entreprise accorde et retire les modules par rôle. Aucun changement de plan n'est nécessaire : le module est déjà actif pour votre organisation.",
       activate: 'Activer',
       activating: 'Activation…',
       activateError: "L'activation a échoué. Réessayez.",
@@ -1520,6 +1531,11 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlanRoleTitle: 'الخطة والدور',
       featureLockedPlanRoleBody: 'تُحسب الوحدات الظاهرة في هذه المساحة بناءً على الصلاحيات وخطة الشركة ودور المستخدم.',
       featureLockedCta: 'طلب التفعيل',
+      featureLockedRoleBadge: 'الوصول غير ممنوح لدورك',
+      featureLockedRoleHint: 'هذه ليست وحدة للشراء: شركتك تملكها بالفعل. اطلب من المدير الرئيسي (أو الموارد البشرية) منحك هذه الوحدة من الفريق ← الصلاحيات، ثم أعد تحميل الصفحة.',
+      featureLockedRoleCta: 'عرض صلاحيات فريقي',
+      featureLockedRoleSideTitle: 'من يمكنه منحي الوصول؟',
+      featureLockedRoleSideBody: 'يمنح المدير الرئيسي في شركتك الوحدات ويسحبها حسب الدور. لا حاجة لتغيير الخطة: الوحدة مفعّلة بالفعل لمؤسستك.',
       activate: 'تفعيل',
       activating: 'جارٍ التفعيل…',
       activateError: 'فشل التفعيل. يرجى المحاولة مرة أخرى.',
@@ -2248,6 +2264,11 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlanRoleTitle: 'Plan ve rol',
       featureLockedPlanRoleBody: 'Bu alanda gorunen moduller, haklara, sirket planina ve kullanici rolune gore hesaplanir.',
       featureLockedCta: 'Aktivasyon iste',
+      featureLockedRoleBadge: 'Rolunuze erisim verilmemis',
+      featureLockedRoleHint: 'Bu satin alinacak bir modul degil: sirketinizin zaten erisimi var. Ana yoneticiden (veya IK\'dan) Ekip → Yetkiler bolumunden bu modulu size vermesini isteyin, sonra sayfayi yenileyin.',
+      featureLockedRoleCta: 'Ekip yetkilerimi gor',
+      featureLockedRoleSideTitle: 'Erisimi kim acabilir?',
+      featureLockedRoleSideBody: 'Sirketinizin ana yoneticisi modulleri role gore verir ve kaldirir. Plan degisikligi gerekmez: modul kurulusunuz icin zaten etkin.',
       activate: 'Etkinleştir',
       activating: 'Etkinleştiriliyor…',
       activateError: 'Etkinleştirme başarısız oldu. Tekrar deneyin.',
@@ -2976,6 +2997,11 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlanRoleTitle: 'Plan & role',
       featureLockedPlanRoleBody: 'The modules visible in this space are computed from permissions, the company plan and the user role.',
       featureLockedCta: 'Request activation',
+      featureLockedRoleBadge: 'Access not granted to your role',
+      featureLockedRoleHint: 'This is not a module to buy: your company already has it. Ask the principal manager (or HR) to grant it to you from Team → Access, then reload the page.',
+      featureLockedRoleCta: 'View my team access',
+      featureLockedRoleSideTitle: 'Who can unblock me?',
+      featureLockedRoleSideBody: 'Your company\'s principal manager grants and revokes modules per role. No plan change is needed: the module is already active for your organisation.',
       activate: 'Activate',
       activating: 'Activating…',
       activateError: 'Activation failed. Please try again.',

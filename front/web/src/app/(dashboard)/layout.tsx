@@ -776,9 +776,27 @@ type ClientNotification = {
 
 function FeatureLockedPanel({ module, labels }: { module: ClientModuleAccess; labels: CopyTree }) {
   // #2986 : messages localisés (4 locales) — plus de FR en dur.
-  const reason = module.reason === 'role_locked'
-    ? labels.dashboard.featureLockedRole
-    : labels.dashboard.featureLockedPlan;
+  //
+  // #9329 — le panneau distingue DEUX causes, et cette distinction ne doit pas
+  // s'arrêter au paragraphe d'explication. Un module fermé par le RÔLE n'est
+  // pas un module non acheté : envoyer cet utilisateur vers « Demander
+  // l'activation » / « passer sur un plan » lui propose un achat qui ne
+  // débloquera rien, alors que la seule action utile est interne à son
+  // entreprise (le manager principal accorde le rôle depuis Équipe).
+  // Seule la cause `feature_locked` (flag tenant / plan) relève du commercial.
+  const isRoleLocked = module.reason === 'role_locked';
+
+  const reason = isRoleLocked ? labels.dashboard.featureLockedRole : labels.dashboard.featureLockedPlan;
+  const badge = isRoleLocked ? labels.dashboard.featureLockedRoleBadge : labels.dashboard.featureLockedBadge;
+  const adminHint = isRoleLocked ? labels.dashboard.featureLockedRoleHint : labels.dashboard.featureLockedAdminHint;
+  const ctaLabel = isRoleLocked ? labels.dashboard.featureLockedRoleCta : labels.dashboard.featureLockedCta;
+  const ctaHref = isRoleLocked ? '/employees' : '/contact?topic=upgrade';
+  const sideTitle = isRoleLocked
+    ? labels.dashboard.featureLockedRoleSideTitle
+    : labels.dashboard.featureLockedPlanRoleTitle;
+  const sideBody = isRoleLocked
+    ? labels.dashboard.featureLockedRoleSideBody
+    : labels.dashboard.featureLockedPlanRoleBody;
 
   useEffect(() => {
     trackClientEvent('feature_blocked', {
@@ -789,12 +807,12 @@ function FeatureLockedPanel({ module, labels }: { module: ClientModuleAccess; la
   }, [module.key, module.reason, module.state]);
 
   return (
-    <section data-testid="feature-locked-panel" className="overflow-hidden rounded-3xl border border-amber-200 bg-white shadow-sm">
+    <section data-testid="feature-locked-panel" data-reason={module.reason} className="overflow-hidden rounded-3xl border border-amber-200 bg-white shadow-sm">
       <div className="grid gap-6 p-6 lg:grid-cols-[1fr_280px] lg:items-center">
         <div className="space-y-4">
-          <span className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-amber-700">
+          <span data-testid="feature-locked-badge" className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-amber-700">
             <LockKeyhole className="h-4 w-4" aria-hidden="true" />
-            {labels.dashboard.featureLockedBadge}
+            {badge}
           </span>
           <div>
             <h1 className="text-3xl font-black text-slate-950">{module.upgradeLabel}</h1>
@@ -802,17 +820,15 @@ function FeatureLockedPanel({ module, labels }: { module: ClientModuleAccess; la
               {reason} {labels.dashboard.featureLockedExplanation}
             </p>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-transparent p-4 text-sm text-slate-700">
-            {labels.dashboard.featureLockedAdminHint}
+          <div data-testid="feature-locked-hint" className="rounded-2xl border border-slate-200 bg-transparent p-4 text-sm text-slate-700">
+            {adminHint}
           </div>
         </div>
         <div className="rounded-2xl bg-slate-950 p-5 text-white">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-200">{labels.dashboard.featureLockedPlanRoleTitle}</p>
-          <p className="mt-3 text-sm leading-6 text-slate-300">
-            {labels.dashboard.featureLockedPlanRoleBody}
-          </p>
-          <Link href="/contact?topic=upgrade" className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-emerald-400 px-4 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-300">
-            {labels.dashboard.featureLockedCta}
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-200">{sideTitle}</p>
+          <p className="mt-3 text-sm leading-6 text-slate-300">{sideBody}</p>
+          <Link data-testid="feature-locked-cta" href={ctaHref} className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-emerald-400 px-4 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-300">
+            {ctaLabel}
           </Link>
         </div>
       </div>
