@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $entry_date
  * @property string $period
  * @property string|null $journal_code
+ * @property int $line_no
  * @property string $source_type
  * @property int $source_id
  * @property string $account_code
@@ -43,6 +44,8 @@ class AccountingJournalEntry extends Model
         'entry_date',
         'period',
         'journal_code',
+        'line_no',
+        'manual_ref',
         'source_type',
         'source_id',
         'account_code',

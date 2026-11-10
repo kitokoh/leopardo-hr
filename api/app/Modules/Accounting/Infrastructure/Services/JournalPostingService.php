@@ -457,6 +457,7 @@ final class JournalPostingService
                         'source_type' => $sourceType,
                         'source_id' => $sourceId,
                         'account_code' => $line['account'],
+                        'line_no' => 1,
                     ],
                     [
                         'entry_date' => $entryDate,

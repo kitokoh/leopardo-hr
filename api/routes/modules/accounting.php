@@ -25,6 +25,7 @@ use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingFecController
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingFiscalYearController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingJournalController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingJournalSettingsController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\ManualJournalEntryController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingLedgerController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingLetteringController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingReportController;
@@ -103,6 +104,16 @@ ModuleRoutes::tenantModule('accounting', function (): void {
         // Journal des écritures (issue #5234) — période, export CSV expert,
         // clôture de période (fige le journal) et re-posting d'un document.
         Route::get('/journal', [AccountingJournalController::class, 'index']);
+
+        /*
+         * Écritures manuelles — journal d'opérations diverses (issue #9369).
+         * À déclarer AVANT `/journal/export...` pour que les segments statiques
+         * ne soient pas capturés par `{manual}`.
+         */
+        Route::post('/journal/entries', [ManualJournalEntryController::class, 'store']);
+        Route::get('/journal/entries/{manual}', [ManualJournalEntryController::class, 'show'])->whereNumber('manual');
+        Route::put('/journal/entries/{manual}', [ManualJournalEntryController::class, 'update'])->whereNumber('manual');
+        Route::delete('/journal/entries/{manual}', [ManualJournalEntryController::class, 'destroy'])->whereNumber('manual');
         Route::get('/journal/export.csv', [AccountingJournalController::class, 'export']);
         Route::post('/journal/periods/{period}/close', [AccountingJournalController::class, 'closePeriod']);
         Route::post('/documents/{document}/journal', [AccountingJournalController::class, 'postDocument'])->whereNumber('document');
