@@ -45,7 +45,13 @@ concurrency:
 
 jobs:
   prepare:
-    timeout-minutes: 45
+    # #9336 — ce job PORTE le gate (`verify-deploy-workflows`) qui attend la
+    # conclusion de `Tests - Leopardo`. Son `timeout-minutes` est le VRAI plafond
+    # du gate : avec 45 min, aucun budget supérieur ne pouvait être honoré, et
+    # une suite backend de 45-82 min (durée nominale mesurée) tuait le job au
+    # lieu de laisser le gate rendre un verdict. 120 min > budget par défaut
+    # (100) > durée nominale des tests.
+    timeout-minutes: 120
     name: Prepare deployment context
     runs-on: ubuntu-latest
     permissions:

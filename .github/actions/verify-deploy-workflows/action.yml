@@ -127,10 +127,27 @@ runs:
           //
           // `DEPLOY_GATE_BUDGET_MINUTES` permet au test comportemental
           // (`dev-hub/tools/check-deploy-gate-outcome-test.mjs`) d'épuiser le
-          // budget sans attendre ; la CI ne pose pas cette variable (défaut 30).
+          // budget sans attendre ; la CI ne pose pas cette variable (défaut 100).
           if (EVENT === 'push') {
             core.info(`Push-triggered deploy: polling runs for ${sha} (web_changed=${webChanged}).`);
-            const budgetMinutes = Number(process.env.DEPLOY_GATE_BUDGET_MINUTES ?? '30');
+            // #9336 — le budget par défaut DOIT couvrir la durée réelle de la
+            // suite backend, pas l'inverse. Mesuré en production le 2026-11-10 :
+            // `Tests - Leopardo` nominal dure 45-82 min (plafond d'étape 150,
+            // plafond de job 300). Avec l'ancien défaut de 30 min, TOUT merge
+            // `api/**` épuisait le budget pendant que la suite progressait
+            // encore : le gate rendait `pending` -> `should_deploy=false` ->
+            // job « Deploy API + Web to Render » `skipped`. Le workflow restait
+            // VERT et le tier dev ne recevait plus aucun déploiement (figé sur
+            // `6020118` du 7 nov alors que `main` avançait). Le défaut est donc
+            // porté à 100 min : au-dessus de la durée NOMINALE observée
+            // (45-82 min), et strictement en dessous du `timeout-minutes` du
+            // job `prepare` qui le porte (120 min) — un budget supérieur au
+            // timeout du job serait inapplicable.
+            //
+            // Ce n'est pas une attente infinie : au-delà, le comportement reste
+            // inchangé (motif `pending`, `should_deploy=false`) et
+            // `deploy-main-catchup` reprend la main à l'heure suivante.
+            const budgetMinutes = Number(process.env.DEPLOY_GATE_BUDGET_MINUTES ?? '100');
             const deadline = Date.now() + budgetMinutes * 60 * 1000;
             const intervalMs = 60 * 1000;
             let consecutiveEmpty = 0;
