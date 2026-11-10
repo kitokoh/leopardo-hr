@@ -368,3 +368,15 @@ Vérifié : `node shared/i18n/sync/sync-mobile.js` → `I18N_SYNC_MOBILE_OK`, `n
 - Vérification : CI (smoke build + tests Dart dans les jobs de compilation).
 
 **Scénarios automatisés** : `front/mobile_apps/leopardo_core/test/pos/pos_input_test.dart` (saisie, bornage, virgule) — exécutés dans les jobs de compilation CI.
+
+## Note de conservation 2026-11-09 — socle stock mobile partage (issues #9272, #9273, #9274, #9275, PR #9277)
+
+**Le mobile gagne des surfaces stock, sans jamais devenir le seul chemin.** Le socle vit dans `leopardo_core` (`lib/models/stock_models.dart`, `lib/features/stock/data/stock_repository.dart`, `lib/features/stock/presentation/stock_screen.dart`) : une seule implementation pour les deux verticales, aucune copie par app (garde `check-mobile-duplicated-drift.sh`).
+
+- **Modeles tolerants** : `num?` converti en `double`, champ absent rendu `null`, payload partiel ou vide jamais en exception. Aucune agregation cote client : les totaux viennent du serveur.
+- **Parite web/mobile documentee** : `docs/mobile/STOCK_MOBILE.md` inventorie chaque operation (web = reference, mobile = option) et la regle est citee dans `AGENTS.md` (section mobile). La garde `dev-hub/tools/check-mobile-stock-parity.sh` echoue si un ecran mobile de stock appelle un endpoint sans equivalent web documente.
+- **Retail** : onglet Stock de la caisse tablette (niveaux de l'emplacement courant, recherche, filtre « sous le seuil », bandeau d'alertes, reception rapide). La reception hors ligne n'est mise en file qu'avec une cle d'idempotence stable (meme moteur `PosSyncEngine` que les paiements) ; tant que la cle serveur n'est pas livree, l'ecran fonctionne **en ligne uniquement et le dit** — aucune file silencieuse qui doublerait les quantites.
+- **Restaurant** : `RestaurantStockScreen` (`/restaurant/stock`) — niveaux, mouvements ante-chronologiques (motif lisible, delta signe et colore), reception et ajustement (delta signe + motif obligatoire), un refus serveur 422 **affiche tel quel**, etats honnetes (chargement, vide, erreur avec reessayer, hors ligne explicite).
+- **i18n** : cles fr/en/ar/tr dans `leopardo_core` (aucun litteral dans les ecrans), parite verifiee par `check-mobile-l10n-sync.sh`.
+
+**Scenarios automatises** : `test/models/stock_models_test.dart` (payload complet, partiel, vide) ; tests widget des ecrans partages et des deux caisses. **Verification** : `flutter analyze` 0 issue sur les apps touchees ; la CI fait foi pour l'execution Flutter (SDK absent de la sandbox), comme pour les notes precedentes.

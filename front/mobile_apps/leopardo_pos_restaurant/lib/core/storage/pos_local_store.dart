@@ -1,6 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:leopardo_core/core/pos/pos_config.dart';
+import 'package:leopardo_core/core/pos/pos_history.dart';
 import 'package:leopardo_core/core/pos/pos_search.dart';
 import 'package:leopardo_core/core/pos/pos_ticket.dart';
 
@@ -18,15 +21,17 @@ import '../models/pos_models.dart';
 /// de faire planter l'ouverture de caisse (une caisse qui refuse de démarrer
 /// parce qu'un octet est abîmé est une caisse inutilisable).
 class PosLocalStore {
-  PosLocalStore._(this._catalog, this._floor, this._cart);
+  PosLocalStore._(this._catalog, this._floor, this._cart, this._meta);
 
   static const _catalogBox = 'pos_catalog';
   static const _floorBox = 'pos_floor';
   static const _cartBox = 'pos_cart';
+  static const _metaBox = 'pos_meta';
 
   final Box<dynamic> _catalog;
   final Box<dynamic> _floor;
   final Box<dynamic> _cart;
+  final Box<dynamic> _meta;
 
   static Future<PosLocalStore> open() async {
     await Hive.initFlutter();
@@ -35,7 +40,94 @@ class PosLocalStore {
       await Hive.openBox<dynamic>(_catalogBox),
       await Hive.openBox<dynamic>(_floorBox),
       await Hive.openBox<dynamic>(_cartBox),
+      await Hive.openBox<dynamic>(_metaBox),
     );
+  }
+
+  /// Construit un store sur des boites deja ouvertes (tests widget).
+  @visibleForTesting
+  factory PosLocalStore.fromBoxes({
+    required Box<dynamic> catalog,
+    required Box<dynamic> floor,
+    required Box<dynamic> cart,
+    required Box<dynamic> meta,
+  }) =>
+      PosLocalStore._(catalog, floor, cart, meta);
+
+  // ── Configuration runtime (#9263) ────────────────────────────────────────
+
+  /// Configuration de la tablette (URL API + succursale).
+  Future<void> saveConfig(PosAppConfig config) async {
+    await _meta.put('app_config', jsonEncode(config.toJson()));
+  }
+
+  PosAppConfig? readConfig() {
+    final raw = _meta.get('app_config');
+
+    if (raw is! String) {
+      return null;
+    }
+
+    try {
+      return PosAppConfig.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Empreinte du PIN de l'ecran de reglages (null = PIN d'usine).
+  Future<void> savePinHash(String hash) async {
+    await _meta.put('pin_hash', hash);
+  }
+
+  String? get pinHash {
+    final raw = _meta.get('pin_hash');
+
+    return raw is String && raw.isNotEmpty ? raw : null;
+  }
+
+  /// Imprimante retenue (#9264).
+  Future<void> savePrinter({required String id, required String name}) async {
+    await _meta.put('printer_id', id);
+    await _meta.put('printer_name', name);
+  }
+
+  ({String id, String name})? get printer {
+    final id = _meta.get('printer_id');
+    final name = _meta.get('printer_name');
+
+    if (id is! String || id.isEmpty) {
+      return null;
+    }
+
+    return (id: id, name: name is String ? name : id);
+  }
+
+  // ── Historique des ventes (#9268) ────────────────────────────────────────
+
+  /// Enregistre l'historique des ventes de la tablette.
+  Future<void> saveSalesHistory(PosSalesHistory history) async {
+    await _meta.put('sales_history', jsonEncode(history.toJson()));
+  }
+
+  PosSalesHistory readSalesHistory() {
+    final raw = _meta.get('sales_history');
+
+    if (raw is! String) {
+      return const PosSalesHistory();
+    }
+
+    try {
+      return PosSalesHistory.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (_) {
+      return const PosSalesHistory();
+    }
+  }
+
+  /// Ecrit une valeur brute dans l'historique (tests : ecriture partielle).
+  @visibleForTesting
+  Future<void> saveSalesHistoryRaw(String raw) async {
+    await _meta.put('sales_history', raw);
   }
 
   // ── Catalogue ────────────────────────────────────────────────────────────

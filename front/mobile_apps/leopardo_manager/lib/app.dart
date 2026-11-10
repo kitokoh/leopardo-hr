@@ -54,6 +54,7 @@ import 'package:leopardo_manager/features/restaurant/screens/restaurant_hub_scre
 import 'package:leopardo_manager/features/restaurant/screens/restaurant_server_screen.dart';
 import 'package:leopardo_manager/features/restaurant/screens/restaurant_rider_screen.dart';
 import 'package:leopardo_manager/features/restaurant/screens/restaurant_manager_screen.dart';
+import 'package:leopardo_manager/features/restaurant/screens/restaurant_stock_screen.dart';
 import 'package:leopardo_core/features/manager/screens/manager_attendance_monitoring_screen.dart';
 import 'package:leopardo_core/features/company_branding/screens/company_branding_screen.dart';
 import 'package:leopardo_core/features/company_branding/providers/tenant_branding_provider.dart';
@@ -364,6 +365,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/restaurant/manager',
             builder: (context, state) => const RestaurantManagerScreen(),
+          ),
+          // #9273 — écran de stock du gérant : niveaux, mouvements, réception
+          // et ajustement. Le mobile reste une OPTION : toutes ces opérations
+          // existent aussi en web (docs/mobile/STOCK_MOBILE.md).
+          GoRoute(
+            path: '/restaurant/stock',
+            builder: (context, state) => const RestaurantStockScreen(),
           ),
 
           GoRoute(

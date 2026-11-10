@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_pos_retail/features/pos/numeric_keypad.dart';
+import 'package:leopardo_core/core/pos/pos_numeric_keypad.dart';
+import 'package:leopardo_core/core/pos/pos_states.dart';
 import 'package:leopardo_pos_retail/features/pos/retail_pos_screen.dart';
 
 /// Tests du **pave numerique tactile** et du formatage monetaire (#9215).

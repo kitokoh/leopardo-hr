@@ -89,22 +89,27 @@ class PosSwipeableLine extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.add_circle_outline),
               title: const Text('Augmenter la quantite'),
-              onTap: () => Navigator.of(sheetContext).pop(PosLineAction.increase),
+              onTap: () =>
+                  Navigator.of(sheetContext).pop(PosLineAction.increase),
             ),
             ListTile(
               leading: const Icon(Icons.remove_circle_outline),
               title: const Text('Diminuer la quantite'),
-              onTap: () => Navigator.of(sheetContext).pop(PosLineAction.decrease),
+              onTap: () =>
+                  Navigator.of(sheetContext).pop(PosLineAction.decrease),
             ),
             ListTile(
               leading: const Icon(Icons.dialpad),
               title: const Text('Saisir la quantite'),
-              onTap: () => Navigator.of(sheetContext).pop(PosLineAction.setQuantity),
+              onTap: () =>
+                  Navigator.of(sheetContext).pop(PosLineAction.setQuantity),
             ),
             ListTile(
               leading: Icon(isFavourite ? Icons.star : Icons.star_border),
-              title: Text(isFavourite ? 'Retirer des favoris' : 'Epingler en favori'),
-              onTap: () => Navigator.of(sheetContext).pop(PosLineAction.toggleFavourite),
+              title: Text(
+                  isFavourite ? 'Retirer des favoris' : 'Epingler en favori'),
+              onTap: () =>
+                  Navigator.of(sheetContext).pop(PosLineAction.toggleFavourite),
             ),
             ListTile(
               leading: const Icon(Icons.delete_outline),
@@ -164,9 +169,11 @@ class _PosVoidReasonSheetState extends State<PosVoidReasonSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('Annuler la ligne', style: Theme.of(context).textTheme.titleLarge),
+            Text('Annuler la ligne',
+                style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 4),
-            Text(widget.itemName, style: Theme.of(context).textTheme.bodyMedium),
+            Text(widget.itemName,
+                style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 16),
             RadioGroup<PosVoidReason>(
               groupValue: _reason,
@@ -232,12 +239,17 @@ class PosReceiptPreview extends StatelessWidget {
     this.currencySuffix = '',
     this.onConfirm,
     this.confirmLabel = 'Encaisser',
+    this.onPrint,
   });
 
   final PosReceipt receipt;
   final String currencySuffix;
   final VoidCallback? onConfirm;
   final String confirmLabel;
+
+  /// Imprime le ticket (#9264). Null = pas d'imprimante configuree, le
+  /// bouton n'apparait pas plutot que d'echouer au tap.
+  final VoidCallback? onPrint;
 
   @override
   Widget build(BuildContext context) {
@@ -276,21 +288,40 @@ class PosReceiptPreview extends StatelessWidget {
                   for (final line in receipt.lines)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Text(
-                              '${line.quantity} × ${line.name}',
-                              style: const TextStyle(fontSize: 16),
-                            ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  '${line.quantity} × ${line.name}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              ),
+                              Text(
+                                formatPosMinor(line.totalMinor,
+                                    suffix: currencySuffix),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            formatPosMinor(line.totalMinor, suffix: currencySuffix),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                          // Options du plat : le client doit retrouver sur son
+                          // ticket exactement ce qu'il a commande.
+                          for (final option in line.options)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16, top: 2),
+                              child: Text(
+                                '+ $option',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: scheme.onSurfaceVariant,
+                                ),
+                              ),
                             ),
-                          ),
                         ],
                       ),
                     ),
@@ -323,7 +354,8 @@ class PosReceiptPreview extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              formatPosMinor(-voided.amountMinor, suffix: currencySuffix),
+                              formatPosMinor(-voided.amountMinor,
+                                  suffix: currencySuffix),
                               style: TextStyle(
                                 fontSize: 15,
                                 color: scheme.onSurfaceVariant,
@@ -340,12 +372,14 @@ class PosReceiptPreview extends StatelessWidget {
           const Divider(height: 24),
           _ReceiptTotalRow(
             label: 'Sous-total',
-            value: formatPosMinor(receipt.subtotalMinor, suffix: currencySuffix),
+            value:
+                formatPosMinor(receipt.subtotalMinor, suffix: currencySuffix),
           ),
           if (receipt.discountMinor > 0)
             _ReceiptTotalRow(
               label: 'Remise',
-              value: formatPosMinor(-receipt.discountMinor, suffix: currencySuffix),
+              value: formatPosMinor(-receipt.discountMinor,
+                  suffix: currencySuffix),
             ),
           if (receipt.tipMinor > 0)
             _ReceiptTotalRow(
@@ -363,6 +397,15 @@ class PosReceiptPreview extends StatelessWidget {
             Text(
               'Note : ${receipt.note}',
               style: textTheme.bodyMedium,
+            ),
+          ],
+          if (onPrint != null) ...[
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              key: const Key('pos-receipt-print'),
+              onPressed: onPrint,
+              icon: const Icon(Icons.print_outlined),
+              label: const Text('Imprimer le ticket'),
             ),
           ],
           if (onConfirm != null) ...[
@@ -421,7 +464,11 @@ class _ReceiptTotalRow extends StatelessWidget {
 class PosParkTicketSheet extends StatefulWidget {
   const PosParkTicketSheet({
     super.key,
-    this.suggestions = const ['Client au comptoir', 'Table occupee', 'Client fidele'],
+    this.suggestions = const [
+      'Client au comptoir',
+      'Table occupee',
+      'Client fidele'
+    ],
   });
 
   final List<String> suggestions;
@@ -452,7 +499,8 @@ class _PosParkTicketSheetState extends State<PosParkTicketSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Mettre la commande en attente', style: Theme.of(context).textTheme.titleLarge),
+          Text('Mettre la commande en attente',
+              style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 4),
           const Text(
             'La commande est mise de cote et le panier se vide. '
@@ -518,7 +566,8 @@ class PosRecallTicketSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Commandes en attente', style: Theme.of(context).textTheme.titleLarge),
+          Text('Commandes en attente',
+              style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 4),
           Text('${tickets.length} commande(s) mise(s) de cote.'),
           const SizedBox(height: 12),
@@ -548,7 +597,9 @@ class PosRecallTicketSheet extends StatelessWidget {
 
                   return ListTile(
                     leading: Icon(
-                      stale ? Icons.warning_amber_rounded : Icons.pause_circle_outline,
+                      stale
+                          ? Icons.warning_amber_rounded
+                          : Icons.pause_circle_outline,
                       color: stale ? scheme.error : scheme.primary,
                     ),
                     title: Text(
@@ -592,8 +643,10 @@ class PosSyncBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final hasConflict = progress.hasConflicts;
-    final background = hasConflict ? scheme.errorContainer : scheme.tertiaryContainer;
-    final foreground = hasConflict ? scheme.onErrorContainer : scheme.onTertiaryContainer;
+    final background =
+        hasConflict ? scheme.errorContainer : scheme.tertiaryContainer;
+    final foreground =
+        hasConflict ? scheme.onErrorContainer : scheme.onTertiaryContainer;
 
     return Container(
       width: double.infinity,

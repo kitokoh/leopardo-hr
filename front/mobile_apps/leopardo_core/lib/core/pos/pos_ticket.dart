@@ -33,7 +33,8 @@ enum PosVoidReason {
   /// Un motif `other` exige un commentaire : sans lui, la trace ne dit rien.
   bool get requiresComment => this == PosVoidReason.other;
 
-  static PosVoidReason fromWire(String? value) => PosVoidReason.values.firstWhere(
+  static PosVoidReason fromWire(String? value) =>
+      PosVoidReason.values.firstWhere(
         (reason) => reason.wireValue == value,
         orElse: () => PosVoidReason.other,
       );
@@ -85,7 +86,8 @@ class PosVoidedLine {
         amountMinor: (json['amount_minor'] as num?)?.toInt() ?? 0,
         reason: PosVoidReason.fromWire(json['reason'] as String?),
         comment: json['comment'] as String?,
-        voidedAt: DateTime.tryParse(json['voided_at'] as String? ?? '') ?? DateTime.now(),
+        voidedAt: DateTime.tryParse(json['voided_at'] as String? ?? '') ??
+            DateTime.now(),
       );
 }
 
@@ -123,7 +125,8 @@ class PosParkedTicket {
   Duration ageAt(DateTime now) => now.difference(parkedAt);
 
   /// Un ticket en attente depuis plus de 2 h est probablement un oubli.
-  bool isStaleAt(DateTime now, {Duration threshold = const Duration(hours: 2)}) =>
+  bool isStaleAt(DateTime now,
+          {Duration threshold = const Duration(hours: 2)}) =>
       ageAt(now) > threshold;
 
   Map<String, dynamic> toJson() => {
@@ -136,11 +139,13 @@ class PosParkedTicket {
         'table_label': tableLabel,
       };
 
-  factory PosParkedTicket.fromJson(Map<String, dynamic> json) => PosParkedTicket(
+  factory PosParkedTicket.fromJson(Map<String, dynamic> json) =>
+      PosParkedTicket(
         id: json['id'] as String,
         label: (json['label'] as String?) ?? 'Commande',
         payload: (json['payload'] as Map<String, dynamic>?) ?? const {},
-        parkedAt: DateTime.tryParse(json['parked_at'] as String? ?? '') ?? DateTime.now(),
+        parkedAt: DateTime.tryParse(json['parked_at'] as String? ?? '') ??
+            DateTime.now(),
         itemCount: (json['item_count'] as num?)?.toInt() ?? 0,
         totalMinor: (json['total_minor'] as num?)?.toInt() ?? 0,
         tableLabel: json['table_label'] as String?,
@@ -172,8 +177,10 @@ class PosParkedTickets {
       return this;
     }
 
-    final updated = [ticket, ...tickets.where((existing) => existing.id != ticket.id)]
-      ..sort((a, b) => b.parkedAt.compareTo(a.parkedAt));
+    final updated = [
+      ticket,
+      ...tickets.where((existing) => existing.id != ticket.id)
+    ]..sort((a, b) => b.parkedAt.compareTo(a.parkedAt));
 
     return PosParkedTickets(tickets: updated);
   }
@@ -195,14 +202,20 @@ class PosParkedTickets {
 
     return (
       remaining: PosParkedTickets(
-        tickets: [for (final ticket in tickets) if (ticket.id != id) ticket],
+        tickets: [
+          for (final ticket in tickets)
+            if (ticket.id != id) ticket
+        ],
       ),
       ticket: found,
     );
   }
 
   PosParkedTickets remove(String id) => PosParkedTickets(
-        tickets: [for (final ticket in tickets) if (ticket.id != id) ticket],
+        tickets: [
+          for (final ticket in tickets)
+            if (ticket.id != id) ticket
+        ],
       );
 
   /// Tickets oublies depuis plus de [threshold] : a signaler a l'operateur.
@@ -210,7 +223,10 @@ class PosParkedTickets {
     DateTime now, {
     Duration threshold = const Duration(hours: 2),
   }) =>
-      [for (final ticket in tickets) if (ticket.isStaleAt(now, threshold: threshold)) ticket];
+      [
+        for (final ticket in tickets)
+          if (ticket.isStaleAt(now, threshold: threshold)) ticket
+      ];
 
   Map<String, dynamic> toJson() => {
         'tickets': [for (final ticket in tickets) ticket.toJson()],
@@ -242,13 +258,44 @@ class PosReceiptLine {
     required this.name,
     required this.quantity,
     required this.unitPriceMinor,
+    this.options = const [],
   });
 
   final String name;
   final int quantity;
+
+  /// Prix unitaire **options comprises** : c'est ce que le client paie par
+  /// unite, et ce qui doit apparaitre sur le ticket.
   final int unitPriceMinor;
 
+  /// Options choisies, deja resolues en libelles lisibles
+  /// (ex. « Cuisson : Saignant », « + Fromage »).
+  ///
+  /// Le ticket ne connait pas les identifiants du menu : il recoit du texte
+  /// pret a imprimer, ce qui evite de faire dependre le noyau du modele
+  /// metier de chaque app.
+  final List<String> options;
+
   int get totalMinor => unitPriceMinor * quantity;
+
+  bool get hasOptions => options.isNotEmpty;
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'quantity': quantity,
+        'unitPriceMinor': unitPriceMinor,
+        'options': options,
+      };
+
+  factory PosReceiptLine.fromJson(Map<String, dynamic> json) => PosReceiptLine(
+        name: json['name'] as String? ?? '',
+        quantity: (json['quantity'] as num?)?.toInt() ?? 0,
+        unitPriceMinor: (json['unitPriceMinor'] as num?)?.toInt() ?? 0,
+        options: [
+          for (final option in (json['options'] as List<dynamic>?) ?? const [])
+            option as String,
+        ],
+      );
 }
 
 /// Un ticket pret a etre montre au client.
@@ -292,7 +339,8 @@ class PosReceipt {
   int get itemCount => lines.fold(0, (sum, line) => sum + line.quantity);
 
   /// Montant total annule (positif), pour la trace.
-  int get voidedMinor => voidedLines.fold(0, (sum, line) => sum + line.amountMinor);
+  int get voidedMinor =>
+      voidedLines.fold(0, (sum, line) => sum + line.amountMinor);
 
   bool get isEmpty => lines.isEmpty;
 
@@ -302,6 +350,34 @@ class PosReceipt {
       lines.isNotEmpty &&
       discountMinor <= subtotalMinor &&
       voidedLines.every((line) => line.isValid);
+
+  Map<String, dynamic> toJson() => {
+        'lines': [for (final line in lines) line.toJson()],
+        'discountMinor': discountMinor,
+        'tipMinor': tipMinor,
+        'voidedLines': [for (final line in voidedLines) line.toJson()],
+        'tableLabel': tableLabel,
+        'covers': covers,
+        'orderTypeLabel': orderTypeLabel,
+        'note': note,
+      };
+
+  factory PosReceipt.fromJson(Map<String, dynamic> json) => PosReceipt(
+        lines: [
+          for (final raw in (json['lines'] as List<dynamic>?) ?? const [])
+            PosReceiptLine.fromJson(raw as Map<String, dynamic>),
+        ],
+        discountMinor: (json['discountMinor'] as num?)?.toInt() ?? 0,
+        tipMinor: (json['tipMinor'] as num?)?.toInt() ?? 0,
+        voidedLines: [
+          for (final raw in (json['voidedLines'] as List<dynamic>?) ?? const [])
+            PosVoidedLine.fromJson(raw as Map<String, dynamic>),
+        ],
+        tableLabel: json['tableLabel'] as String?,
+        covers: (json['covers'] as num?)?.toInt(),
+        orderTypeLabel: json['orderTypeLabel'] as String?,
+        note: json['note'] as String?,
+      );
 }
 
 /// Etat d'une operation de la file hors ligne, vu par l'operateur.
@@ -325,7 +401,8 @@ enum PosSyncStatus {
 
   final String label;
 
-  bool get isTerminal => this == PosSyncStatus.synced || this == PosSyncStatus.conflict;
+  bool get isTerminal =>
+      this == PosSyncStatus.synced || this == PosSyncStatus.conflict;
 }
 
 /// Progression de la synchronisation, exposee a l'interface.
@@ -417,7 +494,8 @@ class PosSyncProgress {
 /// Une caisse hors ligne pendant une coupure de 10 minutes ne doit pas marteler
 /// le serveur : 2 s, 4 s, 8 s... plafonne a 60 s. Le plafond evite aussi qu'une
 /// operation reste bloquee une heure apres le retour du reseau.
-Duration posRetryDelay(int attempts, {Duration base = const Duration(seconds: 2)}) {
+Duration posRetryDelay(int attempts,
+    {Duration base = const Duration(seconds: 2)}) {
   if (attempts <= 0) {
     return Duration.zero;
   }
@@ -433,7 +511,8 @@ Duration posRetryDelay(int attempts, {Duration base = const Duration(seconds: 2)
 /// Un rejet metier (4xx hors 408/429) ne se rejoue pas : reessayer un
 /// remboursement refuse par le serveur ne fera que le refuser encore, et
 /// masquerait le vrai probleme a l'operateur.
-bool posShouldRetry({required int? statusCode, required int attempts, int maxAttempts = 8}) {
+bool posShouldRetry(
+    {required int? statusCode, required int attempts, int maxAttempts = 8}) {
   if (attempts >= maxAttempts) {
     return false;
   }
@@ -455,7 +534,8 @@ bool posShouldRetry({required int? statusCode, required int attempts, int maxAtt
 }
 
 /// Classe un code de statut HTTP en statut de synchronisation.
-PosSyncStatus posSyncStatusFor({required int? statusCode, required int attempts}) {
+PosSyncStatus posSyncStatusFor(
+    {required int? statusCode, required int attempts}) {
   if (statusCode != null && statusCode >= 200 && statusCode < 300) {
     return PosSyncStatus.synced;
   }

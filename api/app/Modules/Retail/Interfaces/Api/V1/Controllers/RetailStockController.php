@@ -12,7 +12,9 @@ use App\Modules\Retail\Domain\Models\RetailInventoryMovement;
 use App\Modules\Retail\Domain\Models\RetailLocation;
 use App\Modules\Retail\Domain\Models\RetailProduct;
 use App\Modules\Retail\Domain\Models\RetailStockLevel;
+use App\Modules\Retail\Domain\Models\RetailStockTransfer;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\StoreRetailStockMovementRequest;
+use App\Modules\Retail\Interfaces\Api\V1\Requests\StoreRetailStockTransferRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -101,6 +103,8 @@ class RetailStockController extends Controller
             referenceId: $request->filled('reference_id') ? $request->integer('reference_id') : null,
             note: $note,
             userId: (int) $actor->id,
+            unitCostMinor: $request->filled('unit_cost_minor') ? $request->integer('unit_cost_minor') : null,
+            idempotencyKey: $request->filled('idempotency_key') ? (string) $request->input('idempotency_key') : null,
         );
 
         /** @var RetailStockLevel $level */
@@ -110,6 +114,54 @@ class RetailStockController extends Controller
             'data' => [
                 'movement' => $this->movementPayload($movement),
                 'level' => $this->levelPayload($level),
+            ],
+        ], 201);
+    }
+
+    /**
+     * Transfert inter-emplacements (#9268) : deux mouvements atomiques lies
+     * par le meme `reference_id`. Un stock source insuffisant annule TOUT.
+     */
+    public function storeTransfer(StoreRetailStockTransferRequest $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->authorize('create', RetailStockLevel::class);
+
+        /** @var RetailLocation $from */
+        $from = RetailLocation::query()
+            ->where('company_id', $actor->company_id)
+            ->findOrFail($request->integer('from_location_id'));
+
+        /** @var RetailLocation $to */
+        $to = RetailLocation::query()
+            ->where('company_id', $actor->company_id)
+            ->findOrFail($request->integer('to_location_id'));
+
+        /** @var RetailProduct $product */
+        $product = RetailProduct::query()
+            ->where('company_id', $actor->company_id)
+            ->findOrFail($request->integer('product_id'));
+
+        $transfer = $this->stockService->transfer(
+            from: $from,
+            to: $to,
+            product: $product,
+            quantity: (float) $request->input('quantity'),
+            note: $request->filled('note') ? (string) $request->input('note') : null,
+            userId: (int) $actor->id,
+            unitCostMinor: $request->filled('unit_cost_minor') ? $request->integer('unit_cost_minor') : null,
+        );
+
+        return response()->json([
+            'data' => [
+                'id' => $transfer->id,
+                'from_location_id' => $transfer->from_location_id,
+                'to_location_id' => $transfer->to_location_id,
+                'product_id' => $transfer->product_id,
+                'quantity' => $transfer->quantity,
+                'note' => $transfer->note,
+                'created_at' => $transfer->created_at?->toIso8601String(),
             ],
         ], 201);
     }
@@ -211,11 +263,13 @@ class RetailStockController extends Controller
             'product_id' => $movement->product_id,
             'stock_level_id' => $movement->stock_level_id,
             'quantity_delta' => $movement->quantity_delta,
+            'unit_cost_minor' => $movement->unit_cost_minor,
             'reason_code' => $movement->reason_code->value,
             'reference_type' => $movement->reference_type,
             'reference_id' => $movement->reference_id,
             'note' => $movement->note,
             'user_id' => $movement->user_id,
+            'idempotency_key' => $movement->idempotency_key,
             'created_at' => $movement->created_at?->toIso8601String(),
         ];
     }

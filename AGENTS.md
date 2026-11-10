@@ -570,6 +570,10 @@ Le projet est une **Suite d'Applications** (1 App = 1 Metier). Voici les roles d
 > La liste canonique des apps mobiles est `front/mobile_apps/README.md` (a jour avec melos.yaml).
 > Le **kiosk/biometrie n'est PAS une app Flutter** : c'est une web app offline-first (`front/zkteco-kiosk`,
 > pointage local `/local/punch` + bridge ZKTeco) — cf. `front/zkteco-kiosk/README.md`.
+>
+> **Regle mobile = OPTION (#9275)** : le mobile n'est jamais une obligation. Toute operation de stock
+> livree en mobile doit exister en web (le web est la reference). La parite est documentee dans
+> `docs/mobile/STOCK_MOBILE.md` et gardee par `dev-hub/tools/check-mobile-stock-parity.sh`.
 
 ### L'Ecosysteme Web (`front/`)
 - **La Web App Client (`front/web` et admin-dashboard)** : Le portail web client est **unique**. Un employe, un RH ou un Manager se connecte au meme portail, mais l'interface s'adapte dynamiquement et change completement en fonction du role (RBAC).
