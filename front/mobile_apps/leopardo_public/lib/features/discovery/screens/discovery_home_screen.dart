@@ -283,8 +283,11 @@ class _CityButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.place_outlined,
-                  size: 18, color: AppColors.textSecondaryFor(context)),
+              Icon(
+                Icons.place_outlined,
+                size: 18,
+                color: AppColors.textSecondaryFor(context),
+              ),
               const SizedBox(width: 4),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 84),
@@ -388,8 +391,12 @@ class _Pill extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: active
-                ? AppColors.tint(context, AppColors.info,
-                    lightAlpha: 0.18, darkAlpha: 0.24)
+                ? AppColors.tint(
+                    context,
+                    AppColors.info,
+                    lightAlpha: 0.18,
+                    darkAlpha: 0.24,
+                  )
                 : AppColors.surfaceFor(context),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
@@ -435,8 +442,11 @@ class _MapPlaceholder extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.map_outlined,
-                size: 48, color: AppColors.textSecondaryFor(context)),
+            Icon(
+              Icons.map_outlined,
+              size: 48,
+              color: AppColors.textSecondaryFor(context),
+            ),
             const SizedBox(height: 12),
             Text(
               '${items.length}',
@@ -489,12 +499,75 @@ class _Footer extends StatelessWidget {
           child: OutlinedButton(
             onPressed: () => onLoadMore(),
             child: Text(
-                strings.t('discoveryResultsCount').replaceFirst('%s', '+')),
+              strings.t('discoveryResultsCount').replaceFirst('%s', '+'),
+            ),
           ),
         ),
       );
     }
 
-    return const SizedBox(height: 12);
+    // ── Invitation commerçant (Couloir 16, M1 — section H) ──────────────
+    //
+    // Placée en FIN de liste, après les résultats : le visiteur a d'abord vu
+    // ce que le portail contient, l'invitation a alors un sens. La destination
+    // est la route RÉELLE de la vitrine business (`/business`), pas une page
+    // de publication inventée — le parcours de publication de Page vit dans
+    // l'espace business, et y renvoyer est honnête.
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, bottom: 12),
+      child: _MerchantInvite(strings: strings),
+    );
+  }
+}
+
+/// Carte discrète « Vous êtes commerçant ? » — section H du cahier des charges.
+///
+/// Volontairement sobre : bordure fine, pas d'ombre, pas de dégradé. C'est une
+/// invitation, pas une publicité — elle ne doit pas concurrencer les résultats
+/// que le visiteur est venu chercher.
+class _MerchantInvite extends StatelessWidget {
+  const _MerchantInvite({required this.strings});
+
+  final AppStrings strings;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            strings.t('merchantInviteTitle'),
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            strings.t('merchantInviteBody'),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Cible tactile ≥ 44 px (WCAG 2.5.5).
+          SizedBox(
+            height: 44,
+            child: OutlinedButton(
+              onPressed: () => context.push('/business'),
+              child: Text(strings.t('merchantInviteCta')),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
