@@ -59,4 +59,34 @@ class MailCheckConfigCommandTest extends TestCase
         $cmd->assertExitCode(1);
         $cmd->run();
     }
+
+    /**
+     * #9317 — le transport de PRODUCTION est `resend`, et la commande ne le
+     * connaissait pas : elle sortait en succès sur une configuration qui ne
+     * pouvait pas envoyer. Un `resend` sans clé doit désormais être signalé.
+     */
+    public function test_flags_missing_resend_key_when_transport_is_resend(): void
+    {
+        Config::set('mail.default', 'resend');
+        Config::set('services.resend.key', '');
+        Config::set('resend.api_key', '');
+
+        /** @var PendingCommand $cmd */
+        $cmd = $this->artisan('mail:check-config');
+        $cmd->expectsOutputToContain('RESEND_KEY absent/vide');
+        $cmd->assertExitCode(1);
+        $cmd->run();
+    }
+
+    public function test_accepts_resend_with_key_and_from_address(): void
+    {
+        Config::set('mail.default', 'resend');
+        Config::set('services.resend.key', 're_test_key');
+        Config::set('mail.from.address', 'noreply@hurkonsan.com');
+
+        /** @var PendingCommand $cmd */
+        $cmd = $this->artisan('mail:check-config');
+        $cmd->assertExitCode(0);
+        $cmd->run();
+    }
 }

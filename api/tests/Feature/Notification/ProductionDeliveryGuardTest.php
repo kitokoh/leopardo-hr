@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Notification;
 
+use App\Core\Mail\MailTransportDiagnostics;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Notification\Infrastructure\Services\ProductionDeliveryGuard;
 use Illuminate\Support\Facades\Hash;
@@ -94,6 +95,62 @@ class ProductionDeliveryGuardTest extends TestCase
         ]);
 
         $this->assertSame([], (new ProductionDeliveryGuard)->issues());
+    }
+
+    /**
+     * #9317 — le transport de production (`resend`) n'était couvert par AUCUN
+     * contrôle du guard : un expéditeur sur un domaine inexistant (NXDOMAIN,
+     * cf. #8062) passait inaperçu alors qu'aucun envoi ne peut partir.
+     */
+    public function test_flags_unresolvable_from_domain_for_resend_in_production(): void
+    {
+        $this->simulateProduction([
+            'mail.default' => 'resend',
+            'mail.from.address' => 'noreply@leopardo-rh.com',
+        ]);
+        $this->fakeDns([]);
+
+        $this->assertSame(
+            [ProductionDeliveryGuard::ISSUE_MAILER_FROM_DOMAIN_UNRESOLVED],
+            (new ProductionDeliveryGuard)->issues()
+        );
+    }
+
+    public function test_accepts_resolvable_from_domain_for_resend_in_production(): void
+    {
+        $this->simulateProduction([
+            'mail.default' => 'resend',
+            'mail.from.address' => 'noreply@hurkonsan.com',
+        ]);
+        $this->fakeDns(['hurkonsan.com']);
+
+        $this->assertSame([], (new ProductionDeliveryGuard)->issues());
+    }
+
+    public function test_smtp_from_domain_is_not_dns_probed(): void
+    {
+        // Le domaine d'envoi d'un transport smtp ne décide pas de la
+        // délivrabilité : le guard ne doit pas produire de faux positif.
+        $this->simulateProduction([
+            'mail.default' => 'smtp',
+            'mail.mailers.smtp.host' => 'smtp-relay.brevo.com',
+            'mail.from.address' => 'noreply@leopardo-rh.com',
+        ]);
+        $this->fakeDns([]);
+
+        $this->assertSame([], (new ProductionDeliveryGuard)->issues());
+    }
+
+    /**
+     * Résolveur DNS déterministe : aucun test ne doit dépendre du réseau.
+     *
+     * @param  list<string>  $resolving  domaines qui « existent »
+     */
+    private function fakeDns(array $resolving): void
+    {
+        $this->app->instance(MailTransportDiagnostics::class, new MailTransportDiagnostics(
+            static fn (string $domain): bool => in_array($domain, $resolving, true)
+        ));
     }
 
     public function test_flags_whatsapp_provider_without_secrets_in_production(): void

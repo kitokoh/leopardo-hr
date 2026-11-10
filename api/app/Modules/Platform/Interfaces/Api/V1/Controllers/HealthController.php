@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
+use App\Core\Mail\MailTransportDiagnostics;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Modules\Notification\Infrastructure\Services\ProductionDeliveryGuard;
@@ -452,24 +453,122 @@ class HealthController extends Controller
      * dependance externe, les sonder n'aurait pas de sens (meme logique que
      * `checkRedis()` qui renvoie `skipped` quand Redis n'est pas voulu).
      *
-     * Le test est un `tcp connect` court, PAS un envoi : il attrape l'hote
-     * injoignable et le port ferme — la panne de transport, celle qui a
-     * effectivement bloque la production. Il n'attrape PAS un mot de passe
+     * #9317 — le transport REELLEMENT resolu est sonde, quel qu'il soit :
+     * `smtp` par `tcp connect`, les transports HTTP-API (Resend) par la
+     * presence de la cle + l'existence DNS du domaine d'envoi. Avant ce
+     * correctif la garde etait `$mailer !== 'smtp'`, donc le transport de
+     * production (`resend`) etait rapporte `skipped`/`ok` — un mailer casse
+     * produisait un faux vert (mesure du 2026-11-10).
+     *
+     * Le test SMTP est un `tcp connect` court, PAS un envoi : il attrape
+     * l'hote injoignable et le port ferme — la panne de transport, celle qui
+     * a effectivement bloque la production. Il n'attrape PAS un mot de passe
      * SMTP invalide, d'ou `status: reachable` et non `sent`.
      *
-     * L'hote n'est volontairement pas expose : `/health` est public, et un
-     * nom d'hote SMTP interne est une information d'infrastructure.
+     * Ni l'hote SMTP ni l'adresse expediteur ne sont exposes : `/health` est
+     * public, et un nom d'hote interne est une information d'infrastructure.
      *
      * @return array{ok: bool, status: string, mailer?: string, port?: int, latency_ms?: int, error?: string}
      */
     private function checkMail(): array
     {
-        $mailer = $this->stringConfigValue(config('mail.default'));
+        $diagnostics = app(MailTransportDiagnostics::class);
+        $mailer = $diagnostics->resolvedMailer();
 
-        if ($mailer !== 'smtp') {
+        // #9317 — transports LOCAUX uniquement : aucune dépendance externe,
+        // `skipped` est l'état honnête. Tout autre transport est sondé.
+        //
+        // Avant ce correctif, la garde était `$mailer !== 'smtp'` : le
+        // transport de PRODUCTION (`resend`) tombait donc dans le `skipped`
+        // et un mailer cassé était rapporté `ok: true` — le faux vert que
+        // #7385 prétendait avoir comblé, mesuré le 2026-11-10.
+        if ($diagnostics->isLocalTransport()) {
             return ['ok' => true, 'status' => 'skipped', 'mailer' => $mailer];
         }
 
+        if ($diagnostics->requiresVerifiedSendingDomain()) {
+            return $this->checkApiMailer($diagnostics, $mailer);
+        }
+
+        if ($mailer === 'smtp') {
+            return $this->checkSmtpMailer($mailer);
+        }
+
+        // Transport réseau hors périmètre de sonde : on vérifie au moins la
+        // présence des credentials connus, et on le DIT (`unprobed`) au lieu
+        // de le déclarer sain par défaut.
+        if ($diagnostics->missingRequiredEnv() !== []) {
+            return [
+                'ok' => false,
+                'status' => 'misconfigured',
+                'mailer' => $mailer,
+                'error' => $diagnostics->missingCredentialSlug() ?? 'MAIL_CREDENTIALS_MISSING',
+            ];
+        }
+
+        return ['ok' => true, 'status' => 'unprobed', 'mailer' => $mailer];
+    }
+
+    /**
+     * #9317 — sonde d'un transport HTTP-API (Resend) : la panne mesurée en
+     * production n'était pas un hôte injoignable mais une chaîne
+     * d'authentification/expédition incomplète. On vérifie donc, dans l'ordre
+     * où le fournisseur les refuse :
+     *
+     *  1. la clé API est présente (sinon `misconfigured`, jamais `skipped`) ;
+     *  2. le domaine de l'expéditeur EXISTE dans le DNS — un domaine
+     *     inexistant (NXDOMAIN) ne peut pas être vérifié chez le fournisseur,
+     *     donc aucun envoi ne partira quelle que soit la clé. C'est le cas
+     *     mesuré : `MAIL_FROM_ADDRESS` pointait sur `leopardo-rh.com`,
+     *     NXDOMAIN (cf. #8062).
+     *
+     * On ne teste PAS la validité de la clé (cela exigerait un appel réseau
+     * sortant à chaque sonde) : d'où `status: configured` et non `sent`.
+     * L'adresse expéditrice n'est jamais exposée — `/health` est public.
+     *
+     * @return array{ok: bool, status: string, mailer: string, error?: string}
+     */
+    private function checkApiMailer(MailTransportDiagnostics $diagnostics, string $mailer): array
+    {
+        if ($diagnostics->resendKey() === '') {
+            return [
+                'ok' => false,
+                'status' => 'misconfigured',
+                'mailer' => $mailer,
+                'error' => 'RESEND_KEY_MISSING',
+            ];
+        }
+
+        $domain = $diagnostics->fromDomain();
+
+        if ($domain === '') {
+            return [
+                'ok' => false,
+                'status' => 'misconfigured',
+                'mailer' => $mailer,
+                'error' => 'MAIL_FROM_ADDRESS_MISSING',
+            ];
+        }
+
+        if (! $diagnostics->domainResolves($domain)) {
+            return [
+                'ok' => false,
+                'status' => 'unverified_domain',
+                'mailer' => $mailer,
+                'error' => 'MAIL_FROM_DOMAIN_UNRESOLVED',
+            ];
+        }
+
+        return ['ok' => true, 'status' => 'configured', 'mailer' => $mailer];
+    }
+
+    /**
+     * Sonde SMTP : `tcp connect` court vers `MAIL_HOST:MAIL_PORT`.
+     *
+     * @return array{ok: bool, status: string, mailer: string, port?: int, latency_ms?: int, error?: string}
+     */
+    private function checkSmtpMailer(string $mailer): array
+    {
         $host = $this->stringConfigValue(config('mail.mailers.smtp.host'));
 
         if ($host === '') {

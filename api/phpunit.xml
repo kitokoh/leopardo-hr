@@ -22,228 +22,232 @@
           c'est le seul mécanisme que paratest honore (cf. en-tête du
           générateur).
 
-          Fichiers : 207 — poids cumulé : 1307 méthodes.
-          Équilibrage : panier le plus léger 217, le plus lourd 218.
+          Fichiers : 210 — poids cumulé : 1322 méthodes.
+          Équilibrage : panier le plus léger 220, le plus lourd 221.
 
-          Suivent un shard par sous-répertoire de tests/Feature (71 shards), chacun listant ses <file> récursivement.
+          Suivent un shard par sous-répertoire de tests/Feature (73 shards), chacun listant ses <file> récursivement.
         -->
         <testsuite name="FeatureRoot1">
             <file>tests/Feature/AIWorkflowTest.php</file>
-            <file>tests/Feature/ApiErrorContractTest.php</file>
-            <file>tests/Feature/AuthLoginHardeningTest.php</file>
-            <file>tests/Feature/BankExportControllerTest.php</file>
-            <file>tests/Feature/BulkPaymentControllerTest.php</file>
-            <file>tests/Feature/ConversationGroupTest.php</file>
-            <file>tests/Feature/ConversationMessagesTest.php</file>
-            <file>tests/Feature/DemoDzSeederTest.php</file>
-            <file>tests/Feature/DepartmentHierarchyTest.php</file>
-            <file>tests/Feature/FeatureManifestApiTest.php</file>
-            <file>tests/Feature/FeatureRegistryIntegrationTest.php</file>
-            <file>tests/Feature/GoogleOAuthStateTest.php</file>
-            <file>tests/Feature/HealthEndpointTest.php</file>
-            <file>tests/Feature/LaunchReadinessControllerTest.php</file>
-            <file>tests/Feature/MeEndpointsTest.php</file>
-            <file>tests/Feature/OidcIdTokenValidatorHardeningTest.php</file>
-            <file>tests/Feature/OnboardingQrControllerTest.php</file>
-            <file>tests/Feature/OutboundWebhookSignatureUnificationTest.php</file>
-            <file>tests/Feature/OutboundWebhookTransportTest.php</file>
-            <file>tests/Feature/PayrollCountryRulesTemporalVersioningTest.php</file>
-            <file>tests/Feature/PayrollRunControllerTest.php</file>
-            <file>tests/Feature/PiiFieldRegistryTest.php</file>
-            <file>tests/Feature/PlatformImpersonationControllerTest.php</file>
-            <file>tests/Feature/ProcessBulkPaymentJobTest.php</file>
-            <file>tests/Feature/ProfileFunctionalReadinessTest.php</file>
-            <file>tests/Feature/QaHardeningEndpointsTest.php</file>
-            <file>tests/Feature/QueueCorrelationTest.php</file>
-            <file>tests/Feature/SensitiveWriteEndpointValidationTest.php</file>
-            <file>tests/Feature/SupportTicketEmailNotificationTest.php</file>
-            <file>tests/Feature/TenantIsolationTest.php</file>
-            <file>tests/Feature/TrialDripEmailLocalizationTest.php</file>
-            <file>tests/Feature/WebAuthPagesTest.php</file>
-            <file>tests/Feature/WebEmployeeAuthSecurityTest.php</file>
-            <file>tests/Feature/WebhookDeadLetterTest.php</file>
-            <file>tests/Feature/WebhookDispatchRetryTest.php</file>
-        </testsuite>
-        <testsuite name="FeatureRoot2">
-            <file>tests/Feature/ApiFrLiteralsCatalogedTest.php</file>
-            <file>tests/Feature/AuthGoogleSignInTest.php</file>
-            <file>tests/Feature/AuthRefreshTokenTest.php</file>
-            <file>tests/Feature/CalendarSyncControllerTest.php</file>
-            <file>tests/Feature/ControllerFrenchLiteralsLocalizedTest.php</file>
-            <file>tests/Feature/DashboardControllerTest.php</file>
-            <file>tests/Feature/DemoUserControllerTest.php</file>
-            <file>tests/Feature/EmployeeIbanValidationTest.php</file>
-            <file>tests/Feature/ExceptionLeakRegressionTest.php</file>
-            <file>tests/Feature/ExpenseClaimControllerTest.php</file>
-            <file>tests/Feature/FleetControllerTest.php</file>
-            <file>tests/Feature/GeneratePaymentDocumentJobNotificationTest.php</file>
-            <file>tests/Feature/GeneratePaymentDocumentJobTest.php</file>
-            <file>tests/Feature/LeaveWorkflowIntegrationTest.php</file>
-            <file>tests/Feature/OnboardingStepControllerTest.php</file>
-            <file>tests/Feature/PaymentBatchControllerTest.php</file>
-            <file>tests/Feature/PayrollCycleIntegrationTest.php</file>
-            <file>tests/Feature/PdfBrandingTest.php</file>
-            <file>tests/Feature/PlatformAnnouncementControllerTest.php</file>
-            <file>tests/Feature/PlatformAuthTest.php</file>
-            <file>tests/Feature/PlatformCompanyHealthApiTest.php</file>
-            <file>tests/Feature/PrivacyControllerTest.php</file>
-            <file>tests/Feature/PublicHolidayIslamicSeederTest.php</file>
-            <file>tests/Feature/RateLimiterResilienceTest.php</file>
-            <file>tests/Feature/RecruitmentControllerTest.php</file>
-            <file>tests/Feature/ScheduleControllerTest.php</file>
-            <file>tests/Feature/SsoCallbackThrottleTest.php</file>
-            <file>tests/Feature/TrialSolutionsActivationTest.php</file>
-            <file>tests/Feature/TrialStatusThrottleTest.php</file>
-            <file>tests/Feature/VehicleControllerTest.php</file>
-            <file>tests/Feature/WebhookThrottleIsolationTest.php</file>
-            <file>tests/Feature/WeeklyManagerDigestTest.php</file>
-        </testsuite>
-        <testsuite name="FeatureRoot3">
-            <file>tests/Feature/AttendanceMonthlyExportTest.php</file>
-            <file>tests/Feature/BiometricPurgeExpiredTest.php</file>
-            <file>tests/Feature/BiometricWorkflowTest.php</file>
-            <file>tests/Feature/CalendarSyncServiceTest.php</file>
-            <file>tests/Feature/CommunicationServiceTest.php</file>
-            <file>tests/Feature/CotisationSimulationControllerTest.php</file>
-            <file>tests/Feature/CrmMigrationsTest.php</file>
-            <file>tests/Feature/DeviceTokenControllerTest.php</file>
-            <file>tests/Feature/EmailBounceWebhookFailClosedTest.php</file>
-            <file>tests/Feature/EmployeeInvitationOnboardingTest.php</file>
-            <file>tests/Feature/EnsureEmployeeMiddlewareLocalizedTest.php</file>
-            <file>tests/Feature/ExampleTest.php</file>
-            <file>tests/Feature/FrontendApiContractTest.php</file>
-            <file>tests/Feature/GoogleIdentityBindingTest.php</file>
-            <file>tests/Feature/HealthMailerMuetTest.php</file>
-            <file>tests/Feature/NotificationControllerTest.php</file>
-            <file>tests/Feature/OrgChartControllerTest.php</file>
-            <file>tests/Feature/PaymentDocumentControllerTest.php</file>
-            <file>tests/Feature/PaymentWebhookControllerTest.php</file>
-            <file>tests/Feature/PilotSeedsTest.php</file>
-            <file>tests/Feature/PlatformCompanyEditTest.php</file>
-            <file>tests/Feature/PlatformCompanySubscriptionApiTest.php</file>
-            <file>tests/Feature/PlatformMarketingLeadsReadApiTest.php</file>
-            <file>tests/Feature/PlatformMetricsOverviewApiTest.php</file>
-            <file>tests/Feature/PlatformWebAuth2faTest.php</file>
-            <file>tests/Feature/QueueFailedJobsTableTest.php</file>
-            <file>tests/Feature/QueueSupervisionDatabaseTest.php</file>
-            <file>tests/Feature/RouteControllerMethodContractTest.php</file>
-            <file>tests/Feature/ThrottleResponsesLocalizedTest.php</file>
-            <file>tests/Feature/TrialCompanyProfileTest.php</file>
-            <file>tests/Feature/TrialProvisioningDedupTest.php</file>
-            <file>tests/Feature/WebManagerPagesTest.php</file>
-            <file>tests/Feature/WebhookEnvelopeContractTest.php</file>
-            <file>tests/Feature/ZktecoControllerTest.php</file>
-        </testsuite>
-        <testsuite name="FeatureRoot4">
             <file>tests/Feature/AIWriteActionConfirmationTest.php</file>
-            <file>tests/Feature/ApprovalControllerTest.php</file>
             <file>tests/Feature/AuthSelfRegistrationTest.php</file>
-            <file>tests/Feature/BackfillNotificationPreferencesCommandTest.php</file>
+            <file>tests/Feature/BulkPaymentControllerTest.php</file>
             <file>tests/Feature/CalendarCompanyIdTest.php</file>
-            <file>tests/Feature/ClientEventControllerTest.php</file>
-            <file>tests/Feature/ConversationAttachmentPersistenceTest.php</file>
             <file>tests/Feature/ConversationControllerTest.php</file>
             <file>tests/Feature/ConversationModerationTest.php</file>
             <file>tests/Feature/EmployeesRbacTest.php</file>
+            <file>tests/Feature/ExportControllerTest.php</file>
             <file>tests/Feature/FeatureFlagControllerTest.php</file>
+            <file>tests/Feature/FeatureManifestApiTest.php</file>
             <file>tests/Feature/FirstLoginPasswordlessTest.php</file>
-            <file>tests/Feature/GdprAnonymizeEmployeeTest.php</file>
-            <file>tests/Feature/GeneratePaySlipPdfJobNotifyTest.php</file>
-            <file>tests/Feature/LedgerTest.php</file>
-            <file>tests/Feature/MultiTenantSharedIsolationTest.php</file>
-            <file>tests/Feature/NotificationPreferenceControllerTest.php</file>
-            <file>tests/Feature/OnboardingChecklistTest.php</file>
+            <file>tests/Feature/GrowthPartnerTenantIsolationTest.php</file>
+            <file>tests/Feature/HealthEndpointTest.php</file>
+            <file>tests/Feature/HealthQueuePendingVsScheduledTest.php</file>
+            <file>tests/Feature/KioskMultiEventPunchTest.php</file>
             <file>tests/Feature/OnboardingE2ETest.php</file>
+            <file>tests/Feature/OnboardingQrControllerTest.php</file>
             <file>tests/Feature/OpenApiDocsTest.php</file>
             <file>tests/Feature/PasswordResetTest.php</file>
             <file>tests/Feature/PaySlipControllerTest.php</file>
-            <file>tests/Feature/PayrollAccountingExportTest.php</file>
-            <file>tests/Feature/PayrollCycleSettingsTest.php</file>
-            <file>tests/Feature/PlanningOptimizationTest.php</file>
-            <file>tests/Feature/PlatformPlanApiTest.php</file>
+            <file>tests/Feature/PaymentDocumentControllerTest.php</file>
+            <file>tests/Feature/PayrollCountryConfigSeederTest.php</file>
+            <file>tests/Feature/PlatformCompanyFeatureApiTest.php</file>
+            <file>tests/Feature/PlatformCrmPipelineApiTest.php</file>
+            <file>tests/Feature/PlatformImpersonationControllerTest.php</file>
+            <file>tests/Feature/ProfileFunctionalReadinessTest.php</file>
             <file>tests/Feature/PublicCareerControllerTest.php</file>
-            <file>tests/Feature/QueueJobsFailedHandlerTest.php</file>
             <file>tests/Feature/QueueJobsTest.php</file>
             <file>tests/Feature/QueueObservabilityApiTest.php</file>
-            <file>tests/Feature/SalaryAdvanceProofTest.php</file>
-            <file>tests/Feature/SocialDeclarationControllerTest.php</file>
-            <file>tests/Feature/TrialProvisioningStatusTest.php</file>
-            <file>tests/Feature/ValidationMessagesLocalizedTest.php</file>
-            <file>tests/Feature/WebhookRoutesUniquenessTest.php</file>
-        </testsuite>
-        <testsuite name="FeatureRoot5">
-            <file>tests/Feature/AIGatewayAndAnalyticsTest.php</file>
-            <file>tests/Feature/AuditLogExportTest.php</file>
-            <file>tests/Feature/AuthLoginStaleLookupRegressionTest.php</file>
-            <file>tests/Feature/AuthLoginTest.php</file>
-            <file>tests/Feature/BillingControllerTest.php</file>
-            <file>tests/Feature/CommunicationAnalyticsControllerTest.php</file>
-            <file>tests/Feature/CompanyBankingControllerTest.php</file>
-            <file>tests/Feature/CompanyOnboardingIntegrationTest.php</file>
-            <file>tests/Feature/EmailBounceWebhookControllerTest.php</file>
-            <file>tests/Feature/EmployeeLoanControllerTest.php</file>
-            <file>tests/Feature/FeatureFlagTest.php</file>
-            <file>tests/Feature/GenerateBankExportJobTest.php</file>
-            <file>tests/Feature/GoogleSsoTwoFactorSchemaTest.php</file>
-            <file>tests/Feature/HealthLiveReadyTest.php</file>
-            <file>tests/Feature/HealthQueuePendingVsScheduledTest.php</file>
-            <file>tests/Feature/HrReportControllerTest.php</file>
-            <file>tests/Feature/KioskMultiEventPunchTest.php</file>
-            <file>tests/Feature/KioskSyncSkippedEventsTest.php</file>
-            <file>tests/Feature/PaySlipPdfLocaleTest.php</file>
-            <file>tests/Feature/PayrollCountryConfigSeederTest.php</file>
-            <file>tests/Feature/PlanningControllerTest.php</file>
-            <file>tests/Feature/PlatformCompanyProvisioningTest.php</file>
-            <file>tests/Feature/PlatformCrmPipelineApiTest.php</file>
-            <file>tests/Feature/PlatformSupportTicketControllerTest.php</file>
-            <file>tests/Feature/PlatformWebAuthSecurityTest.php</file>
-            <file>tests/Feature/RequestIdMiddlewareTest.php</file>
-            <file>tests/Feature/RoleAssignmentAuditTest.php</file>
-            <file>tests/Feature/SSOOidcFlowTest.php</file>
-            <file>tests/Feature/SelfServiceTrialTest.php</file>
-            <file>tests/Feature/SensitiveDataAccessAuditTest.php</file>
-            <file>tests/Feature/SensitiveDataEncryptorTest.php</file>
-            <file>tests/Feature/TenantCacheServiceTest.php</file>
-            <file>tests/Feature/TenantCompanyIdSpoofingTest.php</file>
+            <file>tests/Feature/SensitiveWriteEndpointValidationTest.php</file>
+            <file>tests/Feature/TaskControllerTest.php</file>
+            <file>tests/Feature/TrialProvisioningDedupTest.php</file>
+            <file>tests/Feature/WebKioskSessionGateTest.php</file>
+            <file>tests/Feature/WebManagerPagesTest.php</file>
             <file>tests/Feature/WebhookRetryAndDeactivationTest.php</file>
-            <file>tests/Feature/WebhookRouteDedupTest.php</file>
         </testsuite>
-        <testsuite name="FeatureRoot6">
-            <file>tests/Feature/AdminImpersonationEndpointsTest.php</file>
+        <testsuite name="FeatureRoot2">
+            <file>tests/Feature/AuthRefreshTokenTest.php</file>
+            <file>tests/Feature/BiometricPurgeExpiredTest.php</file>
+            <file>tests/Feature/CalendarSyncServiceTest.php</file>
+            <file>tests/Feature/ClientEventControllerTest.php</file>
+            <file>tests/Feature/CommunicationAnalyticsControllerTest.php</file>
+            <file>tests/Feature/CommunicationServiceTest.php</file>
+            <file>tests/Feature/CompanyOnboardingIntegrationTest.php</file>
+            <file>tests/Feature/CrmMigrationsTest.php</file>
+            <file>tests/Feature/DeviceTokenControllerTest.php</file>
+            <file>tests/Feature/EmployeeInvitationOnboardingTest.php</file>
+            <file>tests/Feature/FeatureRegistryIntegrationTest.php</file>
+            <file>tests/Feature/GdprAnonymizeEmployeeTest.php</file>
+            <file>tests/Feature/GeneratePaymentDocumentJobNotificationTest.php</file>
+            <file>tests/Feature/GoogleIdentityBindingTest.php</file>
+            <file>tests/Feature/LeaveWorkflowIntegrationTest.php</file>
+            <file>tests/Feature/MeEndpointsTest.php</file>
+            <file>tests/Feature/NotificationPreferenceControllerTest.php</file>
+            <file>tests/Feature/OrgChartControllerTest.php</file>
+            <file>tests/Feature/PaySlipPdfLocaleTest.php</file>
+            <file>tests/Feature/PaymentWebhookControllerTest.php</file>
+            <file>tests/Feature/PilotSeedsTest.php</file>
+            <file>tests/Feature/PlanningControllerTest.php</file>
+            <file>tests/Feature/PlatformCompanyRequestProvisioningTest.php</file>
+            <file>tests/Feature/PlatformMarketingLeadsReadApiTest.php</file>
+            <file>tests/Feature/PlatformWebAuth2faTest.php</file>
+            <file>tests/Feature/PredictionControllerTest.php</file>
+            <file>tests/Feature/QueueJobsFailedHandlerTest.php</file>
+            <file>tests/Feature/SocialDeclarationControllerTest.php</file>
+            <file>tests/Feature/TrialOnboardingAccessTest.php</file>
+            <file>tests/Feature/TrialProvisioningStatusTest.php</file>
+            <file>tests/Feature/TrialSolutionsActivationTest.php</file>
+            <file>tests/Feature/TrialStatusThrottleTest.php</file>
+            <file>tests/Feature/WeeklyManagerDigestTest.php</file>
+            <file>tests/Feature/ZktecoControllerTest.php</file>
+        </testsuite>
+        <testsuite name="FeatureRoot3">
             <file>tests/Feature/AnnouncementControllerTest.php</file>
-            <file>tests/Feature/AuthLoginGuardrailsTest.php</file>
-            <file>tests/Feature/AuthMeLogoutTest.php</file>
+            <file>tests/Feature/ApprovalControllerTest.php</file>
+            <file>tests/Feature/AuthLoginHardeningTest.php</file>
             <file>tests/Feature/AuthProfileSettingsTest.php</file>
-            <file>tests/Feature/CompanyBrandingControllerTest.php</file>
+            <file>tests/Feature/CalendarSyncControllerTest.php</file>
+            <file>tests/Feature/CompanyBankingControllerTest.php</file>
+            <file>tests/Feature/ControllerFrenchLiteralsLocalizedTest.php</file>
+            <file>tests/Feature/ConversationAttachmentPersistenceTest.php</file>
             <file>tests/Feature/CotisationSimulationTest.php</file>
-            <file>tests/Feature/CountryCurrencyPropagationTest.php</file>
             <file>tests/Feature/CrmFeatureGateTest.php</file>
             <file>tests/Feature/CrossTenantIndexIsolationTest.php</file>
             <file>tests/Feature/DemoCompanySeederSalaryStructuresTest.php</file>
-            <file>tests/Feature/EquityInterestLeadApiTest.php</file>
-            <file>tests/Feature/ExportControllerTest.php</file>
+            <file>tests/Feature/EnsureEmployeeMiddlewareLocalizedTest.php</file>
             <file>tests/Feature/FeatureKillSwitchTest.php</file>
+            <file>tests/Feature/FrontendApiContractTest.php</file>
+            <file>tests/Feature/GeneratePaymentDocumentJobTest.php</file>
+            <file>tests/Feature/GoogleOAuthStateTest.php</file>
             <file>tests/Feature/GrowthModuleTest.php</file>
-            <file>tests/Feature/GrowthPartnerTenantIsolationTest.php</file>
-            <file>tests/Feature/HealthReadyCriticalDepsTest.php</file>
             <file>tests/Feature/HrAppRoutesTest.php</file>
-            <file>tests/Feature/KioskRosterExtractionTest.php</file>
-            <file>tests/Feature/PayrollCyclePreviewTest.php</file>
-            <file>tests/Feature/PayrollRunPlaceholderWarningTest.php</file>
+            <file>tests/Feature/LaunchReadinessControllerTest.php</file>
+            <file>tests/Feature/PayrollCycleSettingsTest.php</file>
+            <file>tests/Feature/PiiFieldRegistryTest.php</file>
             <file>tests/Feature/PlanSeederTrialDaysAlignmentTest.php</file>
+            <file>tests/Feature/PlanningOptimizationTest.php</file>
             <file>tests/Feature/PlatformCompanyDeletionApiTest.php</file>
-            <file>tests/Feature/PlatformCompanyFeatureApiTest.php</file>
-            <file>tests/Feature/PlatformCompanyRequestProvisioningTest.php</file>
             <file>tests/Feature/PlatformNotificationObservabilityApiTest.php</file>
-            <file>tests/Feature/PredictionControllerTest.php</file>
+            <file>tests/Feature/QueueSupervisionDatabaseTest.php</file>
+            <file>tests/Feature/RequestIdMiddlewareTest.php</file>
             <file>tests/Feature/SSOControllerTest.php</file>
-            <file>tests/Feature/StructuredLoggingMiddlewareTest.php</file>
-            <file>tests/Feature/TaskControllerTest.php</file>
-            <file>tests/Feature/TenantContextLockdownTest.php</file>
-            <file>tests/Feature/TranslationCatalogApiTest.php</file>
-            <file>tests/Feature/WebKioskSessionGateTest.php</file>
-            <file>tests/Feature/WebhookTestEndpointTest.php</file>
+            <file>tests/Feature/SensitiveDataEncryptorTest.php</file>
+            <file>tests/Feature/SsoCallbackThrottleTest.php</file>
+            <file>tests/Feature/SupportTicketEmailNotificationTest.php</file>
+            <file>tests/Feature/ThrottleResponsesLocalizedTest.php</file>
+            <file>tests/Feature/TrialDripEmailLocalizationTest.php</file>
             <file>tests/Feature/ZktecoSyncMethodEnforcementTest.php</file>
+        </testsuite>
+        <testsuite name="FeatureRoot4">
+            <file>tests/Feature/ApiFrLiteralsCatalogedTest.php</file>
+            <file>tests/Feature/AttendanceMonthlyExportTest.php</file>
+            <file>tests/Feature/AuditLogExportTest.php</file>
+            <file>tests/Feature/AuthGoogleSignInTest.php</file>
+            <file>tests/Feature/AuthMeLogoutTest.php</file>
+            <file>tests/Feature/CotisationSimulationControllerTest.php</file>
+            <file>tests/Feature/CountryCurrencyPropagationTest.php</file>
+            <file>tests/Feature/DashboardControllerTest.php</file>
+            <file>tests/Feature/DemoDzSeederTest.php</file>
+            <file>tests/Feature/DemoUserControllerTest.php</file>
+            <file>tests/Feature/EmailBounceWebhookFailClosedTest.php</file>
+            <file>tests/Feature/EmployeesManagerRoleCheckTest.php</file>
+            <file>tests/Feature/ExpenseClaimControllerTest.php</file>
+            <file>tests/Feature/FleetControllerTest.php</file>
+            <file>tests/Feature/GeneratePaySlipPdfJobNotifyTest.php</file>
+            <file>tests/Feature/GoogleSsoTwoFactorSchemaTest.php</file>
+            <file>tests/Feature/HealthMailerMuetTest.php</file>
+            <file>tests/Feature/HealthReadyCriticalDepsTest.php</file>
+            <file>tests/Feature/OnboardingStepControllerTest.php</file>
+            <file>tests/Feature/PayrollCycleIntegrationTest.php</file>
+            <file>tests/Feature/PdfBrandingTest.php</file>
+            <file>tests/Feature/PlatformAuthTest.php</file>
+            <file>tests/Feature/PlatformCompanyHealthApiTest.php</file>
+            <file>tests/Feature/PlatformCompanySubscriptionApiTest.php</file>
+            <file>tests/Feature/PlatformSupportTicketControllerTest.php</file>
+            <file>tests/Feature/PublicHolidayIslamicSeederTest.php</file>
+            <file>tests/Feature/QueueCorrelationTest.php</file>
+            <file>tests/Feature/RateLimiterResilienceTest.php</file>
+            <file>tests/Feature/ScheduleControllerTest.php</file>
+            <file>tests/Feature/StructuredLoggingMiddlewareTest.php</file>
+            <file>tests/Feature/TenantContextLockdownTest.php</file>
+            <file>tests/Feature/TenantIsolationTest.php</file>
+            <file>tests/Feature/TranslationCatalogApiTest.php</file>
+            <file>tests/Feature/TrialCompanyProfileTest.php</file>
+            <file>tests/Feature/VehicleControllerTest.php</file>
+        </testsuite>
+        <testsuite name="FeatureRoot5">
+            <file>tests/Feature/AIGatewayAndAnalyticsTest.php</file>
+            <file>tests/Feature/AuthLoginGuardrailsTest.php</file>
+            <file>tests/Feature/AuthLoginStaleLookupRegressionTest.php</file>
+            <file>tests/Feature/BillingControllerTest.php</file>
+            <file>tests/Feature/BiometricWorkflowTest.php</file>
+            <file>tests/Feature/DepartmentHierarchyTest.php</file>
+            <file>tests/Feature/EmailBounceWebhookControllerTest.php</file>
+            <file>tests/Feature/EmployeeLoanControllerTest.php</file>
+            <file>tests/Feature/EquityInterestLeadApiTest.php</file>
+            <file>tests/Feature/ExceptionLeakRegressionTest.php</file>
+            <file>tests/Feature/GenerateBankExportJobTest.php</file>
+            <file>tests/Feature/HealthMailerTransportTest.php</file>
+            <file>tests/Feature/HrReportControllerTest.php</file>
+            <file>tests/Feature/KioskSyncSkippedEventsTest.php</file>
+            <file>tests/Feature/NotificationControllerTest.php</file>
+            <file>tests/Feature/OnboardingChecklistTest.php</file>
+            <file>tests/Feature/PaymentBatchControllerTest.php</file>
+            <file>tests/Feature/PayrollCountryRulesTemporalVersioningTest.php</file>
+            <file>tests/Feature/PayrollCyclePreviewTest.php</file>
+            <file>tests/Feature/PlatformAnnouncementControllerTest.php</file>
+            <file>tests/Feature/PlatformCompanyProvisioningTest.php</file>
+            <file>tests/Feature/QueueFailedJobsTableTest.php</file>
+            <file>tests/Feature/RecruitmentControllerTest.php</file>
+            <file>tests/Feature/RoleAssignmentAuditTest.php</file>
+            <file>tests/Feature/SSOOidcFlowTest.php</file>
+            <file>tests/Feature/SalaryAdvanceProofTest.php</file>
+            <file>tests/Feature/SelfServiceTrialTest.php</file>
+            <file>tests/Feature/SensitiveDataAccessAuditTest.php</file>
+            <file>tests/Feature/TenantCompanyIdSpoofingTest.php</file>
+            <file>tests/Feature/WebhookDeadLetterTest.php</file>
+            <file>tests/Feature/WebhookEnvelopeContractTest.php</file>
+            <file>tests/Feature/WebhookRoutesUniquenessTest.php</file>
+            <file>tests/Feature/WebhookTestEndpointTest.php</file>
+            <file>tests/Feature/WebhookThrottleIsolationTest.php</file>
+        </testsuite>
+        <testsuite name="FeatureRoot6">
+            <file>tests/Feature/AdminImpersonationEndpointsTest.php</file>
+            <file>tests/Feature/ApiErrorContractTest.php</file>
+            <file>tests/Feature/AuthLoginTest.php</file>
+            <file>tests/Feature/BackfillNotificationPreferencesCommandTest.php</file>
+            <file>tests/Feature/BankExportControllerTest.php</file>
+            <file>tests/Feature/CompanyBrandingControllerTest.php</file>
+            <file>tests/Feature/ConversationGroupTest.php</file>
+            <file>tests/Feature/ConversationMessagesTest.php</file>
+            <file>tests/Feature/EmployeeIbanValidationTest.php</file>
+            <file>tests/Feature/ExampleTest.php</file>
+            <file>tests/Feature/FeatureFlagTest.php</file>
+            <file>tests/Feature/HealthLiveReadyTest.php</file>
+            <file>tests/Feature/JobPostingLifecycleTest.php</file>
+            <file>tests/Feature/KioskRosterExtractionTest.php</file>
+            <file>tests/Feature/LedgerTest.php</file>
+            <file>tests/Feature/MultiTenantSharedIsolationTest.php</file>
+            <file>tests/Feature/OidcIdTokenValidatorHardeningTest.php</file>
+            <file>tests/Feature/OutboundWebhookSignatureUnificationTest.php</file>
+            <file>tests/Feature/OutboundWebhookTransportTest.php</file>
+            <file>tests/Feature/PayrollAccountingExportTest.php</file>
+            <file>tests/Feature/PayrollRunControllerTest.php</file>
+            <file>tests/Feature/PayrollRunPlaceholderWarningTest.php</file>
+            <file>tests/Feature/PlatformCompanyEditTest.php</file>
+            <file>tests/Feature/PlatformMetricsOverviewApiTest.php</file>
+            <file>tests/Feature/PlatformPlanApiTest.php</file>
+            <file>tests/Feature/PlatformWebAuthSecurityTest.php</file>
+            <file>tests/Feature/PrivacyControllerTest.php</file>
+            <file>tests/Feature/ProcessBulkPaymentJobTest.php</file>
+            <file>tests/Feature/QaHardeningEndpointsTest.php</file>
+            <file>tests/Feature/RouteControllerMethodContractTest.php</file>
+            <file>tests/Feature/TenantCacheServiceTest.php</file>
+            <file>tests/Feature/ValidationMessagesLocalizedTest.php</file>
+            <file>tests/Feature/WebAuthPagesTest.php</file>
+            <file>tests/Feature/WebEmployeeAuthSecurityTest.php</file>
+            <file>tests/Feature/WebhookDispatchRetryTest.php</file>
+            <file>tests/Feature/WebhookRouteDedupTest.php</file>
         </testsuite>
         <testsuite name="AI">
             <file>tests/Feature/AI/AICostRatesConfigTest.php</file>
@@ -706,13 +710,13 @@
         <testsuite name="FuelStation">
             <file>tests/Feature/FuelStation/FuelEquipmentTest.php</file>
             <file>tests/Feature/FuelStation/FuelGatePolicyRegistrationTest.php</file>
+            <file>tests/Feature/FuelStation/FuelMeterOcrFeatureTest.php</file>
             <file>tests/Feature/FuelStation/FuelMeterReadingTest.php</file>
             <file>tests/Feature/FuelStation/FuelProductCatalogueTest.php</file>
             <file>tests/Feature/FuelStation/FuelSitesInvariantTest.php</file>
             <file>tests/Feature/FuelStation/FuelStationLot6Test.php</file>
             <file>tests/Feature/FuelStation/FuelStationMigrationTest.php</file>
             <file>tests/Feature/FuelStation/FuelStationReferentialTest.php</file>
-            <file>tests/Feature/FuelStation/FuelMeterOcrFeatureTest.php</file>
             <file>tests/Feature/FuelStation/SolutionManifestTest.php</file>
         </testsuite>
         <testsuite name="Fundraising">
@@ -812,6 +816,14 @@
             <file>tests/Feature/LeopardoPublic/PublicParcoursEndToEndTest.php</file>
             <file>tests/Feature/LeopardoPublic/PublicSyntheticDataTest.php</file>
             <file>tests/Feature/LeopardoPublic/TradePublicPublicationTest.php</file>
+        </testsuite>
+        <testsuite name="Library">
+            <file>tests/Feature/Library/LibraryAccessPolicyTest.php</file>
+            <file>tests/Feature/Library/LibraryAdminApiTest.php</file>
+            <file>tests/Feature/Library/LibraryFileServiceTest.php</file>
+            <file>tests/Feature/Library/LibraryPurchaseTest.php</file>
+            <file>tests/Feature/Library/LibraryReadingProgressTest.php</file>
+            <file>tests/Feature/Library/LibrarySearchServiceTest.php</file>
         </testsuite>
         <testsuite name="Logging">
             <file>tests/Feature/Logging/LoggingPiiDefaultsTest.php</file>
@@ -1062,6 +1074,7 @@
             <file>tests/Feature/Platform/PlatformOutboxRuntimeTest.php</file>
             <file>tests/Feature/Platform/PlatformPermissionMatrixDeploymentTest.php</file>
             <file>tests/Feature/Platform/PlatformProvisioningApiTest.php</file>
+            <file>tests/Feature/Platform/PlatformRecruitmentPortalTest.php</file>
             <file>tests/Feature/Platform/PlatformSolutionSurveyStatsTest.php</file>
             <file>tests/Feature/Platform/PlatformTeamApiTest.php</file>
             <file>tests/Feature/Platform/PlatformUserApiTest.php</file>
@@ -1076,6 +1089,11 @@
         <testsuite name="Queue">
             <file>tests/Feature/Queue/ExportJobDoubleDispatchTest.php</file>
             <file>tests/Feature/Queue/QueuedListenersTest.php</file>
+        </testsuite>
+        <testsuite name="Recruitment">
+            <file>tests/Feature/Recruitment/PublicPortalEndToEndTest.php</file>
+            <file>tests/Feature/Recruitment/PurgeExpiredApplicantsTest.php</file>
+            <file>tests/Feature/Recruitment/ResumeScanTest.php</file>
         </testsuite>
         <testsuite name="Restaurant">
             <file>tests/Feature/Restaurant/RestaurantActivationTest.php</file>
@@ -1166,8 +1184,10 @@
             <file>tests/Feature/Retail/RetailOnlinePaymentTest.php</file>
             <file>tests/Feature/Retail/RetailOrderDocumentsTest.php</file>
             <file>tests/Feature/Retail/RetailPosApiTest.php</file>
+            <file>tests/Feature/Retail/RetailPosRbacAndReportsTest.php</file>
             <file>tests/Feature/Retail/RetailPublicDiscoveryTest.php</file>
             <file>tests/Feature/Retail/RetailStockApiTest.php</file>
+            <file>tests/Feature/Retail/RetailStockAuditTest.php</file>
         </testsuite>
         <testsuite name="SearchIntelligence">
             <file>tests/Feature/SearchIntelligence/AeoQuestionTest.php</file>

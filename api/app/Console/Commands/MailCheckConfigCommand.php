@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Core\Mail\MailTransportDiagnostics;
 use App\Mail\TrialVerificationMail;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
@@ -33,20 +34,6 @@ class MailCheckConfigCommand extends Command
 
     protected $description = 'Diagnostic de la config email : transport résolu, variables requises, envoi de test optionnel';
 
-    /**
-     * Variables requises par transport (clé env → clé config Laravel).
-     *
-     * @return array<string, array<string, string>>
-     */
-    private function requiredEnvByTransport(): array
-    {
-        return [
-            'mailgun' => ['MAILGUN_DOMAIN' => 'domain', 'MAILGUN_SECRET' => 'secret'],
-            'smtp' => ['MAIL_HOST' => 'host', 'MAIL_PORT' => 'port', 'MAIL_USERNAME' => 'username'],
-            'ses' => ['AWS_ACCESS_KEY_ID' => 'key', 'AWS_SECRET_ACCESS_KEY' => 'secret'],
-        ];
-    }
-
     public function handle(): int
     {
         $mailer = (string) Config::get('mail.default', 'log');
@@ -56,15 +43,17 @@ class MailCheckConfigCommand extends Command
 
         $issues = [];
 
-        // 1. Variables requises par le transport courant (présence seule).
-        $required = $this->requiredEnvByTransport();
-        if (isset($required[$transport])) {
-            foreach ($required[$transport] as $envKey => $cfgKey) {
-                $value = $mailerConfig[$cfgKey] ?? null;
-                if (! filled($value)) {
-                    $issues[] = "{$envKey} absent/vide — le transport '{$transport}' échouera à l'envoi (vérifier l'env Render).";
-                }
-            }
+        // 1. Variables requises par le transport RÉELLEMENT résolu (présence
+        // seule, jamais les secrets).
+        //
+        // #9317 — la liste était locale à cette commande et ne couvrait que
+        // `mailgun`/`smtp`/`ses` : le transport de production (`resend`) n'y
+        // figurait pas, donc `mail:check-config` sortait en succès sur une
+        // configuration qui ne pouvait pas envoyer. La résolution vit
+        // désormais dans `MailTransportDiagnostics`, partagée avec la sonde
+        // `/health` et le garde-fou de livraison.
+        foreach ((new MailTransportDiagnostics)->missingRequiredEnv() as $issue) {
+            $issues[] = $issue;
         }
 
         // 2. Expéditeur obligatoire pour tout transport.
