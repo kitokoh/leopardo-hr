@@ -2440,7 +2440,14 @@
     "ibanPlaceholderDZ": "رقم IBAN الجزائري أو RIB (20 رقمًا)",
     "saveBanking": "حفظ الإحداثيات",
     "sepaNotReady": "لم يتم تكوين منطقة SEPA",
-    "sepaReady": "سيبا جاهزة"
+    "sepaReady": "سيبا جاهزة",
+    "mobile": {
+      "title": "تطبيقات الجوال",
+      "subtitle": "خذ مساحة عملك معك: امسح وأدخل واطّلع من هاتفك.",
+      "download": "تنزيل التطبيق",
+      "seeAll": "عرض كل تطبيقاتي",
+      "optional": "اختياري — تبقى بوابة الويب هي المرجع، ولست مضطرًا لتثبيت التطبيق."
+    }
   },
   "systemPage": {
     "apiError": "خطأ: :error",

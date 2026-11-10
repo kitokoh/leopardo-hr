@@ -2440,7 +2440,14 @@
     "ibanPlaceholderDZ": "IBAN ou RIB algérien (20 chiffres)",
     "saveBanking": "Enregistrer les coordonnées",
     "sepaNotReady": "SEPA non configuré",
-    "sepaReady": "SEPA prêt"
+    "sepaReady": "SEPA prêt",
+    "mobile": {
+      "title": "Applications mobiles",
+      "subtitle": "Emportez votre espace de travail sur mobile : scannez, saisissez et consultez depuis votre téléphone.",
+      "download": "Télécharger l'application",
+      "seeAll": "Voir toutes mes applications",
+      "optional": "Optionnel — le portail web reste la référence, rien ne vous oblige à installer l'application."
+    }
   },
   "systemPage": {
     "apiError": "Erreur : :error",
