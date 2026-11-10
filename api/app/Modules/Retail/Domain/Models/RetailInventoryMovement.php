@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use LogicException;
 
 /**
  * Mouvement d'inventaire du module Retail (BC-17 RETAIL, #7673).
@@ -70,6 +71,31 @@ class RetailInventoryMovement extends Model
             'unit_cost_minor' => 'integer',
             'reason_code' => RetailStockReasonCode::class,
         ];
+    }
+
+    /**
+     * #9293 — journal APPEND-ONLY, garde fail-closed.
+     *
+     * Le docblock de classe revendiquait « journal append-only » depuis
+     * #7673, mais AUCUNE garde ne l'appliquait : un `update()` ou un
+     * `delete()` sur un mouvement passait silencieusement. Toute
+     * l'architecture du stock Retail repose sur ce journal (tracabilite,
+     * COGS, reconciliation, preuve d'audit) : un mouvement reecrit apres
+     * coup desynchronise le niveau du journal, et un mouvement efface fait
+     * disparaitre la consommation.
+     *
+     * Meme contrat que `PharmacyStockMovement` (#7800) : un mouvement ne se
+     * corrige jamais, il se CONTRE-PASSE (nouveau mouvement inverse).
+     */
+    protected static function booted(): void
+    {
+        static::updating(function (): void {
+            throw new LogicException('retail_inventory_movements est un journal immuable (append-only).');
+        });
+
+        static::deleting(function (): void {
+            throw new LogicException('retail_inventory_movements est un journal immuable (append-only).');
+        });
     }
 
     /**
