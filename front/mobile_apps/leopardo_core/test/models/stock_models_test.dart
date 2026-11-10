@@ -63,7 +63,11 @@ void main() {
     });
 
     test('recalcule le seuil seulement quand il est connu', () {
-      final below = StockLevel.fromJson({'id': 1, 'quantity': 3, 'alert_threshold': 5});
+      final below = StockLevel.fromJson({
+        'id': 1,
+        'quantity': 3,
+        'alert_threshold': 5,
+      });
       final unknown = StockLevel.fromJson({'id': 2, 'quantity': 3});
 
       expect(below.isBelowThreshold, isTrue);
@@ -73,12 +77,24 @@ void main() {
 
   group('StockMovementReason', () {
     test('normalise les codes des deux verticales', () {
-      expect(StockMovementReason.fromWire('purchase'), StockMovementReason.receiving);
-      expect(StockMovementReason.fromWire('receiving'), StockMovementReason.receiving);
+      expect(
+        StockMovementReason.fromWire('purchase'),
+        StockMovementReason.receiving,
+      );
+      expect(
+        StockMovementReason.fromWire('receiving'),
+        StockMovementReason.receiving,
+      );
       expect(StockMovementReason.fromWire('loss'), StockMovementReason.waste);
       expect(StockMovementReason.fromWire('waste'), StockMovementReason.waste);
-      expect(StockMovementReason.fromWire('transfer_in'), StockMovementReason.transferIn);
-      expect(StockMovementReason.fromWire('n_importe_quoi'), StockMovementReason.unknown);
+      expect(
+        StockMovementReason.fromWire('transfer_in'),
+        StockMovementReason.transferIn,
+      );
+      expect(
+        StockMovementReason.fromWire('n_importe_quoi'),
+        StockMovementReason.unknown,
+      );
       expect(StockMovementReason.fromWire(null), StockMovementReason.unknown);
     });
 

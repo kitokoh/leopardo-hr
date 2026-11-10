@@ -153,7 +153,9 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
       SnackBar(
         duration: const Duration(seconds: 2),
         content: Text(
-          found ? 'Article ajoute au panier.' : 'Aucun article pour le code $code.',
+          found
+              ? 'Article ajoute au panier.'
+              : 'Aucun article pour le code $code.',
         ),
       ),
     );
@@ -199,9 +201,8 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
               tooltip: 'Stock',
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
-                  builder: (_) => RetailPosStockScreen(
-                    locationId: widget.locationId,
-                  ),
+                  builder: (_) =>
+                      RetailPosStockScreen(locationId: widget.locationId),
                 ),
               ),
               icon: const Icon(Icons.inventory_2_outlined),
@@ -240,7 +241,9 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
           children: [
             // Bandeau de synchronisation : progression, echecs, action
             // manuelle. Une file muette laisse le vendeur dans le doute.
-            if (state.offline || state.pendingOperations > 0 || state.sync.total > 0)
+            if (state.offline ||
+                state.pendingOperations > 0 ||
+                state.sync.total > 0)
               PosSyncBanner(
                 progress: state.sync,
                 onSyncNow: notifier.flushQueue,
@@ -271,7 +274,8 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
                             favouritesOnly: state.showFavouritesOnly,
                             favouriteIds: {
                               for (final product in state.products)
-                                if (state.affinity.isFavourite(product.id)) product.id,
+                                if (state.affinity.isFavourite(product.id))
+                                  product.id,
                             },
                             searchController: _searchController,
                             searchFocus: _searchFocus,
@@ -280,7 +284,8 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
                             onOpenScanner: _openScanner,
                             onPick: notifier.addProduct,
                             onToggleFavourite: notifier.toggleFavourite,
-                            onToggleFavouritesOnly: notifier.toggleFavouritesOnly,
+                            onToggleFavouritesOnly:
+                                notifier.toggleFavouritesOnly,
                             onClearSearch: () {
                               _searchController.clear();
                               notifier.setSearchQuery('');
@@ -340,7 +345,9 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
       return;
     }
 
-    final ok = ref.read(retailPosControllerProvider.notifier).parkCurrentTicket(label);
+    final ok = ref
+        .read(retailPosControllerProvider.notifier)
+        .parkCurrentTicket(label);
 
     if (!mounted) {
       return;
@@ -348,7 +355,9 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(ok ? 'Commande mise en attente.' : 'Mise en attente impossible.'),
+        content: Text(
+          ok ? 'Commande mise en attente.' : 'Mise en attente impossible.',
+        ),
       ),
     );
   }
@@ -414,7 +423,8 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
   /// Ouvre les reglages de la tablette (#9263), proteges par PIN.
   Future<void> _openSettings() async {
     final store = ref.read(retailLocalStoreProvider);
-    final current = ref.read(retailConfigProvider) ??
+    final current =
+        ref.read(retailConfigProvider) ??
         const PosAppConfig(apiBaseUrl: 'https://api.leopardo.app/api/v1');
 
     await Navigator.of(context).push<bool>(
@@ -536,24 +546,29 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(outcome.message),
-        backgroundColor: outcome.success ? null : Theme.of(context).colorScheme.error,
+        backgroundColor: outcome.success
+            ? null
+            : Theme.of(context).colorScheme.error,
       ),
     );
   }
 
   /// Annule une ligne avec un motif obligatoire.
   Future<void> _voidLine(RetailCartLine line) async {
-    final result = await showModalBottomSheet<({PosVoidReason reason, String comment})>(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => PosVoidReasonSheet(itemName: line.product.name),
-    );
+    final result =
+        await showModalBottomSheet<({PosVoidReason reason, String comment})>(
+          context: context,
+          isScrollControlled: true,
+          builder: (_) => PosVoidReasonSheet(itemName: line.product.name),
+        );
 
     if (result == null || !mounted) {
       return;
     }
 
-    ref.read(retailPosControllerProvider.notifier).voidLine(
+    ref
+        .read(retailPosControllerProvider.notifier)
+        .voidLine(
           productId: line.product.id,
           reason: result.reason,
           comment: result.comment.isEmpty ? null : result.comment,
@@ -593,8 +608,8 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
         content: Text(
           ok
               ? (state.offline
-                  ? 'Encaissement enregistre hors ligne — sera synchronise.'
-                  : 'Encaissement valide.')
+                    ? 'Encaissement enregistre hors ligne — sera synchronise.'
+                    : 'Encaissement valide.')
               : (state.error ?? 'Encaissement refuse.'),
         ),
       ),
@@ -612,7 +627,9 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
       return;
     }
 
-    final ok = await ref.read(retailPosControllerProvider.notifier).recordCashMovement(movement);
+    final ok = await ref
+        .read(retailPosControllerProvider.notifier)
+        .recordCashMovement(movement);
 
     if (!mounted) {
       return;
@@ -621,7 +638,9 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
     final messenger = ScaffoldMessenger.of(context);
 
     messenger.showSnackBar(
-      SnackBar(content: Text(ok ? 'Mouvement enregistre.' : 'Mouvement refuse.')),
+      SnackBar(
+        content: Text(ok ? 'Mouvement enregistre.' : 'Mouvement refuse.'),
+      ),
     );
   }
 
@@ -636,7 +655,9 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
       return;
     }
 
-    final ok = await ref.read(retailPosControllerProvider.notifier).refundLastOrder(refund);
+    final ok = await ref
+        .read(retailPosControllerProvider.notifier)
+        .refundLastOrder(refund);
 
     if (!mounted) {
       return;
@@ -645,7 +666,11 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
     final messenger = ScaffoldMessenger.of(context);
 
     messenger.showSnackBar(
-      SnackBar(content: Text(ok ? 'Remboursement enregistre.' : 'Remboursement refuse.')),
+      SnackBar(
+        content: Text(
+          ok ? 'Remboursement enregistre.' : 'Remboursement refuse.',
+        ),
+      ),
     );
   }
 
@@ -667,7 +692,9 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
       return;
     }
 
-    final closed = await ref.read(retailPosControllerProvider.notifier).closeSession(
+    final closed = await ref
+        .read(retailPosControllerProvider.notifier)
+        .closeSession(
           countedCashMinor: result.countedCashMinor,
           varianceReason: result.varianceReason,
         );
@@ -679,9 +706,7 @@ class _RetailPosScreenState extends ConsumerState<RetailPosScreen> {
     final messenger = ScaffoldMessenger.of(context);
 
     if (closed == null) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Cloture refusee.')),
-      );
+      messenger.showSnackBar(const SnackBar(content: Text('Cloture refusee.')));
 
       return;
     }
@@ -768,14 +793,18 @@ class _CategoryTile extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
           child: Container(
-            constraints: const BoxConstraints(minHeight: RetailTheme.minTouchTarget),
+            constraints: const BoxConstraints(
+              minHeight: RetailTheme.minTouchTarget,
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             child: Row(
               children: [
                 Icon(
                   icon,
                   size: 20,
-                  color: selected ? scheme.onPrimaryContainer : scheme.onSurfaceVariant,
+                  color: selected
+                      ? scheme.onPrimaryContainer
+                      : scheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -785,7 +814,9 @@ class _CategoryTile extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                      color: selected ? scheme.onPrimaryContainer : scheme.onSurface,
+                      color: selected
+                          ? scheme.onPrimaryContainer
+                          : scheme.onSurface,
                     ),
                   ),
                 ),
@@ -935,8 +966,8 @@ class _ProductGrid extends StatelessWidget {
                   message: searching
                       ? 'Aucun article ne correspond a « ${searchController.text} ».'
                       : favouritesOnly
-                          ? 'Appuyez longuement sur un article pour l\'epingler ici.'
-                          : 'Ce rayon ne contient aucun article disponible.',
+                      ? 'Appuyez longuement sur un article pour l\'epingler ici.'
+                      : 'Ce rayon ne contient aucun article disponible.',
                   action: searching
                       ? OutlinedButton.icon(
                           onPressed: onClearSearch,
@@ -944,12 +975,12 @@ class _ProductGrid extends StatelessWidget {
                           label: const Text('Effacer la recherche'),
                         )
                       : (favouritesOnly
-                          ? OutlinedButton.icon(
-                              onPressed: onToggleFavouritesOnly,
-                              icon: const Icon(Icons.grid_view),
-                              label: const Text('Voir tous les articles'),
-                            )
-                          : null),
+                            ? OutlinedButton.icon(
+                                onPressed: onToggleFavouritesOnly,
+                                icon: const Icon(Icons.grid_view),
+                                label: const Text('Voir tous les articles'),
+                              )
+                            : null),
                 )
               : GridView.builder(
                   padding: const EdgeInsets.all(12),
@@ -997,7 +1028,8 @@ class _ProductTile extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: '${product.name}, ${formatMinor(product.priceMinor)}'
+      label:
+          '${product.name}, ${formatMinor(product.priceMinor)}'
           '${isFavourite ? ', favori' : ''}',
       child: Card(
         child: InkWell(
@@ -1020,7 +1052,10 @@ class _ProductTile extends StatelessWidget {
                         product.name,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     if (isFavourite)
@@ -1039,7 +1074,11 @@ class _ProductTile extends StatelessWidget {
                       ),
                     ),
                     if (product.isScannable)
-                      Icon(Icons.qr_code, size: 18, color: scheme.onSurfaceVariant),
+                      Icon(
+                        Icons.qr_code,
+                        size: 18,
+                        color: scheme.onSurfaceVariant,
+                      ),
                   ],
                 ),
               ],
@@ -1161,13 +1200,19 @@ class _CartPanel extends StatelessWidget {
                   value: -state.receipt.voidedMinor,
                 ),
               const SizedBox(height: 8),
-              _TotalRow(label: 'Total', value: cart.totalMinor, emphasized: true),
+              _TotalRow(
+                label: 'Total',
+                value: cart.totalMinor,
+                emphasized: true,
+              ),
               const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: cart.isEmpty ? null : () => _openDiscount(context),
+                      onPressed: cart.isEmpty
+                          ? null
+                          : () => _openDiscount(context),
                       icon: const Icon(Icons.percent),
                       label: Text(
                         cart.discountMinor > 0
@@ -1328,7 +1373,10 @@ class _CartLineTile extends StatelessWidget {
 
 /// Feuille de saisie de quantite au pave numerique.
 class _QuantitySheet extends StatefulWidget {
-  const _QuantitySheet({required this.productName, required this.initialQuantity});
+  const _QuantitySheet({
+    required this.productName,
+    required this.initialQuantity,
+  });
 
   final String productName;
   final int initialQuantity;
@@ -1357,15 +1405,21 @@ class _QuantitySheetState extends State<_QuantitySheet> {
         children: [
           Text('Quantite', style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 4),
-          Text(widget.productName, style: Theme.of(context).textTheme.bodyMedium),
+          Text(
+            widget.productName,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
           const SizedBox(height: 16),
           PosNumericField(value: _input, label: 'Quantite'),
           const SizedBox(height: 12),
           PosNumericKeypad(
-            onDigit: (digit) => setState(() => _input = applyNumericKey(_input, digit)),
+            onDigit: (digit) =>
+                setState(() => _input = applyNumericKey(_input, digit)),
             onBackspace: () => setState(() => _input = applyBackspace(_input)),
             onClear: () => setState(() => _input = ''),
-            onValidate: quantity > 0 ? () => Navigator.of(context).pop(quantity) : null,
+            onValidate: quantity > 0
+                ? () => Navigator.of(context).pop(quantity)
+                : null,
             validateLabel: 'Valider la quantite',
             validateEnabled: quantity > 0,
           ),
@@ -1390,8 +1444,9 @@ class _DiscountSheet extends StatefulWidget {
 }
 
 class _DiscountSheetState extends State<_DiscountSheet> {
-  late String _input =
-      widget.currentDiscountMinor > 0 ? '${widget.currentDiscountMinor}' : '';
+  late String _input = widget.currentDiscountMinor > 0
+      ? '${widget.currentDiscountMinor}'
+      : '';
 
   @override
   Widget build(BuildContext context) {
@@ -1423,10 +1478,13 @@ class _DiscountSheetState extends State<_DiscountSheet> {
           ),
           const SizedBox(height: 12),
           PosNumericKeypad(
-            onDigit: (digit) => setState(() => _input = applyNumericKey(_input, digit)),
+            onDigit: (digit) =>
+                setState(() => _input = applyNumericKey(_input, digit)),
             onBackspace: () => setState(() => _input = applyBackspace(_input)),
             onClear: () => setState(() => _input = ''),
-            onValidate: exceeds ? null : () => Navigator.of(context).pop(discount),
+            onValidate: exceeds
+                ? null
+                : () => Navigator.of(context).pop(discount),
             validateLabel: 'Appliquer la remise',
             validateEnabled: !exceeds,
           ),
@@ -1437,7 +1495,11 @@ class _DiscountSheetState extends State<_DiscountSheet> {
 }
 
 class _TotalRow extends StatelessWidget {
-  const _TotalRow({required this.label, required this.value, this.emphasized = false});
+  const _TotalRow({
+    required this.label,
+    required this.value,
+    this.emphasized = false,
+  });
 
   final String label;
   final int value;
