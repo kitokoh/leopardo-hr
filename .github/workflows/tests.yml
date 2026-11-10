@@ -84,6 +84,14 @@ jobs:
     # TRANSITOIRE pour laisser les runs produire leur JUnit Feature complet
     # (mine d'échecs) — à réduire dès que la fixture est construite une fois
     # par process (#6928, plan P0 CI).
+    #
+    # Issue #9311 (2026-11-10) : ce plafond de 300 min est un DERNIER filet,
+    # pas le mécanisme de sortie. Mesure : le run 42741886141 est resté
+    # `in_progress` 3 h 42 dans l'étape « Run backend feature tests » et, à
+    # cause du groupe de concurrence stable de `main`, il a gelé TOUS les
+    # verdicts suivants (6 runs de main restés `pending` puis remplacés, aucun
+    # job exécuté). Le plafond utile est donc posé sur l'ÉTAPE (ci-dessous),
+    # pour qu'une suite suspendue libère le groupe en ~2 h 30 et non en 5 h.
     timeout-minutes: 300
     name: Backend (PHP 8.4 + PostgreSQL 16 + Redis 7)
     runs-on: ubuntu-latest
@@ -197,6 +205,14 @@ jobs:
 
       - name: Run backend feature tests
         id: backend_feature_tests
+        # Issue #9311 : plafond de l'ÉTAPE, pas seulement du job. Une suite
+        # Feature nominale dure ~45-60 min (job complet mesuré ~82 min) ; au
+        # delà de 150 min, le run est suspendu, et un run suspendu sur `main`
+        # bloque tous les verdicts suivants (groupe de concurrence stable par
+        # ref : les runs plus récents restent `pending` et sont remplacés sans
+        # exécuter un seul job). Borner ici rend l'échec DÉTERMINISTE et libère
+        # le groupe ; le plafond du job (300 min) reste le filet ultime.
+        timeout-minutes: 150
         continue-on-error: true
         working-directory: ./api
         env:
