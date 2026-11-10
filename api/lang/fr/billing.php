@@ -14,4 +14,7 @@ return [
     // BOS-O-01/03 (#8623/#8625) — messages du provisioning guidé (garde i18n PA2-I18N-007).
     'invalid_market_intent' => 'Intention de marché invalide : profil « :profile » incompatible avec le marché « :market ».',
     'primary_site_name' => 'Établissement principal',
+    // #9323 — activation directe : l'espace existe déjà, aucun e-mail requis.
+    'trial_direct_activation_ready' => 'Votre espace est prêt. Connectez-vous avec l\'adresse e-mail et le mot de passe choisis à l\'inscription.',
+    'trial_direct_activation_password_required' => 'Votre espace est prêt. Choisissez votre mot de passe pour y accéder.',
 ];

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Jobs\ProvisionDemoTenantJob;
+use App\Modules\Billing\Application\Actions\ProvisionGuidedTrial;
 use App\Modules\Billing\Application\Actions\RequestTrialSignup;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
@@ -37,6 +38,9 @@ class TrialOnboardingAccessTest extends TestCase
     /**
      * #9305 — une panne d'envoi OTP ne doit pas se traduire par un 503 : le
      * serveur bascule sur le parcours guidé et provisionne quand même.
+     *
+     * #9323 — et ce repli ne doit plus dépendre d'un WORKER : le provisioning
+     * est exécuté dans la requête, donc l'espace existe au retour de l'appel.
      */
     public function test_self_service_signup_falls_back_to_guided_when_otp_cannot_be_sent(): void
     {
@@ -66,23 +70,117 @@ class TrialOnboardingAccessTest extends TestCase
         // Aucun 503 : on ne perd pas le prospect parce qu'un e-mail ne part pas.
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
-            ->assertJsonPath('data.workflow', 'guided_trial')
+            ->assertJsonPath('data.workflow', 'direct_activation')
             ->assertJsonPath('data.otp_sent', false)
-            ->assertJsonPath('data.status', 'provisioning_sandbox')
-            ->assertJsonStructure(['data' => ['provisioning_token']]);
+            ->assertJsonPath('data.status', 'ready')
+            ->assertJsonStructure(['data' => ['provisioning_token', 'login_url', 'activation_url']]);
 
         $token = $response->json('data.provisioning_token');
         $this->assertIsString($token);
         $this->assertSame(64, strlen($token));
 
-        // L'espace est réellement en cours de provisioning.
+        // #9323 — l'espace est RÉELLEMENT prêt : plus de `pending` qui attend
+        // un worker inexistant.
         $this->assertDatabaseHas('trial_provisionings', [
             'email' => 'restaurateur@demo.com',
             'provisioning_token' => $token,
-            'status' => 'pending',
+            'status' => 'ready',
         ]);
 
-        Queue::assertPushed(ProvisionDemoTenantJob::class);
+        // Aucun job n'est mis en file : le provisioning est synchrone.
+        Queue::assertNotPushed(ProvisionDemoTenantJob::class);
+    }
+
+    /**
+     * #9323 — le chemin qui débloque réellement une agence de voyage : un mot
+     * de passe choisi à l'inscription, un mailer KO, et un espace utilisable
+     * immédiatement.
+     */
+    public function test_signup_with_password_activates_workspace_without_email(): void
+    {
+        Queue::fake();
+
+        $this->mock(RequestTrialSignup::class, function ($mock): void {
+            $mock->shouldReceive('execute')->andReturn(false);
+            $mock->shouldReceive('findExistingManager')->andReturn(null);
+            $mock->shouldReceive('resolveCompanyName')->andReturn('Agence Voyage QA');
+        });
+
+        $response = $this->postJson('/api/v1/trial/signup', [
+            'email' => 'agence@demo.com',
+            'company' => 'Agence Voyage QA',
+            'country' => 'FR',
+            'locale' => 'fr',
+            'solution' => 'travelagency',
+            'requestedWorkflow' => 'self_service',
+            'password' => 'Voyage2026Solide',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.workflow', 'direct_activation')
+            ->assertJsonPath('data.password_set', true)
+            ->assertJsonPath('data.login_url', '/auth/login')
+            // Un mot de passe est déjà choisi : aucun lien d'activation à
+            // traîner.
+            ->assertJsonPath('data.activation_url', null);
+
+        // La verticale demandée est bien celle de l'agence de voyage.
+        $this->assertDatabaseHas('companies', [
+            'email' => 'agence@demo.com',
+            'status' => 'trial',
+        ]);
+
+        $this->assertDatabaseHas('trial_provisionings', [
+            'email' => 'agence@demo.com',
+            'status' => 'ready',
+        ]);
+    }
+
+    /**
+     * #9323 — un mot de passe faible est refusé par la politique unique du
+     * dépôt, pas par une règle locale.
+     */
+    public function test_signup_rejects_weak_password(): void
+    {
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'faible@demo.com',
+            'country' => 'FR',
+            'password' => 'court',
+        ])->assertStatus(422)->assertJsonValidationErrors(['password']);
+    }
+
+    /**
+     * #9323 — aucun faux succès : si le provisioning synchrone échoue, la
+     * réponse est un 503 explicite, jamais `success: true` sur un espace
+     * inexistant (leçon de #9308).
+     */
+    public function test_direct_activation_failure_returns_503_not_false_success(): void
+    {
+        Queue::fake();
+
+        $this->mock(RequestTrialSignup::class, function ($mock): void {
+            $mock->shouldReceive('execute')->andReturn(false);
+            $mock->shouldReceive('findExistingManager')->andReturn(null);
+            $mock->shouldReceive('resolveCompanyName')->andReturn('Agence KO');
+        });
+
+        // `ActivateTrialDirectly` est `final` (donc non mockable) : on fait
+        // échouer le provisioning RÉEL, ce qui exerce aussi le vrai chemin
+        // d'erreur de l'Action au lieu de le contourner.
+        $this->mock(ProvisionGuidedTrial::class, function ($mock): void {
+            $mock->shouldReceive('execute')->andThrow(new \RuntimeException('provisioning KO'));
+        });
+
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'ko@demo.com',
+            'company' => 'Agence KO',
+            'country' => 'FR',
+            'requestedWorkflow' => 'self_service',
+        ])
+            ->assertStatus(503)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('error', 'TRIAL_ACTIVATION_UNAVAILABLE');
     }
 
     /**

@@ -14,4 +14,7 @@ return [
     // BOS-O-01/03 (#8623/#8625) — guided provisioning messages (i18n guard PA2-I18N-007).
     'invalid_market_intent' => 'Geçersiz pazar niyeti: ":profile" profili ":market" pazarıyla uyumsuz.',
     'primary_site_name' => 'Ana işletme',
+    // #9323 — doğrudan etkinleştirme: çalışma alanı hazır, e-posta gerekmez.
+    'trial_direct_activation_ready' => 'Çalışma alanınız hazır. Kayıt sırasında seçtiğiniz e-posta ve şifre ile giriş yapın.',
+    'trial_direct_activation_password_required' => 'Çalışma alanınız hazır. Erişmek için şifrenizi seçin.',
 ];

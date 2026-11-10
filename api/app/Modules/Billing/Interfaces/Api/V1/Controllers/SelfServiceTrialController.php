@@ -11,6 +11,7 @@ use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProvisionDemoTenantJob;
+use App\Modules\Billing\Application\Actions\ActivateTrialDirectly;
 use App\Modules\Billing\Application\Actions\RequestTrialSignup;
 use App\Modules\Billing\Application\Actions\SetTrialPassword;
 use App\Modules\Billing\Application\Actions\VerifyTrialSignup;
@@ -40,6 +41,7 @@ class SelfServiceTrialController extends Controller
 
     public function __construct(
         private readonly RequestTrialSignup $requestTrialSignup,
+        private readonly ActivateTrialDirectly $activateTrialDirectly,
         private readonly VerifyTrialSignup $verifyTrialSignup,
         private readonly SetTrialPassword $setTrialPassword,
         private readonly SolutionCatalogue $solutionCatalogue,
@@ -214,11 +216,18 @@ class SelfServiceTrialController extends Controller
             // inscription hors parcours Trade, comportement historique.
             'market_type' => ['nullable', 'string', Rule::in(Company::MARKET_TYPES)],
             'trade_profile' => ['nullable', 'string', Rule::in(Company::TRADE_PROFILES)],
+            // #9323 — mot de passe choisi DÈS l'inscription. Optionnel : sans
+            // lui, le parcours reste identique (OTP, ou repli guidé avec
+            // `activation_url`). Avec lui, un espace peut être ouvert même
+            // quand le transport e-mail est hors service — le responsable se
+            // connecte immédiatement, sans dépendre d'un e-mail ni d'un worker.
+            // Politique unique du dépôt (#7995) : jamais de `min:8` local.
+            'password' => PasswordPolicy::optional(),
         ]);
 
         $this->assertMarketIntentIsCoherent($request);
 
-        /** @var array{email: string, company?: string|null, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solutions?: list<string>|null, solution?: string|null, company_type?: string|null, modules?: list<string>|null, locale?: string|null, market_type?: string|null, trade_profile?: string|null} $validated */
+        /** @var array{email: string, company?: string|null, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solutions?: list<string>|null, solution?: string|null, company_type?: string|null, modules?: list<string>|null, locale?: string|null, market_type?: string|null, trade_profile?: string|null, password?: string|null} $validated */
         $email = strtolower(trim($validated['email']));
 
         // BOS-009 (#8227) — `solution` (singulier) etait valide puis JETE.
@@ -314,15 +323,20 @@ class SelfServiceTrialController extends Controller
             // dans la route Next `/api/forms/signup`, donc tout client direct
             // (mobile, SDK, cURL, intégration partenaire) restait bloqué sur
             // un 503. On bascule ici, côté serveur, sur le parcours guidé qui
-            // provisionne sans dépendre du mailer — la réponse porte
-            // `workflow: guided_trial` pour que le client adapte son écran
-            // (pas d'écran OTP pour un code jamais parti).
-            Log::warning('trial.signup_otp_unavailable_fallback_guided', [
+            // provisionne sans dépendre du mailer.
+            //
+            // #9323 — ce repli ne doit pas dépendre d'un WORKER non plus.
+            // `provisionSandbox()` se contentait de mettre
+            // `ProvisionDemoTenantJob` en file : sans consommateur, la ligne
+            // restait `pending` pour toujours et le prospect n'obtenait aucun
+            // espace. On provisionne donc SYNCHRONEMENT ici, dans la requête.
+            Log::warning('trial.signup_otp_unavailable_direct_activation', [
                 'email_hash' => $this->emailLogId($email),
                 'requested_workflow' => $validated['requestedWorkflow'] ?? null,
+                'password_provided' => filled($validated['password'] ?? null),
             ]);
 
-            return $this->provisionSandbox($email, $companyName, $validated, $existingManager);
+            return $this->activateDirectly($email, $companyName, $validated, $existingManager);
         }
 
         // Issue #2437 (parité guidé) : le parcours self-service doit lui aussi
@@ -693,6 +707,148 @@ class SelfServiceTrialController extends Controller
         throw ValidationException::withMessages([
             'trade_profile' => [__('errors.INVALID_TRADE_PROFILE')],
         ]);
+    }
+
+    /**
+     * #9323 — ouvre l'espace d'essai DANS la requête, sans e-mail ni worker.
+     *
+     * C'est le seul chemin qui garantit qu'un responsable obtient un espace
+     * même quand le transport e-mail est hors service ET qu'aucun worker ne
+     * consomme la file. Le provisioning est synchrone : soit l'espace existe
+     * et la réponse le prouve, soit on répond 503 — jamais de faux succès
+     * (leçon de #9308).
+     *
+     * @param  array<string, mixed>  $validated
+     */
+    private function activateDirectly(
+        string $email,
+        string $companyName,
+        array $validated,
+        ?Employee $existingManager,
+    ): JsonResponse {
+        // Anti-énumération (#3945) : un e-mail déjà manager reçoit la même
+        // réponse uniforme qu'un nouveau prospect, sans second provisioning.
+        if ($existingManager) {
+            return new JsonResponse([
+                'success' => true,
+                'message' => __('billing.trial_signup_received'),
+                'data' => [
+                    'email' => $email,
+                    'status' => 'provisioning_sandbox',
+                    'workflow' => 'direct_activation',
+                    'otp_sent' => false,
+                    'provisioning_token' => Str::random(64),
+                ],
+            ], 200);
+        }
+
+        // Idempotence (#3951) : un double POST réutilise la ligne pending
+        // existante au lieu de créer un second tenant.
+        $existingPending = DB::table('trial_provisionings')
+            ->where('email', $email)
+            ->where('status', 'pending')
+            ->first();
+
+        $provisioningToken = $existingPending !== null
+            ? (string) $existingPending->provisioning_token
+            : Str::random(64);
+
+        if ($existingPending === null) {
+            try {
+                DB::table('trial_provisionings')->insert([
+                    'email' => $email,
+                    'company_name' => $validated['company'],
+                    'country' => strtoupper((string) $validated['country']),
+                    'provisioning_token' => $provisioningToken,
+                    'status' => 'pending',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } catch (QueryException $e) {
+                // Course entre le check et l'insert (index partiel unique
+                // #3951) : on réutilise la ligne gagnante, jamais de 500.
+                if ($e->getCode() !== '23505') {
+                    Log::error('trial.direct_activation_row_failed', [
+                        'email_hash' => $this->emailLogId($email),
+                        'error' => $e->getMessage(),
+                    ]);
+
+                    return $this->directActivationUnavailable();
+                }
+
+                $winner = DB::table('trial_provisionings')
+                    ->where('email', $email)
+                    ->where('status', 'pending')
+                    ->first();
+
+                if ($winner === null) {
+                    return $this->directActivationUnavailable();
+                }
+
+                $provisioningToken = (string) $winner->provisioning_token;
+            }
+        }
+
+        try {
+            $result = $this->activateTrialDirectly->execute(
+                $email,
+                $companyName,
+                (string) $validated['country'],
+                $provisioningToken,
+                $validated['solutions'],
+                $validated['company_type'] ?? null,
+                $validated['modules'] ?? [],
+                $validated['locale'] ?? null,
+                $validated['market_type'] ?? null,
+                $validated['trade_profile'] ?? null,
+                isset($validated['password']) && is_string($validated['password'])
+                    ? $validated['password']
+                    : null,
+            );
+        } catch (\Throwable $e) {
+            // Aucun faux succès : l'espace n'existe pas, on le dit. La ligne
+            // reste `pending` pour que le balayage (#3600) puisse reprendre.
+            Log::error('trial.direct_activation_failed', [
+                'email_hash' => $this->emailLogId($email),
+                'exception' => $e::class,
+                'error' => $e->getMessage(),
+            ]);
+
+            return $this->directActivationUnavailable();
+        }
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => $result['password_set']
+                ? __('billing.trial_direct_activation_ready')
+                : __('billing.trial_direct_activation_password_required'),
+            'data' => [
+                'email' => $email,
+                'status' => 'ready',
+                'workflow' => 'direct_activation',
+                'otp_sent' => false,
+                'provisioning_token' => $provisioningToken,
+                'login_url' => $result['login_url'],
+                'password_set' => $result['password_set'],
+                // Sans mot de passe choisi, le prospect en définit un via ce
+                // lien (même token) — jamais d'impasse.
+                'activation_url' => $result['password_set'] ? null : $result['activation_url'],
+            ],
+        ], 200);
+    }
+
+    /**
+     * Réponse honnête quand l'activation directe échoue : 503 réessayable,
+     * jamais un `success: true` sur un espace inexistant.
+     */
+    private function directActivationUnavailable(): JsonResponse
+    {
+        return new JsonResponse([
+            'success' => false,
+            'error' => 'TRIAL_ACTIVATION_UNAVAILABLE',
+            'message' => __('errors.TRIAL_SIGNUP_UNAVAILABLE'),
+            'localized_message' => __('errors.TRIAL_SIGNUP_UNAVAILABLE'),
+        ], 503);
     }
 
     /**

@@ -525,12 +525,13 @@ class SelfServiceTrialTest extends TestCase
             'country' => 'DZ',
         ]);
 
-        // Jamais un 503 : le repli guidé provisionne malgré le mailer KO.
+        // Jamais un 503 : le repli provisionne malgré le mailer KO, et
+        // #9323 le fait SYNCHRONEMENT — l'espace est prêt au retour de l'appel.
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
-            ->assertJsonPath('data.workflow', 'guided_trial')
+            ->assertJsonPath('data.workflow', 'direct_activation')
             ->assertJsonPath('data.otp_sent', false)
-            ->assertJsonPath('data.status', 'provisioning_sandbox');
+            ->assertJsonPath('data.status', 'ready');
 
         // La demande est bien conservée malgré l'échec du mail.
         $this->assertDatabaseHas('company_requests', [
@@ -538,10 +539,11 @@ class SelfServiceTrialTest extends TestCase
             'status' => 'pending',
         ]);
 
-        // L'espace est réellement en cours de provisioning (ligne de suivi).
+        // #9323 — l'espace est RÉELLEMENT prêt : plus de `pending` qui attend
+        // un worker inexistant.
         $this->assertDatabaseHas('trial_provisionings', [
             'email' => 'founder.otp.fail@newtech.dz',
-            'status' => 'pending',
+            'status' => 'ready',
         ]);
     }
 
@@ -596,14 +598,15 @@ class SelfServiceTrialTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
-            ->assertJsonPath('data.workflow', 'guided_trial')
+            ->assertJsonPath('data.workflow', 'direct_activation')
             ->assertJsonPath('data.otp_sent', false)
-            ->assertJsonPath('data.status', 'provisioning_sandbox')
-            ->assertJsonStructure(['data' => ['provisioning_token']]);
+            ->assertJsonPath('data.status', 'ready')
+            ->assertJsonStructure(['data' => ['provisioning_token', 'login_url']]);
 
+        // #9323 — provisioning synchrone : l'espace existe, aucun job en file.
         $this->assertDatabaseHas('trial_provisionings', [
             'email' => 'otp.fallback@newtech.dz',
-            'status' => 'pending',
+            'status' => 'ready',
         ]);
     }
 

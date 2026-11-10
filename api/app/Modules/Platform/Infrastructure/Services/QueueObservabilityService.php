@@ -34,7 +34,7 @@ class QueueObservabilityService
      * recréeraient exactement le défaut corrigé ici (deux définitions pour le
      * même mot).
      */
-    public const QUEUES = ['default', 'documents', 'pdf', 'payroll', 'notifications', 'webhooks'];
+    public const QUEUES = ['default', 'documents', 'pdf', 'payroll', 'notifications', 'webhooks', 'emails'];
 
     /**
      * Failed-jobs count above this threshold flips `alerts.failed_jobs` to true.

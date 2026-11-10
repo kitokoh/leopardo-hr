@@ -14,4 +14,7 @@ return [
     // BOS-O-01/03 (#8623/#8625) — guided provisioning messages (i18n guard PA2-I18N-007).
     'invalid_market_intent' => 'Invalid market intent: profile ":profile" is incompatible with market ":market".',
     'primary_site_name' => 'Main establishment',
+    // #9323 — direct activation: the workspace already exists, no email needed.
+    'trial_direct_activation_ready' => 'Your workspace is ready. Sign in with the email address and password chosen at signup.',
+    'trial_direct_activation_password_required' => 'Your workspace is ready. Choose your password to access it.',
 ];
