@@ -32,11 +32,11 @@ class UserInvitationService
      *                                                                                                           (l'employé n'a de session qu'à ce moment-là ; s'il n'active jamais,
      *                                                                                                           aucun accès n'existe).
      * @return UserInvitationDispatchResult jeton en clair, lien d'activation et
-     *                                       issue de l'envoi (#9322). `token === ''`
-     *                                       signifie invitation DÉJÀ consommée (compte
-     *                                       actif) : aucun jeton n'est émis, aucun
-     *                                       courriel n'est envoyé, rien n'est rouvert —
-     *                                       à traiter comme « rien à renvoyer ».
+     *                                      issue de l'envoi (#9322). `token === ''`
+     *                                      signifie invitation DÉJÀ consommée (compte
+     *                                      actif) : aucun jeton n'est émis, aucun
+     *                                      courriel n'est envoyé, rien n'est rouvert —
+     *                                      à traiter comme « rien à renvoyer ».
      */
     public function createAndSend(
         Company $company,

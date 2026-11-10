@@ -23,6 +23,25 @@
 **Automatisé** : `front/web/src/lib/__tests__/client-features-manager-matrix.test.ts` (10 cas — garde anti-orphelin, verticales direction fermées, flag tenant comme seconde barrière) ; `front/web/src/app/(dashboard)/__tests__/layout-feature-locked-panel.test.tsx` (3 cas — branche rôle, branche plan, distinction analytics) ; `front/web/src/lib/i18n/__tests__/settings-hub.test.ts` (7 cas — filtrage par rôle, pas de groupe vide, pas de doublon) ; `check-i18n-catalog-parity.sh`, `shared/i18n/validators/validate.js` et `check-i18n-diff.js` (parité ×4 et zéro chaîne en dur).
 
 **Non couvert** : aucun test d'intégration bout-en-bout sur les 4 verticales réelles (il faudrait un tenant de chaque type provisionné) ; la suite Flutter ne tourne pas dans le sandbox — la parité des sous-rôles web/mobile est spécifiée en #9334 mais pas encore verrouillée par un test.
+## 2026-11-10 — BC-HR ONBOARDING : lien d'activation collaborateur exposé quand le mailer échoue (issue #9322)
+
+**Surface API** : `POST /v1/employees` (+ `invitation_activation_url`, `invitation_mail_sent`, `invitation_expires_at` dans `data`), `POST /v1/invitations/{invitation}/resend` (+ `activation_url`, `mail_sent`, `expires_at`), `GET /v1/invitations` (+ `mail_delivered` par ligne). **Aucune route ajoutée, renommée ni retirée** — seuls des champs de réponse sont ajoutés, et sous condition.
+
+**Pourquoi c'est un scénario de test et pas un simple ajout de champ** : ces champs décident si un manager peut ouvrir un compte à un collaborateur, et ils exposent un jeton d'activation. Une régression ici se voit mal — elle renvoie un `201` parfaitement normal et laisse l'invitation intransmissible (le collaborateur n'active jamais, le manager démarre seul), ou au contraire divulgue le jeton sur un envoi réussi, ce qui transforme la liste des invitations en canal de reprise de compte.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| création, mailer KO → `data.invitation_activation_url` présent et **son jeton correspond au `token_hash` persisté** | le manager relaie un lien mort ; ou le lien ne correspond à rien en base |
+| création, envoi réussi → `invitation_activation_url` **absent** | le jeton en clair devient un canal de reprise de compte (#9114/#9117) |
+| `POST /invitations/{id}/resend`, mailer KO → `activation_url` présent et **différent de l'ancien jeton** | le renvoi ré-émet un jeton sans exposer le bon lien ; l'ancien lien reste valide |
+| `resend`, envoi réussi → `mail_sent: true` et `activation_url` **absent** | succès affiché alors que rien ne part, ou jeton divulgué |
+| invitation déjà consommée → ni jeton, ni lien, ni courriel | un compte actif est « réinvité » et son accès rouvert |
+| `GET /invitations` porte `mail_delivered: false` après un échec | l'UI affiche un envoi réussi et le manager ne relaie rien |
+| `metadata.last_mail_delivered` écrit à chaque tentative | la liste mentirait indéfiniment sur l'état réel |
+
+**Automatisé** : `api/tests/Feature/HR/InvitationActivationLinkExposureTest.php` (6 cas : lien à la création, absence de lien sur succès, lien au renvoi avec rotation du jeton, absence de lien sur renvoi réussi, invitation consommée sans rien, `mail_delivered` dans la liste) ; `front/web/src/app/(dashboard)/employees/__tests__/employees-page.test.tsx` (bannière affichée quand le mail échoue, aucune sur succès — 13 tests).
+
+**Non couvert** : la suite PHPUnit ne tourne pas dans le sandbox (ni `vendor/`, ni `composer`, ni PostgreSQL) — elle est exécutée par la CI. Le transport réel (`resend`) n'est jamais appelé : le test provoque l'échec par configuration, pas par un vrai refus fournisseur.
 
 ## 2026-11-10 — BC-31 TRAVEL : garde de collision de routes réparée, 17 redéclarations supprimées (issue #9098, PR #9321)
 

@@ -44,7 +44,7 @@ class UserInvitationResource extends JsonResource
     {
         $metadata = $this->metadata;
 
-        if (! is_array($metadata) || ! array_key_exists('last_mail_delivered', $metadata)) {
+        if (! array_key_exists('last_mail_delivered', $metadata)) {
             return null;
         }
 
