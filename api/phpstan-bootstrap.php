@@ -1,5 +1,22 @@
 <?php
 
+// #9345 (audit securite 2026-11-10, F3) — `config/session.php` chiffre
+// desormais les sessions par defaut (`SESSION_ENCRYPT=true`). Larastan boote
+// l'application pour l'analyse statique : sans APP_KEY, le gestionnaire de
+// session leve « No application encryption key has been specified » et
+// l'analyse echoue AVANT d'avoir produit le moindre diagnostic.
+//
+// Les jobs PHPStan de la CI n'ont pas de secret a disposition (et ne doivent
+// pas en avoir) : on pose une cle FACTICE, uniquement si l'environnement n'en
+// fournit pas deja une. Elle ne sert qu'a satisfaire le boot du conteneur
+// pendant l'analyse — aucun chiffrement reel n'est effectue ici.
+if (getenv('APP_KEY') === false || getenv('APP_KEY') === '') {
+    $phpstanDummyAppKey = 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
+    putenv('APP_KEY='.$phpstanDummyAppKey);
+    $_ENV['APP_KEY'] = $phpstanDummyAppKey;
+    $_SERVER['APP_KEY'] = $phpstanDummyAppKey;
+}
+
 // Preload the project's Cache contracts to prevent the global
 // Larastan install from loading incompatible versions (Laravel 13+).
 // The global Larastan bundles newer illuminate contracts that add
