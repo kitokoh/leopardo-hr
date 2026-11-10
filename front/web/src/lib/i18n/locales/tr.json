@@ -2139,7 +2139,14 @@
     "twoFactorEnabled": "2FA başarıyla etkinleştirildi.",
     "twoFactorSubtitle": "Süper yönetici hesabınıza ek bir güvenlik katmanı ekleyin.",
     "twoFactorTitle": "İki faktörlü kimlik doğrulama (2FA)",
-    "updatePassword": "Parolayı güncelle"
+    "updatePassword": "Parolayı güncelle",
+    "mobile": {
+      "title": "Mobil uygulamalar",
+      "subtitle": "Çalışma alanınızı yanınızda taşıyın: telefonunuzdan tarayın, girin ve kontrol edin.",
+      "download": "Uygulamayı indir",
+      "seeAll": "Tüm uygulamalarımı gör",
+      "optional": "İsteğe bağlı — web portalı referans olmaya devam eder; uygulamayı kurmak zorunda değilsiniz."
+    }
   },
   "systemPage": {
     "apiError": "Hata: :error",

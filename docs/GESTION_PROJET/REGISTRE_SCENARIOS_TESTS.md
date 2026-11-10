@@ -2601,3 +2601,33 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 - Scénarios à vérifier : **parité des hexadécimaux** — chaque token de `brand-tokens.ts` a son équivalent dans `app_colors.dart` et dans `COULEURS.md` ; **aucune régression visuelle** — les constantes préexistantes (`mobileMint`, `mobileLavender`, accents de statut) sont inchangées ; **thème sombre** — les nouveaux tokens sont consommés via `Theme.of(context).brightness`, jamais en dur dans un widget.
 - Couverture : `front/web/src/modules/vitrine/lib/brand-tokens.test.ts` (parité et valeurs), `dev-hub/tools/check-design-token-sync.sh` (garde CI), `dev-hub/tools/check-web-design-tokens.sh` (tout hexadécimal doit être déclaré dans `COULEURS.md`).
 - Non couvert : le rendu visuel réel des apps Flutter (pas de golden test sur ces quatre tokens) — la vérification est statique.
+
+## 2026-11-10 — Audit approfondi du stock multi-tenant + accès téléchargement mobile depuis le profil (PR #9302, issues #9293–#9300)
+
+**Surface concernée** — services de stock des 4 verticales (`RetailStockService`, `RestaurantStockService`, `PharmacyStockService`, `FuelStockService`), leurs modèles de journal, une migration de contraintes `CHECK`, le catalogue logiciel web (`software-catalog.ts`), la table de statut de distribution (`mobile-distribution-status.ts`), la page profil (`settings/account`) et les catalogues i18n (web + mobile `app_*.arb`).
+
+**Pourquoi** — l'audit de surface concluait « bien conçu » ; l'audit approfondi montre que **« bien conçu » n'était pas « bien garanti »** : les 7 faiblesses trouvées sont des écarts entre un invariant **revendiqué par un commentaire** et son application réelle. Le volet B ajoute un accès au téléchargement mobile depuis le profil, en respectant la règle « le mobile est une option, jamais une obligation » (#9275).
+
+**Ce qui est ajouté / corrigé**
+
+- **#9293 — journal Retail append-only** : gardes fail-closed `updating`/`deleting` sur `RetailInventoryMovement` (mêmes que `PharmacyStockMovement`). Un mouvement se contre-passe, il ne se corrige pas.
+- **#9294 — verrou du niveau de stock** : `lockedLevel()` ré-acquiert explicitement le verrou après `firstOrCreate` (le rattrapage de violation d'unicité relisait sans `lockForUpdate`).
+- **#9295 — coût de transfert** : `transfer()` lit le `avg_cost_minor` du niveau source sous le verrou quand aucun coût n'est fourni (la valeur ne disparaît plus en transit).
+- **#9296 — journal Restaurant en politique `warn`** : le delta journalisé est la quantité **réellement consommée** ; l'écart est consigné dans le mouvement (clé i18n `restaurantmanager.stock_shortfall_note`, 4 langues).
+- **#9297 — coût de lot Pharmacie** : `receive()` n'écrase plus `unit_cost` avec le défaut `'0'`.
+- **#9298 — idempotence Carburant** : `recordEntry()` enveloppe lecture + création dans une transaction et rattrape `UniqueConstraintViolationException`.
+- **#9299 — contraintes `CHECK` Retail** : migration additive (`quantity >= 0`, `reason_code IN (…)`, `from_location_id <> to_location_id`, `quantity > 0`), garde `pg_constraint` idempotente, `down()` symétrique.
+- **#9300 — accès téléchargement mobile depuis le profil** : carte « Applications mobiles » dans `settings/account`, rendue **uniquement** si la verticale de stock du tenant est activée **et** que le canal de distribution est sain (`isDistributionHealthy`, source de vérité #8628). Un tenant non concerné ne voit **rien** ; un canal en échec ne produit jamais de bouton vers un build inexistant.
+
+**Scénarios à vérifier**
+
+- **Isolation multi-tenant** — aucune fuite : chaque requête porte `company_id`, le scope `BelongsToCompany` s'applique par défaut, et les rares `withoutGlobalScopes()` (Pharmacie, Carburant) sont immédiatement bornés par un `where('company_id', …)`.
+- **Concurrence** — deux premières réceptions simultanées sur un niveau inexistant produisent un niveau unique et une quantité correcte ; deux rejeux concurrents de la même clé d'idempotence carburant produisent une seule entrée et deux réponses 2xx.
+- **Réconciliation du journal** — en politique `warn`, la somme des mouvements égale le niveau de stock (stock 1.0, demande 3.0 → niveau 0, mouvement −1.0, écart tracé).
+- **Valorisation** — un transfert sans coût explicite ne change pas la valorisation totale de l'entreprise.
+- **Restriction de l'accès mobile** — un tenant sans verticale de stock (voyage, santé, éducation, carburant, indépendant) ne voit aucune carte ; un tenant Commerce n'en voit pas non plus (`commerce-pos` n'a aucune cible mobile, `leopardo_pos_retail` n'a aucun canal public) ; un canal en échec ne produit aucun bouton.
+- **Parité i18n** — les 5 clés `settingsPage.mobile.*` existent dans les 4 langues (fr/en/tr/ar) côté web **et** dans les catalogues mobiles `app_*.arb` régénérés par `sync-mobile.js`.
+
+**Couverture** — `front/web/src/lib/__tests__/tenant-mobile-download.test.ts` (filtrage par tenant, canal sain/échoué), `front/web/src/app/(dashboard)/settings/account/__tests__/account-mobile-download.test.tsx` (rendu conditionnel de la carte), `front/web/src/lib/__tests__/software-catalog.test.ts` (requalification pilotée par la table), `dev-hub/tools/check-mobile-distribution-status.py`, `dev-hub/tools/check-mobile-stock-parity.sh`, `dev-hub/tools/check-hardcoded-accented-messages.sh`.
+
+**Non couvert** — les suites PHPUnit et Flutter ne tournent pas dans le sandbox (ni `vendor/` PHP ni SDK Flutter) : elles sont exécutées par la CI. Le rendu visuel réel de la carte de profil n'a pas de test de snapshot.

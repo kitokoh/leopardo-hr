@@ -6,4 +6,6 @@ return [
     'order_ready_title' => 'Commande prête',
     'order_ready_body' => 'Commande :reference prête à être servie (table :table).',
     'reservation_reminder_title' => 'Réservation à venir (J-1)',
+    // #9296 — écart de rupture consigné dans le mouvement de stock.
+    'stock_shortfall_note' => 'Rupture de stock : :applied consommé(s) sur :required demandé(s), écart :shortfall.',
 ];

@@ -44,10 +44,25 @@ export type MobileChannelState = 'ok' | 'failed' | 'unknown';
  * figurent ici. Les apps servies par un simple lien web ne sont JAMAIS
  * concernées (critère d'acceptation #8628).
  */
-export const MOBILE_DISTRIBUTION_STATUS: Record<string, MobileChannelState> = {};
+export const MOBILE_DISTRIBUTION_STATUS: Record<string, MobileChannelState> = {
+  // Observation du run `42762379168` (2026-11-10T05:28) : les quatre canaux
+  // `Distribute <app> to Firebase` sont EN ÉCHEC. La table déclarait encore
+  // « tout vert » sur la base du run `40677191254` (2026-10-28) — c'est cette
+  // déclaration qui était devenue fausse, pas le canal.
+  //
+  // Conséquence assumée : `isDistributionHealthy()` rend `false` pour ces
+  // quatre apps, donc le catalogue les requalifie en `not_distributed` et
+  // n'affiche plus de bouton d'installation vers un build inexistant
+  // (règle d'honnêteté #6697). C'est exactement le comportement voulu par
+  // #8628 : une fiche ne doit jamais annoncer une app non distribuable.
+  employee: 'failed',
+  manager: 'failed',
+  'platform-admin': 'failed',
+  'hr-mobile': 'failed',
+};
 
 /** Référence du run CI qui a produit l'état ci-dessus (traçabilité). */
-export const MOBILE_DISTRIBUTION_STATUS_SOURCE = 'mobile-distribute-main.yml@40677191254';
+export const MOBILE_DISTRIBUTION_STATUS_SOURCE = 'mobile-distribute-main.yml@42762379168';
 
 /**
  * Le canal de distribution de cette application est-il en échec connu ?

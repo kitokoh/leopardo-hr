@@ -12,6 +12,7 @@ use App\Modules\FuelStation\Domain\Models\FuelStation;
 use App\Modules\FuelStation\Domain\Models\FuelStockEntry;
 use App\Modules\FuelStation\Domain\Models\FuelTank;
 use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -51,18 +52,6 @@ final class FuelStockService
         $companyId = (string) $actor->company_id;
         $idempotencyKey = is_string($data['idempotency_key'] ?? null) ? $data['idempotency_key'] : '';
 
-        if ($idempotencyKey !== '') {
-            /** @var FuelStockEntry|null $existing */
-            $existing = FuelStockEntry::query()
-                ->where('company_id', $companyId)
-                ->where('idempotency_key', $idempotencyKey)
-                ->first();
-
-            if ($existing instanceof FuelStockEntry) {
-                return $existing;
-            }
-        }
-
         $entryType = is_string($data['entry_type'] ?? null) ? $data['entry_type'] : FuelStockEntry::ENTRY_DELIVERY;
         $reason = $data['reason'] ?? null;
 
@@ -71,20 +60,60 @@ final class FuelStockService
             abort(422, 'ADJUSTMENT_REASON_REQUIRED');
         }
 
-        $entry = FuelStockEntry::query()->create([
-            'company_id' => $companyId,
-            'station_id' => $data['station_id'] ?? null,
-            'product_code' => is_string($data['product_code'] ?? null) ? $data['product_code'] : '',
-            'quantity' => is_numeric($data['quantity'] ?? null) ? (float) $data['quantity'] : 0.0,
-            'unit_cost' => is_numeric($data['unit_cost'] ?? null) ? (float) $data['unit_cost'] : 0.0,
-            'entry_type' => $entryType,
-            'reason' => is_string($reason) ? $reason : null,
-            'reference' => $data['reference'] ?? null,
-            'entry_date' => $data['entry_date'] ?? now()->toDateString(),
-            'idempotency_key' => $idempotencyKey !== '' ? $idempotencyKey : (string) Str::uuid(),
-            'created_by' => $actor->id,
-            'notes' => $data['notes'] ?? null,
-        ]);
+        // #9298 — idempotence RÉELLE, pas seulement séquentielle.
+        //
+        // La lecture d'idempotence était hors transaction et la création
+        // n'était pas protégée contre la violation de l'index unique
+        // `fuel_stock_entries_key_unique`. Deux rejeux concurrents de la même
+        // clé — le scénario exact que la clé existe pour couvrir, une file
+        // offline qui se vide en parallèle — passaient tous deux le `first()`,
+        // puis l'un des deux `create()` violait l'index : erreur 500 au lieu
+        // du retour idempotent attendu. Le client réessayait, échouait à
+        // nouveau, et la file se bloquait alors que la donnée était en base.
+        //
+        // On enveloppe lecture + création dans une transaction et on rattrape
+        // la violation d'unicité pour retourner l'entrée déjà écrite.
+        // (`recordDelivery()` de cette même classe était déjà correctement
+        // transactionnel : l'incohérence était interne au fichier.)
+        try {
+            $entry = DB::transaction(function () use ($companyId, $idempotencyKey, $data, $entryType, $reason, $actor): FuelStockEntry {
+                if ($idempotencyKey !== '') {
+                    /** @var FuelStockEntry|null $existing */
+                    $existing = FuelStockEntry::query()
+                        ->where('company_id', $companyId)
+                        ->where('idempotency_key', $idempotencyKey)
+                        ->lockForUpdate()
+                        ->first();
+
+                    if ($existing instanceof FuelStockEntry) {
+                        return $existing;
+                    }
+                }
+
+                return FuelStockEntry::query()->create([
+                    'company_id' => $companyId,
+                    'station_id' => $data['station_id'] ?? null,
+                    'product_code' => is_string($data['product_code'] ?? null) ? $data['product_code'] : '',
+                    'quantity' => is_numeric($data['quantity'] ?? null) ? (float) $data['quantity'] : 0.0,
+                    'unit_cost' => is_numeric($data['unit_cost'] ?? null) ? (float) $data['unit_cost'] : 0.0,
+                    'entry_type' => $entryType,
+                    'reason' => is_string($reason) ? $reason : null,
+                    'reference' => $data['reference'] ?? null,
+                    'entry_date' => $data['entry_date'] ?? now()->toDateString(),
+                    'idempotency_key' => $idempotencyKey !== '' ? $idempotencyKey : (string) Str::uuid(),
+                    'created_by' => $actor->id,
+                    'notes' => $data['notes'] ?? null,
+                ]);
+            });
+        } catch (UniqueConstraintViolationException) {
+            // Course perdue : l'entrée concurrente est déjà écrite, on la
+            // retourne (comportement idempotent attendu par l'appelant).
+            /** @var FuelStockEntry $entry */
+            $entry = FuelStockEntry::query()
+                ->where('company_id', $companyId)
+                ->where('idempotency_key', $idempotencyKey)
+                ->firstOrFail();
+        }
 
         $this->checkLowStock((string) $entry->company_id, (int) $entry->station_id, $entry->product_code);
 

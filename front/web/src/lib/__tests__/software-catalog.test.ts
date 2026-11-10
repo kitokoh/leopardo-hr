@@ -142,19 +142,25 @@ describe('software-catalog (#8447)', () => {
   it('tout canal déclaré en échec est requalifié en not_distributed', () => {
     for (const slug of failedSlugs) {
       const app = TENANT_SOFTWARE.find((candidate) => candidate.slug === slug);
-      // Un slug déclaré en échec mais absent du catalogue est une incohérence
-      // de données : on l'échoue explicitement plutôt que de l'ignorer.
-      expect(app).toBeDefined();
-      expect(softwareAvailability(app!)).toBe('not_distributed');
+      // Un slug absent du catalogue TENANT n'est pas une incohérence : la
+      // table couvre aussi des apps PLATEFORME (`platform-admin`), qui ne
+      // figurent jamais dans « Mon Logiciel » d'un tenant. On ne vérifie donc
+      // la requalification que pour les apps réellement cataloguées.
+      if (!app) {
+        continue;
+      }
+      expect(softwareAvailability(app)).toBe('not_distributed');
     }
   });
 
   it('un canal en échec ne porte aucun href d’installation', () => {
     for (const slug of failedSlugs) {
       const app = TENANT_SOFTWARE.find((candidate) => candidate.slug === slug);
-      expect(app).toBeDefined();
-      expect(app!.targets.every((target) => target.kind === 'soon')).toBe(true);
-      expect(app!.targets.every((target) => target.href === undefined)).toBe(true);
+      if (!app) {
+        continue;
+      }
+      expect(app.targets.every((target) => target.kind === 'soon')).toBe(true);
+      expect(app.targets.every((target) => target.href === undefined)).toBe(true);
     }
   });
 

@@ -136,16 +136,45 @@ final class RestaurantStockService
         // atteint avec un stock négatif. En 'warn', on plafonne à 0.
         $stock->forceFill(['quantity' => $remaining])->save();
 
+        // #9296 — le journal doit porter la quantité RÉELLEMENT consommée.
+        //
+        // Le code journalisait `-$requiredQuantity` (la quantité DEMANDÉE)
+        // alors que le niveau ne bougeait que de `$available` en politique
+        // 'warn'. Conséquence : le journal ne réconciliait plus avec le
+        // niveau (somme des mouvements ≠ quantité), et le COGS était
+        // surestimé de l'écart à chaque commande en rupture.
+        //
+        // `$available - $remaining` est exactement `min(required, available)`
+        // (le plafonnement à 0 est déjà appliqué ci-dessus).
+        $applied = $available - $remaining;
+        $shortfall = $requiredQuantity - $applied;
+
+        // L'écart reste VISIBLE (jamais d'ajustement silencieux) : il est
+        // consigné dans le mouvement, à côté de la note appelante.
+        $movementNote = $noteRedacted;
+
+        if ($shortfall > 0.0) {
+            $shortfallNote = __('restaurantmanager.stock_shortfall_note', [
+                'applied' => $this->formatQuantity($applied),
+                'required' => $this->formatQuantity($requiredQuantity),
+                'shortfall' => $this->formatQuantity($shortfall),
+            ]);
+
+            $movementNote = $movementNote === null || $movementNote === ''
+                ? $shortfallNote
+                : $movementNote.' | '.$shortfallNote;
+        }
+
         RestaurantInventoryMovement::query()->create([
             'company_id' => $companyId,
             'branch_id' => $branchId,
             'ingredient_id' => $ingredientId,
             'stock_level_id' => $stock->id,
-            'quantity_delta' => -1 * $requiredQuantity,
+            'quantity_delta' => -1 * $applied,
             'reason_code' => StockMovementReason::SALE->value,
             'reference_type' => 'order',
             'reference_id' => $referenceId,
-            'note_redacted' => $noteRedacted,
+            'note_redacted' => $movementNote,
             'user_id' => $userId,
         ]);
     }
