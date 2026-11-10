@@ -154,12 +154,11 @@ final class RestaurantStockService
         $movementNote = $noteRedacted;
 
         if ($shortfall > 0.0) {
-            $shortfallNote = sprintf(
-                'Rupture de stock : %s consommé(s) sur %s demandé(s), écart %s.',
-                $this->formatQuantity($applied),
-                $this->formatQuantity($requiredQuantity),
-                $this->formatQuantity($shortfall),
-            );
+            $shortfallNote = __('restaurantmanager.stock_shortfall_note', [
+                'applied' => $this->formatQuantity($applied),
+                'required' => $this->formatQuantity($requiredQuantity),
+                'shortfall' => $this->formatQuantity($shortfall),
+            ]);
 
             $movementNote = $movementNote === null || $movementNote === ''
                 ? $shortfallNote
