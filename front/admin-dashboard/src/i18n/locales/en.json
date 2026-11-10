@@ -2440,7 +2440,14 @@
     "ibanPlaceholderDZ": "Algerian IBAN or RIB (20 digits)",
     "saveBanking": "Save coordinates",
     "sepaNotReady": "SEPA not configured",
-    "sepaReady": "SEPA ready"
+    "sepaReady": "SEPA ready",
+    "mobile": {
+      "title": "Mobile apps",
+      "subtitle": "Take your workspace with you: scan, enter and check from your phone.",
+      "download": "Download the app",
+      "seeAll": "See all my applications",
+      "optional": "Optional — the web portal remains the reference; you are never required to install the app."
+    }
   },
   "systemPage": {
     "apiError": "Error: :error",

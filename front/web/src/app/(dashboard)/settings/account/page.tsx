@@ -2,12 +2,14 @@
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
-import { CreditCard, ExternalLink, KeyRound, ShieldCheck, UserCircle } from 'lucide-react';
+import { CreditCard, Download, ExternalLink, KeyRound, ShieldCheck, Smartphone, UserCircle } from 'lucide-react';
 
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { TwoFactorPanel } from '@/components/settings/two-factor-panel';
 import { Button } from '@/components/ui/Button';
+import { getClientModuleAccess } from '@/lib/client-features';
+import { tenantMobileDownload, type SoftwareApp, type SoftwareTarget } from '@/lib/software-catalog';
 import {
   getCopy,
   getPreferredLocale,
@@ -80,6 +82,22 @@ export default function AccountPage() {
   // Abonnement (résumé, silencieux si non accessible).
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [billingVisible, setBillingVisible] = useState(false);
+
+  // #9300 — Accès au téléchargement de l'app mobile depuis le profil.
+  //
+  // Le mobile reste une OPTION (#9275) : on PROPOSE le lien, on ne l'impose
+  // jamais. La cible est dérivée du catalogue filtré par les modules
+  // RÉELLEMENT activés du tenant (`getClientModuleAccess` → `visibleSoftware`)
+  // — jamais d'une liste en dur. `null` ⇒ aucune carte rendue, donc un tenant
+  // non concerné ne voit strictement rien.
+  const [mobileDownload, setMobileDownload] = useState<{
+    app: SoftwareApp;
+    target: SoftwareTarget;
+  } | null>(null);
+
+  useEffect(() => {
+    setMobileDownload(tenantMobileDownload(getClientModuleAccess(getStoredUser())));
+  }, []);
 
   const load = useCallback(async () => {
     // 1. Profil frais depuis l'API (fallback : session locale déjà affichée).
@@ -400,6 +418,53 @@ export default function AccountPage() {
           <TwoFactorPanel locale={locale} />
         </div>
       </section>
+
+      {/* #9300 — Applications mobiles : accès au téléchargement depuis le
+          profil. Rendue UNIQUEMENT si le tenant a une app mobile réellement
+          distribuable (sinon `mobileDownload` est `null` et rien n'apparaît).
+          Le mobile reste une option : la carte propose, elle n'impose rien, et
+          le web reste la référence (renvoi vers /mon-logiciel). */}
+      {mobileDownload ? (
+        <section
+          className="rounded-3xl border border-app-border bg-white p-6 shadow-sm"
+          data-testid="account-mobile-download-card"
+        >
+          <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-800">
+            <Smartphone className="h-4 w-4 text-slate-500" aria-hidden="true" />
+            {i18nT(locale, 'settingsPage.mobile.title')}
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-slate-500">
+            {i18nT(locale, 'settingsPage.mobile.subtitle')}
+          </p>
+
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <a
+              href={mobileDownload.target.href}
+              {...(/^https?:\/\//.test(mobileDownload.target.href ?? '')
+                ? { target: '_blank', rel: 'noopener noreferrer' }
+                : {})}
+              className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-slate-700"
+              data-testid="account-mobile-download-link"
+            >
+              <Download className="h-4 w-4" aria-hidden="true" />
+              {i18nT(locale, 'settingsPage.mobile.download')}
+            </a>
+
+            <Link
+              href="/mon-logiciel"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-700"
+              data-testid="account-mobile-catalog-link"
+            >
+              {i18nT(locale, 'settingsPage.mobile.seeAll')}
+              <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+            </Link>
+          </div>
+
+          <p className="mt-3 text-xs font-medium text-slate-500">
+            {i18nT(locale, 'settingsPage.mobile.optional')}
+          </p>
+        </section>
+      ) : null}
 
       {/* Abonnement & facturation — résumé silencieux si non accessible. */}
       {billingVisible ? (

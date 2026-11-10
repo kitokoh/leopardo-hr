@@ -70,7 +70,23 @@ class PharmacyStockService
             }
 
             $batch->quantity += $quantity;
-            $batch->unit_cost = $unitCost;
+
+            // #9297 — ne JAMAIS écraser un coût connu par le défaut `'0'`.
+            //
+            // `$unitCost` vaut `'0'` par défaut : une réception sans coût
+            // (réception partielle, saisie rapide, import) remettait le coût
+            // du lot à 0 alors qu'il portait déjà un coût connu. En pharmacie
+            // le lot est le SEUL porteur du coût (pas de coût catalogue
+            // équivalent) : l'information était définitivement perdue, la
+            // valorisation du stock restant tombait à zéro et le COGS des
+            // ventes suivantes devenait faux.
+            //
+            // Un coût explicitement non nul met bien à jour le lot ; un coût
+            // nul par omission le laisse intact.
+            if ((float) $unitCost > 0.0) {
+                $batch->unit_cost = $unitCost;
+            }
+
             $batch->received_at = Carbon::now();
             if ($supplierId !== null) {
                 $batch->supplier_id = $supplierId;

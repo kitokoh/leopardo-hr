@@ -200,6 +200,25 @@ final class RetailStockService
 
                 // Entree : le cout unitaire du transfert est celui de la
                 // source (on deplace de la valeur, on n'en cree pas).
+                //
+                // #9295 — le commentaire le disait, le code ne le faisait
+                // pas : quand l'appelant ne fournit pas de cout, l'entree
+                // destination n'en portait AUCUN, le niveau destination
+                // gardait son cout precedent (ou `null`), et la valorisation
+                // retombait sur le cout CATALOGUE. La valeur sortait de
+                // l'entrepot sans arriver en boutique : le total valorise de
+                // l'entreprise baissait a chaque transfert.
+                //
+                // On lit donc le cout moyen du niveau SOURCE (le verrou est
+                // deja tenu par la sortie ci-dessus, dans la meme
+                // transaction). Un cout explicitement fourni reste prioritaire.
+                $transferCost = $unitCostMinor;
+
+                if ($transferCost === null) {
+                    $sourceLevel = $this->lockedLevel($companyId, (int) $from->id, (int) $product->id);
+                    $transferCost = $sourceLevel->avg_cost_minor;
+                }
+
                 $this->applyMovement(
                     location: $to,
                     product: $product,
@@ -209,7 +228,7 @@ final class RetailStockService
                     referenceId: (int) $created->id,
                     note: $note,
                     userId: $userId,
-                    unitCostMinor: $unitCostMinor,
+                    unitCostMinor: $transferCost,
                 );
 
                 return $created;
@@ -284,8 +303,7 @@ final class RetailStockService
             return $level;
         }
 
-        // Ligne absente : creation dans la transaction courante (la ligne
-        // inseree est verrouillee par l'INSERT jusqu'au commit).
+        // Ligne absente : creation dans la transaction courante.
         /** @var RetailStockLevel $created */
         $created = RetailStockLevel::query()->firstOrCreate([
             'company_id' => $companyId,
@@ -295,6 +313,26 @@ final class RetailStockService
             'quantity' => '0.000',
         ]);
 
-        return $created;
+        // #9294 — `firstOrCreate` ne garantit PAS le verrou.
+        //
+        // Le commentaire precedent affirmait que « la ligne inseree est
+        // verrouillee par l'INSERT jusqu'au commit » : c'est faux dans le cas
+        // concurrent. Deux transactions qui ne trouvent aucune ligne ne
+        // verrouillent rien (`SELECT ... FOR UPDATE` sur un ensemble vide) ;
+        // l'une insere, l'autre viole la contrainte unique, et Laravel
+        // rattrape la violation en relisant la ligne — SANS `lockForUpdate`.
+        // L'appelant repartait donc avec une ligne non verrouillee et
+        // ecrivait une quantite calculee sur une lecture non serialisee.
+        //
+        // On re-acquiert explicitement le verrou avant de retourner la ligne.
+        /** @var RetailStockLevel|null $locked */
+        $locked = RetailStockLevel::query()
+            ->where('company_id', $companyId)
+            ->where('location_id', $locationId)
+            ->where('product_id', $productId)
+            ->lockForUpdate()
+            ->first();
+
+        return $locked ?? $created;
     }
 }

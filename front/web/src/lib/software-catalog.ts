@@ -385,6 +385,86 @@ export function visibleSoftware(access: ClientModuleAccess[]): SoftwareApp[] {
   return TENANT_SOFTWARE.filter((app) => app.moduleKeys.some((key) => enabled.has(key)));
 }
 
+/**
+ * #9300 — Apps mobiles de GESTION DE STOCK, par verticale.
+ *
+ * Le mobile reste une OPTION (#9275) : cette table ne sert qu'à PROPOSER
+ * l'accès au téléchargement depuis le profil, jamais à l'imposer.
+ *
+ * Elle est EXPLICITE et volontairement étroite : seules les verticales dont
+ * l'application mobile embarque réellement un écran de stock y figurent.
+ *  - `restaurant` → `manager` : `leopardo_manager` embarque
+ *    `features/restaurant/screens/restaurant_stock_screen.dart`.
+ *
+ * Aucune autre verticale n'a d'app mobile de stock DANS LE CATALOGUE :
+ * `commerce-pos` (Retail) n'expose qu'une cible web, et `leopardo_pos_retail`
+ * n'a aucun canal de distribution public (absent de la matrice
+ * `mobile-distribute*.yml`). Un tenant Commerce n'obtient donc rien — état
+ * honnête (règle #6697), pas un oubli.
+ */
+const MOBILE_STOCK_APPS: { moduleKeys: ClientModuleKey[]; slug: string }[] = [
+  { moduleKeys: ['restaurant'], slug: 'manager' },
+];
+
+/**
+ * #9300 — Apps mobiles de stock réellement DISTRIBUABLES pour le tenant.
+ *
+ * Deux conditions cumulatives, jamais une liste en dur côté appelant :
+ *  1. la verticale de stock du tenant est activée (`getClientModuleAccess`) ;
+ *  2. l'app correspondante a une cible mobile réellement cliquable
+ *     (`kind === 'link'`) — donc un canal de distribution sain
+ *     (`isDistributionHealthy`, règle d'honnêteté #6697).
+ *
+ * `leopardo_pos_retail` n'a aujourd'hui AUCUN canal public (absent de la
+ * matrice `mobile-distribute*.yml`) : un tenant Commerce obtient donc une
+ * liste vide plutôt qu'un bouton mort. C'est l'état honnête, pas un oubli.
+ */
+export function mobileSoftware(access: ClientModuleAccess[]): SoftwareApp[] {
+  const enabled = new Set(access.filter((module) => module.enabled).map((module) => module.key));
+
+  return MOBILE_STOCK_APPS.filter((entry) => entry.moduleKeys.some((key) => enabled.has(key)))
+    .map((entry) => TENANT_SOFTWARE.find((app) => app.slug === entry.slug))
+    .filter((app): app is SoftwareApp => !!app && mobileTargetOf(app) !== null)
+    // #9300 — un canal en échec ou d'état inconnu n'est JAMAIS proposé
+    // (règle d'honnêteté #6697, source de vérité #8628). Sans cette
+    // condition, la carte de profil enverrait vers un build inexistant.
+    .filter((app) => isDistributionHealthy(app.slug));
+}
+
+/** Première cible mobile cliquable d'une app, ou `null`. */
+function mobileTargetOf(app: SoftwareApp): SoftwareTarget | null {
+  return (
+    app.targets.find(
+      (target) =>
+        (target.platform === 'android' || target.platform === 'ios') &&
+        target.kind === 'link' &&
+        typeof target.href === 'string' &&
+        target.href.length > 0,
+    ) ?? null
+  );
+}
+
+/**
+ * #9300 — Cible de téléchargement mobile principale du tenant (celle de la
+ * carte de profil) : la première app mobile de stock distribuable et sa
+ * première cible mobile cliquable.
+ *
+ * `null` quand le tenant n'a aucune app mobile de stock distribuable —
+ * l'appelant ne rend alors RIEN. C'est ce `null` qui garantit qu'un tenant
+ * non concerné ne voit jamais l'accès.
+ */
+export function tenantMobileDownload(
+  access: ClientModuleAccess[],
+): { app: SoftwareApp; target: SoftwareTarget } | null {
+  for (const app of mobileSoftware(access)) {
+    const target = mobileTargetOf(app);
+    if (target) {
+      return { app, target };
+    }
+  }
+  return null;
+}
+
 /** Résout une cible en URL absolue pour le QR d'installation (origine courante). */
 export function absoluteTargetHref(href: string, origin: string): string {
   if (/^https?:\/\//.test(href)) {
