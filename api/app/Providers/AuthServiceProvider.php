@@ -181,8 +181,10 @@ use App\Modules\HR\Domain\Models\Evaluation;
 use App\Modules\HR\Domain\Models\OnboardingStep;
 use App\Modules\HR\Domain\Models\Position;
 use App\Modules\HR\Domain\Models\TrainingCourse;
+use App\Modules\Library\Domain\Models\LibraryPurchase;
 use App\Modules\Library\Domain\Models\LibraryReadingProgress;
 use App\Modules\Library\Domain\Models\LibraryResource;
+use App\Modules\Library\Domain\Policies\LibraryPurchasePolicy;
 use App\Modules\Library\Domain\Policies\LibraryReadingProgressPolicy;
 use App\Modules\Library\Domain\Policies\LibraryResourcePolicy;
 use App\Modules\Marketing\Domain\Models\SocialAccount;
@@ -526,6 +528,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(LibraryResource::class, LibraryResourcePolicy::class);
         // — Library (progression de lecture : donnée personnelle, propriétaire seul)
         Gate::policy(LibraryReadingProgress::class, LibraryReadingProgressPolicy::class);
+        // — Library (#9238 : achats — un employé ne voit/confirme que les siens)
+        Gate::policy(LibraryPurchase::class, LibraryPurchasePolicy::class);
         // — Pages (BC PAGES #8723/#8725 : présence publique par établissement,
         //   édition tenant d'un côté, vérification de propriété plateforme de
         //   l'autre — les deux axes ne partagent JAMAIS une policy)

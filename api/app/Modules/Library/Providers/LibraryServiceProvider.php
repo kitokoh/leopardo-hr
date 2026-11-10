@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Library\Providers;
 
 use App\Modules\Library\Domain\Contracts\LibraryFileStorage;
+use App\Modules\Library\Infrastructure\Services\LibraryPurchaseService;
 use App\Modules\Library\Infrastructure\Storage\ObjectStorageLibraryFiles;
 use Illuminate\Support\ServiceProvider;
 
@@ -33,6 +34,12 @@ class LibraryServiceProvider extends ServiceProvider
                 (string) config('library.storage_disk', 'library'),
             );
         });
+
+        // #9238 — achat des ressources : le service ne depend que du contrat
+        // PARTAGE d'encaissement (`Shared\Contracts\Payments`), jamais du
+        // module Paiements (garde d'isolation #5584). L'implementation reelle
+        // est liee par `PaiementsServiceProvider`.
+        $this->app->singleton(LibraryPurchaseService::class);
     }
 
     public function boot(): void
