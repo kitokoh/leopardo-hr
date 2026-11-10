@@ -230,7 +230,7 @@ class RouteCollisionGuardTest extends TestCase
         // (`/health-manager/departments`) qui n'existent pas à l'exécution.
         // Un préfixe vide (`tenantModule('', ...)`) n'ajoute aucun segment.
         preg_match_all(
-            "/tenantModule(?:With)?\s*\(\s*'([^']*)'",
+            "/tenantModule(?:With)?\s*\(\s*'([^']*)'/",
             $line,
             $moduleMatches,
         );

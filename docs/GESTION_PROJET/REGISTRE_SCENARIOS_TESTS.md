@@ -1,3 +1,22 @@
+## 2026-11-10 — BC-31 TRAVEL : garde de collision de routes réparée, 17 redéclarations supprimées (issue #9098, PR #9321)
+
+**Surface API** : `api/routes/modules/travelagency.php` — **aucune route ajoutée ni retirée** (282 clés `(méthode, URI)` avant/après, identiques). 17 déclarations **dupliquées** dans le même groupe `travel` sont supprimées, et `api/tests/Feature/Security/RouteCollisionGuardTest.php` est corrigé.
+
+**Pourquoi c'est un scénario de test et pas un simple nettoyage** : la garde qui devait empêcher ce genre de défaut était elle-même aveugle. Elle ne lisait que `->prefix('x')` et ignorait `ModuleRoutes::tenantModule('x', …)` (#7959), où le préfixe vit dans le **premier argument** : elle croyait que `rh.php`, `crm.php`, `health_manager.php`, `accounting.php`, `cabinet.php`, `pharmacy.php` déclaraient tous à la racine `v1` et inventait 22 collisions. Elle affectait aussi le préfixe **après** l'ouverture du groupe, donc un `Route::prefix('community')->group(function () {` sur une seule ligne voyait ses routes attribuées au préfixe parent. Une garde qui crie au loup est pire qu'aucune garde : elle a masqué 17 vraies redéclarations.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `GET /travel/articles/{id}/engagement` sert `aggregates` (`average_rating`) | le contrat servi dépend de l'ordre du fichier — `summary` (`rating_avg`) gagnait, `TravelContentTest` échouait |
+| `GET /travel/community/articles/{id}/engagement` sert `summary` (`rating_avg`) | l'alias rétro-compatible #8127 change de contrat et casse `TravelEngagementApiTest` |
+| les 282 clés `(méthode, URI)` de `travelagency.php` sont inchangées | une déduplication naïve supprime une route réellement unique |
+| `tenantModule('health-manager', …)` compte comme préfixe | collisions fantômes `GET api/v1/departments` entre `rh.php` et `health_manager.php` |
+| `tenantModule('', …)` n'ajoute aucun segment | `rh.php` et `hr_extended.php` seraient préfixés à tort |
+| `Route::prefix('community')->group(function () {` sur une ligne | routes attribuées au préfixe parent → collisions fantômes `/travel/articles/…` |
+
+**Automatisé** : `api/tests/Feature/Security/RouteCollisionGuardTest.php` (0 collision sur 2 510 déclarations) ; `api/tests/Feature/Travel/TravelContentTest.php` et `TravelEngagementApiTest.php` (contrats des deux chemins d'engagement).
+
+**Non couvert** : la suite PHPUnit ne tourne pas dans le sandbox (ni `vendor/`, ni PostgreSQL) — elle est exécutée par la CI.
+
 ## 2026-11-10 — BC-40 LIBRARY / BC-38 PAIEMENTS : achat à l'unité, vente en gros, accès payant (issue #9238, PR #9291)
 
 **Surface API** : 5 routes nouvelles sous `/v1/library` (groupe auth tenant) — `POST /library/resources/{resource}/purchases`, `GET /library/purchases`, `POST /library/purchases/{purchase}/confirm`, `GET /library/resources/{resource}/access`, `GET /library/resources/{resource}/download`. Toutes documentées dans `api/openapi.yaml` (0 route non couverte).
