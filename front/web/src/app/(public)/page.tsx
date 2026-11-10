@@ -15,6 +15,10 @@ import { normalizeLocale } from '@/lib/i18n';
 import { SITE_URL } from '@/lib/site-url';
 import { getPublicPortalCopy } from '@/modules/public-portal/data/copy';
 import { getPublicHomeCopy } from '@/modules/public-portal/data/home-copy';
+import {
+  getPublicDiscoveryCategories,
+  selectDisplayableCategories,
+} from '@/modules/public-portal/data/discovery-categories';
 import { HomeSearch } from '@/modules/public-portal/components/HomeSearch';
 
 /**
@@ -30,10 +34,17 @@ import { HomeSearch } from '@/modules/public-portal/components/HomeSearch';
  *
  * ## Pourquoi elle est rendue côté serveur
  *
- * Aucun appel API : la page est entièrement statique (copie i18n + liens).
- * C'est délibéré — la home doit répondre en quelques dizaines de millisecondes
- * et rester disponible même si l'API de découverte est en panne. La recherche
- * pousse simplement vers `/decouvrir`, qui, elle, interroge l'API.
+ * La copie i18n et les liens sont statiques ; les CATÉGORIES viennent de
+ * `GET /public/discovery/categories` (Couloir 16), en best-effort : si l'API
+ * est indisponible, la page reste servie sans la rangée de catégories plutôt
+ * que de renvoyer une erreur. La recherche pousse vers `/decouvrir`, qui
+ * interroge l'API de son côté.
+ *
+ * ## Règle de vérité
+ *
+ * Aucune catégorie n'est codée en dur : la liste affichée est exactement
+ * `selectDisplayableCategories()` — `visible === true` ET au moins une Page
+ * publiée. Une catégorie vide n'apparaît jamais.
  *
  * ## Design
  *
@@ -90,6 +101,12 @@ export default async function PublicHomePage({ searchParams }: HomePageProps) {
   const copy = getPublicHomeCopy(locale);
   const chrome = getPublicPortalCopy(locale).chrome;
 
+  // Best-effort : `null` = API indisponible, `[]` = aucune catégorie visible.
+  // Les deux rendent la même chose ici (pas de rangée), mais la distinction
+  // reste utile si l'on veut plus tard afficher un état dégradé explicite.
+  const categoriesPayload = await getPublicDiscoveryCategories();
+  const categories = selectDisplayableCategories(categoriesPayload?.categories ?? []);
+
   return (
     <div className="relative overflow-hidden">
       {/* Halo décoratif — purement visuel, masqué aux lecteurs d'écran. */}
@@ -116,7 +133,16 @@ export default async function PublicHomePage({ searchParams }: HomePageProps) {
           {copy.hero.subtitle}
         </p>
 
-        <HomeSearch copy={copy.hero} />
+        <HomeSearch
+          copy={copy.hero}
+          filtersCopy={copy.filters}
+          categories={categories}
+          // Aucun provider n'expose aujourd'hui d'horaires publics dans le
+          // contrat de découverte : le filtre « Ouvert maintenant » reste donc
+          // masqué. Le jour où `opening_hours` entre dans le DTO, il suffit de
+          // dériver ce booléen des items — aucun autre changement d'UI.
+          hasOpeningHours={false}
+        />
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <Link
