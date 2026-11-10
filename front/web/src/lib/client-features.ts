@@ -954,6 +954,42 @@ const MANAGER_MODULE_ROLES: Partial<Record<ClientModuleKey, 'any' | string[]>> =
   // BOS-035 (#8224) : le chat `/ai/*` est ouvert à tout utilisateur du
   // tenant (les tools, eux, sont filtrés par rôle côté serveur).
   assistant: 'any',
+  // ─────────────────────────────────────────────────────────────────────────
+  // #9328 — VERTICALES ET MODULES RÉCENTS.
+  //
+  // Le refus par défaut (#7762) est la bonne règle, mais une matrice qu'on
+  // oublie de compléter ne « refuse » pas : elle CACHE le métier du tenant.
+  // Les 7 modules ci-dessous étaient absents, donc invisibles à tout manager
+  // non-`principal` — y compris au responsable qui exploite la verticale au
+  // quotidien (`manager_role = dept`, le cas le plus courant en magasin, en
+  // agence ou en établissement).
+  //
+  // Chaque entrée est le miroir du RBAC réel de son fichier de routes :
+  // ces modules ne filtrent pas par `manager_role` côté API (`module.<clé>`
+  // + `api.manager` sans liste, ou policies dont `viewAny` est ouvert aux
+  // membres du tenant — cf. `RetailProductPolicy::viewAny`). Le flag tenant
+  // reste la seconde barrière : `enabled` exige AUSSI `state !== 'locked'`.
+  // ─────────────────────────────────────────────────────────────────────────
+  // #8447 — hub d'installation des apps : surface d'accès identique au
+  // tableau de bord, tout tenant doit pouvoir équiper ses appareils.
+  mon_logiciel: 'any',
+  // BC-29 — boîte mail connectée : pas de filtre `manager_role` sur les
+  // routes (`module.communication` seul).
+  communication: 'any',
+  // BC-17 RETAIL — `RetailProductPolicy::viewAny` ouvert, gestion via la
+  // permission `retail.catalog` (policy, pas `manager_role`).
+  commerce: 'any',
+  // BC-34 VTC — `module.vtc` + `vtc.role:*` (profil métier), pas de
+  // `manager_role` sur le socle dispatch.
+  vtc: 'any',
+  // BC-36 TRADE — `module.trade` + `trade.role:*` (acheteur/vendeur), pas de
+  // `manager_role` : une entreprise peut importer ET exporter.
+  trade: 'any',
+  // BC-32 HOSPITALITY — routes tenant derrière le seul flag `hospitality`.
+  hospitality: 'any',
+  // Campagnes de collecte : `api.manager:principal,rh` — l'édition est
+  // réservée au responsable, et c'est bien cette liste qui fait foi.
+  fundraising: ['principal', 'rh'],
 };
 /** Grants de session normalisés (payload `/auth/me` → `module_grants`). */
 function sessionGrants(user?: StoredAuthUser | null): string[] {
