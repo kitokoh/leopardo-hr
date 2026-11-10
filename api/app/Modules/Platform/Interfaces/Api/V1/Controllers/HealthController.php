@@ -502,7 +502,7 @@ class HealthController extends Controller
                 'ok' => false,
                 'status' => 'misconfigured',
                 'mailer' => $mailer,
-                'error' => $diagnostics->missingCredentialSlug(),
+                'error' => $diagnostics->missingCredentialSlug() ?? 'MAIL_CREDENTIALS_MISSING',
             ];
         }
 
