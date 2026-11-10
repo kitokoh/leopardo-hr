@@ -102,6 +102,35 @@ final class TenantDeletionService
         // purgés avec lui.
         'marketplace_favorites',
         'marketplace_reviews',
+        // #9098 — Trois annuaires `public` ajoutés après #8426 et jamais
+        // classés : la garde d'exhaustivité de
+        // `PlatformCompanyDeletionApiTest::test_public_tenant_scope_is_fully_classified`
+        // les signalait, car ils portent `company_id` **sans FK ni cascade**.
+        // En mode `purge`, la suppression de la société les laissait donc
+        // intacts — des données rattachées à un tenant supprimé survivaient,
+        // ce que la purge RGPD interdit.
+        //
+        // Les trois sont des données DU tenant (routage ou marqueur de
+        // publication), pas du pilotage plateforme : ils sont purgés.
+        //
+        //   - `vtc_marketplace_operators` : marqueur d'opt-in d'un opérateur
+        //     VTC sur la marketplace (#8423). Ligne = (company_id, status) ;
+        //     la retirer ferme la surface publique de la société.
+        //   - `public_conversation_index` : index de ROUTAGE client → tenant
+        //     + fil (#8760), pas de contenu de message. Ligne = (user_id,
+        //     company_id, thread_id, target_slug).
+        //   - `public_activity_index` : index de ROUTAGE client → tenant +
+        //     référence d'activité (#9105). Ligne = (user_id, company_id,
+        //     vertical, external_ref).
+        //
+        // Les deux index portent `user_id` : les conserver après suppression
+        // du tenant laisserait un lien persistant entre un client public et
+        // une société qui n'existe plus. En mode `anonymize`, la même purge
+        // s'applique — elle retire le lien client↔tenant sans toucher aux
+        // données métier, qui restent dans le schéma tenant anonymisé.
+        'vtc_marketplace_operators',
+        'public_conversation_index',
+        'public_activity_index',
     ];
 
     /**
