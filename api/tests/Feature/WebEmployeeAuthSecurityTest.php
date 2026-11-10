@@ -116,8 +116,12 @@ class WebEmployeeAuthSecurityTest extends TestCase
                 'password' => 'password123',
             ]);
 
-        $response->assertSessionHasErrors('two_fa_code');
+        // #6541 — le login ne consomme plus le code dans la même requête : il
+        // ouvre un challenge et redirige. Aucune session n'est ouverte tant
+        // que le code n'a pas été vérifié sur /login/2fa.
+        $response->assertRedirect('/login/2fa');
         $this->assertGuest('web');
+        $this->assertNotNull(session('pending_2fa_challenge'));
     }
 
     public function test_web_login_rejects_invalid_2fa_code(): void
@@ -128,16 +132,26 @@ class WebEmployeeAuthSecurityTest extends TestCase
             'two_fa_enabled_at' => now(),
         ])->save();
 
-        $response = $this->from('/login')
-            ->withSession($this->csrf())
+        $token = $this->csrf()['_token'];
+
+        $this->from('/login')
+            ->withSession(['_token' => $token])
             ->post('/login', [
-                '_token' => session()->token(),
+                '_token' => $token,
                 'email' => 'manager@company.test',
                 'password' => 'password123',
-                'two_fa_code' => '123456',
-            ]);
+            ])
+            ->assertRedirect('/login/2fa');
 
-        $response->assertSessionHasErrors('two_fa_code');
+        // Un code faux est refusé sur le challenge, et la session reste fermée.
+        $this->from('/login/2fa')
+            ->withSession(['_token' => $token])
+            ->post('/login/2fa', [
+                '_token' => $token,
+                'code' => '000000',
+            ])
+            ->assertSessionHasErrors('code');
+
         $this->assertGuest('web');
     }
 
@@ -149,16 +163,25 @@ class WebEmployeeAuthSecurityTest extends TestCase
             'two_fa_enabled_at' => now(),
         ])->save();
 
-        $response = $this->from('/login')
-            ->withSession($this->csrf())
+        $token = $this->csrf()['_token'];
+
+        $this->from('/login')
+            ->withSession(['_token' => $token])
             ->post('/login', [
-                '_token' => session()->token(),
+                '_token' => $token,
                 'email' => 'manager@company.test',
                 'password' => 'password123',
-                'two_fa_code' => $this->totpCode($secret),
-            ]);
+            ])
+            ->assertRedirect('/login/2fa');
 
-        $response->assertRedirect('/dashboard');
+        $this->from('/login/2fa')
+            ->withSession(['_token' => $token])
+            ->post('/login/2fa', [
+                '_token' => $token,
+                'code' => $this->totpCode($secret),
+            ])
+            ->assertRedirect('/dashboard');
+
         $this->assertAuthenticated('web');
     }
 
