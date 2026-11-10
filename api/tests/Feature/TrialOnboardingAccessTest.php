@@ -45,7 +45,8 @@ class TrialOnboardingAccessTest extends TestCase
         // Le mailer est la seule dépendance en panne : on simule un envoi
         // impossible au niveau de l'action (c'est exactement ce que le
         // contrôleur reçoit en production quand la queue `emails` est KO).
-        $this->mock(RequestTrialSignup::class, function ($mock): void {
+        $this->mock(RequestTrialSignup::class, function ($mock): void
+    {
             $mock->shouldReceive('execute')->andReturn(false);
             $mock->shouldReceive('findExistingManager')->andReturn(null);
             $mock->shouldReceive('resolveCompanyName')->andReturn('Le Bistrot QA');
