@@ -1073,6 +1073,7 @@
   "signupCopylink": "Copy link",
   "signupLinkcopied": "Link copied!",
   "signupLinkemailed": "Your access link was also sent by email.",
+  "signupActivateelsewhere": "Set my password on another page",
   "signupFailedtitle": "Creation interrupted",
   "signupFailedbody": "Something went wrong while creating your workspace. Try again — it restarts from scratch in a few seconds. If it keeps happening, contact support.",
   "signupTimeouttitle": "Still creating your workspace",

@@ -1073,6 +1073,7 @@
   "signupCopylink": "Bağlantıyı kopyala",
   "signupLinkcopied": "Bağlantı kopyalandı!",
   "signupLinkemailed": "Erişim bağlantınız e-postayla da gönderildi.",
+  "signupActivateelsewhere": "Şifremi başka bir sayfada belirle",
   "signupFailedtitle": "Oluşturma kesintiye uğradı",
   "signupFailedbody": "Çalışma alanınız oluşturulurken bir hata oluştu. Tekrar deneyin — birkaç saniye içinde baştan başlar. Sorun sürerse destek ekibiyle iletişime geçin.",
   "signupTimeouttitle": "Çalışma alanınız hâlâ oluşturuluyor",

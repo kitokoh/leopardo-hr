@@ -72,7 +72,6 @@
             <file>tests/Feature/ControllerFrenchLiteralsLocalizedTest.php</file>
             <file>tests/Feature/DashboardControllerTest.php</file>
             <file>tests/Feature/DemoUserControllerTest.php</file>
-            <file>tests/Feature/EmployeeExtraDataRgpdTest.php</file>
             <file>tests/Feature/EmployeeIbanValidationTest.php</file>
             <file>tests/Feature/ExceptionLeakRegressionTest.php</file>
             <file>tests/Feature/ExpenseClaimControllerTest.php</file>

@@ -1073,6 +1073,7 @@
   "signupCopylink": "نسخ الرابط",
   "signupLinkcopied": "تم نسخ الرابط!",
   "signupLinkemailed": "تم أيضًا إرسال رابط الوصول عبر البريد الإلكتروني.",
+  "signupActivateelsewhere": "تعيين كلمة المرور في صفحة أخرى",
   "signupFailedtitle": "تم إيقاف الإنشاء",
   "signupFailedbody": "حدث خطأ أثناء إنشاء مساحتك. أعد المحاولة — تبدأ العملية من جديد في ثوانٍ. إذا تكرر الأمر، تواصل مع الدعم.",
   "signupTimeouttitle": "لا يزال إنشاء مساحتك جاريًا",

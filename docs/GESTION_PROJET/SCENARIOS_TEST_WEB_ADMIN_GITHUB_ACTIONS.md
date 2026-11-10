@@ -975,3 +975,41 @@ Le merge `8890f8ba3` a écrasé `front/admin-dashboard/src/i18n/locales/*.json` 
 6. **Aucune régression de surface** — les écrans existants du dashboard ne sont pas touchés ; `git diff` sur `front/admin-dashboard/src/` ne contient que des additions (les deux nouvelles vues et leurs routes).
 
 **Vérification** : `npx tsc --noEmit` exit 0 sur `front/web` ; les deux vues sont en Vue 3 + TypeScript et n'introduisent aucune dépendance nouvelle.
+
+## Note de surface 2026-11-10 — ouverture d'espace d'essai (issues #9305/#9306, PR #9310)
+
+**Aucun écran du dashboard super admin n'est ajouté, retiré ou modifié.** La
+surface `front/admin-dashboard/src/` ne change que par la propagation i18n
+standard : `node shared/i18n/sync/sync-web.js` a réécrit les quatre catalogues
+`front/admin-dashboard/src/i18n/locales/*.json` après l'ajout d'une clé
+`signup.activateElsewhere` dans `shared/i18n/locales/*.json`. Ces catalogues sont
+des unions (le merge préserve les clés admin-only), donc aucune clé existante ne
+disparaît.
+
+Le lot corrige le parcours d'ouverture d'un espace d'essai côté vitrine et API :
+
+- `POST /trial/signup` en `self_service` bascule sur le provisioning guidé quand
+  l'OTP ne peut pas partir (plus de `503 TRIAL_OTP_SEND_FAILED`) ;
+- `GET /trial/status` expose `activation_url` tant que le mot de passe n'est pas
+  défini, relayé par le proxy Next `/api/forms/trial-status` ;
+- l'écran de suivi du tunnel `/signup` affiche une issue de secours vers
+  `/auth/set-password`.
+
+**Scénarios à vérifier** :
+
+1. **Non-régression de la surface admin** — `git diff` sur
+   `front/admin-dashboard/src/` ne contient que les quatre fichiers de locales
+   réécrits par le sync, aucune vue, aucun routeur, aucune permission.
+2. **Parité i18n ×4** — `check-i18n-catalog-parity.sh` reste vert et
+   `node shared/i18n/validators/validate.js` renvoie `I18N_VALIDATION_OK`.
+3. **Panne du mailer** — un signup `self_service` répond 200 (`workflow:
+   guided_trial`, `otp_sent: false`) et l'espace atteint `ready`.
+4. **Chemin de connexion garanti** — `activation_url` pointe sur
+   `/auth/set-password?token=…`, jamais sur `/auth/activate/[token]` (réservé aux
+   invitations collaborateur), et disparaît une fois le mot de passe défini.
+5. **Non-régression du parcours vérifié** — quand l'OTP part, la réponse reste
+   `pending_verification` avec `workflow: self_service` et `otp_sent: true`.
+
+**Vérification** : `Pint --test` PASS sur les fichiers PHP touchés ;
+`npx tsc --noEmit` et `npx eslint --max-warnings 0` verts sur `front/web` ;
+`npx jest` 33 tests passés ; `validate.js` OK sur 4 locales.

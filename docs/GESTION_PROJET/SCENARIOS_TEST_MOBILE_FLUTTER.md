@@ -380,3 +380,22 @@ Vérifié : `node shared/i18n/sync/sync-mobile.js` → `I18N_SYNC_MOBILE_OK`, `n
 - **i18n** : cles fr/en/ar/tr dans `leopardo_core` (aucun litteral dans les ecrans), parite verifiee par `check-mobile-l10n-sync.sh`.
 
 **Scenarios automatises** : `test/models/stock_models_test.dart` (payload complet, partiel, vide) ; tests widget des ecrans partages et des deux caisses. **Verification** : `flutter analyze` 0 issue sur les apps touchees ; la CI fait foi pour l'execution Flutter (SDK absent de la sandbox), comme pour les notes precedentes.
+
+## Note de surface 2026-11-10 — clé i18n `signup.activateElsewhere` (PR #9310)
+
+Le correctif d'onboarding (#9305/#9306) ajoute une clé au catalogue partagé
+`shared/i18n/locales/*.json` (`signup.activateElsewhere`). Les quatre ARB de
+`front/mobile_apps/leopardo_core/lib/l10n/` sont réécrits par
+`node shared/i18n/sync/sync-mobile.js` — **aucun widget, aucun écran, aucune
+route mobile ne change**.
+
+**Scénarios à vérifier** :
+
+1. **Parité ×4** — `app_fr/en/tr/ar.arb` contiennent la même clé ; `validate.js`
+   renvoie `I18N_VALIDATION_OK (4 locales)` et `git diff --exit-code` reste
+   propre après les trois syncs (web, mobile, backend).
+2. **RTL arabe** — la clé est une phrase courte, sans placeholder ni format
+   numérique : aucun risque de miroir ou de troncature en `ar`.
+3. **Aucune régression d'écran** — le tunnel d'inscription mobile ne consomme
+   pas cette clé (elle sert à la vitrine web) ; les tests Flutter existants
+   restent valides tels quels.

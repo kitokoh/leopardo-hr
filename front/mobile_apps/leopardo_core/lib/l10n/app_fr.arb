@@ -1073,6 +1073,7 @@
   "signupCopylink": "Copier le lien",
   "signupLinkcopied": "Lien copié !",
   "signupLinkemailed": "Votre lien d'accès a également été envoyé par email.",
+  "signupActivateelsewhere": "Définir mon mot de passe sur une autre page",
   "signupFailedtitle": "Création interrompue",
   "signupFailedbody": "Une erreur est survenue pendant la création de votre espace. Réessayez : la création repart de zéro en quelques secondes. Si le problème se reproduit, contactez le support.",
   "signupTimeouttitle": "Création toujours en cours",

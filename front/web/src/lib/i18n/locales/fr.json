@@ -1509,6 +1509,7 @@
     "copyLink": "Copier le lien",
     "linkCopied": "Lien copié !",
     "linkEmailed": "Votre lien d'accès a également été envoyé par email.",
+    "activateElsewhere": "Définir mon mot de passe sur une autre page",
     "failedTitle": "Création interrompue",
     "failedBody": "Une erreur est survenue pendant la création de votre espace. Réessayez : la création repart de zéro en quelques secondes. Si le problème se reproduit, contactez le support.",
     "timeoutTitle": "Création toujours en cours",
