@@ -50,12 +50,19 @@ class TokenAutoRefreshMiddleware
             return $response;
         }
 
+        // #9344 (audit sécurité 2026-11-10, F2) — la fenêtre de rafraîchissement
+        // ne peut pas dépasser la durée de vie du jeton : avec une expiration
+        // de 12 h et une fenêtre de 24 h, TOUT jeton serait immédiatement dans
+        // la fenêtre et pivoté à chaque requête. On borne donc la fenêtre à la
+        // moitié de la durée de vie (6 h pour 12 h).
+        $refreshWindowMinutes = (int) config('sanctum.auto_refresh_window', 1440);
+        $refreshWindowMinutes = max(1, min($refreshWindowMinutes, intdiv($expirationMinutes, 2)));
+
         $createdAt = $currentToken->created_at;
         if ($createdAt === null || $createdAt === false) {
             return $response;
         }
 
-        $refreshWindowMinutes = (int) config('sanctum.auto_refresh_window', 1440);
         $expiresAt = $createdAt->copy()->addMinutes($expirationMinutes);
         $refreshThreshold = $expiresAt->copy()->subMinutes($refreshWindowMinutes);
 

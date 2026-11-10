@@ -182,10 +182,9 @@ readonly class UserAuthService
 
         // #9093 — tout jeton porte une expiration. Avant, ce chemin (comme les
         // deux flux Google) créait un jeton SANS échéance : un jeton volé
-        // restait valable indéfiniment. On aligne sur `AuthService::login()`
-        // (config `sanctum.expiration`, 30 jours par défaut).
-        $expirationMinutes = (int) config('sanctum.expiration', 0);
-        $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
+        // restait valable indéfiniment. #9344 — la durée vient désormais de
+        // `TokenExpiryService` (12 h par défaut, 30 j pour un appareil enrôlé).
+        $expiresAt = app(TokenExpiryService::class)->forNewToken($deviceName);
 
         $token = $user->createToken($deviceName, ['*'], $expiresAt)->plainTextToken;
 

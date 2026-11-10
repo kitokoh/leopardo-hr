@@ -276,8 +276,8 @@ final class TwoFactorAuthService
             $employee->forceFill(['last_login_at' => now()])->saveQuietly();
 
             $tokenName = is_string($deviceName) && $deviceName !== '' ? $deviceName : ($context['device_name'] ?? 'api');
-            $expirationMinutes = (int) config('sanctum.expiration', 0);
-            $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
+            // #9344 — même source de durée que `AuthService::login()`.
+            $expiresAt = app(TokenExpiryService::class)->forNewToken($tokenName);
             $abilities = ['*'];
             if ($context['tenant_schema'] !== null && $context['tenant_schema'] !== '') {
                 $abilities[] = 'tenant_schema:'.$context['tenant_schema'];

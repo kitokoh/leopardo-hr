@@ -47,7 +47,12 @@ return [
     |
     */
 
-    'encrypt' => env('SESSION_ENCRYPT', false),
+    // #9345 (audit sécurité 2026-11-10, F3) — chiffrement ACTIVÉ par défaut :
+    // la charge de session porte l'identité et le contexte tenant, et le
+    // driver `file` l'écrivait en clair sur le disque du conteneur (image,
+    // volume partagé, sauvegarde). Un environnement qui veut le désactiver
+    // doit le faire explicitement (SESSION_ENCRYPT=false).
+    'encrypt' => env('SESSION_ENCRYPT', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -169,7 +174,13 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE'),
+    // #9345 (audit sécurité 2026-11-10, F3) — `secure` avait pour valeur
+    // `env('SESSION_SECURE_COOKIE')` SANS défaut : sur un environnement où la
+    // variable est absente, le cookie de session partait sans l'attribut
+    // `Secure` et pouvait transiter en clair. Le défaut est désormais `true`
+    // (fail-closed) ; seul un environnement de développement explicite peut
+    // le désactiver.
+    'secure' => env('SESSION_SECURE_COOKIE', true),
 
     /*
     |--------------------------------------------------------------------------

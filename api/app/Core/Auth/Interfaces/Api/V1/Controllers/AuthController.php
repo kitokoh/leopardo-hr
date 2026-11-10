@@ -462,12 +462,11 @@ class AuthController extends Controller
         }
 
         // #9093 — le jeton Google portait une expiration nulle : un jeton volé
-        // restait valable indéfiniment. On aligne sur `AuthService::login()`.
-        /** @var int $expirationMinutes */
-        $expirationMinutes = (int) config('sanctum.expiration', 0);
-        $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
+        // restait valable indéfiniment. #9344 — la durée vient de
+        // `TokenExpiryService` (12 h par défaut).
         /** @var string $tokenName */
         $tokenName = $outcome['token_name'];
+        $expiresAt = app(\App\Core\Auth\Infrastructure\Services\TokenExpiryService::class)->forNewToken($tokenName);
         $token = $employee->createToken($tokenName, ['*'], $expiresAt);
 
         return (new EmployeeResource($employee))
@@ -560,10 +559,8 @@ class AuthController extends Controller
         /** @var string $tokenName */
         $tokenName = $outcome['token_name'];
         // #9093 — même correctif que le callback : le flux mobile Google
-        // émettait un jeton sans échéance.
-        /** @var int $expirationMinutes */
-        $expirationMinutes = (int) config('sanctum.expiration', 0);
-        $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
+        // émettait un jeton sans échéance. #9344 — durée centralisée.
+        $expiresAt = app(\App\Core\Auth\Infrastructure\Services\TokenExpiryService::class)->forNewToken($tokenName);
         $token = $employee->createToken($tokenName, ['*'], $expiresAt);
 
         return (new EmployeeResource($employee))
