@@ -106,6 +106,15 @@ export async function GET(request: NextRequest) {
     if (typeof data.access_sent === 'boolean') {
       passthrough.access_sent = data.access_sent;
     }
+    // #9306 — quand l'e-mail d'accès n'est pas parti et que le manager n'a pas
+    // encore de mot de passe, l'API expose un lien d'activation. Sans ce
+    // relais, l'écran de suivi ne pouvait afficher AUCUN chemin de connexion :
+    // l'espace était provisionné mais inaccessible (constaté en live).
+    // Le proxy ne fait que relayer un lien déjà produit par le backend ; il ne
+    // construit jamais l'URL lui-même.
+    if (typeof data.activation_url === 'string' && data.activation_url !== '') {
+      passthrough.activation_url = data.activation_url;
+    }
 
     return NextResponse.json({ success: true, data: passthrough }, { status: 200 });
   } catch (error) {

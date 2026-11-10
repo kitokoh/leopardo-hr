@@ -1509,6 +1509,7 @@
     "copyLink": "Copy link",
     "linkCopied": "Link copied!",
     "linkEmailed": "Your access link was also sent by email.",
+    "activateElsewhere": "Set my password on another page",
     "failedTitle": "Creation interrupted",
     "failedBody": "Something went wrong while creating your workspace. Try again — it restarts from scratch in a few seconds. If it keeps happening, contact support.",
     "timeoutTitle": "Still creating your workspace",

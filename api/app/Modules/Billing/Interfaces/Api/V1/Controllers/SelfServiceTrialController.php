@@ -476,8 +476,12 @@ class SelfServiceTrialController extends Controller
         // l'écran de suivi puisse l'afficher immédiatement, sans dépendre
         // d'un e-mail qui peut ne jamais partir.
         if ($row->status === 'ready' && $payload['data']['password_set'] === false) {
+            // `/auth/set-password?token=` est l'écran qui consomme le
+            // `provisioning_token` (POST /trial/set-password). `/auth/activate`
+            // est réservé au flux d'invitation collaborateur (invitation_token)
+            // — l'utiliser ici enverrait le manager sur un lien invalide.
             $payload['data']['activation_url'] = rtrim((string) config('app.frontend_url'), '/')
-                .'/auth/activate/'.$token;
+                .'/auth/set-password?token='.$token;
         }
 
         return new JsonResponse($payload, 200);

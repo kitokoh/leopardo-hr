@@ -116,7 +116,7 @@ type SignupFormCopy = Record<(typeof signupFormKeys)[number], string>;
 // Clés du catalogue i18n partagé (shared/i18n/locales/*.json — source de
 // vérité). Le record est construit via t() (garde PA2-I18N-014 : aucun
 // littéral utilisateur ajouté dans le composant).
-const signupFormKeys = ['badge', 'title', 'subtitle', 'profileTitle', 'profileSubtitle', 'profileCompanyTitle', 'profileCompanyDesc', 'profileCompanyBullet1', 'profileCompanyBullet2', 'profileCompanyBullet3', 'profileSoloTitle', 'profileSoloDesc', 'profileSoloBullet1', 'profileSoloBullet2', 'profileSoloBullet3', 'profileCompanyBadge', 'profileSoloBadge', 'toolsTitle', 'toolsSubtitle', 'toolsTeamGroup', 'toolsManagementGroup', 'toolsEmployees', 'toolsEmployeesDesc', 'toolsAttendance', 'toolsAttendanceDesc', 'toolsAbsences', 'toolsAbsencesDesc', 'toolsPayroll', 'toolsPayrollDesc', 'toolsAccounting', 'toolsAccountingDesc', 'toolsCrm', 'toolsCrmDesc', 'toolsReports', 'toolsReportsDesc', 'toolsMarketing', 'toolsMarketingDesc', 'toolsHint', 'verticalTitle', 'verticalSubtitle', 'verticalRestaurant', 'verticalRestaurantDesc', 'verticalFuel', 'verticalFuelDesc', 'verticalEdu', 'verticalEduDesc', 'verticalNone', 'verticalNoneDesc', 'continueLabel', 'stepProfileLabel', 'stepToolsLabel', 'stepIdentityLabel', 'soloNote', 'labelEmail', 'placeholderEmail', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'setPasswordTitle', 'setPasswordSubtitle', 'setPasswordLabel', 'setPasswordConfirmLabel', 'setPasswordSubmit', 'setPasswordSubmitting', 'setPasswordSuccess', 'setPasswordTooWeak', 'setPasswordMismatch', 'setPasswordUnavailable', 'goToLogin', 'planSelected', 'planChange', 'packSelected', 'countryDetectionFailed', 'verifiedByGoogle', 'defaultError', 'otpResend', 'otpResending', 'otpResent', 'otpResendError', 'preparingLonger', 'supportCta'] as const;
+const signupFormKeys = ['badge', 'title', 'subtitle', 'profileTitle', 'profileSubtitle', 'profileCompanyTitle', 'profileCompanyDesc', 'profileCompanyBullet1', 'profileCompanyBullet2', 'profileCompanyBullet3', 'profileSoloTitle', 'profileSoloDesc', 'profileSoloBullet1', 'profileSoloBullet2', 'profileSoloBullet3', 'profileCompanyBadge', 'profileSoloBadge', 'toolsTitle', 'toolsSubtitle', 'toolsTeamGroup', 'toolsManagementGroup', 'toolsEmployees', 'toolsEmployeesDesc', 'toolsAttendance', 'toolsAttendanceDesc', 'toolsAbsences', 'toolsAbsencesDesc', 'toolsPayroll', 'toolsPayrollDesc', 'toolsAccounting', 'toolsAccountingDesc', 'toolsCrm', 'toolsCrmDesc', 'toolsReports', 'toolsReportsDesc', 'toolsMarketing', 'toolsMarketingDesc', 'toolsHint', 'verticalTitle', 'verticalSubtitle', 'verticalRestaurant', 'verticalRestaurantDesc', 'verticalFuel', 'verticalFuelDesc', 'verticalEdu', 'verticalEduDesc', 'verticalNone', 'verticalNoneDesc', 'continueLabel', 'stepProfileLabel', 'stepToolsLabel', 'stepIdentityLabel', 'soloNote', 'labelEmail', 'placeholderEmail', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'activateElsewhere', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'setPasswordTitle', 'setPasswordSubtitle', 'setPasswordLabel', 'setPasswordConfirmLabel', 'setPasswordSubmit', 'setPasswordSubmitting', 'setPasswordSuccess', 'setPasswordTooWeak', 'setPasswordMismatch', 'setPasswordUnavailable', 'goToLogin', 'planSelected', 'planChange', 'packSelected', 'countryDetectionFailed', 'verifiedByGoogle', 'defaultError', 'otpResend', 'otpResending', 'otpResent', 'otpResendError', 'preparingLonger', 'supportCta'] as const;
 
 function buildSignupFormCopy(locale: AppLocale): SignupFormCopy {
   const copy = {} as SignupFormCopy;
@@ -271,6 +271,11 @@ export function SignupForm({
   // #7298 — vrai uniquement si le backend confirme l'envoi du lien d'accès par
   // e-mail (`access_sent`). Évite d'annoncer un e-mail jamais parti.
   const [accessSent, setAccessSent] = useState(false);
+  // #9306 — quand l'e-mail d'accès n'est pas parti et qu'aucun mot de passe
+  // n'est encore défini, l'API expose un lien d'activation : c'est le SEUL
+  // chemin de connexion du manager. Sans lui, l'espace restait provisionné
+  // mais inaccessible (constaté en live : password_set=false, access_sent=false).
+  const [trialActivationUrl, setTrialActivationUrl] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [settingPassword, setSettingPassword] = useState(false);
   const [passwordError, setPasswordError] = useState('');
@@ -429,6 +434,9 @@ export function SignupForm({
           setTrialLoginUrl(res.data.login_url || '');
           setPasswordSet(res.data.password_set === true);
           setAccessSent(res.data.access_sent === true);
+          // #9306 — lien d'activation de secours (jamais construit ici : on ne
+          // relaie que ce que le backend a produit).
+          setTrialActivationUrl(typeof res.data.activation_url === 'string' ? res.data.activation_url : '');
           // #7542 — jalon terminal du tunnel : l'espace est réellement prêt.
           // Garde anti-doublon : le polling peut repasser par `ready`.
           if (!funnelProvisionedRef.current) {
@@ -1199,6 +1207,21 @@ export function SignupForm({
                       {settingPassword ? c.setPasswordSubmitting : c.setPasswordSubmit}
                     </button>
                   </form>
+                ) : null}
+                {/* #9306 — issue de secours : si la saisie inline échoue (token
+                    perdu de l'état React, onglet rouvert…), la page dédiée
+                    relit le token depuis le stockage local. Sans ce lien, un
+                    espace `ready` sans e-mail d'accès n'offre AUCUNE issue. */}
+                {!passwordSet && trialActivationUrl ? (
+                  <p className="mt-3 text-center">
+                    <a
+                      href={trialActivationUrl}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 underline decoration-emerald-700/30 underline-offset-2 transition hover:text-emerald-800 dark:text-emerald-400"
+                    >
+                      <KeyRound className="h-3.5 w-3.5" />
+                      {c.activateElsewhere}
+                    </a>
+                  </p>
                 ) : null}
                 {passwordSet && trialLoginUrl ? (
                   <div className="space-y-3">

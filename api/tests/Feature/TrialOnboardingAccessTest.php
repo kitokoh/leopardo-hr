@@ -111,11 +111,12 @@ class TrialOnboardingAccessTest extends TestCase
             ->assertJsonPath('data.password_set', false)
             ->assertJsonPath('data.access_sent', false);
 
-        // Le lien d'activation pointe sur l'écran qui consomme le même token
-        // que `POST /trial/set-password`.
+        // Le lien pointe sur `/auth/set-password` : c'est l'écran qui consomme
+        // ce `provisioning_token` (POST /trial/set-password).
+        // `/auth/activate/[token]` est réservé aux invitations collaborateur.
         $activationUrl = $response->json('data.activation_url');
         $this->assertIsString($activationUrl);
-        $this->assertStringEndsWith('/auth/activate/'.$token, $activationUrl);
+        $this->assertStringEndsWith('/auth/set-password?token='.$token, $activationUrl);
     }
 
     /**
