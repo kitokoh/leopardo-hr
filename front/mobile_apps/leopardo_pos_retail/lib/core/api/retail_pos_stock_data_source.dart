@@ -125,8 +125,7 @@ class RetailPosStockDataSource implements StockDataSource {
       );
     }
 
-    final key =
-        idempotencyKey ??
+    final key = idempotencyKey ??
         movementKey(
           locationId: locationId,
           productId: productId,
