@@ -39,7 +39,7 @@ abstract class TestCase extends BaseTestCase
 
     protected function tearDown(): void
     {
-        $this->resetTestSearchPath();
+        $this->resetTestSearchPathQuietly();
         app()->forgetInstance('current_company');
         // Registre statique des AIToolDefinition (collecteur #6850) : chaque
         // test boote une app fraiche dont les providers re-enregistrent les
@@ -57,6 +57,35 @@ abstract class TestCase extends BaseTestCase
 
         if ($driver === 'pgsql') {
             DB::statement('SET search_path TO shared_tenants,public');
+        }
+    }
+
+    /**
+     * Variante de `resetTestSearchPath()` réservée à `tearDown()` : elle ne
+     * doit JAMAIS lever, sous peine de masquer l'échec réel du test.
+     *
+     * `tearDown()` s'exécute AVANT `parent::tearDown()`, donc avant le rollback
+     * de la transaction ouverte par `RefreshDatabase`/`DatabaseTransactions`.
+     * Si le corps du test a déjà avorté cette transaction (n'importe quelle
+     * QueryException), le `SET search_path` échoue à son tour en 25P02 — et
+     * cette exception REMPLACE la cause d'origine : le rapport affiche
+     * `25P02 ... SET search_path` à `TestCase.php:59` au lieu de la vraie
+     * erreur. Observé 2026-11-10 : `TravelNotificationConsumerTest` rapporté en
+     * 25P02 alors que l'échec réel était « mailable was not sent ».
+     *
+     * On n'avale donc QUE l'état « transaction avortée » : le rollback de
+     * `parent::tearDown()` restaure de toute façon l'état de la session (`SET`
+     * est transactionnel en PostgreSQL) et le `setUp()` suivant repositionne le
+     * search_path. Toute autre erreur reste remontée.
+     */
+    private function resetTestSearchPathQuietly(): void
+    {
+        try {
+            $this->resetTestSearchPath();
+        } catch (QueryException $exception) {
+            if ($exception->getCode() !== '25P02' && ! str_contains($exception->getMessage(), '25P02')) {
+                throw $exception;
+            }
         }
     }
 
