@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Notification\Infrastructure\Services;
 
+use App\Core\Mail\MailTransportDiagnostics;
+
 /**
  * Production delivery configuration guard (issue #7014, part of #6919).
  *
@@ -88,11 +90,45 @@ class ProductionDeliveryGuard
             $issues[] = $mailgunIssue;
         }
 
+        if ($this->fromDomainUnresolved()) {
+            $issues[] = self::ISSUE_MAILER_FROM_DOMAIN_UNRESOLVED;
+        }
+
         if ($this->whatsappMissingSecrets()) {
             $issues[] = self::ISSUE_WHATSAPP_MISSING_SECRETS;
         }
 
         return $issues;
+    }
+
+    /**
+     * #9317 — transports dont le domaine d'envoi est porté par l'expéditeur
+     * (`MAIL_FROM_ADDRESS`) et doit être vérifié chez le fournisseur. Un
+     * domaine NXDOMAIN ne peut pas l'être : l'envoi échouera à coup sûr.
+     *
+     * Le test DNS est délégué à {@see MailTransportDiagnostics} (source unique
+     * de la résolution transport → credentials), et n'est exécuté que pour les
+     * transports concernés — jamais pour `smtp`, dont le domaine d'envoi n'est
+     * pas ce qui décide de la délivrabilité.
+     */
+    private function fromDomainUnresolved(): bool
+    {
+        $diagnostics = app(MailTransportDiagnostics::class);
+
+        if (! $diagnostics->requiresVerifiedSendingDomain()) {
+            return false;
+        }
+
+        $domain = $diagnostics->fromDomain();
+
+        // Adresse absente/inexploitable : ce n'est pas un domaine « non
+        // résolu » mais une configuration incomplète, déjà couverte par
+        // `mail:check-config` et `checks.mail`. On ne double pas le signal.
+        if ($domain === '') {
+            return false;
+        }
+
+        return ! $diagnostics->domainResolves($domain);
     }
 
     private function mailerIsNoOp(): bool

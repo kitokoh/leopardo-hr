@@ -38,7 +38,7 @@ désormais exposé par `/health` et `/health/ready`.
 
 ## Le check `mail`
 
-- Transports **locaux** (`log`, `array`) → `status: skipped` : aucune
+- Transports **locaux** (`log`, `array`, `null`) → `status: skipped` : aucune
   dépendance externe, rien à sonder.
 - Transport **`smtp`** → `tcp connect` court (2 s) vers `MAIL_HOST:MAIL_PORT`.
   Il attrape **l'hôte injoignable et le port fermé** — la panne de transport,
@@ -49,6 +49,40 @@ désormais exposé par `/health` et `/health/ready`.
 - `MAIL_HOST` absent → `status: misconfigured` (`error: MAIL_HOST_MISSING`).
 - **L'hôte n'est jamais exposé** dans la réponse : `/health` est public, et un
   nom d'hôte SMTP interne est une information d'infrastructure.
+
+### Mise à jour #9317 — le transport RÉELLEMENT résolu est sondé
+
+Avant #9317, la garde était `$mailer !== 'smtp'` : **tout transport autre que
+`smtp` était rapporté `skipped` + `ok: true`**. Le transport de production
+étant `resend` (transport HTTP, #5139), un mailer cassé produisait un faux vert
+— mesuré le 2026-11-10 (`POST /trial/signup` en 503 `TRIAL_OTP_SEND_FAILED`
+pendant que `/health/ready` répondait `mail: {ok: true, status: "skipped"}`).
+
+Désormais :
+
+| Transport résolu | Sonde | Statuts possibles |
+| --- | --- | --- |
+| `log`, `array`, `null` | aucune (pas de dépendance externe) | `skipped` |
+| `smtp` | `tcp connect` 2 s vers `MAIL_HOST:MAIL_PORT` | `reachable`, `unreachable`, `misconfigured` |
+| `resend` (HTTP-API) | présence de la clé + **existence DNS du domaine d'envoi** | `configured`, `misconfigured`, `unverified_domain` |
+| autre transport réseau | présence des credentials connus | `unprobed`, `misconfigured` |
+
+- `resend` sans clé → `misconfigured` (`error: RESEND_KEY_MISSING`), **jamais**
+  `skipped`. La clé est lue dans `services.resend.key` **ou** `resend.api_key`
+  (les deux emplacements que lit `resend/resend-laravel`).
+- Domaine de l'expéditeur **inexistant** (NXDOMAIN) →
+  `unverified_domain` (`error: MAIL_FROM_DOMAIN_UNRESOLVED`). Un domaine
+  inexistant ne peut pas être vérifié chez le fournisseur : aucun envoi ne
+  partira, quelle que soit la validité de la clé. C'est le cas mesuré —
+  `MAIL_FROM_ADDRESS` pointait sur `leopardo-rh.com`, NXDOMAIN (cf. #8062).
+- La **validité** de la clé n'est pas testée (cela exigerait un appel réseau
+  sortant à chaque sonde) : d'où `configured` et non `sent`.
+- L'adresse expéditrice n'est jamais exposée (même raison que l'hôte SMTP).
+
+La résolution transport → credentials vit dans
+`App\Core\Mail\MailTransportDiagnostics`, partagée par `checkMail()`,
+`ProductionDeliveryGuard` et `mail:check-config` — un transport nouvellement
+adopté ne peut plus être silencieusement ignoré par l'un des trois.
 
 ## Quelle sonde brancher où
 
