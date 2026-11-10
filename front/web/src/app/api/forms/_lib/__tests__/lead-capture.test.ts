@@ -152,10 +152,17 @@ describe('#7301 — la réponse n’attend pas un cold start', () => {
 
   it('renvoie `pending` (et poursuit l’écriture) quand l’API dépasse le budget', async () => {
     // Réponse plus lente que le budget de 60 ms : la réponse part sans attendre.
+    //
+    // #9314 — on horodate le moment où l'API *répond réellement*, pour pouvoir
+    // affirmer le contrat en RELATIF (voir plus bas) au lieu d'une durée murale.
+    let apiResolvedAt = 0;
     fetchMock.mockImplementation(
       () =>
         new Promise((resolve) => {
-          setTimeout(() => resolve(jsonResponse(201)), 150);
+          setTimeout(() => {
+            apiResolvedAt = Date.now();
+            resolve(jsonResponse(201));
+          }, 150);
         })
     );
 
@@ -167,7 +174,16 @@ describe('#7301 — la réponse n’attend pas un cold start', () => {
     const elapsed = Date.now() - startedAt;
 
     expect(result.persisted).toBe('pending');
-    expect(elapsed).toBeLessThan(120);
+    // #9314 — le contrat n'est PAS « la réponse revient en moins de 120 ms »
+    // (durée murale : sur un runner CI saturé, `setTimeout(60)` peut tirer à
+    // 221 ms et faire échouer ce test alors que le comportement est correct).
+    // Le contrat est : **la capture a rendu la main AVANT que l'API n'ait
+    // répondu**. C'est relatif au même run, donc insensible à la charge.
+    expect(apiResolvedAt).toBe(0);
+    // Garde-fou de non-régression : on n'a pas attendu la réponse de test
+    // (150 ms). Marge large (≈2×) : ce n'est plus une mesure de précision
+    // mais la détection d'une régression franche (attente bloquante).
+    expect(elapsed).toBeLessThan(300);
     // L'écriture se poursuit malgré la réponse déjà envoyée.
     await new Promise((resolve) => setTimeout(resolve, 200));
     expect(persistCalls().length).toBeGreaterThan(0);
