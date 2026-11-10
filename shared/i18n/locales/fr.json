@@ -1,6 +1,6 @@
 {
-  "_version": "1.0.0",
-  "_updated_at": "2026-10-20T00:00:00Z",
+  "_version": "1.0.1",
+  "_updated_at": "2026-11-10T13:00:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo — suite métier"
@@ -512,6 +512,37 @@
     "leave_balance_used": "{days} utilisés",
     "see_absences": "Voir mes absences",
     "leave_balance_unknown": "Congés"
+  },
+  "settingsHub": {
+    "title": "Paramètres",
+    "subtitle": "Tout le réglage de votre espace, au même endroit.",
+    "menuLabel": "Paramètres",
+    "groupAccount": "Mon compte",
+    "groupCompany": "Entreprise",
+    "groupPlatform": "Plateforme",
+    "tileAccountTitle": "Mon compte",
+    "tileAccountBody": "Profil, e-mail et mot de passe.",
+    "tileSecurityTitle": "Sécurité et 2FA",
+    "tileSecurityBody": "Double authentification et codes de secours.",
+    "tileNotificationsTitle": "Notifications",
+    "tileNotificationsBody": "Ce que vous recevez, et sur quel canal.",
+    "tileDevicesTitle": "Appareils connectés",
+    "tileDevicesBody": "Sessions actives et déconnexion à distance.",
+    "tileBrandingTitle": "Image de marque",
+    "tileBrandingBody": "Logo, couleurs et nom affiché de votre entreprise.",
+    "tileTeamTitle": "Équipe et rôles",
+    "tileTeamBody": "Inviter, attribuer les rôles et les accès aux modules.",
+    "tilePaymentsTitle": "Encaissements",
+    "tilePaymentsBody": "Comptes de paiement, IBAN et mobile money.",
+    "tileModulesTitle": "Modules et plan",
+    "tileModulesBody": "Activer un module et voir ce qui est inclus.",
+    "tileIntegrationsTitle": "Intégrations",
+    "tileIntegrationsBody": "Clés API, webhooks et connecteurs.",
+    "tileBillingTitle": "Abonnement et factures",
+    "tileBillingBody": "Plan en cours, factures et moyen de paiement.",
+    "tileCompanyTitle": "Fiche entreprise",
+    "tileCompanyBody": "Raison sociale, fuseau horaire et devise.",
+    "notAdminHint": "Certaines tuiles ne sont pas affichées : elles sont réservées au manager principal."
   },
   "marketing": {
     "oauth": {

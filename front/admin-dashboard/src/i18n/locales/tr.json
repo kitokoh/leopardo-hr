@@ -1,6 +1,6 @@
 {
-  "_version": "1.0.0",
-  "_updated_at": "2026-10-20T00:00:00Z",
+  "_version": "1.0.1",
+  "_updated_at": "2026-11-10T13:00:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo — İşletme Yönetimi Paketi"
@@ -10732,5 +10732,36 @@
   "stockMobileLocation": "Konum",
   "stockMobileAllLocations": "Tüm konumlar",
   "stockMobileCostSourceAverage": "Ortalama maliyet",
-  "stockMobileCostSourceCatalog": "Katalog maliyeti"
+  "stockMobileCostSourceCatalog": "Katalog maliyeti",
+  "settingsHub": {
+    "title": "Ayarlar",
+    "subtitle": "Calisma alaninizin tum ayarlari tek yerde.",
+    "menuLabel": "Ayarlar",
+    "groupAccount": "Hesabim",
+    "groupCompany": "Sirket",
+    "groupPlatform": "Platform",
+    "tileAccountTitle": "Hesabim",
+    "tileAccountBody": "Profil, e-posta ve sifre.",
+    "tileSecurityTitle": "Guvenlik ve 2FA",
+    "tileSecurityBody": "Iki adimli dogrulama ve yedek kodlar.",
+    "tileNotificationsTitle": "Bildirimler",
+    "tileNotificationsBody": "Neyi hangi kanaldan alacaginiz.",
+    "tileDevicesTitle": "Bagli cihazlar",
+    "tileDevicesBody": "Etkin oturumlar ve uzaktan cikis.",
+    "tileBrandingTitle": "Marka kimligi",
+    "tileBrandingBody": "Logo, renkler ve gorunen sirket adi.",
+    "tileTeamTitle": "Ekip ve roller",
+    "tileTeamBody": "Davet etme, rol ve modul erisimi atama.",
+    "tilePaymentsTitle": "Tahsilatlar",
+    "tilePaymentsBody": "Odeme hesaplari, IBAN ve mobil odeme.",
+    "tileModulesTitle": "Moduller ve plan",
+    "tileModulesBody": "Modul etkinlestirin ve dahil olani gorun.",
+    "tileIntegrationsTitle": "Entegrasyonlar",
+    "tileIntegrationsBody": "API anahtarlari, webhook ve baglayicilar.",
+    "tileBillingTitle": "Abonelik ve faturalar",
+    "tileBillingBody": "Mevcut plan, faturalar ve odeme yontemi.",
+    "tileCompanyTitle": "Sirket bilgileri",
+    "tileCompanyBody": "Unvan, saat dilimi ve para birimi.",
+    "notAdminHint": "Bazi kutucuklar gizli: yalnizca ana yoneticiye ayrilmistir."
+  }
 }
