@@ -65,10 +65,19 @@ jobs:
       - name: Checkout (scripts + registre)
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          # #9360 — `dev-stack-switch.sh` est un SHIM qui `exec`e
+          # `scripts/stack-switch.sh` (logique multi-tiers, #8672). Ce dernier
+          # DOIT figurer ici : sans lui, le shim sortait en 127
+          # (« stack-switch.sh: No such file or directory ») et AUCUNE bascule
+          # n'était possible — y compris celle qui devait sortir la stack dev
+          # de la panne. Le registre prod est inclus pour la même raison
+          # (`--tier prod` lit deploy/prod-stacks.json).
           sparse-checkout: |
             scripts/dev-stack-health.sh
             scripts/dev-stack-switch.sh
+            scripts/stack-switch.sh
             deploy/dev-stacks.json
+            deploy/prod-stacks.json
           sparse-checkout-cone-mode: false
           fetch-depth: 1
           persist-credentials: false
