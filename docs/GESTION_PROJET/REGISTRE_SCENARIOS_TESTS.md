@@ -1,3 +1,24 @@
+## 2026-11-10 — BC-40 LIBRARY / BC-38 PAIEMENTS : achat à l'unité, vente en gros, accès payant (issue #9238, PR #9291)
+
+**Surface API** : 5 routes nouvelles sous `/v1/library` (groupe auth tenant) — `POST /library/resources/{resource}/purchases`, `GET /library/purchases`, `POST /library/purchases/{purchase}/confirm`, `GET /library/resources/{resource}/access`, `GET /library/resources/{resource}/download`. Toutes documentées dans `api/openapi.yaml` (0 route non couverte).
+
+**Pourquoi c'est un scénario de test et pas un simple ajout de routes** : ces routes portent de l'argent et décident d'un droit de lecture. Une régression ici ne se voit pas à l'écran — elle vend un livre deux fois, accorde un accès non payé, ou facture un abandon de panier.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| achat `pending` → `can_read = false`, téléchargement 403 | un contenu payant est lisible sans avoir payé |
+| `confirm` avec transaction `processing` → 409 et aucune facture | un faux retour client ouvre l'accès et consomme un numéro fiscal |
+| `confirm` rejoué deux fois → une seule facture | double facturation d'un même achat au rejeu du webhook |
+| deux `POST /purchases` même `idempotency_key` → une seule vente | un double clic crée deux ventes et deux droits |
+| 10 unités d'un palier `10` → prix de gros ; 9 unités → prix unitaire | le client paie le prix de gros sans atteindre le palier |
+| un achat d'un autre employé du tenant → 403 ; ressource d'un autre tenant → 404 | un employé lit ou télécharge l'achat d'un collègue / d'un autre tenant |
+| ressource `read_only` → `can_download = false` même si `allow_download` | une licence « consultation seule » fuit en fichier téléchargeable |
+| prix calculé côté serveur (montant jamais lu du payload) | un client forge un montant à 0 |
+
+**Automatisé** : `api/tests/Feature/Library/LibraryPurchaseTest.php` (achat à l'unité + gros, fail-closed avant paiement, confirmation idempotente, isolation cross-employé/cross-tenant, refus de téléchargement `read_only`) ; `api/tests/Unit/Library/LibraryPricingTest.php` (paliers + ventilation TVA net/TVA/TTC) ; `dev-hub/tools/check-openapi-coverage.sh` et `check-mvp-schema-parity` (Hygiene Guards).
+
+**Non couvert** : aucun test d'intégration avec un vrai fournisseur de paiement — la relecture de statut est vérifiée sur le contrat `CashInGatewayInterface`, pas sur un sandbox opérateur.
+
 ## 2026-11-09 — BC-17 STOCK multi-tenant : clés i18n du stock mobile dans le catalogue admin (refs #9272–#9275, PR #9277)
 
 **Surface Web admin** : `front/admin-dashboard/src/i18n/locales/{fr,en,ar,tr}.json` — ajout du bloc `stockMobile*` (46 clés par locale). Aucune route, aucun composant, aucun contrat API modifié : c'est un **catalogue de libellés**, pas une vue.

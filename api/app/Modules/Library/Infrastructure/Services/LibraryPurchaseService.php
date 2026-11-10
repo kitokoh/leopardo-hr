@@ -261,20 +261,16 @@ final class LibraryPurchaseService
      */
     private function wholesaleTiers(LibraryResource $resource): array
     {
-        $tiers = $resource->wholesale_tiers;
         $normalized = [];
 
-        if (is_array($tiers)) {
-            foreach ($tiers as $tier) {
-                if (! is_array($tier) || ! isset($tier['min_qty'], $tier['unit_price_minor'])) {
-                    continue;
-                }
-
-                $normalized[] = [
-                    'min_qty' => (int) $tier['min_qty'],
-                    'unit_price_minor' => (int) $tier['unit_price_minor'],
-                ];
-            }
+        // Le type des paliers est garanti par le modèle
+        // (`array<int, array{min_qty: int, unit_price_minor: int}>|null`) :
+        // aucune validation de forme à refaire ici, seul le cast en entier.
+        foreach ($resource->wholesale_tiers ?? [] as $tier) {
+            $normalized[] = [
+                'min_qty' => (int) $tier['min_qty'],
+                'unit_price_minor' => (int) $tier['unit_price_minor'],
+            ];
         }
 
         return $normalized;

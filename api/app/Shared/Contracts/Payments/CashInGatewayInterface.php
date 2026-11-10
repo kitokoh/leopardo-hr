@@ -51,8 +51,10 @@ interface CashInGatewayInterface
      * statut d'initiation (`processing`) n'est jamais une autorisation, et le
      * client ne fournit jamais ce statut lui-même (fail-closed).
      *
+     * Retourne `null` si la transaction n'existe pas, ou si elle n'appartient
+     * pas au tenant demandé (jamais l'existence d'une autre transaction).
+     *
      * @return array{status: string, amount_minor: int, currency: string}|null
-     *         null si la transaction n'existe pas (ou n'appartient pas au tenant).
      */
     public function transactionStatus(int $transactionId, ?string $companyId = null): ?array;
 }
