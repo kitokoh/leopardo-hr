@@ -133,11 +133,14 @@ class _StockScreenState extends ConsumerState<StockScreen>
               children: [
                 Checkbox(
                   value: _belowThresholdOnly,
-                  onChanged: (v) => setState(() => _belowThresholdOnly = v ?? false),
+                  onChanged: (v) =>
+                      setState(() => _belowThresholdOnly = v ?? false),
                 ),
                 Text(
                   l10n.stockMobileBelowThresholdOnly,
-                  style: AppTypography.bodySmall.copyWith(color: MobileSurface.text),
+                  style: AppTypography.bodySmall.copyWith(
+                    color: MobileSurface.text,
+                  ),
                 ),
               ],
             ),
@@ -163,14 +166,8 @@ class _StockScreenState extends ConsumerState<StockScreen>
                   search: _searchController.text,
                   belowThresholdOnly: _belowThresholdOnly,
                 ),
-                _MovementsTab(
-                  repository: _repo,
-                  locationId: widget.locationId,
-                ),
-                _AlertsTab(
-                  repository: _repo,
-                  locationId: widget.locationId,
-                ),
+                _MovementsTab(repository: _repo, locationId: widget.locationId),
+                _AlertsTab(repository: _repo, locationId: widget.locationId),
               ],
             ),
           ),
@@ -222,9 +219,10 @@ class _LevelsTab extends ConsumerWidget {
         final filtered = query.isEmpty
             ? levels
             : levels
-                .where((l) =>
-                    (l.productName ?? '').toLowerCase().contains(query))
-                .toList();
+                  .where(
+                    (l) => (l.productName ?? '').toLowerCase().contains(query),
+                  )
+                  .toList();
 
         if (filtered.isEmpty) {
           return _EmptyState(message: l10n.stockMobileEmptyLevels);
@@ -267,13 +265,16 @@ class _MovementsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final movementsAsync = ref.watch(_movementsProvider(repository, locationId));
+    final movementsAsync = ref.watch(
+      _movementsProvider(repository, locationId),
+    );
 
     return movementsAsync.when(
       loading: () => MobileEmptyLoading(label: l10n.stockMobileTitle),
       error: (_, __) => MobileErrorPanel(
         message: l10n.stockMobileLoadError,
-        onRetry: () => ref.invalidate(_movementsProvider(repository, locationId)),
+        onRetry: () =>
+            ref.invalidate(_movementsProvider(repository, locationId)),
       ),
       data: (movements) {
         if (movements.isEmpty) {
@@ -289,9 +290,7 @@ class _MovementsTab extends ConsumerWidget {
             final color = inbound ? AppColors.finance : AppColors.danger;
 
             return MobileListCard(
-              icon: inbound
-                  ? Icons.arrow_downward
-                  : Icons.arrow_upward,
+              icon: inbound ? Icons.arrow_downward : Icons.arrow_upward,
               iconColor: color,
               title: movement.productName ?? '#${movement.productId}',
               subtitle: _reasonLabel(l10n, movement.reason),
@@ -450,9 +449,8 @@ class _RecordMovementSheetState extends State<_RecordMovementSheet> {
       );
       if (mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.stockMobileSaved)),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.stockMobileSaved)));
         widget.onSaved();
       }
     } on StockWriteException catch (error) {
@@ -501,18 +499,19 @@ class _RecordMovementSheetState extends State<_RecordMovementSheet> {
           DropdownButtonFormField<StockMovementReason>(
             initialValue: _reason,
             decoration: InputDecoration(labelText: l10n.stockMobileReason),
-            items: [
-              StockMovementReason.receiving,
-              StockMovementReason.adjustment,
-              StockMovementReason.waste,
-            ]
-                .map(
-                  (r) => DropdownMenuItem(
-                    value: r,
-                    child: Text(_reasonLabel(l10n, r)),
-                  ),
-                )
-                .toList(),
+            items:
+                [
+                      StockMovementReason.receiving,
+                      StockMovementReason.adjustment,
+                      StockMovementReason.waste,
+                    ]
+                    .map(
+                      (r) => DropdownMenuItem(
+                        value: r,
+                        child: Text(_reasonLabel(l10n, r)),
+                      ),
+                    )
+                    .toList(),
             onChanged: (v) => setState(() => _reason = v ?? _reason),
           ),
           const SizedBox(height: 12),
@@ -590,7 +589,9 @@ class _ProductPicker extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final levelsAsync = ref.watch(_levelsProvider(repository, locationId, false));
+    final levelsAsync = ref.watch(
+      _levelsProvider(repository, locationId, false),
+    );
 
     return levelsAsync.when(
       loading: () => const LinearProgressIndicator(minHeight: 2),
@@ -602,7 +603,9 @@ class _ProductPicker extends ConsumerWidget {
         if (levels.isEmpty) {
           return Text(
             l10n.stockMobileEmptyLevels,
-            style: AppTypography.caption.copyWith(color: MobileSurface.secondary),
+            style: AppTypography.caption.copyWith(
+              color: MobileSurface.secondary,
+            ),
           );
         }
 
@@ -641,7 +644,9 @@ class _EmptyState extends StatelessWidget {
         child: Text(
           message,
           textAlign: TextAlign.center,
-          style: AppTypography.bodySmall.copyWith(color: MobileSurface.secondary),
+          style: AppTypography.bodySmall.copyWith(
+            color: MobileSurface.secondary,
+          ),
         ),
       ),
     );

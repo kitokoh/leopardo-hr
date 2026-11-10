@@ -53,7 +53,7 @@ return new class extends Migration
         });
 
         DB::statement(
-            "COMMENT ON TABLE retail_stock_transfers IS "
+            'COMMENT ON TABLE retail_stock_transfers IS '
             ."'Transferts de stock inter-emplacements Retail - les deux mouvements "
             ."(transfer_out/transfer_in) partagent cet id comme reference_id (BC-17/#9268).'"
         );

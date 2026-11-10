@@ -12,7 +12,6 @@ use App\Modules\Retail\Domain\Models\RetailInventoryMovement;
 use App\Modules\Retail\Domain\Models\RetailLocation;
 use App\Modules\Retail\Domain\Models\RetailProduct;
 use App\Modules\Retail\Domain\Models\RetailStockLevel;
-use App\Modules\Retail\Domain\Models\RetailStockTransfer;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\StoreRetailStockMovementRequest;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\StoreRetailStockTransferRequest;
 use Illuminate\Http\JsonResponse;
