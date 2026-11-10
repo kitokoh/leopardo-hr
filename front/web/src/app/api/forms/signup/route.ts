@@ -44,6 +44,14 @@ const signupSchema = z.object({
 const LEOPARDO_API_URL = process.env.LEOPARDO_API_URL ||
   resolveBackendBaseUrl().replace(/\/api\/v1$/, '');
 
+// #9308 — budget de confirmation du provisioning après le repli `guided_trial`.
+// Le repli ne provisionne pas dans la requête (job en file) : on attend un
+// statut `ready` réel avant d'annoncer un succès. Budget volontairement court
+// (la route est appelée depuis un formulaire) : au-delà, on répond un échec
+// honnête plutôt que de laisser le prospect devant un spinner terminal.
+const PROVISIONING_CONFIRM_TIMEOUT_MS = 12_000;
+const PROVISIONING_CONFIRM_INTERVAL_MS = 1_500;
+
 export async function POST(request: NextRequest) {
   if (!areFormsEnabled()) {
     return formsDisabledResponse();
@@ -173,6 +181,48 @@ export async function POST(request: NextRequest) {
     const sessionToken = request.cookies.get('leopardo_token')?.value;
     const acceptLanguage = request.headers.get('accept-language');
 
+    // #9308 — vérifie qu'un espace est RÉELLEMENT provisionné avant d'annoncer
+    // un succès. `guided_trial` ne fait que mettre un job en file : sans worker,
+    // le statut reste `pending` indéfiniment. On interroge donc `/trial/status`
+    // (borné dans le temps) et on n'accepte que `ready`.
+    const confirmProvisioning = async (token: string): Promise<boolean> => {
+      const deadline = Date.now() + PROVISIONING_CONFIRM_TIMEOUT_MS;
+
+      while (Date.now() < deadline) {
+        try {
+          const statusResponse = await fetch(
+            `${LEOPARDO_API_URL}/api/v1/trial/status?token=${encodeURIComponent(token)}`,
+            {
+              method: 'GET',
+              headers: {
+                Accept: 'application/json',
+                ...(acceptLanguage ? { 'Accept-Language': acceptLanguage } : {}),
+              },
+              signal: AbortSignal.timeout(5000),
+            }
+          );
+
+          if (statusResponse.ok) {
+            const statusPayload = (await statusResponse.json()) as {
+              success?: boolean;
+              data?: { status?: string };
+            };
+            const status = statusPayload?.data?.status;
+
+            if (status === 'ready') return true;
+            // `failed` est terminal : inutile d'attendre la fin du budget.
+            if (status === 'failed') return false;
+          }
+        } catch {
+          // Erreur réseau/timeout : on retente jusqu'à la fin du budget.
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, PROVISIONING_CONFIRM_INTERVAL_MS));
+      }
+
+      return false;
+    };
+
     const postTrialSignup = async (workflow: 'self_service' | 'guided_trial') => {
       const trialResponse = await fetch(`${LEOPARDO_API_URL}/api/v1/trial/signup`, {
         method: 'POST',
@@ -243,7 +293,56 @@ export async function POST(request: NextRequest) {
 
         const fallback = await postTrialSignup('guided_trial');
         if (fallback.ok) {
-          attempt = fallback;
+          // #9308 — le repli guidé ne PROVISIONNE pas dans la requête : il met
+          // un job en file (`ProvisionDemoTenantJob`) et répond
+          // `status=provisioning_sandbox`. Sur un environnement sans worker de
+          // file, la ligne `trial_provisionings` reste `pending` POUR TOUJOURS
+          // et le prospect attend un espace qui n'arrivera jamais — mesuré en
+          // production le 2026-11-10 : `success:true` puis `/trial/status`
+          // bloqué sur `pending`.
+          //
+          // On ne peut donc pas annoncer un succès sur la seule réponse du
+          // POST : on vérifie que l'espace existe VRAIMENT avant de rendre la
+          // main à l'écran de suivi. Un échec honnête (contact support) vaut
+          // mieux qu'un spinner terminal.
+          const fallbackToken =
+            typeof fallback.trialData?.data?.provisioning_token === 'string'
+              ? fallback.trialData.data.provisioning_token
+              : null;
+
+          const confirmed = fallbackToken
+            ? await confirmProvisioning(fallbackToken)
+            : false;
+
+          if (confirmed) {
+            attempt = fallback;
+          } else {
+            console.error(
+              JSON.stringify({
+                event: 'marketing.signup.provisioning_not_confirmed',
+                service: 'leopardo-web',
+                // Jamais d'e-mail en clair dans les logs (BOS-002 / #8144).
+                hasToken: Boolean(fallbackToken),
+              })
+            );
+
+            return NextResponse.json(
+              {
+                success: false,
+                provisioned: false,
+                error: 'PROVISIONING_NOT_READY',
+                data: {
+                  id: lead.id,
+                  email,
+                  nextStep: 'contact_support',
+                  confirmationSent: lead.emailForwarded,
+                  crmForwarded: lead.crmForwarded,
+                  leadPersisted: lead.persisted,
+                },
+              },
+              { status: 503 }
+            );
+          }
         }
       }
 
