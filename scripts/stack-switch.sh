@@ -88,6 +88,27 @@ ADMIN_URL="$(jq -r --arg s "$TARGET" '.stacks[$s].admin.url // empty' "$REGISTRY
 
 [[ -n "$BASE_URL" ]] || die "Stack $TARGET sans api.base_url — provisionnement incomplet (voir docs/ops/${TIER^^}_STACK_ROTATION.md § Onboarding)."
 
+# ── Garde-fou DEV : la cible doit avoir un FRONT ─────────────────────────────
+# Incident #9360 (2026-11-10) : la bascule vers la stack B a été enregistrée
+# (DEV_ACTIVE_STACK=b, DEV_API_BASE_URL=…leopardo-dev-b…) alors que B n'avait
+# AUCUN front (`web.url: null`, `admin.url: null`). Le front Vercel
+# `gestionemployer-backend.vercel.app` — qui appartient à la stack A — s'est
+# donc retrouvé à proxifier vers l'API de B, tombée depuis : 502
+# `backend_unavailable` sur TOUTE route /api/v1/*, espace de travail du
+# responsable inaccessible, aucun parcours possible.
+#
+# La sonde de santé ci-dessous ne suffit pas : elle valide l'API, jamais
+# l'existence du front. Une stack sans front est une cible INCOMPLÈTE — la
+# basculer dessus coupe l'accès utilisateur même si son API répond 200.
+# On refuse donc par défaut, et `--force` reste la soupape assumée (débogage).
+if [[ "$TIER" == "dev" && -z "$WEB_URL" ]]; then
+  if [[ "$FORCE" -eq 1 ]]; then
+    warn "Stack $TARGET sans web.url (front absent) — --force accepté : l'accès utilisateur sera coupé tant qu'aucun front ne pointe cette API (#9360)."
+  else
+    die "Stack $TARGET sans web.url : cible INCOMPLÈTE (aucun front). Basculer dessus couperait l'accès utilisateur (#9360). Provisionnez le front (Vercel/Pages) et renseignez web.url/admin.url, ou utilisez --force en connaissance de cause."
+  fi
+fi
+
 if [[ "$STATUS" != "ready" && "$STATUS" != "active" ]]; then
   if [[ "$FORCE" -eq 1 ]]; then
     warn "Stack $TARGET au statut '$STATUS' — --force accepté."
