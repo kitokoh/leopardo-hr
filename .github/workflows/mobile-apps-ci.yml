@@ -140,6 +140,13 @@ jobs:
         shell: bash
         run: 'bash ./dev-hub/tools/check-mobile-app-identity.sh'
 
+      - name: Validate mobile stock web/mobile parity (#9275)
+        # Règle produit : le mobile reste une OPTION. Tout endpoint de stock
+        # appelé par un écran mobile doit avoir une surface web documentée
+        # dans docs/mobile/STOCK_MOBILE.md.
+        shell: bash
+        run: 'bash ./dev-hub/tools/check-mobile-stock-parity.sh'
+
       - name: Validate mobile release readiness
         shell: pwsh
         run: '& ./dev-hub/tools/validate-mobile-release-readiness.ps1'

@@ -89,6 +89,15 @@ class RestaurantHubScreen extends ConsumerWidget {
             subtitle: l10n.restaurantMobileHubManagerDesc,
             onTap: () => context.push('/restaurant/manager'),
           ),
+          const SizedBox(height: 14),
+          // #9273 — stock : niveaux, mouvements, réception et ajustement.
+          // Option mobile : les mêmes gestes existent en web.
+          _HubCard(
+            icon: Icons.inventory_2_outlined,
+            title: l10n.stockMobileTitle,
+            subtitle: l10n.stockMobileSubtitle,
+            onTap: () => context.push('/restaurant/stock'),
+          ),
           const SizedBox(height: 20),
           Text(
             l10n.restaurantMobileHubFooter,

@@ -65,6 +65,12 @@ class StoreRetailStockMovementRequest extends FormRequest
             'reference_type' => ['nullable', 'string', 'max:80'],
             'reference_id' => ['nullable', 'integer', 'min:1'],
             'note' => ['nullable', 'string', 'max:2000'],
+            // #9269 — cout d'acquisition unitaire (minor units), base du cout
+            // moyen pondere. Absent : le cout moyen ne bouge pas.
+            'unit_cost_minor' => ['nullable', 'integer', 'min:0'],
+            // #9270 — cle de deduplication du rejeu offline. Un rejeu avec la
+            // meme cle ne reapplique pas le delta.
+            'idempotency_key' => ['nullable', 'string', 'min:8', 'max:120'],
         ];
     }
 }

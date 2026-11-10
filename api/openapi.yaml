@@ -39989,6 +39989,52 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Validation422'
+  /retail/stock/transfers:
+    post:
+      operationId: api_post_retail_stock_transfers
+      tags:
+      - Retail
+      summary: Transferer du stock entre deux emplacements (atomique)
+      description: >-
+        Cree les deux mouvements transfer_out et transfer_in dans une seule
+        transaction, lies par le meme reference_id. Un stock source insuffisant
+        annule tout (422), jamais de sortie sans entree.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - from_location_id
+              - to_location_id
+              - product_id
+              - quantity
+              properties:
+                from_location_id:
+                  type: integer
+                to_location_id:
+                  type: integer
+                product_id:
+                  type: integer
+                quantity:
+                  type: number
+                  description: Quantite strictement positive, 3 decimales max
+                note:
+                  type: string
+                  nullable: true
+                  maxLength: 2000
+      responses:
+        '201':
+          description: Transfert enregistre (deux mouvements + niveaux a jour)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
   /retail/stock/alerts:
     get:
       operationId: api_get_retail_stock_alerts

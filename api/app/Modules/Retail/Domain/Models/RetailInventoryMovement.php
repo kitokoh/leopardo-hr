@@ -25,11 +25,13 @@ use Illuminate\Support\Carbon;
  * @property int $product_id
  * @property int|null $stock_level_id
  * @property numeric-string $quantity_delta
+ * @property int|null $unit_cost_minor Cout d'acquisition unitaire (minor units) - base du cout moyen pondere (#9269)
  * @property RetailStockReasonCode $reason_code
  * @property string|null $reference_type
  * @property int|null $reference_id
  * @property string|null $note
  * @property int|null $user_id
+ * @property string|null $idempotency_key Cle de deduplication du rejeu offline (#9270)
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -49,11 +51,13 @@ class RetailInventoryMovement extends Model
         'product_id',
         'stock_level_id',
         'quantity_delta',
+        'unit_cost_minor',
         'reason_code',
         'reference_type',
         'reference_id',
         'note',
         'user_id',
+        'idempotency_key',
     ];
 
     /**
@@ -63,6 +67,7 @@ class RetailInventoryMovement extends Model
     {
         return [
             'quantity_delta' => 'decimal:3',
+            'unit_cost_minor' => 'integer',
             'reason_code' => RetailStockReasonCode::class,
         ];
     }

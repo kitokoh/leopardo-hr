@@ -66,6 +66,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/stock/movements', [RetailStockController::class, 'movements']);
         Route::get('/stock/alerts', [RetailStockController::class, 'alerts']);
 
+        // #9268 — transfert inter-emplacements : DEUX mouvements atomiques
+        // (transfer_out puis transfer_in) lies par le meme reference_id. Un
+        // stock source insuffisant annule tout (pas de sortie sans entree).
+        Route::post('/stock/transfers', [RetailStockController::class, 'storeTransfer']);
+
         // POS v1 (#7674) : sessions de caisse (une seule session ouverte par
         // emplacement), commandes de vente, paiements multi-moyens (le
         // passage à completed décrémente le stock via RetailStockService).
