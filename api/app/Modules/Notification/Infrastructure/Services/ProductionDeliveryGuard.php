@@ -34,6 +34,17 @@ class ProductionDeliveryGuard
 {
     public const ISSUE_MAILER_LOG = 'mailer_log_no_real_delivery';
 
+    /**
+     * #9317 — le domaine d'envoi (`MAIL_FROM_ADDRESS`) ne résout pas (NXDOMAIN)
+     * alors que le transport exige un domaine vérifié chez le fournisseur.
+     *
+     * Déclaré ici et non dans `MailTransportDiagnostics` : c'est un code
+     * d'ISSUE du guard, consommé par `issues()` et par les tests. Il était
+     * utilisé sans être déclaré — `Access to undefined constant` au premier
+     * appel, ce qui faisait échouer `PHPStan — Modules Architecture`.
+     */
+    public const ISSUE_MAILER_FROM_DOMAIN_UNRESOLVED = 'mailer_from_domain_unresolved';
+
     public const ISSUE_SMTP_SANDBOX_HOST = 'mailer_smtp_sandbox_host';
 
     public const ISSUE_MAILGUN_SANDBOX_DOMAIN = 'mailer_mailgun_sandbox_domain';
