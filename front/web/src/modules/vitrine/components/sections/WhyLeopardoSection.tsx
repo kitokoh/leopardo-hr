@@ -41,8 +41,8 @@ const copyByLocale: Record<AppLocale, WhyLeopardoCopy> = {
         text: 'Données exportables, API ouverte, hébergement au choix. Si vous partez un jour, vous partez avec tout — mais rien ne vous y oblige.',
       },
     ],
-    ctaPrimary: { label: 'Comparer cloud et auto-hébergement', href: '/pricing' },
-    ctaSecondary: { label: 'Découvrir les packs métiers', href: '/restaurateur' },
+    ctaPrimary: { label: 'Comparer cloud et auto-hébergement', href: '/business/pricing' },
+    ctaSecondary: { label: 'Découvrir les packs métiers', href: '/business/restaurateur' },
   },
   en: {
     badge: 'Why Leopardo',
@@ -64,8 +64,8 @@ const copyByLocale: Record<AppLocale, WhyLeopardoCopy> = {
         text: 'Exportable data, open API, hosting of your choice. If you ever leave, you leave with everything — but nothing forces you to.',
       },
     ],
-    ctaPrimary: { label: 'Compare cloud vs self-hosting', href: '/pricing' },
-    ctaSecondary: { label: 'Explore the business packs', href: '/restaurateur' },
+    ctaPrimary: { label: 'Compare cloud vs self-hosting', href: '/business/pricing' },
+    ctaSecondary: { label: 'Explore the business packs', href: '/business/restaurateur' },
   },
   tr: {
     badge: 'Neden Leopardo',
@@ -87,8 +87,8 @@ const copyByLocale: Record<AppLocale, WhyLeopardoCopy> = {
         text: 'Dışa aktarılabilir veri, açık API, dilediğiniz barındırma. Bir gün ayrılırsanız her şeyinizle ayrılırsınız — ama hiçbir şey sizi zorlamaz.',
       },
     ],
-    ctaPrimary: { label: 'Bulut ve kendi sunucunuzu karşılaştırın', href: '/pricing' },
-    ctaSecondary: { label: 'İş paketlerini keşfedin', href: '/restaurateur' },
+    ctaPrimary: { label: 'Bulut ve kendi sunucunuzu karşılaştırın', href: '/business/pricing' },
+    ctaSecondary: { label: 'İş paketlerini keşfedin', href: '/business/restaurateur' },
   },
   ar: {
     badge: 'لماذا ليوباردو',
@@ -110,8 +110,8 @@ const copyByLocale: Record<AppLocale, WhyLeopardoCopy> = {
         text: 'بيانات قابلة للتصدير، واجهة API مفتوحة، واستضافة من اختيارك. إن غادرت يوما تغادر بكل شيء — ولا شيء يجبرك على ذلك.',
       },
     ],
-    ctaPrimary: { label: 'قارن بين السحابة والاستضافة الذاتية', href: '/pricing' },
-    ctaSecondary: { label: 'اكتشف حزم الأعمال', href: '/restaurateur' },
+    ctaPrimary: { label: 'قارن بين السحابة والاستضافة الذاتية', href: '/business/pricing' },
+    ctaSecondary: { label: 'اكتشف حزم الأعمال', href: '/business/restaurateur' },
   },
 };
 

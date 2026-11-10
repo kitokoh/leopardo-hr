@@ -88,7 +88,7 @@ export function RestaurantSolutionWizard() {
           email: leadEmail.trim(),
           consent: leadConsent,
           locale,
-          page: '/restaurateur',
+          page: '/business/restaurateur',
           data: {
             solution: 'restaurant',
             answers,

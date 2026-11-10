@@ -180,14 +180,15 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  // #7492 — session active : la page d'accueil vitrine renvoie vers l'espace
+  // #7492 — session active : la page d'accueil VITRINE (/business depuis
+  // #9358) renvoie vers l'espace
   // (demande propriétaire : « s'il y a une session active, même s'il veut
   // aller vers la page vitrine, ça le renvoie directement vers son espace »).
   // Cookie de forme valide requis : si le token est PÉRIMÉ, le dashboard
   // appellera l'API, recevra 401 et renverra vers /auth/login — pas de
   // boucle, `/auth/login` n'étant pas gardé par ce proxy (vérification de la
   // session côté client sur la page de connexion).
-  if (pathname === '/' && isValidToken) {
+  if (pathname === '/business' && isValidToken) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
@@ -263,35 +264,15 @@ export const config = {
     '/chat/:path*', // BOS-CHAT (#8751) messagerie horizontale — gate session
     '/demandes-publiques/:path*', // BOS-CHAT (#8760) boîte de réception publique — gate session
     '/library-admin/:path*', // BC-40 LIBRARY (#9224) back-office bibliothèque — gate session
-    // Vitrine landing — ?lang= → en-tête x-vitrine-lang (issue #4004).
-    // Routes statiques (exactes) + préfixes dynamiques (source
-    // VITRINE_LANG_PREFIXES, garde protected-prefixes.test.ts).
-    '/',
-    '/employes',
-    '/documents',
+    // Vitrine BUSINESS — ?lang= → en-tête x-vitrine-lang (issue #4004).
+    // Depuis #9358 la vitrine commerciale vit sous `/business` : une seule
+    // entrée de matcher couvre ses 36 pages (l'ancienne liste énumérait
+    // chaque route à la racine, ce qui n'est plus vrai).
+    '/business',
+    '/business/:path*',
+    // Portail client des documents partagés (issue #5233) : route PUBLIQUE
+    // restée à la racine (le token de partage est la credential).
     '/documents/:path*',
-    '/comptabilite',
-    '/marketing',
-    '/integrations',
-    '/pricing',
-    '/about',
-    '/changelog',
-    '/docs',
-    '/download',
-    '/contact',
-    '/demo',
-    '/faq',
-    '/testimonials',
-    '/videos',
-    '/branding',
-    '/careers',
-    '/mobile',
-    '/signup',
-    '/restaurateur', // vitrine « Je suis restaurateur » (BC-25, ex-/restaurant)
-    '/blog/:path*',
-    '/guides/:path*',
-    '/case-studies/:path*',
-    '/checkout/:path*',
     // #7650 — CSP enforce + nonce : le proxy doit voir TOUTES les routes HTML
     // (auth, shop, kiosk, order, portails publics…), pas seulement la zone
     // dashboard et la vitrine. Exclusions : routes API Next (`/api/*`, pas de

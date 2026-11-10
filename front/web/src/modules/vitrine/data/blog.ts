@@ -72,7 +72,7 @@ Pour garder vos meilleurs talents:
 ## Conclusion
 
 Une bonne gestion RH est la clé du succès d'une startup. En suivant ces étapes, vous pouvez construire une équipe forte et engagée.`,
-    image: '/blog/startup-rh.svg',
+    image: '/business/blog/startup-rh.svg',
     date: new Date('2024-01-15'),
     archived: true,
     author: {
@@ -139,7 +139,7 @@ Assurez-vous que votre équipe:
 ## Conclusion
 
 La migration de Excel vers un logiciel de paie peut sembler intimidante, mais avec une bonne planification, c'est un processus fluide qui vous fera gagner du temps et réduira les erreurs.`,
-    image: '/blog/paie-excel.svg',
+    image: '/business/blog/paie-excel.svg',
     date: new Date('2024-01-10'),
     archived: true,
     author: {
@@ -194,7 +194,7 @@ La technologie transforme la RH:
 ## Conclusion
 
 2024 sera une année de transformation pour la RH. Les entreprises qui s'adaptent à ces tendances seront mieux positionnées pour le succès.`,
-    image: '/blog/tendances-rh.svg',
+    image: '/business/blog/tendances-rh.svg',
     date: new Date('2024-01-05'),
     archived: true,
     author: {
@@ -249,7 +249,7 @@ La technologie est votre allié:
 ## Conclusion
 
 En suivant ces conseils, vous pouvez économiser des heures chaque semaine et vous concentrer sur les tâches stratégiques.`,
-    image: '/blog/productivite.svg',
+    image: '/business/blog/productivite.svg',
     date: new Date('2023-12-28'),
     archived: true,
     author: {
@@ -309,7 +309,7 @@ Les employés ont le droit de:
 ## Conclusion
 
 La conformité RGPD est essentielle. En mettant en place les bonnes mesures, vous protégez vos employés et votre entreprise.`,
-    image: '/blog/rgpd.svg',
+    image: '/business/blog/rgpd.svg',
     date: new Date('2023-12-20'),
     archived: true,
     author: {
@@ -365,7 +365,7 @@ Vous pouvez mesurer la culture par:
 ## Conclusion
 
 Une bonne culture d'entreprise est un investissement qui paie. Elle crée un environnement où les employés veulent travailler et où l'entreprise prospère.`,
-    image: '/blog/culture.svg',
+    image: '/business/blog/culture.svg',
     date: new Date('2023-12-15'),
     archived: true,
     author: {
@@ -429,7 +429,7 @@ Les coûts incluent:
 ## Conclusion
 
 Le pointage biométrique est une solution moderne qui améliore la sécurité et l'efficacité. Avec une bonne implémentation, c'est un investissement rentable.`,
-    image: '/blog/biometrique.svg',
+    image: '/business/blog/biometrique.svg',
     date: new Date('2023-12-10'),
     archived: true,
     author: {
@@ -493,7 +493,7 @@ Vous devez:
 ## Conclusion
 
 Une gestion efficace des absences améliore la satisfaction des employés et réduit les erreurs administratives.`,
-    image: '/blog/absences.svg',
+    image: '/business/blog/absences.svg',
     date: new Date('2023-12-05'),
     archived: true,
     author: {
@@ -554,7 +554,7 @@ Optimisez votre processus:
 ## Conclusion
 
 Le recrutement digital est essentiel pour attirer les meilleurs talents. En utilisant les bons canaux et stratégies, vous pouvez construire une équipe exceptionnelle.`,
-    image: '/blog/recrutement.svg',
+    image: '/business/blog/recrutement.svg',
     date: new Date('2023-11-30'),
     archived: true,
     author: {
@@ -615,7 +615,7 @@ Mesurez l'impact:
 ## Conclusion
 
 Investir dans la formation de vos employés est un investissement dans l'avenir de votre entreprise. Cela crée une équipe plus compétente et engagée.`,
-    image: '/blog/formation.svg',
+    image: '/business/blog/formation.svg',
     date: new Date('2023-11-25'),
     archived: true,
     author: {
@@ -789,7 +789,7 @@ Seulement s'il embarque réellement le barème IRG, les règles CNAS et les éta
 La paie en Algérie est exigeante mais parfaitement structurable : un cadre légal stable (loi 90-11), deux piliers de prélèvement (CNAS puis IRG), un calendrier déclaratif connu d'avance. La clé est un référentiel de rubriques rigoureux, des barèmes versionnés et une traçabilité de bout en bout.
 
 Envie de voir comment une suite métier gère ce cycle de bout en bout — du pointage au bulletin, avec des règles Algérie en statut pilote ? [Essayez Leopardo gratuitement pendant 14 jours, sans carte bancaire](/signup), ou réservez une [démo guidée](/demo) : l'onboarding prend moins de 30 minutes.`,
-    image: '/blog/paie-algerie.svg',
+    image: '/business/blog/paie-algerie.svg',
     date: new Date('2026-09-18'),
     author: {
       name: 'Ahmed Benali',
@@ -960,7 +960,7 @@ Oui, à condition d'avoir des barèmes à jour, des plafonds paramétrés et une
 La gestion de la paie au Sénégal est un système cohérent une fois qu'on en connaît les pièces : CCNI pour le cadre, CSS et IPRES pour le social (avec leurs plafonds), IR à parts familiales, TRIMF et CFCE pour le fiscal. Une PME outillée, avec des barèmes versionnés et un pointage fiable en amont, transforme la paie d'une source de stress mensuel en processus prévisible.
 
 Pour voir ce que donne ce cycle complet — pointage, absences, bulletin, export comptable — avec des règles Sénégal en statut pilote : [essayez Leopardo gratuitement pendant 14 jours, sans carte bancaire](/signup), ou demandez une [démo guidée](/demo). L'onboarding prend moins de 30 minutes.`,
-    image: '/blog/paie-senegal.svg',
+    image: '/business/blog/paie-senegal.svg',
     date: new Date('2026-09-18'),
     author: {
       name: 'Fatima Dupont',

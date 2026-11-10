@@ -822,7 +822,7 @@ export const PACKS_HUB_COPY: Record<AppLocale, PacksHubCopy> = {
 };
 
 export function packsHubCardHref(slug: PacksHubCopy['cards'][number]['slug']): string {
-  return slug === 'restaurant' ? '/restaurateur' : `/packs/${slug}`;
+  return slug === 'restaurant' ? '/business/restaurateur' : `/business/packs/${slug}`;
 }
 
 /** #8462 — noms courts localisés des verticales SANS carte hub

@@ -36,7 +36,7 @@ export function HeroSolutionsCTA() {
       className="pointer-events-auto flex flex-col items-center gap-3 pb-6 sm:pb-8"
     >
       <Link
-        href={withLocaleHref('/packs', search)}
+        href={withLocaleHref('/business/packs', search)}
         className="group cta-glow-emerald relative inline-flex min-h-14 items-center gap-3 overflow-hidden rounded-2xl border border-amber-400/40 bg-gradient-to-r from-emerald-700 via-emerald-600 to-amber-600 px-8 py-4 text-base font-bold text-white shadow-2xl shadow-emerald-950/70 ring-1 ring-inset ring-white/25 transition-all duration-300 hover:scale-[1.03] hover:border-amber-300/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300 active:scale-[0.98] sm:px-10"
       >
         <span className="relative z-10 flex items-center gap-2.5">

@@ -23,39 +23,39 @@ export function getFooterHref(sectionIndex: number, linkIndex: number): string |
   const routes: Record<string, string> = {
     // ─── Section 0 : Produit & Modules ───
     '0-0': '/#fonctionnalites',
-    '0-1': '/pricing',
-    '0-2': '/integrations',
-    '0-3': '/integrations#api',
-    '0-4': '/changelog',
-    '0-5': '/download',
-    '0-6': '/mobile',
-    '0-7': '/employes',
-    '0-8': '/comptabilite',
-    '0-9': '/marketing',
+    '0-1': '/business/pricing',
+    '0-2': '/business/integrations',
+    '0-3': '/business/integrations#api',
+    '0-4': '/business/changelog',
+    '0-5': '/business/download',
+    '0-6': '/business/mobile',
+    '0-7': '/business/employes',
+    '0-8': '/business/comptabilite',
+    '0-9': '/business/marketing',
     '0-10': '/decouvrir',
 
     // ─── Section 1 : Ressources & Découverte ───
-    '1-0': '/docs',
-    '1-1': '/guides/rh-startup',
-    '1-2': '/blog',
+    '1-0': '/business/docs',
+    '1-1': '/business/guides/rh-startup',
+    '1-2': '/business/blog',
 
-    '1-3': '/case-studies',
-    '1-4': '/testimonials',
-    '1-5': '/alternatives',
-    '1-6': '/packs',
+    '1-3': '/business/case-studies',
+    '1-4': '/business/testimonials',
+    '1-5': '/business/alternatives',
+    '1-6': '/business/packs',
     // LEOPARDO TOOLBOX — catégorie autonome publique (outils gratuits sans compte)
     '1-7': '/toolbox',
-    '1-8': '/contact?topic=community',
+    '1-8': '/business/contact?topic=community',
     // LEOPARDO LIBRARY — bibliothèque numérique publique (livres, guides, documents)
     '1-9': '/library',
 
     // ─── Section 2 : Entreprise & Écosystème ───
-    '2-0': '/about',
-    '2-1': '/contact',
-    '2-2': '/careers',
-    '2-3': '/branding',
-    '2-4': '/videos',
-    '2-5': '/investir',
+    '2-0': '/business/about',
+    '2-1': '/business/contact',
+    '2-2': '/business/careers',
+    '2-3': '/business/branding',
+    '2-4': '/business/videos',
+    '2-5': '/business/investir',
 
     // ─── Section 3 : Légal & Conformité ───
 
@@ -71,13 +71,13 @@ function getLinkBadge(href: string, badges: VitrineCopy['footer']['badges']): { 
   if (href === '/decouvrir') {
     return { label: badges.public, color: 'bg-amber-500/10 text-amber-300 border-amber-500/30' }
   }
-  if (href === '/packs') {
+  if (href === '/business/packs') {
     return { label: badges.offered, color: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' }
   }
-  if (href === '/pricing') {
+  if (href === '/business/pricing') {
     return { label: badges.trial, color: 'bg-teal-500/10 text-teal-300 border-teal-500/30' }
   }
-  if (href === '/investir') {
+  if (href === '/business/investir') {
     return { label: badges.equity, color: 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30' }
   }
   return null
@@ -147,7 +147,7 @@ export function Footer() {
 
             <div className="flex items-center gap-4 mb-6">
               <Link
-                href="/packs"
+                href="/business/packs"
                 title={t(locale, 'vitrine.nav.packs')}
                 className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-950/80 to-teal-950/80 border border-emerald-500/30 px-3.5 py-2 text-xs font-bold text-emerald-300 hover:text-emerald-200 hover:border-emerald-400/50 shadow-sm transition-all duration-200 group"
               >
@@ -172,7 +172,7 @@ export function Footer() {
               <ul className="space-y-2">
                 {section.links.map((link, linkIndex) => {
                   const href = getFooterHref(index, linkIndex)
-                  if (!href || (href === '/blog' && !enableBlog)) return null
+                  if (!href || (href === '/business/blog' && !enableBlog)) return null
 
                   const badge = getLinkBadge(href, copy.footer.badges)
 

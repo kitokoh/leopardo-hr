@@ -27,11 +27,11 @@ describe('ZKTecoHookSection (#8072)', () => {
     render(<ZKTecoHookSection locale="fr" />);
     expect(screen.getByRole('link', { name: /Voir le pointage en action/i })).toHaveAttribute(
       'href',
-      '/demo',
+      '/business/demo',
     );
     expect(
       screen.getByRole('link', { name: /Découvrir les apps mobiles/i }),
-    ).toHaveAttribute('href', '/mobile');
+    ).toHaveAttribute('href', '/business/mobile');
   });
 });
 
@@ -51,27 +51,27 @@ describe('VerticalsSection (#8072)', () => {
     render(<VerticalsSection locale="fr" />);
     expect(
       screen.getByRole('link', { name: /Trade international — Voir le pack offert/i }),
-    ).toHaveAttribute('href', '/packs/trade');
+    ).toHaveAttribute('href', '/business/packs/trade');
   });
 
   it('la carte Cagnottes solidaires pointe vers /packs/cagnottes', () => {
     render(<VerticalsSection locale="fr" />);
     expect(
       screen.getByRole('link', { name: /Cagnottes solidaires — Découvrir/i }),
-    ).toHaveAttribute('href', '/packs/cagnottes');
+    ).toHaveAttribute('href', '/business/packs/cagnottes');
   });
 
   it('la carte VTC & Taxi pointe vers /packs/vtc (#8465)', () => {
     render(<VerticalsSection locale="fr" />);
     expect(
       screen.getByRole('link', { name: /VTC & Taxi — Découvrir/i }),
-    ).toHaveAttribute('href', '/packs/vtc');
+    ).toHaveAttribute('href', '/business/packs/vtc');
   });
 
   it('la carte restaurants pointe vers /restaurateur (page orpheline relinkée)', () => {
     render(<VerticalsSection locale="fr" />);
     expect(
       screen.getByRole('link', { name: /Restaurants — Voir la page restaurateurs/i }),
-    ).toHaveAttribute('href', '/restaurateur');
+    ).toHaveAttribute('href', '/business/restaurateur');
   });
 });

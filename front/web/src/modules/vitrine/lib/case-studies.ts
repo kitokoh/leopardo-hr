@@ -21,10 +21,10 @@ export type CaseStudy = {
 };
 
 const moduleMeta: Record<CaseStudyModule, { label: string; href: string }> = {
-  employes: { label: 'Gestion RH', href: '/employes' },
-  documents: { label: 'Documents', href: '/documents' },
-  comptabilite: { label: 'Paie & Comptabilité', href: '/comptabilite' },
-  marketing: { label: 'Marketing', href: '/marketing' },
+  employes: { label: 'Gestion RH', href: '/business/employes' },
+  documents: { label: 'Documents', href: '/business/documents' },
+  comptabilite: { label: 'Paie & Comptabilité', href: '/business/comptabilite' },
+  marketing: { label: 'Marketing', href: '/business/marketing' },
 };
 
 /**

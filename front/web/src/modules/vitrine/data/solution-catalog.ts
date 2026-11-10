@@ -75,7 +75,7 @@ export const SOLUTIONS: readonly SolutionEntry[] = [
   // ── Anneau intérieur : les environnements métier ouverts en pack ──────────
   {
     id: 'restaurant',
-    href: '/restaurateur',
+    href: '/business/restaurateur',
     osLabel: {
       fr: 'Restaurant OS',
       en: 'Restaurant OS',
@@ -147,7 +147,7 @@ export const SOLUTIONS: readonly SolutionEntry[] = [
   },
   {
     id: 'travel',
-    href: '/packs/agence-de-voyage',
+    href: '/business/packs/agence-de-voyage',
     packSlug: 'agence-de-voyage',
     osLabel: { fr: 'Travel OS', en: 'Travel OS', tr: 'Seyahat OS', ar: 'نظام السفر' },
     // Profils : rôles MÉTIER déclarés par le manifeste `travelagency`
@@ -181,19 +181,19 @@ export const SOLUTIONS: readonly SolutionEntry[] = [
   },
   {
     id: 'fuel',
-    href: '/packs/station-service',
+    href: '/business/packs/station-service',
     packSlug: 'station-service',
     osLabel: { fr: 'Fuel Station OS', en: 'Fuel Station OS', tr: 'Akaryakıt OS', ar: 'نظام محطات الوقود' },
   },
   {
     id: 'education',
-    href: '/packs/ecole',
+    href: '/business/packs/ecole',
     packSlug: 'ecole',
     osLabel: { fr: 'Education OS', en: 'Education OS', tr: 'Eğitim OS', ar: 'نظام التعليم' },
   },
   {
     id: 'mobility',
-    href: '/packs/vtc',
+    href: '/business/packs/vtc',
     packSlug: 'vtc',
     osLabel: { fr: 'Mobility OS', en: 'Mobility OS', tr: 'Mobilite OS', ar: 'نظام التنقّل' },
   },
@@ -201,7 +201,7 @@ export const SOLUTIONS: readonly SolutionEntry[] = [
   // ── Anneau extérieur : autres environnements et socle partagé ─────────────
   {
     id: 'trade',
-    href: '/trade',
+    href: '/business/trade',
     osLabel: {
       fr: 'International Trade OS',
       en: 'International Trade OS',
@@ -273,13 +273,13 @@ export const SOLUTIONS: readonly SolutionEntry[] = [
   },
   {
     id: 'community',
-    href: '/packs/cagnottes',
+    href: '/business/packs/cagnottes',
     packSlug: 'cagnottes',
     osLabel: { fr: 'Community OS', en: 'Community OS', tr: 'Topluluk OS', ar: 'نظام المجتمع' },
   },
   {
     id: 'hr',
-    href: '/employes',
+    href: '/business/employes',
     osLabel: {
       fr: 'HR & Payroll OS',
       en: 'HR & Payroll OS',
@@ -351,7 +351,7 @@ export const SOLUTIONS: readonly SolutionEntry[] = [
   },
   {
     id: 'accounting',
-    href: '/comptabilite',
+    href: '/business/comptabilite',
     osLabel: {
       fr: 'Accounting OS',
       en: 'Accounting OS',
@@ -423,7 +423,7 @@ export const SOLUTIONS: readonly SolutionEntry[] = [
   },
   {
     id: 'documents',
-    href: '/documents',
+    href: '/business/documents',
     osLabel: {
       fr: 'Documents OS',
       en: 'Documents OS',

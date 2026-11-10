@@ -111,8 +111,8 @@ describe('sitemap integrity (#3807)', () => {
   });
 
   it('publie les études de cas individuelles', () => {
-    expect(urls).toContain('https://www.leopardo-rh.com/case-studies/techcorp-algerie');
-    expect(urls).toContain('https://www.leopardo-rh.com/case-studies/pharmaplus-casablanca');
+    expect(urls).toContain('https://www.leopardo-rh.com/business/case-studies/techcorp-algerie');
+    expect(urls).toContain('https://www.leopardo-rh.com/business/case-studies/pharmaplus-casablanca');
   });
 
   it('RESTO-903 (#7748) : publie l’annuaire et les profils publics /restaurants/{slug}', () => {
@@ -141,14 +141,14 @@ describe('sitemap integrity (#3807)', () => {
   it('chaque entrée porte des alternates hreflang localisées', () => {
     const pricing = entries.find((entry) => entry.url.endsWith('/pricing'));
     expect(pricing?.alternates?.languages).toEqual({
-      fr: 'https://www.leopardo-rh.com/pricing',
-      en: 'https://www.leopardo-rh.com/pricing?lang=en',
-      tr: 'https://www.leopardo-rh.com/pricing?lang=tr',
-      ar: 'https://www.leopardo-rh.com/pricing?lang=ar',
+      fr: 'https://www.leopardo-rh.com/business/pricing',
+      en: 'https://www.leopardo-rh.com/business/pricing?lang=en',
+      tr: 'https://www.leopardo-rh.com/business/pricing?lang=tr',
+      ar: 'https://www.leopardo-rh.com/business/pricing?lang=ar',
       // #AI-SEO : variante de repli pour les langues non couvertes — doit
       // pointer la version FR (sans ?lang=), alignée sur seo.ts et le layout
       // racine.
-      'x-default': 'https://www.leopardo-rh.com/pricing',
+      'x-default': 'https://www.leopardo-rh.com/business/pricing',
     });
   });
 });

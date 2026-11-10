@@ -8,7 +8,7 @@
  * `/_next/image?url=/blog/xxx.svg` répond **400** (« image type is not allowed »)
  * et l'image ne s'affiche pas.
  *
- * Nos visuels de contenu sont des SVG first-party (`/blog/*.svg` pour les
+ * Nos visuels de contenu sont des SVG first-party (`/business/blog/*.svg` pour les
  * couvertures d'articles, `/avatars/*.svg` pour les équipes et les auteurs) :
  * vecteurs, donc rien à optimiser. La bonne réponse est celle que Next
  * recommande lui-même dans son message d'erreur : `unoptimized`, qui sert le

@@ -8,7 +8,7 @@ import { trackingAllowed } from './consent';
  *
  * Avant cette tranche, le tunnel n'émettait qu'UN seul événement (`trackSignup`,
  * à la soumission réussie du formulaire) : les étapes intermédiaires — ouverture
- * de `/signup`, envoi du code, vérification du code, espace provisionné — étaient
+ * de `/business/signup`, envoi du code, vérification du code, espace provisionné — étaient
  * invisibles. On ne pouvait donc pas distinguer « personne n'ouvre la page » de
  * « tout le monde abandonne à l'écran du code », alors que les campagnes
  * publicitaires arrivent (#7496).
@@ -20,7 +20,7 @@ import { trackingAllowed } from './consent';
  *    rattacher les événements de l'entretien (#7493) et le lead CRM.
  * 2. **L'attribution ne se perd plus.** `source` + `utm_*` sont captés au premier
  *    écran puis conservés pour tout le tunnel : auparavant ils étaient relus de
- *    `window.location` à chaque appel, donc un passage vitrine → `/signup` (ou un
+ *    `window.location` à chaque appel, donc un passage vitrine → `/business/signup` (ou un
  *    retour de Google avec `?google=1`) les faisait disparaître.
  *
  * Règle de sûreté (critère 4 de #7496) : **aucune donnée sensible** dans les

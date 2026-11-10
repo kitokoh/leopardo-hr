@@ -117,13 +117,13 @@ describe('HeroSolutionsCTA — un SEUL bouton, sous la constellation', () => {
     const cta = screen.getByTestId('hero-solutions-cta');
     const links = cta.querySelectorAll('a');
     expect(links).toHaveLength(1);
-    expect(links[0]).toHaveAttribute('href', '/packs');
+    expect(links[0]).toHaveAttribute('href', '/business/packs');
   });
 
   it('n’expose plus de second bouton ni de réassurance commerciale', () => {
     render(<HeroSolutionsCTA />);
     const cta = screen.getByTestId('hero-solutions-cta');
-    expect(cta.querySelector('a[href="/signup"]')).toBeNull();
+    expect(cta.querySelector('a[href="/business/signup"]')).toBeNull();
     const text = cta.textContent ?? '';
     expect(text).not.toMatch(/free pack/i);
     expect(text).not.toMatch(/no credit card/i);
@@ -158,7 +158,7 @@ describe('SolutionCard — portail et fermeture fiable', () => {
     expect(dialog).toHaveAttribute('aria-modal', 'true');
     expect(dialog.getAttribute('aria-labelledby')).toBeTruthy();
     expect(dialog.querySelector(`a[href="${detail!.href}"]`)).not.toBeNull();
-    expect(dialog.querySelector('a[href="/signup"]')).not.toBeNull();
+    expect(dialog.querySelector('a[href="/business/signup"]')).not.toBeNull();
   });
 
   it('est rendu dans document.body (portail), hors de la pile du héros', () => {
@@ -281,11 +281,11 @@ describe('SOLUTIONS (catalogue de la constellation)', () => {
 
   it('ne contient aucune entrée redondante avec le menu (Contact, Pricing…)', () => {
     const hrefs = SOLUTIONS.map((solution) => solution.href);
-    expect(hrefs).not.toContain('/contact');
-    expect(hrefs).not.toContain('/pricing');
-    expect(hrefs).not.toContain('/careers');
-    expect(hrefs).not.toContain('/alternatives');
-    expect(hrefs).not.toContain('/demo');
+    expect(hrefs).not.toContain('/business/contact');
+    expect(hrefs).not.toContain('/business/pricing');
+    expect(hrefs).not.toContain('/business/careers');
+    expect(hrefs).not.toContain('/business/alternatives');
+    expect(hrefs).not.toContain('/business/demo');
   });
 
   it('propose les environnements métier attendus', () => {

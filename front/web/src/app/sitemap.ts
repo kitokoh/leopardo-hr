@@ -64,37 +64,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticPages: MetadataRoute.Sitemap = [
     page('/', 'weekly', 1.0),
-    page('/employes', 'weekly', 0.9),
-    page('/documents', 'weekly', 0.9),
-    page('/comptabilite', 'weekly', 0.9),
-    page('/marketing', 'weekly', 0.9),
-    page('/pricing', 'monthly', 0.8),
-    page('/demo', 'monthly', 0.8),
-    page('/integrations', 'monthly', 0.75),
-    page('/about', 'monthly', 0.7),
-    page('/changelog', 'weekly', 0.65),
-    page('/docs', 'monthly', 0.7),
-    page('/download', 'monthly', 0.75),
-    page('/contact', 'monthly', 0.6),
-    page('/faq', 'monthly', 0.6),
-    page('/testimonials', 'monthly', 0.6),
-    page('/case-studies', 'monthly', 0.6),
-    page('/videos', 'monthly', 0.55),
-    page('/branding', 'monthly', 0.5),
-    page('/careers', 'monthly', 0.5),
-    page('/mobile', 'monthly', 0.6),
+    page('/business/employes', 'weekly', 0.9),
+    page('/business/documents', 'weekly', 0.9),
+    page('/business/comptabilite', 'weekly', 0.9),
+    page('/business/marketing', 'weekly', 0.9),
+    page('/business/pricing', 'monthly', 0.8),
+    page('/business/demo', 'monthly', 0.8),
+    page('/business/integrations', 'monthly', 0.75),
+    page('/business/about', 'monthly', 0.7),
+    page('/business/changelog', 'weekly', 0.65),
+    page('/business/docs', 'monthly', 0.7),
+    page('/business/download', 'monthly', 0.75),
+    page('/business/contact', 'monthly', 0.6),
+    page('/business/faq', 'monthly', 0.6),
+    page('/business/testimonials', 'monthly', 0.6),
+    page('/business/case-studies', 'monthly', 0.6),
+    page('/business/videos', 'monthly', 0.55),
+    page('/business/branding', 'monthly', 0.5),
+    page('/business/careers', 'monthly', 0.5),
+    page('/business/mobile', 'monthly', 0.6),
     // BC-25 : vitrine « Je suis restaurateur » — page publique indexable, elle
     // avait une route mais ni métadonnées dédiées ni entrée sitemap.
-    page('/restaurateur', 'monthly', 0.6),
-    page('/packs', 'monthly', 0.7),
+    page('/business/restaurateur', 'monthly', 0.6),
+    page('/business/packs', 'monthly', 0.7),
     // #8489 (I-02) — point d'entree « Trade » : page publique indexable,
     // priorite haute (porte d'entree unique du Business OS).
-    page('/trade', 'monthly', 0.8),
+    page('/business/trade', 'monthly', 0.8),
     // Pages « Pack offert » par métier (station-service, école, agence de
     // voyage) — même promesse d'entrée grand public que /restaurateur.
-    page('/packs/station-service', 'monthly', 0.6),
-    page('/packs/ecole', 'monthly', 0.6),
-    page('/packs/agence-de-voyage', 'monthly', 0.6),
+    page('/business/packs/station-service', 'monthly', 0.6),
+    page('/business/packs/ecole', 'monthly', 0.6),
+    page('/business/packs/agence-de-voyage', 'monthly', 0.6),
     // RESTO-903 (#7748) : annuaire public des restaurants (page SSR indexable).
     page('/restaurants', 'daily', 0.8),
     // PORTAIL PUBLIC — les annuaires des autres verticales n'existaient pas
@@ -112,10 +112,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // #7593 — mentions légales (page FR, comme privacy/terms).
     page('/mentions-legales', 'yearly', 0.3, false),
     // #7869 : hub SEO d'interception « Alternatives & comparatifs ».
-    page('/alternatives', 'weekly', 0.8),
-    page('/guides/rh-startup', 'monthly', 0.7),
-    page('/guides/checklist-paie', 'monthly', 0.7),
-    page('/guides/planning-employes', 'monthly', 0.7),
+    page('/business/alternatives', 'weekly', 0.8),
+    page('/business/guides/rh-startup', 'monthly', 0.7),
+    page('/business/guides/checklist-paie', 'monthly', 0.7),
+    page('/business/guides/planning-employes', 'monthly', 0.7),
     // Audit expert 2026-08-15 (issue #2608) : pages manquantes ajoutées.
     // #4467 : /blog rejoint le bloc `if (enableBlog)` — la route répond 404
     // quand le flag est off (blog/layout.tsx → notFound()), le sitemap ne
@@ -130,10 +130,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // #3807 : les études de cas individuelles (pages indexables) étaient absentes
   // du sitemap malgré getAllCaseStudySlugs() — crawl 404 évité, URLs exposées.
   const caseStudyPages: MetadataRoute.Sitemap = getAllCaseStudySlugs().map((slug) => ({
-    url: `${siteUrl}/case-studies/${slug}`,
+    url: `${siteUrl}/business/case-studies/${slug}`,
     changeFrequency: 'monthly' as const,
     priority: 0.55,
-    alternates: localizedAlternates(`/case-studies/${slug}`),
+    alternates: localizedAlternates(`/business/case-studies/${slug}`),
   }));
 
   // RESTO-903 (#7748) : profils publics /restaurants/{slug} (SSR indexables,
@@ -157,11 +157,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // #7869 : pages comparatives /alternatives/[slug] (statiques, indexables).
   const alternativePages: MetadataRoute.Sitemap = getAlternativePages('fr').map((p) => ({
-    url: `${siteUrl}/alternatives/${p.slug}`,
+    url: `${siteUrl}/business/alternatives/${p.slug}`,
     lastModified: p.reviewedAt ? new Date(p.reviewedAt) : undefined,
     changeFrequency: 'monthly' as const,
     priority: 0.7,
-    alternates: localizedAlternates(`/alternatives/${p.slug}`),
+    alternates: localizedAlternates(`/business/alternatives/${p.slug}`),
   }));
 
   // LEOPARDO TOOLBOX — catégorie autonome publique (`/toolbox`), indexable et
@@ -251,7 +251,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // #4467 : l'entrée statique `/blog` (liste) rejoint aussi ce gate — elle
   // répondait 404 quand le flag est off alors que le sitemap la publiait.
   if (enableBlog) {
-    const blogIndexPage: MetadataRoute.Sitemap = [page('/blog', 'weekly', 0.7)];
+    const blogIndexPage: MetadataRoute.Sitemap = [page('/business/blog', 'weekly', 0.7)];
     const postsBySlug = new Map<string, BlogPost>();
     for (const locale of locales) {
       for (const post of getBlogPosts(locale)) {
@@ -262,11 +262,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
 
     const blogPages: MetadataRoute.Sitemap = [...postsBySlug.values()].map((post) => ({
-      url: `${siteUrl}/blog/${post.slug}`,
+      url: `${siteUrl}/business/blog/${post.slug}`,
       lastModified: post.date ? new Date(post.date) : undefined,
       changeFrequency: 'monthly' as const,
       priority: 0.6,
-      alternates: localizedAlternates(`/blog/${post.slug}`),
+      alternates: localizedAlternates(`/business/blog/${post.slug}`),
     }));
 
     return [...allStatic, ...blogIndexPage, ...blogPages];

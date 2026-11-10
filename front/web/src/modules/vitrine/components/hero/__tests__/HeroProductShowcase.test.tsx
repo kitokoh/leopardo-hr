@@ -18,7 +18,7 @@ describe('HeroProductShowcase', () => {
   it('renders a static trust badge linking to pricing (cloud or self-hosted)', () => {
     render(<HeroProductShowcase locale="en" />);
     const badge = screen.getByTestId('hero-trust-badge');
-    expect(badge).toHaveAttribute('href', '/pricing');
+    expect(badge).toHaveAttribute('href', '/business/pricing');
     expect(badge.textContent).toMatch(/cloud or self-hosted/i);
     expect(badge.textContent).not.toMatch(/open[ -]?source/i);
   });

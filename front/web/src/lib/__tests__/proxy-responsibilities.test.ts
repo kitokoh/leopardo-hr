@@ -148,7 +148,7 @@ describe('proxy — convention Next 16 + responsabilités préservées (#7305)',
 
   describe('③bis / (accueil vitrine) avec session active → /dashboard (#7492)', () => {
     it('redirige un utilisateur connecté vers son espace', () => {
-      const res = proxy(request('/', { token: sessionCookie }));
+      const res = proxy(request('/business', { token: sessionCookie }));
       expect(res.status).toBe(307);
       expect(res.headers.get('location')).toBe(`${base}/dashboard`);
     });

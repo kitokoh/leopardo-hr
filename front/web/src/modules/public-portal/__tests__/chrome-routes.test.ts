@@ -25,13 +25,13 @@ function routeExists(href: string): boolean {
   if (clean === '' || clean === '/') {
     return (
       fs.existsSync(path.join(appRoot, 'page.tsx')) ||
-      fs.existsSync(path.join(appRoot, '(landing)', 'page.tsx'))
+      fs.existsSync(path.join(appRoot, 'business', 'page.tsx'))
     );
   }
   const segment = clean.replace(/^\//, '');
   return [
     path.join(appRoot, segment, 'page.tsx'),
-    path.join(appRoot, '(landing)', segment, 'page.tsx'),
+    path.join(appRoot, 'business', segment, 'page.tsx'),
     path.join(appRoot, '(dashboard)', segment, 'page.tsx'),
   ].some((candidate) => fs.existsSync(candidate));
 }

@@ -4,7 +4,7 @@
  * Le point d'entree Trade (vitrine) ne cree JAMAIS d'entite : il traduit un
  * choix utilisateur en une intention normalisee, puis delegue aux mecanismes
  * existants de la plateforme :
- *  - `create` -> tunnel d'inscription existant (`/signup`), qui provisionne
+ *  - `create` -> tunnel d'inscription existant (`/business/signup`), qui provisionne
  *    l'espace via `VerifyTrialSignup` / `ProvisionGuidedTrial` ;
  *  - `join`   -> connexion existante (`/auth/login`), puis rattachement a
  *    l'espace DEJA existant (demande d'acces / QR entreprise, #8447) — un
@@ -123,13 +123,13 @@ function withLang(query: string, lang?: string): string {
 /**
  * Cible de l'action « creer » : le tunnel d'inscription existant, avec le
  * mode d'activite transmis pour pre-remplir la configuration metier.
- * `/signup` ignore les parametres qu'il ne connait pas (fail-closed) — ce
+ * `/business/signup` ignore les parametres qu'il ne connait pas (fail-closed) — ce
  * parametre ne casse donc aucun parcours existant.
  */
 export function tradeCreateHref(mode: TradeMode, lang?: string, profile?: TradeProfile | null): string {
   const params = new URLSearchParams(`trade=${encodeURIComponent(mode)}`);
   if (profile) params.set('profile', profile);
-  return `/signup?${withLang(params.toString(), lang)}`;
+  return `/business/signup?${withLang(params.toString(), lang)}`;
 }
 
 /**

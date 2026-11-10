@@ -1,0 +1,549 @@
+﻿'use client';
+
+import { useState } from 'react';
+import {
+  Navbar,
+  HeroSection,
+  Footer,
+  useScrollReveal,
+  ProductDemoVideo,
+} from '@/modules/vitrine';
+import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import type { AppLocale } from '@/lib/i18n';
+// #7307 — le nombre de moteurs de paie vient de la source unique, pas d'un
+// litteral qui peut diverger d'une page (ou d'une locale) a l'autre.
+import { PAYROLL_RULE_ENGINES_COUNT } from '@/modules/vitrine/data/vitrine-numbers';
+import { motion } from 'framer-motion';
+import { Calendar, Building2, Users, CheckCircle } from 'lucide-react';
+import { FormDataNotice } from '@/modules/vitrine/components/FormDataNotice';
+import { antispamFields } from '@/modules/vitrine/lib/antispam-client';
+import { HoneypotField } from '@/modules/vitrine/components/common/HoneypotField';
+// #7594 — schéma zod branché côté client : messages dans la locale du site (×4).
+import { demoFormSchema, parseZodErrors } from '@/modules/vitrine/lib/validation';
+
+const employeeOptions = ['1-10', '11-50', '51-200', '201-500', '500+'] as const;
+
+interface DemoFormData {
+  name: string;
+  email: string;
+  company: string;
+  phone: string;
+  employees: (typeof employeeOptions)[number] | '';
+  preferredDate: string;
+  message: string;
+}
+
+type DemoCopy = {
+  hero: {
+    headline: string;
+    subheadline: string;
+    cta: string;
+    badge: string;
+  };
+  benefitsTitle: string;
+  benefits: Array<{ title: string; desc: string }>;
+  formTitle: string;
+  successTitle: string;
+  successMessage: string;
+  submitError: string;
+  fields: {
+    name: string;
+    email: string;
+    company: string;
+    phone: string;
+    employees: string;
+    employeesPlaceholder: string;
+    employeeSuffix: string;
+    preferredDate: string;
+    message: string;
+    messagePlaceholder: string;
+  };
+  placeholders: {
+    name: string;
+    email: string;
+    company: string;
+    phone: string;
+  };
+  submit: string;
+  submitting: string;
+};
+
+const demoCopy: Record<AppLocale, DemoCopy> = {
+  fr: {
+    hero: {
+      headline: 'Demandez une demo Leopardo',
+      subheadline: 'Voyez comment la plateforme connecte RH, paie, pointage, mobile et admin dans un seul socle.',
+      cta: 'Remplir le formulaire',
+      badge: 'Demo gratuite',
+    },
+    benefitsTitle: 'Ce que vous decouvrirez',
+    benefits: [
+      { title: 'Gestion complete des employés', desc: 'Pointage, absences, contrats et documents dans une experience unifiee.' },
+      { title: 'Paie multi-pays automatisee', desc: `${PAYROLL_RULE_ENGINES_COUNT} moteurs de regles (Algerie, Canada, CEDEAO, CEMAC, France, Maroc, Senegal, Tunisie, Turquie, Royaume-Uni, Etats-Unis) avec cotisations, IR et bulletins PDF.` },
+      { title: 'Dashboard temps reel', desc: 'KPIs, alertes et donnees operationnelles pour les RH et managers.' },
+      { title: 'Sécurité enterprise', desc: 'Isolation tenant, roles, audit trail, chiffrement et workflows controles.' },
+    ],
+    formTitle: 'Planifiez votre demo',
+    successTitle: 'Demande envoyee',
+    successMessage: 'Notre équipe vous contactera sous 24h pour organiser une demo adaptee a votre contexte.',
+    submitError: 'Erreur lors de la soumission',
+    fields: {
+      name: 'Nom complet *',
+      email: 'Email professionnel *',
+      company: 'Entreprise *',
+      phone: 'Telephone',
+      employees: 'Nombre d employés',
+      employeesPlaceholder: 'Selectionnez',
+      employeeSuffix: 'employés',
+      preferredDate: 'Date preferee',
+      message: 'Message (optionnel)',
+      messagePlaceholder: 'Decrivez vos besoins...',
+    },
+    placeholders: {
+      name: 'Votre nom',
+      email: 'vous@entreprise.com',
+      company: 'Nom de votre entreprise',
+      phone: '+213 5XX XXX XXX',
+    },
+    submit: 'Demander une demo',
+    submitting: 'Envoi en cours...',
+  },
+  en: {
+    hero: {
+      headline: 'Request a Leopardo demo',
+      subheadline: 'See how HR, payroll, attendance, mobile and platform admin work together in one foundation.',
+      cta: 'Fill the form',
+      badge: 'Free demo',
+    },
+    benefitsTitle: 'What you will discover',
+    benefits: [
+      { title: 'Complete employee management', desc: 'Attendance, leave, contracts and documents in one unified experience.' },
+      { title: 'Automated multi-country payroll', desc: `${PAYROLL_RULE_ENGINES_COUNT} rule engines (Algeria, Canada, ECOWAS, CEMAC, France, Morocco, Senegal, Tunisia, Turkey, United Kingdom, United States) with contributions, income tax and PDF pay slips.` },
+      { title: 'Real-time dashboard', desc: 'KPIs, alerts and operational data for HR teams and managers.' },
+      { title: 'Enterprise security', desc: 'Tenant isolation, roles, audit trail, encryption and controlled workflows.' },
+    ],
+    formTitle: 'Schedule your demo',
+    successTitle: 'Request sent',
+    successMessage: 'Our team will contact you within 24 hours to plan a demo tailored to your context.',
+    submitError: 'Unable to submit the request',
+    fields: {
+      name: 'Full name *',
+      email: 'Work email *',
+      company: 'Company *',
+      phone: 'Phone',
+      employees: 'Number of employees',
+      employeesPlaceholder: 'Select',
+      employeeSuffix: 'employees',
+      preferredDate: 'Preferred date',
+      message: 'Message (optional)',
+      messagePlaceholder: 'Describe your needs...',
+    },
+    placeholders: {
+      name: 'Your name',
+      email: 'you@company.com',
+      company: 'Your company name',
+      phone: '+1 555 0100',
+    },
+    submit: 'Request a demo',
+    submitting: 'Sending...',
+  },
+  tr: {
+    hero: {
+      headline: 'Leopardo demosu talep edin',
+      subheadline: 'IK, bordro, devam takibi, mobil ve platform admin alaninin tek bir zeminde nasil calistigini gorun.',
+      cta: 'Formu doldur',
+      badge: 'Ucretsiz demo',
+    },
+    benefitsTitle: 'Neleri goreceksiniz',
+    benefits: [
+      { title: 'Tam calisan yonetimi', desc: 'Devam takibi, izinler, sozlesmeler ve belgeler tek deneyimde.' },
+      { title: 'Cok ulkeli otomatik bordro', desc: `${PAYROLL_RULE_ENGINES_COUNT} kural motoru (Cezayir, Kanada, ECOWAS, CEMAC, Fransa, Fas, Senegal, Tunus, Turkiye, Birlesik Krallik, Amerika Birlesik Devletleri); kesintiler, gelir vergisi ve PDF bordro.` },
+      { title: 'Gercek zamanli panel', desc: 'IK ekipleri ve yoneticiler icin KPI, uyari ve operasyon verileri.' },
+      { title: 'Kurumsal guvenlik', desc: 'Tenant izolasyonu, roller, denetim kaydi, sifreleme ve kontrollu is akislar.' },
+    ],
+    formTitle: 'Demonuzu planlayin',
+    successTitle: 'Talep gonderildi',
+    successMessage: 'Ekibimiz 24 saat icinde sizinle iletisime gecerek uygun demoyu planlayacak.',
+    submitError: 'Talep gonderilemedi',
+    fields: {
+      name: 'Ad soyad *',
+      email: 'Is e-postasi *',
+      company: 'Sirket *',
+      phone: 'Telefon',
+      employees: 'Calisan sayisi',
+      employeesPlaceholder: 'Secin',
+      employeeSuffix: 'calisan',
+      preferredDate: 'Tercih edilen tarih',
+      message: 'Mesaj (opsiyonel)',
+      messagePlaceholder: 'Ihtiyaclarinizi yazin...',
+    },
+    placeholders: {
+      name: 'Adiniz',
+      email: 'siz@sirket.com',
+      company: 'Sirket adiniz',
+      phone: '+90 5XX XXX XX XX',
+    },
+    submit: 'Demo talep et',
+    submitting: 'Gonderiliyor...',
+  },
+  ar: {
+    hero: {
+      headline: 'اطلب عرضا توضيحيا لمنصة Leopardo',
+      subheadline: 'شاهد كيف تعمل الموارد البشرية والرواتب والحضور والتطبيق والإدارة في منصة واحدة.',
+      cta: 'املأ النموذج',
+      badge: 'عرض مجاني',
+    },
+    benefitsTitle: 'ما الذي ستكتشفه',
+    benefits: [
+      { title: 'إدارة كاملة للموظفين', desc: 'الحضور، الإجازات، العقود والمستندات في تجربة موحدة.' },
+      { title: 'رواتب آلية متعددة الدول', desc: `${PAYROLL_RULE_ENGINES_COUNT} محركات قواعد (الجزائر، كندا، إكواس، سيماك، فرنسا، المغرب، السنغال، تونس، تركيا، المملكة المتحدة، الولايات المتحدة) مع الاشتراكات والضريبة وقسائم PDF.` },
+      { title: 'لوحة بيانات فورية', desc: 'مؤشرات وتنبيهات وبيانات تشغيلية لفرق الموارد البشرية والمديرين.' },
+      { title: 'أمان مؤسسي', desc: 'عزل الشركات، الأدوار، سجل التدقيق، التشفير ومسارات عمل مضبوطة.' },
+    ],
+    formTitle: 'خطط العرض التوضيحي',
+    successTitle: 'تم إرسال الطلب',
+    successMessage: 'سيتواصل معك فريقنا خلال 24 ساعة لتنظيم عرض مناسب لسياقك.',
+    submitError: 'تعذر إرسال الطلب',
+    fields: {
+      name: 'الاسم الكامل *',
+      email: 'البريد المهني *',
+      company: 'الشركة *',
+      phone: 'الهاتف',
+      employees: 'عدد الموظفين',
+      employeesPlaceholder: 'اختر',
+      employeeSuffix: 'موظف',
+      preferredDate: 'التاريخ المفضل',
+      message: 'رسالة (اختياري)',
+      messagePlaceholder: 'صف احتياجاتك...',
+    },
+    placeholders: {
+      name: 'اسمك',
+      email: 'you@company.com',
+      company: 'اسم شركتك',
+      phone: '+213 5XX XXX XXX',
+    },
+    submit: 'طلب عرض توضيحي',
+    submitting: 'جار الإرسال...',
+  },
+};
+
+const benefitIcons = [
+  <Users key="users" className="w-6 h-6" />,
+  <Building2 key="building" className="w-6 h-6" />,
+  <Calendar key="calendar" className="w-6 h-6" />,
+  <CheckCircle key="check" className="w-6 h-6" />,
+];
+
+export default function DemoPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const { locale, direction } = useVitrineLocale();
+  const copy = demoCopy[locale] ?? demoCopy.fr;
+  useScrollReveal();
+
+  const [formData, setFormData] = useState<DemoFormData>({
+    name: '',
+    email: '',
+    company: '',
+    phone: '',
+    employees: '',
+    preferredDate: '',
+    message: '',
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    // #7594 — validation zod côté client, messages localisés dans la langue
+    // du site (le HTML5 seul parle la langue du navigateur).
+    const validation = demoFormSchema(locale).safeParse(formData);
+    if (!validation.success) {
+      const errors: Record<string, string> = {};
+      for (const { field, message } of parseZodErrors(validation.error)) {
+        if (!errors[field]) errors[field] = message;
+      }
+      setFieldErrors(errors);
+      return;
+    }
+    setFieldErrors({});
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch('/api/forms/demo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...antispamFields(),
+          ...formData,
+          locale,
+          page: '/business/demo',
+          timestamp: new Date().toISOString(),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || copy.submitError);
+      }
+
+      setIsSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : copy.submitError);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const inputClass =
+    'w-full px-4 py-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all';
+
+  return (
+    <div
+      dir={direction}
+      className={`min-h-screen bg-white `}
+    >
+      <Navbar />
+
+      <HeroSection
+        headline={copy.hero.headline}
+        subheadline={copy.hero.subheadline}
+        ctaPrimary={{ text: copy.hero.cta, href: '#demo-form' }}
+        badge={{
+          text: copy.hero.badge,
+          icon: <Calendar className="w-3 h-3" />,
+        }}
+      />
+
+      <ProductDemoVideo locale={locale} />
+
+      <section id="demo-form" className="relative py-24 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-slate-50/50 to-white dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950" />
+
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            <motion.div
+              initial={{ opacity: 0, x: direction === 'rtl' ? 20 : -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mb-8 tracking-tight">
+                {copy.benefitsTitle}
+              </h2>
+
+              <div className="space-y-6">
+                {copy.benefits.map((item, i) => (
+                  <motion.div
+                    key={item.title}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: i * 0.1 }}
+                    className="flex gap-4"
+                  >
+                    <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 flex items-center justify-center">
+                      {benefitIcons[i]}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-900 dark:text-white mb-1">
+                        {item.title}
+                      </h3>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm">
+                        {item.desc}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: direction === 'rtl' ? -20 : 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              {isSubmitted ? (
+                <div className="p-8 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-center">
+                  <CheckCircle className="w-16 h-16 text-emerald-700 dark:text-emerald-400 mx-auto mb-4" />
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                    {copy.successTitle}
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400">
+                    {copy.successMessage}
+                  </p>
+                </div>
+              ) : (
+                <form
+                  onSubmit={handleSubmit}
+                  className="p-8 rounded-2xl bg-transparent dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800"
+                >
+                  <HoneypotField />
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
+                    {copy.formTitle}
+                  </h3>
+
+                  {error && (
+                    <div
+                      role="alert"
+                      aria-live="assertive"
+                      className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm"
+                    >
+                      {error}
+                    </div>
+                  )}
+
+                  <div className="space-y-4">
+                    <div>
+                      <label htmlFor="demo-name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                        {copy.fields.name}
+                      </label>
+                      <input id="demo-name"
+                        type="text"
+                    name="name"
+                        required
+                        value={formData.name}
+                        onChange={handleChange}
+                        placeholder={copy.placeholders.name}
+                        aria-invalid={fieldErrors.name ? true : undefined}
+                        aria-describedby={fieldErrors.name ? 'demo-name-error' : undefined}
+                        className={inputClass}
+                      />
+                      <p id="demo-name-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.name}</p>
+                    </div>
+
+                    <div>
+                      <label htmlFor="demo-email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                        {copy.fields.email}
+                      </label>
+                      <input id="demo-email"
+                        type="email"
+                    name="email"
+                        required
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder={copy.placeholders.email}
+                        aria-invalid={fieldErrors.email ? true : undefined}
+                        aria-describedby={fieldErrors.email ? 'demo-email-error' : undefined}
+                        className={inputClass}
+                      />
+                      <p id="demo-email-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.email}</p>
+                    </div>
+
+                    <div>
+                      <label htmlFor="demo-company" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                        {copy.fields.company}
+                      </label>
+                      <input id="demo-company"
+                        type="text"
+                    name="company"
+                        required
+                        value={formData.company}
+                        onChange={handleChange}
+                        placeholder={copy.placeholders.company}
+                        aria-invalid={fieldErrors.company ? true : undefined}
+                        aria-describedby={fieldErrors.company ? 'demo-company-error' : undefined}
+                        className={inputClass}
+                      />
+                      <p id="demo-company-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.company}</p>
+                    </div>
+
+                    <div>
+                      <label htmlFor="demo-phone" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                        {copy.fields.phone}
+                      </label>
+                      <input id="demo-phone"
+                        type="tel"
+                    name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        placeholder={copy.placeholders.phone}
+                        aria-invalid={fieldErrors.phone ? true : undefined}
+                        aria-describedby={fieldErrors.phone ? 'demo-phone-error' : undefined}
+                        className={inputClass}
+                      />
+                      <p id="demo-phone-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.phone}</p>
+                    </div>
+
+                    <div>
+                      <label htmlFor="demo-employees" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                        {copy.fields.employees}
+                      </label>
+                      <select
+                        id="demo-employees"
+                        name="employees"
+                        value={formData.employees}
+                        onChange={handleChange}
+                        className={inputClass}
+                      >
+                        <option value="">{copy.fields.employeesPlaceholder}</option>
+                        {employeeOptions.map((opt) => (
+                          <option key={opt} value={opt}>
+                            {opt} {copy.fields.employeeSuffix}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label htmlFor="demo-preferredDate" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                        {copy.fields.preferredDate}
+                      </label>
+                      <input id="demo-preferredDate"
+                        type="date"
+                    name="preferredDate"
+                        value={formData.preferredDate}
+                        onChange={handleChange}
+                        aria-invalid={fieldErrors.preferredDate ? true : undefined}
+                        aria-describedby={fieldErrors.preferredDate ? 'demo-preferredDate-error' : undefined}
+                        className={inputClass}
+                      />
+                      <p id="demo-preferredDate-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.preferredDate}</p>
+                    </div>
+
+                    <div>
+                      <label htmlFor="demo-message" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                        {copy.fields.message}
+                      </label>
+                      <textarea id="demo-message"
+                        name="message"
+                        value={formData.message}
+                        onChange={handleChange}
+                        rows={3}
+                        placeholder={copy.fields.messagePlaceholder}
+                        className={inputClass}
+                      />
+                    </div>
+
+                    <FormDataNotice purpose="demo" />
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full py-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-400 text-white font-bold transition-colors"
+                    >
+                      {isSubmitting ? copy.submitting : copy.submit}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
+}
+

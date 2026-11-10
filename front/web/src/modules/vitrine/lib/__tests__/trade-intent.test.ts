@@ -77,20 +77,20 @@ describe('trade-intent', () => {
   });
 
   it('routes create to the existing signup tunnel with the activity mode', () => {
-    expect(tradeCreateHref('international')).toBe('/signup?trade=international');
-    expect(tradeCreateHref('domestic', 'en')).toBe('/signup?trade=domestic&lang=en');
+    expect(tradeCreateHref('international')).toBe('/business/signup?trade=international');
+    expect(tradeCreateHref('domestic', 'en')).toBe('/business/signup?trade=domestic&lang=en');
   });
 
   it('carries the professional profile through the create link', () => {
     // BOS-O-02 — sans ce parametre, le profil choisi restait une intention
     // purement cosmetique : le tenant etait provisionne sans marche ni profil.
     expect(tradeCreateHref('international', undefined, 'importer')).toBe(
-      '/signup?trade=international&profile=importer',
+      '/business/signup?trade=international&profile=importer',
     );
     expect(tradeCreateHref('domestic', 'fr', 'wholesaler')).toBe(
-      '/signup?trade=domestic&profile=wholesaler&lang=fr',
+      '/business/signup?trade=domestic&profile=wholesaler&lang=fr',
     );
-    expect(tradeCreateHref('domestic', undefined, null)).toBe('/signup?trade=domestic');
+    expect(tradeCreateHref('domestic', undefined, null)).toBe('/business/signup?trade=domestic');
   });
 
   it('routes join to the existing login (no second tenant is created)', () => {
