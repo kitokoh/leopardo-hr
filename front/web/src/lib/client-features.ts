@@ -36,6 +36,7 @@ import {
   Wallet,
   Gift,
   Globe2,
+  BookOpen,
 } from 'lucide-react';
 import type { StoredAuthUser } from '@/lib/i18n';
 export type ClientModuleKey =
@@ -70,6 +71,8 @@ export type ClientModuleKey =
   | 'fleet'
   | 'cameras'
   | 'showcase'
+  // BC-40 LIBRARY (#9241) — administration de la bibliothèque du tenant.
+  | 'library'
   | 'fundraising'
   | 'communication'
   | 'assistant'
@@ -361,6 +364,22 @@ export const CLIENT_MODULES: ClientModule[] = [
     featureKeys: ['showcase', 'company_showcase'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
     upgradeLabel: 'Site vitrine public de l\'entreprise',
+  },
+  // BC-40 LIBRARY (#9241) — administration de la bibliothèque du tenant :
+  // création, édition des métadonnées, upload du fichier et workflow
+  // éditorial (brouillon → publié → archivé). Miroir EXACT du RBAC serveur
+  // (`LibraryResourcePolicy` : `hasManagerRole('principal', 'rh')`) — le
+  // masquage côté UI ne protège rien, l'API répond 403 de toute façon.
+  {
+    key: 'library',
+    href: '/library-admin',
+    label: 'Bibliothèque',
+    group: 'growth',
+    icon: BookOpen,
+    capabilityKeys: ['library', 'can_view_library', 'can_manage_library'],
+    featureKeys: ['library'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Bibliothèque de ressources de l\'entreprise',
   },
   // FUND-090 (#8412) — verticale « Cagnottes solidaires » : le responsable
   // gère ses cagnottes (création, publication, lien public de collecte,
@@ -917,6 +936,9 @@ const MANAGER_MODULE_ROLES: Partial<Record<ClientModuleKey, 'any' | string[]>> =
   crm: ['principal', 'rh'],
   // BC-27 : l'API réserve la vitrine au responsable (`api.manager:principal,rh`).
   showcase: ['principal', 'rh'],
+  // BC-40 (#9241) : miroir de `LibraryResourcePolicy` — gestion réservée à
+  // `principal`/`rh` (création, édition, publication, archivage).
+  library: ['principal', 'rh'],
   // Direction scolaire : principal/rh ou manager sans sous-rôle (propriétaire).
   edu_manager: ['', 'principal', 'rh'],
   // BC-30 (#7792) — direction santé : principal/rh ou manager sans sous-rôle,

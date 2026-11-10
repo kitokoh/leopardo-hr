@@ -26,6 +26,8 @@ const PROTECTED_PREFIXES = [
   '/social-marketing',
   '/restaurant',
   '/showcase',
+  // BC-40 LIBRARY (#9241) — administration de la bibliothèque (zone dashboard).
+  '/library-admin',
   // FUND-090 — gestion des cagnottes, espace tenant (zone dashboard).
   '/fundraising',
   // BC-19 (#7425) — mur de caméras et détail caméra (zone dashboard).
