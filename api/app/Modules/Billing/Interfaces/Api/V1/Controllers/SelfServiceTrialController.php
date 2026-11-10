@@ -184,8 +184,7 @@ class SelfServiceTrialController extends Controller
                 'string',
                 'max:40',
                 'distinct',
-                function (string $attribute, string $value, \Closure $fail): void
-    {
+                function (string $attribute, string $value, \Closure $fail): void {
                     $code = strtolower(trim($value));
                     if (! App::make(SolutionCatalogue::class)->has($code)) {
                         $fail(__('errors.INVALID_SOLUTION', ['solution' => $code]));
@@ -345,8 +344,7 @@ class SelfServiceTrialController extends Controller
             // — voire bloquer la requête indéfiniment. On préfère l'échec
             // rapide (55P03) absorbé par le catch ci-dessous : le prospect
             // reçoit son code OTP et poursuit.
-            DB::transaction(function () use ($email, $validated, $provisioningToken): void
-    {
+            DB::transaction(function () use ($email, $validated, $provisioningToken): void {
                 DB::statement("SET LOCAL lock_timeout = '3s'");
 
                 DB::table('trial_provisionings')->insert([
@@ -712,8 +710,7 @@ class SelfServiceTrialController extends Controller
         string $companyName,
         array $validated,
         ?Employee $existingManager,
-    ): JsonResponse
-    {
+    ): JsonResponse {
         if ($existingManager) {
             // Issue #3945 : pas de double provisioning pour un email déjà
             // enregistré : réponse uniforme uniquement (token aléatoire,
