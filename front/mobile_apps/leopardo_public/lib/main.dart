@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:leopardo_core/core/branding/tenant_theme.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
 import 'core/navigation/app_shell.dart';
 import 'core/providers/app_providers.dart';
+import 'core/theme/public_theme.dart';
 
 /// Entrée de l'application grand public Leopardo (couloir 16).
 ///
@@ -84,8 +84,14 @@ class LeopardoPublicApp extends ConsumerWidget {
 
     return MaterialApp.router(
       title: 'Leopardo',
-      theme: TenantTheme.apply(ThemeData.light(), null),
-      darkTheme: TenantTheme.apply(ThemeData.dark(), null),
+      // #9359 — thème PROPRE à l'app grand public, aligné sur le portail web
+      // (`front/web/tailwind.config.ts`). Avant, `TenantTheme.apply(..., null)`
+      // retournait la ThemeData Material inchangée : l'app n'avait aucune
+      // identité visuelle et ne ressemblait pas à `/` ni à `/decouvrir`.
+      // `TenantTheme` reste utilisé par les apps métier, qui portent la marque
+      // de leur tenant ; ici il n'y a pas de tenant.
+      theme: PublicTheme.light(),
+      darkTheme: PublicTheme.dark(),
       themeMode: ThemeMode.system,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
