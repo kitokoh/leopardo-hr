@@ -16,12 +16,12 @@
 #   2. budget_par_defaut  <  timeout du job `prepare`         (sinon le budget
 #      est inapplicable : le job est tué avant de l'atteindre)
 #
-# Usage : scripts/check-deploy-gate-budget.sh
+# Usage : dev-hub/tools/check-deploy-gate-budget.sh
 # Exit 0 = invariant respecté, 1 = régression.
 
 set -euo pipefail
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 ACTION="$REPO_ROOT/.github/actions/verify-deploy-workflows/action.yml"
 DEPLOY="$REPO_ROOT/.github/workflows/deploy-main.yml"
 

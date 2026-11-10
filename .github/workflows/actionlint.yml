@@ -77,6 +77,17 @@ jobs:
           bash dev-hub/tools/check-deploy-gate-outcome.sh
           bash dev-hub/tools/check-deploy-gate-outcome.sh --self-test
 
+      - name: Deploy gate budget guard (issue #9336)
+        # Échoue si le budget du gate redevient incompatible avec la durée
+        # RÉELLE de la suite backend qu'il attend, ou s'il dépasse le
+        # `timeout-minutes` du job qui le porte (auquel cas il est inapplicable).
+        # Constat #9336 : budget 30 min vs tests 45-82 min, job `prepare`
+        # plafonné à 45 min → gate `pending` → `should_deploy=false` → tous les
+        # runs « Deploy - Leopardo » VERTS sans jamais déployer. Le tier dev est
+        # resté figé 3 jours sur `6020118` et les correctifs d'envoi d'e-mail
+        # déjà mergés n'ont jamais été servis.
+        run: bash dev-hub/tools/check-deploy-gate-budget.sh
+
       - name: Deploy gate verdict — behavioural test (issue #7511)
         # La garde ci-dessus vérifie la STRUCTURE ; ce test exécute le script du
         # gate avec un `core`/`github` simulés et assert les SORTIES réelles
