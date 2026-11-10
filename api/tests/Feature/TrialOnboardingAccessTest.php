@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Jobs\ProvisionDemoTenantJob;
-use App\Modules\Billing\Application\Actions\ActivateTrialDirectly;
+use App\Modules\Billing\Application\Actions\ProvisionGuidedTrial;
 use App\Modules\Billing\Application\Actions\RequestTrialSignup;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
@@ -165,7 +165,10 @@ class TrialOnboardingAccessTest extends TestCase
             $mock->shouldReceive('resolveCompanyName')->andReturn('Agence KO');
         });
 
-        $this->mock(ActivateTrialDirectly::class, function ($mock): void {
+        // `ActivateTrialDirectly` est `final` (donc non mockable) : on fait
+        // échouer le provisioning RÉEL, ce qui exerce aussi le vrai chemin
+        // d'erreur de l'Action au lieu de le contourner.
+        $this->mock(ProvisionGuidedTrial::class, function ($mock): void {
             $mock->shouldReceive('execute')->andThrow(new \RuntimeException('provisioning KO'));
         });
 

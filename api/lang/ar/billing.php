@@ -14,4 +14,7 @@ return [
     // BOS-O-01/03 (#8623/#8625) — guided provisioning messages (i18n guard PA2-I18N-007).
     'invalid_market_intent' => 'نية سوق غير صالحة: الملف الشخصي «:profile» غير متوافق مع السوق «:market».',
     'primary_site_name' => 'المنشأة الرئيسية',
+    // #9323 — التفعيل المباشر: المساحة موجودة، لا حاجة إلى بريد إلكتروني.
+    'trial_direct_activation_ready' => 'مساحتك جاهزة. سجّل الدخول بالبريد الإلكتروني وكلمة المرور اللذين اخترتهما عند التسجيل.',
+    'trial_direct_activation_password_required' => 'مساحتك جاهزة. اختر كلمة المرور للوصول إليها.',
 ];
