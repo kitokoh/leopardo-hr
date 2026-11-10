@@ -411,8 +411,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/tickets/{travelTicket}/print-events', [TravelTicketController::class, 'printHistory']);
         Route::post('/tickets/{travelTicket}/revoke', [TravelTicketController::class, 'revoke']);
         // GET /reports/export (sync legacy) supprimé — le flux canonique est POST /reports/export (asset async, TravelExportController@store).
-        Route::get('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'index']);
-        Route::post('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'store']);
+        // #9098 — `GET`/`POST /webhook-subscriptions` étaient déclarés DEUX fois
+        // dans ce même groupe (ici, puis plus bas) : Laravel ne conserve que la
+        // dernière déclaration, la première implémentation était inatteignable.
+        // Déclaration canonique unique conservée dans le bloc « webhooks
+        // sortants » plus haut ; seul le `DELETE` (absent de ce bloc) reste ici.
         Route::delete('/webhook-subscriptions/{subscription}', [TravelWebhookSubscriptionController::class, 'destroy']);
         Route::get('/cancellation-policies/{travelCancellationPolicy}', [TravelCancellationPolicyController::class, 'show']);
         // #7445 — ce second bloc redéclarait les routes de fidélité, dont
@@ -445,39 +448,32 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/corporate-quotes', [TravelCorporateController::class, 'storeQuote']);
         Route::post('/corporate-quotes/{quote}/accept', [TravelCorporateController::class, 'acceptQuote']);
         Route::post('/corporate-quotes/{quote}/cancel', [TravelCorporateController::class, 'cancelQuote']);
+        // #9098 — ce bloc redéclarait 15 routes déjà déclarées plus haut dans le
+        // MÊME groupe `travel` (articles, commentaires, engagement, quiz) : la
+        // dernière déclaration gagnant chez Laravel, les premières étaient
+        // inatteignables. Pire, `/articles/{travelArticle}/engagement` divergeait
+        // (`aggregates` ici, `summary` plus bas) — le contrat réellement servi
+        // dépendait de l'ordre du fichier. Déclarations canoniques uniques
+        // conservées dans le bloc « réseau & contenu » ; ne restent ici que les
+        // routes qui n'y figurent pas.
         Route::get('/categories', [TravelArticleController::class, 'indexCategories']);
         Route::post('/categories', [TravelArticleController::class, 'storeCategory']);
         Route::put('/categories/{category}', [TravelArticleController::class, 'updateCategory']);
         Route::delete('/categories/{category}', [TravelArticleController::class, 'destroyCategory']);
-        Route::get('/articles/{travelArticle}', [TravelArticleController::class, 'show']);
-        Route::put('/articles/{travelArticle}', [TravelArticleController::class, 'update']);
-        Route::delete('/articles/{travelArticle}', [TravelArticleController::class, 'destroy']);
         Route::post('/articles/{travelArticle}/publish', [TravelArticleController::class, 'publish']);
-        Route::post('/articles/{travelArticle}/moderate', [TravelArticleController::class, 'moderate']);
         // #8396 — même défaut que dans le groupe `community` : `{article}`
         // côté route, `$travelArticle`/`$travelComment` côté contrôleur. Les
         // noms de paramètres doivent coïncider pour la liaison implicite.
         Route::get('/articles/{travelArticle}/comments', [TravelCommentController::class, 'index']);
         Route::post('/articles/{travelArticle}/comments', [TravelCommentController::class, 'store']);
-        Route::delete('/comments/{travelComment}', [TravelCommentController::class, 'destroy']);
         Route::post('/comments/{travelComment}/approve', [TravelCommentController::class, 'approve']);
         Route::post('/comments/{travelComment}/reject', [TravelCommentController::class, 'reject']);
-        Route::post('/comments/{travelComment}/report', [TravelCommentController::class, 'report']);
-        Route::post('/articles/{travelArticle}/like', [TravelEngagementController::class, 'like']);
-        Route::post('/articles/{travelArticle}/unlike', [TravelEngagementController::class, 'unlike']);
-        Route::post('/articles/{travelArticle}/share', [TravelEngagementController::class, 'share']);
-        Route::post('/articles/{travelArticle}/rate', [TravelEngagementController::class, 'rate']);
-        Route::get('/articles/{travelArticle}/engagement', [TravelEngagementController::class, 'summary']);
-        Route::get('/quizzes/{travelQuiz}', [TravelQuizController::class, 'show']);
         Route::post('/quizzes/{travelQuiz}/publish', [TravelQuizController::class, 'publish']);
-        Route::post('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'storeQuestion']);
         Route::delete('/quiz-questions/{travelQuizQuestion}', [TravelQuizController::class, 'destroyQuestion']);
-        Route::post('/quizzes/{travelQuiz}/participate', [TravelQuizController::class, 'participate']);
         Route::get('/quizzes/{travelQuiz}/results', [TravelQuizController::class, 'results']);
         Route::get('/tourist-sites/search', [TravelTouristSiteController::class, 'search']);
         Route::put('/tourist-sites/{site}', [TravelTouristSiteController::class, 'update']);
         Route::delete('/tourist-sites/{site}', [TravelTouristSiteController::class, 'destroy']);
-        Route::get('/quizzes/{travelQuiz}/results', [TravelQuizController::class, 'results']);
 
         // ── Alias /travel/community/* rétro-compatibles pour la suite Feature (#8127) ──
         Route::prefix('community')->group(function (): void {

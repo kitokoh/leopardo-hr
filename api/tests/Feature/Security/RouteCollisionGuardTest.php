@@ -123,18 +123,27 @@ class RouteCollisionGuardTest extends TestCase
         foreach (preg_split('/\R/', $src) ?: [] as $index => $line) {
             $delta = substr_count($line, '{') - substr_count($line, '}');
 
-            // Le préfixe peut être déclaré sur la ligne AVANT le `->group(`
-            // (fluent chain multi-lignes) : on l'affecte au groupe qui s'ouvre.
+            // Le préfixe est collecté AVANT l'ouverture du groupe : il peut être
+            // déclaré sur la ligne PRÉCÉDENTE (chaîne fluide multi-lignes) ou sur
+            // la MÊME ligne que le `{` — `Route::prefix('x')->group(function () {`,
+            // `ModuleRoutes::tenantModule('x', function () {`.
+            //
+            // Dans ce second cas l'ordre inverse (delta puis préfixe) affectait le
+            // préfixe au groupe SUIVANT : les routes du bloc étaient attribuées au
+            // préfixe parent. Deux conséquences mesurées :
+            //  - collisions fantômes `/travel/articles/...` au lieu de
+            //    `/travel/community/articles/...` (bloc `community`) ;
+            //  - garde aveugle aux préfixes de `ModuleRoutes::tenantModule()`.
+            foreach ($this->extractPrefixes($line) as $prefix) {
+                $pending[] = $prefix;
+            }
+
             if ($delta > 0) {
                 foreach ($pending as $value) {
                     $prefixes[] = [$value, $depth + 1];
                 }
                 $pending = [];
                 $depth += $delta;
-            }
-
-            foreach ($this->extractPrefixes($line) as $prefix) {
-                $pending[] = $prefix;
             }
 
             // require inline : les routes du fichier requis héritent de la
@@ -205,13 +214,33 @@ class RouteCollisionGuardTest extends TestCase
      */
     private function extractPrefixes(string $line): array
     {
+        // `->prefix('x')` (chaîne fluide Laravel).
         preg_match_all(
             "/prefix\s*\(\s*['\"]([^'\"]+)['\"]/",
             $line,
             $matches,
         );
+        $prefixes = $matches[1];
 
-        return $matches[1];
+        // `ModuleRoutes::tenantModule('x', ...)` / `tenantModuleWith('x', [...], ...)`
+        // (#7959) : le préfixe vit dans le PREMIER argument, pas dans un
+        // `->prefix()`. Sans cette lecture la garde croyait que tous les modules
+        // déclaraient leurs routes à la racine `v1` et signalait des collisions
+        // entre `rh.php` (`/departments`) et `health_manager.php`
+        // (`/health-manager/departments`) qui n'existent pas à l'exécution.
+        // Un préfixe vide (`tenantModule('', ...)`) n'ajoute aucun segment.
+        preg_match_all(
+            "/tenantModule(?:With)?\s*\(\s*'([^']*)'/",
+            $line,
+            $moduleMatches,
+        );
+        foreach ($moduleMatches[1] as $modulePrefix) {
+            if ($modulePrefix !== '') {
+                $prefixes[] = $modulePrefix;
+            }
+        }
+
+        return $prefixes;
     }
 
     /**
