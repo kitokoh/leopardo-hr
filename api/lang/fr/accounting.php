@@ -102,6 +102,8 @@ return [
         'wf_requires_lines' => 'Un document doit avoir au moins une ligne.',
         'wf_unknown_tax_rate' => 'Le taux de TVA « :code » n\'existe pas dans votre référentiel de taxes.',
         'tax_rate_in_use' => 'Ce taux de TVA est utilisé par des lignes de document : désactivez-le au lieu de le supprimer.',
+        'cancel_paid_document' => 'Un document déjà payé ne peut pas être annulé : émettez un avoir.',
+        'close_period_forbidden' => 'La clôture d\'une période est réservée au principal de l\'entreprise.',
         'wf_contact_not_found' => 'Tiers introuvable pour cette entreprise.',
         'wf_contact_type_mismatch' => 'Le type de tiers est incompatible avec le sens du document : une facture d\'achat exige un fournisseur, une facture de vente un client.',
         'journal_code_taken' => 'Ce code de journal existe déjà pour cette entreprise.',

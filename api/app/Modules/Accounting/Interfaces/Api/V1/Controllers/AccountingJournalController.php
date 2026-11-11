@@ -79,6 +79,14 @@ final class AccountingJournalController extends Controller
      */
     public function closePeriod(string $period, Request $request): JsonResponse
     {
+        // #9379 — la clôture est un acte irréversible : réservée au principal
+        // (séparation des tâches), même si le comptable a accès au module.
+        if ($request->user() !== null && ! $request->user()->can('closePeriod', \App\Modules\Accounting\Domain\Models\AccountingDocument::class)) {
+            return response()->json([
+                'message' => __('accounting.errors.close_period_forbidden'),
+            ], 403);
+        }
+
         Validator::make(['period' => $period], [
             'period' => ['required', 'string', 'regex:/^\d{4}-(0[1-9]|1[0-2])$/'],
         ], [

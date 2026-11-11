@@ -39,6 +39,11 @@ use App\Modules\Communication\Domain\Policies\CommunicationMessagePolicy;
 use App\Modules\Communication\Domain\Policies\CommunicationPendingReplyPolicy;
 use App\Modules\Communication\Domain\Policies\CommunicationReplyPolicyPolicy;
 use App\Modules\Communication\Domain\Policies\CommunicationThreadPolicy;
+use App\Modules\Accounting\Domain\Models\AccountingDocument;
+use App\Modules\Accounting\Domain\Models\AccountingFixedAsset;
+use App\Modules\Accounting\Domain\Models\AccountingJournalEntry;
+use App\Modules\Accounting\Domain\Models\AccountingTaxRate;
+use App\Modules\Accounting\Policies\AccountingPolicy;
 use App\Modules\CRM\Domain\Models\CrmAccount;
 use App\Modules\CRM\Domain\Models\CrmEmailSuppression;
 use App\Modules\CRM\Domain\Models\CrmImport;
@@ -387,6 +392,13 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(Evaluation::class, EvaluationPolicy::class);
         Gate::policy(Camera::class, CameraPolicy::class);
         Gate::policy(CameraAccessToken::class, CameraPolicy::class);
+        // #9379 — autorisations du module Comptabilité : le middleware de route
+        // ne dit que « ce rôle accède au module » ; la Policy tranche l'action
+        // (annulation d'un document payé, clôture, référentiel de TVA…).
+        Gate::policy(AccountingDocument::class, AccountingPolicy::class);
+        Gate::policy(AccountingJournalEntry::class, AccountingPolicy::class);
+        Gate::policy(AccountingTaxRate::class, AccountingPolicy::class);
+        Gate::policy(AccountingFixedAsset::class, AccountingPolicy::class);
         // #7427 — événements & alertes caméra (manager uniquement).
         Gate::policy(CameraAlert::class, CameraAlertPolicy::class);
         Gate::policy(CameraEvent::class, CameraAlertPolicy::class);

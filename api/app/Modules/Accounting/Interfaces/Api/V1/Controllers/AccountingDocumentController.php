@@ -155,6 +155,15 @@ class AccountingDocumentController extends Controller
     {
         $this->assertTenant($request, $document);
 
+        // #9379 — un document déjà payé ne s'annule pas : il s'écrit un avoir.
+        // Le middleware de route ne pouvait pas exprimer cette règle (elle
+        // dépend de l'état de la pièce, pas du rôle).
+        if ($request->user() !== null && ! $request->user()->can('cancel', $document)) {
+            return response()->json([
+                'message' => __('accounting.errors.cancel_paid_document'),
+            ], 403);
+        }
+
         $validated = $request->validate([
             'reason' => ['nullable', 'string', 'max:500'],
         ]);
