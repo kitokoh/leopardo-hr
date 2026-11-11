@@ -1,0 +1,193 @@
+{
+  "_meta": {
+    "description": "Notes humaines du portail de recette leopardo-hr. Modifiable depuis le portail (jeton GitHub requis) ou directement sur GitHub. Chaque cas conserve un historique horodate des modifications.",
+    "schema_version": 2,
+    "repo": "Kitokoh/leopardo-hr",
+    "path": "docs/recette/notes-humaines.json",
+    "updated_at": ""
+  },
+  "notes": {
+    "UC-01": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-02": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-03": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-04": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-05": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-06": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-07": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-08": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-09": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-10": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-11": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-12": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-13": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-14": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-15": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-16": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-17": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-18": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-19": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-20": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-21": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-22": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-23": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-24": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-25": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-26": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    }
+  }
+}

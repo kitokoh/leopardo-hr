@@ -124,6 +124,34 @@ main{padding:28px 20px 60px}
 .result-table .col-note{width:120px}
 .result-table .obs{min-width:280px}
 .human-cell{background:#fbfcfe}
+.human-meta{margin-top:6px;font-size:12px}
+.small{font-size:12px}
+.note-badge{display:inline-block;min-width:38px;padding:3px 9px;border-radius:999px;
+  background:#eef2ff;color:#3730a3;font-weight:700;font-size:13px}
+/* jeton GitHub + statuts d'enregistrement */
+.token-box{margin:14px 0 18px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}
+.token-box>summary{cursor:pointer;padding:11px 14px;font-weight:600;font-size:14px;color:#334155}
+.token-body{padding:0 14px 14px;display:grid;gap:10px}
+.token-body label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:#334155}
+.gh-token,.gh-author{max-width:420px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;font-size:14px}
+.eval-status.ok{color:#047857;font-weight:600}
+.eval-status.err{color:#b91c1c;font-weight:600}
+.eval-status.warn{color:#b45309;font-weight:600}
+.eval-meta{margin:0}
+.eval-save[disabled]{opacity:.6;cursor:progress}
+/* historique des modifications */
+.hist-panel{border-left:4px solid #0d9488}
+.hist-table{font-size:13.5px}
+.hist-table td.obs{min-width:240px}
+.hist-table .nowrap{white-space:nowrap;font-variant-numeric:tabular-nums}
+.hist-badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:700}
+.hist-created{background:#dcfce7;color:#166534}
+.hist-updated{background:#e0e7ff;color:#3730a3}
+.hist-empty{padding:14px 16px;background:#f8fafc;border:1px dashed var(--line);border-radius:10px;margin:0}
+.hist-count{background:#f0fdfa;border-color:#99f6e4;color:#0f766e;font-weight:600}
+.hist-count-badge{display:inline-block;min-width:24px;padding:1px 8px;border-radius:999px;
+  background:#0d9488;color:#fff;font-size:12.5px;font-weight:700;vertical-align:middle}
+.last-edit{font-size:12.5px;line-height:1.5}
 /* eval */
 .eval-panel{border-left:4px solid var(--brand)}
 .eval-form{display:grid;gap:12px}

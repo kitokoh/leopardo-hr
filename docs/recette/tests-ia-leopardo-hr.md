@@ -46,6 +46,8 @@ Connexion acceptée, redirection vers le tableau de bord employé, session persi
 | :---: | :--- | :---: | :--- |
 | 4 | Exécuté contre l'API locale reconstruite. `POST /api/v1/auth/login` (karim.aouad@example.com / password123) → **200**, jeton Sanctum retourné (`token_type`, `token_expires_at`), `data.role = "employee"`. `GET /api/v1/auth/me` avec le jeton → **200** (profil complet, session valide). Mauvais mot de passe → **401** (pas de fuite). L'UI web Next.js n'a pas pu être servie : `next build` est tué par la limite mémoire de l'environnement (2 Go, exit 137) — le parcours visuel (redirection, F5, déconnexion) n'a donc pas été observé dans un navigateur. Le socle d'authentification est conforme. |  |  |
 
+_Aucune modification humaine enregistrée pour ce cas._
+
 ---
 
 ## UC-02 — Pointage entrée / sortie (API, employé)
@@ -72,6 +74,8 @@ Prérequis : Jeton Sanctum valide obtenu via `POST /api/v1/auth/login` ; endpoin
 | :---: | :--- | :---: | :--- |
 | 5 | `POST /attendance/check-in` → **201**, `id=1`, `session_number=1`, `check_in=2026-11-03T15:57:38+00:00`, `timezone=Africa/Algiers`, `method=mobile`. `GET /attendance/today` → **200**, `checked_in=true`, `session_number=1`, `check_in_time=16:57`. `POST /attendance/check-out` → **200**, `check_out` renseigné. Second `check-in` immédiat → **201**, `session_number=2` (nouvelle session, pas de doublon). Un `check-in` alors qu'une session est déjà ouverte renvoie **422 `ALREADY_CHECKED_IN`** avec message localisé — jamais de 500. Horodatage serveur UTC + heure locale entreprise corrects. |  |  |
 
+_Aucune modification humaine enregistrée pour ce cas._
+
 ---
 
 ## UC-03 — Pointage au kiosque biométrique (mode secours matricule)
@@ -96,6 +100,8 @@ Le pointage par matricule aboutit avec un retour visuel explicite ; un matricule
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
 | 4 | Kiosque servi par le pont local (`bridge.py`, port 8037) et piloté dans Chromium headless. Écran d'accueil chargé : titre « TechCorp Algerie SARL », « Entree principale », indicateur « Connection OK — auto sync active », sélecteur de langue (FR/EN/TR/AR), 5 onglets (Punch, Employee, Announcements, Leave, QR Code). Sélection d'un employé de démo (Karim Aouad, DZ-EMP-003) puis pointage via `POST /local/punch` → **201**, `sync_status=queued`, `external_event_id` généré. Matricule inconnu (`UNKNOWN-999`) → **201** mis en file (comportement *offline-first*). Bascule en `ar` → `document.documentElement.dir = "rtl"`, `lang="ar"` (RTL effectif). Aucun plantage. |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
 
 ---
 
@@ -122,6 +128,8 @@ Demande créée « en attente », visible par le manager, approuvée avec succè
 | :---: | :--- | :---: | :--- |
 | 5 | `POST /absences` (absence_type_id=1 « Conge annuel », 2026-12-01→2026-12-03) → **201**, `id=13`, `status="pending"`, `days_count=3`. `GET /absences` (Manager RH) → **200**, la demande #13 est présente. `POST /absences/13/approve` → **200**, `status="approved"`, `approved_by=2`. Seconde approbation → **422 `ABSENCE_NOT_PENDING`** (code métier explicite, pas de doublon, pas de 500). Validation : absence_type_id manquant → **422** avec message localisé. |  |  |
 
+_Aucune modification humaine enregistrée pour ce cas._
+
 ---
 
 ## UC-05 — Consultation du bulletin de paie (self-service employé)
@@ -146,6 +154,8 @@ La liste ne contient que les bulletins de l'utilisateur connecté ; le PDF est t
 | :---: | :--- | :---: | :--- |
 | 4 | `GET /me/pay-slips` → **200** (liste paginée, `data: []` pour l'employé de démo — aucun bulletin n'est généré par le seeder). Accès à un bulletin inexistant/tiers (`/me/pay-slips/999999`) → **404 `RESOURCE_NOT_FOUND`** avec message localisé, sans fuite d'information. Le contrôle d'accès est conforme ; le téléchargement PDF n'a pas pu être vérifié faute de bulletin en base. |  |  |
 
+_Aucune modification humaine enregistrée pour ce cas._
+
 ---
 
 ## UC-06 — Préparation de paie (Manager Comptable)
@@ -169,6 +179,8 @@ Le manager comptable obtient une simulation cohérente et détaillée ; l'employ
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
 | 5 | `GET /salary-structures` (comptable) → **200**, structures DZ listées (base_salary, currency DZD). `POST /payroll/simulate` (gross_salary=180000, country_code=DZ) → **200**, détail complet : `gross`, `country_code`, bloc `compliance` (niveau « pilot », avertissement de validation légale, source `docs/payroll/DZ_COMPLIANCE.md`), `correlation_id`. Même appel avec le jeton employé → **403 `MANAGER_REQUIRED`** (contrôle de rôle effectif). |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
 
 ---
 
@@ -195,6 +207,8 @@ Création, modification et archivage fonctionnent ; les validations renvoient de
 | :---: | :--- | :---: | :--- |
 | 2 | `GET /employees` → **200** (pagination + filtrage OK). `POST /employees` (mot de passe conforme) → **201**, employé #28 créé. **`PUT /employees/28` → 500 `INTERNAL_ERROR`** : le log montre `Error: Unknown named parameter $contract_type at app/Modules/HR/Application/DTOs/UpdateEmployeeDTO.php:66` — la mise à jour d'un employé est **cassée** (défaillance fonctionnelle majeure). `POST /employees/28/archive` → **200**, `status="archived"`. Email déjà utilisé → **422** avec double message. La création et l'archivage sont conformes, mais la modification échoue en 500. *(Corrigé depuis par le patch d'audit — à re-tester.)* |  |  |
 
+_Aucune modification humaine enregistrée pour ce cas._
+
 ---
 
 ## UC-08 — Isolation multi-tenant
@@ -218,6 +232,8 @@ Toute tentative d'accès inter-tenant renvoie 403/404 ; aucune fuite d'identifia
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
 | 5 | Jeton `pharmaplus-casablanca` (MA) utilisé pour lire l'employé #6 de `techcorp-algerie` (DZ) → **404 `RESOURCE_NOT_FOUND`** (pas de fuite). `GET /employees` avec le jeton MA → **200**, aucune donnée de TechCorp (recherche « techcorp »/« Karim » absente). Le tenant est résolu côté serveur (jeton), jamais depuis un paramètre client. |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
 
 ---
 
@@ -243,6 +259,8 @@ Les quatre langues s'appliquent sans rechargement cassé ; le RTL est correct ; 
 | :---: | :--- | :---: | :--- |
 | 5 | API : `GET /auth/me` expose `language` et `is_rtl` ; `PATCH /auth/language {language:"ar"}` → **200**, puis `is_rtl=true` confirmé sur `/auth/me`. Kiosque : bascule en `ar` → `dir="rtl"`, `lang="ar"`. Aucune clé de traduction brute détectée dans le DOM (`[]`). Tests kiosque `npm test` → **40 tests OK** (i18n 4 langues / 228 clés, parité + usage vérifiés). |  |  |
 
+_Aucune modification humaine enregistrée pour ce cas._
+
 ---
 
 ## UC-10 — Kiosque en mode dégradé / synchronisation Edge
@@ -266,6 +284,8 @@ Le kiosque reste utilisable hors-ligne, met l'événement en file, affiche un é
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
 | 4 | Le pont local met chaque pointage en file SQLite (`sync_status=queued`) et incrémente `queue_count` (2 → 3 après un pointage) ; `dead_letter_count=0`. L'état est exposé par `GET /local/status` (`online`, `queue_count`, `last_error`, `last_sync_at`). La borne reste pleinement utilisable sans cloud. La resynchronisation vers le cloud n'a pas pu être validée de bout en bout : le point de synchronisation cloud n'est pas configuré en local (`last_error=HTTP_404`). |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
 
 ---
 
@@ -291,6 +311,8 @@ Les entités sont créées et liées correctement, le pipeline reflète le chang
 | :---: | :--- | :---: | :--- |
 | 5 | `GET /crm/accounts` (Manager RH) → **200** (liste paginée). `POST /crm/accounts {name, email}` → **201**, compte créé (`id=2`, `status` renseigné). Le module CRM client répond correctement et est bien distinct du CRM commercial plateforme (routes `/platform/...` séparées, protégées par `platform.permission`). |  |  |
 
+_Aucune modification humaine enregistrée pour ce cas._
+
 ---
 
 ## UC-12 — Vitrine publique et demande d'essai
@@ -315,6 +337,8 @@ La vitrine s'affiche correctement sur desktop et mobile ; la demande d'essai est
 | :---: | :--- | :---: | :--- |
 | 4 | Endpoint d'ingestion des leads `POST /marketing/leads` : payload valide (`external_id`, `type=demo_request`, `email`) → **201** (`{id, external_id, status:"new"}`) ; email invalide → **422** avec message localisé ; champs obligatoires manquants → **422** explicite. La vitrine Next.js elle-même n'a pas pu être servie (build tué par la limite mémoire 2 Go), donc le rendu visuel desktop/mobile n'a pas été observé. |  |  |
 
+_Aucune modification humaine enregistrée pour ce cas._
+
 ---
 
 ## UC-13 — Observabilité et santé de la plateforme
@@ -337,6 +361,8 @@ Prérequis : Accès réseau à l'API de production.
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
 | 4 | Environnement local : `GET /health` → **200** (`status:"ok"`) ; `/health/live` → **200** ; `/health/ready` → **200** avec matrice `checks` (database ok, redis ok/skipped, queue ok/sync, mail ok/array, `failed_checks:[]`). `GET /demo-users` → **404** (mode démo désactivé par défaut, conforme au durcissement documenté). La documentation `/docs` (Scramble) et la comparaison de version avec le commit attendu n'ont pas été vérifiées localement. |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
 
 ---
 
@@ -363,6 +389,8 @@ Le parcours recherche → réservation → suivi → annulation fonctionne de bo
 | :---: | :--- | :---: | :--- |
 | 4 | `GET /public/travel/shop/trips` sans jeton → **401** « Jeton boutique manquant (X-Travel-Shop-Token) » ; avec un jeton invalide → **401** « Jeton boutique invalide ». Le garde-fou *fail-closed* est effectif (aucune donnée exposée sans jeton tenant valide). Le parcours complet n'a pas pu être exécuté : aucun tenant de démonstration n'a la solution TravelAgency activée avec un jeton boutique émis. |  |  |
 
+_Aucune modification humaine enregistrée pour ce cas._
+
 ---
 
 ## UC-15 — Connexion Manager Principal et tableau de bord
@@ -386,6 +414,8 @@ Connexion acceptée, tableau de bord chargé avec des indicateurs cohérents du 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
 |  | Non exécuté — à réaliser par le testeur IA. |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
 
 ---
 
@@ -411,6 +441,8 @@ Création et affectation fonctionnent ; l'organigramme reflète les changements 
 | :---: | :--- | :---: | :--- |
 |  | Non exécuté — à réaliser par le testeur IA. |  |  |
 
+_Aucune modification humaine enregistrée pour ce cas._
+
 ---
 
 ## UC-17 — Attribution de rôles et invitations
@@ -434,6 +466,8 @@ L'invitation aboutit, le rôle est attribué dans les limites du délégable, l'
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
 |  | Non exécuté — à réaliser par le testeur IA. |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
 
 ---
 
@@ -459,6 +493,8 @@ Le planning s'affiche, les heures supplémentaires sont calculées et validées/
 | :---: | :--- | :---: | :--- |
 |  | Non exécuté — à réaliser par le testeur IA. |  |  |
 
+_Aucune modification humaine enregistrée pour ce cas._
+
 ---
 
 ## UC-19 — Génération et téléchargement d'un bulletin PDF
@@ -482,6 +518,8 @@ Le bulletin est généré, le PDF s'ouvre et les montants sont cohérents ; l'em
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
 |  | Non exécuté — à réaliser par le testeur IA. |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
 
 ---
 
@@ -507,6 +545,8 @@ Les opérations aboutissent, l'état de l'entreprise est reflété, la suspensio
 | :---: | :--- | :---: | :--- |
 |  | Non exécuté — à réaliser par le testeur IA. |  |  |
 
+_Aucune modification humaine enregistrée pour ce cas._
+
 ---
 
 ## UC-21 — Impersonation encadrée (Support)
@@ -530,6 +570,8 @@ L'impersonation est possible, clairement signalée, réversible, et journalisée
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
 |  | Non exécuté — à réaliser par le testeur IA. |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
 
 ---
 
@@ -555,6 +597,8 @@ Les données de facturation sont consultables, les actions hors périmètre sont
 | :---: | :--- | :---: | :--- |
 |  | Non exécuté — à réaliser par le testeur IA. |  |  |
 
+_Aucune modification humaine enregistrée pour ce cas._
+
 ---
 
 ## UC-23 — Kill switch et nœuds Edge (Ops)
@@ -578,6 +622,8 @@ Le kill switch produit un effet immédiat et réversible, les nœuds Edge sont s
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
 |  | Non exécuté — à réaliser par le testeur IA. |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
 
 ---
 
@@ -603,6 +649,8 @@ Les annonces et campagnes sont gérées, la vitrine reflète les publications, l
 | :---: | :--- | :---: | :--- |
 |  | Non exécuté — à réaliser par le testeur IA. |  |  |
 
+_Aucune modification humaine enregistrée pour ce cas._
+
 ---
 
 ## UC-25 — Recrutement et offres d'emploi
@@ -627,6 +675,8 @@ L'offre est créée et publiée, les candidatures sont suivies, le pipeline refl
 | :---: | :--- | :---: | :--- |
 |  | Non exécuté — à réaliser par le testeur IA. |  |  |
 
+_Aucune modification humaine enregistrée pour ce cas._
+
 ---
 
 ## UC-26 — Bibliothèque / Showcase public
@@ -650,6 +700,8 @@ La bibliothèque s'affiche correctement, la navigation est fluide, le cache publ
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
 |  | Non exécuté — à réaliser par le testeur IA. |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
 
 ---
 
@@ -686,4 +738,5 @@ La bibliothèque s'affiche correctement, la navigation est fluide, le cache publ
 
 **Cas notés (IA) :** 14 · **Total des notes IA :** 60 · **Moyenne IA :** 4.29 / 5 · **Cas bloquants (≤2) :** 1
 
-> La colonne « Note humaine (/5) » reste volontairement vide : elle est réservée à l'évaluation humaine.
+> La colonne « Note humaine (/5) » est renseignée par les testeurs humains depuis le portail
+> (ou directement dans `docs/recette/notes-humaines.json`) ; elle est versionnée dans le dépôt.
