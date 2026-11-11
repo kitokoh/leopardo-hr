@@ -25,6 +25,7 @@ use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingFecController
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingFiscalYearController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingJournalController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingJournalSettingsController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingTaxRateController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\ManualJournalEntryController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingLedgerController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingLetteringController;
@@ -124,6 +125,12 @@ ModuleRoutes::tenantModule('accounting', function (): void {
         // structurant : il conditionne tout l'export FEC).
         Route::get('/journals', [AccountingJournalSettingsController::class, 'index']);
         Route::post('/journals/seed', [AccountingJournalSettingsController::class, 'seed']);
+        // #9376 — référentiel de TVA multi-taux du tenant.
+        Route::get('/tax-rates', [AccountingTaxRateController::class, 'index']);
+        Route::post('/tax-rates/seed', [AccountingTaxRateController::class, 'seed']);
+        Route::post('/tax-rates', [AccountingTaxRateController::class, 'store']);
+        Route::put('/tax-rates/{taxRate}', [AccountingTaxRateController::class, 'update'])->whereNumber('taxRate');
+        Route::delete('/tax-rates/{taxRate}', [AccountingTaxRateController::class, 'destroy'])->whereNumber('taxRate');
 
         // Tableaux de bord comptables (issue #5395) — synthèse + export CSV impayés.
         Route::get('/dashboard', [AccountingDashboardController::class, 'show']);

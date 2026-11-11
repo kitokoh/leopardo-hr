@@ -17,6 +17,7 @@ use App\Modules\Accounting\Domain\Exceptions\InvalidDocumentTransitionException;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
+use App\Modules\Accounting\Infrastructure\Services\TaxRateService;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -61,7 +62,61 @@ class DocumentWorkflowService
 
     public function __construct(
         private readonly DocumentNumberingInterface $numbering,
+        // Optionnel : les tests qui instancient le service à la main (avec un
+        // numbering bouchonné) n'ont pas à connaître le référentiel de TVA.
+        // Résolu par le container en production.
+        private readonly ?TaxRateService $taxRates = null,
     ) {}
+
+    /**
+     * Référentiel de TVA, résolu paresseusement quand le service a été construit
+     * sans lui (tests unitaires du workflow de numérotation).
+     */
+    private function taxRates(): TaxRateService
+    {
+        return $this->taxRates ?? app(TaxRateService::class);
+    }
+
+    /**
+     * Taux d'une ligne (#9376) : `tax_rate` explicite > `tax_rate_code` résolu
+     * dans le référentiel > taux du document > 0.
+     *
+     * Un code inconnu lève plutôt que de retomber silencieusement sur 0 : une
+     * ligne à 0 % par erreur de saisie est une facture fausse.
+     *
+     * @param  array<string, mixed>  $line
+     * @param  array<string, float>  $taxRates
+     */
+    private function resolveLineRate(array $line, ?float $documentRate, array $taxRates): float
+    {
+        if (isset($line['tax_rate']) && $line['tax_rate'] !== '') {
+            return (float) $line['tax_rate'];
+        }
+
+        $code = $line['tax_rate_code'] ?? null;
+        if (is_string($code) && $code !== '') {
+            if (! array_key_exists($code, $taxRates)) {
+                throw new DocumentWorkflowException(__('accounting.errors.wf_unknown_tax_rate', ['code' => $code]));
+            }
+
+            return (float) $taxRates[$code];
+        }
+
+        return $documentRate ?? 0.0;
+    }
+
+    /**
+     * Identifiant du taux référencé par la ligne, s'il est connu du référentiel.
+     *
+     * @param  array<string, mixed>  $line
+     * @param  array<string, int>  $taxRateIds
+     */
+    private function resolveLineRateId(array $line, array $taxRateIds): ?int
+    {
+        $code = $line['tax_rate_code'] ?? null;
+
+        return is_string($code) && isset($taxRateIds[$code]) ? $taxRateIds[$code] : null;
+    }
 
     /**
      * Transition générique de la machine à états (issue #5223).
@@ -119,7 +174,7 @@ class DocumentWorkflowService
      *     currency?: string|null, tva_rate?: float|null, notes?: string|null,
      *     footer_mentions?: string|null, metadata?: array<string, mixed>,
      *     source_document_id?: int|null,
-     *     lines?: list<array{description: string, quantity?: float, unit_price?: float, discount?: float, tax_id?: string|null}>
+     *     lines?: list<array{description: string, quantity?: float, unit_price?: float, discount?: float, tax_id?: string|null, tax_rate?: float|null, tax_rate_code?: string|null}>
      * }  $payload
      */
     public function createDraft(array $payload, ?string $companyId = null): AccountingDocument
@@ -143,17 +198,53 @@ class DocumentWorkflowService
             throw new DocumentWorkflowException(__('accounting.errors.wf_requires_lines'));
         }
 
+        // #9376 — TVA multi-taux. Chaque ligne peut porter son propre taux
+        // (`tax_rate` explicite, ou `tax_rate_code` résolu dans le référentiel
+        // du tenant). Le taux du document (`tva_rate`) reste le défaut des
+        // lignes qui n'en précisent pas, ce qui préserve le comportement
+        // mono-taux existant.
+        $documentRate = isset($payload['tva_rate']) ? (float) $payload['tva_rate'] : null;
+        $taxRates = $this->taxRates()->rateMapFor($companyId);
+        $taxRateIds = $this->taxRates()->idMapFor($companyId);
+
         $subtotal = 0.0;
+        $taxAmount = 0.0;
+        $resolvedLines = [];
+
         foreach ($lines as $line) {
             $quantity = (float) ($line['quantity'] ?? 1);
             $unitPrice = (float) ($line['unit_price'] ?? 0);
             $discount = (float) ($line['discount'] ?? 0);
-            $subtotal += max(0.0, $quantity * $unitPrice - $discount);
+            $lineSubtotal = round(max(0.0, $quantity * $unitPrice - $discount), 2);
+
+            $rate = $this->resolveLineRate($line, $documentRate, $taxRates);
+            $lineTax = round($lineSubtotal * $rate / 100, 2);
+
+            $subtotal += $lineSubtotal;
+            $taxAmount += $lineTax;
+
+            $resolvedLines[] = [
+                'line' => $line,
+                'subtotal' => $lineSubtotal,
+                'rate' => $rate,
+                'tax' => $lineTax,
+                'tax_rate_id' => $this->resolveLineRateId($line, $taxRateIds),
+            ];
         }
 
-        $tvaRate = isset($payload['tva_rate']) ? (float) $payload['tva_rate'] : 0.0;
-        $taxAmount = round($subtotal * $tvaRate / 100, 2);
+        $subtotal = round($subtotal, 2);
+        $taxAmount = round($taxAmount, 2);
         $total = round($subtotal + $taxAmount, 2);
+
+        // Taux « du document » : celui du payload s'il est fourni, sinon le taux
+        // unique effectivement appliqué. Sur une facture multi-taux il n'y a pas
+        // de taux unique : on laisse `tva_rate` à null plutôt que d'inventer une
+        // moyenne, et les lignes portent la vérité.
+        $distinctRates = array_values(array_unique(array_map(
+            static fn (array $resolved): float => $resolved['rate'],
+            $resolvedLines,
+        )));
+        $documentTvaRate = $documentRate ?? (count($distinctRates) === 1 ? $distinctRates[0] : null);
 
         $metadata = is_array($payload['metadata'] ?? null) ? $payload['metadata'] : [];
         if (($payload['source_document_id'] ?? null) !== null) {
@@ -163,7 +254,7 @@ class DocumentWorkflowService
         $attempts = 0;
         do {
             try {
-                return DB::transaction(function () use ($companyId, $type, $payload, $subtotal, $taxAmount, $total, $metadata, $lines): AccountingDocument {
+                return DB::transaction(function () use ($companyId, $type, $payload, $subtotal, $taxAmount, $total, $metadata, $resolvedLines, $documentTvaRate): AccountingDocument {
                     /** @var AccountingDocument $document */
                     $document = AccountingDocument::create([
                         'company_id' => $companyId,
@@ -176,8 +267,8 @@ class DocumentWorkflowService
                         'due_date' => $payload['due_date'] ?? null,
                         'delivery_date' => $payload['delivery_date'] ?? null,
                         'currency' => $payload['currency'] ?? null,
-                        'tva_rate' => isset($payload['tva_rate']) ? (float) $payload['tva_rate'] : null,
-                        'subtotal_ht' => round($subtotal, 2),
+                        'tva_rate' => $documentTvaRate,
+                        'subtotal_ht' => $subtotal,
                         'tax_amount' => $taxAmount,
                         'total_ttc' => $total,
                         'notes' => $payload['notes'] ?? null,
@@ -187,7 +278,9 @@ class DocumentWorkflowService
                     ]);
 
                     $sortOrder = 0;
-                    foreach ($lines as $line) {
+                    foreach ($resolvedLines as $resolved) {
+                        $line = $resolved['line'];
+
                         AccountingDocumentLine::create([
                             'company_id' => $companyId,
                             'document_id' => $document->id,
@@ -195,7 +288,9 @@ class DocumentWorkflowService
                             'quantity' => (float) ($line['quantity'] ?? 1),
                             'unit_price' => (float) ($line['unit_price'] ?? 0),
                             'discount' => (float) ($line['discount'] ?? 0),
-                            'tax_id' => $line['tax_id'] ?? null,
+                            'tax_rate_id' => $resolved['tax_rate_id'],
+                            'tax_rate' => $resolved['rate'],
+                            'tax_amount' => $resolved['tax'],
                             'sort_order' => $sortOrder++,
                         ]);
                     }

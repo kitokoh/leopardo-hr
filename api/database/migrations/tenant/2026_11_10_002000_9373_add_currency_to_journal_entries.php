@@ -60,19 +60,26 @@ return new class extends Migration
             // quel, dans la devise de leur entreprise, à taux 1. On ne
             // reconvertit **jamais** un historique (les montants débit/crédit
             // restent intacts, seule la traçabilité de devise est ajoutée).
-            DB::statement(<<<'SQL'
+            //
+            // `companies` vit dans le schéma `public` alors que cette migration
+            // tourne avec `search_path = shared_tenants` : on qualifie la table
+            // explicitement, sinon `relation "companies" does not exist` (42P01)
+            // et la migration échoue — donc les colonnes n'existent jamais.
+            $companiesTable = $this->publicTable('companies');
+
+            DB::statement(<<<SQL
                 UPDATE accounting_journal_entries AS e
                 SET currency = COALESCE(
                         (SELECT UPPER(s.currency) FROM accounting_settings AS s
                           WHERE s.company_id = e.company_id LIMIT 1),
-                        (SELECT UPPER(c.currency) FROM companies AS c
+                        (SELECT UPPER(c.currency) FROM {$companiesTable} AS c
                           WHERE c.id = e.company_id LIMIT 1),
                         'DZD'
                     ),
                     amount_currency = COALESCE(
                         (SELECT UPPER(s.currency) FROM accounting_settings AS s
                           WHERE s.company_id = e.company_id LIMIT 1),
-                        (SELECT UPPER(c.currency) FROM companies AS c
+                        (SELECT UPPER(c.currency) FROM {$companiesTable} AS c
                           WHERE c.id = e.company_id LIMIT 1),
                         'DZD'
                     ),
@@ -89,6 +96,23 @@ return new class extends Migration
                 $table->index(['company_id', 'currency'], 'journal_entries_company_currency_idx');
             });
         }
+    }
+
+    /**
+     * Nom qualifié d'une table du schéma `public` (les migrations tenant
+     * tournent avec `search_path = shared_tenants`, où `companies` n'existe pas).
+     */
+    private function publicTable(string $table): string
+    {
+        $schema = DB::selectOne(
+            "SELECT table_schema FROM information_schema.tables
+              WHERE table_name = ? AND table_schema NOT IN ('shared_tenants', 'pg_catalog', 'information_schema')
+              ORDER BY CASE WHEN table_schema = 'public' THEN 0 ELSE 1 END
+              LIMIT 1",
+            [$table]
+        );
+
+        return $schema !== null ? $schema->table_schema.'.'.$table : 'public.'.$table;
     }
 
     public function down(): void
