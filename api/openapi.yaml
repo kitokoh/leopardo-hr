@@ -37620,6 +37620,382 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /accounting/journal/entries:
+    post:
+      operationId: api_post_accounting_journal_entries
+      tags:
+      - Accounting
+      summary: Creer une ecriture manuelle (journal d'operations diverses)
+      description: 'Ecriture libre multi-lignes, validee contre le plan comptable du tenant et equilibree debit=credit (issue #9369). RBAC comptable/principal.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - entry_date
+              - lines
+              properties:
+                entry_date:
+                  type: string
+                  format: date
+                description:
+                  type: string
+                  nullable: true
+                  maxLength: 500
+                piece:
+                  type: string
+                  nullable: true
+                  maxLength: 64
+                journal_code:
+                  type: string
+                  nullable: true
+                  maxLength: 6
+                lines:
+                  type: array
+                  minItems: 2
+                  items:
+                    type: object
+                    required:
+                    - account_code
+                    properties:
+                      account_code:
+                        type: string
+                        maxLength: 20
+                      debit:
+                        type: number
+                        format: double
+                        minimum: 0
+                      credit:
+                        type: number
+                        format: double
+                        minimum: 0
+                      description:
+                        type: string
+                        nullable: true
+                        maxLength: 255
+      responses:
+        '201':
+          description: Ecriture creee (manual_ref, piece, nombre de lignes)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      manual_ref:
+                        type: string
+                      piece:
+                        type: string
+                      lines:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /accounting/journal/entries/{manual}:
+    get:
+      operationId: api_get_accounting_journal_entries_param
+      tags:
+      - Accounting
+      summary: Detail d'une ecriture manuelle
+      description: 'En-tete et lignes d''une ecriture manuelle du tenant (issue #9369).'
+      parameters:
+      - name: manual
+        in: path
+        required: true
+        description: Identifiant de l'ecriture manuelle.
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ecriture manuelle (en-tete + lignes)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_accounting_journal_entries_param
+      tags:
+      - Accounting
+      summary: Remplacer les lignes d'une ecriture manuelle
+      description: 'Remplacement total des lignes, revalide l''equilibre debit=credit (issue #9369).'
+      parameters:
+      - name: manual
+        in: path
+        required: true
+        description: Identifiant de l'ecriture manuelle.
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - entry_date
+              - lines
+              properties:
+                entry_date:
+                  type: string
+                  format: date
+                description:
+                  type: string
+                  nullable: true
+                  maxLength: 500
+                journal_code:
+                  type: string
+                  nullable: true
+                  maxLength: 6
+                lines:
+                  type: array
+                  minItems: 2
+                  items:
+                    type: object
+                    required:
+                    - account_code
+                    properties:
+                      account_code:
+                        type: string
+                        maxLength: 20
+                      debit:
+                        type: number
+                        format: double
+                        minimum: 0
+                      credit:
+                        type: number
+                        format: double
+                        minimum: 0
+                      description:
+                        type: string
+                        nullable: true
+                        maxLength: 255
+      responses:
+        '200':
+          description: Ecriture mise a jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      operationId: api_delete_accounting_journal_entries_param
+      tags:
+      - Accounting
+      summary: Supprimer une ecriture manuelle
+      description: 'Supprime l''en-tete et ses lignes ; refusee si la periode est cloturee (issue #9369).'
+      parameters:
+      - name: manual
+        in: path
+        required: true
+        description: Identifiant de l'ecriture manuelle.
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ecriture supprimee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Periode cloturee
+  /accounting/journals:
+    get:
+      operationId: api_get_accounting_journals
+      tags:
+      - Accounting
+      summary: Lister les journaux comptables du tenant
+      description: 'Journaux du referentiel du tenant, tries par code (issue #9370).'
+      responses:
+        '200':
+          description: Liste des journaux
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AccountingJournal'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_accounting_journals
+      tags:
+      - Accounting
+      summary: Creer un journal comptable
+      description: 'Code FEC immuable, unique par tenant, 2 a 6 caracteres alphanumeriques (issue #9370).'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - label
+              - type
+              properties:
+                code:
+                  type: string
+                  minLength: 2
+                  maxLength: 6
+                  pattern: ^[A-Za-z0-9]+$
+                label:
+                  type: string
+                  maxLength: 120
+                type:
+                  type: string
+                default_account_code:
+                  type: string
+                  nullable: true
+                  maxLength: 20
+                is_active:
+                  type: boolean
+      responses:
+        '201':
+          description: Journal cree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AccountingJournal'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /accounting/journals/seed:
+    post:
+      operationId: api_post_accounting_journals_seed
+      tags:
+      - Accounting
+      summary: Provisionner les journaux par defaut du tenant
+      description: 'Idempotent : cree les journaux manquants du referentiel (issue #9370).'
+      responses:
+        '201':
+          description: Codes des journaux provisionnes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /accounting/journals/{journal}:
+    put:
+      operationId: api_put_accounting_journals_param
+      tags:
+      - Accounting
+      summary: Modifier un journal comptable
+      description: 'Le code est immuable ; libelle, type, compte par defaut et activation sont modifiables (issue #9370).'
+      parameters:
+      - name: journal
+        in: path
+        required: true
+        description: Identifiant du journal.
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                  maxLength: 120
+                type:
+                  type: string
+                default_account_code:
+                  type: string
+                  nullable: true
+                  maxLength: 20
+                is_active:
+                  type: boolean
+      responses:
+        '200':
+          description: Journal mis a jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AccountingJournal'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      operationId: api_delete_accounting_journals_param
+      tags:
+      - Accounting
+      summary: Supprimer un journal comptable
+      description: 'Refuse (409) des qu''une ecriture reference le journal : il se desactive, il ne se supprime pas (issue #9370).'
+      parameters:
+      - name: journal
+        in: path
+        required: true
+        description: Identifiant du journal.
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Journal supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Journal mouvemente
   /accounting/journal/export-fec:
     get:
       operationId: api_get_accounting_journal_export_fec
@@ -67606,6 +67982,24 @@ components:
           type: string
           format: date-time
 
+    AccountingJournal:
+      type: object
+      description: Journal comptable du referentiel du tenant (issue #9370).
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+          description: Code FEC, immuable, 2 a 6 caracteres alphanumeriques.
+        label:
+          type: string
+        type:
+          type: string
+        default_account_code:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
     AccountingChartAccount:
       type: object
       properties:
