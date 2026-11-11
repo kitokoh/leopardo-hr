@@ -90,6 +90,15 @@ jobs:
             # pas créé dans les secrets du repo.
             firebase_secret: FIREBASE_APP_ID_HR
             android_package: com.leopardo.rh
+          # #9381 — parité avec mobile-distribute.yml : l'app comptable doit
+          # aussi être distribuée en staging, sinon elle reste invisible aux
+          # testeurs et aucune régression tablette n'est détectée.
+          - name: accounting
+            project_path: front/mobile_apps/leopardo_accounting
+            artifact_name: leopardo-accounting-staging
+            version_prefix: accounting
+            firebase_secret: FIREBASE_ACCOUNTING_ANDROID_APP_ID
+            android_package: com.leopardo.accounting
 
     steps:
       - name: Guard DEV_API_BASE_URL (#4524)

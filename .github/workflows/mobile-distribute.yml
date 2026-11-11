@@ -81,6 +81,14 @@ jobs:
             # générique conservé tant que FIREBASE_APP_ID_HR n'existe pas.
             firebase_secret: FIREBASE_APP_ID_HR
             android_package: com.leopardo.rh
+          # #9381 — l'app comptable existait dans le dépôt mais était ABSENTE de
+          # la matrice : aucun APK n'était donc jamais construit ni distribué.
+          - name: accounting
+            project_path: front/mobile_apps/leopardo_accounting
+            artifact_name: leopardo-accounting
+            version_prefix: accounting
+            firebase_secret: FIREBASE_ACCOUNTING_ANDROID_APP_ID
+            android_package: com.leopardo.accounting
 
     steps:
       - name: Guard DEV_API_BASE_URL (#4524)
