@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Application\Services;
 
 use App\Modules\Accounting\Domain\Contracts\DocumentNumberingInterface;
-use App\Modules\Accounting\Domain\Enums\ContactType;
 use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Enums\DocumentType;
 use App\Modules\Accounting\Domain\Enums\PaymentMethod;
@@ -15,7 +14,6 @@ use App\Modules\Accounting\Domain\Exceptions\DeliveryNoteRequiresDeliveryDateExc
 use App\Modules\Accounting\Domain\Exceptions\DocumentNotFullyPaidException;
 use App\Modules\Accounting\Domain\Exceptions\DocumentWorkflowException;
 use App\Modules\Accounting\Domain\Exceptions\InvalidDocumentTransitionException;
-use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
@@ -447,8 +445,8 @@ class DocumentWorkflowService
             return;
         }
 
-        /** @var AccountingContact|null $contact */
-        $contact = AccountingContact::query()
+        /** @var \App\Modules\Accounting\Domain\Models\AccountingContact|null $contact */
+        $contact = \App\Modules\Accounting\Domain\Models\AccountingContact::query()
             ->where('company_id', $companyId)
             ->find((int) $contactId);
 
@@ -457,8 +455,8 @@ class DocumentWorkflowService
         }
 
         $allowed = $type->isPurchase()
-            ? [ContactType::Supplier->value, ContactType::Both->value]
-            : [ContactType::Customer->value, ContactType::Both->value];
+            ? [\App\Modules\Accounting\Domain\Enums\ContactType::Supplier->value, \App\Modules\Accounting\Domain\Enums\ContactType::Both->value]
+            : [\App\Modules\Accounting\Domain\Enums\ContactType::Customer->value, \App\Modules\Accounting\Domain\Enums\ContactType::Both->value];
 
         if (! in_array((string) $contact->type, $allowed, true)) {
             throw new DocumentWorkflowException(__('accounting.errors.wf_contact_type_mismatch'));

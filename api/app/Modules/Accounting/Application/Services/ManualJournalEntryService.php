@@ -14,8 +14,8 @@ use App\Modules\Accounting\Domain\Models\AccountingJournalEntry;
 use App\Modules\Accounting\Domain\Models\AccountingManualEntry;
 use App\Modules\Accounting\Infrastructure\Services\ChartAccountResolver;
 use App\Modules\Accounting\Infrastructure\Services\JournalResolver;
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
@@ -45,6 +45,7 @@ final class ManualJournalEntryService
     private const TOLERANCE = 0.005;
 
     public function __construct(
+        private readonly ConnectionInterface $db,
         private readonly ?JournalResolver $journals = null,
     ) {}
 
@@ -67,7 +68,7 @@ final class ManualJournalEntryService
 
         $manualRef = (string) Str::uuid();
 
-        DB::transaction(function () use ($companyId, $manualRef, $entryDate, $journalCode, $piece, $payload, $createdBy, $lines): void {
+        $this->db->transaction(function () use ($companyId, $manualRef, $entryDate, $journalCode, $piece, $payload, $createdBy, $lines): void {
             /** @var AccountingManualEntry $manual */
             $manual = AccountingManualEntry::create([
                 'company_id' => $companyId,
@@ -111,7 +112,7 @@ final class ManualJournalEntryService
             $payload['journal_code'] ?? $manual->journal_code,
         );
 
-        DB::transaction(function () use ($manual, $entryDate, $journalCode, $payload, $lines): void {
+        $this->db->transaction(function () use ($manual, $entryDate, $journalCode, $payload, $lines): void {
             AccountingJournalEntry::query()
                 ->where('company_id', $manual->company_id)
                 ->where('source_type', 'manual')
@@ -136,7 +137,7 @@ final class ManualJournalEntryService
     {
         $this->guardPeriodOpen((string) $manual->company_id, $manual->entry_date);
 
-        DB::transaction(function () use ($manual): void {
+        $this->db->transaction(function () use ($manual): void {
             AccountingJournalEntry::query()
                 ->where('company_id', $manual->company_id)
                 ->where('source_type', 'manual')
