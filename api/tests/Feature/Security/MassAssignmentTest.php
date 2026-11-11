@@ -45,7 +45,14 @@ class MassAssignmentTest extends TestCase
     public function test_reminder_rejects_a_forged_primary_key(): void
     {
         $reminder = new CrmTaskReminder;
-        $reminder->fill(['id' => 999999, 'company_id' => 1, 'task_id' => 2, 'remind_date' => '2026-11-10']);
+        // Date relative à now() : une date calendaire figée deviendrait passée
+        // et déclencherait le garde #8396 (check-tests-no-frozen-dates).
+        $reminder->fill([
+            'id' => 999999,
+            'company_id' => 1,
+            'task_id' => 2,
+            'remind_date' => now()->addDay()->toDateString(),
+        ]);
 
         $this->assertNotSame(999999, $reminder->id, 'Un `id` fourni par le client doit être ignoré.');
     }
