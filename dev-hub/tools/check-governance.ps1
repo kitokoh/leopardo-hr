@@ -30,7 +30,27 @@ function Assert-NotContains([string]$Path, [string]$Pattern, [string]$FailureMes
 
 Write-Host "Running governance checks on diff $BaseRef..$HeadRef"
 
-$changed = git diff --name-only $BaseRef $HeadRef
+# Issue #9411 — le diff doit partir du MERGE-BASE, pas du tip de la branche de
+# base. `github.event.pull_request.base.sha` est le `main` du MOMENT de la PR :
+# des qu'une autre PR est fusionnee pendant la revue, `git diff base head`
+# enumere AUSSI les fichiers de ces merges et declenche des exigences de
+# gouvernance etrangeres au changement (mesure sur #9410 : 198 fichiers dont
+# 12 sous `front/mobile_apps/`, pour une PR qui en touche 2). Le verdict
+# dependait donc de la cadence de fusion, pas du contenu de la PR.
+$mergeBase = $null
+try {
+    $mergeBase = (git merge-base $BaseRef $HeadRef 2>$null | Select-Object -First 1)
+} catch {
+    $mergeBase = $null
+}
+if ([string]::IsNullOrWhiteSpace($mergeBase)) {
+    # Repli explicite : sans merge-base (clone superficiel), on conserve le
+    # comportement historique plutot que d'echouer sans explication.
+    Write-Host "WARN: merge-base introuvable pour $BaseRef..$HeadRef - diff depuis $BaseRef."
+    $mergeBase = $BaseRef
+}
+Write-Host "Diff effectif depuis le merge-base $mergeBase"
+$changed = git diff --name-only $mergeBase $HeadRef
 if (-not $changed) {
     Pass "No changes detected."
     exit 0
