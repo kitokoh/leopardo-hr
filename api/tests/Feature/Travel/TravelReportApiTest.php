@@ -15,8 +15,8 @@ use App\Modules\TravelAgency\Domain\Enums\SeatStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCity;
 use App\Modules\TravelAgency\Domain\Models\TravelDailySale;
+use App\Modules\TravelAgency\Domain\Models\TravelExportAsset;
 use App\Modules\TravelAgency\Domain\Models\TravelPayment;
-use App\Modules\TravelAgency\Domain\Models\TravelReportExport;
 use App\Modules\TravelAgency\Domain\Models\TravelRoute;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripOccupancy;
@@ -108,6 +108,22 @@ class TravelReportApiTest extends TestCase
             'from' => now()->subDay()->toDateString(),
             'to' => now()->addDays(31)->toDateString(),
         ]);
+    }
+
+    /**
+     * Corps exigé par StoreTravelExportRequest (#6075) : `report_type`
+     * allowlisté, fenêtre `from`/`to`, `idempotency_key` obligatoire.
+     *
+     * @return array{report_type: string, from: string, to: string, idempotency_key: string}
+     */
+    private function exportPayload(string $idempotencyKey, string $reportType = 'sales'): array
+    {
+        return [
+            'report_type' => $reportType,
+            'from' => now()->subDay()->toDateString(),
+            'to' => now()->addDays(31)->toDateString(),
+            'idempotency_key' => $idempotencyKey,
+        ];
     }
 
     /** @return array{trip: TravelTrip, booking: TravelBooking} */
@@ -303,7 +319,10 @@ class TravelReportApiTest extends TestCase
         // s'exécute avant le Gate — sans from/to, un 422 masquerait le 403.
         $this->getJson('/api/v1/travel/reports/sales?'.$this->reportWindow())->assertForbidden();
         $this->getJson('/api/v1/travel/reports/dashboard')->assertForbidden();
-        $this->getJson('/api/v1/travel/reports/export?type=sales')->assertForbidden();
+        // L'export est ASYNCHRONE (#6075) : POST + corps validé. En GET, la
+        // route n'existe pas pour cette URI -> 405, qui masquait le 403.
+        $this->postJson('/api/v1/travel/reports/export', $this->exportPayload('perm-export'))
+            ->assertForbidden();
     }
 
     public function test_export_is_idempotent_and_returns_signed_url(): void
@@ -315,17 +334,33 @@ class TravelReportApiTest extends TestCase
 
         $this->confirmedBooking($company, 15000);
 
-        $first = $this->getJson('/api/v1/travel/reports/export?type=sales')->assertOk();
-        $hash1 = $first->json('data.request_hash');
+        // POST = demande d'export : 202 + asset, job dispatché (queue sync en
+        // test, donc le fichier peut être généré dans la même requête).
+        $first = $this->postJson('/api/v1/travel/reports/export', $this->exportPayload('export-1'))
+            ->assertStatus(202)
+            ->assertJsonPath('data.report_type', 'sales');
 
-        $this->assertNotEmpty($hash1);
-        $this->assertStringContainsString('travel/exports', $first->json('data.signed_url'));
+        $assetId = $first->json('data.id');
+        $this->assertNotNull($assetId, 'un asset export est cree');
 
-        $second = $this->getJson('/api/v1/travel/reports/export?type=sales')->assertOk();
+        // GET de l'asset : même ressource, URL signée régénérée si généré.
+        $detail = $this->getJson("/api/v1/travel/reports/export/{$assetId}")->assertOk();
+        $this->assertSame($assetId, $detail->json('data.id'));
+        $this->assertContains($detail->json('data.status'), [
+            TravelExportAsset::STATUS_PENDING,
+            TravelExportAsset::STATUS_GENERATED,
+        ]);
+        if ($detail->json('data.status') === TravelExportAsset::STATUS_GENERATED) {
+            $this->assertNotEmpty($detail->json('data.signed_url'));
+        }
 
-        $this->assertSame($hash1, $second->json('data.request_hash'));
+        // Rejeu de la MÊME clé d'idempotence : même asset, aucun doublon.
+        $second = $this->postJson('/api/v1/travel/reports/export', $this->exportPayload('export-1'))
+            ->assertStatus(202);
+
+        $this->assertSame($assetId, $second->json('data.id'));
         $this->assertSame(1, app(TenantManager::class)->withinTenant($company, function (): int {
-            return TravelReportExport::query()->count();
+            return TravelExportAsset::query()->count();
         }));
     }
 
@@ -336,7 +371,8 @@ class TravelReportApiTest extends TestCase
         $this->activateTravel($company);
         $this->principal($company);
 
-        $this->getJson('/api/v1/travel/reports/export?type=bogus')->assertStatus(422);
+        $this->postJson('/api/v1/travel/reports/export', $this->exportPayload('bogus-1', 'bogus'))
+            ->assertStatus(422);
     }
 
     public function test_read_models_rebuild_is_idempotent(): void
