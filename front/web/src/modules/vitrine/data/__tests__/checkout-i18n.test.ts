@@ -50,8 +50,8 @@ describe('checkout i18n (#4185)', () => {
   it('ne laisse aucun littéral FR orphelin dans les pages du tunnel', () => {
     const repoRoot = join(__dirname, '..', '..', '..', '..', '..')
     const pages = [
-      join(repoRoot, 'src/app/(landing)/checkout/page.tsx'),
-      join(repoRoot, 'src/app/(landing)/checkout/success/page.tsx'),
+      join(repoRoot, 'src/app/business/checkout/page.tsx'),
+      join(repoRoot, 'src/app/business/checkout/success/page.tsx'),
     ]
     // Mots français typiques qui ne doivent apparaître ni dans les JSX ni
     // dans les littéraux des pages (les commentaires `//` sont autorisés).

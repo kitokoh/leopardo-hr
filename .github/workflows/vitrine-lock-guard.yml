@@ -4,7 +4,10 @@ on:
   pull_request:
     paths:
       - 'front/web/src/modules/vitrine/**'
-      - 'front/web/src/app/(landing)/**'
+      # #9358 : la vitrine a été déplacée de `(landing)` vers `business/`
+      # (le portail grand public occupe désormais la racine). L'ancien chemin
+      # ne matchait plus aucun fichier — le workflow ne se déclenchait jamais.
+      - 'front/web/src/app/business/**'
 
 permissions:
   contents: read

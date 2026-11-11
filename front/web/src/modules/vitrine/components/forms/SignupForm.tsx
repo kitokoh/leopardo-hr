@@ -127,7 +127,7 @@ function buildSignupFormCopy(locale: AppLocale): SignupFormCopy {
 }
 
 export function SignupForm({
-  page = '/signup',
+  page = '/business/signup',
   onSuccess,
   onError,
   className = '',
@@ -159,11 +159,11 @@ export function SignupForm({
   const [showCountryFallback, setShowCountryFallback] = useState(false);
 
   // Offre choisie sur /pricing (`?plan=<code>`), rappelée à l'utilisateur.
-  // #7488 (décision #7487) : le paramètre est OPTIONNEL — `/signup` nu sert le
+  // #7488 (décision #7487) : le paramètre est OPTIONNEL — `/business/signup` nu sert le
   // formulaire directement (fin du choix de plan à l'inscription) ; quand il
   // est présent (campagne ciblant une offre), le rappel reste affiché.
   const [selectedPlan, setSelectedPlan] = useState('');
-  // #8462 (vague 4) — métier choisi sur la vitrine (`/signup?pack=<slug>`) :
+  // #8462 (vague 4) — métier choisi sur la vitrine (`/business/signup?pack=<slug>`) :
   // l'espace est provisionné AVEC sa verticale (`solutions[]`, BC-25 #6693)
   // et l'entretien de préparation ne redemande pas le secteur. Slug inconnu
   // → ignoré silencieusement (fail-closed, parcours inchangé).
@@ -190,7 +190,7 @@ export function SignupForm({
 
   // BOS-O-02 / #8625 — intention du point d'entrée « Trade ».
   //
-  // `/trade` envoie `?trade=international|domestic&profile=…`. Sans capture
+  // `/business/trade` envoie `?trade=international|domestic&profile=…`. Sans capture
   // ici, ces paramètres disparaissaient au premier rendu : le visiteur avait
   // bien été segmenté dans la vitrine, mais le tenant était provisionné sans
   // marché ni profil. `normalizeTradeIntent` applique l'allowlist (une valeur
@@ -534,7 +534,7 @@ export function SignupForm({
         // avec l'espace, elle dispense la question secteur de l'entretien.
         ...(selectedPack ? { solutions: [packSolutionCode(selectedPack) as string] } : {}),
         // BOS-O-02 / #8625 — reprise de l'intention Trade depuis l'URL de
-        // `/trade` (`?trade=…&profile=…`). La valeur est normalisée par
+        // `/business/trade` (`?trade=…&profile=…`). La valeur est normalisée par
         // allowlist (`normalizeTradeIntent`) : une valeur forgée ne peut pas
         // produire un marché ou un profil inconnu, et un profil incohérent
         // avec le marché est écarté AVANT l'envoi.
@@ -854,7 +854,7 @@ export function SignupForm({
                     {c.planSelected} : <span className="uppercase">{selectedPlan}</span>
                   </span>
                   <Link
-                    href="/pricing"
+                    href="/business/pricing"
                     className="font-semibold text-emerald-700 underline hover:text-emerald-800 dark:text-emerald-300"
                   >
                     {c.planChange}
@@ -1292,7 +1292,7 @@ export function SignupForm({
                   </Button>
                   {/* #7495 — état d'erreur honnête : lien support actionnable. */}
                   <Link
-                    href="/contact"
+                    href="/business/contact"
                     className="inline-flex items-center justify-center gap-1.5 text-sm font-semibold text-emerald-600 transition hover:text-emerald-700 dark:text-emerald-400"
                   >
                     {c.supportCta}
@@ -1432,7 +1432,7 @@ export function SignupForm({
                     {c.loginCta}
                   </Link>
                   <Link
-                    href="/download"
+                    href="/business/download"
                     className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-transparent dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                   >
                     <Download className="h-4 w-4" />

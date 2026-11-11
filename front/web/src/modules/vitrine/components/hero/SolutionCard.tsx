@@ -238,7 +238,7 @@ export function SolutionCard({ solutionId, locale, onClose, returnFocusRef }: So
             <span className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
           </Link>
           <Link
-            href={withLocaleHref('/signup', search)}
+            href={withLocaleHref('/business/signup', search)}
             prefetch={false}
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-white/15 hover:border-white/25 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
           >

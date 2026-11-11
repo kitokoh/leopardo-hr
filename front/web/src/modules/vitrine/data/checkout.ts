@@ -978,14 +978,14 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
 
 /**
  * Cible du CTA « essai guidé » du plan Free, affiché sur
- * `/checkout?plan=free` (#3883/#4195).
+ * `/business/checkout?plan=free` (#3883/#4195).
  *
  * `plan=free` est conservé pour le rappel d'offre dans le formulaire et le
  * tracking campagne, mais il n'est plus OBLIGATOIRE : depuis #7488 (décision
- * #7487), `/signup` est accessible sans plan — le proxy ne redirige plus vers
- * `/pricing#plans` (règle #7238 abrogée).
+ * #7487), `/business/signup` est accessible sans plan — le proxy ne redirige plus vers
+ * `/business/pricing#plans` (règle #7238 abrogée).
  */
-export const FREE_GUIDED_TRIAL_HREF = '/signup?plan=free&source=checkout_plan_free';
+export const FREE_GUIDED_TRIAL_HREF = '/business/signup?plan=free&source=checkout_plan_free';
 
 export function getCheckoutCopy(locale: AppLocale): CheckoutCopy {
   return checkoutCopyByLocale[locale] ?? checkoutCopyByLocale.en

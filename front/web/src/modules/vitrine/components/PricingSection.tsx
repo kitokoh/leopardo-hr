@@ -18,21 +18,21 @@ export function planNameToCheckoutKey(planName?: string): 'free' | 'pilot' | 'op
 }
 
 function getPlanCtaHref(price: string, planName?: string, isAnnual?: boolean) {
-  if (!showsCurrency(price)) return '/contact?topic=enterprise'
+  if (!showsCurrency(price)) return '/business/contact?topic=enterprise'
   const billing = isAnnual ? 'annual' : 'monthly'
   // #2907 : mappe le NOM de plan affiché vers la clé canonique du checkout.
   // Avant, tout plan non-Operations tombait sur 'starter' (Pilot payant) :
   // le CTA « Start for free » du plan Free menait au paywall 24€/mois.
   // #3329 : le plan pilote gratuit doit mener au parcours d'essai sans carte.
-  if (planNameToCheckoutKey(planName) === 'free') return '/signup?source=home_free'
-  if (planNameToCheckoutKey(planName) === 'pilot') return `/signup?source=home_pilot`
+  if (planNameToCheckoutKey(planName) === 'free') return '/business/signup?source=home_free'
+  if (planNameToCheckoutKey(planName) === 'pilot') return `/business/signup?source=home_pilot`
   // #3883 : le plan Free (0 €) suit le même funnel sans carte que l'essai guidé
   // (#2907 : ne jamais mener « Start for free » vers le paywall du checkout).
   // #4952 : tunnel de paiement indisponible en prod (CHECKOUT_UNAVAILABLE) —
   // les plans payants mènent à l'essai sans carte. Réactiver /checkout
   // quand Stripe est branché (#4630).
   const planKey = planNameToCheckoutKey(planName)
-  return `/signup?source=home_${planKey}`
+  return `/business/signup?source=home_${planKey}`
 }
 
 export function PricingSection() {
@@ -198,7 +198,7 @@ export function PricingSection() {
             {t(locale, 'pricing.section.selfHostNote')}
           </p>
           <Link
-            href="/pricing"
+            href="/business/pricing"
             className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors"
           >
             {t(locale, 'pricing.section.fullComparison')}

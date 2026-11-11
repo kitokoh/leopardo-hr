@@ -116,10 +116,9 @@ export const PROTECTED_PREFIXES = [
  * besoin du wildcard.
  */
 export const VITRINE_LANG_PREFIXES = [
-  '/blog',
-  '/guides',
-  '/case-studies',
-  '/checkout',
+  // #9358 — la vitrine commerciale est servie sous `/business` : une seule
+  // entrée couvre ses 36 pages (blog, guides, case-studies, checkout, pricing…).
+  '/business',
   // Portail client des documents partagés (issue #5233) : route PUBLIQUE
   // (le token de partage est la credential, pattern CabinetShare #1817) —
   // le middleware normalise `?lang=` / Accept-Language pour un SSR localisé.

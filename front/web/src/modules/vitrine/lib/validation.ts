@@ -202,7 +202,7 @@ export function contactFormSchema(locale: AppLocale) {
 export type ContactFormData = z.infer<ReturnType<typeof contactFormSchema>>;
 
 /**
- * #8440 — formulaire « Devenir actionnaire » (`/investir`). Tranche de
+ * #8440 — formulaire « Devenir actionnaire » (`/business/investir`). Tranche de
  * montant indicative OBLIGATOIRE (liste fermée, valeurs stables côté API),
  * consentement explicite au recontact (RGPD). Aligné sur le schéma serveur
  * de `/api/forms/equity`.

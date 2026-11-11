@@ -149,6 +149,7 @@ function normalizeMeta(
  */
 export async function searchPublicDiscovery(
   params: PublicDiscoveryParams = {},
+  options: { signal?: AbortSignal } = {},
 ): Promise<{ items: PublicDiscoveryItem[]; meta: PublicDiscoveryMeta } | null> {
   const qs = buildDiscoveryQuery(params);
 
@@ -160,6 +161,12 @@ export async function searchPublicDiscovery(
         // Découverte publique : cache court côté serveur (les publications de
         // profils sont rares, la fraîcheur à la minute suffit au SEO).
         next: { revalidate: 60 },
+        // #9357 — sans signal, un backend injoignable bloque jusqu'au timeout
+        // TCP du runtime : le sitemap dépassait alors les 60 s de Next et le
+        // build échouait (`Failed to build /sitemap.xml/route`). Le signal est
+        // fourni par l'appelant (collecte sitemap) ; absent, comportement
+        // inchangé pour les pages SSR.
+        ...(options.signal ? { signal: options.signal } : {}),
       },
     );
 
@@ -213,14 +220,45 @@ const VERTICAL_PATHS: Record<string, string> = {
 export async function collectVerticalProfilePages(
   siteUrl: string,
   maxPages = 10,
+  budgetMs = 20_000,
 ): Promise<Array<{ url: string; changeFrequency: 'daily'; priority: number }>> {
-  const pages: Array<{ url: string; changeFrequency: 'daily'; priority: number }> = [];
+  // #9357 — BUDGET DE TEMPS GLOBAL.
+  //
+  // La version précédente bouclait 6 verticales × 10 pages EN SÉRIE, sans
+  // timeout : 60 requêtes séquentielles, chacune pouvant bloquer jusqu'au
+  // timeout TCP du runtime. Résultat mesuré en CI : `Failed to build
+  // /sitemap.xml/route ... took more than 60 seconds` → build rouge.
+  //
+  // Trois garde-fous, dans cet ordre :
+  //   1. `AbortSignal.timeout(budgetMs)` borne CHAQUE requête et l'ensemble ;
+  //   2. les verticales sont collectées EN PARALLÈLE (6 requêtes simultanées
+  //      au lieu de 60 séquentielles) ;
+  //   3. le budget est partagé : une verticale lente n'empêche pas les autres
+  //      de publier leurs fiches — on perd des URLs, jamais le sitemap.
+  //
+  // Le sitemap reste donc servi même si l'API publique est totalement
+  // injoignable : c'est la garantie « best-effort » du contrat, désormais
+  // réellement tenue en temps borné.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), budgetMs);
 
-  for (const [type, basePath] of Object.entries(VERTICAL_PATHS)) {
+  const collectOne = async (
+    type: string,
+    basePath: string,
+  ): Promise<Array<{ url: string; changeFrequency: 'daily'; priority: number }>> => {
+    const collected: Array<{ url: string; changeFrequency: 'daily'; priority: number }> = [];
     const seen = new Set<string>();
 
     for (let page = 1; page <= maxPages; page += 1) {
-      const result = await searchPublicDiscovery({ type, page, per_page: 50 });
+      if (controller.signal.aborted) {
+        break;
+      }
+
+      const result = await searchPublicDiscovery(
+        { type, page, per_page: 50 },
+        { signal: controller.signal },
+      );
+
       if (!result || result.items.length === 0) {
         break;
       }
@@ -230,7 +268,7 @@ export async function collectVerticalProfilePages(
           continue;
         }
         seen.add(item.slug);
-        pages.push({
+        collected.push({
           url: `${siteUrl}${basePath}/${item.slug}`,
           changeFrequency: 'daily',
           priority: 0.6,
@@ -241,7 +279,16 @@ export async function collectVerticalProfilePages(
         break;
       }
     }
-  }
 
-  return pages;
+    return collected;
+  };
+
+  try {
+    const perVertical = await Promise.all(
+      Object.entries(VERTICAL_PATHS).map(([type, basePath]) => collectOne(type, basePath)),
+    );
+    return perVertical.flat();
+  } finally {
+    clearTimeout(timer);
+  }
 }

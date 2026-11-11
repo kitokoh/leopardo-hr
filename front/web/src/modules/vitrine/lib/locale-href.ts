@@ -3,7 +3,7 @@
  *
  * La locale vitrine est portée par `?lang=` (URL) ET par localStorage. Quand un
  * visiteur arrive sur `/?lang=en` et clique un lien Navbar/Footer, le href cible
- * (`/pricing`, `/about`, …) ne portait pas `?lang=` → la locale ne survivait pas
+ * (`/business/pricing`, `/business/about`, …) ne portait pas `?lang=` → la locale ne survivait pas
  * au partage/refresh de l'URL (résiduel #3735, qui ne couvrait que le <select>).
  *
  * Règles :

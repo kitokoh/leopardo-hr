@@ -31,7 +31,7 @@ describe('case study detail i18n (#4703)', () => {
   })
 
   it('la page détail ne contient aucun littéral FR hors commentaires', () => {
-    const pagePath = join(__dirname, '../../../../app/(landing)/case-studies/[slug]/page.tsx')
+    const pagePath = join(__dirname, '../../../../app/business/case-studies/[slug]/page.tsx')
     const raw = readFileSync(pagePath, 'utf8')
     const code = raw
       .replace(/\/\*[\s\S]*?\*\//g, '')

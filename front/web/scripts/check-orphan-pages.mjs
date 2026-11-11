@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 /**
- * #8075 — garde « pages orphelines » : toute page publiée sous (landing)
- * doit être atteignable par un lien interne (navbar, footer, contenu) —
+ * #8075 — garde « pages orphelines » : toute page publiée sous la vitrine
+ * (`src/app/business/`, ex-`(landing)` avant #9358) doit être atteignable par
+ * un lien interne (navbar, footer, contenu) —
  * sinon elle est construite mais ne reçoit aucun trafic interne.
  *
- * Pour chaque route top-level de src/app/(landing)/\x{2026}/page.tsx, on cherche
+ * Pour chaque route top-level de src/app/business/\x{2026}/page.tsx, on cherche
  * une référence `"/route"` (lien, bouton, data de navigation) dans src/,
  * en excluant : le dossier de la page elle-même, les tests, le sitemap
  * (le sitemap rendrait la garde aveugle — il liste toutes les routes sans
@@ -18,7 +19,7 @@ import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SRC = fileURLToPath(new URL('../src', import.meta.url));
-const LANDING = join(SRC, 'app', '(landing)');
+const LANDING = join(SRC, 'app', 'business');
 
 /** Routes top-level publiées (dossiers avec page.tsx, hors dynamiques/tests). */
 const routes = readdirSync(LANDING)
@@ -27,7 +28,7 @@ const routes = readdirSync(LANDING)
     const dir = join(LANDING, name);
     return statSync(dir).isDirectory() && existsSync(join(dir, 'page.tsx'));
   })
-  .map((name) => ({ name, route: `/${name}`, dir: join('app', '(landing)', name) }));
+  .map((name) => ({ name, route: `/business/${name}`, dir: join('app', 'business', name) }));
 
 /** Tous les fichiers source candidats à contenir un lien. */
 function* walk(dir) {
@@ -72,4 +73,4 @@ if (orphans) {
   console.error(`\n${orphans} page(s) orpheline(s) — chaque page publiée doit être atteignable en ≤ 2 clics depuis la home.`);
   process.exit(1);
 }
-console.log(`\n${routes.length} pages (landing) : toutes sont liées en interne.`);
+console.log(`\n${routes.length} pages vitrine (/business) : toutes sont liées en interne.`);

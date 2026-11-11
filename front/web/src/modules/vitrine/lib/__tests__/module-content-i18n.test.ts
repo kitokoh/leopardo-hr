@@ -96,7 +96,7 @@ describe('module page sections i18n (#4702)', () => {
   it('ne contient aucun littéral FR hardcodé dans les pages modules', () => {
     const fs = require('fs')
     const path = require('path')
-    const base = path.join(__dirname, '../../../../app/(landing)')
+    const base = path.join(__dirname, '../../../../app/business')
     for (const mod of ['employes', 'documents', 'comptabilite', 'marketing']) {
       const raw = fs.readFileSync(path.join(base, mod, 'page.tsx'), 'utf8')
       // Retire les commentaires // et /* */ puis analyse ligne par ligne :

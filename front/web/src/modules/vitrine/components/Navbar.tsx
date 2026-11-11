@@ -79,7 +79,7 @@ function filterNavEntries(entries: NavEntry[]): NavEntry[] {
       return acc
     }
 
-    const items = entry.items.filter((item) => item.href !== '/blog')
+    const items = entry.items.filter((item) => item.href !== '/business/blog')
     if (items.length > 0) acc.push({ ...entry, items })
     return acc
   }, [])
@@ -104,23 +104,23 @@ function buildNavEntries(locale: AppLocale): NavEntry[] {
     // du Business OS vit désormais dans les offres (/packs, carte dédiée) ET
     // sous la constellation (fiche interactive). Le lien profond /trade reste
     // servi — routes, sitemap et redirections inchangés.
-    { href: '/pricing', label: nav('pricing') },
+    { href: '/business/pricing', label: nav('pricing') },
     {
       label: nav('packs'),
       items: [
-        { href: '/packs', icon: <Gift className="w-4 h-4" />, label: nav('packsHub'), description: nav('packsHubDesc') },
-        { href: '/restaurateur', icon: <UtensilsCrossed className="w-4 h-4" />, label: nav('packsRestaurant'), description: nav('packsRestaurantDesc') },
-        { href: '/packs/station-service', icon: <Fuel className="w-4 h-4" />, label: nav('packsFuel'), description: nav('packsFuelDesc') },
-        { href: '/packs/ecole', icon: <GraduationCap className="w-4 h-4" />, label: nav('packsEdu'), description: nav('packsEduDesc') },
-        { href: '/packs/agence-de-voyage', icon: <Plane className="w-4 h-4" />, label: nav('packsTravel'), description: nav('packsTravelDesc') },
+        { href: '/business/packs', icon: <Gift className="w-4 h-4" />, label: nav('packsHub'), description: nav('packsHubDesc') },
+        { href: '/business/restaurateur', icon: <UtensilsCrossed className="w-4 h-4" />, label: nav('packsRestaurant'), description: nav('packsRestaurantDesc') },
+        { href: '/business/packs/station-service', icon: <Fuel className="w-4 h-4" />, label: nav('packsFuel'), description: nav('packsFuelDesc') },
+        { href: '/business/packs/ecole', icon: <GraduationCap className="w-4 h-4" />, label: nav('packsEdu'), description: nav('packsEduDesc') },
+        { href: '/business/packs/agence-de-voyage', icon: <Plane className="w-4 h-4" />, label: nav('packsTravel'), description: nav('packsTravelDesc') },
       ],
     },
-    { href: '/alternatives', label: nav('comparer') },
+    { href: '/business/alternatives', label: nav('comparer') },
     // Retour propriétaire 2026-10-11 (#8406) : « Contact » vit déjà au footer
     // (colonne Ressources) — sa place en navbar est réinvestie en « Carrières »
     // (/careers, page existante mais sans lien en haut), levier de marque
     // employeur. La barre reste ≤ 7 entrées (#8387).
-    { href: '/careers', label: nav('careers') },
+    { href: '/business/careers', label: nav('careers') },
   ]
 }
 
@@ -371,12 +371,12 @@ export function Navbar({ overDarkStage = false }: Props) {
                   href={withLocaleHref(entry.href, search)}
                   aria-current={pathname === entry.href ? 'page' : undefined}
                   className={`relative px-4 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-slate-100/80 dark:hover:bg-slate-800/80 ${
-                    entry.href === '/download'
+                    entry.href === '/business/download'
                       ? 'text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 flex items-center gap-1.5'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
-                  {entry.href === '/download' && <Monitor className="w-3.5 h-3.5" />}
+                  {entry.href === '/business/download' && <Monitor className="w-3.5 h-3.5" />}
                   {entry.label}
                 </Link>
               )
@@ -418,7 +418,7 @@ export function Navbar({ overDarkStage = false }: Props) {
                  * liée, coût faible, bénéfice nul mesuré).
                  */}
                 <Link
-                  href="/signup"
+                  href="/business/signup"
                   prefetch={false}
                   className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white text-sm font-bold rounded-xl hover:from-emerald-800 hover:to-emerald-900 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]"
                 >
@@ -518,13 +518,13 @@ export function Navbar({ overDarkStage = false }: Props) {
                     <Link
                       href={withLocaleHref(entry.href, search)}
                       className={`block px-4 py-3 text-lg font-semibold rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${
-                        entry.href === '/download'
+                        entry.href === '/business/download'
                           ? 'text-emerald-700 dark:text-emerald-400 flex items-center gap-2'
                           : 'text-slate-900 dark:text-white'
                       }`}
                       onClick={() => setMobileOpen(false)}
                     >
-                      {entry.href === '/download' && <Monitor className="w-5 h-5" />}
+                      {entry.href === '/business/download' && <Monitor className="w-5 h-5" />}
                       {entry.label}
                     </Link>
                   </motion.div>
@@ -551,7 +551,7 @@ export function Navbar({ overDarkStage = false }: Props) {
                       {copy.nav.login}
                     </Link>
                     <Link
-                      href="/signup"
+                      href="/business/signup"
                       prefetch={false}
                       className="block w-full text-center py-3.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20"
                       onClick={() => setMobileOpen(false)}

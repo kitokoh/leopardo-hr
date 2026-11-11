@@ -400,7 +400,7 @@ export function BlogArticle({
               {post.tags.map((tag) => (
                 <Link
                   key={tag}
-                  href={`/blog?category=${encodeURIComponent(post.category)}`}
+                  href={`/business/blog?category=${encodeURIComponent(post.category)}`}
                   className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors"
                 >
                   #{tag}
@@ -439,7 +439,7 @@ export function BlogArticle({
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   className="group relative"
                 >
-                  <Link href={`/blog/${relatedPost.slug}`}>
+                  <Link href={`/business/blog/${relatedPost.slug}`}>
                     <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 group-hover:opacity-10 blur-xl transition-opacity duration-500" />
 
                     <div className="relative bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden transition-all duration-300 group-hover:border-emerald-200/50 dark:group-hover:border-emerald-800/50 group-hover:shadow-xl h-full flex flex-col cursor-pointer">

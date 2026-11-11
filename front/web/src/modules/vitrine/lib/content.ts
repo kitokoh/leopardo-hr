@@ -19,11 +19,11 @@ export const modulePageContent = {
       subheadline: "Pointage, absences, schedules et évaluations en un seul endroit",
       ctaPrimary: {
         text: "Essai gratuit",
-        href: "/signup?module=employes",
+        href: "/business/signup?module=employes",
       },
       ctaSecondary: {
         text: "Voir la démo",
-        href: "/demo?module=employes",
+        href: "/business/demo?module=employes",
       },
     },
     problem: {
@@ -84,7 +84,7 @@ export const modulePageContent = {
             { label: "Erreurs de paie", value: "0" },
             { label: "Satisfaction", value: "98%" },
           ],
-          link: "/case-studies/startup",
+          link: "/business/case-studies/startup",
         },
         {
           title: "Retail: 50 points de vente",
@@ -95,7 +95,7 @@ export const modulePageContent = {
             { label: "Employés gérés", value: "500+" },
             { label: "Réduction coûts", value: "30%" },
           ],
-          link: "/case-studies/retail",
+          link: "/business/case-studies/retail",
         },
         {
           title: "Usine: Biométrie avancée",
@@ -106,7 +106,7 @@ export const modulePageContent = {
             { label: "Précision", value: "99.9%" },
             { label: "Fraude réduite", value: "95%" },
           ],
-          link: "/case-studies/factory",
+          link: "/business/case-studies/factory",
         },
       ],
     },
@@ -183,11 +183,11 @@ export const modulePageContent = {
       subheadline: "Commencez votre essai gratuit de 14 jours dès maintenant",
       ctaPrimary: {
         text: "Essai gratuit",
-        href: "/signup?module=employes",
+        href: "/business/signup?module=employes",
       },
       ctaSecondary: {
         text: "Demander une démo",
-        href: "/demo?module=employes",
+        href: "/business/demo?module=employes",
       },
     },
   },
@@ -206,11 +206,11 @@ export const modulePageContent = {
       subheadline: "Stockage, partage et archivage conformes",
       ctaPrimary: {
         text: "Essai gratuit",
-        href: "/signup?module=documents",
+        href: "/business/signup?module=documents",
       },
       ctaSecondary: {
         text: "Voir la démo",
-        href: "/demo?module=documents",
+        href: "/business/demo?module=documents",
       },
     },
     problem: {
@@ -271,7 +271,7 @@ export const modulePageContent = {
             { label: "Temps économisé", value: "20h/mois" },
             { label: "Conformité", value: "100%" },
           ],
-          link: "/case-studies/law-firm",
+          link: "/business/case-studies/law-firm",
         },
         {
           title: "RH: Dossiers Employés",
@@ -282,7 +282,7 @@ export const modulePageContent = {
             { label: "Sécurité", value: "AES-256" },
             { label: "Accès", value: "Contrôlé" },
           ],
-          link: "/case-studies/hr-files",
+          link: "/business/case-studies/hr-files",
         },
         {
           title: "Finance: Documents Comptables",
@@ -293,7 +293,7 @@ export const modulePageContent = {
             { label: "Rétention", value: "Automatique" },
             { label: "Audit", value: "Complet" },
           ],
-          link: "/case-studies/accounting",
+          link: "/business/case-studies/accounting",
         },
       ],
     },
@@ -370,11 +370,11 @@ export const modulePageContent = {
       subheadline: "Essai gratuit de 14 jours, sans engagement",
       ctaPrimary: {
         text: "Essai gratuit",
-        href: "/signup?module=documents",
+        href: "/business/signup?module=documents",
       },
       ctaSecondary: {
         text: "Demander une démo",
-        href: "/demo?module=documents",
+        href: "/business/demo?module=documents",
       },
     },
   },
@@ -393,11 +393,11 @@ export const modulePageContent = {
       subheadline: "Calculs exacts, bulletins générés, exports comptables",
       ctaPrimary: {
         text: "Essai gratuit",
-        href: "/signup?module=comptabilite",
+        href: "/business/signup?module=comptabilite",
       },
       ctaSecondary: {
         text: "Voir la démo",
-        href: "/demo?module=comptabilite",
+        href: "/business/demo?module=comptabilite",
       },
     },
     problem: {
@@ -458,7 +458,7 @@ export const modulePageContent = {
             { label: "Erreurs", value: "0" },
             { label: "Satisfaction", value: "100%" },
           ],
-          link: "/case-studies/sme-payroll",
+          link: "/business/case-studies/sme-payroll",
         },
         {
           title: "Startup: Avances Automatisées",
@@ -469,7 +469,7 @@ export const modulePageContent = {
             { label: "Traitement", value: "Automatique" },
             { label: "Erreurs", value: "0" },
           ],
-          link: "/case-studies/startup-advances",
+          link: "/business/case-studies/startup-advances",
         },
         {
           title: "Groupe: Multi-Entités",
@@ -480,7 +480,7 @@ export const modulePageContent = {
             { label: "Devises", value: "3" },
             { label: "Employés", value: "500+" },
           ],
-          link: "/case-studies/group-payroll",
+          link: "/business/case-studies/group-payroll",
         },
       ],
     },
@@ -557,11 +557,11 @@ export const modulePageContent = {
       subheadline: "Essai gratuit de 14 jours, sans engagement",
       ctaPrimary: {
         text: "Essai gratuit",
-        href: "/signup?module=comptabilite",
+        href: "/business/signup?module=comptabilite",
       },
       ctaSecondary: {
         text: "Demander une démo",
-        href: "/demo?module=comptabilite",
+        href: "/business/demo?module=comptabilite",
       },
     },
   },
@@ -580,11 +580,11 @@ export const modulePageContent = {
       subheadline: "Email, SMS, réseaux sociaux en un seul endroit",
       ctaPrimary: {
         text: "Essai gratuit",
-        href: "/signup?module=marketing",
+        href: "/business/signup?module=marketing",
       },
       ctaSecondary: {
         text: "Voir la démo",
-        href: "/demo?module=marketing",
+        href: "/business/demo?module=marketing",
       },
     },
     problem: {
@@ -645,7 +645,7 @@ export const modulePageContent = {
             { label: "Coût par candidat", value: "-40%" },
             { label: "Taux de réponse", value: "35%" },
           ],
-          link: "/case-studies/recruitment",
+          link: "/business/case-studies/recruitment",
         },
         {
           title: "Engagement: Newsletters Employés",
@@ -656,7 +656,7 @@ export const modulePageContent = {
             { label: "Clics", value: "15%" },
             { label: "Satisfaction", value: "90%" },
           ],
-          link: "/case-studies/employee-engagement",
+          link: "/business/case-studies/employee-engagement",
         },
         {
           title: "Promotion: Campagnes Clients",
@@ -667,7 +667,7 @@ export const modulePageContent = {
             { label: "ROI", value: "300%" },
             { label: "Clients acquis", value: "50+" },
           ],
-          link: "/case-studies/customer-campaigns",
+          link: "/business/case-studies/customer-campaigns",
         },
       ],
     },
@@ -744,11 +744,11 @@ export const modulePageContent = {
       subheadline: "Essai gratuit de 14 jours, sans engagement",
       ctaPrimary: {
         text: "Essai gratuit",
-        href: "/signup?module=marketing",
+        href: "/business/signup?module=marketing",
       },
       ctaSecondary: {
         text: "Demander une démo",
-        href: "/demo?module=marketing",
+        href: "/business/demo?module=marketing",
       },
     },
   },
@@ -779,8 +779,8 @@ const modulePageContentEn: Partial<ModulePageContent> = {
     hero: {
       headline: 'Simplified HR Management for SMEs',
       subheadline: 'Time tracking, absences, schedules and reviews in one place',
-      ctaPrimary: { text: 'Free trial', href: '/signup?module=employes' },
-      ctaSecondary: { text: 'See the demo', href: '/demo?module=employes' },
+      ctaPrimary: { text: 'Free trial', href: '/business/signup?module=employes' },
+      ctaSecondary: { text: 'See the demo', href: '/business/demo?module=employes' },
     },
     problem: {
       title: 'Still managing employees with Excel and emails?',
@@ -816,7 +816,7 @@ const modulePageContentEn: Partial<ModulePageContent> = {
             { label: 'Payroll errors', value: '0' },
             { label: 'Satisfaction', value: '98%' },
           ],
-          link: '/case-studies/startup',
+          link: '/business/case-studies/startup',
         },
         {
           title: 'Retail: 50 point-of-sale locations',
@@ -827,7 +827,7 @@ const modulePageContentEn: Partial<ModulePageContent> = {
             { label: 'Employees managed', value: '500+' },
             { label: 'Cost reduction', value: '30%' },
           ],
-          link: '/case-studies/retail',
+          link: '/business/case-studies/retail',
         },
         {
           title: 'Factory: advanced biometrics',
@@ -838,7 +838,7 @@ const modulePageContentEn: Partial<ModulePageContent> = {
             { label: 'Accuracy', value: '99.9%' },
             { label: 'Fraud reduced', value: '95%' },
           ],
-          link: '/case-studies/factory',
+          link: '/business/case-studies/factory',
         },
       ],
     },
@@ -913,8 +913,8 @@ const modulePageContentEn: Partial<ModulePageContent> = {
     cta: {
       headline: 'Ready to simplify your HR management?',
       subheadline: 'Start your free 14-day trial today',
-      ctaPrimary: { text: 'Free trial', href: '/signup?module=employes' },
-      ctaSecondary: { text: 'Request a demo', href: '/demo?module=employes' },
+      ctaPrimary: { text: 'Free trial', href: '/business/signup?module=employes' },
+      ctaSecondary: { text: 'Request a demo', href: '/business/demo?module=employes' },
     },
   },
   documents: {
@@ -931,11 +931,11 @@ const modulePageContentEn: Partial<ModulePageContent> = {
       subheadline: "Secure storage, sharing and archiving",
       ctaPrimary: {
         text: "Free trial",
-        href: "/signup?module=documents",
+        href: "/business/signup?module=documents",
       },
       ctaSecondary: {
         text: "See the demo",
-        href: "/demo?module=documents",
+        href: "/business/demo?module=documents",
       },
     },
     problem: {
@@ -1005,7 +1005,7 @@ const modulePageContentEn: Partial<ModulePageContent> = {
               value: "100%",
             },
           ],
-          link: "/case-studies/law-firm",
+          link: "/business/case-studies/law-firm",
         },
         {
           title: "HR: Employee Files",
@@ -1025,7 +1025,7 @@ const modulePageContentEn: Partial<ModulePageContent> = {
               value: "Controlled",
             },
           ],
-          link: "/case-studies/hr-files",
+          link: "/business/case-studies/hr-files",
         },
         {
           title: "Finance: Accounting Documents",
@@ -1045,7 +1045,7 @@ const modulePageContentEn: Partial<ModulePageContent> = {
               value: "Complete",
             },
           ],
-          link: "/case-studies/accounting",
+          link: "/business/case-studies/accounting",
         },
       ],
     },
@@ -1122,11 +1122,11 @@ const modulePageContentEn: Partial<ModulePageContent> = {
       subheadline: "14-day free trial, no commitment",
       ctaPrimary: {
         text: "Free trial",
-        href: "/signup?module=documents",
+        href: "/business/signup?module=documents",
       },
       ctaSecondary: {
         text: "Request a demo",
-        href: "/demo?module=documents",
+        href: "/business/demo?module=documents",
       },
     },
   },
@@ -1144,11 +1144,11 @@ const modulePageContentEn: Partial<ModulePageContent> = {
       subheadline: "Accurate calculations, generated payslips, accounting exports",
       ctaPrimary: {
         text: "Free trial",
-        href: "/signup?module=comptabilite",
+        href: "/business/signup?module=comptabilite",
       },
       ctaSecondary: {
         text: "See the demo",
-        href: "/demo?module=comptabilite",
+        href: "/business/demo?module=comptabilite",
       },
     },
     problem: {
@@ -1218,7 +1218,7 @@ const modulePageContentEn: Partial<ModulePageContent> = {
               value: "100%",
             },
           ],
-          link: "/case-studies/sme-payroll",
+          link: "/business/case-studies/sme-payroll",
         },
         {
           title: "Startup: Automated Advances",
@@ -1238,7 +1238,7 @@ const modulePageContentEn: Partial<ModulePageContent> = {
               value: "0",
             },
           ],
-          link: "/case-studies/startup-advances",
+          link: "/business/case-studies/startup-advances",
         },
         {
           title: "Group: Multi-Entity",
@@ -1258,7 +1258,7 @@ const modulePageContentEn: Partial<ModulePageContent> = {
               value: "500+",
             },
           ],
-          link: "/case-studies/group-payroll",
+          link: "/business/case-studies/group-payroll",
         },
       ],
     },
@@ -1335,11 +1335,11 @@ const modulePageContentEn: Partial<ModulePageContent> = {
       subheadline: "14-day free trial, no commitment",
       ctaPrimary: {
         text: "Free trial",
-        href: "/signup?module=comptabilite",
+        href: "/business/signup?module=comptabilite",
       },
       ctaSecondary: {
         text: "Request a demo",
-        href: "/demo?module=comptabilite",
+        href: "/business/demo?module=comptabilite",
       },
     },
   },
@@ -1357,11 +1357,11 @@ const modulePageContentEn: Partial<ModulePageContent> = {
       subheadline: "Email, SMS, social networks in one place",
       ctaPrimary: {
         text: "Free trial",
-        href: "/signup?module=marketing",
+        href: "/business/signup?module=marketing",
       },
       ctaSecondary: {
         text: "See the demo",
-        href: "/demo?module=marketing",
+        href: "/business/demo?module=marketing",
       },
     },
     problem: {
@@ -1431,7 +1431,7 @@ const modulePageContentEn: Partial<ModulePageContent> = {
               value: "35%",
             },
           ],
-          link: "/case-studies/recruitment",
+          link: "/business/case-studies/recruitment",
         },
         {
           title: "Engagement: Employee Newsletters",
@@ -1451,7 +1451,7 @@ const modulePageContentEn: Partial<ModulePageContent> = {
               value: "90%",
             },
           ],
-          link: "/case-studies/employee-engagement",
+          link: "/business/case-studies/employee-engagement",
         },
         {
           title: "Promotion: Customer Campaigns",
@@ -1471,7 +1471,7 @@ const modulePageContentEn: Partial<ModulePageContent> = {
               value: "50+",
             },
           ],
-          link: "/case-studies/customer-campaigns",
+          link: "/business/case-studies/customer-campaigns",
         },
       ],
     },
@@ -1548,11 +1548,11 @@ const modulePageContentEn: Partial<ModulePageContent> = {
       subheadline: "14-day free trial, no commitment",
       ctaPrimary: {
         text: "Free trial",
-        href: "/signup?module=marketing",
+        href: "/business/signup?module=marketing",
       },
       ctaSecondary: {
         text: "Request a demo",
-        href: "/demo?module=marketing",
+        href: "/business/demo?module=marketing",
       },
     },
   }
@@ -1572,8 +1572,8 @@ const modulePageContentTr: Partial<ModulePageContent> = {
     hero: {
       headline: "KOBİ'ler için Basitleştirilmiş İK Yönetimi",
       subheadline: 'Yoklama, izinler, planlamalar ve değerlendirmeler tek yerde',
-      ctaPrimary: { text: 'Ücretsiz deneme', href: '/signup?module=employes' },
-      ctaSecondary: { text: 'Demoyu gör', href: '/demo?module=employes' },
+      ctaPrimary: { text: 'Ücretsiz deneme', href: '/business/signup?module=employes' },
+      ctaSecondary: { text: 'Demoyu gör', href: '/business/demo?module=employes' },
     },
     problem: {
       title: 'Çalışanlarınızı hâlâ Excel ve e-postalarla mı yönetiyorsunuz?',
@@ -1609,7 +1609,7 @@ const modulePageContentTr: Partial<ModulePageContent> = {
             { label: 'Bordro hatası', value: '0' },
             { label: 'Memnuniyet', value: '%98' },
           ],
-          link: '/case-studies/startup',
+          link: '/business/case-studies/startup',
         },
         {
           title: 'Perakende: 50 satış noktası',
@@ -1620,7 +1620,7 @@ const modulePageContentTr: Partial<ModulePageContent> = {
             { label: 'Yönetilen çalışan', value: '500+' },
             { label: 'Maliyet düşüşü', value: '%30' },
           ],
-          link: '/case-studies/retail',
+          link: '/business/case-studies/retail',
         },
         {
           title: 'Fabrika: gelişmiş biyometri',
@@ -1631,7 +1631,7 @@ const modulePageContentTr: Partial<ModulePageContent> = {
             { label: 'Doğruluk', value: '%99,9' },
             { label: 'Azaltılan sahtecilik', value: '%95' },
           ],
-          link: '/case-studies/factory',
+          link: '/business/case-studies/factory',
         },
       ],
     },
@@ -1706,8 +1706,8 @@ const modulePageContentTr: Partial<ModulePageContent> = {
     cta: {
       headline: 'İK yönetiminizi basitleştirmeye hazır mısınız?',
       subheadline: '14 günlük ücretsiz denemenize hemen başlayın',
-      ctaPrimary: { text: 'Ücretsiz deneme', href: '/signup?module=employes' },
-      ctaSecondary: { text: 'Demo talep edin', href: '/demo?module=employes' },
+      ctaPrimary: { text: 'Ücretsiz deneme', href: '/business/signup?module=employes' },
+      ctaSecondary: { text: 'Demo talep edin', href: '/business/demo?module=employes' },
     },
   },
   documents: {
@@ -1724,11 +1724,11 @@ const modulePageContentTr: Partial<ModulePageContent> = {
       subheadline: "Uyumlu depolama, paylaşım ve arşivleme",
       ctaPrimary: {
         text: "Ücretsiz deneme",
-        href: "/signup?module=documents",
+        href: "/business/signup?module=documents",
       },
       ctaSecondary: {
         text: "Demoyu gör",
-        href: "/demo?module=documents",
+        href: "/business/demo?module=documents",
       },
     },
     problem: {
@@ -1798,7 +1798,7 @@ const modulePageContentTr: Partial<ModulePageContent> = {
               value: "100%",
             },
           ],
-          link: "/case-studies/law-firm",
+          link: "/business/case-studies/law-firm",
         },
         {
           title: "İK: Çalışan Dosyaları",
@@ -1818,7 +1818,7 @@ const modulePageContentTr: Partial<ModulePageContent> = {
               value: "Kontrollü",
             },
           ],
-          link: "/case-studies/hr-files",
+          link: "/business/case-studies/hr-files",
         },
         {
           title: "Finans: Muhasebe Belgeleri",
@@ -1838,7 +1838,7 @@ const modulePageContentTr: Partial<ModulePageContent> = {
               value: "Tam",
             },
           ],
-          link: "/case-studies/accounting",
+          link: "/business/case-studies/accounting",
         },
       ],
     },
@@ -1915,11 +1915,11 @@ const modulePageContentTr: Partial<ModulePageContent> = {
       subheadline: "14 gün ücretsiz deneme, taahhüt yok",
       ctaPrimary: {
         text: "Ücretsiz deneme",
-        href: "/signup?module=documents",
+        href: "/business/signup?module=documents",
       },
       ctaSecondary: {
         text: "Demo iste",
-        href: "/demo?module=documents",
+        href: "/business/demo?module=documents",
       },
     },
   },
@@ -1937,11 +1937,11 @@ const modulePageContentTr: Partial<ModulePageContent> = {
       subheadline: "Doğru hesaplamalar, oluşturulan bordrolar, muhasebe dışa aktarımları",
       ctaPrimary: {
         text: "Ücretsiz deneme",
-        href: "/signup?module=comptabilite",
+        href: "/business/signup?module=comptabilite",
       },
       ctaSecondary: {
         text: "Demoyu gör",
-        href: "/demo?module=comptabilite",
+        href: "/business/demo?module=comptabilite",
       },
     },
     problem: {
@@ -2011,7 +2011,7 @@ const modulePageContentTr: Partial<ModulePageContent> = {
               value: "100%",
             },
           ],
-          link: "/case-studies/sme-payroll",
+          link: "/business/case-studies/sme-payroll",
         },
         {
           title: "Startup: Otomatik Avanslar",
@@ -2031,7 +2031,7 @@ const modulePageContentTr: Partial<ModulePageContent> = {
               value: "0",
             },
           ],
-          link: "/case-studies/startup-advances",
+          link: "/business/case-studies/startup-advances",
         },
         {
           title: "Grup: Çoklu Kuruluş",
@@ -2051,7 +2051,7 @@ const modulePageContentTr: Partial<ModulePageContent> = {
               value: "500+",
             },
           ],
-          link: "/case-studies/group-payroll",
+          link: "/business/case-studies/group-payroll",
         },
       ],
     },
@@ -2128,11 +2128,11 @@ const modulePageContentTr: Partial<ModulePageContent> = {
       subheadline: "14 gün ücretsiz deneme, taahhüt yok",
       ctaPrimary: {
         text: "Ücretsiz deneme",
-        href: "/signup?module=comptabilite",
+        href: "/business/signup?module=comptabilite",
       },
       ctaSecondary: {
         text: "Demo iste",
-        href: "/demo?module=comptabilite",
+        href: "/business/demo?module=comptabilite",
       },
     },
   },
@@ -2150,11 +2150,11 @@ const modulePageContentTr: Partial<ModulePageContent> = {
       subheadline: "E-posta, SMS, sosyal ağlar tek yerde",
       ctaPrimary: {
         text: "Ücretsiz deneme",
-        href: "/signup?module=marketing",
+        href: "/business/signup?module=marketing",
       },
       ctaSecondary: {
         text: "Demoyu gör",
-        href: "/demo?module=marketing",
+        href: "/business/demo?module=marketing",
       },
     },
     problem: {
@@ -2224,7 +2224,7 @@ const modulePageContentTr: Partial<ModulePageContent> = {
               value: "35%",
             },
           ],
-          link: "/case-studies/recruitment",
+          link: "/business/case-studies/recruitment",
         },
         {
           title: "Bağlılık: Çalışan Bültenleri",
@@ -2244,7 +2244,7 @@ const modulePageContentTr: Partial<ModulePageContent> = {
               value: "90%",
             },
           ],
-          link: "/case-studies/employee-engagement",
+          link: "/business/case-studies/employee-engagement",
         },
         {
           title: "Tanıtım: Müşteri Kampanyaları",
@@ -2264,7 +2264,7 @@ const modulePageContentTr: Partial<ModulePageContent> = {
               value: "50+",
             },
           ],
-          link: "/case-studies/customer-campaigns",
+          link: "/business/case-studies/customer-campaigns",
         },
       ],
     },
@@ -2341,11 +2341,11 @@ const modulePageContentTr: Partial<ModulePageContent> = {
       subheadline: "14 gün ücretsiz deneme, taahhüt yok",
       ctaPrimary: {
         text: "Ücretsiz deneme",
-        href: "/signup?module=marketing",
+        href: "/business/signup?module=marketing",
       },
       ctaSecondary: {
         text: "Demo iste",
-        href: "/demo?module=marketing",
+        href: "/business/demo?module=marketing",
       },
     },
   }
@@ -2365,8 +2365,8 @@ const modulePageContentAr: Partial<ModulePageContent> = {
     hero: {
       headline: 'إدارة موارد بشرية مبسّطة للشركات الصغيرة والمتوسطة',
       subheadline: 'تسجيل الحضور والإجازات والجداول والتقييمات في مكان واحد',
-      ctaPrimary: { text: 'تجربة مجانية', href: '/signup?module=employes' },
-      ctaSecondary: { text: 'شاهد العرض', href: '/demo?module=employes' },
+      ctaPrimary: { text: 'تجربة مجانية', href: '/business/signup?module=employes' },
+      ctaSecondary: { text: 'شاهد العرض', href: '/business/demo?module=employes' },
     },
     problem: {
       title: 'هل ما زلت تدير موظفيك عبر Excel والبريد الإلكتروني؟',
@@ -2402,7 +2402,7 @@ const modulePageContentAr: Partial<ModulePageContent> = {
             { label: 'أخطاء الرواتب', value: '0' },
             { label: 'رضا', value: '98%' },
           ],
-          link: '/case-studies/startup',
+          link: '/business/case-studies/startup',
         },
         {
           title: 'تجارة التجزئة: 50 نقطة بيع',
@@ -2413,7 +2413,7 @@ const modulePageContentAr: Partial<ModulePageContent> = {
             { label: 'موظفون مُدارون', value: '500+' },
             { label: 'خفض التكاليف', value: '30%' },
           ],
-          link: '/case-studies/retail',
+          link: '/business/case-studies/retail',
         },
         {
           title: 'مصنع: بصمة متقدمة',
@@ -2424,7 +2424,7 @@ const modulePageContentAr: Partial<ModulePageContent> = {
             { label: 'دقة', value: '99.9%' },
             { label: 'انخفاض الاحتيال', value: '95%' },
           ],
-          link: '/case-studies/factory',
+          link: '/business/case-studies/factory',
         },
       ],
     },
@@ -2499,8 +2499,8 @@ const modulePageContentAr: Partial<ModulePageContent> = {
     cta: {
       headline: 'مستعد لتبسيط إدارة الموارد البشرية لديك؟',
       subheadline: 'ابدأ تجربتك المجانية لمدة 14 يوماً الآن',
-      ctaPrimary: { text: 'تجربة مجانية', href: '/signup?module=employes' },
-      ctaSecondary: { text: 'اطلب عرضاً', href: '/demo?module=employes' },
+      ctaPrimary: { text: 'تجربة مجانية', href: '/business/signup?module=employes' },
+      ctaSecondary: { text: 'اطلب عرضاً', href: '/business/demo?module=employes' },
     },
   },
   documents: {
@@ -2517,11 +2517,11 @@ const modulePageContentAr: Partial<ModulePageContent> = {
       subheadline: "تخزين ومشاركة وأرشفة متوافقة",
       ctaPrimary: {
         text: "تجربة مجانية",
-        href: "/signup?module=documents",
+        href: "/business/signup?module=documents",
       },
       ctaSecondary: {
         text: "عرض العرض التوضيحي",
-        href: "/demo?module=documents",
+        href: "/business/demo?module=documents",
       },
     },
     problem: {
@@ -2591,7 +2591,7 @@ const modulePageContentAr: Partial<ModulePageContent> = {
               value: "100%",
             },
           ],
-          link: "/case-studies/law-firm",
+          link: "/business/case-studies/law-firm",
         },
         {
           title: "الموارد البشرية: ملفات الموظفين",
@@ -2611,7 +2611,7 @@ const modulePageContentAr: Partial<ModulePageContent> = {
               value: "محكوم",
             },
           ],
-          link: "/case-studies/hr-files",
+          link: "/business/case-studies/hr-files",
         },
         {
           title: "المالية: مستندات محاسبية",
@@ -2631,7 +2631,7 @@ const modulePageContentAr: Partial<ModulePageContent> = {
               value: "كامل",
             },
           ],
-          link: "/case-studies/accounting",
+          link: "/business/case-studies/accounting",
         },
       ],
     },
@@ -2708,11 +2708,11 @@ const modulePageContentAr: Partial<ModulePageContent> = {
       subheadline: "تجربة مجانية 14 يوماً دون التزام",
       ctaPrimary: {
         text: "تجربة مجانية",
-        href: "/signup?module=documents",
+        href: "/business/signup?module=documents",
       },
       ctaSecondary: {
         text: "اطلب عرضاً",
-        href: "/demo?module=documents",
+        href: "/business/demo?module=documents",
       },
     },
   },
@@ -2730,11 +2730,11 @@ const modulePageContentAr: Partial<ModulePageContent> = {
       subheadline: "حسابات دقيقة، قسائم رواتب مولّدة، تصديرات محاسبية",
       ctaPrimary: {
         text: "تجربة مجانية",
-        href: "/signup?module=comptabilite",
+        href: "/business/signup?module=comptabilite",
       },
       ctaSecondary: {
         text: "عرض العرض التوضيحي",
-        href: "/demo?module=comptabilite",
+        href: "/business/demo?module=comptabilite",
       },
     },
     problem: {
@@ -2804,7 +2804,7 @@ const modulePageContentAr: Partial<ModulePageContent> = {
               value: "100%",
             },
           ],
-          link: "/case-studies/sme-payroll",
+          link: "/business/case-studies/sme-payroll",
         },
         {
           title: "ناشئة: سلف آلية",
@@ -2824,7 +2824,7 @@ const modulePageContentAr: Partial<ModulePageContent> = {
               value: "0",
             },
           ],
-          link: "/case-studies/startup-advances",
+          link: "/business/case-studies/startup-advances",
         },
         {
           title: "مجموعة: كيانات متعددة",
@@ -2844,7 +2844,7 @@ const modulePageContentAr: Partial<ModulePageContent> = {
               value: "500+",
             },
           ],
-          link: "/case-studies/group-payroll",
+          link: "/business/case-studies/group-payroll",
         },
       ],
     },
@@ -2921,11 +2921,11 @@ const modulePageContentAr: Partial<ModulePageContent> = {
       subheadline: "تجربة مجانية 14 يوماً دون التزام",
       ctaPrimary: {
         text: "تجربة مجانية",
-        href: "/signup?module=comptabilite",
+        href: "/business/signup?module=comptabilite",
       },
       ctaSecondary: {
         text: "اطلب عرضاً",
-        href: "/demo?module=comptabilite",
+        href: "/business/demo?module=comptabilite",
       },
     },
   },
@@ -2943,11 +2943,11 @@ const modulePageContentAr: Partial<ModulePageContent> = {
       subheadline: "البريد، الرسائل القصيرة، شبكات التواصل في مكان واحد",
       ctaPrimary: {
         text: "تجربة مجانية",
-        href: "/signup?module=marketing",
+        href: "/business/signup?module=marketing",
       },
       ctaSecondary: {
         text: "عرض العرض التوضيحي",
-        href: "/demo?module=marketing",
+        href: "/business/demo?module=marketing",
       },
     },
     problem: {
@@ -3017,7 +3017,7 @@ const modulePageContentAr: Partial<ModulePageContent> = {
               value: "35%",
             },
           ],
-          link: "/case-studies/recruitment",
+          link: "/business/case-studies/recruitment",
         },
         {
           title: "التفاعل: نشرات الموظفين",
@@ -3037,7 +3037,7 @@ const modulePageContentAr: Partial<ModulePageContent> = {
               value: "90%",
             },
           ],
-          link: "/case-studies/employee-engagement",
+          link: "/business/case-studies/employee-engagement",
         },
         {
           title: "الترويج: حملات العملاء",
@@ -3057,7 +3057,7 @@ const modulePageContentAr: Partial<ModulePageContent> = {
               value: "50+",
             },
           ],
-          link: "/case-studies/customer-campaigns",
+          link: "/business/case-studies/customer-campaigns",
         },
       ],
     },
@@ -3134,11 +3134,11 @@ const modulePageContentAr: Partial<ModulePageContent> = {
       subheadline: "تجربة مجانية 14 يوماً دون التزام",
       ctaPrimary: {
         text: "تجربة مجانية",
-        href: "/signup?module=marketing",
+        href: "/business/signup?module=marketing",
       },
       ctaSecondary: {
         text: "اطلب عرضاً",
-        href: "/demo?module=marketing",
+        href: "/business/demo?module=marketing",
       },
     },
   }

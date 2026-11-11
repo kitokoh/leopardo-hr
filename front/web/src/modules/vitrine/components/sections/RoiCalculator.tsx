@@ -34,7 +34,7 @@ export function RoiCalculator({
   subtitle = 'Estimez en temps réel le nombre d’heures et les coûts opérationnels économisés chaque mois avec Leopardo.',
   badge = 'SIMULATEUR DE ROI',
   ctaText = 'Démarrer l’essai gratuit de 14 jours',
-  ctaHref = '/signup',
+  ctaHref = '/business/signup',
 }: RoiCalculatorProps) {
   const [employeeCount, setEmployeeCount] = useState<number>(35);
   const [selectedSectorId, setSelectedSectorId] = useState<string>('restaurant');

@@ -9,7 +9,7 @@ import { Navbar } from '../Navbar';
  * Le cookie de session est httpOnly (illisible en JS) : la Navbar valide la
  * session auprès de `/api/v1/auth/me`. Les assertions portent sur les HREF
  * (indépendantes de la locale — jsdom rend en `en` par défaut) :
- * session active → lien `/dashboard`, jamais `/auth/login` ni `/signup`.
+ * session active → lien `/dashboard`, jamais `/auth/login` ni `/business/signup`.
  */
 
 const mockFetch = jest.fn();
@@ -23,7 +23,7 @@ function ctaHrefs(): Array<string | null> {
   return screen
     .getAllByRole('link')
     .map((a) => a.getAttribute('href'))
-    .filter((href) => href === '/dashboard' || href === '/auth/login' || href === '/signup');
+    .filter((href) => href === '/dashboard' || href === '/auth/login' || href === '/business/signup');
 }
 
 describe('Navbar — CTA selon la session (#7492)', () => {
@@ -43,7 +43,7 @@ describe('Navbar — CTA selon la session (#7492)', () => {
     );
     // Les CTA d'acquisition ont disparu.
     expect(ctaHrefs()).not.toContain('/auth/login');
-    expect(ctaHrefs()).not.toContain('/signup');
+    expect(ctaHrefs()).not.toContain('/business/signup');
   });
 
   it('conserve Connexion / Créer un compte pour un visiteur anonyme (401)', async () => {
@@ -57,7 +57,7 @@ describe('Navbar — CTA selon la session (#7492)', () => {
 
     expect(ctaHrefs()).not.toContain('/dashboard');
     expect(ctaHrefs()).toContain('/auth/login');
-    expect(ctaHrefs()).toContain('/signup');
+    expect(ctaHrefs()).toContain('/business/signup');
   });
 
   it('reste en mode anonyme si la vérification échoue (réseau)', async () => {

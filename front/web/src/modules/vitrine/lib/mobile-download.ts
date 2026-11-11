@@ -58,7 +58,7 @@ export function mobileDownloadTarget(
   }
 
   return {
-    href: `/signup?source=download_${slug}_${platform}`,
+    href: `/business/signup?source=download_${slug}_${platform}`,
     isFallback: true,
   };
 }

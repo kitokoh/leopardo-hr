@@ -159,7 +159,7 @@ describe('SignupForm Component', () => {
   // vers les suivants (qui attendent le formulaire complet) ; l'URL aussi.
   beforeEach(() => {
     sessionStorage.clear();
-    window.history.replaceState({}, '', '/signup');
+    window.history.replaceState({}, '', '/business/signup');
     // #7542 — les jalons du funnel sont comptés par test : sans ce nettoyage,
     // les appels des tests précédents feraient échouer les assertions d'ordre.
     mockedTrackFunnelStep.mockClear();
@@ -342,7 +342,7 @@ describe('SignupForm Component', () => {
     });
 
     it('reprend le suivi au montage quand l\'URL porte un ?token= explicite (#8384)', async () => {
-      window.history.replaceState({}, '', `/signup?token=${'r'.repeat(64)}`);
+      window.history.replaceState({}, '', `/business/signup?token=${'r'.repeat(64)}`);
       (fetchTrialStatus as jest.Mock).mockResolvedValue({
         success: true,
         data: { status: 'ready', login_url: '/auth/login', password_set: false, access_sent: false },
@@ -367,7 +367,7 @@ describe('SignupForm Component', () => {
     });
 
     it('affiche un écran d\'échec actionnable et permet de repartir du formulaire', async () => {
-      window.history.replaceState({}, '', `/signup?token=${'f'.repeat(64)}`);
+      window.history.replaceState({}, '', `/business/signup?token=${'f'.repeat(64)}`);
       (fetchTrialStatus as jest.Mock).mockResolvedValue({
         success: true,
         data: { status: 'failed', provisioned_at: null, password_set: false, access_sent: false },
@@ -649,7 +649,7 @@ describe('SignupForm Component', () => {
       // Ouverture de /signup → un seul jalon de vue, malgré les re-renders.
       expect(mockedTrackFunnelStep).toHaveBeenCalledTimes(1);
       expect(mockedTrackFunnelStep).toHaveBeenCalledWith(FUNNEL_EVENTS.signupView, {
-        page: '/signup',
+        page: '/business/signup',
       });
 
       await fillField(/email/i, 'test@example.com');
@@ -674,12 +674,12 @@ describe('SignupForm Component', () => {
 describe('Pack pré-sélectionné (#8462)', () => {
   beforeEach(() => {
     sessionStorage.clear();
-    window.history.replaceState({}, '', '/signup');
+    window.history.replaceState({}, '', '/business/signup');
     mockedSubmitSignupForm.mockClear();
   });
 
   it('affiche le bandeau du pack et envoie sa verticale au provisioning', async () => {
-    window.history.replaceState({}, '', '/signup?pack=restaurant');
+    window.history.replaceState({}, '', '/business/signup?pack=restaurant');
     mockedSubmitSignupForm.mockResolvedValue({
       success: true,
       provisioned: true,
@@ -703,7 +703,7 @@ describe('Pack pré-sélectionné (#8462)', () => {
   });
 
   it('ignore silencieusement un slug inconnu (fail-closed, parcours inchangé)', async () => {
-    window.history.replaceState({}, '', '/signup?pack=inconnu');
+    window.history.replaceState({}, '', '/business/signup?pack=inconnu');
     mockedSubmitSignupForm.mockResolvedValue({
       success: true,
       provisioned: true,
@@ -724,7 +724,7 @@ describe('Pack pré-sélectionné (#8462)', () => {
   });
 
   it('nomme le pack cagnottes via le repli dédié (sans carte hub)', () => {
-    window.history.replaceState({}, '', '/signup?pack=cagnottes&lang=fr');
+    window.history.replaceState({}, '', '/business/signup?pack=cagnottes&lang=fr');
     renderAtFormStep();
 
     expect(screen.getByText(/Pack métier pré-sélectionné/i)).toBeInTheDocument();

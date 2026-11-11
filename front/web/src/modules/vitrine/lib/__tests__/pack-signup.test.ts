@@ -8,7 +8,7 @@ import { packDisplayName } from '../../data/pack-pages';
 
 /**
  * #8462 (vague 4) — « pack-aware signup » : le métier choisi sur la vitrine
- * (`/signup?pack=<slug>`) est traduit en code du catalogue de solutions,
+ * (`/business/signup?pack=<slug>`) est traduit en code du catalogue de solutions,
  * fail-closed — un slug inconnu ne produit JAMAIS de code (il ferait échouer
  * l'inscription en 422 côté catalogue).
  */
@@ -55,13 +55,13 @@ describe('pack-signup (#8462)', () => {
   });
 
   it('construit /signup?pack=… en préservant la query courante (locale)', () => {
-    expect(packSignupHref('restaurant')).toBe('/signup?pack=restaurant');
-    expect(packSignupHref('ecole', 'lang=en')).toBe('/signup?lang=en&pack=ecole');
+    expect(packSignupHref('restaurant')).toBe('/business/signup?pack=restaurant');
+    expect(packSignupHref('ecole', 'lang=en')).toBe('/business/signup?lang=en&pack=ecole');
     expect(packSignupHref('cagnottes', '?lang=ar&utm_source=x')).toBe(
-      '/signup?lang=ar&utm_source=x&pack=cagnottes',
+      '/business/signup?lang=ar&utm_source=x&pack=cagnottes',
     );
     // Un pack déjà présent est remplacé, jamais dupliqué.
-    expect(packSignupHref('ecole', 'pack=restaurant')).toBe('/signup?pack=ecole');
+    expect(packSignupHref('ecole', 'pack=restaurant')).toBe('/business/signup?pack=ecole');
   });
 });
 

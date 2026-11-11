@@ -204,14 +204,14 @@ export function ZKTecoHookSection({ locale = 'fr' }: ZKTecoHookSectionProps) {
 
             <div className="flex flex-wrap items-center gap-4">
               <Link
-                href="/demo"
+                href="/business/demo"
                 className="group inline-flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-7 py-3.5 text-base font-bold text-white shadow-lg shadow-emerald-950/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-emerald-500/25 active:scale-[0.98]"
               >
                 {copy.cta}
                 <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
               </Link>
               <Link
-                href="/mobile"
+                href="/business/mobile"
                 className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/80 px-7 py-3.5 text-base font-semibold text-slate-700 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-emerald-400 hover:bg-white hover:text-emerald-600 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:border-emerald-500 dark:hover:text-emerald-400"
               >
                 {copy.ctaSecondary}

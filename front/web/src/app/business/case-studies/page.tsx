@@ -1,0 +1,158 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { Navbar, HeroSection, CTASection, Footer, useScrollReveal } from '@/modules/vitrine';
+import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { caseStudiesByLocale } from '@/modules/vitrine/data/case-studies';
+import { getAllCaseStudies } from '@/modules/vitrine/lib/case-studies';
+import { motion } from 'framer-motion';
+import { TrendingUp, Clock, Users, Building2, CheckCircle, Info } from 'lucide-react';
+
+
+const colorMap: Record<string, { bg: string; text: string; border: string; badge: string }> = {
+  emerald: { bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-700 dark:text-emerald-400', border: 'border-emerald-200 dark:border-emerald-800', badge: 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400' },
+  blue: { bg: 'bg-blue-50 dark:bg-blue-900/20', text: 'text-blue-700 dark:text-blue-400', border: 'border-blue-200 dark:border-blue-800', badge: 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400' },
+  amber: { bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-700 dark:text-amber-400', border: 'border-amber-200 dark:border-amber-800', badge: 'bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-400' },
+};
+
+export default function CaseStudiesPage() {
+  const { copy, locale } = useVitrineLocale();
+  const caseStudies = caseStudiesByLocale[locale] ?? caseStudiesByLocale.fr;
+  // #AI-SEO : les 12 études de cas détaillées du sitemap. Le hub n'en exposait
+  // AUCUN lien (constaté en production : 0 href vers /case-studies/<slug>) —
+  // elles n'étaient atteignables que depuis les 4 pages module.
+  const detailedStudies = getAllCaseStudies(locale);
+  const cs = copy.caseStudies;
+  useScrollReveal();
+
+  return (
+    <div className={`min-h-screen bg-white `}>
+      <Navbar />
+
+      <HeroSection
+        headline={cs.heroTitle}
+        subheadline={cs.heroSubtitle}
+        ctaPrimary={{ text: cs.heroPrimary, href: '/business/signup' }}
+        ctaSecondary={{ text: cs.heroSecondary, href: '/business/testimonials' }}
+        badge={{ text: cs.heroBadge, icon: <TrendingUp className="w-3 h-3" /> }}
+      />
+
+      {/* Honesty notice — these case studies are illustrative (fictional data) */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10">
+        <div className="flex items-start gap-3 rounded-2xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 px-5 py-4">
+          <Info className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" aria-hidden="true" />
+          <p className="text-sm text-amber-800 dark:text-amber-200 leading-relaxed">{cs.demoNotice}</p>
+        </div>
+      </section>
+
+      {/* Case Studies */}
+      <section className="py-24">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+          {caseStudies.map((item, i) => {
+            const colors = colorMap[item.color] || colorMap.emerald;
+            return (
+              <motion.article
+                key={i}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                viewport={{ once: true }}
+                className={`rounded-3xl border ${colors.border} overflow-hidden`}
+              >
+                {/* Header */}
+                <div className={`${colors.bg} px-8 py-6`}>
+                  <div className="flex flex-wrap items-center gap-4">
+                    <div className={`px-3 py-1 rounded-full text-xs font-bold ${colors.badge}`}>
+                      {item.industry}
+                    </div>
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/70 dark:bg-slate-900/70 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                      {cs.demoBadge}
+                    </span>
+                    <h2 className="text-2xl font-black text-slate-900 dark:text-white">{item.company}</h2>
+                    <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 ml-auto">
+                      <span className="flex items-center gap-1"><Users className="w-4 h-4" />{item.employees} {cs.employees}</span>
+                      <span className="flex items-center gap-1"><Building2 className="w-4 h-4" />{item.country}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Body */}
+                <div className="bg-white dark:bg-slate-900 px-8 py-8">
+                  <div className="grid md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                      <h3 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-red-500" /> {cs.challenge}
+                      </h3>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{item.challenge}</p>
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-emerald-500" /> {cs.solution}
+                      </h3>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{item.solution}</p>
+                    </div>
+                  </div>
+
+                  {/* Results */}
+                  <div className="grid grid-cols-3 gap-4 mb-8">
+                    {item.results.map((r, j) => (
+                      <div key={j} className={`${colors.bg} rounded-xl p-4 text-center`}>
+                        <p className={`text-2xl font-black ${colors.text}`}>{r.metric}</p>
+                        <p className="text-slate-600 dark:text-slate-400 text-xs mt-1">{r.label}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Testimonial */}
+                  <blockquote className="border-l-4 border-emerald-500 pl-4 py-2">
+                    <p className="text-slate-700 dark:text-slate-300 italic text-sm">&ldquo;{item.testimonial}&rdquo;</p>
+                    <cite className="text-slate-600 text-xs mt-2 block not-italic dark:text-slate-400">&mdash; {item.author}</cite>
+                  </blockquote>
+                </div>
+              </motion.article>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* #AI-SEO : catalogue de liens vers les 12 études de cas détaillées
+          (maillage interne du hub vers les URLs du sitemap). Titres et
+          libellés de module sont localisés via getAllCaseStudies(locale). */}
+      <section className="py-20 bg-slate-50 dark:bg-slate-900/40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">
+            {cs.catalogTitle}
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 mb-10 max-w-3xl">{cs.catalogSubtitle}</p>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {detailedStudies.map((study) => (
+              <li key={study.slug}>
+                <Link
+                  href={`/business/case-studies/${study.slug}`}
+                  className="group flex h-full flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:border-emerald-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900"
+                >
+                  <span className="mb-3 inline-flex w-fit rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400">
+                    {study.moduleLabel}
+                  </span>
+                  <span className="text-base font-bold leading-snug text-slate-900 group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-400">
+                    {study.title}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <CTASection
+        title={cs.ctaTitle}
+        description={cs.ctaDescription}
+        primaryCta={{ text: cs.ctaPrimary, href: '/business/signup' }}
+        secondaryCta={{ text: cs.ctaSecondary, href: '/business/demo' }}
+      />
+
+      <Footer />
+    </div>
+  );
+}

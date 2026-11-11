@@ -78,6 +78,17 @@ jest.doMock('@/lib/careers-api', () => ({
   },
 }));
 
+// #9357 : les fiches des verticales (`/boutiques/{slug}`, `/operateurs/{slug}`,
+// `/entreprises/{slug}`, `/stay/{slug}`) viennent du contrat public de
+// découverte — mocké ici (aucun réseau en test). Sans ce mock, le test tapait
+// l'API réelle et le sitemap dépassait le budget de build.
+jest.doMock('@/lib/public-discovery-api', () => ({
+  collectVerticalProfilePages: async (siteUrl: string) => [
+    { url: `${siteUrl}/boutiques/atelier-du-cuir`, changeFrequency: 'daily', priority: 0.6 },
+    { url: `${siteUrl}/entreprises/transports-benali`, changeFrequency: 'daily', priority: 0.6 },
+  ],
+}));
+
 describe('sitemap integrity (#3807)', () => {
   let urls: string[];
   let entries: Array<{ url: string; lastModified?: unknown; alternates?: { languages?: Record<string, string> } }>;
@@ -111,8 +122,8 @@ describe('sitemap integrity (#3807)', () => {
   });
 
   it('publie les études de cas individuelles', () => {
-    expect(urls).toContain('https://www.leopardo-rh.com/case-studies/techcorp-algerie');
-    expect(urls).toContain('https://www.leopardo-rh.com/case-studies/pharmaplus-casablanca');
+    expect(urls).toContain('https://www.leopardo-rh.com/business/case-studies/techcorp-algerie');
+    expect(urls).toContain('https://www.leopardo-rh.com/business/case-studies/pharmaplus-casablanca');
   });
 
   it('RESTO-903 (#7748) : publie l’annuaire et les profils publics /restaurants/{slug}', () => {
@@ -138,17 +149,25 @@ describe('sitemap integrity (#3807)', () => {
     expect(pricing?.lastModified).toBeUndefined();
   });
 
+  it('#9357 : publie les fiches des verticales (auparavant orphelines)', () => {
+    // `/boutiques/{slug}`, `/operateurs/{slug}`, `/entreprises/{slug}` et
+    // `/stay/{slug}` étaient servies mais déclarées NULLE PART : invisibles
+    // pour le crawl. Elles doivent désormais figurer au sitemap.
+    expect(urls).toContain('https://www.leopardo-rh.com/boutiques/atelier-du-cuir');
+    expect(urls).toContain('https://www.leopardo-rh.com/entreprises/transports-benali');
+  });
+
   it('chaque entrée porte des alternates hreflang localisées', () => {
     const pricing = entries.find((entry) => entry.url.endsWith('/pricing'));
     expect(pricing?.alternates?.languages).toEqual({
-      fr: 'https://www.leopardo-rh.com/pricing',
-      en: 'https://www.leopardo-rh.com/pricing?lang=en',
-      tr: 'https://www.leopardo-rh.com/pricing?lang=tr',
-      ar: 'https://www.leopardo-rh.com/pricing?lang=ar',
+      fr: 'https://www.leopardo-rh.com/business/pricing',
+      en: 'https://www.leopardo-rh.com/business/pricing?lang=en',
+      tr: 'https://www.leopardo-rh.com/business/pricing?lang=tr',
+      ar: 'https://www.leopardo-rh.com/business/pricing?lang=ar',
       // #AI-SEO : variante de repli pour les langues non couvertes — doit
       // pointer la version FR (sans ?lang=), alignée sur seo.ts et le layout
       // racine.
-      'x-default': 'https://www.leopardo-rh.com/pricing',
+      'x-default': 'https://www.leopardo-rh.com/business/pricing',
     });
   });
 });

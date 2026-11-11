@@ -85,7 +85,7 @@ describe('chiffres canoniques de la vitrine (#7307)', () => {
     expect(localeSource).toContain('FREE_TRIAL_DAYS')
 
     // La page demo annoncait « 9 moteurs » alors que l'API en enregistre 11.
-    const demoSource = read('../../app/(landing)/demo/page.tsx')
+    const demoSource = read('../../app/business/demo/page.tsx')
     expect(demoSource).toContain('PAYROLL_RULE_ENGINES_COUNT')
     expect(demoSource).not.toMatch(/desc: '9 (moteurs|rule|kural|محركات)/)
   })
