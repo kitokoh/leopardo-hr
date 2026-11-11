@@ -91,7 +91,7 @@ jobs:
     # cause du groupe de concurrence stable de `main`, il a gelé TOUS les
     # verdicts suivants (6 runs de main restés `pending` puis remplacés, aucun
     # job exécuté). Le plafond utile est donc posé sur l'ÉTAPE (ci-dessous),
-    # pour qu'une suite suspendue libère le groupe en ~2 h 30 et non en 5 h.
+    # pour qu'une suite suspendue libère le groupe en ~3 h 30 et non en 5 h.
     timeout-minutes: 300
     name: Backend (PHP 8.4 + PostgreSQL 16 + Redis 7)
     runs-on: ubuntu-latest
@@ -205,14 +205,21 @@ jobs:
 
       - name: Run backend feature tests
         id: backend_feature_tests
-        # Issue #9311 : plafond de l'ÉTAPE, pas seulement du job. Une suite
-        # Feature nominale dure ~45-60 min (job complet mesuré ~82 min) ; au
-        # delà de 150 min, le run est suspendu, et un run suspendu sur `main`
-        # bloque tous les verdicts suivants (groupe de concurrence stable par
-        # ref : les runs plus récents restent `pending` et sont remplacés sans
-        # exécuter un seul job). Borner ici rend l'échec DÉTERMINISTE et libère
-        # le groupe ; le plafond du job (300 min) reste le filet ultime.
-        timeout-minutes: 150
+        # Issue #9311 : plafond de l'ÉTAPE, pas seulement du job. Un run
+        # suspendu sur `main` bloque tous les verdicts suivants (groupe de
+        # concurrence stable par ref : les runs plus récents restent `pending`
+        # et sont remplacés sans exécuter un seul job). Borner ici rend l'échec
+        # DÉTERMINISTE et libère le groupe ; le plafond du job (300 min) reste
+        # le filet ultime.
+        #
+        # Issue #9401 : la valeur de départ (150 min) venait d'une ESTIMATION
+        # (~45-60 min), pas d'une mesure. Durée réelle de l'étape mesurée sur
+        # `main` (run 42770976926, SHA b1b1c8da2) : 08:09:40Z -> 10:13:48Z =
+        # 124 min en `completed/success` — 150 min ne laissait que 21 % de
+        # marge, donc le prochain run légitime un peu plus lent serait devenu
+        # un faux rouge par timeout. 210 min (124 x 1,6) garde la propriété
+        # recherchée tout en ne tuant pas un run sain.
+        timeout-minutes: 210
         continue-on-error: true
         working-directory: ./api
         env:
