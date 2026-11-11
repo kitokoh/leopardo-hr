@@ -70,6 +70,67 @@
       .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function(j){ notesCache = j; return j; });
   }
+  function fmtDate(iso){
+    var s = String(iso || '').trim();
+    if(!s) return '';
+    s = s.replace('T',' ');
+    if(s.charAt(s.length-1) === 'Z') s = s.slice(0,-1);
+    s = s.split('.')[0];
+    return s.length >= 16 ? s + ' UTC' : s;
+  }
+  function histRowsHtml(hist){
+    if(!hist || !hist.length) return '';
+    var ordered = hist.slice().sort(function(a,b){
+      return String(b.date||'').localeCompare(String(a.date||''));
+    });
+    return ordered.map(function(h){
+      var note = h.note_humaine;
+      var noteHtml = (note === null || note === undefined || note === '')
+        ? '<span class="muted">\u2014</span>'
+        : '<span class="note-badge">' + escHtml(note) + '/5</span>';
+      var action = h.action || 'modification';
+      var cls = action === 'creation' ? 'hist-created' : 'hist-updated';
+      var label = action === 'creation' ? 'cr\u00e9ation' : 'modification';
+      var obs = h.observation_humaine ? escHtml(h.observation_humaine)
+        : '<span class="muted">\u2014</span>';
+      return '<tr><td class="nowrap">' + escHtml(fmtDate(h.date)) + '</td>'
+        + '<td>' + escHtml(h.auteur || '\u2014') + '</td>'
+        + '<td class="center">' + noteHtml + '</td>'
+        + '<td class="obs">' + obs + '</td>'
+        + '<td><span class="hist-badge ' + cls + '">' + label + '</span></td></tr>';
+    }).join('');
+  }
+  function paintHistory(notes){
+    document.querySelectorAll('[data-hist-body]').forEach(function(box){
+      var id = box.getAttribute('data-hist-body');
+      var n = (notes && notes[id]) || {};
+      var hist = n.historique || [];
+      var rows = histRowsHtml(hist);
+      box.innerHTML = rows
+        ? '<div class="table-wrap"><table class="data-table hist-table"><thead><tr>'
+          + '<th>Date</th><th>Auteur</th><th class="center">Note (/5)</th>'
+          + '<th>Observation</th><th>Action</th></tr></thead><tbody>'
+          + rows + '</tbody></table></div>'
+        : '<p class="hist-empty muted">Aucune modification enregistr\u00e9e pour ce cas. '
+          + 'La premi\u00e8re note saisie ci-dessous cr\u00e9era la premi\u00e8re entr\u00e9e d\'historique.</p>';
+      var badge = document.querySelector('[data-hist-count-badge="' + id + '"]');
+      if(badge) badge.textContent = String(hist.length);
+      var chip = document.querySelector('[data-hist-count="' + id + '"]');
+      if(chip) chip.textContent = hist.length + ' modification' + (hist.length === 1 ? '' : 's');
+    });
+    // R\u00e9capitulatif : derni\u00e8re modification par cas
+    document.querySelectorAll('[data-last-edit]').forEach(function(td){
+      var id = td.getAttribute('data-last-edit');
+      var n = (notes && notes[id]) || {};
+      if(!n.date_modification && !n.auteur){ td.innerHTML = '<span class="muted">\u2014</span>'; return; }
+      var bits = [];
+      if(n.date_modification) bits.push('<span class="nowrap">' + escHtml(fmtDate(n.date_modification)) + '</span>');
+      if(n.auteur) bits.push('<span class="muted">par ' + escHtml(n.auteur) + '</span>');
+      var hn = n.historique || [];
+      if(hn.length) bits.push('<span class="muted small">(' + hn.length + ' modif.)</span>');
+      td.innerHTML = bits.join('<br>');
+    });
+  }
   function paintHumanCells(notes){
     document.querySelectorAll('[data-human-note]').forEach(function(td){
       var n = (notes && notes[td.getAttribute('data-human-note')]) || {};
@@ -95,7 +156,7 @@
 
   // Rafraîchit les cellules humaines sur TOUTES les pages (fiches + récapitulatif).
   // En cas d'échec (hors-ligne), le rendu serveur généré par build_portal.py reste affiché.
-  fetchNotes().then(function(j){ paintHumanCells(j.notes || {}); }).catch(function(){});
+  fetchNotes().then(function(j){ paintHumanCells(j.notes || {}); paintHistory(j.notes || {}); }).catch(function(){});
 
   var panel = document.querySelector('.eval-panel');
   if(!panel) return;
@@ -219,16 +280,35 @@
       try{ current = JSON.parse(b64decode(file.content)); }catch(e){ current = {notes:{}}; }
       if(!current.notes) current.notes = {};
       if(!current.notes[uc]) current.notes[uc] = {};
-      current.notes[uc].note_humaine = noteVal;
-      current.notes[uc].observation_humaine = obsVal;
-      current.notes[uc].auteur = author;
-      current.notes[uc].date_modification = new Date().toISOString();
-      if(current._meta) current._meta.updated_at = new Date().toISOString();
+      var entry = current.notes[uc];
+      // Migration douce : un fichier v1 (sans historique) reste valide.
+      if(!Array.isArray(entry.historique)) entry.historique = [];
+      var now = new Date().toISOString();
+      var isFirst = entry.historique.length === 0
+                 && (entry.note_humaine === null || entry.note_humaine === undefined || entry.note_humaine === '')
+                 && !entry.observation_humaine;
+      entry.note_humaine = noteVal;
+      entry.observation_humaine = obsVal;
+      entry.auteur = author;
+      entry.date_modification = now;
+      // Une entrée d'historique par enregistrement (date UTC, auteur, note, observation, action).
+      entry.historique.push({
+        date: now,
+        auteur: author,
+        note_humaine: noteVal,
+        observation_humaine: obsVal,
+        action: isFirst ? 'creation' : 'modification'
+      });
+      if(current._meta){
+        current._meta.updated_at = now;
+        current._meta.schema_version = 2;
+      }
       var msg = 'docs(recette): note humaine ' + uc + ' (' +
                 (noteVal === null ? '—' : noteVal + '/5') + ') par ' + author;
       return ghPut(JSON.stringify(current, null, 2) + '\n', file.sha, msg).then(function(){
         notesCache = current;
         paintHumanCells(current.notes);
+        paintHistory(current.notes);
         fillForm(current.notes);
         setStatus('Enregistré dans le dépôt ✔ (commit sur ' + BRANCH + ')', 'ok');
       });

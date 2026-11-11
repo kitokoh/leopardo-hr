@@ -467,15 +467,66 @@ HUMAN_NOTES = load_human_notes()
 
 
 def human_note(uc_id: str) -> dict:
-    """Valeurs humaines d'un cas d'usage (vides si non renseignées)."""
+    """Valeurs humaines d'un cas d'usage (vides si non renseignées).
+
+    `historique` est la liste horodatée des modifications (schéma v2). Les
+    fichiers v1 (sans historique) restent valides : la liste est simplement
+    vide, et une entrée est ajoutée au prochain enregistrement.
+    """
     n = HUMAN_NOTES.get(uc_id) or {}
     note = n.get("note_humaine")
+    hist = n.get("historique")
+    if not isinstance(hist, list):
+        hist = []
     return {
         "note": "" if note is None else str(note),
         "obs": n.get("observation_humaine") or "",
         "auteur": n.get("auteur") or "",
         "date": n.get("date_modification") or "",
+        "historique": [h for h in hist if isinstance(h, dict)],
     }
+
+
+def fmt_date(iso: str) -> str:
+    """ISO 8601 -> « 2026-11-11 14:32 UTC » (lisible, sans dépendance)."""
+    s = (iso or "").strip()
+    if not s:
+        return ""
+    s = s.replace("T", " ")
+    if s.endswith("Z"):
+        s = s[:-1]
+    s = s.split(".")[0]
+    return f"{s} UTC" if len(s) >= 16 else s
+
+
+def history_rows(uc_id: str) -> str:
+    """Lignes du tableau d'historique, du plus récent au plus ancien."""
+    hist = human_note(uc_id)["historique"]
+    if not hist:
+        return ""
+    ordered = sorted(hist, key=lambda h: str(h.get("date") or ""), reverse=True)
+    out = []
+    for h in ordered:
+        note = h.get("note_humaine")
+        note_html = (
+            '<span class="muted">—</span>' if note is None or note == ""
+            else f'<span class="note-badge">{esc(str(note))}/5</span>'
+        )
+        action = str(h.get("action") or "modification")
+        cls = "hist-created" if action == "creation" else "hist-updated"
+        label = "création" if action == "creation" else "modification"
+        obs_raw = str(h.get("observation_humaine") or "")
+        obs_html = md_inline(obs_raw) if obs_raw else '<span class="muted">—</span>'
+        out.append(
+            "<tr>"
+            f'<td class="nowrap">{esc(fmt_date(str(h.get("date") or "")))}</td>'
+            f'<td>{esc(str(h.get("auteur") or "—"))}</td>'
+            f'<td class="center">{note_html}</td>'
+            f'<td class="obs">{obs_html}</td>'
+            f'<td><span class="hist-badge {cls}">{label}</span></td>'
+            "</tr>"
+        )
+    return "".join(out)
 
 
 TYPES = ["Fonctionnel", "Sécurité", "API", "UI/UX", "Résilience"]
@@ -864,6 +915,28 @@ def page_uc(uc: dict) -> str:
         if hn["date"]:
             bits.append(f'le {esc(hn["date"][:10])}')
         hn_meta = f'<div class="human-meta muted small">{" ".join(bits)}</div>'
+
+    # Historique des modifications (schéma v2) — rendu serveur, rafraîchi par portal.js
+    hist = hn["historique"]
+    n_hist = len(hist)
+    hist_rows_html = history_rows(uc["id"])
+    if hist_rows_html:
+        hist_body = f"""
+    <div class="table-wrap">
+      <table class="data-table hist-table">
+        <thead>
+          <tr>
+            <th>Date</th><th>Auteur</th><th class="center">Note (/5)</th>
+            <th>Observation</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody>{hist_rows_html}</tbody>
+      </table>
+    </div>"""
+    else:
+        hist_body = """
+    <p class="hist-empty muted">Aucune modification enregistrée pour ce cas.
+    La première note saisie ci-dessous créera la première entrée d'historique.</p>"""
     body = f"""
 {breadcrumb(1, [("Profils", "profils/index.html"), (profs[0]['name'], f"../profils/{profs[0]['slug']}.html"), (uc['id'], None)])}
 <div class="uc-head">
@@ -875,6 +948,7 @@ def page_uc(uc: dict) -> str:
       {status_badge(uc['status'])}
       <span class="chip">Profil : {prof_links}</span>
       <span class="chip">Module : {mod_links}</span>
+      <span class="chip hist-count" data-hist-count="{esc(uc['id'])}">{n_hist} modification{'s' if n_hist != 1 else ''}</span>
     </div>
   </div>
 </div>
@@ -917,6 +991,14 @@ def page_uc(uc: dict) -> str:
         </tr>
       </tbody>
     </table>
+  </div>
+</section>
+
+<section class="panel hist-panel" data-hist-panel="{esc(uc['id'])}">
+  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="{esc(uc['id'])}">{n_hist}</span></h3>
+  <p class="muted small">Toutes les saisies de notation humaine de ce cas, de la plus récente à la plus ancienne.
+  Chaque enregistrement depuis le portail ajoute une entrée horodatée (UTC).</p>
+  <div class="hist-body" data-hist-body="{esc(uc['id'])}">{hist_body}
   </div>
 </section>
 
@@ -987,6 +1069,22 @@ def recap_human(uc_id: str) -> str:
     return '<span class="muted">—</span>'
 
 
+def recap_last_edit(uc_id: str) -> str:
+    """Cellule « Dernière modification » du récapitulatif (date + auteur)."""
+    hn = human_note(uc_id)
+    if not (hn["date"] or hn["auteur"]):
+        return '<span class="muted">—</span>'
+    bits = []
+    if hn["date"]:
+        bits.append(f'<span class="nowrap">{esc(fmt_date(hn["date"]))}</span>')
+    if hn["auteur"]:
+        bits.append(f'<span class="muted">par {esc(hn["auteur"])}</span>')
+    n = len(hn["historique"])
+    if n:
+        bits.append(f'<span class="muted small">({n} modif.)</span>')
+    return "<br>".join(bits)
+
+
 def page_recap() -> str:
     rows = []
     notes = []
@@ -1002,6 +1100,7 @@ def page_recap() -> str:
           <td>{status_badge(u['status'])}</td>
           <td class="center">{note_badge(n)}</td>
           <td class="center human-cell" data-human-note="{esc(u['id'])}">{recap_human(u['id'])}</td>
+          <td class="last-edit" data-last-edit="{esc(u['id'])}">{recap_last_edit(u['id'])}</td>
         </tr>""")
     total = sum(notes)
     avg = f"{total/len(notes):.2f}" if notes else "—"
@@ -1016,7 +1115,7 @@ def page_recap() -> str:
 </div>
 <div class="table-wrap">
   <table class="data-table">
-    <thead><tr><th>ID</th><th>Cas d'usage</th><th>Type</th><th>Statut</th><th class="center">Note IA (/5)</th><th class="center">Note humaine (/5)</th></tr></thead>
+    <thead><tr><th>ID</th><th>Cas d'usage</th><th>Type</th><th>Statut</th><th class="center">Note IA (/5)</th><th class="center">Note humaine (/5)</th><th>Dernière modification</th></tr></thead>
     <tbody>{''.join(rows)}</tbody>
   </table>
 </div>
@@ -1068,7 +1167,27 @@ def build_markdown() -> str:
         lines.append("| Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |")
         lines.append("| :---: | :--- | :---: | :--- |")
         obs = u["obs_ia"].replace("|", "\\|") if u["obs_ia"] else "Non exécuté — à réaliser par le testeur IA."
-        lines.append(f"| {u['note_ia'] or ''} | {obs} |  |  |\n")
+        hn = human_note(u["id"])
+        hn_note = hn["note"] or ""
+        hn_obs = (hn["obs"] or "").replace("|", "\\|")
+        lines.append(f"| {u['note_ia'] or ''} | {obs} | {hn_note} | {hn_obs} |\n")
+        # Historique des modifications (schéma v2)
+        hist = hn["historique"]
+        if hist:
+            lines.append(f"**Historique des modifications ({len(hist)})**\n")
+            lines.append("| Date (UTC) | Auteur | Note (/5) | Observation | Action |")
+            lines.append("| :--- | :--- | :---: | :--- | :--- |")
+            for h in sorted(hist, key=lambda x: str(x.get("date") or ""), reverse=True):
+                d = fmt_date(str(h.get("date") or ""))
+                a = str(h.get("auteur") or "—").replace("|", "\\|")
+                n = h.get("note_humaine")
+                n = "" if n is None else str(n)
+                o = str(h.get("observation_humaine") or "").replace("|", "\\|")
+                act = "création" if str(h.get("action")) == "creation" else "modification"
+                lines.append(f"| {d} | {a} | {n} | {o} | {act} |")
+            lines.append("")
+        else:
+            lines.append("_Aucune modification humaine enregistrée pour ce cas._\n")
         lines.append("---\n")
     # recap
     notes = [int(u["note_ia"]) for u in USE_CASES if u["note_ia"]]
@@ -1292,6 +1411,19 @@ main{padding:28px 20px 60px}
 .eval-status.warn{color:#b45309;font-weight:600}
 .eval-meta{margin:0}
 .eval-save[disabled]{opacity:.6;cursor:progress}
+/* historique des modifications */
+.hist-panel{border-left:4px solid #0d9488}
+.hist-table{font-size:13.5px}
+.hist-table td.obs{min-width:240px}
+.hist-table .nowrap{white-space:nowrap;font-variant-numeric:tabular-nums}
+.hist-badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:700}
+.hist-created{background:#dcfce7;color:#166534}
+.hist-updated{background:#e0e7ff;color:#3730a3}
+.hist-empty{padding:14px 16px;background:#f8fafc;border:1px dashed var(--line);border-radius:10px;margin:0}
+.hist-count{background:#f0fdfa;border-color:#99f6e4;color:#0f766e;font-weight:600}
+.hist-count-badge{display:inline-block;min-width:24px;padding:1px 8px;border-radius:999px;
+  background:#0d9488;color:#fff;font-size:12.5px;font-weight:700;vertical-align:middle}
+.last-edit{font-size:12.5px;line-height:1.5}
 /* eval */
 .eval-panel{border-left:4px solid var(--brand)}
 .eval-form{display:grid;gap:12px}
@@ -1402,6 +1534,67 @@ JS = r"""
       .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function(j){ notesCache = j; return j; });
   }
+  function fmtDate(iso){
+    var s = String(iso || '').trim();
+    if(!s) return '';
+    s = s.replace('T',' ');
+    if(s.charAt(s.length-1) === 'Z') s = s.slice(0,-1);
+    s = s.split('.')[0];
+    return s.length >= 16 ? s + ' UTC' : s;
+  }
+  function histRowsHtml(hist){
+    if(!hist || !hist.length) return '';
+    var ordered = hist.slice().sort(function(a,b){
+      return String(b.date||'').localeCompare(String(a.date||''));
+    });
+    return ordered.map(function(h){
+      var note = h.note_humaine;
+      var noteHtml = (note === null || note === undefined || note === '')
+        ? '<span class="muted">\u2014</span>'
+        : '<span class="note-badge">' + escHtml(note) + '/5</span>';
+      var action = h.action || 'modification';
+      var cls = action === 'creation' ? 'hist-created' : 'hist-updated';
+      var label = action === 'creation' ? 'cr\u00e9ation' : 'modification';
+      var obs = h.observation_humaine ? escHtml(h.observation_humaine)
+        : '<span class="muted">\u2014</span>';
+      return '<tr><td class="nowrap">' + escHtml(fmtDate(h.date)) + '</td>'
+        + '<td>' + escHtml(h.auteur || '\u2014') + '</td>'
+        + '<td class="center">' + noteHtml + '</td>'
+        + '<td class="obs">' + obs + '</td>'
+        + '<td><span class="hist-badge ' + cls + '">' + label + '</span></td></tr>';
+    }).join('');
+  }
+  function paintHistory(notes){
+    document.querySelectorAll('[data-hist-body]').forEach(function(box){
+      var id = box.getAttribute('data-hist-body');
+      var n = (notes && notes[id]) || {};
+      var hist = n.historique || [];
+      var rows = histRowsHtml(hist);
+      box.innerHTML = rows
+        ? '<div class="table-wrap"><table class="data-table hist-table"><thead><tr>'
+          + '<th>Date</th><th>Auteur</th><th class="center">Note (/5)</th>'
+          + '<th>Observation</th><th>Action</th></tr></thead><tbody>'
+          + rows + '</tbody></table></div>'
+        : '<p class="hist-empty muted">Aucune modification enregistr\u00e9e pour ce cas. '
+          + 'La premi\u00e8re note saisie ci-dessous cr\u00e9era la premi\u00e8re entr\u00e9e d\'historique.</p>';
+      var badge = document.querySelector('[data-hist-count-badge="' + id + '"]');
+      if(badge) badge.textContent = String(hist.length);
+      var chip = document.querySelector('[data-hist-count="' + id + '"]');
+      if(chip) chip.textContent = hist.length + ' modification' + (hist.length === 1 ? '' : 's');
+    });
+    // R\u00e9capitulatif : derni\u00e8re modification par cas
+    document.querySelectorAll('[data-last-edit]').forEach(function(td){
+      var id = td.getAttribute('data-last-edit');
+      var n = (notes && notes[id]) || {};
+      if(!n.date_modification && !n.auteur){ td.innerHTML = '<span class="muted">\u2014</span>'; return; }
+      var bits = [];
+      if(n.date_modification) bits.push('<span class="nowrap">' + escHtml(fmtDate(n.date_modification)) + '</span>');
+      if(n.auteur) bits.push('<span class="muted">par ' + escHtml(n.auteur) + '</span>');
+      var hn = n.historique || [];
+      if(hn.length) bits.push('<span class="muted small">(' + hn.length + ' modif.)</span>');
+      td.innerHTML = bits.join('<br>');
+    });
+  }
   function paintHumanCells(notes){
     document.querySelectorAll('[data-human-note]').forEach(function(td){
       var n = (notes && notes[td.getAttribute('data-human-note')]) || {};
@@ -1427,7 +1620,7 @@ JS = r"""
 
   // Rafraîchit les cellules humaines sur TOUTES les pages (fiches + récapitulatif).
   // En cas d'échec (hors-ligne), le rendu serveur généré par build_portal.py reste affiché.
-  fetchNotes().then(function(j){ paintHumanCells(j.notes || {}); }).catch(function(){});
+  fetchNotes().then(function(j){ paintHumanCells(j.notes || {}); paintHistory(j.notes || {}); }).catch(function(){});
 
   var panel = document.querySelector('.eval-panel');
   if(!panel) return;
@@ -1551,16 +1744,35 @@ JS = r"""
       try{ current = JSON.parse(b64decode(file.content)); }catch(e){ current = {notes:{}}; }
       if(!current.notes) current.notes = {};
       if(!current.notes[uc]) current.notes[uc] = {};
-      current.notes[uc].note_humaine = noteVal;
-      current.notes[uc].observation_humaine = obsVal;
-      current.notes[uc].auteur = author;
-      current.notes[uc].date_modification = new Date().toISOString();
-      if(current._meta) current._meta.updated_at = new Date().toISOString();
+      var entry = current.notes[uc];
+      // Migration douce : un fichier v1 (sans historique) reste valide.
+      if(!Array.isArray(entry.historique)) entry.historique = [];
+      var now = new Date().toISOString();
+      var isFirst = entry.historique.length === 0
+                 && (entry.note_humaine === null || entry.note_humaine === undefined || entry.note_humaine === '')
+                 && !entry.observation_humaine;
+      entry.note_humaine = noteVal;
+      entry.observation_humaine = obsVal;
+      entry.auteur = author;
+      entry.date_modification = now;
+      // Une entrée d'historique par enregistrement (date UTC, auteur, note, observation, action).
+      entry.historique.push({
+        date: now,
+        auteur: author,
+        note_humaine: noteVal,
+        observation_humaine: obsVal,
+        action: isFirst ? 'creation' : 'modification'
+      });
+      if(current._meta){
+        current._meta.updated_at = now;
+        current._meta.schema_version = 2;
+      }
       var msg = 'docs(recette): note humaine ' + uc + ' (' +
                 (noteVal === null ? '—' : noteVal + '/5') + ') par ' + author;
       return ghPut(JSON.stringify(current, null, 2) + '\n', file.sha, msg).then(function(){
         notesCache = current;
         paintHumanCells(current.notes);
+        paintHistory(current.notes);
         fillForm(current.notes);
         setStatus('Enregistré dans le dépôt ✔ (commit sur ' + BRANCH + ')', 'ok');
       });
@@ -1621,14 +1833,15 @@ def main() -> None:
             empty = {
                 "_meta": {
                     "description": "Notes humaines du portail de recette leopardo-hr.",
-                    "schema_version": 1,
+                    "schema_version": 2,
                     "repo": GITHUB_REPO,
                     "path": GITHUB_NOTES_PATH,
                     "updated_at": "",
                 },
                 "notes": {
                     u["id"]: {"note_humaine": None, "observation_humaine": "",
-                              "auteur": "", "date_modification": ""}
+                              "auteur": "", "date_modification": "",
+                              "historique": []}
                     for u in USE_CASES
                 },
             }

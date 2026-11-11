@@ -67,6 +67,24 @@ jobs:
             echo "::error::notes-humaines.json manquant dans l'artefact Pages"; exit 1; }
           python3 -c "import json,sys; d=json.load(open('_site/recette/notes-humaines.json')); sys.exit(0 if isinstance(d.get('notes'), dict) else 1)" \
             || { echo "::error::notes-humaines.json invalide (clé 'notes' absente)"; exit 1; }
+          # Validation du schéma v2 : chaque cas doit exposer une liste
+          # `historique` (migration douce : une liste absente est tolérée mais
+          # signalée, car le portail l'initialise au prochain enregistrement).
+          python3 - <<'PY'
+          import json, sys
+          d = json.load(open('_site/recette/notes-humaines.json'))
+          notes = d.get('notes') or {}
+          bad = [k for k, v in notes.items()
+                 if not isinstance(v, dict) or not isinstance(v.get('historique', []), list)]
+          if bad:
+              print(f"::error::notes-humaines.json : 'historique' invalide pour {', '.join(bad)}")
+              sys.exit(1)
+          missing = [k for k, v in notes.items() if 'historique' not in v]
+          if missing:
+              print(f"::warning::notes-humaines.json : 'historique' absent (schéma v1) pour {len(missing)} cas — sera initialisé au prochain enregistrement")
+          total = sum(len(v.get('historique') or []) for v in notes.values())
+          print(f"notes-humaines.json valide : {len(notes)} cas, {total} entrée(s) d'historique.")
+          PY
           # L'onglet « Recette » est déjà présent dans le menu principal de
           # site/gh-pages/index.html (lien relatif vers recette/), donc aucune
           # injection de lien n'est nécessaire ici.
