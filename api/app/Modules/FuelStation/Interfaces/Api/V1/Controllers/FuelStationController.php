@@ -188,8 +188,16 @@ class FuelStationController extends Controller
 
         $this->authorize('update', $station);
 
+        // #9343 (audit sécurité 2026-11-10, F1) — `svg` est VOLONTAIREMENT
+        // absent de la liste : le logo est écrit sur le disque `public` et
+        // servi depuis l'origine de l'API. Un SVG est un document XML qui peut
+        // porter `<script>` : l'accepter ici ouvrait un XSS stocké exécuté
+        // dans le domaine de l'API (cookies de session + API authentifiée).
+        // Si le SVG redevient nécessaire, il devra être servi depuis un
+        // domaine distinct avec `Content-Disposition: attachment` et
+        // `Content-Security-Policy: sandbox` (cf. ShowcaseMediaPublicController).
         $request->validate([
-            'logo' => ['required', 'file', 'image', 'mimes:png,jpg,jpeg,webp,svg', 'max:2048'],
+            'logo' => ['required', 'file', 'image', 'mimes:png,jpg,jpeg,webp', 'max:2048'],
         ]);
 
         /** @var \Illuminate\Http\UploadedFile $file */

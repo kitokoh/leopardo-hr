@@ -14,13 +14,23 @@ return [
 
     'guard' => ['web'],
 
-    // #7491 — session client 30 jours glissants (43 200 min). La rotation
-    // glissante est assurée par TokenAutoRefreshMiddleware (fenêtre
-    // `sanctum.auto_refresh_window`, 24 h par défaut) : un utilisateur actif
-    // ne voit jamais l'écran de connexion, un utilisateur inactif garde sa
-    // session 30 jours. Justification écrite et contrôles compensatoires :
-    // ADR-0025 (#7655 point 3).
-    'expiration' => (int) env('SANCTUM_TOKEN_EXPIRATION', 43200),
+    // #9344 (audit sécurité 2026-11-10, F2) — la durée de vie par défaut est
+    // passée de 30 jours à 12 h. Le raisonnement de #7491 (session 30 jours
+    // glissants) reste servi par TokenAutoRefreshMiddleware : un utilisateur
+    // ACTIF est rafraîchi dans `sanctum.auto_refresh_window` (24 h) avant
+    // l'échéance et ne voit jamais l'écran de connexion. Ce qui change est la
+    // fenêtre d'exposition d'un jeton VOLÉ : 12 h au lieu d'un mois, sur une
+    // application qui porte la paie, les bulletins, les IBAN et les données
+    // biométriques.
+    //
+    // La durée longue (30 j) reste disponible pour les appareils ENRÔLÉS
+    // (kiosque de pointage, nœud Edge), via `sanctum.device_expiration` et
+    // `TokenExpiryService::forDevice()` — jamais par le `device_name` fourni
+    // par le client.
+    'expiration' => (int) env('SANCTUM_TOKEN_EXPIRATION', 720),
+
+    // #9344 — durée des jetons d'appareils enrôlés (kiosque, Edge). 30 jours.
+    'device_expiration' => (int) env('SANCTUM_DEVICE_TOKEN_EXPIRATION', 43200),
 
     // #7655 (tranche 2, ADR-0025) — préfixe de détection de fuite : un token
     // préfixé est repérable par le secret scanning (GitHub & co). Rétro-

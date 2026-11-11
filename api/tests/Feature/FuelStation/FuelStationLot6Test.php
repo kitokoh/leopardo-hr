@@ -135,6 +135,28 @@ class FuelStationLot6Test extends TestCase
         self::assertNull($station->refresh()->logo_path);
     }
 
+    public function test_station_logo_upload_rejects_svg_to_prevent_stored_xss(): void
+    {
+        // #9343 (audit sécurité 2026-11-10, F1) — le logo est servi depuis le
+        // disque `public`, donc depuis l'origine de l'API : un SVG piégé y
+        // exécuterait son `<script>` avec accès aux cookies de session.
+        Storage::fake('public');
+
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD', 'features' => ['fuel_station' => true]]);
+        $manager = Employee::factory()->for($company)->create(['role' => 'manager']);
+        $station = $this->makeStation($company, 'ST-1', 'Station 1');
+
+        $svg = '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>';
+
+        $response = $this->actingAs($manager)->postJson(
+            "/api/v1/fuel-station/stations/{$station->id}/logo",
+            ['logo' => UploadedFile::fake()->createWithContent('logo.svg', $svg)]
+        );
+
+        $response->assertStatus(422);
+        self::assertNull($station->refresh()->logo_path);
+    }
+
     public function test_station_logo_is_isolated_per_tenant(): void
     {
         Storage::fake('public');

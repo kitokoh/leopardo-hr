@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Application\Actions;
 
+use App\Core\Auth\Infrastructure\Services\TokenExpiryService;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Contracts\HasApiTokens;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -33,10 +34,9 @@ final class RefreshTokenAction
         /** @var PersonalAccessToken $currentToken */
         $currentToken = $user->currentAccessToken();
 
-        $expirationMinutes = (int) config('sanctum.expiration', 0);
-        $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
+        // #9344 (audit sécurité 2026-11-10, F2) — durée centralisée : 12 h.
+        $expiresAt = app(TokenExpiryService::class)->forInteractive();
         $tokenId = $currentToken->getKey();
-
         /** @var array{token: string, token_type: string, token_expires_at: ?string} $result */
         $result = DB::transaction(static function () use ($user, $currentToken, $tokenId, $expiresAt): array {
             // Verrou pessimiste — bloque les rotations concurrentes sur ce token.

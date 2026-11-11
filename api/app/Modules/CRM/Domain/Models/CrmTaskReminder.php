@@ -40,9 +40,23 @@ class CrmTaskReminder extends Model
     public $timestamps = false;
 
     /**
-     * Insertions en masse contrôlées (payload fixe côté service).
+     * #9346 (audit sécurité 2026-11-10, F4) — liste blanche explicite.
+     *
+     * Le modèle déclarait `$guarded = []` : TOUS les attributs étaient
+     * assignables en masse, y compris `id`, `company_id` et `task_id`. C'était
+     * le seul modèle du dépôt dans ce cas, et il ne porte PAS le trait
+     * `BelongsToCompany` (exception tenant-scope documentée ci-dessus) : aucune
+     * réécriture défensive de `company_id` ne s'appliquait donc.
+     *
+     * Le consommateur unique (`CrmOverdueReminderService`) écrit via
+     * `insertOrIgnore()` — query builder, qui ne consulte pas `$fillable` :
+     * le comportement du scheduler est inchangé.
      *
      * @var list<string>
      */
-    protected $guarded = [];
+    protected $fillable = [
+        'company_id',
+        'task_id',
+        'remind_date',
+    ];
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Auth\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\TokenExpiryService;
 use App\Exceptions\DomainException;
 use Illuminate\Support\Facades\Hash;
 
@@ -40,14 +41,18 @@ final class ChangePasswordAction
 
         // Revoke every existing Sanctum token. A stolen token must stop
         // working the moment the password is changed instead of staying
-        // valid until its natural expiration (up to 7 days). We then issue a
-        // fresh token for the current device so the caller isn't logged out
-        // by their own password change. See
+        // valid until its natural expiration. We then issue a fresh token for
+        // the current device so the caller isn't logged out by their own
+        // password change. See
         // docs/security/AUDIT_API_2026-07-19.md, section 3.
         $currentToken = $employee->currentAccessToken();
         $tokenName = ($currentToken?->name) ?? 'api';
         $abilities = ($currentToken?->abilities) ?? ['*'];
-        $expiresAt = $currentToken->expires_at;
+        // #9344 (audit sécurité 2026-11-10, F2) — on ne réhérite PAS de
+        // l'échéance du jeton courant : un jeton émis avant le durcissement
+        // (30 j) aurait prolongé la fenêtre d'exposition. On réémet avec la
+        // durée courante (12 h).
+        $expiresAt = app(TokenExpiryService::class)->forInteractive();
 
         $employee->tokens()->delete();
 

@@ -23,6 +23,7 @@ use App\Core\Notifications\Contracts\InAppNotifier;
 use App\Core\Outbox\Contracts\OutboxPublisher;
 use App\Core\Outbox\Infrastructure\DatabaseOutboxPublisher;
 use App\Core\Privacy\Infrastructure\Services\PiiRegistry;
+use App\Core\Security\InsecureConfigurationGuard;
 use App\Core\Tenant\TenantManager;
 use App\Jobs\Services\HmacWebhookSigner;
 use App\Jobs\Services\HttpOutboundWebhookTransport;
@@ -252,6 +253,25 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // #9353 (audit sécurité 2026-11-10, F11) — refus de SERVIR avec un
+        // mot de passe base de données vide ou égal à une valeur de
+        // développement connue.
+        //
+        // Le contrôle est volontairement limité au runtime de service
+        // (`runningInConsole() === false`) : les étapes de BUILD (composer
+        // install → `artisan package:discover`, `config:cache`, migrations de
+        // CI) n'ont pas de secret de production à disposition et ne doivent
+        // pas échouer ici — c'est le rôle du déploiement. Un serveur réel
+        // (php-fpm, Octane) n'est pas en console : il est donc bien couvert.
+        if ($this->app->runningInConsole() === false) {
+            InsecureConfigurationGuard::check(
+                (string) $this->app->environment(),
+                config('database.connections.pgsql.password') !== null
+                    ? (string) config('database.connections.pgsql.password')
+                    : null,
+            );
+        }
+
         // PA2-ARCH-008 : point d'enregistrement unique. Tous les Gate::policy(...)
         // vivent exclusivement dans AuthServiceProvider::boot() (y compris
         // WebhookEndpoint) ; ce provider ne garde que les Gate::define(...).

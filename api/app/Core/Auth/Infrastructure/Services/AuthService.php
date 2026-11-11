@@ -209,8 +209,10 @@ readonly class AuthService
             $employee->forceFill(['last_login_at' => now()])->saveQuietly();
 
             $tokenName = $deviceName ?: 'api';
-            $expirationMinutes = (int) config('sanctum.expiration', 0);
-            $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
+            // #9344 (audit sécurité 2026-11-10, F2) — durée centralisée
+            // (`TokenExpiryService`) : 12 h par défaut, 30 j seulement pour
+            // un appareil enrôlé.
+            $expiresAt = app(TokenExpiryService::class)->forNewToken($deviceName);
             $abilities = ['*'];
             if ($employeeSchema !== null) {
                 $abilities[] = 'tenant_schema:'.$employeeSchema;
@@ -536,8 +538,8 @@ readonly class AuthService
             $employee->forceFill(['last_login_at' => now()])->saveQuietly();
 
             $tokenName = $deviceName ?: 'sso';
-            $expirationMinutes = (int) config('sanctum.expiration', 0);
-            $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
+            // #9344 — même source de durée que `login()`.
+            $expiresAt = app(TokenExpiryService::class)->forNewToken($deviceName);
             $abilities = ['*'];
             if ($employeeSchema !== null) {
                 $abilities[] = 'tenant_schema:'.$employeeSchema;

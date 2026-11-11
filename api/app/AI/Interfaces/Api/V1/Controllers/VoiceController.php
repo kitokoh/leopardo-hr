@@ -254,7 +254,14 @@ class VoiceController extends Controller
         // #7696 : la valeur de config vient de l'env admin mais on l'échappe
         // quand même (cohérence avec CameraService::probeStream, défense en
         // profondeur si la config devient pilotable par un autre canal).
-        $binary = trim((string) shell_exec('command -v '.escapeshellarg((string) config('ai.voice.edge_tts_binary', 'edge-tts')).' 2>/dev/null'));
+        //
+        // #9354 (audit sécurité 2026-11-10, F12) — `shell_exec('command -v …')`
+        // remplacé par une résolution en PHP : on n'a pas besoin d'un shell
+        // pour savoir si un binaire est exécutable, et chaque appel shell est
+        // une surface d'attaque de plus (PATH détourné, wrapper, injection si
+        // l'échappement régresse). `is_executable()` sur des chemins candidats
+        // donne la même réponse sans processus enfant.
+        $binary = $this->resolveExecutable((string) config('ai.voice.edge_tts_binary', 'edge-tts'));
         if ($binary === '') {
             Log::error('TTS edge-tts unavailable: binary not found (pip install edge-tts, see Dockerfile.prod - issue #5616)');
 
@@ -295,6 +302,44 @@ class VoiceController extends Controller
      *
      * Issue #5616 : URL signée temporaire, stockage privé (disk local).
      */
+    /**
+     * #9354 (audit sécurité 2026-11-10, F12) — résout un binaire exécutable
+     * sans passer par un shell.
+     *
+     * Accepte un chemin absolu (vérifié directement) ou un simple nom de
+     * commande (résolu dans `PATH`). Retourne `''` si rien d'exécutable n'est
+     * trouvé, ce que l'appelant traite comme « edge-tts indisponible ».
+     */
+    private function resolveExecutable(string $candidate): string
+    {
+        $candidate = trim($candidate);
+
+        if ($candidate === '') {
+            return '';
+        }
+
+        // Chemin absolu ou relatif explicite : pas de recherche dans PATH.
+        if (str_contains($candidate, '/')) {
+            return is_file($candidate) && is_executable($candidate) ? $candidate : '';
+        }
+
+        $path = (string) getenv('PATH');
+
+        foreach (explode(PATH_SEPARATOR, $path) as $directory) {
+            if ($directory === '') {
+                continue;
+            }
+
+            $full = rtrim($directory, '/').'/'.$candidate;
+
+            if (is_file($full) && is_executable($full)) {
+                return $full;
+            }
+        }
+
+        return '';
+    }
+
     private function elevenLabsSynthesize(string $text, ?string $voiceId): ?string
     {
         $apiKey = config('ai.voice.elevenlabs_key');

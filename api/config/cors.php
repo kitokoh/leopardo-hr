@@ -1,5 +1,67 @@
 <?php
 
+/**
+ * #9349 (audit sécurité 2026-11-10, F7) — validation d'une origine CORS
+ * fournie par l'environnement.
+ *
+ * Une origine CORS est un triplet `scheme://host[:port]` SANS chemin, sans
+ * wildcard et sans identifiants. Tout le reste est refusé (retour `null`,
+ * éliminé par le `array_filter()` de `allowed_origins`) plutôt que propagé :
+ * avec `supports_credentials => true`, une origine erronée est une faille,
+ * pas un désagrément.
+ *
+ * Hors `local`/`testing`, le schéma `https` est obligatoire.
+ */
+if (! function_exists('cors_env_origin')) {
+    function cors_env_origin(string $key): ?string
+    {
+        $raw = env($key);
+
+        if (! is_string($raw)) {
+            return null;
+        }
+
+        $value = trim($raw);
+
+        if ($value === '' || str_contains($value, '*')) {
+            return null;
+        }
+
+        if (filter_var($value, FILTER_VALIDATE_URL) === false) {
+            return null;
+        }
+
+        $parts = parse_url($value);
+
+        if (! is_array($parts) || ! isset($parts['scheme'], $parts['host'])) {
+            return null;
+        }
+
+        // Une origine ne porte ni chemin, ni query, ni fragment, ni userinfo.
+        if (isset($parts['user']) || isset($parts['pass']) || isset($parts['query']) || isset($parts['fragment'])) {
+            return null;
+        }
+
+        if (isset($parts['path']) && $parts['path'] !== '' && $parts['path'] !== '/') {
+            return null;
+        }
+
+        $scheme = strtolower((string) $parts['scheme']);
+
+        if (! in_array($scheme, ['http', 'https'], true)) {
+            return null;
+        }
+
+        $isLocal = in_array(env('APP_ENV', 'production'), ['local', 'testing'], true);
+
+        if ($scheme !== 'https' && ! $isLocal) {
+            return null;
+        }
+
+        return $scheme.'://'.$parts['host'].(isset($parts['port']) ? ':'.$parts['port'] : '');
+    }
+}
+
 return [
 
     /*
@@ -17,7 +79,12 @@ return [
 
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
-    'allowed_methods' => ['*'],
+    // #9349 (audit sécurité 2026-11-10, F7) — `['*']` remplacé par la liste
+    // explicite des méthodes réellement servies. Avec
+    // `supports_credentials => true`, un `*` sur les méthodes élargit la
+    // surface cross-origin sans aucun bénéfice : aucune route n'utilise
+    // TRACE/CONNECT, et les méthodes exotiques n'ont pas à être annoncées.
+    'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 
     'allowed_origins' => array_filter([
         // Dev servers (Vite) — whitelistés en dur et indépendamment de
@@ -54,10 +121,15 @@ return [
         // origine exacte exigée pour la session acheteur en cookie HttpOnly
         // cross-origin (`supports_credentials` interdit tout wildcard).
         'https://leopardo-marche.vercel.app',
-        env('ADMIN_DASHBOARD_URL'),
-        env('CORS_EXTRA_ORIGIN'),
+        // #9349 (audit sécurité 2026-11-10, F7) — les deux entrées suivantes
+        // venaient BRUTES de l'environnement : une valeur erronée en
+        // production (`*`, origine en `http://`, chaîne vide mal collée)
+        // élargissait immédiatement la surface cross-origin AVEC credentials.
+        // Elles passent désormais par `cors_env_origin()`, qui n'accepte
+        // qu'une origine absolue, sans wildcard, en `https` hors développement.
+        cors_env_origin('ADMIN_DASHBOARD_URL'),
+        cors_env_origin('CORS_EXTRA_ORIGIN'),
     ]),
-
     'allowed_origins_patterns' => [
         // #8096 : previews Vercel du marketplace — même discipline que
         // `leo-admin.pages.dev` ci-dessous : restreint au projet connu

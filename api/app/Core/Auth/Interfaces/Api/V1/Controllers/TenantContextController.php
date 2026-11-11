@@ -77,8 +77,8 @@ class TenantContextController extends Controller
         $company = $context['company'];
         $schema = $context['schema'];
 
-        $expirationMinutes = (int) config('sanctum.expiration', 0);
-        $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
+        // #9344 (audit sécurité 2026-11-10, F2) — durée centralisée : 12 h.
+        $expiresAt = app(\App\Core\Auth\Infrastructure\Services\TokenExpiryService::class)->forInteractive();
 
         // Mêmes abilities que celles posées au login (AuthService:214-220) :
         // la sélection ne fait que les REBORNER sur l'entreprise choisie.

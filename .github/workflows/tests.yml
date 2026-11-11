@@ -498,6 +498,10 @@ jobs:
         env:
           DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
           DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          # #9345 (audit securite 2026-11-10, F3) — `SESSION_ENCRYPT=true` par
+          # defaut : Larastan boote l'application et exige un APP_KEY. Cle
+          # FACTICE, sans valeur de secret, uniquement pour le boot d'analyse.
+          APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
         run: |
           set -euo pipefail
           # Gate diff-scopé « Backend Quality » : analyse des fichiers CHANGÉS au

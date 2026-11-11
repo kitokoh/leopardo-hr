@@ -47,7 +47,15 @@ class StoreMarketingAssetRequest extends FormRequest
             'rights_expires_at' => ['nullable', 'date'],
             // Contenu texte (script, prompt, légende) : pas de fichier exigé.
             'body' => ['nullable', 'string', 'max:200000'],
-            'file' => ['nullable', 'file'],
+            // #9347 (audit sécurité 2026-11-10, F5) — la règle était
+            // `['nullable', 'file']` : ni type, ni plafond. La validation
+            // réelle (extension + poids par type) reste dans
+            // `MarketingAssetStorage`, mais elle s'appuie désormais sur le
+            // type DÉTECTÉ (finfo) et non sur l'extension déclarée par le
+            // client. Ce plafond global (200 Mo, le plus haut des types
+            // autorisés) évite de charger en mémoire un fichier arbitraire
+            // avant même d'atteindre le service.
+            'file' => ['nullable', 'file', 'max:204800'],
         ];
     }
 }
