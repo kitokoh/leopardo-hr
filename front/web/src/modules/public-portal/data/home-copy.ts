@@ -38,11 +38,27 @@ export interface PublicHomeCopy {
     cityLabel: string;
     cityPlaceholder: string;
     searchCta: string;
+    /** Libellé du bouton de géolocalisation. */
+    aroundMe: string;
+    /** État pendant la demande de permission. */
+    locating: string;
+    /** Message quand la permission est refusée. */
+    locationDenied: string;
+    /** Invitation à saisir la ville après un refus. */
+    locationDeniedHint: string;
+    /** Action pour oublier la position courante. */
+    changeLocation: string;
     /** Lien secondaire vers l'explorateur complet. */
     exploreCta: string;
     /** Bouton d'entrée vers la vitrine business. */
     businessCta: string;
     businessHint: string;
+  };
+  /** Filtres conditionnels de la recherche. */
+  filters: {
+    title: string;
+    openNow: string;
+    nearest: string;
   };
   /** Bandeau de confiance sous le hero. */
   trust: {
@@ -94,9 +110,19 @@ const fr: PublicHomeCopy = {
     cityLabel: 'Où ?',
     cityPlaceholder: 'Ville ou quartier',
     searchCta: 'Rechercher',
+    aroundMe: 'Autour de moi',
+    locating: 'Localisation…',
+    locationDenied: 'Ville ou quartier',
+    locationDeniedHint: 'Localisation refusée — saisissez votre ville.',
+    changeLocation: 'Changer',
     exploreCta: 'Explorer tout le portail',
     businessCta: 'Leopardo Business',
     businessHint: 'Vous êtes un professionnel ?',
+  },
+  filters: {
+    title: 'Filtres',
+    openNow: 'Ouvert maintenant',
+    nearest: 'Plus proches',
   },
   trust: {
     title: 'Ce que le portail garantit',
@@ -169,9 +195,19 @@ const en: PublicHomeCopy = {
     cityLabel: 'Where?',
     cityPlaceholder: 'City or neighbourhood',
     searchCta: 'Search',
+    aroundMe: 'Around me',
+    locating: 'Locating…',
+    locationDenied: 'City or neighbourhood',
+    locationDeniedHint: 'Location denied — enter your city.',
+    changeLocation: 'Change',
     exploreCta: 'Explore the whole portal',
     businessCta: 'Leopardo Business',
     businessHint: 'Are you a business owner?',
+  },
+  filters: {
+    title: 'Filters',
+    openNow: 'Open now',
+    nearest: 'Nearest',
   },
   trust: {
     title: 'What the portal guarantees',
@@ -244,9 +280,19 @@ const tr: PublicHomeCopy = {
     cityLabel: 'Nerede?',
     cityPlaceholder: 'Şehir veya mahalle',
     searchCta: 'Ara',
+    aroundMe: 'Yakınımda',
+    locating: 'Konum alınıyor…',
+    locationDenied: 'Şehir veya mahalle',
+    locationDeniedHint: 'Konum reddedildi — şehrinizi yazın.',
+    changeLocation: 'Değiştir',
     exploreCta: 'Tüm portalı keşfet',
     businessCta: 'Leopardo Business',
     businessHint: 'Bir işletme sahibi misiniz?',
+  },
+  filters: {
+    title: 'Filtreler',
+    openNow: 'Şu an açık',
+    nearest: 'En yakın',
   },
   trust: {
     title: 'Portalın garantileri',
@@ -319,9 +365,19 @@ const ar: PublicHomeCopy = {
     cityLabel: 'أين؟',
     cityPlaceholder: 'المدينة أو الحي',
     searchCta: 'ابحث',
+    aroundMe: 'حولي',
+    locating: 'جارٍ تحديد الموقع…',
+    locationDenied: 'المدينة أو الحي',
+    locationDeniedHint: 'تم رفض الموقع — أدخل مدينتك.',
+    changeLocation: 'تغيير',
     exploreCta: 'استكشف البوابة كاملة',
     businessCta: 'ليوباردو للأعمال',
     businessHint: 'هل تدير شركة؟',
+  },
+  filters: {
+    title: 'الفلاتر',
+    openNow: 'مفتوح الآن',
+    nearest: 'الأقرب',
   },
   trust: {
     title: 'ما تضمنه البوابة',
