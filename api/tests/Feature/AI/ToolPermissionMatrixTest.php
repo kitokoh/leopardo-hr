@@ -15,6 +15,7 @@ use App\AI\WriteActionRunner;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Planning\Domain\Models\AbsenceType;
 use Database\Seeders\AIToolRegistrySeeder;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -223,6 +224,20 @@ class ToolPermissionMatrixTest extends TestCase
             ? Employee::factory()->manager()->create(['company_id' => $company->id])
             : Employee::factory()->create(['company_id' => $company->id]);
 
+        // #7357 — `absences.absence_type_id` est NOT NULL et `WriteActionRunner`
+        // refuse proprement en `ABSENCE_TYPE_UNAVAILABLE` quand le tenant n'a
+        // aucun catalogue `absence_types` (société fraîchement provisionnée).
+        // Le comportement de production est correct : c'est la fixture qui
+        // était incomplète, si bien que les deux cas « l'employé crée sa
+        // propre absence » et « l'employé ne crée pas celle d'autrui »
+        // échouaient sur le refus de catalogue au lieu de la règle RBAC
+        // qu'ils prétendent vérifier (#6533).
+        AbsenceType::factory()->create([
+            'company_id' => $company->id,
+            'code' => 'CP',
+            'name' => 'Congé payé',
+        ]);
+
         return [$company, $employee];
     }
 
@@ -361,8 +376,18 @@ class ToolPermissionMatrixTest extends TestCase
             'end_date' => '2026-09-02',
         ], (string) $company->id, $employee->id);
 
-        $this->assertArrayHasKey('error', $result);
-        $this->assertStringContainsString('PERMISSION_DENIED', (string) $result['error'], '#6533 : employee ne crée pas d\'absence pour autrui');
+        // audit(securite) #6533 — le contrat livré n'est PAS un refus : un
+        // non-manager ne peut pas créer une absence pour autrui, mais
+        // l'`employee_id` fourni par le LLM est **ignoré** et l'absence est
+        // créée pour le demandeur lui-même (fail-safe : aucune écriture au
+        // nom d'un tiers, et la demande légitime de l'acteur n'est pas
+        // perdue). C'est exactement ce que verrouille
+        // `AIWriteActionConfirmationTest::test_employee_create_absence_for_other_is_forced_to_self`.
+        // Ce cas assertait auparavant un `PERMISSION_DENIED` qui n'a jamais
+        // existé dans le code : il ne pouvait donc pas passer.
+        $this->assertArrayNotHasKey('error', $result);
+        $this->assertSame($employee->id, $result['employee_id'], '#6533 : absence forcée sur le demandeur');
+        $this->assertNotSame($other->id, $result['employee_id'], '#6533 : jamais au nom d\'un tiers');
     }
 
     public function test_employee_can_create_absence_for_self(): void
