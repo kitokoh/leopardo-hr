@@ -36,7 +36,7 @@ class SecurityConfigurationTest extends TestCase
     {
         InsecureConfigurationGuard::check('production', 'a-real-generated-secret-value');
 
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 
     public function test_local_and_testing_are_exempt(): void
@@ -46,7 +46,7 @@ class SecurityConfigurationTest extends TestCase
         InsecureConfigurationGuard::check('local', 'leopardo-dev-local-only');
         InsecureConfigurationGuard::check('testing', '');
 
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 
     public function test_env_example_does_not_ship_a_database_password(): void

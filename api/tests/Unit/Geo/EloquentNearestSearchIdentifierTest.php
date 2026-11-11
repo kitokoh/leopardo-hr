@@ -55,8 +55,8 @@ class EloquentNearestSearchIdentifierTest extends TestCase
         };
 
         return $method->invoke(new EloquentNearestSearch(
-            $this->createStub(\App\Modules\Geo\Infrastructure\Services\SearchableRegistry::class),
-            $this->createStub(\App\Modules\Geo\Infrastructure\Services\GeoCapabilities::class),
+            new \App\Modules\Geo\Infrastructure\Services\SearchableRegistry,
+            new \App\Modules\Geo\Infrastructure\Services\GeoCapabilities,
         ), $builder, $column);
     }
 

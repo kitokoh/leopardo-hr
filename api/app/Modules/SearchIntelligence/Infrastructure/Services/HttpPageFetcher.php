@@ -81,9 +81,11 @@ final class HttpPageFetcher implements PageFetcherInterface
                 ];
             }
 
-            $location = $response->header('Location');
+            // `header()` est typé `string` par le stub Laravel ; on caste pour
+            // rester sûr à l'exécution (en-tête absent → `null`).
+            $location = (string) $response->header('Location');
 
-            if (! is_string($location) || $location === '') {
+            if ($location === '') {
                 // Redirection sans `Location` : rien à suivre, on rend la
                 // réponse telle quelle (le statut 3xx est une observation).
                 return [

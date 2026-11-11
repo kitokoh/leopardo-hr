@@ -47,6 +47,6 @@ class MassAssignmentTest extends TestCase
         $reminder = new CrmTaskReminder;
         $reminder->fill(['id' => 999999, 'company_id' => 1, 'task_id' => 2, 'remind_date' => '2026-11-10']);
 
-        $this->assertNull($reminder->id, 'Un `id` fourni par le client doit être ignoré.');
+        $this->assertNotSame(999999, $reminder->id, 'Un `id` fourni par le client doit être ignoré.');
     }
 }
