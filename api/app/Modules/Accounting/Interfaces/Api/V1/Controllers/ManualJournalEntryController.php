@@ -41,12 +41,15 @@ final class ManualJournalEntryController extends Controller
      */
     public function store(ManualJournalEntryRequest $request): JsonResponse
     {
-        $companyId = (string) $request->user()?->company_id;
+        $companyId = (string) $request->user()?->getAttribute('company_id');
+
+        /** @var array{entry_date: string, description?: string|null, journal_code?: string|null, piece?: string|null, lines: list<array{account_code: string, debit?: float|int|string, credit?: float|int|string, description?: string|null}>} $payload */
+        $payload = $request->validated();
 
         try {
             $result = $this->service->create(
                 $companyId,
-                $request->validated(),
+                $payload,
                 (string) $request->user()?->id,
             );
         } catch (PeriodClosedException $exception) {
@@ -73,8 +76,11 @@ final class ManualJournalEntryController extends Controller
     {
         $this->guardOwnership($request, $manual);
 
+        /** @var array{entry_date: string, description?: string|null, journal_code?: string|null, lines: list<array{account_code: string, debit?: float|int|string, credit?: float|int|string, description?: string|null}>} $payload */
+        $payload = $request->validated();
+
         try {
-            $this->service->update($manual, $request->validated());
+            $this->service->update($manual, $payload);
         } catch (PeriodClosedException $exception) {
             return $this->periodClosed($exception);
         } catch (UnbalancedJournalEntryException $exception) {
@@ -146,7 +152,7 @@ final class ManualJournalEntryController extends Controller
      */
     private function guardOwnership(Request $request, AccountingManualEntry $manual): void
     {
-        if ((string) $manual->company_id !== (string) $request->user()?->company_id) {
+        if ((string) $manual->company_id !== (string) $request->user()?->getAttribute('company_id')) {
             abort(404);
         }
     }

@@ -27,7 +27,7 @@ use Illuminate\Http\Response;
  * écriture — un journal est un paramétrage structurant, pas une saisie
  * quotidienne.
  */
-final class AccountingJournalController extends Controller
+final class AccountingJournalSettingsController extends Controller
 {
     public function __construct(
         private readonly JournalResolver $journals,
@@ -38,7 +38,7 @@ final class AccountingJournalController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $companyId = (string) $request->user()?->company_id;
+        $companyId = (string) $request->user()?->getAttribute('company_id');
 
         $journals = AccountingJournal::query()
             ->where('company_id', $companyId)
@@ -62,7 +62,7 @@ final class AccountingJournalController extends Controller
      */
     public function store(AccountingJournalRequest $request): JsonResponse
     {
-        $companyId = (string) $request->user()?->company_id;
+        $companyId = (string) $request->user()?->getAttribute('company_id');
         $validated = $request->validated();
 
         $duplicate = AccountingJournal::query()
@@ -98,7 +98,7 @@ final class AccountingJournalController extends Controller
      */
     public function update(AccountingJournalUpdateRequest $request, AccountingJournal $journal): JsonResponse
     {
-        if ($journal->company_id !== (string) $request->user()?->company_id) {
+        if ($journal->company_id !== (string) $request->user()?->getAttribute('company_id')) {
             // 404 et non 403 : ne jamais divulguer l'existence d'un journal
             // d'un autre tenant.
             abort(404);
@@ -124,7 +124,7 @@ final class AccountingJournalController extends Controller
      */
     public function destroy(Request $request, AccountingJournal $journal): JsonResponse|Response
     {
-        if ($journal->company_id !== (string) $request->user()?->company_id) {
+        if ($journal->company_id !== (string) $request->user()?->getAttribute('company_id')) {
             abort(404);
         }
 
@@ -150,7 +150,7 @@ final class AccountingJournalController extends Controller
     public function seed(Request $request): JsonResponse
     {
         $user = $request->user();
-        $companyId = (string) $user?->company_id;
+        $companyId = (string) $user?->getAttribute('company_id');
 
         /** @var \App\Core\Tenant\Domain\Models\Company|null $company */
         $company = \App\Core\Tenant\Domain\Models\Company::query()

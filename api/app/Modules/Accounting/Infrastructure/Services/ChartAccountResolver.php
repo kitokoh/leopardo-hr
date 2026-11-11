@@ -68,9 +68,10 @@ final class ChartAccountResolver
     private ?string $country;
 
     /**
-     * @param  array<string, array{code: string, label: string}>|null  $overrides
-     *         Surcharges explicites (plan comptable du tenant déjà chargé) —
-     *         évite une requête quand l'appelant les possède.
+     * @param  array<array-key, string>|null  $overrides
+     *         Surcharges explicites `code => libellé` (plan comptable du tenant
+     *         déjà chargé) — évite une requête quand l'appelant les possède.
+     *         Les clés numériques sont normalisées en chaîne par `merge()`.
      */
     public function __construct(?string $country = null, ?array $overrides = null)
     {
@@ -277,10 +278,12 @@ final class ChartAccountResolver
         /** @var array<string, string> $byCode */
         $byCode = [];
 
+        // Le type est déjà `array<array-key, string>` : les gardes
+        // `is_string()`/`is_int()` seraient toujours vraies (PHPStan level 8,
+        // `function.alreadyNarrowedType`). Seule la normalisation en chaîne
+        // reste nécessaire.
         foreach ($overrides as $code => $label) {
-            if (is_string($label) && (is_string($code) || is_int($code))) {
-                $byCode[(string) $code] = $label;
-            }
+            $byCode[(string) $code] = $label;
         }
 
         foreach ($base as $family => $account) {

@@ -101,6 +101,7 @@ class ManualJournalEntryTest extends TestCase
                 'debit' => (float) $entry->debit,
                 'credit' => (float) $entry->credit,
             ])
+            ->values()
             ->all();
     }
 

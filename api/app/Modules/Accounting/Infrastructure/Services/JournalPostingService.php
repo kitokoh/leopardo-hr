@@ -85,13 +85,18 @@ final class JournalPostingService
 
         $resolver = $this->resolverFor((string) $document->company_id);
 
-        [$lines, $description] = match ($document->type) {
-            DocumentType::Invoice->value => [$this->salesInvoiceLines($document, $resolver), 'Facture'],
-            DocumentType::CreditNote->value => [$this->salesCreditNoteLines($document, $resolver), 'Avoir'],
-            DocumentType::PurchaseInvoice->value => [$this->purchaseInvoiceLines($document, $resolver), 'Facture fournisseur'],
-            DocumentType::PurchaseCreditNote->value => [$this->purchaseCreditNoteLines($document, $resolver), 'Avoir fournisseur'],
-            default => [[], ''],
-        };
+        // `POSTABLE_TYPES` a déjà restreint `$document->type` : une chaîne de
+        // `if` évite un `match` dont la dernière branche serait toujours vraie
+        // (PHPStan level 8, `match.alwaysTrue`).
+        if ($document->type === DocumentType::Invoice->value) {
+            [$lines, $description] = [$this->salesInvoiceLines($document, $resolver), 'Facture'];
+        } elseif ($document->type === DocumentType::CreditNote->value) {
+            [$lines, $description] = [$this->salesCreditNoteLines($document, $resolver), 'Avoir'];
+        } elseif ($document->type === DocumentType::PurchaseInvoice->value) {
+            [$lines, $description] = [$this->purchaseInvoiceLines($document, $resolver), 'Facture fournisseur'];
+        } else {
+            [$lines, $description] = [$this->purchaseCreditNoteLines($document, $resolver), 'Avoir fournisseur'];
+        }
 
         if ($lines === []) {
             return 0;

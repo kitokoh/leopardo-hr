@@ -95,16 +95,18 @@ class PurchaseAndChartResolverTest extends TestCase
         /** @var array<string, array{debit: float, credit: float}> $lines */
         $lines = [];
 
-        AccountingJournalEntry::query()
+        // Boucle explicite (et non `->each(closure)`) : PHPStan ne voit pas les
+        // écritures faites par référence dans une closure et croirait `$lines`
+        // toujours vide, d'où des « Offset '607' does not exist ».
+        foreach (AccountingJournalEntry::query()
             ->where('source_type', 'document')
             ->where('source_id', $document->id)
-            ->get()
-            ->each(function (AccountingJournalEntry $entry) use (&$lines): void {
-                $lines[$entry->account_code] = [
-                    'debit' => (float) $entry->debit,
-                    'credit' => (float) $entry->credit,
-                ];
-            });
+            ->get() as $entry) {
+            $lines[(string) $entry->account_code] = [
+                'debit' => (float) $entry->debit,
+                'credit' => (float) $entry->credit,
+            ];
+        }
 
         return $lines;
     }
