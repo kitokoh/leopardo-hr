@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $amount_currency
  * @property float $exchange_rate
  * @property string|null $journal_code
+ * @property int|null $cost_center_id
  * @property int $line_no
  * @property string $source_type
  * @property int $source_id
@@ -50,6 +51,7 @@ class AccountingJournalEntry extends Model
         'amount_currency',
         'exchange_rate',
         'journal_code',
+        'cost_center_id',
         'line_no',
         'manual_ref',
         'source_type',
