@@ -174,6 +174,16 @@ final class FecExporter
         $amount = $debit !== '' ? $debit : $credit;
         $date = $entry->entry_date->format('Ymd');
 
+        // #9373 — la colonne Devise est celle de **l'écriture**, pas celle de la
+        // company : une ligne comptabilisée en DZD issue d'une facture en EUR
+        // doit porter DZD (c'est la devise du montant des colonnes Débit/Crédit),
+        // et MontantDevise reste égal au montant puisque le journal est tenu dans
+        // une seule devise. L'ancien comportement écrivait la devise de la
+        // company sur des montants exprimés dans une autre devise.
+        $entryCurrency = is_string($entry->currency) && $entry->currency !== ''
+            ? $entry->currency
+            : $currency;
+
         return [
             $this->cell($journalCode),
             $this->cell($journalLabel),
@@ -186,7 +196,7 @@ final class FecExporter
             $this->cell($this->libelle($entry)),
             $this->cell($debit),
             $this->cell($credit),
-            $this->cell($currency),
+            $this->cell($entryCurrency),
             $this->cell($amount),
         ];
     }

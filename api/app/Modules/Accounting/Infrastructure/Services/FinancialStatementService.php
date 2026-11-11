@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Infrastructure\Services;
 
 use App\Modules\Accounting\Domain\Enums\AccountType;
+use App\Modules\Accounting\Domain\Models\AccountingSettings;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use stdClass;
@@ -206,6 +207,12 @@ final class FinancialStatementService
             'total_passif_capitaux' => round($totalPassifCapitaux, 2),
             'resultat_net' => $resultatNet,
             'balanced' => abs($totalActif - $totalPassifCapitaux) <= self::TOLERANCE,
+            // #9373 — devise de référence de l'agrégation et lignes écartées
+            // parce qu'exprimées dans une autre devise : on ne les additionne
+            // jamais en silence (un total faux est pire qu'un total partiel
+            // signalé).
+            'currency' => $this->referenceCurrency($companyId),
+            'unconverted_entries' => $this->unconvertedCount($companyId, sprintf('%04d-01-01', $year), sprintf('%04d-12-31', $year)),
         ];
     }
 
@@ -273,6 +280,8 @@ final class FinancialStatementService
             'produits' => $produits,
             'charges' => $charges,
             'resultat' => round($produits['total'] - $charges['total'], 2),
+            'currency' => $this->referenceCurrency($companyId),
+            'unconverted_entries' => $this->unconvertedCount($companyId, null, null, $period),
         ];
     }
 
@@ -290,6 +299,7 @@ final class FinancialStatementService
             ->selectRaw('COALESCE(SUM(credit), 0) AS credit')
             ->where('company_id', $companyId)
             ->whereBetween('entry_date', [$from, $to])
+            ->where($this->referenceCurrencyFilter($companyId))
             ->groupBy('account_code')
             ->orderBy('account_code')
             ->get()
@@ -317,6 +327,7 @@ final class FinancialStatementService
             ->selectRaw('COALESCE(SUM(credit), 0) AS credit')
             ->where('company_id', $companyId)
             ->where('period', $period)
+            ->where($this->referenceCurrencyFilter($companyId))
             ->groupBy('account_code')
             ->orderBy('account_code')
             ->get()
@@ -327,6 +338,70 @@ final class FinancialStatementService
                 'credit' => (float) $row->credit,
             ])
             ->all();
+    }
+
+    /**
+     * Devise de référence du tenant (#9373) — celle dans laquelle le journal
+     * est tenu, donc la seule dans laquelle une somme a un sens.
+     */
+    private function referenceCurrency(string $companyId): string
+    {
+        $settingsCurrency = DB::table('accounting_settings')
+            ->where('company_id', $companyId)
+            ->value('currency');
+
+        if (is_string($settingsCurrency) && $settingsCurrency !== '') {
+            return strtoupper($settingsCurrency);
+        }
+
+        $companyCurrency = DB::table('companies')->where('id', $companyId)->value('currency');
+
+        return is_string($companyCurrency) && $companyCurrency !== ''
+            ? strtoupper($companyCurrency)
+            : 'DZD';
+    }
+
+    /**
+     * Filtre d'agrégation : uniquement les écritures libellées dans la devise
+     * de référence. Les lignes d'une autre devise (historique antérieur à
+     * #9373, ou écriture insérée hors du service de posting) sont **exclues**
+     * et comptées séparément — jamais additionnées à des montants d'une autre
+     * devise, ce qui produirait un bilan faux sans le signaler.
+     *
+     * @return \Closure(\Illuminate\Database\Query\Builder): void
+     */
+    private function referenceCurrencyFilter(string $companyId): \Closure
+    {
+        $reference = $this->referenceCurrency($companyId);
+
+        return static function ($query) use ($reference): void {
+            $query->where(static function ($inner) use ($reference): void {
+                $inner->where('currency', $reference)->orWhereNull('currency');
+            });
+        };
+    }
+
+    /**
+     * Nombre d'écritures écartées des agrégations faute d'être dans la devise de
+     * référence — exposé par les états pour que l'utilisateur sache que le
+     * total ne couvre pas tout.
+     */
+    private function unconvertedCount(string $companyId, ?string $from, ?string $to, ?string $period = null): int
+    {
+        $reference = $this->referenceCurrency($companyId);
+
+        $query = DB::table('accounting_journal_entries')
+            ->where('company_id', $companyId)
+            ->whereNotNull('currency')
+            ->where('currency', '!=', $reference);
+
+        if ($period !== null) {
+            $query->where('period', $period);
+        } elseif ($from !== null && $to !== null) {
+            $query->whereBetween('entry_date', [$from, $to]);
+        }
+
+        return (int) $query->count();
     }
 
     /**
