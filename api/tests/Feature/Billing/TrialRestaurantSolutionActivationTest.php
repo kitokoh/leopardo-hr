@@ -37,10 +37,15 @@ class TrialRestaurantSolutionActivationTest extends TestCase
             ->where('status', 'pending')
             ->firstOrFail();
 
+        // `/trial/verify` répond 201 : le provisioning crée le tenant ET le
+        // compte manager (puis ouvre la session) dans la même requête —
+        // `SelfServiceTrialController::verify()` termine par `], 201);`.
+        // Le test attendait encore 200, si bien que les DEUX cas passant par
+        // ce helper échouaient avant d'asserter ce qu'ils annoncent (#9409).
         $this->postJson('/api/v1/trial/verify', [
             'email' => $signupPayload['email'],
             'code' => $companyRequest->verification_token,
-        ])->assertStatus(200)->assertJson(['success' => true]);
+        ])->assertStatus(201)->assertJson(['success' => true]);
 
         /** @var Company $company */
         $company = Company::query()->where('email', $signupPayload['email'])->firstOrFail();
