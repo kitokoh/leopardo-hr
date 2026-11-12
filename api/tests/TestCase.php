@@ -225,25 +225,101 @@ abstract class TestCase extends BaseTestCase
 
         $connection = DB::getDefaultConnection();
         $originalSearchPath = config("database.connections.{$connection}.search_path");
+        $originalDatabase = config("database.connections.{$connection}.database");
 
-        config(["database.connections.{$connection}.search_path" => 'public']);
+        // Issue #9399 (cause profonde) : cette méthode est appelée DEPUIS
+        // `configureTestingDatabaseConnection()`, AVANT que la config ne
+        // pointe sur la base du worker. Sans ce forçage, `migrate` s'exécutait
+        // sur la base COMMUNE (`leopardo_test`) et la base du worker restait
+        // vide → `relation "public.companies" does not exist` (42P01) sur
+        // tous les tests Company du worker. On cible donc explicitement la
+        // base demandée, et on restaure la config d'origine en sortie.
+        config([
+            "database.connections.{$connection}.database" => $database,
+            "database.connections.{$connection}.search_path" => 'public',
+        ]);
         DB::purge($connection);
         DB::reconnect($connection);
 
-        DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+        // Issue #9399 : le garde `self::$parallelPublicMigrated` est STATIQUE
+        // PAR PROCESSUS. En `--parallel`, chaque worker paratest est un
+        // processus distinct : le garde ne protège rien entre workers, il ne
+        // fait que mémoïser en intra-processus. Deux workers pouvaient donc
+        // migrer la MÊME base de worker en même temps ; celui qui terminait
+        // en premier marquait la base comme prête alors que la migration de
+        // l'autre n'était pas finie → base partiellement migrée, et
+        // `relation "public.companies" does not exist` (42P01) sur les tests
+        // suivants. Le verrou doit donc être INTER-PROCESSUS.
+        //
+        // On prend un verrou consultatif PostgreSQL (session-scoped, sans
+        // dépendance ni migration dédiée) et on RE-VÉRIFIE l'état canonique
+        // SOUS le verrou : le worker qui arrive second doit constater que la
+        // migration est déjà faite, pas la refaire.
+        $lockKey = 'worker_public_schema:'.$database;
+        $locked = false;
 
         try {
-            $this->artisan('migrate', [
-                '--path' => 'database/migrations/public',
-                '--force' => true,
-            ]);
+            DB::selectOne('SELECT pg_advisory_lock(hashtext(?))', [$lockKey]);
+            $locked = true;
+
+            if (! $this->workerPublicSchemaReady()) {
+                DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+
+                $this->artisan('migrate', [
+                    '--path' => 'database/migrations/public',
+                    '--force' => true,
+                ]);
+            }
         } finally {
-            config(["database.connections.{$connection}.search_path" => $originalSearchPath]);
+            if ($locked) {
+                // Libération AVANT la purge : le verrou est attaché à la
+                // session PostgreSQL, une reconnexion le relâcherait
+                // implicitement sans jamais rendre le jeton.
+                try {
+                    DB::selectOne('SELECT pg_advisory_unlock(hashtext(?))', [$lockKey]);
+                } catch (\Throwable) {
+                    // La session est peut-être déjà perdue : PostgreSQL libère
+                    // alors le verrou de lui-même à la fermeture.
+                }
+            }
+
+            config([
+                "database.connections.{$connection}.database" => $originalDatabase,
+                "database.connections.{$connection}.search_path" => $originalSearchPath,
+            ]);
             DB::purge($connection);
             DB::reconnect($connection);
         }
 
         self::$parallelPublicMigrated[$database] = true;
+    }
+
+    /**
+     * État canonique du schéma `public` d'une base de worker (issue #9399).
+     *
+     * Vérification explicite par `to_regclass` : `Schema::hasTable()` suit le
+     * `search_path` de session, qui peut pointer sur un tenant et faire
+     * paraître absente une base saine (même piège que `canonicalSchemaReady()`
+     * dans RefreshTenantDatabase).
+     *
+     * On exige `public.companies` (la table du 42P01 observé) ET le dépôt de
+     * migrations `shared_tenants.migrations` : une base dont la migration a
+     * été interrompue peut avoir `companies` mais pas le dépôt, ou l'inverse.
+     */
+    private function workerPublicSchemaReady(): bool
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return false;
+        }
+
+        $row = DB::selectOne(
+            "SELECT to_regclass('public.companies') AS companies,
+                    to_regclass('shared_tenants.migrations') AS migrations_repo"
+        );
+
+        return $row !== null
+            && $row->companies !== null
+            && $row->migrations_repo !== null;
     }
 
     private function envValueForTesting(string $key, string $fallback): string
