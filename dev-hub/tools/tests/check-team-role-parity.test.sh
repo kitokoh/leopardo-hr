@@ -86,4 +86,23 @@ if python3 "$guard" --root "$tmp" > /dev/null 2>&1; then
   exit 1
 fi
 
-echo "OK: garde de parite des sous-roles manager (verte + 2 cas rouges)"
+# La reference est le PHP : ajouter un role COTE PHP et nulle part ailleurs doit
+# etre ROUGE. C'est la semantique voulue depuis que la liste de reference n'est
+# plus figee dans la garde : un role ajoute a l'API rend les clients fautifs.
+cat > "$tmp/api/app/Modules/HR/Interfaces/Api/V1/Requests/UpdateEmployeeRequest.php" <<'PHP'
+<?php
+'manager_role' => ['sometimes', 'nullable', 'in:'.implode(',', RoleInvitationService::allowedManagerRoles())],
+PHP
+cat > "$tmp/api/app/Modules/HR/Infrastructure/Services/RoleInvitationService.php" <<'PHP'
+<?php
+class RoleInvitationService
+{
+    public const ASSIGNABLE_MANAGER_ROLES = ['rh', 'dept', 'comptable', 'superviseur', 'marketing', 'audit'];
+}
+PHP
+if python3 "$guard" --root "$tmp" > /dev/null 2>&1; then
+  echo "ECHEC: la garde devait etre ROUGE quand le PHP ajoute un role que les clients ignorent"
+  exit 1
+fi
+
+echo "OK: garde de parite des sous-roles manager (verte + 3 cas rouges)"
