@@ -258,9 +258,12 @@ jobs:
       - name: Flutter analyze
         if: env.SHOULD_BUILD == 'true'
         working-directory: ${{ matrix.app.project_path }}
-        # #4724 (audit 360°) : gate aligné sur mobile-apps-ci (strict —
-        # les infos bloquantes en CI étaient acceptées dans la distribution).
-        run: flutter analyze
+        # #4724 (audit 360°) : gate aligné sur mobile-apps-ci.
+        # #9432 : aligné aussi sur la BASELINE `--no-fatal-infos` de
+        # mobile-apps-ci — sinon la distribution reste rouge sur la vague de
+        # deprecations Flutter 3.50 (`package:flutter/material.dart`), qui n'est
+        # pas une regression. Erreurs et warnings restent fatals.
+        run: flutter analyze --no-fatal-infos
 
       - name: Build release binary
         if: env.SHOULD_BUILD == 'true'

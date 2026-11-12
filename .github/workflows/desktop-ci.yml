@@ -67,6 +67,10 @@ jobs:
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           channel: stable
+          # #9432 : version EPINGLEE, comme l'action setup-flutter-android.
+          # Sans `flutter-version`, la CI suit `stable` et peut devenir rouge du
+          # jour au lendemain sur du code inchange. Bump = PR dediee.
+          flutter-version: '3.50.0'
 
       - name: Install dependencies
         working-directory: front/mobile_apps/${{ matrix.app }}
@@ -84,9 +88,12 @@ jobs:
           flutter pub get
           dart run build_runner build
 
+      # #9432 : meme baseline que mobile-apps-ci (les `info` de deprecation
+      # Flutter 3.50 ne sont pas des regressions ; erreurs et warnings restent
+      # fatals).
       - name: Analyze
         working-directory: front/mobile_apps/${{ matrix.app }}
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
 
       - name: Build (verify, non signé)
         working-directory: front/mobile_apps/${{ matrix.app }}

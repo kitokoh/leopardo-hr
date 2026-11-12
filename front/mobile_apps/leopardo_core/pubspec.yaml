@@ -48,7 +48,16 @@ dependencies:
   # Le bump automatique 05869af2e l'avait ecrase, ce qui a aussi cree un
   # conflit avec le pin exact "7.4.4" de leopardo_pos_retail (#9430).
   mobile_scanner: 7.4.4
-  flutter_blue_plus: ^2.3.15
+  # Pin volontaire en 1.x (#9432) : la 2.0.0 a change de LICENCE (BSD-3 ->
+  # licence proprietaire FlutterBluePlus, licence commerciale payante pour
+  # toute organisation a but lucratif) et exige desormais une declaration
+  # `license:` sur chaque `connect()`. Le code de ce package a ete ecrit
+  # contre l API 1.x (`device.connect(timeout: ...)` sans `license`) : la
+  # 2.3.15 hissee par le bump automatique ne COMPILAIT pas (missing argument
+  # `license`). Repasser en 2.x suppose une decision proprietaire sur la
+  # licence, pas un simple bump de dependance. 1.36.8 = derniere version
+  # BSD-3.
+  flutter_blue_plus: ^1.36.8
 
 dev_dependencies:
   flutter_test:

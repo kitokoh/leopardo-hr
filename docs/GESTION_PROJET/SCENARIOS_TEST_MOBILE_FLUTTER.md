@@ -415,3 +415,13 @@ Cause : le commit `05869af2e` n'a mis à jour que `leopardo_core`. Deux contrain
 
 **À retenir pour les prochains scénarios** : un bump de dépendance dans `leopardo_core` doit être répercuté dans les apps qui déclarent la même dépendance. Comme `leopardo_core` est une dépendance `path`, un seul désaccord casse la résolution de **toutes** les apps, y compris celles qui n'utilisent pas la fonctionnalité — c'est pourquoi un job rouge ici invalide tous les scénarios mobiles.
 
+## Note d'outillage 2026-11-12 — dépendance BLE repassée en 1.x, Flutter épinglé, baseline `analyze` (issue #9432)
+
+Trois changements qui conditionnent **la validité de tout scénario mobile** :
+
+1. **`flutter_blue_plus` repasse en `^1.36.8`** (dernière version BSD-3). La 2.0.0 a changé de **licence** (licence propriétaire FlutterBluePlus, licence commerciale payante pour toute organisation à but lucratif) et exige un argument `license:` sur chaque `connect()` — une **déclaration juridique**, pas un flag technique. Le code (`pos_ble_printer.dart:170`) était écrit contre l'API 1.x et ne compilait plus en 2.3.15. **Conséquence pour les tests** : l'appairage/impression POS est testé sur l'API 1.x ; repasser en 2.x est une décision propriétaire (licence) qui demandera de toute façon une migration de code.
+2. **Flutter est épinglé à `3.50.0`** dans `.github/actions/setup-flutter-android` et `desktop-ci.yml` (plus de `flutter-version: any`). Une capture ou un comportement de widget ne peut donc plus changer sans qu'une PR de bump Flutter l'ait décidé : une PR qui échoue sans modification de code mobile est désormais un vrai signal.
+3. **`flutter analyze --no-fatal-infos`** (baseline) : les `info` de dépréciation Flutter 3.50 (`package:flutter/material.dart`) ne sont plus bloquantes, mais les **erreurs et warnings** le restent. La migration `material_ui` est suivie par l'issue #9433.
+
+**Pour un nouveau scénario mobile** : vérifier le rendu avec la version épinglée, et ne jamais conclure « c'est vert » sur la seule étape `analyze` — elle ne bloque plus sur les simples `info`.
+

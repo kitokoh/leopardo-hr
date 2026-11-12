@@ -14,9 +14,15 @@ inputs:
     required: false
     default: "stable"
   flutter-version:
-    description: "Pinned Flutter version; 'any' uses the channel's latest (subosito/flutter-action default)"
+    # #9432 : plus jamais `any`. `any` suit le canal `stable` et fait arriver
+    # une nouvelle version Flutter (donc une nouvelle vague de deprecations ou
+    # un changement de SDK Dart) SANS qu'aucune PR ne l'ait demandee : la CI
+    # mobile peut devenir rouge du jour au lendemain sur du code inchange.
+    # Une version epinglee rend la CI reproductible ; la montee de version est
+    # un changement explicite, relu, fait dans une PR dediee.
+    description: "Pinned Flutter version (jamais 'any' : voir #9432). Bump = PR dediee."
     required: false
-    default: "any"
+    default: "3.50.0"
 
 runs:
   using: "composite"
