@@ -16,6 +16,7 @@ import {
   Rocket,
   CheckCircle2,
   Circle,
+  Receipt,
 } from 'lucide-react';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { apiFetch } from '@/lib/api-client';
@@ -58,6 +59,10 @@ export default function AccountingHomePage() {
   }, [loadActivation]);
 
   const tiles = [
+    // #9380 — la facturation n'existait que dans le cockpit super-admin Vue et
+    // dans l'app mobile : le portail tenant n'avait aucun écran pour consulter
+    // ni émettre une facture.
+    { href: '/accounting/invoices', icon: Receipt, label: t(locale, 'accountingModule.navInvoices'), accent: 'bg-sky-50 text-sky-600' },
     { href: '/accounting/chart', icon: BookOpen, label: t(locale, 'accountingModule.navChart'), accent: 'bg-sky-50 text-sky-600' },
     { href: '/accounting/ledger', icon: ListOrdered, label: t(locale, 'accountingModule.navLedger'), accent: 'bg-emerald-50 text-emerald-700' },
     { href: '/accounting/balance', icon: Scale, label: t(locale, 'accountingModule.navBalance'), accent: 'bg-amber-50 text-amber-600' },

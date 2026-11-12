@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_accounting/core/i18n/app_strings.dart';
+import 'package:leopardo_accounting/core/layout/responsive.dart';
 import 'package:leopardo_accounting/core/providers/core_providers.dart';
 import 'package:leopardo_accounting/features/accounting/models/accounting_document.dart';
 import 'package:leopardo_accounting/features/accounting/providers/accounting_providers.dart';
@@ -32,12 +33,47 @@ class DocumentsScreen extends ConsumerWidget {
           }
           return RefreshIndicator(
             onRefresh: () async => ref.invalidate(documentsProvider),
-            child: ListView.separated(
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: items.length,
-              separatorBuilder: (_, __) => const Divider(height: 1),
-              itemBuilder: (context, index) =>
-                  _DocumentTile(document: items[index], l10n: l10n),
+            // #9381 — sur tablette, la liste à une colonne laissait 60 % de la
+            // dalle vide et imposait un scroll inutile. On passe en grille dès
+            // la classe medium (2 colonnes) et expanded (3 colonnes), avec le
+            // contenu centré et une largeur maximale.
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: Responsive.maxContentWidth),
+                child: Responsive.isTablet(context)
+                    ? GridView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: Responsive.horizontalPadding(context),
+                          vertical: 12,
+                        ),
+                        itemCount: items.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: Responsive.gridColumns(context),
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          mainAxisExtent: 96,
+                        ),
+                        itemBuilder: (context, index) => Card(
+                          elevation: 0,
+                          color: AppColors.surfaceFor(context),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: _DocumentTile(
+                            document: items[index],
+                            l10n: l10n,
+                          ),
+                        ),
+                      )
+                    : ListView.separated(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        itemCount: items.length,
+                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        itemBuilder: (context, index) =>
+                            _DocumentTile(document: items[index], l10n: l10n),
+                      ),
+              ),
             ),
           );
         },

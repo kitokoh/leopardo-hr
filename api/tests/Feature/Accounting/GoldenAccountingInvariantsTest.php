@@ -122,7 +122,7 @@ class GoldenAccountingInvariantsTest extends TestCase
 
         // Calcul manuel : HT 1 000 + TVA 19 % = 190 → TTC 1 190.
         //   D 411  Clients   1 190
-        //   C 70   Ventes    1 000
+        //   C 706  Ventes    1 000
         //   C 4457 TVA         190
         $this->assertSame(3, $count);
 
@@ -135,7 +135,7 @@ class GoldenAccountingInvariantsTest extends TestCase
         $this->assertCount(3, $entries);
 
         $debit = $entries->where('account_code', '411')->first();
-        $creditSales = $entries->where('account_code', '70')->first();
+        $creditSales = $entries->where('account_code', '706')->first();
         $creditVat = $entries->where('account_code', '4457')->first();
 
         $this->assertInstanceOf(AccountingJournalEntry::class, $debit);
@@ -157,7 +157,7 @@ class GoldenAccountingInvariantsTest extends TestCase
 
         $service = new JournalPostingService;
 
-        // Calcul manuel : D 411 2 975 · C 70 2 500 · C 4457 475.
+        // Calcul manuel : D 411 2 975 · C 706 2 500 · C 4457 475.
         $this->assertSame(3, $service->postDocument($document));
 
         $fresh = $document->fresh();
@@ -240,22 +240,23 @@ class GoldenAccountingInvariantsTest extends TestCase
 
         // Calcul manuel :
         //   411 : D 1 190 + D 2 975 = 4 165 · C 500 (encaissement) → solde 3 665
-        //   70  : C 1 000 + C 2 500 = 3 500
+        //   706 : C 1 000 + C 2 500 = 3 500  (#9368 : registre PCG, plus le
+        //         préfixe « 70 » codé en dur)
         //   4457: C 190 + C 475 = 665
         //   53  : D 500
         $totals411 = $totals['411'];
-        $totals70 = $totals['70'];
+        $totals706 = $totals['706'];
         $totals4457 = $totals['4457'];
         $totals53 = $totals['53'];
 
         $this->assertIsArray($totals411);
-        $this->assertIsArray($totals70);
+        $this->assertIsArray($totals706);
         $this->assertIsArray($totals4457);
         $this->assertIsArray($totals53);
 
         $this->assertSame(4165.0, $totals411['debit']);
         $this->assertSame(500.0, $totals411['credit']);
-        $this->assertSame(3500.0, $totals70['credit']);
+        $this->assertSame(3500.0, $totals706['credit']);
         $this->assertSame(665.0, $totals4457['credit']);
         $this->assertSame(500.0, $totals53['debit']);
         $this->assertTrue($service->isPeriodBalanced('2026-08'));

@@ -68,6 +68,10 @@ final class AccountingChartOfAccounts
         'external_charges' => ['code' => '628', 'label' => 'Charges externes diverses'],
         'paid_in_capital' => ['code' => '101', 'label' => 'Capital social'],
         'retained_earnings' => ['code' => '110', 'label' => 'Report à nouveau'],
+        // #9378 — immobilisations et amortissements (PCG).
+        'fixed_assets' => ['code' => '21', 'label' => 'Immobilisations corporelles'],
+        'accumulated_depreciation' => ['code' => '281', 'label' => 'Amortissements des immobilisations corporelles'],
+        'depreciation_expense' => ['code' => '681', 'label' => 'Dotations aux amortissements'],
     ];
 
     /**
@@ -87,6 +91,11 @@ final class AccountingChartOfAccounts
         'external_charges' => ['code' => '628', 'label' => 'Charges externes diverses'],
         'paid_in_capital' => ['code' => '101', 'label' => 'Capital social'],
         'retained_earnings' => ['code' => '11', 'label' => 'Report à nouveau'],
+        // #9378 — SYSCOHADA révisé : 2x immobilisations, 28x amortissements,
+        // 681 dotations aux amortissements d'exploitation.
+        'fixed_assets' => ['code' => '24', 'label' => 'Matériel, mobilier et actifs biologiques'],
+        'accumulated_depreciation' => ['code' => '284', 'label' => 'Amortissements du matériel et du mobilier'],
+        'depreciation_expense' => ['code' => '681', 'label' => 'Dotations aux amortissements d\'exploitation'],
     ];
 
     /**
@@ -106,6 +115,11 @@ final class AccountingChartOfAccounts
         'external_charges' => ['code' => '770', 'label' => 'Genel yönetim giderleri'],
         'paid_in_capital' => ['code' => '500', 'label' => 'Sermaye'],
         'retained_earnings' => ['code' => '570', 'label' => 'Geçmiş yıllar kârları'],
+        // #9378 — Tekdüzen : 25x maddi duran varlıklar, 257 birikmiş
+        // amortismanlar, 770 genel yönetim giderleri içinde amortisman payı.
+        'fixed_assets' => ['code' => '255', 'label' => 'Demirbaşlar'],
+        'accumulated_depreciation' => ['code' => '257', 'label' => 'Birikmiş amortismanlar'],
+        'depreciation_expense' => ['code' => '770', 'label' => 'Genel yönetim giderleri'],
     ];
 
     /**
@@ -125,6 +139,11 @@ final class AccountingChartOfAccounts
         'external_charges' => ['code' => '6200', 'label' => 'General expenses'],
         'paid_in_capital' => ['code' => '3000', 'label' => 'Share capital'],
         'retained_earnings' => ['code' => '3200', 'label' => 'Retained earnings'],
+        // #9378 — UK : 1500 tangible assets, 1510 accumulated depreciation,
+        // 6000 depreciation charge.
+        'fixed_assets' => ['code' => '1500', 'label' => 'Tangible fixed assets'],
+        'accumulated_depreciation' => ['code' => '1510', 'label' => 'Accumulated depreciation'],
+        'depreciation_expense' => ['code' => '6000', 'label' => 'Depreciation'],
     ];
 
     /**
@@ -144,6 +163,11 @@ final class AccountingChartOfAccounts
         'external_charges' => ['code' => '6200', 'label' => 'General and administrative'],
         'paid_in_capital' => ['code' => '3000', 'label' => 'Common stock'],
         'retained_earnings' => ['code' => '3500', 'label' => 'Retained earnings'],
+        // #9378 — US GAAP : 1500 property & equipment, 1590 accumulated
+        // depreciation, 6100 depreciation expense.
+        'fixed_assets' => ['code' => '1500', 'label' => 'Property and equipment'],
+        'accumulated_depreciation' => ['code' => '1590', 'label' => 'Accumulated depreciation'],
+        'depreciation_expense' => ['code' => '6100', 'label' => 'Depreciation expense'],
     ];
 
     /**
@@ -163,6 +187,11 @@ final class AccountingChartOfAccounts
         'external_charges' => ['code' => '6200', 'label' => 'General expenses'],
         'paid_in_capital' => ['code' => '3000', 'label' => 'Share capital'],
         'retained_earnings' => ['code' => '3500', 'label' => 'Retained earnings'],
+        // #9378 — Canada : 1500 immobilisations, 1590 amortissements cumulés,
+        // 6100 dotation aux amortissements.
+        'fixed_assets' => ['code' => '1500', 'label' => 'Property and equipment'],
+        'accumulated_depreciation' => ['code' => '1590', 'label' => 'Accumulated depreciation'],
+        'depreciation_expense' => ['code' => '6100', 'label' => 'Depreciation expense'],
     ];
 
     /**
@@ -186,6 +215,11 @@ final class AccountingChartOfAccounts
         'external_charges',
         'paid_in_capital',
         'retained_earnings',
+        // #9378 — amortissements : sans ces trois familles, aucune dotation ne
+        // peut être comptabilisée sur un plan comptable par pays.
+        'fixed_assets',
+        'accumulated_depreciation',
+        'depreciation_expense',
     ];
 
     /**

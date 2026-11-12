@@ -18,12 +18,19 @@ use Illuminate\Support\Carbon;
  * @property string|null $company_id
  * @property Carbon $entry_date
  * @property string $period
+ * @property string|null $currency
+ * @property string|null $amount_currency
+ * @property float $exchange_rate
+ * @property string|null $journal_code
+ * @property int|null $cost_center_id
+ * @property int $line_no
  * @property string $source_type
  * @property int $source_id
  * @property string $account_code
  * @property string $account_label
  * @property float $debit
  * @property float $credit
+ * @property string|null $piece
  * @property string|null $description
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -40,6 +47,13 @@ class AccountingJournalEntry extends Model
         'company_id',
         'entry_date',
         'period',
+        'currency',
+        'amount_currency',
+        'exchange_rate',
+        'journal_code',
+        'cost_center_id',
+        'line_no',
+        'manual_ref',
         'source_type',
         'source_id',
         'account_code',
@@ -54,5 +68,6 @@ class AccountingJournalEntry extends Model
         'entry_date' => 'date',
         'debit' => 'float',
         'credit' => 'float',
+        'exchange_rate' => 'float',
     ];
 }

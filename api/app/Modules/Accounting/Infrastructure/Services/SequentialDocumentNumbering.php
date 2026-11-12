@@ -31,6 +31,10 @@ final class SequentialDocumentNumbering implements DocumentNumberingInterface
         DocumentType::CreditNote->value => 'AVR',
         DocumentType::DeliveryNote->value => 'BL',
         DocumentType::Receipt->value => 'RCP',
+        // #9367 — séries achats distinctes des séries de vente (un expert-
+        // comptable ne mélange jamais les deux chaînes de numérotation).
+        DocumentType::PurchaseInvoice->value => 'FAC-F',
+        DocumentType::PurchaseCreditNote->value => 'AVR-F',
     ];
 
     public function nextNumber(string $companyId, DocumentType $type): string

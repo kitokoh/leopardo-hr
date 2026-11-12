@@ -34,6 +34,10 @@ class DocumentNumberingService implements DocumentNumberingInterface
         'credit_note' => ['prefix' => 'AVO', 'year' => true, 'pad' => 4],
         'delivery_note' => ['prefix' => 'BL', 'year' => true, 'pad' => 4],
         'receipt' => ['prefix' => 'RC', 'year' => true, 'pad' => 4],
+        // #9367 — séries achats distinctes : un expert-comptable ne mélange
+        // jamais la numérotation des ventes et celle des achats.
+        'purchase_invoice' => ['prefix' => 'FACF', 'year' => true, 'pad' => 4],
+        'purchase_credit_note' => ['prefix' => 'AVOF', 'year' => true, 'pad' => 4],
     ];
 
     public function nextNumber(string $companyId, DocumentType $type): string

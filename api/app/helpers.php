@@ -104,3 +104,26 @@ if (! function_exists('schemaHasColumn')) {
         return $row !== null;
     }
 }
+
+if (! function_exists('schemaHasIndex')) {
+    /**
+     * Garde d'existence d'un index (résolue via le search_path, même convention
+     * que `schemaTableExists`/`schemaHasColumn`). Introduite pour les migrations
+     * additives du module Comptabilité (#9373) : ajouter un index de façon
+     * idempotente sans dépendre de la version du schéma en place.
+     */
+    function schemaHasIndex(string $table, string $index): bool
+    {
+        $schema = resolveTableSchema($table);
+        if ($schema === null) {
+            return false;
+        }
+
+        $row = \Illuminate\Support\Facades\DB::selectOne(
+            'SELECT 1 FROM pg_indexes WHERE schemaname = ? AND tablename = ? AND indexname = ?',
+            [$schema, $table, $index]
+        );
+
+        return $row !== null;
+    }
+}

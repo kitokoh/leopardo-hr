@@ -24,6 +24,9 @@ use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingDocumentContr
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingFecController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingFiscalYearController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingJournalController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingJournalSettingsController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingTaxRateController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\ManualJournalEntryController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingLedgerController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingLetteringController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingReportController;
@@ -102,9 +105,32 @@ ModuleRoutes::tenantModule('accounting', function (): void {
         // Journal des écritures (issue #5234) — période, export CSV expert,
         // clôture de période (fige le journal) et re-posting d'un document.
         Route::get('/journal', [AccountingJournalController::class, 'index']);
+
+        /*
+         * Écritures manuelles — journal d'opérations diverses (issue #9369).
+         * À déclarer AVANT `/journal/export...` pour que les segments statiques
+         * ne soient pas capturés par `{manual}`.
+         */
+        Route::post('/journal/entries', [ManualJournalEntryController::class, 'store']);
+        Route::get('/journal/entries/{manual}', [ManualJournalEntryController::class, 'show'])->whereNumber('manual');
+        Route::put('/journal/entries/{manual}', [ManualJournalEntryController::class, 'update'])->whereNumber('manual');
+        Route::delete('/journal/entries/{manual}', [ManualJournalEntryController::class, 'destroy'])->whereNumber('manual');
         Route::get('/journal/export.csv', [AccountingJournalController::class, 'export']);
         Route::post('/journal/periods/{period}/close', [AccountingJournalController::class, 'closePeriod']);
         Route::post('/documents/{document}/journal', [AccountingJournalController::class, 'postDocument'])->whereNumber('document');
+
+        // Journaux comptables (issue #9370) — le journal est une entité
+        // paramétrable : code FEC, libellé, nature et compte de trésorerie par
+        // défaut. Lecture large, écriture réservée au principal (paramétrage
+        // structurant : il conditionne tout l'export FEC).
+        Route::get('/journals', [AccountingJournalSettingsController::class, 'index']);
+        Route::post('/journals/seed', [AccountingJournalSettingsController::class, 'seed']);
+        // #9376 — référentiel de TVA multi-taux du tenant.
+        Route::get('/tax-rates', [AccountingTaxRateController::class, 'index']);
+        Route::post('/tax-rates/seed', [AccountingTaxRateController::class, 'seed']);
+        Route::post('/tax-rates', [AccountingTaxRateController::class, 'store']);
+        Route::put('/tax-rates/{taxRate}', [AccountingTaxRateController::class, 'update'])->whereNumber('taxRate');
+        Route::delete('/tax-rates/{taxRate}', [AccountingTaxRateController::class, 'destroy'])->whereNumber('taxRate');
 
         // Tableaux de bord comptables (issue #5395) — synthèse + export CSV impayés.
         Route::get('/dashboard', [AccountingDashboardController::class, 'show']);
@@ -122,6 +148,15 @@ ModuleRoutes::tenantModule('accounting', function (): void {
         // Lettrage des comptes de tiers (équilibre Σ débits = Σ crédits).
         Route::post('/journal/lettering', [AccountingLetteringController::class, 'store']);
         Route::delete('/journal/lettering/{letter}', [AccountingLetteringController::class, 'destroy']);
+    });
+
+    // Paramétrage des journaux (issue #9370) — réservé au propriétaire :
+    // le code de journal conditionne la colonne JournalCode de l'export FEC,
+    // donc la conformité de la liasse remise à l'administration.
+    Route::middleware('api.manager:principal,module:accounting')->group(function (): void {
+        Route::post('/journals', [AccountingJournalSettingsController::class, 'store']);
+        Route::put('/journals/{journal}', [AccountingJournalSettingsController::class, 'update'])->whereNumber('journal');
+        Route::delete('/journals/{journal}', [AccountingJournalSettingsController::class, 'destroy'])->whereNumber('journal');
     });
 
     // ── Rapports (issue #5271) + conversion (issue #5270) — RBAC

@@ -82,6 +82,17 @@ return [
         'year_between' => 'L\'année doit être comprise entre 2000 et 2100.',
     ],
 
+    // Libellés des natures de journal (#9370)
+    'journal_types' => [
+        'sale' => 'Journal des ventes',
+        'purchase' => 'Journal des achats',
+        'bank' => 'Journal de banque',
+        'cash' => 'Journal de caisse',
+        'payroll' => 'Journal de paie',
+        'misc' => 'Opérations diverses',
+        'opening' => 'Journal d\'ouverture',
+    ],
+
     // Erreurs métier (issue #5227)
     'errors' => [
         'gateway_checkout_failed' => 'La passerelle de paiement est temporairement indisponible. Réessayez plus tard.',
@@ -89,6 +100,24 @@ return [
         'payment_amount_positive' => 'Le montant du paiement doit être strictement positif.',
         'wf_invalid_type' => 'Type de document invalide.',
         'wf_requires_lines' => 'Un document doit avoir au moins une ligne.',
+        'wf_unknown_tax_rate' => 'Le taux de TVA « :code » n\'existe pas dans votre référentiel de taxes.',
+        'tax_rate_in_use' => 'Ce taux de TVA est utilisé par des lignes de document : désactivez-le au lieu de le supprimer.',
+        'cancel_paid_document' => 'Un document déjà payé ne peut pas être annulé : émettez un avoir.',
+        'close_period_forbidden' => 'La clôture d\'une période est réservée au principal de l\'entreprise.',
+        'wf_contact_not_found' => 'Tiers introuvable pour cette entreprise.',
+        'wf_contact_type_mismatch' => 'Le type de tiers est incompatible avec le sens du document : une facture d\'achat exige un fournisseur, une facture de vente un client.',
+        'journal_code_taken' => 'Ce code de journal existe déjà pour cette entreprise.',
+        'journal_has_entries' => 'Ce journal porte des écritures : désactivez-le au lieu de le supprimer.',
+        'journal_code_required' => 'Le code du journal est requis.',
+        'journal_code_format' => 'Le code du journal doit contenir 2 à 6 caractères alphanumériques.',
+        'journal_type_invalid' => 'Nature de journal invalide.',
+        'manual_needs_two_lines' => 'Une écriture doit comporter au moins deux lignes.',
+        'manual_account_required' => 'Chaque ligne doit porter un compte.',
+        'manual_account_unknown' => 'Le compte :code n\'existe pas dans votre plan comptable.',
+        'manual_account_inactive' => 'Le compte :code est inactif.',
+        'manual_line_debit_credit_exclusive' => 'Ligne :line : une ligne est au débit ou au crédit, jamais les deux.',
+        'manual_line_empty' => 'Ligne :line : montant nul.',
+        'manual_journal_unknown' => 'Le journal :code est inconnu ou inactif.',
         'wf_send_draft_only' => 'Seul un brouillon peut être envoyé.',
         'wf_send_no_lines' => 'Impossible d\'envoyer un document sans ligne.',
         'wf_send_requires_contact' => 'Un contact client est requis pour envoyer une facture ou un avoir.',

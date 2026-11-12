@@ -140,7 +140,9 @@ class AccountingJournalTest extends TestCase
         $this->assertSame(1190.0, $lines[0]['debit']);
         $this->assertSame('4457', $lines[1]['account_code']);
         $this->assertSame(190.0, $lines[1]['credit']);
-        $this->assertSame('70', $lines[2]['account_code']);
+        // #9368 — le compte produit vient du registre pays (PCG : 706
+        // « Prestations de services »), plus d'une constante codée en dur.
+        $this->assertSame('706', $lines[2]['account_code']);
         $this->assertSame(1000.0, $lines[2]['credit']);
         // Période dérivée de la date d'émission.
         $this->assertSame('2026-08', AccountingJournalEntry::query()->first()?->period);
