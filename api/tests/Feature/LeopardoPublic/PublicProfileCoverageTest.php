@@ -57,14 +57,22 @@ final class PublicProfileCoverageTest extends TestCase
         ];
 
         // Aucune des quatre n'est une sous-classe d'une autre.
+        //
+        // On passe par la réflexion et non par `is_subclass_of($a, $b)` sur des
+        // constantes de classe : PHPStan (niveau 8) résout statiquement ce
+        // dernier et signale « will always evaluate to false », ce qui est vrai
+        // aujourd'hui mais rendrait le test inopérant le jour où l'héritage
+        // apparaîtrait. La réflexion reste dynamique.
         foreach ($models as $nameA => $classA) {
+            $refA = new \ReflectionClass($classA);
+
             foreach ($models as $nameB => $classB) {
                 if ($nameA === $nameB) {
                     continue;
                 }
 
                 $this->assertFalse(
-                    is_subclass_of($classA, $classB),
+                    $refA->isSubclassOf($classB),
                     "{$nameA} ne doit pas hériter de {$nameB} : ce serait une fusion d'identité.",
                 );
             }
@@ -72,7 +80,7 @@ final class PublicProfileCoverageTest extends TestCase
 
         // Le cas explicitement visé par l'ADR §2.1.
         $this->assertFalse(
-            is_subclass_of(TravelCustomerAccount::class, User::class),
+            (new \ReflectionClass(TravelCustomerAccount::class))->isSubclassOf(User::class),
             'TravelCustomerAccount ne doit JAMAIS hériter de User (ADR §2.1).',
         );
     }
