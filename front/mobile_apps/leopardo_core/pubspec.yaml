@@ -43,7 +43,11 @@ dependencies:
   # (MobileScanner.kt:167 et :243, "Bitmap? but Bitmap was expected") et fait
   # echouer le check "Smoke build leopardo_employee (debug APK)". Voir
   # docs/ci/SMOKE_MOBILE_SCANNER_750.md. A depinner des que le plugin corrige.
-  mobile_scanner: 7.5.0
+  # Pin volontaire : 7.5.0 casse le build Kotlin Android (Smoke build
+  # leopardo_employee) — voir 4882250ff et docs/ci/SMOKE_MOBILE_SCANNER_750.md.
+  # Le bump automatique 05869af2e l'avait ecrase, ce qui a aussi cree un
+  # conflit avec le pin exact "7.4.4" de leopardo_pos_retail (#9430).
+  mobile_scanner: 7.4.4
   flutter_blue_plus: ^2.3.15
 
 dev_dependencies:
