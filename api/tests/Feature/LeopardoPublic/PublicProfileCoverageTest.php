@@ -58,29 +58,46 @@ final class PublicProfileCoverageTest extends TestCase
 
         // Aucune des quatre n'est une sous-classe d'une autre.
         //
-        // On passe par la réflexion et non par `is_subclass_of($a, $b)` sur des
-        // constantes de classe : PHPStan (niveau 8) résout statiquement ce
-        // dernier et signale « will always evaluate to false », ce qui est vrai
-        // aujourd'hui mais rendrait le test inopérant le jour où l'héritage
-        // apparaîtrait. La réflexion reste dynamique.
+        // On remonte la CHAÎNE D'HÉRITAGE réelle (`getParentClass()`) au lieu
+        // d'appeler `isSubclassOf()` : PHPStan (niveau 8) replie la hiérarchie
+        // de classes et signale « will always evaluate to false » — vrai
+        // aujourd'hui, mais le test deviendrait inopérant le jour où
+        // l'héritage apparaîtrait. La remontée de chaîne reste dynamique.
         foreach ($models as $nameA => $classA) {
-            $refA = new \ReflectionClass($classA);
+            $ancestors = [];
+            $parent = (new \ReflectionClass($classA))->getParentClass();
+
+            while ($parent !== false) {
+                $ancestors[] = $parent->getName();
+                $parent = $parent->getParentClass();
+            }
 
             foreach ($models as $nameB => $classB) {
                 if ($nameA === $nameB) {
                     continue;
                 }
 
-                $this->assertFalse(
-                    $refA->isSubclassOf($classB),
+                $this->assertNotContains(
+                    $classB,
+                    $ancestors,
                     "{$nameA} ne doit pas hériter de {$nameB} : ce serait une fusion d'identité.",
                 );
             }
         }
 
-        // Le cas explicitement visé par l'ADR §2.1.
-        $this->assertFalse(
-            (new \ReflectionClass(TravelCustomerAccount::class))->isSubclassOf(User::class),
+        // Le cas explicitement visé par l'ADR §2.1 : `TravelCustomerAccount`
+        // ne doit jamais avoir `User` dans sa chaîne d'héritage.
+        $travelAncestors = [];
+        $parent = (new \ReflectionClass($models['TravelCustomerAccount']))->getParentClass();
+
+        while ($parent !== false) {
+            $travelAncestors[] = $parent->getName();
+            $parent = $parent->getParentClass();
+        }
+
+        $this->assertNotContains(
+            $models['User'],
+            $travelAncestors,
             'TravelCustomerAccount ne doit JAMAIS hériter de User (ADR §2.1).',
         );
     }
