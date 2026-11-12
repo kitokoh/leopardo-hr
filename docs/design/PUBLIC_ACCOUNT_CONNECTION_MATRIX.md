@@ -38,19 +38,27 @@ Les 8 cas ci-dessous sont ceux où une implémentation naïve se trompe.
 
 | # | Cas | Comportement attendu | Test existant | Fichier | Exécuté | Verdict |
 |---|---|---|---|---|---|---|
-| 1 | **E-mail seul** | inscription + connexion par e-mail, jeton porteur rendu | ✅ oui | `Feature/Auth/RegisterLoginFlowTest.php`, `Feature/Auth/AuthSelfRegistrationTest.php` | ❌ | **couvert par des tests** |
+| 1 | **E-mail seul** | inscription + connexion par e-mail, jeton porteur rendu | ✅ oui | `Feature/Auth/RegisterLoginFlowTest.php`, `Feature/AuthSelfRegistrationTest.php` | ⚠️ | **couvert — 2 échecs préexistants** (§2.5) |
 | 2 | **Téléphone seul** | compte sans e-mail, OTP par SMS, jeton rendu | ✅ oui | `Feature/Auth/LoginCodeSmsChannelTest.php` (16 tests) | ✅ | **couvert ET exécuté** (16/16) — mais voir §2.1 |
 | 3 | **Compte agence de voyage existant** (pont par téléphone vérifié) | un client déjà présent dans `travel_customer_accounts` retrouve **le même** compte `users`, sans doublon | ✅ oui | `Feature/LeopardoPublic/PublicIdentityBridgeServiceTest.php` (M2, #9104) — 10 tests | ✅ | **couvert ET exécuté** (10/10) |
 | 4 | **Personne cliente de plusieurs métiers** | une seule identité, N conversations / N activités, aucune permission partagée | ✅ oui | `Feature/LeopardoPublic/PublicActivityTest.php` (M3, #9108) + `PublicIdentityBridgeServiceTest` (pont) | ✅ | **couvert ET exécuté** (14/14 + 10/10) |
 | 5 | **Cliente ET employée** | deux comptes séparés, jetons non interchangeables | ✅ oui | `Feature/Auth/PublicPhoneOtpTest.php` : `test_user_api_token_does_not_open_employee_surface` (isolation de guard) | ✅ | **couvert ET exécuté** (14/14) |
 | 6 | **Numéro changé ou réattribué** | nouveau numéro ⇒ nouvelle vérification ; l'ancien ne donne plus accès | ✅ oui | `Feature/LeopardoPublic/PublicIdentityBridgeServiceTest.php` : `test_changing_phone_never_transfers_user_id` (M2, #9104) | ✅ | **couvert ET exécuté** (10/10) |
 | 7 | **SMS indisponible** | message clair + alternative e-mail, **jamais de faux succès** | ✅ oui | `Feature/Auth/LoginCodeSmsChannelTest.php` : `test_request_falls_back_to_email_when_sms_is_not_configured`, `test_request_falls_back_to_email_when_sms_sender_returns_null` | ✅ | **couvert ET exécuté** (16/16) |
-| 8 | **Appareil perdu** → révocation | révocation des jetons d'un appareil, sans toucher les autres | ✅ oui | `Feature/LeopardoPublic/PublicLogoutAllTest.php` (PR #9178, **ouverte**) — 5 tests ; `Feature/Auth/SanctumTokenHygieneTest.php` (purge des expirés) | ⚠️ | **couvert — PR #9178 non mergée** |
+| 8 | **Appareil perdu** → révocation | révocation des jetons d'un appareil, sans toucher les autres | ✅ oui | `Feature/LeopardoPublic/PublicLogoutAllTest.php` (**PR #9178 mergée**) — 5 tests ; `Feature/Auth/SanctumTokenHygieneTest.php` (purge des expirés) | ✅ | **couvert ET mergé** (§2.6) |
 
-**Synthèse honnête (8 novembre 2026)** : **6 cas couverts et exécutés** (1, 2, 3,
-4, 5, 6, 7 — voir §4 pour les comptes), **1 cas couvert mais non mergé** (8,
-PR #9178 ouverte). **Aucun cas n'est plus « non couvert ».** Les cas 3 et 6,
-que ce document déclarait « non implémentés », ont été livrés par M2 (#9104).
+**Synthèse honnête (12 novembre 2026)** : **8 cas sur 8 sont couverts**, et le
+cas 8 est désormais **mergé** (PR #9178, vérifiée `merged: true` le 12 novembre).
+Les cas 3 et 6, que ce document déclarait « non implémentés », ont été livrés
+par M2 (#9104).
+
+> **Révision du 12 novembre 2026.** Le tableau précédent déclarait le cas 8
+> « ⚠️ PR #9178 ouverte, non mergée ». C'était exact le 8 novembre, plus le 12.
+> La même révision corrige **deux références de preuve fausses** :
+> `Feature/Auth/AuthSelfRegistrationTest.php` n'existe pas (le fichier est
+> `tests/Feature/AuthSelfRegistrationTest.php`, sans le sous-dossier `Auth`),
+> et le cas 8 renvoie maintenant à §2.6 révisé.
+> Audit de couverture complet : `COULOIR16_AUDIT_COUVERTURE_GITHUB.md`.
 
 ---
 
@@ -135,19 +143,46 @@ l'unicité en base.
 **Ce qui reste hors couloir 16** : la révocation systématique des jetons au
 changement de numéro (point 2) dépend du lot **L1** (#9091).
 
-### 2.5 Cas 8 — appareil perdu : **couvert par une PR ouverte**
+### 2.5 Cas 1 — e-mail seul : **2 échecs préexistants, mesurés**
+
+Exécution du 12 novembre 2026 (`CI=true`, PostgreSQL 15) :
+
+```
+AuthSelfRegistrationTest    FAILURES!  Tests: 3, Failures: 2
+```
+
+Cause réelle, identifiée et **non applicative** : `NotCommonPassword`
+retire les chiffres de fin avant de consulter sa liste de refus
+(`$root = rtrim($normalized, '0123456789')`). Le test utilise
+`password123456` → racine `password` → **présente dans la liste** → `422`.
+L'assertion attendait `201`, et l'autre test `REGISTRATION_NOT_AVAILABLE`
+au lieu de `VALIDATION_ERROR`.
+
+Ce n'est **pas** une régression : c'est un mot de passe de test devenu
+interdit par une règle de sécurité ajoutée depuis. Non corrigé ici — changer
+le mot de passe d'un test d'inscription relève de la politique de test
+d'authentification, pas de ce couloir. **Décision en attente.**
+
+`RegisterLoginFlowTest` passe (le cas 1 est donc couvert par au moins une
+classe verte) ; les 2 échecs portent sur la classe d'inscription par
+invitation.
+
+---
+
+### 2.6 Cas 8 — appareil perdu : **couvert ET mergé**
 
 `logout` révoque **le jeton courant**. Pour un appareil perdu, il faut révoquer
 **tous** les jetons, sans dépendre d'un `device_id` absent de
 `personal_access_tokens`. **M2 (#9104) a livré la route `POST /user/logout-all`**
-(`api/routes/modules/user.php:56`), et la PR **#9178** (ouverte, non mergée)
-ajoute `PublicLogoutAllTest` — 5 tests / 11 assertions, vrai jeton Sanctum +
+(`api/routes/modules/user.php:56`), et la PR **#9178** (**mergée** le 12 novembre
+2026, vérifié via l'API GitHub : `state: closed`, `merged: true`) a ajouté
+`PublicLogoutAllTest` — 5 tests / 11 assertions, vrai jeton Sanctum +
 `Auth::forgetGuards()`, sur les vraies migrations : 401 sans jeton, révocation
 totale (0 jeton survivant), jeton refusé après révocation, jetons d'un autre
 utilisateur intacts.
 
-**Ce qui reste** : la PR #9178 doit être mergée pour que le cas 8 soit
-« couvert ET exécuté » en CI. Tant qu'elle est ouverte, le cas reste ⚠️.
+**Il ne reste rien à faire sur ce cas** : la route existe, le test existe, la
+PR est mergée.
 
 ---
 
@@ -157,7 +192,7 @@ utilisateur intacts.
 |---|---|---|---|
 | 3 | backfill `travel_customer_accounts.phone → users.phone_e164` (le pont est livré) | L4 (#9094) | hors 16 |
 | 6 | révocation de tous les jetons au changement de numéro (le non-transfert est livré) | L1 (#9091) | hors 16 |
-| 8 | merger la PR #9178 (`logout-all` livré, test ouvert) | aucune | M2 |
+| 8 | ✅ **fait** — PR #9178 mergée | aucune | M2 |
 | 2 | transport SMS réel | L1 (#9091) | hors 16 |
 | 4 | test du pont d'identité bout en bout | 3 | hors 16 |
 
@@ -189,10 +224,21 @@ n'a été réalisée ici : ce document est un état des lieux, pas une promesse.
 | `SanctumTokenHygieneTest` (cas 8, partiel) | 4 | 0 |
 | `AuthMeLogoutTest` (cas 8, partiel) | 5 | 0 |
 
-**Ce qui reste ❌** : le cas 8 n'est **pas encore mergé** (PR #9178 ouverte) ;
-les cas 1 et 5 reposent sur des classes dont l'exécution n'a pas été relevée
-individuellement dans ce JUnit. Dire le contraire sans exécution serait
-exactement le faux succès que le cas 7 interdit.
+**Ce qui reste ❌** : les cas 1 et 5 reposent sur des classes dont l'exécution
+n'est pas relevée individuellement dans le JUnit de référence. Dire le
+contraire sans exécution serait exactement le faux succès que le cas 7
+interdit.
+
+**Relevé du 12 novembre 2026 (local, PostgreSQL 15)** :
+
+| Commande | Résultat |
+|---|---|
+| 6 classes de la matrice (cas 1, 2, 3, 6, 7, 8) | **41 tests, 104 assertions, 2 échecs** — 2 échecs = `AuthSelfRegistrationTest` (§2.5) |
+| `PublicActivityTest` (cas 4) | **14 tests, 39 assertions, 0 échec** |
+| `PublicProfileCoverageTest` (nouveau — profils + guards) | **9 tests, 42 assertions, 0 échec** |
+
+Le cas 8 n'est plus « en attente de merge » : il est mergé et sa classe est
+dans les 41 tests exécutés.
 
 ---
 
