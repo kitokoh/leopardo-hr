@@ -26,7 +26,7 @@ class AccountingTaxRateController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $companyId = (string) $request->user()->company_id;
+        $companyId = $this->companyId($request);
 
         $rates = AccountingTaxRate::query()
             ->where('company_id', $companyId)
@@ -53,13 +53,17 @@ class AccountingTaxRateController extends Controller
      */
     public function seed(Request $request): JsonResponse
     {
-        $companyId = (string) $request->user()->company_id;
-        $company = $request->user()->company;
+        $companyId = $this->companyId($request);
+        $company = $request->user()?->getAttribute('company');
+
+        $province = is_object($company) && isset($company->metadata['province']) && is_string($company->metadata['province'])
+            ? $company->metadata['province']
+            : null;
 
         $created = $this->taxRates->seedForCompany(
             $companyId,
-            $company?->country,
-            $company?->province,
+            is_string($company->country ?? null) ? $company->country : null,
+            $province,
         );
 
         return response()->json(['created' => $created], 201);
@@ -76,7 +80,7 @@ class AccountingTaxRateController extends Controller
             'is_active' => ['nullable', 'boolean'],
         ]);
 
-        $companyId = (string) $request->user()->company_id;
+        $companyId = $this->companyId($request);
 
         $rate = $this->taxRates->upsert($companyId, $validated);
 
@@ -102,7 +106,7 @@ class AccountingTaxRateController extends Controller
             'is_active' => ['sometimes', 'boolean'],
         ]);
 
-        $updated = $this->taxRates->upsert((string) $request->user()->company_id, [
+        $updated = $this->taxRates->upsert($this->companyId($request), [
             'code' => $taxRate->code,
             'label' => $validated['label'] ?? $taxRate->label,
             'rate' => $validated['rate'] ?? $taxRate->rate,
@@ -129,7 +133,7 @@ class AccountingTaxRateController extends Controller
     {
         $this->assertOwnedByTenant($request, $taxRate);
 
-        if (! $this->taxRates->delete((string) $request->user()->company_id, $taxRate)) {
+        if (! $this->taxRates->delete($this->companyId($request), $taxRate)) {
             return response()->json([
                 'message' => __('accounting.errors.tax_rate_in_use'),
             ], 409);
@@ -140,6 +144,22 @@ class AccountingTaxRateController extends Controller
 
     private function assertOwnedByTenant(Request $request, AccountingTaxRate $taxRate): void
     {
-        abort_if((string) $taxRate->company_id !== (string) $request->user()->company_id, 404);
+        abort_if((string) $taxRate->company_id !== $this->companyId($request), 404);
+    }
+
+    /**
+     * Compagnie de l'acteur authentifié — même pattern que les autres
+     * contrôleurs du module (`getAttribute`, jamais la propriété directe :
+     * `SuperAdmin` n'a pas de `company_id`).
+     */
+    private function companyId(Request $request): string
+    {
+        $companyId = $request->user()?->getAttribute('company_id');
+
+        if (! is_string($companyId) || $companyId === '') {
+            abort(403, 'Tenant context missing.');
+        }
+
+        return $companyId;
     }
 }

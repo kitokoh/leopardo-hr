@@ -173,6 +173,9 @@ class AccountingPolicy
         return $this->hasAnyRole($actor, self::READ_ROLES);
     }
 
+    /**
+     * @param  list<string>  $roles
+     */
     private function hasAnyRole(Employee $actor, array $roles): bool
     {
         return $actor->hasManagerRole(...$roles);

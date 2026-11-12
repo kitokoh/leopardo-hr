@@ -85,6 +85,9 @@ class DepreciationTest extends TestCase
         $debit = $entries->firstWhere('debit', '>', 0);
         $credit = $entries->firstWhere('credit', '>', 0);
 
+        $this->assertNotNull($debit);
+        $this->assertNotNull($credit);
+
         $this->assertSame('681', $debit->account_code);
         $this->assertSame(1000.0, (float) $debit->debit);
         $this->assertSame('281', $credit->account_code);

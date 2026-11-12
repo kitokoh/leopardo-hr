@@ -91,7 +91,8 @@ class ManualJournalEntryTest extends TestCase
     /** @return list<array{account_code: string, debit: float, credit: float}> */
     private function linesOf(string $manualRef): array
     {
-        return AccountingJournalEntry::query()
+        /** @var list<array{account_code: string, debit: float, credit: float}> $lines */
+        $lines = AccountingJournalEntry::query()
             ->where('source_type', 'manual')
             ->where('manual_ref', $manualRef)
             ->orderBy('line_no')
@@ -103,6 +104,8 @@ class ManualJournalEntryTest extends TestCase
             ])
             ->values()
             ->all();
+
+        return $lines;
     }
 
     // ── Création ─────────────────────────────────────────────────────────

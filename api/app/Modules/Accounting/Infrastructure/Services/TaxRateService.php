@@ -36,7 +36,7 @@ class TaxRateService
         $created = 0;
 
         foreach ($defaults as $index => $definition) {
-            $kind = $this->kindFromLabelKey((string) ($definition['label_key'] ?? 'standard'));
+            $kind = $this->kindFromLabelKey($definition['label_key']);
 
             $exists = AccountingTaxRate::query()
                 ->where('company_id', $companyId)
@@ -119,7 +119,7 @@ class TaxRateService
         $rate = (float) $payload['rate'];
         $kind = $this->kindFromLabelKey((string) ($payload['kind'] ?? 'standard'));
 
-        DB::transaction(function () use ($companyId, $payload, $rate, $kind): void {
+        DB::transaction(function () use ($companyId, $payload): void {
             if (($payload['is_default'] ?? false) === true) {
                 // Un seul défaut par tenant.
                 AccountingTaxRate::query()

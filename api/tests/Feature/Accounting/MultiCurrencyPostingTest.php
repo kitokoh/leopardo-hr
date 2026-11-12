@@ -62,9 +62,6 @@ class MultiCurrencyPostingTest extends TestCase
         return $contact;
     }
 
-    /**
-     * @param  array{currency?: string|null, exchange_rate?: float|null}  $overrides
-     */
     private function invoice(
         Company $company,
         string $type = 'invoice',
@@ -100,21 +97,40 @@ class MultiCurrencyPostingTest extends TestCase
         /** @var array<string, array{debit: float, credit: float, currency: ?string, amount_currency: ?string, exchange_rate: float}> $lines */
         $lines = [];
 
-        AccountingJournalEntry::query()
+        // Boucle explicite (et non `->each(closure)`) : PHPStan ne voit pas les
+        // écritures faites par référence dans une closure et croirait `$lines`
+        // toujours vide, d'où des « Offset '411' does not exist ».
+        foreach (AccountingJournalEntry::query()
             ->where('source_type', 'document')
             ->where('source_id', $document->id)
-            ->get()
-            ->each(function (AccountingJournalEntry $entry) use (&$lines): void {
-                $lines[$entry->account_code] = [
-                    'debit' => (float) $entry->debit,
-                    'credit' => (float) $entry->credit,
-                    'currency' => $entry->currency,
-                    'amount_currency' => $entry->amount_currency,
-                    'exchange_rate' => (float) $entry->exchange_rate,
-                ];
-            });
+            ->get() as $entry) {
+            $lines[(string) $entry->account_code] = [
+                'debit' => (float) $entry->debit,
+                'credit' => (float) $entry->credit,
+                'currency' => $entry->currency,
+                'amount_currency' => $entry->amount_currency,
+                'exchange_rate' => (float) $entry->exchange_rate,
+            ];
+        }
 
         return $lines;
+    }
+
+    /**
+     * Ligne d'écriture d'un compte, ou zéro si le compte n'a pas été mouvementé.
+     *
+     * @param  array<string, array{debit: float, credit: float, currency: ?string, amount_currency: ?string, exchange_rate: float}>  $lines
+     * @return array{debit: float, credit: float, currency: ?string, amount_currency: ?string, exchange_rate: float}
+     */
+    private function line(array $lines, string $code): array
+    {
+        return $lines[$code] ?? [
+            'debit' => 0.0,
+            'credit' => 0.0,
+            'currency' => null,
+            'amount_currency' => null,
+            'exchange_rate' => 0.0,
+        ];
     }
 
     /**
@@ -136,9 +152,9 @@ class MultiCurrencyPostingTest extends TestCase
 
         $lines = $this->linesOf($invoice);
 
-        $this->assertSame(178500.0, $lines['411']['debit']);
-        $this->assertSame(150000.0, $lines['706']['credit']);
-        $this->assertSame(28500.0, $lines['4457']['credit']);
+        $this->assertSame(178500.0, $this->line($lines, '411')['debit']);
+        $this->assertSame(150000.0, $this->line($lines, '706')['credit']);
+        $this->assertSame(28500.0, $this->line($lines, '4457')['credit']);
 
         // Traçabilité : devise de comptabilisation, devise d'origine, taux.
         foreach ($lines as $line) {
@@ -163,11 +179,11 @@ class MultiCurrencyPostingTest extends TestCase
 
         $lines = $this->linesOf($invoice);
 
-        $this->assertSame(1190.0, $lines['411']['debit']);
-        $this->assertSame(1000.0, $lines['706']['credit']);
-        $this->assertSame(190.0, $lines['4457']['credit']);
-        $this->assertSame(1.0, $lines['411']['exchange_rate']);
-        $this->assertSame('DZD', $lines['411']['currency']);
+        $this->assertSame(1190.0, $this->line($lines, '411')['debit']);
+        $this->assertSame(1000.0, $this->line($lines, '706')['credit']);
+        $this->assertSame(190.0, $this->line($lines, '4457')['credit']);
+        $this->assertSame(1.0, $this->line($lines, '411')['exchange_rate']);
+        $this->assertSame('DZD', $this->line($lines, '411')['currency']);
     }
 
     /**
@@ -210,8 +226,8 @@ class MultiCurrencyPostingTest extends TestCase
 
         $lines = $this->linesOf($invoice);
 
-        $debit = round($lines['411']['debit'], 2);
-        $credit = round($lines['706']['credit'] + $lines['4457']['credit'], 2);
+        $debit = round($this->line($lines, '411')['debit'], 2);
+        $credit = round($this->line($lines, '706')['credit'] + $this->line($lines, '4457')['credit'], 2);
 
         $this->assertSame($debit, $credit, 'Écriture déséquilibrée après conversion.');
     }

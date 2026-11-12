@@ -95,8 +95,13 @@ class AnalyticalBudgetTest extends TestCase
 
         $byCode = collect($actuals)->keyBy('code');
 
-        $this->assertSame(1500.0, $byCode['CH-1']['charges']);
-        $this->assertSame(2000.0, $byCode['ADM']['charges']);
+        $chantierRow = $byCode['CH-1'];
+        $adminRow = $byCode['ADM'];
+        $this->assertNotNull($chantierRow);
+        $this->assertNotNull($adminRow);
+
+        $this->assertSame(1500.0, $chantierRow['charges']);
+        $this->assertSame(2000.0, $adminRow['charges']);
     }
 
     /**

@@ -11,6 +11,7 @@ use App\Modules\Accounting\Domain\Models\AccountingFixedAsset;
 use App\Modules\Accounting\Domain\Models\AccountingJournalEntry;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 /**
  * Amortissements linéaires (issue #9378).
@@ -30,9 +31,21 @@ use Illuminate\Support\Facades\DB;
  */
 class DepreciationService
 {
-    public function __construct(
-        private readonly JournalPostingService $posting,
-    ) {}
+    /**
+     * Fin du mois d'une période `YYYY-MM`. Extraite parce que
+     * `Carbon::createFromFormat()` est retourné nullable/false par son typage :
+     * la garde ci-dessous rend le type certain pour l'appelant.
+     */
+    private function monthEnd(string $period): Carbon
+    {
+        $start = Carbon::createFromFormat('Y-m-d', $period.'-01');
+
+        if (! $start instanceof Carbon) {
+            throw new InvalidArgumentException('Période invalide : '.$period);
+        }
+
+        return $start->endOfMonth();
+    }
 
     /**
      * Passe la dotation d'une période pour toutes les immobilisations actives
@@ -44,7 +57,7 @@ class DepreciationService
     {
         $this->assertPeriodOpen($period);
 
-        $entryDate = Carbon::createFromFormat('Y-m-d', $period.'-01')->endOfMonth();
+        $entryDate = $this->monthEnd($period);
 
         $assets = AccountingFixedAsset::query()
             ->where('company_id', $companyId)
@@ -78,7 +91,7 @@ class DepreciationService
      */
     public function postForAsset(AccountingFixedAsset $asset, string $period, ?Carbon $entryDate = null): ?float
     {
-        $entryDate ??= Carbon::createFromFormat('Y-m-d', $period.'-01')->endOfMonth();
+        $entryDate ??= $this->monthEnd($period);
 
         // Hors période de mise en service : pas de dotation avant l'utilisation.
         if ($entryDate->lt($asset->in_service_date->copy()->startOfMonth())) {

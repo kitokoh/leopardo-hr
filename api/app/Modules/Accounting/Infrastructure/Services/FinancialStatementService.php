@@ -98,7 +98,9 @@ final class FinancialStatementService
      *   total_capitaux: float,
      *   total_passif_capitaux: float,
      *   resultat_net: float,
-     *   balanced: bool
+     *   balanced: bool,
+     *   currency: string,
+     *   unconverted_entries: int
      * }
      */
     public function balanceSheet(string $companyId, int $year): array

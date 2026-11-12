@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -30,6 +31,8 @@ use Illuminate\Database\Eloquent\Model;
 class AccountingTaxRate extends Model
 {
     use BelongsToCompany;
+
+    /** @use HasFactory<Factory<static>> */
     use HasFactory;
 
     protected $table = 'accounting_tax_rates';

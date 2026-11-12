@@ -181,15 +181,18 @@ final class JournalPostingService
         // #9373 — un paiement est saisi dans la devise de son document : on
         // applique le même taux que l'écriture du document pour que le solde du
         // tiers reste soldé (sinon un écart de change fantôme apparaît).
-        $document = $payment->document_id !== null
-            ? AccountingDocument::query()->withoutGlobalScopes()->find($payment->document_id)
+        $document = AccountingDocument::query()->withoutGlobalScopes()->find($payment->document_id);
+
+        $documentCurrency = $document instanceof AccountingDocument ? (string) $document->currency : '';
+        $documentRate = $document instanceof AccountingDocument && $document->exchange_rate !== null
+            ? (float) $document->exchange_rate
             : null;
 
         [$lines, $currency, $amountCurrency, $rate] = $this->convertLinesToReference(
             lines: $lines,
             counterpartyIndex: $isDisbursement ? 0 : 1,
-            documentCurrency: (string) ($document->currency ?? ''),
-            documentRate: $document->exchange_rate !== null ? (float) $document->exchange_rate : null,
+            documentCurrency: $documentCurrency,
+            documentRate: $documentRate,
             companyId: (string) $payment->company_id,
         );
 

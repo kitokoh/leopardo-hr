@@ -138,15 +138,20 @@ class MultiRateVatTest extends TestCase
             ->orderBy('sort_order')
             ->get();
 
-        $this->assertSame(20.0, (float) $lines[0]->tax_rate);
-        $this->assertSame(200.0, (float) $lines[0]->tax_amount);
-        $this->assertSame(1.0, (float) $lines[1]->tax_rate);
-        $this->assertSame(5.0, (float) $lines[1]->tax_amount);
+        $first = $lines[0];
+        $second = $lines[1];
+        $this->assertNotNull($first);
+        $this->assertNotNull($second);
+
+        $this->assertSame(20.0, (float) $first->tax_rate);
+        $this->assertSame(200.0, (float) $first->tax_amount);
+        $this->assertSame(1.0, (float) $second->tax_rate);
+        $this->assertSame(5.0, (float) $second->tax_amount);
 
         // Chaque ligne référence le taux du référentiel qu'elle a appliqué.
-        $this->assertNotNull($lines[0]->tax_rate_id);
-        $this->assertNotNull($lines[1]->tax_rate_id);
-        $this->assertNotSame($lines[0]->tax_rate_id, $lines[1]->tax_rate_id);
+        $this->assertNotNull($first->tax_rate_id);
+        $this->assertNotNull($second->tax_rate_id);
+        $this->assertNotSame($first->tax_rate_id, $second->tax_rate_id);
     }
 
     /**
