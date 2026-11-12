@@ -71,6 +71,39 @@ export interface PublicHomeCopy {
     subtitle: string;
     cta: string;
   };
+  /**
+   * « Reprendre où vous étiez » — rendu UNIQUEMENT si un historique local
+   * réel existe (dernière recherche en cache). Sinon la section est absente.
+   */
+  resume: {
+    title: string;
+    subtitle: string;
+    cta: string;
+  };
+  /**
+   * « À découvrir près de vous » — rendu UNIQUEMENT si la découverte renvoie
+   * des fiches. Les actions affichées viennent de `supportedActions()`.
+   */
+  nearby: {
+    title: string;
+    subtitle: string;
+    cta: string;
+    /**
+     * Libellés des actions issues de `supportedActions()`. Indexés par la clé
+     * du contrat (`contact`, `order`, `book`, `quote`) : aucune chaîne
+     * utilisateur en dur dans le composant (garde PA2-I18N-014).
+     */
+    actions: Record<string, string>;
+  };
+  /** Navigation basse mobile — 4 onglets du cahier des charges. */
+  tabs: {
+    home: string;
+    messages: string;
+    activities: string;
+    profile: string;
+    /** Libellé accessible du compteur de non-lus. */
+    unread: string;
+  };
   /** « Comment ça marche ». */
   how: {
     title: string;
@@ -145,6 +178,29 @@ const fr: PublicHomeCopy = {
     title: 'Parcourir par catégorie',
     subtitle: 'Cinq annuaires publics, un seul point d’entrée.',
     cta: 'Voir l’annuaire',
+  },
+  resume: {
+    title: 'Reprendre où vous étiez',
+    subtitle: 'Votre dernière recherche, telle que vous l’avez laissée.',
+    cta: 'Reprendre',
+  },
+  nearby: {
+    title: 'À découvrir près de vous',
+    subtitle: 'Des fiches publiques autour de votre position.',
+    cta: 'Voir la fiche',
+    actions: {
+      contact: 'Contacter',
+      order: 'Commander',
+      book: 'Réserver',
+      quote: 'Demander un devis',
+    },
+  },
+  tabs: {
+    home: 'Accueil',
+    messages: 'Messages',
+    activities: 'Activités',
+    profile: 'Profil',
+    unread: 'conversation(s) non lue(s)',
   },
   how: {
     title: 'Comment ça marche',
@@ -231,6 +287,29 @@ const en: PublicHomeCopy = {
     subtitle: 'Five public directories, one entry point.',
     cta: 'Open the directory',
   },
+  resume: {
+    title: 'Pick up where you left off',
+    subtitle: 'Your last search, exactly as you left it.',
+    cta: 'Resume',
+  },
+  nearby: {
+    title: 'Discover near you',
+    subtitle: 'Public listings around your location.',
+    cta: 'Open the page',
+    actions: {
+      contact: 'Contact',
+      order: 'Order',
+      book: 'Book',
+      quote: 'Request a quote',
+    },
+  },
+  tabs: {
+    home: 'Home',
+    messages: 'Messages',
+    activities: 'Activities',
+    profile: 'Profile',
+    unread: 'unread conversation(s)',
+  },
   how: {
     title: 'How it works',
     subtitle: 'Three steps, no mandatory sign-up.',
@@ -316,6 +395,29 @@ const tr: PublicHomeCopy = {
     subtitle: 'Beş kamusal dizin, tek giriş noktası.',
     cta: 'Dizini aç',
   },
+  resume: {
+    title: 'Kaldığınız yerden devam edin',
+    subtitle: 'Son aramanız, bıraktığınız gibi.',
+    cta: 'Devam et',
+  },
+  nearby: {
+    title: 'Yakınınızda keşfedin',
+    subtitle: 'Konumunuzun çevresindeki kamusal kayıtlar.',
+    cta: 'Kaydı aç',
+    actions: {
+      contact: 'İletişime geç',
+      order: 'Sipariş ver',
+      book: 'Rezervasyon yap',
+      quote: 'Teklif iste',
+    },
+  },
+  tabs: {
+    home: 'Ana sayfa',
+    messages: 'Mesajlar',
+    activities: 'Etkinlikler',
+    profile: 'Profil',
+    unread: 'okunmamış konuşma',
+  },
   how: {
     title: 'Nasıl çalışır',
     subtitle: 'Üç adım, zorunlu kayıt yok.',
@@ -400,6 +502,29 @@ const ar: PublicHomeCopy = {
     title: 'تصفح حسب الفئة',
     subtitle: 'خمسة أدلة عامة، ونقطة دخول واحدة.',
     cta: 'افتح الدليل',
+  },
+  resume: {
+    title: 'تابع من حيث توقفت',
+    subtitle: 'آخر بحث لك، كما تركته.',
+    cta: 'متابعة',
+  },
+  nearby: {
+    title: 'اكتشف بالقرب منك',
+    subtitle: 'بطاقات عامة حول موقعك.',
+    cta: 'افتح البطاقة',
+    actions: {
+      contact: 'تواصل',
+      order: 'اطلب',
+      book: 'احجز',
+      quote: 'اطلب عرض سعر',
+    },
+  },
+  tabs: {
+    home: 'الرئيسية',
+    messages: 'الرسائل',
+    activities: 'الأنشطة',
+    profile: 'الملف',
+    unread: 'محادثة غير مقروءة',
   },
   how: {
     title: 'كيف يعمل',
