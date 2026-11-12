@@ -22,6 +22,20 @@ class RoleInvitationService
     public const ASSIGNABLE_MANAGER_ROLES = ['rh', 'dept', 'comptable', 'superviseur', 'marketing'];
 
     /**
+     * Valeurs acceptees par la validation `manager_role` (#9334).
+     *
+     * `principal` est ajoute ici : la liste des roles ATTRIBUABLES l'exclut
+     * (proprietaire du tenant) mais l'API doit continuer de l'accepter pour
+     * les transitions existantes.
+     *
+     * @return list<string>
+     */
+    public static function allowedManagerRoles(): array
+    {
+        return array_merge(['principal'], self::ASSIGNABLE_MANAGER_ROLES);
+    }
+
+    /**
      * Returns the deep link URL for downloading the app based on manager_role.
      * Links use universal links / app store links with a fallback.
      */

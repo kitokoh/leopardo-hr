@@ -61,10 +61,7 @@ class StoreEmployeeRequest extends FormRequest
             'salary_base' => ['nullable', 'numeric', 'min:0'],
             'hourly_rate' => ['nullable', 'numeric', 'min:0'],
             'role' => ['nullable', 'in:employee,manager'],
-            'manager_role' => ['nullable', 'in:'.implode(',', [
-                'principal',
-                ...RoleInvitationService::ASSIGNABLE_MANAGER_ROLES,
-            ])],
+            'manager_role' => ['nullable', 'in:'.implode(',', RoleInvitationService::allowedManagerRoles())],
             // #7601 (R4 de l'épique #7597) — invitation pré-assignée : les
             // accès ressource sont posés dans le même geste que l'invitation
             // et créés à l'ACTIVATION. Réservé au principal (même règle que
