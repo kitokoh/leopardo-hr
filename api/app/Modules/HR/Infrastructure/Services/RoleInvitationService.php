@@ -7,6 +7,21 @@ namespace App\Modules\HR\Infrastructure\Services;
 class RoleInvitationService
 {
     /**
+     * Sous-roles manager acceptes par l'API (#9334).
+     *
+     * `principal` en est volontairement ABSENT : c'est le proprietaire du
+     * tenant, non assignable depuis l'ecran Equipe. Les FormRequests
+     * l'ajoutent explicitement (`principal` + cette liste), afin qu'un seul
+     * endroit porte la liste des roles attribuables — avant #9334, la meme
+     * enumeration etait recopiee en dur dans DEUX FormRequests, si bien que
+     * les clients web et mobile avaient chacun derive de leur cote (web 5
+     * roles, mobile 4, base 10).
+     *
+     * @var list<string>
+     */
+    public const ASSIGNABLE_MANAGER_ROLES = ['rh', 'dept', 'comptable', 'superviseur', 'marketing'];
+
+    /**
      * Returns the deep link URL for downloading the app based on manager_role.
      * Links use universal links / app store links with a fallback.
      */
