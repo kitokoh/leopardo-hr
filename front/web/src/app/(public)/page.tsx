@@ -20,6 +20,9 @@ import {
   selectDisplayableCategories,
 } from '@/modules/public-portal/data/discovery-categories';
 import { HomeSearch } from '@/modules/public-portal/components/HomeSearch';
+import { PublicResumeSearch } from '@/modules/public-portal/components/PublicResumeSearch';
+import { PublicNearbyDiscover } from '@/modules/public-portal/components/PublicNearbyDiscover';
+import { PublicBottomNav } from '@/modules/public-portal/components/PublicBottomNav';
 
 /**
  * Page d'accueil du PORTAIL GRAND PUBLIC (#9357).
@@ -166,7 +169,12 @@ export default async function PublicHomePage({ searchParams }: HomePageProps) {
         </div>
       </section>
 
-      {/* ─────────────── GARANTIES ─────────────── */}
+      {/* REPRENDRE OÙ VOUS ÉTIEZ (point F) — rendu uniquement si un
+          historique local réel existe : le composant lit `readLastSearch()`
+          après montage et rend `null` sinon. */}
+      <PublicResumeSearch copy={copy.resume} />
+
+      {/* GARANTIES */}
       <section aria-labelledby="home-trust" className="border-y border-slate-200 bg-white dark:border-white/10 dark:bg-white/[0.02]">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
           <h2 id="home-trust" className="sr-only">
@@ -190,39 +198,11 @@ export default async function PublicHomePage({ searchParams }: HomePageProps) {
         </div>
       </section>
 
-      {/* ─────────────── VERTICALES ─────────────── */}
-      <section aria-labelledby="home-verticals" className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-        <h2 id="home-verticals" className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl dark:text-white">
-          {copy.verticals.title}
-        </h2>
-        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{copy.verticals.subtitle}</p>
+      {/* À DÉCOUVRIR PRÈS DE VOUS (point G) — source `GET /public/discover`.
+          Aucune fiche ⇒ section absente. Actions issues de `supportedActions()`. */}
+      <PublicNearbyDiscover copy={copy.nearby} />
 
-        <ul className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {VERTICALS.map(({ href, icon: Icon, key }) => (
-            <li key={href}>
-              <Link
-                href={href}
-                className="group flex min-h-[76px] items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md dark:border-white/10 dark:bg-white/[0.03] dark:hover:border-emerald-500/40"
-              >
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400">
-                  <Icon className="h-5 w-5" aria-hidden />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-sm font-bold text-slate-900 dark:text-white">
-                    {chrome[key]}
-                  </span>
-                  <span className="block text-xs text-slate-500 dark:text-slate-400">
-                    {copy.verticals.cta}
-                  </span>
-                </span>
-                <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-emerald-600 dark:text-slate-600" aria-hidden />
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* ─────────────── COMMENT ÇA MARCHE ─────────────── */}
+      {/* COMMENT ÇA MARCHE */}
       <section aria-labelledby="home-how" className="border-t border-slate-200 bg-white dark:border-white/10 dark:bg-white/[0.02]">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <h2 id="home-how" className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl dark:text-white">
@@ -249,7 +229,7 @@ export default async function PublicHomePage({ searchParams }: HomePageProps) {
         </div>
       </section>
 
-      {/* ─────────────── CTA BUSINESS ─────────────── */}
+      {/* CTA BUSINESS */}
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <div className="relative overflow-hidden rounded-3xl bg-slate-950 px-6 py-10 text-white sm:px-10 sm:py-12">
           <div
@@ -279,6 +259,16 @@ export default async function PublicHomePage({ searchParams }: HomePageProps) {
           </div>
         </div>
       </section>
+
+      {/* NAVIGATION BASSE MOBILE (point I) — quatre onglets, uniquement des
+          routes réellement servies. Compteur de non-lus à 0 : la home est
+          publique et anonyme, elle n'interroge pas `/public/conversations`
+          (qui exige `auth:user_api`). Le compteur réel vit dans l'espace
+          connecté. */}
+      <PublicBottomNav copy={copy.tabs} unreadCount={0} />
+
+      {/* Réserve la hauteur de la barre basse sur mobile. */}
+      <div aria-hidden className="h-16 md:hidden" />
     </div>
   );
 }
