@@ -425,3 +425,28 @@ Trois changements qui conditionnent **la validité de tout scénario mobile** :
 
 **Pour un nouveau scénario mobile** : vérifier le rendu avec la version épinglée, et ne jamais conclure « c'est vert » sur la seule étape `analyze` — elle ne bloque plus sur les simples `info`.
 
+
+## Note de scénario 2026-11-13 — responsive de `leopardo_accounting` (issue #9397)
+
+Le lot comptable #9367-#9381 a introduit un **layout responsive** dans
+`leopardo_accounting` : `lib/core/layout/responsive.dart` (points de rupture
+compact / medium / expanded) consommé par `accounting_home_screen.dart` et
+`documents_screen.dart`, avec `test/responsive_test.dart` comme filet.
+
+**Scénarios à rejouer sur les trois largeurs** (téléphone 360 dp, tablette
+768 dp, desktop 1280 dp) :
+
+1. **Accueil comptable** — la grille de tuiles passe de 1 à 2 puis 3 colonnes
+   sans débordement (`RenderFlex overflowed` interdit) et sans troncature de
+   libellé en `ar` (RTL).
+2. **Liste des documents** — le tableau bascule en cartes sous le point de
+   rupture `medium` ; les colonnes numéro / date / tiers / total restent
+   toutes visibles, aucune n'est masquée silencieusement.
+3. **Aucune régression de navigation** — les onglets et le tiroir restent
+   atteignables aux trois largeurs ; le retour arrière ne perd pas la
+   sélection de période.
+
+**Limite honnête** : `flutter test` n'est pas disponible dans l'environnement
+de la PR ; `responsive_test.dart` est exécuté par `mobile-apps-ci.yml`, pas
+localement. Un `analyze` vert ne prouve pas le rendu — seule la capture sur
+la version Flutter épinglée (3.50.0) le fait.
