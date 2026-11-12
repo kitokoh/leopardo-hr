@@ -230,14 +230,30 @@ abstract class TestCase extends BaseTestCase
         DB::purge($connection);
         DB::reconnect($connection);
 
-        DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+        // #9399 : garde INTER-PROCESSUS. Le memo statique ci-dessus ne protege
+        // rien entre workers paratest (un processus = un worker) : deux workers
+        // pouvaient migrer la MEME base en concurrence, l'un marquant « fait »
+        // alors que la migration de l'autre n'etait pas terminee -> base
+        // partiellement migree, `public.companies` absent, et 18 tests du shard
+        // Console en `SQLSTATE[42P01] relation "public.companies" does not
+        // exist` (echecs non deterministes, absents en sequentiel).
+        // Verrou consultatif PostgreSQL : portee inter-sessions, aucune
+        // migration dediee. La migration est idempotente, donc le worker qui
+        // arrive second la rejoue sous le verrou et ne fait rien, au lieu de
+        // courir en parallele avec celui qui la tient.
+        $lockKey = 'worker_public_schema:'.$database;
+        DB::statement('SELECT pg_advisory_lock(hashtext(?))', [$lockKey]);
 
         try {
+            DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+
             $this->artisan('migrate', [
                 '--path' => 'database/migrations/public',
                 '--force' => true,
             ]);
         } finally {
+            DB::statement('SELECT pg_advisory_unlock(hashtext(?))', [$lockKey]);
+
             config(["database.connections.{$connection}.search_path" => $originalSearchPath]);
             DB::purge($connection);
             DB::reconnect($connection);
