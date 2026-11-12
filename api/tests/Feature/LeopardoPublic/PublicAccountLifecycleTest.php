@@ -137,6 +137,7 @@ class PublicAccountLifecycleTest extends TestCase
         // Rien ne doit avoir bougé : ni marquage, ni purge planifiée, ni jeton
         // révoqué. Un refus qui laisse des traces est un refus raté.
         $fresh = $this->client->fresh();
+        $this->assertNotNull($fresh);
         $this->assertNull($fresh->deletion_requested_at);
         $this->assertNull($fresh->purge_scheduled_at);
         $this->assertSame(1, $fresh->tokens()->count());
@@ -153,6 +154,7 @@ class PublicAccountLifecycleTest extends TestCase
             ->assertJsonPath('error', 'CONFIRMATION_REQUIRED');
 
         $fresh = $this->client->fresh();
+        $this->assertNotNull($fresh);
         $this->assertNull($fresh->purge_scheduled_at);
         $this->assertSame(1, $fresh->tokens()->count());
     }
@@ -209,7 +211,9 @@ class PublicAccountLifecycleTest extends TestCase
             'confirmation' => 'SUPPRIMER',
         ])->assertStatus(202);
 
-        $this->assertSame(0, $this->client->fresh()->tokens()->count());
+        $fresh = $this->client->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertSame(0, $fresh->tokens()->count());
     }
 
     public function test_account_deletion_never_touches_another_account(): void
@@ -225,6 +229,7 @@ class PublicAccountLifecycleTest extends TestCase
 
         // Le voisin est intact : ni marqué, ni déconnecté.
         $freshOther = $other->fresh();
+        $this->assertNotNull($freshOther);
         $this->assertNull($freshOther->deletion_requested_at);
         $this->assertSame(1, $freshOther->tokens()->count());
     }

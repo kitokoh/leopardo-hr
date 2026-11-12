@@ -139,6 +139,7 @@ class PublicDeviceTokenTest extends TestCase
         );
 
         $row = DB::table('public_device_tokens')->where('token', 'fcm-token-idem')->first();
+        $this->assertNotNull($row);
         $this->assertSame('Nouveau nom', $row->device_name);
     }
 
@@ -165,6 +166,7 @@ class PublicDeviceTokenTest extends TestCase
         ])->assertStatus(201);
 
         $row = DB::table('public_device_tokens')->where('token', 'fcm-token-revendu')->first();
+        $this->assertNotNull($row);
 
         $this->assertSame($this->client->id, (int) $row->user_id);
         $this->assertNotSame($previousOwner->id, (int) $row->user_id);
