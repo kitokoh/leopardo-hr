@@ -1,5 +1,31 @@
 # AGENTS.md - Guide de travail Leopardo
 
+> Leçon 2026-11-12 (session PM dette de tests + alertes dev) : **trois pièges qui coûtent une PR chacun.**
+> **(1) Vérifier `gh pr list --state open` AVANT d'écrire du code, pas après.** J'ai implémenté #9399
+> (course `ensureWorkerPublicSchema()` en `--parallel`) alors que la PR #9418 était ouverte depuis la
+> nuit sur la même issue, avec la **vraie** cause profonde que je n'avais pas vue : `migrate` était
+> lancé **depuis** `configureTestingDatabaseConnection()`, donc **avant** que la config ne pointe sur
+> la base du worker — la migration tournait sur la base **commune** et la base du worker restait vide.
+> Verrouiller correctement une migration qui ne cible pas la bonne base ne corrige rien, et une
+> correction **mesurée** (39 → 58 passed sur 3 runs froids) doit primer sur une correction seulement
+> `php -l`. Ma PR a été fermée en doublon, avec le détail. Corollaire : le protocole anti-doublon
+> d'`AGENTS.md` parle de branches, mais `gh pr list --state open` est le contrôle le moins cher et le
+> plus direct.
+> **(2) Une issue peut affirmer l'existence d'un helper : le vérifier avant de le réutiliser.**
+> #9399 recommandait de « réutiliser `canonicalSchemaReady()` (déjà présent) » — il existe bien, mais
+> dans le trait `tests/RefreshTenantDatabase.php`, **pas** dans `tests/TestCase.php` où le correctif
+> devait vivre. Un `grep` de 2 s a évité un appel de méthode inexistante.
+> **(3) Un watchdog qui promet « une alerte par 24 h » produit un ticket PAR JOUR sur une panne
+> durable.** `dev-keepalive.yml` créait une issue `[dev-switch] ALERTE` sans regarder si une était
+> déjà ouverte : 10 tickets identiques ouverts le même jour pour une seule panne. La règle est
+> désormais « une panne durable = un ticket, rafraîchi par commentaire au plus 1 fois / 24 h »
+> (`Closes #9424`). Piège de diagnostic associé : la mesure `gh issue list | grep -c` ne distingue pas
+> 10 alertes d'une seule — lire les **titres**, pas le nombre.
+> **(4) Un doublon de ticket se ferme avec sa motivation, jamais en silence** : les 9 alertes
+> redondantes ont été fermées en renvoyant vers #9339 (canonique, porte la durée) et #9384 (cause
+> opérationnelle), et la cause a été corrigée **à la source** — fermer sans corriger aurait fait
+> revenir les doublons le lendemain.
+
 Derniere mise a jour : 2026-11-11 (#9401 — un plafond d'etape fixe sur une ESTIMATION devient un faux rouge)
 
 > Leçon 2026-11-11 (#9401, suite de #9311) : **un `timeout-minutes` de garde se dimensionne sur une MESURE, jamais sur une estimation — sinon il tue les runs légitimes et produit le faux rouge qu'il devait éviter.** Le correctif #9311 avait posé `timeout-minutes: 150` sur l'étape « Run backend feature tests » en s'appuyant sur « ~45-60 min nominal ». Le premier job complet passé ensuite sur `main` (`42770976926`, SHA `b1b1c8da2`) donne la durée réelle : étape Feature **124 min** (`08:09:40Z` → `10:13:48Z`, `completed/success`), job total 141 min. 150 min ne laissait donc que **21 % de marge** : le run suivant un peu plus lent aurait rougi par timeout, sans aucun rapport avec le code. **Règles** : (1) avant d'écrire un plafond, extraire la durée du dernier run complet via les **horodatages d'étapes** (`GET /actions/runs/{id}/jobs` → `steps[].started_at/completed_at`), pas depuis l'en-tête du workflow — les commentaires d'en-tête portaient ici une estimation périmée (job « ~82 min » contre 141 min mesurées) ; (2) la marge se prend sur la mesure (ici 124 × 1,6 ≈ 210 min), et le plafond du **job** garde le rôle de dernier filet ; (3) un `timeout` d'étape déclenche un échec `failure` indiscernable d'un vrai échec de test dans la liste des checks — d'où le coût : on ne saurait plus distinguer « suite trop lente » de « suite cassée ». Corollaire de lecture : les durées dans les commentaires de CI vieillissent plus vite que le code — dater la mesure et la sourcer (run + SHA) à côté de la valeur.
