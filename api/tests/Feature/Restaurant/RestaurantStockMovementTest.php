@@ -74,7 +74,10 @@ class RestaurantStockMovementTest extends TestCase
             'reason_code' => 'adjustment',
             'note_redacted' => 'Réception directe non référencée',
         ])->assertStatus(201)
-            ->assertJsonPath('data.quantity_delta', 12.5)
+            // `quantity_delta` est caste `decimal:3` et expose la CHAINE du
+            // cast ('12.500') — meme convention que cote Retail, ou
+            // RetailStockApiTest verrouille '-3.000' (#9421).
+            ->assertJsonPath('data.quantity_delta', '12.500')
             ->assertJsonPath('data.reason_code', 'adjustment');
 
         $level = app(TenantManager::class)->withinTenant($company, fn (): RestaurantStockLevel => RestaurantStockLevel::query()

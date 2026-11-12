@@ -156,7 +156,10 @@ class RestaurantPurchaseReceivingInventoryTest extends TestCase
             // Création : la ligne attendue est pré-remplie (10).
             $this->postJson('/api/v1/restaurant/inventory-counts', ['branch_id' => $branch->id])
                 ->assertStatus(201)
-                ->assertJsonPath('data.items.0.expected_qty', '10.000');
+                // Le cast `decimal:3` rend une chaine, mais la ressource
+                // convertit explicitement en NOMBRE (contrat numerique,
+                // cf. RestaurantInventoryCountItemResource) : 10, pas '10.000' (#9421).
+                ->assertJsonPath('data.items.0.expected_qty', 10);
 
             $countId = RestaurantInventoryCount::query()->firstOrFail()->id;
             $itemId = RestaurantInventoryCountItem::query()->firstOrFail()->id;
