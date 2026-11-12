@@ -10769,5 +10769,10 @@
     "tileCompanyTitle": "Sirket bilgileri",
     "tileCompanyBody": "Unvan, saat dilimi ve para birimi.",
     "notAdminHint": "Bazi kutucuklar gizli: yalnizca ana yoneticiye ayrilmistir."
-  }
+  },
+  "teamRoleRh": "IK yoneticisi",
+  "teamRoleDept": "Departman yoneticisi",
+  "teamRoleComptable": "Muhasebe yoneticisi",
+  "teamRoleSuperviseur": "Denetim yoneticisi",
+  "teamRoleMarketing": "Pazarlama yoneticisi"
 }

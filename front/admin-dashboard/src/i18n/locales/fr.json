@@ -10769,5 +10769,10 @@
     "tileCompanyTitle": "Fiche entreprise",
     "tileCompanyBody": "Raison sociale, fuseau horaire et devise.",
     "notAdminHint": "Certaines tuiles ne sont pas affichées : elles sont réservées au manager principal."
-  }
+  },
+  "teamRoleRh": "Manager RH",
+  "teamRoleDept": "Manager departement",
+  "teamRoleComptable": "Manager comptable",
+  "teamRoleSuperviseur": "Manager superviseur",
+  "teamRoleMarketing": "Manager marketing"
 }

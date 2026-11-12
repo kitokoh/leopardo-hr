@@ -10769,5 +10769,10 @@
     "tileCompanyTitle": "Company profile",
     "tileCompanyBody": "Legal name, time zone and currency.",
     "notAdminHint": "Some tiles are hidden: they are reserved for the principal manager."
-  }
+  },
+  "teamRoleRh": "HR manager",
+  "teamRoleDept": "Department manager",
+  "teamRoleComptable": "Accounting manager",
+  "teamRoleSuperviseur": "Supervisor manager",
+  "teamRoleMarketing": "Marketing manager"
 }

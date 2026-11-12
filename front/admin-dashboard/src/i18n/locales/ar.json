@@ -10769,5 +10769,10 @@
     "tileCompanyTitle": "بطاقة الشركة",
     "tileCompanyBody": "الاسم القانوني والمنطقة الزمنية والعملة.",
     "notAdminHint": "بعض البطاقات مخفية: إنها مخصصة للمدير الرئيسي."
-  }
+  },
+  "teamRoleRh": "مدير الموارد البشرية",
+  "teamRoleDept": "مدير القسم",
+  "teamRoleComptable": "مدير المحاسبة",
+  "teamRoleSuperviseur": "مدير الإشراف",
+  "teamRoleMarketing": "مدير التسويق"
 }
