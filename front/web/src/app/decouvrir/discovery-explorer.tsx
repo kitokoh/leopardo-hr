@@ -15,6 +15,7 @@ import {
 import { startConversation } from '@/lib/public-conversation-api';
 import { readLastSearch, saveLastSearch } from '@/lib/offline/public-discovery-cache';
 import ContactDialog from './contact-dialog';
+import { DiscoverySkeleton } from './discovery-skeleton';
 
 /**
  * SUPERAPP-P0 (#8611) — explorateur client de la passerelle publique.
@@ -369,7 +370,7 @@ export default function DiscoveryExplorer({
         </p>
       )}
 
-      {loading && <p className="py-8 text-center text-sm text-slate-500">{t(locale, 'discovery.loading')}</p>}
+      {loading && <DiscoverySkeleton label={t(locale, 'discovery.loading')} />}
 
       {!loading && fromCache && (
         <p className="mb-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
