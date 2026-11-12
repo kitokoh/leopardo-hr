@@ -19,7 +19,6 @@ use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
 use App\Modules\Accounting\Infrastructure\Services\TaxRateService;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -312,7 +311,7 @@ class DocumentWorkflowService
     /**
      * draft → sent. Exige des lignes ; facture et avoir exigent un contact.
      */
-    public function send(AccountingDocument $document, ?Carbon $sentAt = null): AccountingDocument
+    public function send(AccountingDocument $document, ?\Illuminate\Support\Carbon $sentAt = null): AccountingDocument
     {
         $this->assertStatus($document, [DocumentStatus::Draft], __('accounting.errors.wf_send_draft_only'));
 
@@ -343,7 +342,7 @@ class DocumentWorkflowService
         AccountingDocument $document,
         float $amount,
         PaymentMethod $method,
-        ?Carbon $receivedAt = null,
+        ?\Illuminate\Support\Carbon $receivedAt = null,
         ?string $reference = null,
     ): AccountingPayment {
         return DB::transaction(function () use ($document, $amount, $method, $receivedAt, $reference): AccountingPayment {
