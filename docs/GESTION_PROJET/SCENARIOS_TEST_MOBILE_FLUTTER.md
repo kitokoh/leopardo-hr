@@ -399,3 +399,19 @@ route mobile ne change**.
 3. **Aucune régression d'écran** — le tunnel d'inscription mobile ne consomme
    pas cette clé (elle sert à la vitrine web) ; les tests Flutter existants
    restent valides tels quels.
+
+## Note de dépendances 2026-11-12 — résolution cassée par le bump `05869af2e` (issue #9430)
+
+Depuis le 2026-11-10 23:56 UTC, `mobile-apps-ci.yml` échouait sur les 12 apps à l'étape « Install dependencies » (`flutter pub get`), donc **avant** toute analyse : aucun scénario mobile n'était vérifiable, y compris ceux de #9334.
+
+Cause : le commit `05869af2e` n'a mis à jour que `leopardo_core`. Deux contraintes divergeaient ensuite avec les apps qui les déclarent aussi :
+
+| Dépendance | `leopardo_core` | Apps concernées | Résolution |
+|---|---|---|---|
+| `flutter_local_notifications` | `^23.0.0` | `employee`, `hr`, `manager`, `platform_admin` (`^22.3.3`) | les 4 apps sont alignées sur `^23.0.0` |
+| `mobile_scanner` | `7.5.0` (pin écrasé) | `pos_retail` (`"7.4.4"`, pin exact) | retour à `7.4.4`, le pin documenté de `4882250ff` |
+
+`flutter_riverpod` n'est **pas** concerné : les `^3.3.1` / `^3.4.2` des autres apps sont compatibles avec `^3.5.0` (les intervalles caret se chevauchent).
+
+**À retenir pour les prochains scénarios** : un bump de dépendance dans `leopardo_core` doit être répercuté dans les apps qui déclarent la même dépendance. Comme `leopardo_core` est une dépendance `path`, un seul désaccord casse la résolution de **toutes** les apps, y compris celles qui n'utilisent pas la fonctionnalité — c'est pourquoi un job rouge ici invalide tous les scénarios mobiles.
+
