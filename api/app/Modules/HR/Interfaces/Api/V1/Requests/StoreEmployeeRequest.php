@@ -12,6 +12,7 @@ use App\Rules\GlobalEmailUnique;
 use App\Rules\ValidIban;
 use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Modules\HR\Infrastructure\Services\RoleInvitationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
@@ -60,7 +61,10 @@ class StoreEmployeeRequest extends FormRequest
             'salary_base' => ['nullable', 'numeric', 'min:0'],
             'hourly_rate' => ['nullable', 'numeric', 'min:0'],
             'role' => ['nullable', 'in:employee,manager'],
-            'manager_role' => ['nullable', 'in:principal,rh,dept,comptable,superviseur,marketing'],
+            'manager_role' => ['nullable', 'in:'.implode(',', [
+                'principal',
+                ...RoleInvitationService::ASSIGNABLE_MANAGER_ROLES,
+            ])],
             // #7601 (R4 de l'épique #7597) — invitation pré-assignée : les
             // accès ressource sont posés dans le même geste que l'invitation
             // et créés à l'ACTIVATION. Réservé au principal (même règle que

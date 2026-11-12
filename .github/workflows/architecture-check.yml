@@ -297,6 +297,17 @@ jobs:
           GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: bash dev-hub/tools/check-tests-no-frozen-dates.sh
 
+      # Parite des sous-roles manager (#9334) : la meme enumeration vit dans
+      # TROIS langages (PHP, TypeScript, Dart). Avant ce verrou, la base en
+      # acceptait 10, l'API 6, le web 5 et le mobile 4 — un client pouvait donc
+      # proposer un role que l'API refuse en 422. Garde volontairement HORS du
+      # filtre `*_changed` : c'est une comparaison de texte (~0,2 s), et une
+      # parite ne doit pas dependre du chemin modifie par la PR.
+      - name: Team manager role parity guard (issue #9334)
+        run: |
+          python3 dev-hub/tools/check-team-role-parity.py
+          bash dev-hub/tools/tests/check-team-role-parity.test.sh
+
 
   phpstan-modules:
     timeout-minutes: 45

@@ -18,6 +18,7 @@ import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 import 'package:leopardo_core/core/utils/currency_format.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
+import '../manager_roles.dart';
 
 /// Ecran "Equipe" — reserve aux managers (principal / RH).
 /// Permet de lister, creer, archiver un employe et de gerer les invitations.
@@ -1493,6 +1494,23 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
   final _workLocation = TextEditingController();
   String _role = 'employee';
   String? _managerRole;
+
+  /// Libelle l10n d'un sous-role assignable (#9334). Les libelles etaient
+  /// ecrits en dur ('Departement', 'Comptable', 'Superviseur') alors que le
+  /// web passe par l'i18n 4 locales : c'etait la seconde moitie du defaut de
+  /// parite. Tout role absent du catalogue retombe sur sa valeur brute, ce qui
+  /// rend une divergence visible a l'ecran au lieu de la masquer.
+  String _managerRoleLabel(String managerRole) {
+    final l10n = context.l10n;
+    return switch (managerRole) {
+      'rh' => l10n.teamRoleRh,
+      'dept' => l10n.teamRoleDept,
+      'comptable' => l10n.teamRoleComptable,
+      'superviseur' => l10n.teamRoleSuperviseur,
+      'marketing' => l10n.teamRoleMarketing,
+      _ => managerRole,
+    };
+  }
   String _salaryType = 'fixed';
   int? _scheduleId;
   bool _submitting = false;
@@ -1671,16 +1689,11 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                     labelText: context.l10n.teamManagerType,
                   ),
                   items: [
-                    DropdownMenuItem(value: 'rh', child: Text('RH')),
-                    DropdownMenuItem(value: 'dept', child: Text('Departement')),
-                    DropdownMenuItem(
-                      value: 'comptable',
-                      child: Text('Comptable'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'superviseur',
-                      child: Text('Superviseur'),
-                    ),
+                    for (final managerRole in kAssignableManagerRoles)
+                      DropdownMenuItem(
+                        value: managerRole,
+                        child: Text(_managerRoleLabel(managerRole)),
+                      ),
                   ],
                   validator: (v) =>
                       (_role == 'manager' && (v == null || v.isEmpty))

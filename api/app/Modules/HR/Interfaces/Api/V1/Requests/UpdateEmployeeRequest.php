@@ -9,6 +9,7 @@ use App\Rules\GlobalEmailUnique;
 use App\Rules\ValidIban;
 use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Modules\HR\Infrastructure\Services\RoleInvitationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
@@ -60,7 +61,10 @@ class UpdateEmployeeRequest extends FormRequest
             'salary_base' => ['sometimes', 'nullable', 'numeric', 'min:0'],
             'hourly_rate' => ['sometimes', 'nullable', 'numeric', 'min:0'],
             'role' => ['sometimes', 'nullable', 'in:employee,manager'],
-            'manager_role' => ['sometimes', 'nullable', 'in:principal,rh,dept,comptable,superviseur,marketing'],
+            'manager_role' => ['sometimes', 'nullable', 'in:'.implode(',', [
+                'principal',
+                ...RoleInvitationService::ASSIGNABLE_MANAGER_ROLES,
+            ])],
             'status' => ['sometimes', 'nullable', 'in:active,suspended'],
             'phone' => ['sometimes', 'nullable', 'string', 'max:30'],
             'personal_email' => ['sometimes', 'nullable', 'email', 'max:150'],
