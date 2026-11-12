@@ -40,13 +40,15 @@ interface PublicNearbyDiscoverProps {
   limit?: number;
 }
 
-/** Libellé d'action lisible, dérivé de la clé du contrat. */
-const ACTION_LABEL: Record<string, string> = {
-  contact: 'Contacter',
-  order: 'Commander',
-  book: 'Réserver',
-  quote: 'Demander un devis',
-};
+/**
+ * Libellé d'action : lu dans le catalogue i18n (`copy.actions`), jamais en dur
+ * dans le composant (garde PA2-I18N-014). Une clé inconnue du catalogue
+ * retombe sur la clé brute du contrat — jamais sur une phrase française
+ * imposée à un visiteur arabophone.
+ */
+function actionLabel(copy: PublicHomeCopy['nearby'], action: string): string {
+  return copy.actions[action] ?? action;
+}
 
 export async function PublicNearbyDiscover({ copy, limit = 6 }: PublicNearbyDiscoverProps) {
   const result = await searchPublicDiscovery({ per_page: limit, page: 1 });
@@ -101,7 +103,7 @@ export async function PublicNearbyDiscover({ copy, limit = 6 }: PublicNearbyDisc
                         key={action}
                         className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300"
                       >
-                        {ACTION_LABEL[action] ?? action}
+                        {actionLabel(copy, action)}
                       </li>
                     ))}
                   </ul>

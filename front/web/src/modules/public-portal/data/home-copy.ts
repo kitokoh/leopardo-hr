@@ -88,6 +88,12 @@ export interface PublicHomeCopy {
     title: string;
     subtitle: string;
     cta: string;
+    /**
+     * Libellés des actions issues de `supportedActions()`. Indexés par la clé
+     * du contrat (`contact`, `order`, `book`, `quote`) : aucune chaîne
+     * utilisateur en dur dans le composant (garde PA2-I18N-014).
+     */
+    actions: Record<string, string>;
   };
   /** Navigation basse mobile — 4 onglets du cahier des charges. */
   tabs: {
@@ -182,6 +188,12 @@ const fr: PublicHomeCopy = {
     title: 'À découvrir près de vous',
     subtitle: 'Des fiches publiques autour de votre position.',
     cta: 'Voir la fiche',
+    actions: {
+      contact: 'Contacter',
+      order: 'Commander',
+      book: 'Réserver',
+      quote: 'Demander un devis',
+    },
   },
   tabs: {
     home: 'Accueil',
@@ -284,6 +296,12 @@ const en: PublicHomeCopy = {
     title: 'Discover near you',
     subtitle: 'Public listings around your location.',
     cta: 'Open the page',
+    actions: {
+      contact: 'Contact',
+      order: 'Order',
+      book: 'Book',
+      quote: 'Request a quote',
+    },
   },
   tabs: {
     home: 'Home',
@@ -386,6 +404,12 @@ const tr: PublicHomeCopy = {
     title: 'Yakınınızda keşfedin',
     subtitle: 'Konumunuzun çevresindeki kamusal kayıtlar.',
     cta: 'Kaydı aç',
+    actions: {
+      contact: 'İletişime geç',
+      order: 'Sipariş ver',
+      book: 'Rezervasyon yap',
+      quote: 'Teklif iste',
+    },
   },
   tabs: {
     home: 'Ana sayfa',
@@ -488,6 +512,12 @@ const ar: PublicHomeCopy = {
     title: 'اكتشف بالقرب منك',
     subtitle: 'بطاقات عامة حول موقعك.',
     cta: 'افتح البطاقة',
+    actions: {
+      contact: 'تواصل',
+      order: 'اطلب',
+      book: 'احجز',
+      quote: 'اطلب عرض سعر',
+    },
   },
   tabs: {
     home: 'الرئيسية',
