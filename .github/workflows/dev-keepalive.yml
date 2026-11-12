@@ -205,6 +205,10 @@ jobs:
       - name: Alerte sans bascule (pas de cible, cooldown expiré)
         # #8666 : jamais d'alerte pendant le cooldown — au plus UNE alerte ou
         # UNE bascule par 24 h, quelle que soit la durée de la panne.
+        # #9424 : le cooldown « 24 h » ne suffisait pas — une panne DURABLE
+        # produisait un ticket NEUF par jour (10 doublons constatés le
+        # 2026-11-12). Une panne durable = UN ticket, rafraîchi par commentaire
+        # (au plus 1 rafraîchissement / 24 h), jamais un ticket par jour.
         if: steps.probe.outputs.down == 'true' && steps.decide.outputs.target == '' && steps.decide.outputs.cooldown_active != 'true'
         shell: bash
         env:
@@ -216,9 +220,27 @@ jobs:
             "Aucune bascule automatique n'a été effectuée (cooldown 24 h actif ou aucune stack au statut ready dans deploy/dev-stacks.json)." \
             "**Actions manuelles** : scripts/dev-stack-health.sh, runbook docs/ops/DEV_STACK_ROTATION.md § Dépannage, bascule manuelle via le workflow dev-stack-switch.yml ou scripts/dev-stack-switch.sh <stack>." \
             "_Référence : épic #8659._")"
+
+          # Ticket d'alerte deja ouvert ? On le rafraichit, on n'en cree pas un autre.
+          existing="$(gh issue list --repo "${{ github.repository }}" --state open --limit 200 \
+            --json number,title,updatedAt \
+            --jq 'map(select(.title | startswith("[dev-switch] ALERTE"))) | (.[0] // null) | if . == null then "" else "\(.number) \(.updatedAt)" end')"
+          if [[ -n "${existing}" ]]; then
+            number="${existing%% *}"
+            updated="${existing##* }"
+            age=$(( $(date -u +%s) - $(date -u -d "${updated}" +%s) ))
+            if (( age < 86400 )); then
+              echo "Alerte #${number} deja rafraichie il y a $((age / 3600)) h (< 24 h) — silence."
+              exit 0
+            fi
+            gh issue comment "${number}" --repo "${{ github.repository }}" --body "${body}" >/dev/null
+            echo "Alerte existante #${number} rafraichie par commentaire (aucun doublon cree)."
+            exit 0
+          fi
+
           gh issue create --repo "${{ github.repository }}" \
             --title "[dev-switch] ALERTE — stack active dev malade, aucune bascule possible" \
-            --body "$body" >/dev/null
+            --body "${body}" >/dev/null
           echo "Issue d'alerte créée."
 
   switch:
