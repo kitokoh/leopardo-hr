@@ -39,7 +39,9 @@ class DocumentsScreen extends ConsumerWidget {
             // contenu centré et une largeur maximale.
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: Responsive.maxContentWidth),
+                constraints: const BoxConstraints(
+                  maxWidth: Responsive.maxContentWidth,
+                ),
                 child: Responsive.isTablet(context)
                     ? GridView.builder(
                         physics: const AlwaysScrollableScrollPhysics(),

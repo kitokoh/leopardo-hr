@@ -40,7 +40,8 @@ class Responsive {
     return ScreenSize.compact;
   }
 
-  static bool isTablet(BuildContext context) => of(context) != ScreenSize.compact;
+  static bool isTablet(BuildContext context) =>
+      of(context) != ScreenSize.compact;
 
   /// Nombre de colonnes d'une grille de cartes.
   static int gridColumns(BuildContext context) {

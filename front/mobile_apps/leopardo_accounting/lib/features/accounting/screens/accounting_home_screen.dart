@@ -68,7 +68,9 @@ class AccountingHomeScreen extends ConsumerWidget {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: Responsive.maxContentWidth),
+            constraints: const BoxConstraints(
+              maxWidth: Responsive.maxContentWidth,
+            ),
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: padding, vertical: 20),
               child: Column(
