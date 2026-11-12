@@ -457,3 +457,11 @@ Flutter 3.50 (épinglé) exige **Gradle ≥ 9.3.1** et **AGP ≥ 9.1.1**. Les 11
 
 **Conséquence pour les scénarios mobiles** : un build Android local exige désormais un JDK 17 et un Gradle 9.3.1 (le wrapper s'en charge). Toute régression de build doit être reproduite avec cette combinaison, pas avec l'ancienne — sinon on « corrige » un symptôme qui n'existe plus.
 
+## Note de parité 2026-11-12 — sous-rôles manager : liste partagée et libellés l10n (issue #9334, PR #9428)
+
+L'écran Équipe (`leopardo_core/lib/features/team/screens/team_screen.dart`) construisait son menu « type de manager » à partir de **4 valeurs et de libellés écrits en dur**, alors que le web en proposait 5 (avec `marketing`) et que l'API en acceptait 6 (`principal` inclus) : un manager ne pouvait pas attribuer `marketing` depuis le mobile.
+
+Le menu est désormais construit depuis `kAssignableManagerRoles` (`lib/features/team/manager_roles.dart`) et les libellés passent par `context.l10n` (`teamRoleRh`, `teamRoleDept`, `teamRoleComptable`, `teamRoleSuperviseur`, `teamRoleMarketing`, ajoutées aux 4 locales).
+
+**Conséquence pour les tests mobile** : toute capture ou test de widget qui vérifie les options de ce menu doit attendre 5 entrées, dans l'ordre `rh, dept, comptable, superviseur, marketing`, et des libellés dépendants de la locale. La parité des trois listes (PHP / TS / Dart) est verrouillée par `dev-hub/tools/check-team-role-parity.py`, exécutée dans le job `hygiene-guards`.
+
