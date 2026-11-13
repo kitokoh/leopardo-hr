@@ -8,7 +8,6 @@ use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\User;
 use App\Modules\TravelAgency\Domain\Models\TravelCustomerAccount;
 use App\Support\PhoneNumber;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -161,7 +160,10 @@ final class PublicIdentityBridge
                 ],
             ]);
         } catch (\Throwable $e) {
-            Log::error('public_identity_audit_failed', [
+            // La couche Application ne depend pas de la facade Log (garde de
+            // purete des couches). On passe par le helper `logger()`, qui rend
+            // le meme service sans importer Illuminate\Support\Facades.
+            logger()->error('public_identity_audit_failed', [
                 'account_id' => $account->id,
                 'user_id' => $user->id,
                 'previous_user_id' => $previousUserId,
