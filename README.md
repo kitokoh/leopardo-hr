@@ -268,6 +268,7 @@ The project currently uses a low-cost, resilient deployment approach. Availabili
 | Platform admin | [leo-admin.pages.dev](https://leo-admin.pages.dev) | Leopardo platform administration and commercial CRM. |
 | Mobile suite | [Mobile documentation](docs/mobile/README.md) | Employee, Manager, HR, Marketing and Platform Admin apps. |
 | Product site | [kitokoh.github.io/leopardo-hr](https://kitokoh.github.io/leopardo-hr) | Static project and product landing page. |
+| Public app (Couloir 16) | `/decouvrir`, `/activites`, `/profil`, `/conversations` on the corporate web surface | Consumer-facing channel. Orchestrates BC Identité, BC-13 and Shared/Discovery; it is **not** a vertical or a horizontal. See [coverage audit](docs/design/COULOIR16_AUDIT_COUVERTURE_GITHUB.md). |
 
 Queue and cache behavior is described in [deployment documentation](docs/deployment/DEPLOYMENT_GUIDE.md) and [architecture documentation](ARCHITECTURE.md). Do not assume that a free-tier environment has production-grade availability for a customer deployment.
 
