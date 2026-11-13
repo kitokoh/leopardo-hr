@@ -10,6 +10,7 @@ use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\PdfTextExtractor;
 use Tests\TestCase;
 
 /**
@@ -96,81 +97,17 @@ class PaySlipDzMentionsTest extends TestCase
         $this->assertStringContainsString('95 116,00', $text);
     }
 
+    /**
+     * Extraction mutualisee (Tests\Support\PdfTextExtractor).
+     *
+     * La copie locale qui vivait ici ne gerait pas les echappements PDF
+     * (`\\(`, `\\)`, `\\\\`) : des qu'une valeur rendue contenait une
+     * parenthese, le flux se desynchronisait et les runs suivants etaient
+     * decodes en vrac — d'ou l'echec intermittent en suite complete alors que
+     * le test passait isolement (l'ordre des donnees en base changeait).
+     */
     private function pdfText(string $binary): string
     {
-        // dompdf v3 compresse les flux de contenu (FlateDecode) : on décompresse
-        // chaque stream avant d'extraire les chaînes entre parenthèses.
-        $text = '';
-        if (preg_match_all('/stream\r?\n(.*?)\r?\nendstream/s', $binary, $matches)) {
-            foreach ($matches[1] as $stream) {
-                $decoded = @gzuncompress($stream);
-                if ($decoded === false) {
-                    continue;
-                }
-                $text .= $this->extractParenthesized($decoded).' ';
-            }
-        }
-
-        return $text;
-    }
-
-    private function extractParenthesized(string $data): string
-    {
-        // Chaînes entre parenthèses + décodage des échappements dompdf
-        // (`\(`, `\)`, `\\`, séquences octales `\nnn`). dompdf v3 encode les
-        // flux en UTF-16 (BE ou LE selon la police/le run) : endianness
-        // détectée par run (BOM, puis position du premier octet nul).
-        $text = '';
-        $inParen = false;
-        $buf = '';
-        foreach (str_split($data) as $ch) {
-            if ($inParen) {
-                if ($ch === ')') {
-                    $text .= $this->decodeRun($buf).' ';
-                    $buf = '';
-                    $inParen = false;
-                } elseif ($ch === '(') {
-                    $buf .= '(';
-                } else {
-                    $buf .= $ch;
-                }
-            } elseif ($ch === '(') {
-                $inParen = true;
-                $buf = '';
-            }
-        }
-
-        // Normalisation des espaces Unicode (U+00A0, U+2000–U+200A, U+202F,
-        // U+3000) et des doubles espaces (runs de texte scindés par dompdf).
-        $text = (string) preg_replace('/[\x{00A0}\x{2000}-\x{200A}\x{202F}\x{3000}]/u', ' ', $text);
-        $text = preg_replace('/\s{2,}/', ' ', $text);
-
-        return (string) $text;
-    }
-
-    private function decodeRun(string $run): string
-    {
-        $decoded = preg_replace_callback(
-            '/\\\\([0-7]{3})/',
-            static fn (array $m): string => chr((int) octdec($m[1])),
-            $run
-        );
-        $decoded = preg_replace('/\\\\([()\\\\])/', '$1', (string) $decoded);
-
-        if (! str_contains((string) $decoded, "\0")) {
-            return (string) $decoded;
-        }
-
-        // Endianness : BOM explicite, sinon position du premier octet nul.
-        if (str_starts_with((string) $decoded, "\xFE\xFF")) {
-            return mb_convert_encoding(substr((string) $decoded, 2), 'UTF-8', 'UTF-16BE');
-        }
-        if (str_starts_with((string) $decoded, "\xFF\xFE")) {
-            return mb_convert_encoding(substr((string) $decoded, 2), 'UTF-8', 'UTF-16LE');
-        }
-
-        $littleEndian = isset($decoded[1]) && $decoded[1] === "\0";
-
-        return mb_convert_encoding((string) $decoded, 'UTF-8', $littleEndian ? 'UTF-16LE' : 'UTF-16BE');
+        return PdfTextExtractor::text($binary);
     }
 }

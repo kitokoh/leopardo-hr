@@ -6898,6 +6898,13 @@ trait CreatesMvpSchema
                 // utilisée par l'expert-comptable (libre de référence).
                 $table->string('piece', 64)->nullable();
                 $table->string('description', 500)->nullable();
+                // #9373 — devise de comptabilisation + devise d'origine + taux.
+                // Sans ces colonnes, FinancialStatementService (bilan / balance /
+                // resultat) echoue en 42703 (`column "currency" does not exist`).
+                // Schema identique a la migration tenant 2026_11_10_002000_9373.
+                $table->char('currency', 3)->nullable();
+                $table->char('amount_currency', 3)->nullable();
+                $table->decimal('exchange_rate', 18, 8)->default(1);
                 $table->timestamps();
 
                 $table->index(['company_id', 'period']);

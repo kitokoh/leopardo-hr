@@ -105,7 +105,16 @@ class AccountingPolicy
             return false;
         }
 
-        return (float) $document->paid_amount <= 0.0;
+        // #9379 — « paye » signifie INTEGRALEMENT regle. Un document
+        // partiellement regle reste annulable : DocumentWorkflowService
+        // autorise explicitement Draft/Sent/PartiallyPaid/Overdue, et la
+        // matrice ci-dessus ne reserve l'avoir qu'aux pieces soldees. La garde
+        // precedente (`paid_amount <= 0`) refusait toute piece ayant recu le
+        // moindre acompte, en contradiction avec le service.
+        $paid = (float) $document->paid_amount;
+        $total = (float) $document->total_ttc;
+
+        return $paid <= 0.0 || $paid < $total;
     }
 
     /**
