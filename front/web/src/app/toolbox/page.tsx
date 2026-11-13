@@ -7,6 +7,7 @@ import { TOOL_CATEGORIES } from '@/modules/toolbox/data/catalog';
 import { getCatalogTools } from '@/modules/toolbox/lib/registry';
 import { getToolboxCopy } from '@/modules/toolbox/data/copy';
 import { ToolboxCatalog, type CatalogItem } from '@/modules/toolbox/components/ToolboxCatalog';
+import { MyTools, type MyToolsItem } from '@/modules/toolbox/components/MyTools';
 
 /**
  * Catalogue public de la Toolbox (`/toolbox`).
@@ -72,6 +73,14 @@ export default async function ToolboxPage() {
     label: copy.categories[category.id] ?? category.id,
   }));
 
+  // « Mes outils » ne reçoit que des données sérialisables : le composant
+  // client lit `localStorage` lui-même (décision #9156, aucun appel réseau).
+  const myToolsItems: MyToolsItem[] = items.map((item) => ({
+    slug: item.slug,
+    name: item.name,
+    categoryLabel: item.categoryLabel,
+  }));
+
   return (
     <div>
       <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-3">
@@ -80,6 +89,8 @@ export default async function ToolboxPage() {
       <p className="text-base text-slate-600 dark:text-slate-400 mb-8 max-w-2xl">
         {copy.catalog.subtitle}
       </p>
+
+      <MyTools items={myToolsItems} copy={copy.myTools} />
 
       <ToolboxCatalog
         items={items}

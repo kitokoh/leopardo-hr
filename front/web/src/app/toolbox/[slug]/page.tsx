@@ -8,6 +8,7 @@ import { getToolboxCopy } from '@/modules/toolbox/data/copy';
 import { getAllToolSlugs, getTool } from '@/modules/toolbox/lib/registry';
 import { ToolShell } from '@/modules/toolbox/components/ToolShell';
 import { ToolRenderer } from '@/modules/toolbox/components/ToolRenderer';
+import { ToolActions } from '@/modules/toolbox/components/ToolActions';
 
 /**
  * Page d'un outil public (`/toolbox/[slug]`).
@@ -95,6 +96,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
       backLabel={copy.common.backToCatalog}
       disclaimer={copy.common.disclaimer}
     >
+      <ToolActions slug={slug} copy={copy.myTools} />
       <ToolRenderer slug={slug} copy={toolCopy} common={copy.common} locale={locale} />
     </ToolShell>
   );

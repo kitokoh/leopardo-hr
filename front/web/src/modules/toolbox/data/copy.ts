@@ -53,6 +53,23 @@ export interface ToolboxCopy {
     notFound: string;
     notFoundHint: string;
   };
+  /**
+   * Espace personnel « Mes outils » (favoris + historique).
+   *
+   * Persistance 100 % locale (`lib/storage.ts`, décision #9156) : ces libellés
+   * ne décrivent jamais un compte ni une synchronisation serveur.
+   */
+  myTools: {
+    title: string;
+    subtitle: string;
+    favorites: string;
+    history: string;
+    empty: string;
+    emptyHint: string;
+    clear: string;
+    addFavorite: string;
+    removeFavorite: string;
+  };
   tools: Record<string, ToolCopy>;
 }
 
@@ -107,6 +124,17 @@ const fr: ToolboxCopy = {
     invalidInput: 'Saisissez une valeur valide.',
     notFound: 'Outil introuvable',
     notFoundHint: 'Cet outil n’existe pas ou a été renommé. Parcourez le catalogue pour trouver l’outil souhaité.',
+  },
+  myTools: {
+    title: 'Mes outils',
+    subtitle: 'Vos favoris et vos outils récemment utilisés, enregistrés dans ce navigateur.',
+    favorites: 'Favoris',
+    history: 'Récemment utilisés',
+    empty: 'Aucun outil enregistré pour le moment.',
+    emptyHint: 'Ouvrez un outil et ajoutez-le à vos favoris pour le retrouver ici.',
+    clear: 'Effacer mes outils',
+    addFavorite: 'Ajouter aux favoris',
+    removeFavorite: 'Retirer des favoris',
   },
   tools: {
     imc: {
@@ -389,6 +417,17 @@ const en: ToolboxCopy = {
     notFound: 'Tool not found',
     notFoundHint: 'This tool does not exist or has been renamed. Browse the catalogue to find the tool you need.',
   },
+  myTools: {
+    title: 'My tools',
+    subtitle: 'Your favourites and recently used tools, saved in this browser.',
+    favorites: 'Favourites',
+    history: 'Recently used',
+    empty: 'No tool saved yet.',
+    emptyHint: 'Open a tool and add it to your favourites to find it here.',
+    clear: 'Clear my tools',
+    addFavorite: 'Add to favourites',
+    removeFavorite: 'Remove from favourites',
+  },
   tools: {
     imc: {
       name: 'BMI — Body mass index',
@@ -666,6 +705,17 @@ const tr: ToolboxCopy = {
     notFound: 'Araç bulunamadı',
     notFoundHint: 'Bu araç yok veya yeniden adlandırıldı. İhtiyacınız olan aracı bulmak için kataloğa göz atın.',
   },
+  myTools: {
+    title: 'Araçlarım',
+    subtitle: 'Favorileriniz ve son kullandığınız araçlar bu tarayıcıda saklanır.',
+    favorites: 'Favoriler',
+    history: 'Son kullanılanlar',
+    empty: 'Henüz kayıtlı araç yok.',
+    emptyHint: 'Bir araç açın ve burada bulmak için favorilere ekleyin.',
+    clear: 'Araçlarımı temizle',
+    addFavorite: 'Favorilere ekle',
+    removeFavorite: 'Favorilerden çıkar',
+  },
   tools: {
     imc: {
       name: 'VKİ — Vücut kitle indeksi',
@@ -938,6 +988,17 @@ const ar: ToolboxCopy = {
     invalidInput: 'أدخل قيمة صحيحة.',
     notFound: 'الأداة غير موجودة',
     notFoundHint: 'هذه الأداة غير موجودة أو تم تغيير اسمها. تصفّح الكتالوج للعثور على الأداة التي تحتاجها.',
+  },
+  myTools: {
+    title: 'أدواتي',
+    subtitle: 'مفضلاتك والأدوات التي استخدمتها مؤخرًا، محفوظة في هذا المتصفح.',
+    favorites: 'المفضلة',
+    history: 'المستخدمة مؤخرًا',
+    empty: 'لا توجد أداة محفوظة بعد.',
+    emptyHint: 'افتح أداة وأضفها إلى المفضلة لتجدها هنا.',
+    clear: 'مسح أدواتي',
+    addFavorite: 'أضف إلى المفضلة',
+    removeFavorite: 'إزالة من المفضلة',
   },
   tools: {
     imc: {
