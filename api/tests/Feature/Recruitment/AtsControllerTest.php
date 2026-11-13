@@ -63,6 +63,7 @@ class AtsControllerTest extends TestCase
         parent::tearDown();
     }
 
+    /** @param array<string, mixed> $overrides */
     private function applicant(array $overrides = []): Applicant
     {
         return Applicant::create([

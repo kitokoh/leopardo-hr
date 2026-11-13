@@ -60,7 +60,7 @@ class ApplicantResource extends JsonResource
                 'actor_id' => $event->actor_id,
                 'actor_name' => $event->actor_name,
                 'reason' => $event->reason,
-                'occurred_at' => $event->occurred_at?->toIso8601String(),
+                'occurred_at' => $event->occurred_at->toIso8601String(),
             ])->values()),
             'created_at' => $this->created_at?->toIso8601String(),
         ];

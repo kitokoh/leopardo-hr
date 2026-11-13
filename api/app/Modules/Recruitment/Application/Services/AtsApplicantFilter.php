@@ -120,6 +120,7 @@ final class AtsApplicantFilter
      * l'ordre dans lequel un recruteur veut voir arriver les dossiers.
      *
      * @param  Builder<Applicant>  $query
+     * @param  array<string, mixed>  $criteria
      * @return Builder<Applicant>
      */
     public function sort(Builder $query, array $criteria): Builder
@@ -206,7 +207,10 @@ final class AtsApplicantFilter
         return $counts;
     }
 
-    /** @param Builder<Applicant> $query */
+    /**
+     * @param  Builder<Applicant>  $query
+     * @param  array<string, mixed>  $criteria
+     */
     private function applyStatuses(Builder $query, array $criteria): void
     {
         $statuses = $criteria['statuses'] ?? null;
@@ -215,7 +219,10 @@ final class AtsApplicantFilter
         }
     }
 
-    /** @param Builder<Applicant> $query */
+    /**
+     * @param  Builder<Applicant>  $query
+     * @param  array<string, mixed>  $criteria
+     */
     private function applyRating(Builder $query, array $criteria): void
     {
         if (isset($criteria['min_rating'])) {
@@ -223,7 +230,10 @@ final class AtsApplicantFilter
         }
     }
 
-    /** @param Builder<Applicant> $query */
+    /**
+     * @param  Builder<Applicant>  $query
+     * @param  array<string, mixed>  $criteria
+     */
     private function applySource(Builder $query, array $criteria): void
     {
         if (isset($criteria['source'])) {
@@ -231,7 +241,10 @@ final class AtsApplicantFilter
         }
     }
 
-    /** @param Builder<Applicant> $query */
+    /**
+     * @param  Builder<Applicant>  $query
+     * @param  array<string, mixed>  $criteria
+     */
     private function applySearch(Builder $query, array $criteria): void
     {
         $term = $criteria['q'] ?? null;
@@ -252,7 +265,10 @@ final class AtsApplicantFilter
         });
     }
 
-    /** @param Builder<Applicant> $query */
+    /**
+     * @param  Builder<Applicant>  $query
+     * @param  array<string, mixed>  $criteria
+     */
     private function applyAge(Builder $query, array $criteria): void
     {
         if (isset($criteria['older_than_days'])) {
@@ -264,7 +280,10 @@ final class AtsApplicantFilter
         }
     }
 
-    /** @param Builder<Applicant> $query */
+    /**
+     * @param  Builder<Applicant>  $query
+     * @param  array<string, mixed>  $criteria
+     */
     private function applyResumeScan(Builder $query, array $criteria): void
     {
         $scan = $criteria['resume_scan_status'] ?? null;
