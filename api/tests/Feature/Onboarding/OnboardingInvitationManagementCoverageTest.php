@@ -68,12 +68,15 @@ class OnboardingInvitationManagementCoverageTest extends TestCase
             'status' => 'active',
         ], $employeeAttributes));
 
-        $token = app(UserInvitationService::class)->createAndSend(
+        // #9322 : `createAndSend()` retourne un DTO (jeton + issue de l'envoi),
+        // plus une chaîne nue. Le jeton en clair reste `->token`.
+        $dispatch = app(UserInvitationService::class)->createAndSend(
             company: $this->company,
             employee: $employee,
             invitedByType: 'manager',
             invitedByEmail: $this->principal->email,
         );
+        $token = $dispatch->token;
 
         $invitation = UserInvitation::query()
             ->where('company_id', $this->company->id)
