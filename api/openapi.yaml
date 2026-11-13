@@ -37996,6 +37996,182 @@ paths:
           $ref: '#/components/responses/Error404'
         '409':
           description: Journal mouvemente
+  /accounting/tax-rates:
+    get:
+      operationId: api_get_accounting_tax_rates
+      tags:
+      - Accounting
+      summary: Lister le referentiel de TVA du tenant
+      description: 'Taux de TVA du tenant, tries par defaut puis par taux croissant (issue #9376).'
+      responses:
+        '200':
+          description: Referentiel de TVA
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AccountingTaxRate'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_accounting_tax_rates
+      tags:
+      - Accounting
+      summary: Creer ou mettre a jour un taux de TVA
+      description: 'Upsert par (tenant, code) : le code est immuable, un changement de taux legal cree un nouveau code (issue #9376).'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - label
+              - rate
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                label:
+                  type: string
+                  maxLength: 120
+                rate:
+                  type: number
+                  minimum: 0
+                  maximum: 100
+                kind:
+                  type: string
+                  enum:
+                  - standard
+                  - reduced
+                  - super_reduced
+                  - zero
+                  - exempt
+                is_default:
+                  type: boolean
+                is_active:
+                  type: boolean
+      responses:
+        '201':
+          description: Taux cree ou mis a jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountingTaxRate'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /accounting/tax-rates/seed:
+    post:
+      operationId: api_post_accounting_tax_rates_seed
+      tags:
+      - Accounting
+      summary: Provisionner le referentiel de TVA depuis les defauts pays
+      description: 'Idempotent : cree les taux manquants du pays du tenant, ne reecrit jamais un taux existant (issue #9376).'
+      responses:
+        '201':
+          description: Nombre de taux crees
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created:
+                    type: integer
+                    minimum: 0
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /accounting/tax-rates/{taxRate}:
+    put:
+      operationId: api_put_accounting_tax_rates_param
+      tags:
+      - Accounting
+      summary: Modifier un taux de TVA
+      description: 'Le code est immuable ; libelle, taux, nature, defaut et activation sont modifiables (issue #9376).'
+      parameters:
+      - name: taxRate
+        in: path
+        required: true
+        description: Identifiant du taux de TVA.
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                  maxLength: 120
+                rate:
+                  type: number
+                  minimum: 0
+                  maximum: 100
+                kind:
+                  type: string
+                  enum:
+                  - standard
+                  - reduced
+                  - super_reduced
+                  - zero
+                  - exempt
+                is_default:
+                  type: boolean
+                is_active:
+                  type: boolean
+      responses:
+        '200':
+          description: Taux mis a jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountingTaxRate'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      operationId: api_delete_accounting_tax_rates_param
+      tags:
+      - Accounting
+      summary: Supprimer un taux de TVA
+      description: 'Refuse (409) des qu''une ligne de document reference le taux : l''historique des factures doit rester interpretable (issue #9376).'
+      parameters:
+      - name: taxRate
+        in: path
+        required: true
+        description: Identifiant du taux de TVA.
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Taux supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Taux utilise par une ligne de document
   /accounting/journal/export-fec:
     get:
       operationId: api_get_accounting_journal_export_fec
@@ -67998,6 +68174,36 @@ components:
         default_account_code:
           type: string
           nullable: true
+        is_active:
+          type: boolean
+    AccountingTaxRate:
+      type: object
+      description: Taux de TVA du referentiel du tenant (issue #9376).
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+          description: Code stable et immuable, derive de la nature et du taux (ex. TVA-STD-19).
+        label:
+          type: string
+        rate:
+          type: number
+          minimum: 0
+          maximum: 100
+        kind:
+          type: string
+          enum:
+          - standard
+          - reduced
+          - super_reduced
+          - zero
+          - exempt
+        country:
+          type: string
+          nullable: true
+        is_default:
+          type: boolean
         is_active:
           type: boolean
     AccountingChartAccount:

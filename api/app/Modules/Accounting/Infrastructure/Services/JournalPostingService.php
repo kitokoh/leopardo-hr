@@ -181,7 +181,9 @@ final class JournalPostingService
         // #9373 — un paiement est saisi dans la devise de son document : on
         // applique le même taux que l'écriture du document pour que le solde du
         // tiers reste soldé (sinon un écart de change fantôme apparaît).
-        $document = AccountingDocument::query()->withoutGlobalScopes()->find($payment->document_id);
+        $document = AccountingDocument::query()
+            ->forCompany((string) $payment->company_id)
+            ->find($payment->document_id);
 
         $documentCurrency = $document instanceof AccountingDocument ? (string) $document->currency : '';
         $documentRate = $document instanceof AccountingDocument && $document->exchange_rate !== null
@@ -288,7 +290,8 @@ final class JournalPostingService
         }
 
         /** @var Company|null $company */
-        $company = Company::query()->withoutGlobalScopes()->find($companyId);
+        // `Company` ne porte aucun global scope : le bypass etait un no-op (#7960).
+        $company = Company::query()->find($companyId);
 
         return $company !== null
             ? ChartAccountResolver::forCompany($company)
@@ -403,7 +406,7 @@ final class JournalPostingService
         }
 
         return AccountingDocument::query()
-            ->withoutGlobalScopes()
+            ->forCompany((string) $payment->company_id)
             ->whereKey($documentId)
             ->whereIn('type', [DocumentType::PurchaseInvoice->value, DocumentType::PurchaseCreditNote->value])
             ->exists();
@@ -477,8 +480,7 @@ final class JournalPostingService
     private function referenceCurrency(string $companyId): string
     {
         $settingsCurrency = AccountingSettings::query()
-            ->withoutGlobalScopes()
-            ->where('company_id', $companyId)
+            ->forCompany($companyId)
             ->value('currency');
 
         if (is_string($settingsCurrency) && $settingsCurrency !== '') {
@@ -486,7 +488,6 @@ final class JournalPostingService
         }
 
         $companyCurrency = Company::query()
-            ->withoutGlobalScopes()
             ->whereKey($companyId)
             ->value('currency');
 

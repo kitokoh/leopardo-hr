@@ -134,6 +134,10 @@ return [
         'statement_year_invalid' => 'Geçersiz mali yıl.',
         'statement_period_invalid' => 'Geçersiz muhasebe dönemi (YYYY-AA).',
         'vat_period_invalid' => 'Geçersiz dönem. AAAA-AA biçimini kullanın.',
+        'wf_unknown_tax_rate' => '":code" KDV oranı vergi referansınızda bulunmuyor.',
+        'tax_rate_in_use' => 'Bu KDV oranı belge satırlarında kullanılıyor: silmek yerine devre dışı bırakın.',
+        'cancel_paid_document' => 'Ödenmiş bir belge iptal edilemez: alacak dekontu düzenleyin.',
+        'close_period_forbidden' => 'Bir muhasebe döneminin kapatılması şirket sahibine aittir.',
     ],
 
     // Varsayılan KDV etiketleri (issue #5227)

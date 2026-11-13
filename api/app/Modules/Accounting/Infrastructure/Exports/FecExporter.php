@@ -214,9 +214,16 @@ final class FecExporter
             return $this->journalLabels[$key] ?? (self::JOURNAL_LIB[$journalCode] ?? $journalCode);
         }
 
+        $companyId = $entry->company_id;
+
+        // Une ligne sans société ne peut pas être rattachée à un journal
+        // paramétré : repli direct sur les libellés FEC standards.
+        if ($companyId === null) {
+            return self::JOURNAL_LIB[$journalCode] ?? $journalCode;
+        }
+
         $label = AccountingJournal::query()
-            ->withoutGlobalScopes()
-            ->where('company_id', $entry->company_id)
+            ->forCompany($companyId)
             ->where('code', $journalCode)
             ->value('label');
 
@@ -288,8 +295,7 @@ final class FecExporter
         }
 
         $type = AccountingDocument::query()
-            ->withoutGlobalScopes()
-            ->where('company_id', $companyId)
+            ->forCompany($companyId)
             ->whereKey($documentId)
             ->value('type');
 

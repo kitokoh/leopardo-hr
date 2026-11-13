@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Accounting\Domain\Enums\JournalType;
 use App\Modules\Accounting\Domain\Models\AccountingJournal;
 use App\Modules\Accounting\Infrastructure\Services\ChartAccountResolver;
 use App\Modules\Accounting\Infrastructure\Services\JournalResolver;
@@ -153,8 +152,8 @@ final class AccountingJournalSettingsController extends Controller
         $companyId = (string) $user?->getAttribute('company_id');
 
         /** @var \App\Core\Tenant\Domain\Models\Company|null $company */
+        // `Company` ne porte aucun global scope : le bypass etait un no-op (#7960).
         $company = \App\Core\Tenant\Domain\Models\Company::query()
-            ->withoutGlobalScopes()
             ->find($companyId);
 
         $resolver = $company !== null

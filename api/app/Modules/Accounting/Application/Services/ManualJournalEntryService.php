@@ -9,7 +9,6 @@ use App\Modules\Accounting\Domain\Exceptions\PeriodClosedException;
 use App\Modules\Accounting\Domain\Exceptions\UnbalancedJournalEntryException;
 use App\Modules\Accounting\Domain\Models\AccountingChartAccount;
 use App\Modules\Accounting\Domain\Models\AccountingClosedPeriod;
-use App\Modules\Accounting\Domain\Models\AccountingJournal;
 use App\Modules\Accounting\Domain\Models\AccountingJournalEntry;
 use App\Modules\Accounting\Domain\Models\AccountingManualEntry;
 use App\Modules\Accounting\Infrastructure\Services\ChartAccountResolver;
@@ -257,8 +256,9 @@ final class ManualJournalEntryService
         // d'écriture existante serait absurde. On provisionne alors les
         // journaux du référentiel, puis on reprend la résolution normale.
         if ($journals === []) {
+            // `Company` ne porte aucun global scope : le bypass etait un no-op
+            // (garde #7960).
             $company = \App\Core\Tenant\Domain\Models\Company::query()
-                ->withoutGlobalScopes()
                 ->find($companyId);
 
             $resolver = $company !== null
