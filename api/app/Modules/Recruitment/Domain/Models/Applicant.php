@@ -84,6 +84,18 @@ class Applicant extends Model
         return $this->hasMany(Interview::class, 'applicant_id');
     }
 
+    /**
+     * Journal append-only des changements de statut (ATS).
+     *
+     * @return HasMany<ApplicantStatusEvent, $this>
+     */
+    public function statusEvents(): HasMany
+    {
+        return $this->hasMany(ApplicantStatusEvent::class, 'applicant_id')
+            ->orderByDesc('occurred_at')
+            ->orderByDesc('id');
+    }
+
     public function getFullNameAttribute(): string
     {
         return $this->first_name.' '.$this->last_name;

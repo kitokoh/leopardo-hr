@@ -82,6 +82,11 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/fuel',
   // #8447 — « Mon Logiciel » (hub des apps du tenant) : zone dashboard.
   '/mon-logiciel',
+  // ATS — pipeline recruteur : dossiers de candidature (données personnelles
+  // des candidats, CV, historique de statut). Même gate cosmétique de session
+  // que le reste de la zone dashboard ; la garde réelle reste l'API (policy +
+  // scope BelongsToCompany, 404 hors tenant).
+  '/recruitment',
   // BC-17 — espace vendeur (produits, stock, caisse) : zone dashboard.
   '/commerce',
   // BC-40 LIBRARY (#9224) — back-office de la bibliothèque du tenant :
@@ -253,6 +258,7 @@ export const config = {
     '/hospitality/:path*', // BC-32 (#7943) HospitalityManager — gate session
     '/fuel/:path*', // #7663 stations-service — gate session
     '/mon-logiciel/:path*', // #8447 Mon Logiciel (hub apps tenant) — gate session
+    '/recruitment/:path*', // ATS — pipeline recruteur (données candidats) — gate session
     '/commerce/:path*', // BC-17 espace vendeur — gate session (source unique #3377)
 
     '/support/:path*', // #7759 tickets support côté client — gate session

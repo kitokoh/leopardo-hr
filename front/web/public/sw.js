@@ -45,6 +45,10 @@ const PROTECTED_PREFIXES = [
   '/fuel',
   // #8447 — « Mon Logiciel » (hub des apps du tenant, zone dashboard).
   '/mon-logiciel',
+  // ATS — pipeline recruteur (zone dashboard) : dossiers de candidature et CV
+  // de tiers. Jamais pré-caché : ces données ne doivent pas rester dans le
+  // cache du navigateur.
+  '/recruitment',
   // BC-17 — espace vendeur (zone dashboard).
   '/commerce',
 

@@ -190,6 +190,7 @@ class RecruitmentController extends Controller
                 (string) $actor->company_id,
                 $jobPosting,
                 $validated,
+                ['id' => $actor->id, 'name' => trim($actor->first_name.' '.$actor->last_name)],
             );
         } catch (ApplicantAlreadyAppliedException) {
             return new JsonResponse([
@@ -218,9 +219,14 @@ class RecruitmentController extends Controller
             'status' => 'sometimes|in:new,screening,interview,offer,hired,rejected,withdrawn',
             'rating' => 'nullable|integer|min:1|max:5',
             'notes' => 'nullable|string',
+            'status_reason' => 'nullable|string|max:500',
         ]);
 
-        $applicant = app(UpdateApplicantAction::class)->execute($applicant, $validated);
+        $applicant = app(UpdateApplicantAction::class)->execute(
+            $applicant,
+            $validated,
+            ['id' => $actor->id, 'name' => trim($actor->first_name.' '.$actor->last_name)],
+        );
 
         return (new ApplicantResource($applicant))->response();
     }

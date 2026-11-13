@@ -29,6 +29,7 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\SelfServiceController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\TrainingController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\EmployeeLoanController;
 use App\Modules\Planning\Interfaces\Api\V1\Controllers\LeavePolicyController;
+use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\AtsController;
 use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\JobPostingActionController;
 use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\RecruitmentController;
 use App\Support\Routing\ModuleRoutes;
@@ -133,6 +134,24 @@ ModuleRoutes::tenantModule('', function (): void {
         Route::get('/recruitment/applicants/{applicant}', [JobPostingActionController::class, 'showApplicant'])->whereNumber('applicant');
         Route::patch('/recruitment/applicants/{applicant}/status', [JobPostingActionController::class, 'updateApplicantStatus'])->whereNumber('applicant');
         Route::delete('/recruitment/applicants/{applicant}', [JobPostingActionController::class, 'destroyApplicant'])->whereNumber('applicant');
+
+        // ── ATS — vue de travail du recruteur ────────────────────────────────
+        // Pipeline filtrable (transverse et par offre), dossier détaillé avec
+        // historique de statuts, et filtres sauvegardés. Déclaré APRÈS les
+        // routes `/recruitment/applicants/{applicant}` : `ats` n'est pas un
+        // identifiant numérique, mais l'ordre explicite évite toute ambiguïté
+        // si un jour un segment littéral venait à coïncider.
+        Route::get('/recruitment/ats/applicants', [AtsController::class, 'index']);
+        Route::get('/recruitment/ats/applicants/{applicant}', [AtsController::class, 'show'])->whereNumber('applicant');
+        Route::patch('/recruitment/ats/applicants/{applicant}/status', [AtsController::class, 'updateStatus'])->whereNumber('applicant');
+        Route::get('/recruitment/ats/jobs/{jobPosting}/applicants', [AtsController::class, 'jobPipeline'])->whereNumber('jobPosting');
+        Route::get('/recruitment/ats/filters', [AtsController::class, 'indexFilters']);
+        Route::post('/recruitment/ats/filters', [AtsController::class, 'storeFilter']);
+        Route::delete('/recruitment/ats/filters/{filter}', [AtsController::class, 'destroyFilter'])->whereNumber('filter');
+        // Téléchargement du CV : le fichier vit sur le disque privé `local`,
+        // il n'est donc servi que par cette route authentifiée et bornée au
+        // tenant de l'acteur.
+        Route::get('/recruitment/applicants/{applicant}/resume', [AtsController::class, 'downloadResume'])->whereNumber('applicant');
         Route::patch('/recruitment/interviews/{interview}/feedback', [JobPostingActionController::class, 'interviewFeedback'])->whereNumber('interview');
         Route::delete('/recruitment/interviews/{interview}', [JobPostingActionController::class, 'destroyInterview'])->whereNumber('interview');
 

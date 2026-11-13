@@ -154,10 +154,18 @@ class JobPostingActionController extends Controller
 
         $validated = $request->validate([
             'status' => 'required|in:new,screening,interview,offer,hired,rejected,withdrawn',
+            'reason' => 'nullable|string|max:500',
         ]);
 
         $applicant = Applicant::where('company_id', $user->company_id)->findOrFail($applicant);
-        $applicant = app(UpdateApplicantAction::class)->execute($applicant, $validated);
+        $applicant = app(UpdateApplicantAction::class)->execute(
+            $applicant,
+            [
+                'status' => $validated['status'],
+                'status_reason' => $validated['reason'] ?? null,
+            ],
+            ['id' => $user->id, 'name' => trim($user->first_name.' '.$user->last_name)],
+        );
 
         return (new ApplicantResource($applicant))->response();
     }

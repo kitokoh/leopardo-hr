@@ -3478,6 +3478,38 @@ trait CreatesMvpSchema
             });
         }
 
+        // ATS — journal append-only des changements de statut (miroir de la
+        // migration tenant 2026_11_13_000100).
+        if (! Schema::hasTable($this->moduleTable('applicant_status_events'))) {
+            Schema::create($this->moduleTable('applicant_status_events'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('applicant_id');
+                $table->string('from_status', 20)->nullable();
+                $table->string('to_status', 20);
+                $table->unsignedInteger('actor_id')->nullable();
+                $table->string('actor_name', 120)->nullable();
+                $table->string('reason', 500)->nullable();
+                $table->timestampTz('occurred_at');
+                $table->timestampsTz();
+            });
+        }
+
+        // ATS — filtres sauvegardés (miroir de la migration tenant
+        // 2026_11_13_000100).
+        if (! Schema::hasTable($this->moduleTable('ats_saved_filters'))) {
+            Schema::create($this->moduleTable('ats_saved_filters'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('job_posting_id')->nullable();
+                $table->string('name', 120);
+                $table->jsonb('criteria');
+                $table->unsignedInteger('created_by')->nullable();
+                $table->boolean('is_shared')->default(false);
+                $table->timestampsTz();
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('training_courses'))) {
             Schema::create($this->moduleTable('training_courses'), function (Blueprint $table): void {
                 $table->id();
@@ -6553,6 +6585,8 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "training_sessions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "training_courses"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "interviews"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "applicant_status_events"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "ats_saved_filters"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "applicants"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "job_postings"'.$cascade);
         // BC-10 (#9100) — tables publiques du portail d'offres.

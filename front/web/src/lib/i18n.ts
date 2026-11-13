@@ -121,7 +121,7 @@ export type CopyTree = {
       dashboard: string;
       /** #8447 — hub d'installation des apps du tenant (« Mon Logiciel ») */
       mon_logiciel: string; employees: string; attendance: string; attendance_geo: string;
-      absences: string; contracts: string; payroll: string; training: string;
+      absences: string; contracts: string; recruitment: string; payroll: string; training: string;
       reports: string; partner: string; billing: string; integrations: string;
       marketing: string; accounting: string; crm: string; restaurant: string;
       restaurant_kitchen: string; edu_manager: string; travel: string; travel_portal: string; fuel: string; fleet: string; showcase: string; fundraising: string;
@@ -824,6 +824,7 @@ const copy: Record<AppLocale, CopyTree> = {
         attendance_geo: 'Sessions GPS',
         absences: 'Absences',
         contracts: 'Contrats',
+        recruitment: 'Recrutement',
         payroll: 'Paie',
         training: 'Formations',
         reports: 'Rapports',
@@ -1561,6 +1562,7 @@ const copy: Record<AppLocale, CopyTree> = {
         attendance_geo: 'جلسات GPS',
         absences: 'الإجازات',
         contracts: 'العقود',
+        recruitment: 'التوظيف',
         payroll: 'الرواتب',
         training: 'التدريب',
         reports: 'التقارير',
@@ -2294,6 +2296,7 @@ const copy: Record<AppLocale, CopyTree> = {
         attendance_geo: 'GPS oturumları',
         absences: 'İzinler',
         contracts: 'Sözleşmeler',
+        recruitment: 'İşe Alım',
         payroll: 'Bordro',
         training: 'Eğitimler',
         reports: 'Raporlar',
@@ -3027,6 +3030,7 @@ const copy: Record<AppLocale, CopyTree> = {
         attendance_geo: 'GPS sessions',
         absences: 'Leave',
         contracts: 'Contracts',
+        recruitment: 'Recruitment',
         payroll: 'Payroll',
         training: 'Training',
         reports: 'Reports',
