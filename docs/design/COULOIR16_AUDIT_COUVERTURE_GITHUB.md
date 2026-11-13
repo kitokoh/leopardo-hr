@@ -235,3 +235,29 @@ Environnement : **PHP 8.2.35** (le projet déclare `^8.4.1` ; `composer install 
 - Il ne dit **pas** que les cas 1 à 8 « passent » : les cas 1 et 5 sont couverts par des classes dont l'exécution est relevée en partie ici, avec **2 échecs préexistants** documentés au §4.3.
 - Il ne mesure **aucun** seuil de qualité.
 - Il ne modifie **aucune** fonctionnalité : le lot ajoute un fichier de test et ce document.
+
+---
+
+## 8. Mise à jour — M3-bis (2026-11-13) : les manques du §6 sont comblés
+
+Les décisions 1 à 4 et 6 du §6 ont été **traitées**, chacune dans sa PR, ouverte et jamais mergée. Ce qui suit dit ce qui est **exécuté**, pas ce qui est écrit.
+
+| Décision §6 | État | PR | Preuve exécutée |
+|---|---|---|---|
+| 1. Construire `/activites` et `/profil` | **Fait** | #9446 | jest 32 tests · 14 suites / 152 tests · tsc 0 · eslint 0 |
+| 2. Trancher la surface Léa | **Fait** — section séparée dans Messages | #9447 | jest 15 tests |
+| 3. `public.profiles` | **Fait** — `public_profiles` (additive) | #9443 | `PublicProfileTest` 21 tests / 81 assertions |
+| 4. Piste d'audit du rattachement | **Fait** — ADR §8.3-3 tenue | #9444 | `PublicIdentityBridgeAuditTest` 7 tests / 19 assertions |
+| 6. README | **Fait** — ligne « Public app (Couloir 16) » | #9448 | — |
+| 5. `AuthSelfRegistrationTest` | **Non traité** — politique de test d'authentification, hors M3-bis | — | — |
+| 7. #9419 liens morts | **Résolu** par #9446 : les routes existent désormais | #9446 | — |
+
+**Total backend exécuté pour M3-bis** : 37 tests, 140 assertions, 0 échec (PostgreSQL 15, `CI=true`).
+
+### Ce que M3-bis ne règle pas, et qui reste ouvert
+
+1. **Périmètre du manifeste PWA.** `scope: '/decouvrir'` : une app installée ne couvre pas `/activites` ni `/profil`. Élargir le scope sans exposer le back-office est un travail de manifeste à part entière.
+2. **Route publique d'assistant.** Léa est séparée visuellement mais n'a **aucun** point d'entrée public : `POST /api/v1/ai/chat` exige un tenant. Un nouveau contrat d'API est nécessaire (limite de débit, facturation des jetons, modération).
+3. **Seuils de qualité.** Toujours **aucun mesuré** : pas d'appareil Android, pas de bridage réseau, pas de Flutter. Ils restent **en attente**, jamais déclarés tenus.
+4. **`AuthSelfRegistrationTest`** (2/3) — `NotCommonPassword` retire les chiffres de fin, `password123456` → racine `password` → refusée. Antérieur à la règle de sécurité.
+5. **`Composer Audit`** — `phpseclib 4.0.2` (GHSA-w3p9-g4p2-h3rr). Prouvé préexistant (`git diff --stat origin/main...HEAD -- api/composer.lock` vide). Un bump de dépendance mérite sa propre PR.

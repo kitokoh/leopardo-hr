@@ -5523,6 +5523,39 @@ paths:
           $ref: '#/components/responses/Error422'
         '429':
           $ref: '#/components/responses/Error429'
+  /user/data-export:
+    get:
+      operationId: api_get_user_data_export
+      tags:
+      - User
+      summary: Export des donnees du client (COULOIR 16, M3-bis, RGPD art. 20)
+      description: >-
+        Portabilite : rend au client les donnees qu'il a fournies, dans un format
+        structure et lisible par machine. Contient le compte, le profil public,
+        les favoris, l'historique de recherche, les references d'activite et les
+        jetons d'appareil TRONQUES (plateforme, date, 8 derniers caracteres - un
+        secret de transport en clair permettrait de pousser des notifications au
+        nom du client). Ne contient AUCUNE donnee d'un commercant : ni commande,
+        ni reservation, ni message - elles appartiennent au professionnel et
+        relevent de son propre export. La reponse declare explicitement ce
+        qu'elle ne contient pas (`not_included`).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Export structure des donnees du client
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Error401'
+        '429':
+          $ref: '#/components/responses/Error429'
   /user/device-tokens:
     post:
       operationId: api_post_user_device_tokens
