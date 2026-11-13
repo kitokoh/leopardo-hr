@@ -8980,5 +8980,10 @@
   "stockMobileLocation": "Location",
   "stockMobileAllLocations": "All locations",
   "stockMobileCostSourceAverage": "Average cost",
-  "stockMobileCostSourceCatalog": "Catalog cost"
+  "stockMobileCostSourceCatalog": "Catalog cost",
+  "teamRoleRh": "HR manager",
+  "teamRoleDept": "Department manager",
+  "teamRoleComptable": "Accounting manager",
+  "teamRoleSuperviseur": "Supervisor manager",
+  "teamRoleMarketing": "Marketing manager"
 }

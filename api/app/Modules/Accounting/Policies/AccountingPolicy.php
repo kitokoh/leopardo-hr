@@ -105,7 +105,16 @@ class AccountingPolicy
             return false;
         }
 
-        return (float) $document->paid_amount <= 0.0;
+        // #9379 — « payé » signifie INTÉGRALEMENT réglé. Un document
+        // partiellement réglé reste annulable : le workflow l'autorise
+        // explicitement (Draft/Sent/PartiallyPaid/Overdue) et la matrice
+        // ci-dessus ne réserve l'avoir qu'aux pièces soldées. La garde
+        // précédente (`paid_amount <= 0`) refusait toute pièce ayant reçu le
+        // moindre acompte, en contradiction avec le service.
+        $paid = (float) $document->paid_amount;
+        $total = (float) $document->total_ttc;
+
+        return $paid <= 0.0 || $paid < $total;
     }
 
     /**

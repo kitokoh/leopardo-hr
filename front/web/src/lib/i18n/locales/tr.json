@@ -8980,5 +8980,10 @@
   "stockMobileLocation": "Konum",
   "stockMobileAllLocations": "Tüm konumlar",
   "stockMobileCostSourceAverage": "Ortalama maliyet",
-  "stockMobileCostSourceCatalog": "Katalog maliyeti"
+  "stockMobileCostSourceCatalog": "Katalog maliyeti",
+  "teamRoleRh": "IK yoneticisi",
+  "teamRoleDept": "Departman yoneticisi",
+  "teamRoleComptable": "Muhasebe yoneticisi",
+  "teamRoleSuperviseur": "Denetim yoneticisi",
+  "teamRoleMarketing": "Pazarlama yoneticisi"
 }

@@ -6776,6 +6776,26 @@ trait CreatesMvpSchema
             });
         }
 
+        // #9373 — FinancialStatementService::referenceCurrency() lit la devise de
+        // reference dans accounting_settings. Sans cette table, tout test qui
+        // construit un bilan/liasse via CreatesMvpSchema echoue en 42P01
+        // (`relation "accounting_settings" does not exist`). Schema identique a
+        // la migration tenant 2026_08_22_000003_5221.
+        if (! Schema::hasTable($this->tenantTable('accounting_settings'))) {
+            Schema::create($this->tenantTable('accounting_settings'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->unique();
+                $table->json('number_series')->nullable();
+                $table->json('tva_rates')->nullable();
+                $table->text('legal_mentions')->nullable();
+                $table->string('template_style', 60)->nullable();
+                $table->string('currency', 10)->nullable();
+                $table->string('payment_terms', 60)->nullable();
+                $table->string('document_language', 10)->default('fr');
+                $table->timestamps();
+            });
+        }
+
         if (! Schema::hasTable($this->tenantTable('accounting_documents'))) {
             Schema::create($this->tenantTable('accounting_documents'), function (Blueprint $table): void {
                 $table->id();
@@ -6885,10 +6905,18 @@ trait CreatesMvpSchema
                 // utilisée par l'expert-comptable (libre de référence).
                 $table->string('piece', 64)->nullable();
                 $table->string('description', 500)->nullable();
+                // #9373 — devise de comptabilisation + devise d'origine + taux.
+                // Sans ces colonnes, FinancialStatementService (bilan/balance/
+                // resultat) echoue en 42703 (`column "currency" does not exist`).
+                // Schema identique a la migration tenant 2026_11_10_002000_9373.
+                $table->char('currency', 3)->nullable();
+                $table->char('amount_currency', 3)->nullable();
+                $table->decimal('exchange_rate', 18, 8)->default(1);
                 $table->timestamps();
 
                 $table->index(['company_id', 'period']);
                 $table->index(['company_id', 'entry_date']);
+                $table->index(['company_id', 'currency'], 'journal_entries_company_currency_idx');
                 // Idempotence du re-posting : une ligne par (source, compte).
                 $table->unique(['company_id', 'source_type', 'source_id', 'account_code'], 'journal_source_account_unique');
             });

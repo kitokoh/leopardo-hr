@@ -9,8 +9,10 @@ use App\Modules\Payroll\Infrastructure\Services\CemacCnpsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CnssDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\IpresDeclarationGenerator;
 use ReflectionClass;
+use ReflectionParameter;
 use Tests\TestCase;
 
 /**
@@ -30,19 +32,55 @@ class DeclarationRatesMatchEngineTest extends TestCase
 {
     public function test_sn_and_ci_generators_have_no_duplicated_rate_constants(): void
     {
+        $inspected = 0;
+
         foreach ([IpresDeclarationGenerator::class, CnssDeclarationGenerator::class] as $class) {
+            $this->assertTrue(
+                class_exists($class),
+                "{$class} introuvable — la garde structurelle ne verifie plus rien.",
+            );
+
             $constants = (new ReflectionClass($class))->getConstants();
+            $inspected += count($constants);
 
             foreach ($constants as $name => $_) {
                 $this->assertDoesNotMatchRegularExpression(
                     '/^(RATE_|.*_CAP$)/',
                     $name,
-                    "{$class}::{$name} duplique un taux/plafond — lire les taux depuis les règles pays (#2539).",
+                    "{$class}::{$name} duplique un taux/plafond — lire les taux depuis les regles pays (#2539).",
                 );
             }
         }
 
-        // La boucle ci-dessus échoue si une constante dupliquée réapparaît — pas d'assertion supplémentaire requise.
+        // Garde anti-vacuite : les deux generateurs n'ont AUCUNE constante
+        // (c'est l'etat voulu — les taux viennent des regles pays). Sans cette
+        // assertion, une classe renommee ou videe rendait le test « risky »
+        // (0 assertion) au lieu d'echouer, et la garde passait en silence.
+        // On verifie donc l'invariant reel : chaque generateur depend bien de
+        // sa classe de regles pays, source unique des taux.
+        $this->assertSame(
+            0,
+            $inspected,
+            'Les generateurs SN/CI ne doivent porter aucune constante de taux (lire les regles pays).',
+        );
+
+        foreach ([
+            IpresDeclarationGenerator::class => SenegalPayrollRules::class,
+            CnssDeclarationGenerator::class => CedeaoPayrollRules::class,
+        ] as $generator => $rules) {
+            $ctor = (new ReflectionClass($generator))->getConstructor();
+            $this->assertNotNull($ctor, "{$generator} doit avoir un constructeur injectant ses regles pays.");
+
+            $types = array_map(
+                static fn (ReflectionParameter $p): string => (string) $p->getType(),
+                $ctor->getParameters(),
+            );
+            $this->assertContains(
+                $rules,
+                $types,
+                "{$generator} doit dependre de {$rules} (source unique des taux, #2539).",
+            );
+        }
     }
 
     /**
