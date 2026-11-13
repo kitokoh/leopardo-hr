@@ -192,7 +192,12 @@ class ShowcasePublishWorkflowTest extends TestCase
 
         $this->postJson('/api/v1/showcase/publish')->assertOk();
 
-        $this->getJson('/api/v1/public/vitrine/publish-seo')
+        // Le client de test PHPUnit pose un `Accept-Language: en-us,en;q=0.5`
+        // implicite (Symfony Request::create) : sans en-tête explicite, la
+        // résolution de locale sortirait `en` et le test ne mesurerait plus le
+        // défaut produit. On fixe donc la langue attendue du visiteur.
+        $this->withHeader('Accept-Language', 'fr')
+            ->getJson('/api/v1/public/vitrine/publish-seo')
             ->assertOk()
             ->assertJsonPath('data.meta.title', 'Atelier du Sud')
             ->assertJsonPath('data.meta.description', 'Pilotez votre terrain')

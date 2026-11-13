@@ -358,11 +358,24 @@ class ShowcaseMediaApiTest extends TestCase
         // Aperçu privé : jeton valide → servi sans cache partagé, non indexable.
         $token = (string) $this->postJson('/api/v1/showcase/preview-token')->assertOk()->json('data.preview_token');
 
-        $this->get($publicPath.'?token='.$token)
-            ->assertOk()
-            ->assertHeader('cache-control', 'private, no-store, max-age=0')
+        $preview = $this->get($publicPath.'?token='.$token);
+
+        $preview->assertOk()
             ->assertHeader('x-robots-tag', 'noindex, nofollow')
             ->assertHeader('content-type', 'image/png');
+
+        // L'ORDRE des directives `Cache-Control` n'a aucune signification en
+        // HTTP (RFC 9111) : on vérifie la présence de chaque directive, pas la
+        // chaîne exacte — sinon le test casse au moindre changement de
+        // bibliothèque de streaming.
+        $directives = array_map(
+            'trim',
+            explode(',', (string) $preview->headers->get('cache-control')),
+        );
+
+        $this->assertContains('private', $directives, 'Un aperçu ne doit jamais être mis en cache partagé.');
+        $this->assertContains('no-store', $directives, 'Un aperçu ne doit jamais être stocké.');
+        $this->assertContains('max-age=0', $directives, 'Un aperçu doit expirer immédiatement.');
 
         // Publication → média public mis en cache longuement.
         $this->postJson('/api/v1/showcase/publish')->assertOk();
@@ -370,9 +383,18 @@ class ShowcaseMediaApiTest extends TestCase
         $published = $this->get($publicPath);
 
         $published->assertOk()
-            ->assertHeader('cache-control', 'public, max-age=86400')
             ->assertHeader('x-content-type-options', 'nosniff')
             ->assertHeader('content-type', 'image/png');
+
+        // Même règle que pour l'aperçu : l'ordre des directives `Cache-Control`
+        // est libre (RFC 9111), seule leur présence compte.
+        $publishedDirectives = array_map(
+            'trim',
+            explode(',', (string) $published->headers->get('cache-control')),
+        );
+
+        $this->assertContains('public', $publishedDirectives, 'Un média publié doit être cachable par les proxies.');
+        $this->assertContains('max-age=86400', $publishedDirectives, 'Un média publié doit être mis en cache 24 h.');
 
         $this->assertNotSame('', $published->getContent());
 

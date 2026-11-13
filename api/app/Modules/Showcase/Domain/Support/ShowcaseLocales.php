@@ -43,12 +43,18 @@ final class ShowcaseLocales
     {
         $explicit = $request->query('lang');
 
-        if (is_string($explicit)) {
+        if (is_string($explicit) && trim($explicit) !== '') {
             $normalized = strtolower(substr(trim($explicit), 0, 2));
 
             if (self::isSupported($normalized)) {
                 return $normalized;
             }
+
+            // #6874 — une locale EXPLICITEMENT demandée mais non supportée ne
+            // doit jamais retomber sur une autre langue via `Accept-Language` :
+            // le visiteur a exprimé un choix, on sert le défaut du produit
+            // (`fr`) plutôt qu'une langue qu'il n'a pas demandée.
+            return self::DEFAULT;
         }
 
         $header = $request->header('Accept-Language');

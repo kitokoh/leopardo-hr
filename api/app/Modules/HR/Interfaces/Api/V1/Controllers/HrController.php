@@ -274,7 +274,7 @@ class HrController extends Controller
                 'status' => $e->status,
                 'contract_type' => $e->contract_type,
                 'department' => $e->department?->name,
-                'position' => $e->position?->title,
+                'position' => $e->position?->name,
             ]),
             'meta' => [
                 'total' => $employees->count(),
