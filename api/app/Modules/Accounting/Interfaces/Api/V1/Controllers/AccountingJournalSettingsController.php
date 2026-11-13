@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Accounting\Domain\Enums\JournalType;
 use App\Modules\Accounting\Domain\Models\AccountingJournal;
 use App\Modules\Accounting\Infrastructure\Services\ChartAccountResolver;
 use App\Modules\Accounting\Infrastructure\Services\JournalResolver;

@@ -69,9 +69,9 @@ final class ChartAccountResolver
 
     /**
      * @param  array<array-key, string>|null  $overrides
-     *         Surcharges explicites `code => libellé` (plan comptable du tenant
-     *         déjà chargé) — évite une requête quand l'appelant les possède.
-     *         Les clés numériques sont normalisées en chaîne par `merge()`.
+     *                                                    Surcharges explicites `code => libellé` (plan comptable du tenant
+     *                                                    déjà chargé) — évite une requête quand l'appelant les possède.
+     *                                                    Les clés numériques sont normalisées en chaîne par `merge()`.
      */
     public function __construct(?string $country = null, ?array $overrides = null)
     {

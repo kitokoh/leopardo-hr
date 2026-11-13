@@ -9,7 +9,6 @@ use App\Modules\Accounting\Domain\Exceptions\PeriodClosedException;
 use App\Modules\Accounting\Domain\Exceptions\UnbalancedJournalEntryException;
 use App\Modules\Accounting\Domain\Models\AccountingChartAccount;
 use App\Modules\Accounting\Domain\Models\AccountingClosedPeriod;
-use App\Modules\Accounting\Domain\Models\AccountingJournal;
 use App\Modules\Accounting\Domain\Models\AccountingJournalEntry;
 use App\Modules\Accounting\Domain\Models\AccountingManualEntry;
 use App\Modules\Accounting\Infrastructure\Services\ChartAccountResolver;
