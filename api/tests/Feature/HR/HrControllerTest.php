@@ -6,6 +6,7 @@ namespace Tests\Feature\HR;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\HR\Domain\Models\Position;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -146,5 +147,57 @@ class HrControllerTest extends TestCase
         $response = $this->getJson('/api/v1/employees');
 
         $response->assertUnauthorized();
+    }
+
+    // ── Team overview ────────────────────────────────────────────────────────
+
+    /**
+     * Non-régression : `GET /hr/team-overview` doit exposer le NOM de la
+     * position de chaque employé.
+     *
+     * Le contrôleur lisait `$e->position?->title` alors que la table
+     * `positions` n'a pas de colonne `title` (seulement `name`) : l'opérateur
+     * `?->` masquait l'erreur et le champ valait TOUJOURS `null`. Ce test
+     * verrouille la valeur réelle, pas seulement la présence de la clé.
+     */
+    public function test_team_overview_exposes_position_name(): void
+    {
+        $rh = Employee::factory()->manager()->create([
+            'company_id' => $this->company->id,
+            'manager_role' => 'rh',
+        ]);
+
+        $position = Position::create([
+            'company_id' => $this->company->id,
+            'name' => 'Développeur Backend',
+        ]);
+
+        $this->employee->update(['position_id' => $position->id]);
+
+        Sanctum::actingAs($rh);
+
+        $response = $this->getJson('/api/v1/hr/team-overview');
+
+        $response->assertOk();
+
+        /** @var list<array<string, mixed>> $rows */
+        $rows = $response->json('data');
+
+        $row = null;
+
+        foreach ($rows as $candidate) {
+            if (($candidate['id'] ?? null) === $this->employee->id) {
+                $row = $candidate;
+
+                break;
+            }
+        }
+
+        $this->assertNotNull($row, 'L\'employé doit figurer dans la vue d\'ensemble.');
+        $this->assertSame(
+            'Développeur Backend',
+            $row['position'] ?? null,
+            'Le champ `position` doit porter le NOM de la position (colonne `name`), jamais null.',
+        );
     }
 }

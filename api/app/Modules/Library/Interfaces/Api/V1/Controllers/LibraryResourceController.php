@@ -119,6 +119,7 @@ class LibraryResourceController extends Controller
      */
     public function show(LibraryResource $resource): JsonResponse
     {
+        $this->ensureSameTenant($resource);
         $this->authorize('view', $resource);
 
         return response()->json(['data' => $this->payload($resource)]);
@@ -129,6 +130,7 @@ class LibraryResourceController extends Controller
      */
     public function update(UpdateLibraryResourceRequest $request, LibraryResource $resource): JsonResponse
     {
+        $this->ensureSameTenant($resource);
         $this->authorize('update', $resource);
 
         $data = $request->validated();
@@ -152,6 +154,7 @@ class LibraryResourceController extends Controller
      */
     public function destroy(LibraryResource $resource): JsonResponse
     {
+        $this->ensureSameTenant($resource);
         $this->authorize('delete', $resource);
 
         $resource->delete();
@@ -164,6 +167,7 @@ class LibraryResourceController extends Controller
      */
     public function publish(Request $request, LibraryResource $resource): JsonResponse
     {
+        $this->ensureSameTenant($resource);
         $this->authorize('publish', $resource);
 
         /** @var Employee $actor */
@@ -178,6 +182,7 @@ class LibraryResourceController extends Controller
      */
     public function unpublish(LibraryResource $resource): JsonResponse
     {
+        $this->ensureSameTenant($resource);
         $this->authorize('publish', $resource);
 
         $resource = $this->transition->execute($resource, LibraryResourceStatus::Draft);
@@ -190,6 +195,7 @@ class LibraryResourceController extends Controller
      */
     public function archive(LibraryResource $resource): JsonResponse
     {
+        $this->ensureSameTenant($resource);
         $this->authorize('publish', $resource);
 
         $resource = $this->transition->execute($resource, LibraryResourceStatus::Archived);
@@ -206,6 +212,7 @@ class LibraryResourceController extends Controller
      */
     public function uploadFile(UploadLibraryResourceFileRequest $request, LibraryResource $resource): JsonResponse
     {
+        $this->ensureSameTenant($resource);
         $this->authorize('update', $resource);
 
         if (! $this->files->isConfigured()) {
@@ -240,6 +247,28 @@ class LibraryResourceController extends Controller
         }
 
         return response()->json(['data' => $this->payload($resource)]);
+    }
+
+    /**
+     * Garde #5585 — une ressource d'un AUTRE tenant est « introuvable » (404),
+     * jamais « interdite » (403) : un 403 confirmerait son existence et
+     * permettrait d'énumérer les identifiants des autres sociétés.
+     *
+     * Le scope `BelongsToCompany` ne s'applique pas au route-model binding
+     * (aucun contexte tenant n'est encore posé à ce stade) : la garde est donc
+     * explicite ici, avant toute policy.
+     */
+    private function ensureSameTenant(LibraryResource $resource): void
+    {
+        $actor = request()->user();
+
+        if (! $actor instanceof Employee) {
+            abort(404);
+        }
+
+        if ((string) $resource->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
     }
 
     /**

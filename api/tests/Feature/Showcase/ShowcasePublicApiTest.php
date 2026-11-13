@@ -182,14 +182,18 @@ class ShowcasePublicApiTest extends TestCase
     public function test_cache_is_used_and_invalidated_on_published_showcase_mutation(): void
     {
         $company = $this->company('acme-cache');
-        $this->publishedShowcase($company);
-        $this->principal($company);
+        // Le feature flag doit être posé AVANT la création de la vitrine et de
+        // l'acteur : `withinTenant()` fige l'instance `current_company` lue
+        // ensuite par le middleware `module.showcase` (fixture uniquement —
+        // en production chaque requête recharge la société depuis la base).
         $company->setFeature('company_showcase', true);
         $company->save();
+        $this->publishedShowcase($company);
+        $this->principal($company);
 
         $key = ShowcasePublicCache::key('acme-cache');
 
-        $this->getJson('/api/v1/public/vitrine/acme-cache')->assertOk();
+        $this->getJson('/api/v1/public/vitrine/acme-cache?lang=fr')->assertOk();
         $this->assertTrue(Cache::has($key), 'Le DTO public doit être mis en cache après la première lecture.');
 
         // Mutation d'une section d'une vitrine publiée → invalidation immédiate.
@@ -204,7 +208,7 @@ class ShowcasePublicApiTest extends TestCase
         $this->assertFalse(Cache::has($key), 'Le cache public doit être invalidé après mutation d\'une vitrine publiée.');
 
         // Relecture → nouvelle mise en cache avec le contenu à jour.
-        $this->getJson('/api/v1/public/vitrine/acme-cache')
+        $this->getJson('/api/v1/public/vitrine/acme-cache?lang=fr')
             ->assertOk()
             ->assertJsonPath('data.sections.0.content.heading', 'Acme Industries — mise à jour');
     }
