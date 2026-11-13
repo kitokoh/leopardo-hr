@@ -4311,10 +4311,10 @@
     "invoicesLineQuantity": "Miktar",
     "invoicesLineUnitPrice": "Birim fiyat",
     "invoicesVatRate": "KDV orani (%)",
-    "invoicesSave": "Kaydet",
+    "invoicesSave": "Taslagi kaydet",
     "invoicesSaving": "Kaydediliyor...",
     "invoicesSend": "Gonder",
-    "invoicesCancel": "Iptal",
+    "invoicesCancel": "Faturayi iptal et",
     "invoicesClose": "Kapat",
     "invoicesDownloadPdf": "PDF indir"
   },

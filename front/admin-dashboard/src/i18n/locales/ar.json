@@ -4311,10 +4311,10 @@
     "invoicesLineQuantity": "الكمية",
     "invoicesLineUnitPrice": "سعر الوحدة",
     "invoicesVatRate": "نسبة الضريبة (%)",
-    "invoicesSave": "حفظ",
+    "invoicesSave": "حفظ المسودة",
     "invoicesSaving": "جارٍ الحفظ...",
     "invoicesSend": "إرسال",
-    "invoicesCancel": "إلغاء",
+    "invoicesCancel": "إلغاء الفاتورة",
     "invoicesClose": "إغلاق",
     "invoicesDownloadPdf": "تنزيل PDF"
   },
