@@ -97,7 +97,10 @@ for php in ACCOUNTING.rglob("*.php"):
 # Les clés dynamiques (concaténation de suffixe au runtime, ex.
 # `__('accounting.document_type_'.$document->type)`) se terminent par `_` :
 # leur couverture est assurée par le check 4b (tous les suffixes énumérés).
-for key in sorted(k for k in used_keys if not k.endswith("_")):
+# Même chose pour une concaténation sur un préfixe de groupe
+# (`__('accounting.journal_types.'.$this->value)`) : la regex ne capture que
+# le préfixe, qui se termine alors par `.` — ce n'est pas une clé littérale.
+for key in sorted(k for k in used_keys if not k.endswith(("_", "."))):
     for loc in LANGS:
         if key not in catalogs[loc]:
             errors.append(f"__('accounting.{key}') utilisé dans le module mais absent de accounting.php ({loc})")
