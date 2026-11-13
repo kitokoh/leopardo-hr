@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { t } from '@/lib/i18n/locale-catalog';
 import type { AppLocale } from '@/lib/i18n';
+import LeaSection from '@/modules/public-portal/components/LeaSection';
+import { getPublicLeaCopy } from '@/modules/public-portal/data/lea-copy';
 import {
   CONVERSATION_MESSAGE_MAX,
   fetchConversation,
@@ -248,9 +250,15 @@ export default function ConversationsSpace({ locale }: ConversationsSpaceProps) 
 
   if (threads.length === 0) {
     return (
-      <p className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
-        {t(locale, 'discovery.conversationsEmpty')}
-      </p>
+      <div>
+        {/* Léa est SÉPARÉE des conversations de commerçants : deux groupes
+            distincts, jamais une liste mélangée. */}
+        <LeaSection locale={locale} />
+
+        <p className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
+          {t(locale, 'discovery.conversationsEmpty')}
+        </p>
+      </div>
     );
   }
 
@@ -384,8 +392,12 @@ export default function ConversationsSpace({ locale }: ConversationsSpaceProps) 
 
   return (
     <section aria-label={t(locale, 'discovery.conversationsTitle')}>
+      {/* Léa d'abord, dans son propre groupe : le client voit immédiatement
+          qu'elle n'est pas un commerçant. */}
+      <LeaSection locale={locale} />
+
       <h2 className="mb-3 text-base font-semibold text-gray-900">
-        {t(locale, 'discovery.conversationsTitle')}
+        {getPublicLeaCopy(locale).merchantsTitle}
       </h2>
 
       <ul className="space-y-2">
