@@ -96,6 +96,14 @@
     {
       "controller": "App\\Modules\\Platform\\Interfaces\\Api\\V1\\Controllers\\PublicNotificationController",
       "reason": "Boite de notifications IN-APP du client public (COULOIR 16 M3-bis, #9142) — controleur colocalise dans Modules/Platform (BC-01) mais servi dans api/routes/modules/user.php sous auth:user_api, SANS middleware tenant : un client public recoit des notifications de plusieurs commercants et le tenant est resolu cote serveur depuis la reference. Aucune route tenant n'est exposee ici ; le fichier user.php est classe tenant par la garde au niveau fichier, d'ou cette exception."
+    },
+    {
+      "controller": "App\\Modules\\Platform\\Interfaces\\Api\\V1\\Controllers\\PublicProfileController",
+      "reason": "Profil public du client (COULOIR 16 M3-bis) — controleur colocalise dans Modules/Platform (BC-01) mais servi dans api/routes/modules/user.php sous auth:user_api, SANS middleware tenant : les donnees du client vivent dans le schema public (public_profiles), jamais dans un tenant (regle d'architecture n°1). Aucune route tenant n'est exposee ici ; le fichier user.php est classe tenant par la garde au niveau fichier, d'ou cette exception."
+    },
+    {
+      "controller": "App\\Modules\\Platform\\Interfaces\\Api\\V1\\Controllers\\PublicDataExportController",
+      "reason": "Export des donnees du client (COULOIR 16 M3-bis, RGPD art. 20) — controleur Modules/Platform servi dans api/routes/modules/user.php sous auth:user_api, SANS middleware tenant : l'export agrege les donnees du client dans le schema public et n'inclut aucune donnee d'un commercant. Meme exception que PublicActivityController."
     }
   ],
   "platform_uri_prefixes": [
