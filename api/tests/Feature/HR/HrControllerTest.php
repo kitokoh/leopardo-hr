@@ -180,13 +180,23 @@ class HrControllerTest extends TestCase
 
         $response->assertOk();
 
-        $row = collect($response->json('data'))
-            ->firstWhere('id', $this->employee->id);
+        /** @var list<array<string, mixed>> $rows */
+        $rows = $response->json('data');
+
+        $row = null;
+
+        foreach ($rows as $candidate) {
+            if (($candidate['id'] ?? null) === $this->employee->id) {
+                $row = $candidate;
+
+                break;
+            }
+        }
 
         $this->assertNotNull($row, 'L\'employé doit figurer dans la vue d\'ensemble.');
         $this->assertSame(
             'Développeur Backend',
-            $row['position'],
+            $row['position'] ?? null,
             'Le champ `position` doit porter le NOM de la position (colonne `name`), jamais null.',
         );
     }
