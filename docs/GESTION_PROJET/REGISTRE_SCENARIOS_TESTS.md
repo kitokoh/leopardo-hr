@@ -2695,3 +2695,31 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 **Couverture** — `front/web/src/lib/__tests__/tenant-mobile-download.test.ts` (filtrage par tenant, canal sain/échoué), `front/web/src/app/(dashboard)/settings/account/__tests__/account-mobile-download.test.tsx` (rendu conditionnel de la carte), `front/web/src/lib/__tests__/software-catalog.test.ts` (requalification pilotée par la table), `dev-hub/tools/check-mobile-distribution-status.py`, `dev-hub/tools/check-mobile-stock-parity.sh`, `dev-hub/tools/check-hardcoded-accented-messages.sh`.
 
 **Non couvert** — les suites PHPUnit et Flutter ne tournent pas dans le sandbox (ni `vendor/` PHP ni SDK Flutter) : elles sont exécutées par la CI. Le rendu visuel réel de la carte de profil n'a pas de test de snapshot.
+
+---
+
+## COULOIR 16 — M3-bis : profil public, export RGPD, pages PWA, surface Léa
+
+**Pourquoi** — l'audit de couverture fondé sur la page GitHub du dépôt a identifié cinq manques de fond dans le canal public. Chacun est traité dans sa PR, ouverte et jamais mergée. Ce registre consigne les scénarios à vérifier et ce qui est réellement exécuté.
+
+**Ce qui est ajouté**
+
+- **#9443 — `public_profiles`** : table additive du schéma `public`, PK = FK vers `users` (1–1 strict, cascade à la suppression du compte). `preferred_locale` en `varchar(8)` prime sur `users.preferred_language` (`varchar(2)`, incapable de porter `ar-SA`). Contrainte SQL `CHECK` : `notifications_opt_in = true` exige `notifications_consent_at`. Routes `GET|PATCH /user/public-profile`.
+- **#9444 — piste d'audit du rattachement** : `PublicIdentityBridge` écrit un `AuditLog` (`action = public_identity.attached`, `company_id` NULL — événement plateforme) à chaque création de rattachement (ADR §8.3-3).
+- **#9445 — export RGPD** : `GET /user/data-export` rend compte, profil, favoris, historique de recherche, références d'activité et jetons d'appareil **tronqués** ; la réponse déclare `not_included` (aucune donnée d'un commerçant).
+- **#9446 — pages PWA `/activites` et `/profil`** : les deux onglets que `PublicBottomNav` promettait sans que les routes existent.
+- **#9447 — surface Léa séparée** : section distincte dans l'onglet Messages ; l'écran dit l'indisponibilité au lieu d'afficher un champ qui échouerait.
+
+**Scénarios à vérifier**
+
+- **Isolation** — `public_profiles` vit dans le schéma `public`, jamais dans un tenant ; aucune route de ce lot ne porte de middleware tenant ; un commerçant ne peut pas lire le profil d'un client.
+- **Langue liée au compte** — `PATCH /user/public-profile` écrit `preferred_locale` ; un second appareil relit la même valeur (c'est le cas qu'un stockage local ne couvre pas).
+- **Consentement cohérent** — `notifications_opt_in = true` sans date est refusé (422 applicatif, 23514 en SQL direct) ; un retrait (`false`) efface la date.
+- **Export sans fuite** — l'export ne contient aucune commande, réservation ni message d'un commerçant ; les jetons d'appareil sont tronqués à 8 caractères.
+- **Audit du rattachement** — une création de rattachement produit exactement une ligne `public_identity.attached` ; un rattachement déjà existant n'en produit pas de seconde.
+- **États d'écran** — `unauthenticated` n'est pas une erreur (message « connectez-vous ») ; coupure réseau → `error` ; `204` sans corps → succès explicite.
+- **Parité i18n** — les libellés des deux pages et de la section Léa existent dans les 4 langues (fr/en/ar/tr), arabe réellement servi.
+
+**Couverture exécutée** — `PublicProfileTest` (21 tests / 81 assertions), `PublicIdentityBridgeAuditTest` (7 / 19), `PublicDataExportTest` (9 / 40) sur PostgreSQL 15 avec `CI=true` ; `account-pages.test.ts` (32 tests) et `lea-surface.test.ts` (15 tests) sous jest ; `tsc --noEmit` et eslint sans erreur.
+
+**Non couvert** — aucun seuil de qualité mesuré (pas d'appareil Android, pas de bridage réseau, pas de Flutter dans le sandbox) : ils restent **en attente**, jamais déclarés tenus. Le manifeste PWA (`scope: '/decouvrir'`) ne couvre pas les onglets 3 et 4 d'une app installée. Aucune route publique d'assistant n'existe : Léa est séparée visuellement mais non fonctionnelle.

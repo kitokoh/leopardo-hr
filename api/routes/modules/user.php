@@ -17,6 +17,7 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\UserEmployeeLinkController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\PublicConversationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicActivityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicNotificationController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Public (sans auth, throttle strict)
@@ -145,6 +146,19 @@ Route::middleware(['throttle:shop-public', 'auth:user_api'])->prefix('user')->gr
     Route::post('/notifications/read-all', [PublicNotificationController::class, 'markAllRead']);
     Route::post('/notifications/{notification}/read', [PublicNotificationController::class, 'markRead'])
         ->whereNumber('notification');
+
+    // COULOIR 16 — M3-bis · Profil public du client (schéma `public`).
+    //
+    // `public_profiles` porte la préférence de langue du CLIENT, pas de
+    // l'appareil : sans elle, changer de téléphone perd la langue choisie.
+    // `preferred_locale` (varchar 8) prime sur `users.preferred_language`
+    // (varchar 2), incapable de porter `ar-SA`.
+    //
+    // Aucune donnée métier, aucune coordonnée : `approx_city` est un libellé
+    // qui préremplit la recherche et ne restreint jamais un résultat.
+    Route::get('/public-profile', [PublicProfileController::class, 'show']);
+    Route::patch('/public-profile', [PublicProfileController::class, 'update']);
+
 });
 
 // Manager: lier un utilisateur ordinaire a un employe
