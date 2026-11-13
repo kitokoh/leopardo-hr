@@ -5139,6 +5139,133 @@ trait CreatesMvpSchema
             });
         }
 
+        // Lot comptable #9367-#9378 — la garde #5443 exige toute migration
+        // tenant récente ici : sans ces tables, les tests utilisant
+        // CreatesMvpSchema échouent en `relation "accounting_*" does not exist`
+        // (42P01, régression #5418). Schémas identiques aux migrations
+        // 2026_11_10_001000_9370, _001100_9369, _003000_9376, _004000_9378
+        // et _005000_9375.
+        if (! Schema::hasTable($this->moduleTable('accounting_journals'))) {
+            Schema::create($this->moduleTable('accounting_journals'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 6);
+                $table->string('label', 120);
+                $table->string('type', 20);
+                $table->string('default_account_code', 20)->nullable();
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'accounting_journals_company_code_unique');
+                $table->index(['company_id', 'type']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('accounting_manual_entries'))) {
+            Schema::create($this->moduleTable('accounting_manual_entries'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->uuid('manual_ref');
+                $table->date('entry_date');
+                $table->char('period', 7);
+                $table->string('journal_code', 6)->nullable();
+                $table->string('piece', 64);
+                $table->string('description', 500)->nullable();
+                $table->string('created_by', 255)->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'piece'], 'manual_entries_company_piece_unique');
+                $table->index(['company_id', 'period']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('accounting_tax_rates'))) {
+            Schema::create($this->moduleTable('accounting_tax_rates'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('label', 120);
+                $table->decimal('rate', 7, 4);
+                $table->char('country', 2)->nullable();
+                $table->string('kind', 20)->default('standard');
+                $table->boolean('is_default')->default(false);
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'accounting_tax_rates_company_code_unique');
+                $table->index(['company_id', 'is_active']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('accounting_cost_centers'))) {
+            Schema::create($this->moduleTable('accounting_cost_centers'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('label', 120);
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'accounting_cost_centers_company_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('accounting_budgets'))) {
+            Schema::create($this->moduleTable('accounting_budgets'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('cost_center_id')->nullable();
+                $table->unsignedSmallInteger('year');
+                $table->string('account_prefix', 10)->nullable();
+                $table->decimal('amount', 15, 2);
+                $table->string('label', 120)->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'year']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('accounting_fixed_assets'))) {
+            Schema::create($this->moduleTable('accounting_fixed_assets'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('label', 180);
+                $table->date('in_service_date');
+                $table->decimal('acquisition_cost', 15, 2);
+                $table->decimal('residual_value', 15, 2)->default(0);
+                $table->unsignedSmallInteger('useful_life_months');
+                $table->string('method', 20)->default('linear');
+                $table->char('currency', 3)->nullable();
+                $table->string('status', 20)->default('active');
+                $table->date('disposed_on')->nullable();
+                $table->text('notes')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'accounting_fixed_assets_company_code_unique');
+                $table->index(['company_id', 'status']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('accounting_depreciations'))) {
+            Schema::create($this->moduleTable('accounting_depreciations'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('fixed_asset_id')->index();
+                $table->string('period', 7);
+                $table->date('entry_date');
+                $table->decimal('amount', 15, 2);
+                $table->decimal('accumulated_after', 15, 2);
+                $table->decimal('net_book_value_after', 15, 2);
+                $table->char('currency', 3)->nullable();
+                $table->unsignedBigInteger('journal_entry_source_id')->nullable();
+                $table->timestamps();
+
+                $table->unique(['fixed_asset_id', 'period'], 'accounting_depreciations_asset_period_unique');
+                $table->index(['company_id', 'period']);
+            });
+        }
+
     }
 
     private function createVerticalParityTables(): void
