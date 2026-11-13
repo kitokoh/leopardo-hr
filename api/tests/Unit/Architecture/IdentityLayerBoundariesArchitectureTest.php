@@ -106,6 +106,10 @@ final class IdentityLayerBoundariesArchitectureTest extends TestCase
         'App\Core\Mail\EmailTemplateRegistry',
         'App\Core\Mail\EmailTemplateRepository',
         'App\Core\Mail\EmailTemplateResolver',
+        // #9307/#9317 — la garde de livraison PROD sonde le transport mail
+        // réellement résolu (resend) et détecte le domaine d'envoi NXDOMAIN :
+        // le diagnostic est une source unique dans Core/Mail, pas un contrat.
+        'App\Core\Mail\MailTransportDiagnostics',
         'App\Core\Privacy\Infrastructure\Services\PiiRegistry',
         'App\Core\Solutions\DemoDataRegistry',
         'App\Core\Solutions\SolutionActivator',

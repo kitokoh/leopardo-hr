@@ -34,25 +34,14 @@ class EloquentNearestSearchIdentifierTest extends TestCase
         $method->setAccessible(true);
 
         // `wrapColumn()` n'utilise le builder que pour lire la table du
-        // modèle : un objet anonyme suffit, ce qui évite d'instancier le
-        // service (dépendances `SearchableRegistry` + `GeoCapabilities`).
-        $model = new class
-        {
-            public function getTable(): string
-            {
-                return 'fuel_stations';
-            }
-        };
+        // modèle. On passe un VRAI `Illuminate\Database\Eloquent\Builder`
+        // (mock Mockery) : la signature est typée sur cette classe, un objet
+        // anonyme levait un TypeError avant même d'atteindre l'allowlist.
+        $model = \Mockery::mock(\Illuminate\Database\Eloquent\Model::class);
+        $model->shouldReceive('getTable')->andReturn('fuel_stations');
 
-        $builder = new class($model)
-        {
-            public function __construct(private readonly object $model) {}
-
-            public function getModel(): object
-            {
-                return $this->model;
-            }
-        };
+        $builder = \Mockery::mock(\Illuminate\Database\Eloquent\Builder::class);
+        $builder->shouldReceive('getModel')->andReturn($model);
 
         return $method->invoke(new EloquentNearestSearch(
             new \App\Modules\Geo\Infrastructure\Services\SearchableRegistry,

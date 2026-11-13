@@ -90,27 +90,39 @@ class AccountingAuditRetentionTest extends TestCase
         Sanctum::actingAs($this->manager);
         app()->instance('current_company', $this->company);
 
+        // #9379 — un document DÉJÀ PAYÉ ne s'annule plus (il s'écrit un avoir).
+        // Le trail complet se prouve donc sur deux pièces : une annulée avant
+        // paiement, une payée. Les quatre natures d'événement restent couvertes.
         $store = $this->postJson('/api/v1/accounting/documents', $this->payload([
             'contact_id' => $this->contact()->id,
         ]));
-        $id = $store->json('data.id');
+        $cancelledId = $store->json('data.id');
         $store->assertStatus(201);
 
-        $this->postJson("/api/v1/accounting/documents/{$id}/send")->assertOk();
-        $this->postJson("/api/v1/accounting/documents/{$id}/payments", [
+        $this->postJson("/api/v1/accounting/documents/{$cancelledId}/send")->assertOk();
+        $this->postJson("/api/v1/accounting/documents/{$cancelledId}/cancel")->assertOk();
+
+        $paid = $this->postJson('/api/v1/accounting/documents', $this->payload([
+            'contact_id' => $this->contact()->id,
+        ]));
+        $paidId = $paid->json('data.id');
+        $paid->assertStatus(201);
+
+        $this->postJson("/api/v1/accounting/documents/{$paidId}/send")->assertOk();
+        $this->postJson("/api/v1/accounting/documents/{$paidId}/payments", [
             'amount' => 1000,
             'method' => 'bank_transfer',
         ])->assertStatus(201);
-        $this->postJson("/api/v1/accounting/documents/{$id}/cancel")->assertOk();
 
-        // 4 événements attendus : created, sent, payment, cancelled.
+        // 6 événements attendus : created, sent, cancelled (pièce 1) puis
+        // created, sent, payment (pièce 2).
         $events = AuditLog::query()
             ->forCompany($this->company->id)
             ->where('metadata->resource', 'like', 'accounting.%')
             ->orderBy('id')
             ->get();
 
-        $this->assertCount(4, $events);
+        $this->assertCount(6, $events);
 
         $resources = $events->pluck('metadata.resource')->all();
         $this->assertContains('accounting.document_created', $resources);

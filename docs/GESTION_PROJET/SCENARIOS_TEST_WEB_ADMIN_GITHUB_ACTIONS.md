@@ -1013,3 +1013,25 @@ Le lot corrige le parcours d'ouverture d'un espace d'essai côté vitrine et API
 **Vérification** : `Pint --test` PASS sur les fichiers PHP touchés ;
 `npx tsc --noEmit` et `npx eslint --max-warnings 0` verts sur `front/web` ;
 `npx jest` 33 tests passés ; `validate.js` OK sur 4 locales.
+
+## Note de scénario 2026-11-13 — page Factures comptables (#9380, lot #9397)
+
+La page `/accounting/invoices` (`front/web/src/app/(dashboard)/accounting/invoices/page.tsx`)
+est la première surface web du lot comptable. Quatre scénarios sont verrouillés
+par `__tests__/invoices-page.test.tsx` :
+
+1. **Filtre par statut** — le `<select>` porte le nom accessible
+   « Filtrer par statut » (clé `accountingModule.invoicesStatusFilter`) et
+   déclenche `GET /accounting/documents?status=…`.
+2. **Création de brouillon** — le formulaire poste sur
+   `POST /accounting/documents` et la liste se rafraîchit.
+3. **Annulation refusée (403)** — sur une facture payée, le message du backend
+   est affiché tel quel (`invoicesActionError`), pas un message générique.
+4. **Pas d'action d'annulation sur une facture payée** — le bouton n'est pas
+   rendu, la règle #9379 est donc visible côté UI et pas seulement côté API.
+
+**À retenir** : les 37 clés `accountingModule.invoices*` doivent exister dans
+`shared/i18n/locales/*.json` (4 locales) — `sync-web.js` les propage vers
+`front/web` et `front/admin-dashboard`. Une clé utilisée dans le JSX mais
+absente du catalogue partagé casse à la fois `validate-and-sync` et le nom
+accessible du contrôle, donc le test.

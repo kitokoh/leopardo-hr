@@ -6811,6 +6811,11 @@ trait CreatesMvpSchema
                 $table->decimal('unit_price', 15, 2)->default(0);
                 $table->decimal('discount', 15, 2)->default(0);
                 $table->decimal('tva_rate', 8, 4)->nullable();
+                // #9376 — référentiel de taxes : référence logique + taux et
+                // montant dénormalisés sur la ligne.
+                $table->unsignedBigInteger('tax_rate_id')->nullable();
+                $table->decimal('tax_rate', 7, 4)->nullable();
+                $table->decimal('tax_amount', 15, 2)->default(0);
                 $table->unsignedInteger('sort_order')->default(0);
                 $table->timestamps();
             });
@@ -6873,6 +6878,14 @@ trait CreatesMvpSchema
                 $table->date('entry_date');
                 // Période comptable YYYY-MM dérivée de entry_date — indexée pour le journal.
                 $table->char('period', 7);
+                // #9370 — journal FEC explicite (VE, AC, BQ, OD…).
+                $table->string('journal_code', 6)->nullable();
+                // #9369 — numéro de ligne dans l'écriture + discriminant du
+                // groupe d'écriture manuelle.
+                $table->unsignedSmallInteger('line_no')->default(1);
+                $table->uuid('manual_ref')->nullable();
+                // #9375 — axe analytique (référence logique, nullable).
+                $table->unsignedBigInteger('cost_center_id')->nullable();
                 // document | payment
                 $table->string('source_type', 20);
                 $table->unsignedBigInteger('source_id');
@@ -6889,8 +6902,8 @@ trait CreatesMvpSchema
 
                 $table->index(['company_id', 'period']);
                 $table->index(['company_id', 'entry_date']);
-                // Idempotence du re-posting : une ligne par (source, compte).
-                $table->unique(['company_id', 'source_type', 'source_id', 'account_code'], 'journal_source_account_unique');
+                // Idempotence du re-posting : une ligne par (source, compte, ligne).
+                $table->unique(['company_id', 'source_type', 'source_id', 'account_code', 'line_no'], 'journal_source_account_line_unique');
             });
         }
 
@@ -6998,6 +7011,152 @@ trait CreatesMvpSchema
                     ['company_id', 'report', 'period_from', 'period_to'],
                     'acc_reporting_snapshots_company_report_period_unique',
                 );
+            });
+        }
+
+        // Lot comptable #9367-#9381 (migrations tenant 2026_11_10_*) — garde de
+        // parité #5443 : ces tables sont créées par des migrations récentes et
+        // doivent exister ici, sinon les tests passant par CreatesMvpSchema
+        // échouent en « relation ... does not exist » (régression #5418).
+        if (! Schema::hasTable($this->tenantTable('accounting_settings'))) {
+            Schema::create($this->tenantTable('accounting_settings'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->unique();
+                $table->json('number_series')->nullable();
+                $table->json('tva_rates')->nullable();
+                $table->text('legal_mentions')->nullable();
+                $table->string('template_style', 60)->nullable();
+                $table->string('currency', 10)->nullable();
+                $table->string('payment_terms', 60)->nullable();
+                $table->string('document_language', 10)->default('fr');
+                $table->timestamps();
+            });
+        }
+
+        // #9370 — journal comptable explicite (code FEC, libellé, type).
+        if (! Schema::hasTable($this->tenantTable('accounting_journals'))) {
+            Schema::create($this->tenantTable('accounting_journals'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 6);
+                $table->string('label', 120);
+                $table->string('type', 20);
+                $table->string('default_account_code', 20)->nullable();
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'accounting_journals_company_code_unique');
+                $table->index(['company_id', 'type']);
+            });
+        }
+
+        // #9369 — écritures manuelles (OD) : une ligne par écriture, groupées
+        // par `manual_ref`.
+        if (! Schema::hasTable($this->tenantTable('accounting_manual_entries'))) {
+            Schema::create($this->tenantTable('accounting_manual_entries'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->uuid('manual_ref');
+                $table->date('entry_date');
+                $table->char('period', 7);
+                $table->string('journal_code', 6)->nullable();
+                $table->string('piece', 64);
+                $table->string('description', 500)->nullable();
+                $table->string('created_by', 255)->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'piece'], 'manual_entries_company_piece_unique');
+                $table->index(['company_id', 'period']);
+            });
+        }
+
+        // #9376 — référentiel de taux de TVA par tenant.
+        if (! Schema::hasTable($this->tenantTable('accounting_tax_rates'))) {
+            Schema::create($this->tenantTable('accounting_tax_rates'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('label', 120);
+                $table->decimal('rate', 7, 4);
+                $table->char('country', 2)->nullable();
+                $table->string('kind', 20)->default('standard');
+                $table->boolean('is_default')->default(false);
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'accounting_tax_rates_company_code_unique');
+                $table->index(['company_id', 'is_active']);
+            });
+        }
+
+        // #9378 — immobilisations et dotations aux amortissements.
+        if (! Schema::hasTable($this->tenantTable('accounting_fixed_assets'))) {
+            Schema::create($this->tenantTable('accounting_fixed_assets'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('label', 180);
+                $table->date('in_service_date');
+                $table->decimal('acquisition_cost', 15, 2);
+                $table->decimal('residual_value', 15, 2)->default(0);
+                $table->unsignedSmallInteger('useful_life_months');
+                $table->string('method', 20)->default('linear');
+                $table->char('currency', 3)->nullable();
+                $table->string('status', 20)->default('active');
+                $table->date('disposed_on')->nullable();
+                $table->text('notes')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'accounting_fixed_assets_company_code_unique');
+                $table->index(['company_id', 'status']);
+            });
+        }
+
+        if (! Schema::hasTable($this->tenantTable('accounting_depreciations'))) {
+            Schema::create($this->tenantTable('accounting_depreciations'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('fixed_asset_id')->index();
+                $table->string('period', 7);
+                $table->date('entry_date');
+                $table->decimal('amount', 15, 2);
+                $table->decimal('accumulated_after', 15, 2);
+                $table->decimal('net_book_value_after', 15, 2);
+                $table->char('currency', 3)->nullable();
+                $table->unsignedBigInteger('journal_entry_source_id')->nullable();
+                $table->timestamps();
+
+                $table->unique(['fixed_asset_id', 'period'], 'accounting_depreciations_asset_period_unique');
+                $table->index(['company_id', 'period']);
+            });
+        }
+
+        // #9375 — comptabilité analytique : axes de coût et budgets.
+        if (! Schema::hasTable($this->tenantTable('accounting_cost_centers'))) {
+            Schema::create($this->tenantTable('accounting_cost_centers'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('label', 120);
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'accounting_cost_centers_company_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->tenantTable('accounting_budgets'))) {
+            Schema::create($this->tenantTable('accounting_budgets'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('cost_center_id')->nullable();
+                $table->unsignedSmallInteger('year');
+                $table->string('account_prefix', 10)->nullable();
+                $table->decimal('amount', 15, 2);
+                $table->string('label', 120)->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'year']);
             });
         }
 

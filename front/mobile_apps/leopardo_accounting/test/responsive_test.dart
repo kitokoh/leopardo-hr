@@ -66,7 +66,9 @@ void main() {
     expect(expanded, 3);
   });
 
-  testWidgets('isTablet est faux sur téléphone et vrai sur tablette', (tester) async {
+  testWidgets('isTablet est faux sur téléphone et vrai sur tablette', (
+    tester,
+  ) async {
     late bool phone;
     late bool tablet;
 
