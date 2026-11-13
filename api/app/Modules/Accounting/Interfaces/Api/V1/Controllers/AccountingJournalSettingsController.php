@@ -153,8 +153,8 @@ final class AccountingJournalSettingsController extends Controller
         $companyId = (string) $user?->getAttribute('company_id');
 
         /** @var \App\Core\Tenant\Domain\Models\Company|null $company */
+        // `Company` ne porte aucun global scope : le bypass etait un no-op (#7960).
         $company = \App\Core\Tenant\Domain\Models\Company::query()
-            ->withoutGlobalScopes()
             ->find($companyId);
 
         $resolver = $company !== null

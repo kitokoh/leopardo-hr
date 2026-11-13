@@ -113,8 +113,7 @@ final class ChartAccountResolver
     public static function tenantOverrides(string $companyId): array
     {
         $accounts = AccountingChartAccount::query()
-            ->withoutGlobalScopes()
-            ->where('company_id', $companyId)
+            ->forCompany($companyId)
             ->where('is_active', true)
             ->get(['code', 'label']);
 

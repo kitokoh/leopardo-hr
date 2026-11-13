@@ -215,8 +215,7 @@ final class FecExporter
         }
 
         $label = AccountingJournal::query()
-            ->withoutGlobalScopes()
-            ->where('company_id', $entry->company_id)
+            ->forCompany($entry->company_id)
             ->where('code', $journalCode)
             ->value('label');
 
@@ -288,8 +287,7 @@ final class FecExporter
         }
 
         $type = AccountingDocument::query()
-            ->withoutGlobalScopes()
-            ->where('company_id', $companyId)
+            ->forCompany($companyId)
             ->whereKey($documentId)
             ->value('type');
 

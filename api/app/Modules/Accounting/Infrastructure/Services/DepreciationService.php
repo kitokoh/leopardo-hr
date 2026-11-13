@@ -143,7 +143,7 @@ class DepreciationService
 
         return DB::transaction(function () use ($asset, $period, $entryDate, $amount, $accumulatedAfter, $netBookValueAfter): float {
             $resolver = ChartAccountResolver::forCompany(
-                \App\Core\Tenant\Domain\Models\Company::query()->withoutGlobalScopes()->findOrFail($asset->company_id)
+                \App\Core\Tenant\Domain\Models\Company::query()->findOrFail($asset->company_id)
             );
 
             $expense = $resolver->entry('depreciation_expense');

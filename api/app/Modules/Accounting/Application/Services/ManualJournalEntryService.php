@@ -257,8 +257,9 @@ final class ManualJournalEntryService
         // d'écriture existante serait absurde. On provisionne alors les
         // journaux du référentiel, puis on reprend la résolution normale.
         if ($journals === []) {
+            // `Company` ne porte aucun global scope : le bypass etait un no-op
+            // (garde #7960).
             $company = \App\Core\Tenant\Domain\Models\Company::query()
-                ->withoutGlobalScopes()
                 ->find($companyId);
 
             $resolver = $company !== null
