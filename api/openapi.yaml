@@ -5439,6 +5439,90 @@ paths:
           description: Mot de passe incorrect
         '422':
           description: Mot de confirmation manquant ou incorrect
+  /user/public-profile:
+    get:
+      operationId: api_get_user_public_profile
+      tags:
+      - User
+      summary: Profil public du client (COULOIR 16, M3-bis)
+      description: >-
+        Reglages du client sur la surface publique : langue preferee, ville
+        approximative (libelle, jamais une coordonnee), consentement aux
+        notifications avec sa date. Le profil est cree a la premiere lecture :
+        un client qui n'a jamais rien regle obtient un profil par defaut, pas un
+        404. `preferred_locale` (varchar 8) prime sur `users.preferred_language`
+        (varchar 2), incapable de porter `ar-SA`. Aucune donnee d'un commercant,
+        aucun telephone, aucune position.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Profil public du client
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PublicProfileSettings'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '429':
+          $ref: '#/components/responses/Error429'
+    patch:
+      operationId: api_patch_user_public_profile
+      tags:
+      - User
+      summary: Mettre a jour le profil public du client (COULOIR 16, M3-bis)
+      description: >-
+        Met a jour la langue, la ville approximative et le consentement aux
+        notifications. `notifications_opt_in = true` enregistre
+        `notifications_consent_at` ; un retrait (`false`) efface la date - on ne
+        garde pas la preuve d'un consentement qui n'existe plus. Une locale hors
+        des quatre servies (fr, en, ar, tr) est refusee en 422.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                preferred_locale:
+                  type: string
+                  enum: [fr, en, ar, tr]
+                approx_city:
+                  type: string
+                  nullable: true
+                  maxLength: 120
+                approx_country:
+                  type: string
+                  nullable: true
+                  minLength: 2
+                  maxLength: 2
+                notifications_opt_in:
+                  type: boolean
+                privacy_policy_version:
+                  type: string
+                  nullable: true
+                  maxLength: 20
+      responses:
+        '200':
+          description: Profil mis a jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PublicProfileSettings'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
   /user/device-tokens:
     post:
       operationId: api_post_user_device_tokens
@@ -66321,6 +66405,40 @@ components:
           type: string
           format: date-time
           nullable: true
+    PublicProfileSettings:
+      type: object
+      description: >-
+        Reglages du client sur la surface publique (COULOIR 16, M3-bis). Aucune
+        donnee d'un commercant, aucun telephone, aucune coordonnee : `approx_city`
+        est un libelle qui preremplit la recherche et ne restreint jamais un
+        resultat.
+      properties:
+        preferred_locale:
+          type: string
+          enum: [fr, en, ar, tr]
+        approx_city:
+          type: string
+          nullable: true
+        approx_country:
+          type: string
+          nullable: true
+        notifications_opt_in:
+          type: boolean
+        notifications_consent_at:
+          type: string
+          format: date-time
+          nullable: true
+        privacy_policy_version:
+          type: string
+          nullable: true
+        last_active_at:
+          type: string
+          format: date-time
+          nullable: true
+        supported_locales:
+          type: array
+          items:
+            type: string
     PublicNotification:
       type: object
       description: >-
