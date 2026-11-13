@@ -1,8 +1,9 @@
 # LEOPARDO TOOLBOX — Rapport final
 
-> **Date** : 2026-11-05 (lot 1) · **Mise à jour** : 2026-11-08 (lot 2)
-> **Branches** : `feat/vitrine-toolbox` (lot 1) → `feat/vitrine-toolbox-lot2` (lot 2)
+> **Date** : 2026-11-05 (lot 1) · **Mise à jour** : 2026-11-13 (lot 3 — « Mes outils » câblé)
+> **Branches** : `feat/vitrine-toolbox` (lot 1) → `feat/vitrine-toolbox-lot2` (lot 2) → `feat/toolbox-mes-outils-ui` (lot 3)
 > **Statut** : ✅ **livré et mergé dans `main`** — vérifié sur l'état distant réel.
+> **`main` distant au 2026-11-13** : `63d18224142fdeb52c3f3ff04a0f10540b361a64`
 
 ---
 
@@ -24,6 +25,28 @@
 **Lot 2 (2026-11-08)** : 5 outils supplémentaires livrés via la PR
 [#9182](https://github.com/kitokoh/leopardo-hr/pull/9182), mergée au commit
 `410e63e5b48a069d7e5c17971243dc1f120043b4`. Issue #9181 fermée automatiquement.
+
+**Lot 2 bis (2026-11-08)** : les 4 derniers outils du backlog #9158 (devises, durée
+entre dates, âge, taux horaire) livrés via la PR #9190, commit `09d5d6c62`.
+Issue #9158 fermée.
+
+**Décisions #9156 / #9157 (2026-11-09)** : tranchées et documentées, puis
+implémentées dans le commit `98dd2cb53` (PR #9266) :
+- `docs/DECISIONS/2026-11-09-toolbox-persistance-mes-outils.md` — option A,
+  `localStorage` reste la source de vérité (clé versionnée
+  `leopardo_toolbox_state_v1`, façade `lib/storage.ts`).
+- `docs/DECISIONS/2026-11-09-toolbox-administration-metadonnees.md` — option A,
+  catalogue statique versionné + champ `enabled` (masquage par PR, sans table).
+
+**Lot 3 (2026-11-13)** : câblage de « Mes outils » dans l'interface publique.
+Issue [#9440](https://github.com/kitokoh/leopardo-hr/issues/9440) créée puis fermée
+par la PR [#9441](https://github.com/kitokoh/leopardo-hr/pull/9441), mergée au commit
+`63d18224142fdeb52c3f3ff04a0f10540b361a64`.
+
+> **Constat du lot 3** : `lib/storage.ts` était **testé mais jamais utilisé** —
+> aucun composant n'appelait `loadState` / `toggleFavorite` / `recordUsage`. La
+> décision #9156 était appliquée dans le stockage, pas dans l'interface. Le lot 3
+> comble exactement cet écart, sans rouvrir la décision.
 
 > ⚠️ **Aucun token n'a jamais été commité** dans ce dépôt : les seules occurrences
 > de `ghp_` dans l'historique sont des **placeholders tronqués** (`ghp_…`),
@@ -104,6 +127,10 @@ front/web/src/modules/vitrine/lib/vitrine-locale.ts   # libellé « Outils » ×
 | Lint (tout `src`) | `npx eslint src --max-warnings 0` | ✅ 0 avertissement |
 | Tests Toolbox (lot 1) | `npx jest src/modules/toolbox` | ✅ **74 tests, 6 suites, 0 échec** |
 | Tests Toolbox (lot 1 + lot 2) | `npx jest src/modules/toolbox` | ✅ **145 tests, 12 suites, 0 échec** |
+| Tests Toolbox (lot 1 + lot 2 + lot 3) | `npx jest src/modules/toolbox --maxWorkers=1 --workerIdleMemoryLimit=400MB` | ✅ **235 tests, 25 suites, 0 échec** |
+| Tests projet (complet, lot 3) | `npx jest --maxWorkers=2 --workerIdleMemoryLimit=400MB` | ✅ **2219 tests, 254 suites, 0 échec** |
+| Garde i18n diff (auto-test) | `bash dev-hub/tools/check-i18n-diff-test.sh` | ✅ `PASS : check-i18n-diff-test.sh` |
+| Garde i18n diff (diff réel) | `node dev-hub/tools/check-i18n-diff.js <base> <head>` | ✅ 4 fichiers, 0 chaîne en dur |
 | Tests projet (complet) | `npx jest --maxWorkers=2` | ✅ **1758 tests passés, 0 échec** (2 suites tuées par OOM puis relancées seules : ✅ passent) |
 | Garde mojibake | `node scripts/check-mojibake.mjs` | ✅ passe |
 | Garde copie FR | `node scripts/check-french-copy.mjs` | ✅ passe |
@@ -133,6 +160,21 @@ de plus de mémoire).
 - **Avertissements** : estimation (salaire), non-conseil (IMC), références externes.
 - **Découvrabilité** : lien « Outils » dans le footer de la vitrine (4 langues).
 
+### Lot 3 — « Mes outils » câblé dans l'interface (2026-11-13)
+
+- **`components/MyTools.tsx`** — section « Mes outils » sur `/toolbox` : favoris et
+  historique, hydratation dans `useEffect` (aucune lecture de `localStorage` au
+  rendu → pas d'erreur d'hydratation SSR), slugs inconnus ignorés, état vide
+  explicite, bouton d'effacement.
+- **`components/ToolActions.tsx`** — bouton favori (`aria-pressed`) et
+  enregistrement d'usage au montage sur `/toolbox/[slug]`.
+- **i18n** — bloc `myTools` dans les 4 locales (fr/en/tr/ar, dont RTL arabe).
+- **Tests** — 13 nouveaux cas : état vide, ordre des favoris, slug obsolète,
+  effacement, stockage corrompu, stockage inaccessible, bascule favori,
+  historique sans doublon.
+- **Aucun backend, aucune API, aucune migration** : la décision #9156 (option A)
+  reste inchangée.
+
 ## 6. Matrice d'accès (livrée)
 
 | Fonctionnalité | Visiteur anonyme | Utilisateur public | Professionnel | Collaborateur Leopardo | Administrateur |
@@ -140,25 +182,45 @@ de plus de mémoire).
 | Catalogue `/toolbox` | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Utiliser un outil | ✅ **sans compte** | ✅ | ✅ | ✅ | ✅ |
 | Copier/partager un résultat | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Favoris / historique | — (non implémenté) | — | — | — | — |
-| Synchronisation multi-appareils | — (décision issue 5) | — | — | — | — |
-| Administration des outils | — (décision issue 6) | — | — | — | — |
+| Favoris / historique | ✅ **local, sans compte** | ✅ | ✅ | ✅ | ✅ |
+| Synchronisation multi-appareils | — (décision #9156, option A) | — | — | — | — |
+| Administration des outils | — (décision #9157, option A) | — | — | — | — |
+
+> Les favoris et l'historique sont **locaux au navigateur** (`localStorage`) : ils
+> fonctionnent pour un visiteur anonyme, ne créent aucun compte et n'envoient
+> aucune donnée. La synchronisation multi-appareils reste hors périmètre par
+> décision explicite (#9156).
 
 ## 7. Limites connues
 
 1. **Build complet non terminé localement** (OOM environnement, limite cgroup 2 Go)
-   — non lié au code Toolbox ; à confirmer en CI.
-2. **Pas de persistance** des favoris/historique (décision #9156 non tranchée).
-3. **Pas d'administration** des métadonnées (décision #9157 non tranchée).
-4. **4 outils restent en backlog** (#9158) : devises, dates, âge, taux horaire.
+   — non lié au code Toolbox ; les 4 checks requis sont verts en CI sur `main`.
+2. **Pas de synchronisation serveur** des favoris/historique : décision #9156
+   (option A) assumée, réexamen conditionné à un besoin mesuré.
+3. **Pas d'administration** des métadonnées : décision #9157 (option A) assumée.
+4. **Aucun outil en backlog** : les 14 outils du catalogue sont livrés (#9158 fermée).
 5. **Salaire net = estimation** : aucun barème fiscal codé en dur, par choix
    (éviter de présenter un calcul légal non vérifié).
+6. **Taux de change statiques** : le convertisseur de devises n'appelle aucun
+   service externe (contrainte « pas de dépendance payante ») ; les taux sont
+   documentés et datés, l'outil porte l'avertissement `estimate`.
+7. **Checks CI non requis en échec** : `Route → OpenAPI coverage guard`,
+   `validate-and-sync`, `Hygiene Guards` échouent sur cette PR **comme sur `main`**
+   (11 échecs préexistants sur `main` au moment du merge) ; ils ne touchent ni
+   `front/web/src/modules/toolbox/**` ni `front/web/src/app/toolbox/**` et ne font
+   pas partie des 4 checks requis.
 
 ## 8. Prochaines étapes
 
-1. ✅ ~~Fournir un token GitHub valide~~ — fait ; branche poussée, issues créées,
-   PR mergées dans `main` (#9159, #9182).
-2. Confirmer le build complet en CI (le sandbox est limité à 2 Go).
-3. Trancher les décisions #9156 (persistance) et #9157 (administration) — validation
-   explicite requise avant toute modification serveur.
-4. Implémenter le lot 3 d'outils (#9158 : devises, dates, âge, taux horaire).
+1. ✅ ~~Fournir un token GitHub valide~~ — fait ; branches poussées, issues créées,
+   PR mergées dans `main` (#9159, #9182, #9190, #9266, #9441).
+2. ✅ ~~Trancher #9156 et #9157~~ — fait le 2026-11-09, deux ADR dans
+   `docs/DECISIONS/`, option A retenue pour les deux.
+3. ✅ ~~Implémenter le lot 3 d'outils (#9158)~~ — fait (PR #9190).
+4. ✅ ~~Câbler « Mes outils » dans l'UI~~ — fait (PR #9441).
+5. Confirmer le build complet en CI (le sandbox est limité à 2 Go).
+6. Réexaminer #9156 (synchronisation serveur) **uniquement** si un seuil documenté
+   est atteint (demande explicite d'un compte authentifié, rattachement à un
+   espace utilisateur, ou mesure d'usage montrant une recréation sur 2e appareil).
+7. Réexaminer #9157 (administration) **uniquement** si le rythme d'ajout dépasse
+   ce qu'une PR absorbe **et** qu'un besoin d'activation par tenant apparaît.
