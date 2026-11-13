@@ -16,6 +16,7 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyIntegrationRequestContro
 use App\Modules\HR\Interfaces\Api\V1\Controllers\UserEmployeeLinkController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\PublicConversationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicActivityController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicDataExportController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicNotificationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicProfileController;
 use Illuminate\Support\Facades\Route;
@@ -159,6 +160,15 @@ Route::middleware(['throttle:shop-public', 'auth:user_api'])->prefix('user')->gr
     Route::get('/public-profile', [PublicProfileController::class, 'show']);
     Route::patch('/public-profile', [PublicProfileController::class, 'update']);
 
+    // COULOIR 16 — M3-bis · Portabilité RGPD (art. 20).
+    //
+    // Rend au client les données qu'il a fournies, en JSON structuré. Ne
+    // contient AUCUNE donnée d'un commerçant (commandes, réservations,
+    // messages) : elles appartiennent au professionnel et relèvent de son
+    // propre export. Les jetons d'appareil sont tronqués — un secret de
+    // transport rendu en clair permettrait de pousser des notifications au
+    // nom du client.
+    Route::get('/data-export', [PublicDataExportController::class, 'show']);
 });
 
 // Manager: lier un utilisateur ordinaire a un employe
