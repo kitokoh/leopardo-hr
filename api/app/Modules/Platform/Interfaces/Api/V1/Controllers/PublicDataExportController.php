@@ -131,7 +131,7 @@ class PublicDataExportController extends Controller
     }
 
     /**
-     * @return list<array<string, mixed>>
+     * @return array<int, array<string, mixed>>
      */
     private function favorites(User $client): array
     {
@@ -148,7 +148,7 @@ class PublicDataExportController extends Controller
     }
 
     /**
-     * @return list<array<string, mixed>>
+     * @return array<int, array<string, mixed>>
      */
     private function searchHistory(User $client): array
     {
@@ -160,7 +160,7 @@ class PublicDataExportController extends Controller
                 'query' => $entry->query,
                 'city' => $entry->city,
                 'result_count' => $entry->result_count,
-                'searched_at' => $entry->searched_at?->toIso8601String(),
+                'searched_at' => $entry->searched_at->toIso8601String(),
             ])
             ->all();
     }
@@ -171,7 +171,7 @@ class PublicDataExportController extends Controller
      * C'est exactement ce que l'index contient — aucun contenu métier n'y est
      * stocké (règle d'architecture n°1), donc l'export ne peut pas en divulguer.
      *
-     * @return list<array<string, mixed>>
+     * @return array<int, array<string, mixed>>
      */
     private function activityReferences(User $client): array
     {
@@ -184,7 +184,7 @@ class PublicDataExportController extends Controller
                 'activity_type' => $row->activity_type,
                 'reference' => $row->external_ref,
                 'status' => $row->status,
-                'occurred_at' => $row->occurred_at?->toIso8601String(),
+                'occurred_at' => $row->occurred_at->toIso8601String(),
             ])
             ->all();
     }
@@ -197,7 +197,7 @@ class PublicDataExportController extends Controller
      * plateforme, la date et les 8 derniers caractères — assez pour
      * reconnaître l'appareil, pas assez pour s'en servir.
      *
-     * @return list<array<string, mixed>>
+     * @return array<int, array<string, mixed>>
      */
     private function deviceTokens(User $client): array
     {
