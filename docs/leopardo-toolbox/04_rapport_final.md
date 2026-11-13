@@ -1,9 +1,9 @@
 # LEOPARDO TOOLBOX — Rapport final
 
-> **Date** : 2026-11-05 (lot 1) · **Mise à jour** : 2026-11-13 (lot 3 — « Mes outils » câblé)
-> **Branches** : `feat/vitrine-toolbox` (lot 1) → `feat/vitrine-toolbox-lot2` (lot 2) → `feat/toolbox-mes-outils-ui` (lot 3)
+> **Date** : 2026-11-05 (lot 1) · **Mise à jour** : 2026-11-13 (lot 4 — partage d'un résultat par lien)
+> **Branches** : `feat/vitrine-toolbox` (lot 1) → `feat/vitrine-toolbox-lot2` (lot 2) → `feat/toolbox-mes-outils-ui` (lot 3) → `feat/toolbox-resultats-partageables` (lot 4)
 > **Statut** : ✅ **livré et mergé dans `main`** — vérifié sur l'état distant réel.
-> **`main` distant au 2026-11-13** : `63d18224142fdeb52c3f3ff04a0f10540b361a64`
+> **`main` distant au 2026-11-13 (lot 4)** : `0bce0432707bea28ebc3ec82e2de40e71b5d38cd`
 
 ---
 
@@ -128,9 +128,15 @@ front/web/src/modules/vitrine/lib/vitrine-locale.ts   # libellé « Outils » ×
 | Tests Toolbox (lot 1) | `npx jest src/modules/toolbox` | ✅ **74 tests, 6 suites, 0 échec** |
 | Tests Toolbox (lot 1 + lot 2) | `npx jest src/modules/toolbox` | ✅ **145 tests, 12 suites, 0 échec** |
 | Tests Toolbox (lot 1 + lot 2 + lot 3) | `npx jest src/modules/toolbox --maxWorkers=1 --workerIdleMemoryLimit=400MB` | ✅ **235 tests, 25 suites, 0 échec** |
+| Tests Toolbox (lot 4) | `npx jest src/modules/toolbox --maxWorkers=2 --workerIdleMemoryLimit=512MB` | ✅ **259 tests, 27 suites, 0 échec** |
+| Tests projet (complet, lot 4) | `npx jest --maxWorkers=2 --workerIdleMemoryLimit=512MB` | ✅ **2243 tests, 256 suites, 0 échec** |
 | Tests projet (complet, lot 3) | `npx jest --maxWorkers=2 --workerIdleMemoryLimit=400MB` | ✅ **2219 tests, 254 suites, 0 échec** |
 | Garde i18n diff (auto-test) | `bash dev-hub/tools/check-i18n-diff-test.sh` | ✅ `PASS : check-i18n-diff-test.sh` |
 | Garde i18n diff (diff réel) | `node dev-hub/tools/check-i18n-diff.js <base> <head>` | ✅ 4 fichiers, 0 chaîne en dur |
+| Garde i18n diff (lot 4) | `node dev-hub/tools/check-i18n-diff.js origin/main HEAD` | ✅ **19 fichiers, 0 chaîne en dur** |
+| Partage réel (navigateur) | Playwright : saisie → clic « Partager » → lien copié → ouverture dans un **contexte neuf** | ✅ valeurs rejouées `82` / `181`, IMC affiché |
+| Lien corrompu (navigateur) | `?s=%%%invalide%%%` | ✅ retombe sur les valeurs par défaut (`70`) |
+| Rendu des 15 routes (lot 4) | `curl` sur `/toolbox` + 14 outils + slug inconnu | ✅ 200 partout |
 | Tests projet (complet) | `npx jest --maxWorkers=2` | ✅ **1758 tests passés, 0 échec** (2 suites tuées par OOM puis relancées seules : ✅ passent) |
 | Garde mojibake | `node scripts/check-mojibake.mjs` | ✅ passe |
 | Garde copie FR | `node scripts/check-french-copy.mjs` | ✅ passe |
@@ -175,13 +181,42 @@ de plus de mémoire).
 - **Aucun backend, aucune API, aucune migration** : la décision #9156 (option A)
   reste inchangée.
 
+### Lot 4 — Partage d'un résultat par lien (2026-11-13)
+
+**Manque constaté par inspection du code** (pas supposé) : `ResultPanel` n'offrait
+que « Copier » (presse-papiers, perdu à la fermeture), aucun formulaire ne lisait
+ni n'écrivait l'URL, et `lib/storage.ts` restait local au navigateur. Un visiteur
+ne pouvait donc **pas transmettre** un calcul.
+
+**Solution** : encoder les **entrées** dans l'URL (`?s=…`), jamais le résultat.
+Un lien rejoue le calcul avec la formule courante et ne peut donc pas afficher un
+résultat calculé par une version obsolète.
+
+| Fichier | Rôle |
+|---|---|
+| `lib/share.ts` | Codec versionné (base64url d'un JSON `{v,s}`), validation stricte de l'entrée URL, encodeur/décodeur UTF-8 maison (`TextEncoder` absent de jsdom) |
+| `lib/useToolState.ts` | État de formulaire synchronisé avec l'URL : lecture au montage (pas de désaccord d'hydratation), écriture `history.replaceState` (pas d'entrée d'historique par frappe), seulement après une saisie |
+| `components/ShareButton.tsx` | Copie le lien ; repli en champ sélectionnable si le presse-papiers est refusé |
+| `lib/share-copy.ts` | Point unique de résolution des libellés (exigé par la garde de cohérence i18n) |
+| `components/ResultPanel.tsx` | Prop `share` optionnelle |
+| `components/tools/*.tsx` | **Les 14 formulaires** fournissent la prop `share` |
+| `data/copy.ts` | i18n fr/en/tr/ar : `share` / `shared` / `shareFailed` |
+
+**Propriétés de sécurité** : tout ce qui vient de l'URL est non fiable — type,
+longueur (2 048 car. max), nombre d'entrées (24 max), clés inconnues écartées,
+version inconnue ignorée, JSON/base64 invalide → valeurs par défaut. Un lien forgé
+ne peut pas injecter un champ que le formulaire n'attend pas.
+
+**Aucun backend, aucune API, aucune migration** : les entrées restent dans l'URL,
+rien n'est envoyé à un serveur.
+
 ## 6. Matrice d'accès (livrée)
 
 | Fonctionnalité | Visiteur anonyme | Utilisateur public | Professionnel | Collaborateur Leopardo | Administrateur |
 |---|---|---|---|---|---|
 | Catalogue `/toolbox` | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Utiliser un outil | ✅ **sans compte** | ✅ | ✅ | ✅ | ✅ |
-| Copier/partager un résultat | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Copier/partager un résultat | ✅ **lien, sans compte** | ✅ | ✅ | ✅ | ✅ |
 | Favoris / historique | ✅ **local, sans compte** | ✅ | ✅ | ✅ | ✅ |
 | Synchronisation multi-appareils | — (décision #9156, option A) | — | — | — | — |
 | Administration des outils | — (décision #9157, option A) | — | — | — | — |
@@ -205,10 +240,15 @@ de plus de mémoire).
    service externe (contrainte « pas de dépendance payante ») ; les taux sont
    documentés et datés, l'outil porte l'avertissement `estimate`.
 7. **Checks CI non requis en échec** : `Route → OpenAPI coverage guard`,
-   `validate-and-sync`, `Hygiene Guards` échouent sur cette PR **comme sur `main`**
-   (11 échecs préexistants sur `main` au moment du merge) ; ils ne touchent ni
-   `front/web/src/modules/toolbox/**` ni `front/web/src/app/toolbox/**` et ne font
-   pas partie des 4 checks requis.
+   `validate-and-sync`, `Hygiene Guards`, `Web Marketing Funnel E2E` échouent sur
+   cette PR **comme sur les PR précédentes** (vérifié : la PR #9441 mergée portait
+   les mêmes 3 échecs ; `Hygiene Guards` échoue aussi sur `main`). Preuve que
+   `Route → OpenAPI coverage guard` n'est pas causé par ce lot : exécuté
+   localement, il ne signale que 5 routes de `modules/accounting.php`
+   (`/v1/accounting/tax-rates*`, PR #9397) — ce lot ne touche **aucun fichier PHP**.
+   Les **4 checks requis** sont verts.
+8. **Le lien de partage porte les entrées en clair** (base64url, non chiffré) :
+   ne pas y mettre de donnée sensible. Documenté dans `lib/share.ts`.
 
 ## 8. Prochaines étapes
 
@@ -218,9 +258,14 @@ de plus de mémoire).
    `docs/DECISIONS/`, option A retenue pour les deux.
 3. ✅ ~~Implémenter le lot 3 d'outils (#9158)~~ — fait (PR #9190).
 4. ✅ ~~Câbler « Mes outils » dans l'UI~~ — fait (PR #9441).
-5. Confirmer le build complet en CI (le sandbox est limité à 2 Go).
-6. Réexaminer #9156 (synchronisation serveur) **uniquement** si un seuil documenté
+5. ✅ ~~Partage d'un résultat par lien~~ — fait (issue #9454, PR #9455, merge
+   `0bce0432707bea28ebc3ec82e2de40e71b5d38cd`).
+6. Confirmer le build complet en CI (le sandbox est limité à 2 Go).
+7. Réexaminer #9156 (synchronisation serveur) **uniquement** si un seuil documenté
    est atteint (demande explicite d'un compte authentifié, rattachement à un
    espace utilisateur, ou mesure d'usage montrant une recréation sur 2e appareil).
-7. Réexaminer #9157 (administration) **uniquement** si le rythme d'ajout dépasse
+8. Réexaminer #9157 (administration) **uniquement** si le rythme d'ajout dépasse
    ce qu'une PR absorbe **et** qu'un besoin d'activation par tenant apparaît.
+9. Candidats pour un lot 5 (non engagés) : export PDF/CSV d'un résultat, partage
+   d'un **ensemble** de calculs (panier), accessibilité avancée (annonce des
+   résultats aux lecteurs d'écran).
