@@ -35,4 +35,6 @@ return [
     'infra_switch_dispatched' => 'تم إطلاق التبديل: سير عمل GitHub يتولاه (تابع تبويب Actions).',
     'infra_token_missing' => 'التبديل غير متاح: رمز GitHub الخاص بالزر غير مهيّأ (GITHUB_STACK_SWITCH_TOKEN).',
     'search_intel_unsupported_provider' => 'مزوّد غير مدعوم: :provider.',
+    'export_not_included_orders' => 'بيانات المهني — مشمولة في تصدير المهني نفسه.',
+    'export_not_included_messages' => 'المحادثات مع المهنيين — محتوى أعمال المستأجر.',
 ];

@@ -35,4 +35,6 @@ return [
     'infra_switch_dispatched' => 'Switch triggered: the GitHub workflow is handling it (follow the Actions tab).',
     'infra_token_missing' => 'Switching unavailable: the button\'s GitHub token is not configured (GITHUB_STACK_SWITCH_TOKEN).',
     'search_intel_unsupported_provider' => 'Unsupported provider: :provider.',
+    'export_not_included_orders' => 'Professional data — covered by the professional\'s own export.',
+    'export_not_included_messages' => 'Conversations with professionals — tenant business content.',
 ];

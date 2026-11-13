@@ -74,8 +74,8 @@ class PublicDataExportController extends Controller
                 'activity_references' => $this->activityReferences($client),
                 'device_tokens' => $this->deviceTokens($client),
                 'not_included' => [
-                    'orders_and_reservations' => 'Données du professionnel — relèvent de son propre export.',
-                    'messages' => 'Conversations avec les professionnels — contenu métier du tenant.',
+                    'orders_and_reservations' => __('platform.export_not_included_orders'),
+                    'messages' => __('platform.export_not_included_messages'),
                 ],
             ],
         ]);
