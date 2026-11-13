@@ -6,6 +6,7 @@ import { ResultPanel } from '../ResultPanel';
 import { estimateNetSalary } from '../../tools/salaire-net/logic';
 import { parseNumber } from '../../lib/validation';
 import { formatCurrency } from '../../lib/format';
+import { useToolState } from '../../lib/useToolState';
 import type { ToolCopy, ToolboxCopy, ToolboxLocale } from '../../data/copy';
 
 interface NetSalaryFormProps {
@@ -16,8 +17,9 @@ interface NetSalaryFormProps {
 
 /** Formulaire salaire brut → net (estimation) — taux de cotisations paramétrable. */
 export function NetSalaryForm({ copy, common, locale }: NetSalaryFormProps) {
-  const [gross, setGross] = useState('3000');
-  const [rate, setRate] = useState('22');
+  const [values, setValue] = useToolState({ gross: '3000', rate: '22' });
+  const gross = values.gross;
+  const rate = values.rate;
 
   const grossValue = parseNumber(gross);
   const rateValue = parseNumber(rate);
@@ -33,14 +35,14 @@ export function NetSalaryForm({ copy, common, locale }: NetSalaryFormProps) {
           id="net-gross"
           label={copy.fields.gross}
           value={gross}
-          onChange={setGross}
+          onChange={(value) => setValue('gross', value)}
           min={0}
         />
         <NumberField
           id="net-rate"
           label={copy.fields.rate}
           value={rate}
-          onChange={setRate}
+          onChange={(value) => setValue('rate', value)}
           unit="%"
           min={0}
           max={100}
@@ -57,6 +59,7 @@ export function NetSalaryForm({ copy, common, locale }: NetSalaryFormProps) {
           copyLabel={common.copy}
           copiedLabel={common.copied}
           copyText={`${copy.results.net}: ${formatCurrency(result.net, locale)} — ${copy.results.deductions}: ${formatCurrency(result.deductions, locale)}`}
+          share={{ values, copy: common }}
         />
       ) : (
         <p className="text-sm text-slate-500 dark:text-slate-400">{common.invalidInput}</p>

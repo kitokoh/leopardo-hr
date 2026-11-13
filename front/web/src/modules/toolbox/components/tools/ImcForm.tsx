@@ -6,6 +6,7 @@ import { ResultPanel } from '../ResultPanel';
 import { calculateImc } from '../../tools/imc/logic';
 import { parseNumber } from '../../lib/validation';
 import { formatNumber } from '../../lib/format';
+import { useToolState } from '../../lib/useToolState';
 import { IMC_CATEGORY_LABELS } from '../../data/tool-options';
 import type { ToolCopy, ToolboxCopy, ToolboxLocale } from '../../data/copy';
 
@@ -17,8 +18,9 @@ interface ImcFormProps {
 
 /** Formulaire IMC — calcul en direct à la saisie, 100 % côté client. */
 export function ImcForm({ copy, common, locale }: ImcFormProps) {
-  const [weight, setWeight] = useState('70');
-  const [height, setHeight] = useState('175');
+  const [values, setValue] = useToolState({ weight: '70', height: '175' });
+  const weight = values.weight;
+  const height = values.height;
 
   const weightKg = parseNumber(weight);
   const heightCm = parseNumber(height);
@@ -36,7 +38,7 @@ export function ImcForm({ copy, common, locale }: ImcFormProps) {
           id="imc-weight"
           label={copy.fields.weight}
           value={weight}
-          onChange={setWeight}
+          onChange={(value) => setValue('weight', value)}
           unit="kg"
           min={1}
           max={500}
@@ -45,7 +47,7 @@ export function ImcForm({ copy, common, locale }: ImcFormProps) {
           id="imc-height"
           label={copy.fields.height}
           value={height}
-          onChange={setHeight}
+          onChange={(value) => setValue('height', value)}
           unit="cm"
           min={30}
           max={300}
@@ -62,6 +64,7 @@ export function ImcForm({ copy, common, locale }: ImcFormProps) {
           copyLabel={common.copy}
           copiedLabel={common.copied}
           copyText={`${copy.results.imc}: ${formatNumber(result.imc, locale, 1)} — ${copy.results.category}: ${categoryLabel}`}
+          share={{ values, copy: common }}
         />
       ) : (
         <p className="text-sm text-slate-500 dark:text-slate-400">{common.invalidInput}</p>

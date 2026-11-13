@@ -7,6 +7,7 @@ import { ResultPanel, type ResultRow } from '../ResultPanel';
 import { computeVatRecap, type VatLine } from '../../tools/tva-multi-taux/logic';
 import { parseNumber } from '../../lib/validation';
 import { formatCurrency, formatNumber } from '../../lib/format';
+import { useToolState } from '../../lib/useToolState';
 import type { ToolCopy, ToolboxCopy, ToolboxLocale } from '../../data/copy';
 
 interface TvaMultiTauxFormProps {
@@ -25,9 +26,45 @@ const INITIAL_LINES: LineState[] = [
   { amount: '200', rate: '5.5' },
 ];
 
+/**
+ * Sérialise les lignes en état plat partageable (`amount0`, `rate0`, …).
+ *
+ * Le codec de partage ne connaît que des paires clé/valeur simples : on aplatit
+ * donc la liste, avec un nombre de lignes borné pour garder une URL courte.
+ */
+const MAX_SHARED_LINES = 10;
+
+function linesToState(lines: LineState[]): Record<string, string> {
+  const state: Record<string, string> = {};
+  lines.slice(0, MAX_SHARED_LINES).forEach((line, index) => {
+    state[`amount${index}`] = line.amount;
+    state[`rate${index}`] = line.rate;
+  });
+  return state;
+}
+
+/** Reconstruit les lignes depuis un état plat (au moins une ligne). */
+function stateToLines(state: Record<string, string>): LineState[] {
+  const lines: LineState[] = [];
+  for (let index = 0; index < MAX_SHARED_LINES; index += 1) {
+    const amount = state[`amount${index}`];
+    const rate = state[`rate${index}`];
+    if (amount === undefined || rate === undefined) break;
+    lines.push({ amount, rate });
+  }
+  return lines.length > 0 ? lines : INITIAL_LINES;
+}
+
 /** Formulaire TVA multi-taux — récapitulatif d'une facture à plusieurs lignes. */
 export function TvaMultiTauxForm({ copy, common, locale }: TvaMultiTauxFormProps) {
-  const [lines, setLines] = useState<LineState[]>(INITIAL_LINES);
+  const [state, setStateValue] = useToolState(linesToState(INITIAL_LINES));
+  const lines = stateToLines(state);
+
+  /** Réécrit l'état plat à partir des lignes courantes. */
+  function commitLines(next: LineState[]) {
+    const flat = linesToState(next);
+    for (const key of Object.keys(flat)) setStateValue(key, flat[key]);
+  }
 
   const parsed: VatLine[] | null = (() => {
     const result: VatLine[] = [];
@@ -43,19 +80,19 @@ export function TvaMultiTauxForm({ copy, common, locale }: TvaMultiTauxFormProps
   const recap = parsed ? computeVatRecap(parsed) : null;
 
   function setLine(index: number, field: keyof LineState, value: string) {
-    setLines((previous) =>
-      previous.map((line, position) =>
+    commitLines(
+      lines.map((line, position) =>
         position === index ? { ...line, [field]: value } : line,
       ),
     );
   }
 
   function addLine() {
-    setLines((previous) => [...previous, { amount: '0', rate: '20' }]);
+    commitLines([...lines, { amount: '0', rate: '20' }]);
   }
 
   function removeLine(index: number) {
-    setLines((previous) => previous.filter((_, position) => position !== index));
+    commitLines(lines.filter((_, position) => position !== index));
   }
 
   const rows: ResultRow[] = [];
@@ -122,6 +159,7 @@ export function TvaMultiTauxForm({ copy, common, locale }: TvaMultiTauxFormProps
             copyLabel={common.copy}
             copiedLabel={common.copied}
             copyText={rows.map((row) => `${row.label}: ${row.value}`).join(' — ')}
+            share={{ values: state, copy: common }}
           />
 
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">

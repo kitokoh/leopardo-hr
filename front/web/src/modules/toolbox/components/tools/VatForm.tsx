@@ -6,6 +6,7 @@ import { ResultPanel } from '../ResultPanel';
 import { calculateVat, type VatDirection } from '../../tools/tva/logic';
 import { parseNumber } from '../../lib/validation';
 import { formatCurrency } from '../../lib/format';
+import { useToolState } from '../../lib/useToolState';
 import type { ToolCopy, ToolboxCopy, ToolboxLocale } from '../../data/copy';
 
 interface VatFormProps {
@@ -18,9 +19,10 @@ const RATES = [20, 10, 5.5, 2.1];
 
 /** Formulaire TVA — HT ↔ TTC, taux courants français + taux libre. */
 export function VatForm({ copy, common, locale }: VatFormProps) {
-  const [amount, setAmount] = useState('100');
-  const [rate, setRate] = useState('20');
-  const [direction, setDirection] = useState<VatDirection>('ht-to-ttc');
+  const [values, setValue] = useToolState({ amount: '100', rate: '20', direction: 'ht-to-ttc' });
+  const amount = values.amount;
+  const rate = values.rate;
+  const direction = values.direction as VatDirection;
 
   const amountValue = parseNumber(amount);
   const rateValue = parseNumber(rate);
@@ -36,7 +38,7 @@ export function VatForm({ copy, common, locale }: VatFormProps) {
           id="vat-amount"
           label={copy.fields.amount}
           value={amount}
-          onChange={setAmount}
+          onChange={(value) => setValue('amount', value)}
           min={0}
         />
         <div className="w-full">
@@ -51,7 +53,7 @@ export function VatForm({ copy, common, locale }: VatFormProps) {
             type="text"
             inputMode="decimal"
             value={rate}
-            onChange={(event) => setRate(event.target.value)}
+            onChange={(event) => setValue('rate', event.target.value)}
             className="w-full px-4 py-2.5 text-sm font-medium bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
           />
           <div className="flex flex-wrap gap-2 mt-2">
@@ -59,7 +61,7 @@ export function VatForm({ copy, common, locale }: VatFormProps) {
               <button
                 key={preset}
                 type="button"
-                onClick={() => setRate(String(preset))}
+                onClick={() => setValue('rate', String(preset))}
                 className={`px-2.5 py-1 text-xs font-semibold rounded-lg border transition-colors ${
                   rateValue === preset
                     ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
@@ -83,7 +85,7 @@ export function VatForm({ copy, common, locale }: VatFormProps) {
         <select
           id="vat-direction"
           value={direction}
-          onChange={(event) => setDirection(event.target.value as VatDirection)}
+          onChange={(event) => setValue('direction', event.target.value)}
           className="w-full px-4 py-2.5 text-sm font-medium bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
         >
           <option value="ht-to-ttc">{copy.options?.['ht-to-ttc']}</option>
@@ -102,6 +104,7 @@ export function VatForm({ copy, common, locale }: VatFormProps) {
           copyLabel={common.copy}
           copiedLabel={common.copied}
           copyText={`${copy.results.ht}: ${formatCurrency(result.ht, locale)} — ${copy.results.vat}: ${formatCurrency(result.vat, locale)} — ${copy.results.ttc}: ${formatCurrency(result.ttc, locale)}`}
+          share={{ values, copy: common }}
         />
       ) : (
         <p className="text-sm text-slate-500 dark:text-slate-400">{common.invalidInput}</p>

@@ -7,6 +7,7 @@ import { convertCurrency } from '../../tools/convertisseur-devises/logic';
 import { CURRENCIES, REFERENCE_DATE, rateFor } from '../../tools/convertisseur-devises/rates';
 import { parseNumber } from '../../lib/validation';
 import { formatNumber } from '../../lib/format';
+import { useToolState } from '../../lib/useToolState';
 import type { ToolCopy, ToolboxCopy, ToolboxLocale } from '../../data/copy';
 
 interface ConvertisseurDevisesFormProps {
@@ -17,9 +18,10 @@ interface ConvertisseurDevisesFormProps {
 
 /** Formulaire convertisseur de devises — taux de référence statiques, hors ligne. */
 export function ConvertisseurDevisesForm({ copy, common, locale }: ConvertisseurDevisesFormProps) {
-  const [amount, setAmount] = useState('100');
-  const [from, setFrom] = useState('EUR');
-  const [to, setTo] = useState('DZD');
+  const [values, setValue] = useToolState({ amount: '100', from: 'EUR', to: 'DZD' });
+  const amount = values.amount;
+  const from = values.from;
+  const to = values.to;
 
   const amountValue = parseNumber(amount);
   const fromRate = rateFor(from);
@@ -35,7 +37,7 @@ export function ConvertisseurDevisesForm({ copy, common, locale }: Convertisseur
 
   return (
     <div className="space-y-5">
-      <NumberField id="cur-amount" label={copy.fields.amount} value={amount} onChange={setAmount} />
+      <NumberField id="cur-amount" label={copy.fields.amount} value={amount} onChange={(next) => setValue('amount', next)} />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="w-full">
@@ -48,7 +50,7 @@ export function ConvertisseurDevisesForm({ copy, common, locale }: Convertisseur
           <select
             id="cur-from"
             value={from}
-            onChange={(event) => setFrom(event.target.value)}
+            onChange={(event) => setValue('from', event.target.value)}
             className="w-full px-4 py-2.5 text-sm font-medium bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             {CURRENCIES.map((currency) => (
@@ -69,7 +71,7 @@ export function ConvertisseurDevisesForm({ copy, common, locale }: Convertisseur
           <select
             id="cur-to"
             value={to}
-            onChange={(event) => setTo(event.target.value)}
+            onChange={(event) => setValue('to', event.target.value)}
             className="w-full px-4 py-2.5 text-sm font-medium bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             {CURRENCIES.map((currency) => (
@@ -102,6 +104,7 @@ export function ConvertisseurDevisesForm({ copy, common, locale }: Convertisseur
           copyLabel={common.copy}
           copiedLabel={common.copied}
           copyText={`${formatNumber(result, locale, 2)} ${to}`}
+          share={{ values, copy: common }}
         />
       ) : (
         <p className="text-sm text-slate-500 dark:text-slate-400">{common.invalidInput}</p>

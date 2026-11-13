@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { ResultPanel } from '../ResultPanel';
 import { durationBetween } from '../../tools/duree-entre-dates/logic';
 import { formatNumber } from '../../lib/format';
+import { useToolState } from '../../lib/useToolState';
 import type { ToolCopy, ToolboxCopy, ToolboxLocale } from '../../data/copy';
 
 interface DureeEntreDatesFormProps {
@@ -14,8 +15,9 @@ interface DureeEntreDatesFormProps {
 
 /** Formulaire durée entre deux dates — décomposition calendaire exacte. */
 export function DureeEntreDatesForm({ copy, common, locale }: DureeEntreDatesFormProps) {
-  const [from, setFrom] = useState('2026-01-01');
-  const [to, setTo] = useState('2026-11-08');
+  const [values, setValue] = useToolState({ from: '2026-01-01', to: '2026-11-08' });
+  const from = values.from;
+  const to = values.to;
 
   const result = durationBetween(from, to);
 
@@ -33,7 +35,7 @@ export function DureeEntreDatesForm({ copy, common, locale }: DureeEntreDatesFor
             id="dur-from"
             type="date"
             value={from}
-            onChange={(event) => setFrom(event.target.value)}
+            onChange={(event) => setValue('from', event.target.value)}
             className="w-full px-4 py-2.5 text-sm font-medium bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
@@ -49,7 +51,7 @@ export function DureeEntreDatesForm({ copy, common, locale }: DureeEntreDatesFor
             id="dur-to"
             type="date"
             value={to}
-            onChange={(event) => setTo(event.target.value)}
+            onChange={(event) => setValue('to', event.target.value)}
             className="w-full px-4 py-2.5 text-sm font-medium bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
@@ -80,6 +82,7 @@ export function DureeEntreDatesForm({ copy, common, locale }: DureeEntreDatesFor
           copyLabel={common.copy}
           copiedLabel={common.copied}
           copyText={`${result.years} ${copy.results.years}, ${result.months} ${copy.results.months}, ${result.days} ${copy.results.days} (${result.totalDays} ${copy.results.totalDays})`}
+          share={{ values, copy: common }}
         />
       ) : (
         <p className="text-sm text-slate-500 dark:text-slate-400">{common.invalidInput}</p>
