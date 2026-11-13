@@ -2,6 +2,10 @@
 
 import React, { useState } from 'react';
 import { Check, Copy } from 'lucide-react';
+import { ShareButton } from './ShareButton';
+import { shareCopy } from '../lib/share-copy';
+import type { ToolStateValues } from '../lib/share';
+import type { ToolboxCopy } from '../data/copy';
 
 export interface ResultRow {
   label: string;
@@ -17,6 +21,17 @@ interface ResultPanelProps {
   copiedLabel: string;
   /** Texte brut copié dans le presse-papiers (résultats concaténés). */
   copyText: string;
+  /**
+   * Partage par lien — optionnel.
+   *
+   * `values` porte les ENTRÉES du formulaire (jamais le résultat) : le lien
+   * rejoue le calcul avec la formule courante. Absent = pas de bouton de
+   * partage (un outil sans entrée sérialisable n'en propose pas).
+   */
+  share?: {
+    values: ToolStateValues;
+    copy: ToolboxCopy['common'];
+  };
 }
 
 /**
@@ -25,7 +40,7 @@ interface ResultPanelProps {
  * Aucune donnée n'est envoyée : la copie utilise l'API navigateur
  * `navigator.clipboard` (repli silencieux si indisponible).
  */
-export function ResultPanel({ title, rows, copyLabel, copiedLabel, copyText }: ResultPanelProps) {
+export function ResultPanel({ title, rows, copyLabel, copiedLabel, copyText, share }: ResultPanelProps) {
   const [copied, setCopied] = useState(false);
 
   async function handleCopy() {
@@ -70,6 +85,8 @@ export function ResultPanel({ title, rows, copyLabel, copiedLabel, copyText }: R
           </div>
         ))}
       </dl>
+
+      {share && <ShareButton values={share.values} copy={shareCopy(share.copy)} />}
     </div>
   );
 }

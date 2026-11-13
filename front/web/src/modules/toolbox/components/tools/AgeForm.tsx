@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { ResultPanel } from '../ResultPanel';
 import { ageAt } from '../../tools/age/logic';
 import { formatNumber } from '../../lib/format';
+import { useToolState } from '../../lib/useToolState';
 import type { ToolCopy, ToolboxCopy, ToolboxLocale } from '../../data/copy';
 
 interface AgeFormProps {
@@ -14,8 +15,9 @@ interface AgeFormProps {
 
 /** Formulaire âge — différence calendaire exacte à une date de référence. */
 export function AgeForm({ copy, common, locale }: AgeFormProps) {
-  const [birthDate, setBirthDate] = useState('1990-05-15');
-  const [referenceDate, setReferenceDate] = useState('2026-11-08');
+  const [values, setValue] = useToolState({ birthDate: '1990-05-15', referenceDate: '2026-11-08' });
+  const birthDate = values.birthDate;
+  const referenceDate = values.referenceDate;
 
   const result = ageAt(birthDate, referenceDate);
 
@@ -33,7 +35,7 @@ export function AgeForm({ copy, common, locale }: AgeFormProps) {
             id="age-birth"
             type="date"
             value={birthDate}
-            onChange={(event) => setBirthDate(event.target.value)}
+            onChange={(event) => setValue('birthDate', event.target.value)}
             className="w-full px-4 py-2.5 text-sm font-medium bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
@@ -49,7 +51,7 @@ export function AgeForm({ copy, common, locale }: AgeFormProps) {
             id="age-ref"
             type="date"
             value={referenceDate}
-            onChange={(event) => setReferenceDate(event.target.value)}
+            onChange={(event) => setValue('referenceDate', event.target.value)}
             className="w-full px-4 py-2.5 text-sm font-medium bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
@@ -71,6 +73,7 @@ export function AgeForm({ copy, common, locale }: AgeFormProps) {
           copyLabel={common.copy}
           copiedLabel={common.copied}
           copyText={`${result.years} ${copy.results.years}, ${result.months} ${copy.results.months}, ${result.days} ${copy.results.days}`}
+          share={{ values, copy: common }}
         />
       ) : (
         <p className="text-sm text-slate-500 dark:text-slate-400">{common.invalidInput}</p>

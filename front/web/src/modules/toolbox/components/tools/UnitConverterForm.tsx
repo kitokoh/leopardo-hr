@@ -6,6 +6,7 @@ import { ResultPanel } from '../ResultPanel';
 import { UNIT_CATEGORIES, convertUnit, type UnitCategoryId } from '../../tools/convertisseur-unites/logic';
 import { parseNumber } from '../../lib/validation';
 import { formatNumber } from '../../lib/format';
+import { useToolState } from '../../lib/useToolState';
 import { UNIT_CATEGORY_LABELS, UNIT_LABELS } from '../../data/tool-options';
 import type { ToolCopy, ToolboxCopy, ToolboxLocale } from '../../data/copy';
 
@@ -26,18 +27,19 @@ const CATEGORY_IDS: UnitCategoryId[] = [
 
 /** Formulaire convertisseur d'unités — facteurs exacts, calcul local. */
 export function UnitConverterForm({ copy, common, locale }: UnitConverterFormProps) {
-  const [category, setCategory] = useState<UnitCategoryId>('longueur');
-  const [value, setValue] = useState('1');
-  const [from, setFrom] = useState('m');
-  const [to, setTo] = useState('cm');
+  const [values, setValue] = useToolState({ category: 'longueur', value: '1', from: 'm', to: 'cm' });
+  const category = values.category as UnitCategoryId;
+  const value = values.value;
+  const from = values.from;
+  const to = values.to;
 
   const units = useMemo(() => UNIT_CATEGORIES[category], [category]);
 
   function handleCategoryChange(next: UnitCategoryId) {
-    setCategory(next);
     const nextUnits = UNIT_CATEGORIES[next];
-    setFrom(nextUnits[0].id);
-    setTo(nextUnits[1]?.id ?? nextUnits[0].id);
+    setValue('category', next);
+    setValue('from', nextUnits[0].id);
+    setValue('to', nextUnits[1]?.id ?? nextUnits[0].id);
   }
 
   const numeric = parseNumber(value);
@@ -70,7 +72,7 @@ export function UnitConverterForm({ copy, common, locale }: UnitConverterFormPro
         id="unit-value"
         label={copy.fields.value}
         value={value}
-        onChange={setValue}
+        onChange={(next) => setValue('value', next)}
       />
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -84,7 +86,7 @@ export function UnitConverterForm({ copy, common, locale }: UnitConverterFormPro
           <select
             id="unit-from"
             value={from}
-            onChange={(event) => setFrom(event.target.value)}
+            onChange={(event) => setValue('from', event.target.value)}
             className="w-full px-4 py-2.5 text-sm font-medium bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             {units.map((unit) => (
@@ -104,7 +106,7 @@ export function UnitConverterForm({ copy, common, locale }: UnitConverterFormPro
           <select
             id="unit-to"
             value={to}
-            onChange={(event) => setTo(event.target.value)}
+            onChange={(event) => setValue('to', event.target.value)}
             className="w-full px-4 py-2.5 text-sm font-medium bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             {units.map((unit) => (
@@ -129,6 +131,7 @@ export function UnitConverterForm({ copy, common, locale }: UnitConverterFormPro
           copyLabel={common.copy}
           copiedLabel={common.copied}
           copyText={`${formatNumber(converted, locale, 6)} ${UNIT_LABELS[to] ?? to}`}
+          share={{ values, copy: common }}
         />
       ) : (
         <p className="text-sm text-slate-500 dark:text-slate-400">{common.invalidInput}</p>

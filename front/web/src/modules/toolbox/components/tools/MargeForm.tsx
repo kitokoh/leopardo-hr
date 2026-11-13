@@ -10,6 +10,7 @@ import {
 } from '../../tools/marge-prix-vente/logic';
 import { parseNumber } from '../../lib/validation';
 import { formatCurrency, formatNumber } from '../../lib/format';
+import { useToolState } from '../../lib/useToolState';
 import type { ToolCopy, ToolboxCopy, ToolboxLocale } from '../../data/copy';
 
 interface MargeFormProps {
@@ -22,10 +23,16 @@ type MarginMode = 'from-cost-price' | 'from-margin' | 'from-markup';
 
 /** Formulaire marge et prix de vente — trois modes de calcul. */
 export function MargeForm({ copy, common, locale }: MargeFormProps) {
-  const [mode, setMode] = useState<MarginMode>('from-cost-price');
-  const [cost, setCost] = useState('100');
-  const [price, setPrice] = useState('130');
-  const [rate, setRate] = useState('30');
+  const [values, setValue] = useToolState({
+    mode: 'from-cost-price',
+    cost: '100',
+    price: '130',
+    rate: '30',
+  });
+  const mode = values.mode as MarginMode;
+  const cost = values.cost;
+  const price = values.price;
+  const rate = values.rate;
 
   const costValue = parseNumber(cost);
   const priceValue = parseNumber(price);
@@ -91,7 +98,7 @@ export function MargeForm({ copy, common, locale }: MargeFormProps) {
         <select
           id="marge-mode"
           value={mode}
-          onChange={(event) => setMode(event.target.value as MarginMode)}
+          onChange={(event) => setValue('mode', event.target.value)}
           className="w-full px-4 py-2.5 text-sm font-medium bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
         >
           <option value="from-cost-price">{copy.options?.['from-cost-price']}</option>
@@ -105,7 +112,7 @@ export function MargeForm({ copy, common, locale }: MargeFormProps) {
           id="marge-cost"
           label={copy.fields.cost}
           value={cost}
-          onChange={setCost}
+          onChange={(next) => setValue('cost', next)}
           min={0}
         />
         {mode === 'from-cost-price' ? (
@@ -113,7 +120,7 @@ export function MargeForm({ copy, common, locale }: MargeFormProps) {
             id="marge-price"
             label={copy.fields.price}
             value={price}
-            onChange={setPrice}
+            onChange={(next) => setValue('price', next)}
             min={0}
           />
         ) : (
@@ -121,7 +128,7 @@ export function MargeForm({ copy, common, locale }: MargeFormProps) {
             id="marge-rate"
             label={copy.fields.rate}
             value={rate}
-            onChange={setRate}
+            onChange={(next) => setValue('rate', next)}
           />
         )}
       </div>
@@ -133,6 +140,7 @@ export function MargeForm({ copy, common, locale }: MargeFormProps) {
           copyLabel={common.copy}
           copiedLabel={common.copied}
           copyText={rows.map((row) => `${row.label}: ${row.value}`).join(' — ')}
+          share={{ values, copy: common }}
         />
       ) : (
         <p className="text-sm text-slate-500 dark:text-slate-400">{common.invalidInput}</p>

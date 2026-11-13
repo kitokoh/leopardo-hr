@@ -6,6 +6,7 @@ import { ResultPanel } from '../ResultPanel';
 import { computeCbm, type FreightMode } from '../../tools/cbm-poids-volumetrique/logic';
 import { parseNumber } from '../../lib/validation';
 import { formatNumber } from '../../lib/format';
+import { useToolState } from '../../lib/useToolState';
 import { FREIGHT_MODE_LABELS } from '../../data/tool-options';
 import type { ToolCopy, ToolboxCopy, ToolboxLocale } from '../../data/copy';
 
@@ -19,12 +20,20 @@ const MODE_IDS: FreightMode[] = ['aerien', 'routier', 'maritime'];
 
 /** Formulaire CBM et poids volumétrique — logistique et transport. */
 export function CbmForm({ copy, common, locale }: CbmFormProps) {
-  const [length, setLength] = useState('100');
-  const [width, setWidth] = useState('50');
-  const [height, setHeight] = useState('40');
-  const [quantity, setQuantity] = useState('1');
-  const [weight, setWeight] = useState('0');
-  const [mode, setMode] = useState<FreightMode>('aerien');
+  const [values, setValue] = useToolState({
+    length: '100',
+    width: '50',
+    height: '40',
+    quantity: '1',
+    weight: '0',
+    mode: 'aerien',
+  });
+  const length = values.length;
+  const width = values.width;
+  const height = values.height;
+  const quantity = values.quantity;
+  const weight = values.weight;
+  const mode = values.mode as FreightMode;
 
   const lengthValue = parseNumber(length);
   const widthValue = parseNumber(width);
@@ -55,21 +64,21 @@ export function CbmForm({ copy, common, locale }: CbmFormProps) {
           id="cbm-length"
           label={copy.fields.length}
           value={length}
-          onChange={setLength}
+          onChange={(next) => setValue('length', next)}
           min={0}
         />
         <NumberField
           id="cbm-width"
           label={copy.fields.width}
           value={width}
-          onChange={setWidth}
+          onChange={(next) => setValue('width', next)}
           min={0}
         />
         <NumberField
           id="cbm-height"
           label={copy.fields.height}
           value={height}
-          onChange={setHeight}
+          onChange={(next) => setValue('height', next)}
           min={0}
         />
       </div>
@@ -79,14 +88,14 @@ export function CbmForm({ copy, common, locale }: CbmFormProps) {
           id="cbm-quantity"
           label={copy.fields.quantity}
           value={quantity}
-          onChange={setQuantity}
+          onChange={(next) => setValue('quantity', next)}
           min={1}
         />
         <NumberField
           id="cbm-weight"
           label={copy.fields.weight}
           value={weight}
-          onChange={setWeight}
+          onChange={(next) => setValue('weight', next)}
           min={0}
         />
       </div>
@@ -101,7 +110,7 @@ export function CbmForm({ copy, common, locale }: CbmFormProps) {
         <select
           id="cbm-mode"
           value={mode}
-          onChange={(event) => setMode(event.target.value as FreightMode)}
+          onChange={(event) => setValue('mode', event.target.value)}
           className="w-full px-4 py-2.5 text-sm font-medium bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
         >
           {MODE_IDS.map((id) => (
@@ -137,6 +146,7 @@ export function CbmForm({ copy, common, locale }: CbmFormProps) {
           copyLabel={common.copy}
           copiedLabel={common.copied}
           copyText={`${copy.results.totalCbm}: ${formatNumber(result.totalCbm, locale, 4)} m³ — ${copy.results.chargeableWeight}: ${formatNumber(result.chargeableWeightKg, locale, 2)} kg`}
+          share={{ values, copy: common }}
         />
       ) : (
         <p className="text-sm text-slate-500 dark:text-slate-400">{common.invalidInput}</p>

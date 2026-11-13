@@ -11,6 +11,13 @@ const common = getToolboxCopy('fr').common;
 const copy = getToolboxCopy('fr').tools.imc;
 
 describe('ImcForm', () => {
+  // L'état du formulaire est synchronisé avec l'URL (`?s=…`, partage par lien).
+  // Sans réinitialisation, une saisie d'un test précédent resterait dans
+  // `window.location` et serait ré-hydratée par le test suivant.
+  beforeEach(() => {
+    window.history.replaceState({}, '', '/toolbox/imc');
+  });
+
   it('calcule l’IMC par défaut (70 kg / 175 cm → 22,9)', () => {
     render(<ImcForm copy={copy} common={common} locale="fr" />);
     expect(screen.getByText('22,9')).toBeInTheDocument();

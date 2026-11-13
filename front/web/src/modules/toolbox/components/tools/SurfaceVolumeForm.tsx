@@ -6,6 +6,7 @@ import { ResultPanel, type ResultRow } from '../ResultPanel';
 import { computeShape, type ShapeId } from '../../tools/surface-volume/logic';
 import { parseNumber } from '../../lib/validation';
 import { formatNumber } from '../../lib/format';
+import { useToolState } from '../../lib/useToolState';
 import { SHAPE_LABELS } from '../../data/tool-options';
 import type { ToolCopy, ToolboxCopy, ToolboxLocale } from '../../data/copy';
 
@@ -49,8 +50,8 @@ const DEFAULT_VALUES: Record<string, string> = {
 
 /** Formulaire surfaces et volumes — formes planes et solides usuels. */
 export function SurfaceVolumeForm({ copy, common, locale }: SurfaceVolumeFormProps) {
-  const [shape, setShape] = useState<ShapeId>('carre');
-  const [values, setValues] = useState<Record<string, string>>(DEFAULT_VALUES);
+  const [values, setValue] = useToolState({ shape: 'carre', ...DEFAULT_VALUES });
+  const shape = values.shape as ShapeId;
 
   const fields = useMemo(() => SHAPE_FIELDS[shape], [shape]);
 
@@ -67,7 +68,7 @@ export function SurfaceVolumeForm({ copy, common, locale }: SurfaceVolumeFormPro
   const result = dimensions ? computeShape(shape, dimensions) : null;
 
   function setField(field: string, value: string) {
-    setValues((previous) => ({ ...previous, [field]: value }));
+    setValue(field, value);
   }
 
   const rows: ResultRow[] = [];
@@ -98,7 +99,7 @@ export function SurfaceVolumeForm({ copy, common, locale }: SurfaceVolumeFormPro
         <select
           id="sv-shape"
           value={shape}
-          onChange={(event) => setShape(event.target.value as ShapeId)}
+          onChange={(event) => setValue('shape', event.target.value)}
           className="w-full px-4 py-2.5 text-sm font-medium bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
         >
           {SHAPE_IDS.map((id) => (
@@ -129,6 +130,7 @@ export function SurfaceVolumeForm({ copy, common, locale }: SurfaceVolumeFormPro
           copyLabel={common.copy}
           copiedLabel={common.copied}
           copyText={rows.map((row) => `${row.label}: ${row.value}`).join(' — ')}
+          share={{ values, copy: common }}
         />
       ) : (
         <p className="text-sm text-slate-500 dark:text-slate-400">{common.invalidInput}</p>

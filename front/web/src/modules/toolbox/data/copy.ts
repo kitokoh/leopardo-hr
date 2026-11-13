@@ -52,6 +52,10 @@ export interface ToolboxCopy {
     invalidInput: string;
     notFound: string;
     notFoundHint: string;
+    /** Partage d'un calcul par lien (les entrées voyagent dans l'URL). */
+    share: string;
+    shared: string;
+    shareFailed: string;
   };
   /**
    * Espace personnel « Mes outils » (favoris + historique).
@@ -124,6 +128,9 @@ const fr: ToolboxCopy = {
     invalidInput: 'Saisissez une valeur valide.',
     notFound: 'Outil introuvable',
     notFoundHint: 'Cet outil n’existe pas ou a été renommé. Parcourez le catalogue pour trouver l’outil souhaité.',
+    share: 'Partager ce calcul',
+    shared: 'Lien copié',
+    shareFailed: 'Copie impossible — sélectionnez le lien ci-dessous :',
   },
   myTools: {
     title: 'Mes outils',
@@ -416,6 +423,9 @@ const en: ToolboxCopy = {
     invalidInput: 'Enter a valid value.',
     notFound: 'Tool not found',
     notFoundHint: 'This tool does not exist or has been renamed. Browse the catalogue to find the tool you need.',
+    share: 'Share this calculation',
+    shared: 'Link copied',
+    shareFailed: 'Copy failed — select the link below:',
   },
   myTools: {
     title: 'My tools',
@@ -704,6 +714,9 @@ const tr: ToolboxCopy = {
     invalidInput: 'Geçerli bir değer girin.',
     notFound: 'Araç bulunamadı',
     notFoundHint: 'Bu araç yok veya yeniden adlandırıldı. İhtiyacınız olan aracı bulmak için kataloğa göz atın.',
+    share: 'Bu hesaplamayı paylaş',
+    shared: 'Bağlantı kopyalandı',
+    shareFailed: 'Kopyalanamadı — aşağıdaki bağlantıyı seçin:',
   },
   myTools: {
     title: 'Araçlarım',
@@ -988,6 +1001,9 @@ const ar: ToolboxCopy = {
     invalidInput: 'أدخل قيمة صحيحة.',
     notFound: 'الأداة غير موجودة',
     notFoundHint: 'هذه الأداة غير موجودة أو تم تغيير اسمها. تصفّح الكتالوج للعثور على الأداة التي تحتاجها.',
+    share: 'مشاركة هذا الحساب',
+    shared: 'تم نسخ الرابط',
+    shareFailed: 'تعذّر النسخ — حدّد الرابط أدناه:',
   },
   myTools: {
     title: 'أدواتي',

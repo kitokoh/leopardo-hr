@@ -6,6 +6,7 @@ import { ResultPanel } from '../ResultPanel';
 import { hourlyRate, monthlyGrossFromHourly } from '../../tools/taux-horaire/logic';
 import { parseNumber } from '../../lib/validation';
 import { formatNumber } from '../../lib/format';
+import { useToolState } from '../../lib/useToolState';
 import type { ToolCopy, ToolboxCopy, ToolboxLocale } from '../../data/copy';
 
 interface TauxHoraireFormProps {
@@ -18,10 +19,16 @@ type Direction = 'monthly-to-hourly' | 'hourly-to-monthly';
 
 /** Formulaire taux horaire — conversion brut mensuel ↔ taux horaire. */
 export function TauxHoraireForm({ copy, common, locale }: TauxHoraireFormProps) {
-  const [direction, setDirection] = useState<Direction>('monthly-to-hourly');
-  const [monthlyGross, setMonthlyGross] = useState('2000');
-  const [hourly, setHourly] = useState('13.19');
-  const [hoursPerWeek, setHoursPerWeek] = useState('35');
+  const [values, setValue] = useToolState({
+    direction: 'monthly-to-hourly',
+    monthlyGross: '2000',
+    hourly: '13.19',
+    hoursPerWeek: '35',
+  });
+  const direction = values.direction as Direction;
+  const monthlyGross = values.monthlyGross;
+  const hourly = values.hourly;
+  const hoursPerWeek = values.hoursPerWeek;
 
   const hoursValue = parseNumber(hoursPerWeek);
 
@@ -50,7 +57,7 @@ export function TauxHoraireForm({ copy, common, locale }: TauxHoraireFormProps) 
         <select
           id="th-direction"
           value={direction}
-          onChange={(event) => setDirection(event.target.value as Direction)}
+          onChange={(event) => setValue('direction', event.target.value)}
           className="w-full px-4 py-2.5 text-sm font-medium bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
         >
           <option value="monthly-to-hourly">{copy.options?.['monthly-to-hourly']}</option>
@@ -64,16 +71,16 @@ export function TauxHoraireForm({ copy, common, locale }: TauxHoraireFormProps) 
             id="th-gross"
             label={copy.fields.monthlyGross}
             value={monthlyGross}
-            onChange={setMonthlyGross}
+            onChange={(next) => setValue('monthlyGross', next)}
           />
         ) : (
-          <NumberField id="th-hourly" label={copy.results.hourly} value={hourly} onChange={setHourly} />
+          <NumberField id="th-hourly" label={copy.results.hourly} value={hourly} onChange={(next) => setValue('hourly', next)} />
         )}
         <NumberField
           id="th-hours"
           label={copy.fields.hoursPerWeek}
           value={hoursPerWeek}
-          onChange={setHoursPerWeek}
+          onChange={(next) => setValue('hoursPerWeek', next)}
         />
       </div>
 
@@ -96,6 +103,7 @@ export function TauxHoraireForm({ copy, common, locale }: TauxHoraireFormProps) 
           copyLabel={common.copy}
           copiedLabel={common.copied}
           copyText={formatNumber(result, locale, 2)}
+          share={{ values, copy: common }}
         />
       ) : (
         <p className="text-sm text-slate-500 dark:text-slate-400">{common.invalidInput}</p>
