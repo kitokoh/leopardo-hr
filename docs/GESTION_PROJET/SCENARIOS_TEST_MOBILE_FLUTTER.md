@@ -465,3 +465,13 @@ Le menu est désormais construit depuis `kAssignableManagerRoles` (`lib/features
 
 **Conséquence pour les tests mobile** : toute capture ou test de widget qui vérifie les options de ce menu doit attendre 5 entrées, dans l'ordre `rh, dept, comptable, superviseur, marketing`, et des libellés dépendants de la locale. La parité des trois listes (PHP / TS / Dart) est verrouillée par `dev-hub/tools/check-team-role-parity.py`, exécutée dans le job `hygiene-guards`.
 
+## Note d'outillage 2026-11-14 (suite) — compileSdk 37 et plateforme android-37.0 (issue #9465)
+
+Une fois Gradle 9.3.1 / AGP 9.1.1 / Kotlin 2.4.0 en place, le build Android a réellement compilé (4 min) puis échoué sur `:app:checkDebugAarMetadata` : `flutter_local_notifications` 23 et `androidx.core` 1.19 déclarent **`minCompileSdk 37`**, alors que les apps compilaient en 36 (`flutter.compileSdkVersion`).
+
+Les 11 apps passent donc à **`compileSdk = 37`**, et la CI installe **`platforms;android-37.0`** + `build-tools;37.0.0`.
+
+**Piège vérifié sur `repository2-3.xml` (dépôt Android officiel)** : la plateforme API 37 n'y est publiée que sous des noms versionnés (`android-37.0`, `-37.1`, `-37.2`, toutes sur `channel-0` = stable). `compileSdk = 37` se résout en hash **`android-37.0`** : installer `android-37.1` à la place fait échouer Gradle sur `Failed to find target with hash string 'android-37.0'`. La garde `check-android-sdk-packages.sh` exige donc ce nom exact, et son auto-test couvre ce cas (mutation « mineure 37.1 »).
+
+**Pour un build local** : JDK 17, Gradle 9.3.1 (wrapper), AGP 9.1.1, et `sdkmanager "platforms;android-37.0" "build-tools;37.0.0"`.
+
