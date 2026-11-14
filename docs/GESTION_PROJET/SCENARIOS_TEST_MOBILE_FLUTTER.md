@@ -475,3 +475,15 @@ Les 11 apps passent donc à **`compileSdk = 37`**, et la CI installe **`platform
 
 **Pour un build local** : JDK 17, Gradle 9.3.1 (wrapper), AGP 9.1.1, et `sdkmanager "platforms;android-37.0" "build-tools;37.0.0"`.
 
+## Garde outillage 2026-11-14 — `compileSdk = 37` / `minSdk = 26` imposes (issue #9491)
+
+Les deux pannes qui ont garde `Build Debug` rouge sont venues de valeurs **implicites** de Flutter, pas d'une erreur de code : `flutter.compileSdkVersion` (36) face aux AAR exigeant `minCompileSdk 37`, et `flutter.minSdkVersion` (24) face au `minSdk 26` de `sentry_flutter` (tire par `leopardo_core`). Une valeur implicite change a chaque montee de Flutter : le defaut reviendrait sans qu'aucune PR ne le demande.
+
+`dev-hub/tools/check-mobile-android-sdk-versions.sh` echoue si une app de `front/mobile_apps` (hors `leopardo_core`, qui est un package) :
+
+- n'a pas de projet Android (`android/app/build.gradle(.kts)`) ;
+- declare `compileSdk` autre que **37**, ou `minSdk` autre que **26** ;
+- utilise `flutter.compileSdkVersion` / `flutter.minSdkVersion`.
+
+Pour monter de SDK : modifier `EXPECTED_COMPILE_SDK` / `EXPECTED_MIN_SDK` en tete du script **dans la meme PR** que les build.gradle, et mettre a jour `.github/actions/setup-flutter-android` (plateforme installee).
+

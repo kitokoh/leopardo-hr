@@ -186,6 +186,19 @@ jobs:
       - name: Mobile Firebase stubs guard (issue #3152)
         run: bash dev-hub/tools/check-mobile-firebase-configs.sh
 
+      # #9491 — le 2026-11-14, la CI mobile est passee de 11 echecs a 11 succes
+      # en deux PR (#9467 puis #9472) parce que les builds Android lisaient deux
+      # valeurs IMPLICITES de Flutter : `flutter.compileSdkVersion` (36, alors
+      # que les AAR du depot exigent minCompileSdk 37) et `flutter.minSdkVersion`
+      # (24, alors que sentry_flutter, via leopardo_core, exige 26). Chaque
+      # manquement ne se voyait qu'apres ~4 min de build Gradle, app par app.
+      # Garde volontairement HORS filtre `*_changed` : elle lit 11 fichiers
+      # (~0,1 s) et une valeur de SDK ne doit pas dependre du chemin modifie.
+      - name: Mobile android SDK versions guard (issue #9491)
+        run: |
+          bash dev-hub/tools/check-mobile-android-sdk-versions.sh
+          bash dev-hub/tools/tests/check-mobile-android-sdk-versions.test.sh
+
       - name: Migrations tenant — convention #1613 (search_path, audit PM 2026-08-17)
         run: bash dev-hub/tools/check-migrations-tenant-schema.sh
       - name: Migrations BC conventions guard (MAT-005 #5863)
