@@ -8,7 +8,6 @@ use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\User;
 use App\Modules\TravelAgency\Application\Services\PublicIdentityBridge;
 use App\Modules\TravelAgency\Domain\Models\TravelCustomerAccount;
-
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
