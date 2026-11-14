@@ -86,16 +86,36 @@ runs:
     # tests »), et faisait tomber tout le job Backend. Le paquet est installé
     # ici, dans l'action partagée, pour que tous les jobs backend (tests,
     # coverage, shards) voient le même environnement.
-    - name: Install PDF text extraction tooling (poppler-utils)
+    # ATS (#9477) — `antiword` et `catdoc` manquaient encore.
+    #
+    # Le correctif #9480 a installé `poppler-utils` (PDF) mais pas les outils
+    # du format `.doc`, que `ShellResumeTextExtractor::fromDoc()` appelle
+    # aussi. Le formulaire de candidature accepte PDF, DOC et DOCX : sans ces
+    # deux binaires, un candidat déposant un `.doc` voyait son CV non extrait
+    # et son score ATS retomber sur la seule lettre de motivation — la même
+    # panne silencieuse que #9480 corrigeait pour les PDF.
+    #
+    # La sonde est NON tautologique : chaque binaire doit répondre, pas
+    # seulement `apt-get` rendre 0.
+    - name: Install resume text extraction tooling (poppler-utils + antiword + catdoc)
       shell: bash
       run: |
-        if command -v pdftotext >/dev/null 2>&1; then
-          echo "pdftotext déjà présent : $(pdftotext -v 2>&1 | head -1)"
-          exit 0
+        set -euo pipefail
+        if ! command -v pdftotext >/dev/null 2>&1 \
+          || ! command -v antiword >/dev/null 2>&1 \
+          || ! command -v catdoc >/dev/null 2>&1; then
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends \
+            poppler-utils antiword catdoc
         fi
-        sudo apt-get update -qq
-        sudo apt-get install -y -qq poppler-utils
-        pdftotext -v 2>&1 | head -1
+        for bin in pdftotext antiword catdoc; do
+          if ! command -v "$bin" >/dev/null 2>&1; then
+            echo "::error::binaire d'extraction CV manquant : $bin"
+            exit 1
+          fi
+        done
+        echo "pdftotext=$(pdftotext -v 2>&1 | head -1)"
+        echo "antiword=$(antiword -h 2>&1 | head -1 || true)"
 
     - name: Resolve Composer cache directory
       id: composer-cache
