@@ -5,10 +5,12 @@ import { cache } from 'react';
 import { normalizeLocale } from '@/lib/locale-core';
 import { SITE_URL } from '@/lib/site-url';
 import { getToolboxCopy } from '@/modules/toolbox/data/copy';
-import { getAllToolSlugs, getTool } from '@/modules/toolbox/lib/registry';
+import { getAllToolSlugs, getRelatedTools, getTool } from '@/modules/toolbox/lib/registry';
 import { ToolShell } from '@/modules/toolbox/components/ToolShell';
 import { ToolRenderer } from '@/modules/toolbox/components/ToolRenderer';
 import { ToolActions } from '@/modules/toolbox/components/ToolActions';
+import { RelatedTools, type RelatedToolItem } from '@/modules/toolbox/components/RelatedTools';
+import { buildToolSchema, serializeSchema } from '@/modules/toolbox/lib/structured-data';
 
 /**
  * Page d'un outil public (`/toolbox/[slug]`).
@@ -83,21 +85,39 @@ export default async function ToolPage({ params }: ToolPageProps) {
     url: reference.url,
   }));
 
+  // Données structurées : décrit ce que la page EST (outil gratuit, sans
+  // compte, exécuté côté client). Aucune note ni avis n'est inventé.
+  const schema = buildToolSchema(tool, toolCopy.name, toolCopy.description, locale);
+
+  // Outils similaires : même catégorie d'abord, l'outil courant toujours exclu.
+  const relatedItems: RelatedToolItem[] = getRelatedTools(slug, 3).map((related) => ({
+    slug: related.slug,
+    name: copy.tools[related.slug]?.name ?? related.slug,
+    categoryLabel: copy.categories[related.category] ?? related.category,
+  }));
+
   return (
-    <ToolShell
-      title={toolCopy.name}
-      description={toolCopy.description}
-      categoryLabel={copy.categories[tool.category] ?? tool.category}
-      warnings={warnings}
-      references={references}
-      referencesLabel={copy.common.reference}
-      versionLabel={copy.common.version}
-      version={tool.version}
-      backLabel={copy.common.backToCatalog}
-      disclaimer={copy.common.disclaimer}
-    >
-      <ToolActions slug={slug} copy={copy.myTools} />
-      <ToolRenderer slug={slug} copy={toolCopy} common={copy.common} locale={locale} />
-    </ToolShell>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeSchema(schema) }}
+      />
+      <ToolShell
+        title={toolCopy.name}
+        description={toolCopy.description}
+        categoryLabel={copy.categories[tool.category] ?? tool.category}
+        warnings={warnings}
+        references={references}
+        referencesLabel={copy.common.reference}
+        versionLabel={copy.common.version}
+        version={tool.version}
+        backLabel={copy.common.backToCatalog}
+        disclaimer={copy.common.disclaimer}
+      >
+        <ToolActions slug={slug} copy={copy.myTools} />
+        <ToolRenderer slug={slug} copy={toolCopy} common={copy.common} locale={locale} />
+      </ToolShell>
+      <RelatedTools title={copy.common.related} items={relatedItems} />
+    </>
   );
 }

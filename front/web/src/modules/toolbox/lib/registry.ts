@@ -66,3 +66,23 @@ function normalize(value: string): string {
     .toLowerCase()
     .trim();
 }
+
+/**
+ * Outils suggérés après un outil donné — « outils similaires ».
+ *
+ * Ordre : d'abord les outils ACTIFS de la même catégorie (ordre du catalogue),
+ * puis les autres outils actifs. L'outil courant est toujours exclu, et un slug
+ * inconnu retourne une liste vide (pas de suggestion arbitraire).
+ *
+ * Fonction PURE : aucun accès réseau, testée directement.
+ */
+export function getRelatedTools(slug: string, limit = 3): ToolDefinition[] {
+  const current = getTool(slug);
+  if (!current) return [];
+
+  const catalog = getCatalogTools().filter((tool) => tool.slug !== slug);
+  const sameCategory = catalog.filter((tool) => tool.category === current.category);
+  const others = catalog.filter((tool) => tool.category !== current.category);
+
+  return [...sameCategory, ...others].slice(0, Math.max(0, limit));
+}
