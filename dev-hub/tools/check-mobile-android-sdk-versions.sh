@@ -3,40 +3,30 @@
 # check-mobile-android-sdk-versions.sh - compileSdk / minSdk EXPLICITES
 # (issue #9491, suite de #9471)
 #
-# Le 2026-11-14, la CI mobile est passee de 11 echecs a 11 succes en deux temps,
-# et chaque etape a ete payee par une PR : d'abord le toolchain (#9467), puis le
-# `compileSdk` (#9472). Les deux defauts venaient de la MEME ligne implicite :
+# Deux pannes de `Build Debug` (13 et 14/11/2026) sont venues de la MEME ligne
+# implicite dans les 11 apps : `compileSdk = flutter.compileSdkVersion` (36) et
+# `minSdk = flutter.minSdkVersion` (24), alors que `flutter_local_notifications`
+# 23 / `androidx.core` 1.19 exigent `minCompileSdk 37` et que `sentry_flutter`
+# (via `leopardo_core`, donc pour TOUTES les apps) exige `minSdk 26`.
 #
-#   compileSdk = flutter.compileSdkVersion   # = 36 sur Flutter 3.50
-#   minSdk     = flutter.minSdkVersion       # = 24
+# Cette garde impose les deux valeurs en LITTERAL, refuse les formes `flutter.*`
+# (une valeur implicite bouge sans PR, cf. #9432/#9434), et signale les alias
+# Groovy historiques `compileSdkVersion` / `minSdkVersion`.
 #
-# Or `flutter_local_notifications` 23 et `androidx.core` 1.19 declarent
-# `minCompileSdk 37`, et `sentry_flutter` (via `leopardo_core`, donc pour TOUTES
-# les apps) declare `minSdkVersion 26`. Les valeurs par defaut de Flutter sont
-# donc en retard sur les dependances du depot, et le manquement ne se voit
-# qu'APRES ~4 minutes de build Gradle, app par app.
-#
-# Cette garde rend le defaut impossible a reintroduire :
-#   1. chaque app (`front/mobile_apps/*/pubspec.yaml`, hors `leopardo_core`
-#      qui est un package et n'a pas de projet Android) doit avoir
-#      `android/app/build.gradle` ou `android/app/build.gradle.kts` ;
-#   2. ce fichier doit declarer `compileSdk` = 37 et `minSdk` = 26 en LITTERAL ;
-#   3. `flutter.compileSdkVersion` / `flutter.minSdkVersion` sont refuses : une
-#      valeur implicite peut changer sous nos pieds a chaque montee de Flutter,
-#      y compris via `pub upgrade` (#9432/#9434 ont deja paye ce prix).
+# ANCRAGE DES NOMS (corrige le 2026-11-14) : la detection cherchait le prefixe
+# `minSdk` sans borne, donc `minSdkVersion = 26` etait lu `minSdk` + "Version"
+# et la garde annoncait `minSdk = Version, attendu 26`. Le nom est desormais
+# ancre : il doit etre suivi de `=` ou d'un espace, jamais d'une lettre.
 #
 # Usage :
 #   bash dev-hub/tools/check-mobile-android-sdk-versions.sh [racine]
 #   bash dev-hub/tools/check-mobile-android-sdk-versions.sh --self-test
 #
-# Sortie volontairement ASCII : ce script doit pouvoir s'executer sans planter
-# sur une console Windows cp1252 (lecon #5875 / threat-models).
+# Sortie ASCII uniquement (console Windows cp1252, lecon #5875).
 # Exit 0 = conforme ; exit 1 = violation(s).
 # ============================================================================
 set -euo pipefail
 
-# Source unique des valeurs attendues : une montee de SDK se fait ICI, en
-# meme temps que les build.gradle et le commentaire de la PR.
 EXPECTED_COMPILE_SDK=37
 EXPECTED_MIN_SDK=26
 
@@ -47,12 +37,79 @@ fail() {
   errors=$((errors + 1))
 }
 
-# Extrait la valeur d'une propriete Gradle (kotlin DSL `compileSdk = 37` ou
-# groovy `compileSdk 37`), en tolerant CRLF et l'indentation.
-read_prop() {
-  local file="$1" key="$2"
-  sed -n "s/^[[:space:]]*${key}[[:space:]]*=\{0,1\}[[:space:]]*\([^[:space:]\r]*\).*/\1/p" \
-    "${file}" | head -n 1 | tr -d '\r'
+# find_decl <fichier> <regex-du-nom> -> "nom=valeur" de la PREMIERE declaration.
+#
+# ANCRAGE : le nom doit etre suivi soit de `=` (espaces optionnels), soit d'au
+# moins un espace. Consequences voulues :
+#   - `minSdkVersion = 26` garde son nom COMPLET `minSdkVersion` ;
+#   - `minSdk 26` (Groovy sans `=`) est capture aussi ;
+#   - `// minSdk = 26` ne matche pas : la ligne doit COMMENCER par le nom ;
+#   - `minSdkFoo = 1` ne matche pas : apres le nom il faut `=` ou un espace.
+find_decl() {
+  # Python plutot que sed : une regex BRE imbriquee a deja produit un message
+  # trompeur (`minSdk = Version`). Ici l'ancrage est explicite, sans regex.
+  python3 - "$1" "$2" <<'PYDECL'
+import sys
+
+path, name = sys.argv[1], sys.argv[2]
+for raw in open(path, encoding="utf-8", errors="replace"):
+    line = raw.strip()
+    if not line or line.startswith("//"):
+        continue
+    for candidate in (name, name + "Version"):
+        if not line.startswith(candidate):
+            continue
+        rest = line[len(candidate):]
+        # ANCRAGE : apres le nom il faut "=" ou un espace, jamais une lettre.
+        # `minSdkFoo = 1` ne matche donc pas, et `minSdkVersion = 26` garde son
+        # nom complet au lieu d'etre lu comme `minSdk` + "Version".
+        head = rest[:1]
+        if not (head == "=" or (head != "" and head.isspace())):
+            continue
+        rest = rest.strip()
+        if rest.startswith("="):
+            rest = rest[1:].strip()
+        parts = rest.split()
+        value = parts[0] if parts else ""
+        print(candidate + "=" + value)
+        raise SystemExit(0)
+print("")
+PYDECL
+}
+
+# check_one <app> <declaration> <nom-canonique> <attendu> <rappel>
+check_one() {
+  local app="$1" decl="$2" canonical="$3" expected="$4" hint="$5"
+  local name value
+
+  if [[ -z "${decl}" ]]; then
+    fail "${app}: ${canonical} absent. Declarer \`${canonical} = ${expected}\` en litteral : ${hint}"
+    return
+  fi
+  name="${decl%%=*}"
+  value="${decl#*=}"
+
+  # Valeur implicite (flutter.*) : refusee meme si elle vaut aujourd'hui la
+  # bonne valeur, parce qu'elle bouge sans PR.
+  case "${value}" in
+    *flutter.*|*"${canonical}Version"*)
+      fail "${app}: ${canonical} implicite (\`${value}\`). Declarer \`${canonical} = ${expected}\` en litteral : ${hint}"
+      return
+      ;;
+  esac
+
+  # Alias Groovy historique : signale comme alias, avec sa valeur reelle -
+  # jamais comme une valeur tronquee (`minSdk = Version`).
+  if [[ "${name}" != "${canonical}" ]]; then
+    fail "${app}: \`${name}\` est l'alias Groovy historique de \`${canonical}\` (deprecie) : ecrire \`${canonical} = ${expected}\`. Valeur lue : ${value}."
+    return
+  fi
+
+  if [[ -z "${value}" ]]; then
+    fail "${app}: ${canonical} sans valeur. Declarer \`${canonical} = ${expected}\`."
+  elif [[ "${value}" != "${expected}" ]]; then
+    fail "${app}: ${canonical} = ${value}, attendu ${expected}."
+  fi
 }
 
 check_app() {
@@ -70,34 +127,12 @@ check_app() {
     return
   fi
 
-  local compile_sdk min_sdk
-  compile_sdk="$(read_prop "${build}" compileSdk)"
-  min_sdk="$(read_prop "${build}" minSdk)"
-
-  if [[ -z "${compile_sdk}" ]]; then
-    compile_sdk="$(read_prop "${build}" compileSdkVersion)"
-  fi
-  if [[ -z "${min_sdk}" ]]; then
-    min_sdk="$(read_prop "${build}" minSdkVersion)"
-  fi
-
-  # 1. compileSdk
-  if [[ -z "${compile_sdk}" ]]; then
-    fail "${app}: compileSdk absent de $(basename "${build}")."
-  elif [[ "${compile_sdk}" == *"compileSdkVersion"* ]]; then
-    fail "${app}: compileSdk implicite (\`${compile_sdk}\`). Declarer \`compileSdk = ${EXPECTED_COMPILE_SDK}\` en litteral : la valeur de Flutter est en retard sur les AAR du depot (minCompileSdk 37)."
-  elif [[ "${compile_sdk}" != "${EXPECTED_COMPILE_SDK}" ]]; then
-    fail "${app}: compileSdk = ${compile_sdk}, attendu ${EXPECTED_COMPILE_SDK}."
-  fi
-
-  # 2. minSdk
-  if [[ -z "${min_sdk}" ]]; then
-    fail "${app}: minSdk absent de $(basename "${build}")."
-  elif [[ "${min_sdk}" == *"minSdkVersion"* ]]; then
-    fail "${app}: minSdk implicite (\`${min_sdk}\`). Declarer \`minSdk = ${EXPECTED_MIN_SDK}\` en litteral : sentry_flutter (via leopardo_core) exige 26, et la contrainte traverse la dependance de package."
-  elif [[ "${min_sdk}" != "${EXPECTED_MIN_SDK}" ]]; then
-    fail "${app}: minSdk = ${min_sdk}, attendu ${EXPECTED_MIN_SDK}."
-  fi
+  check_one "${app}" "$(find_decl "${build}" 'compileSdk')" \
+    compileSdk "${EXPECTED_COMPILE_SDK}" \
+    "la valeur de Flutter est en retard sur les AAR du depot (minCompileSdk 37)."
+  check_one "${app}" "$(find_decl "${build}" 'minSdk')" \
+    minSdk "${EXPECTED_MIN_SDK}" \
+    "sentry_flutter (via leopardo_core) exige 26, et la contrainte traverse la dependance de package."
 }
 
 check_root() {
@@ -143,31 +178,65 @@ android {
 KTS
   }
 
-  expect() { # expect <attendu> <libelle> <racine>
-    local want="$1" label="$2" root="$3" rc=0
+  mkapp_groovy() { # mkapp_groovy <racine> <nom> <ligne-minSdk>
+    local root="$1" name="$2" min_line="$3"
+    mkdir -p "${root}/front/mobile_apps/${name}/android/app"
+    : > "${root}/front/mobile_apps/${name}/pubspec.yaml"
+    cat > "${root}/front/mobile_apps/${name}/android/app/build.gradle" <<GROOVY
+android {
+    compileSdk 37
+    defaultConfig {
+        ${min_line}
+    }
+}
+GROOVY
+  }
+
+  # expect <pass|fail> <libelle> <racine> [sous-chaine-attendue] [sous-chaine-interdite]
+  expect() {
+    local want="$1" label="$2" root="$3"
+    local want_msg="${4:-}" forbid_msg="${5:-}"
+    local out rc=0
     # `check_root` accumule dans `errors` et sort toujours 0 : on lit le
     # compteur DANS LE MEME SHELL (un sous-shell perdrait l'increment).
     errors=0
-    check_root "${root}" >/dev/null 2>&1 || true
+    # Sortie dans un FICHIER, pas en substitution de commande : `$(...)` ouvre
+    # un sous-shell, donc les `errors=$((errors+1))` de `check_root` seraient
+    # perdus et tous les cas passeraient pour verts.
+    local errfile="${tmp}/_expect_out"
+    check_root "${root}" >"${errfile}" 2>&1 || true
+    out="$(cat "${errfile}")"
     [[ ${errors} -eq 0 ]] || rc=1
+
     if [[ "${want}" == "pass" && ${rc} -ne 0 ]]; then
       echo "[android-sdk-versions --self-test] KO: ${label} aurait du etre VERT." >&2
+      echo "${out}" >&2
       return 1
     fi
     if [[ "${want}" == "fail" && ${rc} -eq 0 ]]; then
       echo "[android-sdk-versions --self-test] KO: ${label} aurait du etre ROUGE." >&2
       return 1
     fi
+    if [[ -n "${want_msg}" && "${out}" != *"${want_msg}"* ]]; then
+      echo "[android-sdk-versions --self-test] KO: ${label} - message attendu absent." >&2
+      echo "${out}" >&2
+      return 1
+    fi
+    if [[ -n "${forbid_msg}" && "${out}" == *"${forbid_msg}"* ]]; then
+      echo "[android-sdk-versions --self-test] KO: ${label} - message parasite present." >&2
+      echo "${out}" >&2
+      return 1
+    fi
     return 0
   }
 
-  # cas sain
+  # 1. cas sain (kotlin DSL, leopardo_core ignore car c'est un package)
   mkapp "${tmp}/ok" leopardo_employee 37 26
   mkdir -p "${tmp}/ok/front/mobile_apps/leopardo_core"
   : > "${tmp}/ok/front/mobile_apps/leopardo_core/pubspec.yaml"
   expect pass "etat conforme (37 / 26, leopardo_core ignore)" "${tmp}/ok"
 
-  # mutation 1 : l'ANCIEN etat du depot (valeurs implicites Flutter)
+  # 2. l'ANCIEN etat du depot (valeurs implicites Flutter)
   mkdir -p "${tmp}/old/front/mobile_apps/leopardo_pos_retail/android/app"
   : > "${tmp}/old/front/mobile_apps/leopardo_pos_retail/pubspec.yaml"
   cat > "${tmp}/old/front/mobile_apps/leopardo_pos_retail/android/app/build.gradle.kts" <<'KTS'
@@ -178,27 +247,39 @@ android {
     }
 }
 KTS
-  expect fail "ancien etat (flutter.compileSdkVersion / flutter.minSdkVersion)" "${tmp}/old"
+  expect fail "ancien etat (flutter.compileSdkVersion / flutter.minSdkVersion)" "${tmp}/old" "implicite"
 
-  # mutation 2 : compileSdk trop bas
+  # 3. compileSdk trop bas
   mkapp "${tmp}/csdk" leopardo_hr 36 26
-  expect fail "compileSdk = 36" "${tmp}/csdk"
+  expect fail "compileSdk = 36" "${tmp}/csdk" "compileSdk = 36, attendu 37"
 
-  # mutation 3 : minSdk trop bas
+  # 4. minSdk trop bas
   mkapp "${tmp}/msdk" leopardo_pos_restaurant 37 24
-  expect fail "minSdk = 24" "${tmp}/msdk"
+  expect fail "minSdk = 24" "${tmp}/msdk" "minSdk = 24, attendu 26"
 
-  # mutation 4 : app sans projet Android (echappe a la garde)
+  # 5. app sans projet Android (echappe a la garde)
   mkdir -p "${tmp}/noandroid/front/mobile_apps/leopardo_new"
   : > "${tmp}/noandroid/front/mobile_apps/leopardo_new/pubspec.yaml"
   mkapp "${tmp}/noandroid" leopardo_manager 37 26
-  expect fail "app sans android/app/build.gradle" "${tmp}/noandroid"
+  expect fail "app sans android/app/build.gradle" "${tmp}/noandroid" "aucun android/app/build.gradle"
 
-  # mutation 5 : aucune app detectee (liste vide)
+  # 6. aucune app detectee (liste vide)
   mkdir -p "${tmp}/empty/front/mobile_apps"
-  expect fail "arbre sans app (fail-closed)" "${tmp}/empty"
+  expect fail "arbre sans app (fail-closed)" "${tmp}/empty" "aucune app mobile detectee"
 
-  echo "[android-sdk-versions --self-test] OK: 5 cas (1 vert, 4 rouges) verifies."
+  # 7. Groovy : alias historique AVEC `=` et la BONNE valeur (26). Le nom
+  #    complet doit etre reconnu -> message d'alias, et surtout PAS un
+  #    `minSdk = Version` tronque (regression corrigee ici).
+  mkapp_groovy "${tmp}/groovy_eq" leopardo_travel_agent "minSdkVersion = 26"
+  expect fail "Groovy minSdkVersion = 26" "${tmp}/groovy_eq" \
+    "alias Groovy historique de \`minSdk\`" "minSdk = Version"
+
+  # 8. Groovy : alias historique SANS `=` (forme pre-AGP 7)
+  mkapp_groovy "${tmp}/groovy_sp" leopardo_accounting "minSdkVersion 24"
+  expect fail "Groovy minSdkVersion 24" "${tmp}/groovy_sp" \
+    "alias Groovy historique de \`minSdk\`" "minSdk = Version"
+
+  echo "[android-sdk-versions --self-test] OK: 8 cas (1 vert, 7 rouges) verifies."
 }
 
 if [[ "${1:-}" == "--self-test" ]]; then
