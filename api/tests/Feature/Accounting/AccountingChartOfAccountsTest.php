@@ -112,8 +112,25 @@ class AccountingChartOfAccountsTest extends TestCase
 
     public function test_assert_complete_passes_for_all_supported_countries(): void
     {
-        foreach (AccountingChartOfAccounts::supportedCountries() as $country) {
+        $countries = AccountingChartOfAccounts::supportedCountries();
+
+        $this->assertNotEmpty($countries, 'Le registre CountryDefaults ne doit pas etre vide.');
+
+        foreach ($countries as $country) {
             AccountingChartOfAccounts::assertComplete($country);
+
+            // assertComplete() ne fait que lever une exception : PHPUnit ne compte
+            // pas cela comme une assertion et signalait donc ce test « risky »
+            // (« did not perform any assertions »). On verifie explicitement le
+            // meme invariant pour que la garde soit reellement evaluee.
+            $this->assertSame(
+                [],
+                array_values(array_diff(
+                    AccountingChartOfAccounts::ACCOUNT_FAMILIES,
+                    array_keys(AccountingChartOfAccounts::for($country)),
+                )),
+                sprintf('Familles de comptes manquantes pour le pays %s.', $country),
+            );
         }
     }
 }

@@ -111,7 +111,6 @@ class PurchaseAndChartResolverTest extends TestCase
         return $lines;
     }
 
-
     /**
      * Ligne d'écriture d'un compte, ou zéro si le compte n'a pas été mouvementé.
      * Évite les « Offset does not exist » de PHPStan sur un tableau construit
@@ -270,6 +269,14 @@ class PurchaseAndChartResolverTest extends TestCase
         $lines = $this->linesOf($invoice);
 
         // SYSCOHADA révisé : 411 Clients / 706 Services vendus / 44571 TVA collectée.
+        // Montants identiques au PCG (HT 1 000 + TVA 19 % = 1 190) : c'est la
+        // numérotation des comptes qui change, d'où l'assertion sur 44571 et
+        // l'absence du 4457 français. Sans ces assertions le test était signalé
+        // « risky » (aucune assertion exécutée).
+        $this->assertSame(1190.0, $this->line($lines, '411')['debit']);
+        $this->assertSame(1000.0, $this->line($lines, '706')['credit']);
+        $this->assertSame(190.0, $this->line($lines, '44571')['credit']);
+        $this->assertArrayNotHasKey('4457', $lines);
     }
 
     public function test_pcg_tenant_keeps_historical_accounts(): void
