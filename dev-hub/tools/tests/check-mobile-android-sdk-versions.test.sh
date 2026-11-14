@@ -30,10 +30,10 @@ if ! out="$(bash "${guard}" --self-test 2>&1)"; then
   echo "${out}" >&2
   fail "l'auto-test de la garde echoue."
 fi
-[[ "${out}" == *"OK: 8 cas"* ]] || fail "auto-test incomplet (8 cas attendus) : ${out}"
+[[ "${out}" == *"OK: 9 cas"* ]] || fail "auto-test incomplet (8 cas attendus) : ${out}"
 # Le cas Groovy est explicitement couvert : l'ancrage des noms est le bug
 # corrige le 2026-11-14 (`minSdkVersion = 26` lu comme `minSdk` + "Version").
-[[ "${out}" == *"cas (1 vert, 7 rouges)"* ]] || fail "repartition des cas inattendue : ${out}"
+[[ "${out}" == *"cas (1 vert, 8 rouges)"* ]] || fail "repartition des cas inattendue : ${out}"
 
 # 2. Vert sur le depot courant (les 11 apps sont en 37 / 26 depuis #9471).
 if ! out="$(bash "${guard}" "${root}" 2>&1)"; then
