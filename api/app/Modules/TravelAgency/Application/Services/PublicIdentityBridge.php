@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Application\Services;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\User;
 use App\Modules\TravelAgency\Domain\Models\TravelCustomerAccount;
 use App\Support\PhoneNumber;
@@ -101,9 +102,74 @@ final class PublicIdentityBridge
             return $account;
         }
 
+        // ADR §8.3-3 — audit systématique. On capture l'ANCIEN `user_id`
+        // AVANT l'écriture : après le `save()`, il n'est plus lisible, et un
+        // journal qui ne dit pas d'où l'on vient ne permet pas de défaire un
+        // rattachement erroné.
+        $previousUserId = $account->user_id;
+
         $account->forceFill(['user_id' => $user->id])->save();
 
+        $this->recordAttachment($account, $previousUserId, $user);
+
         return $account->refresh();
+    }
+
+    /**
+     * Écrit la ligne `audit_logs` du rattachement (ADR §8.3-3).
+     *
+     * ## Pourquoi l'audit ne peut pas faire échouer le rattachement
+     *
+     * Le rattachement est déjà écrit quand on arrive ici. Faire échouer
+     * l'opération parce que le journal est indisponible laisserait le compte
+     * dans un état où `user_id` est écrit SANS trace — exactement ce que
+     * l'ADR interdit. On journalise donc l'échec d'audit dans le log
+     * applicatif (niveau `error`, avec l'identifiant du compte) plutôt que de
+     * propager : la trace existe quelque part, et l'opération reste cohérente.
+     *
+     * ## Ce que la ligne contient
+     *
+     * Acteur (`user_id` = le `users` rattaché), ancien `user_id`, nouveau,
+     * numéro vérifié, motif, horodatage. Aucun contenu métier : c'est une
+     * trace d'identité, pas une donnée de réservation.
+     */
+    private function recordAttachment(
+        TravelCustomerAccount $account,
+        ?int $previousUserId,
+        User $user,
+    ): void {
+        try {
+            AuditLog::create([
+                // `company_id` reste NULL : le rattachement est un événement
+                // PLATEFORME, il n'appartient à aucun tenant.
+                'company_id' => null,
+                'user_id' => $user->id,
+                'action' => 'public_identity.attached',
+                'module' => 'public_identity',
+                'auditable_type' => TravelCustomerAccount::class,
+                'auditable_id' => (string) $account->id,
+                'old_values' => ['user_id' => $previousUserId],
+                'new_values' => ['user_id' => $user->id],
+                'metadata' => [
+                    // Le numéro est la PREUVE du rattachement : sans lui, la
+                    // ligne ne dit pas pourquoi ces deux identités ont été
+                    // jointes.
+                    'verified_phone' => $account->phone_e164,
+                    'reason' => 'verified_phone_bridge',
+                    'account_id' => $account->id,
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            // La couche Application ne depend pas de la facade Log (garde de
+            // purete des couches). On passe par le helper `logger()`, qui rend
+            // le meme service sans importer Illuminate\Support\Facades.
+            logger()->error('public_identity_audit_failed', [
+                'account_id' => $account->id,
+                'user_id' => $user->id,
+                'previous_user_id' => $previousUserId,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
