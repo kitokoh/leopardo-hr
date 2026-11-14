@@ -87,6 +87,7 @@ final class PublicIdentityBridgeAuditTest extends TestCase
         $this->bridge->link($account, $user);
 
         $log = AuditLog::query()->firstOrFail();
+        $this->assertInstanceOf(AuditLog::class, $log);
 
         $this->assertSame('public_identity.attached', $log->action);
         $this->assertSame('public_identity', $log->module);
@@ -116,6 +117,7 @@ final class PublicIdentityBridgeAuditTest extends TestCase
         $this->bridge->link($account, $user);
 
         $log = AuditLog::query()->firstOrFail();
+        $this->assertInstanceOf(AuditLog::class, $log);
 
         $this->assertSame('+221770001003', $log->metadata['verified_phone'] ?? null);
         $this->assertSame('verified_phone_bridge', $log->metadata['reason'] ?? null);
@@ -129,6 +131,7 @@ final class PublicIdentityBridgeAuditTest extends TestCase
         $this->bridge->link($account, $user);
 
         $log = AuditLog::query()->firstOrFail();
+        $this->assertInstanceOf(AuditLog::class, $log);
 
         // Le rattachement n'appartient à aucun tenant : `company_id` NULL est
         // la marque d'un événement plateforme.
@@ -156,8 +159,11 @@ final class PublicIdentityBridgeAuditTest extends TestCase
 
         $this->assertCount(2, $logs, 'Deux rattachements distincts = deux lignes.');
 
-        $this->assertSame($first->id, $logs[1]->old_values['user_id']);
-        $this->assertSame($second->id, $logs[1]->new_values['user_id']);
+        $secondLog = $logs[1];
+        $this->assertInstanceOf(AuditLog::class, $secondLog);
+
+        $this->assertSame($first->id, $secondLog->old_values['user_id']);
+        $this->assertSame($second->id, $secondLog->new_values['user_id']);
     }
 
     // ────────────────────────────────────────────────────────────────────────
