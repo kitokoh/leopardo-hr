@@ -138,10 +138,6 @@ return [
         'statement_year_invalid' => 'Invalid fiscal year.',
         'statement_period_invalid' => 'Invalid accounting period (YYYY-MM).',
         'vat_period_invalid' => 'Invalid period. Use the YYYY-MM format.',
-        'wf_unknown_tax_rate' => 'The VAT rate ":code" does not exist in your tax reference.',
-        'tax_rate_in_use' => 'This VAT rate is used by document lines: deactivate it instead of deleting it.',
-        'cancel_paid_document' => 'A document that has already been paid cannot be cancelled: issue a credit note.',
-        'close_period_forbidden' => 'Closing an accounting period is reserved for the company principal.',
     ],
 
     // Default VAT labels (issue #5227)
