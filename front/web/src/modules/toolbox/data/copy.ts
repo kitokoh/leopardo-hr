@@ -56,6 +56,14 @@ export interface ToolboxCopy {
     share: string;
     shared: string;
     shareFailed: string;
+    /** Titre de la section « outils similaires » en bas de page d'outil. */
+    related: string;
+    /** Frontière d'erreur du segment `/toolbox` (jamais la frontière racine). */
+    errorTitle: string;
+    errorBody: string;
+    errorRetry: string;
+    /** Exigence technique annoncée dans le JSON-LD (`browserRequirements`). */
+    browserRequirements: string;
   };
   /**
    * Espace personnel « Mes outils » (favoris + historique).
@@ -131,6 +139,12 @@ const fr: ToolboxCopy = {
     share: 'Partager ce calcul',
     shared: 'Lien copié',
     shareFailed: 'Copie impossible — sélectionnez le lien ci-dessous :',
+    related: 'Outils similaires',
+    errorTitle: 'Cet outil a rencontré un problème',
+    errorBody:
+      'Le calcul n’a pas pu s’afficher. Le reste du site continue de fonctionner — vous pouvez réessayer ou revenir au catalogue.',
+    errorRetry: 'Réessayer',
+    browserRequirements: 'Nécessite JavaScript',
   },
   myTools: {
     title: 'Mes outils',
@@ -426,6 +440,12 @@ const en: ToolboxCopy = {
     share: 'Share this calculation',
     shared: 'Link copied',
     shareFailed: 'Copy failed — select the link below:',
+    related: 'Similar tools',
+    errorTitle: 'This tool ran into a problem',
+    errorBody:
+      'The calculation could not be displayed. The rest of the site keeps working — you can retry or go back to the catalogue.',
+    errorRetry: 'Retry',
+    browserRequirements: 'Requires JavaScript',
   },
   myTools: {
     title: 'My tools',
@@ -717,6 +737,12 @@ const tr: ToolboxCopy = {
     share: 'Bu hesaplamayı paylaş',
     shared: 'Bağlantı kopyalandı',
     shareFailed: 'Kopyalanamadı — aşağıdaki bağlantıyı seçin:',
+    related: 'Benzer araçlar',
+    errorTitle: 'Bu araçta bir sorun oluştu',
+    errorBody:
+      'Hesaplama görüntülenemedi. Sitenin geri kalanı çalışmaya devam ediyor — yeniden deneyebilir veya kataloğa dönebilirsiniz.',
+    errorRetry: 'Yeniden dene',
+    browserRequirements: 'JavaScript gerektirir',
   },
   myTools: {
     title: 'Araçlarım',
@@ -1004,6 +1030,12 @@ const ar: ToolboxCopy = {
     share: 'مشاركة هذا الحساب',
     shared: 'تم نسخ الرابط',
     shareFailed: 'تعذّر النسخ — حدّد الرابط أدناه:',
+    related: 'أدوات مشابهة',
+    errorTitle: 'واجهت هذه الأداة مشكلة',
+    errorBody:
+      'تعذّر عرض الحساب. بقية الموقع تعمل بشكل طبيعي — يمكنك إعادة المحاولة أو العودة إلى الكتالوج.',
+    errorRetry: 'إعادة المحاولة',
+    browserRequirements: 'يتطلب JavaScript',
   },
   myTools: {
     title: 'أدواتي',

@@ -69,7 +69,15 @@ export function ResultPanel({ title, rows, copyLabel, copiedLabel, copyText, sha
         </button>
       </div>
 
-      <dl className="space-y-3">
+      {/*
+        Région live : le résultat est recalculé à chaque frappe, mais un lecteur
+        d'écran n'annonce rien sans `aria-live`. `polite` (et non `assertive`)
+        pour ne pas interrompre la saisie en cours ; `aria-atomic` pour que la
+        phrase annoncée soit le bloc complet et non le seul fragment modifié.
+        Les boutons Copier/Partager restent HORS de la région : sinon chaque
+        recalcul ré-annoncerait les libellés d'action.
+      */}
+      <dl aria-live="polite" aria-atomic="true" className="space-y-3">
         {rows.map((row) => (
           <div key={row.label} className="flex items-baseline justify-between gap-4">
             <dt className="text-sm text-slate-600 dark:text-slate-400">{row.label}</dt>
