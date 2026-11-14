@@ -78,6 +78,25 @@ runs:
         tools: ${{ inputs.tools }}
         coverage: ${{ inputs.coverage }}
 
+    # Issue #9477 : `ShellResumeTextExtractor` (module Recruitment) appelle le
+    # binaire `pdftotext` (poppler-utils) pour extraire le texte des CV PDF.
+    # Le runner `ubuntu-latest` ne l'embarque pas : `ResumeTextExtractorTest >
+    # it extracts text from a pdf` échouait donc en `assertNotNull(null)` sur
+    # CHAQUE run de `main` (constaté sur 0399e590, étape « Run backend unit
+    # tests »), et faisait tomber tout le job Backend. Le paquet est installé
+    # ici, dans l'action partagée, pour que tous les jobs backend (tests,
+    # coverage, shards) voient le même environnement.
+    - name: Install PDF text extraction tooling (poppler-utils)
+      shell: bash
+      run: |
+        if command -v pdftotext >/dev/null 2>&1; then
+          echo "pdftotext déjà présent : $(pdftotext -v 2>&1 | head -1)"
+          exit 0
+        fi
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq poppler-utils
+        pdftotext -v 2>&1 | head -1
+
     - name: Resolve Composer cache directory
       id: composer-cache
       shell: bash
