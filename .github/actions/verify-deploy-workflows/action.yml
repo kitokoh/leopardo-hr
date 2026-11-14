@@ -131,23 +131,22 @@ runs:
           if (EVENT === 'push') {
             core.info(`Push-triggered deploy: polling runs for ${sha} (web_changed=${webChanged}).`);
             // #9336 — le budget par défaut DOIT couvrir la durée réelle de la
-            // suite backend, pas l'inverse. Mesuré en production le 2026-11-10 :
-            // `Tests - Leopardo` nominal dure 45-82 min (plafond d'étape 150,
-            // plafond de job 300). Avec l'ancien défaut de 30 min, TOUT merge
-            // `api/**` épuisait le budget pendant que la suite progressait
-            // encore : le gate rendait `pending` -> `should_deploy=false` ->
-            // job « Deploy API + Web to Render » `skipped`. Le workflow restait
-            // VERT et le tier dev ne recevait plus aucun déploiement (figé sur
-            // `6020118` du 7 nov alors que `main` avançait). Le défaut est donc
-            // porté à 100 min : au-dessus de la durée NOMINALE observée
-            // (45-82 min), et strictement en dessous du `timeout-minutes` du
-            // job `prepare` qui le porte (120 min) — un budget supérieur au
-            // timeout du job serait inapplicable.
+            // suite backend, pas l'inverse.
+            // #9464 — la valeur de #9336 (100 min) reposait sur une ESTIMATION
+            // de 45-82 min qui ne correspondait à aucun run réel. Mesure du
+            // 2026-11-14 sur les 15 derniers runs de main : médiane 240 min,
+            // maximum 533 min. Le gate a consommé ses 100,6 min puis rendu
+            // `pending` — le déploiement n'a jamais eu lieu. Le défaut est donc
+            // porté à 300 min, strictement au-dessus de la médiane mesurée et
+            // strictement en dessous du `timeout-minutes` du job `prepare` qui
+            // le porte (360 min). Ces trois valeurs vivent dans
+            // `dev-hub/tools/deploy-gate-budget.env` et sont vérifiées par
+            // `dev-hub/tools/check-deploy-gate-budget.sh` (check requis).
             //
             // Ce n'est pas une attente infinie : au-delà, le comportement reste
             // inchangé (motif `pending`, `should_deploy=false`) et
             // `deploy-main-catchup` reprend la main à l'heure suivante.
-            const budgetMinutes = Number(process.env.DEPLOY_GATE_BUDGET_MINUTES ?? '100');
+            const budgetMinutes = Number(process.env.DEPLOY_GATE_BUDGET_MINUTES ?? '300');
             const deadline = Date.now() + budgetMinutes * 60 * 1000;
             const intervalMs = 60 * 1000;
             let consecutiveEmpty = 0;
