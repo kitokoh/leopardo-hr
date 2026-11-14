@@ -294,7 +294,21 @@ android {
 KTS
   expect fail "ligne minSdk absente" "${tmp}/nomsdk" "minSdk absent"
 
-  echo "[android-sdk-versions --self-test] OK: 9 cas (1 vert, 8 rouges) verifies."
+  # 10. ligne compileSdk completement ABSENTE : symetrique du cas 9 pour
+  #     l'autre propriete (l'ordre de check_one est compileSdk puis minSdk).
+  mkdir -p "${tmp}/nosdk/front/mobile_apps/leopardo_vente/android/app"
+  : > "${tmp}/nosdk/front/mobile_apps/leopardo_vente/pubspec.yaml"
+  cat > "${tmp}/nosdk/front/mobile_apps/leopardo_vente/android/app/build.gradle.kts" <<'KTS'
+android {
+    defaultConfig {
+        minSdk = 26
+        targetSdk = 36
+    }
+}
+KTS
+  expect fail "ligne compileSdk absente" "${tmp}/nosdk" "compileSdk absent"
+
+  echo "[android-sdk-versions --self-test] OK: 10 cas (1 vert, 9 rouges) verifies."
 }
 
 if [[ "${1:-}" == "--self-test" ]]; then
