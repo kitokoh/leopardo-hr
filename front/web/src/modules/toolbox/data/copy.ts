@@ -62,6 +62,8 @@ export interface ToolboxCopy {
     errorTitle: string;
     errorBody: string;
     errorRetry: string;
+    /** Exigence technique annoncée dans le JSON-LD (`browserRequirements`). */
+    browserRequirements: string;
   };
   /**
    * Espace personnel « Mes outils » (favoris + historique).
@@ -142,6 +144,7 @@ const fr: ToolboxCopy = {
     errorBody:
       'Le calcul n’a pas pu s’afficher. Le reste du site continue de fonctionner — vous pouvez réessayer ou revenir au catalogue.',
     errorRetry: 'Réessayer',
+    browserRequirements: 'Nécessite JavaScript',
   },
   myTools: {
     title: 'Mes outils',
@@ -442,6 +445,7 @@ const en: ToolboxCopy = {
     errorBody:
       'The calculation could not be displayed. The rest of the site keeps working — you can retry or go back to the catalogue.',
     errorRetry: 'Retry',
+    browserRequirements: 'Requires JavaScript',
   },
   myTools: {
     title: 'My tools',
@@ -738,6 +742,7 @@ const tr: ToolboxCopy = {
     errorBody:
       'Hesaplama görüntülenemedi. Sitenin geri kalanı çalışmaya devam ediyor — yeniden deneyebilir veya kataloğa dönebilirsiniz.',
     errorRetry: 'Yeniden dene',
+    browserRequirements: 'JavaScript gerektirir',
   },
   myTools: {
     title: 'Araçlarım',
@@ -1030,6 +1035,7 @@ const ar: ToolboxCopy = {
     errorBody:
       'تعذّر عرض الحساب. بقية الموقع تعمل بشكل طبيعي — يمكنك إعادة المحاولة أو العودة إلى الكتالوج.',
     errorRetry: 'إعادة المحاولة',
+    browserRequirements: 'يتطلب JavaScript',
   },
   myTools: {
     title: 'أدواتي',

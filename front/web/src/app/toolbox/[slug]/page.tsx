@@ -87,7 +87,13 @@ export default async function ToolPage({ params }: ToolPageProps) {
 
   // Données structurées : décrit ce que la page EST (outil gratuit, sans
   // compte, exécuté côté client). Aucune note ni avis n'est inventé.
-  const schema = buildToolSchema(tool, toolCopy.name, toolCopy.description, locale);
+  const schema = buildToolSchema(
+    tool,
+    toolCopy.name,
+    toolCopy.description,
+    locale,
+    copy.common.browserRequirements,
+  );
 
   // Outils similaires : même catégorie d'abord, l'outil courant toujours exclu.
   const relatedItems: RelatedToolItem[] = getRelatedTools(slug, 3).map((related) => ({

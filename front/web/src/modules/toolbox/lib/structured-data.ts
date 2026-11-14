@@ -49,18 +49,32 @@ const SCHEMA_LOCALES: Record<string, string> = {
 };
 
 /**
+ * Constantes d'échappement JSON-LD.
+ *
+ * `JSON.stringify` n'échappe pas `<` : une description contenant `</script>`
+ * fermerait la balise et injecterait du HTML. Ces séquences Unicode gardent le
+ * JSON valide et identique après parsing. Ce sont des constantes TECHNIQUES
+ * (pas du texte utilisateur) — d'où leur extraction ici.
+ */
+const LT = '\\u003c';
+const GT = '\\u003e';
+const AMP = '\\u0026';
+
+/**
  * Construit le schéma `WebApplication` d'un outil.
  *
  * @param tool   Définition du catalogue (métadonnées uniquement).
  * @param name   Nom localisé de l'outil.
  * @param description Description localisée.
  * @param locale Locale de la page (fr/en/tr/ar).
+ * @param browserRequirements Exigence technique localisée (catalogue i18n).
  */
 export function buildToolSchema(
   tool: ToolDefinition,
   name: string,
   description: string,
   locale: string,
+  browserRequirements: string,
 ): WebApplicationSchema {
   return {
     '@context': 'https://schema.org',
@@ -70,7 +84,7 @@ export function buildToolSchema(
     url: `${SITE_URL}/toolbox/${tool.slug}`,
     applicationCategory: 'UtilitiesApplication',
     operatingSystem: 'Any',
-    browserRequirements: 'Requires JavaScript',
+    browserRequirements,
     inLanguage: SCHEMA_LOCALES[locale] ?? SCHEMA_LOCALES.fr,
     isAccessibleForFree: true,
     offers: {
@@ -95,7 +109,7 @@ export function buildToolSchema(
  */
 export function serializeSchema(schema: unknown): string {
   return JSON.stringify(schema)
-    .replace(/</g, '\\u003c')
-    .replace(/>/g, '\\u003e')
-    .replace(/&/g, '\\u0026');
+    .replace(/</g, LT)
+    .replace(/>/g, GT)
+    .replace(/&/g, AMP);
 }
