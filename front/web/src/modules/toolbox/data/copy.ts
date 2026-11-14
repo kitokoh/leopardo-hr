@@ -56,6 +56,10 @@ export interface ToolboxCopy {
     share: string;
     shared: string;
     shareFailed: string;
+    /** Export du résultat dans un fichier texte (100 % côté client). */
+    export: string;
+    exported: string;
+    exportFailed: string;
     /** Titre de la section « outils similaires » en bas de page d'outil. */
     related: string;
     /** Frontière d'erreur du segment `/toolbox` (jamais la frontière racine). */
@@ -139,6 +143,9 @@ const fr: ToolboxCopy = {
     share: 'Partager ce calcul',
     shared: 'Lien copié',
     shareFailed: 'Copie impossible — sélectionnez le lien ci-dessous :',
+    export: 'Exporter le résultat',
+    exported: 'Fichier téléchargé',
+    exportFailed: 'Export impossible dans ce navigateur',
     related: 'Outils similaires',
     errorTitle: 'Cet outil a rencontré un problème',
     errorBody:
@@ -440,6 +447,9 @@ const en: ToolboxCopy = {
     share: 'Share this calculation',
     shared: 'Link copied',
     shareFailed: 'Copy failed — select the link below:',
+    export: 'Export the result',
+    exported: 'File downloaded',
+    exportFailed: 'Export not available in this browser',
     related: 'Similar tools',
     errorTitle: 'This tool ran into a problem',
     errorBody:
@@ -737,6 +747,9 @@ const tr: ToolboxCopy = {
     share: 'Bu hesaplamayı paylaş',
     shared: 'Bağlantı kopyalandı',
     shareFailed: 'Kopyalanamadı — aşağıdaki bağlantıyı seçin:',
+    export: 'Sonucu dışa aktar',
+    exported: 'Dosya indirildi',
+    exportFailed: 'Bu tarayıcıda dışa aktarma kullanılamıyor',
     related: 'Benzer araçlar',
     errorTitle: 'Bu araçta bir sorun oluştu',
     errorBody:
@@ -1030,6 +1043,9 @@ const ar: ToolboxCopy = {
     share: 'مشاركة هذا الحساب',
     shared: 'تم نسخ الرابط',
     shareFailed: 'تعذّر النسخ — حدّد الرابط أدناه:',
+    export: 'تصدير النتيجة',
+    exported: 'تم تنزيل الملف',
+    exportFailed: 'التصدير غير متاح في هذا المتصفح',
     related: 'أدوات مشابهة',
     errorTitle: 'واجهت هذه الأداة مشكلة',
     errorBody:
