@@ -8,11 +8,12 @@ plugins {
 
 android {
     namespace = "com.leopardo.employee"
-    // permission_handler est pinné en ^12.0.1 (audit #1715) : son implémentation
-    // Android (permission_handler_android 13.0.0) compile en SDK 35, donc
-    // flutter.compileSdkVersion (36 sur stable) suffit. Pas de dépendance au
-    // SDK preview android-37 (indisponible sur le canal stable de Google).
-    compileSdk = flutter.compileSdkVersion
+    // compileSdk = 37 (et non flutter.compileSdkVersion, encore à 36) : les AAR
+    // de flutter_local_notifications 23 et androidx.core 1.19 déclarent
+    // `minCompileSdk 37`, et :app:checkDebugAarMetadata refuse de compiler sinon.
+    // AGP 9.1 résout l'entier 37 vers le hash « android-37.0 » : la CI installe
+    // donc platforms;android-37.0, et pas une autre mineure (#9465).
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

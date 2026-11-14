@@ -4,7 +4,7 @@
 # (issue #7519)
 #
 # Pourquoi : `.github/actions/setup-flutter-android` demandait
-# `packages: 'tools platform-tools platforms;android-36 build-tools;36.0.0'`.
+# `packages: 'tools platform-tools platforms;android-37.0 build-tools;37.0.0'`.
 # Les runners GitHub embarquent cmdline-tools 12.0, que
 # `android-actions/setup-android` juge « wrong version » et remplace par
 # cmdline-tools **20.0**. Dans 20.0, le paquet hérité `tools` n'existe plus :
@@ -104,9 +104,13 @@ PYEXTRACT
     fi
   done
 
-  # Le cœur du besoin doit rester présent : compiler en compileSdk 36.
-  if ! printf '%s' "${packages}" | grep -q 'platforms;android-36'; then
-    fail "${ACTION_PATH} : platforms;android-36 absent — les apps compilent en compileSdk 36 (flutter.compileSdkVersion)."
+  # Le cœur du besoin doit rester présent : compiler en compileSdk 37.
+  # Le nom EXACT compte : `compileSdk = 37` se résout en hash `android-37.0`
+  # sous AGP 9.1, donc `platforms;android-37.1` (ou -37.2) ne le satisfait pas —
+  # Gradle échouerait sur « Failed to find target with hash string
+  # 'android-37.0' ». Voir #9465.
+  if ! printf '%s' "${packages}" | grep -qE '(^| )platforms;android-37\.0( |$)'; then
+    fail "${ACTION_PATH} : platforms;android-37.0 absent ou mal nommé — les apps compilent en compileSdk 37, que AGP résout en android-37.0 (une autre mineure, ex. android-37.1, ne suffit pas)."
   fi
 
   [[ ${errors} -eq ${before} ]] || return 1
@@ -124,10 +128,10 @@ self_test() {
 runs:
   using: "composite"
   steps:
-    - name: Setup Android SDK (platform 36)
+    - name: Setup Android SDK (platform 37.0)
       uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
       with:
-        packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
+        packages: 'platform-tools platforms;android-37.0 build-tools;37.0.0'
 YAML
   if ! check_action "${tmp}" >/dev/null 2>&1; then
     echo "::error::[android-sdk --self-test] la liste corrigée est refusée — garde trop stricte." >&2
@@ -139,10 +143,10 @@ YAML
 runs:
   using: "composite"
   steps:
-    - name: Setup Android SDK (platform 36)
+    - name: Setup Android SDK (platform 37.0)
       uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
       with:
-        packages: 'tools platform-tools platforms;android-36 build-tools;36.0.0'
+        packages: 'tools platform-tools platforms;android-37.0 build-tools;37.0.0'
 YAML
   if ( check_action "${tmp}" ) 2>/dev/null; then
     echo "::error::[android-sdk --self-test] le retour du paquet « tools » n'est pas détecté." >&2
@@ -154,13 +158,29 @@ YAML
 runs:
   using: "composite"
   steps:
-    - name: Setup Android SDK (platform 36)
+    - name: Setup Android SDK (platform 37.0)
       uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
       with:
         packages: 'platform-tools platforms;android-37-preview'
 YAML
   if ( check_action "${tmp}" ) 2>/dev/null; then
     echo "::error::[android-sdk --self-test] un paquet inconnu n'est pas détecté." >&2
+    return 1
+  fi
+
+  # mutation 3 : plateforme API 37 installee sous une AUTRE mineure (android-37.1)
+  # compileSdk = 37 se resout en android-37.0 -> Gradle echouerait ; la garde doit refuser.
+  cat > "${tmp}/${ACTION_PATH}" <<'YAML'
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Android SDK (platform 37.1)
+      uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
+      with:
+        packages: 'platform-tools platforms;android-37.1 build-tools;37.0.0'
+YAML
+  if ( check_action "${tmp}" ) 2>/dev/null; then
+    echo "::error::[android-sdk --self-test] une mineure 37.1 au lieu de 37.0 n'est pas détectée." >&2
     return 1
   fi
 
@@ -175,5 +195,5 @@ else
     echo "::error::[android-sdk] ${errors} problème(s) — voir ci-dessus (#7519)."
     exit 1
   fi
-  echo "✅  Paquets Android SDK connus de cmdline-tools 20.0 (platform 36 présent, aucun paquet hérité)."
+  echo "✅  Paquets Android SDK connus de cmdline-tools 20.0 (platform 37.0 présent, aucun paquet hérité)."
 fi

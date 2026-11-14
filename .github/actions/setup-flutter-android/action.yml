@@ -40,11 +40,18 @@ runs:
         flutter-version: ${{ inputs.flutter-version }}
         cache: true
 
-    # Les apps mobiles compilent en compileSdk 36 (flutter.compileSdkVersion,
-    # permission_handler pinné en ^12 — audit #1715). La plateforme
-    # platforms;android-37 n'existe PAS sur le canal stable de Google
-    # (canal preview uniquement, répertoire android-37.0 non reconnu par AGP) :
-    # on installe donc le SDK stable android-36 + build-tools 36.
+    # Les apps mobiles compilent en compileSdk 37 depuis #9465 : les AAR de
+    # flutter_local_notifications 23 et androidx.core 1.19 declarent
+    # `minCompileSdk 37` et `:app:checkDebugAarMetadata` refuse sinon.
+    #
+    # Piege verifie sur depot Android officiel (repository2-3.xml) : la
+    # plateforme API 37 n'est publiee que sous des noms VERSIONNES
+    # (`platforms;android-37.0`, `-37.1`, `-37.2`, toutes sur channel-0 =
+    # stable). Il n'existe pas de `platforms;android-37` nu, et `compileSdk = 37`
+    # (forme entiere) se resout en hash **android-37.0** — pas en android-37.1 :
+    # installer une autre mineure laisse Gradle echouer sur
+    # « Failed to find target with hash string 'android-37.0' ».
+    #
     # android-actions/setup-android (pinné, #1706) pose ANDROID_HOME/
     # ANDROID_SDK_ROOT dans GITHUB_ENV et accepte les licences de façon fiable.
     #
@@ -59,21 +66,21 @@ runs:
     # l'ère cmdline-tools 12 ; c'est `setup-android` lui-même qui installe
     # désormais cmdline-tools — le demander est au mieux inutile, au pire fatal.
     # Seuls des paquets qui EXISTENT dans 20.0 sont demandés ici.
-    - name: Setup Android SDK (platform 36)
+    - name: Setup Android SDK (platform 37.0)
       uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
       with:
-        packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
+        packages: 'platform-tools platforms;android-37.0 build-tools;37.0.0'
 
     - name: Guard — no legacy Android SDK package requested (issue #7519)
       shell: bash
       run: bash dev-hub/tools/check-android-sdk-packages.sh
 
-    - name: Verify Android SDK platform 36
+    - name: Verify Android SDK platform 37.0
       shell: bash
       run: |
         echo "ANDROID_HOME=${ANDROID_HOME:-<unset>}"
-        if [[ -d "${ANDROID_HOME}/platforms/android-36" ]]; then
-          echo "platforms;android-36 OK (${ANDROID_HOME}/platforms/android-36)."
+        if [[ -d "${ANDROID_HOME}/platforms/android-37.0" ]]; then
+          echo "platforms;android-37.0 OK (${ANDROID_HOME}/platforms/android-37.0)."
         else
-          echo "::warning::platforms;android-36 absent (ANDROID_HOME=${ANDROID_HOME}) — builds Android peuvent échouer."
+          echo "::warning::platforms;android-37.0 absent (ANDROID_HOME=${ANDROID_HOME}) — builds Android peuvent échouer."
         fi
