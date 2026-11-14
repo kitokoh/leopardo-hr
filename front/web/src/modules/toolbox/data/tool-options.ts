@@ -152,6 +152,51 @@ export const SHAPE_LABELS: Record<ToolboxLocale, Record<string, string>> = {
   },
 };
 
+/**
+ * Libellés des jours de la semaine (outil `calcul-date-echeance`).
+ *
+ * Indexés par `Date.getUTCDay()` : 0 = dimanche … 6 = samedi. L'ordre suit donc
+ * la convention JavaScript, pas la convention française « lundi = 1 ».
+ */
+export const WEEKDAY_LABELS: Record<ToolboxLocale, Record<number, string>> = {
+  fr: {
+    0: 'Dimanche',
+    1: 'Lundi',
+    2: 'Mardi',
+    3: 'Mercredi',
+    4: 'Jeudi',
+    5: 'Vendredi',
+    6: 'Samedi',
+  },
+  en: {
+    0: 'Sunday',
+    1: 'Monday',
+    2: 'Tuesday',
+    3: 'Wednesday',
+    4: 'Thursday',
+    5: 'Friday',
+    6: 'Saturday',
+  },
+  tr: {
+    0: 'Pazar',
+    1: 'Pazartesi',
+    2: 'Salı',
+    3: 'Çarşamba',
+    4: 'Perşembe',
+    5: 'Cuma',
+    6: 'Cumartesi',
+  },
+  ar: {
+    0: 'الأحد',
+    1: 'الاثنين',
+    2: 'الثلاثاء',
+    3: 'الأربعاء',
+    4: 'الخميس',
+    5: 'الجمعة',
+    6: 'السبت',
+  },
+};
+
 /** Libellés des modes de transport (outil `cbm-poids-volumetrique`). */
 export const FREIGHT_MODE_LABELS: Record<ToolboxLocale, Record<string, string>> = {
   fr: {

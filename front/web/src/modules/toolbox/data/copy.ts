@@ -391,6 +391,30 @@ const fr: ToolboxCopy = {
         'Résultat approximatif : il ne remplace pas un bulletin de paie.',
       ],
     },
+    'calcul-date-echeance': {
+      name: 'Calcul de date d’échéance',
+      description:
+        'Projetez une date dans le futur ou le passé : jours calendaires, jours ouvrés, mois ou années.',
+      fields: { startDate: 'Date de départ', amount: 'Décalage', unit: 'Unité' },
+      options: {
+        jours: 'Jours calendaires',
+        'jours-ouvres': 'Jours ouvrés (lun-ven)',
+        mois: 'Mois',
+        annees: 'Années',
+      },
+      results: {
+        date: 'Date obtenue',
+        weekday: 'Jour de la semaine',
+        totalDays: 'Décalage en jours',
+        businessDays: 'Jours ouvrés décomptés',
+      },
+      notes: [
+        'Un décalage négatif remonte dans le passé (ex. -30 jours).',
+        'Les mois et les années bornent le jour à la longueur du mois d’arrivée (31 janv. + 1 mois = 28/29 févr.).',
+        'Les jours ouvrés excluent samedi et dimanche, mais AUCUN jour férié n’est connu de l’outil.',
+        'Résultat théorique : il ne remplace pas un calcul de délai légal ou contractuel.',
+      ],
+    },
   },
 };
 
@@ -692,6 +716,30 @@ const en: ToolboxCopy = {
         'Approximate result: it does not replace a payslip.',
       ],
     },
+    'calcul-date-echeance': {
+      name: 'Due date calculator',
+      description:
+        'Project a date into the future or the past: calendar days, business days, months or years.',
+      fields: { startDate: 'Start date', amount: 'Offset', unit: 'Unit' },
+      options: {
+        jours: 'Calendar days',
+        'jours-ouvres': 'Business days (Mon-Fri)',
+        mois: 'Months',
+        annees: 'Years',
+      },
+      results: {
+        date: 'Resulting date',
+        weekday: 'Day of the week',
+        totalDays: 'Offset in days',
+        businessDays: 'Business days counted',
+      },
+      notes: [
+        'A negative offset moves into the past (e.g. -30 days).',
+        'Months and years clamp the day to the length of the target month (31 Jan + 1 month = 28/29 Feb).',
+        'Business days exclude Saturday and Sunday, but NO public holiday is known to this tool.',
+        'Theoretical result: it does not replace a legal or contractual deadline calculation.',
+      ],
+    },
   },
 };
 
@@ -991,6 +1039,30 @@ const tr: ToolboxCopy = {
         'Yaklaşık sonuç: bordro yerine geçmez.',
       ],
     },
+    'calcul-date-echeance': {
+      name: 'Vade tarihi hesaplama',
+      description:
+        'Bir tarihi geleceğe veya geçmişe taşıyın: takvim günü, iş günü, ay veya yıl.',
+      fields: { startDate: 'Başlangıç tarihi', amount: 'Kaydırma', unit: 'Birim' },
+      options: {
+        jours: 'Takvim günü',
+        'jours-ouvres': 'İş günü (Pzt-Cum)',
+        mois: 'Ay',
+        annees: 'Yıl',
+      },
+      results: {
+        date: 'Elde edilen tarih',
+        weekday: 'Haftanın günü',
+        totalDays: 'Gün cinsinden kaydırma',
+        businessDays: 'Sayılan iş günü',
+      },
+      notes: [
+        'Negatif kaydırma geçmişe gider (ör. -30 gün).',
+        'Ay ve yıl, günü varış ayının uzunluğuna sınırlar (31 Oca + 1 ay = 28/29 Şub).',
+        'İş günleri cumartesi ve pazarı hariç tutar, ancak bu araç HİÇBİR resmî tatili bilmez.',
+        'Teorik sonuç: yasal veya sözleşmesel süre hesabının yerine geçmez.',
+      ],
+    },
   },
 };
 
@@ -1282,6 +1354,30 @@ const ar: ToolboxCopy = {
         'الصيغة: الأجر بالساعة = الراتب الشهري ÷ (الساعات أسبوعيًا × 52 ÷ 12).',
         'المقسوم عليه هو متوسط عدد الساعات شهريًا على مدار السنة (52 أسبوعًا).',
         'نتيجة تقريبية: لا تحل محل كشف الراتب.',
+      ],
+    },
+    'calcul-date-echeance': {
+      name: 'حساب تاريخ الاستحقاق',
+      description:
+        'انقل تاريخًا إلى المستقبل أو الماضي: أيام تقويمية أو أيام عمل أو أشهر أو سنوات.',
+      fields: { startDate: 'تاريخ البداية', amount: 'الإزاحة', unit: 'الوحدة' },
+      options: {
+        jours: 'أيام تقويمية',
+        'jours-ouvres': 'أيام عمل (الاثنين-الجمعة)',
+        mois: 'أشهر',
+        annees: 'سنوات',
+      },
+      results: {
+        date: 'التاريخ الناتج',
+        weekday: 'يوم الأسبوع',
+        totalDays: 'الإزاحة بالأيام',
+        businessDays: 'أيام العمل المحسوبة',
+      },
+      notes: [
+        'الإزاحة السالبة ترجع إلى الماضي (مثل -30 يومًا).',
+        'تُقيَّد الأشهر والسنوات بطول شهر الوصول (31 يناير + شهر = 28/29 فبراير).',
+        'تستثني أيام العمل السبت والأحد، لكن الأداة لا تعرف أي عطلة رسمية.',
+        'نتيجة نظرية: لا تحل محل حساب مهلة قانونية أو تعاقدية.',
       ],
     },
   },
