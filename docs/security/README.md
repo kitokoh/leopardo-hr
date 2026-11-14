@@ -17,6 +17,12 @@ Index de la documentation sécurité. **MAJ : 2026-08-17 (revue PM).**
 > ⚠️ Reste ouvert (action propriétaire) : rotation console Neon (#1601), révocation
 > des 2 clés Google/Firebase (#1467), contacts des 5 forks (plan §3).
 
+## Dépendances & alertes
+
+| Sujet | Doc |
+|---|---|
+| Alertes Dependabot ouvertes et risques acceptés | `DEPENDABOT_ALERTES_SUIVI.md` |
+
 ## Audits & conformité
 
 - `AUDIT_SECURITE_2026-08-23.md` — audit sécurité consolidé OWASP Top 10 + scan secrets (issue #5281, 0 critique ouvert)
