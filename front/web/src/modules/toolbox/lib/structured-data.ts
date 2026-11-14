@@ -68,6 +68,7 @@ const AMP = '\\u0026';
  * @param description Description localisée.
  * @param locale Locale de la page (fr/en/tr/ar).
  * @param browserRequirements Exigence technique localisée (catalogue i18n).
+ * @param siteName Nom localisé du site parent (catalogue i18n).
  */
 export function buildToolSchema(
   tool: ToolDefinition,
@@ -75,6 +76,7 @@ export function buildToolSchema(
   description: string,
   locale: string,
   browserRequirements: string,
+  siteName: string,
 ): WebApplicationSchema {
   return {
     '@context': 'https://schema.org',
@@ -94,7 +96,7 @@ export function buildToolSchema(
     },
     isPartOf: {
       '@type': 'WebSite',
-      name: 'Leopardo Toolbox',
+      name: siteName,
       url: `${SITE_URL}/toolbox`,
     },
   };

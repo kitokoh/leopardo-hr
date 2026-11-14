@@ -11,9 +11,10 @@ import { TOOLS } from '../data/catalog';
 describe('buildToolSchema', () => {
   const imc = TOOLS.find((tool) => tool.slug === 'imc')!;
   const req = 'Requires JavaScript';
+  const site = 'Leopardo Toolbox';
 
   it('produit un WebApplication conforme à ce que la page est réellement', () => {
-    const schema = buildToolSchema(imc, 'IMC', 'Indice de masse corporelle', 'fr', req);
+    const schema = buildToolSchema(imc, 'IMC', 'Indice de masse corporelle', 'fr', req, site);
 
     expect(schema['@context']).toBe('https://schema.org');
     expect(schema['@type']).toBe('WebApplication');
@@ -25,36 +26,36 @@ describe('buildToolSchema', () => {
   });
 
   it('déclare un outil gratuit (aucun prix inventé)', () => {
-    const schema = buildToolSchema(imc, 'IMC', 'x', 'fr', req);
+    const schema = buildToolSchema(imc, 'IMC', 'x', 'fr', req, site);
     expect(schema.offers.price).toBe('0');
     expect(schema.offers.priceCurrency).toBe('EUR');
   });
 
   it('pointe vers l’URL canonique de l’outil et du catalogue', () => {
-    const schema = buildToolSchema(imc, 'IMC', 'x', 'fr', req);
+    const schema = buildToolSchema(imc, 'IMC', 'x', 'fr', req, site);
     expect(schema.url).toMatch(/\/toolbox\/imc$/);
     expect(schema.isPartOf.url).toMatch(/\/toolbox$/);
   });
 
   it('localise `inLanguage` pour les 4 locales', () => {
-    expect(buildToolSchema(imc, 'a', 'b', 'fr', req).inLanguage).toBe('fr-FR');
-    expect(buildToolSchema(imc, 'a', 'b', 'en', req).inLanguage).toBe('en-GB');
-    expect(buildToolSchema(imc, 'a', 'b', 'tr', req).inLanguage).toBe('tr-TR');
-    expect(buildToolSchema(imc, 'a', 'b', 'ar', req).inLanguage).toBe('ar-MA');
+    expect(buildToolSchema(imc, 'a', 'b', 'fr', req, site).inLanguage).toBe('fr-FR');
+    expect(buildToolSchema(imc, 'a', 'b', 'en', req, site).inLanguage).toBe('en-GB');
+    expect(buildToolSchema(imc, 'a', 'b', 'tr', req, site).inLanguage).toBe('tr-TR');
+    expect(buildToolSchema(imc, 'a', 'b', 'ar', req, site).inLanguage).toBe('ar-MA');
   });
 
   it('retombe sur fr-FR pour une locale inconnue', () => {
-    expect(buildToolSchema(imc, 'a', 'b', 'de', req).inLanguage).toBe('fr-FR');
+    expect(buildToolSchema(imc, 'a', 'b', 'de', req, site).inLanguage).toBe('fr-FR');
   });
 
   it('reprend l’exigence technique localisée fournie', () => {
-    expect(buildToolSchema(imc, 'a', 'b', 'fr', 'Nécessite JavaScript').browserRequirements).toBe(
+    expect(buildToolSchema(imc, 'a', 'b', 'fr', 'Nécessite JavaScript', site).browserRequirements).toBe(
       'Nécessite JavaScript',
     );
   });
 
   it('n’invente ni note agrégée ni avis', () => {
-    const schema = buildToolSchema(imc, 'a', 'b', 'fr', req) as unknown as Record<string, unknown>;
+    const schema = buildToolSchema(imc, 'a', 'b', 'fr', req, site) as unknown as Record<string, unknown>;
     expect(schema.aggregateRating).toBeUndefined();
     expect(schema.review).toBeUndefined();
   });
@@ -62,7 +63,14 @@ describe('buildToolSchema', () => {
 
 describe('serializeSchema', () => {
   it('produit du JSON valide et réversible', () => {
-    const schema = buildToolSchema(TOOLS[0], 'Nom', 'Description', 'fr', 'Requires JavaScript');
+    const schema = buildToolSchema(
+      TOOLS[0],
+      'Nom',
+      'Description',
+      'fr',
+      'Requires JavaScript',
+      'Leopardo Toolbox',
+    );
     const parsed = JSON.parse(serializeSchema(schema));
     expect(parsed['@type']).toBe('WebApplication');
     expect(parsed.name).toBe('Nom');

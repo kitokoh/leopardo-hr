@@ -93,6 +93,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     toolCopy.description,
     locale,
     copy.common.browserRequirements,
+    copy.catalog.title,
   );
 
   // Outils similaires : même catégorie d'abord, l'outil courant toujours exclu.
