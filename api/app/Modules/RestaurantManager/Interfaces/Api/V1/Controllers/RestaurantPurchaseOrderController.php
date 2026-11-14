@@ -7,6 +7,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Application\Actions\PurchaseOrderAction;
+use App\Modules\RestaurantManager\Domain\Enums\PurchaseOrderStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPurchaseOrder;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\Concerns\ScopesRestaurantBranchListings;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantPurchaseOrderRequest;
@@ -60,7 +61,15 @@ class RestaurantPurchaseOrderController extends Controller
             abort(403);
         }
 
-        $order = RestaurantPurchaseOrder::query()->create($request->validated());
+        // Le statut est posé EXPLICITEMENT : le défaut `draft` vit dans la
+        // migration, pas dans le modèle. Sans cette ligne, `create()` laissait
+        // `status` à null en mémoire (Laravel ne relit pas les défauts SQL) et
+        // la ressource renvoyait `"status": null` au client, alors que la
+        // ligne en base valait bien `draft`.
+        $order = RestaurantPurchaseOrder::query()->create([
+            ...$request->safe()->except(['items']),
+            'status' => PurchaseOrderStatus::DRAFT,
+        ]);
 
         return (new RestaurantPurchaseOrderResource($order))->response()->setStatusCode(201);
     }

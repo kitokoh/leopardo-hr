@@ -20,6 +20,18 @@ class SolutionSurveyStatsTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // `solution_survey_responses` est une table PUBLIQUE créée par la
+        // fixture MVP : elle n'est pas couverte par l'isolation par transaction
+        // du tenant, et le contrôleur écrit hors de toute transaction de test.
+        // Sans ce nettoyage, les lignes laissées par les tests précédents
+        // s'accumulent (`Entries found: 3` au lieu de 1).
+        DB::table('solution_survey_responses')->delete();
+    }
+
     private function submitSurvey(array $answers = []): void
     {
         $this->postJson('/api/v1/solutions/restaurant/survey', [
@@ -63,13 +75,34 @@ class SolutionSurveyStatsTest extends TestCase
 
     public function test_admin_survey_stats_requires_super_admin(): void
     {
-        $this->getJson('/api/v1/admin/solutions/surveys')->assertUnauthorized();
+        $this->getJson('/api/v1/admin/solutions/survey-stats')->assertUnauthorized();
     }
 
     public function test_admin_survey_stats_returns_aggregates(): void
     {
-        $this->submitSurvey();
-        $this->submitSurvey(['service_type' => 'sur_place', 'employee_count' => '1_5']);
+        // #8020 : l'écran admin agrège les LEADS `solution_survey` de
+        // `marketing_leads` (pas la table `solution_survey_responses`, qui
+        // sert la persistance anonyme du wizard). On sème donc la source réelle.
+        DB::table('marketing_leads')->insert([
+            [
+                'external_id' => 'survey-1',
+                'email' => 'lead1@restaurant.example',
+                'type' => 'solution_survey',
+                'source' => 'restaurant',
+                'payload' => json_encode(['solution' => 'restaurant', 'packages' => ['pro'], 'answers' => ['service_type' => 'mixte']]),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'external_id' => 'survey-2',
+                'email' => 'lead2@restaurant.example',
+                'type' => 'solution_survey',
+                'source' => 'restaurant',
+                'payload' => json_encode(['solution' => 'restaurant', 'packages' => ['pro'], 'answers' => ['service_type' => 'sur_place']]),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
 
         /** @var SuperAdmin $superAdmin */
         $superAdmin = new SuperAdmin([
@@ -80,17 +113,21 @@ class SolutionSurveyStatsTest extends TestCase
 
         Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
 
-        $response = $this->getJson('/api/v1/admin/solutions/surveys?days=30');
+        $response = $this->getJson('/api/v1/admin/solutions/survey-stats?days=30');
 
+        // #8020 : le contrat de réponse est `data.totals.responses` /
+        // `data.by_solution[].solution` (agrégats de `marketing_leads`),
+        // pas l'ancien `data.total_responses` / `data.per_solution`.
         $response->assertOk()
-            ->assertJsonPath('data.total_responses', 2)
-            ->assertJsonPath('data.per_solution.0.code', 'restaurant')
-            ->assertJsonPath('data.per_solution.0.responses', 2)
-            ->assertJsonPath('data.conversion.survey_responses', 2)
+            ->assertJsonPath('data.totals.responses', 2)
+            ->assertJsonPath('data.by_solution.0.solution', 'restaurant')
+            ->assertJsonPath('data.by_solution.0.responses', 2)
             ->assertJsonStructure([
                 'data' => [
-                    'top_packages' => [],
-                    'conversion' => ['rate'],
+                    'totals' => ['responses', 'converted', 'conversion_rate'],
+                    'by_solution' => [],
+                    'packages' => [],
+                    'answers' => [],
                 ],
             ]);
     }
