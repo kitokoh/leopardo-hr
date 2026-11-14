@@ -451,7 +451,7 @@ de la PR ; `responsive_test.dart` est exécuté par `mobile-apps-ci.yml`, pas
 localement. Un `analyze` vert ne prouve pas le rendu — seule la capture sur
 la version Flutter épinglée (3.50.0) le fait.
 
-## Note d'outillage 2026-11-14 — toolchain Android aligné sur Flutter 3.50 (issue #9465)
+## Note d'outillage 2026-11-14 — toolchain Android aligné sur Flutter 3.50 (issues #9465 puis #9471)
 
 Flutter 3.50 (épinglé) exige **Gradle ≥ 9.3.1** et **AGP ≥ 9.1.1**. Les 11 apps sont désormais sur Gradle 9.3.1 / AGP 9.1.1 / Kotlin 2.4.0, et les 9 apps encore en Java 11 passent en Java 17 (la configuration que les apps POS utilisaient déjà).
 
