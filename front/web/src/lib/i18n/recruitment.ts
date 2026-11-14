@@ -63,6 +63,21 @@ export type RecruitmentCopy = {
     coverLetter: string;
     notes: string;
   };
+  pipeline: {
+    pageTitle: string;
+    pageSubtitle: string;
+    searchPlaceholder: string;
+    allApplications: string;
+    closeDossier: string;
+    autoDeposit: string;
+    forbidden: string;
+    loadError: string;
+    moveError: string;
+    sourceWebsite: string;
+    sourceReferral: string;
+    sourceAgency: string;
+    sourceOther: string;
+  };
 };
 
 const fr: RecruitmentCopy = {
@@ -121,6 +136,21 @@ const fr: RecruitmentCopy = {
     coverLetter: 'lettre',
     notes: 'notes',
   },
+  pipeline: {
+    pageTitle: 'Recrutement — ATS',
+    pageSubtitle: 'Suivi des candidatures, filtrage et déplacement dans le pipeline.',
+    searchPlaceholder: 'Rechercher un nom, un email, une lettre de motivation...',
+    allApplications: 'Toutes les candidatures',
+    closeDossier: 'Fermer le dossier',
+    autoDeposit: 'dépôt automatique',
+    forbidden: 'Vous n’avez pas les droits de recrutement sur cette entreprise.',
+    loadError: 'Impossible de charger le pipeline de candidatures.',
+    moveError: 'Le changement de statut a échoué. Réessayez.',
+    sourceWebsite: 'Site carrière',
+    sourceReferral: 'Cooptation',
+    sourceAgency: 'Cabinet',
+    sourceOther: 'Autre',
+  },
 };
 
 const en: RecruitmentCopy = {
@@ -178,6 +208,21 @@ const en: RecruitmentCopy = {
     coverLetter: 'cover letter',
     notes: 'notes',
   },
+  pipeline: {
+    pageTitle: 'Recruitment — ATS',
+    pageSubtitle: 'Application tracking, filtering and pipeline moves.',
+    searchPlaceholder: 'Search a name, an email, a cover letter...',
+    allApplications: 'All applications',
+    closeDossier: 'Close the file',
+    autoDeposit: 'automatic submission',
+    forbidden: 'You do not have recruitment rights on this company.',
+    loadError: 'Could not load the application pipeline.',
+    moveError: 'The status change failed. Try again.',
+    sourceWebsite: 'Careers site',
+    sourceReferral: 'Referral',
+    sourceAgency: 'Agency',
+    sourceOther: 'Other',
+  },
 };
 
 const tr: RecruitmentCopy = {
@@ -234,6 +279,21 @@ const tr: RecruitmentCopy = {
     coverLetter: 'ön yazı',
     notes: 'notlar',
   },
+  pipeline: {
+    pageTitle: 'İşe alım — ATS',
+    pageSubtitle: 'Başvuru takibi, filtreleme ve akış içinde taşıma.',
+    searchPlaceholder: 'Ad, e-posta veya ön yazı ara...',
+    allApplications: 'Tüm başvurular',
+    closeDossier: 'Dosyayı kapat',
+    autoDeposit: 'otomatik başvuru',
+    forbidden: 'Bu şirkette işe alım yetkiniz yok.',
+    loadError: 'Başvuru akışı yüklenemedi.',
+    moveError: 'Durum değişikliği başarısız. Tekrar deneyin.',
+    sourceWebsite: 'Kariyer sitesi',
+    sourceReferral: 'Referans',
+    sourceAgency: 'Ajans',
+    sourceOther: 'Diğer',
+  },
 };
 
 const ar: RecruitmentCopy = {
@@ -289,6 +349,21 @@ const ar: RecruitmentCopy = {
     resume: 'السيرة',
     coverLetter: 'رسالة التقديم',
     notes: 'الملاحظات',
+  },
+  pipeline: {
+    pageTitle: 'التوظيف — ATS',
+    pageSubtitle: 'تتبّع الطلبات والتصفية والتنقّل داخل المسار.',
+    searchPlaceholder: 'ابحث عن اسم أو بريد أو رسالة تقديم...',
+    allApplications: 'كل الطلبات',
+    closeDossier: 'إغلاق الملف',
+    autoDeposit: 'تقديم تلقائي',
+    forbidden: 'ليست لديك صلاحيات التوظيف في هذه الشركة.',
+    loadError: 'تعذّر تحميل مسار الطلبات.',
+    moveError: 'فشل تغيير الحالة. أعد المحاولة.',
+    sourceWebsite: 'موقع الوظائف',
+    sourceReferral: 'توصية',
+    sourceAgency: 'وكالة',
+    sourceOther: 'أخرى',
   },
 };
 

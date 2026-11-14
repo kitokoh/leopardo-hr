@@ -93,6 +93,7 @@ const STATUS_LABELS: Record<ApplicantStatus, string> = {
 const recruitmentCopy = getRecruitmentCopy(getPreferredLocale());
 const decisionCopy = recruitmentCopy.decision;
 const scoreCopy = recruitmentCopy.score;
+const pipelineCopy = recruitmentCopy.pipeline;
 
 const STATUS_STYLES: Record<ApplicantStatus, string> = {
   new: 'bg-sky-50 text-sky-700 border-sky-200',
@@ -105,11 +106,11 @@ const STATUS_STYLES: Record<ApplicantStatus, string> = {
 };
 
 const SOURCE_LABELS: Record<string, string> = {
-  website: 'Site carriere',
-  referral: 'Cooptation',
+  website: pipelineCopy.sourceWebsite,
+  referral: pipelineCopy.sourceReferral,
   linkedin: 'LinkedIn',
-  agency: 'Cabinet',
-  other: 'Autre',
+  agency: pipelineCopy.sourceAgency,
+  other: pipelineCopy.sourceOther,
 };
 
 function formatDate(value: string | null): string {
@@ -187,8 +188,8 @@ export default function RecruitmentAtsPage() {
       const status = (e as { status?: number }).status;
       setError(
         status === 403
-          ? "Vous n'avez pas les droits de recrutement sur cette entreprise."
-          : 'Impossible de charger le pipeline de candidatures.',
+          ? pipelineCopy.forbidden
+          : pipelineCopy.loadError,
       );
       setApplicants([]);
     } finally {
@@ -241,7 +242,7 @@ export default function RecruitmentAtsPage() {
       await openDetail(updated);
       await loadApplicants();
     } catch {
-      setMoveError('Le changement de statut a echoue. Reessayez.');
+      setMoveError(pipelineCopy.moveError);
     } finally {
       setMoving(false);
     }
@@ -311,8 +312,8 @@ export default function RecruitmentAtsPage() {
 
   return (
     <ModulePageShell
-      title="Recrutement — ATS"
-      subtitle="Suivi des candidatures, filtrage et deplacement dans le pipeline."
+      title={pipelineCopy.pageTitle}
+      subtitle={pipelineCopy.pageSubtitle}
       icon={Users}
       accentClassName="bg-gradient-to-br from-rh-light via-white to-white"
     >
@@ -359,7 +360,7 @@ export default function RecruitmentAtsPage() {
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Rechercher un nom, un email, une lettre de motivation..."
+            placeholder={pipelineCopy.searchPlaceholder}
             className="w-full rounded-xl border border-app-border bg-white py-2.5 pl-10 pr-4 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
@@ -441,7 +442,7 @@ export default function RecruitmentAtsPage() {
       <section className="overflow-hidden rounded-3xl border border-app-border bg-white shadow-sm">
         <div className="flex items-center justify-between border-b border-app-border px-6 py-4">
           <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">
-            {meta.job ? `Candidatures — ${meta.job.title}` : 'Toutes les candidatures'}
+            {meta.job ? `Candidatures — ${meta.job.title}` : pipelineCopy.allApplications}
           </h2>
           <span className="text-xs font-semibold text-slate-500">
             {applicants.length} affichee(s) sur {total}
@@ -547,7 +548,7 @@ export default function RecruitmentAtsPage() {
                 type="button"
                 onClick={() => setSelected(null)}
                 className="rounded-lg p-2 text-slate-500 hover:bg-slate-100"
-                aria-label="Fermer le dossier"
+                aria-label={pipelineCopy.closeDossier}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -741,7 +742,7 @@ export default function RecruitmentAtsPage() {
                             </p>
                             <p className="text-xs text-slate-500">
                               {formatDate(event.occurred_at)}
-                              {event.actor_name ? ` · ${event.actor_name}` : ' · depot automatique'}
+                              {event.actor_name ? ` · ${event.actor_name}` : ` · ${pipelineCopy.autoDeposit}`}
                             </p>
                             {event.reason && (
                               <p className="mt-1 text-xs italic text-slate-600">« {event.reason} »</p>
