@@ -112,9 +112,17 @@ jobs:
         # sont passées à `docker create [options] <image>` — AUCUN argument ne
         # peut être ajouté APRÈS l'image, donc `-c max_locks_per_transaction=…`
         # est inexprimable ici ; cf. docker-library/postgres discussion #1091).
+        # ATS (#9477) — `--health-cmd pg_isready` SANS `-U` s'execute en tant
+        # qu'utilisateur ambiant du conteneur (`root`), role qui n'existe pas
+        # ici : `initdb -U leopardo_user` ne cree QUE ce superutilisateur.
+        # Le healthcheck echouait donc a chaque passage — 597 lignes
+        # `FATAL: role "root" does not exist` dans le log du run 43586732494 —
+        # et le conteneur restait `unhealthy` pendant toute la duree du job.
+        # Le role est desormais explicite, comme dans l'etape de
+        # reconfiguration `max_locks_per_transaction` plus bas.
         options: >-
           --name leopardo-postgres
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U leopardo_user -d leopardo_test"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
