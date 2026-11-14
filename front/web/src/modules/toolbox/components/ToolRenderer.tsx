@@ -13,6 +13,7 @@ import { ConvertisseurDevisesForm } from './tools/ConvertisseurDevisesForm';
 import { DureeEntreDatesForm } from './tools/DureeEntreDatesForm';
 import { AgeForm } from './tools/AgeForm';
 import { TauxHoraireForm } from './tools/TauxHoraireForm';
+import { CalculDateEcheanceForm } from './tools/CalculDateEcheanceForm';
 import type { ToolCopy, ToolboxCopy, ToolboxLocale } from '../data/copy';
 
 interface ToolRendererProps {
@@ -58,6 +59,8 @@ export function ToolRenderer({ slug, copy, common, locale }: ToolRendererProps) 
       return <AgeForm copy={copy} common={common} locale={locale} />;
     case 'taux-horaire':
       return <TauxHoraireForm copy={copy} common={common} locale={locale} />;
+    case 'calcul-date-echeance':
+      return <CalculDateEcheanceForm copy={copy} common={common} locale={locale} />;
     default:
       return null;
   }
