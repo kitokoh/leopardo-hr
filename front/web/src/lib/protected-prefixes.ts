@@ -21,6 +21,7 @@ export const PROTECTED_PREFIXES = [
   '/attendance/geo',
   '/billing',
   '/contracts',
+  '/recruitment',
   '/employees',
   '/partner',
   '/payroll',

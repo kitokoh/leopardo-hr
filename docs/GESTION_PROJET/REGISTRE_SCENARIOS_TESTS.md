@@ -2723,3 +2723,33 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 **Couverture exécutée** — `PublicProfileTest` (21 tests / 81 assertions), `PublicIdentityBridgeAuditTest` (7 / 19), `PublicDataExportTest` (9 / 40) sur PostgreSQL 15 avec `CI=true` ; `account-pages.test.ts` (32 tests) et `lea-surface.test.ts` (15 tests) sous jest ; `tsc --noEmit` et eslint sans erreur.
 
 **Non couvert** — aucun seuil de qualité mesuré (pas d'appareil Android, pas de bridage réseau, pas de Flutter dans le sandbox) : ils restent **en attente**, jamais déclarés tenus. Le manifeste PWA (`scope: '/decouvrir'`) ne couvre pas les onglets 3 et 4 d'une app installée. Aucune route publique d'assistant n'existe : Léa est séparée visuellement mais non fonctionnelle.
+
+## COULOIR 17 — ATS recrutement : parcours complets et extraction du CV (#9461)
+
+**Pourquoi** — le premier lot du module Recruitment livrait le journal de statuts, le moteur de filtrage, les routes API et l'écran pipeline, mais laissait trois trous qu'un recruteur comme un candidat rencontraient immédiatement, et le score de correspondance ne lisait pas le CV. Ce couloir consigne les scénarios à vérifier et ce qui est réellement exécuté.
+
+**Ce qui est ajouté**
+
+- **Extraction du texte des CV** — `ResumeTextExtraction` + `ShellResumeTextExtractor` : PDF par `pdftotext -layout`, DOCX par lecture de `word/document.xml` dans l'archive ZIP, DOC par `antiword` avec repli `catdoc`. Migration additive `applicants.resume_text` / `resume_text_extracted_at`. Branchement au dépôt de candidature, après stockage du fichier.
+- **Score ATS sur le CV** — `AtsApplicantFilter::score()` compare les compétences de l'offre au texte du CV, à la lettre et aux notes, avec frontières de mot. Expose `sources` (`resume` / `cover_letter` / `notes`). La recherche du pipeline couvre aussi `resume_text`.
+- **Suivi candidat** — `POST /public/careers/{slug}/applications/track`, throttling `public-careers-track` à double clé (IP + email), réponse minimale.
+- **Gestion des offres** — `JobManagementPanel` : création avec compétences, cycle de vie explicite (brouillon → publiée → clôturée → archivée), transitions valides selon l'état.
+- **Décision finale** — embaucher / refuser avec motif obligatoire, journalisé dans `applicant_status_events`.
+- **Éditeur de CV vitrine** — `/[companySlug]/careers/cv`, aperçu live, export PDF par `@media print`, stockage `localStorage`.
+
+**Scénarios à vérifier**
+
+- **Extraction réelle** — un PDF texte rend son contenu ; un DOCX rend le texte de `word/document.xml` ; un fichier corrompu, absent ou d'extension inconnue rend `null` **sans lever d'exception** (une candidature ne doit pas échouer parce qu'un CV est illisible).
+- **Score sur le CV seul** — un candidat sans lettre mais avec un CV aligné obtient 100 %, pas 0 %.
+- **Frontières de mot** — « Go » ne correspond pas à « Google », « R » ne correspond pas à « Recrutement » : une compétence d'un caractère ne doit pas donner 100 % à tout le monde.
+- **Offre sans compétences** — le score est `null`, jamais `0` (0 laisserait croire à un mauvais profil).
+- **CV non extrait** — `resume_text = null` est distinct de vide ; le score retombe sur la lettre et `sources` le dit.
+- **Suivi candidat** — email insensible à la casse ; email inconnu rend une liste **vide** (200), jamais 404 ; aucune note interne, aucun score ATS, aucun texte de CV dans la réponse ; un dossier d'une autre entreprise n'apparaît pas.
+- **Throttling** — au-delà de 5 requêtes/min par IP et par email, la route répond 429.
+- **Décision finale** — un motif vide est refusé côté écran ; la décision produit une ligne de journal avec auteur, motif et horodatage.
+- **Cycle de vie de l'offre** — une offre en brouillon n'est pas visible sur la vitrine ; publier la rend visible ; clôturer refuse les nouvelles candidatures ; archiver la retire.
+- **Parité i18n** — les libellés du pipeline, du panneau offres, du suivi et de l'éditeur de CV existent dans les 4 langues (fr/en/ar/tr).
+
+**Couverture exécutée** — `phpunit --filter=Recruitment` (101 tests / 296 assertions) sur PostgreSQL 15 avec `CI=true`, dont `ResumeTextExtractorTest` (7 tests sur les **vrais binaires** et `ZipArchive`), `AtsResumeScoreTest` (10), `CandidateApplicationTrackingTest` (9) ; `jest careers` (66 tests / 6 suites) ; `tsc --noEmit` 0 erreur ; `eslint --max-warnings 0` 0 erreur ; `pint --test` 77 fichiers PASS ; `phpstan-modules` 0 erreur ; `phpstan-strict` 0 erreur sur le module.
+
+**Non couvert** — rendu visuel des trois nouveaux écrans non observé avec de vraies données (pas de base peuplée ni de session authentifiée dans le sandbox) ; migration non jouée sur une base tenant réelle (les tests utilisent la fixture `CreatesMvpSchema`) ; présence de `pdftotext` / `antiword` sur l'image de production non vérifiée — le code rend `null` proprement s'ils manquent, donc absence = dégradation du score, pas panne ; aucune OCR sur les CV scannés en image (choix assumé) ; suite Jest **complète** tuée par l'OOM du sandbox (2 Go) — seul le périmètre touché a été exécuté.

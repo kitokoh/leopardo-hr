@@ -54,6 +54,12 @@ trait CreatesMvpSchema
                 // EstimationServiceTest supprime public.hr_model_templates).
                 $this->restoreDefaultSearchPath();
                 $this->resetMvpFixtureTables();
+                // ATS (#9461) — la fixture est construite UNE fois puis
+                // marquée prête : une base existante n'a pas les colonnes
+                // ajoutées depuis. On rejoue la garde additive ici, sinon la
+                // suite échoue sur `column "resume_text" does not exist`
+                // jusqu'à ce que quelqu'un pense à recréer la base.
+                $this->ensureApplicantResumeTextColumns();
             }
 
             return;
@@ -1531,6 +1537,34 @@ trait CreatesMvpSchema
     private function moduleTable(string $table): string
     {
         return DB::getDriverName() === 'pgsql' ? 'shared_tenants.'.$table : $table;
+    }
+
+    /**
+     * ATS (#9461) — colonnes additives du CV sur `applicants`.
+     *
+     * Idempotent et sans effet si la table n'existe pas encore : appelé à la
+     * construction de la fixture ET à chaque réutilisation d'une base déjà
+     * construite, pour qu'une base de test ancienne reste utilisable.
+     */
+    private function ensureApplicantResumeTextColumns(): void
+    {
+        $table = $this->moduleTable('applicants');
+
+        if (! Schema::hasTable($table)) {
+            return;
+        }
+
+        if (! Schema::hasColumn($table, 'resume_text')) {
+            Schema::table($table, function (Blueprint $blueprint): void {
+                $blueprint->text('resume_text')->nullable();
+            });
+        }
+
+        if (! Schema::hasColumn($table, 'resume_text_extracted_at')) {
+            Schema::table($table, function (Blueprint $blueprint): void {
+                $blueprint->timestampTz('resume_text_extracted_at')->nullable();
+            });
+        }
     }
 
     private function createPostSprintModuleTables(): void
@@ -3442,6 +3476,10 @@ trait CreatesMvpSchema
                 $table->string('email');
                 $table->string('phone', 30)->nullable();
                 $table->string('resume_path', 500)->nullable();
+                // ATS (#9461) — texte extrait du CV (miroir de la migration
+                // tenant 2026_11_14_000001). `null` = non extrait.
+                $table->text('resume_text')->nullable();
+                $table->timestampTz('resume_text_extracted_at')->nullable();
                 $table->text('cover_letter')->nullable();
                 $table->string('source', 30)->nullable();
                 $table->string('status', 20)->default('new');
@@ -3462,6 +3500,14 @@ trait CreatesMvpSchema
             });
         }
 
+        // ATS (#9461) — une base de test deja creee par une execution
+        // precedente n'a pas les colonnes ajoutees depuis. On les ajoute de
+        // facon additive, comme le fait la migration tenant : sans cette
+        // garde, la suite echoue sur `column "resume_text" does not exist`
+        // tant que la base n'est pas recreee, ce qui n'a rien a voir avec le
+        // code teste.
+        $this->ensureApplicantResumeTextColumns();
+
         if (! Schema::hasTable($this->moduleTable('interviews'))) {
             Schema::create($this->moduleTable('interviews'), function (Blueprint $table): void {
                 $table->id();
@@ -3475,6 +3521,38 @@ trait CreatesMvpSchema
                 $table->text('feedback')->nullable();
                 $table->unsignedTinyInteger('rating')->nullable();
                 $table->timestamps();
+            });
+        }
+
+        // ATS — journal append-only des changements de statut (miroir de la
+        // migration tenant 2026_11_13_000100).
+        if (! Schema::hasTable($this->moduleTable('applicant_status_events'))) {
+            Schema::create($this->moduleTable('applicant_status_events'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('applicant_id');
+                $table->string('from_status', 20)->nullable();
+                $table->string('to_status', 20);
+                $table->unsignedInteger('actor_id')->nullable();
+                $table->string('actor_name', 120)->nullable();
+                $table->string('reason', 500)->nullable();
+                $table->timestampTz('occurred_at');
+                $table->timestampsTz();
+            });
+        }
+
+        // ATS — filtres sauvegardés (miroir de la migration tenant
+        // 2026_11_13_000100).
+        if (! Schema::hasTable($this->moduleTable('ats_saved_filters'))) {
+            Schema::create($this->moduleTable('ats_saved_filters'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('job_posting_id')->nullable();
+                $table->string('name', 120);
+                $table->jsonb('criteria');
+                $table->unsignedInteger('created_by')->nullable();
+                $table->boolean('is_shared')->default(false);
+                $table->timestampsTz();
             });
         }
 
@@ -6553,6 +6631,8 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "training_sessions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "training_courses"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "interviews"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "applicant_status_events"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "ats_saved_filters"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "applicants"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "job_postings"'.$cascade);
         // BC-10 (#9100) — tables publiques du portail d'offres.

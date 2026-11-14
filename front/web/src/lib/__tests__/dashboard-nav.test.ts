@@ -100,13 +100,15 @@ describe('dashboard-nav — menu une ligne + sous-menus de groupe (#7328/#7724)'
       CLIENT_MODULES.filter((module) => module.group === 'hr').map((module) => module.key),
     );
     // Le mapping validé : Employés · Pointages · Sessions GPS · Absences ·
-    // Contrats · Formations · Paie (la Paie rejoint la RH, #7724).
+    // Contrats · Recrutement · Formations · Paie (la Paie rejoint la RH,
+    // #7724 ; le Recrutement/ATS rejoint la RH avec le pipeline recruteur).
     expect(HR_SUBMENU_KEYS).toEqual([
       'employees',
       'attendance',
       'attendance_geo',
       'absences',
       'contracts',
+      'recruitment',
       'training',
       'payroll',
     ]);

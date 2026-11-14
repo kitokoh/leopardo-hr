@@ -47,6 +47,7 @@ export type ClientModuleKey =
   | 'attendance_geo'
   | 'absences'
   | 'contracts'
+  | 'recruitment'
   | 'payroll'
   | 'training'
   | 'reports'
@@ -280,6 +281,19 @@ export const CLIENT_MODULES: ClientModule[] = [
     featureKeys: ['contracts', 'rh'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
     upgradeLabel: 'Contrats RH',
+  },
+  {
+    key: 'recruitment',
+    href: '/recruitment',
+    label: 'Recrutement',
+    group: 'hr',
+    icon: Users,
+    // Le pipeline ATS est un outil de pilotage : un employe non-manager n'a
+    // rien a y faire, et l'API le refuse de toute facon (403).
+    capabilityKeys: ['recruitment', 'can_view_recruitment'],
+    featureKeys: ['recruitment', 'ats', 'rh'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Recrutement et ATS',
   },
   {
     key: 'training',
