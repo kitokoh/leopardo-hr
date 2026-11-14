@@ -279,7 +279,22 @@ KTS
   expect fail "Groovy minSdkVersion 24" "${tmp}/groovy_sp" \
     "alias Groovy historique de \`minSdk\`" "minSdk = Version"
 
-  echo "[android-sdk-versions --self-test] OK: 8 cas (1 vert, 7 rouges) verifies."
+  # 9. ligne minSdk completement ABSENTE : couvre la branche "absent" de
+  #    check_one, qu'aucun autre cas n'exercait (les autres fournissent une
+  #    valeur, fausse ou sous forme d'alias).
+  mkdir -p "${tmp}/nomsdk/front/mobile_apps/leopardo_public/android/app"
+  : > "${tmp}/nomsdk/front/mobile_apps/leopardo_public/pubspec.yaml"
+  cat > "${tmp}/nomsdk/front/mobile_apps/leopardo_public/android/app/build.gradle.kts" <<'KTS'
+android {
+    compileSdk = 37
+    defaultConfig {
+        targetSdk = 36
+    }
+}
+KTS
+  expect fail "ligne minSdk absente" "${tmp}/nomsdk" "minSdk absent"
+
+  echo "[android-sdk-versions --self-test] OK: 9 cas (1 vert, 8 rouges) verifies."
 }
 
 if [[ "${1:-}" == "--self-test" ]]; then
