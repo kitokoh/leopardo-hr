@@ -85,6 +85,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportedCountryControlle
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogController;
 use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\CandidateApplicationController;
+use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\CandidateApplicationTrackingController;
 use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\PublicCareerController;
 use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\PublicCareersDirectoryController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryAppWebhookController;
@@ -347,6 +348,18 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/{companySlug}/jobs/{jobPosting}/apply', [CandidateApplicationController::class, 'store'])
             ->whereNumber('jobPosting')
             ->middleware('throttle:public-careers-apply');
+
+        // ATS (#9461) — suivi de candidature par le candidat. Déclaré APRÈS
+        // `/{companySlug}` et `/{companySlug}/jobs/...` : le segment
+        // `applications` ne peut pas être confondu avec un slug d'entreprise
+        // grâce au préfixe `/{companySlug}/applications`, mais l'ordre
+        // explicite évite toute ambiguïté future.
+        //
+        // POST et non GET : l'email est une donnée personnelle, un GET la
+        // ferait atterrir dans les journaux d'accès et l'historique du
+        // navigateur. Bucket de throttling dédié, plus strict que la lecture.
+        Route::post('/{companySlug}/applications/track', [CandidateApplicationTrackingController::class, 'track'])
+            ->middleware('throttle:public-careers-track');
     });
 
     // Issue #4217 (audit 360° 2026-08-16) — registre multi-pays canonique

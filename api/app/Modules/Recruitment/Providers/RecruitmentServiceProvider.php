@@ -6,8 +6,10 @@ namespace App\Modules\Recruitment\Providers;
 
 use App\Modules\Recruitment\Application\Services\ResumeScanService;
 use App\Modules\Recruitment\Domain\Contracts\ResumeScanner;
+use App\Modules\Recruitment\Domain\Contracts\ResumeTextExtraction;
 use App\Modules\Recruitment\Infrastructure\Antivirus\ClamAvResumeScanner;
 use App\Modules\Recruitment\Infrastructure\Antivirus\NullResumeScanner;
+use App\Modules\Recruitment\Infrastructure\Extraction\ShellResumeTextExtractor;
 use Illuminate\Support\ServiceProvider;
 use Psr\Log\LoggerInterface;
 
@@ -38,6 +40,13 @@ class RecruitmentServiceProvider extends ServiceProvider
         $this->app->singleton(ResumeScanService::class, fn ($app): ResumeScanService => new ResumeScanService(
             scanner: $app->make(ResumeScanner::class),
             policy: (string) config('recruitment.antivirus.policy', ResumeScanService::POLICY_REJECT),
+            logger: $app->make(LoggerInterface::class),
+        ));
+
+        // ATS (#9461) — extraction du texte des CV. Lié à l'interface, pas à la
+        // classe : les tests injectent un extracteur déterministe sans dépendre
+        // de la présence de `pdftotext` sur la machine.
+        $this->app->singleton(ResumeTextExtraction::class, fn ($app): ResumeTextExtraction => new ShellResumeTextExtractor(
             logger: $app->make(LoggerInterface::class),
         ));
     }

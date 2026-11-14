@@ -3,13 +3,14 @@ import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Briefcase, MapPin, Clock, ArrowRight, Rss } from 'lucide-react';
+import { Briefcase, MapPin, Clock, ArrowRight, Rss, FileSearch, FileText } from 'lucide-react';
 import { CareersNavbar } from './CareersNavbar';
 import { Footer } from '@/modules/vitrine/components/Footer';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
 import { JsonLd } from '@/components/JsonLd';
 import { normalizeLocale, type AppLocale } from '@/lib/i18n';
 import { getTenantCareersCopy, tenantCareersMetaTitle, tenantCareersMetaDescription } from '@/modules/vitrine/data/tenant-careers';
+import { getCandidateToolsCopy } from '@/modules/vitrine/data/candidate-tools';
 import {
   getPublicCareersCompany,
   getPublicJobPostings,
@@ -97,6 +98,8 @@ export default async function CareersPortalPage({ params, searchParams }: Career
   ]);
   const locale = await resolveCareersLocale(lang);
   const copy = getTenantCareersCopy(locale);
+  // ATS (#9461) — libellés des outils candidat (suivi + CV).
+  const tools = getCandidateToolsCopy(locale);
 
   if (jobs === null) {
     notFound();
@@ -210,6 +213,27 @@ export default async function CareersPortalPage({ params, searchParams }: Career
           <p className="mt-3 text-lg text-slate-600 dark:text-slate-400">
             {jobs.length > 0 ? copy.openingsCount(jobs.length) : copy.noOpenings}
           </p>
+
+          {/* ATS (#9461) — les deux outils du candidat, accessibles depuis le
+              portail : suivre une candidature déjà déposée, et construire un
+              CV. Sans ces liens, un candidat n'avait aucun moyen de retrouver
+              l'état de son dossier ni de préparer un CV depuis la vitrine. */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href={`/${companySlug}/careers/applications${lang ? `?lang=${lang}` : ''}`}
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+            >
+              <FileSearch className="h-4 w-4" />
+              {tools.track.title}
+            </Link>
+            <Link
+              href={`/${companySlug}/careers/cv${lang ? `?lang=${lang}` : ''}`}
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+            >
+              <FileText className="h-4 w-4" />
+              {tools.cv.title}
+            </Link>
+          </div>
         </div>
       </section>
 

@@ -148,17 +148,180 @@ pas au-delà de la première page et donnerait un compteur faux.
 - **Le téléchargement de CV** est couvert par le code mais pas par un test
   bout-en-bout avec un fichier réel sur le disque `local`.
 
+## 3 bis. Second lot — parcours complets et extraction du CV (PR #9461)
+
+Le premier lot laissait trois trous dans le parcours « de A à Z ». Ce second
+lot les ferme, et corrige la limite n° 2 de la section suivante.
+
+### 3 bis.1 Extraction du texte des CV (objectif 4)
+
+**Vérifié avant d'écrire : aucune extraction n'existait.** Recherche plein
+texte de `pdftotext`, `PdfParser`, `extractText`, `resume_text`, `cv_text` sur
+`api/app`, `api/config`, `api/database` → **0 résultat**. `composer.json` ne
+contient aucune bibliothèque de parsing PDF. La colonne `resume_text`
+n'existait pas.
+
+| Élément | Emplacement |
+|---|---|
+| Contrat | `Domain/Contracts/ResumeTextExtraction.php` |
+| Implémentation | `Infrastructure/Extraction/ShellResumeTextExtractor.php` |
+| Migration | `2026_11_14_000001_9461_add_resume_text_to_applicants.php` |
+| Branchement | `CandidateApplicationController` (après stockage du fichier) |
+| Score ATS | `AtsApplicantFilter::score()` |
+| Recherche pipeline | `AtsApplicantFilter::apply()` |
+
+Trois formats, trois stratégies : **PDF** via `pdftotext -layout` (la disposition
+en colonnes est conservée — sans elle, un CV sur deux colonnes ressort en mots
+entremêlés), **DOCX** par lecture directe de `word/document.xml` dans l'archive
+ZIP (`ZipArchive` + `DOMDocument`, aucune dépendance), **DOC** via `antiword`
+avec repli `catdoc`.
+
+Trois décisions qui comptent :
+
+1. **`proc_open` avec des arguments en TABLEAU**, jamais une chaîne concaténée.
+   Le nom d'origine du CV vient d'un visiteur non authentifié ; c'est la seule
+   injection réelle de ce chemin.
+2. **Aucune exception, `null` partout.** Un CV scanné (image dans un PDF) ou
+   chiffré ne rend aucun texte : c'est un cas normal, pas une erreur. Faire
+   échouer la candidature d'un candidat légitime pour cela serait un défaut.
+3. **`LIBXML_NONET | LIBXML_NOENT`** au parsing du DOCX : un DOCX piégé ne doit
+   pas pouvoir déclencher la lecture d'un fichier local au serveur.
+
+Le score distingue désormais `resume_text = null` (« non extrait ») de vide, et
+expose `sources` (`resume`, `cover_letter`, `notes`) pour que le recruteur sache
+sur quoi le score a été calculé — un score de 40 % sans CV lisible n'a pas la
+même valeur qu'un score de 40 % sur un CV complet.
+
+**Correction de bord : la correspondance se fait sur frontières de mot.** La
+version précédente utilisait `str_contains` : « Go » correspondait à « Google »,
+« R » à « Recrutement », « C » à n'importe quel mot. Avec une compétence d'un
+caractère, tous les candidats obtenaient 100 %. Le test
+`test_a_skill_is_matched_on_word_boundaries_only` verrouille ce cas.
+
+### 3 bis.2 Suivi de candidature par le candidat (objectif 2)
+
+Le parcours candidat s'arrêtait au dépôt : aucun moyen de savoir ce que le
+dossier était devenu.
+
+| Élément | Emplacement |
+|---|---|
+| Route | `POST /api/v1/public/careers/{slug}/applications/track` |
+| Contrôleur | `CandidateApplicationTrackingController` |
+| Throttling | `public-careers-track` (5/min par IP **et** par email) |
+| Client | `src/lib/candidate-tracking-api.ts` |
+| Page | `/[companySlug]/careers/applications` |
+
+Une route qui rend des dossiers à partir d'un email est par nature une surface
+d'énumération. Trois mesures cumulatives :
+
+- **Throttling à double clé** (IP + email) : 5/min par IP bloque le balayage,
+  la clé email empêche un attaquant réparti sur plusieurs IP de marteler une
+  même victime.
+- **Réponse minimale** : intitulé du poste, statut, dates. Jamais la note
+  interne, les notes du recruteur, le score ATS, le texte du CV ni l'identité
+  des recruteurs. Un test vérifie explicitement l'absence de chacune de ces
+  clés.
+- **Email inconnu → liste vide, jamais 404.** Un 404 confirmerait « cette
+  adresse n'a jamais postulé », ce qui est déjà une information.
+
+`POST` et non `GET` : l'email est une donnée personnelle, un `GET` la ferait
+atterrir dans les journaux d'accès, l'historique du navigateur et les en-têtes
+`Referer`.
+
+Le tenant est résolu depuis `{companySlug}` : un candidat ne voit que les
+dossiers déposés chez cette entreprise, jamais ceux déposés ailleurs avec la
+même adresse (test dédié).
+
+### 3 bis.3 Gestion des offres et décision finale (objectif 1)
+
+**Constat :** le backend exposait le CRUD complet (`/recruitment/jobs`,
+`/publish`, `/close`, `/archive`, `/reopen`) mais **aucun écran ne l'appelait**.
+Un tenant ne pouvait publier une offre qu'en appelant l'API à la main — le
+parcours « de A à Z » s'arrêtait à la première étape.
+
+| Élément | Emplacement |
+|---|---|
+| Panneau offres | `(dashboard)/recruitment/JobManagementPanel.tsx` |
+| Décision finale | `(dashboard)/recruitment/page.tsx` |
+| Routes utilisées | `POST /recruitment/jobs`, `.../{id}/publish|close|archive|reopen` |
+
+Le panneau crée une offre (titre, lieu, contrat, modalité, **compétences**,
+description), affiche son statut avec le cycle de vie explicite, et propose les
+transitions valides selon l'état courant. Les compétences saisies sont la seule
+source du score ATS : sans elles, le score reste `null` et le tri par
+correspondance ne sert à rien — le formulaire le dit à l'écran.
+
+La décision finale (embaucher / refuser) exige un **motif non vide**. C'est un
+acte qui doit rester justifié dans le journal append-only : un refus sans motif
+écrit est indéfendable devant le candidat comme devant un contrôle.
+
+### 3 bis.4 Éditeur de CV depuis la vitrine (objectif 3)
+
+| Élément | Emplacement |
+|---|---|
+| Composant | `/[companySlug]/careers/cv/ResumeBuilder.tsx` |
+| Page | `/[companySlug]/careers/cv/page.tsx` |
+| Libellés | `src/modules/vitrine/data/candidate-tools.ts` (4 locales) |
+| Stockage | `localStorage`, clé `leopardo.candidate.cv.v1` |
+
+Sections nom / titre / contact / profil / expériences / formations /
+compétences, aperçu mis en forme en direct, et export PDF par l'impression du
+navigateur (`@media print`) plutôt qu'une bibliothèque de génération : aucune
+dépendance ajoutée, rendu identique à l'aperçu, et le candidat choisit
+« Enregistrer au format PDF ».
+
+**Choix assumé, et dit à l'écran :** un candidat sans compte ne peut pas avoir
+de CV stocké côté serveur sans qu'on lui impose une inscription — exactement la
+friction qu'on veut éviter. Le CV reste donc dans le navigateur et n'est envoyé
+à aucune entreprise tant que le candidat ne joint pas le fichier. Conséquence
+réelle : il ne suit pas d'un appareil à l'autre. L'écran le dit, il ne le
+cache pas.
+
+Un contenu `localStorage` corrompu fait repartir d'un CV vide au lieu de faire
+planter la page — test dédié.
+
+### 3 bis.5 Vérifications de ce second lot
+
+| Vérification | Résultat |
+|---|---|
+| `phpunit --filter=Recruitment` | **101 tests, 296 assertions, 0 échec** |
+| `phpunit` — extracteur (vrais binaires + ZipArchive) | 7 tests PASS |
+| `phpunit` — score ATS sur CV | 10 tests PASS |
+| `phpunit` — suivi candidat | 9 tests PASS |
+| `jest` — `careers` + `recruitment` + libellés | **66 tests, 6 suites, 0 échec** |
+| `tsc --noEmit` | 0 erreur |
+| `eslint --max-warnings 0` (fichiers touchés) | 0 erreur |
+| `pint --test` (81 fichiers) | PASS |
+| `route:list --path=public/careers` | route de suivi enregistrée |
+
+**Une régression réelle rencontrée et corrigée pendant ce lot :** ajouter
+`/recruitment` aux préfixes protégés a cassé quatre sources qui en dérivent
+(matcher du proxy, gate `DASHBOARD_PREFIXES`, `sw.js`, test du sous-menu RH).
+Les quatre sont alignées et la suite repasse au vert. Corriger sans comprendre
+aurait laissé le service worker servir une page protégée depuis le cache.
+
+**Ce qui n'a pas pu être vérifié :** la suite Jest complète (`npx jest`) a été
+tuée par l'OOM du sandbox (2 Go) — ce n'est pas un échec de test, c'est le
+runner qui meurt. J'ai donc exécuté le périmètre touché (66 tests) plutôt que
+de prétendre à une suite complète. Le rendu visuel des trois nouveaux écrans
+n'a pas été observé avec de vraies données. La migration n'a pas été jouée sur
+une base tenant réelle. Les binaires `pdftotext` / `antiword` sont présents
+dans cet environnement, mais leur présence sur l'image de production n'est pas
+vérifiée ici — le code rend `null` proprement s'ils manquent, donc une absence
+dégradation n'est pas une panne, mais le score retomberait sur la lettre.
+
 ## 4. Points d'attention pour la suite
 
 1. **`resume_url` pointe vers une route authentifiée.** C'est volontaire (le
    fichier est sur le disque privé), mais un lien collé dans un email ne
    fonctionnera pas pour un destinataire non connecté. Si ce besoin apparaît,
    il faudra une URL signée à durée limitée.
-2. **Le score de correspondance ne lit que la lettre de motivation.** Il ne
-   parse pas le CV (pas d'extraction de texte dans le pipeline actuel). Un
-   candidat qui ne rédige pas de lettre obtient donc 0 % même avec un CV
-   parfaitement aligné — c'est une limite assumée, pas un bug, mais elle doit
-   être expliquée aux recruteurs.
+2. ~~**Le score de correspondance ne lit que la lettre de motivation.**~~ **Corrigé
+   au second lot (§3 bis.1)** : le texte du CV est extrait au dépôt et entre dans
+   le corpus de scoring. Reste vrai : un CV **scanné en image** ne rend aucun
+   texte (`resume_text = null`), et le score retombe alors sur la lettre et les
+   notes. L'API expose `sources` pour que l'écran puisse le dire — mais aucune
+   OCR n'est faite, volontairement (coût et faux positifs).
 3. **`front/admin-dashboard` n'a pas été modifié.** L'écran recruteur vit dans
    `front/web` (le dashboard principal). Si l'admin-dashboard doit aussi
    exposer le pipeline, il faudra y dupliquer la vue — l'API est prête.

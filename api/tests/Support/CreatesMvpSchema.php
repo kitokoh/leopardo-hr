@@ -54,6 +54,12 @@ trait CreatesMvpSchema
                 // EstimationServiceTest supprime public.hr_model_templates).
                 $this->restoreDefaultSearchPath();
                 $this->resetMvpFixtureTables();
+                // ATS (#9461) — la fixture est construite UNE fois puis
+                // marquée prête : une base existante n'a pas les colonnes
+                // ajoutées depuis. On rejoue la garde additive ici, sinon la
+                // suite échoue sur `column "resume_text" does not exist`
+                // jusqu'à ce que quelqu'un pense à recréer la base.
+                $this->ensureApplicantResumeTextColumns();
             }
 
             return;
@@ -1531,6 +1537,34 @@ trait CreatesMvpSchema
     private function moduleTable(string $table): string
     {
         return DB::getDriverName() === 'pgsql' ? 'shared_tenants.'.$table : $table;
+    }
+
+    /**
+     * ATS (#9461) — colonnes additives du CV sur `applicants`.
+     *
+     * Idempotent et sans effet si la table n'existe pas encore : appelé à la
+     * construction de la fixture ET à chaque réutilisation d'une base déjà
+     * construite, pour qu'une base de test ancienne reste utilisable.
+     */
+    private function ensureApplicantResumeTextColumns(): void
+    {
+        $table = $this->moduleTable('applicants');
+
+        if (! Schema::hasTable($table)) {
+            return;
+        }
+
+        if (! Schema::hasColumn($table, 'resume_text')) {
+            Schema::table($table, function (Blueprint $blueprint): void {
+                $blueprint->text('resume_text')->nullable();
+            });
+        }
+
+        if (! Schema::hasColumn($table, 'resume_text_extracted_at')) {
+            Schema::table($table, function (Blueprint $blueprint): void {
+                $blueprint->timestampTz('resume_text_extracted_at')->nullable();
+            });
+        }
     }
 
     private function createPostSprintModuleTables(): void
@@ -3442,6 +3476,10 @@ trait CreatesMvpSchema
                 $table->string('email');
                 $table->string('phone', 30)->nullable();
                 $table->string('resume_path', 500)->nullable();
+                // ATS (#9461) — texte extrait du CV (miroir de la migration
+                // tenant 2026_11_14_000001). `null` = non extrait.
+                $table->text('resume_text')->nullable();
+                $table->timestampTz('resume_text_extracted_at')->nullable();
                 $table->text('cover_letter')->nullable();
                 $table->string('source', 30)->nullable();
                 $table->string('status', 20)->default('new');
@@ -3461,6 +3499,14 @@ trait CreatesMvpSchema
                 $table->timestamps();
             });
         }
+
+        // ATS (#9461) — une base de test deja creee par une execution
+        // precedente n'a pas les colonnes ajoutees depuis. On les ajoute de
+        // facon additive, comme le fait la migration tenant : sans cette
+        // garde, la suite echoue sur `column "resume_text" does not exist`
+        // tant que la base n'est pas recreee, ce qui n'a rien a voir avec le
+        // code teste.
+        $this->ensureApplicantResumeTextColumns();
 
         if (! Schema::hasTable($this->moduleTable('interviews'))) {
             Schema::create($this->moduleTable('interviews'), function (Blueprint $table): void {

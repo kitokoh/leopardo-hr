@@ -630,6 +630,19 @@ class AppServiceProvider extends ServiceProvider
                 ->by('public-careers-apply:'.$request->ip());
         });
 
+        // ATS (#9461) — suivi de candidature par le candidat. Bucket TRÈS
+        // strict, par IP ET par email visé : cette route rend l'état d'un
+        // dossier à partir d'une simple adresse email, donc elle est une
+        // surface d'énumération. 5/min par IP empêche de balayer une liste
+        // d'adresses, et la clé par email empêche qu'un attaquant réparti sur
+        // plusieurs IP martèle une même victime.
+        RateLimiter::for('public-careers-track', function (Request $request) {
+            $email = mb_strtolower(trim((string) $request->input('email', '')));
+
+            return Limit::perMinute((int) config('security.rate_limits.public_careers_track_per_minute', 5))
+                ->by('public-careers-track:'.$request->ip().'|'.$email);
+        });
+
         // EDU-013 (#5829) : consommation des liens du portail guardian (route
         // publique). Bucket dédié par token + IP — 10/min borne l'énumération
         // et le bruteforce sans affamer le flux légitime (un lien est à usage

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { JobManagementPanel } from './JobManagementPanel';
 
 /**
  * ATS — pipeline de recrutement du recruteur.
@@ -122,11 +123,18 @@ export default function RecruitmentAtsPage() {
   const [selected, setSelected] = useState<Applicant | null>(null);
   const [detail, setDetail] = useState<{
     history: Array<{ id: number; from_status: string | null; to_status: string; actor_name: string | null; reason: string | null; occurred_at: string | null }>;
-    match: { score: number | null; matched: string[]; missing: string[] } | null;
+    match: { score: number | null; matched: string[]; missing: string[]; sources?: string[] } | null;
   } | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [moving, setMoving] = useState(false);
   const [moveError, setMoveError] = useState<string | null>(null);
+
+  // ATS (#9461) — decision finale. Le motif est OBLIGATOIRE : un refus sans
+  // justification ecrit est indefendable devant le candidat et devant un
+  // controle, et le journal de statuts perdrait tout son interet.
+  const [decisionReason, setDecisionReason] = useState('');
+  const [deciding, setDeciding] = useState(false);
+  const [decisionError, setDecisionError] = useState<string | null>(null);
 
   const queryString = useMemo(() => {
     const params = new URLSearchParams();
@@ -187,6 +195,8 @@ export default function RecruitmentAtsPage() {
     setSelected(applicant);
     setDetail(null);
     setMoveError(null);
+    setDecisionError(null);
+    setDecisionReason('');
     setDetailLoading(true);
     try {
       const res = await apiFetch(`/recruitment/ats/applicants/${applicant.id}`);
@@ -224,6 +234,50 @@ export default function RecruitmentAtsPage() {
     }
   };
 
+  /**
+   * Decision finale : embauche ou refus, avec motif obligatoire.
+   *
+   * Passe par la meme route que le deplacement dans le pipeline, mais avec un
+   * motif non vide : c'est la seule difference, et elle est volontaire — la
+   * decision finale est un acte qui doit rester justifie dans le journal.
+   */
+  const decide = async (status: 'hired' | 'rejected') => {
+    if (!selected) return;
+
+    const reason = decisionReason.trim();
+    if (reason.length < 3) {
+      setDecisionError('Un motif est obligatoire pour une decision finale.');
+      return;
+    }
+
+    setDeciding(true);
+    setDecisionError(null);
+
+    try {
+      const res = await apiFetch(`/recruitment/ats/applicants/${selected.id}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status, reason }),
+      });
+
+      if (!res.ok) {
+        setDecisionError('La decision n a pas pu etre enregistree.');
+        return;
+      }
+
+      const payload = await res.json();
+      const updated = payload.data as Applicant;
+      setApplicants((prev) => prev.map((a) => (a.id === updated.id ? { ...a, ...updated } : a)));
+      setSelected((prev) => (prev ? { ...prev, ...updated } : prev));
+      setDecisionReason('');
+      await openDetail(updated);
+      await loadApplicants();
+    } catch {
+      setDecisionError('La decision n a pas pu etre enregistree.');
+    } finally {
+      setDeciding(false);
+    }
+  };
+
   const toggleStatus = (status: ApplicantStatus) => {
     setStatusFilter((prev) =>
       prev.includes(status) ? prev.filter((s) => s !== status) : [...prev, status],
@@ -255,6 +309,11 @@ export default function RecruitmentAtsPage() {
           <span>{error}</span>
         </div>
       )}
+
+      {/* ATS (#9461) — gestion des offres. Placee AVANT le pipeline : sans
+          offre publiee, il n'y a aucune candidature a traiter, et un
+          recruteur qui arrive sur un pipeline vide doit voir pourquoi. */}
+      <JobManagementPanel onJobsChanged={loadJobs} />
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {statCards.map((stat, i) => (
@@ -536,6 +595,64 @@ export default function RecruitmentAtsPage() {
               <p className="text-sm text-slate-500">Chargement du dossier...</p>
             ) : (
               <>
+                {/* ATS (#9461) — decision finale. Placee AVANT l'historique :
+                    c'est l'acte que le recruteur vient poser, et il doit voir
+                    ce qu'il reste a faire sans faire defiler. */}
+                <div className="mb-6 rounded-2xl border border-app-border bg-white p-4">
+                  <h3 className="mb-2 text-xs font-bold uppercase tracking-widest text-slate-500">
+                    Decision finale
+                  </h3>
+
+                  {selected.status === 'hired' || selected.status === 'rejected' ? (
+                    <p className="text-sm font-semibold text-slate-700">
+                      Ce dossier est deja tranche :{' '}
+                      {STATUS_LABELS[selected.status]}. Le motif figure dans l&apos;historique
+                      ci-dessous.
+                    </p>
+                  ) : (
+                    <>
+                      <label htmlFor="decision-reason" className="mb-1 block text-xs font-semibold text-slate-600">
+                        Motif (obligatoire)
+                      </label>
+                      <textarea
+                        id="decision-reason"
+                        value={decisionReason}
+                        onChange={(e) => setDecisionReason(e.target.value)}
+                        rows={2}
+                        placeholder="Ex. : profil retenu apres entretien technique du 12/11."
+                        className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm"
+                      />
+
+                      {decisionError && (
+                        <p role="alert" className="mt-1 text-xs font-semibold text-red-600">
+                          {decisionError}
+                        </p>
+                      )}
+
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          disabled={deciding}
+                          onClick={() => decide('hired')}
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-emerald-700 disabled:opacity-50"
+                        >
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          Embaucher
+                        </button>
+                        <button
+                          type="button"
+                          disabled={deciding}
+                          onClick={() => decide('rejected')}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-rose-300 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-700 transition hover:bg-rose-100 disabled:opacity-50"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                          Refuser
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+
                 {detail?.match && detail.match.score !== null && (
                   <div className="mb-6 rounded-2xl border border-app-border bg-slate-50/60 p-4">
                     <div className="mb-2 flex items-center justify-between">
@@ -564,7 +681,19 @@ export default function RecruitmentAtsPage() {
                       ))}
                     </div>
                     <p className="mt-2 text-[11px] text-slate-500">
-                      Score calcule sur les competences declarees dans la lettre de motivation.
+                      Score calcule sur le texte du CV, la lettre de motivation et les notes
+                      {detail.match.sources && detail.match.sources.length > 0
+                        ? ` (sources : ${detail.match.sources
+                            .map((source) =>
+                              source === 'resume'
+                                ? 'CV'
+                                : source === 'cover_letter'
+                                  ? 'lettre'
+                                  : 'notes',
+                            )
+                            .join(', ')})`
+                        : ''}
+                      .
                     </p>
                   </div>
                 )}

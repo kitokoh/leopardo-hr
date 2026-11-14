@@ -137,17 +137,23 @@ final class AtsApplicantFilter
      * Score de correspondance 0-100 entre un candidat et les compétences
      * demandées par l'offre.
      *
+     * Le corpus est le texte que le candidat a RÉELLEMENT fourni : le CV
+     * extrait (`resume_text`), la lettre de motivation et les notes internes.
+     * Avant #9461, seul le texte libre était lu — un candidat sans lettre
+     * obtenait 0 % malgré un CV parfaitement aligné, ce qui rendait le score
+     * trompeur au point d'être inutilisable.
+     *
      * Retourne `null` quand l'offre ne déclare aucune compétence : il n'y a
      * alors rien à comparer, et afficher 0 laisserait croire à un mauvais
      * profil.
      *
-     * @return array{score: int|null, matched: list<string>, missing: list<string>}
+     * @return array{score: int|null, matched: list<string>, missing: list<string>, sources: list<string>}
      */
     public function score(Applicant $applicant, ?JobPosting $job): array
     {
         $required = $job?->skills_required;
         if (! is_array($required) || $required === []) {
-            return ['score' => null, 'matched' => [], 'missing' => []];
+            return ['score' => null, 'matched' => [], 'missing' => [], 'sources' => []];
         }
 
         $required = array_values(array_filter(
@@ -156,21 +162,40 @@ final class AtsApplicantFilter
         ));
 
         if ($required === []) {
-            return ['score' => null, 'matched' => [], 'missing' => []];
+            return ['score' => null, 'matched' => [], 'missing' => [], 'sources' => []];
         }
 
         // Le corpus est le texte que le candidat a réellement fourni. On ne
         // devine pas ses compétences à partir de son intitulé de poste.
-        $haystack = mb_strtolower(trim(implode(' ', array_filter([
-            (string) $applicant->cover_letter,
-            (string) $applicant->notes,
-        ]))));
+        //
+        // `sources` dit au recruteur SUR QUOI le score a été calculé : un
+        // score de 40 % obtenu sans CV lisible n'a pas la même valeur qu'un
+        // score de 40 % sur un CV complet, et l'écran doit pouvoir le dire.
+        $sources = [];
+        $parts = [];
+
+        if (is_string($applicant->resume_text) && trim($applicant->resume_text) !== '') {
+            $parts[] = $applicant->resume_text;
+            $sources[] = 'resume';
+        }
+
+        if (is_string($applicant->cover_letter) && trim($applicant->cover_letter) !== '') {
+            $parts[] = $applicant->cover_letter;
+            $sources[] = 'cover_letter';
+        }
+
+        if (is_string($applicant->notes) && trim($applicant->notes) !== '') {
+            $parts[] = $applicant->notes;
+            $sources[] = 'notes';
+        }
+
+        $haystack = mb_strtolower(trim(implode("\n", $parts)));
 
         $matched = [];
         $missing = [];
 
         foreach ($required as $skill) {
-            if ($haystack !== '' && str_contains($haystack, mb_strtolower($skill))) {
+            if ($haystack !== '' && $this->containsSkill($haystack, $skill)) {
                 $matched[] = $skill;
             } else {
                 $missing[] = $skill;
@@ -181,7 +206,31 @@ final class AtsApplicantFilter
             'score' => (int) round(count($matched) / count($required) * 100),
             'matched' => $matched,
             'missing' => $missing,
+            'sources' => $sources,
         ];
+    }
+
+    /**
+     * Présence d'une compétence dans le corpus, avec frontières de mot.
+     *
+     * Une simple sous-chaîne produit des faux positifs coûteux : « R » est
+     * contenu dans « Recrutement », « Go » dans « Google », « C » partout. On
+     * exige donc que la compétence ne soit pas collée à une lettre ou un
+     * chiffre. Les compétences à plusieurs mots (« React Native ») restent
+     * cherchées telles quelles, espaces normalisés.
+     */
+    private function containsSkill(string $haystack, string $skill): bool
+    {
+        $needle = mb_strtolower(trim($skill));
+        if ($needle === '') {
+            return false;
+        }
+
+        // Les espaces du corpus ont été normalisés à l'extraction, mais pas
+        // forcément ceux de la lettre : on tolère plusieurs espaces.
+        $pattern = '/(?<![\p{L}\p{N}])'.preg_quote($needle, '/').'(?![\p{L}\p{N}])/u';
+
+        return preg_match($pattern, $haystack) === 1;
     }
 
     /**
@@ -261,7 +310,12 @@ final class AtsApplicantFilter
             $q->whereRaw("first_name ILIKE ? ESCAPE '\\'", [$like])
                 ->orWhereRaw("last_name ILIKE ? ESCAPE '\\'", [$like])
                 ->orWhereRaw("email ILIKE ? ESCAPE '\\'", [$like])
-                ->orWhereRaw("COALESCE(cover_letter, '') ILIKE ? ESCAPE '\\'", [$like]);
+                ->orWhereRaw("COALESCE(cover_letter, '') ILIKE ? ESCAPE '\\'", [$like])
+                // ATS (#9461) — chercher « Kubernetes » doit trouver le
+                // candidat qui l'a écrit dans son CV, pas seulement dans sa
+                // lettre. Sans cette branche, la recherche plein texte
+                // ignorait le document principal du dossier.
+                ->orWhereRaw("COALESCE(resume_text, '') ILIKE ? ESCAPE '\\'", [$like]);
         });
     }
 

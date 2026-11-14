@@ -20,6 +20,8 @@ use Illuminate\Support\Carbon;
  * @property string $email
  * @property string|null $phone
  * @property string|null $resume_path
+ * @property string|null $resume_text
+ * @property Carbon|null $resume_text_extracted_at
  * @property string|null $resume_scan_status
  * @property string|null $resume_scan_engine
  * @property string|null $resume_scan_signature
@@ -51,6 +53,8 @@ class Applicant extends Model
         'email',
         'phone',
         'resume_path',
+        'resume_text',
+        'resume_text_extracted_at',
         'resume_scan_status',
         'resume_scan_engine',
         'resume_scan_signature',
@@ -70,6 +74,7 @@ class Applicant extends Model
         'consent_given_at' => 'datetime',
         'retention_until' => 'datetime',
         'resume_scanned_at' => 'datetime',
+        'resume_text_extracted_at' => 'datetime',
     ];
 
     /** @return BelongsTo<JobPosting, $this> */

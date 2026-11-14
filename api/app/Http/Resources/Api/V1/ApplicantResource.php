@@ -48,6 +48,12 @@ class ApplicantResource extends JsonResource
             'cover_letter' => $this->cover_letter,
             'has_resume' => $this->resume_path !== null && $this->resume_path !== '',
             'resume_url' => $this->resumeUrl(),
+            // ATS (#9461) — le recruteur doit savoir si le score a pu être
+            // calculé sur le CV ou seulement sur la lettre. On expose la
+            // PRÉSENCE du texte, jamais son contenu : le dossier complet se
+            // consulte via la route dédiée, pas dans une liste paginée.
+            'has_resume_text' => is_string($this->resume_text) && trim($this->resume_text) !== '',
+            'resume_text_extracted_at' => $this->resume_text_extracted_at?->toIso8601String(),
             'resume_scan_status' => $this->resume_scan_status,
             'resume_scanned_at' => $this->resume_scanned_at?->toIso8601String(),
             'applied_at' => $this->applied_at?->toIso8601String(),

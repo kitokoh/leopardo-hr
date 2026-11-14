@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ApplicantResource;
 use App\Modules\Recruitment\Application\Actions\CreateApplicantAction;
 use App\Modules\Recruitment\Application\Services\ResumeScanService;
+use App\Modules\Recruitment\Domain\Contracts\ResumeTextExtraction;
 use App\Modules\Recruitment\Domain\Exceptions\ApplicantAlreadyAppliedException;
 use App\Modules\Recruitment\Domain\Exceptions\ResumeRejectedException;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
@@ -29,6 +30,7 @@ class CandidateApplicationController extends Controller
     public function __construct(
         private readonly TenantManager $tenantManager,
         private readonly ResumeScanService $resumeScanService,
+        private readonly ResumeTextExtraction $resumeTextExtraction,
     ) {}
 
     /**
@@ -48,6 +50,8 @@ class CandidateApplicationController extends Controller
 
             $resumePath = null;
             $scanVerdict = null;
+            $resumeText = null;
+            $resumeTextExtractedAt = null;
 
             if ($request->hasFile('resume')) {
                 $file = $request->file('resume');
@@ -78,6 +82,19 @@ class CandidateApplicationController extends Controller
                 }
 
                 $resumePath = $file->store("recruitment/{$company->id}/resumes", 'local');
+
+                // ATS (#9461) — extraction du TEXTE du CV, APRÈS le scan et
+                // APRÈS le stockage : on lit le fichier à sa place définitive,
+                // donc le texte correspond exactement au document que le
+                // recruteur téléchargera. Un CV illisible (scan image, PDF
+                // chiffré) rend `null` sans faire échouer la candidature.
+                if ($resumePath !== null) {
+                    $resumeText = $this->resumeTextExtraction->extract(
+                        \Illuminate\Support\Facades\Storage::disk('local')->path($resumePath),
+                        $file->getClientOriginalName(),
+                    );
+                    $resumeTextExtractedAt = $resumeText !== null ? now() : null;
+                }
             }
 
             // BC-10 (#9100) — RGPD : on horodate le consentement et on fixe la
@@ -102,6 +119,11 @@ class CandidateApplicationController extends Controller
                         'email' => $validated['email'],
                         'phone' => $validated['phone'] ?? null,
                         'resume_path' => $resumePath ?? ($validated['resume_url'] ?? null),
+                        // ATS (#9461) — texte extrait du CV, base du score de
+                        // correspondance. `null` = non extrait (CV image ou
+                        // chiffré), ce qui n'est pas la même chose que vide.
+                        'resume_text' => $resumeText,
+                        'resume_text_extracted_at' => $resumeTextExtractedAt,
                         // BC-10 (#9217) — le verdict est persisté, y compris
                         // `unavailable` : un CV non analysé doit rester
                         // distinguable d'un CV vérifié, et re-scannable après
