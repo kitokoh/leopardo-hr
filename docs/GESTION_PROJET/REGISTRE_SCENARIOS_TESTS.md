@@ -1,3 +1,16 @@
+## 2026-11-12 — BC-02 TENANT : parité web / mobile des sous-rôles manager (issue #9334, PR #9428)
+
+Surface : écran Équipe mobile (`leopardo_core/lib/features/team/`), formulaire collaborateur du web, validation `manager_role` de l'API.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| un manager principal attribue « Manager marketing » **depuis le mobile** → le rôle est proposé et l'enregistrement passe | le mobile proposait 4 sous-rôles sur 5 : `marketing` était **inattribuable** depuis l'application alors que l'API et le web l'acceptaient (#9334) |
+| le web et le mobile proposent **le même ensemble** de sous-rôles | c'est la dérive mesurée avant ce lot : contrainte SQL 10 valeurs, API 6, web 5, mobile 4 |
+| les libellés des sous-rôles suivent la locale de l'appareil (fr / en / ar / tr) | les libellés étaient écrits en dur (`'Departement'`, `'Comptable'`, `'Superviseur'`) : un utilisateur arabophone voyait du français |
+| un rôle ajouté à `ASSIGNABLE_MANAGER_ROLES` sans mise à jour des clients → garde `check-team-role-parity.py` **rouge** | une énumération répartie sur trois langages dérive toujours : c'est exactement ce qui a produit #9334 |
+| un FormRequest recopie `in:principal,rh,…` en dur → garde **rouge** | cause racine du défaut : deux copies en dur dans l'API, donc deux occasions de rater un ajout |
+| le menu déroulant se remplit depuis `kAssignableManagerRoles`, jamais depuis une liste locale au widget | une liste dans le widget redevient invisible pour la garde, donc non verrouillable |
+
 ## 2026-11-10 — BC-02 TENANT : audit de l'espace locataire — navigation des verticales, panneau verrouillé, hub Paramètres (issues #9328/#9329/#9330, PR #9335)
 
 **Surface** : `front/web/src/lib/client-features.ts` (matrice `MANAGER_MODULE_ROLES`), `front/web/src/app/(dashboard)/layout.tsx` (`FeatureLockedPanel`), `front/web/src/app/(dashboard)/settings/page.tsx` (ex-redirection), `front/web/src/components/layout/Sidebar.tsx`, plus le namespace i18n `settingsHub` propagé aux 4 catalogues `shared/i18n/locales` et régénéré vers le web, le backend et les ARB mobile. **Aucune route, aucun contrôleur, aucune migration.**
