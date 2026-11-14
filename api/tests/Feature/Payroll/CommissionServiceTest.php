@@ -85,6 +85,9 @@ class CommissionServiceTest extends TestCase
             ->exists();
     }
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     private function partner(array $attributes = []): Partner
     {
         $user = User::factory()->create();
@@ -114,6 +117,9 @@ class CommissionServiceTest extends TestCase
         return $company;
     }
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     private function payment(Company $company, array $attributes = []): Payment
     {
         /** @var Payment $payment */
