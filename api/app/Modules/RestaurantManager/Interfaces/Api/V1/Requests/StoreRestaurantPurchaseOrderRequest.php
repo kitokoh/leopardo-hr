@@ -36,7 +36,14 @@ class StoreRestaurantPurchaseOrderRequest extends FormRequest
             'supplier_id' => ['required', 'integer', Rule::exists('restaurant_suppliers', 'id')->where(fn (Builder $q) => $q->where('company_id', $actor->company_id))],
             'expected_at' => ['nullable', 'date'],
             'currency' => ['nullable', 'string', 'size:3'],
-            'items' => ['required', 'array', 'min:1'],
+            // Les lignes sont créées via `POST /purchase-orders/{po}/items`
+            // (RestaurantPurchaseOrderItemController), qui recalcule le total
+            // serveur. `store()` ne persiste que l'en-tête : exiger `items` ici
+            // rendait la création impossible sans lignes, alors qu'elles
+            // arrivent après coup — et le tableau validé était de toute façon
+            // ignoré (aucune écriture). Le champ reste accepté pour les
+            // clients qui l'envoient, mais n'est plus obligatoire.
+            'items' => ['sometimes', 'array'],
             'items.*.ingredient_id' => ['required', 'integer', Rule::exists('restaurant_ingredients', 'id')->where(fn (Builder $q) => $q->where('company_id', $actor->company_id))],
             'items.*.quantity' => ['required', 'numeric', 'gt:0'],
             'items.*.unit_price_minor' => ['required', 'integer', 'min:0'],
