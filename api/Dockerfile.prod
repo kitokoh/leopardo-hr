@@ -48,6 +48,23 @@ RUN install-php-extensions \
 RUN apk add --no-cache python3 py3-pip \
     && pip3 install --no-cache-dir --break-system-packages edge-tts==7.2.8
 
+# ATS (#9461) — extraction du texte des CV (ShellResumeTextExtractor).
+#
+# Sans ces binaires, `proc_open` échoue, l'extracteur rend `null` et le score
+# de correspondance retombe sur la seule lettre de motivation : un candidat
+# sans lettre obtient 0 % malgré un CV parfaitement aligné. La panne est
+# SILENCIEUSE (aucune exception, aucune erreur visible) — c'est exactement
+# pourquoi elle doit être traitée à la construction de l'image et non
+# découverte en production.
+#
+#  - poppler-utils → `pdftotext` (PDF, format le plus courant)
+#  - antiword      → `.doc` (ancien format binaire Word)
+#  - catdoc        → repli `.doc` si antiword ne sait pas lire le fichier
+#
+# Le DOCX ne demande rien : il est lu par `ZipArchive` + `DOMDocument`.
+# Vérification : `php artisan recruitment:check-extractors`.
+RUN apk add --no-cache poppler-utils antiword catdoc
+
 WORKDIR /app
 
 # Build context is the monorepo root (render.yaml: dockerContext: .) so
