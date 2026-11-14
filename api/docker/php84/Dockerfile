@@ -2,6 +2,13 @@ FROM php:8.4-cli-bookworm
 
 WORKDIR /var/www/html
 
+# ATS (#9461) — extraction du texte des CV (ShellResumeTextExtractor).
+# L'image de dev doit offrir les mêmes binaires que la prod, sinon un
+# développeur voit un score ATS correct en local et dégradé en recette.
+#  - poppler-utils → `pdftotext` (PDF)
+#  - antiword      → `.doc` (ancien format binaire Word)
+#  - catdoc        → repli `.doc`
+# Vérification : `php artisan recruitment:check-extractors`.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     unzip \
@@ -13,6 +20,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libonig-dev \
     libicu-dev \
     libxml2-dev \
+    poppler-utils \
+    antiword \
+    catdoc \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) pdo pdo_pgsql pgsql mbstring zip gd bcmath intl \
     && pecl install redis \
