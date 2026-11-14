@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Modules\HR\Interfaces\Api\V1\Requests;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\HR\Infrastructure\Services\RoleInvitationService;
 use App\Rules\GlobalEmailUnique;
 use App\Rules\ValidIban;
 use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Modules\HR\Infrastructure\Services\RoleInvitationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
