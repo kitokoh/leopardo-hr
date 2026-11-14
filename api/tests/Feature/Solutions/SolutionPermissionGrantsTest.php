@@ -120,6 +120,12 @@ class SolutionPermissionGrantsTest extends TestCase
         $company = $this->company(['documents' => true, 'notifications' => true]);
         $employee = Employee::factory()->create(['company_id' => $company->id]); // non-manager
 
+        // `SolutionPermissionInstaller::install()` ne pose les grants que sur
+        // les employés `manager_role = 'principal'` : sans principal dans la
+        // société, l'activation n'installe rien et l'assertion finale sur
+        // `pharmacy.catalog` ne pouvait pas passer.
+        $this->principal($company);
+
         // Aucune activation : aucun grant `edu.*` chez personne.
         $this->assertSame([], $this->grantKeys($company));
         $this->assertFalse($employee->hasModuleGrant('edu.admin'));

@@ -33,10 +33,11 @@ class SolutionManifestConformanceTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    /** Les 13 codes de solution de l'allowlist (triés) — `fundraising` ajouté (FUND-080, #8400), `vtc` ajouté (VTC-01, #8377), `trade` ajouté (TRADE-001, #8476). */
+    /** Les 14 codes de solution de l'allowlist (triés) — `fundraising` ajouté (FUND-080, #8400), `vtc` ajouté (VTC-01, #8377), `trade` ajouté (TRADE-001, #8476), `farm_os` ajouté (BC-37). */
     private const EXPECTED_CODES = [
         'delivery',
         'edumanager',
+        'farm_os',
         'fuel_station',
         'fundraising',
         'healthmanager',

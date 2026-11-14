@@ -1,3 +1,20 @@
+-- Issue #9482 : ces 9 tables sont CREATE plus bas dans ce fichier mais
+-- n'avaient pas de DROP correspondant. `loadPostgresFixtureDrops()` ne
+-- supprime que les tables listées ici : sur une base où la fixture avait déjà
+-- été construite (marqueur `__mvp_fixture_ready` invalidé par un
+-- RefreshTenantDatabase), le CREATE rejoué échouait en
+-- `42P07 relation "user_employee_links" already exists` — observé sur
+-- CommissionServiceTest en suite complète. La liste DROP doit rester le
+-- miroir exact de la liste CREATE.
+DROP TABLE IF EXISTS public.user_employee_links CASCADE;
+DROP TABLE IF EXISTS public.company_sso_configs CASCADE;
+DROP TABLE IF EXISTS public.platform_oauth_configs CASCADE;
+DROP TABLE IF EXISTS public.platform_alert_dismissals CASCADE;
+DROP TABLE IF EXISTS public.feature_flag_audits CASCADE;
+DROP TABLE IF EXISTS public.edge_nodes CASCADE;
+DROP TABLE IF EXISTS public.edge_licenses CASCADE;
+DROP TABLE IF EXISTS public.sync_queue CASCADE;
+DROP TABLE IF EXISTS public.sync_logs CASCADE;
 DROP TABLE IF EXISTS public.user_invitations CASCADE;
 DROP TABLE IF EXISTS public.platform_announcement_companies CASCADE;
 DROP TABLE IF EXISTS public.platform_impersonation_sessions CASCADE;
