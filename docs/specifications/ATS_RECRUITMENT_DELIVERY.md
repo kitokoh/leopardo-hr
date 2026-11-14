@@ -294,6 +294,8 @@ planter la page — test dédié.
 | `pint --test` (81 fichiers) | PASS |
 | `route:list --path=public/careers` | route de suivi enregistrée |
 
+> Voir **§3 ter** pour le troisième lot (binaires Docker, recette réelle, E2E).
+
 **Une régression réelle rencontrée et corrigée pendant ce lot :** ajouter
 `/recruitment` aux préfixes protégés a cassé quatre sources qui en dérivent
 (matcher du proxy, gate `DASHBOARD_PREFIXES`, `sw.js`, test du sous-menu RH).
@@ -303,12 +305,99 @@ aurait laissé le service worker servir une page protégée depuis le cache.
 **Ce qui n'a pas pu être vérifié :** la suite Jest complète (`npx jest`) a été
 tuée par l'OOM du sandbox (2 Go) — ce n'est pas un échec de test, c'est le
 runner qui meurt. J'ai donc exécuté le périmètre touché (66 tests) plutôt que
-de prétendre à une suite complète. Le rendu visuel des trois nouveaux écrans
-n'a pas été observé avec de vraies données. La migration n'a pas été jouée sur
-une base tenant réelle. Les binaires `pdftotext` / `antiword` sont présents
-dans cet environnement, mais leur présence sur l'image de production n'est pas
-vérifiée ici — le code rend `null` proprement s'ils manquent, donc une absence
-dégradation n'est pas une panne, mais le score retomberait sur la lettre.
+de prétendre à une suite complète.
+
+> **Mis à jour au troisième lot (§3 ter)** : le rendu des trois écrans **a été
+> observé** avec de vraies données, la migration **a été jouée** sur une base
+> tenant de recette, et la présence des binaires sur l'image de production
+> **a été traitée** (ils manquaient — corrigé).
+
+## 3 ter. Troisième lot — binaires Docker, recette réelle, test E2E
+
+### 3 ter.1 Les binaires d'extraction manquaient dans les images Docker
+
+`api/Dockerfile.prod` (alpine) et `api/docker/php84/Dockerfile` (bookworm)
+n'installaient **ni** `poppler-utils`, **ni** `antiword`, **ni** `catdoc`.
+
+C'est une panne **silencieuse**, et c'est ce qui la rend dangereuse :
+`ShellResumeTextExtractor` rend `null` quand un binaire manque — comportement
+voulu, un CV illisible ne doit pas faire échouer la candidature. En production,
+le score ATS serait donc retombé sur la seule lettre de motivation **sans
+qu'aucune alerte ne se déclenche**.
+
+**Pourquoi les tests ne l'attrapaient pas :** le runner CI est `ubuntu-latest`,
+où ces binaires sont préinstallés. Le test d'extraction passait pour une raison
+qui n'existe pas en production — le pire type de faux vert.
+
+**Corrigé** : les trois paquets ajoutés aux deux images, avec le motif écrit
+dans le Dockerfile. Ajout de `php artisan recruitment:check-extractors`
+(tableau lisible ou `--json`, **code de sortie 1** si un binaire requis
+manque), utilisable tel quel dans un smoke test de déploiement. `catdoc` est
+déclaré **optionnel** (repli `.doc` uniquement) : le rendre bloquant ferait
+échouer un déploiement pour un cas marginal. `ZipArchive` est vérifié aussi,
+car le DOCX en dépend et une image PHP minimale peut en manquer.
+
+### 3 ter.2 Migration jouée sur une base tenant de recette
+
+PostgreSQL 15 + PostGIS, `php artisan leopardo:migrate --seed`, puis
+`DemoCompanySeeder` (3 tenants réels) et un seeder de recette dédié
+(`RecruitmentRecetteSeeder`) : 4 offres dont 1 brouillon, 6 candidatures avec
+de **vrais PDF** écrits octet par octet.
+
+Schéma vérifié après migration : `applicants.resume_text`,
+`applicants.resume_text_extracted_at`, `applicant_status_events`,
+`job_postings` — conformes.
+
+**Extraction réelle confirmée** : les 6 CV ont un `resume_text` non nul et
+`resume_text_extracted_at` renseigné, sur la base de recette.
+
+### 3 ter.3 Les trois écrans, rendus et observés
+
+| Écran | Ce qui a été observé |
+|---|---|
+| Portail carrières (`/[slug]/careers`) | 5 offres publiées affichées, **le brouillon exclu** |
+| Suivi candidat (`/[slug]/careers/applications`) | email réel saisi → **1 candidature**, statut et dates affichés |
+| Éditeur de CV (`/[slug]/careers/cv`) | aperçu live rempli (nom, titre, compétences) |
+
+Côté API, le pipeline ATS a été interrogé avec un jeton recruteur réel :
+score **100 %** avec `sources: ["resume", "cover_letter"]` sur un candidat dont
+le CV contient les 4 compétences exigées.
+
+### 3 ter.4 Test E2E du dépôt de candidature avec un vrai PDF
+
+`ApplicationSubmissionE2ETest` (3 tests) : PDF généré octet par octet → upload
+public → stockage → extraction → score ATS interrogé via l'API recruteur.
+
+**Un bug réel a été trouvé par ce test.** `pdftotext` termine chaque page par
+un form-feed (0x0C), que `trim()` **ne retire pas** (il n'est pas dans sa liste
+de caractères par défaut). Un PDF sans texte extractible — un CV scanné, cas
+très courant — ressortait donc en `"\n\f"` : `resume_text` était **non nul et
+vide**. Conséquence : le score affichait 0 % en prétendant avoir lu le CV, et
+l'écran recruteur ne distinguait plus « CV illisible » de « CV sans les
+compétences ». Corrigé par le retrait des caractères de contrôle (hors `\n` et
+`\t`) avant `trim()`.
+
+### 3 ter.5 Vérifications de ce troisième lot
+
+| Vérification | Résultat |
+|---|---|
+| `phpunit --filter=Recruitment` (base vierge) | **104 tests, 0 échec** |
+| `ApplicationSubmissionE2ETest` | 3 tests PASS (PDF réel, score, CV illisible) |
+| `pint --test` (79 fichiers) | PASS |
+| PHPStan modules (Recruitment + commande) | 0 erreur |
+| `recruitment:check-extractors` | présent → exit 0 ; PATH vidé → exit 1 |
+| Migration sur base tenant de recette | jouée, schéma conforme |
+| Rendu des 3 écrans | observé avec de vraies données |
+
+**Un échec rencontré, et sa cause réelle :** `PublicPortalEndToEndTest` a
+échoué une fois avec 1 offre au lieu de 0. La cause était **mes propres données
+de recette** (2 offres externes matchées par pays, non par tenant), pas le code
+— prouvé en rejouant la suite sur une base vierge, où elle passe intégralement.
+
+**Ce qui reste non vérifié :** le rendu a été observé sur un front en mode
+développement alimenté par une base de recette locale, **pas sur un
+environnement déployé** ; des captures ne remplacent pas une recette
+utilisateur. Aucune OCR sur les CV scannés en image (choix assumé).
 
 ## 4. Points d'attention pour la suite
 

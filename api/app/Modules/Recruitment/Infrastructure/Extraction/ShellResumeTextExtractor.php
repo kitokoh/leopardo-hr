@@ -195,6 +195,17 @@ final class ShellResumeTextExtractor implements ResumeTextExtraction
             $text = @mb_convert_encoding($text, 'UTF-8', 'UTF-8');
         }
 
+        // `pdftotext` termine chaque page par un saut de page (0x0C). Un PDF
+        // sans texte extractible — un CV scanné, cas très courant — ressort
+        // donc en "\n\f", que `trim()` NE retire PAS (le form-feed n'est pas
+        // dans sa liste de caractères par défaut). Sans ce nettoyage, un CV
+        // scanné était considéré comme « texte extrait » avec un contenu
+        // vide : le score affichait alors 0 % en prétendant avoir lu le CV,
+        // et l'écran recruteur ne distinguait plus « CV illisible » de
+        // « CV sans les compétences ». On retire donc tous les caractères de
+        // contrôle, sauf le saut de ligne et la tabulation déjà normalisée.
+        $text = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $text) ?? $text;
+
         $text = preg_replace('/[ \t]+/u', ' ', $text) ?? $text;
         $text = preg_replace('/\n{3,}/u', "\n\n", $text) ?? $text;
         $text = trim($text);
