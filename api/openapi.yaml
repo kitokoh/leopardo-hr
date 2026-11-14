@@ -6780,6 +6780,104 @@ paths:
           description: ALREADY_APPLIED (déjà postulé)
         '422':
           description: Validation
+  /public/careers/{companySlug}/applications/track:
+    post:
+      operationId: api_post_public_careers_by_companySlug_applications_track
+      tags:
+      - Careers
+      summary: Suivi de candidature par le candidat (ATS #9461)
+      description: |
+        Rend l'etat des candidatures deposees chez cette entreprise avec une
+        adresse email. Route PUBLIQUE, sans compte.
+
+        Reponse MINIMALE par construction : intitule du poste, statut, dates.
+        Jamais la note interne, les notes du recruteur, le score ATS, le texte
+        du CV ni l'identite des recruteurs.
+
+        Un email inconnu rend une liste VIDE (200), jamais 404 : un 404
+        confirmerait que l'adresse n'a jamais postule, ce qui est deja une
+        information.
+
+        POST et non GET : l'email est une donnee personnelle et ne doit pas
+        atterrir dans les journaux d'acces, l'historique du navigateur ni les
+        en-tetes Referer. Throttling dedie `public-careers-track`, 5/min par IP
+        ET par email.
+      parameters:
+      - name: companySlug
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  maxLength: 255
+      responses:
+        '200':
+          description: Liste des candidatures (vide si aucune ne correspond)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        reference:
+                          type: string
+                          example: CAND-000042
+                        job_title:
+                          type: string
+                          nullable: true
+                        job_location:
+                          type: string
+                          nullable: true
+                        contract_type:
+                          type: string
+                          nullable: true
+                        status:
+                          type: string
+                          enum:
+                          - new
+                          - screening
+                          - interview
+                          - offer
+                          - hired
+                          - rejected
+                          - withdrawn
+                        applied_at:
+                          type: string
+                          format: date-time
+                          nullable: true
+                        last_update:
+                          type: string
+                          format: date-time
+                          nullable: true
+                  meta:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                      retention_days:
+                        type: integer
+                        description: Duree de conservation RGPD annoncee au candidat
+        '404':
+          description: Entreprise inconnue ou suspendue
+        '422':
+          description: Email manquant ou invalide
+        '429':
+          description: Trop de tentatives (throttle public-careers-track)
   /public/vitrine/{slug}:
     get:
       operationId: api_get_public_vitrine_by_slug
@@ -35641,6 +35739,242 @@ paths:
           description: Entretien clôturé (status=completed)
         '401':
           $ref: '#/components/responses/Error401'
+  /recruitment/ats/applicants:
+    get:
+      operationId: api_get_recruitment_ats_applicants
+      tags:
+      - Recruitment
+      summary: Pipeline ATS transverse, filtre et trie (ATS #9461)
+      description: |
+        Liste les candidatures de l'entreprise avec filtres serveur : statut,
+        note minimale, source, recherche plein texte (nom, email, lettre ET
+        texte du CV), anciennete, etat du scan CV, tri.
+
+        Les criteres sont valides contre une LISTE BLANCHE stricte : aucun nom
+        de colonne venu de l'exterieur n'atteint la requete. Les jokers LIKE
+        sont echappes — sans cela une recherche sur `%` renverrait tous les
+        dossiers.
+
+        Isolation tenant : seules les candidatures de l'entreprise de
+        l'appelant sont rendues.
+      parameters:
+      - name: statuses[]
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum: [new, screening, interview, offer, hired, rejected, withdrawn]
+      - name: q
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Recherche plein texte (nom, email, lettre, texte du CV)
+      - name: min_rating
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 5
+      - name: older_than_days
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Page de candidatures + compteurs par statut
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Droits de recrutement absents
+  /recruitment/ats/applicants/{applicant}:
+    get:
+      operationId: api_get_recruitment_ats_applicants_by_applicant
+      tags:
+      - Recruitment
+      summary: Dossier complet d'une candidature (ATS #9461)
+      description: |
+        Rend le dossier, son historique de statuts et le detail du score de
+        correspondance (`meta.match`), y compris `sources` : le recruteur doit
+        savoir si le score a ete calcule sur le CV, la lettre ou les notes.
+
+        Un dossier d'une autre entreprise repond 404, jamais 403 : un 403
+        confirmerait l'existence du dossier.
+      parameters:
+      - name: applicant
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Dossier + historique + score
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Dossier introuvable pour cette entreprise
+  /recruitment/ats/applicants/{applicant}/status:
+    patch:
+      operationId: api_patch_recruitment_ats_applicants_by_applicant_status
+      tags:
+      - Recruitment
+      summary: Deplacer un dossier dans le pipeline (ATS #9461)
+      description: |
+        Ecrit une entree dans le journal append-only `applicant_status_events`
+        AVANT d'appliquer le statut : si l'ecriture echoue, le statut ne bouge
+        pas. Un changement identique n'ecrit rien.
+
+        La decision finale (hired / rejected) doit porter un motif : c'est ce
+        qui rend le refus defendable et le journal utile.
+      parameters:
+      - name: applicant
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  enum: [new, screening, interview, offer, hired, rejected, withdrawn]
+                reason:
+                  type: string
+                  maxLength: 500
+      responses:
+        '200':
+          description: Statut applique et journalise
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Droits de recrutement absents
+        '422':
+          description: Statut inconnu
+  /recruitment/ats/jobs/{jobPosting}/applicants:
+    get:
+      operationId: api_get_recruitment_ats_jobs_by_jobPosting_applicants
+      tags:
+      - Recruitment
+      summary: Pipeline ATS d'une offre (ATS #9461)
+      description: Memes filtres que le pipeline transverse, restreints a une offre.
+      parameters:
+      - name: jobPosting
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Page de candidatures de l'offre + compteurs
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Offre introuvable pour cette entreprise
+  /recruitment/ats/filters:
+    get:
+      operationId: api_get_recruitment_ats_filters
+      tags:
+      - Recruitment
+      summary: Lister les filtres ATS sauvegardes (ATS #9461)
+      responses:
+        '200':
+          description: Filtres sauvegardes de l'entreprise
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_recruitment_ats_filters
+      tags:
+      - Recruitment
+      summary: Sauvegarder un jeu de filtres ATS (ATS #9461)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 100
+                criteria:
+                  type: object
+                  description: Criteres valides contre la liste blanche du moteur
+      responses:
+        '201':
+          description: Filtre cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Validation
+  /recruitment/ats/filters/{filter}:
+    delete:
+      operationId: api_delete_recruitment_ats_filters_by_filter
+      tags:
+      - Recruitment
+      summary: Supprimer un filtre ATS sauvegarde (ATS #9461)
+      parameters:
+      - name: filter
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Filtre supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Filtre introuvable pour cette entreprise
+  /recruitment/applicants/{applicant}/resume:
+    get:
+      operationId: api_get_recruitment_applicants_by_applicant_resume
+      tags:
+      - Recruitment
+      summary: Telecharger le CV d'une candidature (ATS #9461)
+      description: |
+        Sert le fichier depuis le disque prive. Le chemin stocke n'est jamais
+        expose au client : il est resolu ici, apres verification du tenant.
+
+        Route AUTHENTIFIEE : un lien colle dans un email ne fonctionnera pas
+        pour un destinataire non connecte. C'est volontaire — le fichier est
+        prive.
+      parameters:
+      - name: applicant
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Fichier binaire du CV
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Dossier ou fichier introuvable
   /zkteco/devices:
     get:
       tags:

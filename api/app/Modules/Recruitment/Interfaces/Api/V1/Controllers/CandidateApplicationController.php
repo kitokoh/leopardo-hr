@@ -88,7 +88,11 @@ class CandidateApplicationController extends Controller
                 // donc le texte correspond exactement au document que le
                 // recruteur téléchargera. Un CV illisible (scan image, PDF
                 // chiffré) rend `null` sans faire échouer la candidature.
-                if ($resumePath !== null) {
+                //
+                // `store()` rend `string|false` : on teste `is_string` et non
+                // `!== null`, sinon un échec d'écriture disque passerait pour
+                // un succès et `path()` recevrait `false`.
+                if (is_string($resumePath) && $resumePath !== '') {
                     $resumeText = $this->resumeTextExtraction->extract(
                         \Illuminate\Support\Facades\Storage::disk('local')->path($resumePath),
                         $file->getClientOriginalName(),

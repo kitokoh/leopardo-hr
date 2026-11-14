@@ -13,6 +13,8 @@ import {
   XCircle,
 } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
+import { getPreferredLocale } from '@/lib/i18n';
+import { getRecruitmentCopy } from '@/lib/i18n/recruitment';
 
 /**
  * Gestion des offres d'emploi (ATS #9461).
@@ -27,6 +29,10 @@ import { apiFetch } from '@/lib/api-client';
  * reste consultable mais refuse les candidatures, `archived` disparaît. Un
  * recruteur qui ne voit pas cette différence publie une offre brouillon et
  * s'étonne qu'elle n'apparaisse pas sur la vitrine.
+ *
+ * Les libellés viennent du catalogue i18n (`@/lib/i18n/recruitment`) : un
+ * écran RH francophone uniquement est inutilisable pour un tenant arabophone
+ * ou turcophone, et la garde CI refuse les nouvelles chaînes en dur.
  */
 
 type JobStatus = 'draft' | 'published' | 'closed' | 'archived';
@@ -44,13 +50,6 @@ interface Job {
   applicants_count?: number;
 }
 
-const STATUS_LABELS: Record<JobStatus, string> = {
-  draft: 'Brouillon',
-  published: 'Publiee',
-  closed: 'Cloturee',
-  archived: 'Archivee',
-};
-
 const STATUS_STYLES: Record<JobStatus, string> = {
   draft: 'bg-slate-100 text-slate-600 border-slate-200',
   published: 'bg-emerald-50 text-emerald-700 border-emerald-200',
@@ -58,18 +57,9 @@ const STATUS_STYLES: Record<JobStatus, string> = {
   archived: 'bg-slate-100 text-slate-500 border-slate-200',
 };
 
-const CONTRACT_LABELS: Record<string, string> = {
-  cdi: 'CDI',
-  cdd: 'CDD',
-  stage: 'Stage',
-  freelance: 'Freelance',
-};
-
-const REMOTE_LABELS: Record<string, string> = {
-  onsite: 'Sur site',
-  hybrid: 'Hybride',
-  remote: 'Teletravail',
-};
+/** Codes techniques → clés du catalogue. Les codes ne sont jamais traduits. */
+const CONTRACT_CODES = ['cdi', 'cdd', 'stage', 'freelance'] as const;
+const REMOTE_CODES = ['onsite', 'hybrid', 'remote'] as const;
 
 interface JobManagementPanelProps {
   /** Appelé après toute mutation : le pipeline doit recharger ses offres. */
@@ -77,11 +67,26 @@ interface JobManagementPanelProps {
 }
 
 export function JobManagementPanel({ onJobsChanged }: JobManagementPanelProps) {
+  const copy = getRecruitmentCopy(getPreferredLocale()).jobs;
+
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);
   const [showForm, setShowForm] = useState(false);
+
+  const statusLabels: Record<JobStatus, string> = {
+    draft: copy.statusDraft,
+    published: copy.statusPublished,
+    closed: copy.statusClosed,
+    archived: copy.statusArchived,
+  };
+
+  const remoteLabels: Record<string, string> = {
+    onsite: copy.onSite,
+    hybrid: copy.hybrid,
+    remote: copy.remote,
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -90,18 +95,18 @@ export function JobManagementPanel({ onJobsChanged }: JobManagementPanelProps) {
     try {
       const response = await apiFetch('/recruitment/jobs');
       if (!response.ok) {
-        setError('Impossible de charger les offres.');
+        setError(copy.loadError);
         return;
       }
 
       const payload = (await response.json()) as { data?: Job[] } | Job[];
       setJobs(Array.isArray(payload) ? payload : (payload.data ?? []));
     } catch {
-      setError('Impossible de charger les offres.');
+      setError(copy.loadError);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [copy.loadError]);
 
   useEffect(() => {
     void load();
@@ -116,17 +121,17 @@ export function JobManagementPanel({ onJobsChanged }: JobManagementPanelProps) {
 
       if (!response.ok) {
         // On remonte le message du serveur : « offre sans description » ou
-        // « deja publiee » sont des refus metier, pas des pannes reseau, et le
+        // « déjà publiée » sont des refus métier, pas des pannes réseau, et le
         // recruteur doit savoir lequel des deux.
         const body = (await response.json().catch(() => null)) as { message?: string } | null;
-        setError(body?.message ?? `L'action « ${action} » a echoue.`);
+        setError(body?.message ?? copy.loadError);
         return;
       }
 
       await load();
       onJobsChanged?.();
     } catch {
-      setError(`L'action « ${action} » a echoue.`);
+      setError(copy.loadError);
     } finally {
       setBusyId(null);
     }
@@ -136,11 +141,8 @@ export function JobManagementPanel({ onJobsChanged }: JobManagementPanelProps) {
     <section className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-black text-slate-950">Offres d&apos;emploi</h2>
-          <p className="text-xs text-slate-500">
-            Une offre en brouillon n&apos;est pas visible sur la vitrine. Publiez-la pour la rendre
-            visible et ouvrir les candidatures.
-          </p>
+          <h2 className="text-lg font-black text-slate-950">{copy.title}</h2>
+          <p className="text-xs text-slate-500">{copy.subtitle}</p>
         </div>
         <button
           type="button"
@@ -148,7 +150,7 @@ export function JobManagementPanel({ onJobsChanged }: JobManagementPanelProps) {
           className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-700"
         >
           {showForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-          {showForm ? 'Annuler' : 'Nouvelle offre'}
+          {showForm ? copy.cancel : copy.newJob}
         </button>
       </div>
 
@@ -172,11 +174,11 @@ export function JobManagementPanel({ onJobsChanged }: JobManagementPanelProps) {
       {loading ? (
         <p className="flex items-center gap-2 text-sm text-slate-500">
           <Loader2 className="h-4 w-4 animate-spin" />
-          Chargement des offres...
+          {copy.title}
         </p>
       ) : jobs.length === 0 ? (
         <p className="rounded-xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-500">
-          Aucune offre pour le moment. Creez-en une pour commencer a recruter.
+          {copy.empty}
         </p>
       ) : (
         <ul className="space-y-2">
@@ -193,22 +195,22 @@ export function JobManagementPanel({ onJobsChanged }: JobManagementPanelProps) {
                       STATUS_STYLES[job.status] ?? STATUS_STYLES.draft
                     }`}
                   >
-                    {STATUS_LABELS[job.status] ?? job.status}
+                    {statusLabels[job.status] ?? job.status}
                   </span>
                 </div>
                 <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-slate-500">
                   <Briefcase className="h-3 w-3" />
                   {[
                     job.location,
-                    job.contract_type ? CONTRACT_LABELS[job.contract_type] ?? job.contract_type : null,
-                    job.remote_policy ? REMOTE_LABELS[job.remote_policy] ?? job.remote_policy : null,
+                    job.contract_type ? job.contract_type.toUpperCase() : null,
+                    job.remote_policy ? remoteLabels[job.remote_policy] ?? job.remote_policy : null,
                   ]
                     .filter(Boolean)
-                    .join(' · ') || 'Aucun detail'}
+                    .join(' · ') || copy.noDetail}
                 </p>
                 {job.skills_required && job.skills_required.length > 0 && (
                   <p className="mt-1 text-[11px] text-slate-500">
-                    Competences ATS : {job.skills_required.join(', ')}
+                    {copy.skills} : {job.skills_required.join(', ')}
                   </p>
                 )}
               </div>
@@ -216,7 +218,7 @@ export function JobManagementPanel({ onJobsChanged }: JobManagementPanelProps) {
               <div className="flex flex-wrap items-center gap-1.5">
                 {job.status === 'draft' && (
                   <ActionButton
-                    label="Publier"
+                    label={copy.publish}
                     icon={Send}
                     busy={busyId === job.id}
                     onClick={() => act(job, 'publish')}
@@ -225,7 +227,7 @@ export function JobManagementPanel({ onJobsChanged }: JobManagementPanelProps) {
                 )}
                 {job.status === 'published' && (
                   <ActionButton
-                    label="Cloturer"
+                    label={copy.close}
                     icon={XCircle}
                     busy={busyId === job.id}
                     onClick={() => act(job, 'close')}
@@ -233,7 +235,7 @@ export function JobManagementPanel({ onJobsChanged }: JobManagementPanelProps) {
                 )}
                 {job.status === 'closed' && (
                   <ActionButton
-                    label="Rouvrir"
+                    label={copy.reopen}
                     icon={RotateCcw}
                     busy={busyId === job.id}
                     onClick={() => act(job, 'reopen')}
@@ -241,7 +243,7 @@ export function JobManagementPanel({ onJobsChanged }: JobManagementPanelProps) {
                 )}
                 {job.status !== 'archived' && (
                   <ActionButton
-                    label="Archiver"
+                    label={copy.archive}
                     icon={Archive}
                     busy={busyId === job.id}
                     onClick={() => act(job, 'archive')}
@@ -293,6 +295,8 @@ function JobForm({
   onCreated: () => Promise<void> | void;
   onError: (message: string | null) => void;
 }) {
+  const copy = getRecruitmentCopy(getPreferredLocale()).jobs;
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
@@ -301,6 +305,12 @@ function JobForm({
   const [skills, setSkills] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
+
+  const remoteLabels: Record<string, string> = {
+    onsite: copy.onSite,
+    hybrid: copy.hybrid,
+    remote: copy.remote,
+  };
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -318,8 +328,8 @@ function JobForm({
           location: location.trim() || null,
           contract_type: contractType,
           remote_policy: remotePolicy,
-          // Les competences sont la SEULE source du score ATS : sans elles,
-          // le score est `null` et le tri par correspondance ne sert a rien.
+          // Les compétences sont la SEULE source du score ATS : sans elles,
+          // le score est `null` et le tri par correspondance ne sert à rien.
           skills_required: skills
             .split(',')
             .map((skill) => skill.trim())
@@ -334,7 +344,7 @@ function JobForm({
       }
 
       if (!response.ok) {
-        onError("La creation de l'offre a echoue.");
+        onError(copy.createError);
         return;
       }
 
@@ -344,7 +354,7 @@ function JobForm({
       setSkills('');
       await onCreated();
     } catch {
-      onError("La creation de l'offre a echoue.");
+      onError(copy.createError);
     } finally {
       setSubmitting(false);
     }
@@ -357,11 +367,12 @@ function JobForm({
     >
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="block sm:col-span-2">
-          <span className="mb-1 block text-xs font-bold text-slate-600">Intitule du poste *</span>
+          <span className="mb-1 block text-xs font-bold text-slate-600">{copy.titleField} *</span>
           <input
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            placeholder={copy.titlePlaceholder}
             className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm"
           />
           {fieldErrors.title && (
@@ -370,65 +381,63 @@ function JobForm({
         </label>
 
         <label className="block">
-          <span className="mb-1 block text-xs font-bold text-slate-600">Lieu</span>
+          <span className="mb-1 block text-xs font-bold text-slate-600">{copy.location}</span>
           <input
             value={location}
             onChange={(e) => setLocation(e.target.value)}
+            placeholder={copy.locationPlaceholder}
             className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm"
           />
         </label>
 
         <label className="block">
-          <span className="mb-1 block text-xs font-bold text-slate-600">Type de contrat</span>
+          <span className="mb-1 block text-xs font-bold text-slate-600">{copy.contract}</span>
           <select
             value={contractType}
             onChange={(e) => setContractType(e.target.value)}
             className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm"
           >
-            {Object.entries(CONTRACT_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
+            {CONTRACT_CODES.map((code) => (
+              <option key={code} value={code}>
+                {code.toUpperCase()}
               </option>
             ))}
           </select>
         </label>
 
         <label className="block">
-          <span className="mb-1 block text-xs font-bold text-slate-600">Modalite</span>
+          <span className="mb-1 block text-xs font-bold text-slate-600">{copy.workMode}</span>
           <select
             value={remotePolicy}
             onChange={(e) => setRemotePolicy(e.target.value)}
             className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm"
           >
-            {Object.entries(REMOTE_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
+            {REMOTE_CODES.map((code) => (
+              <option key={code} value={code}>
+                {remoteLabels[code]}
               </option>
             ))}
           </select>
         </label>
 
         <label className="block">
-          <span className="mb-1 block text-xs font-bold text-slate-600">
-            Competences (separees par des virgules)
-          </span>
+          <span className="mb-1 block text-xs font-bold text-slate-600">{copy.skills}</span>
           <input
             value={skills}
             onChange={(e) => setSkills(e.target.value)}
-            placeholder="PHP, Laravel, PostgreSQL"
+            placeholder={copy.skillsPlaceholder}
             className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm"
           />
-          <span className="mt-1 block text-[11px] text-slate-500">
-            Elles servent au score de correspondance ATS.
-          </span>
+          <span className="mt-1 block text-[11px] text-slate-500">{copy.skillsHint}</span>
         </label>
 
         <label className="block sm:col-span-2">
-          <span className="mb-1 block text-xs font-bold text-slate-600">Description</span>
+          <span className="mb-1 block text-xs font-bold text-slate-600">{copy.description}</span>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
+            placeholder={copy.descriptionPlaceholder}
             className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm"
           />
         </label>
@@ -441,11 +450,8 @@ function JobForm({
           className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-700 disabled:opacity-60"
         >
           {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-          Creer l&apos;offre
+          {submitting ? copy.creating : copy.create}
         </button>
-        <span className="text-[11px] text-slate-500">
-          L&apos;offre est creee en brouillon : publiez-la ensuite pour la rendre visible.
-        </span>
       </div>
     </form>
   );

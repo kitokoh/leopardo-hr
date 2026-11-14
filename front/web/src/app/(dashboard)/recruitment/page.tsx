@@ -15,6 +15,8 @@ import {
   X,
 } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
+import { getPreferredLocale } from '@/lib/i18n';
+import { getRecruitmentCopy } from '@/lib/i18n/recruitment';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { JobManagementPanel } from './JobManagementPanel';
 
@@ -80,6 +82,17 @@ const STATUS_LABELS: Record<ApplicantStatus, string> = {
   rejected: 'Refuse',
   withdrawn: 'Retire',
 };
+
+/**
+ * Libelles de la decision finale et du score, depuis le catalogue i18n.
+ *
+ * Resolus au niveau du module et non dans le composant : `decide()` est une
+ * fonction de rappel qui n'a pas acces a un hook, et le catalogue ne depend
+ * que de la locale stockee.
+ */
+const recruitmentCopy = getRecruitmentCopy(getPreferredLocale());
+const decisionCopy = recruitmentCopy.decision;
+const scoreCopy = recruitmentCopy.score;
 
 const STATUS_STYLES: Record<ApplicantStatus, string> = {
   new: 'bg-sky-50 text-sky-700 border-sky-200',
@@ -246,7 +259,7 @@ export default function RecruitmentAtsPage() {
 
     const reason = decisionReason.trim();
     if (reason.length < 3) {
-      setDecisionError('Un motif est obligatoire pour une decision finale.');
+      setDecisionError(decisionCopy.reasonRequired);
       return;
     }
 
@@ -260,7 +273,7 @@ export default function RecruitmentAtsPage() {
       });
 
       if (!res.ok) {
-        setDecisionError('La decision n a pas pu etre enregistree.');
+        setDecisionError(decisionCopy.saveError);
         return;
       }
 
@@ -272,7 +285,7 @@ export default function RecruitmentAtsPage() {
       await openDetail(updated);
       await loadApplicants();
     } catch {
-      setDecisionError('La decision n a pas pu etre enregistree.');
+      setDecisionError(decisionCopy.saveError);
     } finally {
       setDeciding(false);
     }
@@ -600,26 +613,24 @@ export default function RecruitmentAtsPage() {
                     ce qu'il reste a faire sans faire defiler. */}
                 <div className="mb-6 rounded-2xl border border-app-border bg-white p-4">
                   <h3 className="mb-2 text-xs font-bold uppercase tracking-widest text-slate-500">
-                    Decision finale
+                    {decisionCopy.title}
                   </h3>
 
                   {selected.status === 'hired' || selected.status === 'rejected' ? (
                     <p className="text-sm font-semibold text-slate-700">
-                      Ce dossier est deja tranche :{' '}
-                      {STATUS_LABELS[selected.status]}. Le motif figure dans l&apos;historique
-                      ci-dessous.
+                      {decisionCopy.alreadyDecided(STATUS_LABELS[selected.status] ?? selected.status)}
                     </p>
                   ) : (
                     <>
                       <label htmlFor="decision-reason" className="mb-1 block text-xs font-semibold text-slate-600">
-                        Motif (obligatoire)
+                        {decisionCopy.reasonLabel}
                       </label>
                       <textarea
                         id="decision-reason"
                         value={decisionReason}
                         onChange={(e) => setDecisionReason(e.target.value)}
                         rows={2}
-                        placeholder="Ex. : profil retenu apres entretien technique du 12/11."
+                        placeholder={decisionCopy.reasonPlaceholder}
                         className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm"
                       />
 
@@ -637,7 +648,7 @@ export default function RecruitmentAtsPage() {
                           className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-emerald-700 disabled:opacity-50"
                         >
                           <CheckCircle2 className="h-3.5 w-3.5" />
-                          Embaucher
+                          {decisionCopy.hire}
                         </button>
                         <button
                           type="button"
@@ -646,7 +657,7 @@ export default function RecruitmentAtsPage() {
                           className="inline-flex items-center gap-1.5 rounded-lg border border-rose-300 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-700 transition hover:bg-rose-100 disabled:opacity-50"
                         >
                           <X className="h-3.5 w-3.5" />
-                          Refuser
+                          {decisionCopy.reject}
                         </button>
                       </div>
                     </>
@@ -681,17 +692,19 @@ export default function RecruitmentAtsPage() {
                       ))}
                     </div>
                     <p className="mt-2 text-[11px] text-slate-500">
-                      Score calcule sur le texte du CV, la lettre de motivation et les notes
+                      {scoreCopy.caption}
                       {detail.match.sources && detail.match.sources.length > 0
-                        ? ` (sources : ${detail.match.sources
-                            .map((source) =>
-                              source === 'resume'
-                                ? 'CV'
-                                : source === 'cover_letter'
-                                  ? 'lettre'
-                                  : 'notes',
-                            )
-                            .join(', ')})`
+                        ? scoreCopy.sources(
+                            detail.match.sources
+                              .map((source) =>
+                                source === 'resume'
+                                  ? scoreCopy.resume
+                                  : source === 'cover_letter'
+                                    ? scoreCopy.coverLetter
+                                    : scoreCopy.notes,
+                              )
+                              .join(', '),
+                          )
                         : ''}
                       .
                     </p>

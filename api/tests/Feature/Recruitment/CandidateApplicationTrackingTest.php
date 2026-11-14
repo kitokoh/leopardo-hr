@@ -47,6 +47,9 @@ class CandidateApplicationTrackingTest extends TestCase
         parent::tearDown();
     }
 
+    /**
+     * @param  array<string, mixed>  $overrides
+     */
     private function applicant(string $email, array $overrides = []): Applicant
     {
         return Applicant::create([
@@ -130,7 +133,7 @@ class CandidateApplicationTrackingTest extends TestCase
         $this->assertArrayNotHasKey('email', $payload);
         $this->assertArrayNotHasKey('id', $payload);
 
-        $this->assertStringNotContainsString('trop cher', $response->getContent());
+        $this->assertStringNotContainsString('trop cher', (string) $response->getContent());
     }
 
     public function test_it_does_not_return_applications_from_another_company(): void

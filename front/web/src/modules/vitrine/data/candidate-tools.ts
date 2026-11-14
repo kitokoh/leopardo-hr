@@ -47,6 +47,7 @@ export type CandidateToolsCopy = {
     education: string;
     skills: string;
     skillsHint: string;
+    skillsPlaceholder: string;
     addExperience: string;
     addEducation: string;
     role: string;
@@ -106,6 +107,7 @@ const fr: CandidateToolsCopy = {
     education: 'Formations',
     skills: 'Compétences',
     skillsHint: 'Séparez les compétences par des virgules.',
+    skillsPlaceholder: 'PHP, Laravel, PostgreSQL',
     addExperience: 'Ajouter une expérience',
     addEducation: 'Ajouter une formation',
     role: 'Poste',
@@ -174,6 +176,7 @@ const en: CandidateToolsCopy = {
     education: 'Education',
     skills: 'Skills',
     skillsHint: 'Separate skills with commas.',
+    skillsPlaceholder: 'PHP, Laravel, PostgreSQL',
     addExperience: 'Add experience',
     addEducation: 'Add education',
     role: 'Role',
@@ -240,6 +243,7 @@ const tr: CandidateToolsCopy = {
     education: 'Eğitim',
     skills: 'Beceriler',
     skillsHint: 'Becerileri virgülle ayırın.',
+    skillsPlaceholder: 'PHP, Laravel, PostgreSQL',
     addExperience: 'Deneyim ekle',
     addEducation: 'Eğitim ekle',
     role: 'Pozisyon',
@@ -305,6 +309,7 @@ const ar: CandidateToolsCopy = {
     education: 'التكوين',
     skills: 'المهارات',
     skillsHint: 'افصل المهارات بفواصل.',
+    skillsPlaceholder: 'PHP, Laravel, PostgreSQL',
     addExperience: 'إضافة خبرة',
     addEducation: 'إضافة تكوين',
     role: 'المنصب',

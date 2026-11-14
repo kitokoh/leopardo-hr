@@ -218,7 +218,7 @@ export function ResumeBuilder({ companySlug }: { companySlug: string }) {
             <input
               value={resume.skills}
               onChange={(e) => update('skills', e.target.value)}
-              placeholder="PHP, Laravel, PostgreSQL"
+              placeholder={copy.skillsPlaceholder}
               aria-label={copy.skills}
               className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />

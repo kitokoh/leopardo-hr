@@ -42,9 +42,6 @@ final class ShellResumeTextExtractor implements ResumeTextExtraction
     /** Au-delà, on considère que le document n'est pas un CV mais un piège à mémoire. */
     private const MAX_TEXT_LENGTH = 200_000;
 
-    /** Un CV de 40 pages n'existe pas ; au-delà, l'extraction est suspecte. */
-    private const TIMEOUT_SECONDS = 20;
-
     public function __construct(
         private readonly LoggerInterface $logger,
     ) {}
@@ -110,7 +107,10 @@ final class ShellResumeTextExtractor implements ResumeTextExtraction
         $xml = $zip->getFromName('word/document.xml');
         $zip->close();
 
-        if (! is_string($xml) || $xml === '') {
+        // `getFromName` rend `false` si l'entrée est absente : on teste
+        // explicitement, sans `is_string` (PHPStan sait déjà que c'est une
+        // chaîne quand ce n'est pas `false`).
+        if ($xml === false || $xml === '') {
             return null;
         }
 
@@ -190,8 +190,9 @@ final class ShellResumeTextExtractor implements ResumeTextExtraction
         $text = str_replace(["\xEF\xBB\xBF", "\x00"], '', $text);
 
         if (! mb_check_encoding($text, 'UTF-8')) {
-            $converted = @mb_convert_encoding($text, 'UTF-8', 'UTF-8');
-            $text = is_string($converted) ? $converted : '';
+            // Le PHPDoc de `mb_convert_encoding` annonce `string` : pas de
+            // test de retour, PHPStan le rejetterait comme toujours vrai.
+            $text = @mb_convert_encoding($text, 'UTF-8', 'UTF-8');
         }
 
         $text = preg_replace('/[ \t]+/u', ' ', $text) ?? $text;
