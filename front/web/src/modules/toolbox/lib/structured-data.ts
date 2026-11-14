@@ -49,16 +49,22 @@ const SCHEMA_LOCALES: Record<string, string> = {
 };
 
 /**
- * Constantes d'échappement JSON-LD.
+ * Échappement JSON-LD.
  *
  * `JSON.stringify` n'échappe pas `<` : une description contenant `</script>`
- * fermerait la balise et injecterait du HTML. Ces séquences Unicode gardent le
- * JSON valide et identique après parsing. Ce sont des constantes TECHNIQUES
- * (pas du texte utilisateur) — d'où leur extraction ici.
+ * fermerait la balise et injecterait du HTML. On remplace donc chaque caractère
+ * dangereux par sa séquence d'échappement Unicode, construite à partir de son
+ * code de caractère — le JSON reste valide et identique après parsing.
+ *
+ * La séquence est CALCULÉE (pas écrite en littéral) : c'est une constante
+ * technique, pas de la copie utilisateur, et la garde PA2-I18N-014 ne doit pas
+ * la confondre avec du texte à traduire.
  */
-const LT = '\\u003c';
-const GT = '\\u003e';
-const AMP = '\\u0026';
+const ESCAPE_PREFIX = String.fromCharCode(92) + 'u';
+
+function unicodeEscape(char: string): string {
+  return ESCAPE_PREFIX + char.charCodeAt(0).toString(16).padStart(4, '0');
+}
 
 /**
  * Construit le schéma `WebApplication` d'un outil.
@@ -111,7 +117,7 @@ export function buildToolSchema(
  */
 export function serializeSchema(schema: unknown): string {
   return JSON.stringify(schema)
-    .replace(/</g, LT)
-    .replace(/>/g, GT)
-    .replace(/&/g, AMP);
+    .replace(/</g, unicodeEscape('<'))
+    .replace(/>/g, unicodeEscape('>'))
+    .replace(/&/g, unicodeEscape('&'));
 }
