@@ -117,14 +117,25 @@ class TravelContactAdminApiTest extends TestCase
         $this->actingManager();
         $contact = $this->tenants->withinTenant($this->company, fn (): TravelCustomerContact => TravelCustomerContact::factory()->create());
 
+        // #8396 : PUT/PATCH `/consent` porte le contrat `{channel, given}`
+        // (un canal par appel) et est branché sur `updateConsentChannel`.
+        // Le bulk `{*_consent_given}` reste servi par POST `/consent`.
         // Opt-in sms + whatsapp.
         $this->putJson("/api/v1/travel/contacts/{$contact->id}/consent", [
-            'sms_consent_given' => true,
-            'whatsapp_consent_given' => true,
+            'channel' => 'sms',
+            'given' => true,
         ])
             ->assertOk()
-            ->assertJsonPath('data.sms_consent_given', true)
-            ->assertJsonPath('data.whatsapp_consent_given', true);
+            ->assertJsonPath('data.channel', 'sms')
+            ->assertJsonPath('data.given', true);
+
+        $this->putJson("/api/v1/travel/contacts/{$contact->id}/consent", [
+            'channel' => 'whatsapp',
+            'given' => true,
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.channel', 'whatsapp')
+            ->assertJsonPath('data.given', true);
 
         $contact->refresh();
         self::assertNotNull($contact->sms_consent_at, 'opt-in horodaté');
@@ -132,10 +143,12 @@ class TravelContactAdminApiTest extends TestCase
 
         // Opt-out sms : consentement retiré, horodatage reflète le changement.
         $this->putJson("/api/v1/travel/contacts/{$contact->id}/consent", [
-            'sms_consent_given' => false,
+            'channel' => 'sms',
+            'given' => false,
         ])
             ->assertOk()
-            ->assertJsonPath('data.sms_consent_given', false);
+            ->assertJsonPath('data.channel', 'sms')
+            ->assertJsonPath('data.given', false);
 
         $contact->refresh();
         self::assertFalse($contact->sms_consent_given);
@@ -155,7 +168,8 @@ class TravelContactAdminApiTest extends TestCase
         $contact = $this->tenants->withinTenant($this->company, fn (): TravelCustomerContact => TravelCustomerContact::factory()->create());
 
         $this->putJson("/api/v1/travel/contacts/{$contact->id}/consent", [
-            'email_consent_given' => true,
+            'channel' => 'email',
+            'given' => true,
         ])->assertStatus(403);
     }
 
@@ -168,7 +182,8 @@ class TravelContactAdminApiTest extends TestCase
         $this->actingManager();
 
         $this->putJson("/api/v1/travel/contacts/{$foreignContact->id}/consent", [
-            'email_consent_given' => true,
+            'channel' => 'email',
+            'given' => true,
         ])->assertStatus(404);
 
         $this->getJson('/api/v1/travel/contacts')

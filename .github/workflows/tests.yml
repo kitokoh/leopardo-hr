@@ -220,7 +220,12 @@ jobs:
         # un faux rouge par timeout. 210 min (124 x 1,6) garde la propriété
         # recherchée tout en ne tuant pas un run sain.
         timeout-minutes: 210
-        continue-on-error: true
+        # Issue #9482 : `continue-on-error: true` masquait les échecs Feature.
+        # Le job ne devenait rouge que par l'étape « Fail backend job if unit
+        # tests failed » ; quand l'unité passait, 104 échecs Feature restaient
+        # invisibles (run 43570213398 : `104 failed, 9023 passed` en `success`).
+        # L'étape porte désormais son propre verdict : un échec Feature rend le
+        # job rouge, comme pour l'unité.
         working-directory: ./api
         env:
           DB_CONNECTION: pgsql
