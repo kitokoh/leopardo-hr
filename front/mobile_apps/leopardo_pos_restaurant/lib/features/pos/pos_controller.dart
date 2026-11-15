@@ -278,6 +278,41 @@ class PosController extends Notifier<PosState> {
     }
   }
 
+  /// Clôture la session de caisse courante (en ligne uniquement).
+  Future<bool> closeSession({required int countedCashMinor, String? varianceReason}) async {
+    final sessionId = state.sessionId;
+
+    if (sessionId == null) {
+      state = state.copyWith(error: 'Aucune session de caisse ouverte.');
+
+      return false;
+    }
+
+    state = state.copyWith(loading: true, clearError: true);
+
+    try {
+      await _api.closeSession(
+        sessionId: sessionId,
+        countedCashMinor: countedCashMinor,
+        varianceReason: varianceReason,
+      );
+
+      state = state.copyWith(
+        sessionId: null,
+        cart: const Cart(),
+        voidedLines: const [],
+        loading: false,
+      );
+      _persistCart(const Cart());
+
+      return true;
+    } on PosOfflineException catch (error) {
+      state = state.copyWith(loading: false, error: error.message);
+
+      return false;
+    }
+  }
+
   void setSearchQuery(String query) {
     state = state.copyWith(searchQuery: query);
   }

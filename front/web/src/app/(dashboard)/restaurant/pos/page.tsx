@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Banknote, Loader2, Plus, RefreshCw, ShoppingCart, Trash2 } from 'lucide-react';
+import { Banknote, CreditCard, Loader2, LogOut, Phone, Plus, Printer, RefreshCw, ShoppingCart, Trash2 } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { ConnectionIndicator } from '@/components/offline/ConnectionIndicator';
@@ -20,14 +20,12 @@ import { getPreferredLocale } from '@/lib/i18n';
  * RESTO-705 (#6218) — Prise de commande & encaissement (POS).
  *
  * Flux (spec §4.1) : ouverture de caisse → nouvelle commande → ajout
- * d'articles → soumission → confirmation (cuisine) → addition → encaissement
- * espèces. Tous les montants sont recalculés SERVEUR (jamais acceptés du
- * client) ; les actions idempotentes passent par les endpoints RESTO-401..407.
+ * d'articles → soumission → confirmation (cuisine) → addition → encaissement.
+ * Tous les montants sont recalculés SERVEUR (jamais acceptés du client) ;
+ * les actions idempotentes passent par les endpoints RESTO-401..407.
  *
  * #8449 — offline-first : le catalogue est mis en cache localement (par
- * succursale) et l'encaissement passe par la file hors-ligne partagée. Hors
- * réseau, le catalogue reste encaissable et le règlement est mis en file avec
- * une clé d'idempotence stable → zéro perte, zéro doublon au retour du réseau.
+ * succursale) et l'encaissement passe par la file hors-ligne partagée.
  */
 
 interface PosSession {
@@ -58,12 +56,6 @@ interface Product {
   is_available: boolean;
 }
 
-/**
- * #9210 — Type de commande. Le POS web envoyait `order_type: 'dine_in'` et
- * `covers: 1` en dur : le restaurateur ne pouvait ni vendre a emporter, ni
- * livrer, ni declarer le nombre de couverts. Ces valeurs sont desormais
- * choisies en caisse et transmises au serveur.
- */
 type OrderType = 'dine_in' | 'takeaway' | 'delivery';
 
 const ORDER_TYPE_LABELS: Record<OrderType, string> = {
@@ -71,6 +63,8 @@ const ORDER_TYPE_LABELS: Record<OrderType, string> = {
   takeaway: RESTAURANT_POS_FR.orderTypeTakeaway,
   delivery: RESTAURANT_POS_FR.orderTypeDelivery,
 };
+
+type PaymentMethod = 'cash' | 'card' | 'mobile_money';
 
 interface RestaurantTable {
   id: number;
@@ -119,7 +113,6 @@ const ORDER_STATUS_LABELS: Record<string, string> = {
 export default function RestaurantPosPage() {
   const locale = getPreferredLocale();
 
-  // #8449 — cache catalogue local (localStorage en navigateur, mémoire sinon).
   const catalogCache = useMemo(() => {
     const storage: KeyValueStorage =
       typeof window !== 'undefined' && window.localStorage
@@ -132,7 +125,6 @@ export default function RestaurantPosPage() {
     return new PosCatalogCache<{ categories: Category[]; products: Product[] }>(storage);
   }, []);
 
-  // #8449 — envoi réel d'une opération POS (encaissement).
   const sendPosOperation = useMemo(
     () =>
       createPosSender(async (path, body) => {
@@ -148,16 +140,23 @@ export default function RestaurantPosPage() {
   const [branches, setBranches] = useState<RestaurantBranch[]>([]);
   const [branchId, setBranchId] = useState<number | null>(null);
   const [session, setSession] = useState<PosSession | null>(null);
+  const [openingCash, setOpeningCash] = useState('0');
+  const [showCloseModal, setShowCloseModal] = useState(false);
+  const [countedCash, setCountedCash] = useState('');
+  const [varianceReason, setVarianceReason] = useState('');
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
-  const [order, setOrder] = useState<Order | null>(null);
-  const [bill, setBill] = useState<Bill | null>(null);
-  // #9210 — choix de caisse : type de commande, table, couverts, code promo.
+  const [tables, setTables] = useState<RestaurantTable[]>([]);
   const [orderType, setOrderType] = useState<OrderType>('dine_in');
   const [tableId, setTableId] = useState<number | null>(null);
-  const [covers, setCovers] = useState(1);
+  const [covers, setCovers] = useState<number>(2);
   const [promotionCode, setPromotionCode] = useState('');
-  const [tables, setTables] = useState<RestaurantTable[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
+  const [tenderedCash, setTenderedCash] = useState('');
+
+  const [order, setOrder] = useState<Order | null>(null);
+  const [bill, setBill] = useState<Bill | null>(null);
   const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -177,14 +176,10 @@ export default function RestaurantPosPage() {
       setCategories(nextCategories);
       setProducts(nextProducts);
 
-      // #8449 — le catalogue fraîchement chargé alimente le cache local, pour
-      // que le POS reste encaissable si le réseau tombe en plein service.
       if (branchId !== null) {
         catalogCache.save(branchId, { categories: nextCategories, products: nextProducts });
       }
     } catch {
-      // #8449 — hors ligne : on sert le dernier catalogue connu au lieu d'un
-      // écran vide. On ne signale une erreur que s'il n'y a AUCUN cache.
       const cached = branchId === null ? null : catalogCache.load(branchId);
       if (cached !== null) {
         setCategories(cached.data.categories);
@@ -225,10 +220,6 @@ export default function RestaurantPosPage() {
     }
   }, [locale]);
 
-  /**
-   * #9210 — Plan de salle de la succursale : sans lui, une commande `dine_in`
-   * ne peut pas etre rattachee a une table (le serveur la refuse).
-   */
   const loadTables = useCallback(async () => {
     if (branchId === null) {
       setTables([]);
@@ -239,16 +230,10 @@ export default function RestaurantPosPage() {
         _cacheBust: true,
       });
       const json = (await res.json()) as { data: RestaurantTable[] };
-      const list = (Array.isArray(json.data) ? json.data : []).filter(
-        (table) => table.is_active !== false,
-      );
+      const list = Array.isArray(json.data) ? json.data : [];
       setTables(list);
-      setTableId((current) =>
-        current !== null && list.some((table) => table.id === current) ? current : null,
-      );
+      setTableId((current) => current ?? list[0]?.id ?? null);
     } catch {
-      // Le plan de salle est secondaire : son echec ne doit pas bloquer la
-      // vente a emporter ni la livraison.
       setTables([]);
     }
   }, [branchId]);
@@ -277,7 +262,7 @@ export default function RestaurantPosPage() {
   );
 
   const runAction = useCallback(
-    async (action: () => Promise<unknown>, successMessage?: string) => {
+    async (action: () => Promise<unknown>) => {
       setActing(true);
       setError(null);
       try {
@@ -296,23 +281,42 @@ export default function RestaurantPosPage() {
       return;
     }
     void runAction(async () => {
+      const openingMinor = Math.round((parseFloat(openingCash) || 0) * 100);
       const res = await apiFetch('/restaurant/pos-sessions', {
         method: 'POST',
         _idempotent: true,
-        body: JSON.stringify({ branch_id: branchId, opening_cash_minor: 0 }),
+        body: JSON.stringify({ branch_id: branchId, opening_cash_minor: openingMinor }),
       });
       const json = (await res.json()) as { data: PosSession };
       setSession(json.data);
     });
-  }, [branchId, runAction]);
+  }, [branchId, openingCash, runAction]);
+
+  const handleCloseSession = useCallback(() => {
+    if (session === null) return;
+    void runAction(async () => {
+      const countedMinor = Math.round((parseFloat(countedCash) || 0) * 100);
+      await apiFetch(`/restaurant/pos-sessions/${session.id}/close`, {
+        method: 'POST',
+        _idempotent: true,
+        body: JSON.stringify({
+          counted_cash_minor: countedMinor,
+          variance_reason: varianceReason.trim() === '' ? undefined : varianceReason.trim(),
+        }),
+      });
+      setSession(null);
+      setOrder(null);
+      setBill(null);
+      setShowCloseModal(false);
+      setCountedCash('');
+      setVarianceReason('');
+    });
+  }, [session, countedCash, varianceReason, runAction]);
 
   const createOrder = useCallback(() => {
     if (branchId === null) {
       return;
     }
-    // #9210 — une commande sur place exige une table (meme regle que
-    // StoreRestaurantOrderRequest) : on le dit avant l'appel plutot que de
-    // laisser le serveur renvoyer une 422 incomprehensible en plein service.
     if (orderType === 'dine_in' && tableId === null) {
       setError(t(locale, 'restaurant.pos.tableRequired'));
       return;
@@ -331,6 +335,7 @@ export default function RestaurantPosPage() {
       const json = (await res.json()) as { data: Order };
       setOrder(json.data);
       setBill(null);
+      setTenderedCash('');
     });
   }, [branchId, orderType, tableId, covers, runAction, locale]);
 
@@ -388,8 +393,6 @@ export default function RestaurantPosPage() {
       return;
     }
     void runAction(async () => {
-      // #9210 — le code promo est transmis au serveur, qui recalcule et borne
-      // la remise (aucun montant n'est accepte du client).
       const code = promotionCode.trim();
       const query = code === '' ? '' : `?promotion_code=${encodeURIComponent(code)}`;
       const res = await apiFetch(`/restaurant/orders/${order.id}/bill${query}`, {
@@ -397,21 +400,19 @@ export default function RestaurantPosPage() {
       });
       const json = (await res.json()) as { data: Bill };
       setBill(json.data);
+      setTenderedCash((json.data.total_minor / 100).toFixed(2));
     });
   }, [order, promotionCode, runAction]);
 
-  const payCash = useCallback(() => {
+  const payOrder = useCallback(() => {
     if (order === null || bill === null) {
       return;
     }
     void runAction(async () => {
-      // #8449 — l'encaissement passe par la file hors-ligne : en ligne il part
-      // immédiatement, hors ligne il est conservé et rejoué à la reconnexion.
-      // La clé d'idempotence (commande + montant + moyen) rend le rejeu sûr.
       const operation = buildPaymentOperation({
         orderId: order.id,
         amountMinor: bill.total_minor,
-        providerCode: 'cash',
+        providerCode: paymentMethod,
         reference: order.reference,
       });
 
@@ -424,7 +425,7 @@ export default function RestaurantPosPage() {
 
       await refreshOrder(order.id);
     });
-  }, [order, bill, dispatch, refreshOrder, runAction, locale]);
+  }, [order, bill, paymentMethod, dispatch, refreshOrder, runAction, locale]);
 
   const groupedProducts = useMemo(() => {
     const grouped = new Map<number | null, Product[]>();
@@ -446,6 +447,9 @@ export default function RestaurantPosPage() {
   };
 
   const isOrderPayable = order !== null && !['draft', 'cancelled', 'refunded', 'paid', 'closed'].includes(order.status);
+
+  const tenderedMinor = Math.round((parseFloat(tenderedCash) || 0) * 100);
+  const changeDueMinor = bill !== null && tenderedMinor > bill.total_minor ? tenderedMinor - bill.total_minor : 0;
 
   return (
     <ModulePageShell
@@ -472,6 +476,7 @@ export default function RestaurantPosPage() {
           onClick={() => {
             void loadSession();
             void loadCatalog();
+            void loadTables();
           }}
           className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
         >
@@ -479,7 +484,17 @@ export default function RestaurantPosPage() {
           Refresh
         </button>
 
-        {/* #8449 — état de connexion et de synchronisation, visible en caisse. */}
+        {session !== null && (
+          <button
+            type="button"
+            onClick={() => setShowCloseModal(true)}
+            className="inline-flex items-center gap-1 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-bold text-red-600 transition hover:bg-red-50"
+          >
+            <LogOut className="h-3 w-3" />
+            {t(locale, 'restaurant.pos.closeSession', RESTAURANT_POS_FR.closeSession)}
+          </button>
+        )}
+
         <ConnectionIndicator
           state={connectionState}
           pendingCount={pendingCount}
@@ -556,6 +571,20 @@ export default function RestaurantPosPage() {
             {session === null ? (
               <div className="space-y-3">
                 <p className="text-sm text-slate-500">{t(locale, 'restaurant.pos.noSession')}</p>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">
+                    {t(locale, 'restaurant.pos.openingCashLabel', RESTAURANT_POS_FR.openingCashLabel)}
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    step="any"
+                    value={openingCash}
+                    onChange={(e) => setOpeningCash(e.target.value)}
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium focus:border-emerald-400 focus:outline-none"
+                    placeholder="0.00"
+                  />
+                </div>
                 <button
                   type="button"
                   onClick={openSession}
@@ -568,7 +597,6 @@ export default function RestaurantPosPage() {
               </div>
             ) : order === null ? (
               <div className="space-y-3">
-                {/* #9210 — choix du type de commande, de la table et des couverts. */}
                 <div className="space-y-2 rounded-xl border border-slate-200 bg-white p-3">
                   <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">
                     {t(locale, 'restaurant.pos.orderType')}
@@ -698,7 +726,6 @@ export default function RestaurantPosPage() {
 
                 {isOrderPayable && (
                   <>
-                    {/* #9210 — code promo : la remise est calculee et bornee serveur. */}
                     <div className="flex items-center gap-2">
                       <input
                         type="text"
@@ -719,7 +746,7 @@ export default function RestaurantPosPage() {
                     </button>
 
                     {bill !== null && (
-                      <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm">
+                      <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm space-y-2">
                         <div className="flex justify-between text-slate-500">
                           <span>{t(locale, 'restaurant.pos.subtotal')}</span>
                           <span className="font-mono">{(bill.subtotal_minor / 100).toFixed(2)}</span>
@@ -738,21 +765,90 @@ export default function RestaurantPosPage() {
                         )}
                         <div className="mt-1 flex justify-between border-t border-emerald-200 pt-1 font-bold text-emerald-800">
                           <span>{t(locale, 'restaurant.pos.total')}</span>
-                          <span className="font-mono">{(bill.total_minor / 100).toFixed(2)}</span>
+                          <span className="font-mono">{(bill.total_minor / 100).toFixed(2)} {bill.currency}</span>
                         </div>
+
+                        {/* Choix du moyen de paiement */}
+                        <div className="pt-2">
+                          <label className="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">
+                            {t(locale, 'restaurant.pos.paymentMethod', RESTAURANT_POS_FR.paymentMethod)}
+                          </label>
+                          <div className="grid grid-cols-3 gap-1">
+                            {(['cash', 'card', 'mobile_money'] as const).map((method) => (
+                              <button
+                                key={method}
+                                type="button"
+                                onClick={() => setPaymentMethod(method)}
+                                className={`rounded-lg px-2 py-1.5 text-xs font-bold transition ${
+                                  paymentMethod === method
+                                    ? 'bg-emerald-700 text-white shadow-sm'
+                                    : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                                }`}
+                              >
+                                {method === 'cash'
+                                  ? t(locale, 'restaurant.pos.paymentCash', RESTAURANT_POS_FR.paymentCash)
+                                  : method === 'card'
+                                  ? t(locale, 'restaurant.pos.paymentCard', RESTAURANT_POS_FR.paymentCard)
+                                  : t(locale, 'restaurant.pos.paymentMobile', RESTAURANT_POS_FR.paymentMobile)}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Calcul monnaie rendue pour espèces */}
+                        {paymentMethod === 'cash' && (
+                          <div className="space-y-1 pt-1">
+                            <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">
+                              {t(locale, 'restaurant.pos.tenderedAmount', RESTAURANT_POS_FR.tenderedAmount)}
+                            </label>
+                            <input
+                              type="number"
+                              min={0}
+                              step="any"
+                              value={tenderedCash}
+                              onChange={(e) => setTenderedCash(e.target.value)}
+                              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium focus:border-emerald-400 focus:outline-none"
+                            />
+                            {changeDueMinor > 0 && (
+                              <div className="flex justify-between text-xs font-bold text-emerald-800 bg-emerald-100 rounded-lg px-2.5 py-1">
+                                <span>{t(locale, 'restaurant.pos.changeDue', RESTAURANT_POS_FR.changeDue)}</span>
+                                <span className="font-mono">{(changeDueMinor / 100).toFixed(2)} {bill.currency}</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                         <button
                           type="button"
-                          onClick={payCash}
+                          onClick={payOrder}
                           disabled={acting}
-                          className="mt-3 inline-flex w-full items-center justify-center gap-1 rounded-lg bg-emerald-700 px-3 py-2 text-sm font-bold text-white transition hover:bg-emerald-800 disabled:opacity-50"
+                          className="mt-2 inline-flex w-full items-center justify-center gap-1 rounded-lg bg-emerald-700 px-3 py-2 text-sm font-bold text-white transition hover:bg-emerald-800 disabled:opacity-50"
                         >
                           <Banknote className="h-4 w-4" />
-                          {t(locale, 'restaurant.pos.payCash')}
+                          {paymentMethod === 'cash'
+                            ? t(locale, 'restaurant.pos.payCash')
+                            : `${t(locale, 'restaurant.pos.payWithMethod', RESTAURANT_POS_FR.payWithMethod)} (${
+                                paymentMethod === 'card'
+                                  ? t(locale, 'restaurant.pos.paymentCard', RESTAURANT_POS_FR.paymentCard)
+                                  : t(locale, 'restaurant.pos.paymentMobile', RESTAURANT_POS_FR.paymentMobile)
+                              })`}
                         </button>
                       </div>
                     )}
                   </>
+                )}
+
+                {order.items.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="inline-flex w-full items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+                  >
+                    <Printer className="h-3.5 w-3.5" />
+                    {['paid', 'closed'].includes(order.status)
+                      ? t(locale, 'restaurant.pos.printReceipt', RESTAURANT_POS_FR.printReceipt)
+                      : t(locale, 'restaurant.pos.printBill', RESTAURANT_POS_FR.printBill)}
+                  </button>
                 )}
 
                 {['paid', 'closed'].includes(order.status) && (
@@ -773,6 +869,65 @@ export default function RestaurantPosPage() {
               </div>
             )}
           </section>
+        </div>
+      )}
+
+      {/* ── Modal de clôture de caisse ──────────────────────────────────── */}
+      {showCloseModal && session && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl space-y-4">
+            <h3 className="text-base font-bold text-slate-800">
+              {t(locale, 'restaurant.pos.closeSessionTitle', RESTAURANT_POS_FR.closeSessionTitle)}
+            </h3>
+            <p className="text-xs text-slate-500">
+              {t(locale, 'restaurant.pos.openingCashLabel', RESTAURANT_POS_FR.openingCashLabel)} :{' '}
+              <span className="font-mono font-bold">{(session.opening_cash_minor / 100).toFixed(2)}</span>
+            </p>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">
+                {t(locale, 'restaurant.pos.countedCashLabel', RESTAURANT_POS_FR.countedCashLabel)}
+              </label>
+              <input
+                type="number"
+                min={0}
+                step="any"
+                value={countedCash}
+                onChange={(e) => setCountedCash(e.target.value)}
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-emerald-400 focus:outline-none"
+                placeholder="0.00"
+                autoFocus
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">
+                {t(locale, 'restaurant.pos.varianceReasonLabel', RESTAURANT_POS_FR.varianceReasonLabel)}
+              </label>
+              <input
+                type="text"
+                value={varianceReason}
+                onChange={(e) => setVarianceReason(e.target.value)}
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-emerald-400 focus:outline-none"
+                placeholder="..."
+              />
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowCloseModal(false)}
+                className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50"
+              >
+                {t(locale, 'restaurant.pos.cancel', RESTAURANT_POS_FR.cancel)}
+              </button>
+              <button
+                type="button"
+                disabled={acting}
+                onClick={handleCloseSession}
+                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                {t(locale, 'restaurant.pos.confirmClose', RESTAURANT_POS_FR.confirmClose)}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </ModulePageShell>

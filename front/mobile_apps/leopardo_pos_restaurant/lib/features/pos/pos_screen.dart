@@ -480,6 +480,48 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     }
   }
 
+  /// Clôture de la session de caisse avec comptage des espèces.
+  Future<void> _openCloseSession() async {
+    final state = ref.read(posControllerProvider);
+    final controller = ref.read(posControllerProvider.notifier);
+
+    if (state.sessionId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Aucune session de caisse ouverte.')),
+      );
+      return;
+    }
+
+    final countedMinor = await showModalBottomSheet<int>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => const AmountEntrySheet(
+        title: 'Clôture de caisse (Z de caisse)',
+        label: 'Montant compté dans le tiroir',
+        initialMinor: 0,
+        helperText: 'Comptez les espèces réelles présentes dans votre tiroir-caisse.',
+      ),
+    );
+
+    if (countedMinor == null || !mounted) {
+      return;
+    }
+
+    final success = await controller.closeSession(
+      countedCashMinor: countedMinor,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Session de caisse clôturée avec succès.'),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(posControllerProvider);
@@ -517,6 +559,12 @@ class _PosScreenState extends ConsumerState<PosScreen> {
               tooltip: 'Apercu du ticket (F8)',
               onPressed: state.cart.isEmpty ? null : _openReceipt,
               icon: const Icon(Icons.receipt_long),
+            ),
+            IconButton(
+              key: const Key('pos-close-session'),
+              tooltip: 'Clôturer la caisse (Z de caisse)',
+              onPressed: state.sessionOpen ? _openCloseSession : null,
+              icon: const Icon(Icons.point_of_sale),
             ),
             IconButton(
               key: const Key('pos-open-history'),

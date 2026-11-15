@@ -78,13 +78,36 @@ class PosApiClient {
   Future<int> openSession({required int branchId, required int openingCashMinor}) async {
     try {
       final response = await dio.post<Map<String, dynamic>>(
-        '/restaurant/pos/sessions',
+        '/restaurant/pos-sessions',
         data: {'branch_id': branchId, 'opening_cash_minor': openingCashMinor},
       );
 
       return ((response.data?['data'] as Map<String, dynamic>?)?['id'] as num).toInt();
     } on DioException catch (error) {
       throw PosOfflineException('Ouverture de caisse impossible hors ligne.', error);
+    }
+  }
+
+  /// Clôture une session de caisse.
+  ///
+  /// **En ligne uniquement** : la clôture recalcule les totaux serveur,
+  /// vérifie les écarts et verrouille définitivement la session.
+  Future<void> closeSession({
+    required int sessionId,
+    required int countedCashMinor,
+    String? varianceReason,
+  }) async {
+    try {
+      await dio.post<Map<String, dynamic>>(
+        '/restaurant/pos-sessions/$sessionId/close',
+        data: {
+          'counted_cash_minor': countedCashMinor,
+          if (varianceReason != null && varianceReason.trim().isNotEmpty)
+            'variance_reason': varianceReason.trim(),
+        },
+      );
+    } on DioException catch (error) {
+      throw PosOfflineException('Clôture de caisse impossible hors ligne.', error);
     }
   }
 
@@ -139,9 +162,9 @@ class PosApiClient {
 
     try {
       await dio.post<Map<String, dynamic>>(
-        '/restaurant/orders/$orderId/payments',
+        '/restaurant/orders/$orderId/pay',
         data: {
-          'method': method,
+          'provider_code': method,
           'amount_minor': amountMinor,
           'idempotency_key': key,
         },
@@ -152,9 +175,9 @@ class PosApiClient {
       await queue.enqueue(
         QueuedOperation(
           idempotencyKey: key,
-          endpoint: '/restaurant/orders/$orderId/payments',
+          endpoint: '/restaurant/orders/$orderId/pay',
           payload: {
-            'method': method,
+            'provider_code': method,
             'amount_minor': amountMinor,
             'idempotency_key': key,
           },

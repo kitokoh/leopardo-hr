@@ -77,4 +77,19 @@ void main() {
       expect(restored.barcode, isNull);
     });
   });
+
+  group('PosTable', () {
+    test('instancie une table libre par défaut', () {
+      const table = PosTable(id: 1, label: 'Table 1', seats: 4);
+
+      expect(table.occupied, isFalse);
+      expect(table.seats, 4);
+    });
+
+    test('supporte le statut occupé', () {
+      const table = PosTable(id: 2, label: 'Table 2', seats: 2, occupied: true);
+
+      expect(table.occupied, isTrue);
+    });
+  });
 }
