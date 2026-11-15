@@ -48,7 +48,7 @@ test.describe('Vitrine — visibilité de la home au scroll (#8063)', () => {
 
   for (const mode of ['lent', 'rapide'] as const) {
     test(`scroll ${mode} : toutes les sections sont visibles (opacité > 0.9)`, async ({ page }) => {
-      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      await page.goto('/business', { waitUntil: 'domcontentloaded' });
 
       const pageHeight = await page.evaluate(() => document.body.scrollHeight);
 
@@ -85,7 +85,7 @@ test.describe('Vitrine — visibilité de la home au scroll (#8063)', () => {
   }
 
   test('sections clés présentes et visibles après scroll complet', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.goto('/business', { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.waitForTimeout(500);
 
@@ -115,7 +115,7 @@ test.describe('Vitrine — home lisible sans JavaScript (#8063)', () => {
   test.setTimeout(120_000);
 
   test('aucun élément de contenu ne porte une opacité inline <= 0.9 dans le HTML SSR', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.goto('/business', { waitUntil: 'domcontentloaded' });
 
     const offenders = await page.evaluate(() => {
       const out: string[] = [];

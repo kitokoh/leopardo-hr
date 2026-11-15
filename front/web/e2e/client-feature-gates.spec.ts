@@ -176,7 +176,7 @@ test.describe('Client web feature gates', () => {
     await page.goto('/payroll', { waitUntil: 'domcontentloaded' });
 
     await expect(page.getByTestId('feature-locked-panel')).toBeVisible();
-    await expect(page.getByText('Module non inclus').first()).toBeVisible();
+    await expect(page.getByTestId('feature-locked-badge')).toContainText(/Accès non accordé|Access not granted/i);
     await expect(page.locator('body')).toContainText("Votre rôle actuel ne permet pas d'accéder à ce module.");
     const events = await analyticsEvents(page);
     expect(events.find((event) => event.name === 'feature_blocked')?.properties.reason).toBe('role_locked');
@@ -285,7 +285,7 @@ test.describe('Client web feature gates', () => {
     await page.goto('/social-marketing', { waitUntil: 'domcontentloaded' });
 
     await expect(page.getByTestId('feature-locked-panel')).toBeVisible();
-    await expect(page.getByText('Module non inclus').first()).toBeVisible();
+    await expect(page.getByTestId('feature-locked-badge')).toContainText(/Accès non accordé|Access not granted/i);
     const events = await analyticsEvents(page);
     expect(events.find((event) => event.name === 'feature_blocked')?.properties.reason).toBe('role_locked');
   });

@@ -158,7 +158,7 @@ test.describe('Marketing funnel preview', () => {
     // made this test time out in CI. The footer NewsletterForm renders on
     // every landing page including the homepage — always available, no
     // feature flag involved (issue #1463).
-    await page.goto('/?utm_source=e2e', { waitUntil: 'domcontentloaded' });
+    await page.goto('/business?utm_source=e2e', { waitUntil: 'domcontentloaded' });
 
     const footer = page.locator('footer');
     const newsletterInput = footer.locator('input[type="email"]');
