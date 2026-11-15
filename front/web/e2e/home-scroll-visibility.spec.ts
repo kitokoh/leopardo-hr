@@ -48,19 +48,19 @@ async function assertToutesSectionsVisibles(page: import('@playwright/test').Pag
 
 test.describe('#8063 — visibilité des sections de la home au scroll', () => {
   test('scroll lent : toutes les sections deviennent visibles', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/business');
     await scrollLent(page);
     await assertToutesSectionsVisibles(page);
   });
 
   test('scroll rapide : toutes les sections deviennent visibles', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/business');
     await scrollRapide(page);
     await assertToutesSectionsVisibles(page);
   });
 
   test('filet de sécurité : un contenu re-masqué est révélé de force', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/business');
     // Simule un reveal jamais déclenché (observer mort, hydratation
     // incomplète) : le contenu est masqué APRÈS le chargement, comme le
     // faisait le bug #8063. Le filet doit le révéler sans animation.
@@ -81,7 +81,7 @@ test.describe('#8063 — visibilité des sections de la home au scroll', () => {
   });
 
   test('bande métriques : les 4 statistiques sont affichées', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/business');
     await scrollLent(page);
     // La bande métriques affiche 4 stats (paie, langues, surfaces, tests).
     // Avant le correctif, la moitié droite restait vide.
@@ -93,7 +93,7 @@ test.describe('#8063 — visibilité des sections de la home au scroll', () => {
   });
 
   test('cartes pricing et témoignages finissent révélées', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/business');
     await scrollLent(page);
     const pricing = page.locator('#tarifs');
     await pricing.scrollIntoViewIfNeeded();

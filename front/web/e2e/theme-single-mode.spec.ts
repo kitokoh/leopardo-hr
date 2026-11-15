@@ -27,7 +27,7 @@ const CONTRAST_FN = `(() => {
 
 test.describe('Vitrine \u2014 th\u00e8me unique clair (#8461)', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/business');
   });
 
   test('aucun bouton de bascule jour/nuit ne subsiste', async ({ page }) => {
@@ -66,7 +66,7 @@ test.describe('Vitrine \u2014 th\u00e8me unique clair (#8461)', () => {
 
 test.describe('S\u00e9lecteur de langue \u2014 ic\u00f4ne seule, accessible (#8461)', () => {
   test('le libell\u00e9 texte a disparu mais le nom accessible demeure', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/business');
     // L'ancien libell\u00e9 visible n'existe plus.
     await expect(page.locator('nav >> text=/^Fran\u00e7ais$/')).toHaveCount(0);
     // Le vrai contr\u00f4le reste un <select> avec un nom accessible.

@@ -8,12 +8,12 @@ import { test, expect } from '@playwright/test';
 test.describe('Conversion Funnel E2E Tests', () => {
   // Issue #3834 : contrat stable — jamais un texte mono-locale. Les href
   // acceptent les variantes ?lang= (issue #3821) et ?source=* (acquisition).
-  const signupCta = (page: import('@playwright/test').Page) => page.locator('a[href^="/signup"]').first();
-  const demoCta = (page: import('@playwright/test').Page) => page.locator('a[href^="/demo"]').first();
+  const signupCta = (page: import('@playwright/test').Page) => page.locator('a[href*="/signup"]').first();
+  const demoCta = (page: import('@playwright/test').Page) => page.locator('a[href*="/demo"]').first();
 
   test.beforeEach(async ({ page }) => {
     // Navigate to landing page before each test
-    await page.goto('/');
+    await page.goto('/business');
   });
 
   test.describe('Signup Conversion Funnel', () => {
@@ -170,7 +170,7 @@ test.describe('Conversion Funnel E2E Tests', () => {
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight / 2));
 
       // Step 4: User navigates back to landing
-      await page.goto('/');
+      await page.goto('/business');
 
       // Step 5: User clicks signup CTA
       const signupCTA = signupCta(page);
@@ -203,7 +203,7 @@ test.describe('Conversion Funnel E2E Tests', () => {
       await page.context().setOffline(true);
 
       // Try to navigate
-      await page.goto('/', { waitUntil: 'domcontentloaded' }).catch(() => null);
+      await page.goto('/business', { waitUntil: 'domcontentloaded' }).catch(() => null);
 
       // Restore network
       await page.context().setOffline(false);

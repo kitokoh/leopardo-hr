@@ -13,7 +13,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Navigation and Links E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to landing page before each test
-    await page.goto('/');
+    await page.goto('/business');
   });
 
   test.describe('Navbar Navigation', () => {
@@ -23,8 +23,8 @@ test.describe('Navigation and Links E2E Tests', () => {
 
     // Liens directs de la navbar (hors dropdown).
     const DIRECT_LINKS: Array<{ href: string }> = [
-      { href: '/pricing' },
-      { href: '/contact' },
+      { href: '/business/pricing' },
+      { href: '/business/contact' },
     ];
 
     for (const { href } of DIRECT_LINKS) {
@@ -39,9 +39,9 @@ test.describe('Navigation and Links E2E Tests', () => {
 
     // Liens dans le dropdown « Ressources » (FR) / « Resources » (EN).
     const DROPDOWN_LINKS: Array<{ href: string }> = [
-      { href: '/guides/rh-startup' },
-      { href: '/docs' },
-      { href: '/changelog' },
+      { href: '/business/guides/rh-startup' },
+      { href: '/business/docs' },
+      { href: '/business/changelog' },
     ];
 
     for (const { href } of DROPDOWN_LINKS) {
@@ -67,7 +67,7 @@ test.describe('Navigation and Links E2E Tests', () => {
       await expect(trigger).toBeVisible();
       await trigger.click();
 
-      const faqLink = page.locator('a[href="/faq"]').first();
+      const faqLink = page.locator('a[href="/business/faq"]').first();
       await expect(faqLink).toBeVisible();
       await faqLink.click();
       await page.waitForURL('**/faq');
@@ -81,7 +81,7 @@ test.describe('Navigation and Links E2E Tests', () => {
       await expect(trigger).toBeVisible();
       await trigger.click();
 
-      const windowsLink = page.locator('a[href="/download?platform=windows"]').first();
+      const windowsLink = page.locator('a[href="/business/download?platform=windows"]').first();
       await expect(windowsLink).toBeVisible();
       await windowsLink.click();
       await page.waitForURL('**/download?platform=windows');
@@ -90,7 +90,7 @@ test.describe('Navigation and Links E2E Tests', () => {
 
     test('should navigate to pricing from navbar in every locale variant', async ({ page }) => {
       // The FR navbar uses "Tarifs", EN uses "Pricing" — the href is stable.
-      const pricingLink = page.locator('nav a[href="/pricing"]').first();
+      const pricingLink = page.locator('nav a[href="/business/pricing"]').first();
       await expect(pricingLink).toBeVisible();
       await pricingLink.click();
       await page.waitForURL('**/pricing');
@@ -102,10 +102,10 @@ test.describe('Navigation and Links E2E Tests', () => {
     test('should navigate to landing page from footer logo', async ({ page }) => {
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 
-      const footerLogo = page.locator('footer a[href="/"]').first();
+      const footerLogo = page.locator('footer a[href*="/business"]').first();
       await expect(footerLogo).toBeVisible();
       await footerLogo.click();
-      await page.waitForURL('/');
+      await page.waitForURL('**/business');
     });
 
     test('should have working footer links', async ({ page }) => {
@@ -132,7 +132,7 @@ test.describe('Navigation and Links E2E Tests', () => {
       await page.waitForURL('**/privacy');
       await expect(page.getByRole('heading', { name: /Politique de confidentialite|Privacy policy|Gizlilik politikasi|سياسة الخصوصية/i })).toBeVisible();
 
-      await page.goto('/');
+      await page.goto('/business');
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
       await page.locator('footer a[href="/terms"]').first().click();
       await page.waitForURL('**/terms');
@@ -161,10 +161,10 @@ test.describe('Navigation and Links E2E Tests', () => {
       // Les pages modules existent (/employes) mais ne sont pas dans la
       // navbar — on y accède par URL directe, puis on revient vers la
       // navigation réelle (pricing).
-      await page.goto('/employes');
+      await page.goto('/business/employes');
       await expect(page).toHaveURL(/employes/);
 
-      const pricingLink = page.locator('nav a[href="/pricing"]').first();
+      const pricingLink = page.locator('nav a[href="/business/pricing"]').first();
       await expect(pricingLink).toBeVisible();
       await pricingLink.click();
       await page.waitForURL('**/pricing');
@@ -172,7 +172,7 @@ test.describe('Navigation and Links E2E Tests', () => {
     });
 
     test('should navigate from a module page to the changelog', async ({ page }) => {
-      await page.goto('/documents');
+      await page.goto('/business/documents');
       await expect(page).toHaveURL(/documents/);
 
       const trigger = page
@@ -181,7 +181,7 @@ test.describe('Navigation and Links E2E Tests', () => {
       await expect(trigger).toBeVisible();
       await trigger.click();
 
-      const changelogLink = page.locator('nav a[href="/changelog"]').first();
+      const changelogLink = page.locator('nav a[href="/business/changelog"]').first();
       await expect(changelogLink).toBeVisible();
       await changelogLink.click();
       await page.waitForURL('**/changelog');
@@ -228,7 +228,7 @@ test.describe('Navigation and Links E2E Tests', () => {
 
   test.describe('URL Routing', () => {
     test('should route to landing page at /', async ({ page }) => {
-      await page.goto('/');
+      await page.goto('/business');
       expect(page.url()).toContain('/');
     });
 
@@ -273,7 +273,7 @@ test.describe('Navigation and Links E2E Tests', () => {
     test('should highlight active pricing page in navbar', async ({ page }) => {
       await page.goto('/pricing');
 
-      const pricingLink = page.locator('nav a[href="/pricing"]').first();
+      const pricingLink = page.locator('nav a[href="/business/pricing"]').first();
       await expect(pricingLink).toBeVisible();
       await expect(pricingLink).toHaveAttribute('aria-current', 'page');
     });
