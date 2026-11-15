@@ -12,7 +12,8 @@ void main() {
     sku: 'BOIS-01',
     barcode: '6001234567890',
   );
-  const the = PosProduct(id: 2, name: 'The a la menthe', priceMinor: 700, categoryId: 3);
+  const the = PosProduct(
+      id: 2, name: 'The a la menthe', priceMinor: 700, categoryId: 3);
 
   group('Cart.setQuantity', () {
     test('fixe la quantite d une ligne existante', () {
@@ -41,10 +42,8 @@ void main() {
     });
 
     test('ne touche pas les autres lignes', () {
-      final cart = const Cart()
-          .addProduct(bissap)
-          .addProduct(the)
-          .setQuantity(1, 4);
+      final cart =
+          const Cart().addProduct(bissap).addProduct(the).setQuantity(1, 4);
 
       expect(cart.lines.first.quantity, 4);
       expect(cart.lines.last.quantity, 1);

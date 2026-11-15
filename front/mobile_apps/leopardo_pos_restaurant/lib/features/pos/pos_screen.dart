@@ -146,7 +146,9 @@ class _PosScreenState extends ConsumerState<PosScreen> {
       SnackBar(
         duration: const Duration(seconds: 2),
         content: Text(
-          found ? 'Article ajoute a la commande.' : 'Aucun article pour le code $code.',
+          found
+              ? 'Article ajoute a la commande.'
+              : 'Aucun article pour le code $code.',
         ),
       ),
     );
@@ -304,7 +306,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
       return;
     }
 
-    final ok = ref.read(posControllerProvider.notifier).parkCurrentTicket(label);
+    final ok =
+        ref.read(posControllerProvider.notifier).parkCurrentTicket(label);
 
     if (!mounted) {
       return;
@@ -312,7 +315,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(ok ? 'Commande mise en attente.' : 'Mise en attente impossible.'),
+        content: Text(
+            ok ? 'Commande mise en attente.' : 'Mise en attente impossible.'),
       ),
     );
   }
@@ -415,14 +419,16 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(outcome.message),
-        backgroundColor: outcome.success ? null : Theme.of(context).colorScheme.error,
+        backgroundColor:
+            outcome.success ? null : Theme.of(context).colorScheme.error,
       ),
     );
   }
 
   /// Annule une ligne avec un motif obligatoire.
   Future<void> _voidLine(CartLine line) async {
-    final result = await showModalBottomSheet<({PosVoidReason reason, String comment})>(
+    final result =
+        await showModalBottomSheet<({PosVoidReason reason, String comment})>(
       context: context,
       isScrollControlled: true,
       builder: (_) => PosVoidReasonSheet(itemName: line.product.name),
@@ -537,7 +543,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
         appBar: AppBar(
           title: const Text('Caisse — Restaurant'),
           actions: [
-            PosConnectionChip(offline: state.offline, pending: state.pendingOperations),
+            PosConnectionChip(
+                offline: state.offline, pending: state.pendingOperations),
             const SizedBox(width: 8),
             IconButton(
               tooltip: 'Scanner un article (F2)',
@@ -588,7 +595,9 @@ class _PosScreenState extends ConsumerState<PosScreen> {
           children: [
             // Bandeau de synchronisation : progression, echecs, action
             // manuelle. Une file muette laisse le serveur dans le doute.
-            if (state.offline || state.pendingOperations > 0 || state.sync.total > 0)
+            if (state.offline ||
+                state.pendingOperations > 0 ||
+                state.sync.total > 0)
               PosSyncBanner(
                 progress: state.sync,
                 onSyncNow: controller.flushQueue,
@@ -608,7 +617,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                         _CategoryRail(
                           categories: state.categories,
                           selectedId: _selectedCategoryId,
-                          onSelect: (id) => setState(() => _selectedCategoryId = id),
+                          onSelect: (id) =>
+                              setState(() => _selectedCategoryId = id),
                         ),
                         const VerticalDivider(width: 1),
                         Expanded(
@@ -625,7 +635,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                             favouritesOnly: state.showFavouritesOnly,
                             favouriteIds: {
                               for (final product in state.products)
-                                if (state.affinity.isFavourite(product.id)) product.id,
+                                if (state.affinity.isFavourite(product.id))
+                                  product.id,
                             },
                             searchController: _searchController,
                             onSearch: controller.setSearchQuery,
@@ -633,7 +644,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                             onOpenScanner: _openScanner,
                             onTap: _onProductTap,
                             onToggleFavourite: controller.toggleFavourite,
-                            onToggleFavouritesOnly: controller.toggleFavouritesOnly,
+                            onToggleFavouritesOnly:
+                                controller.toggleFavouritesOnly,
                             onClearSearch: () {
                               _searchController.clear();
                               controller.setSearchQuery('');
@@ -653,7 +665,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                             onDiscount: controller.setDiscount,
                             onTip: controller.setTip,
                             onClear: controller.clearCart,
-                            onPay: (method) => _pay(context, controller, method),
+                            onPay: (method) =>
+                                _pay(context, controller, method),
                             onSplitPay: () => _splitPay(context, controller),
                             onVoid: _voidLine,
                             onReceipt: _openReceipt,
@@ -668,7 +681,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     );
   }
 
-  Future<void> _pay(BuildContext context, PosController controller, String method) async {
+  Future<void> _pay(
+      BuildContext context, PosController controller, String method) async {
     final ok = await controller.submitAndPay(method: method);
 
     if (!context.mounted) {
@@ -774,7 +788,8 @@ class _CategoryRail extends StatelessWidget {
 }
 
 class _CategoryTile extends StatelessWidget {
-  const _CategoryTile({required this.label, required this.selected, required this.onTap});
+  const _CategoryTile(
+      {required this.label, required this.selected, required this.onTap});
 
   final String label;
   final bool selected;
@@ -793,7 +808,8 @@ class _CategoryTile extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
           child: Container(
-            constraints: const BoxConstraints(minHeight: PosTheme.minTouchTarget),
+            constraints:
+                const BoxConstraints(minHeight: PosTheme.minTouchTarget),
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             child: Text(
@@ -882,7 +898,8 @@ class _ProductGrid extends StatelessWidget {
               FilterChip(
                 selected: favouritesOnly,
                 onSelected: (_) => onToggleFavouritesOnly(),
-                avatar: Icon(favouritesOnly ? Icons.star : Icons.star_border, size: 20),
+                avatar: Icon(favouritesOnly ? Icons.star : Icons.star_border,
+                    size: 20),
                 label: const Text('Favoris'),
               ),
               const SizedBox(width: 10),
@@ -936,7 +953,9 @@ class _ProductGrid extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          favouritesOnly ? Icons.star_border : Icons.restaurant_menu,
+                          favouritesOnly
+                              ? Icons.star_border
+                              : Icons.restaurant_menu,
                           size: 56,
                           color: scheme.outline,
                         ),
@@ -962,7 +981,8 @@ class _ProductGrid extends StatelessWidget {
                                   ? 'Appuyez longuement sur un plat pour l\'epingler ici.'
                                   : 'Choisissez une autre categorie du menu.'),
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16, color: scheme.onSurfaceVariant),
+                          style: TextStyle(
+                              fontSize: 16, color: scheme.onSurfaceVariant),
                         ),
                         const SizedBox(height: 16),
                         if (searching)
@@ -996,14 +1016,17 @@ class _ProductGrid extends StatelessWidget {
 
                     return Semantics(
                       button: true,
-                      label: '${product.name}, ${_formatMinor(product.priceMinor)}'
+                      label:
+                          '${product.name}, ${_formatMinor(product.priceMinor)}'
                           '${isFavourite ? ', favori' : ''}',
                       child: Card(
                         child: InkWell(
-                          onTap: product.available ? () => onTap(product) : null,
+                          onTap:
+                              product.available ? () => onTap(product) : null,
                           // Appui long : epingle le plat en favori.
                           onLongPress: () => onToggleFavourite(product.id),
-                          borderRadius: BorderRadius.circular(PosTheme.cardRadius),
+                          borderRadius:
+                              BorderRadius.circular(PosTheme.cardRadius),
                           child: Padding(
                             padding: const EdgeInsets.all(14),
                             child: Column(
@@ -1025,11 +1048,13 @@ class _ProductGrid extends StatelessWidget {
                                       ),
                                     ),
                                     if (isFavourite)
-                                      Icon(Icons.star, size: 20, color: scheme.tertiary),
+                                      Icon(Icons.star,
+                                          size: 20, color: scheme.tertiary),
                                   ],
                                 ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       _formatMinor(product.priceMinor),
@@ -1108,7 +1133,8 @@ class _CartPanel extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
           child: Row(
             children: [
-              const Text('Commande', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+              const Text('Commande',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
               const SizedBox(width: 8),
               if (!cart.isEmpty)
                 Chip(
@@ -1178,7 +1204,9 @@ class _CartPanel extends StatelessWidget {
                                   '  + $option',
                                   style: TextStyle(
                                     fontSize: 13,
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
                                   ),
                                 ),
                               ),
@@ -1189,7 +1217,8 @@ class _CartPanel extends StatelessWidget {
                           children: [
                             Text(
                               _formatMinor(line.lineTotalMinor),
-                              style: const TextStyle(fontWeight: FontWeight.w700),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w700),
                             ),
                             IconButton(
                               onPressed: () => onRemove(line.product.id),
@@ -1222,7 +1251,8 @@ class _CartPanel extends StatelessWidget {
               if (cart.tipMinor > 0)
                 _TotalRow(label: 'Pourboire', value: cart.tipMinor),
               const SizedBox(height: 6),
-              _TotalRow(label: 'Total', value: cart.totalMinor, emphasized: true),
+              _TotalRow(
+                  label: 'Total', value: cart.totalMinor, emphasized: true),
               if (!cart.discountValid)
                 Padding(
                   padding: const EdgeInsets.only(top: 6),
@@ -1240,7 +1270,8 @@ class _CartPanel extends StatelessWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: cart.isEmpty ? null : () => _editDiscount(context),
+                      onPressed:
+                          cart.isEmpty ? null : () => _editDiscount(context),
                       icon: const Icon(Icons.percent),
                       label: Text(
                         cart.discountMinor > 0
@@ -1438,7 +1469,8 @@ class _TableSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text('Table', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              const Text('Table',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               const Spacer(),
               const Text('Couverts', style: TextStyle(fontSize: 16)),
               IconButton(
@@ -1448,7 +1480,8 @@ class _TableSection extends StatelessWidget {
               ),
               Text(
                 '$covers',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
               IconButton(
                 tooltip: 'Un couvert de plus',
@@ -1476,7 +1509,8 @@ class _TableSection extends StatelessWidget {
 }
 
 class _TotalRow extends StatelessWidget {
-  const _TotalRow({required this.label, required this.value, this.emphasized = false});
+  const _TotalRow(
+      {required this.label, required this.value, this.emphasized = false});
 
   final String label;
   final int value;
