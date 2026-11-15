@@ -71,7 +71,7 @@ export default async function CaseStudyLayout({
     <>
       <BreadcrumbJsonLd
         items={[
-          { name: labels.home, url: localizedUrl('/', lang) },
+          { name: labels.home, url: localizedUrl('/business', lang) },
           { name: labels.caseStudies, url: localizedUrl('/business/case-studies', lang) },
           { name: study.title, url: localizedUrl(`/business/case-studies/${study.slug}`, lang) },
         ]}

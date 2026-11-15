@@ -43,7 +43,7 @@ export default async function GuidesPlanningEmployesLayout({
     <>
       <BreadcrumbJsonLd
         items={[
-          { name: labels.home, url: localizedUrl('/', lang) },
+          { name: labels.home, url: localizedUrl('/business', lang) },
           { name: guide.title, url: localizedUrl('/business/guides/planning-employes', lang) },
         ]}
       />

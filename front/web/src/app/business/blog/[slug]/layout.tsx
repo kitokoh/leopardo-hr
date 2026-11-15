@@ -82,7 +82,7 @@ export default async function BlogArticleLayout({
       />
       <BreadcrumbJsonLd
         items={[
-          { name: labels.home, url: localizedUrl('/', lang) },
+          { name: labels.home, url: localizedUrl('/business', lang) },
           { name: labels.blog, url: localizedUrl('/business/blog', lang) },
           { name: post.title, url: articleUrl },
         ]}

@@ -332,7 +332,7 @@ export function Navbar({ overDarkStage = false }: Props) {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          <Link href="/" className="flex items-center group">
+          <Link href={withLocaleHref('/business', search)} className="flex items-center group">
             <LeopardoBrandMark
               size="md"
               subtitle={copy.nav.brandTagline}
@@ -457,7 +457,14 @@ export function Navbar({ overDarkStage = false }: Props) {
             className="lg:hidden bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl border-t border-slate-200/50 dark:border-slate-800/50 max-h-[80vh] overflow-y-auto"
           >
             <div className="px-6 py-6 space-y-1">
-              <div className="mb-4">
+              <div className="mb-4 flex items-center justify-between">
+                <Link
+                  href={withLocaleHref('/business', search)}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center"
+                >
+                  <LeopardoBrandMark size="sm" subtitle={copy.nav.brandTagline} tone="auto" />
+                </Link>
                 <LocaleSwitcher
                   locale={locale}
                   options={options}

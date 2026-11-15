@@ -25,7 +25,7 @@ export function LegalPageShell({ page }: LegalPageShellProps) {
       <header className="border-b border-slate-200/80 bg-white/95 dark:border-slate-800/80 dark:bg-slate-950/95">
         <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6 md:flex-row md:items-center md:justify-between">
           <Link
-            href="/"
+            href="/business"
             className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-slate-600 transition-colors hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />

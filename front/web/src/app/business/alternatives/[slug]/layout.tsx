@@ -82,7 +82,7 @@ export default async function AlternativeLayout({
       <JsonLd data={generateFAQSchema(page.faqs)} />
       <BreadcrumbJsonLd
         items={[
-          { name: labels.home, url: localizedUrl('/', lang) },
+          { name: labels.home, url: localizedUrl('/business', lang) },
           { name: alternativesHubLabel[lang] ?? alternativesHubLabel.fr, url: localizedUrl('/business/alternatives', lang) },
           { name: page.title, url: pageUrl },
         ]}

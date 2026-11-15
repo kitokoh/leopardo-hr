@@ -22,7 +22,7 @@ export function getFooterHref(sectionIndex: number, linkIndex: number): string |
   const key = `${sectionIndex}-${linkIndex}`
   const routes: Record<string, string> = {
     // ─── Section 0 : Produit & Modules ───
-    '0-0': '/#fonctionnalites',
+    '0-0': '/business#fonctionnalites',
     '0-1': '/business/pricing',
     '0-2': '/business/integrations',
     '0-3': '/business/integrations#api',
@@ -104,7 +104,7 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8 lg:gap-10 mb-12">
           {/* Colonne Marque, Mission & Réassurance */}
           <div className="col-span-2">
-            <Link href="/" className="flex items-center mb-4 group inline-flex">
+            <Link href={withLocaleHref('/business', search)} className="flex items-center mb-4 group inline-flex">
               <LeopardoBrandMark
                 size="md"
                 tone="dark"
