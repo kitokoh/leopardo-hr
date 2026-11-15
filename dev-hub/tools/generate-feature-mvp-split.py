@@ -119,6 +119,17 @@ def main() -> int:
         print("KO: aucun fichier de test trouve (fail-closed)", file=sys.stderr)
         return 1
 
+    # Verification statique des chemins : une testsuite `<file>` qui pointe un
+    # chemin inexistant ne rougit pas, elle ne selectionne simplement rien.
+    # C'est le second risque silencieux d'un decoupage, apres le fichier oublie.
+    manquants = [rel for rel in (*mvp, *rest) if not (api / rel).is_file()]
+    if manquants:
+        print(
+            f"KO: {len(manquants)} chemin(s) de test inexistant(s) (ex. {manquants[0]})",
+            file=sys.stderr,
+        )
+        return 1
+
     nouvelle = zone(mvp, rest)
     actuel = config.read_text(encoding="utf-8")
     if BEGIN in actuel and END in actuel:
