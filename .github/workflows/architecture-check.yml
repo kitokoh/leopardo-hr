@@ -199,6 +199,14 @@ jobs:
           bash dev-hub/tools/check-mobile-android-sdk-versions.sh
           bash dev-hub/tools/tests/check-mobile-android-sdk-versions.test.sh
 
+      - name: Feature suite MVP split guard (issue #9098)
+        # Le decoupage de `tests/Feature` en deux invocations (classes a fixture
+        # MVP vs canoniques) ne vaut que si AUCUN fichier de test n'est perdu au
+        # passage. Ce test verrouille la partition, l'ancrage du motif et la
+        # detection de peremption ; la generation elle-meme tourne dans
+        # `tests.yml` juste avant les deux invocations.
+        run: bash dev-hub/tools/tests/generate-feature-mvp-split.test.sh
+
       - name: Migrations tenant — convention #1613 (search_path, audit PM 2026-08-17)
         run: bash dev-hub/tools/check-migrations-tenant-schema.sh
       - name: Migrations BC conventions guard (MAT-005 #5863)

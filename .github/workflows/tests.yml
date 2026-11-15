@@ -211,7 +211,44 @@ jobs:
           DB_SEARCH_PATH: public,shared_tenants
         run: php artisan test --testsuite=Unit --log-junit=storage/test-results/unit.xml
 
-      - name: Run backend feature tests
+      - name: Generate Feature suite split (issue #9098)
+        # Mesure du 2026-11-14 (artefact `backend-test-reports`, run 43570213398,
+        # feature.xml, 9137 testcases) : 92 tests pesent 19 751 s sur 23 938 s de
+        # temps total (82 %), et 88 d'entre eux sont le PREMIER test de leur
+        # classe. Ces 89 classes utilisent toutes `CreatesMvpSchema` : le cout
+        # n'est pas le test, c'est la reconstruction de la fixture MVP (~215 s de
+        # DDL) que `RefreshTenantDatabase` invalide en faisant
+        # `DROP SCHEMA shared_tenants CASCADE` (le marqueur
+        # `__mvp_fixture_ready` disparait avec le schema).
+        #
+        # Paratest repartit les fichiers par taille : les deux familles
+        # s'entrelacent, donc le marqueur est detruit ~89 fois et la fixture
+        # reconstruite autant. En isolant les classes MVP dans leur propre
+        # invocation, aucune classe canonique ne tombe entre elles : la fixture
+        # est construite une fois PAR WORKER, pas une fois par classe.
+        #
+        # Aucun test n'est perdu : le generateur partitionne les 1302 fichiers de
+        # `tests/Feature` en deux testsuites exhaustives (234 MVP + 1068
+        # canoniques), et l'invariant est verrouille par
+        # `dev-hub/tools/tests/generate-feature-mvp-split.test.sh`.
+        working-directory: .
+        run: python3 dev-hub/tools/generate-feature-mvp-split.py
+
+      - name: Run backend feature tests (MVP fixture classes)
+        id: backend_feature_mvp_tests
+        # Budget mesure : 234 fichiers dont les ~215 s de fixture ne sont plus
+        # payees qu'une fois par worker. Ne PAS relancer la suite entiere ici :
+        # l'interet du decoupage est justement de ne pas melanger les familles.
+        timeout-minutes: 90
+        working-directory: ./api
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: leopardo_test
+          DB_SEARCH_PATH: public,shared_tenants
+        run: php artisan test --testsuite=FeatureMvpFixture --parallel --processes=4 --exclude-group=audit --log-junit=storage/test-results/feature-mvp.xml
+
+      - name: Run backend feature tests (canonical classes)
         id: backend_feature_tests
         # Issue #9311 : plafond de l'ÉTAPE, pas seulement du job. Un run
         # suspendu sur `main` bloque tous les verdicts suivants (groupe de
@@ -249,7 +286,7 @@ jobs:
         # mécanisme et DOIVENT échouer quand le lot correspondant est livré —
         # les inclure bloquerait la PR qui livre le correctif.
         # Exécution manuelle : vendor/bin/phpunit --group=audit
-        run: php artisan test --testsuite=Feature --parallel --processes=4 --exclude-group=audit --log-junit=storage/test-results/feature.xml
+        run: php artisan test --testsuite=FeatureRest --parallel --processes=4 --exclude-group=audit --log-junit=storage/test-results/feature.xml
 
       - name: Triage causal des échecs (clusters par signature)
         # Issue #8396 : 264 échecs ne sont pas 264 bugs. Le tableau brut ne dit
@@ -295,6 +332,12 @@ jobs:
         if: steps.backend_feature_tests.outcome == 'failure'
         run: |
           echo "Backend feature tests failed."
+          exit 1
+
+      - name: Fail backend job if MVP feature tests failed
+        if: steps.backend_feature_mvp_tests.outcome == 'failure'
+        run: |
+          echo "Backend MVP-fixture feature tests failed."
           exit 1
 
       - name: Extract first test failures (causal errors)
