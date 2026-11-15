@@ -152,10 +152,7 @@ class TravelAdvertController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('create', TravelAdvert::class)) {
-            abort(403);
-        }
-
+        // #9504 — Permission déjà évaluée dans FormRequest::authorize()
         $advert = $this->submit->execute(
             $actor,
             (int) $request->validated('advert_type_id'),
@@ -255,8 +252,9 @@ class TravelAdvertController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
+        // #9504 — Permission refusée = 403, pas 404 (doctrine #8020/#8247)
         if ($actor->cannot('renew', $travelAdvert)) {
-            abort(404);
+            abort(403);
         }
 
         $advert = $this->renew->execute($travelAdvert);

@@ -19,7 +19,8 @@ class StoreTravelAdvertRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // TravelAdvertPolicy::create() tranche
+        // #9504 — Permission AVANT validation : 403 prioritaire sur 422
+        return $this->user()->can('create', TravelAdvert::class);
     }
 
     /**
