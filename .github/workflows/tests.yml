@@ -250,6 +250,12 @@ jobs:
 
       - name: Run backend feature tests (canonical classes)
         id: backend_feature_tests
+        # Mesure du 2026-11-15 (run 43680616469) : sans ce `if`, l'echec de
+        # l'etape MVP (elle porte 1 564 tests) faisait SKIPPER celle-ci, donc
+        # 7 573 tests canoniques n'etaient plus executes du tout — exactement le
+        # risque d'un decoupage : une moitie de suite qui ne tourne jamais. Les
+        # deux familles doivent produire leur verdict, meme si l'autre echoue.
+        if: always()
         # Issue #9311 : plafond de l'ÉTAPE, pas seulement du job. Un run
         # suspendu sur `main` bloque tous les verdicts suivants (groupe de
         # concurrence stable par ref : les runs plus récents restent `pending`
