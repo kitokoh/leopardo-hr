@@ -4926,7 +4926,13 @@
       "tenderedAmount": "Alınan tutar",
       "changeDue": "Para üstü",
       "printReceipt": "Fiş yazdır",
-      "printBill": "Adisyon yazdır"
+      "printBill": "Adisyon yazdır",
+      "searchPlaceholder": "Yemek veya ürün ara...",
+      "allCategories": "Tüm kategoriler",
+      "parkOrder": "Beklemeye al",
+      "recallOrder": "Geri çağır",
+      "parkedOrders": "Bekleyen siparişler",
+      "noParkedOrders": "Bekleyen sipariş yok."
     },
     "kitchenTitle": "Mutfak ekranı",
     "kitchenSubtitle": "Gerçek zamanlı sipariş kuyruğu — hazırlık ve teslim",

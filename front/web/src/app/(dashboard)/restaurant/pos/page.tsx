@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Banknote, CreditCard, Loader2, LogOut, Phone, Plus, Printer, RefreshCw, ShoppingCart, Trash2 } from 'lucide-react';
+import { Banknote, CreditCard, Loader2, LogOut, Pause, Phone, Play, Plus, Printer, RefreshCw, Search, ShoppingCart, Trash2 } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { ConnectionIndicator } from '@/components/offline/ConnectionIndicator';
@@ -154,6 +154,15 @@ export default function RestaurantPosPage() {
   const [promotionCode, setPromotionCode] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [tenderedCash, setTenderedCash] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  const [parkedOrders, setParkedOrders] = useState<
+    Array<{
+      order: Order;
+      bill: Bill | null;
+      parkedAt: string;
+    }>
+  >([]);
 
   const [order, setOrder] = useState<Order | null>(null);
   const [bill, setBill] = useState<Bill | null>(null);
@@ -427,9 +436,46 @@ export default function RestaurantPosPage() {
     });
   }, [order, bill, paymentMethod, dispatch, refreshOrder, runAction, locale]);
 
+  const parkCurrentOrder = useCallback(() => {
+    if (order === null) return;
+    setParkedOrders((prev) => [
+      ...prev,
+      {
+        order,
+        bill,
+        parkedAt: new Date().toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }),
+      },
+    ]);
+    setOrder(null);
+    setBill(null);
+  }, [order, bill, locale]);
+
+  const recallParkedOrder = useCallback((index: number) => {
+    setParkedOrders((prev) => {
+      const target = prev[index];
+      if (!target) return prev;
+      setOrder(target.order);
+      setBill(target.bill);
+      return prev.filter((_, i) => i !== index);
+    });
+  }, []);
+
+  const filteredProducts = useMemo(() => {
+    return products.filter((p) => {
+      if (selectedCategoryId !== null && p.category_id !== selectedCategoryId) {
+        return false;
+      }
+      if (searchQuery.trim() !== '') {
+        const q = searchQuery.toLowerCase().trim();
+        return p.name.toLowerCase().includes(q);
+      }
+      return true;
+    });
+  }, [products, selectedCategoryId, searchQuery]);
+
   const groupedProducts = useMemo(() => {
     const grouped = new Map<number | null, Product[]>();
-    for (const product of products) {
+    for (const product of filteredProducts) {
       const key = product.category_id;
       if (!grouped.has(key)) {
         grouped.set(key, []);
@@ -437,7 +483,7 @@ export default function RestaurantPosPage() {
       grouped.get(key)?.push(product);
     }
     return grouped;
-  }, [products]);
+  }, [filteredProducts]);
 
   const categoryName = (categoryId: number | null): string => {
     if (categoryId === null) {
@@ -519,15 +565,54 @@ export default function RestaurantPosPage() {
         <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
           {/* ── Catalogue ─────────────────────────────────────────────── */}
           <section className="rounded-2xl border border-white/20 bg-white/60 p-4 shadow-glass backdrop-blur-xl">
-            <div className="mb-3 flex items-center gap-2">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <h2 className="text-sm font-black uppercase tracking-widest text-slate-600">
                 {t(locale, 'restaurant.pos.products')}
               </h2>
               {order !== null && (
-                <span className="ml-auto rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-bold text-emerald-700">
+                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-bold text-emerald-700">
                   {order.reference}
                 </span>
               )}
+            </div>
+
+            <div className="relative mb-3">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t(locale, 'restaurant.pos.searchPlaceholder', RESTAURANT_POS_FR.searchPlaceholder)}
+                className="w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 py-2 text-sm font-medium shadow-sm focus:border-emerald-400 focus:outline-none"
+              />
+            </div>
+
+            <div className="mb-4 flex flex-wrap gap-1.5">
+              <button
+                type="button"
+                onClick={() => setSelectedCategoryId(null)}
+                className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${
+                  selectedCategoryId === null
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'bg-white border border-slate-200 text-slate-600 hover:border-emerald-300'
+                }`}
+              >
+                {t(locale, 'restaurant.pos.allCategories', RESTAURANT_POS_FR.allCategories)}
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setSelectedCategoryId(cat.id === selectedCategoryId ? null : cat.id)}
+                  className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${
+                    selectedCategoryId === cat.id
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:border-emerald-300'
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              ))}
             </div>
 
             {groupedProducts.size === 0 ? (
@@ -561,12 +646,51 @@ export default function RestaurantPosPage() {
 
           {/* ── Commande en cours ──────────────────────────────────────── */}
           <section className="rounded-2xl border border-white/20 bg-white/60 p-4 shadow-glass backdrop-blur-xl">
-            <div className="mb-3 flex items-center gap-2">
+            <div className="mb-3 flex items-center justify-between gap-2">
               <h2 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-slate-600">
                 <ShoppingCart className="h-4 w-4 text-emerald-500" />
                 {t(locale, 'restaurant.pos.cart')}
               </h2>
+              {order !== null && (
+                <button
+                  type="button"
+                  onClick={parkCurrentOrder}
+                  className="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2 py-1 text-xs font-bold text-amber-800 hover:bg-amber-100 transition"
+                >
+                  <Pause className="h-3 w-3" />
+                  {t(locale, 'restaurant.pos.parkOrder', RESTAURANT_POS_FR.parkOrder)}
+                </button>
+              )}
             </div>
+
+            {parkedOrders.length > 0 && (
+              <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50/70 p-2.5 space-y-1.5">
+                <span className="text-xs font-bold text-amber-900 uppercase tracking-wide">
+                  {t(locale, 'restaurant.pos.parkedOrders', RESTAURANT_POS_FR.parkedOrders)} ({parkedOrders.length})
+                </span>
+                <div className="space-y-1">
+                  {parkedOrders.map((parked, idx) => (
+                    <div
+                      key={parked.order.id}
+                      className="flex items-center justify-between rounded-lg bg-white p-2 text-xs shadow-sm"
+                    >
+                      <div>
+                        <span className="font-bold text-slate-700">{parked.order.reference}</span>
+                        <span className="ml-1.5 text-slate-400">{parked.parkedAt}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => recallParkedOrder(idx)}
+                        className="inline-flex items-center gap-1 rounded bg-emerald-600 px-2 py-1 font-bold text-white hover:bg-emerald-700"
+                      >
+                        <Play className="h-3 w-3" />
+                        {t(locale, 'restaurant.pos.recallOrder', RESTAURANT_POS_FR.recallOrder)}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {session === null ? (
               <div className="space-y-3">

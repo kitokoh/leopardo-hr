@@ -32,4 +32,10 @@ export const RESTAURANT_POS_FR = {
   changeDue: 'Monnaie à rendre',
   printReceipt: 'Imprimer le ticket',
   printBill: "Imprimer l'addition",
+  searchPlaceholder: 'Rechercher un plat ou article...',
+  allCategories: 'Toutes les catégories',
+  parkOrder: 'Mettre en attente',
+  recallOrder: 'Rappeler',
+  parkedOrders: 'Commandes en attente',
+  noParkedOrders: 'Aucune commande en attente.',
 } as const;

@@ -4926,7 +4926,13 @@
       "tenderedAmount": "Montant reçu",
       "changeDue": "Monnaie à rendre",
       "printReceipt": "Imprimer le ticket",
-      "printBill": "Imprimer l addition"
+      "printBill": "Imprimer l addition",
+      "searchPlaceholder": "Rechercher un plat ou article...",
+      "allCategories": "Toutes les catégories",
+      "parkOrder": "Mettre en attente",
+      "recallOrder": "Rappeler",
+      "parkedOrders": "Commandes en attente",
+      "noParkedOrders": "Aucune commande en attente."
     },
     "kitchenTitle": "Écran cuisine",
     "kitchenSubtitle": "File de commandes en temps réel — préparation et mise à disposition",

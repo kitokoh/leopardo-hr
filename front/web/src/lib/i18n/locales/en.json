@@ -4397,7 +4397,13 @@
       "tenderedAmount": "Tendered amount",
       "changeDue": "Change due",
       "printReceipt": "Print receipt",
-      "printBill": "Print bill"
+      "printBill": "Print bill",
+      "searchPlaceholder": "Search dish or item...",
+      "allCategories": "All categories",
+      "parkOrder": "Park order",
+      "recallOrder": "Recall",
+      "parkedOrders": "Parked orders",
+      "noParkedOrders": "No parked orders."
     },
     "kitchenTitle": "Kitchen display",
     "kitchenSubtitle": "Real-time order queue — preparation and pickup",

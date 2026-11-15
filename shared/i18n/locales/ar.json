@@ -4397,7 +4397,13 @@
       "tenderedAmount": "المبلغ المستلم",
       "changeDue": "الباقي للزبون",
       "printReceipt": "طباعة الإيصال",
-      "printBill": "طباعة الفاتورة"
+      "printBill": "طباعة الفاتورة",
+      "searchPlaceholder": "بحث عن طبق أو منتج...",
+      "allCategories": "جميع الفئات",
+      "parkOrder": "تعليق الطلب",
+      "recallOrder": "استرجاع",
+      "parkedOrders": "الطلبات المعلقة",
+      "noParkedOrders": "لا توجد طلبات معلقة."
     },
     "kitchenTitle": "شاشة المطبخ",
     "kitchenSubtitle": "قائمة الطلبات لحظيًا — التحضير والتجهيز",
