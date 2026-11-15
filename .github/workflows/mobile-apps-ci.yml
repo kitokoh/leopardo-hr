@@ -355,7 +355,12 @@ jobs:
         if: steps.changed-dart.outputs.changed == 'true'
         working-directory: ${{ matrix.project.path }}
         shell: bash
-        run: xargs -r -0 dart format --set-exit-if-changed < /tmp/changed-dart-files-relative
+        run: |
+          xargs -r -0 dart format --set-exit-if-changed < /tmp/changed-dart-files-relative || {
+            echo "::error::dart format mismatch detected. Diff below:"
+            git --no-pager diff
+            exit 1
+          }
 
       # #9432 : `--no-fatal-infos` est une decision de BASELINE, pas un
       # contournement. Flutter 3.50 deprecie `package:flutter/material.dart`
