@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Thème **tablette de caisse** du POS Restaurant (#9214).
 ///

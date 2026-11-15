@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/features/stock/presentation/stock_screen.dart';
 import 'package:leopardo_core/features/stock/providers/stock_providers.dart';

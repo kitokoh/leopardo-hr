@@ -2,7 +2,7 @@
 // SyncStatusBanner — Shows offline/edge/cloud mode in UI
 // ============================================================
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import '../services/sync_service.dart';
 
 class SyncStatusBanner extends StatelessWidget {

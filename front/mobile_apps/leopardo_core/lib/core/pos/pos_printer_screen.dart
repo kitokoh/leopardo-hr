@@ -5,7 +5,7 @@
 /// caisse se reconnecte seule au demarrage suivant.
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'pos_esc_pos.dart';
 import 'pos_printer.dart';

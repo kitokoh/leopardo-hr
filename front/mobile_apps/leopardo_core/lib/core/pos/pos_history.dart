@@ -16,7 +16,7 @@
 /// la trace.
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'pos_esc_pos.dart';
 import 'pos_printer.dart';

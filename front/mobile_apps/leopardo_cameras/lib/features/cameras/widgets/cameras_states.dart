@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:leopardo_cameras/core/i18n/app_strings.dart';
 import 'package:leopardo_cameras/features/cameras/providers/cameras_providers.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';

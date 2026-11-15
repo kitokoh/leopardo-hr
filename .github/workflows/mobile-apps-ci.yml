@@ -362,19 +362,12 @@ jobs:
             exit 1
           }
 
-      # #9432 : `--no-fatal-infos` est une decision de BASELINE, pas un
-      # contournement. Flutter 3.50 deprecie `package:flutter/material.dart`
-      # au profit de `material_ui` : chaque fichier qui l'importe produit une
-      # `info` (78 dans leopardo_core seul, des dizaines par app). `flutter
-      # analyze` rend les `info` fatales par defaut, donc la CI restait rouge
-      # pour une dette de migration transversale, jamais pour une regression.
-      # Les ERREURS et les WARNINGS restent fatals (defaut inchange) : une
-      # rupture d'API comme celle de flutter_blue_plus 2.x (missing argument
-      # `license`) echoue toujours ici. La migration material_ui est suivie par
-      # une issue dediee ; retirer ce flag quand elle sera faite.
+      # #9433 : migration `package:flutter/material.dart` → `material_ui` terminée.
+      # Le flag `--no-fatal-infos` (baseline #9432) est retiré : `flutter analyze`
+      # strict (erreurs + warnings + infos fatals) — toute régression est rouge.
       - name: Run flutter analyze
         working-directory: ${{ matrix.project.path }}
-        run: flutter analyze --no-fatal-infos
+        run: flutter analyze
 
       # #3822 : chaque app livrée exécute ses tests en CI. Avant, seuls
       # leopardo_core et leopardo_employee lançaient `flutter test` — les

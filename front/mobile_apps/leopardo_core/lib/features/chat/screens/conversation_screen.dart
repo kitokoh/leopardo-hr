@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // `chatThreadControllerProvider` est un `StateNotifierProvider.family` déclaré
 // dans `providers/conversation_provider.dart`, qui porte lui-même l'import

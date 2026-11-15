@@ -13,7 +13,7 @@
 /// utilisent desormais celle-ci.
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// **Pave numerique tactile** de caisse.
 class PosNumericKeypad extends StatelessWidget {
