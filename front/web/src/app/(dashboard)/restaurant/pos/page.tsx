@@ -150,7 +150,7 @@ export default function RestaurantPosPage() {
   const [tables, setTables] = useState<RestaurantTable[]>([]);
   const [orderType, setOrderType] = useState<OrderType>('dine_in');
   const [tableId, setTableId] = useState<number | null>(null);
-  const [covers, setCovers] = useState<number>(2);
+  const [covers, setCovers] = useState<number>(1);
   const [promotionCode, setPromotionCode] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [tenderedCash, setTenderedCash] = useState('');
@@ -241,7 +241,9 @@ export default function RestaurantPosPage() {
       const json = (await res.json()) as { data: RestaurantTable[] };
       const list = Array.isArray(json.data) ? json.data : [];
       setTables(list);
-      setTableId((current) => current ?? list[0]?.id ?? null);
+      setTableId((current) =>
+        current !== null && list.some((table) => table.id === current) ? current : null,
+      );
     } catch {
       setTables([]);
     }
