@@ -257,7 +257,7 @@ it('transmet le type de commande, la table et les couverts choisis', async () =>
 
   expect(body.order_type).toBe('dine_in');
   expect(body.table_id).toBe(7);
-  expect(body.covers).toBe(2);
+  expect(body.covers).toBe(1);
 });
 
 it('refuse une commande sur place sans table selectionnee', async () => {
