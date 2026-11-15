@@ -89,9 +89,12 @@ class PosState {
 
   bool get sessionOpen => sessionId != null;
 
-  List<PosProduct> productsFor(int? categoryId) => categoryId == null
-      ? products
-      : products.where((product) => product.categoryId == categoryId).toList();
+  List<PosProduct> productsFor(int? categoryId) =>
+      categoryId == null
+          ? products
+          : products
+              .where((product) => product.categoryId == categoryId)
+              .toList();
 
   /// Plats visibles : rayon + favoris + recherche **classee par pertinence**,
   /// favoris et recents remontes en tete.
@@ -105,7 +108,9 @@ class PosState {
       pool = pool.where((product) => affinity.isFavourite(product.id)).toList();
     }
 
-    final ordered = affinity.order([for (final product in pool) PosSearchableProduct(product)]);
+    final ordered = affinity.order([
+      for (final product in pool) PosSearchableProduct(product),
+    ]);
     final ranked = rankPosItems(items: ordered, query: searchQuery);
 
     return [for (final item in ranked) item.product];
@@ -154,25 +159,25 @@ class PosState {
   /// Le total est calcule par le noyau partage : c'est exactement celui qui
   /// sera encaisse, pas un recalcul approximatif de l'ecran.
   PosReceipt get receipt => PosReceipt(
-        lines: [
-          for (final line in cart.lines)
-            PosReceiptLine(
-              name: line.product.name,
-              quantity: line.quantity,
-              // Prix unitaire options comprises : c'est ce que le client a
-              // accepte, et ce que l'apercu et l'imprimante doivent montrer.
-              unitPriceMinor: line.unitPriceMinor,
-              options: line.optionLabels,
-            ),
-        ],
-        discountMinor: cart.discountMinor,
-        tipMinor: cart.tipMinor,
-        voidedLines: voidedLines,
-        tableLabel: selectedTable?.label,
-        covers: cart.covers,
-        orderTypeLabel: cart.orderType.label,
-        note: cart.note,
-      );
+    lines: [
+      for (final line in cart.lines)
+        PosReceiptLine(
+          name: line.product.name,
+          quantity: line.quantity,
+          // Prix unitaire options comprises : c'est ce que le client a
+          // accepte, et ce que l'apercu et l'imprimante doivent montrer.
+          unitPriceMinor: line.unitPriceMinor,
+          options: line.optionLabels,
+        ),
+    ],
+    discountMinor: cart.discountMinor,
+    tipMinor: cart.tipMinor,
+    voidedLines: voidedLines,
+    tableLabel: selectedTable?.label,
+    covers: cart.covers,
+    orderTypeLabel: cart.orderType.label,
+    note: cart.note,
+  );
 
   PosState copyWith({
     List<PosCategory>? categories,
@@ -193,26 +198,25 @@ class PosState {
     PosSyncProgress? sync,
     bool? showFavouritesOnly,
     PosSalesHistory? history,
-  }) =>
-      PosState(
-        categories: categories ?? this.categories,
-        products: products ?? this.products,
-        tables: tables ?? this.tables,
-        cart: cart ?? this.cart,
-        sessionId: sessionId ?? this.sessionId,
-        branchId: branchId ?? this.branchId,
-        offline: offline ?? this.offline,
-        pendingOperations: pendingOperations ?? this.pendingOperations,
-        loading: loading ?? this.loading,
-        error: clearError ? null : (error ?? this.error),
-        searchQuery: searchQuery ?? this.searchQuery,
-        affinity: affinity ?? this.affinity,
-        parked: parked ?? this.parked,
-        voidedLines: voidedLines ?? this.voidedLines,
-        sync: sync ?? this.sync,
-        showFavouritesOnly: showFavouritesOnly ?? this.showFavouritesOnly,
-        history: history ?? this.history,
-      );
+  }) => PosState(
+    categories: categories ?? this.categories,
+    products: products ?? this.products,
+    tables: tables ?? this.tables,
+    cart: cart ?? this.cart,
+    sessionId: sessionId ?? this.sessionId,
+    branchId: branchId ?? this.branchId,
+    offline: offline ?? this.offline,
+    pendingOperations: pendingOperations ?? this.pendingOperations,
+    loading: loading ?? this.loading,
+    error: clearError ? null : (error ?? this.error),
+    searchQuery: searchQuery ?? this.searchQuery,
+    affinity: affinity ?? this.affinity,
+    parked: parked ?? this.parked,
+    voidedLines: voidedLines ?? this.voidedLines,
+    sync: sync ?? this.sync,
+    showFavouritesOnly: showFavouritesOnly ?? this.showFavouritesOnly,
+    history: history ?? this.history,
+  );
 }
 
 /// Contrôleur de la caisse : charge le catalogue, gère le panier, encaisse.
@@ -279,7 +283,10 @@ class PosController extends Notifier<PosState> {
   }
 
   /// Clôture la session de caisse courante (en ligne uniquement).
-  Future<bool> closeSession({required int countedCashMinor, String? varianceReason}) async {
+  Future<bool> closeSession({
+    required int countedCashMinor,
+    String? varianceReason,
+  }) async {
     final sessionId = state.sessionId;
 
     if (sessionId == null) {
@@ -341,7 +348,10 @@ class PosController extends Notifier<PosState> {
   /// Deux lignes du meme plat avec des options differentes restent **deux
   /// lignes distinctes** : un « Poulet saignant + frites » et un
   /// « Poulet bien cuit + riz » ne peuvent pas fusionner.
-  void addProductWithOptions(PosProduct product, List<PosOptionSelection> selections) {
+  void addProductWithOptions(
+    PosProduct product,
+    List<PosOptionSelection> selections,
+  ) {
     if (selections.isEmpty) {
       addProduct(product);
 
@@ -417,7 +427,9 @@ class PosController extends Notifier<PosState> {
   /// La validite (remise <= sous-total) est verifiee par `Cart.isValid` : on
   /// ne bloque pas la saisie, on empeche seulement l'encaissement.
   void setDiscount(int discountMinor) {
-    final cart = state.cart.copyWith(discountMinor: discountMinor < 0 ? 0 : discountMinor);
+    final cart = state.cart.copyWith(
+      discountMinor: discountMinor < 0 ? 0 : discountMinor,
+    );
 
     state = state.copyWith(cart: cart);
     _persistCart(cart);
@@ -451,7 +463,9 @@ class PosController extends Notifier<PosState> {
     required PosVoidReason reason,
     String? comment,
   }) {
-    final index = state.cart.lines.indexWhere((line) => line.product.id == productId);
+    final index = state.cart.lines.indexWhere(
+      (line) => line.product.id == productId,
+    );
 
     if (index == -1) {
       state = state.copyWith(error: 'Cette ligne n\'est plus dans le panier.');
@@ -494,14 +508,17 @@ class PosController extends Notifier<PosState> {
   /// Retourne `false` si le panier est vide ou si la file est pleine.
   bool parkCurrentTicket(String label) {
     if (state.cart.isEmpty) {
-      state = state.copyWith(error: 'Le panier est vide : rien a mettre en attente.');
+      state = state.copyWith(
+        error: 'Le panier est vide : rien a mettre en attente.',
+      );
 
       return false;
     }
 
     if (state.parked.isFull) {
       state = state.copyWith(
-        error: 'Trop de commandes en attente (${PosParkedTickets.maxTickets}). '
+        error:
+            'Trop de commandes en attente (${PosParkedTickets.maxTickets}). '
             'Rappelez-en une avant d\'en mettre une autre de cote.',
       );
 
@@ -565,16 +582,19 @@ class PosController extends Notifier<PosState> {
     final branchId = state.branchId;
 
     if (sessionId == null || branchId == null) {
-      state = state.copyWith(error: 'La caisse doit être ouverte avant d\'encaisser.');
+      state = state.copyWith(
+        error: 'La caisse doit être ouverte avant d\'encaisser.',
+      );
 
       return false;
     }
 
     if (!state.cart.isValid) {
       state = state.copyWith(
-        error: state.cart.isEmpty
-            ? 'Le panier est vide.'
-            : 'Sélectionnez une table pour une commande sur place.',
+        error:
+            state.cart.isEmpty
+                ? 'Le panier est vide.'
+                : 'Sélectionnez une table pour une commande sur place.',
       );
 
       return false;
@@ -664,7 +684,11 @@ class PosController extends Notifier<PosState> {
     final progress = await _api.flushQueueWithProgress(
       onProgress: (synced, total) {
         state = state.copyWith(
-          sync: state.sync.copyWith(total: total, synced: synced, running: true),
+          sync: state.sync.copyWith(
+            total: total,
+            synced: synced,
+            running: true,
+          ),
         );
       },
     );
@@ -684,4 +708,6 @@ class PosController extends Notifier<PosState> {
   }
 }
 
-final posControllerProvider = NotifierProvider<PosController, PosState>(PosController.new);
+final posControllerProvider = NotifierProvider<PosController, PosState>(
+  PosController.new,
+);

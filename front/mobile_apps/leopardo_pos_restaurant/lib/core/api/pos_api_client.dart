@@ -30,17 +30,23 @@ class PosApiClient {
 
       final data = response.data?['data'] as Map<String, dynamic>? ?? const {};
 
-      final categories = ((data['categories'] as List<dynamic>?) ?? [])
-          .map((raw) => PosCategory.fromJson(raw as Map<String, dynamic>))
-          .toList();
+      final categories =
+          ((data['categories'] as List<dynamic>?) ?? [])
+              .map((raw) => PosCategory.fromJson(raw as Map<String, dynamic>))
+              .toList();
 
-      final products = ((data['products'] as List<dynamic>?) ?? [])
-          .map((raw) => PosProduct.fromJson(raw as Map<String, dynamic>))
-          .toList();
+      final products =
+          ((data['products'] as List<dynamic>?) ?? [])
+              .map((raw) => PosProduct.fromJson(raw as Map<String, dynamic>))
+              .toList();
 
       await store.saveCatalog(categories: categories, products: products);
 
-      return CatalogResult(categories: categories, products: products, fromCache: false);
+      return CatalogResult(
+        categories: categories,
+        products: products,
+        fromCache: false,
+      );
     } on DioException {
       return CatalogResult(
         categories: store.readCategories(),
@@ -58,9 +64,10 @@ class PosApiClient {
         queryParameters: branchId == null ? null : {'branch_id': branchId},
       );
 
-      final tables = ((response.data?['data'] as List<dynamic>?) ?? [])
-          .map((raw) => PosTable.fromJson(raw as Map<String, dynamic>))
-          .toList();
+      final tables =
+          ((response.data?['data'] as List<dynamic>?) ?? [])
+              .map((raw) => PosTable.fromJson(raw as Map<String, dynamic>))
+              .toList();
 
       await store.saveTables(tables);
 
@@ -75,16 +82,23 @@ class PosApiClient {
   /// **En ligne uniquement** : une session a besoin d'un identifiant serveur
   /// (elle porte le fonds de caisse et l'attendu de clôture). Hors ligne,
   /// l'appelant reçoit une [PosOfflineException] et l'interface le dit.
-  Future<int> openSession({required int branchId, required int openingCashMinor}) async {
+  Future<int> openSession({
+    required int branchId,
+    required int openingCashMinor,
+  }) async {
     try {
       final response = await dio.post<Map<String, dynamic>>(
         '/restaurant/pos-sessions',
         data: {'branch_id': branchId, 'opening_cash_minor': openingCashMinor},
       );
 
-      return ((response.data?['data'] as Map<String, dynamic>?)?['id'] as num).toInt();
+      return ((response.data?['data'] as Map<String, dynamic>?)?['id'] as num)
+          .toInt();
     } on DioException catch (error) {
-      throw PosOfflineException('Ouverture de caisse impossible hors ligne.', error);
+      throw PosOfflineException(
+        'Ouverture de caisse impossible hors ligne.',
+        error,
+      );
     }
   }
 
@@ -107,7 +121,10 @@ class PosApiClient {
         },
       );
     } on DioException catch (error) {
-      throw PosOfflineException('Clôture de caisse impossible hors ligne.', error);
+      throw PosOfflineException(
+        'Clôture de caisse impossible hors ligne.',
+        error,
+      );
     }
   }
 
@@ -127,20 +144,25 @@ class PosApiClient {
           'table_id': cart.tableId,
           'covers': cart.covers,
           'note': cart.note,
-          'lines': cart.lines
-              .map(
-                (line) => {
-                  'product_id': line.product.id,
-                  'quantity': line.quantity,
-                },
-              )
-              .toList(),
+          'lines':
+              cart.lines
+                  .map(
+                    (line) => {
+                      'product_id': line.product.id,
+                      'quantity': line.quantity,
+                    },
+                  )
+                  .toList(),
         },
       );
 
-      return ((response.data?['data'] as Map<String, dynamic>?)?['id'] as num).toInt();
+      return ((response.data?['data'] as Map<String, dynamic>?)?['id'] as num)
+          .toInt();
     } on DioException catch (error) {
-      throw PosOfflineException('Création de commande impossible hors ligne.', error);
+      throw PosOfflineException(
+        'Création de commande impossible hors ligne.',
+        error,
+      );
     }
   }
 
@@ -226,7 +248,10 @@ class PosApiClient {
       }
 
       try {
-        await dio.post<Map<String, dynamic>>(operation.endpoint, data: operation.payload);
+        await dio.post<Map<String, dynamic>>(
+          operation.endpoint,
+          data: operation.payload,
+        );
         await queue.remove(operation.idempotencyKey);
         synced++;
         operations.add(
@@ -304,7 +329,10 @@ final posOfflineQueueProvider = Provider<PosOfflineQueue>((ref) {
 final posApiClientProvider = Provider<PosApiClient>((ref) {
   final dio = Dio(
     BaseOptions(
-      baseUrl: const String.fromEnvironment('API_BASE_URL', defaultValue: 'https://api.leopardo.app/api/v1'),
+      baseUrl: const String.fromEnvironment(
+        'API_BASE_URL',
+        defaultValue: 'https://api.leopardo.app/api/v1',
+      ),
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 20),
     ),

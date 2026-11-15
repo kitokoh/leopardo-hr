@@ -12,7 +12,12 @@ void main() {
     sku: 'BOIS-01',
     barcode: '6001234567890',
   );
-  const the = PosProduct(id: 2, name: 'The a la menthe', priceMinor: 700, categoryId: 3);
+  const the = PosProduct(
+    id: 2,
+    name: 'The a la menthe',
+    priceMinor: 700,
+    categoryId: 3,
+  );
 
   group('Cart.setQuantity', () {
     test('fixe la quantite d une ligne existante', () {

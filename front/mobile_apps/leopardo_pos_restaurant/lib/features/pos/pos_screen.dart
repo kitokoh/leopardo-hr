@@ -146,7 +146,9 @@ class _PosScreenState extends ConsumerState<PosScreen> {
       SnackBar(
         duration: const Duration(seconds: 2),
         content: Text(
-          found ? 'Article ajoute a la commande.' : 'Aucun article pour le code $code.',
+          found
+              ? 'Article ajoute a la commande.'
+              : 'Aucun article pour le code $code.',
         ),
       ),
     );
@@ -186,11 +188,12 @@ class _PosScreenState extends ConsumerState<PosScreen> {
 
     await Navigator.of(context).push<void>(
       MaterialPageRoute(
-        builder: (_) => PosSalesHistoryScreen(
-          history: state.history,
-          printer: ref.read(posPrinterProvider),
-          shopName: 'Leopardo Restaurant',
-        ),
+        builder:
+            (_) => PosSalesHistoryScreen(
+              history: state.history,
+              printer: ref.read(posPrinterProvider),
+              shopName: 'Leopardo Restaurant',
+            ),
       ),
     );
   }
@@ -199,56 +202,61 @@ class _PosScreenState extends ConsumerState<PosScreen> {
   /// vers un autre serveur au milieu du service.
   Future<void> _openSettings() async {
     final store = ref.read(posLocalStoreProvider);
-    final current = ref.read(posConfigProvider) ??
+    final current =
+        ref.read(posConfigProvider) ??
         const PosAppConfig(apiBaseUrl: 'https://api.leopardo.app/api/v1');
 
     await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (_) => PosSettingsScreen(
-          initialConfig: current,
-          locationLabel: 'Succursale',
-          pinHash: ref.read(posPinHashProvider),
-          printerName: store.printer?.name,
-          onOpenPrinter: _openPrinterPicker,
-          onSave: (config) async {
-            await store.saveConfig(config);
-            ref.invalidate(posConfigProvider);
-          },
-          onPinChanged: (pin) async {
-            await store.savePinHash(PosPinCode.hash(pin, salt: 'leopardo-pos'));
-            ref.invalidate(posPinHashProvider);
-          },
-          probe: (url) => checkPosBackendHealth(
-            apiBaseUrl: url,
-            performRequest: (uri) async {
-              final dio = Dio(
-                BaseOptions(
-                  connectTimeout: const Duration(seconds: 8),
-                  receiveTimeout: const Duration(seconds: 8),
-                ),
-              );
+        builder:
+            (_) => PosSettingsScreen(
+              initialConfig: current,
+              locationLabel: 'Succursale',
+              pinHash: ref.read(posPinHashProvider),
+              printerName: store.printer?.name,
+              onOpenPrinter: _openPrinterPicker,
+              onSave: (config) async {
+                await store.saveConfig(config);
+                ref.invalidate(posConfigProvider);
+              },
+              onPinChanged: (pin) async {
+                await store.savePinHash(
+                  PosPinCode.hash(pin, salt: 'leopardo-pos'),
+                );
+                ref.invalidate(posPinHashProvider);
+              },
+              probe:
+                  (url) => checkPosBackendHealth(
+                    apiBaseUrl: url,
+                    performRequest: (uri) async {
+                      final dio = Dio(
+                        BaseOptions(
+                          connectTimeout: const Duration(seconds: 8),
+                          receiveTimeout: const Duration(seconds: 8),
+                        ),
+                      );
 
-              try {
-                final response = await dio.get<dynamic>(uri.toString());
+                      try {
+                        final response = await dio.get<dynamic>(uri.toString());
 
-                return response.statusCode ?? 0;
-              } on DioException catch (error) {
-                final status = error.response?.statusCode;
+                        return response.statusCode ?? 0;
+                      } on DioException catch (error) {
+                        final status = error.response?.statusCode;
 
-                if (status != null) {
-                  return status;
-                }
+                        if (status != null) {
+                          return status;
+                        }
 
-                if (error.type == DioExceptionType.connectionTimeout ||
-                    error.type == DioExceptionType.receiveTimeout) {
-                  throw const PosHealthTimeout();
-                }
+                        if (error.type == DioExceptionType.connectionTimeout ||
+                            error.type == DioExceptionType.receiveTimeout) {
+                          throw const PosHealthTimeout();
+                        }
 
-                rethrow;
-              }
-            },
-          ),
-        ),
+                        rethrow;
+                      }
+                    },
+                  ),
+            ),
       ),
     );
   }
@@ -260,12 +268,13 @@ class _PosScreenState extends ConsumerState<PosScreen> {
 
     await Navigator.of(context).push<PosPrinterDevice>(
       MaterialPageRoute(
-        builder: (_) => PosPrinterPickerScreen(
-          service: service,
-          onSelected: (device) async {
-            await store.savePrinter(id: device.id, name: device.name);
-          },
-        ),
+        builder:
+            (_) => PosPrinterPickerScreen(
+              service: service,
+              onSelected: (device) async {
+                await store.savePrinter(id: device.id, name: device.name);
+              },
+            ),
       ),
     );
   }
@@ -274,12 +283,13 @@ class _PosScreenState extends ConsumerState<PosScreen> {
   Future<void> _openScanner() async {
     final code = await Navigator.of(context).push<String>(
       MaterialPageRoute<String>(
-        builder: (_) => PosBarcodeScannerScreen(
-          title: 'Scanner un article',
-          hint: 'Scannez une boisson ou un produit emballe.',
-          accentColor: Theme.of(context).colorScheme.primary,
-          cardRadius: PosTheme.cardRadius,
-        ),
+        builder:
+            (_) => PosBarcodeScannerScreen(
+              title: 'Scanner un article',
+              hint: 'Scannez une boisson ou un produit emballe.',
+              accentColor: Theme.of(context).colorScheme.primary,
+              cardRadius: PosTheme.cardRadius,
+            ),
       ),
     );
 
@@ -295,16 +305,23 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     final label = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => const PosParkTicketSheet(
-        suggestions: ['Table occupee', 'Client au bar', 'Commande a emporter'],
-      ),
+      builder:
+          (_) => const PosParkTicketSheet(
+            suggestions: [
+              'Table occupee',
+              'Client au bar',
+              'Commande a emporter',
+            ],
+          ),
     );
 
     if (label == null || !mounted) {
       return;
     }
 
-    final ok = ref.read(posControllerProvider.notifier).parkCurrentTicket(label);
+    final ok = ref
+        .read(posControllerProvider.notifier)
+        .parkCurrentTicket(label);
 
     if (!mounted) {
       return;
@@ -312,7 +329,9 @@ class _PosScreenState extends ConsumerState<PosScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(ok ? 'Commande mise en attente.' : 'Mise en attente impossible.'),
+        content: Text(
+          ok ? 'Commande mise en attente.' : 'Mise en attente impossible.',
+        ),
       ),
     );
   }
@@ -349,14 +368,15 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => PosReceiptPreview(
-        receipt: state.receipt,
-        onPrint: () => _printReceipt(state.receipt),
-        onConfirm: () {
-          Navigator.of(context).pop();
-          _pay(context, ref.read(posControllerProvider.notifier), 'cash');
-        },
-      ),
+      builder:
+          (_) => PosReceiptPreview(
+            receipt: state.receipt,
+            onPrint: () => _printReceipt(state.receipt),
+            onConfirm: () {
+              Navigator.of(context).pop();
+              _pay(context, ref.read(posControllerProvider.notifier), 'cash');
+            },
+          ),
     );
   }
 
@@ -370,23 +390,24 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     if (service.selectedPrinter == null) {
       final go = await showDialog<bool>(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Aucune imprimante'),
-          content: const Text(
-            'Aucune imprimante n\u2019est configuree sur cette tablette. '
-            'Voulez-vous en choisir une maintenant ?',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Plus tard'),
+        builder:
+            (context) => AlertDialog(
+              title: const Text('Aucune imprimante'),
+              content: const Text(
+                'Aucune imprimante n\u2019est configuree sur cette tablette. '
+                'Voulez-vous en choisir une maintenant ?',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Plus tard'),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Choisir'),
+                ),
+              ],
             ),
-            FilledButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Choisir'),
-            ),
-          ],
-        ),
       );
 
       if (go != true || !mounted) {
@@ -415,24 +436,28 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(outcome.message),
-        backgroundColor: outcome.success ? null : Theme.of(context).colorScheme.error,
+        backgroundColor:
+            outcome.success ? null : Theme.of(context).colorScheme.error,
       ),
     );
   }
 
   /// Annule une ligne avec un motif obligatoire.
   Future<void> _voidLine(CartLine line) async {
-    final result = await showModalBottomSheet<({PosVoidReason reason, String comment})>(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => PosVoidReasonSheet(itemName: line.product.name),
-    );
+    final result =
+        await showModalBottomSheet<({PosVoidReason reason, String comment})>(
+          context: context,
+          isScrollControlled: true,
+          builder: (_) => PosVoidReasonSheet(itemName: line.product.name),
+        );
 
     if (result == null || !mounted) {
       return;
     }
 
-    ref.read(posControllerProvider.notifier).voidLine(
+    ref
+        .read(posControllerProvider.notifier)
+        .voidLine(
           productId: line.product.id,
           reason: result.reason,
           comment: result.comment.isEmpty ? null : result.comment,
@@ -446,13 +471,15 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     final value = await showModalBottomSheet<int>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => AmountEntrySheet(
-        title: 'Remise',
-        label: 'Montant de la remise',
-        initialMinor: state.cart.discountMinor,
-        maxMinor: state.cart.subtotalMinor,
-        helperText: 'Sous-total : ${_formatMinor(state.cart.subtotalMinor)}',
-      ),
+      builder:
+          (_) => AmountEntrySheet(
+            title: 'Remise',
+            label: 'Montant de la remise',
+            initialMinor: state.cart.discountMinor,
+            maxMinor: state.cart.subtotalMinor,
+            helperText:
+                'Sous-total : ${_formatMinor(state.cart.subtotalMinor)}',
+          ),
     );
 
     if (value != null) {
@@ -467,12 +494,13 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     final value = await showModalBottomSheet<int>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => AmountEntrySheet(
-        title: 'Pourboire',
-        label: 'Montant du pourboire',
-        initialMinor: state.cart.tipMinor,
-        helperText: 'Le pourboire s\'ajoute au total de l\'addition.',
-      ),
+      builder:
+          (_) => AmountEntrySheet(
+            title: 'Pourboire',
+            label: 'Montant du pourboire',
+            initialMinor: state.cart.tipMinor,
+            helperText: 'Le pourboire s\'ajoute au total de l\'addition.',
+          ),
     );
 
     if (value != null) {
@@ -495,12 +523,14 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     final countedMinor = await showModalBottomSheet<int>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => const AmountEntrySheet(
-        title: 'Clôture de caisse (Z de caisse)',
-        label: 'Montant compté dans le tiroir',
-        initialMinor: 0,
-        helperText: 'Comptez les espèces réelles présentes dans votre tiroir-caisse.',
-      ),
+      builder:
+          (_) => const AmountEntrySheet(
+            title: 'Clôture de caisse (Z de caisse)',
+            label: 'Montant compté dans le tiroir',
+            initialMinor: 0,
+            helperText:
+                'Comptez les espèces réelles présentes dans votre tiroir-caisse.',
+          ),
     );
 
     if (countedMinor == null || !mounted) {
@@ -534,7 +564,10 @@ class _PosScreenState extends ConsumerState<PosScreen> {
         appBar: AppBar(
           title: const Text('Caisse — Restaurant'),
           actions: [
-            PosConnectionChip(offline: state.offline, pending: state.pendingOperations),
+            PosConnectionChip(
+              offline: state.offline,
+              pending: state.pendingOperations,
+            ),
             const SizedBox(width: 8),
             IconButton(
               tooltip: 'Scanner un article (F2)',
@@ -585,7 +618,9 @@ class _PosScreenState extends ConsumerState<PosScreen> {
           children: [
             // Bandeau de synchronisation : progression, echecs, action
             // manuelle. Une file muette laisse le serveur dans le doute.
-            if (state.offline || state.pendingOperations > 0 || state.sync.total > 0)
+            if (state.offline ||
+                state.pendingOperations > 0 ||
+                state.sync.total > 0)
               PosSyncBanner(
                 progress: state.sync,
                 onSyncNow: controller.flushQueue,
@@ -597,67 +632,75 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                 onDismiss: controller.clearError,
               ),
             Expanded(
-              child: state.loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _CategoryRail(
-                          categories: state.categories,
-                          selectedId: _selectedCategoryId,
-                          onSelect: (id) => setState(() => _selectedCategoryId = id),
-                        ),
-                        const VerticalDivider(width: 1),
-                        Expanded(
-                          flex: 3,
-                          child: _ProductGrid(
-                            products: state.visibleProducts
-                                .where(
-                                  (product) =>
-                                      _selectedCategoryId == null ||
-                                      product.categoryId == _selectedCategoryId,
-                                )
-                                .toList(),
-                            recentProducts: state.recentProducts,
-                            favouritesOnly: state.showFavouritesOnly,
-                            favouriteIds: {
-                              for (final product in state.products)
-                                if (state.affinity.isFavourite(product.id)) product.id,
-                            },
-                            searchController: _searchController,
-                            onSearch: controller.setSearchQuery,
-                            onScan: controller.scanBarcode,
-                            onOpenScanner: _openScanner,
-                            onTap: _onProductTap,
-                            onToggleFavourite: controller.toggleFavourite,
-                            onToggleFavouritesOnly: controller.toggleFavouritesOnly,
-                            onClearSearch: () {
-                              _searchController.clear();
-                              controller.setSearchQuery('');
-                            },
+              child:
+                  state.loading
+                      ? const Center(child: CircularProgressIndicator())
+                      : Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _CategoryRail(
+                            categories: state.categories,
+                            selectedId: _selectedCategoryId,
+                            onSelect:
+                                (id) =>
+                                    setState(() => _selectedCategoryId = id),
                           ),
-                        ),
-                        const VerticalDivider(width: 1),
-                        SizedBox(
-                          width: 420,
-                          child: _CartPanel(
-                            state: state,
-                            onRemove: controller.removeProduct,
-                            onSetQuantity: controller.setQuantity,
-                            onOrderType: controller.setOrderType,
-                            onTable: controller.selectTable,
-                            onCovers: controller.setCovers,
-                            onDiscount: controller.setDiscount,
-                            onTip: controller.setTip,
-                            onClear: controller.clearCart,
-                            onPay: (method) => _pay(context, controller, method),
-                            onSplitPay: () => _splitPay(context, controller),
-                            onVoid: _voidLine,
-                            onReceipt: _openReceipt,
+                          const VerticalDivider(width: 1),
+                          Expanded(
+                            flex: 3,
+                            child: _ProductGrid(
+                              products:
+                                  state.visibleProducts
+                                      .where(
+                                        (product) =>
+                                            _selectedCategoryId == null ||
+                                            product.categoryId ==
+                                                _selectedCategoryId,
+                                      )
+                                      .toList(),
+                              recentProducts: state.recentProducts,
+                              favouritesOnly: state.showFavouritesOnly,
+                              favouriteIds: {
+                                for (final product in state.products)
+                                  if (state.affinity.isFavourite(product.id))
+                                    product.id,
+                              },
+                              searchController: _searchController,
+                              onSearch: controller.setSearchQuery,
+                              onScan: controller.scanBarcode,
+                              onOpenScanner: _openScanner,
+                              onTap: _onProductTap,
+                              onToggleFavourite: controller.toggleFavourite,
+                              onToggleFavouritesOnly:
+                                  controller.toggleFavouritesOnly,
+                              onClearSearch: () {
+                                _searchController.clear();
+                                controller.setSearchQuery('');
+                              },
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                          const VerticalDivider(width: 1),
+                          SizedBox(
+                            width: 420,
+                            child: _CartPanel(
+                              state: state,
+                              onRemove: controller.removeProduct,
+                              onSetQuantity: controller.setQuantity,
+                              onOrderType: controller.setOrderType,
+                              onTable: controller.selectTable,
+                              onCovers: controller.setCovers,
+                              onDiscount: controller.setDiscount,
+                              onTip: controller.setTip,
+                              onClear: controller.clearCart,
+                              onPay:
+                                  (method) => _pay(context, controller, method),
+                              onSplitPay: () => _splitPay(context, controller),
+                              onVoid: _voidLine,
+                              onReceipt: _openReceipt,
+                            ),
+                          ),
+                        ],
+                      ),
             ),
           ],
         ),
@@ -665,7 +708,11 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     );
   }
 
-  Future<void> _pay(BuildContext context, PosController controller, String method) async {
+  Future<void> _pay(
+    BuildContext context,
+    PosController controller,
+    String method,
+  ) async {
     final ok = await controller.submitAndPay(method: method);
 
     if (!context.mounted) {
@@ -771,7 +818,11 @@ class _CategoryRail extends StatelessWidget {
 }
 
 class _CategoryTile extends StatelessWidget {
-  const _CategoryTile({required this.label, required this.selected, required this.onTap});
+  const _CategoryTile({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   final String label;
   final bool selected;
@@ -790,7 +841,9 @@ class _CategoryTile extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
           child: Container(
-            constraints: const BoxConstraints(minHeight: PosTheme.minTouchTarget),
+            constraints: const BoxConstraints(
+              minHeight: PosTheme.minTouchTarget,
+            ),
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             child: Text(
@@ -865,13 +918,14 @@ class _ProductGrid extends StatelessWidget {
                   decoration: InputDecoration(
                     hintText: 'Rechercher un plat (nom, code, code-barres)',
                     prefixIcon: const Icon(Icons.search),
-                    suffixIcon: searchController.text.isEmpty
-                        ? null
-                        : IconButton(
-                            tooltip: 'Effacer la recherche',
-                            onPressed: onClearSearch,
-                            icon: const Icon(Icons.close),
-                          ),
+                    suffixIcon:
+                        searchController.text.isEmpty
+                            ? null
+                            : IconButton(
+                              tooltip: 'Effacer la recherche',
+                              onPressed: onClearSearch,
+                              icon: const Icon(Icons.close),
+                            ),
                   ),
                 ),
               ),
@@ -879,7 +933,10 @@ class _ProductGrid extends StatelessWidget {
               FilterChip(
                 selected: favouritesOnly,
                 onSelected: (_) => onToggleFavouritesOnly(),
-                avatar: Icon(favouritesOnly ? Icons.star : Icons.star_border, size: 20),
+                avatar: Icon(
+                  favouritesOnly ? Icons.star : Icons.star_border,
+                  size: 20,
+                ),
                 label: const Text('Favoris'),
               ),
               const SizedBox(width: 10),
@@ -925,136 +982,154 @@ class _ProductGrid extends StatelessWidget {
             ),
           ),
         Expanded(
-          child: products.isEmpty
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          favouritesOnly ? Icons.star_border : Icons.restaurant_menu,
-                          size: 56,
-                          color: scheme.outline,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          searching
-                              ? 'Aucun plat ne correspond'
-                              : (favouritesOnly
-                                  ? 'Aucun favori'
-                                  : 'Aucun plat dans cette categorie'),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 19,
-                            fontWeight: FontWeight.w700,
-                            color: scheme.onSurface,
+          child:
+              products.isEmpty
+                  ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            favouritesOnly
+                                ? Icons.star_border
+                                : Icons.restaurant_menu,
+                            size: 56,
+                            color: scheme.outline,
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          searching
-                              ? 'Aucun plat ne correspond a « ${searchController.text} ».'
-                              : (favouritesOnly
-                                  ? 'Appuyez longuement sur un plat pour l\'epingler ici.'
-                                  : 'Choisissez une autre categorie du menu.'),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16, color: scheme.onSurfaceVariant),
-                        ),
-                        const SizedBox(height: 16),
-                        if (searching)
-                          OutlinedButton.icon(
-                            onPressed: onClearSearch,
-                            icon: const Icon(Icons.close),
-                            label: const Text('Effacer la recherche'),
-                          )
-                        else if (favouritesOnly)
-                          OutlinedButton.icon(
-                            onPressed: onToggleFavouritesOnly,
-                            icon: const Icon(Icons.grid_view),
-                            label: const Text('Voir tous les plats'),
+                          const SizedBox(height: 16),
+                          Text(
+                            searching
+                                ? 'Aucun plat ne correspond'
+                                : (favouritesOnly
+                                    ? 'Aucun favori'
+                                    : 'Aucun plat dans cette categorie'),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 19,
+                              fontWeight: FontWeight.w700,
+                              color: scheme.onSurface,
+                            ),
                           ),
-                      ],
+                          const SizedBox(height: 8),
+                          Text(
+                            searching
+                                ? 'Aucun plat ne correspond a « ${searchController.text} ».'
+                                : (favouritesOnly
+                                    ? 'Appuyez longuement sur un plat pour l\'epingler ici.'
+                                    : 'Choisissez une autre categorie du menu.'),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: scheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          if (searching)
+                            OutlinedButton.icon(
+                              onPressed: onClearSearch,
+                              icon: const Icon(Icons.close),
+                              label: const Text('Effacer la recherche'),
+                            )
+                          else if (favouritesOnly)
+                            OutlinedButton.icon(
+                              onPressed: onToggleFavouritesOnly,
+                              icon: const Icon(Icons.grid_view),
+                              label: const Text('Voir tous les plats'),
+                            ),
+                        ],
+                      ),
                     ),
-                  ),
-                )
-              : GridView.builder(
-                  padding: const EdgeInsets.all(16),
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 220,
-                    mainAxisSpacing: 14,
-                    crossAxisSpacing: 14,
-                    childAspectRatio: 1.35,
-                  ),
-                  itemCount: products.length,
-                  itemBuilder: (context, index) {
-                    final product = products[index];
-                    final isFavourite = favouriteIds.contains(product.id);
+                  )
+                  : GridView.builder(
+                    padding: const EdgeInsets.all(16),
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 220,
+                          mainAxisSpacing: 14,
+                          crossAxisSpacing: 14,
+                          childAspectRatio: 1.35,
+                        ),
+                    itemCount: products.length,
+                    itemBuilder: (context, index) {
+                      final product = products[index];
+                      final isFavourite = favouriteIds.contains(product.id);
 
-                    return Semantics(
-                      button: true,
-                      label: '${product.name}, ${_formatMinor(product.priceMinor)}'
-                          '${isFavourite ? ', favori' : ''}',
-                      child: Card(
-                        child: InkWell(
-                          onTap: product.available ? () => onTap(product) : null,
-                          // Appui long : epingle le plat en favori.
-                          onLongPress: () => onToggleFavourite(product.id),
-                          borderRadius: BorderRadius.circular(PosTheme.cardRadius),
-                          child: Padding(
-                            padding: const EdgeInsets.all(14),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        product.name,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w600,
+                      return Semantics(
+                        button: true,
+                        label:
+                            '${product.name}, ${_formatMinor(product.priceMinor)}'
+                            '${isFavourite ? ', favori' : ''}',
+                        child: Card(
+                          child: InkWell(
+                            onTap:
+                                product.available ? () => onTap(product) : null,
+                            // Appui long : epingle le plat en favori.
+                            onLongPress: () => onToggleFavourite(product.id),
+                            borderRadius: BorderRadius.circular(
+                              PosTheme.cardRadius,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(14),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          product.name,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    if (isFavourite)
-                                      Icon(Icons.star, size: 20, color: scheme.tertiary),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      _formatMinor(product.priceMinor),
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700,
-                                        color: scheme.primary,
-                                      ),
-                                    ),
-                                    if (!product.available)
+                                      if (isFavourite)
+                                        Icon(
+                                          Icons.star,
+                                          size: 20,
+                                          color: scheme.tertiary,
+                                        ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
                                       Text(
-                                        'Indisponible',
+                                        _formatMinor(product.priceMinor),
                                         style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: scheme.error,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w700,
+                                          color: scheme.primary,
                                         ),
                                       ),
-                                  ],
-                                ),
-                              ],
+                                      if (!product.available)
+                                        Text(
+                                          'Indisponible',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: scheme.error,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
+                      );
+                    },
+                  ),
         ),
       ],
     );
@@ -1105,7 +1180,10 @@ class _CartPanel extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
           child: Row(
             children: [
-              const Text('Commande', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+              const Text(
+                'Commande',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+              ),
               const SizedBox(width: 8),
               if (!cart.isEmpty)
                 Chip(
@@ -1129,83 +1207,91 @@ class _CartPanel extends StatelessWidget {
           ),
         const Divider(height: 1),
         Expanded(
-          child: cart.isEmpty
-              ? const _EmptyCart()
-              : ListView.separated(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: cart.lines.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final line = cart.lines[index];
+          child:
+              cart.isEmpty
+                  ? const _EmptyCart()
+                  : ListView.separated(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemCount: cart.lines.length,
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final line = cart.lines[index];
 
-                    // Balayage vers la gauche = retirer la ligne ; appui long
-                    // = menu d'actions (quantite, annulation motivee).
-                    return PosSwipeableLine(
-                      isFavourite: state.affinity.isFavourite(line.product.id),
-                      onRemove: () => onRemove(line.product.id),
-                      onAction: (action) {
-                        switch (action) {
-                          case PosLineAction.increase:
-                            onSetQuantity(line.product.id, line.quantity + 1);
-                          case PosLineAction.decrease:
-                            onSetQuantity(line.product.id, line.quantity - 1);
-                          case PosLineAction.setQuantity:
-                            _editQuantity(context, line);
-                          case PosLineAction.remove:
-                            onRemove(line.product.id);
-                          case PosLineAction.toggleFavourite:
-                            onRemove(line.product.id);
-                        }
-                      },
-                      child: ListTile(
-                        title: Text(line.product.name),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${line.quantity} × ${_formatMinor(line.product.priceMinor)}',
-                            ),
-                            // Options du plat : affichees sous la ligne pour que
-                            // le serveur et le client voient la cuisson, les
-                            // supplements choisis et leur coût (unités mineures).
-                            for (final option in line.optionLabels)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 2),
-                                child: Text(
-                                  '  + $option',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      // Balayage vers la gauche = retirer la ligne ; appui long
+                      // = menu d'actions (quantite, annulation motivee).
+                      return PosSwipeableLine(
+                        isFavourite: state.affinity.isFavourite(
+                          line.product.id,
+                        ),
+                        onRemove: () => onRemove(line.product.id),
+                        onAction: (action) {
+                          switch (action) {
+                            case PosLineAction.increase:
+                              onSetQuantity(line.product.id, line.quantity + 1);
+                            case PosLineAction.decrease:
+                              onSetQuantity(line.product.id, line.quantity - 1);
+                            case PosLineAction.setQuantity:
+                              _editQuantity(context, line);
+                            case PosLineAction.remove:
+                              onRemove(line.product.id);
+                            case PosLineAction.toggleFavourite:
+                              onRemove(line.product.id);
+                          }
+                        },
+                        child: ListTile(
+                          title: Text(line.product.name),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${line.quantity} × ${_formatMinor(line.product.priceMinor)}',
+                              ),
+                              // Options du plat : affichees sous la ligne pour que
+                              // le serveur et le client voient la cuisson, les
+                              // supplements choisis et leur coût (unités mineures).
+                              for (final option in line.optionLabels)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 2),
+                                  child: Text(
+                                    '  + $option',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant,
+                                    ),
                                   ),
                                 ),
+                            ],
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                _formatMinor(line.lineTotalMinor),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                          ],
+                              IconButton(
+                                onPressed: () => onRemove(line.product.id),
+                                icon: const Icon(Icons.remove_circle_outline),
+                                tooltip: 'Retirer un',
+                              ),
+                              // Annulation motivee : la ligne sort du total mais
+                              // reste tracee sur le ticket.
+                              IconButton(
+                                onPressed: () => onVoid(line),
+                                icon: const Icon(Icons.block),
+                                tooltip: 'Annuler la ligne (motif)',
+                              ),
+                            ],
+                          ),
                         ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              _formatMinor(line.lineTotalMinor),
-                              style: const TextStyle(fontWeight: FontWeight.w700),
-                            ),
-                            IconButton(
-                              onPressed: () => onRemove(line.product.id),
-                              icon: const Icon(Icons.remove_circle_outline),
-                              tooltip: 'Retirer un',
-                            ),
-                            // Annulation motivee : la ligne sort du total mais
-                            // reste tracee sur le ticket.
-                            IconButton(
-                              onPressed: () => onVoid(line),
-                              icon: const Icon(Icons.block),
-                              tooltip: 'Annuler la ligne (motif)',
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                      );
+                    },
+                  ),
         ),
         const Divider(height: 1),
         Padding(
@@ -1219,7 +1305,11 @@ class _CartPanel extends StatelessWidget {
               if (cart.tipMinor > 0)
                 _TotalRow(label: 'Pourboire', value: cart.tipMinor),
               const SizedBox(height: 6),
-              _TotalRow(label: 'Total', value: cart.totalMinor, emphasized: true),
+              _TotalRow(
+                label: 'Total',
+                value: cart.totalMinor,
+                emphasized: true,
+              ),
               if (!cart.discountValid)
                 Padding(
                   padding: const EdgeInsets.only(top: 6),
@@ -1237,7 +1327,8 @@ class _CartPanel extends StatelessWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: cart.isEmpty ? null : () => _editDiscount(context),
+                      onPressed:
+                          cart.isEmpty ? null : () => _editDiscount(context),
                       icon: const Icon(Icons.percent),
                       label: Text(
                         cart.discountMinor > 0
@@ -1296,12 +1387,13 @@ class _CartPanel extends StatelessWidget {
     final value = await showModalBottomSheet<int>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => AmountEntrySheet(
-        title: 'Quantite',
-        label: 'Nombre de portions',
-        initialMinor: line.quantity,
-        helperText: line.product.name,
-      ),
+      builder:
+          (_) => AmountEntrySheet(
+            title: 'Quantite',
+            label: 'Nombre de portions',
+            initialMinor: line.quantity,
+            helperText: line.product.name,
+          ),
     );
 
     if (value != null) {
@@ -1313,13 +1405,15 @@ class _CartPanel extends StatelessWidget {
     final value = await showModalBottomSheet<int>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => AmountEntrySheet(
-        title: 'Remise',
-        label: 'Montant de la remise',
-        initialMinor: state.cart.discountMinor,
-        maxMinor: state.cart.subtotalMinor,
-        helperText: 'Sous-total : ${_formatMinor(state.cart.subtotalMinor)}',
-      ),
+      builder:
+          (_) => AmountEntrySheet(
+            title: 'Remise',
+            label: 'Montant de la remise',
+            initialMinor: state.cart.discountMinor,
+            maxMinor: state.cart.subtotalMinor,
+            helperText:
+                'Sous-total : ${_formatMinor(state.cart.subtotalMinor)}',
+          ),
     );
 
     if (value != null) {
@@ -1331,12 +1425,13 @@ class _CartPanel extends StatelessWidget {
     final value = await showModalBottomSheet<int>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => AmountEntrySheet(
-        title: 'Pourboire',
-        label: 'Montant du pourboire',
-        initialMinor: state.cart.tipMinor,
-        helperText: 'Le pourboire s\'ajoute au total de l\'addition.',
-      ),
+      builder:
+          (_) => AmountEntrySheet(
+            title: 'Pourboire',
+            label: 'Montant du pourboire',
+            initialMinor: state.cart.tipMinor,
+            helperText: 'Le pourboire s\'ajoute au total de l\'addition.',
+          ),
     );
 
     if (value != null) {
@@ -1435,7 +1530,10 @@ class _TableSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text('Table', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              const Text(
+                'Table',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
               const Spacer(),
               const Text('Couverts', style: TextStyle(fontSize: 16)),
               IconButton(
@@ -1445,7 +1543,10 @@ class _TableSection extends StatelessWidget {
               ),
               Text(
                 '$covers',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               IconButton(
                 tooltip: 'Un couvert de plus',
@@ -1473,7 +1574,11 @@ class _TableSection extends StatelessWidget {
 }
 
 class _TotalRow extends StatelessWidget {
-  const _TotalRow({required this.label, required this.value, this.emphasized = false});
+  const _TotalRow({
+    required this.label,
+    required this.value,
+    this.emphasized = false,
+  });
 
   final String label;
   final int value;
