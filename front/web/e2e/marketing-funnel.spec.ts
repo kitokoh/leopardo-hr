@@ -161,6 +161,7 @@ test.describe('Marketing funnel preview', () => {
     await page.goto('/business?utm_source=e2e', { waitUntil: 'domcontentloaded' });
 
     const footer = page.locator('footer');
+    await footer.scrollIntoViewIfNeeded().catch(() => null);
     const newsletterInput = footer.locator('input[type="email"]');
     const newsletterButton = footer.locator('button[type="submit"]');
 
@@ -184,15 +185,15 @@ test.describe('Marketing funnel preview', () => {
 
   test('keeps guide trial CTAs on the public guided signup flow', async ({ page }) => {
     const guideRoutes = [
-      '/guides/rh-startup',
-      '/guides/planning-employes',
-      '/guides/checklist-paie',
+      '/business/guides/rh-startup',
+      '/business/guides/planning-employes',
+      '/business/guides/checklist-paie',
     ];
 
     for (const route of guideRoutes) {
       await page.goto(route, { waitUntil: 'domcontentloaded' });
       await expect(page.locator('a[href*="/auth/signup"]')).toHaveCount(0);
-      await expect(page.locator('a[href^="/signup"]')).not.toHaveCount(0);
+      await expect(page.locator('a[href*="/signup"]')).not.toHaveCount(0);
     }
   });
 
