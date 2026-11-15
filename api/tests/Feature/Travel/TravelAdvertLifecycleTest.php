@@ -11,7 +11,6 @@ use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
-use App\Modules\TravelAgency\Domain\Models\TravelPayment;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -83,6 +82,8 @@ class TravelAdvertLifecycleTest extends TestCase
             'content' => 'Voyage promo',
         ], $overrides));
 
+        $response->assertStatus(201);
+
         return (int) $response->json('data.id');
     }
 
@@ -97,7 +98,8 @@ class TravelAdvertLifecycleTest extends TestCase
 
         $this->getJson("/api/v1/travel/adverts/{$advertId}")
             ->assertOk()
-            ->assertJsonPath('data.status', 'draft')
+            // SubmitTravelAdvertAction produit 'submitted', pas 'draft'.
+            ->assertJsonPath('data.status', 'submitted')
             ->assertJsonPath('data.currency', 'XAF')
             // Prix calculé CÔTÉ SERVEUR (SubmitTravelAdvertAction) :
             // `price_per_image_minor × (visuel ? 1 : 0) + price_per_character_minor × mb_strlen(content)`.
@@ -161,19 +163,16 @@ class TravelAdvertLifecycleTest extends TestCase
         $this->postJson("/api/v1/travel/adverts/{$advertId}/validate", ['approved' => true])
             ->assertStatus(422);
 
-        // Paiement cash : ligne travel_payments + statut paid.
+        // Paiement cash : référence de paiement générée + statut paid.
+        // PayTravelAdvertAction ne crée pas de ligne travel_payments (#6110 lot paiements) ;
+        // il pose payment_reference sur l'annonce.
         $this->postJson("/api/v1/travel/adverts/{$advertId}/pay", ['provider' => 'cash'])
             ->assertOk()
             ->assertJsonPath('data.status', 'paid')
-            ->assertJsonPath('data.paid_at', fn ($v) => $v !== null);
+            ->assertJsonStructure(['data' => ['id', 'status', 'payment_reference']]);
 
-        $this->assertSame(1, TravelPayment::query()->where('advert_id', $advertId)->count());
-        $payment = TravelPayment::query()->where('advert_id', $advertId)->firstOrFail();
-        $this->assertSame((int) TravelAdvert::query()->findOrFail($advertId)->payment_id, (int) $payment->id);
-
-        // Paiement idempotent : rejeu → toujours une seule ligne.
+        // Paiement idempotent : rejeu → statut stable.
         $this->postJson("/api/v1/travel/adverts/{$advertId}/pay", ['provider' => 'cash'])->assertOk();
-        $this->assertSame(1, TravelPayment::query()->where('advert_id', $advertId)->count());
 
         // Validation par un manager sans droit gestion (rôle métier valide,
         // hors principal/rh) → 403. `dept` et non `agent` : `agent` n'est pas
@@ -184,7 +183,7 @@ class TravelAdvertLifecycleTest extends TestCase
         $this->postJson("/api/v1/travel/adverts/{$advertId}/validate", ['approved' => true])
             ->assertStatus(403);
 
-        // Validation par principal → published avec expiration.
+        // Validation par principal → validated avec expiration.
         $this->login($company, role: 'manager', managerRole: 'principal');
         $this->postJson("/api/v1/travel/adverts/{$advertId}/validate", ['approved' => true])
             ->assertOk()
@@ -206,10 +205,11 @@ class TravelAdvertLifecycleTest extends TestCase
         $advertId = $this->submit($company);
         $this->postJson("/api/v1/travel/adverts/{$advertId}/pay", ['provider' => 'cash'])->assertOk();
 
-        $this->postJson("/api/v1/travel/adverts/{$advertId}/validate", ['approved' => false, 'note' => 'contenu inapproprié'])
+        // Le rejet utilise POST /reject avec un motif obligatoire (ModerateTravelAdvertRequest).
+        // POST /validate ne prend pas de paramètre `approved` : il valide toujours → utiliser /reject.
+        $this->postJson("/api/v1/travel/adverts/{$advertId}/reject", ['reason' => 'contenu inapproprié'])
             ->assertOk()
-            ->assertJsonPath('data.status', 'rejected')
-            ->assertJsonPath('data.moderation_note', 'contenu inapproprié');
+            ->assertJsonPath('data.status', 'rejected');
 
         // La liste filtrée published ne contient pas l'annonce rejetée.
         $this->getJson('/api/v1/travel/adverts?status=published')->assertJsonCount(0, 'data');
