@@ -475,6 +475,11 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/company/banking', [CompanyBankingController::class, 'show']);
         Route::patch('/company/banking', [CompanyBankingController::class, 'update']);
 
+        // #9333 — Piste d'audit consultable (RGPD) : réservé au principal.
+        Route::get('/audit-logs', [\App\Core\Auth\Interfaces\Api\V1\Controllers\AuditLogController::class, 'index']);
+        Route::get('/audit-logs/{id}', [\App\Core\Auth\Interfaces\Api\V1\Controllers\AuditLogController::class, 'show'])->whereNumber('id');
+        Route::get('/audit-logs/export', [\App\Core\Auth\Interfaces\Api\V1\Controllers\AuditLogController::class, 'export']);
+
         // #7322 — le client (responsable du tenant) active lui-même un module
         // HORIZONTAL de son entreprise : `metadata.modules` + flag plateforme
         // miroir. Allowlist fail-closed (Company::HORIZONTAL_TOOLS) et RBAC
