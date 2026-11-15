@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:leopardo_core/core/pos/pos_numeric_keypad.dart';
 
 import '../../core/models/pos_models.dart';

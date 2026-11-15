@@ -3,7 +3,7 @@
 // Add this around your MaterialApp or top-level widget
 // ============================================================
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:leopardo_core/offline/services/sync_service.dart';
 import 'package:leopardo_core/offline/widgets/sync_status_banner.dart';
 

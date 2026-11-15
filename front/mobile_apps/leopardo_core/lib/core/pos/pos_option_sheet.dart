@@ -6,7 +6,7 @@
 /// le serveur annonce le bon montant au client sans calculer de tete.
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'pos_options.dart';
 

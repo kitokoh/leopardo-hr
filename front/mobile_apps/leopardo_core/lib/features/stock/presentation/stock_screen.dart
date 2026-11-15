@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Riverpod 3 : `ProviderListenable` n'est plus exporte par l'entree principale,
 // il vit dans `misc.dart` (cf. migration 2.0 -> 3.0).
