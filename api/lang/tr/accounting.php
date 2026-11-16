@@ -94,6 +94,7 @@ return [
     ],
 
     'errors' => [
+        'fixed_asset_has_depreciations' => 'Bu duran varlığın kaydedilmiş amortisman kayıtları var; silinemez. Bunun yerine elden çıkarma (durum "disposed") kullanın.',
         'gateway_checkout_failed' => 'Ödeme sağlayıcısı geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.',
         'fiscal_year_invalid' => 'Geçersiz mali yıl.',
         'payment_amount_positive' => 'Ödeme tutarı kesinlikle pozitif olmalıdır.',

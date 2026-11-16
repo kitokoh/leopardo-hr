@@ -95,6 +95,7 @@ return [
 
     // Erreurs métier (issue #5227)
     'errors' => [
+        'fixed_asset_has_depreciations' => 'Cette immobilisation a des dotations comptabilisées : elle ne peut pas être supprimée. Utilisez la sortie (statut « cédée »).',
         'gateway_checkout_failed' => 'La passerelle de paiement est temporairement indisponible. Réessayez plus tard.',
         'fiscal_year_invalid' => 'Exercice comptable invalide.',
         'payment_amount_positive' => 'Le montant du paiement doit être strictement positif.',

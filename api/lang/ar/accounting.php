@@ -94,6 +94,7 @@ return [
     ],
 
     'errors' => [
+        'fixed_asset_has_depreciations' => 'هذا الأصل الثابت له قيود إهلاك مسجلة ولا يمكن حذفه. استخدم الاستبعاد (الحالة "disposed") بدلاً من ذلك.',
         'gateway_checkout_failed' => 'بوابة الدفع غير متاحة مؤقتًا. يرجى المحاولة لاحقًا.',
         'fiscal_year_invalid' => 'السنة المالية غير صالحة.',
         'payment_amount_positive' => 'يجب أن يكون مبلغ الدفع موجباً تماماً.',
