@@ -2767,6 +2767,27 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 
 **Non couvert** — rendu visuel des trois nouveaux écrans non observé avec de vraies données (pas de base peuplée ni de session authentifiée dans le sandbox) ; migration non jouée sur une base tenant réelle (les tests utilisent la fixture `CreatesMvpSchema`) ; présence de `pdftotext` / `antiword` sur l'image de production non vérifiée — le code rend `null` proprement s'ils manquent, donc absence = dégradation du score, pas panne ; aucune OCR sur les CV scannés en image (choix assumé) ; suite Jest **complète** tuée par l'OOM du sandbox (2 Go) — seul le périmètre touché a été exécuté.
 
+## 2026-11-16 — Piste d'audit tenant consultable (#9333)
+
+**Ce qui est ajouté**
+
+- **API de consultation** — `GET /api/v1/audit-logs` (liste paginée, filtres combinables : acteur, action, entité, période) et `GET /api/v1/audit-logs/{id}` (détail). Contrôleur `AuditLogController`, policy `AuditLogPolicy` enregistrée dans `AuthServiceProvider`.
+- **Rétention** — la fenêtre de conservation est lue depuis `CompanySetting.retention_months` ; au-delà, les entrées ne sont plus servies.
+- **Écran web** — `/(dashboard)/audit-logs` avec filtres, pagination et détail ; préfixe protégé ajouté à `protected-prefixes.ts` et au proxy.
+- **i18n** — libellés d'autorisation ajoutés dans les 4 langues (fr/en/ar/tr).
+
+**Scénarios à vérifier**
+
+- **Cloisonnement tenant** — un utilisateur d'une entreprise ne voit jamais une entrée d'une autre entreprise, même en devinant l'identifiant (le détail répond 404, pas 403, pour rester indistinguable d'une absence).
+- **Autorisation** — un rôle sans droit de lecture d'audit reçoit 403 sur la liste comme sur le détail.
+- **Filtres combinables** — acteur + action + période se cumulent ; un filtre vide n'en restreint aucun.
+- **Pagination** — la réponse porte le total et les liens de page ; une page hors bornes rend une liste vide, jamais une erreur.
+- **Rétention** — une entrée plus ancienne que `retention_months` n'apparaît pas dans la liste et son détail répond 404.
+- **Écran** — les filtres se reflètent dans l'URL, le rechargement conserve la sélection, et le détail s'ouvre sans perdre la liste.
+- **Parité i18n** — les libellés existent dans les 4 langues.
+
+**Non couvert** — rendu visuel de l'écran non observé avec une base peuplée et une session authentifiée ; la rétention n'a pas été vérifiée sur une base tenant réelle (les tests utilisent la fixture de schéma).
+
 ## 2026-11-17 — BC-06 NOTIFICATION : purge des notifications anciennes (#9540, PR #9560)
 
 **Surface** : `DELETE /v1/notifications/purge-old` (`NotificationController::purgeOld`), declaree dans `routes/modules/rh.php`, documentee dans `api/openapi.yaml`. Aucune migration.
