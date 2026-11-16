@@ -31418,7 +31418,7 @@ paths:
           $ref: '#/components/responses/Error401'
   /audit-logs:
     get:
-      operationId: api_get_audit_logs
+      operationId: api_get_admin_audit_logs
       tags:
       - Admin
       summary: Journal d'audit
@@ -31506,15 +31506,15 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
-  /audit-logs/{auditLog}:
+  /audit-logs/{id}:
     get:
-      operationId: api_get_audit_logs_by_auditLog
+      operationId: api_get_admin_audit_log
       tags:
       - Admin
       summary: Voir un evenement d'audit
       description: Reserve au manager `principal`. Journal en lecture seule (append-only), pas de update/delete.
       parameters:
-      - name: auditLog
+      - name: id
         in: path
         required: true
         schema:
