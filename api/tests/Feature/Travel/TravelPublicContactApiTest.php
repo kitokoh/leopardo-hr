@@ -112,6 +112,10 @@ class TravelPublicContactApiTest extends TestCase
     {
         /** @var Company $other */
         $other = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        // #9098 — sans la feature travel, la route publique repond 404 (Gate
+        // `hasFeature`) et le test attendait 202 : la feature etait oubliee.
+        $other->setFeature('travelagency', true);
+        $other->save();
         $this->tenants->withinTenant($other, function (): void {
             TravelCustomerContact::factory()->create(['email' => 'existante.autre@example.com']);
         });
