@@ -173,8 +173,6 @@ class GenerateMonthlyInvoices extends Command
      * Lecture qualifiée `public.plans` : la commande tourne hors contexte
      * tenant, le search_path n'est pas garanti (même garde que
      * VerifyTrialSignup::publicTable).
-     *
-     * @return array{amount: float, currency: string}
      */
     private function nextInvoiceSequence(int $year): int
     {

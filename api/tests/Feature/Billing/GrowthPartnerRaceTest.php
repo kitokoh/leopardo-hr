@@ -32,8 +32,6 @@ class GrowthPartnerRaceTest extends TestCase
 
     private Employee $employee;
 
-    private User $adminUser;
-
     private SuperAdmin $superAdmin;
 
     protected function setUp(): void
@@ -170,7 +168,6 @@ class GrowthPartnerRaceTest extends TestCase
             'email' => $this->employee->email,
             'password_hash' => Hash::make('password123'),
         ]);
-        $this->adminUser = $user;
         // #8523 (GSI-12 gotcha 7) : `partner_audit_logs.admin_id` reference
         // desormais `super_admins.id`, PAS `users.id` — un administrateur
         // plateforme n'est pas un employe. Passer un `users.id` levait une
