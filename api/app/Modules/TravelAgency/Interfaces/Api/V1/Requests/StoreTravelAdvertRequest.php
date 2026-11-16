@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Interfaces\Api\V1\Requests;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
 use Illuminate\Database\Query\Builder;
@@ -17,9 +18,20 @@ use Illuminate\Validation\Rule;
  */
 class StoreTravelAdvertRequest extends FormRequest
 {
+    /**
+     * La policy tranche AVANT la validation.
+     *
+     * Mesure (#9098, TravelAdvertLifecycleTest « Write requires operational
+     * role ») : le controle vivait dans le corps du controleur, donc APRES
+     * FormRequest. Un acteur sans droit envoyant un payload invalide recevait
+     * 422 (validation) au lieu de 403 (permission) — le refus dependait alors
+     * du contenu envoye, ce qui n'est pas un contrat de permission.
+     */
     public function authorize(): bool
     {
-        return true; // TravelAdvertPolicy::create() tranche
+        $actor = $this->user();
+
+        return $actor instanceof Employee && $actor->can('create', TravelAdvert::class);
     }
 
     /**

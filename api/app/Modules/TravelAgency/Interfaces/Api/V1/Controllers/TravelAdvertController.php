@@ -152,9 +152,9 @@ class TravelAdvertController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('create', TravelAdvert::class)) {
-            abort(403);
-        }
+        // Permission deja tranchee par StoreTravelAdvertRequest::authorize(),
+        // donc AVANT la validation : garder ce controle ici le rendait
+        // inatteignable et laissait croire que l'ordre etait correct.
 
         $advert = $this->submit->execute(
             $actor,
@@ -255,8 +255,13 @@ class TravelAdvertController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
+        // Un refus de permission n'est PAS une ressource absente : le contrat
+        // attendu (TravelAdvertExpirationTest « Renewal requires manage and
+        // valid state ») est 403, et `abort(404)` ici maquillait un 403 en 404
+        // (mesure #9098 : `Expected response status code [403] but received
+        // 404`). Les autres refus de ce controleur renvoient deja 403.
         if ($actor->cannot('renew', $travelAdvert)) {
-            abort(404);
+            abort(403);
         }
 
         $advert = $this->renew->execute($travelAdvert);
