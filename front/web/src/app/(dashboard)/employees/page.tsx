@@ -30,6 +30,7 @@ import {
 
 import { ModuleGrantsPanel } from './module-grants-panel';
 import { ResourceAccessPanel } from './resource-access-panel';
+import { CustomRolesPanel } from './custom-roles-panel';
 
 type EmployeeRecord = {
   id: number;
@@ -711,6 +712,17 @@ export default function EmployeesPage() {
           </button>
         </form>
       </section>
+
+      {/* ── Rôles personnalisés (#9331) ──────────────────────────────────── */}
+      {isPrincipalViewer ? (
+        <CustomRolesPanel
+          locale={locale}
+          onSaved={(message) => {
+            setError(null);
+            setNotice(message);
+          }}
+        />
+      ) : null}
 
       {/* ── Liste + création d'un collaborateur ──────────────────────────── */}
       <section className="overflow-hidden rounded-3xl border border-app-border bg-white shadow-sm">
