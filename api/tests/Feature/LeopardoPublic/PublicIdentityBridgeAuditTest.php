@@ -157,8 +157,11 @@ final class PublicIdentityBridgeAuditTest extends TestCase
 
         $this->assertCount(2, $logs, 'Deux rattachements distincts = deux lignes.');
 
-        $this->assertSame($first->id, $logs[1]->old_values['user_id']);
-        $this->assertSame($second->id, $logs[1]->new_values['user_id']);
+        $relink = $logs[1];
+        $this->assertNotNull($relink, 'La seconde ligne d\'audit doit exister.');
+
+        $this->assertSame($first->id, $relink->old_values['user_id']);
+        $this->assertSame($second->id, $relink->new_values['user_id']);
     }
 
     // ────────────────────────────────────────────────────────────────────────
