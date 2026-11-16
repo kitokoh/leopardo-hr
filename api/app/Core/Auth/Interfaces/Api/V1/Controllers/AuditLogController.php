@@ -32,7 +32,7 @@ class AuditLogController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        
+
         // Gate : principal uniquement (ou grant dédié future)
         abort_unless(
             Gate::forUser($actor)->allows('viewTenantAudit'),
@@ -62,7 +62,7 @@ class AuditLogController extends Controller
         }
 
         if (isset($validated['action'])) {
-            $query->where('action', 'like', '%' . $validated['action'] . '%');
+            $query->where('action', 'like', '%'.$validated['action'].'%');
         }
 
         if (isset($validated['resource_type'])) {
@@ -107,7 +107,7 @@ class AuditLogController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        
+
         abort_unless(
             Gate::forUser($actor)->allows('viewTenantAudit'),
             403,
@@ -130,7 +130,7 @@ class AuditLogController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        
+
         abort_unless(
             Gate::forUser($actor)->allows('viewTenantAudit'),
             403,
@@ -152,7 +152,7 @@ class AuditLogController extends Controller
             ->limit(10000);
 
         if (isset($validated['action'])) {
-            $query->where('action', 'like', '%' . $validated['action'] . '%');
+            $query->where('action', 'like', '%'.$validated['action'].'%');
         }
 
         $logs = $query->get();
@@ -210,7 +210,7 @@ class AuditLogController extends Controller
     private function generateCsv($logs): string
     {
         $lines = [];
-        
+
         // En-tête
         $lines[] = implode(',', [
             'Date',
@@ -222,20 +222,20 @@ class AuditLogController extends Controller
         ]);
 
         foreach ($logs as $log) {
-            $actor = $log->user 
-                ? trim(($log->user->first_name ?? '') . ' ' . ($log->user->last_name ?? ''))
-                : __('auth.audit_actor_system');
-            
+            $actor = $log->user
+                ? trim(($log->user->first_name ?? '').' '.($log->user->last_name ?? ''))
+                : (string) __('auth.audit_actor_system');
+
             $resource = $log->auditable_type
-                ? class_basename($log->auditable_type) . '#' . ($log->auditable_id ?? '')
+                ? class_basename($log->auditable_type).'#'.($log->auditable_id ?? '')
                 : '';
 
             $lines[] = implode(',', [
                 $log->created_at?->toIso8601String() ?? '',
-                '"' . str_replace('"', '""', $actor) . '"',
-                '"' . str_replace('"', '""', $log->action) . '"',
-                '"' . str_replace('"', '""', $log->module ?? '') . '"',
-                '"' . str_replace('"', '""', $resource) . '"',
+                '"'.str_replace('"', '""', $actor).'"',
+                '"'.str_replace('"', '""', $log->action).'"',
+                '"'.str_replace('"', '""', $log->module ?? '').'"',
+                '"'.str_replace('"', '""', $resource).'"',
                 $log->ip_address ?? '',
             ]);
         }
