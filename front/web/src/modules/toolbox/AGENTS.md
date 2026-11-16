@@ -43,6 +43,9 @@ automatiquement.
 
 - ❌ Écrire un `<Link href="/toolbox/…">` en dur : passer par `withLang(href, locale)`
   (`lib/locale-href.ts`), sinon le choix de langue est perdu au clic.
+- ❌ Réécrire les clés d'un état de liste sans supprimer les orphelines : utiliser
+  `pruneOrphanKeys` + `removeValue` (`lib/useToolState.ts`), sinon le résultat
+  affiché est faux (voir #9531).
 - ❌ Ajouter `/toolbox` à `PROTECTED_PREFIXES` (casserait l'accès anonyme).
 - ❌ Ajouter une dépendance de calcul externe (les formules sont écrites et testées ici).
 - ❌ Appeler un service externe payant (devises = taux statiques documentés).

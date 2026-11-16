@@ -66,6 +66,35 @@ Le contrôle est `components/ToolboxLangSwitcher.tsx`, monté dans
 (`window.location.assign`) et non un `router.push` : seul un aller-retour serveur
 rejoue le proxy qui pose `x-vitrine-lang`.
 
+## État de formulaire et partage par lien
+
+L'état d'un formulaire est synchronisé avec l'URL (`?s=…`) par
+`lib/useToolState.ts` : un calcul est partageable **sans compte**, et le calcul
+est rejoué localement à l'ouverture.
+
+### Outil à état de LISTE (longueur variable)
+
+Un outil dont l'état est une liste (ex. `tva-multi-taux`) aplatit ses lignes sous
+des clés indexées `amount0`, `rate0`, `amount1`, … Quatre règles, verrouillées par
+`tools/tva-multi-taux/lines.test.ts` :
+
+1. **Numérotation contiguë** — de 0 à n-1, sans trou. `stateToLines` s'arrête au
+   premier indice incomplet : une clé orpheline **détourne** la lecture au lieu
+d'être ignorée.
+2. **Suppression réelle** — retirer une ligne exige de **supprimer** ses clés
+   (`pruneOrphanKeys` + `removeValue`), pas seulement de réécrire les autres.
+   Sinon la ligne supprimée ressuscite en duplicata de la suivante et le total
+   affiché est faux (défaut corrigé en #9531).
+3. **Plafond unique** — `MAX_SHARED_LINES` borne à la fois l'encodage de l'URL
+   **et** l'interface (`canAddLine`). Les désynchroniser produit un lien partagé
+   qui recalcule un autre total, sans avertissement.
+4. **Motif déclaré** — `useToolState(defaults, { extraKeyPattern })` : sans ce
+   motif, `mergeWithDefaults` n'accepte que les clés des valeurs par défaut, donc
+   un lien portant plus d'entrées que celles-ci en **perd** silencieusement.
+
+La conversion lignes ↔ état vit dans `tools/<slug>/lines.ts` (fonctions pures),
+**pas** dans le composant : c'est ce qui la rend testable sans React.
+
 ## Vérifications
 
 ```bash
