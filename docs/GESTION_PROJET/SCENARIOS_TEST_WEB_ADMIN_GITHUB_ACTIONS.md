@@ -2,6 +2,8 @@
 
 ## Journal des mises à jour de surface (`front/web/`)
 
+- **2026-11-15 (#9508, POS Parité Web/Tablette Restaurant et Retail)** — synchronisation des catalogues de traduction i18n web/admin (`front/admin-dashboard/src/i18n/locales/`) et alignement des fonctionnalités de caisse (recherche, filtres, clôture, mouvements).
+
 - **2026-11-08 (#9106, mission Couloir 16 / M4 hors ligne)** — surface **PWA publique** modifiée :
   `front/web/src/app/decouvrir/discovery-explorer.tsx` (restitution hors ligne) et nouveau
   `front/web/src/lib/offline/public-discovery-cache.ts`. Aucun contrat d'API touché : le cache ne

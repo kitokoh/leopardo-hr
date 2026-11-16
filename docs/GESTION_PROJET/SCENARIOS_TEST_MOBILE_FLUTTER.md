@@ -487,3 +487,11 @@ Les deux pannes qui ont garde `Build Debug` rouge sont venues de valeurs **impli
 
 Pour monter de SDK : modifier `EXPECTED_COMPILE_SDK` / `EXPECTED_MIN_SDK` en tete du script **dans la meme PR** que les build.gradle, et mettre a jour `.github/actions/setup-flutter-android` (plateforme installee).
 
+## POS Restaurant Tablette 2026-11-15 — Clôture de session et alignement des contrats d'API (#9508 / #9270)
+
+L'application tablette `leopardo_pos_restaurant` intègre la clôture de session de caisse (Z de caisse) :
+- `closeSession` avec comptage physique des espèces (`counted_cash_minor`) et motif d'écart (`variance_reason`).
+- Alignement des routes API canoniques : `/restaurant/pos-sessions` et `/restaurant/orders/{order}/pay` (`provider_code`).
+- Scénario de test : ouverture de caisse -> prise de commande -> encaissement multi-moyens -> clôture avec saisie du montant compté et vérification de la réinitialisation de l'état local.
+
+

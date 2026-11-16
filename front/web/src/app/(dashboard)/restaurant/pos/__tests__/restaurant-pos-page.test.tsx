@@ -92,6 +92,9 @@ function mockBaseApis() {
       orderStatus = 'paid';
       return Promise.resolve(jsonResponse({ data: { id: 1, status: 'confirmed' } }));
     }
+    if (endpoint === '/restaurant/pos-sessions/9/close' && options?.method === 'POST') {
+      return Promise.resolve(jsonResponse({ data: { id: 9, status: 'closed' } }));
+    }
     if (endpoint.startsWith('/restaurant/orders/11')) {
       return Promise.resolve(jsonResponse({ data: { id: 11, reference: 'RST-ABC', status: orderStatus, items: orderItems } }));
     }
@@ -290,8 +293,6 @@ it('permet une vente a emporter sans table', async () => {
     expect(screen.getByText('Poulet braisé')).toBeInTheDocument();
   });
 
-  // Le selecteur de type de commande n'apparait qu'une fois la session
-  // chargee (appel asynchrone) : on l'attend au lieu de cliquer a l'aveugle.
   const takeaway = await screen.findByRole('button', { name: /emporter/i });
   await userEvent.click(takeaway);
   await userEvent.click(screen.getByRole('button', { name: /Nouvelle commande/i }));
@@ -346,6 +347,37 @@ it('transmet le code promo a l\'addition', async () => {
     expect(mockedApiFetch).toHaveBeenCalledWith(
       '/restaurant/orders/11/bill?promotion_code=PROMO10',
       expect.anything(),
+    );
+  });
+});
+
+it('ouvre et confirme la cloture de caisse avec le montant compte', async () => {
+  mockBaseApis();
+
+  render(<RestaurantPosPage />);
+
+  await waitFor(() => {
+    expect(screen.getByRole('button', { name: /Clôturer la caisse/i })).toBeInTheDocument();
+  });
+
+  await userEvent.click(screen.getByRole('button', { name: /Clôturer la caisse/i }));
+
+  await waitFor(() => {
+    expect(screen.getByText(/Clôture de session de caisse/i)).toBeInTheDocument();
+  });
+
+  const countedInput = screen.getByPlaceholderText('0.00');
+  await userEvent.type(countedInput, '150');
+
+  await userEvent.click(screen.getByRole('button', { name: /Confirmer la clôture/i }));
+
+  await waitFor(() => {
+    expect(mockedApiFetch).toHaveBeenCalledWith(
+      '/restaurant/pos-sessions/9/close',
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.stringContaining('"counted_cash_minor":15000'),
+      }),
     );
   });
 });

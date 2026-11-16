@@ -105,7 +105,8 @@ class PosState {
       pool = pool.where((product) => affinity.isFavourite(product.id)).toList();
     }
 
-    final ordered = affinity.order([for (final product in pool) PosSearchableProduct(product)]);
+    final ordered = affinity
+        .order([for (final product in pool) PosSearchableProduct(product)]);
     final ranked = rankPosItems(items: ordered, query: searchQuery);
 
     return [for (final item in ranked) item.product];
@@ -278,6 +279,44 @@ class PosController extends Notifier<PosState> {
     }
   }
 
+  /// Clôture la session de caisse courante (en ligne uniquement).
+  Future<bool> closeSession({
+    required int countedCashMinor,
+    String? varianceReason,
+  }) async {
+    final sessionId = state.sessionId;
+
+    if (sessionId == null) {
+      state = state.copyWith(error: 'Aucune session de caisse ouverte.');
+
+      return false;
+    }
+
+    state = state.copyWith(loading: true, clearError: true);
+
+    try {
+      await _api.closeSession(
+        sessionId: sessionId,
+        countedCashMinor: countedCashMinor,
+        varianceReason: varianceReason,
+      );
+
+      state = state.copyWith(
+        sessionId: null,
+        cart: const Cart(),
+        voidedLines: const [],
+        loading: false,
+      );
+      _persistCart(const Cart());
+
+      return true;
+    } on PosOfflineException catch (error) {
+      state = state.copyWith(loading: false, error: error.message);
+
+      return false;
+    }
+  }
+
   void setSearchQuery(String query) {
     state = state.copyWith(searchQuery: query);
   }
@@ -306,7 +345,8 @@ class PosController extends Notifier<PosState> {
   /// Deux lignes du meme plat avec des options differentes restent **deux
   /// lignes distinctes** : un « Poulet saignant + frites » et un
   /// « Poulet bien cuit + riz » ne peuvent pas fusionner.
-  void addProductWithOptions(PosProduct product, List<PosOptionSelection> selections) {
+  void addProductWithOptions(
+      PosProduct product, List<PosOptionSelection> selections) {
     if (selections.isEmpty) {
       addProduct(product);
 
@@ -382,7 +422,8 @@ class PosController extends Notifier<PosState> {
   /// La validite (remise <= sous-total) est verifiee par `Cart.isValid` : on
   /// ne bloque pas la saisie, on empeche seulement l'encaissement.
   void setDiscount(int discountMinor) {
-    final cart = state.cart.copyWith(discountMinor: discountMinor < 0 ? 0 : discountMinor);
+    final cart = state.cart
+        .copyWith(discountMinor: discountMinor < 0 ? 0 : discountMinor);
 
     state = state.copyWith(cart: cart);
     _persistCart(cart);
@@ -416,7 +457,8 @@ class PosController extends Notifier<PosState> {
     required PosVoidReason reason,
     String? comment,
   }) {
-    final index = state.cart.lines.indexWhere((line) => line.product.id == productId);
+    final index =
+        state.cart.lines.indexWhere((line) => line.product.id == productId);
 
     if (index == -1) {
       state = state.copyWith(error: 'Cette ligne n\'est plus dans le panier.');
@@ -459,7 +501,8 @@ class PosController extends Notifier<PosState> {
   /// Retourne `false` si le panier est vide ou si la file est pleine.
   bool parkCurrentTicket(String label) {
     if (state.cart.isEmpty) {
-      state = state.copyWith(error: 'Le panier est vide : rien a mettre en attente.');
+      state = state.copyWith(
+          error: 'Le panier est vide : rien a mettre en attente.');
 
       return false;
     }
@@ -530,7 +573,8 @@ class PosController extends Notifier<PosState> {
     final branchId = state.branchId;
 
     if (sessionId == null || branchId == null) {
-      state = state.copyWith(error: 'La caisse doit être ouverte avant d\'encaisser.');
+      state = state.copyWith(
+          error: 'La caisse doit être ouverte avant d\'encaisser.');
 
       return false;
     }
@@ -629,7 +673,8 @@ class PosController extends Notifier<PosState> {
     final progress = await _api.flushQueueWithProgress(
       onProgress: (synced, total) {
         state = state.copyWith(
-          sync: state.sync.copyWith(total: total, synced: synced, running: true),
+          sync:
+              state.sync.copyWith(total: total, synced: synced, running: true),
         );
       },
     );
@@ -649,4 +694,5 @@ class PosController extends Notifier<PosState> {
   }
 }
 
-final posControllerProvider = NotifierProvider<PosController, PosState>(PosController.new);
+final posControllerProvider =
+    NotifierProvider<PosController, PosState>(PosController.new);

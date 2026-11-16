@@ -10,13 +10,14 @@
  * (fonds compté, écart signé + motif). Totaux TOUJOURS calculés serveur.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Printer, ShoppingBag } from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight, Banknote, CheckCircle2, Printer, RotateCcw, Search, ShoppingBag } from 'lucide-react';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { readApiError } from '@/components/commerce/CommerceCrudTable';
 import { apiFetch } from '@/lib/api-client';
 import { formatMinor, parseMajorToMinor } from '@/lib/commerce-format';
 import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
+import { COMMERCE_POS_FR } from '@/lib/i18n/commerce-pos';
 import { ConnectionIndicator } from '@/components/offline/ConnectionIndicator';
 import { useOfflineSync } from '@/lib/offline/use-offline-sync';
 
@@ -115,6 +116,24 @@ export default function CommercePosPage() {
   const [showClose, setShowClose] = useState(false);
   const [countedCash, setCountedCash] = useState('');
   const [varianceReason, setVarianceReason] = useState('');
+
+  // Recherche produit.
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Mouvements de caisse.
+  const [showCashMovement, setShowCashMovement] = useState(false);
+  const [cashMovementType, setCashMovementType] = useState<'in' | 'out'>('in');
+  const [cashMovementAmount, setCashMovementAmount] = useState('');
+  const [cashMovementReason, setCashMovementReason] = useState('');
+  const [movementMessage, setMovementMessage] = useState('');
+
+  // Remboursement.
+  const [showRefund, setShowRefund] = useState(false);
+  const [refundAmount, setRefundAmount] = useState('');
+  const [refundReason, setRefundReason] = useState('');
+  const [refundMethod, setRefundMethod] = useState<(typeof PAYMENT_METHODS)[number]>('cash');
+  const [refundRestock, setRefundRestock] = useState(true);
+  const [refundMessage, setRefundMessage] = useState('');
 
   // #8494 (I-07) — file hors-ligne partagée : l'encaissement hors ligne est
   // enregistré localement puis resynchronisé. La clé d'idempotence est STABLE
@@ -375,6 +394,86 @@ export default function CommercePosPage() {
     });
   };
 
+  const recordCashMovement = () => {
+    if (!session) return;
+    const amountMinor = parseMajorToMinor(cashMovementAmount);
+    if (amountMinor === null || amountMinor <= 0) {
+      setError(t(locale, 'commerce.pos.invalidAmount', COMMERCE_POS_FR.movementAmount));
+      return;
+    }
+    if (cashMovementReason.trim() === '') {
+      setError(t(locale, 'commerce.pos.movementReason', COMMERCE_POS_FR.movementReason));
+      return;
+    }
+    void runAction(async () => {
+      const res = await apiFetch(`/retail/pos/sessions/${session.id}/cash-movements`, {
+        method: 'POST',
+        body: JSON.stringify({
+          type: cashMovementType,
+          amount_minor: amountMinor,
+          reason: cashMovementReason.trim(),
+        }),
+      });
+      if (!res.ok) {
+        const msg = await readApiError(res);
+        throw new Error(msg ?? t(locale, 'commerce.error.actionFailed', "L'action a échoué."));
+      }
+      setMovementMessage(t(locale, 'commerce.pos.movementSuccess', COMMERCE_POS_FR.movementSuccess));
+      setShowCashMovement(false);
+      setCashMovementAmount('');
+      setCashMovementReason('');
+    });
+  };
+
+  const processRefund = () => {
+    if (!receipt) return;
+    const amountMinor = parseMajorToMinor(refundAmount);
+    if (amountMinor === null || amountMinor <= 0) {
+      setError(t(locale, 'commerce.pos.invalidAmount', COMMERCE_POS_FR.refundAmount));
+      return;
+    }
+    if (refundReason.trim() === '') {
+      setError(t(locale, 'commerce.pos.refundReason', COMMERCE_POS_FR.refundReason));
+      return;
+    }
+    void runAction(async () => {
+      const restockLines = refundRestock
+        ? receipt.items.map((it) => ({
+            product_id: it.product_id,
+            quantity: typeof it.quantity === 'string' ? parseFloat(it.quantity) : it.quantity,
+          }))
+        : [];
+      const res = await apiFetch(`/retail/pos/orders/${receipt.id}/refund`, {
+        method: 'POST',
+        body: JSON.stringify({
+          amount_minor: amountMinor,
+          reason: refundReason.trim(),
+          method: refundMethod,
+          restock_lines: restockLines,
+          idempotency_key: crypto.randomUUID(),
+        }),
+      });
+      if (!res.ok) {
+        const msg = await readApiError(res);
+        throw new Error(msg ?? t(locale, 'commerce.error.actionFailed', "L'action a échoué."));
+      }
+      const payload = (await res.json()) as { data: Receipt };
+      setReceipt(payload.data);
+      setShowRefund(false);
+      setRefundAmount('');
+      setRefundReason('');
+      setRefundMessage(t(locale, 'commerce.pos.refundSuccess', COMMERCE_POS_FR.refundSuccess));
+    });
+  };
+
+  const filteredProducts = useMemo(() => {
+    if (!searchQuery.trim()) return products;
+    const q = searchQuery.toLowerCase().trim();
+    return products.filter(
+      (p) => p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q),
+    );
+  }, [products, searchQuery]);
+
   const currency = products[0]?.currency ?? 'XOF';
 
   return (
@@ -492,14 +591,86 @@ export default function CommercePosPage() {
               {t(locale, 'commerce.pos.openingCash', 'Fonds de caisse')} :{' '}
               {formatMinor(locale, session.opening_cash_minor, currency)}
             </p>
-            <button
-              type="button"
-              onClick={() => setShowClose((v) => !v)}
-              className="rounded-lg border border-emerald-300 bg-white px-3 py-1.5 text-sm font-semibold text-emerald-800 hover:bg-emerald-100"
-            >
-              {t(locale, 'commerce.pos.close', 'Clôturer la caisse')}
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowCashMovement((v) => !v)}
+                className="inline-flex items-center gap-1 rounded-lg border border-emerald-300 bg-white px-3 py-1.5 text-sm font-semibold text-emerald-800 hover:bg-emerald-100"
+              >
+                <Banknote className="h-4 w-4" />
+                {t(locale, 'commerce.pos.cashMovement', COMMERCE_POS_FR.cashMovement)}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowClose((v) => !v)}
+                className="rounded-lg border border-emerald-300 bg-white px-3 py-1.5 text-sm font-semibold text-emerald-800 hover:bg-emerald-100"
+              >
+                {t(locale, 'commerce.pos.close', 'Clôturer la caisse')}
+              </button>
+            </div>
           </section>
+
+          {movementMessage ? (
+            <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+              {movementMessage}
+            </p>
+          ) : null}
+
+          {showCashMovement ? (
+            <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h2 className="text-lg font-bold text-slate-900">
+                {t(locale, 'commerce.pos.cashMovementTitle', COMMERCE_POS_FR.cashMovementTitle)}
+              </h2>
+              <div className="mt-3 flex flex-wrap items-end gap-3">
+                <label className="block text-sm">
+                  <span className="mb-1 block font-medium text-slate-700">
+                    {t(locale, 'commerce.pos.movementType', COMMERCE_POS_FR.movementType)}
+                  </span>
+                  <select
+                    value={cashMovementType}
+                    onChange={(e) => setCashMovementType(e.target.value as 'in' | 'out')}
+                    className="rounded-lg border border-slate-200 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+                  >
+                    <option value="in">{t(locale, 'commerce.pos.cashIn', COMMERCE_POS_FR.cashIn)}</option>
+                    <option value="out">{t(locale, 'commerce.pos.cashOut', COMMERCE_POS_FR.cashOut)}</option>
+                  </select>
+                </label>
+                <label className="block text-sm">
+                  <span className="mb-1 block font-medium text-slate-700">
+                    {t(locale, 'commerce.pos.movementAmount', COMMERCE_POS_FR.movementAmount)} <span className="text-red-500">*</span>
+                  </span>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={cashMovementAmount}
+                    onChange={(e) => setCashMovementAmount(e.target.value)}
+                    className="rounded-lg border border-slate-200 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+                    placeholder="0.00"
+                  />
+                </label>
+                <label className="block grow text-sm">
+                  <span className="mb-1 block font-medium text-slate-700">
+                    {t(locale, 'commerce.pos.movementReason', COMMERCE_POS_FR.movementReason)} <span className="text-red-500">*</span>
+                  </span>
+                  <input
+                    type="text"
+                    value={cashMovementReason}
+                    maxLength={255}
+                    onChange={(e) => setCashMovementReason(e.target.value)}
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+                  />
+                </label>
+                <button
+                  type="button"
+                  onClick={recordCashMovement}
+                  disabled={acting}
+                  className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+                >
+                  {t(locale, 'commerce.pos.recordMovement', COMMERCE_POS_FR.recordMovement)}
+                </button>
+              </div>
+            </section>
+          ) : null}
 
           {showClose ? (
             <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -549,16 +720,28 @@ export default function CommercePosPage() {
           {!receipt ? (
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
               <section>
-                <h2 className="mb-3 text-lg font-bold text-slate-900">
-                  {t(locale, 'commerce.pos.catalog', 'Catalogue publié')}
-                </h2>
-                {products.length === 0 ? (
+                <div className="mb-3 flex items-center justify-between">
+                  <h2 className="text-lg font-bold text-slate-900">
+                    {t(locale, 'commerce.pos.catalog', 'Catalogue publié')}
+                  </h2>
+                </div>
+                <div className="relative mb-3">
+                  <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder={t(locale, 'commerce.pos.searchPlaceholder', COMMERCE_POS_FR.searchPlaceholder)}
+                    className="w-full rounded-lg border border-slate-200 pl-9 pr-3 py-2 text-sm focus:border-emerald-500 focus:outline-none"
+                  />
+                </div>
+                {filteredProducts.length === 0 ? (
                   <p className="rounded-xl border border-slate-200 bg-white px-4 py-6 text-center text-sm text-slate-500">
                     {t(locale, 'commerce.pos.noProducts', 'Aucun produit publié.')}
                   </p>
                 ) : (
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                    {products.map((product) => (
+                    {filteredProducts.map((product) => (
                       <button
                         key={product.id}
                         type="button"
@@ -768,6 +951,70 @@ export default function CommercePosPage() {
                     {t(locale, 'commerce.pos.completed', 'Commande encaissée : le stock a été décrémenté.')}
                   </p>
                 ) : null}
+                {refundMessage ? (
+                  <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+                    {refundMessage}
+                  </p>
+                ) : null}
+                {showRefund && receipt.status === 'completed' ? (
+                  <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <h2 className="text-lg font-bold text-slate-900">
+                      {t(locale, 'commerce.pos.refundTitle', COMMERCE_POS_FR.refundTitle)}
+                    </h2>
+                    <div className="mt-3 space-y-3">
+                      <div className="flex flex-wrap items-end gap-3">
+                        <label className="block text-sm">
+                          <span className="mb-1 block font-medium text-slate-700">
+                            {t(locale, 'commerce.pos.refundAmount', COMMERCE_POS_FR.refundAmount)} <span className="text-red-500">*</span>
+                          </span>
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            value={refundAmount}
+                            onChange={(e) => setRefundAmount(e.target.value)}
+                            className="rounded-lg border border-slate-200 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+                          />
+                        </label>
+                        <label className="block text-sm">
+                          <span className="mb-1 block font-medium text-slate-700">
+                            {t(locale, 'commerce.pos.method', 'Moyen de paiement')}
+                          </span>
+                          <select
+                            value={refundMethod}
+                            onChange={(e) => setRefundMethod(e.target.value as (typeof PAYMENT_METHODS)[number])}
+                            className="rounded-lg border border-slate-200 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+                          >
+                            {PAYMENT_METHODS.map((method) => (
+                              <option key={method} value={method}>
+                                {methodLabel(locale, method)}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      </div>
+                      <label className="block text-sm">
+                        <span className="mb-1 block font-medium text-slate-700">
+                          {t(locale, 'commerce.pos.refundReason', COMMERCE_POS_FR.refundReason)} <span className="text-red-500">*</span>
+                        </span>
+                        <input
+                          type="text"
+                          value={refundReason}
+                          maxLength={255}
+                          onChange={(e) => setRefundReason(e.target.value)}
+                          className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={processRefund}
+                        disabled={acting}
+                        className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700 disabled:opacity-50"
+                      >
+                        {t(locale, 'commerce.pos.confirmRefund', COMMERCE_POS_FR.confirmRefund)}
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
                 {receipt.status === 'cancelled' ? (
                   <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
                     {t(locale, 'commerce.pos.cancelled', 'Commande annulée : le stock a été restauré.')}
@@ -775,6 +1022,20 @@ export default function CommercePosPage() {
                 ) : null}
 
                 <div className="flex flex-wrap gap-2">
+                  {receipt.status === 'completed' ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowRefund((v) => !v);
+                        setRefundAmount((receipt.total_minor / 100).toFixed(2));
+                      }}
+                      disabled={acting}
+                      className="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-800 hover:bg-amber-100 disabled:opacity-50"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                      {t(locale, 'commerce.pos.refund', COMMERCE_POS_FR.refund)}
+                    </button>
+                  ) : null}
                   {receipt.status !== 'cancelled' ? (
                     <button
                       type="button"

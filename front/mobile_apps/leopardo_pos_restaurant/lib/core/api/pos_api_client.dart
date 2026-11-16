@@ -40,7 +40,8 @@ class PosApiClient {
 
       await store.saveCatalog(categories: categories, products: products);
 
-      return CatalogResult(categories: categories, products: products, fromCache: false);
+      return CatalogResult(
+          categories: categories, products: products, fromCache: false);
     } on DioException {
       return CatalogResult(
         categories: store.readCategories(),
@@ -75,16 +76,49 @@ class PosApiClient {
   /// **En ligne uniquement** : une session a besoin d'un identifiant serveur
   /// (elle porte le fonds de caisse et l'attendu de clôture). Hors ligne,
   /// l'appelant reçoit une [PosOfflineException] et l'interface le dit.
-  Future<int> openSession({required int branchId, required int openingCashMinor}) async {
+  Future<int> openSession({
+    required int branchId,
+    required int openingCashMinor,
+  }) async {
     try {
       final response = await dio.post<Map<String, dynamic>>(
-        '/restaurant/pos/sessions',
+        '/restaurant/pos-sessions',
         data: {'branch_id': branchId, 'opening_cash_minor': openingCashMinor},
       );
 
-      return ((response.data?['data'] as Map<String, dynamic>?)?['id'] as num).toInt();
+      return ((response.data?['data'] as Map<String, dynamic>?)?['id'] as num)
+          .toInt();
     } on DioException catch (error) {
-      throw PosOfflineException('Ouverture de caisse impossible hors ligne.', error);
+      throw PosOfflineException(
+        'Ouverture de caisse impossible hors ligne.',
+        error,
+      );
+    }
+  }
+
+  /// Clôture une session de caisse.
+  ///
+  /// **En ligne uniquement** : la clôture recalcule les totaux serveur,
+  /// vérifie les écarts et verrouille définitivement la session.
+  Future<void> closeSession({
+    required int sessionId,
+    required int countedCashMinor,
+    String? varianceReason,
+  }) async {
+    try {
+      await dio.post<Map<String, dynamic>>(
+        '/restaurant/pos-sessions/$sessionId/close',
+        data: {
+          'counted_cash_minor': countedCashMinor,
+          if (varianceReason != null && varianceReason.trim().isNotEmpty)
+            'variance_reason': varianceReason.trim(),
+        },
+      );
+    } on DioException catch (error) {
+      throw PosOfflineException(
+        'Clôture de caisse impossible hors ligne.',
+        error,
+      );
     }
   }
 
@@ -115,9 +149,11 @@ class PosApiClient {
         },
       );
 
-      return ((response.data?['data'] as Map<String, dynamic>?)?['id'] as num).toInt();
+      return ((response.data?['data'] as Map<String, dynamic>?)?['id'] as num)
+          .toInt();
     } on DioException catch (error) {
-      throw PosOfflineException('Création de commande impossible hors ligne.', error);
+      throw PosOfflineException(
+          'Création de commande impossible hors ligne.', error);
     }
   }
 
@@ -139,9 +175,9 @@ class PosApiClient {
 
     try {
       await dio.post<Map<String, dynamic>>(
-        '/restaurant/orders/$orderId/payments',
+        '/restaurant/orders/$orderId/pay',
         data: {
-          'method': method,
+          'provider_code': method,
           'amount_minor': amountMinor,
           'idempotency_key': key,
         },
@@ -152,9 +188,9 @@ class PosApiClient {
       await queue.enqueue(
         QueuedOperation(
           idempotencyKey: key,
-          endpoint: '/restaurant/orders/$orderId/payments',
+          endpoint: '/restaurant/orders/$orderId/pay',
           payload: {
-            'method': method,
+            'provider_code': method,
             'amount_minor': amountMinor,
             'idempotency_key': key,
           },
@@ -203,7 +239,8 @@ class PosApiClient {
       }
 
       try {
-        await dio.post<Map<String, dynamic>>(operation.endpoint, data: operation.payload);
+        await dio.post<Map<String, dynamic>>(operation.endpoint,
+            data: operation.payload);
         await queue.remove(operation.idempotencyKey);
         synced++;
         operations.add(
@@ -281,7 +318,8 @@ final posOfflineQueueProvider = Provider<PosOfflineQueue>((ref) {
 final posApiClientProvider = Provider<PosApiClient>((ref) {
   final dio = Dio(
     BaseOptions(
-      baseUrl: const String.fromEnvironment('API_BASE_URL', defaultValue: 'https://api.leopardo.app/api/v1'),
+      baseUrl: const String.fromEnvironment('API_BASE_URL',
+          defaultValue: 'https://api.leopardo.app/api/v1'),
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 20),
     ),
