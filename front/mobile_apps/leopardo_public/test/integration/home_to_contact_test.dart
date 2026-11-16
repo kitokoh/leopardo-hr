@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart' show GlobalCupertinoLocalizations;
 import 'package:flutter_localizations/flutter_localizations.dart'
-    hide GlobalMaterialLocalizations;
+    hide GlobalMaterialLocalizations, GlobalCupertinoLocalizations;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_public/core/i18n/app_strings.dart';
