@@ -160,4 +160,5 @@ return [
     'lettering_unbalanced' => 'Lettering must be balanced: total debits must equal total credits.',
     'lettering_invalid' => 'Invalid lettering: entries must target the same account.',
     'lettering_already_used' => 'One or more entries are already lettered with another code.',
+    'depreciation_declining_unsupported' => 'Declining depreciation is not implemented for this country.',
 ];
