@@ -62,15 +62,28 @@ class CorsAndTrustedProxyTest extends TestCase
         $this->assertIsArray($patterns);
         $this->assertContains('https://leo-admin.pages.dev', $origins);
         $this->assertNotEmpty($patterns, 'Au moins un pattern CORS doit exister.');
+
+        // Chaque pattern doit etre une regex COMPLETE utilisable par
+        // preg_match() (fruitcake/php-cors) — un glob crashe en 500.
+        // On ne peut PAS exiger que chaque pattern matche leo-admin : la
+        // liste contient aussi le pattern Vercel du marketplace (#8096).
+        // L'invariant reel est : chaque pattern compile, et AUCUN ne matche
+        // un projet Cloudflare Pages arbitraire (#5582).
+        $leoAdminPatternMatched = false;
         foreach ($patterns as $pattern) {
             $this->assertNotSame('*', $pattern);
-            // Chaque pattern doit être une regex complète utilisable par
-            // preg_match() (fruitcake/php-cors) — un glob crashe en 500.
-            // #5582 : échantillon du projet CONNU (leo-admin) ; un projet
-            // arbitraire `*.pages.dev` ne doit plus matcher.
-            $this->assertNotSame(0, @preg_match($pattern, 'https://preview-123.leo-admin.pages.dev'));
-            $this->assertSame(0, @preg_match($pattern, 'https://evil-arbitrary.pages.dev'));
+            $this->assertNotFalse(@preg_match($pattern, 'https://preview-123.leo-admin.pages.dev'),
+                "Le pattern CORS doit etre une regex valide : {$pattern}");
+            $this->assertSame(0, @preg_match($pattern, 'https://evil-arbitrary.pages.dev'),
+                "Un projet Pages arbitraire ne doit jamais matcher : {$pattern}");
+
+            if (@preg_match($pattern, 'https://preview-123.leo-admin.pages.dev') === 1) {
+                $leoAdminPatternMatched = true;
+            }
         }
+
+        $this->assertTrue($leoAdminPatternMatched,
+            'Au moins un pattern doit couvrir les previews leo-admin.pages.dev.');
 
         foreach (array_merge($origins, $patterns) as $entry) {
             $this->assertNotSame('*', $entry);

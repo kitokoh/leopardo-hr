@@ -213,6 +213,12 @@ class KioskDeviceCodeAtRestTest extends TestCase
             biometric_mode VARCHAR(50) NULL,
             trusted_device_label VARCHAR(255) NULL,
             sync_token_hash VARCHAR(255) NULL,
+            -- BIO-005 (#6766) : site d'affectation, ecrit par le provisioning.
+            -- Sans cette colonne, l'INSERT echoue en 42703 et le test observe
+            -- un INTERNAL_ERROR generique au lieu du fail-closed attendu.
+            site_id BIGINT NULL,
+            -- BIO-006 : matrice de methodes de pointage (cast `array`).
+            punch_methods JSONB NULL,
             last_seen_at TIMESTAMPTZ NULL,
             last_sync_at TIMESTAMPTZ NULL,
             created_at TIMESTAMPTZ NULL,

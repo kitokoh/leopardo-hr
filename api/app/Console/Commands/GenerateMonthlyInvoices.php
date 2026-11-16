@@ -97,7 +97,13 @@ class GenerateMonthlyInvoices extends Command
                     // fallback documenté FALLBACK_PLAN_PRICES.
                     $pricing = $this->resolvePlanPricing($plan);
                     $year = now()->format('Y');
-                    $seq = Invoice::where('company_id', $locked->company_id)->count() + 1;
+                    // #6549 : numérotation ATOMIQUE via le compteur
+                    // `billing_invoice_number_counters` (INSERT ... ON CONFLICT
+                    // DO UPDATE ... RETURNING). L'ancien `count()+1` était
+                    // sensible aux suppressions (une facture annulée faisait
+                    // réémettre un numéro déjà utilisé) et ne lisait jamais le
+                    // compteur que la migration #6549 avait créé pour cela.
+                    $seq = $this->nextInvoiceSequence((int) $year);
 
                     // Audit #1702 : la colonne réelle est `number` (le champ
                     // `invoice_number` n'est pas fillable — le numéro était
@@ -167,7 +173,28 @@ class GenerateMonthlyInvoices extends Command
      * Lecture qualifiée `public.plans` : la commande tourne hors contexte
      * tenant, le search_path n'est pas garanti (même garde que
      * VerifyTrialSignup::publicTable).
-     *
+     */
+    private function nextInvoiceSequence(int $year): int
+    {
+        $table = DB::getDriverName() === 'pgsql'
+            ? 'shared_tenants.billing_invoice_number_counters'
+            : 'billing_invoice_number_counters';
+
+        /** @var object{last_number: int|string}|null $row */
+        $row = DB::selectOne(
+            'INSERT INTO '.$table.' (year, last_number, created_at, updated_at)
+             VALUES (?, 1, now(), now())
+             ON CONFLICT (year) DO UPDATE
+                SET last_number = '.$table.'.last_number + 1,
+                    updated_at = now()
+             RETURNING last_number',
+            [$year]
+        );
+
+        return (int) ($row->last_number ?? 1);
+    }
+
+    /**
      * @return array{amount: float, currency: string}
      */
     private function resolvePlanPricing(string $plan): array

@@ -36,7 +36,11 @@ class EdgeNodeSilentAlert extends Notification implements ShouldQueue
 
     public function toMail(mixed $notifiable): MailMessage
     {
-        $silenceDuration = $this->lastSeenAt?->diffForHumans() ?? '—';
+        // Un noeud JAMAIS vu n'a pas de duree de silence : afficher un tiret
+        // cadratin produisait « n'a pas communique depuis — », illisible pour
+        // le destinataire. On rend une formulation explicite et localisee.
+        $silenceDuration = $this->lastSeenAt?->diffForHumans()
+            ?? __('emails.edge_node_silent_never');
 
         return (new MailMessage)
             ->subject(__('emails.edge_node_silent_subject', ['node' => $this->nodeName, 'company' => $this->companyName]))

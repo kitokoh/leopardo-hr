@@ -180,6 +180,7 @@ return [
     'edge_node_silent_subject' => 'Time clock terminal unreachable — :node (:company)',
     'edge_node_silent_greeting' => 'Hello,',
     'edge_node_silent_body' => 'The time clock terminal :node at :company has not reported for :duration.',
+    'edge_node_silent_never' => 'never (no heartbeat received since registration)',
     'edge_node_silent_note' => 'Clock-ins recorded during this period will be synced automatically as soon as the connection is restored.',
     'edge_node_silent_support' => 'If the issue persists, check the terminal network connection or write to us:',
     'edge_license_expiring_subject' => 'Time clock terminal subscription to renew — :node (:company)',

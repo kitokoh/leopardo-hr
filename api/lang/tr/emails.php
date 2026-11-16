@@ -180,6 +180,7 @@ return [
     'edge_node_silent_subject' => 'Giriş terminaline ulaşılamıyor — :node (:company)',
     'edge_node_silent_greeting' => 'Merhaba,',
     'edge_node_silent_body' => ':company şirketindeki :node giriş terminali :duration boyunca bağlantı kurmadı.',
+    'edge_node_silent_never' => 'hiç (kayıttan bu yana hiçbir sinyal alınmadı)',
     'edge_node_silent_note' => 'Bu dönemde kaydedilen girişler, bağlantı geri geldiğinde otomatik olarak eşitlenecek.',
     'edge_node_silent_support' => 'Sorun devam ederse terminalin ağ bağlantısını kontrol edin veya bize yazın:',
     'edge_license_expiring_subject' => 'Giriş terminali aboneliği yenilenmeli — :node (:company)',
