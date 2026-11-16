@@ -53,11 +53,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final TextEditingController _edgeTokenController = TextEditingController();
   final TextEditingController _edgeBaseUrlController = TextEditingController();
   static Map<String, String> get _languageLabels => {
-        'fr': 'Francais',
-        'ar': deviceL10n.commonLanguageArabic,
-        'tr': 'Turkce',
-        'en': 'English',
-      };
+    'fr': 'Francais',
+    'ar': deviceL10n.commonLanguageArabic,
+    'tr': 'Turkce',
+    'en': 'English',
+  };
 
   bool _profileSaving = false;
   bool _passwordSaving = false;
@@ -78,8 +78,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   void initState() {
     super.initState();
     final employee = ref.read(authProvider).employee;
-    final deviceLanguage =
-        PlatformDispatcher.instance.locale.languageCode.toLowerCase();
+    final deviceLanguage = PlatformDispatcher.instance.locale.languageCode
+        .toLowerCase();
     _firstNameController = TextEditingController(
       text: employee?.firstName ?? '',
     );
@@ -112,7 +112,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _saveEdgeSettings(BuildContext context) async {
     setState(() => _edgeSaving = true);
     try {
-      await ref.read(appPreferencesProvider).saveEdgeEnrollment(
+      await ref
+          .read(appPreferencesProvider)
+          .saveEdgeEnrollment(
             edgeNodeId: _edgeNodeIdController.text,
             edgeToken: _edgeTokenController.text,
             edgeBaseUrl: _edgeBaseUrlController.text,
@@ -122,9 +124,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       // or connectivity change (see issue #1287).
       unawaited(ref.read(syncServiceProvider).syncNow());
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.settingsEdgeSaved)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.settingsEdgeSaved)));
     } finally {
       if (mounted) setState(() => _edgeSaving = false);
     }
@@ -142,8 +144,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _loadLocalSettings() async {
-    final settings =
-        await ref.read(settingsRepositoryProvider).loadLocalBiometricSettings();
+    final settings = await ref
+        .read(settingsRepositoryProvider)
+        .loadLocalBiometricSettings();
     if (!mounted) return;
 
     setState(() {
@@ -157,8 +160,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _loadEnrollmentStatus() async {
     try {
-      final enrollment =
-          await ref.read(settingsRepositoryProvider).loadBiometricEnrollment();
+      final enrollment = await ref
+          .read(settingsRepositoryProvider)
+          .loadBiometricEnrollment();
       if (!mounted) return;
       setState(() {
         _latestEnrollment = enrollment;
@@ -240,10 +244,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             label: Text(sections[index].label),
             onSelected: (_) => setState(() => _selectedSection = index),
             labelStyle: TextStyle(
-              color:
-                  _selectedSection == index
-                      ? Colors.white
-                      : MobileSurface.secondary,
+              color: _selectedSection == index
+                  ? Colors.white
+                  : MobileSurface.secondary,
               fontWeight: FontWeight.w700,
             ),
             selectedColor: AppColors.rh,
@@ -343,8 +346,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _firstNameController,
-              decoration:
-                  InputDecoration(labelText: context.l10n.settingsFirstName),
+              decoration: InputDecoration(
+                labelText: context.l10n.settingsFirstName,
+              ),
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? context.l10n.settingsFirstNameRequired
                   : null,
@@ -353,7 +357,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: _lastNameController,
               decoration: InputDecoration(
-                  labelText: context.l10n.settingsLastNameLabel),
+                labelText: context.l10n.settingsLastNameLabel,
+              ),
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? context.l10n.settingsLastNameRequired
                   : null,
@@ -362,8 +367,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              decoration:
-                  InputDecoration(labelText: context.l10n.settingsEmailLabel),
+              decoration: InputDecoration(
+                labelText: context.l10n.settingsEmailLabel,
+              ),
               validator: (value) {
                 final trimmed = value?.trim() ?? '';
                 if (trimmed.isEmpty) return context.l10n.settingsEmailRequired;
@@ -603,8 +609,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 16),
           FutureBuilder<EmployeeQrPayload>(
-            future:
-                ref.read(settingsRepositoryProvider).loadEmployeeQrPayload(),
+            future: ref
+                .read(settingsRepositoryProvider)
+                .loadEmployeeQrPayload(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const LinearProgressIndicator(minHeight: 2);
@@ -641,11 +648,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               if (text == null || text.isEmpty) {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      context.l10n.settingsNoCompanyQr,
-                    ),
-                  ),
+                  SnackBar(content: Text(context.l10n.settingsNoCompanyQr)),
                 );
                 return;
               }
@@ -877,7 +880,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           DropdownButtonFormField<String>(
             initialValue: _selectedLanguage,
             decoration: InputDecoration(
-                labelText: context.l10n.settingsPreferredLanguage),
+              labelText: context.l10n.settingsPreferredLanguage,
+            ),
             items: _languageLabels.entries
                 .map(
                   (entry) => DropdownMenuItem<String>(
@@ -920,9 +924,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final currentMode = ref.watch(themeModeProvider);
 
     final options = [
-      (ThemeMode.system, Icons.brightness_auto_outlined, context.l10n.settingsThemeSystem),
-      (ThemeMode.light, Icons.light_mode_outlined, context.l10n.settingsThemeLight),
-      (ThemeMode.dark, Icons.dark_mode_outlined, context.l10n.settingsThemeDark),
+      (
+        ThemeMode.system,
+        Icons.brightness_auto_outlined,
+        context.l10n.settingsThemeSystem,
+      ),
+      (
+        ThemeMode.light,
+        Icons.light_mode_outlined,
+        context.l10n.settingsThemeLight,
+      ),
+      (
+        ThemeMode.dark,
+        Icons.dark_mode_outlined,
+        context.l10n.settingsThemeDark,
+      ),
     ];
 
     return Container(
@@ -938,17 +954,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 8),
           Text(
             context.l10n.settingsThemeHint,
-            style: AppTypography.bodySmall
-                .copyWith(color: MobileSurface.secondary),
+            style: AppTypography.bodySmall.copyWith(
+              color: MobileSurface.secondary,
+            ),
           ),
           const SizedBox(height: 16),
           RadioGroup<ThemeMode>(
             groupValue: currentMode,
             onChanged: (mode) async {
               if (mode != null) {
-                await ref
-                    .read(themeModeProvider.notifier)
-                    .setMode(mode);
+                await ref.read(themeModeProvider.notifier).setMode(mode);
               }
             },
             child: Column(
@@ -957,15 +972,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     (opt) => RadioListTile<ThemeMode>(
                       contentPadding: EdgeInsets.zero,
                       value: opt.$1,
-              title: Row(
-                children: [
-                  Icon(opt.$2, size: 20, color: MobileSurface.secondary),
-                  const SizedBox(width: 10),
-                  Text(opt.$3,
-                      style: AppTypography.body
-                          .copyWith(color: MobileSurface.text)),
-                ],
-              ),
+                      title: Row(
+                        children: [
+                          Icon(
+                            opt.$2,
+                            size: 20,
+                            color: MobileSurface.secondary,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            opt.$3,
+                            style: AppTypography.body.copyWith(
+                              color: MobileSurface.text,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   )
                   .toList(),
@@ -1103,8 +1125,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 color: _latestEnrollment!.status == 'approved'
                     ? AppColors.success
                     : _latestEnrollment!.status == 'rejected'
-                        ? AppColors.danger
-                        : AppColors.warning,
+                    ? AppColors.danger
+                    : AppColors.warning,
               ),
             ),
             if ((_latestEnrollment!.managerNote ?? '').isNotEmpty)
@@ -1131,7 +1153,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             value: _fingerprintEnabled,
             onChanged: _biometricEnabled
                 ? (value) =>
-                    setState(() => _fingerprintEnabled = value ?? false)
+                      setState(() => _fingerprintEnabled = value ?? false)
                 : null,
           ),
           CheckboxListTile(
@@ -1305,8 +1327,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             children: [
               Expanded(
                 child: FilledButton(
-                  onPressed:
-                      _edgeSaving ? null : () => _saveEdgeSettings(context),
+                  onPressed: _edgeSaving
+                      ? null
+                      : () => _saveEdgeSettings(context),
                   child: Text(
                     (_edgeSaving
                         ? context.l10n.settingsSaving
@@ -1325,7 +1348,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
     );
   }
-
 
   /// Issue #5683 — accès à l'écran de gestion 2FA (enrôlement, codes de
   /// récupération, désactivation). Écran partagé leopardo_core.
@@ -1383,8 +1405,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Widget _buildNotificationSection(BuildContext context) {
     return FutureBuilder<NotificationPreferences>(
-      future:
-          ref.read(settingsRepositoryProvider).loadNotificationPreferences(),
+      future: ref
+          .read(settingsRepositoryProvider)
+          .loadNotificationPreferences(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Container(
@@ -1446,8 +1469,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      context.l10n
-                          .settingsNotificationsSaveFailed(e.toString()),
+                      context.l10n.settingsNotificationsSaveFailed(
+                        e.toString(),
+                      ),
                     ),
                   ),
                 );
@@ -1482,7 +1506,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               final fallback = isStart ? '20:00' : '07:00';
               final parts = (current ?? fallback).split(':');
               final initial = TimeOfDay(
-                hour: int.tryParse(parts.isNotEmpty ? parts[0] : '') ??
+                hour:
+                    int.tryParse(parts.isNotEmpty ? parts[0] : '') ??
                     (isStart ? 20 : 7),
                 minute: int.tryParse(parts.length > 1 ? parts[1] : '') ?? 0,
               );
@@ -1572,8 +1597,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         children: [
                           Expanded(
                             child: OutlinedButton(
-                              onPressed:
-                                  saving ? null : () => pickQuietHour(true),
+                              onPressed: saving
+                                  ? null
+                                  : () => pickQuietHour(true),
                               child: Text(
                                 'Debut ${preferences.quietHoursStart ?? '20:00'}',
                               ),
@@ -1582,8 +1608,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           const SizedBox(width: 10),
                           Expanded(
                             child: OutlinedButton(
-                              onPressed:
-                                  saving ? null : () => pickQuietHour(false),
+                              onPressed: saving
+                                  ? null
+                                  : () => pickQuietHour(false),
                               child: Text(
                                 'Fin ${preferences.quietHoursEnd ?? '07:00'}',
                               ),
@@ -1596,8 +1623,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   DropdownButtonFormField<String>(
                     initialValue:
                         _languageLabels.containsKey(preferences.locale)
-                            ? preferences.locale
-                            : null,
+                        ? preferences.locale
+                        : null,
                     decoration: InputDecoration(
                       labelText: context.l10n.settingsNotificationsLanguage,
                     ),
@@ -1636,23 +1663,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _submitCompanyQr(BuildContext context) async {
     final token = _companyQrController.text.trim();
     if (token.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.settingsQrPasted)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(context.l10n.settingsQrPasted)));
       return;
     }
 
     try {
-      final message =
-          await ref.read(settingsRepositoryProvider).submitCompanyQr(token);
+      final message = await ref
+          .read(settingsRepositoryProvider)
+          .submitCompanyQr(token);
       if (!context.mounted) return;
       _companyQrController.clear();
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(message)));
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(context.l10n.settingsQrRejected(e.toString()))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.settingsQrRejected(e.toString()))),
+      );
     }
   }
 
@@ -1660,7 +1688,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (!_profileFormKey.currentState!.validate()) return;
 
     setState(() => _profileSaving = true);
-    final success = await ref.read(authProvider.notifier).updateProfile(
+    final success = await ref
+        .read(authProvider.notifier)
+        .updateProfile(
           firstName: _firstNameController.text,
           lastName: _lastNameController.text,
           email: _emailController.text,
@@ -1674,7 +1704,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.settingsProfileUpdated)));
+        SnackBar(content: Text(context.l10n.settingsProfileUpdated)),
+      );
     }
   }
 
@@ -1682,7 +1713,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (!_passwordFormKey.currentState!.validate()) return;
 
     setState(() => _passwordSaving = true);
-    final success = await ref.read(authProvider.notifier).changePassword(
+    final success = await ref
+        .read(authProvider.notifier)
+        .changePassword(
           currentPassword: _currentPasswordController.text,
           newPassword: _newPasswordController.text,
           confirmation: _confirmPasswordController.text,
@@ -1695,10 +1728,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _currentPasswordController.clear();
       _newPasswordController.clear();
       _confirmPasswordController.clear();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-          SnackBar(content: Text(context.l10n.settingsPasswordChanged)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.settingsPasswordChanged)),
+      );
     }
   }
 
@@ -1713,14 +1745,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.settingsLanguageUpdated)));
+        SnackBar(content: Text(context.l10n.settingsLanguageUpdated)),
+      );
     }
   }
 
   Future<void> _savePreferences() async {
     setState(() => _preferencesSaving = true);
 
-    await ref.read(settingsRepositoryProvider).saveLocalBiometricSettings(
+    await ref
+        .read(settingsRepositoryProvider)
+        .saveLocalBiometricSettings(
           LocalBiometricSettings(
             biometricEnabled: _biometricEnabled,
             fingerprintEnabled: _biometricEnabled && _fingerprintEnabled,
@@ -1733,9 +1768,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (!mounted) return;
     setState(() => _preferencesSaving = false);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(context.l10n.settingsBiometricSavedLocal),
-      ),
+      SnackBar(content: Text(context.l10n.settingsBiometricSavedLocal)),
     );
   }
 
@@ -1755,27 +1788,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _submitBiometricEnrollment() async {
     if (!_biometricEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.settingsBiometricEnableFirst),
-        ),
+        SnackBar(content: Text(context.l10n.settingsBiometricEnableFirst)),
       );
       return;
     }
 
     if (!_attendanceConsent) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.settingsBiometricConsentRequired),
-        ),
+        SnackBar(content: Text(context.l10n.settingsBiometricConsentRequired)),
       );
       return;
     }
 
     if (_faceEnabled && _selectedFaceImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.settingsBiometricFaceRequired),
-        ),
+        SnackBar(content: Text(context.l10n.settingsBiometricFaceRequired)),
       );
       return;
     }
@@ -1801,29 +1828,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     setState(() => _biometricSubmitting = true);
     try {
-      final enrollment =
-          await ref.read(settingsRepositoryProvider).submitBiometricEnrollment(
-                requestedFaceEnabled: _faceEnabled,
-                requestedFingerprintEnabled: _fingerprintEnabled,
-                employeeNote: _biometricNoteController.text,
-                requestedFingerprintDeviceId: _fingerprintDeviceController.text,
-                faceImage: _selectedFaceImage,
-              );
+      final enrollment = await ref
+          .read(settingsRepositoryProvider)
+          .submitBiometricEnrollment(
+            requestedFaceEnabled: _faceEnabled,
+            requestedFingerprintEnabled: _fingerprintEnabled,
+            employeeNote: _biometricNoteController.text,
+            requestedFingerprintDeviceId: _fingerprintDeviceController.text,
+            faceImage: _selectedFaceImage,
+          );
 
       if (!mounted) return;
       setState(() {
         _latestEnrollment = enrollment;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.settingsBiometricSubmitted),
-        ),
+        SnackBar(content: Text(context.l10n.settingsBiometricSubmitted)),
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content:
-              Text(context.l10n.settingsBiometricSubmitFailed(e.toString()))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.settingsBiometricSubmitFailed(e.toString()),
+          ),
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() => _biometricSubmitting = false);

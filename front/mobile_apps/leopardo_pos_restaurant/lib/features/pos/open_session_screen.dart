@@ -63,8 +63,13 @@ class _OpenSessionScreenState extends ConsumerState<OpenSessionScreen> {
                   const SizedBox(height: 24),
                   TextField(
                     controller: _controller,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                    ),
                     decoration: const InputDecoration(
                       labelText: 'Fonds de caisse (unités mineures)',
                       helperText: 'Exemple : 5000 pour 50,00',
@@ -75,8 +80,11 @@ class _OpenSessionScreenState extends ConsumerState<OpenSessionScreen> {
                     onPressed: state.loading
                         ? null
                         : () async {
-                            final amount = int.tryParse(_controller.text.trim()) ?? 0;
-                            final ok = await controller.openSession(openingCashMinor: amount);
+                            final amount =
+                                int.tryParse(_controller.text.trim()) ?? 0;
+                            final ok = await controller.openSession(
+                              openingCashMinor: amount,
+                            );
 
                             if (!context.mounted) {
                               return;
@@ -84,7 +92,11 @@ class _OpenSessionScreenState extends ConsumerState<OpenSessionScreen> {
 
                             if (!ok) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(state.error ?? 'Ouverture impossible.')),
+                                SnackBar(
+                                  content: Text(
+                                    state.error ?? 'Ouverture impossible.',
+                                  ),
+                                ),
                               );
                             }
                           },
@@ -101,7 +113,9 @@ class _OpenSessionScreenState extends ConsumerState<OpenSessionScreen> {
                     Text(
                       state.error!,
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
                     ),
                   ],
                   const SizedBox(height: 12),
@@ -159,7 +173,10 @@ class FloorPlanScreen extends ConsumerWidget {
                       children: [
                         Text(
                           table.label,
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                         const SizedBox(height: 6),
                         Text('${table.seats} places'),
@@ -168,7 +185,9 @@ class FloorPlanScreen extends ConsumerWidget {
                           table.occupied ? 'Occupée' : 'Libre',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            color: table.occupied ? scheme.error : scheme.primary,
+                            color: table.occupied
+                                ? scheme.error
+                                : scheme.primary,
                           ),
                         ),
                       ],
@@ -198,7 +217,9 @@ class _PosShellState extends ConsumerState<PosShell> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(posControllerProvider.notifier).bootstrap(branchId: widget.branchId);
+      ref
+          .read(posControllerProvider.notifier)
+          .bootstrap(branchId: widget.branchId);
     });
   }
 
@@ -210,10 +231,7 @@ class _PosShellState extends ConsumerState<PosShell> {
       return OpenSessionScreen(branchId: widget.branchId);
     }
 
-    final pages = [
-      const PosScreen(),
-      const FloorPlanScreen(),
-    ];
+    final pages = [const PosScreen(), const FloorPlanScreen()];
 
     return Scaffold(
       body: Row(

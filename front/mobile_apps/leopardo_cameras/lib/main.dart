@@ -113,15 +113,13 @@ final _routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/camera/:id',
-        builder: (context, state) => CameraLiveScreen(
-          cameraId: int.parse(state.pathParameters['id']!),
-        ),
+        builder: (context, state) =>
+            CameraLiveScreen(cameraId: int.parse(state.pathParameters['id']!)),
       ),
       GoRoute(
         path: '/events',
         builder: (context, state) => CameraEventsScreen(
-          focusEventId:
-              int.tryParse(state.uri.queryParameters['focus'] ?? ''),
+          focusEventId: int.tryParse(state.uri.queryParameters['focus'] ?? ''),
         ),
       ),
       GoRoute(

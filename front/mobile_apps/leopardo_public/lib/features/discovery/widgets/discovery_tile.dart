@@ -146,11 +146,7 @@ class _Thumb extends StatelessWidget {
         color: AppColors.tint(context, AppColors.info),
         borderRadius: radius,
       ),
-      child: Icon(
-        Icons.storefront_outlined,
-        color: AppColors.info,
-        size: 26,
-      ),
+      child: Icon(Icons.storefront_outlined, color: AppColors.info, size: 26),
     );
 
     if (imageUrl == null) return fallback;

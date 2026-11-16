@@ -65,9 +65,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            publishNow ? 'Post publié !' : 'Post enregistré.',
-          ),
+          content: Text(publishNow ? 'Post publié !' : 'Post enregistré.'),
         ),
       );
       context.pop();
@@ -127,9 +125,10 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
               const Text(
                 'Contenu du post',
                 style: TextStyle(
-                    color: Colors.white70,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13),
+                  color: Colors.white70,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
               ),
               const SizedBox(height: 8),
               Container(
@@ -156,9 +155,10 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
               const Text(
                 'Réseaux cibles',
                 style: TextStyle(
-                    color: Colors.white70,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13),
+                  color: Colors.white70,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -195,9 +195,10 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
                   const Text(
                     'Planifier',
                     style: TextStyle(
-                        color: Colors.white70,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13),
+                      color: Colors.white70,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
                   ),
                   const Spacer(),
                   Switch.adaptive(
@@ -222,17 +223,25 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.schedule_rounded,
-                            color: AppColors.rh, size: 18),
+                        const Icon(
+                          Icons.schedule_rounded,
+                          color: AppColors.rh,
+                          size: 18,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           _formatDateTime(_scheduledAt),
                           style: const TextStyle(
-                              color: Colors.white, fontSize: 14),
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
                         ),
                         const Spacer(),
-                        const Icon(Icons.edit_rounded,
-                            color: Colors.white38, size: 16),
+                        const Icon(
+                          Icons.edit_rounded,
+                          color: Colors.white38,
+                          size: 16,
+                        ),
                       ],
                     ),
                   ),

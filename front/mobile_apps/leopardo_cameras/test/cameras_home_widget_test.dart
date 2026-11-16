@@ -45,28 +45,30 @@ void main() {
     });
 
     testWidgets(
-        'un tenant sans le flag cameras voit un refus explicite, pas un écran vide (AC 2)',
-        (tester) async {
-      await tester.pumpWidget(
-        buildHome([
-          cameraWallProvider.overrideWith(
-            (ref) => Future<CameraWall>.error(
-              ApiException(
-                'Your plan does not include the cameras module.',
-                statusCode: 403,
-                code: 'FEATURE_NOT_ENABLED',
+      'un tenant sans le flag cameras voit un refus explicite, pas un écran vide (AC 2)',
+      (tester) async {
+        await tester.pumpWidget(
+          buildHome([
+            cameraWallProvider.overrideWith(
+              (ref) => Future<CameraWall>.error(
+                ApiException(
+                  'Your plan does not include the cameras module.',
+                  statusCode: 403,
+                  code: 'FEATURE_NOT_ENABLED',
+                ),
               ),
             ),
-          ),
-        ]),
-      );
-      await tester.pumpAndSettle();
+          ]),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('Module Caméras non activé'), findsOneWidget);
-    });
+        expect(find.text('Module Caméras non activé'), findsOneWidget);
+      },
+    );
 
-    testWidgets('un rôle non-manager voit un refus explicite (AC 2)',
-        (tester) async {
+    testWidgets('un rôle non-manager voit un refus explicite (AC 2)', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         buildHome([
           cameraWallProvider.overrideWith(
@@ -81,13 +83,12 @@ void main() {
       expect(find.text('Accès refusé'), findsOneWidget);
     });
 
-    testWidgets('mur vide : message explicite, jamais un écran vide',
-        (tester) async {
+    testWidgets('mur vide : message explicite, jamais un écran vide', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         buildHome([
-          cameraWallProvider.overrideWith(
-            (ref) async => const CameraWall(),
-          ),
+          cameraWallProvider.overrideWith((ref) async => const CameraWall()),
         ]),
       );
       await tester.pumpAndSettle();

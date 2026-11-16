@@ -71,16 +71,18 @@ class BusinessActionRow extends StatelessWidget {
       final hasDestination = profile.actionUrls[action] != null;
       // « contact » a une destination native (la conversation, en M2) ; les
       // autres dépendent d'une URL exposée par le serveur.
-      final reachable =
-          action == 'contact' ? onContact != null : hasDestination;
+      final reachable = action == 'contact'
+          ? onContact != null
+          : hasDestination;
 
       specs.add(
         _ActionSpec(
           action: action,
           label: label,
           icon: icon,
-          onPressed:
-              reachable ? () => _handle(context, action, hasDestination) : null,
+          onPressed: reachable
+              ? () => _handle(context, action, hasDestination)
+              : null,
           primary: specs.isEmpty,
         ),
       );
@@ -133,9 +135,8 @@ class BusinessActionRow extends StatelessWidget {
 
     // Destination exposée mais navigation mobile hors périmètre M1 : on ne
     // fait pas semblant. M3 branchera la commande et la réservation.
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(strings.t('commonNoModule'))),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(strings.t('commonNoModule'))));
   }
 }
 
@@ -190,11 +191,7 @@ class _Button extends StatelessWidget {
               icon: icon,
               label: label,
             )
-          : FilledButton.tonalIcon(
-              onPressed: null,
-              icon: icon,
-              label: label,
-            ),
+          : FilledButton.tonalIcon(onPressed: null, icon: icon, label: label),
     );
   }
 }

@@ -15,19 +15,19 @@ import 'company_screen.dart';
 
 final platformCompanyDetailProvider =
     FutureProvider.family<_CompanyDetailData, String>((ref, companyId) async {
-  final repository = ref.watch(platformRepositoryProvider);
-  final results = await Future.wait([
-    repository.companyHealth(companyId),
-    repository.companySubscription(companyId),
-    repository.companyFeatures(companyId),
-  ]);
+      final repository = ref.watch(platformRepositoryProvider);
+      final results = await Future.wait([
+        repository.companyHealth(companyId),
+        repository.companySubscription(companyId),
+        repository.companyFeatures(companyId),
+      ]);
 
-  return _CompanyDetailData(
-    health: results[0] as PlatformCompanyHealth,
-    subscription: results[1] as PlatformCompanySubscription,
-    features: results[2] as PlatformCompanyFeatures,
-  );
-});
+      return _CompanyDetailData(
+        health: results[0] as PlatformCompanyHealth,
+        subscription: results[1] as PlatformCompanySubscription,
+        features: results[2] as PlatformCompanyFeatures,
+      );
+    });
 
 final platformPlansProvider = FutureProvider<List<PlatformPlan>>((ref) {
   return ref.watch(platformRepositoryProvider).plans();
@@ -59,9 +59,8 @@ class CompanyDetailScreen extends ConsumerWidget {
           loading: () => const _CompanyDetailLoading(),
           error: (error, _) => MobileErrorPanel(
             message: error.toString(),
-            onRetry: () => ref.invalidate(
-              platformCompanyDetailProvider(companyId),
-            ),
+            onRetry: () =>
+                ref.invalidate(platformCompanyDetailProvider(companyId)),
           ),
         ),
       ],
@@ -104,11 +103,7 @@ class _CompanyDetailLoading extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 18),
-        ShimmerLoading(
-          width: double.infinity,
-          height: 220,
-          borderRadius: 16,
-        ),
+        ShimmerLoading(width: double.infinity, height: 220, borderRadius: 16),
       ],
     );
   }
@@ -241,9 +236,13 @@ class _CompanyDetailContent extends ConsumerWidget {
           child: Column(
             children: [
               _InfoRow(
-                  context.l10n.companydetailPlan, data.subscription.planName),
+                context.l10n.companydetailPlan,
+                data.subscription.planName,
+              ),
               _InfoRow(
-                  context.l10n.companydetailStatus, data.subscription.status),
+                context.l10n.companydetailStatus,
+                data.subscription.status,
+              ),
               _InfoRow(
                 context.l10n.companydetailMonthlyPrice,
                 '${data.subscription.monthlyPrice} ${data.subscription.currency}',
@@ -364,17 +363,18 @@ class _CompanyDetailContent extends ConsumerWidget {
     required PlatformCompanySubscription subscription,
   }) async {
     if (subscription.planId <= 0) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-          SnackBar(content: Text(context.l10n.companydetailPlanNotFound)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.companydetailPlanNotFound)),
+      );
       return;
     }
 
     // Capture l10n note before async gap (context may not be mounted after await).
     final activationNote = context.l10n.platformAdminActivationNote;
     try {
-      await ref.read(platformRepositoryProvider).updateCompanySubscription(
+      await ref
+          .read(platformRepositoryProvider)
+          .updateCompanySubscription(
             companyId: companyId,
             planId: subscription.planId,
             status: 'active',
@@ -384,15 +384,13 @@ class _CompanyDetailContent extends ConsumerWidget {
       ref.invalidate(platformCompaniesProvider);
       ref.invalidate(platformMetricsProvider);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-          SnackBar(content: Text(context.l10n.companydetailClientActivated)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.companydetailClientActivated)),
+      );
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error.toString())));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error.toString())));
     }
   }
 }
@@ -434,16 +432,17 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
 
   Future<void> _submit() async {
     if (_planId == null || _planId == 0) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-          SnackBar(content: Text(context.l10n.companydetailChoosePlan)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.companydetailChoosePlan)),
+      );
       return;
     }
 
     setState(() => _submitting = true);
     try {
-      await ref.read(platformRepositoryProvider).updateCompanySubscription(
+      await ref
+          .read(platformRepositoryProvider)
+          .updateCompanySubscription(
             companyId: widget.companyId,
             planId: _planId!,
             status: _status,
@@ -452,15 +451,13 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
       ref.invalidate(platformCompanyDetailProvider(widget.companyId));
       if (!mounted) return;
       Navigator.pop(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(
-          content: Text(context.l10n.companydetailSubscriptionUpdated)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.companydetailSubscriptionUpdated)),
+      );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error.toString())));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error.toString())));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -518,8 +515,9 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
               DropdownButtonFormField<int>(
                 initialValue: _planId == 0 ? null : _planId,
                 dropdownColor: MobileSurface.surface,
-                decoration:
-                    InputDecoration(labelText: context.l10n.companydetailPlan),
+                decoration: InputDecoration(
+                  labelText: context.l10n.companydetailPlan,
+                ),
                 items: activePlans
                     .map(
                       (plan) => DropdownMenuItem<int>(
@@ -542,7 +540,8 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
                 initialValue: _status,
                 dropdownColor: MobileSurface.surface,
                 decoration: InputDecoration(
-                    labelText: context.l10n.companydetailStatus),
+                  labelText: context.l10n.companydetailStatus,
+                ),
                 items: _statuses
                     .map(
                       (status) => DropdownMenuItem<String>(
@@ -606,22 +605,22 @@ class _FeaturesSheetState extends ConsumerState<_FeaturesSheet> {
   Future<void> _submit() async {
     setState(() => _submitting = true);
     try {
-      await ref.read(platformRepositoryProvider).updateCompanyFeatures(
+      await ref
+          .read(platformRepositoryProvider)
+          .updateCompanyFeatures(
             companyId: widget.companyId,
             features: _features,
           );
       ref.invalidate(platformCompanyDetailProvider(widget.companyId));
       if (!mounted) return;
       Navigator.pop(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-          SnackBar(content: Text(context.l10n.companydetailModulesUpdated)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.companydetailModulesUpdated)),
+      );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error.toString())));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error.toString())));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

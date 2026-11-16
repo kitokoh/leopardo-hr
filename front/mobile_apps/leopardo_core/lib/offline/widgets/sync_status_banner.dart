@@ -3,6 +3,7 @@
 // ============================================================
 
 import 'package:material_ui/material_ui.dart';
+
 import '../services/sync_service.dart';
 
 class SyncStatusBanner extends StatelessWidget {
@@ -21,24 +22,25 @@ class SyncStatusBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (mode) {
       SyncMode.offline => _banner(
-          color: Colors.red.shade700,
-          icon: Icons.wifi_off_rounded,
-          label: 'Mode hors ligne — données sauvegardées localement',
-        ),
+        color: Colors.red.shade700,
+        icon: Icons.wifi_off_rounded,
+        label: 'Mode hors ligne — données sauvegardées localement',
+      ),
       SyncMode.edge => _banner(
-          color: Colors.orange.shade700,
-          icon: Icons.lan_rounded,
-          label: isSyncing
-              ? 'Synchronisation Edge en cours…'
-              : 'Réseau local (Edge)',
-          trailing: onSyncTap != null
-              ? IconButton(
-                  icon: const Icon(Icons.sync, color: Colors.white, size: 18),
-                  onPressed: onSyncTap,
-                )
-              : null,
-        ),
-      SyncMode.cloud => const SizedBox.shrink(), // Cloud = normal mode, no banner
+        color: Colors.orange.shade700,
+        icon: Icons.lan_rounded,
+        label: isSyncing
+            ? 'Synchronisation Edge en cours…'
+            : 'Réseau local (Edge)',
+        trailing: onSyncTap != null
+            ? IconButton(
+                icon: const Icon(Icons.sync, color: Colors.white, size: 18),
+                onPressed: onSyncTap,
+              )
+            : null,
+      ),
+      SyncMode.cloud =>
+        const SizedBox.shrink(), // Cloud = normal mode, no banner
     };
   }
 

@@ -92,10 +92,8 @@ class _BrandPreview extends StatelessWidget {
                         child: Image.network(
                           branding.logoUrl!,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Icon(
-                            Icons.business_rounded,
-                            color: primary,
-                          ),
+                          errorBuilder: (_, __, ___) =>
+                              Icon(Icons.business_rounded, color: primary),
                         ),
                       ),
               ),
@@ -178,7 +176,9 @@ class _BrandingFormState extends ConsumerState<_BrandingForm> {
     setState(() => _saving = true);
 
     try {
-      await ref.read(companyBrandingRepositoryProvider).update(
+      await ref
+          .read(companyBrandingRepositoryProvider)
+          .update(
             CompanyBrandingPayload(
               displayName: _nameCtrl.text,
               logoUrl: _logoCtrl.text,
@@ -195,9 +195,8 @@ class _BrandingFormState extends ConsumerState<_BrandingForm> {
       );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error.toString())));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error.toString())));
     } finally {
       if (mounted) setState(() => _saving = false);
     }

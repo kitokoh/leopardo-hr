@@ -15,8 +15,7 @@ class CamerasLoginScreen extends ConsumerStatefulWidget {
   const CamerasLoginScreen({super.key});
 
   @override
-  ConsumerState<CamerasLoginScreen> createState() =>
-      _CamerasLoginScreenState();
+  ConsumerState<CamerasLoginScreen> createState() => _CamerasLoginScreenState();
 }
 
 class _CamerasLoginScreenState extends ConsumerState<CamerasLoginScreen> {

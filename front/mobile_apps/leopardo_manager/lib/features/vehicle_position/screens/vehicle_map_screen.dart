@@ -110,7 +110,8 @@ class VehicleMapScreen extends ConsumerWidget {
                                   const SizedBox(width: 4),
                                   Text(
                                     context.l10n.vehicleMapSpeedKmh(
-                                        v.speed!.toStringAsFixed(0)),
+                                      v.speed!.toStringAsFixed(0),
+                                    ),
                                     style: AppTypography.bodySmall.copyWith(
                                       color: AppColors.textMutedDark,
                                     ),

@@ -65,7 +65,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       final methods = await auth.getAvailableBiometrics();
       if (!mounted) return;
       setState(() {
-        _fingerprintAvailable = supported &&
+        _fingerprintAvailable =
+            supported &&
             canCheck &&
             methods.any((type) => type == BiometricType.fingerprint);
       });
@@ -87,7 +88,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     );
     final week = _buildWeekSummaries(weekLogs);
     final employee = authState.employee;
-    final isCheckedIn = attState.todayLog?.checkIn != null &&
+    final isCheckedIn =
+        attState.todayLog?.checkIn != null &&
         attState.todayLog?.checkOut == null;
     const canDirectEdit = false;
 
@@ -167,8 +169,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     final messenger = ScaffoldMessenger.of(context);
     messenger.showSnackBar(
       SnackBar(
-        content:
-            Text(context.l10n.attendanceSendingToServer(choice.loadingLabel)),
+        content: Text(
+          context.l10n.attendanceSendingToServer(choice.loadingLabel),
+        ),
         duration: const Duration(seconds: 2),
         backgroundColor: AppColors.rhDark,
       ),
@@ -176,11 +179,11 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
 
     final success = isCheckedIn
         ? await ref
-            .read(attendanceProvider.notifier)
-            .checkOut(workType: choice.workType)
+              .read(attendanceProvider.notifier)
+              .checkOut(workType: choice.workType)
         : await ref
-            .read(attendanceProvider.notifier)
-            .checkIn(workType: choice.workType);
+              .read(attendanceProvider.notifier)
+              .checkIn(workType: choice.workType);
     if (!mounted) return;
     messenger.clearSnackBars();
     messenger.showSnackBar(
@@ -189,7 +192,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           success
               ? choice.successLabel
               : ref.read(attendanceProvider).error ??
-                  context.l10n.attendanceRetryAfterFailure(choice.failureLabel),
+                    context.l10n.attendanceRetryAfterFailure(
+                      choice.failureLabel,
+                    ),
         ),
         backgroundColor: success ? AppColors.rh : AppColors.danger,
       ),
@@ -305,10 +310,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             ...choices.map(
               (choice) => ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text(
-                  choice.title,
-                  style: const TextStyle(color: _text),
-                ),
+                title: Text(choice.title, style: const TextStyle(color: _text)),
                 subtitle: Text(
                   choice.subtitle,
                   style: const TextStyle(color: _muted, fontSize: 12),
@@ -559,8 +561,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           isLoading
               ? context.l10n.attendanceSaving
               : isCheckedIn
-                  ? context.l10n.attendancePressToCheckout
-                  : context.l10n.attendancePressToCheckin,
+              ? context.l10n.attendancePressToCheckout
+              : context.l10n.attendancePressToCheckin,
           style: const TextStyle(color: _secondary, fontSize: 12),
           textAlign: TextAlign.center,
         ),
@@ -602,12 +604,13 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     final checkOut = _formatTime(log?.checkOut);
     final statusLabel = _statusLabel(log);
     final statusColor = _statusColor(log);
-    final gain = state.summary?.totalEstimated ??
+    final gain =
+        state.summary?.totalEstimated ??
         _estimatedEarnings(log?.workedHours ?? 0);
     final currency = state.summary?.currency ?? '';
     final sessionsCount =
         int.tryParse(state.daySummary?['sessions_count']?.toString() ?? '') ??
-            state.todaySessions.length;
+        state.todaySessions.length;
     final breakMinutes =
         int.tryParse(state.daySummary?['break_minutes']?.toString() ?? '') ?? 0;
 
@@ -640,14 +643,18 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           Row(
             children: [
               Expanded(
-                  child: _TimeChip(
-                      label: context.l10n.attendanceCheckinLabel,
-                      value: checkIn)),
+                child: _TimeChip(
+                  label: context.l10n.attendanceCheckinLabel,
+                  value: checkIn,
+                ),
+              ),
               const SizedBox(width: 10),
               Expanded(
-                  child: _TimeChip(
-                      label: context.l10n.attendanceCheckoutLabel,
-                      value: checkOut)),
+                child: _TimeChip(
+                  label: context.l10n.attendanceCheckoutLabel,
+                  value: checkOut,
+                ),
+              ),
             ],
           ),
           if (sessionsCount > 1 || breakMinutes > 0) ...[
@@ -761,8 +768,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     final barColor = day.isAbsent
         ? _soft
         : day.lateMinutes > 0
-            ? AppColors.warning
-            : AppColors.rh;
+        ? AppColors.warning
+        : AppColors.rh;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
@@ -806,7 +813,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                           day.isAbsent
                               ? context.l10n.attendanceAbsent
                               : '${context.l10n.attendanceSessionRange(day.checkInFormatted, day.checkOutFormatted)}'
-                                  '${day.lateMinutes > 0 ? ' · +${day.lateMinutes} min' : ''}',
+                                    '${day.lateMinutes > 0 ? ' · +${day.lateMinutes} min' : ''}',
                           style: const TextStyle(fontSize: 10, color: _soft),
                         ),
                       ],
@@ -982,7 +989,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                 subtitle: day.isAbsent
                     ? context.l10n.attendanceNoPunchForDay
                     : context.l10n.attendanceDaySessionsSummary(
-                        day.hoursFormatted, day.sessionsCount),
+                        day.hoursFormatted,
+                        day.sessionsCount,
+                      ),
               ),
               const SizedBox(height: 14),
               _ActionTile(
@@ -1040,8 +1049,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         builder: (context, controller) => SafeArea(
           child: Consumer(
             builder: (context, ref, _) {
-              final anomaliesAsync =
-                  ref.watch(monthlyAnomaliesProvider(day.date));
+              final anomaliesAsync = ref.watch(
+                monthlyAnomaliesProvider(day.date),
+              );
               final dayAnomalies = anomaliesAsync.maybeWhen(
                 data: (report) => report.forDate(_dateKey(day.date)),
                 orElse: () => const <AttendanceAnomaly>[],
@@ -1146,9 +1156,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       final labelPrefix = index == 0
           ? context.l10n.attendanceDayTodayLabel
           : index == 1
-              ? context.l10n.attendanceDayYesterdayLabel
-              : _capitalize(
-                  DateFormat('EEE', deviceIntlDateLocale).format(date));
+          ? context.l10n.attendanceDayYesterdayLabel
+          : _capitalize(DateFormat('EEE', deviceIntlDateLocale).format(date));
       final label =
           '$labelPrefix - ${DateFormat('d MMM', deviceIntlDateLocale).format(date)}';
       return AttendanceDaySummary.fromLogs(
@@ -1688,13 +1697,13 @@ class _TaskLine extends ConsumerWidget {
             done
                 ? Icons.task_alt
                 : priority == 'urgent' || priority == 'high'
-                    ? Icons.priority_high
-                    : Icons.task_alt,
+                ? Icons.priority_high
+                : Icons.task_alt,
             color: done
                 ? AppColors.rh
                 : priority == 'urgent' || priority == 'high'
-                    ? AppColors.warning
-                    : AppColors.rh,
+                ? AppColors.warning
+                : AppColors.rh,
             size: 18,
           ),
           const SizedBox(width: 10),
@@ -1856,7 +1865,9 @@ class _TaskCompletionSheetState extends ConsumerState<_TaskCompletionSheet> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref.read(attendanceRepositoryProvider).completeTask(
+      await ref
+          .read(attendanceRepositoryProvider)
+          .completeTask(
             taskId: widget.taskId,
             completedMinutes: int.parse(_minutesCtrl.text.trim()),
             note: _noteCtrl.text,
@@ -1869,10 +1880,9 @@ class _TaskCompletionSheetState extends ConsumerState<_TaskCompletionSheet> {
       ).showSnackBar(SnackBar(content: Text(context.l10n.attendanceTaskDone)));
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
-            SnackBar(content: Text(context.l10n.attendanceTaskFailed(e))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.attendanceTaskFailed(e))),
+        );
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -1910,7 +1920,8 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
 
   bool _isTimeFuture(TimeOfDay time) {
     final now = DateTime.now();
-    final isToday = widget.targetDate.day == now.day &&
+    final isToday =
+        widget.targetDate.day == now.day &&
         widget.targetDate.month == now.month &&
         widget.targetDate.year == now.year;
     if (!isToday) return false;
@@ -1957,7 +1968,8 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     if (_checkIn == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(context.l10n.attendanceCorrectionCheckinRequired)),
+          content: Text(context.l10n.attendanceCorrectionCheckinRequired),
+        ),
       );
       return;
     }
@@ -1965,9 +1977,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     if (widget.canDirectEdit && widget.logId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            context.l10n.attendanceCorrectionNoLogWarning,
-          ),
+          content: Text(context.l10n.attendanceCorrectionNoLogWarning),
           backgroundColor: AppColors.warning,
         ),
       );
@@ -1977,7 +1987,9 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     setState(() => _submitting = true);
     var success = true;
     if (widget.canDirectEdit) {
-      success = await ref.read(attendanceProvider.notifier).updateCorrection(
+      success = await ref
+          .read(attendanceProvider.notifier)
+          .updateCorrection(
             logId: widget.logId!,
             checkIn: _asDateTime(widget.targetDate, _checkIn!),
             checkOut: _checkOut == null
@@ -1986,7 +1998,9 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
             notes: _reasonCtrl.text.trim(),
           );
     } else {
-      success = await ref.read(attendanceProvider.notifier).requestCorrection(
+      success = await ref
+          .read(attendanceProvider.notifier)
+          .requestCorrection(
             logId: widget.logId,
             date: widget.targetDate,
             checkIn: _asDateTime(widget.targetDate, _checkIn!),
@@ -2000,7 +2014,8 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     if (!mounted) return;
     setState(() => _submitting = false);
     if (!success) {
-      final message = ref.read(attendanceProvider).error ??
+      final message =
+          ref.read(attendanceProvider).error ??
           context.l10n.attendanceCorrectionSubmitError;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), backgroundColor: AppColors.danger),
@@ -2013,11 +2028,17 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
         content: Text(
           widget.canDirectEdit
               ? context.l10n.attendanceCorrectionDirectSnack(
-                  DateFormat('d MMM', deviceIntlDateLocale)
-                      .format(widget.targetDate))
+                  DateFormat(
+                    'd MMM',
+                    deviceIntlDateLocale,
+                  ).format(widget.targetDate),
+                )
               : context.l10n.attendanceCorrectionRequestSnack(
-                  DateFormat('d MMM', deviceIntlDateLocale)
-                      .format(widget.targetDate)),
+                  DateFormat(
+                    'd MMM',
+                    deviceIntlDateLocale,
+                  ).format(widget.targetDate),
+                ),
         ),
         backgroundColor: AppColors.rh,
         duration: const Duration(seconds: 4),
@@ -2057,8 +2078,11 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
             const SizedBox(height: 16),
             Text(
               context.l10n.attendanceCorrectionEditDateTitle(
-                  DateFormat('EEEE d MMMM', deviceIntlDateLocale)
-                      .format(widget.targetDate)),
+                DateFormat(
+                  'EEEE d MMMM',
+                  deviceIntlDateLocale,
+                ).format(widget.targetDate),
+              ),
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -2071,7 +2095,9 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                   ? context.l10n.attendanceCorrectionDirectHint
                   : context.l10n.attendanceCorrectionRequestHint,
               style: const TextStyle(
-                  fontSize: 12, color: AppColors.mobileDarkMuted),
+                fontSize: 12,
+                color: AppColors.mobileDarkMuted,
+              ),
             ),
             const SizedBox(height: 18),
             Row(
@@ -2099,7 +2125,9 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
               maxLines: 2,
               maxLength: 200,
               style: const TextStyle(
-                  fontSize: 13, color: AppColors.mobileDarkText),
+                fontSize: 13,
+                color: AppColors.mobileDarkText,
+              ),
               decoration: InputDecoration(
                 hintText: context.l10n.attendanceCorrectionReasonHint,
                 hintStyle: const TextStyle(
@@ -2110,13 +2138,15 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                 fillColor: AppColors.mobileDarkField,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide:
-                      const BorderSide(color: AppColors.mobileDarkBorder),
+                  borderSide: const BorderSide(
+                    color: AppColors.mobileDarkBorder,
+                  ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide:
-                      const BorderSide(color: AppColors.mobileDarkBorder),
+                  borderSide: const BorderSide(
+                    color: AppColors.mobileDarkBorder,
+                  ),
                 ),
               ),
               validator: (value) => value == null || value.trim().isEmpty
@@ -2188,7 +2218,9 @@ class _TimeTile extends StatelessWidget {
             Text(
               label,
               style: const TextStyle(
-                  fontSize: 10, color: AppColors.mobileDarkMuted),
+                fontSize: 10,
+                color: AppColors.mobileDarkMuted,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
@@ -2198,8 +2230,9 @@ class _TimeTile extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color:
-                    value != null ? AppColors.rh : AppColors.mobileDarkDisabled,
+                color: value != null
+                    ? AppColors.rh
+                    : AppColors.mobileDarkDisabled,
                 fontFeatures: const [FontFeature.tabularFigures()],
               ),
             ),
@@ -2230,8 +2263,10 @@ class _TimeChip extends StatelessWidget {
         children: [
           Text(
             label,
-            style:
-                const TextStyle(fontSize: 10, color: AppColors.mobileDarkMuted),
+            style: const TextStyle(
+              fontSize: 10,
+              color: AppColors.mobileDarkMuted,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
@@ -2325,7 +2360,9 @@ class _WeekStat extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-              fontSize: 10, color: AppColors.mobileDarkDisabled),
+            fontSize: 10,
+            color: AppColors.mobileDarkDisabled,
+          ),
         ),
       ],
     );

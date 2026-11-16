@@ -256,8 +256,9 @@ class _MonthlySummaryBody extends StatelessWidget {
               child: _MetricTile(
                 label: context.l10n.attendancePresence,
                 value: '${summary.daysPresent}/${summary.workingDays}',
-                detail:
-                    context.l10n.attendanceDaysAbsentShort(summary.daysAbsent),
+                detail: context.l10n.attendanceDaysAbsentShort(
+                  summary.daysAbsent,
+                ),
                 icon: Icons.event_available,
                 color: AppColors.rh,
               ),

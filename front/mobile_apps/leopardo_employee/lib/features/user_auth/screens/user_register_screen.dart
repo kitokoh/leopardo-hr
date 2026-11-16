@@ -41,7 +41,9 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     HapticFeedback.mediumImpact();
 
-    final ok = await ref.read(userAuthProvider.notifier).register(
+    final ok = await ref
+        .read(userAuthProvider.notifier)
+        .register(
           firstName: _firstNameCtrl.text.trim(),
           lastName: _lastNameCtrl.text.trim(),
           email: _emailCtrl.text.trim(),
@@ -62,9 +64,9 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
       final googleSignIn = GoogleSignIn.instance;
       final account = await googleSignIn.authenticate();
 
-      final ok = await ref.read(userAuthProvider.notifier).googleSignIn(
-            idToken: account.authentication.idToken ?? '',
-          );
+      final ok = await ref
+          .read(userAuthProvider.notifier)
+          .googleSignIn(idToken: account.authentication.idToken ?? '');
 
       if (ok && mounted) {
         context.go('/user-home');
@@ -72,9 +74,9 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
     } catch (e) {
       if (mounted) {
         final l10n = context.l10n;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.userAuthGoogleError(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.userAuthGoogleError(e.toString()))),
+        );
       }
     } finally {
       if (mounted) setState(() => _googleLoading = false);
@@ -91,9 +93,8 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
 
     ref.listen<UserAuthState>(userAuthProvider, (prev, next) {
       if (next.error != null && next.error != prev?.error) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.error!)));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(next.error!)));
       }
     });
 
@@ -150,20 +151,20 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
     return Column(
       children: [
         Container(
-          width: 64,
-          height: 64,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              colors: [AppColors.ia, AppColors.rh],
-            ),
-          ),
-          child: const Icon(
-            Icons.person_add_outlined,
-            color: Colors.white,
-            size: 30,
-          ),
-        )
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [AppColors.ia, AppColors.rh],
+                ),
+              ),
+              child: const Icon(
+                Icons.person_add_outlined,
+                color: Colors.white,
+                size: 30,
+              ),
+            )
             .animate()
             .fadeIn(duration: 400.ms)
             .scale(begin: const Offset(0.8, 0.8), duration: 400.ms),
@@ -215,7 +216,12 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
     );
   }
 
-  Widget _buildForm(AppLocalizations l10n, UserAuthState state, Color text, Color muted) {
+  Widget _buildForm(
+    AppLocalizations l10n,
+    UserAuthState state,
+    Color text,
+    Color muted,
+  ) {
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
@@ -239,8 +245,9 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
                       labelText: l10n.userAuthFirstName,
                       prefixIcon: const Icon(Icons.person_outlined),
                     ),
-                    validator: (v) =>
-                        (v?.trim().isEmpty ?? true) ? l10n.commonRequired : null,
+                    validator: (v) => (v?.trim().isEmpty ?? true)
+                        ? l10n.commonRequired
+                        : null,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -252,8 +259,9 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
                       labelText: l10n.userAuthLastName,
                       prefixIcon: const Icon(Icons.person_outlined),
                     ),
-                    validator: (v) =>
-                        (v?.trim().isEmpty ?? true) ? l10n.commonRequired : null,
+                    validator: (v) => (v?.trim().isEmpty ?? true)
+                        ? l10n.commonRequired
+                        : null,
                   ),
                 ),
               ],

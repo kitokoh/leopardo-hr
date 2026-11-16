@@ -106,16 +106,12 @@ class _LiveBody extends ConsumerWidget {
                 const SizedBox(height: 8),
                 Text(
                   camera.name,
-                  style: AppTypography.subtitle
-                      .copyWith(color: Colors.white),
+                  style: AppTypography.subtitle.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  l10n.t(
-                    camera.isActive ? 'liveStreamInfo' : 'cameraInactive',
-                  ),
-                  style: AppTypography.caption
-                      .copyWith(color: Colors.white70),
+                  l10n.t(camera.isActive ? 'liveStreamInfo' : 'cameraInactive'),
+                  style: AppTypography.caption.copyWith(color: Colors.white70),
                 ),
               ],
             ),
@@ -130,8 +126,9 @@ class _LiveBody extends ConsumerWidget {
         Card(
           elevation: 0,
           color: AppColors.surfaceFor(context),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -150,8 +147,7 @@ class _LiveBody extends ConsumerWidget {
                   text: text,
                   muted: muted,
                 ),
-                if (camera.location != null &&
-                    camera.location!.isNotEmpty) ...[
+                if (camera.location != null && camera.location!.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   _InfoRow(
                     label: l10n.t('location'),
@@ -166,8 +162,7 @@ class _LiveBody extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
         OutlinedButton.icon(
-          onPressed: () =>
-              ref.invalidate(cameraStreamProvider(camera.id)),
+          onPressed: () => ref.invalidate(cameraStreamProvider(camera.id)),
           icon: const Icon(Icons.refresh),
           label: Text(l10n.t('liveRefreshToken')),
         ),
@@ -196,10 +191,7 @@ class _InfoRow extends StatelessWidget {
       children: [
         Text(label, style: AppTypography.caption.copyWith(color: muted)),
         const SizedBox(height: 2),
-        Text(
-          value,
-          style: AppTypography.bodySmall.copyWith(color: text),
-        ),
+        Text(value, style: AppTypography.bodySmall.copyWith(color: text)),
       ],
     );
   }

@@ -98,8 +98,7 @@ class LocationService {
   LocationOutcome _map(LocationPermission permission) {
     return switch (permission) {
       LocationPermission.always ||
-      LocationPermission.whileInUse =>
-        LocationOutcome.granted,
+      LocationPermission.whileInUse => LocationOutcome.granted,
       LocationPermission.deniedForever => LocationOutcome.deniedForever,
       LocationPermission.denied => LocationOutcome.denied,
       // `unableToDetermine` (plateforme sans service) : impossible de savoir,
@@ -109,8 +108,9 @@ class LocationService {
   }
 }
 
-final locationServiceProvider =
-    Provider<LocationService>((ref) => LocationService());
+final locationServiceProvider = Provider<LocationService>(
+  (ref) => LocationService(),
+);
 
 /// Villes proposées pour le choix manuel.
 ///
@@ -150,8 +150,9 @@ class CityPickerSheet extends StatefulWidget {
 }
 
 class _CityPickerSheetState extends State<CityPickerSheet> {
-  late final TextEditingController _controller =
-      TextEditingController(text: widget.currentCity ?? '');
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.currentCity ?? '',
+  );
 
   @override
   void dispose() {

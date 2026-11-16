@@ -87,7 +87,10 @@ class _SalaryAdvanceListScreenState
 
                 return Semantics(
                   label: context.l10n.salaryAdvanceSemantics(
-                      amount, reason, _getStatusLabel(context.l10n, advance)),
+                    amount,
+                    reason,
+                    _getStatusLabel(context.l10n, advance),
+                  ),
                   container: true,
                   child: ExcludeSemantics(
                     child: MobileListGlassCard(
@@ -126,8 +129,9 @@ class _SalaryAdvanceListScreenState
   }
 
   Widget? _advanceFooter(BuildContext context, SalaryAdvance advance) {
-    final proofButton =
-        advance.hasProof ? _proofButton(context, advance.id) : null;
+    final proofButton = advance.hasProof
+        ? _proofButton(context, advance.id)
+        : null;
 
     if (advance.validationStatus == 'payment_declared') {
       return Column(
@@ -212,15 +216,15 @@ class _SalaryAdvanceListScreenState
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(context.l10n.salaryAdvanceProofDownloaded(path))),
+            content: Text(context.l10n.salaryAdvanceProofDownloaded(path)),
+          ),
         );
       }
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-          SnackBar(content: Text(context.l10n.salaryAdvanceError(error))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.salaryAdvanceError(error))),
+      );
     } finally {
       if (mounted) setState(() => _downloadingProofId = null);
     }
@@ -246,9 +250,7 @@ class _SalaryAdvanceListScreenState
       context: context,
       builder: (_) => AlertDialog(
         title: Text(context.l10n.salaryAdvanceCancelTitle),
-        content: Text(
-          context.l10n.salaryAdvanceCancelBody,
-        ),
+        content: Text(context.l10n.salaryAdvanceCancelBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -272,10 +274,9 @@ class _SalaryAdvanceListScreenState
       );
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-          SnackBar(content: Text(context.l10n.salaryAdvanceError(error))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.salaryAdvanceError(error))),
+      );
     }
   }
 
@@ -284,9 +285,7 @@ class _SalaryAdvanceListScreenState
       context: context,
       builder: (_) => AlertDialog(
         title: Text(context.l10n.salaryAdvanceConfirmReceivedTitle),
-        content: Text(
-          context.l10n.salaryAdvanceConfirmReceivedBody,
-        ),
+        content: Text(context.l10n.salaryAdvanceConfirmReceivedBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -307,15 +306,13 @@ class _SalaryAdvanceListScreenState
           .confirmReceived(advanceId);
       ref.invalidate(salaryAdvancesProvider);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Reception confirmee.')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Reception confirmee.')));
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-          SnackBar(content: Text(context.l10n.salaryAdvanceError(error))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.salaryAdvanceError(error))),
+      );
     }
   }
 
@@ -514,7 +511,9 @@ class _SalaryAdvanceRequestSheetState
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref.read(salaryAdvanceRepositoryProvider).requestAdvance(
+      await ref
+          .read(salaryAdvanceRepositoryProvider)
+          .requestAdvance(
             amount: _parseAmount(_amountCtrl.text) ?? 0,
             repaymentMonths: _repaymentMonths,
             reason: _reasonCtrl.text,
@@ -530,10 +529,9 @@ class _SalaryAdvanceRequestSheetState
     } catch (e) {
       if (!context.mounted) return;
       setState(() => _submitting = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-          SnackBar(content: Text(context.l10n.salaryAdvanceError(e))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.salaryAdvanceError(e))),
+      );
     }
   }
 

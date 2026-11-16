@@ -135,20 +135,17 @@ class _StartupGateState extends State<StartupGate> {
                               height: 80,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: const Color(
-                                  0xFF10B981,
-                                ).withValues(alpha: 0.1),
+                                color: const Color(0xFF10B981)
+                                    .withValues(alpha: 0.1),
                                 border: Border.all(
-                                  color: const Color(
-                                    0xFF10B981,
-                                  ).withValues(alpha: 0.3),
+                                  color: const Color(0xFF10B981)
+                                      .withValues(alpha: 0.3),
                                   width: 1.5,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(
-                                      0xFF10B981,
-                                    ).withValues(alpha: 0.3),
+                                    color: const Color(0xFF10B981)
+                                        .withValues(alpha: 0.3),
                                     blurRadius: 30,
                                     spreadRadius: 2,
                                   ),
@@ -199,8 +196,7 @@ class _StartupGateState extends State<StartupGate> {
                                   height: 1.4,
                                 ),
                               ),
-                            ]
-                            else
+                            ] else
                               Text(
                                 _startupWarning!,
                                 textAlign: TextAlign.center,
@@ -215,16 +211,14 @@ class _StartupGateState extends State<StartupGate> {
                             if (_startupWarning != null) ...[
                               const SizedBox(height: 24),
                               OutlinedButton(
-                                onPressed:
-                                    () => setState(() {
-                                      _showStartupGuard = false;
-                                    }),
+                                onPressed: () => setState(() {
+                                  _showStartupGuard = false;
+                                }),
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: AppColors.mobileLavender,
                                   side: BorderSide(
-                                    color: const Color(
-                                      0xFFDAE2FD,
-                                    ).withValues(alpha: 0.2),
+                                    color: const Color(0xFFDAE2FD)
+                                        .withValues(alpha: 0.2),
                                   ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),

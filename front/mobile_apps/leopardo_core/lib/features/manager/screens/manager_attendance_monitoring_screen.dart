@@ -38,9 +38,8 @@ class ManagerAttendanceMonitoringScreen extends ConsumerWidget {
       ),
       children: [
         attendance.when(
-          loading: () => MobileEmptyLoading(
-            label: context.l10n.attendanceSyncingPresence,
-          ),
+          loading: () =>
+              MobileEmptyLoading(label: context.l10n.attendanceSyncingPresence),
           error: (error, _) => MobileErrorPanel(
             message: error.toString(),
             onRetry: () => ref.invalidate(managerAttendanceTodayProvider),
@@ -59,10 +58,7 @@ class ManagerAttendanceMonitoringScreen extends ConsumerWidget {
 /// PA2-ATT-005: opens the manager day-detail drill-down for [employeeId].
 /// The bottom sheet owns its own Riverpod scope via [Consumer] so the parent
 /// screen does not need to know about [employeeDayDetailProvider].
-Future<void> showEmployeeDayDetailSheet(
-  BuildContext context,
-  int employeeId,
-) {
+Future<void> showEmployeeDayDetailSheet(BuildContext context, int employeeId) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
@@ -220,9 +216,7 @@ class _EmployeeDayDetailSheet extends ConsumerWidget {
                     ),
                   ],
                   const SizedBox(height: 18),
-                  MobileSectionLabel(
-                    'Pointages (${day.sessionsCount})',
-                  ),
+                  MobileSectionLabel('Pointages (${day.sessionsCount})'),
                   const SizedBox(height: 6),
                   if (day.sessions.isEmpty)
                     _EmptyState(
@@ -403,7 +397,8 @@ class ManagerAnomaliesScreen extends ConsumerWidget {
       children: [
         report.when(
           loading: () => MobileEmptyLoading(
-              label: context.l10n.attendanceAnalyzingAnomalies),
+            label: context.l10n.attendanceAnalyzingAnomalies,
+          ),
           error: (error, _) => MobileErrorPanel(
             message: error.toString(),
             onRetry: () => ref.invalidate(managerAnomaliesProvider),
@@ -446,8 +441,9 @@ class _AnomalyBody extends StatelessWidget {
                 child: _Metric(
                   label: 'Retard',
                   value: '${report.lateMinutes}m',
-                  color:
-                      report.lateMinutes > 0 ? AppColors.warning : AppColors.rh,
+                  color: report.lateMinutes > 0
+                      ? AppColors.warning
+                      : AppColors.rh,
                 ),
               ),
             ],

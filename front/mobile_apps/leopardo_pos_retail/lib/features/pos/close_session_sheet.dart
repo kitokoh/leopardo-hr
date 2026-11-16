@@ -4,7 +4,10 @@ import '../../core/models/retail_models.dart';
 
 /// Resultat de la feuille de cloture.
 class CloseSessionResult {
-  const CloseSessionResult({required this.countedCashMinor, this.varianceReason});
+  const CloseSessionResult({
+    required this.countedCashMinor,
+    this.varianceReason,
+  });
 
   final int countedCashMinor;
   final String? varianceReason;
@@ -57,13 +60,22 @@ class _CloseSessionSheetState extends State<CloseSessionSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Cloture de caisse', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            'Cloture de caisse',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Attendu', style: TextStyle(fontSize: 16)),
-              Text('$expected', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+              Text(
+                '$expected',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -95,7 +107,9 @@ class _CloseSessionSheetState extends State<CloseSessionSheet> {
             TextField(
               controller: _reasonController,
               onChanged: (_) => setState(() {}),
-              decoration: const InputDecoration(labelText: 'Motif de l\'ecart (obligatoire)'),
+              decoration: const InputDecoration(
+                labelText: 'Motif de l\'ecart (obligatoire)',
+              ),
             ),
           ],
           const SizedBox(height: 20),
@@ -103,13 +117,13 @@ class _CloseSessionSheetState extends State<CloseSessionSheet> {
             onPressed: needsReason
                 ? null
                 : () => Navigator.of(context).pop(
-                      CloseSessionResult(
-                        countedCashMinor: counted,
-                        varianceReason: _reasonController.text.trim().isEmpty
-                            ? null
-                            : _reasonController.text.trim(),
-                      ),
+                    CloseSessionResult(
+                      countedCashMinor: counted,
+                      varianceReason: _reasonController.text.trim().isEmpty
+                          ? null
+                          : _reasonController.text.trim(),
                     ),
+                  ),
             child: const Text('Cloturer la caisse'),
           ),
         ],

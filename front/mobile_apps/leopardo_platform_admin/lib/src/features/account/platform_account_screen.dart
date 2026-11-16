@@ -63,29 +63,24 @@ class PlatformAccountScreen extends ConsumerWidget {
         const SizedBox(height: 18),
         const MobileSectionLabel('Securite'),
         MobileListCard(
-          icon:
-              user?.twoFactorEnabled == true
-                  ? Icons.verified_user_rounded
-                  : Icons.security_update_warning_rounded,
-          iconColor:
-              user?.twoFactorEnabled == true
-                  ? AppColors.success
-                  : AppColors.warning,
-          title:
-              user?.twoFactorEnabled == true
-                  ? 'Double authentification active'
-                  : 'Double authentification inactive',
-          subtitle:
-              user?.twoFactorEnabled == true
-                  ? 'Le compte plateforme est protege par un second facteur.'
-                  : 'A activer avant exploitation commerciale large.',
+          icon: user?.twoFactorEnabled == true
+              ? Icons.verified_user_rounded
+              : Icons.security_update_warning_rounded,
+          iconColor: user?.twoFactorEnabled == true
+              ? AppColors.success
+              : AppColors.warning,
+          title: user?.twoFactorEnabled == true
+              ? 'Double authentification active'
+              : 'Double authentification inactive',
+          subtitle: user?.twoFactorEnabled == true
+              ? 'Le compte plateforme est protege par un second facteur.'
+              : 'A activer avant exploitation commerciale large.',
         ),
         MobileListCard(
           icon: Icons.key_rounded,
           iconColor: AppColors.info,
           title: 'Session API plateforme',
-          subtitle:
-              'Token Sanctum super-admin utilise uniquement pour les routes /platform.',
+          subtitle: 'Token Sanctum super-admin utilise uniquement pour les routes /platform.',
         ),
         const SizedBox(height: 18),
         const MobileSectionLabel('Perimetre'),
@@ -101,8 +96,7 @@ class PlatformAccountScreen extends ConsumerWidget {
           icon: Icons.block_rounded,
           iconColor: AppColors.warning,
           title: 'Pas de donnees tenant directes',
-          subtitle:
-              'Cette app ne doit pas consommer pointage, absences ou tokens push tenant.',
+          subtitle: 'Cette app ne doit pas consommer pointage, absences ou tokens push tenant.',
         ),
         const SizedBox(height: 18),
         const MobileSectionLabel('Actions'),
@@ -119,8 +113,8 @@ class PlatformAccountScreen extends ConsumerWidget {
           iconColor: AppColors.danger,
           title: 'Deconnexion',
           subtitle: 'Fermer la session super-admin sur cet appareil.',
-          onTap:
-              () => ref.read(platformAuthControllerProvider.notifier).logout(),
+          onTap: () =>
+              ref.read(platformAuthControllerProvider.notifier).logout(),
         ),
       ],
     );

@@ -199,7 +199,9 @@ class _TwoFactorChallengeScreenState
     HapticFeedback.lightImpact();
     FocusScope.of(context).unfocus();
 
-    await ref.read(authProvider.notifier).verifyMfaChallenge(
+    await ref
+        .read(authProvider.notifier)
+        .verifyMfaChallenge(
           code: _useRecovery ? null : value,
           recoveryCode: _useRecovery ? value : null,
         );

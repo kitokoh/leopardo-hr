@@ -91,8 +91,8 @@ class _SalaryAdvanceListScreenState
                 final months = advance.repaymentMonths;
                 final requester =
                     advance.employeeName?.trim().isNotEmpty == true
-                        ? advance.employeeName!
-                        : 'Employe #${advance.employeeId}';
+                    ? advance.employeeName!
+                    : 'Employe #${advance.employeeId}';
 
                 return Semantics(
                   label:
@@ -140,8 +140,9 @@ class _SalaryAdvanceListScreenState
     required Employee? actor,
   }) {
     final details = _advanceContext(advance);
-    final proofButton =
-        advance.hasProof ? _proofButton(context, advance.id) : null;
+    final proofButton = advance.hasProof
+        ? _proofButton(context, advance.id)
+        : null;
 
     final canManage = _canDecideAdvance(actor, advance);
 
@@ -250,9 +251,8 @@ class _SalaryAdvanceListScreenState
       }
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Echec : $error')));
     } finally {
       if (mounted) setState(() => _downloadingProofId = null);
     }
@@ -342,9 +342,8 @@ class _SalaryAdvanceListScreenState
       );
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Echec : $error')));
     }
   }
 
@@ -375,20 +374,20 @@ class _SalaryAdvanceListScreenState
     if (confirmed != true) return;
 
     try {
-      await ref.read(salaryAdvanceRepositoryProvider).approveAdvance(
+      await ref
+          .read(salaryAdvanceRepositoryProvider)
+          .approveAdvance(
             advanceId: advance.id,
             repaymentMonths: advance.repaymentMonths,
           );
       ref.invalidate(salaryAdvancesProvider);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Avance approuvee.')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Avance approuvee.')));
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Echec : $error')));
     }
   }
 
@@ -424,14 +423,12 @@ class _SalaryAdvanceListScreenState
           .markPaid(advanceId: advance.id);
       ref.invalidate(salaryAdvancesProvider);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Paiement declare.')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Paiement declare.')));
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Echec : $error')));
     }
   }
 
@@ -684,7 +681,9 @@ class _SalaryAdvanceRequestSheetState
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref.read(salaryAdvanceRepositoryProvider).requestAdvance(
+      await ref
+          .read(salaryAdvanceRepositoryProvider)
+          .requestAdvance(
             amount: _parseAmount(_amountCtrl.text) ?? 0,
             repaymentMonths: _repaymentMonths,
             reason: _reasonCtrl.text,
@@ -700,9 +699,8 @@ class _SalaryAdvanceRequestSheetState
     } catch (e) {
       if (!context.mounted) return;
       setState(() => _submitting = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $e')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Echec : $e')));
     }
   }
 

@@ -277,7 +277,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                                       log.checkOut != null
                                           ? '${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}'
                                           : context
-                                              .l10n.attendanceStatusInProgress,
+                                                .l10n
+                                                .attendanceStatusInProgress,
                                     )
                                   : context.l10n.attendanceAbsent,
                             ),

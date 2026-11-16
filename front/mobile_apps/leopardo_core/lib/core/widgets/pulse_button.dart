@@ -58,34 +58,31 @@ class _PulseButtonState extends State<PulseButton>
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label:
-          widget.isCheckedIn
-              ? 'Se deconnecter du pointage'
-              : 'Pointer mon arrivee',
+      label: widget.isCheckedIn
+          ? 'Se deconnecter du pointage'
+          : 'Pointer mon arrivee',
       button: true,
       enabled: !widget.isLoading,
       child: GestureDetector(
-        onTap:
-            widget.isLoading
-                ? null
-                : () {
-                  HapticFeedback.mediumImpact();
-                  widget.onTap?.call();
-                },
+        onTap: widget.isLoading
+            ? null
+            : () {
+                HapticFeedback.mediumImpact();
+                widget.onTap?.call();
+              },
         child: AnimatedBuilder(
           animation: _animation,
           builder: (context, child) {
             final accent = widget.isCheckedIn ? AppColors.danger : AppColors.rh;
-            final coreColors =
-                widget.isCheckedIn
-                    ? const [
-                      AppColors.mobilePunchOutGradientStart,
-                      AppColors.mobilePunchOutGradientEnd,
-                    ]
-                    : const [
-                      AppColors.mobilePunchInGradientStart,
-                      AppColors.rhDark,
-                    ];
+            final coreColors = widget.isCheckedIn
+                ? const [
+                    AppColors.mobilePunchOutGradientStart,
+                    AppColors.mobilePunchOutGradientEnd,
+                  ]
+                : const [
+                    AppColors.mobilePunchInGradientStart,
+                    AppColors.rhDark,
+                  ];
 
             return Transform.scale(
               scale: widget.isLoading ? 1.0 : _animation.value,
@@ -126,58 +123,56 @@ class _PulseButtonState extends State<PulseButton>
                             BoxShadow(
                               color: accent.withValues(alpha: 0.28),
                               blurRadius: 28,
-                              spreadRadius:
-                                  widget.isLoading ? 4 : 8 * _animation.value,
+                              spreadRadius: widget.isLoading
+                                  ? 4
+                                  : 8 * _animation.value,
                             ),
                           ],
                         ),
                         child: Center(
-                          child:
-                              widget.isLoading
-                                  ? const SizedBox(
-                                    width: 30,
-                                    height: 30,
-                                    child: CircularProgressIndicator(
-                                      color: Colors.white,
-                                      strokeWidth: 2.4,
-                                    ),
-                                  )
-                                  : Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        widget.isCheckedIn
-                                            ? Icons.logout_rounded
-                                            : Icons.fingerprint_rounded,
-                                        color: Colors.white,
-                                        size: widget.size * 0.19,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        widget.isCheckedIn
-                                            ? 'SORTIR'
-                                            : 'POINTER',
-                                        style: AppTypography.subtitle.copyWith(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w800,
-                                          letterSpacing: 0.8,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 3),
-                                      Text(
-                                        widget.isCheckedIn
-                                            ? 'Fin de journee'
-                                            : 'Arrivee',
-                                        style: AppTypography.caption.copyWith(
-                                          color: Colors.white.withValues(
-                                            alpha: 0.82,
-                                          ),
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
+                          child: widget.isLoading
+                              ? const SizedBox(
+                                  width: 30,
+                                  height: 30,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2.4,
                                   ),
+                                )
+                              : Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      widget.isCheckedIn
+                                          ? Icons.logout_rounded
+                                          : Icons.fingerprint_rounded,
+                                      color: Colors.white,
+                                      size: widget.size * 0.19,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      widget.isCheckedIn ? 'SORTIR' : 'POINTER',
+                                      style: AppTypography.subtitle.copyWith(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: 0.8,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      widget.isCheckedIn
+                                          ? 'Fin de journee'
+                                          : 'Arrivee',
+                                      style: AppTypography.caption.copyWith(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.82,
+                                        ),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                         ),
                       ),
                     ),

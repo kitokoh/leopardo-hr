@@ -22,7 +22,6 @@ Locale? _resolvedLocale(WidgetRef ref) {
   return code.isEmpty ? null : Locale(code);
 }
 
-
 final platformRouterProvider = Provider<GoRouter>((ref) {
   final authListenable = ValueNotifier<PlatformAuthState>(
     ref.read(platformAuthControllerProvider),

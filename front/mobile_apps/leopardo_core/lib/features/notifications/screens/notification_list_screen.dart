@@ -30,16 +30,15 @@ class NotificationListScreen extends ConsumerWidget {
             icon: const Icon(Icons.done_all, color: MobileSurface.secondary),
             onPressed: () async {
               try {
-                await ref
-                    .read(notificationRepositoryProvider)
-                    .markAllAsRead();
+                await ref.read(notificationRepositoryProvider).markAllAsRead();
                 ref.invalidate(notificationsProvider);
               } catch (_) {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text(
-                        'Impossible de marquer les notifications comme lues.'),
+                      'Impossible de marquer les notifications comme lues.',
+                    ),
                   ),
                 );
               }
@@ -64,8 +63,7 @@ class NotificationListScreen extends ConsumerWidget {
                     EmptyState(
                       icon: Icons.notifications_none,
                       title: 'Aucune notification',
-                      description:
-                          'Vous etes a jour. Cette page se rafraichit automatiquement.',
+                      description: 'Vous etes a jour. Cette page se rafraichit automatiquement.',
                     ),
                   ],
                 )
@@ -91,7 +89,8 @@ class NotificationListScreen extends ConsumerWidget {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
-                                    'Impossible de marquer la notification comme lue.'),
+                                  'Impossible de marquer la notification comme lue.',
+                                ),
                               ),
                             );
                           }
@@ -113,8 +112,9 @@ class NotificationListScreen extends ConsumerWidget {
                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content:
-                                  Text('Impossible de supprimer la notification.'),
+                              content: Text(
+                                'Impossible de supprimer la notification.',
+                              ),
                             ),
                           );
                         }
@@ -206,8 +206,9 @@ class _NotificationTile extends StatelessWidget {
                               title,
                               style: AppTypography.bodySmall.copyWith(
                                 color: MobileSurface.text,
-                                fontWeight:
-                                    isRead ? FontWeight.w500 : FontWeight.w700,
+                                fontWeight: isRead
+                                    ? FontWeight.w500
+                                    : FontWeight.w700,
                               ),
                             ),
                           ),

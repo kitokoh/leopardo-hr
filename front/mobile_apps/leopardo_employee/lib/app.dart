@@ -171,8 +171,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/user-company-integration',
-        builder: (context, state) =>
-            const CompanyIntegrationRequestScreen(),
+        builder: (context, state) => const CompanyIntegrationRequestScreen(),
       ),
 
       // --- Authenticated routes with bottom nav ---
@@ -263,8 +262,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/settings/2fa',
-            builder: (context, state) =>
-                const TwoFactorSettingsScreen(),
+            builder: (context, state) => const TwoFactorSettingsScreen(),
           ),
           GoRoute(
             path: '/profile',

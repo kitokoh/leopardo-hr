@@ -100,8 +100,8 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
         _lastResult = result.replayed
             ? 'Relevé déjà enregistré (rejeu) — aucun doublon.'
             : result.isAnomaly
-                ? 'Anomalie détectée (delta ${result.deltaMinor}) — signalée au manager.'
-                : 'Relevé enregistré (delta ${result.deltaMinor}).';
+            ? 'Anomalie détectée (delta ${result.deltaMinor}) — signalée au manager.'
+            : 'Relevé enregistré (delta ${result.deltaMinor}).';
       });
       _readingController.clear();
     } catch (e) {
@@ -165,7 +165,9 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
             // ── Shift actif ────────────────────────────────────────────────
             Text(
               l10n.fuelPumpistActiveShift,
-              style: AppTypography.bodySmall.copyWith(color: AppColors.textDark),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textDark,
+              ),
             ),
             const SizedBox(height: 8),
             shiftsAsync.when(
@@ -200,10 +202,11 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
                                           ),
                                           Text(
                                             s.assignmentDate ?? '',
-                                            style:
-                                                AppTypography.caption.copyWith(
-                                              color: AppColors.textMutedDark,
-                                            ),
+                                            style: AppTypography.caption
+                                                .copyWith(
+                                                  color:
+                                                      AppColors.textMutedDark,
+                                                ),
                                           ),
                                         ],
                                       ),
@@ -232,7 +235,9 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
             // ── Sélection station → pompe → compteur ───────────────────────
             Text(
               l10n.fuelPumpSelectstation,
-              style: AppTypography.bodySmall.copyWith(color: AppColors.textDark),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textDark,
+              ),
             ),
             const SizedBox(height: 8),
             stationsAsync.when(
@@ -256,7 +261,9 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
             const SizedBox(height: 16),
             Text(
               l10n.fuelPumpSelectpump,
-              style: AppTypography.bodySmall.copyWith(color: AppColors.textDark),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textDark,
+              ),
             ),
             const SizedBox(height: 8),
             pumpsAsync.when(
@@ -278,7 +285,9 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
             const SizedBox(height: 16),
             Text(
               l10n.fuelPumpSelectmeter,
-              style: AppTypography.bodySmall.copyWith(color: AppColors.textDark),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textDark,
+              ),
             ),
             const SizedBox(height: 8),
             metersAsync.when(

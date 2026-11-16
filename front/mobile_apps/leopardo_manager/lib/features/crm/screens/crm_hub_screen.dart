@@ -22,9 +22,8 @@ class CrmHubScreen extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           l10n.crmHubSubtitle,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: MobileSurface.muted,
-              ),
+          style: Theme.of(context).textTheme.bodyMedium
+              ?.copyWith(color: MobileSurface.muted),
         ),
         const SizedBox(height: 16),
         _HubTile(

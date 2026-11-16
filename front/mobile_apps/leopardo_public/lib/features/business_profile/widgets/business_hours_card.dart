@@ -89,8 +89,8 @@ class _Row extends StatelessWidget {
     final value = slots.isEmpty
         ? '—'
         : slots
-            .map((s) => '${_hhmm(s.opensAt)} – ${_hhmm(s.closesAt)}')
-            .join(', ');
+              .map((s) => '${_hhmm(s.opensAt)} – ${_hhmm(s.closesAt)}')
+              .join(', ');
 
     return Container(
       color: isToday

@@ -12,7 +12,7 @@ class _ChatMessage {
   final DateTime timestamp;
 
   _ChatMessage({required this.role, required this.content, DateTime? timestamp})
-      : timestamp = timestamp ?? DateTime.now();
+    : timestamp = timestamp ?? DateTime.now();
 }
 
 class AiChatScreen extends ConsumerStatefulWidget {
@@ -109,11 +109,7 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.auto_awesome,
-                          size: 48,
-                          color: AppColors.ia,
-                        ),
+                        Icon(Icons.auto_awesome, size: 48, color: AppColors.ia),
                         const SizedBox(height: 12),
                         Text(
                           l10n.aiChatEmptyStateTitle,

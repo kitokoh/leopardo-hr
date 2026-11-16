@@ -123,24 +123,21 @@ class _MobileDecisionCommentSheetState
                 labelText: 'Commentaire',
                 hintText: 'Expliquez la decision en une phrase claire.',
               ),
-              validator:
-                  (value) =>
-                      value == null || value.trim().length < 3
-                          ? 'Commentaire obligatoire'
-                          : null,
+              validator: (value) => value == null || value.trim().length < 3
+                  ? 'Commentaire obligatoire'
+                  : null,
             ),
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: _submitting ? null : _submit,
               style: ElevatedButton.styleFrom(backgroundColor: color),
-              child:
-                  _submitting
-                      ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                      : Text(widget.submitLabel),
+              child: _submitting
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(widget.submitLabel),
             ),
           ],
         ),
@@ -155,15 +152,13 @@ class _MobileDecisionCommentSheetState
       await widget.onSubmit(_commentController.text);
       if (!mounted) return;
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(widget.successMessage)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(widget.successMessage)));
     } catch (error) {
       if (!mounted) return;
       setState(() => _submitting = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Echec : $error')));
     }
   }
 }

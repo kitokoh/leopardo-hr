@@ -36,20 +36,21 @@ class AppTheme {
     final border = isDark ? AppColors.mobileDarkBorder : AppColors.borderLight;
     final text = isDark ? AppColors.mobileDarkText : AppColors.textLight;
     final muted = isDark ? AppColors.mobileDarkMuted : AppColors.textMuted;
-    final scheme = ColorScheme.fromSeed(
-      seedColor: AppColors.rh,
-      brightness: brightness,
-    ).copyWith(
-      primary: AppColors.rh,
-      onPrimary: Colors.white,
-      secondary: AppColors.ia,
-      onSecondary: Colors.white,
-      surface: surface,
-      onSurface: text,
-      error: AppColors.danger,
-      onError: Colors.white,
-      outline: border,
-    );
+    final scheme =
+        ColorScheme.fromSeed(
+          seedColor: AppColors.rh,
+          brightness: brightness,
+        ).copyWith(
+          primary: AppColors.rh,
+          onPrimary: Colors.white,
+          secondary: AppColors.ia,
+          onSecondary: Colors.white,
+          surface: surface,
+          onSurface: text,
+          error: AppColors.danger,
+          onError: Colors.white,
+          outline: border,
+        );
 
     OutlineInputBorder borderStyle(Color color) {
       return OutlineInputBorder(
@@ -66,9 +67,8 @@ class AppTheme {
       cardColor: surface,
       colorScheme: scheme,
       fontFamily: AppTypography.fontFamily,
-      textTheme: AppTypography.buildTextTheme(
-        text,
-      ).apply(bodyColor: text, displayColor: text),
+      textTheme: AppTypography.buildTextTheme(text)
+          .apply(bodyColor: text, displayColor: text),
       dividerColor: border,
       appBarTheme: AppBarTheme(
         backgroundColor: scaffold,
