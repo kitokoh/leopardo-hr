@@ -2763,6 +2763,55 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/GeoAttendanceSession'
+  /company/profile:
+    get:
+      operationId: api_get_company_profile
+      tags:
+      - Company
+      summary: Profil du tenant courant
+      description: 'Raison sociale, fuseau, devise, langue et coordonnees du tenant. Issue #9332.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Profil du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CompanyProfile'
+        '401':
+          $ref: '#/components/responses/Error401'
+    patch:
+      operationId: api_patch_company_profile
+      tags:
+      - Company
+      summary: Modifier le profil du tenant
+      description: 'Mise a jour partielle, reservee au role principal. Les champs plateforme (slug, schema_name, tenancy_type, status, plan_id, features, metadata) sont refuses en 422. Les changements de timezone et currency sont journalises dans audit_logs (RGPD). Issue #9332.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyProfileInput'
+      responses:
+        '200':
+          description: Profil mis a jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CompanyProfile'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
   /attendance/geo-sessions/{id}:
     get:
       operationId: api_get_attendance_geo_sessions_by_id
@@ -68846,6 +68895,75 @@ components:
         accuracy:
           type: integer
           description: Précision GPS en mètres
+    CompanyProfile:
+      type: object
+      description: 'Profil du tenant (issue #9332).'
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        address:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        timezone:
+          type: string
+        currency:
+          type: string
+        language:
+          type: string
+          enum:
+          - fr
+          - en
+          - ar
+          - tr
+    CompanyProfileInput:
+      type: object
+      description: 'Mise a jour partielle du profil. Tous les champs sont optionnels ; les champs plateforme sont refuses en 422.'
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 200
+        address:
+          type: string
+          maxLength: 500
+          nullable: true
+        city:
+          type: string
+          maxLength: 100
+          nullable: true
+        phone:
+          type: string
+          maxLength: 30
+          nullable: true
+        email:
+          type: string
+          format: email
+          maxLength: 200
+        timezone:
+          type: string
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        language:
+          type: string
+          enum:
+          - fr
+          - en
+          - ar
+          - tr
     GeoAttendanceSession:
       type: object
       properties:
