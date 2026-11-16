@@ -61,7 +61,22 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 concurrency:
-  group: pr-external-checks-${{ github.event.pull_request.number || github.event.workflow_run.head_sha }}
+  # Issue #9035 (suite) — le groupe differait selon le declencheur : un run
+  # `pull_request` s'inscrivait sous le NUMERO de PR, un run `workflow_run`
+  # sous le `head_sha`. Deux cles distinctes pour la MEME PR : les runs
+  # `workflow_run` (un par workflow source termine — Architecture Quality,
+  # Tests, Web CI Admin, Web CI Vitrine) ne pouvaient donc jamais annuler le
+  # run `pull_request` ni se remplacer entre eux. Mesure du 2026-11-16 : 11
+  # runs de ce workflow dans les 100 derniers du depot, pour un seul
+  # commentaire de synthese par PR.
+  #
+  # La cle est desormais le NOM DE BRANCHE, identique pour les deux
+  # declencheurs : `github.head_ref` sur `pull_request`, et
+  # `workflow_run.head_branch` sur `workflow_run` (meme champ que celui deja
+  # utilise par `deploy-main.yml`). Une branche ne porte qu'une PR ouverte a la
+  # fois, donc la cle reste unique par PR — et le dernier arrive annule le
+  # precedent, quel que soit le declencheur.
+  group: pr-external-checks-${{ github.head_ref || github.event.workflow_run.head_branch }}
   cancel-in-progress: true
 
 jobs:
