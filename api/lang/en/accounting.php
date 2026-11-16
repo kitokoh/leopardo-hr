@@ -94,6 +94,7 @@ return [
     ],
 
     'errors' => [
+        'fixed_asset_has_depreciations' => 'This fixed asset has posted depreciation entries and cannot be deleted. Use disposal (status "disposed") instead.',
         'gateway_checkout_failed' => 'The payment gateway is temporarily unavailable. Please try again later.',
         'fiscal_year_invalid' => 'Invalid fiscal year.',
         'payment_amount_positive' => 'The payment amount must be strictly positive.',
