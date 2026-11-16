@@ -41,6 +41,8 @@ automatiquement.
 
 ## Interdictions
 
+- ❌ Écrire un `<Link href="/toolbox/…">` en dur : passer par `withLang(href, locale)`
+  (`lib/locale-href.ts`), sinon le choix de langue est perdu au clic.
 - ❌ Ajouter `/toolbox` à `PROTECTED_PREFIXES` (casserait l'accès anonyme).
 - ❌ Ajouter une dépendance de calcul externe (les formules sont écrites et testées ici).
 - ❌ Appeler un service externe payant (devises = taux statiques documentés).

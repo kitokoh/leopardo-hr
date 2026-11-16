@@ -1,6 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { withLang } from '../lib/locale-href';
+import type { ToolboxLocale } from '../data/copy';
 
 export interface RelatedToolItem {
   slug: string;
@@ -11,6 +13,8 @@ export interface RelatedToolItem {
 interface RelatedToolsProps {
   title: string;
   items: RelatedToolItem[];
+  /** Locale courante — propagée dans les liens. */
+  locale: ToolboxLocale;
 }
 
 /**
@@ -23,7 +27,7 @@ interface RelatedToolsProps {
  *
  * Rien n'est rendu si la liste est vide : pas de titre orphelin.
  */
-export function RelatedTools({ title, items }: RelatedToolsProps) {
+export function RelatedTools({ title, items, locale }: RelatedToolsProps) {
   if (items.length === 0) return null;
 
   return (
@@ -38,7 +42,7 @@ export function RelatedTools({ title, items }: RelatedToolsProps) {
         {items.map((item) => (
           <li key={item.slug}>
             <Link
-              href={`/toolbox/${item.slug}`}
+              href={withLang(`/toolbox/${item.slug}`, locale)}
               className="group flex h-full flex-col rounded-xl border border-slate-200 bg-white p-4 transition-colors hover:border-emerald-400 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-emerald-600"
             >
               <span className="mb-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">

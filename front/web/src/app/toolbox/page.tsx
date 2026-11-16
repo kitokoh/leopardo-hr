@@ -90,11 +90,12 @@ export default async function ToolboxPage() {
         {copy.catalog.subtitle}
       </p>
 
-      <MyTools items={myToolsItems} copy={copy.myTools} />
+      <MyTools items={myToolsItems} locale={locale} copy={copy.myTools} />
 
       <ToolboxCatalog
         items={items}
         categories={categories}
+        locale={locale}
         copy={{
           searchPlaceholder: copy.catalog.searchPlaceholder,
           noResults: copy.catalog.noResults,

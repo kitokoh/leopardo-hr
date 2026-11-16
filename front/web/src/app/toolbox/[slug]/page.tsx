@@ -120,11 +120,12 @@ export default async function ToolPage({ params }: ToolPageProps) {
         version={tool.version}
         backLabel={copy.common.backToCatalog}
         disclaimer={copy.common.disclaimer}
+        locale={locale}
       >
         <ToolActions slug={slug} copy={copy.myTools} />
         <ToolRenderer slug={slug} copy={toolCopy} common={copy.common} locale={locale} />
       </ToolShell>
-      <RelatedTools title={copy.common.related} items={relatedItems} />
+      <RelatedTools title={copy.common.related} items={relatedItems} locale={locale} />
     </>
   );
 }

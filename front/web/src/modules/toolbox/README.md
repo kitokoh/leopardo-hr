@@ -44,13 +44,37 @@ src/modules/toolbox/
 | `marge-prix-vente` | Commerce | marge, taux de marge/marque, coefficient | — |
 | `tva-multi-taux` | Finance | récapitulatif TVA regroupé par taux | estimation |
 
+## Langue (fr / en / tr / ar)
+
+La Toolbox suit la convention vitrine `?lang=` (aucune route préfixée) : le
+proxy normalise le paramètre en `x-vitrine-lang`, que les layouts lisent pour
+rendre le HTML déjà dans la bonne langue.
+
+Deux règles, portées par `lib/locale-href.ts` :
+
+1. **Tout lien interne passe par `withLang(href, locale)`.** `?lang=` ne survit
+   pas à une navigation : un `<Link href="/toolbox/imc">` écrit en dur faisait
+   repartir le visiteur en français dès le premier clic, quel que soit son
+   choix. `fr` est la locale par défaut et n'est **pas** écrite dans l'URL
+   (URL canonique, cohérente avec `sitemap.ts` et les `alternates.hreflang`).
+2. **La bascule de langue passe par `localeSwitchHref(pathname, search, locale)`**,
+   qui conserve les filtres du catalogue et le paramètre `s=` d'un calcul
+   partagé, et ne remplace que `lang`.
+
+Le contrôle est `components/ToolboxLangSwitcher.tsx`, monté dans
+`app/toolbox/layout.tsx`. Il déclenche une **navigation complète**
+(`window.location.assign`) et non un `router.push` : seul un aller-retour serveur
+rejoue le proxy qui pose `x-vitrine-lang`.
+
 ## Vérifications
 
 ```bash
 cd front/web
 npx tsc --noEmit
-npx eslint src/modules/toolbox --max-warnings 0
+npx eslint src/modules/toolbox src/app/toolbox --max-warnings 0
 npx jest src/modules/toolbox
+# E2E (nécessite un dev server) :
+BASE_URL=http://localhost:3000 npx playwright test e2e/toolbox-langue.spec.ts --project=chromium
 ```
 
 Voir `AGENTS.md` pour la procédure d'ajout d'un outil.
