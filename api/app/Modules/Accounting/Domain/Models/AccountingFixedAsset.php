@@ -33,6 +33,21 @@ class AccountingFixedAsset extends Model
     use BelongsToCompany;
     use SoftDeletes;
 
+    /** Statut d'une immobilisation en service, amortie normalement. */
+    public const STATUS_ACTIVE = 'active';
+
+    /** Statut d'une immobilisation cédée : plus aucun amortissement n'est comptabilisé. */
+    public const STATUS_DISPOSED = 'disposed';
+
+    /** Statut d'une immobilisation intégralement amortie : la dotation est plafonnée. */
+    public const STATUS_FULLY_DEPRECIATED = 'fully_depreciated';
+
+    /** Amortissement linéaire. */
+    public const METHOD_LINEAR = 'linear';
+
+    /** Amortissement dégressif. */
+    public const METHOD_DECLINING = 'declining';
+
     protected $fillable = [
         'label',
         'asset_account_code',
@@ -59,7 +74,7 @@ class AccountingFixedAsset extends Model
     ];
 
     /**
-     * @return HasMany<AccountingDepreciationEntry>
+     * @return HasMany<AccountingDepreciationEntry, $this>
      */
     public function depreciationEntries(): HasMany
     {

@@ -2791,3 +2791,33 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 **Couverture executee** — `pint --test` PASS sur les 2 fichiers du lot (aucun defaut de style).
 
 **Non couvert** — aucun test PHPUnit execute : la suite Feature depasse la RAM du sandbox (2 Go, OOM signal 9). Les scenarios ci-dessus sont **a ecrire**.
+## COULOIR 19 — Amortissements : immobilisations et dotations (#9377)
+
+**Pourquoi** — le module Comptabilité tenait des écritures mais aucune immobilisation : l'amortissement se saisissait à la main, sans état de l'actif ni plafonnement, donc sans moyen de prouver qu'une dotation ne dépasse jamais la valeur résiduelle. Ce couloir consigne les scénarios que la surface API des immobilisations doit tenir.
+
+**Ce qui est ajouté**
+
+- **`GET /v1/accounting/fixed-assets`** — liste les immobilisations du tenant.
+- **`POST /v1/accounting/fixed-assets`** — crée une immobilisation (`label`, comptes comptables, `acquisition_date`, `acquisition_cost`, `residual_value`, `useful_life_months`, `method`).
+- **`GET` / `PUT` / `DELETE /v1/accounting/fixed-assets/{id}`** — lecture, mise à jour, cession/suppression ; `whereNumber('id')` sur la route pour ne pas capturer les autres routes `accounting/*`.
+- **`GET /v1/accounting/fixed-assets/{id}/schedule`** — échéancier de dotations.
+- **Constantes de domaine** — `AccountingFixedAsset::STATUS_ACTIVE`, `STATUS_DISPOSED`, `STATUS_FULLY_DEPRECIATED`, `METHOD_LINEAR`, `METHOD_DECLINING`, alignées sur les valeurs admises par la migration (`active | disposed | fully_depreciated`, `linear | declining`). Elles manquaient : le service et le test y référaient des constantes inexistantes, ce que PHPStan level 8 refusait (`classConstant.notFound`).
+- **Garde RBAC** — `api.manager:principal,comptable,module:accounting`.
+
+**Scénarios à vérifier**
+
+- **Dotation linéaire** — une immobilisation de 12 000 sur 12 mois produit une dotation mensuelle de 1 000.
+- **Plafonnement par la valeur résiduelle** — la somme des dotations ne dépasse jamais `acquisition_cost - residual_value`.
+- **Statut `fully_depreciated`** — une immobilisation intégralement amortie ne génère plus de dotation et est marquée `fully_depreciated`.
+- **Statut `disposed`** — une immobilisation cédée ne génère plus aucune dotation après `disposal_date`, quel que soit l'échéancier demandé.
+- **Méthode `declining`** — l'échéancier dégressif reste monotone décroissant et s'arrête à la valeur résiduelle.
+- **`method` inconnue** — une méthode hors `linear`/`declining` est refusée (422), jamais écrite.
+- **`status` inconnu** — un statut hors `active`/`disposed`/`fully_depreciated` est refusé (422).
+- **Isolation tenant** — un acteur d'un autre tenant ne lit ni ne modifie l'immobilisation (404 indistinguable d'une absence).
+- **Garde RBAC** — un manager non habilité et un employé reçoivent 403 ; `principal`, `comptable` et le module `accounting` passent.
+- **Collision de route** — `GET /accounting/fixed-assets/12` atteint l'immobilisation 12 et non une autre route `accounting/*`.
+- **Parité i18n** — les libellés d'immobilisation existent dans les 4 langues (fr/en/ar/tr).
+
+**Couverture exécutée** — `php -l` PASS sur le modèle ; `pint --test` PASS ; `check-unrouted-controllers.sh` → 558 contrôleurs, 0 orphelin ; PHPStan level 8 sans erreur sur le modèle après ajout des constantes.
+
+**Non couvert** — aucun test Feature des immobilisations n'a été exécuté dans le sandbox (pas de `vendor/` ni de base peuplée) : les scénarios ci-dessus sont **à vérifier**, pas déclarés tenus. `DepreciationService` et `DepreciationTest` restent à valider par la CI.
