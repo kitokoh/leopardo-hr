@@ -133,6 +133,177 @@ tags:
   description: 'BC-36 TRADE — verticale International Trade OS (TRADE-001 #8476 → TRADE-011 #8486, spec docs/specifications/VERTICAL_TRADE_OS.md) : noyau commercial partagé (profils professionnels, catalogue, demandes de prix, offres, commandes, transport, coûts rendus, documents) avec vues acheteur et vendeur sur les MÊMES objets. RBAC par opération, deny-by-default (TradeRoleResolver : purchase / sales / logistics / admin).'
 
 paths:
+  /v1/audit-logs:
+    get:
+      operationId: api_get_audit_logs
+      tags:
+      - Auth
+      summary: Piste d'audit du tenant (liste paginée)
+      description: >-
+        Issue #9333 — consultation de la piste d'audit tenant (obligation
+        RGPD). Réservé au principal du tenant (gate `viewTenantAudit`). Le
+        scope `BelongsToCompany` cloisonne automatiquement par entreprise.
+        La fenêtre de rétention vient de `CompanySetting.audit_retention_months`.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: actor
+        in: query
+        required: false
+        description: Identifiant de l'employé auteur de l'action
+        schema:
+          type: integer
+      - name: action
+        in: query
+        required: false
+        schema:
+          type: string
+          maxLength: 200
+      - name: resource_type
+        in: query
+        required: false
+        schema:
+          type: string
+          maxLength: 200
+      - name: resource_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: date_from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: date_to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Liste paginée des entrées d'audit
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuditLogEntry'
+                  meta:
+                    type: object
+        '401':
+          description: Non authentifié
+        '403':
+          description: Rôle sans droit de lecture de l'audit tenant
+  /v1/audit-logs/export:
+    get:
+      operationId: api_get_audit_logs_export
+      tags:
+      - Auth
+      summary: Export CSV de la piste d'audit
+      description: >-
+        Issue #9333 — export CSV borné à 10 000 lignes. `date_from` et
+        `date_to` sont obligatoires. L'export est lui-même journalisé
+        (`audit_logs.export`).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: date_from
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: date_to
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: action
+        in: query
+        required: false
+        schema:
+          type: string
+          maxLength: 200
+      responses:
+        '200':
+          description: CSV encodé et nombre de lignes exportées
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      csv:
+                        type: string
+                      count:
+                        type: integer
+                      date_from:
+                        type: string
+                        format: date
+                      date_to:
+                        type: string
+                        format: date
+        '401':
+          description: Non authentifié
+        '403':
+          description: Rôle sans droit de lecture de l'audit tenant
+        '422':
+          description: Dates manquantes ou incohérentes
+  /v1/audit-logs/{id}:
+    get:
+      operationId: api_get_audit_log
+      tags:
+      - Auth
+      summary: Détail d'une entrée d'audit
+      description: >-
+        Issue #9333 — une entrée d'une autre entreprise répond 404, jamais
+        403, pour rester indistinguable d'une absence.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Entrée d'audit
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AuditLogEntry'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Rôle sans droit de lecture de l'audit tenant
+        '404':
+          description: Entrée absente ou appartenant à une autre entreprise
   /v1/travel/adverts:
     get:
       operationId: api_get_travel_adverts
@@ -66478,6 +66649,49 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    # Issue #9333 — entrée de la piste d'audit tenant.
+    AuditLogEntry:
+      type: object
+      description: >-
+        Entrée de la piste d'audit tenant. `old_values` / `new_values` portent
+        le delta de la mutation ; `metadata` porte le contexte libre.
+      properties:
+        id:
+          type: integer
+        module:
+          type: string
+        action:
+          type: string
+        resource_type:
+          type: string
+          nullable: true
+        resource_id:
+          type: integer
+          nullable: true
+        old_values:
+          type: object
+          nullable: true
+        new_values:
+          type: object
+          nullable: true
+        metadata:
+          type: object
+          nullable: true
+        user:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
+            email:
+              type: string
+        created_at:
+          type: string
+          format: date-time
     # BC-40 LIBRARY — progression de lecture persistée (donnée personnelle).
     LibraryReadingProgress:
       type: object
