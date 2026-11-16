@@ -237,6 +237,8 @@ ModuleRoutes::tenantModule('', function (): void {
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->whereNumber('notification');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->whereNumber('notification');
+    // #9540 : purge des notifications anciennes (lues uniquement).
+    Route::delete('/notifications/purge-old', [NotificationController::class, 'purgeOld']);
     // #7481 — le flux SSE (`/notifications/stream` + `/notifications/sse-token`)
     // est RETIRÉ : aucun client ne le consommait (`0 EventSource` dans
     // `front/web` et `front/mobile_apps`, le mobile polle toutes les 30 s), et
