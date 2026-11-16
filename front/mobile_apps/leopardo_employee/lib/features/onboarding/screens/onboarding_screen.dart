@@ -79,9 +79,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   ],
                 );
               }
-              final completed = steps
-                  .where((s) => s.completed || s.skipped)
-                  .length;
+              final completed =
+                  steps.where((s) => s.completed || s.skipped).length;
               final total = steps.length;
               final progress = total > 0 ? completed / total : 0.0;
 
@@ -191,12 +190,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                               color: isDone
                                   ? MobileSurface.muted
                                   : MobileSurface.text,
-                              fontWeight: isDone
-                                  ? FontWeight.normal
-                                  : FontWeight.w600,
-                              decoration: isDone
-                                  ? TextDecoration.lineThrough
-                                  : null,
+                              fontWeight:
+                                  isDone ? FontWeight.normal : FontWeight.w600,
+                              decoration:
+                                  isDone ? TextDecoration.lineThrough : null,
                             ),
                           ),
                           subtitle: step.description != null

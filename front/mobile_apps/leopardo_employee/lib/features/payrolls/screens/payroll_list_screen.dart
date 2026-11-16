@@ -413,9 +413,8 @@ class _PaymentDocumentTile extends StatelessWidget {
               color: document.isAvailable
                   ? AppColors.info
                   : MobileSurface.secondary,
-              onPressed: document.isAvailable
-                  ? () => onDownload(document)
-                  : null,
+              onPressed:
+                  document.isAvailable ? () => onDownload(document) : null,
             ),
         ],
       ),

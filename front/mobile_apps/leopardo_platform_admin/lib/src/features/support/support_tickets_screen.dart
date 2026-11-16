@@ -22,13 +22,11 @@ final _statusFilterProvider = NotifierProvider<_StatusFilter, String?>(
 
 final platformSupportTicketsProvider =
     FutureProvider.family<List<PlatformSupportTicket>, String?>((
-      ref,
-      status,
-    ) async {
-      return ref
-          .watch(platformRepositoryProvider)
-          .supportTickets(status: status);
-    });
+  ref,
+  status,
+) async {
+  return ref.watch(platformRepositoryProvider).supportTickets(status: status);
+});
 
 class SupportTicketsScreen extends ConsumerWidget {
   const SupportTicketsScreen({super.key});
@@ -122,17 +120,17 @@ class _TicketCard extends StatelessWidget {
   final PlatformSupportTicket ticket;
 
   Color get _priorityColor => switch (ticket.priority) {
-    'urgent' => AppColors.danger,
-    'high' => AppColors.warning,
-    _ => AppColors.info,
-  };
+        'urgent' => AppColors.danger,
+        'high' => AppColors.warning,
+        _ => AppColors.info,
+      };
 
   Color get _statusColor => switch (ticket.status) {
-    'open' => AppColors.danger,
-    'in_progress' => AppColors.warning,
-    'resolved' => AppColors.success,
-    _ => MobileSurface.disabled,
-  };
+        'open' => AppColors.danger,
+        'in_progress' => AppColors.warning,
+        'resolved' => AppColors.success,
+        _ => MobileSurface.disabled,
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -232,13 +230,11 @@ class _TicketCard extends StatelessWidget {
 
 final platformTicketDetailProvider =
     FutureProvider.family<PlatformSupportTicketDetail, int>((
-      ref,
-      ticketId,
-    ) async {
-      return ref
-          .watch(platformRepositoryProvider)
-          .supportTicketDetail(ticketId);
-    });
+  ref,
+  ticketId,
+) async {
+  return ref.watch(platformRepositoryProvider).supportTicketDetail(ticketId);
+});
 
 class SupportTicketDetailScreen extends ConsumerStatefulWidget {
   const SupportTicketDetailScreen({super.key, required this.ticketId});
@@ -467,9 +463,8 @@ class _MessageBubble extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: isSuperAdmin
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isSuperAdmin ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           if (!isSuperAdmin) ...[
             CircleAvatar(
@@ -498,9 +493,8 @@ class _MessageBubble extends StatelessWidget {
                   Text(
                     message.authorName,
                     style: TextStyle(
-                      color: isSuperAdmin
-                          ? AppColors.rh
-                          : MobileSurface.secondary,
+                      color:
+                          isSuperAdmin ? AppColors.rh : MobileSurface.secondary,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                     ),

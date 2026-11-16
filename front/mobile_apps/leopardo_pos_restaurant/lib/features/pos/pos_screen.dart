@@ -201,8 +201,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
   /// vers un autre serveur au milieu du service.
   Future<void> _openSettings() async {
     final store = ref.read(posLocalStoreProvider);
-    final current =
-        ref.read(posConfigProvider) ??
+    final current = ref.read(posConfigProvider) ??
         const PosAppConfig(apiBaseUrl: 'https://api.leopardo.app/api/v1');
 
     await Navigator.of(context).push<bool>(
@@ -307,9 +306,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
       return;
     }
 
-    final ok = ref
-        .read(posControllerProvider.notifier)
-        .parkCurrentTicket(label);
+    final ok =
+        ref.read(posControllerProvider.notifier).parkCurrentTicket(label);
 
     if (!mounted) {
       return;
@@ -422,9 +420,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(outcome.message),
-        backgroundColor: outcome.success
-            ? null
-            : Theme.of(context).colorScheme.error,
+        backgroundColor:
+            outcome.success ? null : Theme.of(context).colorScheme.error,
       ),
     );
   }
@@ -433,18 +430,16 @@ class _PosScreenState extends ConsumerState<PosScreen> {
   Future<void> _voidLine(CartLine line) async {
     final result =
         await showModalBottomSheet<({PosVoidReason reason, String comment})>(
-          context: context,
-          isScrollControlled: true,
-          builder: (_) => PosVoidReasonSheet(itemName: line.product.name),
-        );
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => PosVoidReasonSheet(itemName: line.product.name),
+    );
 
     if (result == null || !mounted) {
       return;
     }
 
-    ref
-        .read(posControllerProvider.notifier)
-        .voidLine(
+    ref.read(posControllerProvider.notifier).voidLine(
           productId: line.product.id,
           reason: result.reason,
           comment: result.comment.isEmpty ? null : result.comment,
@@ -707,8 +702,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
         content: Text(
           ok
               ? (state.offline
-                    ? 'Encaissement mis en file (hors ligne) — il sera synchronisé.'
-                    : 'Encaissement enregistré.')
+                  ? 'Encaissement mis en file (hors ligne) — il sera synchronisé.'
+                  : 'Encaissement enregistré.')
               : (state.error ?? 'Encaissement impossible.'),
         ),
       ),
@@ -753,8 +748,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
         content: Text(
           allOk
               ? (state.offline
-                    ? 'Paiement partagé mis en file (hors ligne).'
-                    : 'Paiement partagé encaissé.')
+                  ? 'Paiement partagé mis en file (hors ligne).'
+                  : 'Paiement partagé encaissé.')
               : (state.error ?? 'Paiement partagé refusé.'),
         ),
       ),
@@ -981,8 +976,8 @@ class _ProductGrid extends StatelessWidget {
                           searching
                               ? 'Aucun plat ne correspond'
                               : (favouritesOnly
-                                    ? 'Aucun favori'
-                                    : 'Aucun plat dans cette categorie'),
+                                  ? 'Aucun favori'
+                                  : 'Aucun plat dans cette categorie'),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 19,
@@ -995,8 +990,8 @@ class _ProductGrid extends StatelessWidget {
                           searching
                               ? 'Aucun plat ne correspond a « ${searchController.text} ».'
                               : (favouritesOnly
-                                    ? 'Appuyez longuement sur un plat pour l\'epingler ici.'
-                                    : 'Choisissez une autre categorie du menu.'),
+                                  ? 'Appuyez longuement sur un plat pour l\'epingler ici.'
+                                  : 'Choisissez une autre categorie du menu.'),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16,
@@ -1040,9 +1035,8 @@ class _ProductGrid extends StatelessWidget {
                           '${isFavourite ? ', favori' : ''}',
                       child: Card(
                         child: InkWell(
-                          onTap: product.available
-                              ? () => onTap(product)
-                              : null,
+                          onTap:
+                              product.available ? () => onTap(product) : null,
                           // Appui long : epingle le plat en favori.
                           onLongPress: () => onToggleFavourite(product.id),
                           borderRadius: BorderRadius.circular(
@@ -1300,9 +1294,8 @@ class _CartPanel extends StatelessWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: cart.isEmpty
-                          ? null
-                          : () => _editDiscount(context),
+                      onPressed:
+                          cart.isEmpty ? null : () => _editDiscount(context),
                       icon: const Icon(Icons.percent),
                       label: Text(
                         cart.discountMinor > 0

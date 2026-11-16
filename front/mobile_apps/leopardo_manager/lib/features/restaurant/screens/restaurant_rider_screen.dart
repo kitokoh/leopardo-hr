@@ -112,8 +112,8 @@ class _RestaurantRiderScreenState extends ConsumerState<RestaurantRiderScreen> {
                                   ),
                                 )
                               : null,
-                          footer:
-                              delivery.isAssigned || delivery.isOutForDelivery
+                          footer: delivery.isAssigned ||
+                                  delivery.isOutForDelivery
                               ? Row(
                                   children: [
                                     if (delivery.isAssigned) ...[
@@ -122,12 +122,13 @@ class _RestaurantRiderScreenState extends ConsumerState<RestaurantRiderScreen> {
                                           onPressed: _busy
                                               ? null
                                               : () => _transition(
-                                                  delivery,
-                                                  (repo) => repo.outForDelivery(
-                                                    delivery.id,
+                                                    delivery,
+                                                    (repo) =>
+                                                        repo.outForDelivery(
+                                                      delivery.id,
+                                                    ),
+                                                    l10n.restaurantMobileRiderDeparted,
                                                   ),
-                                                  l10n.restaurantMobileRiderDeparted,
-                                                ),
                                           child: Text(
                                             l10n.restaurantMobileRiderDepart,
                                           ),
@@ -141,11 +142,11 @@ class _RestaurantRiderScreenState extends ConsumerState<RestaurantRiderScreen> {
                                           onPressed: _busy
                                               ? null
                                               : () => _transition(
-                                                  delivery,
-                                                  (repo) =>
-                                                      repo.deliver(delivery.id),
-                                                  l10n.restaurantMobileRiderDeliveredOk,
-                                                ),
+                                                    delivery,
+                                                    (repo) => repo
+                                                        .deliver(delivery.id),
+                                                    l10n.restaurantMobileRiderDeliveredOk,
+                                                  ),
                                           child: Text(
                                             l10n.restaurantMobileRiderDeliver,
                                           ),

@@ -12,8 +12,8 @@ import '../platform/platform_models.dart';
 
 final platformCompanyRequestsProvider =
     FutureProvider<List<PlatformCompanyRequest>>((ref) {
-      return ref.watch(platformRepositoryProvider).companyRequests();
-    });
+  return ref.watch(platformRepositoryProvider).companyRequests();
+});
 
 class CompanyRequestsScreen extends ConsumerWidget {
   const CompanyRequestsScreen({super.key});
@@ -104,9 +104,7 @@ class _CompanyRequestCard extends ConsumerWidget {
     final note = approved
         ? context.l10n.platformAdminCompanyApprovedNote
         : context.l10n.platformAdminCompanyRejectedNote;
-    await ref
-        .read(platformRepositoryProvider)
-        .reviewCompanyRequest(
+    await ref.read(platformRepositoryProvider).reviewCompanyRequest(
           id: request.id,
           approved: approved,
           adminNotes: note,

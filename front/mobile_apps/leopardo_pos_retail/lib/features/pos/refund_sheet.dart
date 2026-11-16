@@ -77,9 +77,8 @@ class _RefundSheetState extends State<RefundSheet> {
           ),
           const SizedBox(height: 20),
           FilledButton(
-            onPressed: refund.isValid
-                ? () => Navigator.of(context).pop(refund)
-                : null,
+            onPressed:
+                refund.isValid ? () => Navigator.of(context).pop(refund) : null,
             child: const Text('Rembourser'),
           ),
         ],

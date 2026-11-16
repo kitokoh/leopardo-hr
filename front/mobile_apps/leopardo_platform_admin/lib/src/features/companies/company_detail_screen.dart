@@ -15,19 +15,19 @@ import 'company_screen.dart';
 
 final platformCompanyDetailProvider =
     FutureProvider.family<_CompanyDetailData, String>((ref, companyId) async {
-      final repository = ref.watch(platformRepositoryProvider);
-      final results = await Future.wait([
-        repository.companyHealth(companyId),
-        repository.companySubscription(companyId),
-        repository.companyFeatures(companyId),
-      ]);
+  final repository = ref.watch(platformRepositoryProvider);
+  final results = await Future.wait([
+    repository.companyHealth(companyId),
+    repository.companySubscription(companyId),
+    repository.companyFeatures(companyId),
+  ]);
 
-      return _CompanyDetailData(
-        health: results[0] as PlatformCompanyHealth,
-        subscription: results[1] as PlatformCompanySubscription,
-        features: results[2] as PlatformCompanyFeatures,
-      );
-    });
+  return _CompanyDetailData(
+    health: results[0] as PlatformCompanyHealth,
+    subscription: results[1] as PlatformCompanySubscription,
+    features: results[2] as PlatformCompanyFeatures,
+  );
+});
 
 final platformPlansProvider = FutureProvider<List<PlatformPlan>>((ref) {
   return ref.watch(platformRepositoryProvider).plans();
@@ -372,9 +372,7 @@ class _CompanyDetailContent extends ConsumerWidget {
     // Capture l10n note before async gap (context may not be mounted after await).
     final activationNote = context.l10n.platformAdminActivationNote;
     try {
-      await ref
-          .read(platformRepositoryProvider)
-          .updateCompanySubscription(
+      await ref.read(platformRepositoryProvider).updateCompanySubscription(
             companyId: companyId,
             planId: subscription.planId,
             status: 'active',
@@ -440,9 +438,7 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
 
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(platformRepositoryProvider)
-          .updateCompanySubscription(
+      await ref.read(platformRepositoryProvider).updateCompanySubscription(
             companyId: widget.companyId,
             planId: _planId!,
             status: _status,
@@ -605,9 +601,7 @@ class _FeaturesSheetState extends ConsumerState<_FeaturesSheet> {
   Future<void> _submit() async {
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(platformRepositoryProvider)
-          .updateCompanyFeatures(
+      await ref.read(platformRepositoryProvider).updateCompanyFeatures(
             companyId: widget.companyId,
             features: _features,
           );
