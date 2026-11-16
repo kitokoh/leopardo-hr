@@ -2763,6 +2763,191 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/GeoAttendanceSession'
+  /accounting/fixed-assets:
+    get:
+      operationId: api_get_accounting_fixed_assets
+      tags:
+      - Accounting
+      summary: Lister les immobilisations
+      description: 'Immobilisations du tenant, de la date de mise en service la plus recente a la plus ancienne (pagine 50). RBAC comptable/principal. Issue #9377.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        description: Filtre par statut.
+        schema:
+          type: string
+          enum:
+          - active
+          - disposed
+      responses:
+        '200':
+          description: Liste paginee des immobilisations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AccountingFixedAsset'
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_accounting_fixed_assets
+      tags:
+      - Accounting
+      summary: Creer une immobilisation
+      description: 'Enregistre l''immobilisation dans le registre (#9378). RBAC comptable/principal. Issue #9377.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountingFixedAssetInput'
+      responses:
+        '201':
+          description: Immobilisation creee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AccountingFixedAsset'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /accounting/fixed-assets/{id}:
+    get:
+      operationId: api_get_accounting_fixed_assets_by_id
+      tags:
+      - Accounting
+      summary: Detail d'une immobilisation
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Immobilisation avec ses dotations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AccountingFixedAsset'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_accounting_fixed_assets_by_id
+      tags:
+      - Accounting
+      summary: Modifier une immobilisation
+      description: 'Seuls le libelle et les notes sont modifiables apres creation. Issue #9377.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                  maxLength: 180
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: Immobilisation mise a jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AccountingFixedAsset'
+        '404':
+          $ref: '#/components/responses/Error404'
+    delete:
+      operationId: api_delete_accounting_fixed_assets_by_id
+      tags:
+      - Accounting
+      summary: Supprimer une immobilisation
+      description: 'Refuse en 409 des qu''une dotation existe : la sortie du registre passe par le statut disposed. Issue #9377.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Immobilisation supprimee
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Des dotations existent, suppression refusee
+  /accounting/fixed-assets/{id}/schedule:
+    get:
+      operationId: api_get_accounting_fixed_assets_by_id_schedule
+      tags:
+      - Accounting
+      summary: Echeancier d'amortissement
+      description: 'Dotations periodiques calculees (periode, montant, cumul, valeur nette). Calcul seulement, rien n''est comptabilise. Issue #9377.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Echeancier d'amortissement
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        period:
+                          type: string
+                        amount:
+                          type: number
+                          format: double
+                        accumulated:
+                          type: number
+                          format: double
+                        net_book_value:
+                          type: number
+                          format: double
+        '404':
+          $ref: '#/components/responses/Error404'
   /attendance/geo-sessions/{id}:
     get:
       operationId: api_get_attendance_geo_sessions_by_id
@@ -15452,166 +15637,6 @@ paths:
           description: Contact supprime
         '404':
           description: Contact introuvable
-  /accounting/fixed-assets:
-    get:
-      operationId: api_get_accounting_fixed_assets
-      tags:
-      - Accounting
-      summary: Liste des immobilisations du tenant
-      description: 'Retourne les immobilisations (actifs amortissables) du tenant courant.
-
-        '
-      responses:
-        '200':
-          description: Liste des immobilisations
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/AccountingFixedAsset'
-        '403':
-          description: Acteur non habilite (principal, comptable ou module accounting requis)
-    post:
-      operationId: api_post_accounting_fixed_assets
-      tags:
-      - Accounting
-      summary: Creer une immobilisation
-      description: 'Cree une immobilisation amortissable. `method` vaut `linear` ou
-
-        `declining` ; `status` demarre a `active`.
-
-        '
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AccountingFixedAssetInput'
-      responses:
-        '201':
-          description: Immobilisation creee
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/AccountingFixedAsset'
-        '403':
-          description: Acteur non habilite
-        '422':
-          description: Validation echouee (methode ou statut inconnu, montants negatifs)
-  /accounting/fixed-assets/{id}:
-    parameters:
-    - name: id
-      in: path
-      required: true
-      schema:
-        type: integer
-    get:
-      operationId: api_get_accounting_fixed_asset
-      tags:
-      - Accounting
-      summary: Detail d'une immobilisation
-      responses:
-        '200':
-          description: Immobilisation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/AccountingFixedAsset'
-        '403':
-          description: Acteur non habilite
-        '404':
-          description: Immobilisation absente ou appartenant a un autre tenant
-    put:
-      operationId: api_put_accounting_fixed_asset
-      tags:
-      - Accounting
-      summary: Mettre a jour une immobilisation
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AccountingFixedAssetInput'
-      responses:
-        '200':
-          description: Immobilisation mise a jour
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/AccountingFixedAsset'
-        '403':
-          description: Acteur non habilite
-        '404':
-          description: Immobilisation absente ou appartenant a un autre tenant
-        '422':
-          description: Validation echouee
-    delete:
-      operationId: api_delete_accounting_fixed_asset
-      tags:
-      - Accounting
-      summary: Ceder ou supprimer une immobilisation
-      responses:
-        '204':
-          description: Immobilisation supprimee
-        '403':
-          description: Acteur non habilite
-        '404':
-          description: Immobilisation absente ou appartenant a un autre tenant
-  /accounting/fixed-assets/{id}/schedule:
-    parameters:
-    - name: id
-      in: path
-      required: true
-      schema:
-        type: integer
-    get:
-      operationId: api_get_accounting_fixed_asset_schedule
-      tags:
-      - Accounting
-      summary: Echeancier de dotations d'une immobilisation
-      description: 'Retourne les dotations periodiques. La somme ne depasse jamais
-
-        `acquisition_cost - residual_value` ; une immobilisation `disposed` ou
-
-        `fully_depreciated` ne produit plus de dotation.
-
-        '
-      responses:
-        '200':
-          description: Echeancier de dotations
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        period:
-                          type: string
-                        amount:
-                          type: number
-        '403':
-          description: Acteur non habilite
-        '404':
-          description: Immobilisation absente ou appartenant a un autre tenant
-        '422':
-          description: Methode d'amortissement non implementee pour ce pays
   /accounting/settings:
     get:
       operationId: api_get_accounting_settings
@@ -66638,70 +66663,6 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
-    AccountingFixedAsset:
-      type: object
-      properties:
-        id:
-          type: integer
-        label:
-          type: string
-        asset_account_code:
-          type: string
-        depreciation_account_code:
-          type: string
-        expense_account_code:
-          type: string
-        acquisition_date:
-          type: string
-          format: date
-        acquisition_cost:
-          type: number
-        residual_value:
-          type: number
-        useful_life_months:
-          type: integer
-        method:
-          type: string
-          enum: [linear, declining]
-        status:
-          type: string
-          enum: [active, disposed, fully_depreciated]
-        disposal_date:
-          type: string
-          format: date
-          nullable: true
-        disposal_proceeds:
-          type: number
-          nullable: true
-        notes:
-          type: string
-          nullable: true
-    AccountingFixedAssetInput:
-      type: object
-      required: [label, asset_account_code, depreciation_account_code, expense_account_code, acquisition_date, acquisition_cost, useful_life_months]
-      properties:
-        label:
-          type: string
-        asset_account_code:
-          type: string
-        depreciation_account_code:
-          type: string
-        expense_account_code:
-          type: string
-        acquisition_date:
-          type: string
-          format: date
-        acquisition_cost:
-          type: number
-        residual_value:
-          type: number
-        useful_life_months:
-          type: integer
-        method:
-          type: string
-          enum: [linear, declining]
-        notes:
-          type: string
     # BC-40 LIBRARY — progression de lecture persistée (donnée personnelle).
     LibraryReadingProgress:
       type: object
@@ -69114,6 +69075,110 @@ components:
         accuracy:
           type: integer
           description: Précision GPS en mètres
+    AccountingFixedAsset:
+      type: object
+      description: 'Immobilisation amortissable (issue #9378). Schema de la migration 2026_11_10_004000_9378.'
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          maxLength: 40
+        label:
+          type: string
+          maxLength: 180
+        in_service_date:
+          type: string
+          format: date
+        acquisition_cost:
+          type: number
+          format: double
+        residual_value:
+          type: number
+          format: double
+        useful_life_months:
+          type: integer
+        method:
+          type: string
+          enum:
+          - linear
+        currency:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+          - active
+          - disposed
+        disposed_on:
+          type: string
+          format: date
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        depreciations:
+          type: array
+          items:
+            type: object
+            properties:
+              period:
+                type: string
+              entry_date:
+                type: string
+                format: date
+              amount:
+                type: number
+                format: double
+              accumulated_after:
+                type: number
+                format: double
+              net_book_value_after:
+                type: number
+                format: double
+    AccountingFixedAssetInput:
+      type: object
+      required:
+      - code
+      - label
+      - in_service_date
+      - acquisition_cost
+      - useful_life_months
+      - method
+      properties:
+        code:
+          type: string
+          maxLength: 40
+        label:
+          type: string
+          maxLength: 180
+        in_service_date:
+          type: string
+          format: date
+        acquisition_cost:
+          type: number
+          format: double
+          minimum: 0
+        residual_value:
+          type: number
+          format: double
+          minimum: 0
+        useful_life_months:
+          type: integer
+          minimum: 1
+        method:
+          type: string
+          enum:
+          - linear
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        notes:
+          type: string
     GeoAttendanceSession:
       type: object
       properties:
