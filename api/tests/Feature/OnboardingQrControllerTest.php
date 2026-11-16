@@ -195,6 +195,127 @@ class OnboardingQrControllerTest extends TestCase
             ->assertJsonStructure(['data' => ['token', 'expires_at']]);
     }
 
+    /**
+     * Le jeton QR est autoporteur : sa validité ne dépend ni de la base ni d'un
+     * état serveur, seulement de la signature HMAC et de la date `expires_at`
+     * qu'il contient. Aucun test ne couvrait cette échéance — un jeton signé
+     * valablement mais EXPIRÉ doit être refusé, sinon un QR photographié reste
+     * exploitable indéfiniment pour préremplir une fiche employé.
+     *
+     * On forge ici un jeton avec la même clé que le service : c'est la seule
+     * façon de tester l'expiration sans attendre 30 jours (le service signe en
+     * `now()->addDays(30)` et n'expose aucun paramètre de TTL).
+     */
+    public function test_scan_employee_rejects_an_expired_qr_token(): void
+    {
+        $company = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        $manager = new Employee([
+            'first_name' => 'Meriem',
+            'last_name' => 'RH',
+            'email' => 'manager@a.test',
+        ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'rh',
+            'status' => 'active',
+        ])->save();
+
+        $this->actingAs($manager, 'sanctum')
+            ->postJson('/api/v1/company/qr-onboarding/scan-employee', [
+                'qr_token' => $this->forgeQrToken([
+                    'v' => 1,
+                    'type' => 'employee_profile',
+                    'employee' => [
+                        'id' => 999,
+                        'first_name' => 'Expire',
+                        'last_name' => 'Test',
+                        'email' => 'expire@example.test',
+                    ],
+                    'issued_at' => now()->subDays(60)->toIso8601String(),
+                    'expires_at' => now()->subDay()->toIso8601String(),
+                ]),
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['qr_token'])
+            ->assertJsonPath('errors.qr_token.0', 'QR expire.');
+    }
+
+    /**
+     * Un jeton correctement signé mais d'un AUTRE type ne doit pas être accepté
+     * par la route `scan-employee` : sans ce contrôle, le QR « onboarding
+     * société » (qui porte le nom et l'e-mail du propriétaire, pas d'un
+     * employé) pourrait servir de préremplissage de fiche employé.
+     */
+    public function test_scan_employee_rejects_a_token_of_another_type(): void
+    {
+        $company = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        $manager = new Employee([
+            'first_name' => 'Meriem',
+            'last_name' => 'RH',
+            'email' => 'manager@a.test',
+        ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'rh',
+            'status' => 'active',
+        ])->save();
+
+        $this->actingAs($manager, 'sanctum')
+            ->postJson('/api/v1/company/qr-onboarding/scan-employee', [
+                'qr_token' => $this->forgeQrToken([
+                    'v' => 1,
+                    'type' => 'company_onboarding',
+                    'company' => ['id' => $company->id, 'name' => 'Company A'],
+                    'issued_at' => now()->toIso8601String(),
+                    'expires_at' => now()->addDays(30)->toIso8601String(),
+                ]),
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['qr_token'])
+            ->assertJsonPath('errors.qr_token.0', 'Type de QR incompatible.');
+    }
+
+    /**
+     * Signe un payload avec la clé applicative, exactement comme
+     * `OnboardingQrService::sign()` — pour exercer les branches que la fabrique
+     * du service (TTL fixe de 30 jours, type figé) ne permet pas d'atteindre.
+     *
+     * @param  array<string, mixed>  $payload
+     */
+    private function forgeQrToken(array $payload): string
+    {
+        $encoded = rtrim(strtr(base64_encode(json_encode($payload, JSON_THROW_ON_ERROR)), '+/', '-_'), '=');
+        $signature = hash_hmac('sha256', $encoded, (string) config('app.key'));
+
+        return $encoded.'.'.$signature;
+    }
+
     public function test_company_onboarding_forbidden_for_non_manager(): void
     {
         $company = Company::query()->create([

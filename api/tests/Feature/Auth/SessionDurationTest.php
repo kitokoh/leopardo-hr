@@ -90,14 +90,44 @@ class SessionDurationTest extends TestCase
     {
         // Garde de configuration (#9344) : si le défaut remonte à 30 jours,
         // ce test le signale avant même le premier login.
-        $this->assertSame(720, (int) config('sanctum.expiration'));
+        //
+        // Le test doit être INDÉPENDANT du `.env` local : `config/sanctum.php`
+        // lit `env('SANCTUM_TOKEN_EXPIRATION', 720)`, donc un `.env` de poste
+        // encore réglé sur l'ancienne valeur (43 200) faisait échouer la garde
+        // alors que le dépôt est correct (`.env.example:130` = 720).
+        //
+        // On vérifie donc le DÉFAUT DU CODE — la valeur de repli écrite dans
+        // `config/sanctum.php` — et non la valeur chargée depuis
+        // l'environnement du développeur. Lecture du littéral dans la source :
+        // c'est la seule façon de tester le repli sans dépendre de `env()`.
+        $configSource = (string) file_get_contents(config_path('sanctum.php'));
+
+        $this->assertMatchesRegularExpression(
+            "/'expiration'\s*=>\s*\(int\)\s*env\(\s*'SANCTUM_TOKEN_EXPIRATION'\s*,\s*720\s*\)/",
+            $configSource,
+            'Le repli de `config/sanctum.php` doit rester 12 h (720 min).',
+        );
+
+        // Et la constante du service, source unique de vérité, doit valoir 12 h.
+        $this->assertSame(
+            720,
+            \App\Core\Auth\Infrastructure\Services\TokenExpiryService::DEFAULT_INTERACTIVE_MINUTES,
+            'La durée interactive par défaut doit être de 12 h.',
+        );
     }
 
     public function test_enrolled_device_tokens_keep_the_long_lifetime(): void
     {
         // #9344 — la durée longue est réservée aux appareils enrôlés, et
         // n'est PAS atteignable par le `device_name` fourni par le client.
-        $this->assertSame(43200, (int) config('sanctum.device_expiration'));
+        //
+        // Le test doit être INDÉPENDANT du `.env` local : un poste dont
+        // `SANCTUM_TOKEN_EXPIRATION` vaut encore 43 200 rend les deux durées
+        // égales, et le test échouait alors sur la configuration du
+        // développeur, pas sur le service. On force donc les deux valeurs
+        // attendues avant d'exercer la logique de décision.
+        config()->set('sanctum.expiration', 720);
+        config()->set('sanctum.device_expiration', 43200);
 
         $service = app(\App\Core\Auth\Infrastructure\Services\TokenExpiryService::class);
 
@@ -106,9 +136,28 @@ class SessionDurationTest extends TestCase
 
         $this->assertNotNull($interactive);
         $this->assertNotNull($device);
-        $this->assertTrue(
-            $device->diffInMinutes($interactive) > 40000,
+
+        // Carbon 3 rend `diffInMinutes()` SIGNÉ : `$device->diffInMinutes($interactive)`
+        // vaut −42 480 (l'argument est postérieur), donc `> 40000` était faux
+        // même avec la bonne configuration. On mesure dans le sens
+        // chronologique et on prend la valeur absolue.
+        $gap = abs($interactive->diffInMinutes($device));
+
+        $this->assertGreaterThan(
+            40000,
+            $gap,
             'Un appareil enrôlé doit obtenir une durée nettement plus longue qu\'une surface interactive.',
+        );
+
+        // Contrôle direct des deux durées, indépendant de toute API de diff.
+        $this->assertSame(720, $service->interactiveMinutes());
+        $this->assertSame(43200, $service->deviceMinutes());
+
+        // Le `device_name` seul ne suffit PAS à obtenir la durée longue.
+        $this->assertSame(
+            $service->interactiveMinutes(),
+            (int) abs(now()->diffInMinutes($service->forNewToken('kiosk-1'))),
+            'Un nom d\'appareil fourni par le client ne doit pas ouvrir la durée longue.',
         );
     }
 }
