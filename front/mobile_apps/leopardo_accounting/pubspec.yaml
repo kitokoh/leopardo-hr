@@ -12,6 +12,9 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  # #9433 : Flutter 3.50 déprécie package:flutter/material.dart au profit
+  # du package standalone material_ui (versioning indépendant, pub.dev).
+  material_ui: ^1.0.0
 
   cupertino_icons: ^1.0.9
   flutter_riverpod: ^3.4.2
