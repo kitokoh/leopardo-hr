@@ -161,4 +161,5 @@ return [
     'lettering_unbalanced' => 'Le lettrage doit être équilibré : la somme des débits doit égaler la somme des crédits.',
     'lettering_invalid' => 'Lettrage invalide : les écritures doivent porter sur le même compte.',
     'lettering_already_used' => 'Une ou plusieurs écritures sont déjà lettrées avec une autre lettre.',
+    'depreciation_declining_unsupported' => 'Méthode dégressif non implémentée pour ce pays.',
 ];

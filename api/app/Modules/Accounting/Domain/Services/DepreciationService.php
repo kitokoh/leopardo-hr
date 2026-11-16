@@ -24,12 +24,12 @@ class DepreciationService
         $depreciableAmount = $asset->getDepreciableAmount();
         $acquisitionDate = Carbon::parse($asset->acquisition_date);
         $schedule = collect();
-        
+
         if ($asset->method === 'linear') {
             $schedule = $this->calculateLinearSchedule($asset, $depreciableAmount, $acquisitionDate);
         } elseif ($asset->method === 'declining') {
             // Pour le moment, on refuse explicitement declining si non implémenté par pays
-            throw new \InvalidArgumentException('Méthode declining non implémentée pour ce pays');
+            throw new \InvalidArgumentException(__('accounting.depreciation_declining_unsupported'));
         }
 
         return $schedule;
@@ -69,7 +69,7 @@ class DepreciationService
 
         for ($i = 0; $i < $remainingMonths; $i++) {
             $amount = $monthlyRate;
-            
+
             // Dernière ligne : ajuster pour tomber exactement sur le montant total
             if ($i === $remainingMonths - 1) {
                 $amount = round($depreciableAmount - $cumulative, 2);
@@ -117,10 +117,10 @@ class DepreciationService
             // Créer les écritures comptables
             // TODO: Appeler JournalPostingService avec source_type=depreciation
             // Débit: expense_account_code / Crédit: depreciation_account_code
-            
+
             $entry->update([
                 'status' => 'posted',
-                'journal_entry_group' => 'DEP-' . $period . '-' . $entry->fixed_asset_id,
+                'journal_entry_group' => 'DEP-'.$period.'-'.$entry->fixed_asset_id,
             ]);
 
             $posted++;
