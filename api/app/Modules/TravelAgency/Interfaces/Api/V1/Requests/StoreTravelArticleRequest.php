@@ -70,14 +70,26 @@ class StoreTravelArticleRequest extends FormRequest
     {
         $body = $this->input('body_redacted') ?? $this->input('body');
 
-        $slug = $this->input('slug');
+        $given = $this->input('slug');
 
-        if (! is_string($slug) || trim($slug) === '') {
+        // #9098 — un slug FOURNI par le client ne doit pas etre suffixe en
+        // silence : `uniqueSlug()` le rendait unique avant que `rules()` ne
+        // s'execute, donc la `Rule::unique` ci-dessus ne pouvait JAMAIS lever
+        // 422 et l'article etait cree avec un slug different de celui demande
+        // (`douala-littoral` -> `douala-littoral-2`). Seul le slug DERIVE du
+        // titre est suffixe, conformement au contrat de cette classe.
+        if (is_string($given) && trim($given) !== '') {
+            $slug = trim($given);
+        } else {
             $slug = Str::slug((string) $this->input('title', ''));
+
+            if ($slug !== '') {
+                $slug = $this->uniqueSlug($slug);
+            }
         }
 
         $this->merge(array_filter([
-            'slug' => $slug !== '' ? $this->uniqueSlug($slug) : $slug,
+            'slug' => $slug,
             'body_redacted' => $body,
         ], static fn ($v): bool => $v !== null));
     }
