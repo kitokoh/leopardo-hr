@@ -106,10 +106,13 @@ class TravelContentTest extends TestCase
 
         $commentId = (int) $created->json('data.id');
 
-        // Signalement → flagged.
+        // Signalement → `reported` (etat distinct de `flagged`, qui est une
+        // decision de moderation). Contrat porte par le controleur et son
+        // commentaire #8396 : `report()` ecrit `reported` + `report_reason`
+        // + `reported_at` ; le test attendait l'ancien statut.
         $this->postJson("/api/v1/travel/comments/{$commentId}/report")
             ->assertOk()
-            ->assertJsonPath('data.status', 'flagged');
+            ->assertJsonPath('data.status', 'reported');
 
         // Modération → rejected.
         $this->postJson("/api/v1/travel/comments/{$commentId}/moderate", ['status' => 'rejected'])
@@ -138,8 +141,12 @@ class TravelContentTest extends TestCase
         $likes = app(TenantManager::class)->withinTenant($company, fn (): int => TravelLike::query()->where('article_id', $article->id)->count());
         $this->assertSame(1, $likes);
 
-        // Partage.
-        $this->postJson("/api/v1/travel/articles/{$article->id}/share", ['channel' => 'whatsapp'])->assertStatus(201);
+        // Partage → 200 : `POST /share` trace un evenement d'engagement et
+        // renvoie l'agregat comme `like`/`rate` ; il n'expose pas l'identite
+        // d'une nouvelle ressource (contrat #8396, commentaire du controleur).
+        $this->postJson("/api/v1/travel/articles/{$article->id}/share", ['channel' => 'whatsapp'])
+            ->assertOk()
+            ->assertJsonPath('data.shared', true);
 
         // Note 2× → mise à jour (pas de doublon), agrégat exact.
         $this->postJson("/api/v1/travel/articles/{$article->id}/rate", ['rating' => 4])->assertOk();
