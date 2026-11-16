@@ -133,9 +133,8 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final failure = error is PublicApiFailure
-        ? error as PublicApiFailure
-        : null;
+    final failure =
+        error is PublicApiFailure ? error as PublicApiFailure : null;
 
     // 404 : le commerce n'est plus publié. C'est une information, pas une
     // panne — surtout quand la personne arrive par un QR code imprimé il y a
