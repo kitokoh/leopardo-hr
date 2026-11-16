@@ -109,6 +109,8 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   // BOS-CHAT (#8760) — boîte de réception des demandes publiques : messages de
   // CLIENTS, contenu commercial et données personnelles de tiers.
   '/demandes-publiques',
+  // #9333 — piste d'audit du tenant : traçabilité nominative, zone dashboard.
+  '/audit-logs',
 ];
 
 export function proxy(request: NextRequest) {
@@ -270,6 +272,7 @@ export const config = {
     '/chat/:path*', // BOS-CHAT (#8751) messagerie horizontale — gate session
     '/demandes-publiques/:path*', // BOS-CHAT (#8760) boîte de réception publique — gate session
     '/library-admin/:path*', // BC-40 LIBRARY (#9224) back-office bibliothèque — gate session
+    '/audit-logs/:path*', // #9333 piste d'audit du tenant — gate session
     // Vitrine BUSINESS — ?lang= → en-tête x-vitrine-lang (issue #4004).
     // Depuis #9358 la vitrine commerciale vit sous `/business` : une seule
     // entrée de matcher couvre ses 36 pages (l'ancienne liste énumérait

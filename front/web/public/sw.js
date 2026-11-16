@@ -28,6 +28,8 @@ const PROTECTED_PREFIXES = [
   '/showcase',
   // BC-40 LIBRARY (#9241) — administration de la bibliothèque (zone dashboard).
   '/library-admin',
+  // #9333 — piste de tracabilite du tenant (zone dashboard).
+  '/audit-logs',
   // FUND-090 — gestion des cagnottes, espace tenant (zone dashboard).
   '/fundraising',
   // BC-19 (#7425) — mur de caméras et détail caméra (zone dashboard).
