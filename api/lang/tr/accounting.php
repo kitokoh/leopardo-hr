@@ -160,4 +160,5 @@ return [
     'lettering_unbalanced' => 'Mutabakat dengeli olmalıdır: toplam borçlar toplam alacaklara eşit olmalıdır.',
     'lettering_invalid' => 'Geçersiz mutabakat: kayıtlar aynı hesabı hedeflemelidir.',
     'lettering_already_used' => 'Bir veya daha fazla kayıt başka bir kodla mutabık kılınmış.',
+    'depreciation_declining_unsupported' => 'Azalan amortisman yöntemi bu ülkede uygulanmıyor.',
 ];
