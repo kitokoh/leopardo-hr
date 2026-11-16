@@ -35,4 +35,6 @@ return [
     'infra_switch_dispatched' => 'Geçiş başlatıldı: GitHub iş akışı devraldı (Actions sekmesini izleyin).',
     'infra_token_missing' => 'Geçiş kullanılamıyor: butonun GitHub jetonu tanımlı değil (GITHUB_STACK_SWITCH_TOKEN).',
     'search_intel_unsupported_provider' => 'Desteklenmeyen sağlayıcı: :provider.',
+    'export_not_included_orders' => 'Profesyonelin verileri — kendi dışa aktarımına aittir.',
+    'export_not_included_messages' => 'Profesyonellerle sohbetler — kiracı iş içeriği.',
 ];
