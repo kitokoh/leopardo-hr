@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 use App\Modules\Expense\Interfaces\Api\V1\Controllers\ExpenseAccountingController;
 use App\Modules\Expense\Interfaces\Api\V1\Controllers\ExpenseClaimController;
+use App\Modules\Expense\Interfaces\Api\V1\Controllers\ExpenseStatsController;
 use App\Support\Routing\ModuleRoutes;
 use Illuminate\Support\Facades\Route;
 
 ModuleRoutes::tenantModule('', function (): void {
+    // Issue #9550 : KPIs des notes de frais pour dashboard Finance
+    Route::get('/expense/stats', [ExpenseStatsController::class, 'index']);
+    
     Route::get('/expense-claims', [ExpenseClaimController::class, 'index']);
     Route::post('/expense-claims', [ExpenseClaimController::class, 'store']);
     Route::get('/expense-claims/{expenseClaim}', [ExpenseClaimController::class, 'show']);
