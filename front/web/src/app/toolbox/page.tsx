@@ -102,6 +102,7 @@ export default async function ToolboxPage() {
           allCategories: copy.catalog.allCategories,
           openTool: copy.catalog.openTool,
           toolsCount: copy.catalog.toolsCount,
+          clearFilters: copy.catalog.clearFilters,
         }}
       />
     </div>

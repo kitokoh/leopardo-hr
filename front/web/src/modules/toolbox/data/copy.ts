@@ -37,6 +37,8 @@ export interface ToolboxCopy {
     allCategories: string;
     toolsCount: string;
     openTool: string;
+    /** Bouton qui remet la recherche et la catégorie à zéro. */
+    clearFilters: string;
   };
   categories: Record<string, string>;
   warnings: Record<string, string>;
@@ -114,6 +116,7 @@ const fr: ToolboxCopy = {
     allCategories: 'Toutes les catégories',
     toolsCount: 'outils disponibles',
     openTool: 'Ouvrir l’outil',
+    clearFilters: 'Effacer les filtres',
   },
   categories: {
     calcul: 'Calcul',
@@ -445,6 +448,7 @@ const en: ToolboxCopy = {
     allCategories: 'All categories',
     toolsCount: 'tools available',
     openTool: 'Open tool',
+    clearFilters: 'Clear filters',
   },
   categories: {
     calcul: 'Calculation',
@@ -772,6 +776,7 @@ const tr: ToolboxCopy = {
     allCategories: 'Tüm kategoriler',
     toolsCount: 'araç mevcut',
     openTool: 'Aracı aç',
+    clearFilters: 'Filtreleri temizle',
   },
   categories: {
     calcul: 'Hesaplama',
@@ -1096,6 +1101,7 @@ const ar: ToolboxCopy = {
     allCategories: 'كل الفئات',
     toolsCount: 'أداة متاحة',
     openTool: 'افتح الأداة',
+    clearFilters: 'مسح عوامل التصفية',
   },
   categories: {
     calcul: 'حساب',
