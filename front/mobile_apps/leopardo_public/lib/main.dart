@@ -1,11 +1,8 @@
 import 'dart:async';
 
-import 'package:material_ui/material_ui.dart'
-    hide
-        GlobalMaterialLocalizations,
-        GlobalWidgetsLocalizations,
-        GlobalCupertinoLocalizations;
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_localizations/flutter_localizations.dart'
+    hide GlobalMaterialLocalizations;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
