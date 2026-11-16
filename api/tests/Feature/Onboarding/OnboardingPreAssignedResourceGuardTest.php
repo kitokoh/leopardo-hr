@@ -9,7 +9,6 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\Site;
 use App\Modules\HR\Domain\Models\UserInvitation;
 use App\Modules\HR\Infrastructure\Services\UserInvitationService;
-use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
