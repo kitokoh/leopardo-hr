@@ -111,13 +111,9 @@ class CrmOpportunitiesScreen extends ConsumerWidget {
           .read(crmRepositoryProvider)
           .transitionOpportunity(opportunityId, stage);
       ref.invalidate(crmOpportunitiesProvider);
-      messenger.showSnackBar(
-        SnackBar(content: Text('$stage ✓')),
-      );
+      messenger.showSnackBar(SnackBar(content: Text('$stage ✓')));
     } catch (_) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.crmLoadError)),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(l10n.crmLoadError)));
     }
   }
 }

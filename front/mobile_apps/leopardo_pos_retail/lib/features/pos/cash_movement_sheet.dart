@@ -46,7 +46,10 @@ class _CashMovementSheetState extends State<CashMovementSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Mouvement de caisse', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            'Mouvement de caisse',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 16),
           SegmentedButton<RetailCashMovementType>(
             segments: [
@@ -57,14 +60,17 @@ class _CashMovementSheetState extends State<CashMovementSheet> {
                 ),
             ],
             selected: {_type},
-            onSelectionChanged: (selection) => setState(() => _type = selection.first),
+            onSelectionChanged: (selection) =>
+                setState(() => _type = selection.first),
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _amountController,
             keyboardType: TextInputType.number,
             onChanged: (_) => setState(() {}),
-            decoration: const InputDecoration(labelText: 'Montant (unites mineures)'),
+            decoration: const InputDecoration(
+              labelText: 'Montant (unites mineures)',
+            ),
           ),
           const SizedBox(height: 12),
           TextField(

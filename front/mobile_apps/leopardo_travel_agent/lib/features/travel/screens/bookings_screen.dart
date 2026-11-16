@@ -154,10 +154,7 @@ class _StatusBadge extends ConsumerWidget {
         color: color.withValues(alpha: 0.14),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(
-        label,
-        style: AppTypography.caption.copyWith(color: color),
-      ),
+      child: Text(label, style: AppTypography.caption.copyWith(color: color)),
     );
   }
 }

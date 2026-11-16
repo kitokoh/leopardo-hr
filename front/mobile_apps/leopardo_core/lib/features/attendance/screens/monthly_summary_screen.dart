@@ -151,7 +151,9 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
           label: context.l10n.attendanceHoursWorkedLabel,
           value: '${summary.hours.toStringAsFixed(2)} h',
           sub: context.l10n.attendanceDaysPresentRatio(
-              summary.daysPresent, summary.workingDays),
+            summary.daysPresent,
+            summary.workingDays,
+          ),
         ),
         const SizedBox(height: 12),
         _metricGlassCard(
@@ -177,7 +179,8 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
           label: context.l10n.attendanceNetEstimate,
           value: currencyFormat.format(summary.net),
           sub: context.l10n.attendanceDeductionsSub(
-              currencyFormat.format(summary.deductions)),
+            currencyFormat.format(summary.deductions),
+          ),
           accent: Theme.of(context).colorScheme.primary,
         ),
         const SizedBox(height: 24),

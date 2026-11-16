@@ -72,8 +72,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   void initState() {
     super.initState();
     final employee = ref.read(authProvider).employee;
-    final deviceLanguage =
-        PlatformDispatcher.instance.locale.languageCode.toLowerCase();
+    final deviceLanguage = PlatformDispatcher.instance.locale.languageCode
+        .toLowerCase();
     _firstNameController = TextEditingController(
       text: employee?.firstName ?? '',
     );
@@ -96,8 +96,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _loadLocalSettings() async {
-    final settings =
-        await ref.read(settingsRepositoryProvider).loadLocalBiometricSettings();
+    final settings = await ref
+        .read(settingsRepositoryProvider)
+        .loadLocalBiometricSettings();
     if (!mounted) return;
 
     setState(() {
@@ -111,8 +112,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _loadEnrollmentStatus() async {
     try {
-      final enrollment =
-          await ref.read(settingsRepositoryProvider).loadBiometricEnrollment();
+      final enrollment = await ref
+          .read(settingsRepositoryProvider)
+          .loadBiometricEnrollment();
       if (!mounted) return;
       setState(() {
         _latestEnrollment = enrollment;
@@ -312,8 +314,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _firstNameController,
-              decoration:
-                  InputDecoration(labelText: context.l10n.settingsFirstName),
+              decoration: InputDecoration(
+                labelText: context.l10n.settingsFirstName,
+              ),
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? context.l10n.settingsFirstNameRequired
                   : null,
@@ -322,7 +325,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: _lastNameController,
               decoration: InputDecoration(
-                  labelText: context.l10n.settingsLastNameLabel),
+                labelText: context.l10n.settingsLastNameLabel,
+              ),
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? context.l10n.settingsLastNameRequired
                   : null,
@@ -331,8 +335,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              decoration:
-                  InputDecoration(labelText: context.l10n.settingsEmailLabel),
+              decoration: InputDecoration(
+                labelText: context.l10n.settingsEmailLabel,
+              ),
               validator: (value) {
                 final trimmed = value?.trim() ?? '';
                 if (trimmed.isEmpty) return context.l10n.settingsEmailRequired;
@@ -445,8 +450,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 16),
           FutureBuilder<EmployeeQrPayload>(
-            future:
-                ref.read(settingsRepositoryProvider).loadEmployeeQrPayload(),
+            future: ref
+                .read(settingsRepositoryProvider)
+                .loadEmployeeQrPayload(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const LinearProgressIndicator(minHeight: 2);
@@ -483,9 +489,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               if (text == null || text.isEmpty) {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(context.l10n.settingsNoCompanyQr),
-                  ),
+                  SnackBar(content: Text(context.l10n.settingsNoCompanyQr)),
                 );
                 return;
               }
@@ -760,8 +764,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
 
     try {
-      final message =
-          await ref.read(settingsRepositoryProvider).submitCompanyQr(token);
+      final message = await ref
+          .read(settingsRepositoryProvider)
+          .submitCompanyQr(token);
       if (!context.mounted) return;
       _companyQrController.clear();
       ScaffoldMessenger.of(context)
@@ -835,9 +840,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final currentMode = ref.watch(themeModeProvider);
 
     final options = [
-      (ThemeMode.system, Icons.brightness_auto_outlined, context.l10n.settingsThemeSystem),
-      (ThemeMode.light, Icons.light_mode_outlined, context.l10n.settingsThemeLight),
-      (ThemeMode.dark, Icons.dark_mode_outlined, context.l10n.settingsThemeDark),
+      (
+        ThemeMode.system,
+        Icons.brightness_auto_outlined,
+        context.l10n.settingsThemeSystem,
+      ),
+      (
+        ThemeMode.light,
+        Icons.light_mode_outlined,
+        context.l10n.settingsThemeLight,
+      ),
+      (
+        ThemeMode.dark,
+        Icons.dark_mode_outlined,
+        context.l10n.settingsThemeDark,
+      ),
     ];
 
     return Container(
@@ -853,8 +870,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 8),
           Text(
             context.l10n.settingsThemeHint,
-            style: AppTypography.bodySmall
-                .copyWith(color: MobileSurface.secondary),
+            style: AppTypography.bodySmall.copyWith(
+              color: MobileSurface.secondary,
+            ),
           ),
           const SizedBox(height: 16),
           RadioGroup<ThemeMode>(
@@ -872,12 +890,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       value: opt.$1,
                       title: Row(
                         children: [
-                          Icon(opt.$2, size: 20, color: MobileSurface.secondary),
+                          Icon(
+                            opt.$2,
+                            size: 20,
+                            color: MobileSurface.secondary,
+                          ),
                           const SizedBox(width: 10),
                           Text(
                             opt.$3,
-                            style: AppTypography.body
-                                .copyWith(color: MobileSurface.text),
+                            style: AppTypography.body.copyWith(
+                              color: MobileSurface.text,
+                            ),
                           ),
                         ],
                       ),
@@ -1004,8 +1027,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 color: _latestEnrollment!.status == 'approved'
                     ? AppColors.success
                     : _latestEnrollment!.status == 'rejected'
-                        ? AppColors.danger
-                        : AppColors.warning,
+                    ? AppColors.danger
+                    : AppColors.warning,
               ),
             ),
             if ((_latestEnrollment!.managerNote ?? '').isNotEmpty)
@@ -1032,7 +1055,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             value: _fingerprintEnabled,
             onChanged: _biometricEnabled
                 ? (value) =>
-                    setState(() => _fingerprintEnabled = value ?? false)
+                      setState(() => _fingerprintEnabled = value ?? false)
                 : null,
           ),
           CheckboxListTile(
@@ -1065,8 +1088,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             maxLines: 3,
             decoration: const InputDecoration(
               labelText: 'Notes et consentement',
-              hintText:
-                  'Exemple: selfie autorise, prefere borne entree principale, accord photo visage...',
+              hintText: 'Exemple: selfie autorise, prefere borne entree principale, accord photo visage...',
             ),
           ),
           const SizedBox(height: 16),
@@ -1120,7 +1142,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
     );
   }
-
 
   /// Issue #5683 — accès à l'écran de gestion 2FA (enrôlement, codes de
   /// récupération, désactivation). Écran partagé leopardo_core.
@@ -1178,8 +1199,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Widget _buildNotificationSection(BuildContext context) {
     return FutureBuilder<NotificationPreferences>(
-      future:
-          ref.read(settingsRepositoryProvider).loadNotificationPreferences(),
+      future: ref
+          .read(settingsRepositoryProvider)
+          .loadNotificationPreferences(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Container(
@@ -1272,7 +1294,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               final fallback = isStart ? '20:00' : '07:00';
               final parts = (current ?? fallback).split(':');
               final initial = TimeOfDay(
-                hour: int.tryParse(parts.isNotEmpty ? parts[0] : '') ??
+                hour:
+                    int.tryParse(parts.isNotEmpty ? parts[0] : '') ??
                     (isStart ? 20 : 7),
                 minute: int.tryParse(parts.length > 1 ? parts[1] : '') ?? 0,
               );
@@ -1342,8 +1365,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   tile(
                     title: 'WhatsApp',
-                    subtitle:
-                        'Canal conversationnel, necessite votre opt-in explicite.',
+                    subtitle: 'Canal conversationnel, necessite votre opt-in explicite.',
                     value: preferences.whatsappEnabled,
                     onChanged: (next) => preferences = preferences.copyWith(
                       whatsappEnabled: next,
@@ -1364,8 +1386,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         children: [
                           Expanded(
                             child: OutlinedButton(
-                              onPressed:
-                                  saving ? null : () => pickQuietHour(true),
+                              onPressed: saving
+                                  ? null
+                                  : () => pickQuietHour(true),
                               child: Text(
                                 'Debut ${preferences.quietHoursStart ?? '20:00'}',
                               ),
@@ -1374,8 +1397,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           const SizedBox(width: 10),
                           Expanded(
                             child: OutlinedButton(
-                              onPressed:
-                                  saving ? null : () => pickQuietHour(false),
+                              onPressed: saving
+                                  ? null
+                                  : () => pickQuietHour(false),
                               child: Text(
                                 'Fin ${preferences.quietHoursEnd ?? '07:00'}',
                               ),
@@ -1388,8 +1412,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   DropdownButtonFormField<String>(
                     initialValue:
                         _languageLabels.containsKey(preferences.locale)
-                            ? preferences.locale
-                            : null,
+                        ? preferences.locale
+                        : null,
                     decoration: const InputDecoration(
                       labelText: 'Langue des notifications',
                     ),
@@ -1429,7 +1453,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (!_profileFormKey.currentState!.validate()) return;
 
     setState(() => _profileSaving = true);
-    final success = await ref.read(authProvider.notifier).updateProfile(
+    final success = await ref
+        .read(authProvider.notifier)
+        .updateProfile(
           firstName: _firstNameController.text,
           lastName: _lastNameController.text,
           email: _emailController.text,
@@ -1451,7 +1477,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (!_passwordFormKey.currentState!.validate()) return;
 
     setState(() => _passwordSaving = true);
-    final success = await ref.read(authProvider.notifier).changePassword(
+    final success = await ref
+        .read(authProvider.notifier)
+        .changePassword(
           currentPassword: _currentPasswordController.text,
           newPassword: _newPasswordController.text,
           confirmation: _confirmPasswordController.text,
@@ -1488,7 +1516,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _savePreferences() async {
     setState(() => _preferencesSaving = true);
 
-    await ref.read(settingsRepositoryProvider).saveLocalBiometricSettings(
+    await ref
+        .read(settingsRepositoryProvider)
+        .saveLocalBiometricSettings(
           LocalBiometricSettings(
             biometricEnabled: _biometricEnabled,
             fingerprintEnabled: _biometricEnabled && _fingerprintEnabled,
@@ -1570,14 +1600,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     setState(() => _biometricSubmitting = true);
     try {
-      final enrollment =
-          await ref.read(settingsRepositoryProvider).submitBiometricEnrollment(
-                requestedFaceEnabled: _faceEnabled,
-                requestedFingerprintEnabled: _fingerprintEnabled,
-                employeeNote: _biometricNoteController.text,
-                requestedFingerprintDeviceId: _fingerprintDeviceController.text,
-                faceImage: _selectedFaceImage,
-              );
+      final enrollment = await ref
+          .read(settingsRepositoryProvider)
+          .submitBiometricEnrollment(
+            requestedFaceEnabled: _faceEnabled,
+            requestedFingerprintEnabled: _fingerprintEnabled,
+            employeeNote: _biometricNoteController.text,
+            requestedFingerprintDeviceId: _fingerprintDeviceController.text,
+            faceImage: _selectedFaceImage,
+          );
 
       if (!mounted) return;
       setState(() {

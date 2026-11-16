@@ -88,7 +88,8 @@ class NotificationListScreen extends ConsumerWidget {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                    context.l10n.notificationsMarkReadError),
+                                  context.l10n.notificationsMarkReadError,
+                                ),
                               ),
                             );
                           }
@@ -110,8 +111,9 @@ class NotificationListScreen extends ConsumerWidget {
                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content:
-                                  Text(context.l10n.notificationsDeleteError),
+                              content: Text(
+                                context.l10n.notificationsDeleteError,
+                              ),
                             ),
                           );
                         }
@@ -203,8 +205,9 @@ class _NotificationTile extends StatelessWidget {
                               title,
                               style: AppTypography.bodySmall.copyWith(
                                 color: MobileSurface.text,
-                                fontWeight:
-                                    isRead ? FontWeight.w500 : FontWeight.w700,
+                                fontWeight: isRead
+                                    ? FontWeight.w500
+                                    : FontWeight.w700,
                               ),
                             ),
                           ),

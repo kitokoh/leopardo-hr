@@ -137,10 +137,8 @@ class _PosBarcodeScannerScreenState extends State<PosBarcodeScannerScreen> {
           MobileScanner(
             controller: _controller,
             onDetect: _onDetect,
-            errorBuilder: (context, error) => _ScannerError(
-              error: error,
-              cardRadius: widget.cardRadius,
-            ),
+            errorBuilder: (context, error) =>
+                _ScannerError(error: error, cardRadius: widget.cardRadius),
           ),
           // Viseur : un cadre net au centre, lisible a bout de bras.
           IgnorePointer(
@@ -204,8 +202,7 @@ class _ScannerError extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
 
     final message = switch (error.errorCode) {
-      MobileScannerErrorCode.permissionDenied =>
-        'Acces a la camera refuse. Autorisez la camera dans les reglages de la tablette.',
+      MobileScannerErrorCode.permissionDenied => 'Acces a la camera refuse. Autorisez la camera dans les reglages de la tablette.',
       MobileScannerErrorCode.unsupported =>
         'Cet appareil ne permet pas le scan par camera.',
       _ => 'Camera indisponible. Utilisez la saisie manuelle du code.',

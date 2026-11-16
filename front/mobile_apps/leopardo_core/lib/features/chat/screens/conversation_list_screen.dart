@@ -43,9 +43,8 @@ class ConversationListScreen extends ConsumerWidget {
       ),
       body: threadsAsync.when(
         // --- État chargement ---
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: AppColors.rh),
-        ),
+        loading: () =>
+            const Center(child: CircularProgressIndicator(color: AppColors.rh)),
 
         // --- État erreur ---
         error: (error, _) => ListView(
@@ -54,8 +53,7 @@ class ConversationListScreen extends ConsumerWidget {
             EmptyState(
               icon: Icons.cloud_off,
               title: 'Messagerie indisponible',
-              description:
-                  'Vérifiez votre connexion, puis réessayez. Vos conversations restent enregistrées côté serveur.',
+              description: 'Vérifiez votre connexion, puis réessayez. Vos conversations restent enregistrées côté serveur.',
             ),
             const SizedBox(height: 16),
             Center(
@@ -79,8 +77,7 @@ class ConversationListScreen extends ConsumerWidget {
                     EmptyState(
                       icon: Icons.forum_outlined,
                       title: 'Aucune conversation',
-                      description:
-                          'Les échanges avec votre manager ou vos groupes apparaîtront ici.',
+                      description: 'Les échanges avec votre manager ou vos groupes apparaîtront ici.',
                     ),
                   ],
                 )
@@ -148,8 +145,9 @@ class _ThreadTile extends StatelessWidget {
                               : thread.title,
                           style: AppTypography.bodySmall.copyWith(
                             color: MobileSurface.text,
-                            fontWeight:
-                                thread.unread ? FontWeight.w700 : FontWeight.w500,
+                            fontWeight: thread.unread
+                                ? FontWeight.w700
+                                : FontWeight.w500,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,

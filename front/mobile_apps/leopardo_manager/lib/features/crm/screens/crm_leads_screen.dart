@@ -98,10 +98,7 @@ class _StatusPill extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
-      child: Text(
-        status,
-        style: TextStyle(color: color, fontSize: 11),
-      ),
+      child: Text(status, style: TextStyle(color: color, fontSize: 11)),
     );
   }
 }

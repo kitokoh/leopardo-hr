@@ -82,7 +82,8 @@ class ContractScreen extends ConsumerWidget {
                             ),
                             _InfoRow(
                               label: l10n.contractsLabelEndDate,
-                              value: contract.endDate ?? l10n.contractsStatusCdi,
+                              value:
+                                  contract.endDate ?? l10n.contractsStatusCdi,
                             ),
                             _InfoRow(
                               label: l10n.contractsLabelBaseSalary,

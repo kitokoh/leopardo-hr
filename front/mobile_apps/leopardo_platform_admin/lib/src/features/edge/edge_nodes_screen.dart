@@ -9,8 +9,9 @@ import 'package:leopardo_core/l10n/l10n.dart';
 import '../../core/platform_providers.dart';
 import '../platform/platform_models.dart';
 
-final platformEdgeNodesProvider =
-    FutureProvider<List<PlatformEdgeNode>>((ref) async {
+final platformEdgeNodesProvider = FutureProvider<List<PlatformEdgeNode>>((
+  ref,
+) async {
   return ref.watch(platformRepositoryProvider).edgeNodes();
 });
 
@@ -78,7 +79,9 @@ class EdgeNodesScreen extends ConsumerWidget {
                     MobileMetricTile(
                       value: '$offline',
                       label: l10n.edgeNodesOffline,
-                      color: offline > 0 ? AppColors.danger : MobileSurface.disabled,
+                      color: offline > 0
+                          ? AppColors.danger
+                          : MobileSurface.disabled,
                     ),
                   ],
                 ),
@@ -141,7 +144,10 @@ class _EdgeNodeCard extends ConsumerWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        l10n.edgeNodesVersionInfo(node.version, node.employeesCount),
+                        l10n.edgeNodesVersionInfo(
+                          node.version,
+                          node.employeesCount,
+                        ),
                         style: const TextStyle(
                           color: MobileSurface.secondary,
                           fontSize: 12,
@@ -182,9 +188,8 @@ class _EdgeNodeCard extends ConsumerWidget {
                       .forceEdgeNodeSync(node.id);
                   ref.invalidate(platformEdgeNodesProvider);
                   if (!context.mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(syncTriggeredMsg)),
-                  );
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text(syncTriggeredMsg)));
                 } catch (e) {
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context)

@@ -12,8 +12,8 @@ import '../platform/platform_models.dart';
 
 final platformCompanyRequestsProvider =
     FutureProvider<List<PlatformCompanyRequest>>((ref) {
-  return ref.watch(platformRepositoryProvider).companyRequests();
-});
+      return ref.watch(platformRepositoryProvider).companyRequests();
+    });
 
 class CompanyRequestsScreen extends ConsumerWidget {
   const CompanyRequestsScreen({super.key});
@@ -43,9 +43,7 @@ class CompanyRequestsScreen extends ConsumerWidget {
                 )
               : Column(
                   children: items
-                      .map(
-                        (request) => _CompanyRequestCard(request: request),
-                      )
+                      .map((request) => _CompanyRequestCard(request: request))
                       .toList(),
                 ),
           loading: () => const _CompanyRequestsLoading(),
@@ -106,7 +104,9 @@ class _CompanyRequestCard extends ConsumerWidget {
     final note = approved
         ? context.l10n.platformAdminCompanyApprovedNote
         : context.l10n.platformAdminCompanyRejectedNote;
-    await ref.read(platformRepositoryProvider).reviewCompanyRequest(
+    await ref
+        .read(platformRepositoryProvider)
+        .reviewCompanyRequest(
           id: request.id,
           approved: approved,
           adminNotes: note,
@@ -115,9 +115,11 @@ class _CompanyRequestCard extends ConsumerWidget {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(approved
-            ? context.l10n.companyrequestsApprovedToast
-            : context.l10n.companyrequestsRejectedToast),
+        content: Text(
+          approved
+              ? context.l10n.companyrequestsApprovedToast
+              : context.l10n.companyrequestsRejectedToast,
+        ),
       ),
     );
   }
@@ -129,10 +131,7 @@ class _CompanyRequestCard extends ConsumerWidget {
       iconColor: AppColors.warning,
       title: request.companyName,
       subtitle: '${request.city}, ${request.country} - ${request.email}',
-      trailing: LeopardoBadge(
-        label: request.status,
-        color: AppColors.warning,
-      ),
+      trailing: LeopardoBadge(label: request.status, color: AppColors.warning),
       footer: Row(
         children: [
           Expanded(

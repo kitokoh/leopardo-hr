@@ -190,7 +190,9 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                             children: [
                               Text(
                                 context.l10n.payrollMonthLabel(
-                                    payroll.month, payroll.year),
+                                  payroll.month,
+                                  payroll.year,
+                                ),
                                 style: AppTypography.bodySmall.copyWith(
                                   color: MobileSurface.text,
                                   fontWeight: FontWeight.w700,
@@ -446,8 +448,9 @@ class _PaymentDocumentTile extends StatelessWidget {
               color: document.isAvailable
                   ? AppColors.info
                   : MobileSurface.secondary,
-              onPressed:
-                  document.isAvailable ? () => onDownload(document) : null,
+              onPressed: document.isAvailable
+                  ? () => onDownload(document)
+                  : null,
             ),
         ],
       ),
@@ -518,7 +521,8 @@ class _SummaryCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       context.l10n.payrollOvertimeHoursTeam(
-                          summary.overtimeHours.toStringAsFixed(1)),
+                        summary.overtimeHours.toStringAsFixed(1),
+                      ),
                       style: AppTypography.caption.copyWith(
                         color: MobileSurface.secondary,
                       ),
@@ -535,7 +539,9 @@ class _SummaryCard extends StatelessWidget {
               ),
             ],
             const SizedBox(height: 12),
-            ...summary.items.take(5).map(
+            ...summary.items
+                .take(5)
+                .map(
                   (item) => Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: Row(
@@ -553,7 +559,8 @@ class _SummaryCard extends StatelessWidget {
                               if (item.overtimeHours > 0)
                                 Text(
                                   context.l10n.payrollOvertimeHoursItem(
-                                      item.overtimeHours.toStringAsFixed(1)),
+                                    item.overtimeHours.toStringAsFixed(1),
+                                  ),
                                   style: AppTypography.caption.copyWith(
                                     color: AppColors.info,
                                     fontSize: 11,
@@ -565,10 +572,13 @@ class _SummaryCard extends StatelessWidget {
                               if (item.compliance != null)
                                 Text(
                                   _confidenceLabel(
-                                      context, item.compliance!.level),
+                                    context,
+                                    item.compliance!.level,
+                                  ),
                                   style: AppTypography.caption.copyWith(
                                     color: _confidenceColor(
-                                        item.compliance!.level),
+                                      item.compliance!.level,
+                                    ),
                                     fontSize: 11,
                                   ),
                                 ),
@@ -619,11 +629,11 @@ class _SummaryCard extends StatelessWidget {
   }
 
   Color _confidenceColor(String level) => switch (level) {
-        'production' => AppColors.success,
-        'placeholder' => AppColors.danger,
-        'unknown' => AppColors.textMuted,
-        _ => AppColors.warning,
-      };
+    'production' => AppColors.success,
+    'placeholder' => AppColors.danger,
+    'unknown' => AppColors.textMuted,
+    _ => AppColors.warning,
+  };
 }
 
 class _MoneyLine extends StatelessWidget {

@@ -52,7 +52,9 @@ class _RefundSheetState extends State<RefundSheet> {
             controller: _amountController,
             keyboardType: TextInputType.number,
             onChanged: (_) => setState(() {}),
-            decoration: const InputDecoration(labelText: 'Montant a rembourser'),
+            decoration: const InputDecoration(
+              labelText: 'Montant a rembourser',
+            ),
           ),
           const SizedBox(height: 12),
           TextField(
@@ -64,14 +66,20 @@ class _RefundSheetState extends State<RefundSheet> {
           SegmentedButton<RetailPaymentMethod>(
             segments: [
               for (final method in RetailPaymentMethod.values)
-                ButtonSegment<RetailPaymentMethod>(value: method, label: Text(method.label)),
+                ButtonSegment<RetailPaymentMethod>(
+                  value: method,
+                  label: Text(method.label),
+                ),
             ],
             selected: {_method},
-            onSelectionChanged: (selection) => setState(() => _method = selection.first),
+            onSelectionChanged: (selection) =>
+                setState(() => _method = selection.first),
           ),
           const SizedBox(height: 20),
           FilledButton(
-            onPressed: refund.isValid ? () => Navigator.of(context).pop(refund) : null,
+            onPressed: refund.isValid
+                ? () => Navigator.of(context).pop(refund)
+                : null,
             child: const Text('Rembourser'),
           ),
         ],

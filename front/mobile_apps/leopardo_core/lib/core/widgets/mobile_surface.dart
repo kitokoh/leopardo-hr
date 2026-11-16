@@ -51,7 +51,8 @@ class MobilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final PreferredSizeWidget? resolvedAppBar = appBar ??
+    final PreferredSizeWidget? resolvedAppBar =
+        appBar ??
         (title == null
             ? null
             : MobileTopBar(
@@ -69,7 +70,9 @@ class MobilePage extends StatelessWidget {
       backgroundColor: MobileSurface.background,
       appBar: resolvedAppBar,
       bottomNavigationBar: bottom,
-      body: SafeArea(child: ListView(padding: padding, children: children)),
+      body: SafeArea(
+        child: ListView(padding: padding, children: children),
+      ),
     );
   }
 }

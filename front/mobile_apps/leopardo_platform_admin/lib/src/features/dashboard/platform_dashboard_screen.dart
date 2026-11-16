@@ -90,9 +90,11 @@ class PlatformDashboardScreen extends ConsumerWidget {
                   runSpacing: 8,
                   children: [
                     LeopardoBadge.present(
-                        label: '${data.activeCompanies} actives'),
+                      label: '${data.activeCompanies} actives',
+                    ),
                     LeopardoBadge.onLeave(
-                        label: '${data.trialCompanies} essais'),
+                      label: '${data.trialCompanies} essais',
+                    ),
                     LeopardoBadge(
                       label: '${data.totalCompanies} totales',
                       color: AppColors.rh,

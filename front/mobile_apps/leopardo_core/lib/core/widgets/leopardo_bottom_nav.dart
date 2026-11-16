@@ -48,10 +48,7 @@ class LeopardoBottomNav extends StatelessWidget {
       decoration: BoxDecoration(
         color: MobileSurface.surface,
         border: Border(
-          top: BorderSide(
-            color: MobileSurface.border,
-            width: 0.7,
-          ),
+          top: BorderSide(color: MobileSurface.border, width: 0.7),
         ),
       ),
       child: SafeArea(
@@ -61,7 +58,8 @@ class LeopardoBottomNav extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: items.map((item) {
-              final isActive = currentRoute == item.route ||
+              final isActive =
+                  currentRoute == item.route ||
                   (item.route != '/' && currentRoute.startsWith(item.route));
               return _NavBarItem(
                 item: item,

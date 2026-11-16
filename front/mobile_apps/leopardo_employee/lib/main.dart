@@ -10,7 +10,9 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
 import 'package:leopardo_core/features/attendance/config/attendance_feature_config.dart';
+
 import 'app.dart';
+
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 Future<void> main() async {
@@ -23,8 +25,10 @@ Future<void> main() async {
 
   await SentryFlutter.init(
     (options) {
-      options.dsn =
-          const String.fromEnvironment('SENTRY_DSN', defaultValue: '');
+      options.dsn = const String.fromEnvironment(
+        'SENTRY_DSN',
+        defaultValue: '',
+      );
       // Issue #2766 — 100 % des traces (PII potentielle) → échantillonnage
       // borné ; le DSN reste vide par défaut (env).
       options.tracesSampleRate = 0.2;
@@ -136,7 +140,10 @@ class _StartupRuntimeError extends StatelessWidget {
           child: Text(
             'Erreur d affichage Leopardo Employee\n${details.exceptionAsString()}',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.mobileDarkText, fontSize: 13),
+            style: const TextStyle(
+              color: AppColors.mobileDarkText,
+              fontSize: 13,
+            ),
           ),
         ),
       ),

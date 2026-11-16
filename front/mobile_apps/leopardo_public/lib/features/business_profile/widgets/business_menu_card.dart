@@ -31,8 +31,9 @@ class BusinessMenuCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final visibleSections =
-        sections.where((s) => s.items.isNotEmpty).toList(growable: false);
+    final visibleSections = sections
+        .where((s) => s.items.isNotEmpty)
+        .toList(growable: false);
 
     if (visibleSections.isEmpty) return const SizedBox.shrink();
 
@@ -75,8 +76,8 @@ class _MenuRow extends StatelessWidget {
     final price = item.price == null
         ? null
         : (currency == null
-            ? item.price!.toStringAsFixed(2)
-            : '${item.price!.toStringAsFixed(2)} $currency');
+              ? item.price!.toStringAsFixed(2)
+              : '${item.price!.toStringAsFixed(2)} $currency');
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7),

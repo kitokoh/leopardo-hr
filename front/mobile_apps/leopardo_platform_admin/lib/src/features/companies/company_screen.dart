@@ -63,8 +63,8 @@ class CompanyScreen extends ConsumerWidget {
                           onTap: company.id.isEmpty
                               ? null
                               : () => context.push(
-                                    '/platform/companies/${Uri.encodeComponent(company.id)}',
-                                  ),
+                                  '/platform/companies/${Uri.encodeComponent(company.id)}',
+                                ),
                         ),
                       )
                       .toList(),

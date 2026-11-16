@@ -79,7 +79,9 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
                 return MobileListGlassCard(
                   icon: Icons.event_available_outlined,
                   iconColor: color,
-                  title: absence.absenceTypeName ?? context.l10n.absencesTypeFallback,
+                  title:
+                      absence.absenceTypeName ??
+                      context.l10n.absencesTypeFallback,
                   subtitle:
                       '$dateLabel - ${absence.daysCount.toStringAsFixed(1)}${context.l10n.absencesDaysShort}',
                   trailing: MobileStatusPill(
@@ -189,9 +191,9 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
       }
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${context.l10n.absencesFailure}$error')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${context.l10n.absencesFailure}$error')),
+      );
     } finally {
       if (mounted) setState(() => _downloadingProofId = null);
     }
@@ -230,9 +232,9 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
       );
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${context.l10n.absencesFailure}$error')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${context.l10n.absencesFailure}$error')),
+      );
     }
   }
 
@@ -368,7 +370,9 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
               balances.when(
                 data: (rawBalances) {
                   final options = rawBalances
-                      .map((b) => _AbsenceTypeOption.fromBalance(b, context.l10n))
+                      .map(
+                        (b) => _AbsenceTypeOption.fromBalance(b, context.l10n),
+                      )
                       .where((option) => option != null)
                       .cast<_AbsenceTypeOption>()
                       .toList();
@@ -532,9 +536,9 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
     } catch (error) {
       if (!context.mounted) return;
       setState(() => _submitting = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${context.l10n.absencesFailure}$error')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${context.l10n.absencesFailure}$error')),
+      );
     }
   }
 }
@@ -613,7 +617,8 @@ class _AbsenceTypeOption {
 
     return _AbsenceTypeOption(
       id: id,
-      label: '${name == null || name.isEmpty ? l10n.absencesTypeFallback : name}$suffix',
+      label:
+          '${name == null || name.isEmpty ? l10n.absencesTypeFallback : name}$suffix',
     );
   }
 }

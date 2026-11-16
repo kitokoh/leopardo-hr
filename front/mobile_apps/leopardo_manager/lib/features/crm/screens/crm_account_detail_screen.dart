@@ -145,13 +145,9 @@ class CrmAccountDetailScreen extends ConsumerWidget {
     try {
       await ref.read(crmRepositoryProvider).completeTask(taskId);
       ref.invalidate(crmAccountDetailProvider(accountId));
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.crmTaskCompleted)),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(l10n.crmTaskCompleted)));
     } catch (_) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.crmLoadError)),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(l10n.crmLoadError)));
     }
   }
 }

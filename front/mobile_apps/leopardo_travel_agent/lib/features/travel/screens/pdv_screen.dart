@@ -129,9 +129,7 @@ class _PdvScreenState extends ConsumerState<PdvScreen> {
               const SizedBox(height: 12),
               Text(
                 _success!,
-                style: AppTypography.caption.copyWith(
-                  color: AppColors.success,
-                ),
+                style: AppTypography.caption.copyWith(color: AppColors.success),
               ),
             ],
           ],

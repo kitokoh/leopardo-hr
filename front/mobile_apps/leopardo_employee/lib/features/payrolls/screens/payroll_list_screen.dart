@@ -176,8 +176,10 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            context.l10n
-                                .payrollMonthLabel(payroll.month, payroll.year),
+                            context.l10n.payrollMonthLabel(
+                              payroll.month,
+                              payroll.year,
+                            ),
                             style: AppTypography.bodySmall.copyWith(
                               color: MobileSurface.text,
                               fontWeight: FontWeight.w700,
@@ -347,9 +349,7 @@ class _PaymentDocumentsCard extends StatelessWidget {
         ),
         error: (_, __) => Text(
           context.l10n.payrollDocsUnavailable,
-          style: AppTypography.caption.copyWith(
-            color: MobileSurface.secondary,
-          ),
+          style: AppTypography.caption.copyWith(color: MobileSurface.secondary),
         ),
       ),
     );
@@ -413,8 +413,9 @@ class _PaymentDocumentTile extends StatelessWidget {
               color: document.isAvailable
                   ? AppColors.info
                   : MobileSurface.secondary,
-              onPressed:
-                  document.isAvailable ? () => onDownload(document) : null,
+              onPressed: document.isAvailable
+                  ? () => onDownload(document)
+                  : null,
             ),
         ],
       ),
@@ -454,7 +455,9 @@ class _BalanceCard extends StatelessWidget {
                       ),
                       Text(
                         context.l10n.payrollPeriodRange(
-                            balance.periodStart, balance.periodEnd),
+                          balance.periodStart,
+                          balance.periodEnd,
+                        ),
                         style: AppTypography.caption.copyWith(
                           color: MobileSurface.secondary,
                         ),

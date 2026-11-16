@@ -51,8 +51,7 @@ class ScheduleListScreen extends ConsumerWidget {
                   EmptyState(
                     icon: Icons.schedule_outlined,
                     title: 'Aucune regle entreprise',
-                    description:
-                        'Creez la premiere regle pour cadrer horaires, repos, conges, pauses et heures supplementaires.',
+                    description: 'Creez la premiere regle pour cadrer horaires, repos, conges, pauses et heures supplementaires.',
                   ),
                 ],
               );
@@ -464,10 +463,11 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
       text: (schedule?.overtimeThresholdWeekly ?? 40).toStringAsFixed(0),
     );
     _leaveDaysCtrl = TextEditingController(
-      text: (schedule?.leaveRules.isNotEmpty == true
-              ? schedule!.leaveRules.first.daysPerYear ?? 21
-              : 21)
-          .toStringAsFixed(0),
+      text:
+          (schedule?.leaveRules.isNotEmpty == true
+                  ? schedule!.leaveRules.first.daysPerYear ?? 21
+                  : 21)
+              .toStringAsFixed(0),
     );
     _notesCtrl = TextEditingController(text: schedule?.assignmentNotes ?? '');
     _startTime = _parseTime(schedule?.startTime ?? '08:00');
@@ -665,8 +665,7 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
                 style: AppTypography.body.copyWith(color: MobileSurface.text),
                 decoration: InputDecoration(
                   labelText: 'Regles internes',
-                  hintText:
-                      'Repos, consignes de pause, conges, exceptions terrain...',
+                  hintText: 'Repos, consignes de pause, conges, exceptions terrain...',
                   prefixIcon: const Icon(
                     Icons.rule_folder_outlined,
                     color: MobileSurface.secondary,

@@ -246,7 +246,10 @@ class _EmployeeLinkGlassCard extends StatelessWidget {
   final String companyName;
   final VoidCallback onTap;
 
-  const _EmployeeLinkGlassCard({required this.companyName, required this.onTap});
+  const _EmployeeLinkGlassCard({
+    required this.companyName,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -280,7 +283,10 @@ class _CompanyRequestGlassCard extends StatelessWidget {
   final String companyName;
   final String status;
 
-  const _CompanyRequestGlassCard({required this.companyName, required this.status});
+  const _CompanyRequestGlassCard({
+    required this.companyName,
+    required this.status,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -316,4 +322,3 @@ class _CompanyRequestGlassCard extends StatelessWidget {
     );
   }
 }
-

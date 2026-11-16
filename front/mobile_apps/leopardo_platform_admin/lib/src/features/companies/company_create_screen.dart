@@ -187,8 +187,8 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
 
   String? _required(AppLocalizations l10n, String? value) =>
       value == null || value.trim().isEmpty
-          ? l10n.companiesRequiredField
-          : null;
+      ? l10n.companiesRequiredField
+      : null;
 
   String? _emailValidator(AppLocalizations l10n, String? value) {
     final trimmed = value?.trim() ?? '';
@@ -219,7 +219,9 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
     final selectedCountry = _selectedCountry(_countries());
     setState(() => _submitting = true);
     try {
-      final company = await ref.read(platformRepositoryProvider).createCompany(
+      final company = await ref
+          .read(platformRepositoryProvider)
+          .createCompany(
             name: _name.text.trim(),
             email: _email.text.trim(),
             country: selectedCountry.country,
@@ -242,9 +244,8 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
       }
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error.toString())));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error.toString())));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -334,7 +335,9 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
   }
 
   List<PlatformCountryDefault> _countries() {
-    return ref.watch(platformCountryDefaultsProvider).maybeWhen(
+    return ref
+        .watch(platformCountryDefaultsProvider)
+        .maybeWhen(
           data: (items) => items.isNotEmpty ? items : _fallbackCountryDefaults,
           orElse: () => _fallbackCountryDefaults,
         );
@@ -377,7 +380,9 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
   /// Libellé localisé du pays (clés core `commonCountries*`), fallback sur la
   /// valeur serveur (`PlatformCountryDefault.label`) pour les codes inconnus.
   String _localizedCountryLabel(
-      AppLocalizations l10n, PlatformCountryDefault country) {
+    AppLocalizations l10n,
+    PlatformCountryDefault country,
+  ) {
     return switch (country.country) {
       'DZ' => l10n.commonCountriesDz,
       'MA' => l10n.commonCountriesMa,
@@ -426,7 +431,8 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
               (country) => DropdownMenuItem(
                 value: country,
                 child: Text(
-                    '${_localizedCountryLabel(context.l10n, country)} (${country.country})'),
+                  '${_localizedCountryLabel(context.l10n, country)} (${country.country})',
+                ),
               ),
             )
             .toList(),
@@ -444,7 +450,7 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
       (context.l10n.companiesTimezone, selectedCountry.timezone),
       (
         context.l10n.commonLanguageLabel,
-        selectedCountry.language.toUpperCase()
+        selectedCountry.language.toUpperCase(),
       ),
     ];
 

@@ -57,10 +57,7 @@ class PosNumericKeypad extends StatelessWidget {
             children: [
               for (final digit in row)
                 Expanded(
-                  child: _KeypadKey(
-                    label: digit,
-                    onTap: () => onDigit(digit),
-                  ),
+                  child: _KeypadKey(label: digit, onTap: () => onDigit(digit)),
                 ),
             ],
           ),
@@ -75,10 +72,7 @@ class PosNumericKeypad extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: _KeypadKey(
-                label: '0',
-                onTap: () => onDigit('0'),
-              ),
+              child: _KeypadKey(label: '0', onTap: () => onDigit('0')),
             ),
             Expanded(
               child: _KeypadKey(

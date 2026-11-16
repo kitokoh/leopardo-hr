@@ -53,8 +53,7 @@ class TaskListScreen extends ConsumerWidget {
                   EmptyState(
                     icon: Icons.assignment_turned_in_outlined,
                     title: 'Aucune tache aujourd hui',
-                    description:
-                        'Assignez une tache recurrente ou ponctuelle a un collaborateur pour guider sa journee.',
+                    description: 'Assignez une tache recurrente ou ponctuelle a un collaborateur pour guider sa journee.',
                   ),
                 ],
               );
@@ -120,17 +119,17 @@ class _TaskCard extends StatelessWidget {
   }
 
   static Color _priorityColor(String priority) => switch (priority) {
-        'urgent' || 'high' => AppColors.warning,
-        'low' => MobileSurface.secondary,
-        _ => AppColors.info,
-      };
+    'urgent' || 'high' => AppColors.warning,
+    'low' => MobileSurface.secondary,
+    _ => AppColors.info,
+  };
 
   static String _priorityLabel(String priority) => switch (priority) {
-        'urgent' => 'Urgent',
-        'high' => 'Haute',
-        'low' => 'Basse',
-        _ => 'Normale',
-      };
+    'urgent' => 'Urgent',
+    'high' => 'Haute',
+    'low' => 'Basse',
+    _ => 'Normale',
+  };
 }
 
 class _CreateTaskSheet extends ConsumerStatefulWidget {
@@ -389,7 +388,9 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref.read(taskRepositoryProvider).create(
+      await ref
+          .read(taskRepositoryProvider)
+          .create(
             title: _title.text,
             description: _description.text,
             employeeId: _employeeId!,
@@ -408,9 +409,8 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Echec : $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Echec : $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -432,8 +432,7 @@ const List<_TaskTemplate> _taskTemplates = [
     key: 'agriculture_daily',
     label: 'Agriculture - tour quotidien',
     title: 'Tour de parcelle et verification arrosage',
-    description:
-        'Verifier l etat des zones, signaler les anomalies et confirmer le passage.',
+    description: 'Verifier l etat des zones, signaler les anomalies et confirmer le passage.',
     category: 'agriculture',
     priority: 'normal',
     estimatedMinutes: 90,
@@ -442,8 +441,7 @@ const List<_TaskTemplate> _taskTemplates = [
     key: 'livestock_round',
     label: 'Elevage - soin et controle',
     title: 'Tour d elevage et controle alimentation',
-    description:
-        'Verifier eau, nourriture, etat sanitaire visible et signaler les urgences.',
+    description: 'Verifier eau, nourriture, etat sanitaire visible et signaler les urgences.',
     category: 'elevage',
     priority: 'high',
     estimatedMinutes: 75,
@@ -452,8 +450,7 @@ const List<_TaskTemplate> _taskTemplates = [
     key: 'maintenance_check',
     label: 'Maintenance - controle',
     title: 'Controle maintenance preventif',
-    description:
-        'Inspecter les equipements critiques et noter toute intervention necessaire.',
+    description: 'Inspecter les equipements critiques et noter toute intervention necessaire.',
     category: 'maintenance',
     priority: 'high',
     estimatedMinutes: 60,

@@ -37,8 +37,7 @@ class _PersonalStatusScreenState extends ConsumerState<PersonalStatusScreen> {
     setState(() => _saving = true);
     try {
       final repo = ref.read(userAuthRepositoryProvider);
-      final updated =
-          await repo.updatePersonalStatuses(_selected.toList());
+      final updated = await repo.updatePersonalStatuses(_selected.toList());
       await ref.read(userAuthProvider.notifier).setUser(updated);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -79,14 +78,26 @@ class _PersonalStatusScreenState extends ConsumerState<PersonalStatusScreen> {
     final muted = AppColors.textSecondaryFor(context);
 
     final statuses = [
-      (PersonalStatus.student, l10n.personalOnboardingStatusStudent,
-          Icons.school_outlined),
-      (PersonalStatus.employee, l10n.personalOnboardingStatusEmployee,
-          Icons.badge_outlined),
-      (PersonalStatus.entrepreneur, l10n.personalOnboardingStatusEntrepreneur,
-          Icons.business_center_outlined),
-      (PersonalStatus.seekingEmployment,
-          l10n.personalOnboardingStatusSeeking, Icons.search_outlined),
+      (
+        PersonalStatus.student,
+        l10n.personalOnboardingStatusStudent,
+        Icons.school_outlined,
+      ),
+      (
+        PersonalStatus.employee,
+        l10n.personalOnboardingStatusEmployee,
+        Icons.badge_outlined,
+      ),
+      (
+        PersonalStatus.entrepreneur,
+        l10n.personalOnboardingStatusEntrepreneur,
+        Icons.business_center_outlined,
+      ),
+      (
+        PersonalStatus.seekingEmployment,
+        l10n.personalOnboardingStatusSeeking,
+        Icons.search_outlined,
+      ),
     ];
 
     return Scaffold(
@@ -115,21 +126,19 @@ class _PersonalStatusScreenState extends ConsumerState<PersonalStatusScreen> {
                     style: AppTypography.bodySmall.copyWith(color: muted),
                   ),
                   const SizedBox(height: 24),
-                  ...statuses.map(
-                    (entry) {
-                      final (status, label, icon) = entry;
-                      final checked = _selected.contains(status);
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _StatusTile(
-                          icon: icon,
-                          label: label,
-                          checked: checked,
-                          onTap: () => _toggle(status),
-                        ),
-                      );
-                    },
-                  ),
+                  ...statuses.map((entry) {
+                    final (status, label, icon) = entry;
+                    final checked = _selected.contains(status);
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _StatusTile(
+                        icon: icon,
+                        label: label,
+                        checked: checked,
+                        onTap: () => _toggle(status),
+                      ),
+                    );
+                  }),
                 ],
               ),
             ),
@@ -217,8 +226,7 @@ class _StatusTile extends StatelessWidget {
                 label,
                 style: AppTypography.body.copyWith(
                   color: checked ? AppColors.rh : text,
-                  fontWeight:
-                      checked ? FontWeight.w600 : FontWeight.normal,
+                  fontWeight: checked ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
             ),

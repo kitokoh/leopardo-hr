@@ -53,14 +53,17 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
       await repo.submitCompanyRequest(
         companyName: _nameCtrl.text.trim(),
         email: _emailCtrl.text.trim(),
-        sector:
-            _sectorCtrl.text.trim().isEmpty ? null : _sectorCtrl.text.trim(),
-        country:
-            _countryCtrl.text.trim().isEmpty ? null : _countryCtrl.text.trim(),
+        sector: _sectorCtrl.text.trim().isEmpty
+            ? null
+            : _sectorCtrl.text.trim(),
+        country: _countryCtrl.text.trim().isEmpty
+            ? null
+            : _countryCtrl.text.trim(),
         city: _cityCtrl.text.trim().isEmpty ? null : _cityCtrl.text.trim(),
         phone: _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
-        description:
-            _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim(),
+        description: _descCtrl.text.trim().isEmpty
+            ? null
+            : _descCtrl.text.trim(),
       );
 
       if (mounted) {
@@ -69,11 +72,9 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
     } catch (e) {
       if (mounted) {
         final l10n = context.l10n;
-        final msg =
-            e is ApiException ? e.message : l10n.userAuthSubmitError;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(msg)));
+        final msg = e is ApiException ? e.message : l10n.userAuthSubmitError;
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(msg)));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -98,18 +99,18 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.success.withValues(alpha: 0.12),
-                    ),
-                    child: const Icon(
-                      Icons.check_circle_outline,
-                      color: AppColors.success,
-                      size: 40,
-                    ),
-                  )
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.success.withValues(alpha: 0.12),
+                        ),
+                        child: const Icon(
+                          Icons.check_circle_outline,
+                          color: AppColors.success,
+                          size: 40,
+                        ),
+                      )
                       .animate()
                       .fadeIn(duration: 400.ms)
                       .scale(begin: const Offset(0.5, 0.5)),
@@ -201,7 +202,8 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
               labelText: '${l10n.userAuthCompanyName} *',
               prefixIcon: const Icon(Icons.business_outlined),
             ),
-            validator: (v) => (v?.trim().isEmpty ?? true) ? l10n.commonRequired : null,
+            validator: (v) =>
+                (v?.trim().isEmpty ?? true) ? l10n.commonRequired : null,
           ),
           const SizedBox(height: 14),
           TextFormField(

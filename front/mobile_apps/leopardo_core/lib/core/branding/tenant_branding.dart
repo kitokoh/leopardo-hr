@@ -19,10 +19,9 @@ class TenantBranding {
   final String brandMode;
 
   factory TenantBranding.fromApi(Map<String, dynamic> json) {
-    final branding =
-        json['branding'] is Map
-            ? (json['branding'] as Map).cast<String, dynamic>()
-            : const <String, dynamic>{};
+    final branding = json['branding'] is Map
+        ? (json['branding'] as Map).cast<String, dynamic>()
+        : const <String, dynamic>{};
 
     return TenantBranding(
       companyId: json['company_id']?.toString() ?? '',

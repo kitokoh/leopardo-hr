@@ -35,8 +35,9 @@ class DiscoverySearchField extends StatefulWidget {
 }
 
 class _DiscoverySearchFieldState extends State<DiscoverySearchField> {
-  late final TextEditingController _controller =
-      TextEditingController(text: widget.initialQuery);
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.initialQuery,
+  );
 
   @override
   void didUpdateWidget(covariant DiscoverySearchField oldWidget) {
@@ -83,8 +84,10 @@ class _DiscoverySearchFieldState extends State<DiscoverySearchField> {
                   ),
             filled: true,
             fillColor: AppColors.surfaceFor(context),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 14,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: AppColors.borderFor(context)),

@@ -17,37 +17,37 @@ class HrMainShell extends StatelessWidget {
   final Widget child;
 
   List<LeopardoNavItem> _items(BuildContext context) => [
-        LeopardoNavItem(
-          icon: Icons.dashboard_outlined,
-          activeIcon: Icons.dashboard_rounded,
-          label: context.l10n.shellHome,
-          route: '/',
-        ),
-        LeopardoNavItem(
-          icon: Icons.fingerprint_outlined,
-          activeIcon: Icons.fingerprint,
-          label: context.l10n.shellAttendance,
-          route: '/attendance',
-        ),
-        LeopardoNavItem(
-          icon: Icons.event_busy_outlined,
-          activeIcon: Icons.event_busy,
-          label: context.l10n.shellAbsences,
-          route: '/absences',
-        ),
-        LeopardoNavItem(
-          icon: Icons.group_outlined,
-          activeIcon: Icons.group,
-          label: context.l10n.shellTeam,
-          route: '/team',
-        ),
-        LeopardoNavItem(
-          icon: Icons.settings_outlined,
-          activeIcon: Icons.settings,
-          label: context.l10n.shellSettings,
-          route: '/settings',
-        ),
-      ];
+    LeopardoNavItem(
+      icon: Icons.dashboard_outlined,
+      activeIcon: Icons.dashboard_rounded,
+      label: context.l10n.shellHome,
+      route: '/',
+    ),
+    LeopardoNavItem(
+      icon: Icons.fingerprint_outlined,
+      activeIcon: Icons.fingerprint,
+      label: context.l10n.shellAttendance,
+      route: '/attendance',
+    ),
+    LeopardoNavItem(
+      icon: Icons.event_busy_outlined,
+      activeIcon: Icons.event_busy,
+      label: context.l10n.shellAbsences,
+      route: '/absences',
+    ),
+    LeopardoNavItem(
+      icon: Icons.group_outlined,
+      activeIcon: Icons.group,
+      label: context.l10n.shellTeam,
+      route: '/team',
+    ),
+    LeopardoNavItem(
+      icon: Icons.settings_outlined,
+      activeIcon: Icons.settings,
+      label: context.l10n.shellSettings,
+      route: '/settings',
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {

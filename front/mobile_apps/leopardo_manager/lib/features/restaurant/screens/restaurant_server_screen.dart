@@ -127,7 +127,9 @@ class _RestaurantServerScreenState
 
     setState(() => _busy = true);
     try {
-      await ref.read(restaurantRepositoryProvider).payOrder(
+      await ref
+          .read(restaurantRepositoryProvider)
+          .payOrder(
             order.id,
             amountMinor: amountMinor,
             tipMinor: tipMinor > 0 ? tipMinor : null,
@@ -142,14 +144,16 @@ class _RestaurantServerScreenState
       }
     } catch (_) {
       // Hors ligne : mise en file idempotente (RESTO-804) — rejeu sans doublon.
-      ref.read(restaurantOfflineQueueProvider).enqueue(
-        type: 'order.pay',
-        payload: {
-          'order_id': order.id,
-          'amount_minor': amountMinor,
-          if (tipMinor > 0) 'tip_minor': tipMinor,
-        },
-      );
+      ref
+          .read(restaurantOfflineQueueProvider)
+          .enqueue(
+            type: 'order.pay',
+            payload: {
+              'order_id': order.id,
+              'amount_minor': amountMinor,
+              if (tipMinor > 0) 'tip_minor': tipMinor,
+            },
+          );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.restaurantMobileServerOfflineQueued)),
@@ -268,8 +272,9 @@ class _RestaurantServerScreenState
                               if (!order.isServed) ...[
                                 Expanded(
                                   child: OutlinedButton(
-                                    onPressed:
-                                        _busy ? null : () => _serve(order),
+                                    onPressed: _busy
+                                        ? null
+                                        : () => _serve(order),
                                     child: Text(
                                       l10n.restaurantMobileServerServe,
                                     ),
