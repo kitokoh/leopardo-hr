@@ -36,7 +36,7 @@ describe('MyTools', () => {
   });
 
   it('affiche l’état vide quand aucun outil n’est enregistré', async () => {
-    render(<MyTools items={ITEMS} copy={COPY} />);
+    render(<MyTools items={ITEMS} locale="fr" copy={COPY} />);
 
     expect(await screen.findByText(COPY.empty)).toBeInTheDocument();
     expect(screen.getByText(COPY.emptyHint)).toBeInTheDocument();
@@ -46,7 +46,7 @@ describe('MyTools', () => {
 
   it('affiche les favoris enregistrés, dans l’ordre du stockage', async () => {
     seed({ favorites: ['tva', 'imc'], history: [] });
-    render(<MyTools items={ITEMS} copy={COPY} />);
+    render(<MyTools items={ITEMS} locale="fr" copy={COPY} />);
 
     expect(await screen.findByText(COPY.favorites)).toBeInTheDocument();
     const links = screen.getAllByRole('link');
@@ -58,7 +58,7 @@ describe('MyTools', () => {
 
   it('affiche l’historique enregistré', async () => {
     seed({ favorites: [], history: ['age'] });
-    render(<MyTools items={ITEMS} copy={COPY} />);
+    render(<MyTools items={ITEMS} locale="fr" copy={COPY} />);
 
     expect(await screen.findByText(COPY.history)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Âge' })).toHaveAttribute('href', '/toolbox/age');
@@ -66,7 +66,7 @@ describe('MyTools', () => {
 
   it('ignore un slug inconnu du catalogue (stockage obsolète)', async () => {
     seed({ favorites: ['outil-supprime'], history: ['imc'] });
-    render(<MyTools items={ITEMS} copy={COPY} />);
+    render(<MyTools items={ITEMS} locale="fr" copy={COPY} />);
 
     await screen.findByText(COPY.history);
     // Le slug inconnu ne produit aucun lien ; seul `imc` est rendu.
@@ -76,7 +76,7 @@ describe('MyTools', () => {
 
   it('efface l’état au clic sur « Effacer mes outils »', async () => {
     seed({ favorites: ['imc'], history: ['tva'] });
-    render(<MyTools items={ITEMS} copy={COPY} />);
+    render(<MyTools items={ITEMS} locale="fr" copy={COPY} />);
 
     const clearButton = await screen.findByRole('button', { name: COPY.clear });
     fireEvent.click(clearButton);
@@ -103,7 +103,7 @@ describe('MyTools', () => {
     });
 
     try {
-      expect(() => render(<MyTools items={ITEMS} copy={COPY} />)).not.toThrow();
+      expect(() => render(<MyTools items={ITEMS} locale="fr" copy={COPY} />)).not.toThrow();
     } finally {
       Object.defineProperty(window, 'localStorage', {
         configurable: true,
@@ -114,7 +114,7 @@ describe('MyTools', () => {
 
   it('survit à un contenu de stockage corrompu', async () => {
     window.localStorage.setItem(TOOLBOX_STORAGE_KEY, '{ pas du json');
-    render(<MyTools items={ITEMS} copy={COPY} />);
+    render(<MyTools items={ITEMS} locale="fr" copy={COPY} />);
 
     expect(await screen.findByText(COPY.empty)).toBeInTheDocument();
   });

@@ -4,6 +4,7 @@ import { headers } from 'next/headers';
 import { cache } from 'react';
 import { normalizeLocale } from '@/lib/locale-core';
 import { getToolboxCopy } from '@/modules/toolbox/data/copy';
+import { ToolboxLangSwitcher } from '@/modules/toolbox/components/ToolboxLangSwitcher';
 
 /**
  * Layout de la catégorie autonome « Leopardo Toolbox » (`/toolbox`).
@@ -35,12 +36,25 @@ export default async function ToolboxLayout({ children }: { children: React.Reac
               {copy.catalog.title}
             </span>
           </Link>
-          <Link
-            href="/"
-            className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
-          >
-            Leopardo
-          </Link>
+          <div className="flex items-center gap-3">
+            {/*
+              Sélecteur de langue : la Toolbox sert 4 locales (fr/en/tr/ar) mais
+              n'offrait aucun moyen d'en changer — le visiteur subissait
+              `Accept-Language`. Le contrôle réécrit `?lang=` sur l'URL courante,
+              que le proxy normalise en `x-vitrine-lang` pour le SSR.
+            */}
+            <ToolboxLangSwitcher
+              locale={locale}
+              label={copy.common.language}
+              names={copy.common.languageNames}
+            />
+            <Link
+              href="/"
+              className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+            >
+              Leopardo
+            </Link>
+          </div>
         </div>
       </header>
 

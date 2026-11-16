@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 import { ToolCard } from './ToolCard';
+import type { ToolboxLocale } from '../data/copy';
 
 export interface CatalogItem {
   slug: string;
@@ -16,6 +17,8 @@ export interface CatalogItem {
 interface ToolboxCatalogProps {
   items: CatalogItem[];
   categories: { id: string; label: string }[];
+  /** Locale courante — propagée dans chaque carte d'outil. */
+  locale: ToolboxLocale;
   copy: {
     searchPlaceholder: string;
     noResults: string;
@@ -40,7 +43,7 @@ function normalize(value: string): string {
  * Composant CLIENT : le filtrage est instantané et 100 % local (aucun appel
  * réseau). Les données sont sérialisables (passées depuis le composant serveur).
  */
-export function ToolboxCatalog({ items, categories, copy }: ToolboxCatalogProps) {
+export function ToolboxCatalog({ items, categories, locale, copy }: ToolboxCatalogProps) {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<string>('all');
 
@@ -99,6 +102,7 @@ export function ToolboxCatalog({ items, categories, copy }: ToolboxCatalogProps)
               description={item.description}
               categoryLabel={item.categoryLabel}
               openLabel={copy.openTool}
+              locale={locale}
             />
           ))}
         </div>

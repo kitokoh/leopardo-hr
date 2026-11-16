@@ -1,6 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { AlertTriangle, ArrowLeft, ExternalLink, Info } from 'lucide-react';
+import { withLang } from '../lib/locale-href';
+import type { ToolboxLocale } from '../data/copy';
 
 interface ToolShellProps {
   title: string;
@@ -13,6 +15,8 @@ interface ToolShellProps {
   version: string;
   backLabel: string;
   disclaimer: string;
+  /** Locale courante — propagée dans le lien de retour au catalogue. */
+  locale: ToolboxLocale;
   children: React.ReactNode;
 }
 
@@ -34,12 +38,13 @@ export function ToolShell({
   version,
   backLabel,
   disclaimer,
+  locale,
   children,
 }: ToolShellProps) {
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-10 sm:py-14">
       <Link
-        href="/toolbox"
+        href={withLang('/toolbox', locale)}
         className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors mb-6"
       >
         <ArrowLeft className="w-4 h-4" />

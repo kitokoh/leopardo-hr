@@ -14,6 +14,7 @@ describe('ToolCard', () => {
         description="Calculez votre IMC."
         categoryLabel="Santé"
         openLabel="Ouvrir l’outil"
+        locale="fr"
       />,
     );
     const link = screen.getByRole('link');
@@ -21,5 +22,33 @@ describe('ToolCard', () => {
     expect(screen.getByText('IMC — Indice de masse corporelle')).toBeInTheDocument();
     expect(screen.getByText('Santé')).toBeInTheDocument();
     expect(screen.getByText('Ouvrir l’outil')).toBeInTheDocument();
+  });
+
+  it('propage la locale dans le lien (fr = URL canonique, sans ?lang=)', () => {
+    render(
+      <ToolCard
+        href="/toolbox/imc"
+        name="IMC"
+        description="…"
+        categoryLabel="Santé"
+        openLabel="Ouvrir"
+        locale="fr"
+      />,
+    );
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/toolbox/imc');
+  });
+
+  it('ajoute ?lang=tr au lien quand la locale n’est pas le français', () => {
+    render(
+      <ToolCard
+        href="/toolbox/imc"
+        name="IMC"
+        description="…"
+        categoryLabel="Sağlık"
+        openLabel="Aç"
+        locale="tr"
+      />,
+    );
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/toolbox/imc?lang=tr');
   });
 });

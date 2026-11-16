@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Clock, Star, Trash2 } from 'lucide-react';
 import { clearState, loadState, type ToolboxState } from '../lib/storage';
+import { withLang } from '../lib/locale-href';
+import type { ToolboxLocale } from '../data/copy';
 
 export interface MyToolsItem {
   slug: string;
@@ -14,6 +16,8 @@ export interface MyToolsItem {
 interface MyToolsProps {
   /** Outils du catalogue actif, résolus côté serveur (sérialisables). */
   items: MyToolsItem[];
+  /** Locale courante — propagée dans les liens vers les outils. */
+  locale: ToolboxLocale;
   copy: {
     title: string;
     subtitle: string;
@@ -36,7 +40,7 @@ interface MyToolsProps {
  * `useEffect` : le serveur ne peut pas lire `localStorage`, et rendre un état
  * différent au premier rendu client provoquerait une erreur d'hydratation.
  */
-export function MyTools({ items, copy }: MyToolsProps) {
+export function MyTools({ items, locale, copy }: MyToolsProps) {
   const [state, setState] = useState<ToolboxState | null>(null);
 
   useEffect(() => {
@@ -98,7 +102,7 @@ export function MyTools({ items, copy }: MyToolsProps) {
                 {favorites.map((item) => (
                   <li key={item.slug}>
                     <Link
-                      href={`/toolbox/${item.slug}`}
+                      href={withLang(`/toolbox/${item.slug}`, locale)}
                       className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 hover:bg-emerald-100 dark:hover:bg-emerald-950/70 transition-colors"
                     >
                       {item.name}
@@ -122,7 +126,7 @@ export function MyTools({ items, copy }: MyToolsProps) {
                 {history.map((item) => (
                   <li key={item.slug}>
                     <Link
-                      href={`/toolbox/${item.slug}`}
+                      href={withLang(`/toolbox/${item.slug}`, locale)}
                       className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-400 dark:hover:border-emerald-600 transition-colors"
                     >
                       {item.name}
