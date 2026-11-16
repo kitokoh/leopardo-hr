@@ -344,6 +344,8 @@ const fr: ToolboxCopy = {
         rate: 'Taux (%)',
         addLine: 'Ajouter une ligne',
         removeLine: 'Supprimer',
+        maxLinesReached:
+          'Une facture peut comporter plus de {max} lignes, mais le lien de partage n’en transporte que {max} au maximum.',
       },
       results: {
         totalHt: 'Total HT',
@@ -673,6 +675,8 @@ const en: ToolboxCopy = {
         rate: 'Rate (%)',
         addLine: 'Add a line',
         removeLine: 'Remove',
+        maxLinesReached:
+          'An invoice can hold more than {max} lines, but a shared link carries at most {max}.',
       },
       results: {
         totalHt: 'Total net',
@@ -1000,6 +1004,8 @@ const tr: ToolboxCopy = {
         rate: 'Oran (%)',
         addLine: 'Satır ekle',
         removeLine: 'Kaldır',
+        maxLinesReached:
+          'Bir fatura {max} satırdan fazla olabilir, ancak paylaşım bağlantısı en fazla {max} satır taşır.',
       },
       results: {
         totalHt: 'Toplam net',
@@ -1320,6 +1326,8 @@ const ar: ToolboxCopy = {
         rate: 'المعدل (%)',
         addLine: 'إضافة سطر',
         removeLine: 'حذف',
+        maxLinesReached:
+          'يمكن أن تحتوي الفاتورة على أكثر من {max} سطر، لكن رابط المشاركة ينقل {max} سطرًا كحد أقصى.',
       },
       results: {
         totalHt: 'الإجمالي الصافي',

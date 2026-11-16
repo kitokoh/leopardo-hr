@@ -243,10 +243,24 @@ export function decodeToolState(raw: string | null | undefined): ToolStateValues
  *
  * Seules les clés **connues de l'outil** sont reprises : un lien forgé ne peut
  * pas injecter un champ que le formulaire n'attend pas.
+ *
+ * ## `extraKeyPattern` — état de longueur variable (issue #9531)
+ *
+ * Un formulaire dont l'état est une LISTE (TVA multi-taux) déclare deux lignes
+ * par défaut mais peut en porter jusqu'à `MAX_SHARED_LINES`. Avec la règle
+ * « clés des valeurs par défaut uniquement », un lien partagé portant 3 lignes
+ * en perdait silencieusement la troisième à l'ouverture : le destinataire
+ * recalculait un total différent de celui de l'expéditeur.
+ *
+ * `extraKeyPattern` déclare EXPLICITEMENT les clés additionnelles acceptées
+ * (ici `/^(amount|rate)\d+$/`). La garantie de sécurité est conservée : tout ce
+ * qui ne correspond ni aux valeurs par défaut ni au motif est écarté, et les
+ * valeurs restent validées par `isValidValue`.
  */
 export function mergeWithDefaults(
   decoded: ToolStateValues | null,
   defaults: ToolStateValues,
+  extraKeyPattern?: RegExp,
 ): ToolStateValues {
   const merged: ToolStateValues = { ...defaults };
   if (!decoded) return merged;
@@ -254,6 +268,14 @@ export function mergeWithDefaults(
   for (const key of Object.keys(defaults)) {
     const value = decoded[key];
     if (typeof value === 'string' && isValidValue(value)) merged[key] = value;
+  }
+
+  if (extraKeyPattern) {
+    for (const [key, value] of Object.entries(decoded)) {
+      if (key in merged) continue; // déjà traité ci-dessus
+      if (!isValidKey(key) || !extraKeyPattern.test(key)) continue;
+      if (isValidValue(value)) merged[key] = value;
+    }
   }
 
   return merged;

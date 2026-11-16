@@ -108,6 +108,54 @@ describe('share — mergeWithDefaults', () => {
     mergeWithDefaults({ weight: '90' }, defaults);
     expect(defaults).toEqual(original);
   });
+
+  describe('extraKeyPattern — état de longueur variable (issue #9531)', () => {
+    const lineDefaults = { amount0: '1000', rate0: '20' };
+    const LINE_KEYS = /^(?:amount|rate)\d+$/;
+
+    it('accepte les clés additionnelles déclarées par le motif', () => {
+      const merged = mergeWithDefaults(
+        { amount0: '100', rate0: '20', amount1: '50', rate1: '10', amount2: '25', rate2: '5.5' },
+        lineDefaults,
+        LINE_KEYS,
+      );
+      expect(merged).toEqual({
+        amount0: '100',
+        rate0: '20',
+        amount1: '50',
+        rate1: '10',
+        amount2: '25',
+        rate2: '5.5',
+      });
+    });
+
+    it('sans motif, les clés additionnelles sont perdues (comportement historique)', () => {
+      const merged = mergeWithDefaults(
+        { amount0: '100', rate0: '20', amount1: '50', rate1: '10' },
+        lineDefaults,
+      );
+      expect(merged).toEqual({ amount0: '100', rate0: '20' });
+    });
+
+    it('écarte toujours une clé qui ne correspond pas au motif', () => {
+      const merged = mergeWithDefaults(
+        { amount0: '100', rate0: '20', injected: 'x', amountX: '9' },
+        lineDefaults,
+        LINE_KEYS,
+      );
+      expect(merged).not.toHaveProperty('injected');
+      expect(merged).not.toHaveProperty('amountX');
+    });
+
+    it('applique la validation de valeur aux clés additionnelles', () => {
+      const merged = mergeWithDefaults(
+        { amount0: '100', rate0: '20', amount1: 'a\u0000b' },
+        lineDefaults,
+        LINE_KEYS,
+      );
+      expect(merged).not.toHaveProperty('amount1');
+    });
+  });
 });
 
 describe('share — buildShareUrl', () => {
