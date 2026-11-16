@@ -136,8 +136,8 @@ class RetailTheme {
   /// illisibles sur une tablette posee a 60 cm. On releve le plancher sans
   /// toucher aux tailles deja grandes.
   static TextTheme _scaledTextTheme(TextTheme base) => base.copyWith(
-    bodySmall: base.bodySmall?.copyWith(fontSize: 15),
-    labelSmall: base.labelSmall?.copyWith(fontSize: 15),
-    labelMedium: base.labelMedium?.copyWith(fontSize: 15),
-  );
+        bodySmall: base.bodySmall?.copyWith(fontSize: 15),
+        labelSmall: base.labelSmall?.copyWith(fontSize: 15),
+        labelMedium: base.labelMedium?.copyWith(fontSize: 15),
+      );
 }

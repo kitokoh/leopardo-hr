@@ -83,8 +83,8 @@ class _TableTile extends StatelessWidget {
     final background = selected
         ? scheme.primaryContainer
         : (table.occupied
-              ? scheme.errorContainer
-              : scheme.surfaceContainerHighest);
+            ? scheme.errorContainer
+            : scheme.surfaceContainerHighest);
     final foreground = selected
         ? scheme.onPrimaryContainer
         : (table.occupied ? scheme.onErrorContainer : scheme.onSurface);
@@ -92,8 +92,7 @@ class _TableTile extends StatelessWidget {
     return Semantics(
       button: true,
       selected: selected,
-      label:
-          '${table.label}, ${table.seats} places, '
+      label: '${table.label}, ${table.seats} places, '
           '${table.occupied ? 'occupee' : 'libre'}',
       child: Material(
         color: background,

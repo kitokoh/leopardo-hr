@@ -117,13 +117,13 @@ class _CloseSessionSheetState extends State<CloseSessionSheet> {
             onPressed: needsReason
                 ? null
                 : () => Navigator.of(context).pop(
-                    CloseSessionResult(
-                      countedCashMinor: counted,
-                      varianceReason: _reasonController.text.trim().isEmpty
-                          ? null
-                          : _reasonController.text.trim(),
+                      CloseSessionResult(
+                        countedCashMinor: counted,
+                        varianceReason: _reasonController.text.trim().isEmpty
+                            ? null
+                            : _reasonController.text.trim(),
+                      ),
                     ),
-                  ),
             child: const Text('Cloturer la caisse'),
           ),
         ],

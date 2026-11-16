@@ -80,7 +80,8 @@ class PlatformAccountScreen extends ConsumerWidget {
           icon: Icons.key_rounded,
           iconColor: AppColors.info,
           title: 'Session API plateforme',
-          subtitle: 'Token Sanctum super-admin utilise uniquement pour les routes /platform.',
+          subtitle:
+              'Token Sanctum super-admin utilise uniquement pour les routes /platform.',
         ),
         const SizedBox(height: 18),
         const MobileSectionLabel('Perimetre'),
@@ -96,7 +97,8 @@ class PlatformAccountScreen extends ConsumerWidget {
           icon: Icons.block_rounded,
           iconColor: AppColors.warning,
           title: 'Pas de donnees tenant directes',
-          subtitle: 'Cette app ne doit pas consommer pointage, absences ou tokens push tenant.',
+          subtitle:
+              'Cette app ne doit pas consommer pointage, absences ou tokens push tenant.',
         ),
         const SizedBox(height: 18),
         const MobileSectionLabel('Actions'),

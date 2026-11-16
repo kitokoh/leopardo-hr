@@ -100,8 +100,8 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
         _lastResult = result.replayed
             ? 'Relevé déjà enregistré (rejeu) — aucun doublon.'
             : result.isAnomaly
-            ? 'Anomalie détectée (delta ${result.deltaMinor}) — signalée au manager.'
-            : 'Relevé enregistré (delta ${result.deltaMinor}).';
+                ? 'Anomalie détectée (delta ${result.deltaMinor}) — signalée au manager.'
+                : 'Relevé enregistré (delta ${result.deltaMinor}).';
       });
       _readingController.clear();
     } catch (e) {
@@ -202,11 +202,10 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
                                           ),
                                           Text(
                                             s.assignmentDate ?? '',
-                                            style: AppTypography.caption
-                                                .copyWith(
-                                                  color:
-                                                      AppColors.textMutedDark,
-                                                ),
+                                            style:
+                                                AppTypography.caption.copyWith(
+                                              color: AppColors.textMutedDark,
+                                            ),
                                           ),
                                         ],
                                       ),

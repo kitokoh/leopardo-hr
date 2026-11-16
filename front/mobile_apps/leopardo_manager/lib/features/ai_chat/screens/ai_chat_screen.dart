@@ -12,7 +12,7 @@ class _ChatMessage {
   final DateTime timestamp;
 
   _ChatMessage({required this.role, required this.content, DateTime? timestamp})
-    : timestamp = timestamp ?? DateTime.now();
+      : timestamp = timestamp ?? DateTime.now();
 }
 
 class AiChatScreen extends ConsumerStatefulWidget {

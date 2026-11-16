@@ -79,8 +79,7 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
                 return MobileListGlassCard(
                   icon: Icons.event_available_outlined,
                   iconColor: color,
-                  title:
-                      absence.absenceTypeName ??
+                  title: absence.absenceTypeName ??
                       context.l10n.absencesTypeFallback,
                   subtitle:
                       '$dateLabel - ${absence.daysCount.toStringAsFixed(1)}${context.l10n.absencesDaysShort}',
@@ -171,9 +170,8 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
   Future<void> _viewProof(BuildContext context, int absenceId) async {
     setState(() => _downloadingProofId = absenceId);
     try {
-      final path = await ref
-          .read(absenceRepositoryProvider)
-          .downloadProof(absenceId);
+      final path =
+          await ref.read(absenceRepositoryProvider).downloadProof(absenceId);
       if (!context.mounted) return;
 
       final uri = Uri.file(path);
@@ -516,9 +514,7 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
 
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(absenceRepositoryProvider)
-          .requestAbsence(
+      await ref.read(absenceRepositoryProvider).requestAbsence(
             absenceTypeId: selectedType.id,
             startDate: _startDate,
             endDate: _endDate,
@@ -606,8 +602,7 @@ class _AbsenceTypeOption {
     if (id == null) return null;
 
     final name = type['name']?.toString();
-    final remaining =
-        balance['remaining_days'] ??
+    final remaining = balance['remaining_days'] ??
         balance['remaining'] ??
         balance['balance'] ??
         balance['available_days'];

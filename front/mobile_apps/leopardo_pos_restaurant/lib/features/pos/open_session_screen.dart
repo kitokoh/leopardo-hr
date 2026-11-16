@@ -185,9 +185,8 @@ class FloorPlanScreen extends ConsumerWidget {
                           table.occupied ? 'Occupée' : 'Libre',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            color: table.occupied
-                                ? scheme.error
-                                : scheme.primary,
+                            color:
+                                table.occupied ? scheme.error : scheme.primary,
                           ),
                         ),
                       ],
