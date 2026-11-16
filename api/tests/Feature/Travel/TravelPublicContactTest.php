@@ -122,9 +122,11 @@ class TravelPublicContactTest extends TestCase
 
         $url = URL::signedRoute('travel.public.contact.store', ['company' => $company->id]);
 
+        // #9098 — message VALIDE : sinon le 422 provient du `min:10` sur `message`
+        // et le test ne prouve rien sur le consentement (cf. ADR-0032 §4).
         $this->postJson($url, [
             'email' => 'sans-consent@example.com',
-            'message' => 'Bonjour',
+            'message' => 'Demande sans consentement email.',
         ])->assertStatus(422);
 
         self::assertSame(0, TravelOutboxEvent::query()->count(), 'aucun événement sans consentement');
@@ -136,9 +138,11 @@ class TravelPublicContactTest extends TestCase
 
         $url = URL::signedRoute('travel.public.contact.store', ['company' => $company->id]);
 
+        // #9098 — payload VALIDE : le 404 doit venir de l'absence de feature
+        // travel, pas d'un `message` trop court (le 422 masquait le Gate).
         $this->postJson($url, [
             'email' => 'autre@example.com',
-            'message' => 'Bonjour',
+            'message' => 'Demande aupres d un tenant sans module travel.',
             'consent_email' => true,
         ])->assertStatus(404);
     }
