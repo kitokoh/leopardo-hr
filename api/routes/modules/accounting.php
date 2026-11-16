@@ -183,6 +183,7 @@ ModuleRoutes::tenantModule('accounting', function (): void {
 
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingPaymentController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\BankStatementController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\FixedAssetController;
 
 Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable,module:accounting'])->group(function (): void {
     Route::get('accounting/payments', [AccountingPaymentController::class, 'index']);
@@ -198,6 +199,14 @@ Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:princ
     Route::get('accounting/bank-statements/{statement}/status', [BankStatementController::class, 'status']);
     Route::get('accounting/bank-statements/{statement}/export', [BankStatementController::class, 'export']);
     Route::post('accounting/bank-statement-lines/{line}/match', [BankStatementController::class, 'match']);
+    // #9377 — immobilisations et amortissements : CRUD + échéancier de dotations.
+    // Même RBAC que la trésorerie (comptable/principal) : données comptables du tenant.
+    Route::get('accounting/fixed-assets', [FixedAssetController::class, 'index']);
+    Route::post('accounting/fixed-assets', [FixedAssetController::class, 'store']);
+    Route::get('accounting/fixed-assets/{id}', [FixedAssetController::class, 'show'])->whereNumber('id');
+    Route::put('accounting/fixed-assets/{id}', [FixedAssetController::class, 'update'])->whereNumber('id');
+    Route::delete('accounting/fixed-assets/{id}', [FixedAssetController::class, 'destroy'])->whereNumber('id');
+    Route::get('accounting/fixed-assets/{id}/schedule', [FixedAssetController::class, 'schedule'])->whereNumber('id');
 });
 
 /**
