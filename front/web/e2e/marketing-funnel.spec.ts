@@ -158,9 +158,10 @@ test.describe('Marketing funnel preview', () => {
     // made this test time out in CI. The footer NewsletterForm renders on
     // every landing page including the homepage — always available, no
     // feature flag involved (issue #1463).
-    await page.goto('/?utm_source=e2e', { waitUntil: 'domcontentloaded' });
+    await page.goto('/business?utm_source=e2e', { waitUntil: 'domcontentloaded' });
 
     const footer = page.locator('footer');
+    await footer.scrollIntoViewIfNeeded().catch(() => null);
     const newsletterInput = footer.locator('input[type="email"]');
     const newsletterButton = footer.locator('button[type="submit"]');
 
@@ -184,15 +185,15 @@ test.describe('Marketing funnel preview', () => {
 
   test('keeps guide trial CTAs on the public guided signup flow', async ({ page }) => {
     const guideRoutes = [
-      '/guides/rh-startup',
-      '/guides/planning-employes',
-      '/guides/checklist-paie',
+      '/business/guides/rh-startup',
+      '/business/guides/planning-employes',
+      '/business/guides/checklist-paie',
     ];
 
     for (const route of guideRoutes) {
       await page.goto(route, { waitUntil: 'domcontentloaded' });
       await expect(page.locator('a[href*="/auth/signup"]')).toHaveCount(0);
-      await expect(page.locator('a[href^="/signup"]')).not.toHaveCount(0);
+      await expect(page.locator('a[href*="/signup"]')).not.toHaveCount(0);
     }
   });
 

@@ -3,7 +3,7 @@ import { getFooterHref } from '../Footer'
 
 describe('getFooterHref', () => {
   it('returns canonical routes for known footer entries', () => {
-    expect(getFooterHref(0, 0)).toBe('/#fonctionnalites')
+    expect(getFooterHref(0, 0)).toBe('/business#fonctionnalites')
     expect(getFooterHref(1, 8)).toBe('/business/contact?topic=community')
     expect(getFooterHref(1, 7)).toBe('/toolbox')
     // LEOPARDO LIBRARY — bibliothèque numérique publique

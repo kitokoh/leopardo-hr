@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Forms and Submissions E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to landing page before each test
-    await page.goto('/');
+    await page.goto('/business');
   });
 
   test.describe('Signup Form', () => {

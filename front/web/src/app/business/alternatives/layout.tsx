@@ -45,7 +45,7 @@ export default async function AlternativesLayout({
     <>
       <BreadcrumbJsonLd
         items={[
-          { name: labels.home, url: localizedUrl('/', lang) },
+          { name: labels.home, url: localizedUrl('/business', lang) },
           { name: seo.title, url: localizedUrl('/business/alternatives', lang) },
         ]}
       />

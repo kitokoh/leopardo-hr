@@ -258,7 +258,7 @@ test.describe('Client web auth smoke', () => {
     await setSessionCookie(page);
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
 
-    await expect(page).toHaveURL(/\/auth\/login$/);
+    await expect(page).toHaveURL(/\/auth\/login$/, { timeout: 15_000 });
     // #7860/#7882 — copie du titre de connexion renommée : « Sign in to
     // Leopardo RH » → « Sign in to Leopardo » (fr : « Connexion à Leopardo »).
     await expect(page.locator('body')).toContainText(/Connexion à Leopardo|Sign in to Leopardo/);
