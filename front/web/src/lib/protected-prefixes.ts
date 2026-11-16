@@ -107,6 +107,9 @@ export const PROTECTED_PREFIXES = [
   // (ressources, fichiers, cycle éditorial, droits) : données tenant, jamais
   // servies sans session. Le catalogue PUBLIC vit sous /library (hors liste).
   '/library-admin',
+  // #9333 — piste d'audit du tenant (qui a consulté quoi) : données de
+  // traçabilité nominatives, jamais servies sans session.
+  '/audit-logs',
 ] as const;
 
 /**

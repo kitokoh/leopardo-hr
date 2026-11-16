@@ -6,7 +6,7 @@ namespace App\Core\Auth\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\CompanySetting;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -37,7 +37,7 @@ class AuditLogController extends Controller
         abort_unless(
             Gate::forUser($actor)->allows('viewTenantAudit'),
             403,
-            'Accès réservé au principal'
+            __('auth.audit_access_principal_only')
         );
 
         $validated = $request->validate([
@@ -111,7 +111,7 @@ class AuditLogController extends Controller
         abort_unless(
             Gate::forUser($actor)->allows('viewTenantAudit'),
             403,
-            'Accès réservé au principal'
+            __('auth.audit_access_principal_only')
         );
 
         // BelongsToCompany protège le scope
@@ -134,7 +134,7 @@ class AuditLogController extends Controller
         abort_unless(
             Gate::forUser($actor)->allows('viewTenantAudit'),
             403,
-            'Accès réservé au principal'
+            __('auth.audit_access_principal_only')
         );
 
         $validated = $request->validate([
@@ -188,10 +188,12 @@ class AuditLogController extends Controller
     private function getRetentionMonths(): int
     {
         try {
-            $company = currentCompany();
-            if ($company instanceof Company) {
-                $settings = $company->settings()->first();
-                return $settings?->audit_retention_months ?? 12;
+            $raw = CompanySetting::query()
+                ->where('key', 'audit_retention_months')
+                ->value('value');
+
+            if (is_string($raw) && ctype_digit($raw) && (int) $raw >= 1) {
+                return (int) $raw;
             }
         } catch (\Throwable) {
             // Silencieux : valeur par défaut
@@ -222,7 +224,7 @@ class AuditLogController extends Controller
         foreach ($logs as $log) {
             $actor = $log->user 
                 ? trim(($log->user->first_name ?? '') . ' ' . ($log->user->last_name ?? ''))
-                : 'Système';
+                : __('auth.audit_actor_system');
             
             $resource = $log->auditable_type
                 ? class_basename($log->auditable_type) . '#' . ($log->auditable_id ?? '')
