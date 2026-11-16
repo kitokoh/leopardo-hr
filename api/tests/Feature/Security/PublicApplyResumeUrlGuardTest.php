@@ -61,6 +61,12 @@ class PublicApplyResumeUrlGuardTest extends TestCase
             'last_name' => 'Bensaid',
             'email' => 'karim@example.com',
             'resume_url' => 'https://cv.example.com/resume.pdf',
+            // BC-10 (#9100) : le consentement RGPD est obligatoire depuis
+            // l'ajout de `consent => required|accepted`. Sans lui, la
+            // validation echoue pour une raison SANS RAPPORT avec
+            // `resume_url` et le test ne prouverait plus rien sur la garde
+            // SSRF qu'il est cense verrouiller.
+            'consent' => true,
         ]);
         $this->assertFalse($v->fails());
     }
@@ -71,6 +77,8 @@ class PublicApplyResumeUrlGuardTest extends TestCase
             'first_name' => 'Karim',
             'last_name' => 'Ben',
             'email' => 'karim@example.com',
+            // BC-10 (#9100) : consentement obligatoire (cf. test precedent).
+            'consent' => true,
         ]);
         $this->assertFalse($v->fails());
     }

@@ -49,19 +49,36 @@ class SecurityConfigurationTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function test_env_example_does_not_ship_a_database_password(): void
+    public function test_env_example_ships_only_a_guarded_development_password(): void
     {
+        // #9353 puis 86fffeb9 : la valeur de developpement a ete RESTAUREE
+        // dans `.env.example` parce que l'onboarding documente
+        // (`cp api/.env.example api/.env` + `docker compose up`) en depend —
+        // `php artisan serve` ne transmet pas l'environnement du conteneur au
+        // processus enfant, donc un `DB_PASSWORD` vide casse le health check
+        // local (503).
+        //
+        // L'invariant n'est donc plus « le fichier ne contient aucun mot de
+        // passe » mais « le mot de passe qu'il contient est REFUSE hors
+        // local/testing » : c'est `InsecureConfigurationGuard` qui protege la
+        // production, et c'est cela que ce test doit verrouiller.
         $path = base_path('.env.example');
         $this->assertFileExists($path);
 
         $contents = (string) file_get_contents($path);
 
         $this->assertMatchesRegularExpression(
-            '/^DB_PASSWORD=\s*$/m',
+            '/^DB_PASSWORD=(.*)$/m',
             $contents,
-            'DB_PASSWORD doit rester vide dans .env.example (#9353).',
+            'DB_PASSWORD doit rester declare dans .env.example (onboarding).',
         );
-        $this->assertStringNotContainsString('DB_PASSWORD=leopardo-dev-local-only', $contents);
+
+        preg_match('/^DB_PASSWORD=(.*)$/m', $contents, $matches);
+        $shipped = trim($matches[1] ?? '');
+
+        // La valeur livree ne doit JAMAIS etre acceptee en production.
+        $this->expectException(RuntimeException::class);
+        InsecureConfigurationGuard::check('production', $shipped);
     }
 
     // ── F7 — CORS ─────────────────────────────────────────────────────

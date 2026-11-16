@@ -180,6 +180,7 @@ return [
     'edge_node_silent_subject' => 'جهاز تسجيل الحضور غير متصل — :node (:company)',
     'edge_node_silent_greeting' => 'مرحبًا،',
     'edge_node_silent_body' => 'لم يتصل جهاز تسجيل الحضور :node الخاص بـ :company منذ :duration.',
+    'edge_node_silent_never' => 'أبدًا (لم يُستلم أي نبض منذ التسجيل)',
     'edge_node_silent_note' => 'سيتم مزامنة تسجيلات الحضور التي تمت خلال هذه الفترة تلقائيًا بمجرد عودة الاتصال.',
     'edge_node_silent_support' => 'إذا استمرت المشكلة، تحقق من اتصال الجهاز بالشبكة أو راسلنا على:',
     'edge_license_expiring_subject' => 'اشتراك جهاز تسجيل الحضور بحاجة إلى تجديد — :node (:company)',

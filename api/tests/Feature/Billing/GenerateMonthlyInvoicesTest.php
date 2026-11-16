@@ -107,9 +107,14 @@ class GenerateMonthlyInvoicesTest extends TestCase
             ->pluck('number')
             ->all();
 
-        // Numérotation séquentielle par entreprise (count()+1 sous verrou).
+        // #6549 : la numerotation est GLOBALE par annee, pas par entreprise —
+        // `invoices.number` porte une contrainte UNIQUE globale, donc deux
+        // entreprises facturees le meme mois recoivent 0001 puis 0002. Le
+        // commentaire de la migration #6549 le dit explicitement ; l'ancienne
+        // assertion (0001 pour les deux) decrivait le `count()+1` par
+        // entreprise, qui produisait justement des collisions inter-tenant.
         $this->assertSame('LEO-'.now()->format('Y').'-0001', $numbers[0]);
-        $this->assertSame('LEO-'.now()->format('Y').'-0001', $numbers[1]);
+        $this->assertSame('LEO-'.now()->format('Y').'-0002', $numbers[1]);
         $this->assertCount(2, array_unique($numbers));
         $this->assertSame($subscriptionA->id, Invoice::query()->where('company_id', $companyA->id)->value('subscription_id'));
         $this->assertSame($subscriptionB->id, Invoice::query()->where('company_id', $companyB->id)->value('subscription_id'));
@@ -155,7 +160,9 @@ class GenerateMonthlyInvoicesTest extends TestCase
         $second->run();
 
         $this->assertSame(1, Invoice::query()->where('subscription_id', $subscription->getKey())->count());
-        $this->assertSame('pilot', $subscription->refresh()->plan);
+        // `activeSubscription()` cree un abonnement `operations` : l'ancienne
+        // assertion `pilot` ne correspondait a aucune fixture de ce fichier.
+        $this->assertSame('operations', $subscription->refresh()->plan);
 
         $invoice = Invoice::query()->where('subscription_id', $subscription->getKey())->firstOrFail();
         $this->assertSame(now()->format('Y-m'), $invoice->period);

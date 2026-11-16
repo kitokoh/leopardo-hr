@@ -27,6 +27,7 @@ use App\Modules\Communication\Domain\Models\CommunicationThread;
 use App\Modules\Communication\Domain\Support\CommunicationFeatures;
 use App\Modules\Communication\Infrastructure\Services\GoogleGmailOAuthService;
 use App\Modules\Communication\Infrastructure\Services\GoogleGmailReplySender;
+use App\Modules\CRM\Domain\Models\CrmContact;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -332,11 +333,19 @@ class CommunicationApplicationActionsTest extends TestCase
         $this->assertNotNull($proposal->crm_contact_id);
         $this->assertSame((int) $this->employee->id, $proposal->decided_by);
 
-        // Contact CRM créé via le contrat partagé (BC-11).
+        // Contact CRM cree via le contrat partage (BC-11).
+        // #5713 : `crm_contacts.email` est caste `encrypted` — la colonne
+        // stocke un chiffre non deterministe, donc `assertDatabaseHas` sur
+        // `email` comparait le clair au chiffre et echouait toujours. On
+        // verifie la ligne par son id, puis la valeur DECHIFFREE via le
+        // modele (qui applique le cast).
         $this->assertDatabaseHas('crm_contacts', [
             'id' => $proposal->crm_contact_id,
-            'email' => 'alice@example.com',
         ]);
+        $this->assertSame(
+            'alice@example.com',
+            CrmContact::query()->withoutGlobalScopes()->findOrFail($proposal->crm_contact_id)->email,
+        );
 
         // Liaison rétroactive — casse de l'expéditeur ignorée.
         foreach (CommunicationMessage::query()->where('integration_id', $integration->id)->get() as $message) {

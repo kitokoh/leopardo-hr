@@ -33,16 +33,32 @@ class CrmEmailContactDirectory implements EmailContactDirectory
             return null;
         }
 
-        /** @var CrmContact|null $contact */
-        $contact = CrmContact::query()
+        // #5713 : `crm_contacts.email` est caste `encrypted` — la colonne
+        // stocke un chiffre non deterministe (`enc:` + IV aleatoire). Un
+        // `WHERE LOWER(email) = ?` ne peut donc JAMAIS correspondre : il
+        // comparait le clair au chiffre et renvoyait toujours null, ce qui
+        // cassait silencieusement la liaison CRM de la classification
+        // (aucun contact reconnu, proposition creee a chaque message).
+        //
+        // Il n'existe pas de colonne d'index aveugle sur cette table : la
+        // correspondance se fait donc en PHP sur les valeurs dechiffrees,
+        // bornee au tenant et aux contacts non archives. Le volume par
+        // tenant reste faible (annuaire CRM), et l'ordre par id garde le
+        // resultat deterministe.
+        $candidates = CrmContact::query()
             ->withoutGlobalScopes()
             ->where('company_id', $companyId)
             ->whereNull('archived_at')
-            ->whereRaw('LOWER(email) = ?', [$normalized])
             ->orderBy('id')
-            ->first();
+            ->get(['id', 'email']);
 
-        return $contact?->id;
+        foreach ($candidates as $contact) {
+            if (mb_strtolower(trim((string) $contact->email)) === $normalized) {
+                return (int) $contact->id;
+            }
+        }
+
+        return null;
     }
 
     public function createContact(string $companyId, string $email, ?string $suggestedName): int

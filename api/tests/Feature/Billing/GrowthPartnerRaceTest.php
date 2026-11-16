@@ -7,6 +7,7 @@ namespace Tests\Feature\Billing;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Exceptions\DomainException;
 use App\Modules\Billing\Domain\Models\Partner;
 use App\Modules\Billing\Domain\Models\PartnerPayoutRequest;
@@ -32,6 +33,8 @@ class GrowthPartnerRaceTest extends TestCase
     private Employee $employee;
 
     private User $adminUser;
+
+    private SuperAdmin $superAdmin;
 
     protected function setUp(): void
     {
@@ -135,13 +138,13 @@ class GrowthPartnerRaceTest extends TestCase
         ]);
 
         // Transition valide : pending → paid
-        $service->updatePayoutStatus($payout, 'paid', (int) $this->adminUser->id, 'Paiement effectue');
+        $service->updatePayoutStatus($payout, 'paid', (int) $this->superAdmin->id, 'Paiement effectue');
         $payout->refresh();
         $this->assertSame('paid', $payout->status);
 
         // Transition invalide : paid → pending → DomainException propre
         try {
-            $service->updatePayoutStatus($payout, 'pending', (int) $this->adminUser->id, 'Reouverture');
+            $service->updatePayoutStatus($payout, 'pending', (int) $this->superAdmin->id, 'Reouverture');
             $this->fail('La transition paid -> pending doit etre refusee.');
         } catch (DomainException $e) {
             $this->assertSame(422, $e->statusCode());
@@ -168,6 +171,16 @@ class GrowthPartnerRaceTest extends TestCase
             'password_hash' => Hash::make('password123'),
         ]);
         $this->adminUser = $user;
+        // #8523 (GSI-12 gotcha 7) : `partner_audit_logs.admin_id` reference
+        // desormais `super_admins.id`, PAS `users.id` — un administrateur
+        // plateforme n'est pas un employe. Passer un `users.id` levait une
+        // violation de FK 23503 et faisait perdre l'acte d'audit. On cree donc
+        // un vrai super administrateur pour l'acteur des transitions.
+        $this->superAdmin = SuperAdmin::query()->forceCreate([
+            'name' => 'QA Platform Admin',
+            'email' => 'qa-platform-admin-'.uniqid().'@example.com',
+            'password_hash' => Hash::make('password123'),
+        ]);
         $partner = Partner::create([
             'user_id' => $user->id,
             'referral_code' => 'QA-'.strtoupper(substr(uniqid(), -6)),

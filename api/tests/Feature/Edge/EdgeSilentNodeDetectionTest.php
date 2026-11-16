@@ -269,15 +269,20 @@ class EdgeSilentNodeDetectionTest extends TestCase
         $this->assertNull($notification->lastSeenAt);
 
         $mail = $notification->toMail(new \stdClass);
-        // Le mail doit contenir "Jamais" pour un nœud jamais vu
-        $this->assertStringContainsString(
-            'Jamais',
-            collect($mail->introLines)->implode(' ').' '.collect($mail->outroLines)->implode(' ')
-                .' '.$mail->subject.' '.implode(' ', array_map(
-                    fn ($line) => is_array($line) ? $line[0] : $line,
-                    $mail->introLines
-                ))
-        );
+        // Un noeud jamais vu n'a pas de duree de silence : le mail doit le
+        // dire explicitement, dans la locale COURANTE (la suite tourne en
+        // `en` ; asserter le litteral francais « Jamais » rendait le test
+        // dependant de la locale et donc rouge par defaut).
+        $body = collect($mail->introLines)->implode(' ').' '.collect($mail->outroLines)->implode(' ')
+            .' '.$mail->subject.' '.implode(' ', array_map(
+                fn ($line) => is_array($line) ? $line[0] : $line,
+                $mail->introLines
+            ));
+
+        $this->assertStringContainsString(__('emails.edge_node_silent_never'), $body);
+        // Et surtout : plus de tiret cadratin en guise de duree.
+        $this->assertStringNotContainsString('for —', $body);
+        $this->assertStringNotContainsString('depuis —', $body);
     }
 
     /**

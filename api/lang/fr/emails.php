@@ -181,6 +181,7 @@ return [
     'edge_node_silent_subject' => 'Terminal de pointage injoignable — :node (:company)',
     'edge_node_silent_greeting' => 'Bonjour,',
     'edge_node_silent_body' => 'Le terminal de pointage :node de :company n\'a pas communiqué depuis :duration.',
+    'edge_node_silent_never' => 'jamais (aucun battement reçu depuis l\'enregistrement)',
     'edge_node_silent_note' => 'Les pointages effectués pendant cette période seront synchronisés automatiquement dès le retour de la connexion.',
     'edge_node_silent_support' => 'Si la situation persiste, vérifiez la connexion réseau du terminal ou écrivez-nous :',
     'edge_license_expiring_subject' => 'Abonnement du terminal de pointage à renouveler — :node (:company)',

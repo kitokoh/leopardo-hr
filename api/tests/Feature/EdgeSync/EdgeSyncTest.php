@@ -139,9 +139,25 @@ class EdgeSyncTest extends TestCase
             ->assertOk()
             ->assertJson(['queued' => 1]);
 
+        // #6554 : le rejeu est absorbe par l'index unique
+        // (edge_node_id, dedup_key) — `insertOrIgnore` renvoie 0 ligne, donc
+        // le contrat machine repond `queued: 0` et `status: duplicate` pour
+        // cet enregistrement. C'est le comportement ATTENDU (aucune ligne
+        // dupliquee) ; l'ancienne assertion `queued: 1` decrivait l'ancien
+        // contrat, avant l'introduction du resultat par enregistrement.
         $this->postJson("/api/v1/edge-node/{$this->node->id}/push", ['records' => [$record]])
             ->assertOk()
-            ->assertJson(['queued' => 1]);
+            ->assertJson([
+                'queued' => 0,
+                'results' => [
+                    [
+                        'entity_type' => 'attendance_logs',
+                        'entity_id' => 'local-uuid-dup-001',
+                        'operation' => 'create',
+                        'status' => 'duplicate',
+                    ],
+                ],
+            ]);
 
         $this->assertSame(1, SyncQueue::query()
             ->where('edge_node_id', $this->node->id)
