@@ -74,9 +74,18 @@ class PublicPortalEndToEndTest extends TestCase
         $this->assertNotNull($jobId, 'La création doit renvoyer un identifiant.');
 
         // 2. Un brouillon ne doit JAMAIS fuiter sur le portail public.
+        //
+        // On assert sur `meta.counts.company` et non sur le nombre d'éléments
+        // de `data` : le portail fusionne les offres du tenant ET les offres
+        // agrégées par la plateforme pour le pays de l'entreprise
+        // (`PublicJobCatalog::externalOffers`). Un test qui compte `data`
+        // dépend donc des `external_job_offers` laissées par les autres
+        // classes du worker — il passait isolément et échouait en suite
+        // complète. Ce qu'on veut prouver ici, c'est qu'aucune offre DU TENANT
+        // n'est visible, pas qu'aucune offre agrégée n'existe.
         $this->getJson("/api/v1/public/careers/{$company->slug}")
             ->assertOk()
-            ->assertJsonCount(0, 'data');
+            ->assertJsonPath('meta.counts.company', 0);
 
         // 3. Publication.
         $this->postJson("/api/v1/recruitment/jobs/{$jobId}/publish")

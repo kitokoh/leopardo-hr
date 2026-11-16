@@ -82,13 +82,28 @@ return new class extends Migration
 
     private function constraintExists(string $name): bool
     {
+        $schema = resolveTableSchema(self::TABLE);
+
+        if ($schema === null) {
+            return false;
+        }
+
+        // Le schéma est OBLIGATOIREMENT filtré : `pg_class` est partagé par tous
+        // les schémas de la connexion, donc une recherche au nom nu
+        // (`relname = 'edu_classes'`) renvoie une ligne par tenant et fait
+        // échouer PostgreSQL en `21000 more than one row returned by a subquery
+        // used as an expression` dès qu'un second schéma porte la table.
         $row = DB::selectOne(
             'SELECT 1 AS present
-               FROM pg_constraint
-              WHERE conname = ?
-                AND conrelid = (SELECT oid FROM pg_class WHERE relname = ? AND relkind = ?)
+               FROM pg_constraint c
+               JOIN pg_class t ON t.oid = c.conrelid
+               JOIN pg_namespace n ON n.oid = t.relnamespace
+              WHERE c.conname = ?
+                AND t.relname = ?
+                AND t.relkind = ?
+                AND n.nspname = ?
               LIMIT 1',
-            [$name, self::TABLE, 'r']
+            [$name, self::TABLE, 'r', $schema]
         );
 
         return $row !== null;
