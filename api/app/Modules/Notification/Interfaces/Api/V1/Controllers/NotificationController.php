@@ -182,4 +182,53 @@ class NotificationController extends Controller
 
         return response()->json(['message' => 'Notification deleted.']);
     }
+
+    /**
+     * feat(notification): API purge des notifications anciennes (#9540).
+     *
+     * Supprime les notifications LUES de plus de X jours pour nettoyer
+     * la base et améliorer les performances. Les notifications non lues
+     * et critiques sont toujours conservées.
+     *
+     * RBAC : authentifié (chaque employé purge ses propres notifications).
+     */
+    public function purgeOld(Request $request): JsonResponse
+    {
+        /** @var Employee $user */
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'days' => ['nullable', 'integer', 'min:7', 'max:365'],
+            'confirm' => ['required', 'boolean', 'accepted'],
+        ]);
+
+        abort_unless($validated['confirm'], 422, 'PURGE_NOT_CONFIRMED');
+
+        $days = $validated['days'] ?? 90;
+        $cutoffDate = now()->subDays($days);
+
+        $deleted = DB::transaction(function () use ($user, $cutoffDate) {
+            return Notification::query()
+                ->where('company_id', $user->company_id)
+                ->where('employee_id', $user->id)
+                ->where('is_read', true)
+                ->where('created_at', '<', $cutoffDate)
+                // Ne jamais supprimer les notifications critiques
+                ->whereNotIn('type', ['security_alert', 'system_maintenance'])
+                ->delete();
+        });
+
+        $oldestKept = Notification::query()
+            ->where('company_id', $user->company_id)
+            ->where('employee_id', $user->id)
+            ->orderBy('created_at')
+            ->value('created_at');
+
+        return response()->json([
+            'data' => [
+                'deleted_count' => $deleted,
+                'oldest_kept' => $oldestKept ? $oldestKept->toIso8601String() : null,
+            ],
+        ]);
+    }
 }
