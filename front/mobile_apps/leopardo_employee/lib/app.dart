@@ -1,6 +1,10 @@
 import 'dart:async';
 
-import 'package:material_ui/material_ui.dart';
+import 'package:material_ui/material_ui.dart'
+    hide
+        GlobalMaterialLocalizations,
+        GlobalWidgetsLocalizations,
+        GlobalCupertinoLocalizations;
 
 import 'dart:ui' show PlatformDispatcher;
 
