@@ -66262,6 +66262,193 @@ paths:
         '403': {description: Téléchargement non autorisé}
         '404': {description: Ressource inconnue ou non visible par le tenant}
         '501': {description: Stockage non configuré}
+  /v1/brands:
+    get:
+      operationId: api_get_brands
+      tags:
+      - Branding
+      summary: Liste les marques du tenant
+      description: >-
+        BC-41 BRANDING (#9578) — surface TENANT. Une entreprise peut porter
+        plusieurs marques (enseignes) : c'est ce que l'audit DDD reprochait au
+        branding historique, stocké en JSON libre dans `companies.metadata` et
+        donc limité à une marque par tenant. Isolation tenant stricte.
+      responses:
+        '200':
+          description: Marques du tenant courant
+        '401': {description: Non authentifié}
+    post:
+      operationId: api_post_brands
+      tags:
+      - Branding
+      summary: Crée une marque
+      description: >-
+        BC-41 BRANDING (#9578) — crée une enseigne. Le slug est unique par
+        tenant ; `on_primary` n'est jamais accepté en entrée, il est calculé
+        serveur pour garantir le contraste WCAG AA.
+      responses:
+        '201':
+          description: Marque créée
+        '401': {description: Non authentifié}
+        '422': {description: Données invalides (slug, palette, verticale)}
+  /v1/brands/{brand}:
+    get:
+      operationId: api_get_brands_by_id
+      tags:
+      - Branding
+      summary: Détail d'une marque
+      description: BC-41 BRANDING (#9578) — 404 fail-closed si la marque n'appartient pas au tenant.
+      parameters:
+      - name: brand
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200':
+          description: Marque du tenant
+        '401': {description: Non authentifié}
+        '404': {description: Marque inconnue ou hors tenant (fail-closed)}
+    patch:
+      operationId: api_patch_brands_by_id
+      tags:
+      - Branding
+      summary: Met à jour une marque
+      description: >-
+        BC-41 BRANDING (#9578) — met à jour identité, palette, domaine ou
+        verticale. La palette est revalidée et `on_primary` recalculé.
+      parameters:
+      - name: brand
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200':
+          description: Marque mise à jour
+        '401': {description: Non authentifié}
+        '404': {description: Marque inconnue ou hors tenant (fail-closed)}
+        '422': {description: Données invalides}
+  /v1/brands/{brand}/publish:
+    post:
+      operationId: api_post_brands_by_id_publish
+      tags:
+      - Branding
+      summary: Publie une marque
+      description: >-
+        BC-41 BRANDING (#9578) — rend la surface publique servable. Refusé si
+        l'identité publique est incomplète (nom public obligatoire) : une
+        marque publiée sans nom produirait une page sans titre ni métadonnées.
+      parameters:
+      - name: brand
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200':
+          description: Marque publiée
+        '401': {description: Non authentifié}
+        '404': {description: Marque inconnue ou hors tenant (fail-closed)}
+        '422': {description: Identité publique incomplète}
+  /v1/brands/{brand}/unpublish:
+    post:
+      operationId: api_post_brands_by_id_unpublish
+      tags:
+      - Branding
+      summary: Dépublie une marque
+      description: BC-41 BRANDING (#9578) — la surface publique renvoie 404 immédiatement.
+      parameters:
+      - name: brand
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200':
+          description: Marque dépubliée
+        '401': {description: Non authentifié}
+        '404': {description: Marque inconnue ou hors tenant (fail-closed)}
+  /v1/brands/{brand}/suspend:
+    post:
+      operationId: api_post_brands_by_id_suspend
+      tags:
+      - Branding
+      summary: Suspend une marque
+      description: >-
+        BC-41 BRANDING (#9578) — suspension temporaire (impayé, litige). La
+        surface publique cesse d'être servie sans perdre la configuration.
+      parameters:
+      - name: brand
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200':
+          description: Marque suspendue
+        '401': {description: Non authentifié}
+        '404': {description: Marque inconnue ou hors tenant (fail-closed)}
+  /v1/brands/{brand}/unsuspend:
+    post:
+      operationId: api_post_brands_by_id_unsuspend
+      tags:
+      - Branding
+      summary: Réactive une marque suspendue
+      description: BC-41 BRANDING (#9578) — retour au statut précédent.
+      parameters:
+      - name: brand
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200':
+          description: Marque réactivée
+        '401': {description: Non authentifié}
+        '404': {description: Marque inconnue ou hors tenant (fail-closed)}
+  /v1/public/brands/by-host:
+    get:
+      operationId: api_get_public_brands_by_host
+      tags:
+      - Branding
+      summary: Résout la marque servie sur un domaine
+      description: >-
+        BC-41 BRANDING (#9579) — surface PUBLIQUE (aucun auth, throttle
+        `shop-public`). Résout la marque par domaine personnalisé, pour servir
+        une vitrine sur son propre domaine. 404 fail-closed si le domaine est
+        inconnu, non publié ou suspendu.
+      parameters:
+      - name: host
+        in: query
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: DTO public de la marque (identité, palette, profil de surface)
+        '404': {description: Domaine inconnu, non publié ou suspendu (fail-closed)}
+        '429': {description: Limite de débit `shop-public` dépassée}
+  /v1/public/brands/{slug}:
+    get:
+      operationId: api_get_public_brands_by_slug
+      tags:
+      - Branding
+      summary: DTO public d'une marque
+      description: >-
+        BC-41 BRANDING (#9579) — surface PUBLIQUE (aucun auth, throttle
+        `shop-public`). Sert l'identité, la palette (avec `on_primary` calculé
+        serveur) et le profil de surface de la verticale. DTO en liste blanche
+        stricte : jamais `company_id`, jamais le statut interne, jamais les
+        métadonnées du tenant. 404 fail-closed si le slug est inconnu, non
+        publié ou suspendu.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema: {type: string}
+      - name: locale
+        in: query
+        required: false
+        schema: {type: string}
+      responses:
+        '200':
+          description: DTO public de la marque
+        '404': {description: Marque inconnue, non publiée ou suspendue (fail-closed)}
+        '429': {description: Limite de débit `shop-public` dépassée}
 components:
   securitySchemes:
     BearerAuth:
