@@ -285,20 +285,25 @@ class AbsenceController extends Controller
         ];
 
         $byType = $absences->groupBy('absence_type_id')->map(function ($group) {
+            $first = $group->first();
+
             return [
-                'type' => $group->first()->absenceType->name ?? 'Unknown',
-                'code' => $group->first()->absenceType->code ?? 'unknown',
+                'type' => $first?->absenceType?->name ?? 'Unknown',
+                'code' => $first?->absenceType?->code ?? 'unknown',
                 'count' => $group->count(),
                 'days' => round($group->sum('days_count'), 1),
             ];
         })->values()->toArray();
 
         $topEmployees = $absences->groupBy('employee_id')->map(function ($group) {
+            $first = $group->first();
+            $employee = $first?->employee;
+
             return [
-                'employee_id' => $group->first()->employee_id,
-                'name' => $group->first()->employee ?
-                    $group->first()->employee->first_name.' '.$group->first()->employee->last_name :
-                    'Unknown',
+                'employee_id' => $first?->employee_id,
+                'name' => $employee
+                    ? $employee->first_name.' '.$employee->last_name
+                    : 'Unknown',
                 'count' => $group->count(),
                 'days' => round($group->sum('days_count'), 1),
             ];
