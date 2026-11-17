@@ -2766,3 +2766,28 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 **Couverture exécutée** — `phpunit --filter=Recruitment` (101 tests / 296 assertions) sur PostgreSQL 15 avec `CI=true`, dont `ResumeTextExtractorTest` (7 tests sur les **vrais binaires** et `ZipArchive`), `AtsResumeScoreTest` (10), `CandidateApplicationTrackingTest` (9) ; `jest careers` (66 tests / 6 suites) ; `tsc --noEmit` 0 erreur ; `eslint --max-warnings 0` 0 erreur ; `pint --test` 77 fichiers PASS ; `phpstan-modules` 0 erreur ; `phpstan-strict` 0 erreur sur le module.
 
 **Non couvert** — rendu visuel des trois nouveaux écrans non observé avec de vraies données (pas de base peuplée ni de session authentifiée dans le sandbox) ; migration non jouée sur une base tenant réelle (les tests utilisent la fixture `CreatesMvpSchema`) ; présence de `pdftotext` / `antiword` sur l'image de production non vérifiée — le code rend `null` proprement s'ils manquent, donc absence = dégradation du score, pas panne ; aucune OCR sur les CV scannés en image (choix assumé) ; suite Jest **complète** tuée par l'OOM du sandbox (2 Go) — seul le périmètre touché a été exécuté.
+
+## 2026-11-17 — BC-06 NOTIFICATION : purge des notifications anciennes (#9540, PR #9560)
+
+**Surface** : `DELETE /v1/notifications/purge-old` (`NotificationController::purgeOld`), declaree dans `routes/modules/rh.php`, documentee dans `api/openapi.yaml`. Aucune migration.
+
+**Pourquoi ce sont des scenarios de test** : c'est une **suppression definitive** de donnees, declenchee par un simple appel HTTP. Les trois risques sont l'effacement trop large, l'effacement de donnees critiques, et l'effacement chez autrui.
+
+| Scenario | Ce qui serait casse sans lui |
+|---|---|
+| sans `confirm=true` -> **422** `PURGE_NOT_CONFIRMED` | `'confirm' => ['required','boolean','accepted']` **et** `abort_unless($validated['confirm'], 422)` : deux gardes redondantes, mais un `DELETE` sans confirmation est une perte de donnees en un clic |
+| `confirm=false` -> **422**, pas 200 avec 0 supprime | `accepted` refuse `false` a la validation ; le `abort_unless` couvre le cas ou la validation serait assouplie |
+| seules les notifications **lues** sont supprimees | `where('is_read', true)` : sans test, une refonte du filtre effacerait des notifications non lues, donc des taches en attente |
+| seules les notifications **plus anciennes que `days`** sont supprimees | `where('created_at', '<', $cutoffDate)` : une borne inclusive ou un `subDays` deplace changerait la fenetre sans erreur |
+| `days` par defaut = **90** | `$validated['days'] ?? 90` : le defaut est une decision produit, il doit etre fige |
+| `days` hors `[7, 365]` -> **422** | `min:7` protege d'une purge quasi totale (`days=0` effacerait tout) ; `max:365` borne la fenetre |
+| les types `security_alert` et `system_maintenance` ne sont **jamais** supprimes | `whereNotIn('type', [...])` : ce sont les deux seules categories exclues ; les perdre, c'est perdre la trace d'un incident de securite |
+| un employe ne peut purger que **ses** notifications | `where('employee_id', $user->id)` **et** `where('company_id', $user->company_id)` : sans le premier, un collaborateur effacerait les notifications de ses collegues |
+| `deleted_count` reflete exactement le nombre supprime | la valeur vient du `delete()` dans la transaction : un test la compare au compte reel avant/apres |
+| `oldest_kept` est `null` quand plus aucune notification ne reste | `$oldestKept ? ... : null` : sans test, une refonte rendrait `""` ou une date sentinelle |
+| la route n'est pas capturee par `DELETE /notifications/{notification}` | `whereNumber('notification')` sur la route parametree est la seule protection : sans lui, `purge-old` serait interprete comme un identifiant et rendrait **404** |
+| la suppression est **atomique** | `DB::transaction(...)` : un echec a mi-parcours ne doit pas laisser une purge partielle |
+
+**Couverture executee** — `pint --test` PASS sur les 2 fichiers du lot (aucun defaut de style).
+
+**Non couvert** — aucun test PHPUnit execute : la suite Feature depasse la RAM du sandbox (2 Go, OOM signal 9). Les scenarios ci-dessus sont **a ecrire**.

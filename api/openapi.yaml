@@ -18482,6 +18482,50 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+  /notifications/purge-old:
+    delete:
+      operationId: api_delete_notifications_purge_old
+      tags:
+      - Notifications
+      summary: Purger les anciennes notifications
+      description: |
+        Supprime les notifications lues de l'employe courant plus anciennes que
+        `days` jours. Exige une confirmation explicite (`confirm=true`).
+      parameters:
+      - name: days
+        in: query
+        schema:
+          type: integer
+          minimum: 7
+          maximum: 365
+        description: Age minimal des notifications purgees, en jours.
+      - name: confirm
+        in: query
+        required: true
+        schema:
+          type: boolean
+        description: Doit valoir true, sinon la requete est refusee.
+      responses:
+        '200':
+          description: Notifications purgees
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      deleted_count:
+                        type: integer
+                      oldest_kept:
+                        type: string
+                        format: date-time
+                        nullable: true
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
   /notifications/{notification}:
     delete:
       operationId: api_delete_notifications_by_notification
