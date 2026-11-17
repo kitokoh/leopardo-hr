@@ -25,13 +25,13 @@ use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingFecController
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingFiscalYearController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingJournalController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingJournalSettingsController;
-use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingTaxRateController;
-use App\Modules\Accounting\Interfaces\Api\V1\Controllers\ManualJournalEntryController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingLedgerController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingLetteringController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingSettingsController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingStatementController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingTaxRateController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\ManualJournalEntryController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\PublicDocumentShareController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\ShareAccessController;
 use App\Support\Routing\ModuleRoutes;

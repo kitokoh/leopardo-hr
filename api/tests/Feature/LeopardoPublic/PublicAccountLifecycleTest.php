@@ -6,7 +6,6 @@ namespace Tests\Feature\LeopardoPublic;
 
 use App\Core\Auth\Domain\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
