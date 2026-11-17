@@ -137,7 +137,7 @@ class TravelEngagementController extends Controller
             ['rating' => $rating],
         );
 
-        return new JsonResponse(['data' => $this->aggregateData($actor, $travelArticle)]);
+        return $this->engagementResponse($this->aggregateData($actor, $travelArticle));
     }
 
     /**
@@ -152,7 +152,21 @@ class TravelEngagementController extends Controller
             abort(404);
         }
 
-        return new JsonResponse(['data' => $this->aggregateData($actor, $travelArticle)]);
+        return $this->engagementResponse($this->aggregateData($actor, $travelArticle));
+    }
+
+    /**
+     * #9098 — sans `JSON_PRESERVE_ZERO_FRACTION`, `round(5.0, 2)` sort en `5`
+     * et non `5.0` : le client recoit un ENTIER la ou le contrat annonce une
+     * note moyenne decimale, et un client type (Dart `.as double`, TypeScript
+     * strict) leve sur une note entiere. Le test d'agregats l'a revele :
+     * `Failed asserting that 5 is identical to 5.0`.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function engagementResponse(array $data): JsonResponse
+    {
+        return new JsonResponse(['data' => $data], 200, [], JSON_PRESERVE_ZERO_FRACTION);
     }
 
     /**
@@ -206,7 +220,7 @@ class TravelEngagementController extends Controller
             abort(404);
         }
 
-        return response()->json(['data' => [
+        return $this->engagementResponse([
             'likes_count' => $this->likesCount($travelArticle),
             'shares_count' => TravelShare::query()
                 ->where('company_id', $travelArticle->company_id)
@@ -214,7 +228,7 @@ class TravelEngagementController extends Controller
                 ->count(),
             'rating_avg' => $this->ratingAverage($travelArticle),
             'ratings_count' => $this->ratingsCount($travelArticle),
-        ]]);
+        ]);
     }
 
     private function likesCount(TravelArticle $article): int
