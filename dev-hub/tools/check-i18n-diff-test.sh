@@ -295,6 +295,14 @@ expect_clean '[admin-dashboard] VITE_API_URL is not set' "diagnostic développeu
 expect_clean 'system-ui, sans-serif' "pile de polices CSS (font-family d'un avatar SVG local) — #8000"
 expect_clean 'a[href], button:not([disabled])' "sélecteur CSS de focus-trap (mission vitrine)"
 expect_clean '(prefers-reduced-motion: reduce)' "media query CSS (mission vitrine)"
+# Cas 1octies — valeurs CSS de style inline (vitrines publiques, #9577) : les
+# raccourcis de marge/padding et les fonctions de grille sont des constantes de
+# mise en page, jamais du texte utilisateur. Contre-contrôle : une phrase à
+# virgule reste flaggée (voir cas 2).
+expect_clean '0.7rem 1.2rem' "raccourci de padding inline (vitrines publiques) — #9577"
+expect_clean '2rem 1.25rem 4rem' "raccourci de padding à trois valeurs (vitrines publiques) — #9577"
+expect_clean 'repeat(auto-fill, minmax(17rem, 1fr))' "grille CSS auto-fill/minmax (vitrines publiques) — #9577"
+expect_clean 'clamp(2rem, 6vw, 4.5rem) 1.25rem' "padding avec clamp() (vitrines publiques) — #9577"
 expect_clean 'text/csv;charset=utf-8' "type MIME d'un Blob (export CSV Toolbox) — #9569"
 expect_clean 'text/plain;charset=utf-8' "type MIME d'un Blob (export texte Toolbox) — #9569"
 expect_clean '\r\n' "separateur de lignes CRLF de l'export CSV (RFC 4180) — #9569"

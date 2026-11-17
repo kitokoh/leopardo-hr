@@ -387,4 +387,113 @@ class AppColors {
 
   /// Erreur en mode sombre (red-400).
   static const Color publicErrorDark = Color(0xFFF87171);
+
+  // ─── Vitrines publiques verticales (#9577) ───────────────────────────────
+  //
+  // Chaque verticale grand public porte sa propre palette, alignée sur
+  // `front/web/src/modules/public-surfaces/<vertical>/identity/` et sur
+  // docs/REFERENTIEL_PRODUIT/COULEURS.md (règle L.07 : même commit).
+  //
+  // Ces couleurs servent aux apps publiques verticales. Elles ne remplacent
+  // aucune couleur existante : les apps mobiles indépendantes déjà livrées
+  // gardent leurs tokens, et une app qui n'embarque pas de vitrine n'utilise
+  // simplement pas ces constantes.
+
+  /// Texte posé sur la couleur d'action d'une vitrine verticale.
+  ///
+  /// Blanc : les six couleurs d'action des vitrines sont toutes assez sombres
+  /// pour que le blanc atteigne le contraste AA (vérifié par les tests du
+  /// module web `public-surfaces`). Côté mobile, `readableOn()` recalcule le
+  /// meilleur candidat si une palette venait à changer.
+  static const Color surfaceOnPrimary = Color(0xFFFFFFFF);
+
+  /// Restaurant — action principale (braise).
+  static const Color surfaceRestaurantPrimary = Color(0xFFC2410C);
+
+  /// Restaurant — accent (ambre).
+  static const Color surfaceRestaurantAccent = Color(0xFFF59E0B);
+
+  /// Restaurant — fond de page.
+  static const Color surfaceRestaurantSurface = Color(0xFFFFFBF5);
+
+  /// Restaurant — texte principal.
+  static const Color surfaceRestaurantOnSurface = Color(0xFF1C1917);
+
+  /// Restaurant — texte secondaire.
+  static const Color surfaceRestaurantMuted = Color(0xFF78716C);
+
+  /// Retail — action principale (indigo).
+  static const Color surfaceRetailPrimary = Color(0xFF4338CA);
+
+  /// Retail — accent (cyan).
+  static const Color surfaceRetailAccent = Color(0xFF0EA5E9);
+
+  /// Retail — fond de page.
+  static const Color surfaceRetailSurface = Color(0xFFF8FAFC);
+
+  /// Retail — texte principal.
+  static const Color surfaceRetailOnSurface = Color(0xFF0F172A);
+
+  /// Retail — texte secondaire.
+  static const Color surfaceRetailMuted = Color(0xFF64748B);
+
+  /// Hôtellerie — action principale (teal profond).
+  static const Color surfaceHospitalityPrimary = Color(0xFF0F766E);
+
+  /// Hôtellerie — accent (teal clair).
+  static const Color surfaceHospitalityAccent = Color(0xFF14B8A6);
+
+  /// Hôtellerie — fond de page.
+  static const Color surfaceHospitalitySurface = Color(0xFFF7FAF9);
+
+  /// Hôtellerie — texte principal.
+  static const Color surfaceHospitalityOnSurface = Color(0xFF0B1F1C);
+
+  /// Hôtellerie — texte secondaire.
+  static const Color surfaceHospitalityMuted = Color(0xFF5F7A76);
+
+  /// B2B — action principale (bleu nuit).
+  static const Color surfaceTradePrimary = Color(0xFF1E3A8A);
+
+  /// B2B — accent (bleu acier).
+  static const Color surfaceTradeAccent = Color(0xFF3B82F6);
+
+  /// B2B — fond de page.
+  static const Color surfaceTradeSurface = Color(0xFFF8FAFC);
+
+  /// B2B — texte principal.
+  static const Color surfaceTradeOnSurface = Color(0xFF0B1220);
+
+  /// B2B — texte secondaire.
+  static const Color surfaceTradeMuted = Color(0xFF64748B);
+
+  /// Billets — action principale (violet).
+  static const Color surfaceTravelPrimary = Color(0xFF6D28D9);
+
+  /// Billets — accent (cyan).
+  static const Color surfaceTravelAccent = Color(0xFF06B6D4);
+
+  /// Billets — fond de page.
+  static const Color surfaceTravelSurface = Color(0xFFFAF8FF);
+
+  /// Billets — texte principal.
+  static const Color surfaceTravelOnSurface = Color(0xFF1B1035);
+
+  /// Billets — texte secondaire.
+  static const Color surfaceTravelMuted = Color(0xFF6B6480);
+
+  /// Pharmacie — action principale (vert clinique).
+  static const Color surfacePharmacyPrimary = Color(0xFF047857);
+
+  /// Pharmacie — accent (vert clair).
+  static const Color surfacePharmacyAccent = Color(0xFF22C55E);
+
+  /// Pharmacie — fond de page.
+  static const Color surfacePharmacySurface = Color(0xFFF7FBF8);
+
+  /// Pharmacie — texte principal.
+  static const Color surfacePharmacyOnSurface = Color(0xFF0A1F16);
+
+  /// Pharmacie — texte secondaire.
+  static const Color surfacePharmacyMuted = Color(0xFF5B7A6B);
 }

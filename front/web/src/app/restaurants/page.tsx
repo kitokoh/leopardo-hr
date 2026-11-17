@@ -3,6 +3,7 @@ import { normalizeLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
 import { SITE_URL } from '@/lib/site-url';
 import { searchPublicRestaurants } from '@/lib/restaurants-public-api';
+import { RESTAURANT_SURFACE, loadRestaurantSurface } from '@/modules/public-surfaces';
 import RestaurantsExplorer from './restaurants-explorer';
 
 /**
@@ -13,6 +14,12 @@ import RestaurantsExplorer from './restaurants-explorer';
  * serveur via `GET /api/v1/public/restaurants` (RESTO-901 #7746, DTO public
  * strict, sans auth). La géolocalisation (« Autour de moi ») raffine ensuite
  * côté client uniquement (la position n'est jamais dans l'URL SSR).
+ *
+ * #9577 / #9584 — la page est désormais la **vitrine publique de la verticale
+ * Restaurant** : l'identité (nom, accroche, palette, domaine canonique) vient
+ * de `modules/public-surfaces/restaurants`, et le chargement passe par le cas
+ * d'usage `loadRestaurantSurface` (domaine pur + adaptateur). L'explorateur
+ * client existant est conservé tel quel : aucune régression de parcours.
  */
 
 interface RestaurantsPageProps {
@@ -33,7 +40,7 @@ export async function generateMetadata({ searchParams }: RestaurantsPageProps): 
   return {
     title: t(locale, 'restaurant.public.directoryTitle'),
     description: t(locale, 'restaurant.public.directoryDescription'),
-    alternates: { canonical: `${SITE_URL}/restaurants` },
+    alternates: { canonical: `${SITE_URL}${RESTAURANT_SURFACE.basePath}` },
     robots: { index: true, follow: true },
     openGraph: {
       title: t(locale, 'restaurant.public.directoryTitle'),
@@ -56,19 +63,44 @@ export default async function RestaurantsPage({ searchParams }: RestaurantsPageP
     page,
   };
 
-  const result = await searchPublicRestaurants({
+  // #9577 — chargement via le cas d'usage de la vitrine (domaine + adaptateur).
+  // `failed` distingue une panne API d'un annuaire réellement vide.
+  const surface = await loadRestaurantSurface({
     q: query.q || undefined,
     city: query.city || undefined,
-    type: query.type || undefined,
+    kind: query.type || undefined,
     cuisine: query.cuisine || undefined,
     page: query.page,
   });
 
+  // Le premier rendu SSR reste servi par l'explorateur existant (HTML
+  // indexable, filtres, pagination) : la vitrine apporte l'identité et le
+  // chargement, pas un second parcours concurrent.
+  const result = surface.failed
+    ? null
+    : await searchPublicRestaurants({
+        q: query.q || undefined,
+        city: query.city || undefined,
+        type: query.type || undefined,
+        cuisine: query.cuisine || undefined,
+        page: query.page,
+      });
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50/40 to-orange-50/40 px-4 py-10">
+    <div
+      data-surface={RESTAURANT_SURFACE.vertical}
+      className="min-h-screen px-4 py-10"
+      style={{ backgroundColor: RESTAURANT_SURFACE.palette.surface }}
+    >
       <div className="mx-auto max-w-5xl">
         <header className="mb-8">
-          <h1 className="text-3xl font-black tracking-tight text-slate-950">
+          <p
+            className="text-xs uppercase tracking-[0.14em]"
+            style={{ color: RESTAURANT_SURFACE.palette.muted }}
+          >
+            {RESTAURANT_SURFACE.displayName}
+          </p>
+          <h1 className="mt-1 text-3xl font-black tracking-tight text-slate-950">
             {t(locale, 'restaurant.public.directoryTitle')}
           </h1>
           <p className="mt-1 text-sm text-slate-500">
