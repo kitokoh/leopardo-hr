@@ -29893,7 +29893,7 @@ paths:
       - Library
       summary: Statistiques de bibliotheque
       description: |
-        Agrege ressources, emprunts et engagement sur une periode. RBAC :
+        Agrege ressources, ventes et engagement sur une periode. RBAC :
         permission `library.view`. Isolation tenant automatique.
       parameters:
       - name: from
@@ -29935,28 +29935,27 @@ paths:
                             type: object
                           by_status:
                             type: object
-                      borrowing:
+                      sales:
                         type: object
                         properties:
-                          active:
+                          purchases:
                             type: integer
-                          overdue:
+                          paid:
                             type: integer
-                          returned_on_time:
+                          refunded:
                             type: integer
-                          avg_duration_days:
-                            type: number
-                            nullable: true
+                          revenue_minor:
+                            type: integer
                       engagement:
                         type: object
                         properties:
-                          total_views:
+                          total_readings:
                             type: integer
-                          unique_users:
+                          unique_readers:
                             type: integer
                           completed_readings:
                             type: integer
-                          avg_completion_rate:
+                          completion_rate:
                             type: number
                             nullable: true
                       top_resources:

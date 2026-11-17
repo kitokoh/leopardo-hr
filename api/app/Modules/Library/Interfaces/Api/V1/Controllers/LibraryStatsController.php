@@ -6,7 +6,7 @@ namespace App\Modules\Library\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\Library\Domain\Models\LibraryCheckout;
+use App\Modules\Library\Domain\Models\LibraryPurchase;
 use App\Modules\Library\Domain\Models\LibraryReadingProgress;
 use App\Modules\Library\Domain\Models\LibraryResource;
 use Carbon\Carbon;
@@ -17,8 +17,13 @@ use Illuminate\Support\Facades\DB;
 /**
  * GET /library/stats — KPIs de la bibliothèque d'entreprise (#9548).
  *
- * Agrège : ressources par type et statut, emprunts actifs et en retard,
- * engagement (vues, utilisateurs uniques, complétions), top ressources.
+ * Agrège : ressources par type et statut, ventes/achats de la période,
+ * engagement (lectures, lecteurs uniques, complétions), top ressources.
+ *
+ * ⚠️ Le schéma Library ne contient PAS de table d'emprunt (`library_checkouts`
+ * n'existe pas) : le module vend des ressources (`library_purchases`) et suit
+ * la progression de lecture (`library_reading_progress`). Les indicateurs
+ * « emprunts » ont donc été remplacés par les indicateurs de vente réels.
  *
  * Permission : `library.view` (Gate), scope tenant `company_id`.
  */
@@ -42,7 +47,7 @@ class LibraryStatsController extends Controller
         $to = isset($validated['to']) ? Carbon::parse($validated['to'])->endOfDay() : null;
         $companyId = (string) $actor->company_id;
 
-        // Resources stats
+        // --- Ressources -----------------------------------------------------
         $resourcesQuery = LibraryResource::query()->where('company_id', $companyId);
         if ($from) {
             $resourcesQuery->where('created_at', '>=', $from);
@@ -57,89 +62,78 @@ class LibraryStatsController extends Controller
             ->where('company_id', $companyId)
             ->when($from, fn ($q) => $q->where('created_at', '>=', $from))
             ->when($to, fn ($q) => $q->where('created_at', '<=', $to))
-            ->select('type', DB::raw('COUNT(*) as count'))
-            ->groupBy('type')
+            ->select('document_type', DB::raw('COUNT(*) as aggregate'))
+            ->groupBy('document_type')
             ->get()
-            ->pluck('count', 'type')
+            ->pluck('aggregate', 'document_type')
             ->toArray();
 
         $byStatus = LibraryResource::query()
             ->where('company_id', $companyId)
             ->when($from, fn ($q) => $q->where('created_at', '>=', $from))
             ->when($to, fn ($q) => $q->where('created_at', '<=', $to))
-            ->select('status', DB::raw('COUNT(*) as count'))
+            ->select('status', DB::raw('COUNT(*) as aggregate'))
             ->groupBy('status')
             ->get()
-            ->pluck('count', 'status')
+            ->pluck('aggregate', 'status')
             ->toArray();
 
-        // Borrowing stats
-        $checkoutsQuery = LibraryCheckout::query()
-            ->whereHas('resource', fn ($q) => $q->where('company_id', $companyId));
+        // --- Ventes (library_purchases) -------------------------------------
+        $purchasesQuery = LibraryPurchase::query()->where('company_id', $companyId);
 
         if ($from) {
-            $checkoutsQuery->where('checked_out_at', '>=', $from);
+            $purchasesQuery->where('created_at', '>=', $from);
         }
         if ($to) {
-            $checkoutsQuery->where('checked_out_at', '<=', $to);
+            $purchasesQuery->where('created_at', '<=', $to);
         }
 
-        $activeCheckouts = (clone $checkoutsQuery)
-            ->whereNull('returned_at')
-            ->count();
+        $purchaseCount = (clone $purchasesQuery)->count();
+        $paidCount = (clone $purchasesQuery)->whereNotNull('paid_at')->count();
+        $refundedCount = (clone $purchasesQuery)->whereNotNull('refunded_at')->count();
+        $revenueMinor = (int) (clone $purchasesQuery)
+            ->whereNotNull('paid_at')
+            ->whereNull('refunded_at')
+            ->sum('total_minor');
 
-        $overdueCheckouts = (clone $checkoutsQuery)
-            ->whereNull('returned_at')
-            ->where('due_date', '<', now())
-            ->count();
-
-        $returnedOnTime = (clone $checkoutsQuery)
-            ->whereNotNull('returned_at')
-            ->whereColumn('returned_at', '<=', 'due_date')
-            ->count();
-
-        $avgDuration = (clone $checkoutsQuery)
-            ->whereNotNull('returned_at')
-            ->selectRaw('AVG(EXTRACT(EPOCH FROM (returned_at - checked_out_at)) / 86400) as avg_days')
-            ->value('avg_days');
-
-        // Engagement stats
-        $progressQuery = LibraryReadingProgress::query()
-            ->whereHas('resource', fn ($q) => $q->where('company_id', $companyId));
+        // --- Engagement (library_reading_progress) --------------------------
+        $progressQuery = LibraryReadingProgress::query()->where('company_id', $companyId);
 
         if ($from) {
-            $progressQuery->where('started_at', '>=', $from);
+            $progressQuery->where('updated_at', '>=', $from);
         }
         if ($to) {
-            $progressQuery->where('started_at', '<=', $to);
+            $progressQuery->where('updated_at', '<=', $to);
         }
 
-        $totalViews = (clone $progressQuery)->count();
-        $uniqueUsers = (clone $progressQuery)->distinct('employee_id')->count('employee_id');
-        $completedReadings = (clone $progressQuery)->where('progress', '>=', 100)->count();
-        $avgCompletion = (clone $progressQuery)->avg('progress');
+        $totalReadings = (clone $progressQuery)->count();
+        $uniqueReaders = (clone $progressQuery)->distinct()->count('employee_id');
+        $completedReadings = (clone $progressQuery)
+            ->whereNotNull('total_pages')
+            ->whereColumn('page', '>=', 'total_pages')
+            ->count();
 
-        // Top resources (by views/checkouts)
+        // --- Top ressources (par nombre de lectures) ------------------------
         $topResources = LibraryResource::query()
             ->where('company_id', $companyId)
             ->withCount([
-                'readingProgress as views_count' => function ($query) use ($from, $to) {
+                'readingProgress as readings_count' => function ($query) use ($from, $to) {
                     if ($from) {
-                        $query->where('started_at', '>=', $from);
+                        $query->where('updated_at', '>=', $from);
                     }
                     if ($to) {
-                        $query->where('started_at', '<=', $to);
+                        $query->where('updated_at', '<=', $to);
                     }
                 },
             ])
-            ->orderByDesc('views_count')
+            ->orderByDesc('readings_count')
             ->limit(10)
-            ->get(['id', 'title', 'type'])
-            ->map(fn ($resource) => [
+            ->get(['id', 'title', 'document_type'])
+            ->map(fn (LibraryResource $resource) => [
                 'id' => $resource->id,
                 'title' => $resource->title,
-                'type' => $resource->type,
-                'views' => (int) $resource->views_count,
+                'type' => $resource->document_type->value,
+                'readings' => (int) $resource->getAttribute('readings_count'),
             ]);
 
         return new JsonResponse([
@@ -153,17 +147,19 @@ class LibraryStatsController extends Controller
                     'by_type' => $byType,
                     'by_status' => $byStatus,
                 ],
-                'borrowing' => [
-                    'active' => $activeCheckouts,
-                    'overdue' => $overdueCheckouts,
-                    'returned_on_time' => $returnedOnTime,
-                    'avg_duration_days' => $avgDuration ? round((float) $avgDuration, 1) : null,
+                'sales' => [
+                    'purchases' => $purchaseCount,
+                    'paid' => $paidCount,
+                    'refunded' => $refundedCount,
+                    'revenue_minor' => $revenueMinor,
                 ],
                 'engagement' => [
-                    'total_views' => $totalViews,
-                    'unique_users' => $uniqueUsers,
+                    'total_readings' => $totalReadings,
+                    'unique_readers' => $uniqueReaders,
                     'completed_readings' => $completedReadings,
-                    'avg_completion_rate' => $avgCompletion ? round($avgCompletion / 100, 4) : null,
+                    'completion_rate' => $totalReadings > 0
+                        ? round($completedReadings / $totalReadings, 4)
+                        : null,
                 ],
                 'top_resources' => $topResources->toArray(),
             ],
