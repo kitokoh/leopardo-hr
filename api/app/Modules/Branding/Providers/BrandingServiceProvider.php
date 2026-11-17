@@ -71,5 +71,14 @@ final class BrandingServiceProvider extends ServiceProvider
         // n'en enregistre aucun lui-même : il possède le contenant, pas le
         // contenu. C'est ce qui garantit qu'ajouter une verticale ne demande
         // aucune modification ici.
+
+        // Laravel ne découvre que `app/Console/Commands` : une commande de
+        // module doit être enregistrée explicitement (convention du dépôt,
+        // cf. AccountingServiceProvider / CrmServiceProvider).
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                \App\Modules\Branding\Console\Commands\BrandingBackfillCommand::class,
+            ]);
+        }
     }
 }
