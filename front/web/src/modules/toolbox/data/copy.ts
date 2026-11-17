@@ -62,6 +62,15 @@ export interface ToolboxCopy {
     export: string;
     exported: string;
     exportFailed: string;
+    /**
+     * Export CSV d'un résultat TABULAIRE (récapitulatif par taux, mesures).
+     *
+     * Distinct de l'export texte : le CSV est destiné à un tableur, d'où un
+     * libellé d'action séparé et un retour visuel séparé.
+     */
+    exportCsv: string;
+    exportedCsv: string;
+    exportCsvFailed: string;
     /** Titre de la section « outils similaires » en bas de page d'outil. */
     related: string;
     /** Frontière d'erreur du segment `/toolbox` (jamais la frontière racine). */
@@ -158,6 +167,9 @@ const fr: ToolboxCopy = {
     export: 'Exporter le résultat',
     exported: 'Fichier téléchargé',
     exportFailed: 'Export impossible dans ce navigateur',
+    exportCsv: 'Exporter en CSV',
+    exportedCsv: 'CSV téléchargé',
+    exportCsvFailed: 'Export CSV impossible dans ce navigateur',
     related: 'Outils similaires',
     errorTitle: 'Cet outil a rencontré un problème',
     errorBody:
@@ -299,6 +311,8 @@ const fr: ToolboxCopy = {
         totalCbm: 'CBM total',
         volumetricWeight: 'Poids volumétrique',
         chargeableWeight: 'Poids taxable',
+        colMeasure: 'Mesure',
+        colValue: 'Valeur',
       },
       notes: [
         'CBM = longueur × largeur × hauteur (en mètres).',
@@ -352,6 +366,8 @@ const fr: ToolboxCopy = {
         totalVat: 'Total TVA',
         totalTtc: 'Total TTC',
         byRate: 'Détail par taux',
+        colBaseHt: 'Base HT',
+        colVat: 'TVA',
       },
       notes: [
         'Chaque ligne : TVA = montant HT × taux ÷ 100.',
@@ -491,6 +507,9 @@ const en: ToolboxCopy = {
     export: 'Export the result',
     exported: 'File downloaded',
     exportFailed: 'Export not available in this browser',
+    exportCsv: 'Export as CSV',
+    exportedCsv: 'CSV downloaded',
+    exportCsvFailed: 'CSV export not available in this browser',
     related: 'Similar tools',
     errorTitle: 'This tool ran into a problem',
     errorBody:
@@ -630,6 +649,8 @@ const en: ToolboxCopy = {
         totalCbm: 'Total CBM',
         volumetricWeight: 'Volumetric weight',
         chargeableWeight: 'Chargeable weight',
+        colMeasure: 'Measure',
+        colValue: 'Value',
       },
       notes: [
         'CBM = length × width × height (in metres).',
@@ -683,6 +704,8 @@ const en: ToolboxCopy = {
         totalVat: 'Total VAT',
         totalTtc: 'Total gross',
         byRate: 'Breakdown by rate',
+        colBaseHt: 'Net amount',
+        colVat: 'VAT',
       },
       notes: [
         'Each line: VAT = net amount × rate ÷ 100.',
@@ -820,6 +843,9 @@ const tr: ToolboxCopy = {
     export: 'Sonucu dışa aktar',
     exported: 'Dosya indirildi',
     exportFailed: 'Bu tarayıcıda dışa aktarma kullanılamıyor',
+    exportCsv: 'CSV olarak dışa aktar',
+    exportedCsv: 'CSV indirildi',
+    exportCsvFailed: 'Bu tarayıcıda CSV dışa aktarma kullanılamıyor',
     related: 'Benzer araçlar',
     errorTitle: 'Bu araçta bir sorun oluştu',
     errorBody:
@@ -959,6 +985,8 @@ const tr: ToolboxCopy = {
         totalCbm: 'Toplam CBM',
         volumetricWeight: 'Hacimsel ağırlık',
         chargeableWeight: 'Ücretlendirilebilir ağırlık',
+        colMeasure: 'Ölçüm',
+        colValue: 'Değer',
       },
       notes: [
         'CBM = uzunluk × genişlik × yükseklik (metre cinsinden).',
@@ -1012,6 +1040,8 @@ const tr: ToolboxCopy = {
         totalVat: 'Toplam KDV',
         totalTtc: 'Toplam brüt',
         byRate: 'Orana göre döküm',
+        colBaseHt: 'KDV hariç tutar',
+        colVat: 'KDV',
       },
       notes: [
         'Her satır: KDV = net tutar × oran ÷ 100.',
@@ -1145,6 +1175,9 @@ const ar: ToolboxCopy = {
     export: 'تصدير النتيجة',
     exported: 'تم تنزيل الملف',
     exportFailed: 'التصدير غير متاح في هذا المتصفح',
+    exportCsv: 'تصدير بصيغة CSV',
+    exportedCsv: 'تم تنزيل ملف CSV',
+    exportCsvFailed: 'تصدير CSV غير متاح في هذا المتصفح',
     related: 'أدوات مشابهة',
     errorTitle: 'واجهت هذه الأداة مشكلة',
     errorBody:
@@ -1280,7 +1313,9 @@ const ar: ToolboxCopy = {
         unitCbm: 'الحجم لكل طرد',
         totalCbm: 'الحجم الإجمالي',
         volumetricWeight: 'الوزن الحجمي',
-        chargeableWeight: 'الوزن الخاضع للفوترة',
+        chargeableWeight: 'الوزن الخاضع للفاتورة',
+        colMeasure: 'القياس',
+        colValue: 'القيمة',
       },
       notes: [
         'الحجم = الطول × العرض × الارتفاع (بالمتر).',
@@ -1334,6 +1369,8 @@ const ar: ToolboxCopy = {
         totalVat: 'إجمالي الضريبة',
         totalTtc: 'الإجمالي مع الضريبة',
         byRate: 'التفصيل حسب المعدل',
+        colBaseHt: 'المبلغ دون ضريبة',
+        colVat: 'الضريبة',
       },
       notes: [
         'كل سطر: الضريبة = المبلغ الصافي × المعدل ÷ 100.',
