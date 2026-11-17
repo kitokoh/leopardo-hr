@@ -20284,6 +20284,92 @@ paths:
           description: Requête invalide
         '200':
           description: Trajets synchronises
+  /fleet/stats:
+    get:
+      operationId: api_get_fleet_stats
+      tags:
+      - Fleet
+      summary: Statistiques consolidees de flotte
+      description: |
+        Agrege la flotte sur une periode : parc, kilometrage, maintenance,
+        alertes et top vehicules. Isolation tenant automatique.
+      parameters:
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: vehicle_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Statistiques de flotte
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      period:
+                        type: object
+                        properties:
+                          from:
+                            type: string
+                          to:
+                            type: string
+                      fleet_overview:
+                        type: object
+                        properties:
+                          total_vehicles:
+                            type: integer
+                          active:
+                            type: integer
+                          in_maintenance:
+                            type: integer
+                          out_of_service:
+                            type: integer
+                      mileage:
+                        type: object
+                        properties:
+                          total_km:
+                            type: number
+                          avg_per_vehicle:
+                            type: number
+                          total_trips:
+                            type: integer
+                      maintenance:
+                        type: object
+                        properties:
+                          total_cost:
+                            type: number
+                          count:
+                            type: integer
+                          avg_cost_per_vehicle:
+                            type: number
+                          cost_per_km:
+                            type: number
+                      alerts:
+                        type: object
+                        properties:
+                          active_count:
+                            type: integer
+                          by_type:
+                            type: object
+                      top_vehicles:
+                        type: array
+                        items:
+                          type: object
+        '401':
+          $ref: '#/components/responses/Error401'
   /fleet/overview:
     get:
       operationId: api_get_fleet_overview
