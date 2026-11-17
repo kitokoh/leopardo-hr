@@ -166,10 +166,12 @@ class FleetController extends Controller
         // Top véhicules par utilisation
         $topVehicles = $trips->groupBy('vehicle_id')
             ->map(function ($group) use ($vehicles) {
-                $vehicle = $vehicles->firstWhere('id', $group->first()->vehicle_id);
+                $firstTrip = $group->first();
+                $vehicleId = $firstTrip?->vehicle_id;
+                $vehicle = $vehicleId === null ? null : $vehicles->firstWhere('id', $vehicleId);
 
                 return [
-                    'vehicle_id' => $group->first()->vehicle_id,
+                    'vehicle_id' => $vehicleId,
                     'registration' => $vehicle->registration_number ?? 'Unknown',
                     'total_km' => round($group->sum('distance_km'), 1),
                     'trips_count' => $group->count(),
