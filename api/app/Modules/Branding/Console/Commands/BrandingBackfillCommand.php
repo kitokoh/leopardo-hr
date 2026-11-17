@@ -32,9 +32,9 @@ use Illuminate\Console\Command;
 final class BrandingBackfillCommand extends Command
 {
     protected $signature = 'branding:backfill
-        {--limit= : Nombre maximal de tenants traités}';
+        {--limit= : Maximum number of tenants to process}';
 
-    protected $description = 'Reconstitue une Brand par défaut depuis companies.metadata.branding (BC-41, idempotent)';
+    protected $description = 'Backfill a default Brand from companies.metadata.branding (BC-41, idempotent)';
 
     public function handle(BrandBackfillService $backfill): int
     {
@@ -46,10 +46,10 @@ final class BrandingBackfillCommand extends Command
         $this->table(
             ['Indicateur', 'Valeur'],
             [
-                ['Tenants traités', $report['processed']],
-                ['Brands créées', $report['created']],
-                ['Brands mises à jour', $report['updated']],
-                ['Ignorés (pas de branding exploitable)', $report['skipped']],
+                ['Tenants processed', $report['processed']],
+                ['Brands created', $report['created']],
+                ['Brands updated', $report['updated']],
+                ['Skipped (no usable branding)', $report['skipped']],
                 ['Erreurs', count($report['errors'])],
             ],
         );
