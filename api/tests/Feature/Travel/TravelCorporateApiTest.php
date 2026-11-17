@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
+use App\Modules\TravelAgency\Domain\Enums\QuoteStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelCorporateAccount;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
@@ -99,10 +100,14 @@ class TravelCorporateApiTest extends TestCase
         $this->assertSame(60000, $quote['total_amount_minor']);
         $this->assertSame('draft', $quote['status']);
 
-        // Acceptation du devis.
+        // Acceptation du devis. #9098 — le statut attendu etait `accepted`,
+        // qui N'EXISTE PAS dans `QuoteStatus` (draft|confirmed|booked|cancelled|
+        // expired) : accepter un brouillon corporate le passe a `confirmed`
+        // (`CorporateBookingService::acceptQuote()`), ce que le test ne pouvait
+        // donc jamais constater.
         $this->postJson("/api/v1/travel/corporate-quotes/{$quote['id']}/accept")
             ->assertOk()
-            ->assertJsonPath('data.status', 'accepted');
+            ->assertJsonPath('data.status', QuoteStatus::CONFIRMED->value);
 
         // Réservation groupée adossée au devis → 201, facturation différée.
         $passengers = array_fill(0, 6, $this->passengerPayload($fx['class']));

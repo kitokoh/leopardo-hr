@@ -90,18 +90,33 @@ class TravelCurrencyRateController extends Controller
             abort(403);
         }
 
-        $amount = $request->integer('amount');
+        // #9098 — deux ecarts entre le controle et ce que les clients envoient.
+        // (1) Le parametre lu etait `amount` alors que la convention du module
+        // est `amount_minor` (tout montant y est en unites mineures) : un client
+        // conforme envoyait `amount_minor` et se faisait convertir **0**.
+        // (2) La reponse renvoyait telle quelle la sortie du convertisseur, donc
+        // `data.amount_minor` — indistinguable du montant d'entree — et jamais
+        // `data.converted_amount_minor` attendu par le contrat.
+        // `amount` reste accepte en alias legacy, et `amount_minor` est conserve
+        // dans la reponse pour ne casser aucun consommateur existant.
+        $rawAmount = $request->query('amount_minor') ?? $request->query('amount');
         $from = (string) $request->query('from', '');
         $to = (string) $request->query('to', '');
         $date = $request->query('date') ? (string) $request->query('date') : null;
 
-        if ($amount < 0 || strlen($from) !== 3 || strlen($to) !== 3) {
-            abort(422, 'Parametres invalides (amount, from, to requis).');
+        if (! is_numeric($rawAmount) || (int) $rawAmount < 0 || strlen($from) !== 3 || strlen($to) !== 3) {
+            abort(422, 'Parametres invalides (amount_minor, from, to requis).');
         }
 
-        $result = $converter->convert($amount, strtoupper($from), strtoupper($to), $date);
+        $result = $converter->convert((int) $rawAmount, strtoupper($from), strtoupper($to), $date);
 
-        return response()->json(['data' => $result]);
+        return response()->json(['data' => [
+            'converted_amount_minor' => $result['amount_minor'],
+            'amount_minor' => $result['amount_minor'],
+            'currency' => $result['currency'],
+            'rate_minor' => $result['rate_minor'],
+            'inverse' => $result['inverse'],
+        ]]);
     }
 
     /**
