@@ -266,9 +266,8 @@ class _PosPrintButtonState extends State<PosPrintButton> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(outcome.message),
-        backgroundColor: outcome.success
-            ? null
-            : Theme.of(context).colorScheme.error,
+        backgroundColor:
+            outcome.success ? null : Theme.of(context).colorScheme.error,
       ),
     );
   }

@@ -16,16 +16,17 @@ void main() {
     int quantity = 2,
     int unitPrice = 1500,
     int discount = 0,
-  }) => PosReceipt(
-    lines: [
-      PosReceiptLine(
-        name: 'Cafe',
-        quantity: quantity,
-        unitPriceMinor: unitPrice,
-      ),
-    ],
-    discountMinor: discount,
-  );
+  }) =>
+      PosReceipt(
+        lines: [
+          PosReceiptLine(
+            name: 'Cafe',
+            quantity: quantity,
+            unitPriceMinor: unitPrice,
+          ),
+        ],
+        discountMinor: discount,
+      );
 
   PosSaleRecord record({
     String id = 'sale-1',
@@ -36,24 +37,24 @@ void main() {
     int? orderId = 42,
     bool queued = false,
     DateTime? paidAt,
-  }) => PosSaleRecord(
-    id: id,
-    receipt: receipt(
-      quantity: quantity,
-      unitPrice: unitPrice,
-      discount: discount,
-    ),
-    paidAt: paidAt ?? DateTime(2026, 11, 9, 14, 30),
-    orderId: orderId,
-    paymentLabel: paymentLabel,
-    queued: queued,
-  );
+  }) =>
+      PosSaleRecord(
+        id: id,
+        receipt: receipt(
+          quantity: quantity,
+          unitPrice: unitPrice,
+          discount: discount,
+        ),
+        paidAt: paidAt ?? DateTime(2026, 11, 9, 14, 30),
+        orderId: orderId,
+        paymentLabel: paymentLabel,
+        queued: queued,
+      );
 
   group('PosSalesHistory', () {
     test('ajoute la vente la plus recente en tete', () {
-      final history = const PosSalesHistory()
-          .add(record(id: 'a'))
-          .add(record(id: 'b'));
+      final history =
+          const PosSalesHistory().add(record(id: 'a')).add(record(id: 'b'));
 
       expect(history.records.first.id, 'b');
       expect(history.length, 2);

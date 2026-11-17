@@ -108,11 +108,11 @@ class SeverityBadge extends StatelessWidget {
   final AppStrings l10n;
 
   Color get _color => switch (severity) {
-    'critical' => AppColors.danger,
-    'high' => AppColors.warning,
-    'warning' => AppColors.warning,
-    _ => AppColors.info,
-  };
+        'critical' => AppColors.danger,
+        'high' => AppColors.warning,
+        'warning' => AppColors.warning,
+        _ => AppColors.info,
+      };
 
   @override
   Widget build(BuildContext context) {

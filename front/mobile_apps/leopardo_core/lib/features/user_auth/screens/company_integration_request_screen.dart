@@ -166,17 +166,17 @@ class _CompanyIntegrationRequestScreenState
                               ),
                             )
                           : _searchController.text.isNotEmpty
-                          ? IconButton(
-                              icon: Icon(Icons.clear, color: muted),
-                              onPressed: () {
-                                _searchController.clear();
-                                setState(() {
-                                  _results = [];
-                                  _selectedCompany = null;
-                                });
-                              },
-                            )
-                          : null,
+                              ? IconButton(
+                                  icon: Icon(Icons.clear, color: muted),
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    setState(() {
+                                      _results = [];
+                                      _selectedCompany = null;
+                                    });
+                                  },
+                                )
+                              : null,
                       filled: true,
                       fillColor: MobileSurface.surface,
                       border: OutlineInputBorder(
@@ -217,32 +217,33 @@ class _CompanyIntegrationRequestScreenState
                         ),
                       )
                     : _results.isEmpty &&
-                          !_searching &&
-                          _searchController.text.trim().length >= 2
-                    ? Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Text(
-                            l10n.personalOnboardingSearchEmpty(
-                              _searchController.text.trim(),
+                            !_searching &&
+                            _searchController.text.trim().length >= 2
+                        ? Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Text(
+                                l10n.personalOnboardingSearchEmpty(
+                                  _searchController.text.trim(),
+                                ),
+                                style:
+                                    AppTypography.body.copyWith(color: muted),
+                                textAlign: TextAlign.center,
+                              ),
                             ),
-                            style: AppTypography.body.copyWith(color: muted),
-                            textAlign: TextAlign.center,
+                          )
+                        : ListView.builder(
+                            padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+                            itemCount: _results.length,
+                            itemBuilder: (context, index) {
+                              final company = _results[index];
+                              return _CompanyResultTile(
+                                company: company,
+                                onTap: () =>
+                                    setState(() => _selectedCompany = company),
+                              );
+                            },
                           ),
-                        ),
-                      )
-                    : ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-                        itemCount: _results.length,
-                        itemBuilder: (context, index) {
-                          final company = _results[index];
-                          return _CompanyResultTile(
-                            company: company,
-                            onTap: () =>
-                                setState(() => _selectedCompany = company),
-                          );
-                        },
-                      ),
               )
             else
               // ── Request form ─────────────────────────────────────────────

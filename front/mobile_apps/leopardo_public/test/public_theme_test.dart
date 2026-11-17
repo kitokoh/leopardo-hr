@@ -67,7 +67,9 @@ void main() {
       }
     });
 
-    test('la navigation basse signale l’onglet actif par la couleur ET la graisse', () {
+    test(
+        'la navigation basse signale l’onglet actif par la couleur ET la graisse',
+        () {
       final theme = PublicTheme.light();
       final selected = theme.navigationBarTheme.labelTextStyle?.resolve({
         WidgetState.selected,

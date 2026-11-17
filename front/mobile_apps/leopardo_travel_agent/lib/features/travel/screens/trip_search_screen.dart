@@ -26,15 +26,12 @@ class _TripSearchScreenState extends ConsumerState<TripSearchScreen> {
 
   Future<void> _search() async {
     final repository = ref.read(travelRepositoryProvider);
-    ref
-        .read(tripSearchResultsProvider.notifier)
-        .search(
+    ref.read(tripSearchResultsProvider.notifier).search(
           repository: repository,
           originCityId: _origin?.id,
           destinationCityId: _destination?.id,
-          departureDate: _date == null
-              ? null
-              : DateFormat('yyyy-MM-dd').format(_date!),
+          departureDate:
+              _date == null ? null : DateFormat('yyyy-MM-dd').format(_date!),
         );
   }
 
@@ -189,21 +186,22 @@ class _TripSearchScreenState extends ConsumerState<TripSearchScreen> {
               child: results.loading
                   ? const Center(child: CircularProgressIndicator())
                   : results.error
-                  ? _Message(
-                      icon: Icons.error_outline,
-                      label: l10n.t('loadError'),
-                      onRetry: _search,
-                    )
-                  : results.trips.isEmpty
-                  ? _Message(icon: Icons.search_off, label: l10n.t('noTrips'))
-                  : ListView.separated(
-                      padding: const EdgeInsets.all(12),
-                      itemCount: results.trips.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 8),
-                      itemBuilder: (context, index) =>
-                          _TripCard(trip: results.trips[index]),
-                    ),
+                      ? _Message(
+                          icon: Icons.error_outline,
+                          label: l10n.t('loadError'),
+                          onRetry: _search,
+                        )
+                      : results.trips.isEmpty
+                          ? _Message(
+                              icon: Icons.search_off, label: l10n.t('noTrips'))
+                          : ListView.separated(
+                              padding: const EdgeInsets.all(12),
+                              itemCount: results.trips.length,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 8),
+                              itemBuilder: (context, index) =>
+                                  _TripCard(trip: results.trips[index]),
+                            ),
             ),
           ],
         ),

@@ -91,8 +91,8 @@ class _SalaryAdvanceListScreenState
                 final months = advance.repaymentMonths;
                 final requester =
                     advance.employeeName?.trim().isNotEmpty == true
-                    ? advance.employeeName!
-                    : 'Employe #${advance.employeeId}';
+                        ? advance.employeeName!
+                        : 'Employe #${advance.employeeId}';
 
                 return Semantics(
                   label:
@@ -140,9 +140,8 @@ class _SalaryAdvanceListScreenState
     required Employee? actor,
   }) {
     final details = _advanceContext(advance);
-    final proofButton = advance.hasProof
-        ? _proofButton(context, advance.id)
-        : null;
+    final proofButton =
+        advance.hasProof ? _proofButton(context, advance.id) : null;
 
     final canManage = _canDecideAdvance(actor, advance);
 
@@ -374,9 +373,7 @@ class _SalaryAdvanceListScreenState
     if (confirmed != true) return;
 
     try {
-      await ref
-          .read(salaryAdvanceRepositoryProvider)
-          .approveAdvance(
+      await ref.read(salaryAdvanceRepositoryProvider).approveAdvance(
             advanceId: advance.id,
             repaymentMonths: advance.repaymentMonths,
           );
@@ -681,9 +678,7 @@ class _SalaryAdvanceRequestSheetState
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(salaryAdvanceRepositoryProvider)
-          .requestAdvance(
+      await ref.read(salaryAdvanceRepositoryProvider).requestAdvance(
             amount: _parseAmount(_amountCtrl.text) ?? 0,
             repaymentMonths: _repaymentMonths,
             reason: _reasonCtrl.text,

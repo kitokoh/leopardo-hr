@@ -79,7 +79,9 @@ class _StartupGateState extends State<StartupGate> {
 
     if (widget.optionalInitializer != null) {
       unawaited(
-        widget.optionalInitializer!().timeout(widget.optionalTimeout).catchError(
+        widget.optionalInitializer!()
+            .timeout(widget.optionalTimeout)
+            .catchError(
           (Object error, StackTrace stackTrace) {
             debugPrint(
               '${widget.appName} optional startup timed out or failed: $error',
@@ -190,7 +192,8 @@ class _StartupGateState extends State<StartupGate> {
                                 'Ouverture de votre espace...',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: AppColors.brandOnSurfaceVariant, // on-surface-variant
+                                  color: AppColors
+                                      .brandOnSurfaceVariant, // on-surface-variant
                                   fontSize: 14,
                                   height: 1.4,
                                 ),
@@ -200,7 +203,8 @@ class _StartupGateState extends State<StartupGate> {
                                 _startupWarning!,
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
-                                  color: AppColors.brandOnSurfaceVariant, // on-surface-variant
+                                  color: AppColors
+                                      .brandOnSurfaceVariant, // on-surface-variant
                                   fontSize: 14,
                                   height: 1.4,
                                 ),

@@ -178,9 +178,8 @@ class _TwoFactorSettingsScreenState
       _error = null;
     });
     try {
-      final codes = await ref
-          .read(twoFactorRepositoryProvider)
-          .regenerateRecoveryCodes();
+      final codes =
+          await ref.read(twoFactorRepositoryProvider).regenerateRecoveryCodes();
       if (!mounted) return;
       setState(() {
         _recoveryCodes = codes;
@@ -291,9 +290,8 @@ class _TwoFactorSettingsScreenState
       child: Row(
         children: [
           MobileIconBubble(
-            icon: _enabled
-                ? Icons.verified_user_rounded
-                : Icons.shield_outlined,
+            icon:
+                _enabled ? Icons.verified_user_rounded : Icons.shield_outlined,
             color: _enabled ? AppColors.success : AppColors.warning,
             size: 40,
           ),

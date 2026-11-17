@@ -62,26 +62,25 @@ class PosSaleRecord {
   String get summary => '$itemCount article${itemCount > 1 ? 's' : ''}';
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'receipt': receipt.toJson(),
-    'paidAt': paidAt.toIso8601String(),
-    'orderId': orderId,
-    'paymentLabel': paymentLabel,
-    'queued': queued,
-  };
+        'id': id,
+        'receipt': receipt.toJson(),
+        'paidAt': paidAt.toIso8601String(),
+        'orderId': orderId,
+        'paymentLabel': paymentLabel,
+        'queued': queued,
+      };
 
   factory PosSaleRecord.fromJson(Map<String, dynamic> json) => PosSaleRecord(
-    id: json['id'] as String? ?? '',
-    receipt: PosReceipt.fromJson(
-      (json['receipt'] as Map<String, dynamic>?) ?? const {},
-    ),
-    paidAt:
-        DateTime.tryParse(json['paidAt'] as String? ?? '') ??
-        DateTime.fromMillisecondsSinceEpoch(0),
-    orderId: (json['orderId'] as num?)?.toInt(),
-    paymentLabel: json['paymentLabel'] as String?,
-    queued: json['queued'] as bool? ?? false,
-  );
+        id: json['id'] as String? ?? '',
+        receipt: PosReceipt.fromJson(
+          (json['receipt'] as Map<String, dynamic>?) ?? const {},
+        ),
+        paidAt: DateTime.tryParse(json['paidAt'] as String? ?? '') ??
+            DateTime.fromMillisecondsSinceEpoch(0),
+        orderId: (json['orderId'] as num?)?.toInt(),
+        paymentLabel: json['paymentLabel'] as String?,
+        queued: json['queued'] as bool? ?? false,
+      );
 }
 
 /// Historique borne des ventes de la tablette.
@@ -133,26 +132,26 @@ class PosSalesHistory {
   /// C'est la recherche la plus utile au comptoir : le client se souvient du
   /// montant (« c'etait 45 euros »), rarement de l'heure exacte.
   List<PosSaleRecord> byTotal(int totalMinor) => [
-    for (final record in records)
-      if (record.totalMinor == totalMinor) record,
-  ];
+        for (final record in records)
+          if (record.totalMinor == totalMinor) record,
+      ];
 
   /// Ventes d'une journee donnee (comparaison sur la date locale).
   List<PosSaleRecord> onDay(DateTime day) => [
-    for (final record in records)
-      if (record.paidAt.year == day.year &&
-          record.paidAt.month == day.month &&
-          record.paidAt.day == day.day)
-        record,
-  ];
+        for (final record in records)
+          if (record.paidAt.year == day.year &&
+              record.paidAt.month == day.month &&
+              record.paidAt.day == day.day)
+            record,
+      ];
 
   /// Total encaisse sur une journee.
   int totalOnDay(DateTime day) =>
       onDay(day).fold(0, (sum, record) => sum + record.totalMinor);
 
   Map<String, dynamic> toJson() => {
-    'records': [for (final record in records) record.toJson()],
-  };
+        'records': [for (final record in records) record.toJson()],
+      };
 
   factory PosSalesHistory.fromJson(Map<String, dynamic> json) {
     final raw = (json['records'] as List<dynamic>?) ?? const [];
@@ -269,9 +268,8 @@ class _PosSalesHistoryScreenState extends State<PosSalesHistoryScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(outcome.message),
-        backgroundColor: outcome.success
-            ? null
-            : Theme.of(context).colorScheme.error,
+        backgroundColor:
+            outcome.success ? null : Theme.of(context).colorScheme.error,
       ),
     );
   }
@@ -311,7 +309,7 @@ class _PosSalesHistoryScreenState extends State<PosSalesHistoryScreen> {
                     : 'Aucun resultat',
                 message: widget.history.isEmpty
                     ? 'Les ventes encaissees sur cette tablette apparaitront ici, '
-                          'et vous pourrez reimprimer leur ticket.'
+                        'et vous pourrez reimprimer leur ticket.'
                     : 'Aucune vente ne correspond a \u00ab $_query \u00bb.',
               )
             : ListView.separated(

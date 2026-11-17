@@ -31,17 +31,18 @@ void main() {
     int unitPrice = 1500,
     int discount = 0,
     int tip = 0,
-  }) => PosReceipt(
-    lines: [
-      PosReceiptLine(
-        name: 'Cafe',
-        quantity: quantity,
-        unitPriceMinor: unitPrice,
-      ),
-    ],
-    discountMinor: discount,
-    tipMinor: tip,
-  );
+  }) =>
+      PosReceipt(
+        lines: [
+          PosReceiptLine(
+            name: 'Cafe',
+            quantity: quantity,
+            unitPriceMinor: unitPrice,
+          ),
+        ],
+        discountMinor: discount,
+        tipMinor: tip,
+      );
 
   group('PosBarcodeScannerScreen', () {
     testWidgets('affiche le titre, la consigne et le repli manuel', (
@@ -271,14 +272,15 @@ void main() {
     PosParkedTicket ticket({
       String id = 't1',
       String label = 'Client au comptoir',
-    }) => PosParkedTicket(
-      id: id,
-      label: label,
-      payload: const {},
-      parkedAt: DateTime(2026, 11, 9, 12),
-      itemCount: 3,
-      totalMinor: 4500,
-    );
+    }) =>
+        PosParkedTicket(
+          id: id,
+          label: label,
+          payload: const {},
+          parkedAt: DateTime(2026, 11, 9, 12),
+          itemCount: 3,
+          totalMinor: 4500,
+        );
 
     testWidgets('affiche un etat vide quand rien n est en attente', (
       tester,
@@ -399,14 +401,11 @@ void main() {
             Builder(
               builder: (context) => ElevatedButton(
                 onPressed: () async {
-                  result =
-                      await showModalBottomSheet<
-                        ({PosVoidReason reason, String comment})
-                      >(
-                        context: context,
-                        builder: (_) =>
-                            const PosVoidReasonSheet(itemName: 'Cafe'),
-                      );
+                  result = await showModalBottomSheet<
+                      ({PosVoidReason reason, String comment})>(
+                    context: context,
+                    builder: (_) => const PosVoidReasonSheet(itemName: 'Cafe'),
+                  );
                 },
                 child: const Text('Ouvrir'),
               ),
@@ -437,14 +436,11 @@ void main() {
             wrap(
               Builder(
                 builder: (context) => ElevatedButton(
-                  onPressed: () =>
-                      showModalBottomSheet<
-                        ({PosVoidReason reason, String comment})
-                      >(
-                        context: context,
-                        builder: (_) =>
-                            const PosVoidReasonSheet(itemName: 'Cafe'),
-                      ),
+                  onPressed: () => showModalBottomSheet<
+                      ({PosVoidReason reason, String comment})>(
+                    context: context,
+                    builder: (_) => const PosVoidReasonSheet(itemName: 'Cafe'),
+                  ),
                   child: const Text('Ouvrir'),
                 ),
               ),

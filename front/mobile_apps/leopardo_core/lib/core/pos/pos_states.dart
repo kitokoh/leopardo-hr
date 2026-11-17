@@ -98,7 +98,7 @@ class PosOfflineBanner extends StatelessWidget {
     final message = pendingOperations == 0
         ? 'Hors ligne : le catalogue est en cache, la vente continue.'
         : 'Hors ligne : $pendingOperations operation(s) en attente. '
-              'Rien n\'est perdu, la synchronisation se fera au retour du reseau.';
+            'Rien n\'est perdu, la synchronisation se fera au retour du reseau.';
 
     return Container(
       width: double.infinity,
@@ -203,9 +203,8 @@ class PosConnectionChip extends StatelessWidget {
           Icon(
             degraded ? Icons.cloud_off : Icons.cloud_done,
             size: 18,
-            color: degraded
-                ? scheme.onErrorContainer
-                : scheme.onPrimaryContainer,
+            color:
+                degraded ? scheme.onErrorContainer : scheme.onPrimaryContainer,
           ),
           const SizedBox(width: 8),
           Text(

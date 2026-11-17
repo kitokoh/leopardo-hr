@@ -80,75 +80,73 @@ class _ManifestScreenState extends ConsumerState<ManifestScreen> {
                         style: AppTypography.caption.copyWith(color: muted),
                       ),
                     )
-                  : ref
-                        .watch(manifestProvider(tripId))
-                        .when(
-                          loading: () =>
-                              const Center(child: CircularProgressIndicator()),
-                          error: (e, _) => Center(
-                            child: Text(
-                              l10n.t('loadError'),
-                              style: AppTypography.caption.copyWith(
-                                color: AppColors.danger,
-                              ),
+                  : ref.watch(manifestProvider(tripId)).when(
+                        loading: () =>
+                            const Center(child: CircularProgressIndicator()),
+                        error: (e, _) => Center(
+                          child: Text(
+                            l10n.t('loadError'),
+                            style: AppTypography.caption.copyWith(
+                              color: AppColors.danger,
                             ),
                           ),
-                          data: (passengers) {
-                            if (passengers.isEmpty) {
-                              return Center(
-                                child: Text(
-                                  l10n.t('noPassengers'),
-                                  style: AppTypography.caption.copyWith(
-                                    color: muted,
+                        ),
+                        data: (passengers) {
+                          if (passengers.isEmpty) {
+                            return Center(
+                              child: Text(
+                                l10n.t('noPassengers'),
+                                style: AppTypography.caption.copyWith(
+                                  color: muted,
+                                ),
+                              ),
+                            );
+                          }
+                          return ListView.separated(
+                            padding: const EdgeInsets.all(12),
+                            itemCount: passengers.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 8),
+                            itemBuilder: (context, index) {
+                              final passenger = passengers[index];
+                              return Card(
+                                elevation: 0,
+                                color: AppColors.surfaceFor(context),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: ListTile(
+                                  dense: true,
+                                  leading: CircleAvatar(
+                                    backgroundColor: AppColors.rh.withValues(
+                                      alpha: 0.15,
+                                    ),
+                                    child: Text(
+                                      (index + 1).toString(),
+                                      style: AppTypography.caption.copyWith(
+                                        color: AppColors.rhDark,
+                                      ),
+                                    ),
+                                  ),
+                                  title: Text(
+                                    passenger.fullName ?? '',
+                                    style: AppTypography.body.copyWith(
+                                      color: text,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    '${l10n.t('seat')} : '
+                                    '${passenger.seatNumber ?? '—'}',
+                                    style: AppTypography.caption.copyWith(
+                                      color: muted,
+                                    ),
                                   ),
                                 ),
                               );
-                            }
-                            return ListView.separated(
-                              padding: const EdgeInsets.all(12),
-                              itemCount: passengers.length,
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 8),
-                              itemBuilder: (context, index) {
-                                final passenger = passengers[index];
-                                return Card(
-                                  elevation: 0,
-                                  color: AppColors.surfaceFor(context),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: ListTile(
-                                    dense: true,
-                                    leading: CircleAvatar(
-                                      backgroundColor: AppColors.rh.withValues(
-                                        alpha: 0.15,
-                                      ),
-                                      child: Text(
-                                        (index + 1).toString(),
-                                        style: AppTypography.caption.copyWith(
-                                          color: AppColors.rhDark,
-                                        ),
-                                      ),
-                                    ),
-                                    title: Text(
-                                      passenger.fullName ?? '',
-                                      style: AppTypography.body.copyWith(
-                                        color: text,
-                                      ),
-                                    ),
-                                    subtitle: Text(
-                                      '${l10n.t('seat')} : '
-                                      '${passenger.seatNumber ?? '—'}',
-                                      style: AppTypography.caption.copyWith(
-                                        color: muted,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        ),
+                            },
+                          );
+                        },
+                      ),
             ),
           ],
         ),
