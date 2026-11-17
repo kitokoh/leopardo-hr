@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Infrastructure\Services;
 
 use App\Modules\Accounting\Domain\Enums\AccountType;
-use App\Modules\Accounting\Domain\Models\AccountingSettings;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use stdClass;
