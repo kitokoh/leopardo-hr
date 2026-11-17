@@ -204,6 +204,26 @@ le retard de déploiement doit être visible. Runbook : `docs/ops/travel-web-ver
 | `VERCEL_MARCHE_PROD_ORG_ID` | `marketplace-deploy.yml` | Organisation Vercel du compte ibrahimkoubaye | Optional (idem) |
 | `VERCEL_MARCHE_PROD_PROJECT_ID` | `marketplace-deploy.yml` | Projet Vercel `leopardo-marche` (rootDirectory `front/marketplace`) | Optional (idem) |
 
+### Vitrines publiques verticales (#9591)
+
+Un projet Vercel **par vitrine** grand public, `rootDirectory: front/web`. Le
+workflow `public-surfaces-deploy.yml` ne déploie que les vitrines dont le code a
+changé (`dev-hub/tools/detect-changed-surfaces.sh`). Runbook :
+`docs/ops/PUBLIC_SURFACES_DEPLOY.md`.
+
+Les noms sont construits par `format('VERCEL_SURFACE_{0}_TOKEN', <vertical>)` :
+la garde `check-ci-secrets-doc.sh` ne peut pas les lire statiquement, ils sont
+donc listés ici explicitement.
+
+| Secret | Used by | Purpose | Required? |
+|---|---|---|---|
+| `VERCEL_SURFACE_RESTAURANT_TOKEN` / `_ORG_ID` / `_PROJECT_ID` | `public-surfaces-deploy.yml` | Projet Vercel de la vitrine Restaurant (`/restaurants`) | Optional — skip BLOQUANT sur push main (#7994 §4) |
+| `VERCEL_SURFACE_RETAIL_TOKEN` / `_ORG_ID` / `_PROJECT_ID` | `public-surfaces-deploy.yml` | Projet Vercel de la vitrine Retail (`/boutiques`) | Optional (idem) |
+| `VERCEL_SURFACE_HOSPITALITY_TOKEN` / `_ORG_ID` / `_PROJECT_ID` | `public-surfaces-deploy.yml` | Projet Vercel de la vitrine Hôtellerie (`/stay`) | Optional (idem) |
+| `VERCEL_SURFACE_TRADE_TOKEN` / `_ORG_ID` / `_PROJECT_ID` | `public-surfaces-deploy.yml` | Projet Vercel de la vitrine B2B (`/entreprises`) | Optional (idem) |
+| `VERCEL_SURFACE_TRAVEL_TOKEN` / `_ORG_ID` / `_PROJECT_ID` | `public-surfaces-deploy.yml` | Projet Vercel de la vitrine Billets (`/travel`) | Optional (idem) |
+| `VERCEL_SURFACE_PHARMACY_TOKEN` / `_ORG_ID` / `_PROJECT_ID` | `public-surfaces-deploy.yml` | Projet Vercel de la vitrine Pharmacie (`/pharmacies`) | Optional (idem) |
+
 ### Secrets de supervision de la queue (sonde HTTP via GitHub Actions)
 
 > 🔒 **#7694 (audit 2026-09-19)** : les secrets `DB_HOST` / `DB_PORT` / `DB_DATABASE` /
