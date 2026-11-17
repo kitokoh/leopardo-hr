@@ -276,6 +276,7 @@ const cssStyleKeywords = new Set([
   'auto', 'none', 'normal', 'inherit', 'initial', 'unset', 'revert',
   'solid', 'dashed', 'dotted', 'transparent', 'currentcolor',
   'repeat', 'minmax', 'fit-content', 'max-content', 'min-content',
+  'auto-fill', 'auto-fit',
   'clamp', 'calc', 'min', 'max', 'var',
   'center', 'left', 'right', 'top', 'bottom', 'start', 'end',
   'space-between', 'space-around', 'space-evenly', 'stretch', 'baseline',
