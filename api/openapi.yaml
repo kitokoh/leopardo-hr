@@ -29886,6 +29886,87 @@ paths:
           description: Non autorisé
         '404':
           description: Introuvable
+  /library/stats:
+    get:
+      operationId: api_get_library_stats
+      tags:
+      - Library
+      summary: Statistiques de bibliotheque
+      description: |
+        Agrege ressources, emprunts et engagement sur une periode. RBAC :
+        permission `library.view`. Isolation tenant automatique.
+      parameters:
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Statistiques de bibliotheque
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      period:
+                        type: object
+                        properties:
+                          from:
+                            type: string
+                            nullable: true
+                          to:
+                            type: string
+                            nullable: true
+                      resources:
+                        type: object
+                        properties:
+                          total:
+                            type: integer
+                          by_type:
+                            type: object
+                          by_status:
+                            type: object
+                      borrowing:
+                        type: object
+                        properties:
+                          active:
+                            type: integer
+                          overdue:
+                            type: integer
+                          returned_on_time:
+                            type: integer
+                          avg_duration_days:
+                            type: number
+                            nullable: true
+                      engagement:
+                        type: object
+                        properties:
+                          total_views:
+                            type: integer
+                          unique_users:
+                            type: integer
+                          completed_readings:
+                            type: integer
+                          avg_completion_rate:
+                            type: number
+                            nullable: true
+                      top_resources:
+                        type: array
+                        items:
+                          type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /expense-claims:
     get:
       operationId: api_get_expense_claims
