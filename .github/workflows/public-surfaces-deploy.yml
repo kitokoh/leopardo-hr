@@ -159,9 +159,11 @@ jobs:
           SHARED="$(python3 -c 'import json,sys; print(str(json.loads(sys.argv[1])["shared"]).lower())' "${RESULT}")"
           COUNT="$(python3 -c 'import json,sys; print(len(json.loads(sys.argv[1])["surfaces"]))' "${RESULT}")"
 
-          echo "matrix={\"surface\":${SURFACES}}" >> "$GITHUB_OUTPUT"
-          echo "count=${COUNT}" >> "$GITHUB_OUTPUT"
-          echo "shared=${SHARED}" >> "$GITHUB_OUTPUT"
+          {
+            echo "matrix={\"surface\":${SURFACES}}"
+            echo "count=${COUNT}"
+            echo "shared=${SHARED}"
+          } >> "$GITHUB_OUTPUT"
 
           {
             echo "## Vitrines publiques — détection (#9591)"
@@ -289,7 +291,7 @@ jobs:
           set -euo pipefail
           URL="${DEPLOY_URL%/}/"
           echo "Attente de la vitrine ${VERTICAL} sur ${URL}…"
-          for attempt in {1..12}; do
+          for _attempt in {1..12}; do
             OUT="$(curl --silent --output /dev/null --max-time 15 --write-out '%{http_code} %{redirect_url}' "${URL}" || echo '000 ')"
             CODE="${OUT%% *}"
             LOCATION="${OUT#* }"
