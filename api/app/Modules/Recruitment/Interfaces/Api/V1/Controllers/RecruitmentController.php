@@ -151,8 +151,8 @@ class RecruitmentController extends Controller
                 ],
                 'avg_time_to_hire_days' => $avgTimeToHire ? round((float) $avgTimeToHire, 1) : null,
                 'top_sources' => $topSources->map(fn ($row) => [
-                    'source' => $row->source,
-                    'count' => (int) $row->count,
+                    'source' => $row->getAttribute('source'),
+                    'count' => (int) $row->getAttribute('count'),
                 ])->toArray(),
             ],
         ]);
