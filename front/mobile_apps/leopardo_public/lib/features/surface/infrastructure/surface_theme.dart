@@ -42,9 +42,9 @@ ThemeData surfaceTheme(SurfaceIdentity identity) {
       elevation: 0,
     ),
     textTheme: Typography.material2021().black.apply(
-      bodyColor: palette.onSurface,
-      displayColor: palette.onSurface,
-    ),
+          bodyColor: palette.onSurface,
+          displayColor: palette.onSurface,
+        ),
   );
 }
 
@@ -56,16 +56,22 @@ Color readableOn(Color background) {
   const onDark = AppColors.surfaceOnPrimary;
   final onLight = AppColors.surfaceRestaurantOnSurface;
 
-  return _contrast(background, onDark) >= _contrast(background, onLight) ? onDark : onLight;
+  return _contrast(background, onDark) >= _contrast(background, onLight)
+      ? onDark
+      : onLight;
 }
 
 /// Luminance relative (WCAG 2.1).
 double _luminance(Color color) {
   double channel(double value) {
-    return value <= 0.03928 ? value / 12.92 : math.pow((value + 0.055) / 1.055, 2.4).toDouble();
+    return value <= 0.03928
+        ? value / 12.92
+        : math.pow((value + 0.055) / 1.055, 2.4).toDouble();
   }
 
-  return 0.2126 * channel(color.r) + 0.7152 * channel(color.g) + 0.0722 * channel(color.b);
+  return 0.2126 * channel(color.r) +
+      0.7152 * channel(color.g) +
+      0.0722 * channel(color.b);
 }
 
 double _contrast(Color a, Color b) {

@@ -14,7 +14,8 @@ import 'package:leopardo_public/features/surface/infrastructure/surface_theme.da
 void main() {
   group('SurfaceVertical', () {
     test('résout une verticale connue', () {
-      expect(SurfaceVertical.fromCode('restaurant'), SurfaceVertical.restaurant);
+      expect(
+          SurfaceVertical.fromCode('restaurant'), SurfaceVertical.restaurant);
       expect(SurfaceVertical.fromCode('pharmacy'), SurfaceVertical.pharmacy);
     });
 
@@ -40,7 +41,8 @@ void main() {
     });
 
     test('donne à chaque verticale un domaine distinct', () {
-      final domains = surfaceIdentities.values.map((i) => i.canonicalDomain).toList();
+      final domains =
+          surfaceIdentities.values.map((i) => i.canonicalDomain).toList();
 
       expect(domains.toSet().length, domains.length);
     });
@@ -52,7 +54,8 @@ void main() {
     });
 
     test('donne à chaque verticale une couleur d’action distincte', () {
-      final primaries = surfaceIdentities.values.map((i) => i.palette.primary).toList();
+      final primaries =
+          surfaceIdentities.values.map((i) => i.palette.primary).toList();
 
       expect(primaries.toSet().length, primaries.length);
     });

@@ -106,7 +106,8 @@ const Map<SurfaceVertical, SurfaceIdentity> surfaceIdentities = {
   SurfaceVertical.restaurant: SurfaceIdentity(
     vertical: SurfaceVertical.restaurant,
     displayName: 'Leopardo Restaurants',
-    tagline: 'Trouvez votre table, découvrez la carte, réservez en deux gestes.',
+    tagline:
+        'Trouvez votre table, découvrez la carte, réservez en deux gestes.',
     canonicalDomain: 'restaurants.leopardo.app',
     palette: SurfacePalette(
       primary: AppColors.surfaceRestaurantPrimary,
@@ -120,7 +121,8 @@ const Map<SurfaceVertical, SurfaceIdentity> surfaceIdentities = {
   SurfaceVertical.retail: SurfaceIdentity(
     vertical: SurfaceVertical.retail,
     displayName: 'Leopardo Marché',
-    tagline: 'Les boutiques près de chez vous, leur catalogue et leurs nouveautés.',
+    tagline:
+        'Les boutiques près de chez vous, leur catalogue et leurs nouveautés.',
     canonicalDomain: 'marche.leopardo.app',
     palette: SurfacePalette(
       primary: AppColors.surfaceRetailPrimary,
@@ -148,7 +150,8 @@ const Map<SurfaceVertical, SurfaceIdentity> surfaceIdentities = {
   SurfaceVertical.trade: SurfaceIdentity(
     vertical: SurfaceVertical.trade,
     displayName: 'Leopardo Entreprises',
-    tagline: 'Fournisseurs et négociants vérifiés — import, export et marché domestique.',
+    tagline:
+        'Fournisseurs et négociants vérifiés — import, export et marché domestique.',
     canonicalDomain: 'entreprises.leopardo.app',
     palette: SurfacePalette(
       primary: AppColors.surfaceTradePrimary,
@@ -162,7 +165,8 @@ const Map<SurfaceVertical, SurfaceIdentity> surfaceIdentities = {
   SurfaceVertical.travel: SurfaceIdentity(
     vertical: SurfaceVertical.travel,
     displayName: 'Leopardo Billets',
-    tagline: 'Comparez les trajets, réservez votre place, recevez votre billet.',
+    tagline:
+        'Comparez les trajets, réservez votre place, recevez votre billet.',
     canonicalDomain: 'billets.leopardo.app',
     palette: SurfacePalette(
       primary: AppColors.surfaceTravelPrimary,
@@ -176,7 +180,8 @@ const Map<SurfaceVertical, SurfaceIdentity> surfaceIdentities = {
   SurfaceVertical.pharmacy: SurfaceIdentity(
     vertical: SurfaceVertical.pharmacy,
     displayName: 'Leopardo Pharmacies',
-    tagline: 'Trouvez une officine, ses horaires et sa garde, près de chez vous.',
+    tagline:
+        'Trouvez une officine, ses horaires et sa garde, près de chez vous.',
     canonicalDomain: 'pharmacies.leopardo.app',
     palette: SurfacePalette(
       primary: AppColors.surfacePharmacyPrimary,
