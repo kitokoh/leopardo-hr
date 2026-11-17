@@ -2,9 +2,22 @@
  * Adaptateur réseau — verticale Pharmacie.
  *
  * Seule couture vers l'agrégateur public de découverte
- * (`@/lib/public-discovery-api`). Aucun provider `pharmacy` n'étant encore
- * enregistré côté API, la recherche renvoie une liste vide **légitime** : la
- * vitrine la distingue d'une panne via `available`.
+ * (`@/lib/public-discovery-api`).
+ *
+ * ## Ce qui a changé (#9592)
+ *
+ * Le provider `pharmacy` existe désormais côté API
+ * (`PharmacyDiscoverableProvider`, tagué `public.discoverable`) : la recherche
+ * `?type=pharmacy` remonte de vraies officines opt-in. Avant, la vitrine
+ * affichait « bientôt disponible » en permanence — un état honnête, mais qui
+ * masquait l'absence de sémantique de publication côté backend.
+ *
+ * ## Ce que l'adaptateur ne fait PAS
+ *
+ * Il ne devine rien. `onDuty` vient du `category` publié par le provider
+ * (`'on_duty'`), et `services` reste vide tant que le contrat public ne les
+ * expose pas : une liste inventée ferait promettre des services que l'officine
+ * n'a pas déclarés.
  */
 
 import { searchPublicDiscovery } from '@/lib/public-discovery-api';
@@ -21,8 +34,8 @@ export interface PharmacyLoadResult {
 /**
  * Charge les officines publiques.
  *
- * `available: false` = panne API. `available: true` + liste vide = la verticale
- * n'expose encore aucune officine publique (état « bientôt disponible »).
+ * `available: false` = panne API. `available: true` + liste vide = aucune
+ * officine n'a encore activé son opt-in de publication.
  */
 export async function loadPharmacies(params: {
   q?: string;
@@ -47,8 +60,27 @@ export async function loadPharmacies(params: {
       name: item.name,
       city: item.city ?? null,
       description: item.description ?? null,
-      onDuty: false,
+      // Le provider publie `category = 'on_duty'` quand l'officine est de
+      // garde, `null` sinon. On ne déduit jamais « fermée » d'une absence.
+      onDuty: item.category === 'on_duty',
       services: [],
     })),
   };
+}
+
+/**
+ * Charge une officine par slug.
+ *
+ * L'agrégateur public n'expose pas de lecture unitaire par slug : on filtre la
+ * liste. `null` = introuvable (non publiée) ou API indisponible — la page
+ * répond `notFound()`, jamais une fiche vide.
+ */
+export async function loadPharmacy(slug: string): Promise<Pharmacy | null> {
+  const result = await loadPharmacies({ q: slug });
+
+  if (!result.available) {
+    return null;
+  }
+
+  return result.pharmacies.find((pharmacy) => pharmacy.slug === slug) ?? null;
 }
