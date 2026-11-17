@@ -126,7 +126,8 @@ class CustomRoleDelegationTest extends TestCase
         // Le rôle de l'autre tenant n'apparaît pas dans la liste.
         $list = $this->getJson('/api/v1/company/roles');
         $list->assertOk();
-        $this->assertSame([], $list->json('data'));
+        // Contrat de l'écran #9518 : `data.roles` (et non `data` = liste).
+        $this->assertSame([], $list->json('data.roles'));
 
         // Et il n'est pas modifiable depuis ce tenant.
         $update = $this->putJson('/api/v1/company/roles/'.$otherRoleId, [
@@ -181,7 +182,7 @@ class CustomRoleDelegationTest extends TestCase
 
         $list = $this->getJson('/api/v1/company/roles');
         $list->assertOk();
-        $this->assertSame('restaurant', $list->json('data.0.vertical'));
+        $this->assertSame('restaurant', $list->json('data.roles.0.vertical'));
 
         // La révocation est effective à la requête suivante.
         $roleId = (int) $created->json('data.id');
@@ -189,7 +190,7 @@ class CustomRoleDelegationTest extends TestCase
 
         $after = $this->getJson('/api/v1/company/roles');
         $after->assertOk();
-        $this->assertSame([], $after->json('data'));
+        $this->assertSame([], $after->json('data.roles'));
     }
 
     private function manager(Company $company, string $email, string $managerRole): Employee

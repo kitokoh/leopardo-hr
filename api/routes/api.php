@@ -652,7 +652,7 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/ai.php';
 
     // Platform (super-admin, hors module)
-    Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('platform')->group(function (): void {
+    Route::middleware(['auth:super_admin_api', 'platform.mfa', 'throttle:platform-sensitive'])->prefix('platform')->group(function (): void {
         // BC-10 (#9100) — portail public d'offres : publication plateforme et
         // connecteurs d'agrégateurs. Chargé ICI pour hériter du préfixe
         // `platform` et du guard `super_admin_api`.
@@ -880,7 +880,7 @@ Route::prefix('v1')->group(function (): void {
     // Admin cockpit (super-admin) — contrat SPA front/admin-dashboard.
     // Endpoints appelés par le SPA sans exister côté API (issue #1764) :
     // création côté API des routes manquantes (décision produit).
-    Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('admin')->group(function (): void {
+    Route::middleware(['auth:super_admin_api', 'platform.mfa', 'throttle:platform-sensitive'])->prefix('admin')->group(function (): void {
         // Issue #2624 : impersonation super-admin aussi sous /admin (le SPA
         // admin-dashboard consomme /admin/*) — réutilise le contrôleur
         // platform existant (PA2-ADM-006).

@@ -30,6 +30,14 @@ use Illuminate\Validation\Rule;
  * `delegation.manage` — il ne le détient pas, donc le plafond le refuse.
  * Un rôle de verticale est borné à sa verticale.
  *
+ * ## La forme de la réponse (écran #9518)
+ *
+ * L'écran « Rôles personnalisés » lit `data.roles`, `data.catalog` et
+ * `data.roles[].holder_count`. Cette forme est celle du contrat livré : elle
+ * est reproduite **à l'identique** ici, et les alias historiques
+ * (`data` = liste des rôles, `catalogue` = clés) restent exposés pour ne
+ * casser aucun appelant existant.
+ *
  * ## Ce que ce contrôleur ne fait pas
  *
  * Aucune introduction de Spatie, aucune réécriture de gate, aucune permission
@@ -58,15 +66,27 @@ class RoleDefinitionController extends Controller
             ->orderBy('name')
             ->get();
 
-        $data = $rows->map(fn (object $row): array => [
+        $roles = $rows->map(fn (object $row): array => [
             'id' => (int) $row->id,
             'name' => (string) $row->name,
             'permissions' => $this->decodePermissions($row->permissions),
             'vertical' => $row->vertical !== null ? (string) $row->vertical : null,
+            // Écran #9518 : nombre de porteurs ACTIFS du rôle.
+            'holder_count' => $this->holderCount($actor, (int) $row->id),
         ])->all();
 
+        // Le catalogue est BORNÉ par ce que l'acteur peut réellement déléguer :
+        // un `rh` ne se voit proposer que ses propres permissions, au lieu de
+        // composer un rôle puis de se faire refuser en 422. Le refus serveur
+        // reste en place (défense en profondeur).
+        $catalog = DelegablePermission::catalogBoundedBy($this->guard->ceilingFor($actor));
+
         return response()->json([
-            'data' => $data,
+            'data' => [
+                'roles' => $roles,
+                'catalog' => $catalog,
+            ],
+            // Alias historiques — aucun appelant existant ne casse.
             'catalogue' => DelegablePermission::keys(),
         ]);
     }
@@ -144,6 +164,7 @@ class RoleDefinitionController extends Controller
                 'name' => $validated['name'],
                 'permissions' => $permissions,
                 'vertical' => $validated['vertical'] ?? null,
+                'holder_count' => 0,
             ],
         ], 201);
     }
@@ -212,6 +233,7 @@ class RoleDefinitionController extends Controller
                 'name' => (string) $row->name,
                 'permissions' => $permissions,
                 'vertical' => $row->vertical !== null ? (string) $row->vertical : null,
+                'holder_count' => $this->holderCount($actor, (int) $role),
             ],
         ]);
     }
@@ -221,6 +243,8 @@ class RoleDefinitionController extends Controller
      *
      * Révocation **effective à la requête suivante** : la ligne reste (audit du
      * geste) mais n'est plus lue par `index()` ni par le moteur d'enforcement.
+     * Les attributions du rôle sont révoquées dans la MÊME transaction — sinon
+     * des collaborateurs porteraient un rôle qui n'existe plus.
      */
     public function revoke(Request $request, int $role): JsonResponse
     {
@@ -237,11 +261,26 @@ class RoleDefinitionController extends Controller
             ], 403);
         }
 
-        $affected = DB::table('role_assignments')
-            ->where('id', $role)
-            ->where('company_id', $actor->company_id)
-            ->whereNull('revoked_at')
-            ->update(['revoked_at' => now(), 'updated_at' => now()]);
+        $affected = DB::transaction(function () use ($actor, $role): int {
+            $affected = DB::table('role_assignments')
+                ->where('id', $role)
+                ->where('company_id', $actor->company_id)
+                ->whereNull('revoked_at')
+                ->update(['revoked_at' => now(), 'updated_at' => now()]);
+
+            if ($affected === 0) {
+                return 0;
+            }
+
+            // Les porteurs perdent le rôle au même instant.
+            DB::table('employee_role_assignments')
+                ->where('company_id', $actor->company_id)
+                ->where('role_assignment_id', $role)
+                ->whereNull('revoked_at')
+                ->update(['revoked_at' => now(), 'updated_at' => now()]);
+
+            return $affected;
+        });
 
         if ($affected === 0) {
             return response()->json(['message' => __('errors.NOT_FOUND')], 404);
@@ -250,11 +289,153 @@ class RoleDefinitionController extends Controller
         return response()->json(['data' => ['id' => (int) $role, 'revoked' => true]]);
     }
 
+    /**
+     * POST /api/v1/company/roles/{role}/assign — attribuer un rôle à un
+     * collaborateur.
+     *
+     * C'est ce qui rend `holder_count` réel : sans attribution, un rôle créé ne
+     * sert à personne et l'écran #9518 affiche toujours zéro porteur.
+     *
+     * Bornes : le rôle doit être ACTIF et du tenant de l'acteur, la cible doit
+     * être un collaborateur ACTIF du MÊME tenant. Un rôle révoqué ne peut plus
+     * être attribué (on ne ressuscite pas un rôle par une attribution).
+     */
+    public function assign(Request $request, int $role): JsonResponse
+    {
+        $actor = $this->actor($request);
+
+        if (! $actor instanceof Employee) {
+            return response()->json(['message' => __('errors.UNAUTHENTICATED')], 401);
+        }
+
+        if (! $this->guard->canManageDelegation($actor)) {
+            return response()->json([
+                'error' => 'DELEGATION_FORBIDDEN',
+                'message' => __('errors.DELEGATION_FORBIDDEN'),
+            ], 403);
+        }
+
+        /** @var array{employee_id: int} $validated */
+        $validated = $request->validate([
+            'employee_id' => ['required', 'integer'],
+        ]);
+
+        $roleRow = DB::table('role_assignments')
+            ->where('id', $role)
+            ->where('company_id', $actor->company_id)
+            ->whereNull('revoked_at')
+            ->first();
+
+        if ($roleRow === null) {
+            return response()->json(['message' => __('errors.NOT_FOUND')], 404);
+        }
+
+        // La cible doit appartenir au MÊME tenant : sans ce filtre, un
+        // principal pourrait attribuer un rôle à l'employé d'une autre
+        // entreprise (fuite inter-tenant par identifiant deviné).
+        $target = Employee::query()
+            ->where('id', $validated['employee_id'])
+            ->where('company_id', $actor->company_id)
+            ->first();
+
+        if (! $target instanceof Employee) {
+            return response()->json(['message' => __('errors.NOT_FOUND')], 404);
+        }
+
+        // Déjà porteur actif → idempotent, on ne duplique pas la ligne.
+        $already = DB::table('employee_role_assignments')
+            ->where('company_id', $actor->company_id)
+            ->where('employee_id', $target->id)
+            ->where('role_assignment_id', $role)
+            ->whereNull('revoked_at')
+            ->exists();
+
+        if (! $already) {
+            DB::table('employee_role_assignments')->insert([
+                'company_id' => $actor->company_id,
+                'employee_id' => $target->id,
+                'role_assignment_id' => $role,
+                'assigned_by_employee_id' => $actor->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return response()->json([
+            'data' => [
+                'role_id' => (int) $role,
+                'employee_id' => (int) $target->id,
+                'holder_count' => $this->holderCount($actor, (int) $role),
+            ],
+        ]);
+    }
+
+    /**
+     * DELETE /api/v1/company/roles/{role}/assign/{employee} — retirer le rôle.
+     *
+     * Révocation de la ligne d'attribution (jamais de suppression : le geste
+     * reste auditable, même doctrine que `role_assignments.revoked_at`).
+     */
+    public function unassign(Request $request, int $role, int $employee): JsonResponse
+    {
+        $actor = $this->actor($request);
+
+        if (! $actor instanceof Employee) {
+            return response()->json(['message' => __('errors.UNAUTHENTICATED')], 401);
+        }
+
+        if (! $this->guard->canManageDelegation($actor)) {
+            return response()->json([
+                'error' => 'DELEGATION_FORBIDDEN',
+                'message' => __('errors.DELEGATION_FORBIDDEN'),
+            ], 403);
+        }
+
+        $affected = DB::table('employee_role_assignments')
+            ->where('company_id', $actor->company_id)
+            ->where('role_assignment_id', $role)
+            ->where('employee_id', $employee)
+            ->whereNull('revoked_at')
+            ->update(['revoked_at' => now(), 'updated_at' => now()]);
+
+        if ($affected === 0) {
+            return response()->json(['message' => __('errors.NOT_FOUND')], 404);
+        }
+
+        return response()->json([
+            'data' => [
+                'role_id' => (int) $role,
+                'employee_id' => (int) $employee,
+                'holder_count' => $this->holderCount($actor, (int) $role),
+            ],
+        ]);
+    }
+
     private function actor(Request $request): ?Employee
     {
         $user = $request->user();
 
         return $user instanceof Employee ? $user : null;
+    }
+
+    /**
+     * Nombre de porteurs ACTIFS d'un rôle dans le tenant de l'acteur.
+     *
+     * Fail-closed : si la table d'attribution n'existe pas encore (base non
+     * migrée), on renvoie 0 plutôt que de faire échouer la lecture des rôles —
+     * l'écran reste utilisable, il n'affiche simplement aucun porteur.
+     */
+    private function holderCount(Employee $actor, int $roleId): int
+    {
+        try {
+            return (int) DB::table('employee_role_assignments')
+                ->where('company_id', $actor->company_id)
+                ->where('role_assignment_id', $roleId)
+                ->whereNull('revoked_at')
+                ->count();
+        } catch (\Throwable) {
+            return 0;
+        }
     }
 
     /** @return list<string> */

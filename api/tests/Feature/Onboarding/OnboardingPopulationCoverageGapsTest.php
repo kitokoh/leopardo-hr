@@ -250,17 +250,18 @@ class OnboardingPopulationCoverageGapsTest extends TestCase
     /**
      * @test
      *
-     * Comportement RÉEL figé (point ouvert du rapport) : le pré-contrôle de
-     * `/auth/register` ne teste pas le statut de l'employé. Un employé archivé
-     * franchit donc le pré-contrôle, puis `accept()` lève `410
-     * INVITATION_REVOKED` — un code qui, sur une route publique, distingue
-     * « invitation révoquée » de « invitation inconnue », alors que le contrat
-     * documenté promet un 422 indifférencié.
+     * CORRIGÉ au round 13 (#9096) — décision produit « option B ».
      *
-     * Ce test ne corrige rien : il rend la divergence visible et empêche
-     * qu'elle change silencieusement.
+     * Avant : le pré-contrôle de `/auth/register` ne testait pas le statut de
+     * l'employé. Un employé archivé franchissait donc le pré-contrôle, puis
+     * `accept()` levait `410 INVITATION_REVOKED` — un code qui, sur une route
+     * PUBLIQUE, distingue « invitation révoquée » de « invitation inconnue » et
+     * permet d'énumérer les invitations en circulation.
+     *
+     * Désormais : le statut est vérifié AVANT toute écriture et la route
+     * publique renvoie le `422 REGISTRATION_NOT_AVAILABLE` indifférencié.
      */
-    public function register_on_an_archived_employee_leaks_the_revoked_state(): void
+    public function register_on_an_archived_employee_returns_the_undifferentiated_422(): void
     {
         [$invitation, $token] = $this->inviteEmployee(['email' => 'archive@company.test']);
 
@@ -276,9 +277,10 @@ class OnboardingPopulationCoverageGapsTest extends TestCase
             'invitation_token' => $token,
         ]);
 
-        // Comportement observé aujourd'hui : 410, pas 422.
-        $response->assertStatus(410)
-            ->assertJsonPath('error', 'INVITATION_REVOKED');
+        // Contrat public retenu : 422 indifférencié, jamais un 410 qui
+        // révélerait l'état exact de l'invitation.
+        $response->assertStatus(422)
+            ->assertJsonPath('error', 'REGISTRATION_NOT_AVAILABLE');
 
         // Aucune écriture : l'invitation reste ouverte, le mot de passe intact.
         $invitation->refresh();

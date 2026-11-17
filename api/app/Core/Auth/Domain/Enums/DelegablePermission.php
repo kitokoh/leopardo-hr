@@ -46,6 +46,78 @@ enum DelegablePermission: string
     case ManageDelegation = 'delegation.manage';
 
     /**
+     * Libelle lisible du catalogue (ecran « Roles personnalises », #9518).
+     *
+     * Le front ne doit pas inventer ses libelles : la source unique est ici,
+     * a cote de la cle qu'elle decrit.
+     */
+    public function label(): string
+    {
+        return match ($this) {
+            self::ViewDashboard => 'Tableau de bord',
+            self::CreateEmployees => 'Creer des collaborateurs',
+            self::ManageInvitations => 'Gerer les invitations',
+            self::ManageBiometrics => 'Gerer la biometrie',
+            self::ViewPayroll => 'Consulter la paie',
+            self::ViewFleet => 'Consulter la flotte',
+            self::IsPrincipal => 'Proprietaire de l\'entreprise',
+            self::ManageDelegation => 'Gerer les roles personnalises',
+        };
+    }
+
+    /**
+     * Regroupement du catalogue (l'ecran affiche une section par categorie).
+     */
+    public function category(): string
+    {
+        return match ($this) {
+            self::ViewDashboard => 'general',
+            self::CreateEmployees, self::ManageInvitations, self::ManageBiometrics => 'equipe',
+            self::ViewPayroll => 'finance',
+            self::ViewFleet => 'operations',
+            self::IsPrincipal, self::ManageDelegation => 'administration',
+        };
+    }
+
+    /**
+     * Le catalogue complet, tel que l'expose `GET /company/roles`
+     * (`data.catalog`) : `{key, label, category}` par entree.
+     *
+     * @return list<array{key: string, label: string, category: string}>
+     */
+    public static function catalog(): array
+    {
+        return array_map(
+            static fn (self $case): array => [
+                'key' => $case->value,
+                'label' => $case->label(),
+                'category' => $case->category(),
+            ],
+            self::cases(),
+        );
+    }
+
+    /**
+     * Le catalogue BORNE par ce que `$ceiling` detient deja.
+     *
+     * C'est le plafond de delegation applique a l'AFFICHAGE : un `rh` ne se
+     * voit proposer que les permissions qu'il peut reellement deleguer, au
+     * lieu de composer un role puis de se faire refuser en 422. Le refus
+     * serveur reste en place (defense en profondeur) : ce filtre est un
+     * confort d'interface, jamais le garde.
+     *
+     * @param  list<string>  $ceiling
+     * @return list<array{key: string, label: string, category: string}>
+     */
+    public static function catalogBoundedBy(array $ceiling): array
+    {
+        return array_values(array_filter(
+            self::catalog(),
+            static fn (array $entry): bool => in_array($entry['key'], $ceiling, true),
+        ));
+    }
+
+    /**
      * Toutes les clés du registre (validation `Rule::in`, exposition front).
      *
      * @return list<string>

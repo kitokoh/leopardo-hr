@@ -335,6 +335,7 @@ return [
     'PLATFORM_PERMISSION_REQUIRED' => 'Votre rôle plateforme ne permet pas cette action (permissions requises : :permissions).',
     'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'Impossible de modifier votre propre rôle plateforme.',
     'LAST_SUPER_ADMIN_REQUIRED' => 'Action refusée : il doit rester au moins un super administrateur actif.',
+    'PLATFORM_MFA_REQUIRED' => "MFA obligatoire : votre compte de plateforme doit activer un second facteur avant de continuer.",
     'LAST_PRINCIPAL_REQUIRED' => 'Action refusée : il doit rester au moins un principal actif dans l\'entreprise.',
 
     // Issue #9095 (IAM-L5) - roles personnalises de tenant.

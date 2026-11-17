@@ -2507,6 +2507,30 @@ trait CreatesMvpSchema
             });
         }
 
+        // Issue #9095 (IAM-L5) — ATTRIBUTION d'un rôle personnalisé à un
+        // collaborateur. Miroir de la migration 2026_11_17_000600_9095 : ce qui
+        // rend `holder_count` réel (écran #9518).
+        if (! Schema::hasTable($this->moduleTable('employee_role_assignments'))) {
+            Schema::create($this->moduleTable('employee_role_assignments'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id');
+                $table->unsignedBigInteger('role_assignment_id');
+                $table->timestamp('revoked_at')->nullable();
+                $table->unsignedInteger('assigned_by_employee_id')->nullable();
+                $table->timestamps();
+
+                $table->index(
+                    ['company_id', 'employee_id', 'revoked_at'],
+                    'employee_role_assignments_employee_active_idx'
+                );
+                $table->index(
+                    ['role_assignment_id', 'revoked_at'],
+                    'employee_role_assignments_role_active_idx'
+                );
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('catalog_inquiries'))) {
             Schema::create($this->moduleTable('catalog_inquiries'), function (Blueprint $table): void {
                 $table->bigIncrements('id');

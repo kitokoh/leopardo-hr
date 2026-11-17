@@ -184,6 +184,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'delivery.role' => \App\Http\Middleware\Delivery\EnsureDeliveryRoleMiddleware::class,
             // #7553 — permission interne plateforme (`platform.permission:team.manage`).
             'platform.permission' => \App\Http\Middleware\EnsurePlatformPermissionMiddleware::class,
+            // #9096 (IAM-L6) — la MFA est IMPOSÉE aux comptes de plateforme : un
+            // compte sans second facteur n'obtient qu'un jeton d'enrôlement.
+            'platform.mfa' => \App\Http\Middleware\EnsurePlatformMfaEnrolled::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             // #7761 — grant de module OU manager (ex. tickets support délégables).
