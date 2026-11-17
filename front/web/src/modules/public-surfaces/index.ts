@@ -29,3 +29,8 @@
 export * from './kernel';
 export { surfaceRegistry } from './registry';
 export * from './restaurants';
+export * from './retail';
+export * from './hospitality';
+export * from './trade';
+export * from './travel';
+export * from './pharmacy';
