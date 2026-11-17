@@ -156,7 +156,7 @@ export default async function PharmacyPage({ params, searchParams }: PharmacyPag
               {t(locale, 'discovery.shopCategoriesTitle')}
             </h2>
             <ul className="flex flex-wrap gap-2">
-              {pharmacy.services.map((service) => (
+              {pharmacy.services.map((service: string) => (
                 <li
                   key={service}
                   className="rounded-xl border px-3 py-1.5 text-sm"

@@ -1,14 +1,35 @@
 import Link from 'next/link';
 
-import { SurfaceHero, SurfaceShell, type SurfaceIdentity } from '../../kernel';
+import {
+  SurfaceBadge,
+  SurfaceCard,
+  SurfaceCta,
+  SurfaceGrid,
+  SurfaceHero,
+  SurfaceMeta,
+  SurfaceSectionTitle,
+  SurfaceShell,
+  type SurfaceIdentity,
+} from '../../kernel';
 import { getSurfaceCopy } from '../../copy/surfaces-copy';
 import type { ShopView } from '../application/load-shop-view';
 
 /**
- * Rendu de la vitrine Retail.
+ * Rendu de la vitrine Retail (#9594).
  *
- * Composant pur : reçoit une boutique déjà chargée. Aucun fetch, aucun état.
- * Toute chaîne visible vient du catalogue de copie.
+ * ## Composition propre à la verticale
+ *
+ * Le retail est un usage **de catalogue** : on compare, on balaie, on repère
+ * une catégorie. D'où :
+ *
+ *  1. **Grille dense** (`min 14rem`) : le plus grand nombre de catégories par
+ *     écran — l'inverse de la pharmacie et de l'hôtellerie.
+ *  2. **Le comptage produit est le signal principal** de chaque carte : c'est
+ *     ce qui dit si la boutique vaut le détour.
+ *  3. **La note est un badge**, pas une phrase : elle se lit en un coup d'œil
+ *     dans une grille dense. Sans avis, aucun badge — jamais « 0,0 ».
+ *
+ * Composant pur : aucun fetch, aucun état.
  */
 export function ShopSurface({
   identity,
@@ -28,65 +49,46 @@ export function ShopSurface({
       <SurfaceHero
         identity={identity}
         eyebrow={shop.city ?? copy.verticals.retail.eyebrow}
-        action={
-          <Link
-            href="/boutiques"
-            style={{
-              display: 'inline-block',
-              padding: '0.7rem 1.2rem',
-              borderRadius: '0.6rem',
-              background: identity.palette.primary,
-              color: identity.palette.onPrimary,
-              fontWeight: 600,
-              textDecoration: 'none',
-            }}
-          >
-            {shared.allShops}
-          </Link>
-        }
+        action={<SurfaceCta identity={identity} href="/boutiques">{shared.allShops}</SurfaceCta>}
       />
 
       <main style={{ maxWidth: '72rem', margin: '0 auto', padding: '2rem 1.25rem 4rem' }}>
-        <h2 style={{ marginTop: 0, fontSize: '1.4rem' }}>{shop.name}</h2>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.6rem' }}>
+          <h2 style={{ margin: 0, fontSize: '1.4rem', letterSpacing: '-0.01em' }}>{shop.name}</h2>
 
-        <p style={{ color: identity.palette.muted }}>
-          {catalogLabel}
-          {rating !== null
-            ? ` · ★ ${rating} (${shop.ratingCount})`
-            : ` · ${shared.noReviews}`}
-        </p>
+          {rating !== null ? (
+            <SurfaceBadge identity={identity} tone="accent">
+              ★ {rating} ({shop.ratingCount})
+            </SurfaceBadge>
+          ) : (
+            <SurfaceBadge identity={identity}>{shared.noReviews}</SurfaceBadge>
+          )}
+        </div>
 
-        {shop.description ? <p>{shop.description}</p> : null}
+        <SurfaceMeta identity={identity}>{catalogLabel}</SurfaceMeta>
+
+        {shop.description ? (
+          <p style={{ marginTop: '0.9rem', maxWidth: '46rem' }}>{shop.description}</p>
+        ) : null}
 
         {shop.categories.length > 0 ? (
-          <ul
-            style={{
-              listStyle: 'none',
-              margin: '1.5rem 0 0',
-              padding: 0,
-              display: 'grid',
-              gap: '0.75rem',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(14rem, 1fr))',
-            }}
-          >
-            {shop.categories.map((category) => (
-              <li
-                key={category.name}
-                style={{
-                  border: `1px solid ${identity.palette.muted}33`,
-                  borderRadius: '0.75rem',
-                  padding: '0.9rem',
-                  background: '#FFFFFF',
-                }}
-              >
-                <strong style={{ display: 'block' }}>{category.name}</strong>
-                <span style={{ color: identity.palette.muted, fontSize: '0.875rem' }}>
-                  {category.productsCount}{' '}
-                  {category.productsCount > 1 ? shared.products : shared.product}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <section style={{ marginTop: '2rem' }}>
+            <SurfaceSectionTitle identity={identity}>
+              {copy.verticals.retail.exploreCta}
+            </SurfaceSectionTitle>
+
+            <SurfaceGrid min="14rem">
+              {shop.categories.map((category) => (
+                <SurfaceCard key={category.name} as="li" identity={identity}>
+                  <strong style={{ fontSize: '0.95rem' }}>{category.name}</strong>
+                  <SurfaceMeta identity={identity}>
+                    {category.productsCount}{' '}
+                    {category.productsCount > 1 ? shared.products : shared.product}
+                  </SurfaceMeta>
+                </SurfaceCard>
+              ))}
+            </SurfaceGrid>
+          </section>
         ) : null}
       </main>
     </SurfaceShell>

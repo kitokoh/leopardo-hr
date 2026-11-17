@@ -6,12 +6,16 @@
  *
  * ## Note de périmètre
  *
- * La verticale Pharmacie n'expose pas encore de provider de découverte public
- * (`PublicDiscoverableProvider`). La vitrine est donc **prête mais non
- * alimentée** : elle déclare son identité et son domaine, et son adaptateur
- * interroge l'agrégateur public de découverte. Tant qu'aucun provider
- * `pharmacy` n'est enregistré côté API, la vitrine affiche un état « bientôt
- * disponible » — jamais une liste vide présentée comme un résultat.
+ * Depuis #9592, la verticale Pharmacie a son provider de découverte public
+ * (`PharmacyDiscoverableProvider`, tagué `public.discoverable`) et son opt-in
+ * de publication (`pharmacy_public_profiles.enabled`, défaut `false`). La
+ * vitrine est donc réellement alimentée : elle liste les officines qui ont
+ * activé leur publication.
+ *
+ * L'état « bientôt disponible » reste possible et reste honnête : il signifie
+ * qu'aucune officine n'a encore opté pour la publication, pas que la verticale
+ * est cassée. `PharmacySurface` distingue explicitement `empty` (aucune
+ * officine opt-in) de `unavailable` (panne API).
  */
 
 /** Une officine telle que la vitrine la présente. */

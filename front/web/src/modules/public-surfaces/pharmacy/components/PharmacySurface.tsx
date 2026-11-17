@@ -1,15 +1,39 @@
 import Link from 'next/link';
 
-import { SurfaceHero, SurfaceShell, type SurfaceIdentity } from '../../kernel';
+import {
+  SurfaceBadge,
+  SurfaceCard,
+  SurfaceCta,
+  SurfaceGrid,
+  SurfaceHero,
+  SurfaceMeta,
+  SurfaceNotice,
+  SurfaceShell,
+  type SurfaceIdentity,
+} from '../../kernel';
 import { getSurfaceCopy } from '../../copy/surfaces-copy';
 import type { PharmacySurfaceResult } from '../application/load-pharmacy-surface';
 
 /**
- * Rendu de la vitrine Pharmacie.
+ * Rendu de la vitrine Pharmacie (#9594).
  *
- * Composant pur. Les trois états sont rendus explicitement : une verticale pas
- * encore alimentée ne doit jamais ressembler à une recherche sans résultat.
- * Toute chaîne visible vient du catalogue de copie.
+ * ## Composition propre à la verticale
+ *
+ * La pharmacie est un usage **de proximité et d'urgence** : on ne parcourt pas
+ * un catalogue, on cherche l'officine la plus proche et celle qui est de garde.
+ * D'où trois choix qui la distinguent des cinq autres vitrines :
+ *
+ *  1. **La garde est le premier signal**, pas une métadonnée : badge accent en
+ *     tête de carte, avant le nom. C'est l'information qui fait choisir.
+ *  2. **Grille large** (`min 20rem`) : peu d'officines par écran, lisibilité
+ *     maximale — l'inverse du retail dense.
+ *  3. **Aucun CTA « Commander »** : la vente en ligne de médicaments est
+ *     réglementée. Le provider n'expose que l'action `contact`, et la vitrine
+ *     ne promet donc rien de plus.
+ *
+ * Composant pur : aucun fetch, aucun état. Les trois états (`ready`, `empty`,
+ * `unavailable`) sont rendus différemment — une verticale pas encore alimentée
+ * ne doit jamais ressembler à une recherche sans résultat.
  */
 export function PharmacySurface({
   identity,
@@ -28,63 +52,53 @@ export function PharmacySurface({
       <SurfaceHero
         identity={identity}
         eyebrow={copy.verticals.pharmacy.eyebrow}
-        action={
-          <Link
-            href="/decouvrir"
-            style={{
-              display: 'inline-block',
-              padding: '0.7rem 1.2rem',
-              borderRadius: '0.6rem',
-              background: identity.palette.primary,
-              color: identity.palette.onPrimary,
-              fontWeight: 600,
-              textDecoration: 'none',
-            }}
-          >
-            {shared.allAddresses}
-          </Link>
-        }
+        action={<SurfaceCta identity={identity} href="/decouvrir">{shared.allAddresses}</SurfaceCta>}
       />
 
       <main style={{ maxWidth: '72rem', margin: '0 auto', padding: '2rem 1.25rem 4rem' }}>
         {result.state === 'unavailable' ? (
-          <p role="alert" style={{ color: identity.palette.muted }}>
+          <SurfaceNotice identity={identity} alert>
             {shared.unavailable}
-          </p>
+          </SurfaceNotice>
         ) : null}
 
         {result.state === 'empty' ? (
-          <p style={{ color: identity.palette.muted }}>{shared.comingSoon}</p>
+          <SurfaceNotice identity={identity}>{shared.comingSoon}</SurfaceNotice>
         ) : null}
 
         {result.state === 'ready' ? (
-          <ul
-            style={{
-              listStyle: 'none',
-              margin: 0,
-              padding: 0,
-              display: 'grid',
-              gap: '0.75rem',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(16rem, 1fr))',
-            }}
-          >
+          <SurfaceGrid min="20rem">
             {result.cards.map(({ pharmacy, duty }) => (
-              <li
-                key={pharmacy.slug}
-                style={{
-                  border: `1px solid ${identity.palette.muted}33`,
-                  borderRadius: '0.75rem',
-                  padding: '1rem',
-                  background: '#FFFFFF',
-                }}
-              >
-                <strong style={{ display: 'block' }}>{pharmacy.name}</strong>
-                <span style={{ color: identity.palette.muted, fontSize: '0.875rem' }}>
-                  {[pharmacy.city, duty].filter(Boolean).join(' · ') || shared.pharmacy}
-                </span>
-              </li>
+              <SurfaceCard key={pharmacy.slug} as="li" interactive identity={identity}>
+                <Link
+                  href={`${identity.basePath}/${pharmacy.slug}`}
+                  style={{ color: 'inherit', textDecoration: 'none' }}
+                >
+                  {/* La garde passe AVANT le nom : c'est le critère de choix. */}
+                  {pharmacy.onDuty ? (
+                    <div>
+                      <SurfaceBadge identity={identity} tone="accent">
+                        {duty ?? shared.onDuty}
+                      </SurfaceBadge>
+                    </div>
+                  ) : null}
+
+                  <strong style={{ fontSize: '1.05rem', lineHeight: 1.25 }}>{pharmacy.name}</strong>
+
+                  <SurfaceMeta identity={identity}>
+                    {[pharmacy.city, pharmacy.onDuty ? null : duty].filter(Boolean).join(' · ') ||
+                      shared.pharmacy}
+                  </SurfaceMeta>
+
+                  {pharmacy.description ? (
+                    <p style={{ margin: 0, fontSize: '0.875rem', lineHeight: 1.45 }}>
+                      {pharmacy.description}
+                    </p>
+                  ) : null}
+                </Link>
+              </SurfaceCard>
             ))}
-          </ul>
+          </SurfaceGrid>
         ) : null}
       </main>
     </SurfaceShell>
