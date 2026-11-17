@@ -44,6 +44,17 @@ final class CreateBrandAction
      *   host?: string|null
      * }  $input
      */
+    /**
+     * @param  array{
+     *     slug: string,
+     *     name: string,
+     *     vertical?: string,
+     *     palette?: array{primary?: string, accent?: string, surface?: string},
+     *     identity?: array<string, mixed>,
+     *     surface?: array<string, mixed>,
+     *     host?: string|null
+     * }  $input
+     */
     public function execute(array $input): Brand
     {
         $slug = Brand::assertValidSlug($input['slug']);

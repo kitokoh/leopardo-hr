@@ -3,11 +3,10 @@
 use App\Modules\Absence\Providers\AbsenceServiceProvider;
 use App\Modules\Accounting\Providers\AccountingServiceProvider;
 use App\Modules\Attendance\Providers\AttendanceServiceProvider;
-// BC-41 BRANDING (#9578) — enseigne d'un tenant (multi-brand) + surfaces
-// publiques spécialisées par verticale. Placé avant Pages : Pages dépend de
-// Branding pour la résolution de la Brand par défaut d'un tenant.
-use App\Modules\Branding\Providers\BrandingServiceProvider;
 use App\Modules\Billing\Providers\BillingServiceProvider;
+// BC-41 BRANDING (#9578) — enseigne d'un tenant (multi-brand) + surfaces
+// publiques spécialisées par verticale.
+use App\Modules\Branding\Providers\BrandingServiceProvider;
 use App\Modules\Cabinet\Providers\CabinetServiceProvider;
 use App\Modules\Cameras\Providers\CamerasServiceProvider;
 use App\Modules\Catalog\Providers\CatalogServiceProvider;
