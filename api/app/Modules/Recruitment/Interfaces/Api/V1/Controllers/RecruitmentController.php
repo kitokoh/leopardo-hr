@@ -41,7 +41,7 @@ class RecruitmentController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        
+
         if ($actor->cannot('recruitment.view')) {
             abort(403);
         }

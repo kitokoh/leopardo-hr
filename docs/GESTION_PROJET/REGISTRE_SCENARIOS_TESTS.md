@@ -2767,6 +2767,31 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 
 **Non couvert** — rendu visuel des trois nouveaux écrans non observé avec de vraies données (pas de base peuplée ni de session authentifiée dans le sandbox) ; migration non jouée sur une base tenant réelle (les tests utilisent la fixture `CreatesMvpSchema`) ; présence de `pdftotext` / `antiword` sur l'image de production non vérifiée — le code rend `null` proprement s'ils manquent, donc absence = dégradation du score, pas panne ; aucune OCR sur les CV scannés en image (choix assumé) ; suite Jest **complète** tuée par l'OOM du sandbox (2 Go) — seul le périmètre touché a été exécuté.
 
+## 2026-11-17 — BC-07 RECRUITMENT : KPIs de recrutement pour le dashboard RH (#9546, PR #9562)
+
+**Surface** : `GET /v1/recruitment/stats` (`RecruitmentController::stats`), declaree dans `routes/modules/hr_extended.php`, documentee dans `api/openapi.yaml`. Aucune migration.
+
+**Pourquoi ce sont des scenarios de test** : l'endpoint calcule un **entonnoir de conversion a quatre etages** et une **duree moyenne d'embauche** en SQL brut (`EXTRACT(EPOCH FROM (hired_at - applied_at)) / 86400`). Une erreur d'agregation produit un chiffre plausible mais faux — le pire cas pour un dashboard de direction.
+
+| Scenario | Ce qui serait casse sans lui |
+|---|---|
+| un acteur sans `recruitment.view` recoit **403** | `$actor->cannot('recruitment.view')` est la garde par **capacite**, pas par role : sans test, une politique modifiee ouvrirait les KPIs sans changer le code |
+| un acteur d'une **autre entreprise** ne voit aucun chiffre | `where('company_id', $companyId)` est repete sur **quatre** requetes (`JobPosting`, `Applicant` x3) : un oubli sur une seule melange les pipelines de deux clients |
+| entonnoir vide -> les 4 taux valent **0**, pas de division par zero | `$screeningRate = $screening / $total` est garde par `$total > 0` ; `$interviewRate` divise par `$screening`, **pas** par `$total` : si le garde portait sur le mauvais denominateur, le resultat serait faux sans planter |
+| les taux divissent bien par **l'etage precedent** de l'entonnoir | `interview_rate = interview / screening`, `offer_rate = offer / interview` : c'est une definition produit, pas une evidence — un test la fige |
+| un entonnoir a `total = 0` mais `screening = 0` et `offer = 0` rend des taux a 0 et non des `null` | les ternaires rendent `0` (int), l'API documente un `number` : un `null` casserait le contrat OpenAPI |
+| `avg_time_to_hire_days` est `null` quand aucune embauche ne porte `hired_at` | `$avgTimeToHire ? round(...) : null` : `AVG()` sur un ensemble vide rend `null`, et `null ? x : y` doit rendre `null`, pas `0` |
+| `avg_time_to_hire_days` est bien en **jours** et non en secondes | la division par `86400` est la seule conversion : sans test, l'unite derive silencieusement d'un facteur 86400 |
+| `avg_time_to_hire_days` est arrondi a **1 decimale** | `round((float) $avgTimeToHire, 1)` : un changement d'arrondi rendrait le dashboard instable sans erreur |
+| `job_postings.active` compte les `published`, `closed` les `archived`, `filled` les `closed` | l'ordre des parametres lies `['published','closed','archived']` correspond positionnellement aux trois `CASE WHEN status = ?` : inverser deux parametres echange deux compteurs sans erreur |
+| `from`/`to` sont **facultatifs** et absents -> aucune borne | `if ($from)` / `if ($to)` : une periode vide doit rendre **tout** l'historique, pas rien |
+| `from` couvre le debut de journee, `to` la fin | `Carbon::parse($from)->startOfDay()` et `->endOfDay()` : sans cela, une candidature du dernier jour a 14:00 serait exclue |
+| `from`/`to` mal formes -> **422** | `'nullable\|date'` sur les deux champs ; un format libre ferait exploser `Carbon::parse` en 500 |
+| `top_sources` est plafonne a **5**, trie decroissant, avec `source` non nul | `orderByDesc('count')->limit(5)` et `whereNotNull('source')` : sans test, une valeur nulle remonterait en tete |
+| `top_sources` respecte la periode demandee | `.when($from, ...)` / `.when($to, ...)` : ce sont les seules bornes de cette requete |
+
+**Couverture executee** — `pint --test` PASS sur les 2 fichiers du lot apres correction d'un defaut (`unary_operator_spaces`, `not_operator_with_successor_space`, `no_whitespace_in_blank_line` dans `RecruitmentController.php`).
+
 ## 2026-11-17 — BC-06 NOTIFICATION : purge des notifications anciennes (#9540, PR #9560)
 
 **Surface** : `DELETE /v1/notifications/purge-old` (`NotificationController::purgeOld`), declaree dans `routes/modules/rh.php`, documentee dans `api/openapi.yaml`. Aucune migration.
