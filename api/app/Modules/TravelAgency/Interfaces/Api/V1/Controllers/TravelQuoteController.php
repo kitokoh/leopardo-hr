@@ -95,6 +95,13 @@ class TravelQuoteController extends Controller
 
         $booking = app(BookQuoteAction::class)->execute($travelQuote, $actor);
 
-        return (new TravelBookingResource($booking))->response();
+        // #9098 — `JsonResource::response()` deduit un 201 de
+        // `$booking->wasRecentlyCreated` : le MEME appel repondait donc 201 au
+        // premier `POST /book` et 200 au rejeu, alors que l'endpoint est
+        // idempotent (il transitionne le devis en BOOKED et renvoie la
+        // reservation existante). Statut rendu deterministe et aligne sur la
+        // doctrine du module : `share`/`like`/`rate` repondent 200 parce que
+        // l'appel trace un evenement/agregat sur une ressource existante.
+        return (new TravelBookingResource($booking))->response()->setStatusCode(200);
     }
 }
