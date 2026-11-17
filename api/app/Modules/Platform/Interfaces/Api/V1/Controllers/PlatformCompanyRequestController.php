@@ -10,6 +10,7 @@ use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Modules\Platform\Infrastructure\Services\CompanyProvisioningService;
 use App\Support\CountryDefaults;
+use App\Support\SearchPathGuard;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -107,53 +108,55 @@ class PlatformCompanyRequestController extends Controller
 
     public function updateStatus(Request $request, int $id): JsonResponse
     {
-        if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO public');
-        }
+        // Issue #9115 : le search_path `public` est rendu a son etat d'entree a la
+        // fin de la requete (avant, la connexion y restait pour tout le reste du
+        // cycle : `CompanyRequest` et la provisioning ciblaient alors le mauvais
+        // schema selon l'ordre des appels).
+        return SearchPathGuard::run('public', function () use ($request, $id): JsonResponse {
+            $validated = $request->validate([
+                'status' => ['required', 'in:approved,rejected'],
+                'admin_notes' => ['nullable', 'string', 'max:2000'],
+                'plan_id' => ['nullable', 'integer', Rule::exists('plans', 'id')],
+            ]);
 
-        $validated = $request->validate([
-            'status' => ['required', 'in:approved,rejected'],
-            'admin_notes' => ['nullable', 'string', 'max:2000'],
-            'plan_id' => ['nullable', 'integer', Rule::exists('plans', 'id')],
-        ]);
+            $companyRequest = CompanyRequest::with('user:id,first_name,last_name,email,phone')->findOrFail($id);
 
-        $companyRequest = CompanyRequest::with('user:id,first_name,last_name,email,phone')->findOrFail($id);
+            if (! $companyRequest->isPending()) {
+                return new JsonResponse([
+                    'error' => 'ALREADY_REVIEWED',
+                    'message' => __('errors.COMPANY_REQUEST_ALREADY_PROCESSED'),
+                ], 422);
+            }
 
-        if (! $companyRequest->isPending()) {
+            $approvedCompany = null;
+            if ($validated['status'] === 'approved') {
+                /** @var SuperAdmin $superAdmin */
+                $superAdmin = $request->user('super_admin_api');
+                $approvedCompany = $this->provisionCompanyFromRequest(
+                    companyRequest: $companyRequest,
+                    superAdmin: $superAdmin,
+                    planId: $validated['plan_id'] ?? null,
+                    notes: $validated['admin_notes'] ?? null,
+                );
+            }
+
+            $companyRequest->update([
+                'status' => $validated['status'],
+                'admin_notes' => $validated['admin_notes'] ?? null,
+                'approved_company_id' => $approvedCompany?->id,
+                'reviewed_at' => now(),
+            ]);
+
             return new JsonResponse([
-                'error' => 'ALREADY_REVIEWED',
-                'message' => __('errors.COMPANY_REQUEST_ALREADY_PROCESSED'),
-            ], 422);
-        }
-
-        $approvedCompany = null;
-        if ($validated['status'] === 'approved') {
-            /** @var SuperAdmin $superAdmin */
-            $superAdmin = $request->user('super_admin_api');
-            $approvedCompany = $this->provisionCompanyFromRequest(
-                companyRequest: $companyRequest,
-                superAdmin: $superAdmin,
-                planId: $validated['plan_id'] ?? null,
-                notes: $validated['admin_notes'] ?? null,
-            );
-        }
-
-        $companyRequest->update([
-            'status' => $validated['status'],
-            'admin_notes' => $validated['admin_notes'] ?? null,
-            'approved_company_id' => $approvedCompany?->id,
-            'reviewed_at' => now(),
-        ]);
-
-        return new JsonResponse([
-            'data' => [
-                'id' => $companyRequest->id,
-                'status' => $companyRequest->status,
-                'approved_company_id' => $companyRequest->approved_company_id,
-                'admin_notes' => $companyRequest->admin_notes,
-                'reviewed_at' => $companyRequest->reviewed_at?->toIso8601String(),
-            ],
-        ]);
+                'data' => [
+                    'id' => $companyRequest->id,
+                    'status' => $companyRequest->status,
+                    'approved_company_id' => $companyRequest->approved_company_id,
+                    'admin_notes' => $companyRequest->admin_notes,
+                    'reviewed_at' => $companyRequest->reviewed_at?->toIso8601String(),
+                ],
+            ]);
+        });
     }
 
     private function provisionCompanyFromRequest(

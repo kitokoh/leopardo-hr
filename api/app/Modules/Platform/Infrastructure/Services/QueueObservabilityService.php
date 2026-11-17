@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Platform\Infrastructure\Services;
 
 use App\Modules\Platform\Domain\Models\ScheduledTaskRun;
+use App\Support\SearchPathGuard;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -376,9 +377,8 @@ class QueueObservabilityService
                 return [];
             }
 
-            DB::statement('SET search_path TO public');
-
-            return ScheduledTaskRun::query()
+            // Issue #9115 : restauration garantie du search_path d'entree.
+            return SearchPathGuard::run('public', static fn (): array => ScheduledTaskRun::query()
                 ->orderBy('name')
                 ->get()
                 ->map(function (ScheduledTaskRun $run): array {
@@ -396,7 +396,7 @@ class QueueObservabilityService
                         'is_stale' => $isStale,
                     ];
                 })
-                ->all();
+                ->all());
         } catch (Throwable) {
             return [];
         }

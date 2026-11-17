@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Notification\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Support\SearchPathGuard;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -41,16 +42,21 @@ class EmployeeEmailLookupService
             return null;
         }
 
-        DB::statement('SET search_path TO '.$this->formatSearchPath([$schema, 'public']));
+        // Issue #9115 : le search_path est rendu a son etat d'entree meme si la
+        // requete leve — sinon la connexion reste sur le schema tenant.
+        return SearchPathGuard::run(
+            $this->formatSearchPath([$schema, 'public']),
+            function () use ($lookup, $email): ?Employee {
+                /** @var Employee|null $employee */
+                $employee = Employee::withoutGlobalScopes()
+                    ->where('id', $lookup->employee_id)
+                    ->where('company_id', $lookup->company_id)
+                    ->where('email', $email)
+                    ->first();
 
-        /** @var Employee|null $employee */
-        $employee = Employee::withoutGlobalScopes()
-            ->where('id', $lookup->employee_id)
-            ->where('company_id', $lookup->company_id)
-            ->where('email', $email)
-            ->first();
-
-        return $employee;
+                return $employee;
+            },
+        );
     }
 
     private function lookupTableExists(): bool

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Platform\Infrastructure\Services;
 
+use App\Support\SearchPathGuard;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -15,6 +16,11 @@ use Illuminate\Support\Facades\DB;
  * `public.companies` et `shared_tenants.employees` (rôles) : ce service ne
  * passe pas par le middleware tenant et force `search_path TO public` comme
  * PlatformCompanyLookup (pattern #1952/#1873).
+ *
+ * Issue #9115 : ce `SET search_path` est désormais posé via
+ * `SearchPathGuard::run()`, qui restaure l'état d'entrée dans un `finally`.
+ * Avant, la connexion restait sur `public` pour tout le reste du cycle — les
+ * tables tenant-scoped devenaient introuvables (42P01 puis 25P02).
  *
  * Logique extraite de PlatformUsersController (issue #6569, audit DDD M1) —
  * les Actions Application délèguent ici (pattern Action Application → Service
@@ -38,57 +44,57 @@ final class PlatformUserDirectoryService
      */
     public function list(int $perPage, string $search, string $status, string $sortBy, string $sortDir): array
     {
-        DB::statement('SET search_path TO public');
+        return SearchPathGuard::run('public', function () use ($perPage, $search, $status, $sortBy, $sortDir): array {
+            $sortBy = in_array($sortBy, self::SORTABLE, true) ? $sortBy : 'created_at';
+            $sortDir = $sortDir === 'asc' ? 'asc' : 'desc';
 
-        $sortBy = in_array($sortBy, self::SORTABLE, true) ? $sortBy : 'created_at';
-        $sortDir = $sortDir === 'asc' ? 'asc' : 'desc';
+            $query = DB::table('users as u')
+                ->select([
+                    'u.id',
+                    'u.first_name',
+                    'u.last_name',
+                    'u.email',
+                    'u.phone',
+                    'u.status',
+                    'u.preferred_language',
+                    'u.last_login_at',
+                    'u.failed_login_attempts',
+                    'u.locked_until',
+                    'u.created_at',
+                    'u.updated_at',
+                ]);
 
-        $query = DB::table('users as u')
-            ->select([
-                'u.id',
-                'u.first_name',
-                'u.last_name',
-                'u.email',
-                'u.phone',
-                'u.status',
-                'u.preferred_language',
-                'u.last_login_at',
-                'u.failed_login_attempts',
-                'u.locked_until',
-                'u.created_at',
-                'u.updated_at',
-            ]);
+            if ($search !== '') {
+                $query->where(function ($q) use ($search): void {
+                    $like = '%'.$search.'%';
+                    $q->where('u.first_name', 'ilike', $like)
+                        ->orWhere('u.last_name', 'ilike', $like)
+                        ->orWhere('u.email', 'ilike', $like);
+                });
+            }
 
-        if ($search !== '') {
-            $query->where(function ($q) use ($search): void {
-                $like = '%'.$search.'%';
-                $q->where('u.first_name', 'ilike', $like)
-                    ->orWhere('u.last_name', 'ilike', $like)
-                    ->orWhere('u.email', 'ilike', $like);
-            });
-        }
+            if (in_array($status, ['active', 'disabled', 'pending', 'suspended'], true)) {
+                $query->where('u.status', $status);
+            }
 
-        if (in_array($status, ['active', 'disabled', 'pending', 'suspended'], true)) {
-            $query->where('u.status', $status);
-        }
+            $query->orderBy('u.'.$sortBy, $sortDir)->orderBy('u.id', 'desc');
 
-        $query->orderBy('u.'.$sortBy, $sortDir)->orderBy('u.id', 'desc');
+            /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, \stdClass> $paginator */
+            $paginator = $query->paginate($perPage);
 
-        /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, \stdClass> $paginator */
-        $paginator = $query->paginate($perPage);
+            $rows = collect($paginator->items());
+            $this->enrichWithCompanies($rows);
 
-        $rows = collect($paginator->items());
-        $this->enrichWithCompanies($rows);
-
-        return [
-            'rows' => $rows->all(),
-            'meta' => [
-                'current_page' => $paginator->currentPage(),
-                'last_page' => $paginator->lastPage(),
-                'per_page' => $paginator->perPage(),
-                'total' => $paginator->total(),
-            ],
-        ];
+            return [
+                'rows' => $rows->all(),
+                'meta' => [
+                    'current_page' => $paginator->currentPage(),
+                    'last_page' => $paginator->lastPage(),
+                    'per_page' => $paginator->perPage(),
+                    'total' => $paginator->total(),
+                ],
+            ];
+        });
     }
 
     /**
@@ -96,22 +102,22 @@ final class PlatformUserDirectoryService
      */
     public function show(int $userId): ?\stdClass
     {
-        DB::statement('SET search_path TO public');
+        return SearchPathGuard::run('public', function () use ($userId): ?\stdClass {
+            $row = DB::table('users')->where('id', $userId)->first();
 
-        $row = DB::table('users')->where('id', $userId)->first();
+            if ($row === null) {
+                return null;
+            }
 
-        if ($row === null) {
-            return null;
-        }
+            $rows = collect([$row]);
+            $this->enrichWithCompanies($rows);
 
-        $rows = collect([$row]);
-        $this->enrichWithCompanies($rows);
+            /** @var \stdClass $enriched */
+            $enriched = $rows->first();
+            $enriched->roles = $this->rolesFor($enriched->id);
 
-        /** @var \stdClass $enriched */
-        $enriched = $rows->first();
-        $enriched->roles = $this->rolesFor($enriched->id);
-
-        return $enriched;
+            return $enriched;
+        });
     }
 
     /**
@@ -121,39 +127,39 @@ final class PlatformUserDirectoryService
      */
     public function setActive(int $userId, bool $isActive, ?string $actorEmail): array
     {
-        DB::statement('SET search_path TO public');
+        return SearchPathGuard::run('public', function () use ($userId, $isActive, $actorEmail): array {
+            $row = DB::table('users')->where('id', $userId)->first();
 
-        $row = DB::table('users')->where('id', $userId)->first();
+            if ($row === null) {
+                return ['status' => 'not_found'];
+            }
 
-        if ($row === null) {
-            return ['status' => 'not_found'];
-        }
+            // Garde auto-désactivation : le super-admin courant ne peut pas
+            // désactiver un compte partageant son email (se tirerait la porte).
+            if (
+                ! $isActive
+                && $actorEmail !== null
+                && strcasecmp($actorEmail, (string) $row->email) === 0
+            ) {
+                return ['status' => 'self_disable'];
+            }
 
-        // Garde auto-désactivation : le super-admin courant ne peut pas
-        // désactiver un compte partageant son email (se tirerait la porte).
-        if (
-            ! $isActive
-            && $actorEmail !== null
-            && strcasecmp($actorEmail, (string) $row->email) === 0
-        ) {
-            return ['status' => 'self_disable'];
-        }
+            DB::table('users')
+                ->where('id', $userId)
+                ->update(['status' => $isActive ? 'active' : 'disabled']);
 
-        DB::table('users')
-            ->where('id', $userId)
-            ->update(['status' => $isActive ? 'active' : 'disabled']);
+            /** @var \stdClass $fresh */
+            $fresh = DB::table('users')->where('id', $userId)->first();
 
-        /** @var \stdClass $fresh */
-        $fresh = DB::table('users')->where('id', $userId)->first();
+            $rows = collect([$fresh]);
+            $this->enrichWithCompanies($rows);
 
-        $rows = collect([$fresh]);
-        $this->enrichWithCompanies($rows);
+            /** @var \stdClass $enriched */
+            $enriched = $rows->first();
+            $enriched->roles = $this->rolesFor($enriched->id);
 
-        /** @var \stdClass $enriched */
-        $enriched = $rows->first();
-        $enriched->roles = $this->rolesFor($enriched->id);
-
-        return ['status' => 'updated', 'row' => $enriched];
+            return ['status' => 'updated', 'row' => $enriched];
+        });
     }
 
     /**
