@@ -42,7 +42,14 @@ class StoreRestaurantReservationRequest extends FormRequest
             'zone_id' => ['nullable', 'integer', Rule::exists('restaurant_zones', 'id')->where(fn (Builder $q) => $q->where('company_id', $actor->company_id))],
             'deposit_minor' => ['nullable', 'integer', 'min:0'],
             'notes_redacted' => ['nullable', 'string', 'max:1000'],
-            'idempotency_key' => ['nullable', 'string', 'max:64', Rule::unique('restaurant_reservations', 'idempotency_key')->where(fn (Builder $q) => $q->where('company_id', $actor->company_id))],
+            // Le rejeu est une opération NORMALE du protocole d'idempotence :
+            // le contrôleur le détecte et renvoie la ressource existante (200).
+            // Un `Rule::unique` ici transformait ce rejeu en 422 générique AVANT
+            // d'atteindre cette branche, rendant l'idempotence inopérante pour le
+            // client (qui ne peut plus distinguer « déjà appliqué » de « payload
+            // invalide »). L'unicité reste garantie par l'index unique en base et
+            // par la lecture du contrôleur.
+            'idempotency_key' => ['nullable', 'string', 'max:64'],
         ];
     }
 
