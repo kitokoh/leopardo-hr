@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 
@@ -133,9 +133,8 @@ class BusinessActionRow extends StatelessWidget {
 
     // Destination exposée mais navigation mobile hors périmètre M1 : on ne
     // fait pas semblant. M3 branchera la commande et la réservation.
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(strings.t('commonNoModule'))),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(strings.t('commonNoModule'))));
   }
 }
 
@@ -190,11 +189,7 @@ class _Button extends StatelessWidget {
               icon: icon,
               label: label,
             )
-          : FilledButton.tonalIcon(
-              onPressed: null,
-              icon: icon,
-              label: label,
-            ),
+          : FilledButton.tonalIcon(onPressed: null, icon: icon, label: label),
     );
   }
 }

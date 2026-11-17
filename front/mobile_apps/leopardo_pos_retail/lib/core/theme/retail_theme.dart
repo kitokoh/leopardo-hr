@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Theme **tablette de caisse** du POS Retail (#9215).
 ///
@@ -35,12 +35,18 @@ class RetailTheme {
   static ThemeData _build(Brightness brightness) {
     final isDark = brightness == Brightness.dark;
 
-    final scheme = ColorScheme.fromSeed(seedColor: seed, brightness: brightness);
+    final scheme = ColorScheme.fromSeed(
+      seedColor: seed,
+      brightness: brightness,
+    );
 
     // Surfaces derivees du scheme : le mode sombre eclaircit/assombrit la
     // surface de base au lieu d'introduire une palette parallele.
     final surface = isDark
-        ? Color.alphaBlend(scheme.surface.withValues(alpha: 0.6), scheme.surfaceContainerHighest)
+        ? Color.alphaBlend(
+            scheme.surface.withValues(alpha: 0.6),
+            scheme.surfaceContainerHighest,
+          )
         : scheme.surface;
     final appBarSurface = isDark ? scheme.surfaceContainerHigh : scheme.surface;
     final fieldFill = isDark ? scheme.surfaceContainerHighest : scheme.surface;
@@ -101,12 +107,18 @@ class RetailTheme {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
       ),
-      dividerTheme: DividerThemeData(color: scheme.outlineVariant, thickness: 1),
+      dividerTheme: DividerThemeData(
+        color: scheme.outlineVariant,
+        thickness: 1,
+      ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: fieldFill,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 18,
+        ),
         labelStyle: const TextStyle(fontSize: 16),
         hintStyle: const TextStyle(fontSize: 16),
       ),

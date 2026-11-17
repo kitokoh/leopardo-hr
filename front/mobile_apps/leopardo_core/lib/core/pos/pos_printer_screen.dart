@@ -5,7 +5,7 @@
 /// caisse se reconnecte seule au demarrage suivant.
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'pos_esc_pos.dart';
 import 'pos_printer.dart';
@@ -124,8 +124,10 @@ class _PosPrinterPickerScreenState extends State<PosPrinterPickerScreen> {
                   children: [
                     CircularProgressIndicator(),
                     SizedBox(height: 12),
-                    Text('Recherche des imprimantes...',
-                        style: TextStyle(fontSize: 16)),
+                    Text(
+                      'Recherche des imprimantes...',
+                      style: TextStyle(fontSize: 16),
+                    ),
                   ],
                 ),
               ),
@@ -147,7 +149,9 @@ class _PosPrinterPickerScreenState extends State<PosPrinterPickerScreen> {
                       child: Text(
                         _error!,
                         style: TextStyle(
-                            fontSize: 16, color: scheme.onErrorContainer),
+                          fontSize: 16,
+                          color: scheme.onErrorContainer,
+                        ),
                       ),
                     ),
                   ],
@@ -169,15 +173,21 @@ class _PosPrinterPickerScreenState extends State<PosPrinterPickerScreen> {
                         horizontal: 16,
                         vertical: 8,
                       ),
-                      leading:
-                          Icon(Icons.print_outlined, color: scheme.primary),
+                      leading: Icon(
+                        Icons.print_outlined,
+                        color: scheme.primary,
+                      ),
                       title: Text(
                         device.name,
                         style: const TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.w600),
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                      subtitle:
-                          Text(device.id, style: const TextStyle(fontSize: 13)),
+                      subtitle: Text(
+                        device.id,
+                        style: const TextStyle(fontSize: 13),
+                      ),
                       trailing: connecting
                           ? const SizedBox(
                               width: 22,

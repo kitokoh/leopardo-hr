@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -56,14 +56,8 @@ class TripDetailScreen extends ConsumerWidget {
                 label: l10n.t('to'),
                 value: trip.destinationLabel ?? l10n.t('unknown'),
               ),
-              _InfoRow(
-                label: l10n.t('date'),
-                value: trip.departureDate,
-              ),
-              _InfoRow(
-                label: l10n.t('time'),
-                value: trip.departureTime ?? '',
-              ),
+              _InfoRow(label: l10n.t('date'), value: trip.departureDate),
+              _InfoRow(label: l10n.t('time'), value: trip.departureTime ?? ''),
               _InfoRow(
                 label: l10n.t('meansOfTransport'),
                 value: trip.meansOfTransport ?? '',

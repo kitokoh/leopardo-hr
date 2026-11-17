@@ -15,7 +15,7 @@
 /// `validate-mobile-color-tokens.ps1`.
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Cible tactile minimale (guides d'accessibilite).
 const double posMinTouchTarget = 48;
@@ -67,10 +67,7 @@ class PosEmptyState extends StatelessWidget {
                 style: TextStyle(fontSize: 16, color: scheme.onSurfaceVariant),
               ),
             ],
-            if (action != null) ...[
-              const SizedBox(height: 20),
-              action!,
-            ],
+            if (action != null) ...[const SizedBox(height: 20), action!],
           ],
         ),
       ),

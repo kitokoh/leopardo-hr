@@ -10,7 +10,7 @@
 /// detourner la caisse vers un autre serveur au milieu du service.
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'pos_config.dart';
 
@@ -85,8 +85,9 @@ class _PosSettingsScreenState extends State<PosSettingsScreen> {
   @override
   void initState() {
     super.initState();
-    _urlController =
-        TextEditingController(text: widget.initialConfig.apiBaseUrl);
+    _urlController = TextEditingController(
+      text: widget.initialConfig.apiBaseUrl,
+    );
     _locationController = TextEditingController(
       text: widget.initialConfig.locationOrBranchId?.toString() ?? '',
     );
@@ -155,7 +156,8 @@ class _PosSettingsScreenState extends State<PosSettingsScreen> {
 
     if (url.isEmpty) {
       setState(
-          () => _saveError = 'L\u2019adresse de l\u2019API est obligatoire.');
+        () => _saveError = 'L\u2019adresse de l\u2019API est obligatoire.',
+      );
 
       return;
     }
@@ -173,8 +175,10 @@ class _PosSettingsScreenState extends State<PosSettingsScreen> {
     );
 
     if (!config.isValid) {
-      setState(() => _saveError =
-          'Adresse invalide — exemple : https://api.leopardo.app/api/v1');
+      setState(
+        () => _saveError =
+            'Adresse invalide — exemple : https://api.leopardo.app/api/v1',
+      );
 
       return;
     }
@@ -266,8 +270,10 @@ class _PosSettingsScreenState extends State<PosSettingsScreen> {
                   key: const Key('pos-settings-unlock'),
                   onPressed: _unlock,
                   icon: const Icon(Icons.lock_open),
-                  label: const Text('Deverrouiller',
-                      style: TextStyle(fontSize: 17)),
+                  label: const Text(
+                    'Deverrouiller',
+                    style: TextStyle(fontSize: 17),
+                  ),
                 ),
               ),
             ],
@@ -376,7 +382,9 @@ class _PosSettingsScreenState extends State<PosSettingsScreen> {
                   label: Text(
                     _saving ? 'Enregistrement...' : 'Enregistrer',
                     style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w600),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -452,8 +460,10 @@ class _PosSettingsScreenState extends State<PosSettingsScreen> {
                       ? null
                       : () => _openPinChange(context),
                   icon: const Icon(Icons.password),
-                  label: const Text('Changer le code',
-                      style: TextStyle(fontSize: 16)),
+                  label: const Text(
+                    'Changer le code',
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
               ),
             ],
@@ -480,9 +490,8 @@ class _PosSettingsScreenState extends State<PosSettingsScreen> {
     }
 
     // ignore: use_build_context_synchronously
-    ScaffoldMessenger.of(this.context).showSnackBar(
-      const SnackBar(content: Text('Code modifie.')),
-    );
+    ScaffoldMessenger.of(this.context)
+        .showSnackBar(const SnackBar(content: Text('Code modifie.')));
   }
 }
 

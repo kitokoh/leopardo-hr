@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -63,22 +63,18 @@ class PlatformAccountScreen extends ConsumerWidget {
         const SizedBox(height: 18),
         const MobileSectionLabel('Securite'),
         MobileListCard(
-          icon:
-              user?.twoFactorEnabled == true
-                  ? Icons.verified_user_rounded
-                  : Icons.security_update_warning_rounded,
-          iconColor:
-              user?.twoFactorEnabled == true
-                  ? AppColors.success
-                  : AppColors.warning,
-          title:
-              user?.twoFactorEnabled == true
-                  ? 'Double authentification active'
-                  : 'Double authentification inactive',
-          subtitle:
-              user?.twoFactorEnabled == true
-                  ? 'Le compte plateforme est protege par un second facteur.'
-                  : 'A activer avant exploitation commerciale large.',
+          icon: user?.twoFactorEnabled == true
+              ? Icons.verified_user_rounded
+              : Icons.security_update_warning_rounded,
+          iconColor: user?.twoFactorEnabled == true
+              ? AppColors.success
+              : AppColors.warning,
+          title: user?.twoFactorEnabled == true
+              ? 'Double authentification active'
+              : 'Double authentification inactive',
+          subtitle: user?.twoFactorEnabled == true
+              ? 'Le compte plateforme est protege par un second facteur.'
+              : 'A activer avant exploitation commerciale large.',
         ),
         MobileListCard(
           icon: Icons.key_rounded,
@@ -119,8 +115,8 @@ class PlatformAccountScreen extends ConsumerWidget {
           iconColor: AppColors.danger,
           title: 'Deconnexion',
           subtitle: 'Fermer la session super-admin sur cet appareil.',
-          onTap:
-              () => ref.read(platformAuthControllerProvider.notifier).logout(),
+          onTap: () =>
+              ref.read(platformAuthControllerProvider.notifier).logout(),
         ),
       ],
     );

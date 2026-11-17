@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 /// **Ecran de scan code-barres** partage par les deux caisses POS.
@@ -137,10 +137,8 @@ class _PosBarcodeScannerScreenState extends State<PosBarcodeScannerScreen> {
           MobileScanner(
             controller: _controller,
             onDetect: _onDetect,
-            errorBuilder: (context, error) => _ScannerError(
-              error: error,
-              cardRadius: widget.cardRadius,
-            ),
+            errorBuilder: (context, error) =>
+                _ScannerError(error: error, cardRadius: widget.cardRadius),
           ),
           // Viseur : un cadre net au centre, lisible a bout de bras.
           IgnorePointer(

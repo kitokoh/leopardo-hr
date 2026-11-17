@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
@@ -7,8 +7,9 @@ import 'package:leopardo_travel_agent/features/travel/screens/agent_home_screen.
 
 void main() {
   group('AgentHomeScreen (TRAVEL-701/#6088)', () {
-    testWidgets('affiche le hub agent avec les 4 parcours terrain',
-        (tester) async {
+    testWidgets('affiche le hub agent avec les 4 parcours terrain', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [

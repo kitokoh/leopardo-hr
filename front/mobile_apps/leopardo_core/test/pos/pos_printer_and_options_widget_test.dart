@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_core/core/pos/pos_esc_pos.dart';
 import 'package:leopardo_core/core/pos/pos_option_sheet.dart';
@@ -27,18 +27,16 @@ void main() {
       expect(find.text('Imprimante Bar'), findsOneWidget);
     });
 
-    testWidgets('affiche un message quand aucune imprimante n est trouvee',
-        (tester) async {
+    testWidgets('affiche un message quand aucune imprimante n est trouvee', (
+      tester,
+    ) async {
       final service = FakePosPrinterService();
 
       await tester.pumpWidget(wrap(PosPrinterPickerScreen(service: service)));
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('pos-printer-error')), findsOneWidget);
-      expect(
-        find.textContaining('Aucune imprimante detectee'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('Aucune imprimante detectee'), findsOneWidget);
     });
 
     testWidgets('selectionne et connecte une imprimante', (tester) async {
@@ -48,10 +46,12 @@ void main() {
       PosPrinterDevice? selected;
 
       await tester.pumpWidget(
-        wrap(PosPrinterPickerScreen(
-          service: service,
-          onSelected: (device) async => selected = device,
-        )),
+        wrap(
+          PosPrinterPickerScreen(
+            service: service,
+            onSelected: (device) async => selected = device,
+          ),
+        ),
       );
       await tester.pumpAndSettle();
 
@@ -68,17 +68,20 @@ void main() {
       final service = FakePosPrinterService(
         printers: const [PosPrinterDevice(id: 'AA:BB', name: 'Caisse 1')],
       );
-      await service
-          .select(const PosPrinterDevice(id: 'AA:BB', name: 'Caisse 1'));
+      await service.select(
+        const PosPrinterDevice(id: 'AA:BB', name: 'Caisse 1'),
+      );
       await service.connect();
 
       await tester.pumpWidget(
-        wrap(Scaffold(
-          body: PosPrintButton(
-            service: service,
-            buildBytes: () => const [0x1B, 0x40, 0x41],
+        wrap(
+          Scaffold(
+            body: PosPrintButton(
+              service: service,
+              buildBytes: () => const [0x1B, 0x40, 0x41],
+            ),
           ),
-        )),
+        ),
       );
 
       await tester.tap(find.byKey(const Key('pos-print-button')));
@@ -94,12 +97,14 @@ void main() {
       );
 
       await tester.pumpWidget(
-        wrap(Scaffold(
-          body: PosPrintButton(
-            service: service,
-            buildBytes: () => const [0x1B],
+        wrap(
+          Scaffold(
+            body: PosPrintButton(
+              service: service,
+              buildBytes: () => const [0x1B],
+            ),
           ),
-        )),
+        ),
       );
 
       await tester.tap(find.byKey(const Key('pos-print-button')));
@@ -115,17 +120,20 @@ void main() {
         failOnPrint: true,
         failMessage: 'Papier manquant.',
       );
-      await service
-          .select(const PosPrinterDevice(id: 'AA:BB', name: 'Caisse 1'));
+      await service.select(
+        const PosPrinterDevice(id: 'AA:BB', name: 'Caisse 1'),
+      );
       await service.connect();
 
       await tester.pumpWidget(
-        wrap(Scaffold(
-          body: PosPrintButton(
-            service: service,
-            buildBytes: () => const [0x1B],
+        wrap(
+          Scaffold(
+            body: PosPrintButton(
+              service: service,
+              buildBytes: () => const [0x1B],
+            ),
           ),
-        )),
+        ),
       );
 
       await tester.tap(find.byKey(const Key('pos-print-button')));
@@ -158,37 +166,44 @@ void main() {
 
     const options = PosProductOptions(groups: [cuisson, supplements]);
 
-    testWidgets('bloque la validation tant que l obligatoire n est pas choisi',
-        (tester) async {
-      await tester.pumpWidget(
-        wrap(const Scaffold(
-          body: PosOptionSheet(
-            productName: 'Poulet braise',
-            basePriceMinor: 4500,
-            productOptions: options,
+    testWidgets(
+      'bloque la validation tant que l obligatoire n est pas choisi',
+      (tester) async {
+        await tester.pumpWidget(
+          wrap(
+            const Scaffold(
+              body: PosOptionSheet(
+                productName: 'Poulet braise',
+                basePriceMinor: 4500,
+                productOptions: options,
+              ),
+            ),
           ),
-        )),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      final button = tester.widget<FilledButton>(
-        find.byKey(const Key('pos-option-confirm')),
-      );
+        final button = tester.widget<FilledButton>(
+          find.byKey(const Key('pos-option-confirm')),
+        );
 
-      expect(button.onPressed, isNull);
-      expect(find.text('Completez les choix obligatoires'), findsOneWidget);
-    });
+        expect(button.onPressed, isNull);
+        expect(find.text('Completez les choix obligatoires'), findsOneWidget);
+      },
+    );
 
-    testWidgets('active la validation apres le choix obligatoire',
-        (tester) async {
+    testWidgets('active la validation apres le choix obligatoire', (
+      tester,
+    ) async {
       await tester.pumpWidget(
-        wrap(const Scaffold(
-          body: PosOptionSheet(
-            productName: 'Poulet braise',
-            basePriceMinor: 4500,
-            productOptions: options,
+        wrap(
+          const Scaffold(
+            body: PosOptionSheet(
+              productName: 'Poulet braise',
+              basePriceMinor: 4500,
+              productOptions: options,
+            ),
           ),
-        )),
+        ),
       );
       await tester.pumpAndSettle();
 
@@ -205,13 +220,15 @@ void main() {
 
     testWidgets('met a jour le total avec les supplements', (tester) async {
       await tester.pumpWidget(
-        wrap(const Scaffold(
-          body: PosOptionSheet(
-            productName: 'Poulet braise',
-            basePriceMinor: 4500,
-            productOptions: options,
+        wrap(
+          const Scaffold(
+            body: PosOptionSheet(
+              productName: 'Poulet braise',
+              basePriceMinor: 4500,
+              productOptions: options,
+            ),
           ),
-        )),
+        ),
       );
       await tester.pumpAndSettle();
 
@@ -227,21 +244,23 @@ void main() {
       PosOptionSelectionResult? result;
 
       await tester.pumpWidget(
-        wrap(Scaffold(
-          body: Builder(
-            builder: (context) => ElevatedButton(
-              onPressed: () async {
-                result = await showPosOptionSheet(
-                  context: context,
-                  productName: 'Poulet braise',
-                  basePriceMinor: 4500,
-                  productOptions: options,
-                );
-              },
-              child: const Text('ouvrir'),
+        wrap(
+          Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () async {
+                  result = await showPosOptionSheet(
+                    context: context,
+                    productName: 'Poulet braise',
+                    basePriceMinor: 4500,
+                    productOptions: options,
+                  );
+                },
+                child: const Text('ouvrir'),
+              ),
             ),
           ),
-        )),
+        ),
       );
 
       await tester.tap(find.text('ouvrir'));

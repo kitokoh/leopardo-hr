@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_core/core/pos/pos_config.dart';
 import 'package:leopardo_core/core/pos/pos_settings_screen.dart';
@@ -8,8 +8,9 @@ void main() {
   Widget wrap(Widget child) => MaterialApp(home: child);
 
   PosSettingsScreen buildScreen({
-    PosAppConfig initial =
-        const PosAppConfig(apiBaseUrl: 'https://api.leopardo.app'),
+    PosAppConfig initial = const PosAppConfig(
+      apiBaseUrl: 'https://api.leopardo.app',
+    ),
     PosHealthProbe? probe,
     PosConfigSaver? onSave,
     String? pinHash,
@@ -51,7 +52,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-          find.text('Le code doit comporter 4 a 8 chiffres.'), findsOneWidget);
+        find.text('Le code doit comporter 4 a 8 chiffres.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('accepte le code d usine 0000', (tester) async {
@@ -86,12 +89,14 @@ void main() {
 
     testWidgets('pre-remplit l URL et l emplacement', (tester) async {
       await tester.pumpWidget(
-        wrap(buildScreen(
-          initial: const PosAppConfig(
-            apiBaseUrl: 'https://api.leopardo.app/api/v1',
-            locationId: 7,
+        wrap(
+          buildScreen(
+            initial: const PosAppConfig(
+              apiBaseUrl: 'https://api.leopardo.app/api/v1',
+              locationId: 7,
+            ),
           ),
-        )),
+        ),
       );
       await unlock(tester);
 
@@ -106,12 +111,16 @@ void main() {
       expect(locationField.controller?.text, '7');
     });
 
-    testWidgets('test de connexion reussi affiche le bandeau vert',
-        (tester) async {
+    testWidgets('test de connexion reussi affiche le bandeau vert', (
+      tester,
+    ) async {
       await tester.pumpWidget(
-        wrap(buildScreen(
-          probe: (_) async => const PosHealthResult(status: PosHealthStatus.ok),
-        )),
+        wrap(
+          buildScreen(
+            probe: (_) async =>
+                const PosHealthResult(status: PosHealthStatus.ok),
+          ),
+        ),
       );
       await unlock(tester);
 
@@ -124,10 +133,12 @@ void main() {
 
     testWidgets('test de connexion echoue affiche le motif', (tester) async {
       await tester.pumpWidget(
-        wrap(buildScreen(
-          probe: (_) async =>
-              const PosHealthResult(status: PosHealthStatus.unreachable),
-        )),
+        wrap(
+          buildScreen(
+            probe: (_) async =>
+                const PosHealthResult(status: PosHealthStatus.unreachable),
+          ),
+        ),
       );
       await unlock(tester);
 
@@ -148,38 +159,53 @@ void main() {
       await tester.tap(find.byKey(const Key('pos-settings-save')));
       await tester.pumpAndSettle();
 
-      expect(find.text('L\u2019adresse de l\u2019API est obligatoire.'),
-          findsOneWidget);
+      expect(
+        find.text('L\u2019adresse de l\u2019API est obligatoire.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('refuse un emplacement non numerique', (tester) async {
       await tester.pumpWidget(
-        wrap(buildScreen(
-          initial: const PosAppConfig(
-              apiBaseUrl: 'https://api.leopardo.app', locationId: 1),
-        )),
+        wrap(
+          buildScreen(
+            initial: const PosAppConfig(
+              apiBaseUrl: 'https://api.leopardo.app',
+              locationId: 1,
+            ),
+          ),
+        ),
       );
       await unlock(tester);
 
       await tester.enterText(
-          find.byKey(const Key('pos-settings-location')), 'abc');
+        find.byKey(const Key('pos-settings-location')),
+        'abc',
+      );
       await tester.tap(find.byKey(const Key('pos-settings-save')));
       await tester.pumpAndSettle();
 
       expect(
-          find.text('L\u2019identifiant doit etre un nombre.'), findsOneWidget);
+        find.text('L\u2019identifiant doit etre un nombre.'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('enregistre une configuration valide et normalise l URL',
-        (tester) async {
+    testWidgets('enregistre une configuration valide et normalise l URL', (
+      tester,
+    ) async {
       PosAppConfig? saved;
 
       await tester.pumpWidget(
-        wrap(buildScreen(
-          initial: const PosAppConfig(
-              apiBaseUrl: 'https://api.leopardo.app', locationId: 1),
-          onSave: (config) async => saved = config,
-        )),
+        wrap(
+          buildScreen(
+            initial: const PosAppConfig(
+              apiBaseUrl: 'https://api.leopardo.app',
+              locationId: 1,
+            ),
+            onSave: (config) async => saved = config,
+          ),
+        ),
       );
       await unlock(tester);
 
@@ -188,7 +214,9 @@ void main() {
         'api.leopardo.app/api/v1/',
       );
       await tester.enterText(
-          find.byKey(const Key('pos-settings-location')), '12');
+        find.byKey(const Key('pos-settings-location')),
+        '12',
+      );
       await tester.tap(find.byKey(const Key('pos-settings-save')));
       await tester.pumpAndSettle();
 

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -242,9 +242,8 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
       }
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error.toString())));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error.toString())));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -377,7 +376,9 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
   /// Libellé localisé du pays (clés core `commonCountries*`), fallback sur la
   /// valeur serveur (`PlatformCountryDefault.label`) pour les codes inconnus.
   String _localizedCountryLabel(
-      AppLocalizations l10n, PlatformCountryDefault country) {
+    AppLocalizations l10n,
+    PlatformCountryDefault country,
+  ) {
     return switch (country.country) {
       'DZ' => l10n.commonCountriesDz,
       'MA' => l10n.commonCountriesMa,
@@ -426,7 +427,8 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
               (country) => DropdownMenuItem(
                 value: country,
                 child: Text(
-                    '${_localizedCountryLabel(context.l10n, country)} (${country.country})'),
+                  '${_localizedCountryLabel(context.l10n, country)} (${country.country})',
+                ),
               ),
             )
             .toList(),
@@ -444,7 +446,7 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
       (context.l10n.companiesTimezone, selectedCountry.timezone),
       (
         context.l10n.commonLanguageLabel,
-        selectedCountry.language.toUpperCase()
+        selectedCountry.language.toUpperCase(),
       ),
     ];
 

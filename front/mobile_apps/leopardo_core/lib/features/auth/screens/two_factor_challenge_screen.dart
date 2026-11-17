@@ -1,5 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -116,9 +116,8 @@ class _TwoFactorChallengeScreenState
               // ── Champ de saisie ────────────────────────────────────────
               TextField(
                 controller: _codeController,
-                keyboardType: _useRecovery
-                    ? TextInputType.text
-                    : TextInputType.number,
+                keyboardType:
+                    _useRecovery ? TextInputType.text : TextInputType.number,
                 inputFormatters: _useRecovery
                     ? []
                     : [

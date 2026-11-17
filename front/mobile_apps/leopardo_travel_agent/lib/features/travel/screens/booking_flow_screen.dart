@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
@@ -210,9 +210,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
       body: SafeArea(
         child: tripState.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(
-            child: Text(l10n.t('loadError')),
-          ),
+          error: (e, _) => Center(child: Text(l10n.t('loadError'))),
           data: (trip) {
             final booking = _booking;
             return ListView(
@@ -516,9 +514,7 @@ class _BookingSummary extends ConsumerWidget {
               '${l10n.t('totalAmount')} : '
               '${(total / 100).toStringAsFixed(2)} '
               '${booking.currency ?? ''}',
-              style: AppTypography.subtitle.copyWith(
-                color: AppColors.success,
-              ),
+              style: AppTypography.subtitle.copyWith(color: AppColors.success),
             ),
           ],
         ),

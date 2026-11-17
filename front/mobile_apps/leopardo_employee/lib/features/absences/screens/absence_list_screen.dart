@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -79,7 +79,8 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
                 return MobileListGlassCard(
                   icon: Icons.event_available_outlined,
                   iconColor: color,
-                  title: absence.absenceTypeName ?? context.l10n.absencesTypeFallback,
+                  title: absence.absenceTypeName ??
+                      context.l10n.absencesTypeFallback,
                   subtitle:
                       '$dateLabel - ${absence.daysCount.toStringAsFixed(1)}${context.l10n.absencesDaysShort}',
                   trailing: MobileStatusPill(
@@ -169,9 +170,8 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
   Future<void> _viewProof(BuildContext context, int absenceId) async {
     setState(() => _downloadingProofId = absenceId);
     try {
-      final path = await ref
-          .read(absenceRepositoryProvider)
-          .downloadProof(absenceId);
+      final path =
+          await ref.read(absenceRepositoryProvider).downloadProof(absenceId);
       if (!context.mounted) return;
 
       final uri = Uri.file(path);
@@ -189,9 +189,9 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
       }
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${context.l10n.absencesFailure}$error')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${context.l10n.absencesFailure}$error')),
+      );
     } finally {
       if (mounted) setState(() => _downloadingProofId = null);
     }
@@ -230,9 +230,9 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
       );
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${context.l10n.absencesFailure}$error')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${context.l10n.absencesFailure}$error')),
+      );
     }
   }
 
@@ -368,7 +368,9 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
               balances.when(
                 data: (rawBalances) {
                   final options = rawBalances
-                      .map((b) => _AbsenceTypeOption.fromBalance(b, context.l10n))
+                      .map(
+                        (b) => _AbsenceTypeOption.fromBalance(b, context.l10n),
+                      )
                       .where((option) => option != null)
                       .cast<_AbsenceTypeOption>()
                       .toList();
@@ -512,9 +514,7 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
 
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(absenceRepositoryProvider)
-          .requestAbsence(
+      await ref.read(absenceRepositoryProvider).requestAbsence(
             absenceTypeId: selectedType.id,
             startDate: _startDate,
             endDate: _endDate,
@@ -532,9 +532,9 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
     } catch (error) {
       if (!context.mounted) return;
       setState(() => _submitting = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${context.l10n.absencesFailure}$error')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${context.l10n.absencesFailure}$error')),
+      );
     }
   }
 }
@@ -602,8 +602,7 @@ class _AbsenceTypeOption {
     if (id == null) return null;
 
     final name = type['name']?.toString();
-    final remaining =
-        balance['remaining_days'] ??
+    final remaining = balance['remaining_days'] ??
         balance['remaining'] ??
         balance['balance'] ??
         balance['available_days'];
@@ -613,7 +612,8 @@ class _AbsenceTypeOption {
 
     return _AbsenceTypeOption(
       id: id,
-      label: '${name == null || name.isEmpty ? l10n.absencesTypeFallback : name}$suffix',
+      label:
+          '${name == null || name.isEmpty ? l10n.absencesTypeFallback : name}$suffix',
     );
   }
 }

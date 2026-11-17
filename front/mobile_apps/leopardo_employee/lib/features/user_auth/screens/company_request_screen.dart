@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -69,11 +69,9 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
     } catch (e) {
       if (mounted) {
         final l10n = context.l10n;
-        final msg =
-            e is ApiException ? e.message : l10n.userAuthSubmitError;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(msg)));
+        final msg = e is ApiException ? e.message : l10n.userAuthSubmitError;
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(msg)));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -201,7 +199,8 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
               labelText: '${l10n.userAuthCompanyName} *',
               prefixIcon: const Icon(Icons.business_outlined),
             ),
-            validator: (v) => (v?.trim().isEmpty ?? true) ? l10n.commonRequired : null,
+            validator: (v) =>
+                (v?.trim().isEmpty ?? true) ? l10n.commonRequired : null,
           ),
           const SizedBox(height: 14),
           TextFormField(

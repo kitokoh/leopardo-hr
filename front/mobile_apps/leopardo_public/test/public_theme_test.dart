@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_public/core/theme/public_theme.dart';
 
@@ -67,7 +67,9 @@ void main() {
       }
     });
 
-    test('la navigation basse signale l’onglet actif par la couleur ET la graisse', () {
+    test(
+        'la navigation basse signale l’onglet actif par la couleur ET la graisse',
+        () {
       final theme = PublicTheme.light();
       final selected = theme.navigationBarTheme.labelTextStyle?.resolve({
         WidgetState.selected,

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_cameras/core/i18n/app_strings.dart';
@@ -131,8 +131,7 @@ class _CameraCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
-    final statusColor =
-        camera.isActive ? AppColors.success : AppColors.danger;
+    final statusColor = camera.isActive ? AppColors.success : AppColors.danger;
 
     return Card(
       elevation: 0,
@@ -182,8 +181,7 @@ class _CameraCard extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
                   color: statusColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(999),

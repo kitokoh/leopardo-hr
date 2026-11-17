@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'app_colors.dart';
 import 'app_typography.dart';
@@ -66,9 +66,8 @@ class AppTheme {
       cardColor: surface,
       colorScheme: scheme,
       fontFamily: AppTypography.fontFamily,
-      textTheme: AppTypography.buildTextTheme(
-        text,
-      ).apply(bodyColor: text, displayColor: text),
+      textTheme: AppTypography.buildTextTheme(text)
+          .apply(bodyColor: text, displayColor: text),
       dividerColor: border,
       appBarTheme: AppBarTheme(
         backgroundColor: scaffold,

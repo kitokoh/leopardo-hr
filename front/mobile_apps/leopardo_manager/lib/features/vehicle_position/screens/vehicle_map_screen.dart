@@ -1,5 +1,5 @@
 import 'package:leopardo_core/core/widgets/glass_card.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -110,7 +110,8 @@ class VehicleMapScreen extends ConsumerWidget {
                                   const SizedBox(width: 4),
                                   Text(
                                     context.l10n.vehicleMapSpeedKmh(
-                                        v.speed!.toStringAsFixed(0)),
+                                      v.speed!.toStringAsFixed(0),
+                                    ),
                                     style: AppTypography.bodySmall.copyWith(
                                       color: AppColors.textMutedDark,
                                     ),

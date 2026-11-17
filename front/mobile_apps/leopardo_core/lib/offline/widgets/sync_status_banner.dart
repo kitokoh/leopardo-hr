@@ -2,7 +2,8 @@
 // SyncStatusBanner — Shows offline/edge/cloud mode in UI
 // ============================================================
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../services/sync_service.dart';
 
 class SyncStatusBanner extends StatelessWidget {
@@ -38,7 +39,8 @@ class SyncStatusBanner extends StatelessWidget {
                 )
               : null,
         ),
-      SyncMode.cloud => const SizedBox.shrink(), // Cloud = normal mode, no banner
+      SyncMode.cloud =>
+        const SizedBox.shrink(), // Cloud = normal mode, no banner
     };
   }
 

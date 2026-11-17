@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
@@ -22,9 +22,10 @@ class CrmHubScreen extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           l10n.crmHubSubtitle,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: MobileSurface.muted,
-              ),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: MobileSurface.muted),
         ),
         const SizedBox(height: 16),
         _HubTile(

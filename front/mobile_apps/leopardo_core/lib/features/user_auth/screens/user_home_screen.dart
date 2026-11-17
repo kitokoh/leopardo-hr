@@ -1,5 +1,5 @@
 import 'package:leopardo_core/core/widgets/glass_card.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -193,14 +193,16 @@ class UserHomeScreen extends ConsumerWidget {
 
   /// #5540 — Affiche la section "Ma situation" avec les statuts personnels.
   Widget _buildPersonalStatusSection(
-      BuildContext context, AppUser user, Color muted) {
+    BuildContext context,
+    AppUser user,
+    Color muted,
+  ) {
     final l10n = context.l10n;
     final statusLabels = <PersonalStatus, String>{
       PersonalStatus.student: l10n.personalOnboardingStatusStudent,
       PersonalStatus.employee: l10n.personalOnboardingStatusEmployee,
       PersonalStatus.entrepreneur: l10n.personalOnboardingStatusEntrepreneur,
-      PersonalStatus.seekingEmployment:
-          l10n.personalOnboardingStatusSeeking,
+      PersonalStatus.seekingEmployment: l10n.personalOnboardingStatusSeeking,
     };
 
     return Column(
@@ -330,8 +332,10 @@ class _EmployeeLinkGlassCard extends StatelessWidget {
   final String companyName;
   final VoidCallback onTap;
 
-  const _EmployeeLinkGlassCard(
-      {required this.companyName, required this.onTap});
+  const _EmployeeLinkGlassCard({
+    required this.companyName,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -365,8 +369,10 @@ class _CompanyRequestGlassCard extends StatelessWidget {
   final String companyName;
   final String status;
 
-  const _CompanyRequestGlassCard(
-      {required this.companyName, required this.status});
+  const _CompanyRequestGlassCard({
+    required this.companyName,
+    required this.status,
+  });
 
   @override
   Widget build(BuildContext context) {

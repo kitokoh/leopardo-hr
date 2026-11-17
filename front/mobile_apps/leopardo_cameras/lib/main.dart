@@ -1,7 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show GlobalCupertinoLocalizations;
+import 'package:flutter_localizations/flutter_localizations.dart'
+    hide GlobalMaterialLocalizations, GlobalCupertinoLocalizations;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -113,15 +116,13 @@ final _routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/camera/:id',
-        builder: (context, state) => CameraLiveScreen(
-          cameraId: int.parse(state.pathParameters['id']!),
-        ),
+        builder: (context, state) =>
+            CameraLiveScreen(cameraId: int.parse(state.pathParameters['id']!)),
       ),
       GoRoute(
         path: '/events',
         builder: (context, state) => CameraEventsScreen(
-          focusEventId:
-              int.tryParse(state.uri.queryParameters['focus'] ?? ''),
+          focusEventId: int.tryParse(state.uri.queryParameters['focus'] ?? ''),
         ),
       ),
       GoRoute(

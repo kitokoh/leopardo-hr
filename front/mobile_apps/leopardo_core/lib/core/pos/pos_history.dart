@@ -16,7 +16,7 @@
 /// la trace.
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'pos_esc_pos.dart';
 import 'pos_printer.dart';
@@ -106,7 +106,7 @@ class PosSalesHistory {
   PosSalesHistory add(PosSaleRecord record) {
     final updated = [
       record,
-      ...records.where((existing) => existing.id != record.id)
+      ...records.where((existing) => existing.id != record.id),
     ];
 
     return PosSalesHistory(
@@ -133,7 +133,7 @@ class PosSalesHistory {
   /// montant (« c'etait 45 euros »), rarement de l'heure exacte.
   List<PosSaleRecord> byTotal(int totalMinor) => [
         for (final record in records)
-          if (record.totalMinor == totalMinor) record
+          if (record.totalMinor == totalMinor) record,
       ];
 
   /// Ventes d'une journee donnee (comparaison sur la date locale).
@@ -365,8 +365,9 @@ class _PosSalesHistoryScreenState extends State<PosSalesHistoryScreen> {
                             ? const SizedBox(
                                 width: 22,
                                 height: 22,
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : const Icon(Icons.print_outlined),
                       ),

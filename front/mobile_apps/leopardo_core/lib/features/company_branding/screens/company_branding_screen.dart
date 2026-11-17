@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -92,10 +92,8 @@ class _BrandPreview extends StatelessWidget {
                         child: Image.network(
                           branding.logoUrl!,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Icon(
-                            Icons.business_rounded,
-                            color: primary,
-                          ),
+                          errorBuilder: (_, __, ___) =>
+                              Icon(Icons.business_rounded, color: primary),
                         ),
                       ),
               ),
@@ -195,9 +193,8 @@ class _BrandingFormState extends ConsumerState<_BrandingForm> {
       );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error.toString())));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error.toString())));
     } finally {
       if (mounted) setState(() => _saving = false);
     }

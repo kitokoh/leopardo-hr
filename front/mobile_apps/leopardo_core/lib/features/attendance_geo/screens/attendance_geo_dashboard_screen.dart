@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -93,8 +93,7 @@ class _StatsGrid extends StatelessWidget {
     final pending = counters['pending_validation'] ?? 0;
     final approved = counters['approved'] ?? 0;
     final rejected = counters['rejected'] ?? 0;
-    final dateLabel =
-        (stats['today'] as String?) ??
+    final dateLabel = (stats['today'] as String?) ??
         DateFormat('yyyy-MM-dd').format(DateTime.now());
     DateTime? parsedDate;
     try {

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -90,9 +90,11 @@ class PlatformDashboardScreen extends ConsumerWidget {
                   runSpacing: 8,
                   children: [
                     LeopardoBadge.present(
-                        label: '${data.activeCompanies} actives'),
+                      label: '${data.activeCompanies} actives',
+                    ),
                     LeopardoBadge.onLeave(
-                        label: '${data.trialCompanies} essais'),
+                      label: '${data.trialCompanies} essais',
+                    ),
                     LeopardoBadge(
                       label: '${data.totalCompanies} totales',
                       color: AppColors.rh,

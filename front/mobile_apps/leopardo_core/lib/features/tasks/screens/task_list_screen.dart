@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -408,9 +408,8 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Echec : $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Echec : $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);

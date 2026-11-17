@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:ui' show PlatformDispatcher;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -312,8 +312,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _firstNameController,
-              decoration:
-                  InputDecoration(labelText: context.l10n.settingsFirstName),
+              decoration: InputDecoration(
+                labelText: context.l10n.settingsFirstName,
+              ),
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? context.l10n.settingsFirstNameRequired
                   : null,
@@ -322,7 +323,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: _lastNameController,
               decoration: InputDecoration(
-                  labelText: context.l10n.settingsLastNameLabel),
+                labelText: context.l10n.settingsLastNameLabel,
+              ),
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? context.l10n.settingsLastNameRequired
                   : null,
@@ -331,8 +333,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              decoration:
-                  InputDecoration(labelText: context.l10n.settingsEmailLabel),
+              decoration: InputDecoration(
+                labelText: context.l10n.settingsEmailLabel,
+              ),
               validator: (value) {
                 final trimmed = value?.trim() ?? '';
                 if (trimmed.isEmpty) return context.l10n.settingsEmailRequired;
@@ -483,9 +486,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               if (text == null || text.isEmpty) {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(context.l10n.settingsNoCompanyQr),
-                  ),
+                  SnackBar(content: Text(context.l10n.settingsNoCompanyQr)),
                 );
                 return;
               }
@@ -835,9 +836,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final currentMode = ref.watch(themeModeProvider);
 
     final options = [
-      (ThemeMode.system, Icons.brightness_auto_outlined, context.l10n.settingsThemeSystem),
-      (ThemeMode.light, Icons.light_mode_outlined, context.l10n.settingsThemeLight),
-      (ThemeMode.dark, Icons.dark_mode_outlined, context.l10n.settingsThemeDark),
+      (
+        ThemeMode.system,
+        Icons.brightness_auto_outlined,
+        context.l10n.settingsThemeSystem,
+      ),
+      (
+        ThemeMode.light,
+        Icons.light_mode_outlined,
+        context.l10n.settingsThemeLight,
+      ),
+      (
+        ThemeMode.dark,
+        Icons.dark_mode_outlined,
+        context.l10n.settingsThemeDark,
+      ),
     ];
 
     return Container(
@@ -853,8 +866,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 8),
           Text(
             context.l10n.settingsThemeHint,
-            style: AppTypography.bodySmall
-                .copyWith(color: MobileSurface.secondary),
+            style: AppTypography.bodySmall.copyWith(
+              color: MobileSurface.secondary,
+            ),
           ),
           const SizedBox(height: 16),
           RadioGroup<ThemeMode>(
@@ -872,12 +886,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       value: opt.$1,
                       title: Row(
                         children: [
-                          Icon(opt.$2, size: 20, color: MobileSurface.secondary),
+                          Icon(
+                            opt.$2,
+                            size: 20,
+                            color: MobileSurface.secondary,
+                          ),
                           const SizedBox(width: 10),
                           Text(
                             opt.$3,
-                            style: AppTypography.body
-                                .copyWith(color: MobileSurface.text),
+                            style: AppTypography.body.copyWith(
+                              color: MobileSurface.text,
+                            ),
                           ),
                         ],
                       ),
@@ -1120,7 +1139,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
     );
   }
-
 
   /// Issue #5683 — accès à l'écran de gestion 2FA (enrôlement, codes de
   /// récupération, désactivation). Écran partagé leopardo_core.

@@ -1,5 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show GlobalCupertinoLocalizations;
+import 'package:flutter_localizations/flutter_localizations.dart'
+    hide GlobalMaterialLocalizations, GlobalCupertinoLocalizations;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_core/features/auth/screens/welcome_screen.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
@@ -26,7 +29,13 @@ void main() {
     expect(find.text('Leopardo RH'), findsOneWidget);
 
     // Hero title is localized via the ARB catalog (fr).
-    expect(find.text(AppLocalizations.of(tester.element(find.byType(WelcomeScreen))).welcomeHeroTitle), findsOneWidget);
+    expect(
+      find.text(
+        AppLocalizations.of(tester.element(find.byType(WelcomeScreen)))
+            .welcomeHeroTitle,
+      ),
+      findsOneWidget,
+    );
 
     // The first current capability is visible.
     expect(find.text('Mon équipe'), findsOneWidget);

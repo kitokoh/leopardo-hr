@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -87,7 +87,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               return ListView(
                 shrinkWrap: true,
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
                 children: [
                   GlassCard(
                     padding: const EdgeInsets.all(20),
@@ -175,16 +178,22 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             ),
                             child: Icon(
                               isDone ? Icons.check : Icons.flag_outlined,
-                              color: isDone ? AppColors.success : MobileSurface.text,
+                              color: isDone
+                                  ? AppColors.success
+                                  : MobileSurface.text,
                               size: 20,
                             ),
                           ),
                           title: Text(
                             step.title,
                             style: AppTypography.body.copyWith(
-                              color: isDone ? MobileSurface.muted : MobileSurface.text,
-                              fontWeight: isDone ? FontWeight.normal : FontWeight.w600,
-                              decoration: isDone ? TextDecoration.lineThrough : null,
+                              color: isDone
+                                  ? MobileSurface.muted
+                                  : MobileSurface.text,
+                              fontWeight:
+                                  isDone ? FontWeight.normal : FontWeight.w600,
+                              decoration:
+                                  isDone ? TextDecoration.lineThrough : null,
                             ),
                           ),
                           subtitle: step.description != null
@@ -213,7 +222,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                     ),
                                     Container(
                                       decoration: BoxDecoration(
-                                        color: AppColors.success.withValues(alpha: 0.1),
+                                        color: AppColors.success.withValues(
+                                          alpha: 0.1,
+                                        ),
                                         shape: BoxShape.circle,
                                       ),
                                       child: IconButton(

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
@@ -98,10 +98,7 @@ class _StatusPill extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
-      child: Text(
-        status,
-        style: TextStyle(color: color, fontSize: 11),
-      ),
+      child: Text(status, style: TextStyle(color: color, fontSize: 11)),
     );
   }
 }

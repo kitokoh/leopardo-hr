@@ -1,5 +1,6 @@
 import 'dart:ui';
-import 'package:flutter/material.dart';
+
+import 'package:material_ui/material_ui.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 
@@ -28,18 +29,15 @@ class GlassTile extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Stitch design uses a translucent background with a very subtle border
-    final bgColor =
-        isDark
-            ? AppColors.mobileDarkGlass.withValues(alpha: 0.4)
-            : Colors.white.withValues(alpha: 0.7);
-    final borderColor =
-        isDark
-            ? Colors.white.withValues(alpha: 0.1)
-            : Colors.black.withValues(alpha: 0.05);
-    final shadowColor =
-        isDark
-            ? Colors.black.withValues(alpha: 0.2)
-            : Colors.black.withValues(alpha: 0.05);
+    final bgColor = isDark
+        ? AppColors.mobileDarkGlass.withValues(alpha: 0.4)
+        : Colors.white.withValues(alpha: 0.7);
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.1)
+        : Colors.black.withValues(alpha: 0.05);
+    final shadowColor = isDark
+        ? Colors.black.withValues(alpha: 0.2)
+        : Colors.black.withValues(alpha: 0.05);
     final defaultIconColor =
         iconColor ?? AppColors.rh; // Emerald (brand) by default
 

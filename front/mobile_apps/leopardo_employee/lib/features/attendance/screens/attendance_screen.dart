@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -167,8 +167,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     final messenger = ScaffoldMessenger.of(context);
     messenger.showSnackBar(
       SnackBar(
-        content:
-            Text(context.l10n.attendanceSendingToServer(choice.loadingLabel)),
+        content: Text(
+          context.l10n.attendanceSendingToServer(choice.loadingLabel),
+        ),
         duration: const Duration(seconds: 2),
         backgroundColor: AppColors.rhDark,
       ),
@@ -189,7 +190,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           success
               ? choice.successLabel
               : ref.read(attendanceProvider).error ??
-                  context.l10n.attendanceRetryAfterFailure(choice.failureLabel),
+                  context.l10n.attendanceRetryAfterFailure(
+                    choice.failureLabel,
+                  ),
         ),
         backgroundColor: success ? AppColors.rh : AppColors.danger,
       ),
@@ -305,10 +308,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             ...choices.map(
               (choice) => ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text(
-                  choice.title,
-                  style: const TextStyle(color: _text),
-                ),
+                title: Text(choice.title, style: const TextStyle(color: _text)),
                 subtitle: Text(
                   choice.subtitle,
                   style: const TextStyle(color: _muted, fontSize: 12),
@@ -640,14 +640,18 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           Row(
             children: [
               Expanded(
-                  child: _TimeChip(
-                      label: context.l10n.attendanceCheckinLabel,
-                      value: checkIn)),
+                child: _TimeChip(
+                  label: context.l10n.attendanceCheckinLabel,
+                  value: checkIn,
+                ),
+              ),
               const SizedBox(width: 10),
               Expanded(
-                  child: _TimeChip(
-                      label: context.l10n.attendanceCheckoutLabel,
-                      value: checkOut)),
+                child: _TimeChip(
+                  label: context.l10n.attendanceCheckoutLabel,
+                  value: checkOut,
+                ),
+              ),
             ],
           ),
           if (sessionsCount > 1 || breakMinutes > 0) ...[
@@ -982,7 +986,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                 subtitle: day.isAbsent
                     ? context.l10n.attendanceNoPunchForDay
                     : context.l10n.attendanceDaySessionsSummary(
-                        day.hoursFormatted, day.sessionsCount),
+                        day.hoursFormatted,
+                        day.sessionsCount,
+                      ),
               ),
               const SizedBox(height: 14),
               _ActionTile(
@@ -1040,8 +1046,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         builder: (context, controller) => SafeArea(
           child: Consumer(
             builder: (context, ref, _) {
-              final anomaliesAsync =
-                  ref.watch(monthlyAnomaliesProvider(day.date));
+              final anomaliesAsync = ref.watch(
+                monthlyAnomaliesProvider(day.date),
+              );
               final dayAnomalies = anomaliesAsync.maybeWhen(
                 data: (report) => report.forDate(_dateKey(day.date)),
                 orElse: () => const <AttendanceAnomaly>[],
@@ -1869,10 +1876,9 @@ class _TaskCompletionSheetState extends ConsumerState<_TaskCompletionSheet> {
       ).showSnackBar(SnackBar(content: Text(context.l10n.attendanceTaskDone)));
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
-            SnackBar(content: Text(context.l10n.attendanceTaskFailed(e))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.attendanceTaskFailed(e))),
+        );
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -1957,7 +1963,8 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     if (_checkIn == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(context.l10n.attendanceCorrectionCheckinRequired)),
+          content: Text(context.l10n.attendanceCorrectionCheckinRequired),
+        ),
       );
       return;
     }
@@ -1965,9 +1972,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     if (widget.canDirectEdit && widget.logId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            context.l10n.attendanceCorrectionNoLogWarning,
-          ),
+          content: Text(context.l10n.attendanceCorrectionNoLogWarning),
           backgroundColor: AppColors.warning,
         ),
       );
@@ -2013,11 +2018,17 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
         content: Text(
           widget.canDirectEdit
               ? context.l10n.attendanceCorrectionDirectSnack(
-                  DateFormat('d MMM', deviceIntlDateLocale)
-                      .format(widget.targetDate))
+                  DateFormat(
+                    'd MMM',
+                    deviceIntlDateLocale,
+                  ).format(widget.targetDate),
+                )
               : context.l10n.attendanceCorrectionRequestSnack(
-                  DateFormat('d MMM', deviceIntlDateLocale)
-                      .format(widget.targetDate)),
+                  DateFormat(
+                    'd MMM',
+                    deviceIntlDateLocale,
+                  ).format(widget.targetDate),
+                ),
         ),
         backgroundColor: AppColors.rh,
         duration: const Duration(seconds: 4),
@@ -2057,8 +2068,11 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
             const SizedBox(height: 16),
             Text(
               context.l10n.attendanceCorrectionEditDateTitle(
-                  DateFormat('EEEE d MMMM', deviceIntlDateLocale)
-                      .format(widget.targetDate)),
+                DateFormat(
+                  'EEEE d MMMM',
+                  deviceIntlDateLocale,
+                ).format(widget.targetDate),
+              ),
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -2071,7 +2085,9 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                   ? context.l10n.attendanceCorrectionDirectHint
                   : context.l10n.attendanceCorrectionRequestHint,
               style: const TextStyle(
-                  fontSize: 12, color: AppColors.mobileDarkMuted),
+                fontSize: 12,
+                color: AppColors.mobileDarkMuted,
+              ),
             ),
             const SizedBox(height: 18),
             Row(
@@ -2099,7 +2115,9 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
               maxLines: 2,
               maxLength: 200,
               style: const TextStyle(
-                  fontSize: 13, color: AppColors.mobileDarkText),
+                fontSize: 13,
+                color: AppColors.mobileDarkText,
+              ),
               decoration: InputDecoration(
                 hintText: context.l10n.attendanceCorrectionReasonHint,
                 hintStyle: const TextStyle(
@@ -2110,13 +2128,15 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                 fillColor: AppColors.mobileDarkField,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide:
-                      const BorderSide(color: AppColors.mobileDarkBorder),
+                  borderSide: const BorderSide(
+                    color: AppColors.mobileDarkBorder,
+                  ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide:
-                      const BorderSide(color: AppColors.mobileDarkBorder),
+                  borderSide: const BorderSide(
+                    color: AppColors.mobileDarkBorder,
+                  ),
                 ),
               ),
               validator: (value) => value == null || value.trim().isEmpty
@@ -2188,7 +2208,9 @@ class _TimeTile extends StatelessWidget {
             Text(
               label,
               style: const TextStyle(
-                  fontSize: 10, color: AppColors.mobileDarkMuted),
+                fontSize: 10,
+                color: AppColors.mobileDarkMuted,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
@@ -2230,8 +2252,10 @@ class _TimeChip extends StatelessWidget {
         children: [
           Text(
             label,
-            style:
-                const TextStyle(fontSize: 10, color: AppColors.mobileDarkMuted),
+            style: const TextStyle(
+              fontSize: 10,
+              color: AppColors.mobileDarkMuted,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
@@ -2325,7 +2349,9 @@ class _WeekStat extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-              fontSize: 10, color: AppColors.mobileDarkDisabled),
+            fontSize: 10,
+            color: AppColors.mobileDarkDisabled,
+          ),
         ),
       ],
     );

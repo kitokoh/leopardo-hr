@@ -1,7 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show GlobalCupertinoLocalizations;
+import 'package:flutter_localizations/flutter_localizations.dart'
+    hide GlobalMaterialLocalizations, GlobalCupertinoLocalizations;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -103,10 +106,7 @@ final _routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const AgentHomeScreen(),
-      ),
+      GoRoute(path: '/', builder: (context, state) => const AgentHomeScreen()),
       GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
       GoRoute(
         path: '/search',
@@ -114,15 +114,13 @@ final _routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/trip/:id',
-        builder: (context, state) => TripDetailScreen(
-          tripId: int.parse(state.pathParameters['id']!),
-        ),
+        builder: (context, state) =>
+            TripDetailScreen(tripId: int.parse(state.pathParameters['id']!)),
       ),
       GoRoute(
         path: '/trip/:id/sell',
-        builder: (context, state) => BookingFlowScreen(
-          tripId: int.parse(state.pathParameters['id']!),
-        ),
+        builder: (context, state) =>
+            BookingFlowScreen(tripId: int.parse(state.pathParameters['id']!)),
       ),
       GoRoute(
         path: '/bookings',
@@ -132,10 +130,7 @@ final _routerProvider = Provider<GoRouter>((ref) {
         path: '/manifest',
         builder: (context, state) => const ManifestScreen(),
       ),
-      GoRoute(
-        path: '/pdv',
-        builder: (context, state) => const PdvScreen(),
-      ),
+      GoRoute(path: '/pdv', builder: (context, state) => const PdvScreen()),
     ],
   );
 });

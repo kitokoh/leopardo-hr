@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
@@ -154,10 +154,7 @@ class _StatusBadge extends ConsumerWidget {
         color: color.withValues(alpha: 0.14),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(
-        label,
-        style: AppTypography.caption.copyWith(color: color),
-      ),
+      child: Text(label, style: AppTypography.caption.copyWith(color: color)),
     );
   }
 }

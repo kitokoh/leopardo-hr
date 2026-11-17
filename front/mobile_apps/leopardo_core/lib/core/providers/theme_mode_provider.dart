@@ -5,7 +5,7 @@
 ///   ref.read(themeModeProvider.notifier).setMode(ThemeMode.light);
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:leopardo_core/core/providers/base_providers.dart';

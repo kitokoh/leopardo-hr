@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../core/models/pos_models.dart';
 import '../../core/theme/pos_theme.dart';
@@ -82,7 +82,9 @@ class _TableTile extends StatelessWidget {
 
     final background = selected
         ? scheme.primaryContainer
-        : (table.occupied ? scheme.errorContainer : scheme.surfaceContainerHighest);
+        : (table.occupied
+            ? scheme.errorContainer
+            : scheme.surfaceContainerHighest);
     final foreground = selected
         ? scheme.onPrimaryContainer
         : (table.occupied ? scheme.onErrorContainer : scheme.onSurface);
@@ -138,7 +140,11 @@ class _TableTile extends StatelessWidget {
                     ),
                     if (tooSmall) ...[
                       const SizedBox(width: 6),
-                      Icon(Icons.warning_amber_rounded, size: 14, color: scheme.error),
+                      Icon(
+                        Icons.warning_amber_rounded,
+                        size: 14,
+                        color: scheme.error,
+                      ),
                     ],
                   ],
                 ),
@@ -165,7 +171,11 @@ class _FloorPlanEmpty extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.table_restaurant_outlined, size: 44, color: scheme.outline),
+            Icon(
+              Icons.table_restaurant_outlined,
+              size: 44,
+              color: scheme.outline,
+            ),
             const SizedBox(height: 12),
             Text(
               'Aucune table configuree',

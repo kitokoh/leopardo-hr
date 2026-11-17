@@ -1,5 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show GlobalCupertinoLocalizations;
+import 'package:flutter_localizations/flutter_localizations.dart'
+    hide GlobalMaterialLocalizations, GlobalCupertinoLocalizations;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_public/core/i18n/app_strings.dart';
@@ -81,9 +84,7 @@ void main() {
     testWidgets(
         'accueil : la recherche est visible et les résultats arrivent '
         'sans aucun compte', (tester) async {
-      final discovery = _FakeDiscoveryRepository(
-        items: [_nadia, _boulangerie],
-      );
+      final discovery = _FakeDiscoveryRepository(items: [_nadia, _boulangerie]);
 
       await tester.pumpWidget(
         app(discovery: discovery, profile: _FakeProfileRepository()),
@@ -101,15 +102,17 @@ void main() {
       // 3. Aucun écran de connexion, aucun champ de téléphone : le parcours
       //    de consultation ne demande rien.
       expect(find.text(strings.t('authLoginTitle')), findsNothing);
-      expect(find.byType(TextField), findsOneWidget,
-          reason: 'Un seul champ : la recherche. Aucun champ de téléphone.');
+      expect(
+        find.byType(TextField),
+        findsOneWidget,
+        reason: 'Un seul champ : la recherche. Aucun champ de téléphone.',
+      );
     });
 
-    testWidgets('recherche : taper filtre la liste, sans quitter l\'accueil',
-        (tester) async {
-      final discovery = _FakeDiscoveryRepository(
-        items: [_nadia, _boulangerie],
-      );
+    testWidgets('recherche : taper filtre la liste, sans quitter l\'accueil', (
+      tester,
+    ) async {
+      final discovery = _FakeDiscoveryRepository(items: [_nadia, _boulangerie]);
 
       await tester.pumpWidget(
         app(discovery: discovery, profile: _FakeProfileRepository()),
@@ -173,10 +176,14 @@ void main() {
       await tester.pumpAndSettle();
 
       // Le bouton existe parce que le SERVEUR a déclaré `contact`.
-      final contact =
-          find.widgetWithText(FilledButton, strings.t('businessContact'));
-      final contactTonal =
-          find.widgetWithText(FilledButton, strings.t('businessContact'));
+      final contact = find.widgetWithText(
+        FilledButton,
+        strings.t('businessContact'),
+      );
+      final contactTonal = find.widgetWithText(
+        FilledButton,
+        strings.t('businessContact'),
+      );
       expect(
         contact.evaluate().isNotEmpty || contactTonal.evaluate().isNotEmpty,
         isTrue,
@@ -211,9 +218,7 @@ void main() {
         items: [_boulangerie],
         actions: const {'restaurant': <String>[]},
       );
-      final profile = _FakeProfileRepository(
-        profile: _boulangerieProfile,
-      );
+      final profile = _FakeProfileRepository(profile: _boulangerieProfile);
 
       await tester.pumpWidget(app(discovery: discovery, profile: profile));
       await tester.pumpAndSettle();
@@ -229,24 +234,26 @@ void main() {
       );
     });
 
-    testWidgets('404 : une fiche retirée est une information, jamais une panne',
-        (tester) async {
-      final discovery = _FakeDiscoveryRepository(items: [_nadia]);
-      final profile = _FakeProfileRepository(
-        failure: const PublicApiFailure(PublicFailureKind.notFound),
-      );
+    testWidgets(
+      '404 : une fiche retirée est une information, jamais une panne',
+      (tester) async {
+        final discovery = _FakeDiscoveryRepository(items: [_nadia]);
+        final profile = _FakeProfileRepository(
+          failure: const PublicApiFailure(PublicFailureKind.notFound),
+        );
 
-      await tester.pumpWidget(app(discovery: discovery, profile: profile));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(app(discovery: discovery, profile: profile));
+        await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(DiscoveryTile));
-      await tester.pumpAndSettle();
+        await tester.tap(find.byType(DiscoveryTile));
+        await tester.pumpAndSettle();
 
-      expect(find.text(strings.t('stateNotFoundTitle')), findsOneWidget);
-      // Le 404 ne propose PAS « Réessayer » : réessayer ne ressuscitera pas
-      // un commerce dépublié.
-      expect(find.text(strings.t('stateRetry')), findsNothing);
-    });
+        expect(find.text(strings.t('stateNotFoundTitle')), findsOneWidget);
+        // Le 404 ne propose PAS « Réessayer » : réessayer ne ressuscitera pas
+        // un commerce dépublié.
+        expect(find.text(strings.t('stateRetry')), findsNothing);
+      },
+    );
   });
 }
 
@@ -312,9 +319,11 @@ class _FakeDiscoveryRepository implements PublicDiscoveryRepository {
     final filtered = q.isEmpty
         ? items
         : items
-            .where((i) =>
-                i.name.toLowerCase().contains(q) ||
-                i.slug.toLowerCase().contains(q))
+            .where(
+              (i) =>
+                  i.name.toLowerCase().contains(q) ||
+                  i.slug.toLowerCase().contains(q),
+            )
             .toList(growable: false);
 
     return DiscoveryPage(

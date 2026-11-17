@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_core/core/providers/base_providers.dart';
@@ -12,9 +12,7 @@ void main() {
 
   ProviderContainer makeContainer() {
     final container = ProviderContainer(
-      overrides: [
-        appPreferencesProvider.overrideWithValue(AppPreferences()),
-      ],
+      overrides: [appPreferencesProvider.overrideWithValue(AppPreferences())],
     );
     addTearDown(container.dispose);
     return container;
@@ -32,20 +30,21 @@ void main() {
     await container.read(themeModeProvider.notifier).setMode(ThemeMode.light);
 
     expect(container.read(themeModeProvider), ThemeMode.light);
-    expect(
-      container.read(appPreferencesProvider).themeModeSetting,
-      'light',
-    );
+    expect(container.read(appPreferencesProvider).themeModeSetting, 'light');
   });
 
-  test('setMode(dark) then setMode(system) round-trips the persisted value',
-      () async {
-    final container = makeContainer();
+  test(
+    'setMode(dark) then setMode(system) round-trips the persisted value',
+    () async {
+      final container = makeContainer();
 
-    await container.read(themeModeProvider.notifier).setMode(ThemeMode.dark);
-    await container.read(themeModeProvider.notifier).setMode(ThemeMode.system);
+      await container.read(themeModeProvider.notifier).setMode(ThemeMode.dark);
+      await container
+          .read(themeModeProvider.notifier)
+          .setMode(ThemeMode.system);
 
-    expect(container.read(themeModeProvider), ThemeMode.system);
-    expect(container.read(appPreferencesProvider).themeModeSetting, 'system');
-  });
+      expect(container.read(themeModeProvider), ThemeMode.system);
+      expect(container.read(appPreferencesProvider).themeModeSetting, 'system');
+    },
+  );
 }

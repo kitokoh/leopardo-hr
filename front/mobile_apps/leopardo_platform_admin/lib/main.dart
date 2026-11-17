@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
@@ -31,9 +31,12 @@ Future<void> main() async {
 
   await SentryFlutter.init(
     (options) {
-      options.dsn =
-          const String.fromEnvironment('SENTRY_DSN', defaultValue: '');
-      options.tracesSampleRate = 0.2; // #2766 : échantillonnage borné (PII plateforme)
+      options.dsn = const String.fromEnvironment(
+        'SENTRY_DSN',
+        defaultValue: '',
+      );
+      options.tracesSampleRate =
+          0.2; // #2766 : échantillonnage borné (PII plateforme)
     },
     appRunner: () => runApp(
       StartupGate(
@@ -115,7 +118,10 @@ class _StartupRuntimeError extends StatelessWidget {
           child: Text(
             'Erreur d affichage Leopardo Platform Admin\n${details.exceptionAsString()}',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.mobileDarkText, fontSize: 13),
+            style: const TextStyle(
+              color: AppColors.mobileDarkText,
+              fontSize: 13,
+            ),
           ),
         ),
       ),

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'package:leopardo_core/core/theme/app_colors.dart';
 
@@ -79,7 +79,9 @@ class _StartupGateState extends State<StartupGate> {
 
     if (widget.optionalInitializer != null) {
       unawaited(
-        widget.optionalInitializer!().timeout(widget.optionalTimeout).catchError(
+        widget.optionalInitializer!()
+            .timeout(widget.optionalTimeout)
+            .catchError(
           (Object error, StackTrace stackTrace) {
             debugPrint(
               '${widget.appName} optional startup timed out or failed: $error',
@@ -135,20 +137,18 @@ class _StartupGateState extends State<StartupGate> {
                               height: 80,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: const Color(
-                                  0xFF10B981,
-                                ).withValues(alpha: 0.1),
+                                color: AppColors.success.withValues(alpha: 0.1),
                                 border: Border.all(
-                                  color: const Color(
-                                    0xFF10B981,
-                                  ).withValues(alpha: 0.3),
+                                  color: AppColors.success.withValues(
+                                    alpha: 0.3,
+                                  ),
                                   width: 1.5,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(
-                                      0xFF10B981,
-                                    ).withValues(alpha: 0.3),
+                                    color: AppColors.success.withValues(
+                                      alpha: 0.3,
+                                    ),
                                     blurRadius: 30,
                                     spreadRadius: 2,
                                   ),
@@ -192,22 +192,19 @@ class _StartupGateState extends State<StartupGate> {
                                 'Ouverture de votre espace...',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: Color(
-                                    0xFFBBCABF,
-                                  ), // on-surface-variant
+                                  color: AppColors
+                                      .brandOnSurfaceVariant, // on-surface-variant
                                   fontSize: 14,
                                   height: 1.4,
                                 ),
                               ),
-                            ]
-                            else
+                            ] else
                               Text(
                                 _startupWarning!,
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
-                                  color: Color(
-                                    0xFFBBCABF,
-                                  ), // on-surface-variant
+                                  color: AppColors
+                                      .brandOnSurfaceVariant, // on-surface-variant
                                   fontSize: 14,
                                   height: 1.4,
                                 ),
@@ -215,16 +212,15 @@ class _StartupGateState extends State<StartupGate> {
                             if (_startupWarning != null) ...[
                               const SizedBox(height: 24),
                               OutlinedButton(
-                                onPressed:
-                                    () => setState(() {
-                                      _showStartupGuard = false;
-                                    }),
+                                onPressed: () => setState(() {
+                                  _showStartupGuard = false;
+                                }),
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: AppColors.mobileLavender,
                                   side: BorderSide(
-                                    color: const Color(
-                                      0xFFDAE2FD,
-                                    ).withValues(alpha: 0.2),
+                                    color: AppColors.mobileLavender.withValues(
+                                      alpha: 0.2,
+                                    ),
                                   ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),

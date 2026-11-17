@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -9,7 +9,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+
 import 'app.dart';
+
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 Future<void> main() async {
@@ -24,8 +26,10 @@ Future<void> main() async {
   // non bloquant — le premier rendu passe par StartupGate dans appRunner.
   await SentryFlutter.init(
     (options) {
-      options.dsn =
-          const String.fromEnvironment('SENTRY_DSN', defaultValue: '');
+      options.dsn = const String.fromEnvironment(
+        'SENTRY_DSN',
+        defaultValue: '',
+      );
       options.tracesSampleRate = 0.2; // #2766 : échantillonnage borné (PII)
     },
     appRunner: () => runApp(
@@ -124,8 +128,10 @@ class _StartupRuntimeError extends StatelessWidget {
           child: Text(
             'Erreur d affichage Leopardo RH\n${details.exceptionAsString()}',
             textAlign: TextAlign.center,
-            style:
-                const TextStyle(color: AppColors.mobileDarkText, fontSize: 13),
+            style: const TextStyle(
+              color: AppColors.mobileDarkText,
+              fontSize: 13,
+            ),
           ),
         ),
       ),

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // `chatThreadControllerProvider` est un `StateNotifierProvider.family` déclaré
 // dans `providers/conversation_provider.dart`, qui porte lui-même l'import
@@ -72,9 +72,8 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
       // Le message n'est PAS perdu silencieusement : on le dit et on rend le
       // texte à l'utilisateur pour qu'il puisse réessayer.
       _controller.text = text;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_sendErrorLabel(error))),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(_sendErrorLabel(error))));
     }
 
     _scrollToBottom();
@@ -98,8 +97,9 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(chatThreadControllerProvider(widget.threadId));
-    final controller =
-        ref.read(chatThreadControllerProvider(widget.threadId).notifier);
+    final controller = ref.read(
+      chatThreadControllerProvider(widget.threadId).notifier,
+    );
 
     // Suit l'arrivée de nouveaux messages (polling, envoi, rattrapage).
     ref.listen(chatThreadControllerProvider(widget.threadId), (previous, next) {
@@ -135,8 +135,11 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
-                  const Icon(Icons.cloud_off,
-                      size: 16, color: AppColors.warning),
+                  const Icon(
+                    Icons.cloud_off,
+                    size: 16,
+                    color: AppColors.warning,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -205,11 +208,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                             },
                           ),
           ),
-          _Composer(
-            controller: _controller,
-            sending: _sending,
-            onSend: _send,
-          ),
+          _Composer(controller: _controller, sending: _sending, onSend: _send),
         ],
       ),
     );

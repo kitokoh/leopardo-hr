@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -79,8 +79,7 @@ class _CompanyIntegrationRequestScreenState
     if (company == null) return;
 
     // Capture l10n before async gap.
-    final sentMsg = context.l10n
-        .personalOnboardingRequestSent(company.name);
+    final sentMsg = context.l10n.personalOnboardingRequestSent(company.name);
 
     setState(() => _sending = true);
     try {
@@ -94,10 +93,7 @@ class _CompanyIntegrationRequestScreenState
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(sentMsg),
-          backgroundColor: AppColors.success,
-        ),
+        SnackBar(content: Text(sentMsg), backgroundColor: AppColors.success),
       );
       context.pop();
     } catch (e) {
@@ -105,7 +101,8 @@ class _CompanyIntegrationRequestScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-              context.l10n.personalOnboardingRequestError(e.toString())),
+            context.l10n.personalOnboardingRequestError(e.toString()),
+          ),
           backgroundColor: AppColors.danger,
         ),
       );
@@ -155,8 +152,7 @@ class _CompanyIntegrationRequestScreenState
                     style: AppTypography.body.copyWith(color: text),
                     decoration: InputDecoration(
                       hintText: l10n.personalOnboardingSearchHint,
-                      hintStyle:
-                          AppTypography.body.copyWith(color: muted),
+                      hintStyle: AppTypography.body.copyWith(color: muted),
                       prefixIcon: Icon(Icons.search, color: muted),
                       suffixIcon: _searching
                           ? const Padding(
@@ -165,7 +161,8 @@ class _CompanyIntegrationRequestScreenState
                                 width: 16,
                                 height: 16,
                                 child: CircularProgressIndicator(
-                                    strokeWidth: 2),
+                                  strokeWidth: 2,
+                                ),
                               ),
                             )
                           : _searchController.text.isNotEmpty
@@ -194,8 +191,9 @@ class _CompanyIntegrationRequestScreenState
                       padding: const EdgeInsets.only(top: 6),
                       child: Text(
                         l10n.personalOnboardingSearchMinChars,
-                        style: AppTypography.caption
-                            .copyWith(color: AppColors.warning),
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.warning,
+                        ),
                       ),
                     ),
                 ],
@@ -211,8 +209,9 @@ class _CompanyIntegrationRequestScreenState
                           padding: const EdgeInsets.all(20),
                           child: Text(
                             l10n.personalOnboardingSearchError(_searchError!),
-                            style: AppTypography.body
-                                .copyWith(color: AppColors.danger),
+                            style: AppTypography.body.copyWith(
+                              color: AppColors.danger,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -220,31 +219,31 @@ class _CompanyIntegrationRequestScreenState
                     : _results.isEmpty &&
                             !_searching &&
                             _searchController.text.trim().length >= 2
-                    ? Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Text(
-                            l10n.personalOnboardingSearchEmpty(
-                                _searchController.text.trim()),
-                            style:
-                                AppTypography.body.copyWith(color: muted),
-                            textAlign: TextAlign.center,
+                        ? Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Text(
+                                l10n.personalOnboardingSearchEmpty(
+                                  _searchController.text.trim(),
+                                ),
+                                style:
+                                    AppTypography.body.copyWith(color: muted),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          )
+                        : ListView.builder(
+                            padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+                            itemCount: _results.length,
+                            itemBuilder: (context, index) {
+                              final company = _results[index];
+                              return _CompanyResultTile(
+                                company: company,
+                                onTap: () =>
+                                    setState(() => _selectedCompany = company),
+                              );
+                            },
                           ),
-                        ),
-                      )
-                    : ListView.builder(
-                        padding:
-                            const EdgeInsets.fromLTRB(20, 8, 20, 20),
-                        itemCount: _results.length,
-                        itemBuilder: (context, index) {
-                          final company = _results[index];
-                          return _CompanyResultTile(
-                            company: company,
-                            onTap: () => setState(
-                                () => _selectedCompany = company),
-                          );
-                        },
-                      ),
               )
             else
               // ── Request form ─────────────────────────────────────────────
@@ -277,10 +276,8 @@ class _CompanyIntegrationRequestScreenState
                         maxLines: 4,
                         style: AppTypography.body.copyWith(color: text),
                         decoration: InputDecoration(
-                          hintText:
-                              l10n.personalOnboardingRequestMessageHint,
-                          hintStyle:
-                              AppTypography.body.copyWith(color: muted),
+                          hintText: l10n.personalOnboardingRequestMessageHint,
+                          hintStyle: AppTypography.body.copyWith(color: muted),
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.all(16),
                         ),
@@ -327,10 +324,7 @@ class _CompanyIntegrationRequestScreenState
 }
 
 class _CompanyResultTile extends StatelessWidget {
-  const _CompanyResultTile({
-    required this.company,
-    required this.onTap,
-  });
+  const _CompanyResultTile({required this.company, required this.onTap});
 
   final CompanySearchResult company;
   final VoidCallback onTap;
@@ -373,11 +367,11 @@ class _CompanyResultTile extends StatelessWidget {
                     ),
                     if (company.city != null || company.country != null)
                       Text(
-                        [company.city, company.country]
-                            .whereType<String>()
-                            .join(', '),
-                        style:
-                            AppTypography.caption.copyWith(color: muted),
+                        [
+                          company.city,
+                          company.country,
+                        ].whereType<String>().join(', '),
+                        style: AppTypography.caption.copyWith(color: muted),
                       ),
                   ],
                 ),
@@ -422,11 +416,7 @@ class _SelectedCompanyCard extends StatelessWidget {
               color: AppColors.rh.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.business,
-              color: AppColors.rh,
-              size: 18,
-            ),
+            child: const Icon(Icons.business, color: AppColors.rh, size: 18),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -442,9 +432,10 @@ class _SelectedCompanyCard extends StatelessWidget {
                 ),
                 if (company.city != null || company.country != null)
                   Text(
-                    [company.city, company.country]
-                        .whereType<String>()
-                        .join(', '),
+                    [
+                      company.city,
+                      company.country,
+                    ].whereType<String>().join(', '),
                     style: AppTypography.caption.copyWith(color: muted),
                   ),
               ],

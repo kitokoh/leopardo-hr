@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -265,10 +265,7 @@ class _TwoFactorSettingsScreenState
       padding: const EdgeInsets.all(20),
       children: [
         if (_error != null) ...[
-          MobileErrorPanel(
-            message: _error!,
-            onRetry: _loadStatus,
-          ),
+          MobileErrorPanel(message: _error!, onRetry: _loadStatus),
           const SizedBox(height: 20),
         ],
         if (_mfaRequired && !_enabled) ...[
@@ -293,9 +290,8 @@ class _TwoFactorSettingsScreenState
       child: Row(
         children: [
           MobileIconBubble(
-            icon: _enabled
-                ? Icons.verified_user_rounded
-                : Icons.shield_outlined,
+            icon:
+                _enabled ? Icons.verified_user_rounded : Icons.shield_outlined,
             color: _enabled ? AppColors.success : AppColors.warning,
             size: 40,
           ),
@@ -368,9 +364,7 @@ class _TwoFactorSettingsScreenState
             labelText: l10n.twoFaCodeLabel,
             hintText: l10n.twoFaCodeHint,
             prefixIcon: const Icon(Icons.password_rounded),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           onSubmitted: (_) => _confirmEnrollment(),
         ),
@@ -452,9 +446,7 @@ class _TwoFactorSettingsScreenState
         Text(
           l10n.twoFaDoneHint,
           textAlign: TextAlign.center,
-          style: AppTypography.caption.copyWith(
-            color: AppColors.success,
-          ),
+          style: AppTypography.caption.copyWith(color: AppColors.success),
         ),
       ],
     );

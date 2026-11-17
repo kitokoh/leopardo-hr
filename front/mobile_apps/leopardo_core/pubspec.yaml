@@ -12,6 +12,12 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  # #9433 : Flutter 3.50 déprécie package:flutter/material.dart au profit
+  # du package standalone material_ui (versioning indépendant, pub.dev).
+  material_ui: ^1.0.0
+  # #9433 : GlobalCupertinoLocalizations de flutter_localizations est
+  # deprecie depuis v3.47.0-0.0.pre ; le delegate vient de cupertino_ui.
+  cupertino_ui: ^1.0.2
   flutter_riverpod: ^3.5.0
   go_router: ^18.1.1
   google_sign_in: ^7.2.0

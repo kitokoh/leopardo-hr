@@ -88,12 +88,10 @@ jobs:
           flutter pub get
           dart run build_runner build
 
-      # #9432 : meme baseline que mobile-apps-ci (les `info` de deprecation
-      # Flutter 3.50 ne sont pas des regressions ; erreurs et warnings restent
-      # fatals).
+      # #9433 : migration material_ui terminée, `--no-fatal-infos` retiré.
       - name: Analyze
         working-directory: front/mobile_apps/${{ matrix.app }}
-        run: flutter analyze --no-fatal-infos
+        run: flutter analyze
 
       - name: Build (verify, non signé)
         working-directory: front/mobile_apps/${{ matrix.app }}

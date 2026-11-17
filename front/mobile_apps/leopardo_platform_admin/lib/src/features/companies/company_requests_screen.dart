@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -43,9 +43,7 @@ class CompanyRequestsScreen extends ConsumerWidget {
                 )
               : Column(
                   children: items
-                      .map(
-                        (request) => _CompanyRequestCard(request: request),
-                      )
+                      .map((request) => _CompanyRequestCard(request: request))
                       .toList(),
                 ),
           loading: () => const _CompanyRequestsLoading(),
@@ -115,9 +113,11 @@ class _CompanyRequestCard extends ConsumerWidget {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(approved
-            ? context.l10n.companyrequestsApprovedToast
-            : context.l10n.companyrequestsRejectedToast),
+        content: Text(
+          approved
+              ? context.l10n.companyrequestsApprovedToast
+              : context.l10n.companyrequestsRejectedToast,
+        ),
       ),
     );
   }
@@ -129,10 +129,7 @@ class _CompanyRequestCard extends ConsumerWidget {
       iconColor: AppColors.warning,
       title: request.companyName,
       subtitle: '${request.city}, ${request.country} - ${request.email}',
-      trailing: LeopardoBadge(
-        label: request.status,
-        color: AppColors.warning,
-      ),
+      trailing: LeopardoBadge(label: request.status, color: AppColors.warning),
       footer: Row(
         children: [
           Expanded(

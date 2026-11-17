@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -193,9 +193,7 @@ class _TripSearchScreenState extends ConsumerState<TripSearchScreen> {
                         )
                       : results.trips.isEmpty
                           ? _Message(
-                              icon: Icons.search_off,
-                              label: l10n.t('noTrips'),
-                            )
+                              icon: Icons.search_off, label: l10n.t('noTrips'))
                           : ListView.separated(
                               padding: const EdgeInsets.all(12),
                               itemCount: results.trips.length,
@@ -283,11 +281,7 @@ class _TripCard extends ConsumerWidget {
 }
 
 class _Message extends ConsumerWidget {
-  const _Message({
-    required this.icon,
-    required this.label,
-    this.onRetry,
-  });
+  const _Message({required this.icon, required this.label, this.onRetry});
 
   final IconData icon;
   final String label;
@@ -308,10 +302,7 @@ class _Message extends ConsumerWidget {
           Text(label, style: AppTypography.caption.copyWith(color: muted)),
           if (onRetry != null) ...[
             const SizedBox(height: 12),
-            OutlinedButton(
-              onPressed: onRetry,
-              child: Text(l10n.t('retry')),
-            ),
+            OutlinedButton(onPressed: onRetry, child: Text(l10n.t('retry'))),
           ],
         ],
       ),

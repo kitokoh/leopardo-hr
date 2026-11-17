@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:leopardo_core/core/branding/tenant_branding.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
@@ -44,23 +44,21 @@ class TenantBrandMark extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             clipBehavior: Clip.antiAlias,
-            child:
-                logo == null
-                    ? Icon(
+            child: logo == null
+                ? Icon(
+                    Icons.business_rounded,
+                    size: compact ? 12 : 14,
+                    color: primary,
+                  )
+                : Image.network(
+                    logo,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Icon(
                       Icons.business_rounded,
                       size: compact ? 12 : 14,
                       color: primary,
-                    )
-                    : Image.network(
-                      logo,
-                      fit: BoxFit.cover,
-                      errorBuilder:
-                          (_, __, ___) => Icon(
-                            Icons.business_rounded,
-                            size: compact ? 12 : 14,
-                            color: primary,
-                          ),
                     ),
+                  ),
           ),
           const SizedBox(width: 8),
           Flexible(

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_public/core/i18n/app_strings.dart';
 import 'package:leopardo_public/core/widgets/state_widgets.dart';
@@ -30,25 +30,26 @@ void main() {
       final strings = AppStrings.of('fr');
       var retried = false;
 
-      await tester.pumpWidget(wrap(EmptyContentState(
-        strings: strings,
-        onRetry: () => retried = true,
-      )));
+      await tester.pumpWidget(
+        wrap(
+          EmptyContentState(strings: strings, onRetry: () => retried = true),
+        ),
+      );
 
       expect(find.text(strings.t('stateEmptyTitle')), findsOneWidget);
       await tester.tap(find.text(strings.t('stateRetry')));
       expect(retried, isTrue);
     });
 
-    testWidgets('aucun résultat : propose d\'ÉLARGIR, pas de réessayer',
-        (tester) async {
+    testWidgets('aucun résultat : propose d\'ÉLARGIR, pas de réessayer', (
+      tester,
+    ) async {
       final strings = AppStrings.of('fr');
       var widened = false;
 
-      await tester.pumpWidget(wrap(NoResultsState(
-        strings: strings,
-        onWiden: () => widened = true,
-      )));
+      await tester.pumpWidget(
+        wrap(NoResultsState(strings: strings, onWiden: () => widened = true)),
+      );
 
       expect(find.text(strings.t('stateNoResultsTitle')), findsOneWidget);
       // La distinction compte : « réessayer » sur une recherche qui ne renvoie
@@ -62,10 +63,9 @@ void main() {
       final strings = AppStrings.of('fr');
       var retried = false;
 
-      await tester.pumpWidget(wrap(ErrorState(
-        strings: strings,
-        onRetry: () => retried = true,
-      )));
+      await tester.pumpWidget(
+        wrap(ErrorState(strings: strings, onRetry: () => retried = true)),
+      );
 
       expect(find.text(strings.t('stateErrorTitle')), findsOneWidget);
       await tester.tap(find.text(strings.t('stateRetry')));
@@ -81,30 +81,34 @@ void main() {
     });
 
     testWidgets(
-        'localisation refusée : propose le choix de ville, jamais « autoriser »',
-        (tester) async {
-      final strings = AppStrings.of('fr');
-      var choseCity = false;
+      'localisation refusée : propose le choix de ville, jamais « autoriser »',
+      (tester) async {
+        final strings = AppStrings.of('fr');
+        var choseCity = false;
 
-      await tester.pumpWidget(wrap(LocationDeniedState(
-        strings: strings,
-        onChooseCity: () => choseCity = true,
-      )));
+        await tester.pumpWidget(
+          wrap(
+            LocationDeniedState(
+              strings: strings,
+              onChooseCity: () => choseCity = true,
+            ),
+          ),
+        );
 
-      // Le texte explique la conséquence, pas un reproche.
-      expect(find.text(strings.t('discoveryLocationDenied')), findsOneWidget);
-      await tester.tap(find.text(strings.t('discoveryCityHint')));
-      expect(choseCity, isTrue);
-    });
+        // Le texte explique la conséquence, pas un reproche.
+        expect(find.text(strings.t('discoveryLocationDenied')), findsOneWidget);
+        await tester.tap(find.text(strings.t('discoveryCityHint')));
+        expect(choseCity, isTrue);
+      },
+    );
 
     testWidgets('404 : information, SANS bouton réessayer', (tester) async {
       final strings = AppStrings.of('fr');
       var wentBack = false;
 
-      await tester.pumpWidget(wrap(NotFoundState(
-        strings: strings,
-        onBack: () => wentBack = true,
-      )));
+      await tester.pumpWidget(
+        wrap(NotFoundState(strings: strings, onBack: () => wentBack = true)),
+      );
 
       expect(find.text(strings.t('stateNotFoundTitle')), findsOneWidget);
       expect(find.text(strings.t('stateNotFoundBody')), findsOneWidget);
@@ -122,12 +126,14 @@ void main() {
     testWidgets('l\'arabe produit un état lisible en RTL', (tester) async {
       final strings = AppStrings.of('ar');
 
-      await tester.pumpWidget(MaterialApp(
-        home: Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(body: EmptyContentState(strings: strings)),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(body: EmptyContentState(strings: strings)),
+          ),
         ),
-      ));
+      );
 
       expect(find.text(strings.t('stateEmptyTitle')), findsOneWidget);
       // Le texte arabe doit être présent tel quel, pas remplacé par du français.

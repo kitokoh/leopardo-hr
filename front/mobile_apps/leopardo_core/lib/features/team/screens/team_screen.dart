@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +18,7 @@ import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 import 'package:leopardo_core/core/utils/currency_format.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
+
 import '../manager_roles.dart';
 
 /// Ecran "Equipe" — reserve aux managers (principal / RH).
@@ -104,7 +105,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
                 controller: _tabController,
                 tabs: [
                   Tab(text: context.l10n.teamEmployeesTab),
-                  Tab(text: context.l10n.teamInvitationsTab)
+                  Tab(text: context.l10n.teamInvitationsTab),
                 ],
               ),
             ),
@@ -311,10 +312,12 @@ class _EmployeesTab extends ConsumerWidget {
     final currency = e.currency ?? '';
     if (e.salaryType == 'hourly' && e.hourlyRate != null) {
       parts.add(
-          '${e.hourlyRate!.toStringAsFixed(0)}${currencySuffix(currency)}/h');
+        '${e.hourlyRate!.toStringAsFixed(0)}${currencySuffix(currency)}/h',
+      );
     } else if (e.salaryBase != null && e.salaryBase! > 0) {
       parts.add(
-          '${e.salaryBase!.toStringAsFixed(0)}${currencySuffix(currency)}');
+        '${e.salaryBase!.toStringAsFixed(0)}${currencySuffix(currency)}',
+      );
     }
     if (e.scheduleName?.trim().isNotEmpty == true) {
       parts.add('Horaire ${e.scheduleName}');
@@ -351,9 +354,7 @@ class _EmployeesTab extends ConsumerWidget {
           children: [
             Text(
               employee.fullName,
-              style: AppTypography.subtitle.copyWith(
-                color: MobileSurface.text,
-              ),
+              style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
             ),
             Text(
               employee.email,
@@ -420,9 +421,11 @@ class _EmployeesTab extends ConsumerWidget {
                       ? Icons.person_remove_alt_1_outlined
                       : Icons.admin_panel_settings_outlined,
                 ),
-                title: Text(employee.isHr
-                    ? context.l10n.teamRevokeHr
-                    : context.l10n.teamMakeHr),
+                title: Text(
+                  employee.isHr
+                      ? context.l10n.teamRevokeHr
+                      : context.l10n.teamMakeHr,
+                ),
                 subtitle: Text(
                   employee.isHr
                       ? context.l10n.teamRevokeHrHint
@@ -457,9 +460,11 @@ class _EmployeesTab extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text(makeHr
-            ? context.l10n.teamMakeHrConfirmTitle
-            : context.l10n.teamRevokeHrConfirmTitle),
+        title: Text(
+          makeHr
+              ? context.l10n.teamMakeHrConfirmTitle
+              : context.l10n.teamRevokeHrConfirmTitle,
+        ),
         content: Text(
           makeHr
               ? '${employee.fullName} pourra gerer les demandes RH et les collaborateurs.'
@@ -472,9 +477,11 @@ class _EmployeesTab extends ConsumerWidget {
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text(makeHr
-                ? context.l10n.teamMakeHrConfirmAction
-                : context.l10n.teamRevokeHrConfirmAction),
+            child: Text(
+              makeHr
+                  ? context.l10n.teamMakeHrConfirmAction
+                  : context.l10n.teamRevokeHrConfirmAction,
+            ),
           ),
         ],
       ),
@@ -490,9 +497,11 @@ class _EmployeesTab extends ConsumerWidget {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(makeHr
-              ? context.l10n.teamMakeHrSuccess
-              : context.l10n.teamRevokeHrSuccess),
+          content: Text(
+            makeHr
+                ? context.l10n.teamMakeHrSuccess
+                : context.l10n.teamRevokeHrSuccess,
+          ),
         ),
       );
     } catch (e) {
@@ -555,17 +564,15 @@ class _EmployeesTab extends ConsumerWidget {
       await ref.read(employeeRepositoryProvider).archive(employee.id);
       ref.invalidate(teamListProvider);
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
-            SnackBar(content: Text(context.l10n.teamArchiveSuccess)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.teamArchiveSuccess)),
+        );
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
-            SnackBar(content: Text(context.l10n.teamActionError(e))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.teamActionError(e))),
+        );
       }
     }
   }
@@ -785,10 +792,9 @@ class _InvitationsTab extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
-            SnackBar(content: Text(context.l10n.teamActionError(e))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.teamActionError(e))),
+        );
       }
     }
   }
@@ -942,10 +948,8 @@ class _CompanyQrSheet extends ConsumerWidget {
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: async.when(
-          loading: () => const Center(
-            heightFactor: 4,
-            child: CircularProgressIndicator(),
-          ),
+          loading: () =>
+              const Center(heightFactor: 4, child: CircularProgressIndicator()),
           error: (err, _) => MobileErrorPanel(
             message: err.toString(),
             onRetry: () => ref.invalidate(_companyQrProvider),
@@ -1084,9 +1088,8 @@ class _EmployeeQrImportSheetState
   Future<void> _scan() async {
     final token = _tokenCtrl.text.trim();
     if (token.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.teamPasteQrHint)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(context.l10n.teamPasteQrHint)));
       return;
     }
 
@@ -1100,9 +1103,8 @@ class _EmployeeQrImportSheetState
     } catch (e) {
       if (!mounted) return;
       setState(() => _loading = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('QR invalide : $e')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('QR invalide : $e')));
     }
   }
 }
@@ -1344,8 +1346,9 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
               DropdownButtonFormField<String>(
                 initialValue: _salaryType,
                 dropdownColor: MobileSurface.surface,
-                decoration:
-                    InputDecoration(labelText: context.l10n.teamSalaryMode),
+                decoration: InputDecoration(
+                  labelText: context.l10n.teamSalaryMode,
+                ),
                 items: [
                   DropdownMenuItem(value: 'fixed', child: Text('Mensuel')),
                   DropdownMenuItem(value: 'hourly', child: Text('Horaire')),
@@ -1380,8 +1383,9 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
               const SizedBox(height: 10),
               TextFormField(
                 controller: _workLocation,
-                decoration:
-                    InputDecoration(labelText: context.l10n.teamWorkLocation),
+                decoration: InputDecoration(
+                  labelText: context.l10n.teamWorkLocation,
+                ),
               ),
               const SizedBox(height: 18),
               ElevatedButton.icon(
@@ -1449,10 +1453,9 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
-            SnackBar(content: Text(context.l10n.teamActionError(e))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.teamActionError(e))),
+        );
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -1511,6 +1514,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
       _ => managerRole,
     };
   }
+
   String _salaryType = 'fixed';
   int? _scheduleId;
   bool _submitting = false;
@@ -1670,10 +1674,13 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                 decoration: const InputDecoration(labelText: 'Role'),
                 items: [
                   DropdownMenuItem(
-                      value: 'employee',
-                      child: Text(context.l10n.teamEmployeeLabel)),
+                    value: 'employee',
+                    child: Text(context.l10n.teamEmployeeLabel),
+                  ),
                   const DropdownMenuItem(
-                      value: 'manager', child: Text('Manager')),
+                    value: 'manager',
+                    child: Text('Manager'),
+                  ),
                 ],
                 onChanged: (v) => setState(() {
                   _role = v ?? 'employee';
@@ -1706,8 +1713,9 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               DropdownButtonFormField<String>(
                 initialValue: _salaryType,
                 dropdownColor: MobileSurface.surface,
-                decoration:
-                    InputDecoration(labelText: context.l10n.teamPayType),
+                decoration: InputDecoration(
+                  labelText: context.l10n.teamPayType,
+                ),
                 items: [
                   DropdownMenuItem(
                     value: 'fixed',

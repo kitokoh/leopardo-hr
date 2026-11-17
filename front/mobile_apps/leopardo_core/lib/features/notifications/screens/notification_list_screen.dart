@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -30,16 +30,15 @@ class NotificationListScreen extends ConsumerWidget {
             icon: const Icon(Icons.done_all, color: MobileSurface.secondary),
             onPressed: () async {
               try {
-                await ref
-                    .read(notificationRepositoryProvider)
-                    .markAllAsRead();
+                await ref.read(notificationRepositoryProvider).markAllAsRead();
                 ref.invalidate(notificationsProvider);
               } catch (_) {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text(
-                        'Impossible de marquer les notifications comme lues.'),
+                      'Impossible de marquer les notifications comme lues.',
+                    ),
                   ),
                 );
               }
@@ -91,7 +90,8 @@ class NotificationListScreen extends ConsumerWidget {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
-                                    'Impossible de marquer la notification comme lue.'),
+                                  'Impossible de marquer la notification comme lue.',
+                                ),
                               ),
                             );
                           }
@@ -113,8 +113,9 @@ class NotificationListScreen extends ConsumerWidget {
                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content:
-                                  Text('Impossible de supprimer la notification.'),
+                              content: Text(
+                                'Impossible de supprimer la notification.',
+                              ),
                             ),
                           );
                         }

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui' show PlatformDispatcher;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -122,9 +122,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       // or connectivity change (see issue #1287).
       unawaited(ref.read(syncServiceProvider).syncNow());
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.settingsEdgeSaved)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.settingsEdgeSaved)));
     } finally {
       if (mounted) setState(() => _edgeSaving = false);
     }
@@ -240,10 +240,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             label: Text(sections[index].label),
             onSelected: (_) => setState(() => _selectedSection = index),
             labelStyle: TextStyle(
-              color:
-                  _selectedSection == index
-                      ? Colors.white
-                      : MobileSurface.secondary,
+              color: _selectedSection == index
+                  ? Colors.white
+                  : MobileSurface.secondary,
               fontWeight: FontWeight.w700,
             ),
             selectedColor: AppColors.rh,
@@ -343,8 +342,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _firstNameController,
-              decoration:
-                  InputDecoration(labelText: context.l10n.settingsFirstName),
+              decoration: InputDecoration(
+                labelText: context.l10n.settingsFirstName,
+              ),
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? context.l10n.settingsFirstNameRequired
                   : null,
@@ -353,7 +353,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: _lastNameController,
               decoration: InputDecoration(
-                  labelText: context.l10n.settingsLastNameLabel),
+                labelText: context.l10n.settingsLastNameLabel,
+              ),
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? context.l10n.settingsLastNameRequired
                   : null,
@@ -362,8 +363,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              decoration:
-                  InputDecoration(labelText: context.l10n.settingsEmailLabel),
+              decoration: InputDecoration(
+                labelText: context.l10n.settingsEmailLabel,
+              ),
               validator: (value) {
                 final trimmed = value?.trim() ?? '';
                 if (trimmed.isEmpty) return context.l10n.settingsEmailRequired;
@@ -641,11 +643,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               if (text == null || text.isEmpty) {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      context.l10n.settingsNoCompanyQr,
-                    ),
-                  ),
+                  SnackBar(content: Text(context.l10n.settingsNoCompanyQr)),
                 );
                 return;
               }
@@ -877,7 +875,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           DropdownButtonFormField<String>(
             initialValue: _selectedLanguage,
             decoration: InputDecoration(
-                labelText: context.l10n.settingsPreferredLanguage),
+              labelText: context.l10n.settingsPreferredLanguage,
+            ),
             items: _languageLabels.entries
                 .map(
                   (entry) => DropdownMenuItem<String>(
@@ -920,9 +919,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final currentMode = ref.watch(themeModeProvider);
 
     final options = [
-      (ThemeMode.system, Icons.brightness_auto_outlined, context.l10n.settingsThemeSystem),
-      (ThemeMode.light, Icons.light_mode_outlined, context.l10n.settingsThemeLight),
-      (ThemeMode.dark, Icons.dark_mode_outlined, context.l10n.settingsThemeDark),
+      (
+        ThemeMode.system,
+        Icons.brightness_auto_outlined,
+        context.l10n.settingsThemeSystem,
+      ),
+      (
+        ThemeMode.light,
+        Icons.light_mode_outlined,
+        context.l10n.settingsThemeLight,
+      ),
+      (
+        ThemeMode.dark,
+        Icons.dark_mode_outlined,
+        context.l10n.settingsThemeDark,
+      ),
     ];
 
     return Container(
@@ -938,17 +949,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 8),
           Text(
             context.l10n.settingsThemeHint,
-            style: AppTypography.bodySmall
-                .copyWith(color: MobileSurface.secondary),
+            style: AppTypography.bodySmall.copyWith(
+              color: MobileSurface.secondary,
+            ),
           ),
           const SizedBox(height: 16),
           RadioGroup<ThemeMode>(
             groupValue: currentMode,
             onChanged: (mode) async {
               if (mode != null) {
-                await ref
-                    .read(themeModeProvider.notifier)
-                    .setMode(mode);
+                await ref.read(themeModeProvider.notifier).setMode(mode);
               }
             },
             child: Column(
@@ -957,15 +967,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     (opt) => RadioListTile<ThemeMode>(
                       contentPadding: EdgeInsets.zero,
                       value: opt.$1,
-              title: Row(
-                children: [
-                  Icon(opt.$2, size: 20, color: MobileSurface.secondary),
-                  const SizedBox(width: 10),
-                  Text(opt.$3,
-                      style: AppTypography.body
-                          .copyWith(color: MobileSurface.text)),
-                ],
-              ),
+                      title: Row(
+                        children: [
+                          Icon(
+                            opt.$2,
+                            size: 20,
+                            color: MobileSurface.secondary,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            opt.$3,
+                            style: AppTypography.body.copyWith(
+                              color: MobileSurface.text,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   )
                   .toList(),
@@ -1326,7 +1343,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-
   /// Issue #5683 — accès à l'écran de gestion 2FA (enrôlement, codes de
   /// récupération, désactivation). Écran partagé leopardo_core.
   Widget _buildTwoFactorSection(BuildContext context) {
@@ -1446,8 +1462,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      context.l10n
-                          .settingsNotificationsSaveFailed(e.toString()),
+                      context.l10n.settingsNotificationsSaveFailed(
+                        e.toString(),
+                      ),
                     ),
                   ),
                 );
@@ -1636,9 +1653,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _submitCompanyQr(BuildContext context) async {
     final token = _companyQrController.text.trim();
     if (token.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.settingsQrPasted)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(context.l10n.settingsQrPasted)));
       return;
     }
 
@@ -1651,8 +1667,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           .showSnackBar(SnackBar(content: Text(message)));
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(context.l10n.settingsQrRejected(e.toString()))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.settingsQrRejected(e.toString()))),
+      );
     }
   }
 
@@ -1674,7 +1691,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.settingsProfileUpdated)));
+        SnackBar(content: Text(context.l10n.settingsProfileUpdated)),
+      );
     }
   }
 
@@ -1695,10 +1713,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _currentPasswordController.clear();
       _newPasswordController.clear();
       _confirmPasswordController.clear();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-          SnackBar(content: Text(context.l10n.settingsPasswordChanged)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.settingsPasswordChanged)),
+      );
     }
   }
 
@@ -1713,7 +1730,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.settingsLanguageUpdated)));
+        SnackBar(content: Text(context.l10n.settingsLanguageUpdated)),
+      );
     }
   }
 
@@ -1733,9 +1751,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (!mounted) return;
     setState(() => _preferencesSaving = false);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(context.l10n.settingsBiometricSavedLocal),
-      ),
+      SnackBar(content: Text(context.l10n.settingsBiometricSavedLocal)),
     );
   }
 
@@ -1755,27 +1771,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _submitBiometricEnrollment() async {
     if (!_biometricEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.settingsBiometricEnableFirst),
-        ),
+        SnackBar(content: Text(context.l10n.settingsBiometricEnableFirst)),
       );
       return;
     }
 
     if (!_attendanceConsent) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.settingsBiometricConsentRequired),
-        ),
+        SnackBar(content: Text(context.l10n.settingsBiometricConsentRequired)),
       );
       return;
     }
 
     if (_faceEnabled && _selectedFaceImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.settingsBiometricFaceRequired),
-        ),
+        SnackBar(content: Text(context.l10n.settingsBiometricFaceRequired)),
       );
       return;
     }
@@ -1815,15 +1825,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         _latestEnrollment = enrollment;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.settingsBiometricSubmitted),
-        ),
+        SnackBar(content: Text(context.l10n.settingsBiometricSubmitted)),
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content:
-              Text(context.l10n.settingsBiometricSubmitFailed(e.toString()))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.settingsBiometricSubmitFailed(e.toString()),
+          ),
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() => _biometricSubmitting = false);

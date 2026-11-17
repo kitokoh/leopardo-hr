@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -43,9 +43,8 @@ class ConversationListScreen extends ConsumerWidget {
       ),
       body: threadsAsync.when(
         // --- État chargement ---
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: AppColors.rh),
-        ),
+        loading: () =>
+            const Center(child: CircularProgressIndicator(color: AppColors.rh)),
 
         // --- État erreur ---
         error: (error, _) => ListView(
@@ -148,8 +147,9 @@ class _ThreadTile extends StatelessWidget {
                               : thread.title,
                           style: AppTypography.bodySmall.copyWith(
                             color: MobileSurface.text,
-                            fontWeight:
-                                thread.unread ? FontWeight.w700 : FontWeight.w500,
+                            fontWeight: thread.unread
+                                ? FontWeight.w700
+                                : FontWeight.w500,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,

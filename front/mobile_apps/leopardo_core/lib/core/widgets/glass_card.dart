@@ -1,5 +1,6 @@
 import 'dart:ui';
-import 'package:flutter/material.dart';
+
+import 'package:material_ui/material_ui.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 
 /// A premium glassmorphism card component.
@@ -72,17 +73,11 @@ class GlassCard extends StatelessWidget {
     );
 
     if (onTap != null) {
-      result = GestureDetector(
-        onTap: onTap,
-        child: result,
-      );
+      result = GestureDetector(onTap: onTap, child: result);
     }
 
     if (margin != null) {
-      result = Padding(
-        padding: margin!,
-        child: result,
-      );
+      result = Padding(padding: margin!, child: result);
     }
 
     return result;

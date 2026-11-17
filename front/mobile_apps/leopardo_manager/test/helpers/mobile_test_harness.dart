@@ -1,5 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show GlobalCupertinoLocalizations;
+import 'package:flutter_localizations/flutter_localizations.dart'
+    hide GlobalMaterialLocalizations, GlobalCupertinoLocalizations;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_manager/app.dart';
@@ -137,10 +140,7 @@ Employee testEmployee({
   );
 }
 
-dynamic fakePreferencesOverride({
-  String language = 'fr',
-  bool rtl = false,
-}) {
+dynamic fakePreferencesOverride({String language = 'fr', bool rtl = false}) {
   return appPreferencesProvider.overrideWith(
     (ref) => FakeAppPreferences(language: language, rtl: rtl),
   );
@@ -152,9 +152,8 @@ dynamic fakeStorageOverride() {
 
 dynamic authOverride(Employee? employee) {
   return authProvider.overrideWith(
-    (ref) => StaticAuthNotifier(
-      AuthState(isLoading: false, employee: employee),
-    ),
+    (ref) =>
+        StaticAuthNotifier(AuthState(isLoading: false, employee: employee)),
   );
 }
 
@@ -164,11 +163,7 @@ Widget localizedHarness(
   Size surfaceSize = const Size(390, 844),
 }) {
   return ProviderScope(
-    overrides: [
-      fakePreferencesOverride(),
-      fakeStorageOverride(),
-      ...overrides,
-    ],
+    overrides: [fakePreferencesOverride(), fakeStorageOverride(), ...overrides],
     child: MediaQuery(
       data: MediaQueryData(size: surfaceSize),
       child: MaterialApp(
@@ -188,11 +183,7 @@ Widget localizedHarness(
 
 Widget appRouterHarness({List<dynamic> overrides = const []}) {
   return ProviderScope(
-    overrides: [
-      fakePreferencesOverride(),
-      fakeStorageOverride(),
-      ...overrides,
-    ],
+    overrides: [fakePreferencesOverride(), fakeStorageOverride(), ...overrides],
     child: const LeopardoApp(),
   );
 }
@@ -206,11 +197,7 @@ Future<void> pumpMobile(
   await tester.binding.setSurfaceSize(surfaceSize);
   addTearDown(() => tester.binding.setSurfaceSize(null));
   await tester.pumpWidget(
-    localizedHarness(
-      child,
-      overrides: overrides,
-      surfaceSize: surfaceSize,
-    ),
+    localizedHarness(child, overrides: overrides, surfaceSize: surfaceSize),
   );
   await tester.pump();
 }

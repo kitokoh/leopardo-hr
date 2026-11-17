@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_cameras/core/i18n/app_strings.dart';
 import 'package:leopardo_cameras/core/providers/core_providers.dart';
@@ -15,8 +15,7 @@ class CamerasLoginScreen extends ConsumerStatefulWidget {
   const CamerasLoginScreen({super.key});
 
   @override
-  ConsumerState<CamerasLoginScreen> createState() =>
-      _CamerasLoginScreenState();
+  ConsumerState<CamerasLoginScreen> createState() => _CamerasLoginScreenState();
 }
 
 class _CamerasLoginScreenState extends ConsumerState<CamerasLoginScreen> {

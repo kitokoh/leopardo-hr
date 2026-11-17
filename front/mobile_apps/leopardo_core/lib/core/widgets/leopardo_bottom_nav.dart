@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
@@ -48,10 +48,7 @@ class LeopardoBottomNav extends StatelessWidget {
       decoration: BoxDecoration(
         color: MobileSurface.surface,
         border: Border(
-          top: BorderSide(
-            color: MobileSurface.border,
-            width: 0.7,
-          ),
+          top: BorderSide(color: MobileSurface.border, width: 0.7),
         ),
       ),
       child: SafeArea(

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'package:leopardo_core/core/theme/app_colors.dart';
 
@@ -92,12 +92,13 @@ class MobileListGlassCard extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: isDark
-                                    ? AppColors.mobileDarkText
-                                    : Colors.black87,
-                                fontWeight: FontWeight.w600,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: isDark
+                                        ? AppColors.mobileDarkText
+                                        : Colors.black87,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                         ),
                         if (subtitleWidget != null) ...[
                           const SizedBox(height: 2),
@@ -112,10 +113,7 @@ class MobileListGlassCard extends StatelessWidget {
                   ],
                 ],
               ),
-              if (footer != null) ...[
-                const SizedBox(height: 10),
-                footer!,
-              ],
+              if (footer != null) ...[const SizedBox(height: 10), footer!],
             ],
           ),
         ),

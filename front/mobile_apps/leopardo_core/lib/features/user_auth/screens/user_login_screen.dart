@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,18 +52,17 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
       final googleSignIn = GoogleSignIn.instance;
       final account = await googleSignIn.authenticate();
 
-      final ok = await ref.read(userAuthProvider.notifier).googleSignIn(
-            idToken: account.authentication.idToken ?? '',
-          );
+      final ok = await ref
+          .read(userAuthProvider.notifier)
+          .googleSignIn(idToken: account.authentication.idToken ?? '');
 
       if (ok && mounted) {
         context.go('/user-home');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Erreur Google: $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Erreur Google: $e')));
       }
     } finally {
       if (mounted) setState(() => _googleLoading = false);
@@ -79,9 +78,8 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
 
     ref.listen<UserAuthState>(userAuthProvider, (prev, next) {
       if (next.error != null && next.error != prev?.error) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.error!)));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(next.error!)));
       }
     });
 

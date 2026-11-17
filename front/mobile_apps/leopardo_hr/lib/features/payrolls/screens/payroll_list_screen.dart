@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -188,7 +188,9 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                             children: [
                               Text(
                                 context.l10n.payrollMonthLabel(
-                                    payroll.month, payroll.year),
+                                  payroll.month,
+                                  payroll.year,
+                                ),
                                 style: AppTypography.bodySmall.copyWith(
                                   color: MobileSurface.text,
                                   fontWeight: FontWeight.w700,
@@ -505,7 +507,9 @@ class _SummaryCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      context.l10n.payrollOvertimeHoursTeam(summary.overtimeHours.toStringAsFixed(1)),
+                      context.l10n.payrollOvertimeHoursTeam(
+                        summary.overtimeHours.toStringAsFixed(1),
+                      ),
                       style: AppTypography.caption.copyWith(
                         color: MobileSurface.secondary,
                       ),
@@ -539,7 +543,9 @@ class _SummaryCard extends StatelessWidget {
                               ),
                               if (item.overtimeHours > 0)
                                 Text(
-                                  context.l10n.payrollOvertimeHoursItem(item.overtimeHours.toStringAsFixed(1)),
+                                  context.l10n.payrollOvertimeHoursItem(
+                                    item.overtimeHours.toStringAsFixed(1),
+                                  ),
                                   style: AppTypography.caption.copyWith(
                                     color: AppColors.info,
                                     fontSize: 11,

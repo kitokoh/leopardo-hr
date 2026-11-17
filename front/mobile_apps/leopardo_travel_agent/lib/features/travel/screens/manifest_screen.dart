@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
@@ -81,9 +81,8 @@ class _ManifestScreenState extends ConsumerState<ManifestScreen> {
                       ),
                     )
                   : ref.watch(manifestProvider(tripId)).when(
-                        loading: () => const Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                        loading: () =>
+                            const Center(child: CircularProgressIndicator()),
                         error: (e, _) => Center(
                           child: Text(
                             l10n.t('loadError'),
@@ -119,8 +118,9 @@ class _ManifestScreenState extends ConsumerState<ManifestScreen> {
                                 child: ListTile(
                                   dense: true,
                                   leading: CircleAvatar(
-                                    backgroundColor:
-                                        AppColors.rh.withValues(alpha: 0.15),
+                                    backgroundColor: AppColors.rh.withValues(
+                                      alpha: 0.15,
+                                    ),
                                     child: Text(
                                       (index + 1).toString(),
                                       style: AppTypography.caption.copyWith(

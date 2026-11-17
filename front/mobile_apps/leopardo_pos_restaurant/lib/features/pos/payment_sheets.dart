@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:leopardo_core/core/pos/pos_numeric_keypad.dart';
 
 import '../../core/models/pos_models.dart';
@@ -58,13 +58,17 @@ class _AmountEntrySheetState extends State<AmountEntrySheet> {
           Text(widget.title, style: Theme.of(context).textTheme.titleLarge),
           if (widget.helperText != null) ...[
             const SizedBox(height: 4),
-            Text(widget.helperText!, style: Theme.of(context).textTheme.bodyMedium),
+            Text(
+              widget.helperText!,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           ],
           const SizedBox(height: 16),
           InputDecorator(
             decoration: InputDecoration(
               labelText: widget.label,
-              errorText: _exceeds ? 'Le montant depasse le maximum autorise.' : null,
+              errorText:
+                  _exceeds ? 'Le montant depasse le maximum autorise.' : null,
             ),
             child: Text(
               _input.isEmpty ? '0' : _input,
@@ -87,7 +91,8 @@ class _AmountEntrySheetState extends State<AmountEntrySheet> {
           ),
           const SizedBox(height: 12),
           FilledButton(
-            onPressed: _exceeds ? null : () => Navigator.of(context).pop(_value),
+            onPressed:
+                _exceeds ? null : () => Navigator.of(context).pop(_value),
             child: const Text('Valider'),
           ),
         ],
@@ -95,7 +100,6 @@ class _AmountEntrySheetState extends State<AmountEntrySheet> {
     );
   }
 }
-
 
 class SplitPaymentSheet extends StatefulWidget {
   const SplitPaymentSheet({super.key, required this.totalMinor});
@@ -143,7 +147,10 @@ class _SplitPaymentSheetState extends State<SplitPaymentSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('Paiement partage', style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              'Paiement partage',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
             const SizedBox(height: 4),
             Text(
               'Total : ${_formatMinor(widget.totalMinor)} — reste ${_formatMinor(_remaining)}',
@@ -193,10 +200,15 @@ class _SplitPaymentSheetState extends State<SplitPaymentSheet> {
             ),
             const SizedBox(height: 12),
             InputDecorator(
-              decoration: const InputDecoration(labelText: 'Montant de la part'),
+              decoration: const InputDecoration(
+                labelText: 'Montant de la part',
+              ),
               child: Text(
                 _input.isEmpty ? '0' : _input,
-                style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
             const SizedBox(height: 8),
@@ -224,7 +236,8 @@ class _SplitPaymentSheetState extends State<SplitPaymentSheet> {
               onPressed: _remaining > 0
                   ? () => setState(() {
                         _split = _split.add(
-                          PaymentSplit(method: _method, amountMinor: _remaining),
+                          PaymentSplit(
+                              method: _method, amountMinor: _remaining),
                         );
                       })
                   : null,
@@ -241,7 +254,8 @@ class _SplitPaymentSheetState extends State<SplitPaymentSheet> {
                 ),
               ),
             FilledButton(
-              onPressed: covers ? () => Navigator.of(context).pop(_split) : null,
+              onPressed:
+                  covers ? () => Navigator.of(context).pop(_split) : null,
               child: const Text('Encaisser les parts'),
             ),
           ],

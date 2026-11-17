@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_cameras/core/i18n/app_strings.dart';
@@ -110,9 +110,8 @@ class _AlertCard extends ConsumerWidget {
       ref.invalidate(cameraAlertsProvider);
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.t('alertActionError'))),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.t('alertActionError'))));
       }
     }
   }
@@ -159,15 +158,13 @@ class _AlertCard extends ConsumerWidget {
                         const SizedBox(height: 2),
                         Text(
                           alert.cameraName ?? '#${alert.cameraId}',
-                          style:
-                              AppTypography.caption.copyWith(color: muted),
+                          style: AppTypography.caption.copyWith(color: muted),
                         ),
                         if (alert.createdAt != null) ...[
                           const SizedBox(height: 2),
                           Text(
                             alert.createdAt!,
-                            style:
-                                AppTypography.caption.copyWith(color: muted),
+                            style: AppTypography.caption.copyWith(color: muted),
                           ),
                         ],
                       ],

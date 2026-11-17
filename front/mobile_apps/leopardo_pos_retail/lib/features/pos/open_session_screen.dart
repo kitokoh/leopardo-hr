@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/retail_theme.dart';
@@ -26,7 +26,9 @@ class _OpenSessionScreenState extends ConsumerState<OpenSessionScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(retailPosControllerProvider.notifier).bootstrap(locationId: widget.locationId);
+      ref
+          .read(retailPosControllerProvider.notifier)
+          .bootstrap(locationId: widget.locationId);
     });
   }
 
@@ -64,7 +66,10 @@ class _OpenSessionScreenState extends ConsumerState<OpenSessionScreen> {
                 TextField(
                   controller: _controller,
                   keyboardType: TextInputType.number,
-                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                  ),
                   decoration: const InputDecoration(
                     labelText: 'Fonds de caisse (unites mineures)',
                     prefixIcon: Icon(Icons.payments_outlined),
@@ -74,7 +79,9 @@ class _OpenSessionScreenState extends ConsumerState<OpenSessionScreen> {
                 FilledButton.icon(
                   onPressed: state.loading ? null : _open,
                   icon: const Icon(Icons.lock_open),
-                  label: Text(state.loading ? 'Ouverture...' : 'Ouvrir la caisse'),
+                  label: Text(
+                    state.loading ? 'Ouverture...' : 'Ouvrir la caisse',
+                  ),
                 ),
                 if (state.error != null) ...[
                   const SizedBox(height: 16),

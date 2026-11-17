@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
@@ -129,9 +129,7 @@ class _PdvScreenState extends ConsumerState<PdvScreen> {
               const SizedBox(height: 12),
               Text(
                 _success!,
-                style: AppTypography.caption.copyWith(
-                  color: AppColors.success,
-                ),
+                style: AppTypography.caption.copyWith(color: AppColors.success),
               ),
             ],
           ],

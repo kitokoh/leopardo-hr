@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -218,15 +218,15 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('${context.l10n.absencesProofDownloaded}$path')),
+            content: Text('${context.l10n.absencesProofDownloaded}$path'),
+          ),
         );
       }
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-          SnackBar(content: Text('${context.l10n.absencesFailure}$error')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${context.l10n.absencesFailure}$error')),
+      );
     } finally {
       if (mounted) setState(() => _downloadingProofId = null);
     }
@@ -288,16 +288,14 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
       ref.invalidate(absencesProvider);
       ref.invalidate(leaveBalancesProvider);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-          SnackBar(content: Text(context.l10n.absencesApprovedSnack)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.absencesApprovedSnack)),
+      );
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-          SnackBar(content: Text('${context.l10n.absencesFailure}$error')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${context.l10n.absencesFailure}$error')),
+      );
     }
   }
 
@@ -368,10 +366,9 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
       );
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-          SnackBar(content: Text('${context.l10n.absencesFailure}$error')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${context.l10n.absencesFailure}$error')),
+      );
     }
   }
 
@@ -479,8 +476,12 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
               balances.when(
                 data: (rawBalances) {
                   final options = rawBalances
-                      .map((balance) =>
-                          _AbsenceTypeOption.fromBalance(balance, context.l10n))
+                      .map(
+                        (balance) => _AbsenceTypeOption.fromBalance(
+                          balance,
+                          context.l10n,
+                        ),
+                      )
                       .where((option) => option != null)
                       .cast<_AbsenceTypeOption>()
                       .toList();
@@ -498,8 +499,9 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
                         ? _selectedType
                         : options.first,
                     dropdownColor: MobileSurface.surface,
-                    decoration:
-                        InputDecoration(labelText: context.l10n.absencesType),
+                    decoration: InputDecoration(
+                      labelText: context.l10n.absencesType,
+                    ),
                     items: options
                         .map(
                           (option) => DropdownMenuItem(
@@ -515,7 +517,8 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
                   );
                 },
                 loading: () => MobileEmptyLoading(
-                    label: context.l10n.absencesBalancesLoading),
+                  label: context.l10n.absencesBalancesLoading,
+                ),
                 error: (error, _) => MobileErrorPanel(
                   message: error.toString(),
                   onRetry: () => ref.invalidate(leaveBalancesProvider),
@@ -628,10 +631,9 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
     } catch (error) {
       if (!context.mounted) return;
       setState(() => _submitting = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-          SnackBar(content: Text('${context.l10n.absencesFailure}$error')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${context.l10n.absencesFailure}$error')),
+      );
     }
   }
 }
@@ -689,7 +691,9 @@ class _AbsenceTypeOption {
   final String label;
 
   static _AbsenceTypeOption? fromBalance(
-      Map<String, dynamic> balance, AppLocalizations l10n) {
+    Map<String, dynamic> balance,
+    AppLocalizations l10n,
+  ) {
     final rawType = balance['absence_type'] ?? balance['absenceType'];
     if (rawType is! Map) return null;
     final type = rawType.cast<String, dynamic>();

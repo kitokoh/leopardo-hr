@@ -6,7 +6,7 @@
 /// le serveur annonce le bon montant au client sans calculer de tete.
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'pos_options.dart';
 
@@ -97,8 +97,9 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
       if (group.maxSelections <= 1) {
         // Choix unique : la nouvelle option remplace l'ancienne du groupe.
         _selections.removeWhere((selection) => selection.groupId == group.id);
-        _selections
-            .add(PosOptionSelection(groupId: group.id, optionId: option.id));
+        _selections.add(
+          PosOptionSelection(groupId: group.id, optionId: option.id),
+        );
 
         return;
       }
@@ -110,16 +111,18 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
       if (currentInGroup >= group.maxSelections) {
         // Plafond atteint : on remplace la plus ancienne du groupe plutot que
         // d'ignorer le geste (un tap sans effet laisse croire a un bug).
-        final oldest = _selections
-            .indexWhere((selection) => selection.groupId == group.id);
+        final oldest = _selections.indexWhere(
+          (selection) => selection.groupId == group.id,
+        );
 
         if (oldest != -1) {
           _selections.removeAt(oldest);
         }
       }
 
-      _selections
-          .add(PosOptionSelection(groupId: group.id, optionId: option.id));
+      _selections.add(
+        PosOptionSelection(groupId: group.id, optionId: option.id),
+      );
     });
   }
 
@@ -196,7 +199,9 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                       Text(
                         'Choisissez les options',
                         style: TextStyle(
-                            fontSize: 15, color: scheme.onSurfaceVariant),
+                          fontSize: 15,
+                          color: scheme.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ),
@@ -231,7 +236,9 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                     Text(
                       'Total de la ligne',
                       style: TextStyle(
-                          fontSize: 16, color: scheme.onSurfaceVariant),
+                        fontSize: 16,
+                        color: scheme.onSurfaceVariant,
+                      ),
                     ),
                     Text(
                       _formatAmount(total),
@@ -252,7 +259,9 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                       child: Text(
                         'dont ${_formatAmount(_additionalMinor)} d\u2019options',
                         style: TextStyle(
-                            fontSize: 15, color: scheme.onSurfaceVariant),
+                          fontSize: 15,
+                          color: scheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
                   ),
@@ -265,8 +274,9 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                     onPressed: _isValid
                         ? () => Navigator.of(context).pop(
                               PosOptionSelectionResult(
-                                selections:
-                                    List<PosOptionSelection>.from(_selections),
+                                selections: List<PosOptionSelection>.from(
+                                  _selections,
+                                ),
                                 additionalMinor: _additionalMinor,
                               ),
                             )
@@ -277,7 +287,9 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                           ? 'Ajouter au panier'
                           : 'Completez les choix obligatoires',
                       style: const TextStyle(
-                          fontSize: 17, fontWeight: FontWeight.w600),
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
@@ -290,7 +302,10 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
   }
 
   Widget _buildGroup(
-      BuildContext context, PosOptionGroup group, ColorScheme scheme) {
+    BuildContext context,
+    PosOptionGroup group,
+    ColorScheme scheme,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Column(
@@ -309,8 +324,10 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
               const SizedBox(width: 8),
               if (group.required)
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: scheme.errorContainer,
                     borderRadius: BorderRadius.circular(6),
@@ -330,8 +347,10 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                 const SizedBox(width: 8),
                 Text(
                   'jusqu\u2019a ${group.maxSelections}',
-                  style:
-                      TextStyle(fontSize: 15, color: scheme.onSurfaceVariant),
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: scheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ],
@@ -408,7 +427,9 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                 Text(
                   '$quantity',
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w600),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 IconButton(
                   key: Key('pos-option-plus-${group.id}-${option.id}'),

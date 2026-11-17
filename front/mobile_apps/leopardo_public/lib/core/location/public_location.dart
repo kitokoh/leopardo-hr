@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -109,8 +109,9 @@ class LocationService {
   }
 }
 
-final locationServiceProvider =
-    Provider<LocationService>((ref) => LocationService());
+final locationServiceProvider = Provider<LocationService>(
+  (ref) => LocationService(),
+);
 
 /// Villes proposées pour le choix manuel.
 ///
@@ -150,8 +151,9 @@ class CityPickerSheet extends StatefulWidget {
 }
 
 class _CityPickerSheetState extends State<CityPickerSheet> {
-  late final TextEditingController _controller =
-      TextEditingController(text: widget.currentCity ?? '');
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.currentCity ?? '',
+  );
 
   @override
   void dispose() {

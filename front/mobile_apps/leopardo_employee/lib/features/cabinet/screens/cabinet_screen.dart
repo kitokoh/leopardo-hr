@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -277,7 +277,8 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.cabinetScreenUploading)));
+      SnackBar(content: Text(context.l10n.cabinetScreenUploading)),
+    );
 
     final repo = ref.read(cabinetRepositoryProvider);
     try {
@@ -299,9 +300,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
       // le snackbar affiché pour toujours et perdait l'image sélectionnée.
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.cabinetScreenUploadFailed),
-        ),
+        SnackBar(content: Text(context.l10n.cabinetScreenUploadFailed)),
       );
     }
   }
@@ -325,8 +324,10 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(context.l10n.cabinetScreenShareTitle(doc.name),
-                style: AppTypography.subtitle),
+            Text(
+              context.l10n.cabinetScreenShareTitle(doc.name),
+              style: AppTypography.subtitle,
+            ),
             const SizedBox(height: 16),
             ListTile(
               contentPadding: EdgeInsets.zero,
@@ -343,8 +344,11 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
                 final url = result['share_url'] ?? '';
                 await Clipboard.setData(ClipboardData(text: url));
                 if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(context.l10n.cabinetScreenLinkCopied(url))));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(context.l10n.cabinetScreenLinkCopied(url)),
+                  ),
+                );
               },
             ),
             const Divider(),
@@ -377,8 +381,8 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
                   if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                        content:
-                            Text(context.l10n.cabinetScreenShareSent(email))),
+                      content: Text(context.l10n.cabinetScreenShareSent(email)),
+                    ),
                   );
                 },
               ),
@@ -395,9 +399,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(context.l10n.cabinetScreenDeleteTitle),
-        content: Text(
-          context.l10n.cabinetScreenDeleteBody(doc.name),
-        ),
+        content: Text(context.l10n.cabinetScreenDeleteBody(doc.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),

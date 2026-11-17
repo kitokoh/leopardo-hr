@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -16,12 +16,15 @@ class _StatusFilter extends Notifier<String?> {
   void set(String? value) => state = value;
 }
 
-final _statusFilterProvider =
-    NotifierProvider<_StatusFilter, String?>(_StatusFilter.new);
+final _statusFilterProvider = NotifierProvider<_StatusFilter, String?>(
+  _StatusFilter.new,
+);
 
 final platformSupportTicketsProvider =
-    FutureProvider.family<List<PlatformSupportTicket>, String?>(
-        (ref, status) async {
+    FutureProvider.family<List<PlatformSupportTicket>, String?>((
+  ref,
+  status,
+) async {
   return ref.watch(platformRepositoryProvider).supportTickets(status: status);
 });
 
@@ -68,7 +71,9 @@ class SupportTicketsScreen extends ConsumerWidget {
               return Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: FilterChip(
-                  label: Text(statusLabels[s] ?? s ?? l10n.supportTicketsFilterAll),
+                  label: Text(
+                    statusLabels[s] ?? s ?? l10n.supportTicketsFilterAll,
+                  ),
                   selected: selected,
                   selectedColor: AppColors.rh.withValues(alpha: 0.25),
                   labelStyle: TextStyle(
@@ -153,10 +158,7 @@ class _TicketCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  LeopardoBadge(
-                    label: ticket.priority,
-                    color: _priorityColor,
-                  ),
+                  LeopardoBadge(label: ticket.priority, color: _priorityColor),
                 ],
               ),
               const SizedBox(height: 6),
@@ -227,8 +229,10 @@ class _TicketCard extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 final platformTicketDetailProvider =
-    FutureProvider.family<PlatformSupportTicketDetail, int>(
-        (ref, ticketId) async {
+    FutureProvider.family<PlatformSupportTicketDetail, int>((
+  ref,
+  ticketId,
+) async {
   return ref.watch(platformRepositoryProvider).supportTicketDetail(ticketId);
 });
 
@@ -262,16 +266,14 @@ class _SupportTicketDetailScreenState
 
     setState(() => _submitting = true);
     try {
-      await ref.read(platformRepositoryProvider).replySupportTicket(
-            ticketId: widget.ticketId,
-            message: message,
-          );
+      await ref
+          .read(platformRepositoryProvider)
+          .replySupportTicket(ticketId: widget.ticketId, message: message);
       _replyController.clear();
       ref.invalidate(platformTicketDetailProvider(widget.ticketId));
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(replySentMsg)),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(replySentMsg)));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
@@ -283,10 +285,9 @@ class _SupportTicketDetailScreenState
 
   Future<void> _triage(String status) async {
     try {
-      await ref.read(platformRepositoryProvider).triageSupportTicket(
-            ticketId: widget.ticketId,
-            status: status,
-          );
+      await ref
+          .read(platformRepositoryProvider)
+          .triageSupportTicket(ticketId: widget.ticketId, status: status);
       ref.invalidate(platformTicketDetailProvider(widget.ticketId));
       if (!mounted) return;
       ScaffoldMessenger.of(context)
@@ -320,7 +321,8 @@ class _SupportTicketDetailScreenState
             onReply: _sendReply,
             onTriage: _triage,
           ),
-          loading: () => MobileEmptyLoading(label: l10n.supportTicketsLoadingTicket),
+          loading: () =>
+              MobileEmptyLoading(label: l10n.supportTicketsLoadingTicket),
           error: (e, _) => MobileErrorPanel(
             message: e.toString(),
             onRetry: () =>
@@ -373,7 +375,9 @@ class _TicketDetailContent extends StatelessWidget {
                   LeopardoBadge(label: ticket.status, color: AppColors.info),
                   const SizedBox(width: 8),
                   LeopardoBadge(
-                      label: ticket.priority, color: AppColors.warning),
+                    label: ticket.priority,
+                    color: AppColors.warning,
+                  ),
                   const Spacer(),
                   Text(
                     ticket.companyName,

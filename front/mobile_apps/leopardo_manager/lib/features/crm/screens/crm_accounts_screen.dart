@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
@@ -43,16 +43,16 @@ class CrmAccountsScreen extends ConsumerWidget {
                             ),
                             subtitle: Text(
                               account.ownerName ?? '',
-                              style:
-                                  const TextStyle(color: MobileSurface.muted),
+                              style: const TextStyle(
+                                color: MobileSurface.muted,
+                              ),
                             ),
                             trailing: const Icon(
                               Icons.chevron_right,
                               color: MobileSurface.muted,
                             ),
-                            onTap: () => context.push(
-                              '/crm/accounts/${account.id}',
-                            ),
+                            onTap: () =>
+                                context.push('/crm/accounts/${account.id}'),
                           ),
                         ),
                       ),

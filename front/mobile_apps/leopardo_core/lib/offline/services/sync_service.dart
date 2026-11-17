@@ -7,8 +7,7 @@ import 'dart:convert';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart' show visibleForTesting;
-import 'package:flutter/material.dart' show debugPrint;
+import 'package:flutter/foundation.dart' show debugPrint, visibleForTesting;
 
 import '../database/edge_database.dart';
 
@@ -55,12 +54,12 @@ class SyncService {
     required String cloudBaseUrl,
     required String edgeNodeId,
     required String edgeToken,
-  }) : _db = db,
-       _dio = dio,
-       _edgeBaseUrl = edgeBaseUrl,
-       _cloudBaseUrl = cloudBaseUrl,
-       _edgeNodeId = edgeNodeId,
-       _edgeToken = edgeToken {
+  })  : _db = db,
+        _dio = dio,
+        _edgeBaseUrl = edgeBaseUrl,
+        _cloudBaseUrl = cloudBaseUrl,
+        _edgeNodeId = edgeNodeId,
+        _edgeToken = edgeToken {
     // Issue #4406 : les providers passent un `Dio()` nu (aucun BaseOptions) —
     // une requête Edge/Cloud pendante (TCP accepté, réponse jamais reçue)
     // bloquerait `syncNow()` pour toujours. Bornes par défaut : 10 s connect /
@@ -82,8 +81,8 @@ class SyncService {
     // Issue #3867 : la subscription est conservée pour être annulée dans
     // stop() — avant, chaque start() créait un listener orphelin (fuite).
     _connectivitySub = Connectivity().onConnectivityChanged.listen(
-      _onConnectivityChangedList,
-    );
+          _onConnectivityChangedList,
+        );
     _syncTimer = Timer.periodic(const Duration(minutes: 5), (_) => syncNow());
     _detectMode();
   }

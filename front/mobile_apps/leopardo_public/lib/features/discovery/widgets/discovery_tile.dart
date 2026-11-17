@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 
@@ -146,11 +146,7 @@ class _Thumb extends StatelessWidget {
         color: AppColors.tint(context, AppColors.info),
         borderRadius: radius,
       ),
-      child: Icon(
-        Icons.storefront_outlined,
-        color: AppColors.info,
-        size: 26,
-      ),
+      child: Icon(Icons.storefront_outlined, color: AppColors.info, size: 26),
     );
 
     if (imageUrl == null) return fallback;

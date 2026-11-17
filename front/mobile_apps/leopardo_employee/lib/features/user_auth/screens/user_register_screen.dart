@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -62,9 +62,9 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
       final googleSignIn = GoogleSignIn.instance;
       final account = await googleSignIn.authenticate();
 
-      final ok = await ref.read(userAuthProvider.notifier).googleSignIn(
-            idToken: account.authentication.idToken ?? '',
-          );
+      final ok = await ref
+          .read(userAuthProvider.notifier)
+          .googleSignIn(idToken: account.authentication.idToken ?? '');
 
       if (ok && mounted) {
         context.go('/user-home');
@@ -72,9 +72,9 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
     } catch (e) {
       if (mounted) {
         final l10n = context.l10n;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.userAuthGoogleError(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.userAuthGoogleError(e.toString()))),
+        );
       }
     } finally {
       if (mounted) setState(() => _googleLoading = false);
@@ -91,9 +91,8 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
 
     ref.listen<UserAuthState>(userAuthProvider, (prev, next) {
       if (next.error != null && next.error != prev?.error) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.error!)));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(next.error!)));
       }
     });
 
@@ -215,7 +214,12 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
     );
   }
 
-  Widget _buildForm(AppLocalizations l10n, UserAuthState state, Color text, Color muted) {
+  Widget _buildForm(
+    AppLocalizations l10n,
+    UserAuthState state,
+    Color text,
+    Color muted,
+  ) {
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
@@ -239,8 +243,9 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
                       labelText: l10n.userAuthFirstName,
                       prefixIcon: const Icon(Icons.person_outlined),
                     ),
-                    validator: (v) =>
-                        (v?.trim().isEmpty ?? true) ? l10n.commonRequired : null,
+                    validator: (v) => (v?.trim().isEmpty ?? true)
+                        ? l10n.commonRequired
+                        : null,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -252,8 +257,9 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
                       labelText: l10n.userAuthLastName,
                       prefixIcon: const Icon(Icons.person_outlined),
                     ),
-                    validator: (v) =>
-                        (v?.trim().isEmpty ?? true) ? l10n.commonRequired : null,
+                    validator: (v) => (v?.trim().isEmpty ?? true)
+                        ? l10n.commonRequired
+                        : null,
                   ),
                 ),
               ],

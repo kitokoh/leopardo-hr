@@ -1,5 +1,5 @@
 import 'package:leopardo_core/core/widgets/glass_card.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -246,7 +246,10 @@ class _EmployeeLinkGlassCard extends StatelessWidget {
   final String companyName;
   final VoidCallback onTap;
 
-  const _EmployeeLinkGlassCard({required this.companyName, required this.onTap});
+  const _EmployeeLinkGlassCard({
+    required this.companyName,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -280,7 +283,10 @@ class _CompanyRequestGlassCard extends StatelessWidget {
   final String companyName;
   final String status;
 
-  const _CompanyRequestGlassCard({required this.companyName, required this.status});
+  const _CompanyRequestGlassCard({
+    required this.companyName,
+    required this.status,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -316,4 +322,3 @@ class _CompanyRequestGlassCard extends StatelessWidget {
     );
   }
 }
-

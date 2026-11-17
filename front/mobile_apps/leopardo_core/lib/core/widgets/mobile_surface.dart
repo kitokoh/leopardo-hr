@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
@@ -69,7 +69,9 @@ class MobilePage extends StatelessWidget {
       backgroundColor: MobileSurface.background,
       appBar: resolvedAppBar,
       bottomNavigationBar: bottom,
-      body: SafeArea(child: ListView(padding: padding, children: children)),
+      body: SafeArea(
+        child: ListView(padding: padding, children: children),
+      ),
     );
   }
 }

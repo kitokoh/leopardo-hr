@@ -1,10 +1,13 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show GlobalCupertinoLocalizations;
 
 import 'dart:ui' show PlatformDispatcher;
 
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart'
+    hide GlobalMaterialLocalizations, GlobalCupertinoLocalizations;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/branding/tenant_theme.dart';
@@ -171,8 +174,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/user-company-integration',
-        builder: (context, state) =>
-            const CompanyIntegrationRequestScreen(),
+        builder: (context, state) => const CompanyIntegrationRequestScreen(),
       ),
 
       // --- Authenticated routes with bottom nav ---
@@ -263,8 +265,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/settings/2fa',
-            builder: (context, state) =>
-                const TwoFactorSettingsScreen(),
+            builder: (context, state) => const TwoFactorSettingsScreen(),
           ),
           GoRoute(
             path: '/profile',
@@ -284,9 +285,8 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'mode',
                 builder: (context, state) => AttendanceModePickerScreen(
-                  currentMode: state.extra is String
-                      ? state.extra as String
-                      : 'gps',
+                  currentMode:
+                      state.extra is String ? state.extra as String : 'gps',
                 ),
               ),
             ],
@@ -302,10 +302,8 @@ class LeopardoApp extends ConsumerWidget {
 
   Locale _resolveLocale(String rawLocale) {
     final normalized = rawLocale.trim().replaceAll('_', '-');
-    final parts = normalized
-        .split('-')
-        .where((part) => part.isNotEmpty)
-        .toList();
+    final parts =
+        normalized.split('-').where((part) => part.isNotEmpty).toList();
 
     if (parts.isEmpty) {
       return const Locale('fr');
@@ -355,11 +353,9 @@ class LeopardoApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final preferences = ref.watch(appPreferencesProvider);
-    final deviceLanguage = PlatformDispatcher.instance.locale
-        .toLanguageTag()
-        .toLowerCase();
-    final languageCode =
-        authState.employee?.language ??
+    final deviceLanguage =
+        PlatformDispatcher.instance.locale.toLanguageTag().toLowerCase();
+    final languageCode = authState.employee?.language ??
         (preferences.preferredLanguage.isNotEmpty
             ? preferences.preferredLanguage
             : deviceLanguage);

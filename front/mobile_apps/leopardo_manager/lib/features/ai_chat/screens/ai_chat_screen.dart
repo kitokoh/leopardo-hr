@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -109,11 +109,7 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.auto_awesome,
-                          size: 48,
-                          color: AppColors.ia,
-                        ),
+                        Icon(Icons.auto_awesome, size: 48, color: AppColors.ia),
                         const SizedBox(height: 12),
                         Text(
                           l10n.aiChatEmptyStateTitle,

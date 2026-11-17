@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -96,7 +96,8 @@ class BusinessProfileScreen extends ConsumerWidget {
                   onBack: () => context.pop(),
                 ),
                 Expanded(
-                    child: LoadingSkeleton(strings: strings, itemCount: 3)),
+                  child: LoadingSkeleton(strings: strings, itemCount: 3),
+                ),
               ],
             ),
             error: (error, _) => _ErrorView(
@@ -219,8 +220,11 @@ class _Content extends StatelessWidget {
                   },
                   icon: const CircleAvatar(
                     backgroundColor: Colors.black45,
-                    child:
-                        Icon(Icons.arrow_back, color: Colors.white, size: 20),
+                    child: Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                   ),
                   tooltip: strings.t('commonBack'),
                 ),
@@ -273,10 +277,7 @@ class _Content extends StatelessWidget {
               const SizedBox(height: 14),
 
               // Les actions : SOURCE UNIQUE = supportedActions().
-              BusinessActionRow(
-                strings: strings,
-                profile: profile,
-              ),
+              BusinessActionRow(strings: strings, profile: profile),
               const SizedBox(height: 18),
 
               if (profile.description != null) ...[
@@ -304,14 +305,18 @@ class _Content extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.place_outlined,
-                        size: 18, color: AppColors.textSecondaryFor(context)),
+                    Icon(
+                      Icons.place_outlined,
+                      size: 18,
+                      color: AppColors.textSecondaryFor(context),
+                    ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        [profile.address, profile.city]
-                            .whereType<String>()
-                            .join(', '),
+                        [
+                          profile.address,
+                          profile.city,
+                        ].whereType<String>().join(', '),
                         style: AppTypography.bodySmall.copyWith(
                           color: AppColors.textSecondaryFor(context),
                         ),
@@ -339,10 +344,7 @@ class _Content extends StatelessWidget {
           ),
         ),
         SliverToBoxAdapter(
-          child: _SecondaryActions(
-            strings: strings,
-            profile: profile,
-          ),
+          child: _SecondaryActions(strings: strings, profile: profile),
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 32)),
       ],
@@ -454,16 +456,18 @@ class _SecondaryActions extends StatelessWidget {
     // d'autres app de cartes ; `geo:` laisse le téléphone choisir.
     final uri = (lat != null && lng != null)
         ? Uri.parse(
-            'geo:$lat,$lng?q=$lat,$lng(${Uri.encodeComponent(profile.name)})')
+            'geo:$lat,$lng?q=$lat,$lng(${Uri.encodeComponent(profile.name)})',
+          )
         : Uri.parse(
-            'geo:0,0?q=${Uri.encodeComponent('${profile.name} ${profile.address ?? ''}'.trim())}');
+            'geo:0,0?q=${Uri.encodeComponent('${profile.name} ${profile.address ?? ''}'.trim())}',
+          );
 
     final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!ok && context.mounted) {
       // Aucune app de cartes : on ne laisse pas un bouton muet.
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(strings.t('stateNotAvailable'))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(strings.t('stateNotAvailable'))));
     }
   }
 
@@ -481,18 +485,16 @@ class _SecondaryActions extends StatelessWidget {
     // système minimal, sans ajouter un paquet pour un seul bouton.
     await Clipboard.setData(ClipboardData(text: message));
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(strings.t('businessShare'))),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(strings.t('businessShare'))));
   }
 
   void _report(BuildContext context) {
     // Le signalement est une fonctionnalité MODÉRÉE (elle crée une entrée
     // côté plateforme). Elle est visible mais pas encore branchée : prétendre
     // l'inverse serait un faux succès. M3 la branche sur l'endpoint existant.
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(strings.t('commonNoModule'))),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(strings.t('commonNoModule'))));
   }
 
   @override

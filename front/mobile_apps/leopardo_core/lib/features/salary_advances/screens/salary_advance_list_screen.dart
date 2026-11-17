@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -250,9 +250,8 @@ class _SalaryAdvanceListScreenState
       }
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Echec : $error')));
     } finally {
       if (mounted) setState(() => _downloadingProofId = null);
     }
@@ -342,9 +341,8 @@ class _SalaryAdvanceListScreenState
       );
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Echec : $error')));
     }
   }
 
@@ -381,14 +379,12 @@ class _SalaryAdvanceListScreenState
           );
       ref.invalidate(salaryAdvancesProvider);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Avance approuvee.')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Avance approuvee.')));
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Echec : $error')));
     }
   }
 
@@ -424,14 +420,12 @@ class _SalaryAdvanceListScreenState
           .markPaid(advanceId: advance.id);
       ref.invalidate(salaryAdvancesProvider);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Paiement declare.')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Paiement declare.')));
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Echec : $error')));
     }
   }
 
@@ -700,9 +694,8 @@ class _SalaryAdvanceRequestSheetState
     } catch (e) {
       if (!context.mounted) return;
       setState(() => _submitting = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $e')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Echec : $e')));
     }
   }
 
