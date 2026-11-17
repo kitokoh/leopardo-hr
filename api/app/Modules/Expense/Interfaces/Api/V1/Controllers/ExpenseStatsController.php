@@ -135,8 +135,8 @@ class ExpenseStatsController extends Controller
                 return [
                     'employee_id' => $item->employee_id,
                     'name' => $name,
-                    'claims_count' => (int) $item->claims_count,
-                    'total_amount' => (float) $item->total_amount,
+                    'claims_count' => (int) $item->getAttribute('claims_count'),
+                    'total_amount' => (float) $item->getAttribute('total_amount'),
                 ];
             });
 
