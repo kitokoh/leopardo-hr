@@ -3,6 +3,10 @@
 use App\Modules\Absence\Providers\AbsenceServiceProvider;
 use App\Modules\Accounting\Providers\AccountingServiceProvider;
 use App\Modules\Attendance\Providers\AttendanceServiceProvider;
+// BC-41 BRANDING (#9578) — enseigne d'un tenant (multi-brand) + surfaces
+// publiques spécialisées par verticale. Placé avant Pages : Pages dépend de
+// Branding pour la résolution de la Brand par défaut d'un tenant.
+use App\Modules\Branding\Providers\BrandingServiceProvider;
 use App\Modules\Billing\Providers\BillingServiceProvider;
 use App\Modules\Cabinet\Providers\CabinetServiceProvider;
 use App\Modules\Cameras\Providers\CamerasServiceProvider;
@@ -92,6 +96,11 @@ return [
     RetailServiceProvider::class,
     ShowcaseServiceProvider::class,
     PagesServiceProvider::class,
+    // BC-41 BRANDING (#9578) — après Pages : le registre de profils de surface
+    // est résolu paresseusement, l'ordre n'impose rien, mais Branding doit
+    // pouvoir être résolu par Pages lors de la résolution de la Brand par
+    // défaut.
+    BrandingServiceProvider::class,
     CommunicationServiceProvider::class,
     // HOSP-001 (#7943) — verticale HospitalityManager (BC-32, hôtels &
     // résidences) : enregistre le manifest `hospitality` au catalogue.
