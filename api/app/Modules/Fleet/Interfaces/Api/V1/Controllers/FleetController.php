@@ -167,6 +167,7 @@ class FleetController extends Controller
         $topVehicles = $trips->groupBy('vehicle_id')
             ->map(function ($group) use ($vehicles) {
                 $vehicle = $vehicles->firstWhere('id', $group->first()->vehicle_id);
+
                 return [
                     'vehicle_id' => $group->first()->vehicle_id,
                     'registration' => $vehicle->registration_number ?? 'Unknown',
