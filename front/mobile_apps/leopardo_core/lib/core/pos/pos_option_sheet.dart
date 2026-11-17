@@ -71,14 +71,14 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
   }
 
   int get _additionalMinor => PosOptionsPricing.additionalMinor(
-    productOptions: widget.productOptions,
-    selections: _selections,
-  );
+        productOptions: widget.productOptions,
+        selections: _selections,
+      );
 
   bool get _isValid => PosOptionsPricing.validate(
-    productOptions: widget.productOptions,
-    selections: _selections,
-  );
+        productOptions: widget.productOptions,
+        selections: _selections,
+      );
 
   /// Bascule une option : choix unique (remplace) ou multiple (ajoute/retire).
   void _toggle(PosOptionGroup group, PosOption option) {
@@ -153,9 +153,9 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
   }
 
   bool _isSelected(PosOptionGroup group, PosOption option) => _selections.any(
-    (selection) =>
-        selection.groupId == group.id && selection.optionId == option.id,
-  );
+        (selection) =>
+            selection.groupId == group.id && selection.optionId == option.id,
+      );
 
   int _quantityOf(PosOptionGroup group, PosOption option) {
     for (final selection in _selections) {
@@ -273,13 +273,13 @@ class _PosOptionSheetState extends State<PosOptionSheet> {
                     key: const Key('pos-option-confirm'),
                     onPressed: _isValid
                         ? () => Navigator.of(context).pop(
-                            PosOptionSelectionResult(
-                              selections: List<PosOptionSelection>.from(
-                                _selections,
+                              PosOptionSelectionResult(
+                                selections: List<PosOptionSelection>.from(
+                                  _selections,
+                                ),
+                                additionalMinor: _additionalMinor,
                               ),
-                              additionalMinor: _additionalMinor,
-                            ),
-                          )
+                            )
                         : null,
                     icon: const Icon(Icons.check),
                     label: Text(

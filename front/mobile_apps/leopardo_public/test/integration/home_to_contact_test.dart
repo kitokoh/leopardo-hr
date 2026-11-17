@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:cupertino_ui/cupertino_ui.dart' show GlobalCupertinoLocalizations;
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show GlobalCupertinoLocalizations;
 import 'package:flutter_localizations/flutter_localizations.dart'
     hide GlobalMaterialLocalizations, GlobalCupertinoLocalizations;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -80,7 +81,8 @@ void main() {
   }
 
   group('Parcours d\'acceptation — Accueil → Fiche → Contact', () {
-    testWidgets('accueil : la recherche est visible et les résultats arrivent '
+    testWidgets(
+        'accueil : la recherche est visible et les résultats arrivent '
         'sans aucun compte', (tester) async {
       final discovery = _FakeDiscoveryRepository(items: [_nadia, _boulangerie]);
 
@@ -131,7 +133,8 @@ void main() {
       expect(discovery.lastQuery, 'nadia');
     });
 
-    testWidgets('fiche : taper une tuile ouvre le bon commerce, en lecture '
+    testWidgets(
+        'fiche : taper une tuile ouvre le bon commerce, en lecture '
         'seule', (tester) async {
       final discovery = _FakeDiscoveryRepository(items: [_nadia]);
       final profile = _FakeProfileRepository();
@@ -160,7 +163,8 @@ void main() {
       expect(find.text('Cuisine marocaine'), findsOneWidget);
     });
 
-    testWidgets('contact : le bouton vient de supportedActions() et reste '
+    testWidgets(
+        'contact : le bouton vient de supportedActions() et reste '
         'désactivé en M1 — frontière assumée du lot', (tester) async {
       final discovery = _FakeDiscoveryRepository(items: [_nadia]);
       final profile = _FakeProfileRepository();
@@ -207,7 +211,8 @@ void main() {
       expect(find.byType(TextField), findsNothing);
     });
 
-    testWidgets('contact : sans la capacité déclarée, AUCUN bouton — pas de '
+    testWidgets(
+        'contact : sans la capacité déclarée, AUCUN bouton — pas de '
         'bouton grisé inventé', (tester) async {
       final discovery = _FakeDiscoveryRepository(
         items: [_boulangerie],
@@ -314,12 +319,12 @@ class _FakeDiscoveryRepository implements PublicDiscoveryRepository {
     final filtered = q.isEmpty
         ? items
         : items
-              .where(
-                (i) =>
-                    i.name.toLowerCase().contains(q) ||
-                    i.slug.toLowerCase().contains(q),
-              )
-              .toList(growable: false);
+            .where(
+              (i) =>
+                  i.name.toLowerCase().contains(q) ||
+                  i.slug.toLowerCase().contains(q),
+            )
+            .toList(growable: false);
 
     return DiscoveryPage(
       items: filtered,
@@ -352,7 +357,7 @@ class _FakeDiscoveryRepository implements PublicDiscoveryRepository {
 /// découverte, ou l'échec demandé.
 class _FakeProfileRepository implements BusinessProfileRepository {
   _FakeProfileRepository({BusinessProfile? profile, this.failure})
-    : _profile = profile;
+      : _profile = profile;
 
   final BusinessProfile? _profile;
   final PublicApiFailure? failure;

@@ -53,7 +53,8 @@ class ConversationListScreen extends ConsumerWidget {
             EmptyState(
               icon: Icons.cloud_off,
               title: 'Messagerie indisponible',
-              description: 'Vérifiez votre connexion, puis réessayez. Vos conversations restent enregistrées côté serveur.',
+              description:
+                  'Vérifiez votre connexion, puis réessayez. Vos conversations restent enregistrées côté serveur.',
             ),
             const SizedBox(height: 16),
             Center(
@@ -77,7 +78,8 @@ class ConversationListScreen extends ConsumerWidget {
                     EmptyState(
                       icon: Icons.forum_outlined,
                       title: 'Aucune conversation',
-                      description: 'Les échanges avec votre manager ou vos groupes apparaîtront ici.',
+                      description:
+                          'Les échanges avec votre manager ou vos groupes apparaîtront ici.',
                     ),
                   ],
                 )

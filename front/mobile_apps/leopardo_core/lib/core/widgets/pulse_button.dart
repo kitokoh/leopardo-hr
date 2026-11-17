@@ -123,9 +123,8 @@ class _PulseButtonState extends State<PulseButton>
                             BoxShadow(
                               color: accent.withValues(alpha: 0.28),
                               blurRadius: 28,
-                              spreadRadius: widget.isLoading
-                                  ? 4
-                                  : 8 * _animation.value,
+                              spreadRadius:
+                                  widget.isLoading ? 4 : 8 * _animation.value,
                             ),
                           ],
                         ),

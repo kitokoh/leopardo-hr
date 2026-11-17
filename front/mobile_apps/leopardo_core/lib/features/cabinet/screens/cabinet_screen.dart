@@ -133,7 +133,8 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
           EmptyState(
             icon: Icons.door_sliding_outlined,
             title: 'Placard vide',
-            description: 'Ajoutez des dossiers et documents pour organiser votre espace.',
+            description:
+                'Ajoutez des dossiers et documents pour organiser votre espace.',
           ),
         ],
       );

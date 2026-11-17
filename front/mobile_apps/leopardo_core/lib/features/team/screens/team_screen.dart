@@ -326,13 +326,13 @@ class _EmployeesTab extends ConsumerWidget {
   }
 
   Color _workStateColor(String state) => switch (state) {
-    'present' => AppColors.rh,
-    'break' => AppColors.warning,
-    'leave' => AppColors.info,
-    'mission' => AppColors.ia,
-    'absent' => AppColors.danger,
-    _ => MobileSurface.disabled,
-  };
+        'present' => AppColors.rh,
+        'break' => AppColors.warning,
+        'leave' => AppColors.info,
+        'mission' => AppColors.ia,
+        'absent' => AppColors.danger,
+        _ => MobileSurface.disabled,
+      };
 
   void _showActions(
     BuildContext context,
@@ -762,20 +762,20 @@ class _InvitationsTab extends ConsumerWidget {
   }
 
   String _invitationLabel(String status) => switch (status) {
-    'pending' => deviceL10n.smartAttendancePending,
-    'sent' => 'Envoyee',
-    'accepted' => 'Acceptee',
-    'expired' => 'Expiree',
-    'revoked' => 'Revoquee',
-    _ => status,
-  };
+        'pending' => deviceL10n.smartAttendancePending,
+        'sent' => 'Envoyee',
+        'accepted' => 'Acceptee',
+        'expired' => 'Expiree',
+        'revoked' => 'Revoquee',
+        _ => status,
+      };
 
   Color _invitationColor(String status) => switch (status) {
-    'accepted' => AppColors.rh,
-    'sent' || 'pending' => AppColors.info,
-    'expired' || 'revoked' => AppColors.danger,
-    _ => MobileSurface.disabled,
-  };
+        'accepted' => AppColors.rh,
+        'sent' || 'pending' => AppColors.info,
+        'expired' || 'revoked' => AppColors.danger,
+        _ => MobileSurface.disabled,
+      };
 
   Future<void> _resend(
     BuildContext context,
@@ -865,22 +865,19 @@ class _EmployeeProfileSheet extends StatelessWidget {
                   _ProfileLine(
                     icon: Icons.apartment_rounded,
                     label: 'Departement',
-                    value:
-                        employee.department ??
+                    value: employee.department ??
                         context.l10n.dashboardNotprovided,
                   ),
                   _ProfileLine(
                     icon: Icons.place_outlined,
                     label: 'Lieu',
-                    value:
-                        employee.workLocation ??
+                    value: employee.workLocation ??
                         context.l10n.dashboardNotprovided,
                   ),
                   _ProfileLine(
                     icon: Icons.schedule_outlined,
                     label: 'Horaire',
-                    value:
-                        employee.scheduleName ??
+                    value: employee.scheduleName ??
                         context.l10n.teamDefaultSchedule,
                   ),
                   _ProfileLine(
@@ -1098,9 +1095,8 @@ class _EmployeeQrImportSheetState
 
     setState(() => _loading = true);
     try {
-      final prefill = await ref
-          .read(employeeRepositoryProvider)
-          .scanEmployeeQr(token);
+      final prefill =
+          await ref.read(employeeRepositoryProvider).scanEmployeeQr(token);
       if (!mounted) return;
       Navigator.of(context).pop();
       widget.onPrefillReady(prefill);
@@ -1251,8 +1247,7 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
   Widget build(BuildContext context) {
     final schedulesAsync = ref.watch(schedulesProvider);
     final bottom = MediaQuery.of(context).viewInsets.bottom;
-    final currency =
-        ref.watch(authProvider).employee?.currency ??
+    final currency = ref.watch(authProvider).employee?.currency ??
         widget.employee.currency ??
         '';
 
@@ -1288,8 +1283,8 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
                       decoration: const InputDecoration(labelText: 'Prenom'),
                       validator: (value) =>
                           value == null || value.trim().isEmpty
-                          ? 'Obligatoire'
-                          : null,
+                              ? 'Obligatoire'
+                              : null,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -1299,8 +1294,8 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
                       decoration: const InputDecoration(labelText: 'Nom'),
                       validator: (value) =>
                           value == null || value.trim().isEmpty
-                          ? 'Obligatoire'
-                          : null,
+                              ? 'Obligatoire'
+                              : null,
                     ),
                   ),
                 ],
@@ -1709,8 +1704,8 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                   ],
                   validator: (v) =>
                       (_role == 'manager' && (v == null || v.isEmpty))
-                      ? context.l10n.teamSelectType
-                      : null,
+                          ? context.l10n.teamSelectType
+                          : null,
                   onChanged: (v) => setState(() => _managerRole = v),
                 ),
               ],
@@ -1821,12 +1816,10 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
           contractStart: _hireDate.text,
           scheduleId: _scheduleId,
           salaryType: _salaryType,
-          salaryBase: _salaryType == 'hourly'
-              ? null
-              : _parseAmount(_salaryBase.text),
-          hourlyRate: _salaryType == 'hourly'
-              ? _parseAmount(_hourlyRate.text)
-              : null,
+          salaryBase:
+              _salaryType == 'hourly' ? null : _parseAmount(_salaryBase.text),
+          hourlyRate:
+              _salaryType == 'hourly' ? _parseAmount(_hourlyRate.text) : null,
           department: _department.text,
           jobTitle: _jobTitle.text,
           workLocation: _workLocation.text,
@@ -1844,12 +1837,10 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
           contractStart: _hireDate.text,
           scheduleId: _scheduleId,
           salaryType: _salaryType,
-          salaryBase: _salaryType == 'hourly'
-              ? null
-              : _parseAmount(_salaryBase.text),
-          hourlyRate: _salaryType == 'hourly'
-              ? _parseAmount(_hourlyRate.text)
-              : null,
+          salaryBase:
+              _salaryType == 'hourly' ? null : _parseAmount(_salaryBase.text),
+          hourlyRate:
+              _salaryType == 'hourly' ? _parseAmount(_hourlyRate.text) : null,
           department: _department.text,
           jobTitle: _jobTitle.text,
           workLocation: _workLocation.text,

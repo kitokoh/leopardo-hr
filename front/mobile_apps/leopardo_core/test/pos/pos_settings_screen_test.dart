@@ -14,13 +14,14 @@ void main() {
     PosHealthProbe? probe,
     PosConfigSaver? onSave,
     String? pinHash,
-  }) => PosSettingsScreen(
-    initialConfig: initial,
-    onSave: onSave ?? (_) async {},
-    probe:
-        probe ?? (_) async => const PosHealthResult(status: PosHealthStatus.ok),
-    pinHash: pinHash,
-  );
+  }) =>
+      PosSettingsScreen(
+        initialConfig: initial,
+        onSave: onSave ?? (_) async {},
+        probe: probe ??
+            (_) async => const PosHealthResult(status: PosHealthStatus.ok),
+        pinHash: pinHash,
+      );
 
   group('porte PIN', () {
     testWidgets('affiche la demande de code au demarrage', (tester) async {

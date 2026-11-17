@@ -213,7 +213,7 @@ class _PosVoidReasonSheetState extends State<PosVoidReasonSheet> {
             FilledButton.icon(
               onPressed: _canSubmit
                   ? () => Navigator.of(context)
-                        .pop((reason: _reason, comment: _comment.text.trim()))
+                      .pop((reason: _reason, comment: _comment.text.trim()))
                   : null,
               icon: const Icon(Icons.block),
               label: const Text('Annuler la ligne'),
@@ -650,12 +650,10 @@ class PosSyncBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final hasConflict = progress.hasConflicts;
-    final background = hasConflict
-        ? scheme.errorContainer
-        : scheme.tertiaryContainer;
-    final foreground = hasConflict
-        ? scheme.onErrorContainer
-        : scheme.onTertiaryContainer;
+    final background =
+        hasConflict ? scheme.errorContainer : scheme.tertiaryContainer;
+    final foreground =
+        hasConflict ? scheme.onErrorContainer : scheme.onTertiaryContainer;
 
     return Container(
       width: double.infinity,

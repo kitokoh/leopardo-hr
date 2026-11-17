@@ -219,10 +219,10 @@ class _LevelsTab extends ConsumerWidget {
         final filtered = query.isEmpty
             ? levels
             : levels
-                  .where(
-                    (l) => (l.productName ?? '').toLowerCase().contains(query),
-                  )
-                  .toList();
+                .where(
+                  (l) => (l.productName ?? '').toLowerCase().contains(query),
+                )
+                .toList();
 
         if (filtered.isEmpty) {
           return _EmptyState(message: l10n.stockMobileEmptyLevels);
@@ -235,12 +235,10 @@ class _LevelsTab extends ConsumerWidget {
             final level = filtered[index];
             return MobileListCard(
               icon: Icons.inventory_2_outlined,
-              iconColor: level.isBelowThreshold
-                  ? AppColors.danger
-                  : AppColors.finance,
+              iconColor:
+                  level.isBelowThreshold ? AppColors.danger : AppColors.finance,
               title: level.productName ?? '#${level.productId}',
-              subtitle:
-                  '${l10n.stockMobileQuantity}: ${_fmt(level.quantity)}'
+              subtitle: '${l10n.stockMobileQuantity}: ${_fmt(level.quantity)}'
                   '${level.unit != null ? ' ${level.unit}' : ''}',
               trailing: level.isBelowThreshold
                   ? MobileStatusPill(
@@ -371,8 +369,7 @@ class _AlertsTab extends ConsumerWidget {
               icon: Icons.warning_amber_outlined,
               iconColor: AppColors.danger,
               title: alert.productName ?? '#${alert.productId}',
-              subtitle:
-                  '${l10n.stockMobileQuantity}: ${_fmt(alert.quantity)}'
+              subtitle: '${l10n.stockMobileQuantity}: ${_fmt(alert.quantity)}'
                   ' · ${l10n.stockMobileThreshold}: ${_fmt(alert.alertThreshold ?? 0)}',
             );
           },
@@ -499,19 +496,18 @@ class _RecordMovementSheetState extends State<_RecordMovementSheet> {
           DropdownButtonFormField<StockMovementReason>(
             initialValue: _reason,
             decoration: InputDecoration(labelText: l10n.stockMobileReason),
-            items:
-                [
-                      StockMovementReason.receiving,
-                      StockMovementReason.adjustment,
-                      StockMovementReason.waste,
-                    ]
-                    .map(
-                      (r) => DropdownMenuItem(
-                        value: r,
-                        child: Text(_reasonLabel(l10n, r)),
-                      ),
-                    )
-                    .toList(),
+            items: [
+              StockMovementReason.receiving,
+              StockMovementReason.adjustment,
+              StockMovementReason.waste,
+            ]
+                .map(
+                  (r) => DropdownMenuItem(
+                    value: r,
+                    child: Text(_reasonLabel(l10n, r)),
+                  ),
+                )
+                .toList(),
             onChanged: (v) => setState(() => _reason = v ?? _reason),
           ),
           const SizedBox(height: 12),

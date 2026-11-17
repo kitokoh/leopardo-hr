@@ -202,7 +202,8 @@ class _ScannerError extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
 
     final message = switch (error.errorCode) {
-      MobileScannerErrorCode.permissionDenied => 'Acces a la camera refuse. Autorisez la camera dans les reglages de la tablette.',
+      MobileScannerErrorCode.permissionDenied =>
+        'Acces a la camera refuse. Autorisez la camera dans les reglages de la tablette.',
       MobileScannerErrorCode.unsupported =>
         'Cet appareil ne permet pas le scan par camera.',
       _ => 'Camera indisponible. Utilisez la saisie manuelle du code.',

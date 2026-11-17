@@ -79,8 +79,8 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
                 final color = _getStatusColor(absence.status);
                 final dateLabel =
                     '${_formatDate(absence.startDate)} - ${_formatDate(absence.endDate)}';
-                final requester =
-                    absence.employeeName?.trim().isNotEmpty == true
+                final requester = absence.employeeName?.trim().isNotEmpty ==
+                        true
                     ? absence.employeeName!
                     : '${context.l10n.absencesEmployeeLabel} #${absence.employeeId}';
 
@@ -134,9 +134,8 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
     required Employee? actor,
   }) {
     final details = _absenceContext(absence);
-    final proofButton = absence.hasProof
-        ? _proofButton(context, absence.id)
-        : null;
+    final proofButton =
+        absence.hasProof ? _proofButton(context, absence.id) : null;
 
     if (absence.status == 'pending') {
       if (_canDecideAbsence(actor, absence)) {
@@ -206,9 +205,8 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
   Future<void> _viewProof(BuildContext context, int absenceId) async {
     setState(() => _downloadingProofId = absenceId);
     try {
-      final path = await ref
-          .read(absenceRepositoryProvider)
-          .downloadProof(absenceId);
+      final path =
+          await ref.read(absenceRepositoryProvider).downloadProof(absenceId);
       if (!context.mounted) return;
 
       final uri = Uri.file(path);
@@ -615,9 +613,7 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
 
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(absenceRepositoryProvider)
-          .requestAbsence(
+      await ref.read(absenceRepositoryProvider).requestAbsence(
             absenceTypeId: selectedType.id,
             startDate: _startDate,
             endDate: _endDate,
@@ -705,8 +701,7 @@ class _AbsenceTypeOption {
     if (id == null) return null;
 
     final name = type['name']?.toString();
-    final remaining =
-        balance['remaining_days'] ??
+    final remaining = balance['remaining_days'] ??
         balance['remaining'] ??
         balance['balance'] ??
         balance['available_days'];

@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
-import 'package:cupertino_ui/cupertino_ui.dart' show GlobalCupertinoLocalizations;
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show GlobalCupertinoLocalizations;
 
 import 'dart:ui' show PlatformDispatcher;
 

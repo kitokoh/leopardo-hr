@@ -116,9 +116,8 @@ class _TwoFactorChallengeScreenState
               // ── Champ de saisie ────────────────────────────────────────
               TextField(
                 controller: _codeController,
-                keyboardType: _useRecovery
-                    ? TextInputType.text
-                    : TextInputType.number,
+                keyboardType:
+                    _useRecovery ? TextInputType.text : TextInputType.number,
                 inputFormatters: _useRecovery
                     ? []
                     : [
@@ -199,9 +198,7 @@ class _TwoFactorChallengeScreenState
     HapticFeedback.lightImpact();
     FocusScope.of(context).unfocus();
 
-    await ref
-        .read(authProvider.notifier)
-        .verifyMfaChallenge(
+    await ref.read(authProvider.notifier).verifyMfaChallenge(
           code: _useRecovery ? null : value,
           recoveryCode: _useRecovery ? value : null,
         );

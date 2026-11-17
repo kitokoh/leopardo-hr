@@ -113,12 +113,12 @@ class _EventCard extends StatelessWidget {
   final bool highlighted;
 
   IconData get _icon => switch (event.type) {
-    'person' => Icons.person_outline,
-    'vehicle' => Icons.directions_car_outlined,
-    'line_crossing' => Icons.linear_scale_outlined,
-    'tamper' => Icons.report_problem_outlined,
-    _ => Icons.motion_photos_on_outlined,
-  };
+        'person' => Icons.person_outline,
+        'vehicle' => Icons.directions_car_outlined,
+        'line_crossing' => Icons.linear_scale_outlined,
+        'tamper' => Icons.report_problem_outlined,
+        _ => Icons.motion_photos_on_outlined,
+      };
 
   @override
   Widget build(BuildContext context) {

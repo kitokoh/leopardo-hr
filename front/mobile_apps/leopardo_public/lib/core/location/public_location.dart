@@ -98,7 +98,8 @@ class LocationService {
   LocationOutcome _map(LocationPermission permission) {
     return switch (permission) {
       LocationPermission.always ||
-      LocationPermission.whileInUse => LocationOutcome.granted,
+      LocationPermission.whileInUse =>
+        LocationOutcome.granted,
       LocationPermission.deniedForever => LocationOutcome.deniedForever,
       LocationPermission.denied => LocationOutcome.denied,
       // `unableToDetermine` (plateforme sans service) : impossible de savoir,
