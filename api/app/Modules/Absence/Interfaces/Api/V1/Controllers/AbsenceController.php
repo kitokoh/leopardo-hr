@@ -296,7 +296,7 @@ class AbsenceController extends Controller
         $topEmployees = $absences->groupBy('employee_id')->map(function ($group) {
             return [
                 'employee_id' => $group->first()->employee_id,
-                'name' => $group->first()->employee ? 
+                'name' => $group->first()->employee ?
                     $group->first()->employee->first_name.' '.$group->first()->employee->last_name :
                     'Unknown',
                 'count' => $group->count(),

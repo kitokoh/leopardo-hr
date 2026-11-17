@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 ModuleRoutes::tenantModule('absences', function (): void {
     // #9538 : statistiques d'absences pour dashboard manager (avant les routes /{absence}).
     Route::get('/stats', [AbsenceController::class, 'stats']);
-    
+
     Route::get('/', [AbsenceController::class, 'index']);
     Route::post('/', [AbsenceController::class, 'store']);
     Route::get('/{absence}', [AbsenceController::class, 'show'])->whereNumber('absence');

@@ -2767,6 +2767,29 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 
 **Non couvert** — rendu visuel des trois nouveaux écrans non observé avec de vraies données (pas de base peuplée ni de session authentifiée dans le sandbox) ; migration non jouée sur une base tenant réelle (les tests utilisent la fixture `CreatesMvpSchema`) ; présence de `pdftotext` / `antiword` sur l'image de production non vérifiée — le code rend `null` proprement s'ils manquent, donc absence = dégradation du score, pas panne ; aucune OCR sur les CV scannés en image (choix assumé) ; suite Jest **complète** tuée par l'OOM du sandbox (2 Go) — seul le périmètre touché a été exécuté.
 
+## 2026-11-17 — BC-04 ABSENCE : statistiques d'absences pour le dashboard manager (#9538, PR #9556)
+
+**Surface** : `GET /v1/absences/stats` (`AbsenceController::stats`), route déclarée **avant** `/{absence}` dans `routes/modules/absence.php`, documentée dans `api/openapi.yaml`. Aucune migration, aucun changement de modèle.
+
+**Pourquoi ce sont des scénarios de test** : l'endpoint agrège côté PHP (`groupBy` sur une collection chargée en mémoire) et calcule un taux d'absentéisme par approximation. Trois familles de défauts ne se voient pas à l'œil sur un jeu de données vide : le **conflit de route** avec `/{absence}`, la **division par zéro** quand la période ou l'effectif est vide, et le **périmètre multi-tenant** d'un agrégat qui compte des employés.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `GET /v1/absences/stats` atteint bien `stats()` et non `show()` avec `absence = "stats"` | la route est déclarée avant `/{absence}` : inverser les deux lignes ferait répondre **404** (ou 422 sur `whereNumber`) au lieu des statistiques, sans aucune erreur de compilation |
+| un employé non-manager reçoit **403** | `abort_unless($actor->isManager(), 403)` est la seule garde : sans test, un collaborateur lirait les absences de toute l'entreprise |
+| les absences d'une **autre entreprise** ne sont jamais comptées | le filtre `where('company_id', $actor->company_id)` est la seule barrière ; un agrégat qui fuit est un incident RGPD, pas un bug d'affichage |
+| période sans aucune absence → `total_absences = 0`, `absenteeism_rate = 0`, `by_type = []` | `$totalDays / ($workingDays * $activeEmployees)` divise par zéro si l'effectif actif est nul ; le garde `$activeEmployees > 0 && $workingDays > 0` doit être prouvé, pas supposé |
+| `from`/`to` par défaut = mois courant, bornes incluses | `whereBetween('start_date', [$from, $to])` : une absence commençant le dernier jour du mois doit compter |
+| `from`/`to` mal formés (`2026-13-01`, `17/11/2026`) → **422** | `date_format:Y-m-d` est la seule validation ; un format libre ferait passer une date invalide à `Carbon::parse` |
+| `employee_id` inexistant → **422**, et non une liste vide | `exists:employees,id` distingue « filtre invalide » de « aucune absence » ; sans lui, une faute de frappe rend un dashboard vide et crédible |
+| `top_employees` est trié par jours décroissants et plafonné à **10** | `sortByDesc('days')->take(10)` : sans test, un `take` déplacé ou un tri sur `count` passerait inaperçu |
+| une absence dont le type ou l'employé a été supprimé ne fait pas échouer la requête | `$group->first()->absenceType->name ?? 'Unknown'` lit une propriété sur `null` quand la relation manque : PHP 8 émet un *warning* et rend `null`, donc la réponse reste 200 — comportement à figer par un test, sinon une future refonte en `?->` ou en jointure changera silencieusement le libellé |
+| `by_status` ne compte que `pending` / `approved` / `rejected` | les trois clés sont écrites en dur : un nouveau statut ajouté à l'enum disparaîtrait de la réponse sans erreur |
+
+**Couverture exécutée** — `pint --test` PASS sur les 2 fichiers du lot (contrôleur + routes) après correction de 2 défauts de style (`no_trailing_whitespace`, `unary_operator_spaces`, `braces_position`, `not_operator_with_successor_space`, `single_line_empty_body` sur le contrôleur ; `no_whitespace_in_blank_line` sur les routes).
+
+**Non couvert** — aucun test PHPUnit exécuté pour ce lot : la suite Feature dépasse la RAM du sandbox (2 Go, OOM signal 9). Les scénarios ci-dessus sont donc **à écrire**, pas encore écrits ; la CI `Tests - Leopardo` reste le seul verdict d'exécution.
+
 ## 2026-11-17 — BC-06 NOTIFICATION : purge des notifications anciennes (#9540, PR #9560)
 
 **Surface** : `DELETE /v1/notifications/purge-old` (`NotificationController::purgeOld`), declaree dans `routes/modules/rh.php`, documentee dans `api/openapi.yaml`. Aucune migration.
