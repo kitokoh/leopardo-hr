@@ -271,7 +271,7 @@ function isCssSelectorOrMediaQuery(value) {
 // mots-clés de mise en page et de fonctions de grille — jamais de mots d'une
 // phrase utilisateur. On exige donc qu'aucun mot alphabétique hors vocabulaire
 // CSS n'apparaisse, ce qui laisse « Bonjour, le monde » flaggée.
-const cssLengthToken = /^-?(?:\d*\.)?\d+(?:px|rem|em|%|vw|vh|vmin|vmax|ch|ex|pt|fr)?$/i;
+const cssLengthToken = /^-?(?:\d*\.)?\d+(?:px|rem|em|%|vw|vh|vmin|vmax|ch|ex|pt|fr|ms|s)?$/i;
 const cssStyleKeywords = new Set([
   'auto', 'none', 'normal', 'inherit', 'initial', 'unset', 'revert',
   'solid', 'dashed', 'dotted', 'transparent', 'currentcolor',
@@ -284,6 +284,16 @@ const cssStyleKeywords = new Set([
   'absolute', 'relative', 'fixed', 'sticky', 'static',
   'row', 'column', 'wrap', 'nowrap', 'bold', 'italic', 'uppercase', 'lowercase',
   'pointer', 'ellipsis', 'cover', 'contain', 'scroll', 'visible',
+  // Fonctions de couleur (#9594) : `rgba(15, 23, 42, 0.04)` est une valeur de
+  // style, jamais du texte utilisateur. Le nom de fonction est un jeton CSS.
+  'rgba', 'rgb', 'hsl', 'hsla',
+  // Courbes d'animation et propriétés animées (#9594) : la forme abrégée
+  // `box-shadow 120ms ease, transform 120ms ease` est une déclaration de
+  // transition, pas une phrase.
+  'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear', 'step-start', 'step-end',
+  'box-shadow', 'transform', 'transition', 'opacity', 'background', 'color',
+  'border', 'padding', 'margin', 'font', 'display', 'gap', 'width', 'height',
+  'inset', 'filter', 'backdrop-filter', 'will-change', 'outline', 'shadow',
 ]);
 function isCssStyleValue(value) {
   const trimmed = value.trim();
