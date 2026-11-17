@@ -129,7 +129,7 @@ class ExpenseStatsController extends Controller
             ->get()
             ->map(function ($item) {
                 $name = $item->employee
-                    ? trim($item->employee->first_name . ' ' . $item->employee->last_name)
+                    ? trim($item->employee->first_name.' '.$item->employee->last_name)
                     : 'Unknown';
 
                 return [

@@ -2767,6 +2767,35 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 
 **Non couvert** — rendu visuel des trois nouveaux écrans non observé avec de vraies données (pas de base peuplée ni de session authentifiée dans le sandbox) ; migration non jouée sur une base tenant réelle (les tests utilisent la fixture `CreatesMvpSchema`) ; présence de `pdftotext` / `antiword` sur l'image de production non vérifiée — le code rend `null` proprement s'ils manquent, donc absence = dégradation du score, pas panne ; aucune OCR sur les CV scannés en image (choix assumé) ; suite Jest **complète** tuée par l'OOM du sandbox (2 Go) — seul le périmètre touché a été exécuté.
 
+## 2026-11-17 — BC-09 EXPENSE : KPIs des notes de frais pour le dashboard Finance (#9550, PR #9564)
+
+**Surface** : `GET /v1/expense/stats` (`ExpenseStatsController::index`), nouveau controleur dans `routes/modules/expense.php`, documentee dans `api/openapi.yaml`. Aucune migration.
+
+**Pourquoi ce sont des scenarios de test** : c'est un controleur **neuf** qui melange **deux unites de temps** (heures pour l'approbation, jours pour le paiement), une **devise** devinee depuis la premiere ligne, et un **top 10** par montant. Chaque choix est une decision produit silencieuse.
+
+| Scenario | Ce qui serait casse sans lui |
+|---|---|
+| un acteur sans `expense.reports` **ni** `expense.manage` recoit **403** | la garde est un **OU** de deux capacites : `cannot('expense.reports') && cannot('expense.manage')`. Sans test, une politique qui retire `expense.reports` fermerait l'endpoint aux gestionnaires qui n'ont que `expense.manage` |
+| les notes d'une **autre entreprise** ne sont jamais comptees | `where('company_id', $companyId)` est repete sur **sept** requetes : un oubli sur une seule fausse un seul indicateur |
+| `total_amount` est la **somme** des montants, pas un compte | `(clone $claimsQuery)->sum('total_amount')` : sans test, un `count()` a la place rendrait un chiffre plausible mais faux |
+| `currency` est la devise de la **premiere** note, `EUR` par defaut | `->value('currency') ?? 'EUR'` : c'est une approximation (pas de conversion multi-devises) — un test fige le comportement et documente la limite |
+| `amounts_by_status` et `amounts_by_category` sont des **floats** | `->map(fn ($v) => (float) $v)` : sans test, un `int` casserait le contrat OpenAPI (`number` vs `integer`) |
+| `amounts_by_category` exclut les notes sans categorie | `whereNotNull('category')` : sans test, une cle `""` apparaitrait dans la reponse |
+| `avg_approval_time_hours` est en **heures** (facteur 3600) | `EXTRACT(EPOCH ...) / 3600` : l'unite est un choix produit — un facteur 86400 rendrait des « heures » 24 fois trop grandes |
+| `avg_payment_time_days` est en **jours** (facteur 86400) | `EXTRACT(EPOCH ...) / 86400` : les deux unites different **volontairement** (approbation en heures, paiement en jours) — un test fige le couple |
+| `avg_approval_time_hours` exige `approved_at` **et** `submitted_at` non nuls | `whereNotNull` x2 : une note approuvee sans date de soumission ne doit pas fausser la moyenne |
+| `avg_payment_time_days` exige `paid_at` **et** `approved_at` non nuls | idem : le paiement est mesure depuis l'approbation, pas depuis la soumission |
+| `pending_approval` = statut `submitted`, `pending_payment` = statut `approved` | les deux compteurs reposent sur des **statuts en dur** : un nouveau statut dans l'enum disparaitrait des deux sans erreur |
+| `top_claimants` est trie par **montant total** decroissant, plafonne a **10** | `orderByDesc('total_amount')->limit(10)` : sans test, un tri par nombre de notes rendrait un classement different |
+| `top_claimants` joint le nom de l'employe, `'Unknown'` si supprime | `$item->employee ? trim(...) : 'Unknown'` : un employe supprime ne doit pas faire 500 |
+| `top_claimants` respecte la periode demandee | `.when($from, ...)` / `.when($to, ...)` : les bornes sont repetees sur chaque requete |
+| `from`/`to` facultatifs : absents -> tout l'historique | `if ($from)` / `when($from, ...)` : une periode vide ne doit pas rendre zero |
+| `from` = debut de journee, `to` = fin de journee | `startOfDay()` / `endOfDay()` : une note du dernier jour a 16:00 doit compter |
+| `from`/`to` mal formes -> **422** | `'nullable\|date'` : un format libre ferait un 500 dans `Carbon::parse` |
+| la route `/expense/stats` n'est pas avalee par `/expense-claims/{expenseClaim}` | `/stats` est declaree **avant** le groupe parametre : l'ordre est la seule protection |
+
+**Couverture executee** — `pint --test` PASS sur les 2 fichiers du lot apres correction de 2 defauts (`concat_space` dans le controleur, `no_whitespace_in_blank_line` dans les routes).
+
 ## 2026-11-17 — BC-06 NOTIFICATION : purge des notifications anciennes (#9540, PR #9560)
 
 **Surface** : `DELETE /v1/notifications/purge-old` (`NotificationController::purgeOld`), declaree dans `routes/modules/rh.php`, documentee dans `api/openapi.yaml`. Aucune migration.
