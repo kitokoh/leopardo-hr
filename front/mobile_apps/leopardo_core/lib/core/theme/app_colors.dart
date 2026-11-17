@@ -399,6 +399,14 @@ class AppColors {
   // gardent leurs tokens, et une app qui n'embarque pas de vitrine n'utilise
   // simplement pas ces constantes.
 
+  /// Texte posé sur la couleur d'action d'une vitrine verticale.
+  ///
+  /// Blanc : les six couleurs d'action des vitrines sont toutes assez sombres
+  /// pour que le blanc atteigne le contraste AA (vérifié par les tests du
+  /// module web `public-surfaces`). Côté mobile, `readableOn()` recalcule le
+  /// meilleur candidat si une palette venait à changer.
+  static const Color surfaceOnPrimary = Color(0xFFFFFFFF);
+
   /// Restaurant — action principale (braise).
   static const Color surfaceRestaurantPrimary = Color(0xFFC2410C);
 
