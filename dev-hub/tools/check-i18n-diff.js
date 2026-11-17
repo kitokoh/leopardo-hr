@@ -262,6 +262,19 @@ function isCssSelectorOrMediaQuery(value) {
 // compte"` est détecté (cas 2 du self-test). Resserrer cette règle créerait de
 // nouveaux faux positifs sur les libellés courts légitimes (états, clés
 // d'API) — exactement ce que l'issue #7482 demande d'arrêter.
+// Types MIME (`type` d'un `Blob`, en-tete `Content-Type`...) : valeurs de
+// protocole, jamais du texte utilisateur. Constat #9569 : l'export CSV du
+// module Toolbox pose `new Blob([...], { type: 'text/csv;charset=utf-8' })` et
+// la garde lisait le type MIME comme une chaine en dur. Meme famille que #7776
+// (types MIME d'un `accept=`) et #8700 (directives HTTP).
+const mimeTypePattern = /^[a-z]+\/[a-z0-9.+-]+(?:\s*;\s*[a-z-]+=[a-z0-9.+-]+)*$/i;
+
+// Suites d'echappement pures (`'\r\n'`, `'\n\t'`, `'\uFEFF'`) et caracteres de
+// controle : separateurs et marqueurs techniques, jamais du texte utilisateur.
+// Constat #9569 : le separateur de lignes CRLF exige par RFC 4180 pour l'export
+// CSV etait signale comme chaine en dur.
+const escapeSequencePattern = /^(?:\\[nrtvfb0]|\\u[0-9a-fA-F]{4}|\\x[0-9a-fA-F]{2})+$|^[\n\r\t]+$/;
+
 function isTechnicalToken(value) {
   const trimmed = value.trim();
   if (!trimmed) return true;
@@ -288,6 +301,9 @@ function isTechnicalToken(value) {
   if (isCssSelectorOrMediaQuery(trimmed)) return true;
   // Directives d'en-tete HTTP (issue #8700).
   if (isHttpHeaderDirective(trimmed)) return true;
+  // Types MIME et suites d'echappement pures (issue #9569).
+  if (mimeTypePattern.test(trimmed)) return true;
+  if (escapeSequencePattern.test(trimmed)) return true;
   return /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|Bearer\s|https?:\/\/|wss?:\/\/|https?:|wss?:|api\/|\/api|[A-Z_]{2,})$/.test(trimmed);
 }
 
