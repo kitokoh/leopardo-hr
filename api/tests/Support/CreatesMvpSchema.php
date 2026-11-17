@@ -1352,10 +1352,17 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS public.commissions CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.partner_payout_requests CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.partners CASCADE');
+        // Les 4 tables Edge vivent désormais dans `shared_tenants` (voir plus
+        // haut) ; les DROP `public` restent pour nettoyer les bases de test
+        // construites avant ce correctif.
         DB::statement('DROP TABLE IF EXISTS public.edge_licenses CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.sync_queue CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.sync_logs CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.edge_nodes CASCADE');
+        DB::statement('DROP TABLE IF EXISTS shared_tenants.edge_licenses CASCADE');
+        DB::statement('DROP TABLE IF EXISTS shared_tenants.sync_queue CASCADE');
+        DB::statement('DROP TABLE IF EXISTS shared_tenants.sync_logs CASCADE');
+        DB::statement('DROP TABLE IF EXISTS shared_tenants.edge_nodes CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.companies CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.user_employee_links CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.feature_flag_audits CASCADE');
@@ -3940,8 +3947,14 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable('edge_nodes')) {
-            Schema::create('edge_nodes', function (Blueprint $table): void {
+        // #7573 / PlatformAdminDashboardController : le pilotage plateforme lit
+        // `shared_tenants.edge_nodes` en dur (TENANT_SCHEMA). La fixture créait
+        // ces 4 tables dans `public` : le contrôleur échouait en 42P01
+        // (`relation "shared_tenants.edge_nodes" does not exist`) et rendait 503.
+        // Elles sont désormais créées dans le schéma module, comme les autres
+        // tables tenant de cette fixture.
+        if (! Schema::hasTable($this->moduleTable('edge_nodes'))) {
+            Schema::create($this->moduleTable('edge_nodes'), function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('company_id')->index();
                 $table->string('name');
@@ -3962,8 +3975,8 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable('sync_logs')) {
-            Schema::create('sync_logs', function (Blueprint $table): void {
+        if (! Schema::hasTable($this->moduleTable('sync_logs'))) {
+            Schema::create($this->moduleTable('sync_logs'), function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('edge_node_id')->index();
                 $table->string('direction');
@@ -3979,13 +3992,13 @@ trait CreatesMvpSchema
                 $table->timestamps();
 
                 $table->foreign('edge_node_id')
-                    ->references('id')->on('edge_nodes')
+                    ->references('id')->on($this->moduleTable('edge_nodes'))
                     ->cascadeOnDelete();
             });
         }
 
-        if (! Schema::hasTable('sync_queue')) {
-            Schema::create('sync_queue', function (Blueprint $table): void {
+        if (! Schema::hasTable($this->moduleTable('sync_queue'))) {
+            Schema::create($this->moduleTable('sync_queue'), function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('edge_node_id')->index();
                 $table->string('entity_type');
@@ -4013,13 +4026,13 @@ trait CreatesMvpSchema
                 $table->unique(['edge_node_id', 'dedup_key'], 'sync_queue_dedup_unique');
                 $table->index(['edge_node_id', 'idempotency_key'], 'sync_queue_idempotency_index');
                 $table->foreign('edge_node_id')
-                    ->references('id')->on('edge_nodes')
+                    ->references('id')->on($this->moduleTable('edge_nodes'))
                     ->cascadeOnDelete();
             });
         }
 
-        if (! Schema::hasTable('edge_licenses')) {
-            Schema::create('edge_licenses', function (Blueprint $table): void {
+        if (! Schema::hasTable($this->moduleTable('edge_licenses'))) {
+            Schema::create($this->moduleTable('edge_licenses'), function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('company_id')->index();
                 $table->uuid('edge_node_id')->unique();
@@ -4034,7 +4047,7 @@ trait CreatesMvpSchema
                 $table->timestamps();
 
                 $table->foreign('edge_node_id')
-                    ->references('id')->on('edge_nodes')
+                    ->references('id')->on($this->moduleTable('edge_nodes'))
                     ->cascadeOnDelete();
             });
         }
