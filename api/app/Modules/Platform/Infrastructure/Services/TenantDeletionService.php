@@ -131,6 +131,12 @@ final class TenantDeletionService
         'vtc_marketplace_operators',
         'public_conversation_index',
         'public_activity_index',
+        // #7573 — `edge_nodes` porte `company_id` sans FK ni cascade. La garde
+        // d'exhaustivité la signalait : en mode `purge`, la suppression de la
+        // société laissait donc les nœuds Edge du tenant intacts — un appareil
+        // physique restait rattaché à une société supprimée, et pouvait encore
+        // pousser des synchronisations. C'est une donnée DU tenant : purgée.
+        'edge_nodes',
     ];
 
     /**
