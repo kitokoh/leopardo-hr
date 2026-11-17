@@ -288,8 +288,8 @@ class AbsenceController extends Controller
             $first = $group->first();
 
             return [
-                'type' => $first?->absenceType?->name ?? 'Unknown',
-                'code' => $first?->absenceType?->code ?? 'unknown',
+                'type' => $first?->absenceType->name ?? 'Unknown',
+                'code' => $first?->absenceType->code ?? 'unknown',
                 'count' => $group->count(),
                 'days' => round($group->sum('days_count'), 1),
             ];
