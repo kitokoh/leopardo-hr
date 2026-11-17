@@ -51,3 +51,25 @@ Mesure : `TravelReportTest` — deux tests rouges (`422` sur des rapports pourta
 - **Middleware global « authorize-then-validate »** : impossible sans réécrire chaque `FormRequest`; le contrat Laravel est déjà celui-là, le défaut est de ne pas l'utiliser.
 - **Garder 404 sur les refus** : indistinguable d'une absence réelle, et casse les contrats de test documentés.
 - **Autoriser l'interpolation de timestamps dans les tests** : le comportement est spécifique à la query string et silencieux ; on ne peut pas le rattraper côté serveur sans accepter des dates ambiguës.
+
+## Complément 2026-11-17 — statuts et types JSON (tranches #9536, #9543, #9552)
+
+Deux règles nées des mêmes mesures, sur la **forme** de la réponse plutôt que sur l'ordre des contrôles.
+
+### A. Un endpoint idempotent fixe son statut, il ne le déduit pas d'un état de modèle
+
+`JsonResource::response()` retourne **201** quand `$this->resource->wasRecentlyCreated` est vrai. Un `POST` qui *agit* sur une ressource existante (`/travel/quotes/{id}/book`, `/share`, `/like`, `/rate`) répondait donc 201 au premier appel et 200 au rejeu : le même appel changeait de code de réponse selon son historique.
+
+- Règle : `->setStatusCode(200)` explicite sur tout endpoint idempotent ; 201 est réservé à la **création d'une ressource adressable**.
+- Preuve exigée : un test qui exécute l'appel **deux fois** et vérifie le statut des deux réponses, l'égalité des identifiants, et le nombre de lignes créées (`TravelQuoteTest::test_booking_quote_twice_returns_same_booking`).
+
+### B. Un flottant doit rester un flottant dans le JSON
+
+`round($sum / $count, 2)` vaut `5.0` en PHP, mais `json_encode(5.0)` produit `5` sans `JSON_PRESERVE_ZERO_FRACTION` : le client reçoit un **entier** là où le contrat annonce une note décimale — un `double` Dart ou un `number` strict TypeScript refuse.
+
+- Règle : encoder les agrégats décimaux avec `new JsonResponse($data, 200, [], JSON_PRESERVE_ZERO_FRACTION)`.
+- Anti-règle : ne jamais « réparer » en relâchant l'assertion (`assertSame(5.0, (float) $v)`), qui masque la dérive de type exactement comme un `assertStatus` trop permissif masquerait un 201.
+
+### C. Un test de refus doit envoyer un payload valide
+
+Rappel du corps de l'ADR, déjà appliqué deux fois : `TravelPublicContactTest` envoyait `message: 'Bonjour'` (7 caractères, `min:10`) en croyant tester le 404 de feature et le consentement — les deux tests prouvaient la validation. Même piège avec `toIso8601String()` interpolé dans une query string (`+` → espace → 422 avant la permission).
