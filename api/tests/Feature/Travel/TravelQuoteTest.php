@@ -193,8 +193,13 @@ class TravelQuoteTest extends TestCase
 
         $quoteId = $quote->json('data.id');
 
-        $first = $this->postJson("/api/v1/travel/quotes/{$quoteId}/book")->assertOk();
-        $second = $this->postJson("/api/v1/travel/quotes/{$quoteId}/book")->assertOk();
+        // #9098 — statut DETERMINISTE : le premier appel ET le rejeu repondent
+        // 200. Avant correctif, `JsonResource::response()` deduisait 201 de
+        // `$booking->wasRecentlyCreated` : le MEME POST changeait de statut au
+        // rejeu, ce qui rend l'endpoint inutilisable pour un client qui teste
+        // l'idempotence sur le code de reponse.
+        $first = $this->postJson("/api/v1/travel/quotes/{$quoteId}/book")->assertStatus(200);
+        $second = $this->postJson("/api/v1/travel/quotes/{$quoteId}/book")->assertStatus(200);
 
         $this->assertSame($first->json('data.id'), $second->json('data.id'));
         $this->assertSame(1, app(TenantManager::class)->withinTenant($company, function (): int {
