@@ -48,11 +48,11 @@ class CompanyProfileController extends Controller
         abort_unless($actor->hasManagerRole('principal'), 403);
 
         $validated = $request->validate([
-            'name'     => ['sometimes', 'string', 'min:2', 'max:200'],
-            'address'  => ['sometimes', 'nullable', 'string', 'max:500'],
-            'city'     => ['sometimes', 'nullable', 'string', 'max:100'],
-            'phone'    => ['sometimes', 'nullable', 'string', 'max:30'],
-            'email'    => ['sometimes', 'email', 'max:200'],
+            'name' => ['sometimes', 'string', 'min:2', 'max:200'],
+            'address' => ['sometimes', 'nullable', 'string', 'max:500'],
+            'city' => ['sometimes', 'nullable', 'string', 'max:100'],
+            'phone' => ['sometimes', 'nullable', 'string', 'max:30'],
+            'email' => ['sometimes', 'email', 'max:200'],
             'timezone' => ['sometimes', 'string', Rule::in(\DateTimeZone::listIdentifiers())],
             'currency' => ['sometimes', 'string', 'size:3', Rule::in($this->isoCurrencies())],
             'language' => ['sometimes', 'string', Rule::in(['fr', 'en', 'ar', 'tr'])],
@@ -72,7 +72,7 @@ class CompanyProfileController extends Controller
         }
 
         $company = $this->freshCompany();
-        $before  = $this->sensitiveSnapshot($company);
+        $before = $this->sensitiveSnapshot($company);
 
         // Mise à jour dans la table public.companies.
         DB::table('public.companies')
@@ -80,21 +80,21 @@ class CompanyProfileController extends Controller
             ->update($validated);
 
         $company = $this->freshCompany();
-        $after   = $this->sensitiveSnapshot($company);
+        $after = $this->sensitiveSnapshot($company);
 
         // Journalisation des champs sensibles (RGPD #9333).
         if ($before !== $after) {
             \App\Core\Auth\Domain\Models\AuditLog::query()->create([
-                'company_id'     => $actor->company_id,
-                'user_id'        => $actor->id,
-                'action'         => 'company.profile.updated',
+                'company_id' => $actor->company_id,
+                'user_id' => $actor->id,
+                'action' => 'company.profile.updated',
                 'auditable_type' => 'Company',
-                'auditable_id'   => $company->id,
-                'old_values'     => $before,
-                'new_values'     => $after,
-                'ip_address'     => $request->ip(),
-                'user_agent'     => substr((string) $request->userAgent(), 0, 255),
-                'metadata'       => ['category' => 'company_profile'],
+                'auditable_id' => $company->id,
+                'old_values' => $before,
+                'new_values' => $after,
+                'ip_address' => $request->ip(),
+                'user_agent' => substr((string) $request->userAgent(), 0, 255),
+                'metadata' => ['category' => 'company_profile'],
             ]);
         }
 
@@ -115,13 +115,13 @@ class CompanyProfileController extends Controller
     private function payload(Company $company): array
     {
         return [
-            'id'       => $company->id,
-            'name'     => $company->name,
-            'address'  => $company->address,
-            'city'     => $company->city,
-            'country'  => $company->country,
-            'phone'    => $company->phone,
-            'email'    => $company->email,
+            'id' => $company->id,
+            'name' => $company->name,
+            'address' => $company->address,
+            'city' => $company->city,
+            'country' => $company->country,
+            'phone' => $company->phone,
+            'email' => $company->email,
             'timezone' => $company->timezone,
             'currency' => $company->currency,
             'language' => $company->language,
