@@ -79,7 +79,7 @@ export function pickReadableOn(
   candidates: readonly string[] = ['#0B1220', '#FFFFFF'],
 ): string {
   if (candidates.length === 0) {
-    throw new Error('pickReadableOn : au moins un candidat est requis');
+    throw new Error('[public-surfaces] pickReadableOn : au moins un candidat est requis');
   }
 
   let best = candidates[0];
