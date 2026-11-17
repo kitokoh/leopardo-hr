@@ -176,7 +176,13 @@ class SyncEngineService
                     'error' => $e->getMessage(),
                 ]);
 
-                $newStatus = $item->attempt_count >= 5 ? 'failed' : 'pending';
+                // #8629 — la ligne en base porte `attempt_count` = 4 (état du
+                // test) ; le claim atomique vient de la passer à 5. La décision
+                // doit se lire sur l'état PERSISTÉ (>= 5), pas sur la copie en
+                // mémoire antérieure au claim : sinon un item à sa 5e tentative
+                // repart en `pending` et la file ne converge jamais vers
+                // `failed`.
+                $newStatus = $item->fresh()->attempt_count >= 5 ? 'failed' : 'pending';
 
                 // #8629 — la cause de l'échec est désormais conservée sur la
                 // ligne elle-même : sans elle, « pending » et « failed »
