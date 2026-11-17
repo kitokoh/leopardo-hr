@@ -7,6 +7,7 @@ namespace App\Console\Commands;
 use App\Modules\Planning\Domain\Models\LeaveAccrual;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeavePolicy;
+use App\Support\SearchPathGuard;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -22,10 +23,16 @@ class LeaveCarryForward extends Command
         // Les commandes console peuvent être invoquées depuis un worker ayant
         // laissé un search_path public ou tenant spécifique. Cette commande
         // globale lit et écrit dans le schéma tenant partagé canonique.
-        if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO shared_tenants, public');
-        }
+        //
+        // Issue #9115 : SearchPathGuard restaure l'état d'entrée dans un
+        // finally. Sans cela le worker gardait `shared_tenants` pour la tâche
+        // suivante — exactement le mode de défaillance qui faisait échouer le
+        // job Backend (42P01 puis 25P02 en cascade).
+        return SearchPathGuard::run('shared_tenants, public', fn (): int => $this->carryForward());
+    }
 
+    private function carryForward(): int
+    {
         $fromYear = (int) ($this->option('year') ?? (now()->year - 1));
         $toYear = $fromYear + 1;
 
