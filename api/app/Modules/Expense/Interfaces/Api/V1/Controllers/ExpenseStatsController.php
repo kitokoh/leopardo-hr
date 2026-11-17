@@ -6,7 +6,7 @@ namespace App\Modules\Expense\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\Expense\Domain\Models\ExpenseClaim;
+use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
