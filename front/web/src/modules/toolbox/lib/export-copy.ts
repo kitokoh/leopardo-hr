@@ -16,11 +16,34 @@ export interface ExportCopy {
   exportFailed: string;
 }
 
+/** Sous-ensemble de `common` consommé par le bouton d'export CSV. */
+export interface ExportCsvCopy {
+  exportCsv: string;
+  exportedCsv: string;
+  exportCsvFailed: string;
+}
+
 /** Extrait les libellés d'export depuis la copie commune d'une locale. */
 export function exportCopy(common: ToolboxCopy['common']): ExportCopy {
   return {
     export: common.export,
     exported: common.exported,
     exportFailed: common.exportFailed,
+  };
+}
+
+/**
+ * Extrait les libellés d'export CSV depuis la copie commune d'une locale.
+ *
+ * Même raison d'être que `exportCopy` : la garde `consistency.test.ts` exige
+ * que CHAQUE clé de `common` soit référencée littéralement dans le code du
+ * module. Consommées via un objet dérivé, les trois clés CSV seraient vues
+ * comme mortes sans ce point unique.
+ */
+export function exportCsvCopy(common: ToolboxCopy['common']): ExportCsvCopy {
+  return {
+    exportCsv: common.exportCsv,
+    exportedCsv: common.exportedCsv,
+    exportCsvFailed: common.exportCsvFailed,
   };
 }

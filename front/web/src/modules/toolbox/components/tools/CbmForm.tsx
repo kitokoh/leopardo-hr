@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { NumberField } from '../NumberField';
 import { ResultPanel } from '../ResultPanel';
 import { computeCbm, type FreightMode } from '../../tools/cbm-poids-volumetrique/logic';
-import { parseNumber } from '../../lib/validation';
+import { parseNumber, round } from '../../lib/validation';
 import { formatNumber } from '../../lib/format';
 import { useToolState } from '../../lib/useToolState';
 import { FREIGHT_MODE_LABELS } from '../../data/tool-options';
@@ -147,6 +147,24 @@ export function CbmForm({ copy, common, locale }: CbmFormProps) {
           copiedLabel={common.copied}
           copyText={`${copy.results.totalCbm}: ${formatNumber(result.totalCbm, locale, 4)} m³ — ${copy.results.chargeableWeight}: ${formatNumber(result.chargeableWeightKg, locale, 2)} kg`}
           share={{ values, copy: common }}
+          /*
+           * Résultat TABULAIRE : quatre mesures indépendantes, chacune avec son
+           * unité — la forme même d'un tableau à deux colonnes. Un `.txt`
+           * obligeait à ressaisir ces valeurs une à une dans un tableur.
+           *
+           * La valeur numérique est écrite en clair (point décimal), l'unité
+           * restant dans le libellé : le tableur relit la colonne comme des
+           * nombres, ce qu'un « 1 234,56 m³ » formaté interdirait.
+           */
+          csv={{
+            headers: [copy.results.colMeasure, copy.results.colValue],
+            rows: [
+              [copy.results.unitCbm, String(round(result.unitCbm, 4))],
+              [copy.results.totalCbm, String(round(result.totalCbm, 4))],
+              [copy.results.volumetricWeight, String(round(result.volumetricWeightKg, 2))],
+              [copy.results.chargeableWeight, String(round(result.chargeableWeightKg, 2))],
+            ],
+          }}
         />
       ) : (
         <p className="text-sm text-slate-500 dark:text-slate-400">{common.invalidInput}</p>

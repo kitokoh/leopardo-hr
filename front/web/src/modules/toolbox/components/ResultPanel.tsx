@@ -4,8 +4,15 @@ import React, { useState } from 'react';
 import { Check, Copy, Download } from 'lucide-react';
 import { ShareButton } from './ShareButton';
 import { shareCopy } from '../lib/share-copy';
-import { exportCopy } from '../lib/export-copy';
-import { buildExportFilename, buildExportText, downloadTextFile } from '../lib/export';
+import { exportCopy, exportCsvCopy } from '../lib/export-copy';
+import {
+  buildCsv,
+  buildCsvFilename,
+  buildExportFilename,
+  buildExportText,
+  downloadCsvFile,
+  downloadTextFile,
+} from '../lib/export';
 import type { ToolStateValues } from '../lib/share';
 import type { ToolboxCopy } from '../data/copy';
 
@@ -42,6 +49,20 @@ interface ResultPanelProps {
    * devenir un chiffre nu, sans la réserve qui l'accompagnait.
    */
   exportFooter?: string;
+  /**
+   * Export CSV — optionnel, réservé aux outils à résultat TABULAIRE.
+   *
+   * Un résultat scalaire (un IMC, un salaire net) n'a rien à faire dans un
+   * tableur : `buildCsv` y produirait un fichier à deux colonnes sans intérêt.
+   * Seuls les outils qui passent `csv` exposent le bouton — c'est l'appelant
+   * qui sait si son résultat est tabulaire, pas ce composant.
+   */
+  csv?: {
+    /** En-tête du tableau (première ligne du fichier). */
+    headers: string[];
+    /** Corps du tableau, une entrée par ligne. */
+    rows: string[][];
+  };
 }
 
 /**
@@ -58,12 +79,15 @@ export function ResultPanel({
   copyText,
   share,
   exportFooter,
+  csv,
 }: ResultPanelProps) {
   const [copied, setCopied] = useState(false);
   const [exportStatus, setExportStatus] = useState<'idle' | 'exported' | 'failed'>('idle');
+  const [csvStatus, setCsvStatus] = useState<'idle' | 'exported' | 'failed'>('idle');
 
   // Libellés d'export résolus une seule fois (point unique `export-copy.ts`).
   const exportLabels = share ? exportCopy(share.copy) : null;
+  const csvLabels = share ? exportCsvCopy(share.copy) : null;
 
   async function handleCopy() {
     try {
@@ -97,6 +121,25 @@ export function ResultPanel({
     window.setTimeout(() => setExportStatus('idle'), 2000);
   }
 
+  /**
+   * Export CSV d'un résultat tabulaire.
+   *
+   * Même contrat que l'export texte : le retour visuel suit le BOOLÉEN
+   * réellement renvoyé par `downloadCsvFile`, jamais un succès supposé. Le
+   * nom de fichier dérive de celui de l'export texte (une seule source de
+   * vérité pour le slug).
+   */
+  function handleExportCsv() {
+    if (!csv) return;
+    const table = [csv.headers, ...csv.rows];
+    const filename = buildCsvFilename(
+      buildExportFilename(typeof window === 'undefined' ? '' : window.location.pathname),
+    );
+    const ok = downloadCsvFile(filename, buildCsv(table));
+    setCsvStatus(ok ? 'exported' : 'failed');
+    window.setTimeout(() => setCsvStatus('idle'), 2000);
+  }
+
   return (
     <div className="rounded-2xl border border-emerald-200 dark:border-emerald-900 bg-emerald-50/50 dark:bg-emerald-950/20 p-5">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
@@ -128,6 +171,29 @@ export function ResultPanel({
                 : exportStatus === 'failed'
                   ? exportLabels.exportFailed
                   : exportLabels.export}
+            </button>
+          )}
+          {/*
+            Bouton CSV : uniquement pour les outils à résultat TABULAIRE
+            (récapitulatif TVA par taux, mesures CBM). Un résultat scalaire
+            n'a pas de tableau à exporter — le bouton n'apparaît donc pas.
+          */}
+          {csv && csvLabels && (
+            <button
+              type="button"
+              onClick={handleExportCsv}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors"
+            >
+              {csvStatus === 'exported' ? (
+                <Check className="w-3.5 h-3.5" />
+              ) : (
+                <Download className="w-3.5 h-3.5" />
+              )}
+              {csvStatus === 'exported'
+                ? csvLabels.exportedCsv
+                : csvStatus === 'failed'
+                  ? csvLabels.exportCsvFailed
+                  : csvLabels.exportCsv}
             </button>
           )}
         </div>

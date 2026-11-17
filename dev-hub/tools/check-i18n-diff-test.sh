@@ -295,6 +295,9 @@ expect_clean '[admin-dashboard] VITE_API_URL is not set' "diagnostic développeu
 expect_clean 'system-ui, sans-serif' "pile de polices CSS (font-family d'un avatar SVG local) — #8000"
 expect_clean 'a[href], button:not([disabled])' "sélecteur CSS de focus-trap (mission vitrine)"
 expect_clean '(prefers-reduced-motion: reduce)' "media query CSS (mission vitrine)"
+expect_clean 'text/csv;charset=utf-8' "type MIME d'un Blob (export CSV Toolbox) — #9569"
+expect_clean 'text/plain;charset=utf-8' "type MIME d'un Blob (export texte Toolbox) — #9569"
+expect_clean '\r\n' "separateur de lignes CRLF de l'export CSV (RFC 4180) — #9569"
 
 # ── Cas 1bis : glyphes SVG (attributs de géométrie) → VERT ───────────────────
 # Constat mesuré (2026-09-21, vitrine) : `d="M2 12h4l2.5-6 3 12 2.5-6h8"` était

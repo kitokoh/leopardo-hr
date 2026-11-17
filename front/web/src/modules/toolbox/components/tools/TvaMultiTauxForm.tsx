@@ -19,6 +19,7 @@ import {
   type LineState,
 } from '../../tools/tva-multi-taux/lines';
 import { formatCurrency, formatNumber } from '../../lib/format';
+import { round } from '../../lib/validation';
 import { useToolState } from '../../lib/useToolState';
 import type { ToolCopy, ToolboxCopy, ToolboxLocale } from '../../data/copy';
 
@@ -182,6 +183,34 @@ export function TvaMultiTauxForm({ copy, common, locale }: TvaMultiTauxFormProps
             copiedLabel={common.copied}
             copyText={rows.map((row) => `${row.label}: ${row.value}`).join(' — ')}
             share={{ values: state, copy: common }}
+            /*
+             * Résultat TABULAIRE : le récapitulatif par taux a une vraie forme
+             * de tableau (une ligne par taux) et les totaux s'y rattachent.
+             * C'est exactement ce qu'un tableur attend — d'où le bouton CSV,
+             * absent des outils à résultat scalaire.
+             *
+             * Les cellules reprennent les valeurs DÉJÀ AFFICHÉES (donc déjà
+             * localisées), et le montant numérique est écrit en clair (point
+             * décimal) plutôt que formaté avec des séparateurs de milliers :
+             * un tableur doit pouvoir le relire comme un nombre.
+             */
+            csv={{
+              headers: [
+                copy.results.byRate,
+                copy.results.colBaseHt,
+                copy.results.colVat,
+              ],
+              rows: [
+                ...recap.groups.map((group) => [
+                  `${formatNumber(group.ratePercent, locale, 2)} %`,
+                  String(round(group.baseHt, 2)),
+                  String(round(group.vat, 2)),
+                ]),
+                [copy.results.totalHt, String(round(recap.totalHt, 2)), ''],
+                [copy.results.totalVat, '', String(round(recap.totalVat, 2))],
+                [copy.results.totalTtc, String(round(recap.totalTtc, 2)), ''],
+              ],
+            }}
           />
 
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
