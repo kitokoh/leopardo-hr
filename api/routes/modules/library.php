@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Route;
 ModuleRoutes::tenantModule('library', function (): void {
     // Issue #9548 : KPIs de la bibliothèque pour dashboard
     Route::get('/stats', [LibraryStatsController::class, 'index']);
-    
+
     Route::get('/resources', [LibraryResourceController::class, 'index']);
     Route::post('/resources', [LibraryResourceController::class, 'store']);
     Route::get('/resources/{resource}', [LibraryResourceController::class, 'show'])->whereNumber('resource');

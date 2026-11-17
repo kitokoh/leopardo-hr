@@ -2767,6 +2767,31 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 
 **Non couvert** — rendu visuel des trois nouveaux écrans non observé avec de vraies données (pas de base peuplée ni de session authentifiée dans le sandbox) ; migration non jouée sur une base tenant réelle (les tests utilisent la fixture `CreatesMvpSchema`) ; présence de `pdftotext` / `antiword` sur l'image de production non vérifiée — le code rend `null` proprement s'ils manquent, donc absence = dégradation du score, pas panne ; aucune OCR sur les CV scannés en image (choix assumé) ; suite Jest **complète** tuée par l'OOM du sandbox (2 Go) — seul le périmètre touché a été exécuté.
 
+## 2026-11-17 — BC-08 LIBRARY : KPIs de la bibliotheque pour le dashboard (#9548, PR #9563)
+
+**Surface** : `GET /v1/library/stats` (`LibraryStatsController::index`), nouveau controleur dans `routes/modules/library.php`, documentee dans `api/openapi.yaml`. Aucune migration.
+
+**Pourquoi ce sont des scenarios de test** : c'est un controleur **neuf** dont le perimetre tenant passe par une **relation** (`whereHas('resource', ...)`) et non par une colonne `company_id` sur la table interrogee. C'est precisement le motif qui produit des fuites silencieuses.
+
+| Scenario | Ce qui serait casse sans lui |
+|---|---|
+| un acteur sans `library.view` recoit **403** | `$actor->cannot('library.view')` : garde par capacite ; une politique elargie ouvrirait les chiffres sans toucher au code |
+| les ressources d'une **autre entreprise** ne sont jamais comptees | `where('company_id', $companyId)` sur `LibraryResource` — **quatre** fois (total, by_type, by_status, et indirectement) : un oubli sur une seule fausse un seul indicateur, donc passe inapercu |
+| les emprunts d'une autre entreprise ne sont jamais comptes | `LibraryCheckout` n'a **pas** de `company_id` : le perimetre vient de `whereHas('resource', fn ($q) => $q->where('company_id', $companyId))`. Sans test, un emprunt d'un autre tenant serait compte dans `active_checkouts` |
+| `active_checkouts` ne compte que les non-rendus | `whereNull('returned_at')` sur un `clone` de la requete : sans le `clone`, la borne de periode seriait consommee par la premiere requete et les suivantes seraient faussees |
+| `overdue_checkouts` exige en plus `due_date < now()` | un emprunt non rendu **et non en retard** n'est pas en retard : sans test, les deux compteurs seraient identiques |
+| `returned_on_time` compare `returned_at` a `due_date` colonne a colonne | `whereColumn('returned_at', '<=', 'due_date')` (et non `where`) : une comparaison a une valeur figee rendrait le compteur absurde |
+| `avg_duration_days` est `null` quand rien n'a ete rendu | `AVG()` sur ensemble vide rend `null` : un `?->` ou un `?? 0` changerait le contrat |
+| `avg_duration_days` est en **jours** (facteur 86400) et arrondi | `EXTRACT(EPOCH ...) / 86400` : sans test, l'unite derive d'un facteur 86400 sans erreur |
+| `by_type` et `by_status` sont des **objets** indexés par valeur, pas des listes | `->pluck('count','type')->toArray()` : la forme de la reponse change si quelqu'un remplace `pluck` par `get` |
+| une valeur `type` ou `status` nulle apparait comme cle vide | `groupBy` sur une colonne nullable produit une cle `""` : le contrat OpenAPI doit le tolerer ou la requete doit l'exclure — comportement a figer |
+| `from`/`to` facultatifs : absents -> tout l'historique | `if ($from)` / `when($from, ...)` : une periode vide ne doit pas rendre zero |
+| `from` = debut de journee, `to` = fin de journee | `startOfDay()` / `endOfDay()` : un emprunt du dernier jour a 16:00 doit compter |
+| `from`/`to` mal formes -> **422** | `'nullable\|date'` : un format libre ferait un 500 dans `Carbon::parse` |
+| la route `/stats` n'est pas avalee par `/resources/{resource}` | `/stats` est declaree **avant** le groupe `resources` dans le fichier de routes : l'ordre est la seule protection, un `/{resource}` sans `whereNumber` capturerait `stats` |
+
+**Couverture executee** — `pint --test` PASS sur les 2 fichiers du lot apres correction d'un `no_whitespace_in_blank_line` dans `routes/modules/library.php`.
+
 ## 2026-11-17 — BC-06 NOTIFICATION : purge des notifications anciennes (#9540, PR #9560)
 
 **Surface** : `DELETE /v1/notifications/purge-old` (`NotificationController::purgeOld`), declaree dans `routes/modules/rh.php`, documentee dans `api/openapi.yaml`. Aucune migration.
