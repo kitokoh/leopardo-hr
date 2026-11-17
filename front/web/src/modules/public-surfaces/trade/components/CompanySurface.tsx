@@ -1,27 +1,33 @@
 import Link from 'next/link';
 
 import { SurfaceHero, SurfaceShell, type SurfaceIdentity } from '../../kernel';
+import { getSurfaceCopy } from '../../copy/surfaces-copy';
 import type { CompanyView } from '../application/load-company-view';
 
 /**
  * Rendu de la vitrine B2B.
  *
  * Composant pur : reçoit une entreprise déjà chargée. Aucun fetch, aucun état.
+ * Toute chaîne visible vient du catalogue de copie.
  */
 export function CompanySurface({
   identity,
   view,
+  locale,
 }: {
   identity: SurfaceIdentity;
   view: CompanyView;
+  locale?: string;
 }) {
   const { company, location, directions } = view;
+  const copy = getSurfaceCopy(locale);
+  const shared = copy.shared;
 
   return (
     <SurfaceShell identity={identity}>
       <SurfaceHero
         identity={identity}
-        eyebrow={location ?? 'Entreprise'}
+        eyebrow={location ?? copy.verticals.trade.eyebrow}
         action={
           <Link
             href="/entreprises"
@@ -35,7 +41,7 @@ export function CompanySurface({
               textDecoration: 'none',
             }}
           >
-            Toutes les entreprises
+            {shared.allCompanies}
           </Link>
         }
       />

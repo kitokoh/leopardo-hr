@@ -1,7 +1,10 @@
 import { displayShopRating, formatCatalogSize, hasCategories, type Shop } from '../retail/domain/shop';
 import { toShop } from '../retail/infrastructure/shop-gateway';
 import { RETAIL_SURFACE } from '../retail/identity/retail-identity';
+import { getSurfaceCopy } from '../copy/surfaces-copy';
 import { surfaceRegistry } from '../registry';
+
+const words = getSurfaceCopy('fr').shared;
 
 function shop(overrides: Partial<Shop> = {}): Shop {
   return {
@@ -31,12 +34,12 @@ describe('domaine retail — note', () => {
 
 describe('domaine retail — catalogue', () => {
   it('accorde le pluriel', () => {
-    expect(formatCatalogSize(1)).toBe('1 produit');
-    expect(formatCatalogSize(12)).toBe('12 produits');
+    expect(formatCatalogSize(1, words)).toBe('1 produit');
+    expect(formatCatalogSize(12, words)).toBe('12 produits');
   });
 
   it('nomme le catalogue vide', () => {
-    expect(formatCatalogSize(0)).toBe('Catalogue vide');
+    expect(formatCatalogSize(0, words)).toBe('Catalogue vide');
   });
 
   it('détecte la présence de catégories', () => {

@@ -2,15 +2,18 @@
  * Identité de la vitrine Hôtellerie (Stay).
  *
  * Palette propre (teal profond) : registre du séjour, distinct du retail et du
- * restaurant. `onPrimary` est calculé.
+ * restaurant. `onPrimary` est calculé. Nom et accroche viennent du catalogue.
  */
 
+import { getVerticalCopy } from '../../copy/surfaces-copy';
 import { buildPalette, type SurfaceIdentity } from '../../kernel';
+
+const copy = getVerticalCopy('hospitality', 'fr');
 
 export const HOSPITALITY_SURFACE: SurfaceIdentity = {
   vertical: 'hospitality',
-  displayName: 'Leopardo Séjours',
-  tagline: 'Hôtels, résidences et maisons d’hôtes — disponibilités et réservation directe.',
+  displayName: copy.displayName,
+  tagline: copy.tagline,
   canonicalDomain: 'sejours.leopardo.app',
   basePath: '/stay',
   discoveryType: 'hospitality_property',

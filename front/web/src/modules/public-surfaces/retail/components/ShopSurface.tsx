@@ -1,27 +1,33 @@
 import Link from 'next/link';
 
 import { SurfaceHero, SurfaceShell, type SurfaceIdentity } from '../../kernel';
+import { getSurfaceCopy } from '../../copy/surfaces-copy';
 import type { ShopView } from '../application/load-shop-view';
 
 /**
  * Rendu de la vitrine Retail.
  *
  * Composant pur : reçoit une boutique déjà chargée. Aucun fetch, aucun état.
+ * Toute chaîne visible vient du catalogue de copie.
  */
 export function ShopSurface({
   identity,
   view,
+  locale,
 }: {
   identity: SurfaceIdentity;
   view: ShopView;
+  locale?: string;
 }) {
   const { shop, rating, catalogLabel } = view;
+  const copy = getSurfaceCopy(locale);
+  const shared = copy.shared;
 
   return (
     <SurfaceShell identity={identity}>
       <SurfaceHero
         identity={identity}
-        eyebrow={shop.city ?? 'Boutique'}
+        eyebrow={shop.city ?? copy.verticals.retail.eyebrow}
         action={
           <Link
             href="/boutiques"
@@ -35,7 +41,7 @@ export function ShopSurface({
               textDecoration: 'none',
             }}
           >
-            Toutes les boutiques
+            {shared.allShops}
           </Link>
         }
       />
@@ -45,7 +51,9 @@ export function ShopSurface({
 
         <p style={{ color: identity.palette.muted }}>
           {catalogLabel}
-          {rating !== null ? ` · ★ ${rating} (${shop.ratingCount})` : ' · Pas encore d’avis'}
+          {rating !== null
+            ? ` · ★ ${rating} (${shop.ratingCount})`
+            : ` · ${shared.noReviews}`}
         </p>
 
         {shop.description ? <p>{shop.description}</p> : null}
@@ -73,7 +81,8 @@ export function ShopSurface({
               >
                 <strong style={{ display: 'block' }}>{category.name}</strong>
                 <span style={{ color: identity.palette.muted, fontSize: '0.875rem' }}>
-                  {category.productsCount} produit{category.productsCount > 1 ? 's' : ''}
+                  {category.productsCount}{' '}
+                  {category.productsCount > 1 ? shared.products : shared.product}
                 </span>
               </li>
             ))}

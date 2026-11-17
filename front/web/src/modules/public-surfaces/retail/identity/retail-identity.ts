@@ -2,15 +2,19 @@
  * Identité de la vitrine Retail (Marché).
  *
  * Palette propre à la verticale (indigo/ardoise) : registre du commerce de
- * détail, distinct du chaud restaurant. `onPrimary` est calculé.
+ * détail, distinct du chaud restaurant. `onPrimary` est calculé. Nom et accroche
+ * viennent du catalogue de copie.
  */
 
+import { getVerticalCopy } from '../../copy/surfaces-copy';
 import { buildPalette, type SurfaceIdentity } from '../../kernel';
+
+const copy = getVerticalCopy('retail', 'fr');
 
 export const RETAIL_SURFACE: SurfaceIdentity = {
   vertical: 'retail',
-  displayName: 'Leopardo Marché',
-  tagline: 'Les boutiques près de chez vous, leur catalogue et leurs nouveautés.',
+  displayName: copy.displayName,
+  tagline: copy.tagline,
   canonicalDomain: 'marche.leopardo.app',
   basePath: '/boutiques',
   discoveryType: 'retail_shop',

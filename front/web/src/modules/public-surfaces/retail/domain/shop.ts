@@ -43,14 +43,18 @@ export function displayShopRating(rating: number | null, ratingCount: number): n
  * Libellé du catalogue : « 12 produits » / « 1 produit » / « Catalogue vide ».
  *
  * Règle du domaine : le pluriel et le cas vide sont décidés une fois, pas dans
- * chaque composant.
+ * chaque composant. Les mots viennent du catalogue de copie (4 locales) — le
+ * domaine ne porte que la règle, jamais le texte.
  */
-export function formatCatalogSize(productsCount: number): string {
+export function formatCatalogSize(
+  productsCount: number,
+  words: { product: string; products: string; catalogEmpty: string },
+): string {
   if (productsCount <= 0) {
-    return 'Catalogue vide';
+    return words.catalogEmpty;
   }
 
-  return `${productsCount} produit${productsCount > 1 ? 's' : ''}`;
+  return `${productsCount} ${productsCount > 1 ? words.products : words.product}`;
 }
 
 /** Vrai si la boutique expose au moins une catégorie. */

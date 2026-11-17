@@ -1,28 +1,35 @@
 import Link from 'next/link';
 
 import { SurfaceHero, SurfaceShell, type SurfaceIdentity } from '../../kernel';
+import { getSurfaceCopy } from '../../copy/surfaces-copy';
 import type { TripCard } from '../application/load-travel-surface';
-import { tripRoute } from '../domain/trip';
+import { hasRoute, tripRoute } from '../domain/trip';
 
 /**
  * Rendu de la vitrine Billets.
  *
  * Composant pur : reçoit des trajets déjà chargés. Aucun fetch, aucun état.
+ * Toute chaîne visible vient du catalogue de copie.
  */
 export function TravelSurface({
   identity,
   cards,
   failed,
+  locale,
 }: {
   identity: SurfaceIdentity;
   cards: readonly TripCard[];
   failed: boolean;
+  locale?: string;
 }) {
+  const copy = getSurfaceCopy(locale);
+  const shared = copy.shared;
+
   return (
     <SurfaceShell identity={identity}>
       <SurfaceHero
         identity={identity}
-        eyebrow="Billetterie"
+        eyebrow={copy.verticals.travel.eyebrow}
         action={
           <Link
             href="/decouvrir"
@@ -36,7 +43,7 @@ export function TravelSurface({
               textDecoration: 'none',
             }}
           >
-            Explorer les destinations
+            {shared.allDestinations}
           </Link>
         }
       />
@@ -44,14 +51,12 @@ export function TravelSurface({
       <main style={{ maxWidth: '72rem', margin: '0 auto', padding: '2rem 1.25rem 4rem' }}>
         {failed ? (
           <p role="alert" style={{ color: identity.palette.muted }}>
-            La billetterie est momentanément indisponible. Réessayez dans un instant.
+            {shared.unavailable}
           </p>
         ) : null}
 
         {!failed && cards.length === 0 ? (
-          <p style={{ color: identity.palette.muted }}>
-            Aucun trajet ne correspond à votre recherche.
-          </p>
+          <p style={{ color: identity.palette.muted }}>{shared.empty}</p>
         ) : null}
 
         {!failed && cards.length > 0 ? (
@@ -80,18 +85,21 @@ export function TravelSurface({
                 }}
               >
                 <div>
-                  <strong style={{ display: 'block' }}>{tripRoute(trip)}</strong>
+                  <strong style={{ display: 'block' }}>
+                    {hasRoute(trip) ? tripRoute(trip) : shared.trip}
+                  </strong>
                   <span style={{ color: identity.palette.muted, fontSize: '0.875rem' }}>
-                    {[trip.departureAt, seats].filter(Boolean).join(' · ') || 'Horaires à confirmer'}
+                    {[trip.departureAt, seats].filter(Boolean).join(' · ') ||
+                      shared.scheduleTbc}
                   </span>
                 </div>
 
                 <div style={{ textAlign: 'right' }}>
                   <strong style={{ display: 'block' }}>
-                    {priceLabel ?? 'Prix sur demande'}
+                    {priceLabel ?? shared.priceOnRequest}
                   </strong>
                   <span style={{ color: identity.palette.muted, fontSize: '0.8rem' }}>
-                    {bookable ? 'Réservable' : 'Complet'}
+                    {bookable ? shared.bookable : shared.soldOut}
                   </span>
                 </div>
               </li>

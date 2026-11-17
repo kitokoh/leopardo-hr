@@ -49,6 +49,15 @@ REGISTRY=(
   $'demo.leopardo.app\ttarget'
   $'client-a.leopardo-rh.com\ttarget'
   $'mail.leopardo-rh.com\ttarget'
+  # Vitrines publiques verticales (#9577) — domaines canoniques déclarés par
+  # chaque identité de surface. `target` : réservés, DNS à raccorder au moment
+  # de la mise en ligne de chaque vitrine (même règle que les autres `target`).
+  $'restaurants.leopardo.app\ttarget'
+  $'marche.leopardo.app\ttarget'
+  $'sejours.leopardo.app\ttarget'
+  $'entreprises.leopardo.app\ttarget'
+  $'billets.leopardo.app\ttarget'
+  $'pharmacies.leopardo.app\ttarget'
 )
 
 errors=0

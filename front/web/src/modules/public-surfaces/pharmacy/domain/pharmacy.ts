@@ -29,14 +29,18 @@ export interface Pharmacy {
  * Libellé de garde : `null` si l'information n'est pas publiée.
  *
  * Règle du domaine : on n'écrit jamais « fermé » quand on ne sait pas —
- * l'absence d'information n'est pas une information.
+ * l'absence d'information n'est pas une information. Les libellés viennent du
+ * catalogue de copie (4 locales).
  */
-export function dutyLabel(onDuty: boolean | null): string | null {
+export function dutyLabel(
+  onDuty: boolean | null,
+  words: { onDuty: string; regularHours: string },
+): string | null {
   if (onDuty === null) {
     return null;
   }
 
-  return onDuty ? 'De garde' : 'Horaires habituels';
+  return onDuty ? words.onDuty : words.regularHours;
 }
 
 /** Vrai si l'officine publie au moins un service. */

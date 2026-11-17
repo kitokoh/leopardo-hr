@@ -11,6 +11,7 @@ import {
   type Trip,
 } from '../domain/trip';
 import { searchTrips } from '../infrastructure/trip-gateway';
+import { getSurfaceCopy } from '../../copy/surfaces-copy';
 
 /** Trajet prêt à l'affichage. */
 export interface TripCard {
@@ -32,6 +33,7 @@ export async function loadTravelSurface(params: {
   origin?: string;
   destination?: string;
   page?: number;
+  locale?: string;
 }): Promise<TravelSurfaceResult> {
   const trips = await searchTrips(params);
 
@@ -39,11 +41,13 @@ export async function loadTravelSurface(params: {
     return { cards: [], failed: true };
   }
 
+  const shared = getSurfaceCopy(params.locale).shared;
+
   return {
     cards: trips.map((trip) => ({
       trip,
       priceLabel: formatTripPrice(trip.priceMinor, trip.currency),
-      seats: seatsLabel(trip.seatsAvailable),
+      seats: seatsLabel(trip.seatsAvailable, shared),
       bookable: isBookable(trip),
     })),
     failed: false,

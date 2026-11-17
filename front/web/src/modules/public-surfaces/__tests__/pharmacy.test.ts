@@ -1,6 +1,9 @@
 import { dutyLabel, hasServices, type Pharmacy } from '../pharmacy/domain/pharmacy';
 import { PHARMACY_SURFACE } from '../pharmacy/identity/pharmacy-identity';
+import { getSurfaceCopy } from '../copy/surfaces-copy';
 import { surfaceRegistry } from '../registry';
+
+const words = getSurfaceCopy('fr').shared;
 
 function pharmacy(overrides: Partial<Pharmacy> = {}): Pharmacy {
   return {
@@ -16,15 +19,15 @@ function pharmacy(overrides: Partial<Pharmacy> = {}): Pharmacy {
 
 describe('domaine pharmacie — garde', () => {
   it('nomme la garde', () => {
-    expect(dutyLabel(true)).toBe('De garde');
+    expect(dutyLabel(true, words)).toBe('De garde');
   });
 
   it('nomme les horaires habituels', () => {
-    expect(dutyLabel(false)).toBe('Horaires habituels');
+    expect(dutyLabel(false, words)).toBe('Horaires habituels');
   });
 
   it('renvoie null quand l’information n’est pas publiée', () => {
-    expect(dutyLabel(null)).toBeNull();
+    expect(dutyLabel(null, words)).toBeNull();
   });
 });
 

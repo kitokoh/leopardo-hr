@@ -193,3 +193,53 @@ Web ↔ Flutter) et sont répercutées dans `app_colors.dart` côté mobile. Ell
 doivent jamais être réécrites en littéral dans un composant : la garde
 `check-web-design-tokens.sh` (Web) et `validate-mobile-color-tokens.ps1`
 (Flutter) le refusent.
+
+## Vitrines publiques verticales — palettes par verticale (#9577, documentée le 2026-11-17)
+
+Chaque vitrine publique de verticale (`front/web/src/modules/public-surfaces/<vertical>/identity/`)
+porte **sa propre palette**, parce qu'elle s'adresse à un public différent : un visiteur qui cherche
+une table ne doit pas atterrir sur l'identité visuelle d'une pharmacie.
+
+Ces valeurs vivent dans le `identity/` de chaque verticale et sont injectées en variables CSS par
+`SurfaceShell`. Le texte posé sur `primary` (`onPrimary`) n'est **jamais** saisi : il est calculé par
+`buildPalette` pour garantir le contraste WCAG AA.
+
+| Verticale | Rôle | Hex | Token |
+|---|---|---|---|
+| Restaurant | Action principale | `#C2410C` | `RESTAURANT_SURFACE.palette.primary` |
+| Restaurant | Accent | `#F59E0B` | `RESTAURANT_SURFACE.palette.accent` |
+| Restaurant | Fond | `#FFFBF5` | `RESTAURANT_SURFACE.palette.surface` |
+| Restaurant | Texte | `#1C1917` | `RESTAURANT_SURFACE.palette.onSurface` |
+| Restaurant | Texte secondaire | `#78716C` | `RESTAURANT_SURFACE.palette.muted` |
+| Retail | Action principale | `#4338CA` | `RETAIL_SURFACE.palette.primary` |
+| Retail | Accent | `#0EA5E9` | `RETAIL_SURFACE.palette.accent` |
+| Retail | Fond | `#F8FAFC` | `RETAIL_SURFACE.palette.surface` |
+| Retail | Texte | `#0F172A` | `RETAIL_SURFACE.palette.onSurface` |
+| Retail | Texte secondaire | `#64748B` | `RETAIL_SURFACE.palette.muted` |
+| Hôtellerie | Action principale | `#0F766E` | `HOSPITALITY_SURFACE.palette.primary` |
+| Hôtellerie | Accent | `#14B8A6` | `HOSPITALITY_SURFACE.palette.accent` |
+| Hôtellerie | Fond | `#F7FAF9` | `HOSPITALITY_SURFACE.palette.surface` |
+| Hôtellerie | Texte | `#0B1F1C` | `HOSPITALITY_SURFACE.palette.onSurface` |
+| Hôtellerie | Texte secondaire | `#5F7A76` | `HOSPITALITY_SURFACE.palette.muted` |
+| B2B | Action principale | `#1E3A8A` | `TRADE_SURFACE.palette.primary` |
+| B2B | Accent | `#3B82F6` | `TRADE_SURFACE.palette.accent` |
+| B2B | Fond | `#F8FAFC` | `TRADE_SURFACE.palette.surface` |
+| B2B | Texte | `#0B1220` | `TRADE_SURFACE.palette.onSurface` |
+| B2B | Texte secondaire | `#64748B` | `TRADE_SURFACE.palette.muted` |
+| Billets | Action principale | `#6D28D9` | `TRAVEL_SURFACE.palette.primary` |
+| Billets | Accent | `#06B6D4` | `TRAVEL_SURFACE.palette.accent` |
+| Billets | Fond | `#FAF8FF` | `TRAVEL_SURFACE.palette.surface` |
+| Billets | Texte | `#1B1035` | `TRAVEL_SURFACE.palette.onSurface` |
+| Billets | Texte secondaire | `#6B6480` | `TRAVEL_SURFACE.palette.muted` |
+| Pharmacie | Action principale | `#047857` | `PHARMACY_SURFACE.palette.primary` |
+| Pharmacie | Accent | `#22C55E` | `PHARMACY_SURFACE.palette.accent` |
+| Pharmacie | Fond | `#F7FBF8` | `PHARMACY_SURFACE.palette.surface` |
+| Pharmacie | Texte | `#0A1F16` | `PHARMACY_SURFACE.palette.onSurface` |
+| Pharmacie | Texte secondaire | `#5B7A6B` | `PHARMACY_SURFACE.palette.muted` |
+
+### Règle d'usage
+
+Une verticale **ne réutilise jamais** la palette d'une autre : c'est ce qui rend chaque vitrine
+reconnaissable. Ajouter une verticale = ajouter sa palette ici **et** dans son `identity/`, dans le
+même commit (L.07). Le contraste AA de `onPrimary` et `onSurface` est vérifié par
+`assertSurfaceIdentity` au chargement du registre — une palette illisible fait échouer les tests.

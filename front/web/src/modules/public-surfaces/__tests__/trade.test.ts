@@ -1,7 +1,10 @@
 import { companyLocation, hasProductCategories, tradeDirections, type Company } from '../trade/domain/company';
 import { toCompany } from '../trade/infrastructure/company-gateway';
 import { TRADE_SURFACE } from '../trade/identity/trade-identity';
+import { getSurfaceCopy } from '../copy/surfaces-copy';
 import { surfaceRegistry } from '../registry';
+
+const words = getSurfaceCopy('fr').shared;
 
 function company(overrides: Partial<Company> = {}): Company {
   return {
@@ -21,15 +24,13 @@ function company(overrides: Partial<Company> = {}): Company {
 
 describe('domaine B2B — directions', () => {
   it('renvoie une liste vide si aucune direction', () => {
-    expect(tradeDirections(company())).toEqual([]);
+    expect(tradeDirections(company(), words)).toEqual([]);
   });
 
   it('ordonne les directions de façon stable', () => {
-    expect(tradeDirections(company({ imports: true, exports: true, domestic: true }))).toEqual([
-      'Import',
-      'Export',
-      'Marché domestique',
-    ]);
+    expect(
+      tradeDirections(company({ imports: true, exports: true, domestic: true }), words),
+    ).toEqual(['Import', 'Export', 'Marché domestique']);
   });
 });
 

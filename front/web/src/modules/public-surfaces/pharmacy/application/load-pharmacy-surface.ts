@@ -7,6 +7,7 @@
 
 import { dutyLabel, type Pharmacy } from '../domain/pharmacy';
 import { loadPharmacies } from '../infrastructure/pharmacy-gateway';
+import { getSurfaceCopy } from '../../copy/surfaces-copy';
 
 /** Officine prête à l'affichage. */
 export interface PharmacyCard {
@@ -28,6 +29,7 @@ export async function loadPharmacySurface(params: {
   q?: string;
   city?: string;
   page?: number;
+  locale?: string;
 }): Promise<PharmacySurfaceResult> {
   const result = await loadPharmacies(params);
 
@@ -39,11 +41,13 @@ export async function loadPharmacySurface(params: {
     return { state: 'empty', cards: [] };
   }
 
+  const shared = getSurfaceCopy(params.locale).shared;
+
   return {
     state: 'ready',
     cards: result.pharmacies.map((pharmacy) => ({
       pharmacy,
-      duty: dutyLabel(pharmacy.onDuty),
+      duty: dutyLabel(pharmacy.onDuty, shared),
     })),
   };
 }

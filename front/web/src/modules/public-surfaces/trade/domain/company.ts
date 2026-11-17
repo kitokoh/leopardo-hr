@@ -24,21 +24,25 @@ export interface Company {
  * Directions commerciales déclarées, dans un ordre stable.
  *
  * Règle du domaine : l'ordre d'affichage ne dépend pas de l'ordre des booléens
- * du DTO — deux rendus du même profil donnent la même liste.
+ * du DTO — deux rendus du même profil donnent la même liste. Les libellés
+ * viennent du catalogue de copie (4 locales).
  */
-export function tradeDirections(company: Company): readonly string[] {
+export function tradeDirections(
+  company: Company,
+  labels: { importLabel: string; exportLabel: string; domesticLabel: string },
+): readonly string[] {
   const directions: string[] = [];
 
   if (company.imports) {
-    directions.push('Import');
+    directions.push(labels.importLabel);
   }
 
   if (company.exports) {
-    directions.push('Export');
+    directions.push(labels.exportLabel);
   }
 
   if (company.domestic) {
-    directions.push('Marché domestique');
+    directions.push(labels.domesticLabel);
   }
 
   return directions;

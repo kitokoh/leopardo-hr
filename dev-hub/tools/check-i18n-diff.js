@@ -158,6 +158,16 @@ const ignorePathFragments = [
   // composant du module qui porterait une chaîne en dur reste signalé. La
   // complétude des 4 langues reste couverte par les tests du module.
   '/library/data/',
+  // Catalogue i18n des vitrines publiques verticales (#9577) :
+  // `front/web/src/modules/public-surfaces/copy/surfaces-copy.ts` EST le
+  // mécanisme de localisation du module (catalogue inline ×4 fr/en/tr/ar, typé
+  // fermé, accédé via getSurfaceCopy). Les vitrines sont des surfaces PUBLIQUES
+  // autonomes : elles suivent la convention vitrine/toolbox/library (catalogue
+  // inline) plutôt que le catalogue applicatif, qui décrit l'espace de travail
+  // connecté. L'exemption est scopée à copy/ : un composant du module qui
+  // porterait une chaîne en dur reste signalé. La complétude des 4 langues est
+  // couverte par les tests du module.
+  '/public-surfaces/copy/',
   // Catalogue i18n du module autonome Leopardo Public Portal (mission portail
   // grand public) : `front/web/src/modules/public-portal/data/copy.ts` EST le
   // mécanisme de localisation du module (catalogue inline ×4 fr/en/tr/ar,
@@ -256,6 +266,46 @@ function isCssSelectorOrMediaQuery(value) {
   return /[,\[\]:]/.test(trimmed);
 }
 
+// Valeurs CSS de style inline : raccourcis de marge/padding et fonctions de
+// grille. Une valeur CSS n'est faite que de nombres, d'unités, de zéros, de
+// mots-clés de mise en page et de fonctions de grille — jamais de mots d'une
+// phrase utilisateur. On exige donc qu'aucun mot alphabétique hors vocabulaire
+// CSS n'apparaisse, ce qui laisse « Bonjour, le monde » flaggée.
+const cssLengthToken = /^-?(?:\d*\.)?\d+(?:px|rem|em|%|vw|vh|vmin|vmax|ch|ex|pt|fr)?$/i;
+const cssStyleKeywords = new Set([
+  'auto', 'none', 'normal', 'inherit', 'initial', 'unset', 'revert',
+  'solid', 'dashed', 'dotted', 'transparent', 'currentcolor',
+  'repeat', 'minmax', 'fit-content', 'max-content', 'min-content',
+  'center', 'left', 'right', 'top', 'bottom', 'start', 'end',
+  'space-between', 'space-around', 'space-evenly', 'stretch', 'baseline',
+  'flex', 'grid', 'block', 'inline', 'inline-block', 'hidden', 'contents',
+  'absolute', 'relative', 'fixed', 'sticky', 'static',
+  'row', 'column', 'wrap', 'nowrap', 'bold', 'italic', 'uppercase', 'lowercase',
+  'pointer', 'ellipsis', 'cover', 'contain', 'scroll', 'visible',
+]);
+function isCssStyleValue(value) {
+  const trimmed = value.trim();
+  if (trimmed === '') return false;
+  // Une valeur CSS ne contient jamais de ponctuation de phrase.
+  if (/[;!?]/.test(trimmed)) return false;
+  const tokens = trimmed.split(/[\s,()]+/).filter(Boolean);
+  if (tokens.length === 0) return false;
+  let sawCssToken = false;
+  for (const token of tokens) {
+    if (cssLengthToken.test(token)) {
+      sawCssToken = true;
+      continue;
+    }
+    if (cssStyleKeywords.has(token.toLowerCase())) {
+      sawCssToken = true;
+      continue;
+    }
+    // Un mot inconnu (accentué ou non) n'est pas une valeur CSS.
+    return false;
+  }
+  return sawCssToken;
+}
+
 // Limite connue, volontairement conservée (issue #7482) : un littéral d'un seul
 // mot sans espace est classé « jeton technique ». Un `aria-label="Supprimer"`
 // d'un seul mot passe donc la garde, alors qu'un `aria-label="Supprimer le
@@ -299,6 +349,13 @@ function isTechnicalToken(value) {
   // Sélecteurs CSS et media queries (mission vitrine, 2026-10-16) : constantes
   // de style, jamais du texte utilisateur — même famille que #7482/#8000.
   if (isCssSelectorOrMediaQuery(trimmed)) return true;
+  // Valeurs CSS de style inline (mission vitrines publiques, #9577) : les
+  // raccourcis de marge/padding (`0.7rem 1.2rem`, `0 auto`, `2rem 1.25rem 4rem`)
+  // et les fonctions de grille (`repeat(auto-fill, minmax(17rem, 1fr))`) sont
+  // des constantes de mise en page, jamais du texte utilisateur. Même famille
+  // que #7482/#8000 : le motif devient un cas de test dans
+  // check-i18n-diff-test.sh.
+  if (isCssStyleValue(trimmed)) return true;
   // Directives d'en-tete HTTP (issue #8700).
   if (isHttpHeaderDirective(trimmed)) return true;
   // Types MIME et suites d'echappement pures (issue #9569).

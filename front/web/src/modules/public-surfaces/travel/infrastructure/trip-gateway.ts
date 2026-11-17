@@ -28,8 +28,11 @@ interface RawTrip {
 export function toTrip(raw: RawTrip): Trip {
   return {
     reference: raw.reference ?? String(raw.id ?? ''),
-    origin: raw.origin ?? 'Départ',
-    destination: raw.destination ?? 'Destination',
+    // Pas de libellé de repli ici : un trajet sans origine connue doit être
+    // signalé comme tel par l'UI (via le catalogue de copie), pas masqué par un
+    // mot en dur dans l'adaptateur.
+    origin: raw.origin ?? '',
+    destination: raw.destination ?? '',
     departureAt: raw.departure_at ?? null,
     arrivalAt: raw.arrival_at ?? null,
     priceMinor: raw.price_minor ?? null,

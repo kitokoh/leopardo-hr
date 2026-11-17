@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { SurfaceHero, SurfaceShell, type SurfaceIdentity } from '../../kernel';
+import { getSurfaceCopy } from '../../copy/surfaces-copy';
 import type { PharmacySurfaceResult } from '../application/load-pharmacy-surface';
 
 /**
@@ -8,19 +9,25 @@ import type { PharmacySurfaceResult } from '../application/load-pharmacy-surface
  *
  * Composant pur. Les trois états sont rendus explicitement : une verticale pas
  * encore alimentée ne doit jamais ressembler à une recherche sans résultat.
+ * Toute chaîne visible vient du catalogue de copie.
  */
 export function PharmacySurface({
   identity,
   result,
+  locale,
 }: {
   identity: SurfaceIdentity;
   result: PharmacySurfaceResult;
+  locale?: string;
 }) {
+  const copy = getSurfaceCopy(locale);
+  const shared = copy.shared;
+
   return (
     <SurfaceShell identity={identity}>
       <SurfaceHero
         identity={identity}
-        eyebrow="Officines"
+        eyebrow={copy.verticals.pharmacy.eyebrow}
         action={
           <Link
             href="/decouvrir"
@@ -34,7 +41,7 @@ export function PharmacySurface({
               textDecoration: 'none',
             }}
           >
-            Explorer toutes les adresses
+            {shared.allAddresses}
           </Link>
         }
       />
@@ -42,14 +49,12 @@ export function PharmacySurface({
       <main style={{ maxWidth: '72rem', margin: '0 auto', padding: '2rem 1.25rem 4rem' }}>
         {result.state === 'unavailable' ? (
           <p role="alert" style={{ color: identity.palette.muted }}>
-            L’annuaire des pharmacies est momentanément indisponible.
+            {shared.unavailable}
           </p>
         ) : null}
 
         {result.state === 'empty' ? (
-          <p style={{ color: identity.palette.muted }}>
-            Les officines de cette verticale seront publiées prochainement.
-          </p>
+          <p style={{ color: identity.palette.muted }}>{shared.comingSoon}</p>
         ) : null}
 
         {result.state === 'ready' ? (
@@ -75,7 +80,7 @@ export function PharmacySurface({
               >
                 <strong style={{ display: 'block' }}>{pharmacy.name}</strong>
                 <span style={{ color: identity.palette.muted, fontSize: '0.875rem' }}>
-                  {[pharmacy.city, duty].filter(Boolean).join(' · ') || 'Officine'}
+                  {[pharmacy.city, duty].filter(Boolean).join(' · ') || shared.pharmacy}
                 </span>
               </li>
             ))}

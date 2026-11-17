@@ -1,7 +1,10 @@
 import { formatTripPrice, isBookable, seatsLabel, tripRoute, type Trip } from '../travel/domain/trip';
 import { toTrip } from '../travel/infrastructure/trip-gateway';
 import { TRAVEL_SURFACE } from '../travel/identity/travel-identity';
+import { getSurfaceCopy } from '../copy/surfaces-copy';
 import { surfaceRegistry } from '../registry';
+
+const words = getSurfaceCopy('fr').shared;
 
 function trip(overrides: Partial<Trip> = {}): Trip {
   return {
@@ -33,16 +36,16 @@ describe('domaine billets — réservabilité', () => {
 
 describe('domaine billets — places', () => {
   it('accorde le pluriel', () => {
-    expect(seatsLabel(1)).toBe('1 place');
-    expect(seatsLabel(12)).toBe('12 places');
+    expect(seatsLabel(1, words)).toBe('1 place');
+    expect(seatsLabel(12, words)).toBe('12 places');
   });
 
   it('signale le complet', () => {
-    expect(seatsLabel(0)).toBe('Complet');
+    expect(seatsLabel(0, words)).toBe('Complet');
   });
 
   it('renvoie null si inconnu', () => {
-    expect(seatsLabel(null)).toBeNull();
+    expect(seatsLabel(null, words)).toBeNull();
   });
 });
 
@@ -80,7 +83,7 @@ describe('adaptateur billets', () => {
     const mapped = toTrip({ id: 7 });
 
     expect(mapped.reference).toBe('7');
-    expect(mapped.origin).toBe('Départ');
+    expect(mapped.origin).toBe('');
     expect(mapped.seatsAvailable).toBeNull();
   });
 });

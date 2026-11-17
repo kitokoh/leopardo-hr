@@ -104,3 +104,23 @@ le sous-domaine (suivi #6918/#6920).
 4. **Mise à jour** : après modification du DNS, re-vérifier avec
    `getent hosts <domaine>` + `curl -sS -o /dev/null -w "%{http_code}" https://<domaine>`
    et mettre à jour ce document + la date.
+
+## Vitrines publiques verticales (#9577, ajoutées le 2026-11-17)
+
+Chaque vitrine publique de verticale déclare son **domaine canonique** dans son
+`identity/` (`front/web/src/modules/public-surfaces/<vertical>/identity/`). Ces
+domaines sont **réservés** (`target`) : le DNS sera raccordé au moment de la mise
+en ligne de chaque vitrine, selon la règle 4 ci-dessus.
+
+| Domaine | Statut | Verticale | Surcharge d'environnement |
+|---|---|---|---|
+| `restaurants.leopardo.app` | target | Restaurant | `NEXT_PUBLIC_SURFACE_DOMAIN_RESTAURANT` |
+| `marche.leopardo.app` | target | Retail | `NEXT_PUBLIC_SURFACE_DOMAIN_RETAIL` |
+| `sejours.leopardo.app` | target | Hôtellerie | `NEXT_PUBLIC_SURFACE_DOMAIN_HOSPITALITY` |
+| `entreprises.leopardo.app` | target | B2B | `NEXT_PUBLIC_SURFACE_DOMAIN_TRADE` |
+| `billets.leopardo.app` | target | Billets | `NEXT_PUBLIC_SURFACE_DOMAIN_TRAVEL` |
+| `pharmacies.leopardo.app` | target | Pharmacie | `NEXT_PUBLIC_SURFACE_DOMAIN_PHARMACY` |
+
+La surcharge est **nommée par verticale** : aucune variable globale ne peut faire
+pointer toutes les vitrines vers le même hôte par accident. Une surcharge
+malformée (schéma, slash) est ignorée au profit de la valeur déclarée.

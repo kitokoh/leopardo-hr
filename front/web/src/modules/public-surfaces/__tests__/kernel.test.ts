@@ -41,7 +41,7 @@ describe('contraste WCAG', () => {
   });
 
   it('choisit un texte sombre sur un accent clair', () => {
-    expect(pickReadableOn('#C6F24E')).toBe('#0B1220');
+    expect(pickReadableOn('#F59E0B')).toBe('#0B1220');
   });
 
   it('choisit un texte clair sur un accent sombre', () => {
@@ -56,10 +56,10 @@ describe('contraste WCAG', () => {
 describe('buildPalette', () => {
   it('dérive onPrimary pour garantir AA', () => {
     const palette = buildPalette({
-      primary: '#C6F24E',
+      primary: '#F59E0B',
       accent: '#F59E0B',
       surface: '#FFFFFF',
-      onSurface: '#111827',
+      onSurface: '#0F172A',
       muted: '#6B7280',
     });
 

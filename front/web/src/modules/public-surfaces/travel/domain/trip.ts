@@ -37,17 +37,23 @@ export function isBookable(trip: Trip): boolean {
 
 /**
  * Libellé de places : `null` si inconnu (jamais « 0 place » par défaut).
+ *
+ * Les mots viennent du catalogue de copie (4 locales) : le domaine ne porte que
+ * la règle de pluriel et le cas complet.
  */
-export function seatsLabel(seatsAvailable: number | null): string | null {
+export function seatsLabel(
+  seatsAvailable: number | null,
+  words: { place: string; places: string; soldOut: string },
+): string | null {
   if (seatsAvailable === null || !Number.isFinite(seatsAvailable)) {
     return null;
   }
 
   if (seatsAvailable <= 0) {
-    return 'Complet';
+    return words.soldOut;
   }
 
-  return `${seatsAvailable} place${seatsAvailable > 1 ? 's' : ''}`;
+  return `${seatsAvailable} ${seatsAvailable > 1 ? words.places : words.place}`;
 }
 
 /**
@@ -73,4 +79,9 @@ export function formatTripPrice(
 /** Itinéraire lisible : « Lyon → Paris ». */
 export function tripRoute(trip: Trip): string {
   return `${trip.origin} → ${trip.destination}`;
+}
+
+/** Vrai si l'itinéraire est complet (origine et destination connues). */
+export function hasRoute(trip: Trip): boolean {
+  return trip.origin.trim() !== '' && trip.destination.trim() !== '';
 }

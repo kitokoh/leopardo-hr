@@ -11,6 +11,7 @@ import {
   type Shop,
 } from '../domain/shop';
 import { loadShop } from '../infrastructure/shop-gateway';
+import { getSurfaceCopy } from '../../copy/surfaces-copy';
 
 /** Boutique prête à l'affichage. */
 export interface ShopView {
@@ -20,16 +21,21 @@ export interface ShopView {
 }
 
 /** Charge la vitrine d'une boutique ; `null` si introuvable ou API en panne. */
-export async function loadShopView(slug: string): Promise<ShopView | null> {
+export async function loadShopView(
+  slug: string,
+  locale?: string,
+): Promise<ShopView | null> {
   const shop = await loadShop(slug);
 
   if (shop === null) {
     return null;
   }
 
+  const shared = getSurfaceCopy(locale).shared;
+
   return {
     shop,
     rating: displayShopRating(shop.rating, shop.ratingCount),
-    catalogLabel: formatCatalogSize(shop.productsCount),
+    catalogLabel: formatCatalogSize(shop.productsCount, shared),
   };
 }

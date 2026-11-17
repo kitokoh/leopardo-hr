@@ -2,15 +2,18 @@
  * Identité de la vitrine Billets (Travel).
  *
  * Palette propre (violet/cyan) : registre du voyage, distinct du séjour et du
- * commerce. `onPrimary` est calculé.
+ * commerce. `onPrimary` est calculé. Nom et accroche viennent du catalogue.
  */
 
+import { getVerticalCopy } from '../../copy/surfaces-copy';
 import { buildPalette, type SurfaceIdentity } from '../../kernel';
+
+const copy = getVerticalCopy('travel', 'fr');
 
 export const TRAVEL_SURFACE: SurfaceIdentity = {
   vertical: 'travel',
-  displayName: 'Leopardo Billets',
-  tagline: 'Comparez les trajets, réservez votre place, recevez votre billet.',
+  displayName: copy.displayName,
+  tagline: copy.tagline,
   canonicalDomain: 'billets.leopardo.app',
   basePath: '/travel',
   discoveryType: 'travel',

@@ -69,6 +69,7 @@ export function displayRating(rating: number | null, reviewsCount: number): numb
  * Libellé de distance, arrondi au dixième sous 10 km puis à l'entier.
  *
  * `null` quand la distance est inconnue : la vitrine n'invente pas de proximité.
+ * L'unité est un symbole international (`km`), pas un mot à traduire.
  */
 export function formatDistance(distanceKm: number | null): string | null {
   if (distanceKm === null || !Number.isFinite(distanceKm) || distanceKm < 0) {
