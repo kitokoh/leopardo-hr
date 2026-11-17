@@ -40,6 +40,20 @@ class RestaurantPromotion extends Model
         'is_active',
     ];
 
+    /**
+     * Le défaut `used_count = 0` vit dans la MIGRATION, pas dans le modèle :
+     * `create()` laisse donc l'attribut à `null` en mémoire et la ressource
+     * sérialisait `"used_count": null` juste après une création — alors que la
+     * ligne en base vaut bien 0. Un client qui lit le compteur d'utilisations
+     * sur la réponse de création recevait `null` au lieu de 0.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'used_count' => 0,
+        'is_active' => true,
+    ];
+
     protected $casts = [
         'discount_type' => PromotionDiscountType::class,
         'value_minor' => 'integer',

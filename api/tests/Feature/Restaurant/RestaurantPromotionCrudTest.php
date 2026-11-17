@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPromotion;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -247,11 +248,31 @@ class RestaurantPromotionCrudTest extends TestCase
             'currency' => 'XAF',
         ]);
 
+        // RESTO-405 (#6192) — `BillCalculator` recalcule TOUS les totaux depuis
+        // les lignes ACTIVES de la commande ; les colonnes `*_minor` de la
+        // commande ne sont qu'un cache d'affichage. Le test ne creait aucune
+        // ligne : le sous-total serveur valait donc 0, la remise etait bornee a
+        // 0 (`min($discount, $subtotal)`) et la facture sortait a 0 — pas 9000.
+        // La ligne est la source de verite que la caisse, le paiement et les
+        // rapports lisent reellement.
+        RestaurantOrderItem::factory()->create([
+            'company_id' => $company->id,
+            'order_id' => $order->id,
+            'quantity' => 1,
+            'unit_price_minor' => 10000,
+            'line_total_minor' => 10000,
+            'tax_minor' => 0,
+        ]);
+
         $response = $this->getJson("/api/v1/restaurant/orders/{$order->id}/bill?promotion_code={$promotion->code}")
             ->assertStatus(200);
 
-        $response->assertJsonPath('data.total_minor', 9000);
-        $response->assertJsonPath('data.discount_minor', 1000);
+        // RESTO-405 (#6192) — `RestaurantBillResource` expose les totaux
+        // recalculés dans un sous-objet `bill` (à côté du détail de la
+        // commande : `id`, `reference`, `status`, `items`). Le test lisait
+        // `data.total_minor`, chemin qui n'a jamais existé dans la ressource.
+        $response->assertJsonPath('data.bill.total_minor', 9000);
+        $response->assertJsonPath('data.bill.discount_minor', 1000);
 
         $promotion->refresh();
         $this->assertSame(1, $promotion->used_count, 'Le compteur d\'utilisations est incrémenté.');
