@@ -8688,9 +8688,7 @@
     "conversationBack": "Back",
     "conversationStart": "Start a conversation",
     "conversationStarted": "Your message was sent to the professional.",
-    "conversationStartBody": "Hello, I would like to get in touch.",
-    "onDutyLabel": "On duty",
-    "onDutyHint": "An on-duty pharmacy provides continuous service outside regular opening hours."
+    "conversationStartBody": "Hello, I would like to get in touch."
   },
   "publicInbox": {
     "pageTitle": "Public requests",

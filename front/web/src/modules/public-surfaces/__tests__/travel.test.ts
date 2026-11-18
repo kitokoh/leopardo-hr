@@ -92,6 +92,6 @@ describe('identité billets', () => {
   it('est déclarée avec son propre domaine', () => {
     expect(surfaceRegistry.get('travel')).toBe(TRAVEL_SURFACE);
     expect(TRAVEL_SURFACE.canonicalDomain).toBe('billets.leopardo.app');
-    expect(TRAVEL_SURFACE.basePath).toBe('/travel');
+    expect(TRAVEL_SURFACE.basePath).toBe('/billets');
   });
 });

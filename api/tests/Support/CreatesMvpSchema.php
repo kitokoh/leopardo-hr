@@ -2423,6 +2423,29 @@ trait CreatesMvpSchema
             });
         }
 
+        // BC-41 PHARMACY #9592 — opt-in de publication de l'officine sur la
+        // vitrine publique. Miroir de la migration 2026_11_18_000001_9592
+        // (garde #5443). Sans cette fixture, tout test utilisant
+        // CreatesMvpSchema échoue en « relation does not exist » (#5418).
+        if (! Schema::hasTable($this->moduleTable('pharmacy_public_profiles'))) {
+            Schema::create($this->moduleTable('pharmacy_public_profiles'), function (Blueprint $table): void {
+                $table->id();
+                $table->string('company_id')->unique();
+                $table->boolean('enabled')->default(false);
+                $table->string('public_slug')->nullable();
+                $table->string('public_name')->nullable();
+                $table->string('public_city')->nullable();
+                $table->text('public_description')->nullable();
+                $table->string('public_phone')->nullable();
+                $table->boolean('on_duty')->default(false);
+                $table->jsonb('services')->nullable();
+                $table->unsignedInteger('version')->default(1);
+                $table->timestampsTz();
+
+                $table->index(['enabled', 'public_slug'], 'pharmacy_public_profiles_enabled_slug_idx');
+            });
+        }
+
         // BC-17 RETAIL #7812 — intents de paiement en ligne du checkout
         // marketplace. Miroir de la migration 2026_09_19_000501_7812
         // (parité garde #5443, gap constaté en passant sur #7909).

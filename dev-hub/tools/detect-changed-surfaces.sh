@@ -64,7 +64,7 @@ SURFACES=(
   $'retail\t/boutiques'
   $'hospitality\t/stay'
   $'trade\t/entreprises'
-  $'travel\t/travel'
+  $'travel\t/billets'
   $'pharmacy\t/pharmacies'
 )
 

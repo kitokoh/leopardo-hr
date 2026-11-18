@@ -8688,9 +8688,7 @@
     "conversationBack": "Retour",
     "conversationStart": "Démarrer une conversation",
     "conversationStarted": "Votre message a été envoyé au professionnel.",
-    "conversationStartBody": "Bonjour, je souhaite vous contacter.",
-    "onDutyLabel": "De garde",
-    "onDutyHint": "Une pharmacie de garde assure la continuité de service en dehors des horaires habituels."
+    "conversationStartBody": "Bonjour, je souhaite vous contacter."
   },
   "publicInbox": {
     "pageTitle": "Demandes publiques",

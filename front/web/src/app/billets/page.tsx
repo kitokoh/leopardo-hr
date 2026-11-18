@@ -5,7 +5,7 @@ import { SITE_URL } from '@/lib/site-url';
 import { TRAVEL_SURFACE, TravelSurface, loadTravelSurface } from '@/modules/public-surfaces';
 
 /**
- * Vitrine publique Billets — annuaire des trajets (`/travel`), #9593.
+ * Vitrine publique Billets — annuaire des trajets (`/billets`), #9593.
  *
  * SSR indexable, alimentée par `GET /api/v1/public/travel/marketplace/trips`
  * (throttle `shop-public`, aucune auth).

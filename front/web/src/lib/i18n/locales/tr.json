@@ -8688,9 +8688,7 @@
     "conversationBack": "Geri",
     "conversationStart": "Konuşma başlat",
     "conversationStarted": "Mesajınız profesyonel gönderildi.",
-    "conversationStartBody": "Merhaba, sizinle iletişime geçmek istiyorum.",
-    "onDutyLabel": "Nöbetçi",
-    "onDutyHint": "Nöbetçi eczane, normal çalışma saatleri dışında kesintisiz hizmet verir."
+    "conversationStartBody": "Merhaba, sizinle iletişime geçmek istiyorum."
   },
   "publicInbox": {
     "pageTitle": "Genel talepler",

@@ -8688,9 +8688,7 @@
     "conversationBack": "رجوع",
     "conversationStart": "بدء محادثة",
     "conversationStarted": "تم إرسال رسالتك إلى المهني.",
-    "conversationStartBody": "مرحبًا، أرغب في التواصل معكم.",
-    "onDutyLabel": "مناوبة",
-    "onDutyHint": "الصيدلية المناوبة تضمن استمرارية الخدمة خارج أوقات العمل المعتادة."
+    "conversationStartBody": "مرحبًا، أرغب في التواصل معكم."
   },
   "publicInbox": {
     "pageTitle": "الطلبات العامة",

@@ -33,7 +33,7 @@ rollback indépendant.
 | Retail | `marche.leopardo.app` | `/boutiques` |
 | Hôtellerie | `sejours.leopardo.app` | `/stay` |
 | B2B | `entreprises.leopardo.app` | `/entreprises` |
-| Billets | `billets.leopardo.app` | `/travel` |
+| Billets | `billets.leopardo.app` | `/billets` |
 | Pharmacie | `pharmacies.leopardo.app` | `/pharmacies` |
 
 Les domaines sont surchargeables par `NEXT_PUBLIC_SURFACE_DOMAIN_<VERTICAL>` et
