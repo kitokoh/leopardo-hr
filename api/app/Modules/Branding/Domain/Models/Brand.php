@@ -110,6 +110,17 @@ class Brand extends Model
     ];
 
     /**
+     * Format de date explicite.
+     *
+     * Sans lui, `getDateFormat()` interroge la connexion (`getConnection()`),
+     * qui est nulle hors application bootee : les tests unitaires de l'agregat
+     * echouaient en « Call to a member function connection() on null » des
+     * qu'une date etait serialisee. La valeur est celle de PostgreSQL, donc
+     * identique a ce que la connexion aurait rendu.
+     */
+    protected $dateFormat = 'Y-m-d H:i:s';
+
+    /**
      * @return array<string, string>
      */
     protected function casts(): array
@@ -273,6 +284,19 @@ class Brand extends Model
             throw BrandPublishException::missingDisplayName();
         }
 
+        // Republier une Brand deja publiee est une operation IDEMPOTENTE : les
+        // appelants (publish-brand, backfill, rejeu d'un job) la rejouent sans
+        // savoir qu'elle est deja en ligne. La table de transitions refuse
+        // `published -> published`, ce qui faisait echouer un simple rejeu en
+        // `BRAND_STATUS_TRANSITION_FORBIDDEN` — et deplace `published_at`, donc
+        // l'ordre du sitemap, alors que la date de premiere publication est ce
+        // qui compte pour les moteurs.
+        if ($this->status === BrandStatus::Published) {
+            $this->published_at ??= $at ?? Carbon::now();
+
+            return;
+        }
+
         $this->status->assertCanTransitionTo(BrandStatus::Published);
 
         $this->status = BrandStatus::Published;
@@ -336,6 +360,17 @@ class Brand extends Model
     public static function normalizeSlug(string $raw): ?string
     {
         $value = trim($raw);
+
+        // Le turc compte deux i : le pointless `ı` (U+0131) et le `İ` (U+0130).
+        // `Normalizer::FORM_D` ne les decompose PAS (ce ne sont pas des lettres
+        // accentuees), et `mb_strtolower(..., 'UTF-8')` les laisse tels quels :
+        // « Işık » devenait « is-k » au lieu de « isik ». On translittere donc
+        // explicitement AVANT la decomposition Unicode.
+        $value = strtr($value, [
+            'ı' => 'i', 'İ' => 'I', 'ş' => 's', 'Ş' => 'S',
+            'ğ' => 'g', 'Ğ' => 'G', 'ç' => 'c', 'Ç' => 'C',
+            'ö' => 'o', 'Ö' => 'O', 'ü' => 'u', 'Ü' => 'U',
+        ]);
 
         if (class_exists(\Normalizer::class)) {
             $decomposed = \Normalizer::normalize($value, \Normalizer::FORM_D);

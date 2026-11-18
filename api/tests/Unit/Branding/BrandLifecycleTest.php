@@ -64,11 +64,16 @@ final class BrandLifecycleTest extends TestCase
     {
         $brand = $this->brand();
         $brand->publish();
-        $first = $brand->published_at;
+        $first = $brand->published_at?->toIso8601String();
 
         $brand->publish();
 
-        $this->assertSame($first, $brand->published_at);
+        // On compare la DATE, pas l'identite de l'objet : `published_at` est
+        // caste en datetime, donc chaque lecture peut rendre une instance
+        // distincte. L'invariant teste est « la date de premiere publication
+        // ne bouge pas », pas « le meme objet Carbon est reutilise ».
+        $this->assertNotNull($first);
+        $this->assertSame($first, $brand->published_at?->toIso8601String());
     }
 
     public function test_suspend_requires_allowlisted_reason(): void
