@@ -86,7 +86,7 @@ class TradeCompanyProfileController extends Controller
         // aucun filtre de la vitrine.
         if (! $importEnabled && ! $exportEnabled && ! $domestic) {
             throw ValidationException::withMessages([
-                'import_enabled' => 'Déclarez au moins une direction : import, export ou marché domestique.',
+                'import_enabled' => __('trade.direction_required'),
             ]);
         }
 
@@ -134,7 +134,7 @@ class TradeCompanyProfileController extends Controller
 
         if (! $profile instanceof TradeCompanyProfile) {
             throw ValidationException::withMessages([
-                'is_public' => 'Complétez d’abord votre profil commercial avant de le publier.',
+                'is_public' => __('trade.profile_required_before_publish'),
             ]);
         }
 
@@ -146,7 +146,7 @@ class TradeCompanyProfileController extends Controller
 
         if ($publish && ($slug === null || $name === null)) {
             throw ValidationException::withMessages([
-                'public_slug' => 'Un slug et un nom commercial publics sont requis pour publier l’entreprise.',
+                'public_slug' => __('trade.public_slug_required'),
             ]);
         }
 
@@ -185,7 +185,7 @@ class TradeCompanyProfileController extends Controller
 
         if ($taken) {
             throw ValidationException::withMessages([
-                'public_slug' => 'Ce slug public est déjà utilisé par une autre entreprise.',
+                'public_slug' => __('trade.public_slug_taken'),
             ]);
         }
     }

@@ -83,7 +83,7 @@ class PharmacyPublicProfileController extends Controller
         // d'avoir publié, alors que le provider le filtrerait.
         if ($enabled && ($slug === null || $name === null)) {
             throw ValidationException::withMessages([
-                'public_slug' => 'Un slug et un nom publics sont requis pour publier l’officine.',
+                'public_slug' => __('pharmacy.public_profile_slug_required'),
             ]);
         }
 
@@ -135,7 +135,7 @@ class PharmacyPublicProfileController extends Controller
 
         if ($query->exists()) {
             throw ValidationException::withMessages([
-                'public_slug' => 'Ce slug public est déjà utilisé par une autre officine.',
+                'public_slug' => __('pharmacy.public_profile_slug_taken'),
             ]);
         }
     }

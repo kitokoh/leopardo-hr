@@ -25,4 +25,6 @@ return [
     'empty_receipt' => 'Teslim alınacak satır yok.',
     'empty_sale' => 'Bir satış en az bir satır içermelidir.',
     'over_receipt' => '#:line satırında fazla teslim alma reddedildi: :ordered sipariş edildi, :received zaten alındı, :proposed önerildi.',
+    'public_profile_slug_required' => 'Eczaneyi yayinlamak icin genel bir slug ve ad gereklidir.',
+    'public_profile_slug_taken' => 'Bu genel slug baska bir eczane tarafindan kullaniliyor.',
 ];

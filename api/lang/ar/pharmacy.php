@@ -25,4 +25,6 @@ return [
     'empty_receipt' => 'لا يوجد سطر للاستلام.',
     'empty_sale' => 'يجب أن تحتوي عملية البيع على سطر واحد على الأقل.',
     'over_receipt' => 'رُفض الاستلام الزائد على السطر #:line : المطلوب :ordered، المستلم :received، المقترح :proposed.',
+    'public_profile_slug_required' => 'يلزم معرف واسم عامان لنشر الصيدلية.',
+    'public_profile_slug_taken' => 'هذا المعرف العام مستخدم بالفعل من قبل صيدلية أخرى.',
 ];
