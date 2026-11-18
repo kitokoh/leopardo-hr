@@ -35,7 +35,12 @@ class StoreRestaurantReceivingRequest extends FormRequest
             'branch_id' => ['required', 'integer', Rule::exists('restaurant_branches', 'id')->where(fn (Builder $q) => $q->where('company_id', $actor->company_id))],
             'purchase_order_id' => ['nullable', 'integer', Rule::exists('restaurant_purchase_orders', 'id')->where(fn (Builder $q) => $q->where('company_id', $actor->company_id))],
             'supplier_id' => ['nullable', 'integer', Rule::exists('restaurant_suppliers', 'id')->where(fn (Builder $q) => $q->where('company_id', $actor->company_id))],
-            'reference' => ['nullable', 'string', 'max:40', Rule::unique('restaurant_receivings', 'reference')->where(fn (Builder $q) => $q->where('company_id', $actor->company_id))],
+            // Le rejeu avec une même `reference` est un cas NOMINAL que le
+            // contrôleur tranche en 409 (`RestaurantReceivingController::store`),
+            // contrat documenté dans son doc-block. Le `Rule::unique` le
+            // court-circuitait en 422 de validation : le client recevait une
+            // erreur de forme au lieu du conflit métier attendu.
+            'reference' => ['nullable', 'string', 'max:40'],
             'note_redacted' => ['nullable', 'string', 'max:1000'],
             // `lines` est le nom historique du contrat (tests, clients deja
             // integres) ; `items` celui valide a l'origine. Les deux sont

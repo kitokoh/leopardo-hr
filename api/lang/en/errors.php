@@ -339,6 +339,7 @@ return [
     'PLATFORM_PERMISSION_REQUIRED' => 'Your platform role does not allow this action (required permissions: :permissions).',
     'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'You cannot change your own platform role.',
     'LAST_SUPER_ADMIN_REQUIRED' => 'Action denied: at least one active super administrator must remain.',
+    'PLATFORM_MFA_REQUIRED' => 'MFA required: your platform account must enable a second factor before continuing.',
     'LAST_PRINCIPAL_REQUIRED' => 'Action denied: at least one active principal must remain in the company.',
 
     // Issue #9095 (IAM-L5) - roles personnalises de tenant.
@@ -375,4 +376,10 @@ return [
 
     // BC-10 (#9217) — resume rejected by the antivirus scan.
     'RESUME_REJECTED' => 'The attached file was rejected by the security scan.',
+    'BRAND_PUBLISH_MISSING_DISPLAY_NAME' => 'A Brand must have a public name (identity.display_name) before it can be published.',
+    'BRAND_PUBLISH_SUSPENDED' => 'A suspended Brand cannot be published. Lift the suspension (back to draft) first, then publish again.',
+    'BRAND_SLUG_INVALID' => '"%s" does not produce a usable slug (expected: 1..160 characters [a-z0-9-], no leading or trailing hyphen).',
+    'BRAND_SLUG_RESERVED' => '"%s" is reserved by a platform route.',
+    'SURFACE_PROFILE_DUPLICATE' => 'The "%s" vertical is already provided by another provider. Two profiles for the same vertical would make rendering non-deterministic.',
+    'COMPANY_PROFILE_RESERVED_FIELDS' => 'Fields reserved for the platform: %s',
 ];

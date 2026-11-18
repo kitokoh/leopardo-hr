@@ -6,8 +6,8 @@ namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Platform\Infrastructure\Services\PlatformNotificationObservabilityService;
+use App\Support\SearchPathGuard;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 
 /**
  * PA2-ADM-005 — Monitoring plateforme lisible.
@@ -26,8 +26,7 @@ class PlatformNotificationObservabilityController extends Controller
         // `companies` lives in the `public` schema; the service switches
         // search_path per-tenant internally while scanning communication
         // events, then restores it — start from a known baseline.
-        DB::statement('SET search_path TO public');
-
-        return response()->json(['data' => $service->snapshot()]);
+        // Issue #9115 : SearchPathGuard garantit la restauration de ce baseline.
+        return SearchPathGuard::run('public', static fn (): JsonResponse => response()->json(['data' => $service->snapshot()]));
     }
 }

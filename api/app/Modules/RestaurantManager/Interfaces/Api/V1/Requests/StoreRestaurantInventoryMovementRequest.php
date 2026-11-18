@@ -33,12 +33,23 @@ class StoreRestaurantInventoryMovementRequest extends FormRequest
         $actor = $this->user();
 
         $reasons = array_map(fn (StockMovementReason $reason) => $reason->value, StockMovementReason::cases());
+        // Les motifs SYSTÈME ne sont pas saisissables à la main : `sale` est
+        // produit par la confirmation d'une commande, `receiving` par une
+        // réception, `count` par la validation d'un inventaire. Les accepter
+        // ici permettait de fabriquer un mouvement de vente sans commande —
+        // donc de fausser le COGS et le journal de stock, qui s'appuient sur
+        // ces motifs pour rattacher le mouvement à sa source.
+        $manualReasons = array_values(array_diff($reasons, [
+            StockMovementReason::SALE->value,
+            StockMovementReason::RECEIVING->value,
+            StockMovementReason::COUNT->value,
+        ]));
 
         return [
             'branch_id' => ['required', 'integer', Rule::exists('restaurant_branches', 'id')->where(fn (Builder $q) => $q->where('company_id', $actor->company_id))],
             'ingredient_id' => ['required', 'integer', Rule::exists('restaurant_ingredients', 'id')->where(fn (Builder $q) => $q->where('company_id', $actor->company_id))],
             'quantity_delta' => ['required', 'numeric', 'not_in:0'],
-            'reason_code' => ['required', 'string', Rule::in($reasons)],
+            'reason_code' => ['required', 'string', Rule::in($manualReasons)],
             'reference_type' => ['nullable', 'string', 'max:80'],
             'reference_id' => ['nullable', 'integer'],
             'note_redacted' => ['nullable', 'string', 'max:1000'],

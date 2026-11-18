@@ -7,6 +7,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderPayment;
 use App\Modules\RestaurantManager\Infrastructure\Services\Mobile\RestaurantMobileServerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -63,6 +64,17 @@ class RestaurantMobileServerController extends Controller
             'idempotency_key' => ['sometimes', 'string', 'max:255'],
         ]);
 
+        // Un rejeu d'une même `idempotency_key` rend le paiement DÉJÀ existant :
+        // ce n'est pas une création, donc 200 et non 201. Sans cette
+        // distinction, le client mobile ne pouvait pas savoir si son
+        // encaissement avait été appliqué une ou deux fois — exactement ce que
+        // l'idempotence doit lever.
+        $isReplay = isset($data['idempotency_key'])
+            && RestaurantOrderPayment::query()
+                ->where('company_id', $restaurantOrder->company_id)
+                ->where('idempotency_key', (string) $data['idempotency_key'])
+                ->exists();
+
         $payment = $this->service->payCash(
             $actor,
             $restaurantOrder,
@@ -78,6 +90,6 @@ class RestaurantMobileServerController extends Controller
             'amount_minor' => $payment->amount_minor,
             'currency' => $payment->currency,
             'order_status' => $restaurantOrder->refresh()->status->value,
-        ]], 201);
+        ]], $isReplay ? 200 : 201);
     }
 }

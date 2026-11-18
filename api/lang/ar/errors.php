@@ -332,6 +332,7 @@ return [
     'PLATFORM_PERMISSION_REQUIRED' => 'دورك في المنصة لا يسمح بهذا الإجراء (الأذونات المطلوبة: :permissions).',
     'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'لا يمكنك تغيير دورك في المنصة.',
     'LAST_SUPER_ADMIN_REQUIRED' => 'تم رفض الإجراء: يجب أن يبقى مسؤول أعلى نشط واحد على الأقل.',
+    'PLATFORM_MFA_REQUIRED' => 'المصادقة الثنائية مطلوبة: يجب تفعيل عامل ثانٍ لحساب المنصة قبل المتابعة.',
     'LAST_PRINCIPAL_REQUIRED' => 'تم رفض الإجراء: يجب أن يبقى مدير رئيسي نشط واحد على الأقل في الشركة.',
 
     // Issue #9095 (IAM-L5) - roles personnalises de tenant.
@@ -367,4 +368,10 @@ return [
 
     // BC-10 (#9217) — رفض الملف المرفق بواسطة فحص الأمان.
     'RESUME_REJECTED' => 'تم رفض الملف المرفق بواسطة فحص الأمان.',
+    'BRAND_PUBLISH_MISSING_DISPLAY_NAME' => 'يجب أن يكون للعلامة اسم عام (identity.display_name) قبل نشرها.',
+    'BRAND_PUBLISH_SUSPENDED' => 'لا يمكن نشر علامة موقوفة. ارفع الإيقاف أولاً (العودة إلى المسودة) ثم أعد النشر.',
+    'BRAND_SLUG_INVALID' => '«%s» لا ينتج معرفًا صالحًا (المتوقع: 1..160 حرفًا [a-z0-9-]، دون شرطة في البداية أو النهاية).',
+    'BRAND_SLUG_RESERVED' => '«%s» محجوز بواسطة مسار في المنصة.',
+    'SURFACE_PROFILE_DUPLICATE' => 'القطاع «%s» مقدم بالفعل من مزود آخر. ملفان لنفس القطاع سيجعلان العرض غير حتمي.',
+    'COMPANY_PROFILE_RESERVED_FIELDS' => 'حقول محجوزة للمنصة: %s',
 ];

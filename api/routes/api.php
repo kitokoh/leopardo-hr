@@ -23,6 +23,7 @@ use App\Modules\EdgeSync\Interfaces\Api\V1\Controllers\EdgeNodeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBankingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBrandingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyModuleController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyProfileController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PrivacyController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\AcquisitionFunnelEventController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadController;
@@ -295,6 +296,11 @@ Route::prefix('v1')->group(function (): void {
     // contrôleur, fail-closed 404.
     require __DIR__.'/modules/pages_public.php';
 
+    // #9578 (BC-41 BRANDING) — contrat public d'une Brand (multi-brand).
+    // Groupe ISOLÉ : aucun middleware auth/tenant, throttling `shop-public`.
+    // Résolution par slug ou par `Host`, fail-closed 404 uniforme.
+    require __DIR__.'/modules/branding_public.php';
+
     Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {
         // TRAVEL-409 (#6061) — callback provider paiements TravelAgency
         // (signé HMAC, idempotent — public, vérifié dans le contrôleur).
@@ -471,9 +477,20 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/company-requests', [CompanyRequestController::class, 'store']);
         Route::get('/company/branding', [CompanyBrandingController::class, 'show']);
         Route::patch('/company/branding', [CompanyBrandingController::class, 'update']);
+        // #9332 — profil structurant du tenant (raison sociale, fuseau, devise,
+        // langue, coordonnées). Allowlist stricte côté contrôleur ; les champs
+        // plateforme (slug, schema_name, plan_id, features…) restent hors périmètre
+        // (ADR-0028). RBAC principal appliqué dans le contrôleur.
+        Route::get('/company/profile', [CompanyProfileController::class, 'show']);
+        Route::patch('/company/profile', [CompanyProfileController::class, 'update']);
         // Issue #5613 — Coordonnées bancaires SEPA (IBAN/BIC entreprise).
         Route::get('/company/banking', [CompanyBankingController::class, 'show']);
         Route::patch('/company/banking', [CompanyBankingController::class, 'update']);
+
+        // #9333 — Piste d'audit consultable (RGPD) : réservé au principal.
+        Route::get('/audit-logs', [\App\Core\Auth\Interfaces\Api\V1\Controllers\AuditLogController::class, 'index']);
+        Route::get('/audit-logs/{id}', [\App\Core\Auth\Interfaces\Api\V1\Controllers\AuditLogController::class, 'show'])->whereNumber('id');
+        Route::get('/audit-logs/export', [\App\Core\Auth\Interfaces\Api\V1\Controllers\AuditLogController::class, 'export']);
 
         // #7322 — le client (responsable du tenant) active lui-même un module
         // HORIZONTAL de son entreprise : `metadata.modules` + flag plateforme
@@ -599,6 +616,9 @@ Route::prefix('v1')->group(function (): void {
     // BC PAGES (#8728) — surface tenant : CRUD établissements/Pages, blocs,
     // publication et aperçu privé. La surface publique est #8730.
     require __DIR__.'/modules/pages.php';
+    // #9578 (BC-41 BRANDING) — surface tenant : CRUD des enseignes (Brand),
+    // palette à contraste calculé, publication et modération.
+    require __DIR__.'/modules/branding.php';
 
     // BC-17 RETAIL #7672 — module vendeur générique (produits & catégories)
     require __DIR__.'/modules/retail.php';
@@ -652,7 +672,7 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/ai.php';
 
     // Platform (super-admin, hors module)
-    Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('platform')->group(function (): void {
+    Route::middleware(['auth:super_admin_api', 'platform.mfa', 'throttle:platform-sensitive'])->prefix('platform')->group(function (): void {
         // BC-10 (#9100) — portail public d'offres : publication plateforme et
         // connecteurs d'agrégateurs. Chargé ICI pour hériter du préfixe
         // `platform` et du guard `super_admin_api`.
@@ -880,7 +900,7 @@ Route::prefix('v1')->group(function (): void {
     // Admin cockpit (super-admin) — contrat SPA front/admin-dashboard.
     // Endpoints appelés par le SPA sans exister côté API (issue #1764) :
     // création côté API des routes manquantes (décision produit).
-    Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('admin')->group(function (): void {
+    Route::middleware(['auth:super_admin_api', 'platform.mfa', 'throttle:platform-sensitive'])->prefix('admin')->group(function (): void {
         // Issue #2624 : impersonation super-admin aussi sous /admin (le SPA
         // admin-dashboard consomme /admin/*) — réutilise le contrôleur
         // platform existant (PA2-ADM-006).

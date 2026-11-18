@@ -335,6 +335,7 @@ return [
     'PLATFORM_PERMISSION_REQUIRED' => 'Votre rôle plateforme ne permet pas cette action (permissions requises : :permissions).',
     'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'Impossible de modifier votre propre rôle plateforme.',
     'LAST_SUPER_ADMIN_REQUIRED' => 'Action refusée : il doit rester au moins un super administrateur actif.',
+    'PLATFORM_MFA_REQUIRED' => 'MFA obligatoire : votre compte de plateforme doit activer un second facteur avant de continuer.',
     'LAST_PRINCIPAL_REQUIRED' => 'Action refusée : il doit rester au moins un principal actif dans l\'entreprise.',
 
     // Issue #9095 (IAM-L5) - roles personnalises de tenant.
@@ -373,4 +374,10 @@ return [
     // générique : la signature détectée est une information d'exploitation,
     // pas une information candidat.
     'RESUME_REJECTED' => 'Le fichier joint a été refusé par l\'analyse de sécurité.',
+    'BRAND_PUBLISH_MISSING_DISPLAY_NAME' => 'Une Brand doit avoir un nom public (identity.display_name) avant d\'être publiée.',
+    'BRAND_PUBLISH_SUSPENDED' => 'Une Brand suspendue ne peut pas être publiée. Levez d\'abord la suspension (retour en brouillon), puis republiez.',
+    'BRAND_SLUG_INVALID' => '« %s » ne produit pas un slug exploitable (attendu : 1..160 caractères [a-z0-9-], sans tiret en bord).',
+    'BRAND_SLUG_RESERVED' => '« %s » est réservé par une route de la plateforme.',
+    'SURFACE_PROFILE_DUPLICATE' => 'La verticale « %s » est déjà fournie par un autre provider. Deux profils pour une même verticale rendraient le rendu non déterministe.',
+    'COMPANY_PROFILE_RESERVED_FIELDS' => 'Champs réservés à la plateforme : %s',
 ];

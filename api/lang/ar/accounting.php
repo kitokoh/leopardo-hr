@@ -94,6 +94,7 @@ return [
     ],
 
     'errors' => [
+        'fixed_asset_has_depreciations' => 'هذا الأصل الثابت له قيود إهلاك مسجلة ولا يمكن حذفه. استخدم الاستبعاد (الحالة "disposed") بدلاً من ذلك.',
         'gateway_checkout_failed' => 'بوابة الدفع غير متاحة مؤقتًا. يرجى المحاولة لاحقًا.',
         'fiscal_year_invalid' => 'السنة المالية غير صالحة.',
         'payment_amount_positive' => 'يجب أن يكون مبلغ الدفع موجباً تماماً.',
@@ -160,4 +161,5 @@ return [
     'lettering_unbalanced' => 'يجب أن تكون التسوية متوازنة: مجموع المدين يجب أن يساوي مجموع الدائن.',
     'lettering_invalid' => 'تسوية غير صالحة: يجب أن تستهدف القيود نفس الحساب.',
     'lettering_already_used' => 'قيد واحد أو أكثر مسوّى بالفعل برمز آخر.',
+    'depreciation_declining_unsupported' => 'طريقة الإهلاك المتناقص غير مطبقة لهذا البلد.',
 ];

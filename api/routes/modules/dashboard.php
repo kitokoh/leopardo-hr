@@ -84,6 +84,10 @@ ModuleRoutes::tenantModule('', function (): void {
         Route::post('/company/roles', [RoleDefinitionController::class, 'store']);
         Route::put('/company/roles/{role}', [RoleDefinitionController::class, 'update']);
         Route::delete('/company/roles/{role}', [RoleDefinitionController::class, 'revoke']);
+        // #9095 (IAM-L5) — attribution d'un rôle à un collaborateur : ce qui
+        // rend `holder_count` réel et le rôle utile (écran #9518).
+        Route::post('/company/roles/{role}/assign', [RoleDefinitionController::class, 'assign']);
+        Route::delete('/company/roles/{role}/assign/{employee}', [RoleDefinitionController::class, 'unassign']);
     });
 
     Route::middleware('api.manager:rh,principal')->group(function (): void {

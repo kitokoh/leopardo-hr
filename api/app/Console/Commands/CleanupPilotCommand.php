@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Seed\PilotSeedGuard;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
+use App\Support\SearchPathGuard;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -47,10 +48,12 @@ final class CleanupPilotCommand extends Command
     public function handle(PilotSeedGuard $guard, TenantManager $tenantManager): int
     {
         // Déterministe : les tenants pilotes vivent dans le schéma public.
-        if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO public');
-        }
+        // Issue #9115 : restauration garantie du search_path d'entrée.
+        return SearchPathGuard::run('public', fn (): int => $this->cleanup($guard, $tenantManager));
+    }
 
+    private function cleanup(PilotSeedGuard $guard, TenantManager $tenantManager): int
+    {
         $vertical = (string) $this->argument('vertical');
 
         $config = self::VERTICALS[$vertical] ?? null;

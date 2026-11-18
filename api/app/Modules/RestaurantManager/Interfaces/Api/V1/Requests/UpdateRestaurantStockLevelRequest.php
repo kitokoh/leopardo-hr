@@ -31,7 +31,13 @@ class UpdateRestaurantStockLevelRequest extends FormRequest
         $actor = $this->user();
 
         return [
-            'quantity' => ['sometimes', 'numeric', 'min:0'],
+            // Le doc-block de cette classe ET celui du contrôleur disent que
+            // « la quantité ne se modifie que par mouvement » (traçabilité du
+            // journal). La règle `sometimes|numeric` autorisait pourtant un
+            // PUT direct de la quantité, sans mouvement ni traçabilité —
+            // exactement ce que le contrat interdit. `prohibited` rend la
+            // surface conforme au contrat annoncé.
+            'quantity' => ['prohibited'],
             'avg_cost_minor' => ['nullable', 'integer', 'min:0'],
             'reorder_level' => ['nullable', 'numeric', 'min:0'],
             'alert_threshold' => ['nullable', 'numeric', 'min:0'],

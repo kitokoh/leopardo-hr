@@ -2767,6 +2767,150 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 
 **Non couvert** — rendu visuel des trois nouveaux écrans non observé avec de vraies données (pas de base peuplée ni de session authentifiée dans le sandbox) ; migration non jouée sur une base tenant réelle (les tests utilisent la fixture `CreatesMvpSchema`) ; présence de `pdftotext` / `antiword` sur l'image de production non vérifiée — le code rend `null` proprement s'ils manquent, donc absence = dégradation du score, pas panne ; aucune OCR sur les CV scannés en image (choix assumé) ; suite Jest **complète** tuée par l'OOM du sandbox (2 Go) — seul le périmètre touché a été exécuté.
 
+## 2026-11-17 — BC-04 ABSENCE : statistiques d'absences pour le dashboard manager (#9538, PR #9556)
+
+**Surface** : `GET /v1/absences/stats` (`AbsenceController::stats`), route déclarée **avant** `/{absence}` dans `routes/modules/absence.php`, documentée dans `api/openapi.yaml`. Aucune migration, aucun changement de modèle.
+
+**Pourquoi ce sont des scénarios de test** : l'endpoint agrège côté PHP (`groupBy` sur une collection chargée en mémoire) et calcule un taux d'absentéisme par approximation. Trois familles de défauts ne se voient pas à l'œil sur un jeu de données vide : le **conflit de route** avec `/{absence}`, la **division par zéro** quand la période ou l'effectif est vide, et le **périmètre multi-tenant** d'un agrégat qui compte des employés.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `GET /v1/absences/stats` atteint bien `stats()` et non `show()` avec `absence = "stats"` | la route est déclarée avant `/{absence}` : inverser les deux lignes ferait répondre **404** (ou 422 sur `whereNumber`) au lieu des statistiques, sans aucune erreur de compilation |
+| un employé non-manager reçoit **403** | `abort_unless($actor->isManager(), 403)` est la seule garde : sans test, un collaborateur lirait les absences de toute l'entreprise |
+| les absences d'une **autre entreprise** ne sont jamais comptées | le filtre `where('company_id', $actor->company_id)` est la seule barrière ; un agrégat qui fuit est un incident RGPD, pas un bug d'affichage |
+| période sans aucune absence → `total_absences = 0`, `absenteeism_rate = 0`, `by_type = []` | `$totalDays / ($workingDays * $activeEmployees)` divise par zéro si l'effectif actif est nul ; le garde `$activeEmployees > 0 && $workingDays > 0` doit être prouvé, pas supposé |
+| `from`/`to` par défaut = mois courant, bornes incluses | `whereBetween('start_date', [$from, $to])` : une absence commençant le dernier jour du mois doit compter |
+| `from`/`to` mal formés (`2026-13-01`, `17/11/2026`) → **422** | `date_format:Y-m-d` est la seule validation ; un format libre ferait passer une date invalide à `Carbon::parse` |
+| `employee_id` inexistant → **422**, et non une liste vide | `exists:employees,id` distingue « filtre invalide » de « aucune absence » ; sans lui, une faute de frappe rend un dashboard vide et crédible |
+| `top_employees` est trié par jours décroissants et plafonné à **10** | `sortByDesc('days')->take(10)` : sans test, un `take` déplacé ou un tri sur `count` passerait inaperçu |
+| une absence dont le type ou l'employé a été supprimé ne fait pas échouer la requête | `$group->first()->absenceType->name ?? 'Unknown'` lit une propriété sur `null` quand la relation manque : PHP 8 émet un *warning* et rend `null`, donc la réponse reste 200 — comportement à figer par un test, sinon une future refonte en `?->` ou en jointure changera silencieusement le libellé |
+| `by_status` ne compte que `pending` / `approved` / `rejected` | les trois clés sont écrites en dur : un nouveau statut ajouté à l'enum disparaîtrait de la réponse sans erreur |
+
+**Couverture exécutée** — `pint --test` PASS sur les 2 fichiers du lot (contrôleur + routes) après correction de 2 défauts de style (`no_trailing_whitespace`, `unary_operator_spaces`, `braces_position`, `not_operator_with_successor_space`, `single_line_empty_body` sur le contrôleur ; `no_whitespace_in_blank_line` sur les routes).
+
+**Non couvert** — aucun test PHPUnit exécuté pour ce lot : la suite Feature dépasse la RAM du sandbox (2 Go, OOM signal 9). Les scénarios ci-dessus sont donc **à écrire**, pas encore écrits ; la CI `Tests - Leopardo` reste le seul verdict d'exécution.
+## 2026-11-17 — BC-05 FLEET : statistiques consolidees de flotte (#9542, PR #9561)
+
+**Surface** : `GET /v1/fleet/stats` (`FleetController::stats`), declaree dans `routes/modules/tracking.php` sous le groupe `fleet`, documentee dans `api/openapi.yaml`. Aucune migration.
+
+**Pourquoi ce sont des scenarios de test** : l'endpoint agrege **quatre** sources (vehicules, trajets, maintenances, alertes) en memoire et calcule **quatre** ratios. Les defauts typiques sont silencieux : un ratio sur un denominateur nul, un filtre de periode qui exclut le dernier jour, ou un agregat qui franchit la frontiere du tenant.
+
+| Scenario | Ce qui serait casse sans lui |
+|---|---|
+| un non-manager recoit **403** | `abort_unless($user->isManager(), 403)` est la seule garde : sans test, tout collaborateur lirait les couts de maintenance de l'entreprise |
+| les vehicules d'une **autre entreprise** ne sont jamais comptes | les **quatre** requetes portent `where('company_id', $user->company_id)` separement : oublier ce filtre sur une seule (ex. `VehicleAlert`) fuite des donnees sans erreur |
+| flotte vide -> tous les compteurs a 0, aucun `DivisionByZeroError` | `$totalKm / $totalVehicles` et `$totalMaintenanceCost / $totalKm` sont gardes par des ternaires : les deux gardes doivent etre prouvees, pas supposees |
+| `cost_per_km` vaut 0 quand `total_km = 0` (et non `null` ni une exception) | c'est le cas d'une flotte a l'arret : le dashboard doit afficher 0, pas planter |
+| `from`/`to` par defaut = mois courant, **bornes incluses** | `whereBetween('start_time', [$from.' 00:00:00', $to.' 23:59:59'])` : un trajet commencant le dernier jour a 23:30 doit compter ; `performed_at` est compare a des **dates nues**, donc un entretien du dernier jour a 10:00 doit aussi compter |
+| `from`/`to` mal formes -> **422** | `date_format:Y-m-d` est la seule validation ; un format libre ferait passer une date invalide a la concatenation `$from.' 00:00:00'` |
+| `vehicle_id` inexistant -> **422**, pas une flotte vide | `exists:vehicles,id` distingue « filtre invalide » de « aucun vehicule » |
+| `vehicle_id` restreint **les quatre** agregats, pas seulement les vehicules | le filtre est repete sur `VehicleTrip`, `VehicleMaintenance` et `VehicleAlert` : un oubli sur une requete rendrait des couts globaux sous un filtre par vehicule |
+| `avg_km_per_vehicle` et `avg_cost_per_vehicle` divisent par le **total** de vehicules, pas par les actifs | le choix est deliberé (une flotte immobilisee compte dans la moyenne) : un test le fige, sinon une refonte le changerait sans bruit |
+| les alertes actives sont comptees sur la periode demandee | la requete d'alertes ne porte pas de `whereBetween` : le comportement attendu (alertes **courantes**, independantes de la periode) doit etre fige explicitement |
+
+**Couverture executee** — `pint --test` PASS sur les 2 fichiers du lot apres correction d'un defaut `blank_line_before_statement` dans `FleetController.php`.
+
+## 2026-11-17 — BC-07 RECRUITMENT : KPIs de recrutement pour le dashboard RH (#9546, PR #9562)
+
+**Surface** : `GET /v1/recruitment/stats` (`RecruitmentController::stats`), declaree dans `routes/modules/hr_extended.php`, documentee dans `api/openapi.yaml`. Aucune migration.
+
+**Pourquoi ce sont des scenarios de test** : l'endpoint calcule un **entonnoir de conversion a quatre etages** et une **duree moyenne d'embauche** en SQL brut (`EXTRACT(EPOCH FROM (hired_at - applied_at)) / 86400`). Une erreur d'agregation produit un chiffre plausible mais faux — le pire cas pour un dashboard de direction.
+
+| Scenario | Ce qui serait casse sans lui |
+|---|---|
+| un acteur sans `recruitment.view` recoit **403** | `$actor->cannot('recruitment.view')` est la garde par **capacite**, pas par role : sans test, une politique modifiee ouvrirait les KPIs sans changer le code |
+| un acteur d'une **autre entreprise** ne voit aucun chiffre | `where('company_id', $companyId)` est repete sur **quatre** requetes (`JobPosting`, `Applicant` x3) : un oubli sur une seule melange les pipelines de deux clients |
+| entonnoir vide -> les 4 taux valent **0**, pas de division par zero | `$screeningRate = $screening / $total` est garde par `$total > 0` ; `$interviewRate` divise par `$screening`, **pas** par `$total` : si le garde portait sur le mauvais denominateur, le resultat serait faux sans planter |
+| les taux divissent bien par **l'etage precedent** de l'entonnoir | `interview_rate = interview / screening`, `offer_rate = offer / interview` : c'est une definition produit, pas une evidence — un test la fige |
+| un entonnoir a `total = 0` mais `screening = 0` et `offer = 0` rend des taux a 0 et non des `null` | les ternaires rendent `0` (int), l'API documente un `number` : un `null` casserait le contrat OpenAPI |
+| `avg_time_to_hire_days` est `null` quand aucune embauche ne porte `hired_at` | `$avgTimeToHire ? round(...) : null` : `AVG()` sur un ensemble vide rend `null`, et `null ? x : y` doit rendre `null`, pas `0` |
+| `avg_time_to_hire_days` est bien en **jours** et non en secondes | la division par `86400` est la seule conversion : sans test, l'unite derive silencieusement d'un facteur 86400 |
+| `avg_time_to_hire_days` est arrondi a **1 decimale** | `round((float) $avgTimeToHire, 1)` : un changement d'arrondi rendrait le dashboard instable sans erreur |
+| `job_postings.active` compte les `published`, `closed` les `archived`, `filled` les `closed` | l'ordre des parametres lies `['published','closed','archived']` correspond positionnellement aux trois `CASE WHEN status = ?` : inverser deux parametres echange deux compteurs sans erreur |
+| `from`/`to` sont **facultatifs** et absents -> aucune borne | `if ($from)` / `if ($to)` : une periode vide doit rendre **tout** l'historique, pas rien |
+| `from` couvre le debut de journee, `to` la fin | `Carbon::parse($from)->startOfDay()` et `->endOfDay()` : sans cela, une candidature du dernier jour a 14:00 serait exclue |
+| `from`/`to` mal formes -> **422** | `'nullable\|date'` sur les deux champs ; un format libre ferait exploser `Carbon::parse` en 500 |
+| `top_sources` est plafonne a **5**, trie decroissant, avec `source` non nul | `orderByDesc('count')->limit(5)` et `whereNotNull('source')` : sans test, une valeur nulle remonterait en tete |
+| `top_sources` respecte la periode demandee | `.when($from, ...)` / `.when($to, ...)` : ce sont les seules bornes de cette requete |
+
+**Couverture executee** — `pint --test` PASS sur les 2 fichiers du lot apres correction d'un defaut (`unary_operator_spaces`, `not_operator_with_successor_space`, `no_whitespace_in_blank_line` dans `RecruitmentController.php`).
+
+## 2026-11-17 — BC-08 LIBRARY : KPIs de la bibliotheque pour le dashboard (#9548, PR #9563)
+
+**Surface** : `GET /v1/library/stats` (`LibraryStatsController::index`), nouveau controleur dans `routes/modules/library.php`, documentee dans `api/openapi.yaml`. Aucune migration.
+
+**Pourquoi ce sont des scenarios de test** : c'est un controleur **neuf** dont le perimetre tenant passe par une **relation** (`whereHas('resource', ...)`) et non par une colonne `company_id` sur la table interrogee. C'est precisement le motif qui produit des fuites silencieuses.
+
+| Scenario | Ce qui serait casse sans lui |
+|---|---|
+| un acteur sans `library.view` recoit **403** | `$actor->cannot('library.view')` : garde par capacite ; une politique elargie ouvrirait les chiffres sans toucher au code |
+| les ressources d'une **autre entreprise** ne sont jamais comptees | `where('company_id', $companyId)` sur `LibraryResource` — **quatre** fois (total, by_type, by_status, et indirectement) : un oubli sur une seule fausse un seul indicateur, donc passe inapercu |
+| les emprunts d'une autre entreprise ne sont jamais comptes | `LibraryCheckout` n'a **pas** de `company_id` : le perimetre vient de `whereHas('resource', fn ($q) => $q->where('company_id', $companyId))`. Sans test, un emprunt d'un autre tenant serait compte dans `active_checkouts` |
+| `active_checkouts` ne compte que les non-rendus | `whereNull('returned_at')` sur un `clone` de la requete : sans le `clone`, la borne de periode seriait consommee par la premiere requete et les suivantes seraient faussees |
+| `overdue_checkouts` exige en plus `due_date < now()` | un emprunt non rendu **et non en retard** n'est pas en retard : sans test, les deux compteurs seraient identiques |
+| `returned_on_time` compare `returned_at` a `due_date` colonne a colonne | `whereColumn('returned_at', '<=', 'due_date')` (et non `where`) : une comparaison a une valeur figee rendrait le compteur absurde |
+| `avg_duration_days` est `null` quand rien n'a ete rendu | `AVG()` sur ensemble vide rend `null` : un `?->` ou un `?? 0` changerait le contrat |
+| `avg_duration_days` est en **jours** (facteur 86400) et arrondi | `EXTRACT(EPOCH ...) / 86400` : sans test, l'unite derive d'un facteur 86400 sans erreur |
+| `by_type` et `by_status` sont des **objets** indexés par valeur, pas des listes | `->pluck('count','type')->toArray()` : la forme de la reponse change si quelqu'un remplace `pluck` par `get` |
+| une valeur `type` ou `status` nulle apparait comme cle vide | `groupBy` sur une colonne nullable produit une cle `""` : le contrat OpenAPI doit le tolerer ou la requete doit l'exclure — comportement a figer |
+| `from`/`to` facultatifs : absents -> tout l'historique | `if ($from)` / `when($from, ...)` : une periode vide ne doit pas rendre zero |
+| `from` = debut de journee, `to` = fin de journee | `startOfDay()` / `endOfDay()` : un emprunt du dernier jour a 16:00 doit compter |
+| `from`/`to` mal formes -> **422** | `'nullable\|date'` : un format libre ferait un 500 dans `Carbon::parse` |
+| la route `/stats` n'est pas avalee par `/resources/{resource}` | `/stats` est declaree **avant** le groupe `resources` dans le fichier de routes : l'ordre est la seule protection, un `/{resource}` sans `whereNumber` capturerait `stats` |
+
+**Couverture executee** — `pint --test` PASS sur les 2 fichiers du lot apres correction d'un `no_whitespace_in_blank_line` dans `routes/modules/library.php`.
+
+## 2026-11-17 — BC-09 EXPENSE : KPIs des notes de frais pour le dashboard Finance (#9550, PR #9564)
+
+**Surface** : `GET /v1/expense/stats` (`ExpenseStatsController::index`), nouveau controleur dans `routes/modules/expense.php`, documentee dans `api/openapi.yaml`. Aucune migration.
+
+**Pourquoi ce sont des scenarios de test** : c'est un controleur **neuf** qui melange **deux unites de temps** (heures pour l'approbation, jours pour le paiement), une **devise** devinee depuis la premiere ligne, et un **top 10** par montant. Chaque choix est une decision produit silencieuse.
+
+| Scenario | Ce qui serait casse sans lui |
+|---|---|
+| un acteur sans `expense.reports` **ni** `expense.manage` recoit **403** | la garde est un **OU** de deux capacites : `cannot('expense.reports') && cannot('expense.manage')`. Sans test, une politique qui retire `expense.reports` fermerait l'endpoint aux gestionnaires qui n'ont que `expense.manage` |
+| les notes d'une **autre entreprise** ne sont jamais comptees | `where('company_id', $companyId)` est repete sur **sept** requetes : un oubli sur une seule fausse un seul indicateur |
+| `total_amount` est la **somme** des montants, pas un compte | `(clone $claimsQuery)->sum('total_amount')` : sans test, un `count()` a la place rendrait un chiffre plausible mais faux |
+| `currency` est la devise de la **premiere** note, `EUR` par defaut | `->value('currency') ?? 'EUR'` : c'est une approximation (pas de conversion multi-devises) — un test fige le comportement et documente la limite |
+| `amounts_by_status` et `amounts_by_category` sont des **floats** | `->map(fn ($v) => (float) $v)` : sans test, un `int` casserait le contrat OpenAPI (`number` vs `integer`) |
+| `amounts_by_category` exclut les notes sans categorie | `whereNotNull('category')` : sans test, une cle `""` apparaitrait dans la reponse |
+| `avg_approval_time_hours` est en **heures** (facteur 3600) | `EXTRACT(EPOCH ...) / 3600` : l'unite est un choix produit — un facteur 86400 rendrait des « heures » 24 fois trop grandes |
+| `avg_payment_time_days` est en **jours** (facteur 86400) | `EXTRACT(EPOCH ...) / 86400` : les deux unites different **volontairement** (approbation en heures, paiement en jours) — un test fige le couple |
+| `avg_approval_time_hours` exige `approved_at` **et** `submitted_at` non nuls | `whereNotNull` x2 : une note approuvee sans date de soumission ne doit pas fausser la moyenne |
+| `avg_payment_time_days` exige `paid_at` **et** `approved_at` non nuls | idem : le paiement est mesure depuis l'approbation, pas depuis la soumission |
+| `pending_approval` = statut `submitted`, `pending_payment` = statut `approved` | les deux compteurs reposent sur des **statuts en dur** : un nouveau statut dans l'enum disparaitrait des deux sans erreur |
+| `top_claimants` est trie par **montant total** decroissant, plafonne a **10** | `orderByDesc('total_amount')->limit(10)` : sans test, un tri par nombre de notes rendrait un classement different |
+| `top_claimants` joint le nom de l'employe, `'Unknown'` si supprime | `$item->employee ? trim(...) : 'Unknown'` : un employe supprime ne doit pas faire 500 |
+| `top_claimants` respecte la periode demandee | `.when($from, ...)` / `.when($to, ...)` : les bornes sont repetees sur chaque requete |
+| `from`/`to` facultatifs : absents -> tout l'historique | `if ($from)` / `when($from, ...)` : une periode vide ne doit pas rendre zero |
+| `from` = debut de journee, `to` = fin de journee | `startOfDay()` / `endOfDay()` : une note du dernier jour a 16:00 doit compter |
+| `from`/`to` mal formes -> **422** | `'nullable\|date'` : un format libre ferait un 500 dans `Carbon::parse` |
+| la route `/expense/stats` n'est pas avalee par `/expense-claims/{expenseClaim}` | `/stats` est declaree **avant** le groupe parametre : l'ordre est la seule protection |
+
+**Couverture executee** — `pint --test` PASS sur les 2 fichiers du lot apres correction de 2 defauts (`concat_space` dans le controleur, `no_whitespace_in_blank_line` dans les routes).
+
+## 2026-11-16 — Piste d'audit tenant consultable (#9333)
+
+**Ce qui est ajouté**
+
+- **API de consultation** — `GET /api/v1/audit-logs` (liste paginée, filtres combinables : acteur, action, entité, période) et `GET /api/v1/audit-logs/{id}` (détail). Contrôleur `AuditLogController`, policy `AuditLogPolicy` enregistrée dans `AuthServiceProvider`.
+- **Rétention** — la fenêtre de conservation est lue depuis `CompanySetting.retention_months` ; au-delà, les entrées ne sont plus servies.
+- **Écran web** — `/(dashboard)/audit-logs` avec filtres, pagination et détail ; préfixe protégé ajouté à `protected-prefixes.ts` et au proxy.
+- **i18n** — libellés d'autorisation ajoutés dans les 4 langues (fr/en/ar/tr).
+
+**Scénarios à vérifier**
+
+- **Cloisonnement tenant** — un utilisateur d'une entreprise ne voit jamais une entrée d'une autre entreprise, même en devinant l'identifiant (le détail répond 404, pas 403, pour rester indistinguable d'une absence).
+- **Autorisation** — un rôle sans droit de lecture d'audit reçoit 403 sur la liste comme sur le détail.
+- **Filtres combinables** — acteur + action + période se cumulent ; un filtre vide n'en restreint aucun.
+- **Pagination** — la réponse porte le total et les liens de page ; une page hors bornes rend une liste vide, jamais une erreur.
+- **Rétention** — une entrée plus ancienne que `retention_months` n'apparaît pas dans la liste et son détail répond 404.
+- **Écran** — les filtres se reflètent dans l'URL, le rechargement conserve la sélection, et le détail s'ouvre sans perdre la liste.
+- **Parité i18n** — les libellés existent dans les 4 langues.
+
+**Non couvert** — rendu visuel de l'écran non observé avec une base peuplée et une session authentifiée ; la rétention n'a pas été vérifiée sur une base tenant réelle (les tests utilisent la fixture de schéma).
+
+
 ## 2026-11-17 — BC-06 NOTIFICATION : purge des notifications anciennes (#9540, PR #9560)
 
 **Surface** : `DELETE /v1/notifications/purge-old` (`NotificationController::purgeOld`), declaree dans `routes/modules/rh.php`, documentee dans `api/openapi.yaml`. Aucune migration.
@@ -2839,3 +2983,34 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 **Couverture executee** — Jest `front/web` 287 suites / 2639 tests PASS (2 shards) ; `tsc --noEmit` PASS ; eslint PASS ; `check-public-surfaces-deploy-parity.sh` PASS (7 verticales) ; `check-canonical-domains.sh` PASS ; `check-web-design-tokens.sh` PASS ; `check-design-token-sync.sh` PASS ; parite i18n 4 locales PASS ; `php -l` PASS.
 
 **Non couvert** — aucun test PHPUnit execute (PHP >= 8.4 indisponible dans le sandbox) ; aucun rendu visuel capture (pas de serveur Next lance) ; parcours tenant -> publication -> vitrine non clique de bout en bout.
+## COULOIR 19 — Amortissements : immobilisations et dotations (#9377)
+
+**Pourquoi** — le module Comptabilité tenait des écritures mais aucune immobilisation : l'amortissement se saisissait à la main, sans état de l'actif ni plafonnement, donc sans moyen de prouver qu'une dotation ne dépasse jamais la valeur résiduelle. Ce couloir consigne les scénarios que la surface API des immobilisations doit tenir.
+
+**Ce qui est ajouté**
+
+- **`GET /v1/accounting/fixed-assets`** — liste les immobilisations du tenant.
+- **`POST /v1/accounting/fixed-assets`** — crée une immobilisation (`label`, comptes comptables, `acquisition_date`, `acquisition_cost`, `residual_value`, `useful_life_months`, `method`).
+- **`GET` / `PUT` / `DELETE /v1/accounting/fixed-assets/{id}`** — lecture, mise à jour, cession/suppression ; `whereNumber('id')` sur la route pour ne pas capturer les autres routes `accounting/*`.
+- **`GET /v1/accounting/fixed-assets/{id}/schedule`** — échéancier de dotations.
+- **Constantes de domaine** — `AccountingFixedAsset::STATUS_ACTIVE`, `STATUS_DISPOSED`, `STATUS_FULLY_DEPRECIATED`, `METHOD_LINEAR`, `METHOD_DECLINING`, alignées sur les valeurs admises par la migration (`active | disposed | fully_depreciated`, `linear | declining`). Elles manquaient : le service et le test y référaient des constantes inexistantes, ce que PHPStan level 8 refusait (`classConstant.notFound`).
+- **Garde RBAC** — `api.manager:principal,comptable,module:accounting`.
+
+**Scénarios à vérifier**
+
+- **Dotation linéaire** — une immobilisation de 12 000 sur 12 mois produit une dotation mensuelle de 1 000.
+- **Plafonnement par la valeur résiduelle** — la somme des dotations ne dépasse jamais `acquisition_cost - residual_value`.
+- **Statut `fully_depreciated`** — une immobilisation intégralement amortie ne génère plus de dotation et est marquée `fully_depreciated`.
+- **Statut `disposed`** — une immobilisation cédée ne génère plus aucune dotation après `disposal_date`, quel que soit l'échéancier demandé.
+- **Méthode `declining`** — l'échéancier dégressif reste monotone décroissant et s'arrête à la valeur résiduelle.
+- **`method` inconnue** — une méthode hors `linear`/`declining` est refusée (422), jamais écrite.
+- **`status` inconnu** — un statut hors `active`/`disposed`/`fully_depreciated` est refusé (422).
+- **Isolation tenant** — un acteur d'un autre tenant ne lit ni ne modifie l'immobilisation (404 indistinguable d'une absence).
+- **Garde RBAC** — un manager non habilité et un employé reçoivent 403 ; `principal`, `comptable` et le module `accounting` passent.
+- **Collision de route** — `GET /accounting/fixed-assets/12` atteint l'immobilisation 12 et non une autre route `accounting/*`.
+- **Parité i18n** — les libellés d'immobilisation existent dans les 4 langues (fr/en/ar/tr).
+
+**Couverture exécutée** — `php -l` PASS sur le modèle ; `pint --test` PASS ; `check-unrouted-controllers.sh` → 558 contrôleurs, 0 orphelin ; PHPStan level 8 sans erreur sur le modèle après ajout des constantes.
+
+**Non couvert** — aucun test Feature des immobilisations n'a été exécuté dans le sandbox (pas de `vendor/` ni de base peuplée) : les scénarios ci-dessus sont **à vérifier**, pas déclarés tenus. `DepreciationService` et `DepreciationTest` restent à valider par la CI.
+

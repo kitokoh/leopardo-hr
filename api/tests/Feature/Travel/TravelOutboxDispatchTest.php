@@ -311,6 +311,8 @@ final class TravelLedgerConsumer implements TravelOutboxConsumer
  */
 final class TravelFlakyConsumer implements TravelOutboxConsumer
 {
+    private int $calls = 0;
+
     public function __construct(private readonly string $eventType) {}
 
     public function supports(string $eventType): bool
@@ -320,7 +322,17 @@ final class TravelFlakyConsumer implements TravelOutboxConsumer
 
     public function handle(string $eventType, array $payload): void
     {
-        throw new TransientOutboxException('provider indisponible (test)');
+        // #9098 — ce consommateur levait a CHAQUE appel : le test
+        // « transient errors retry with backoff and succeed » ne pouvait donc
+        // jamais observer de succes, et son assertion finale ne mesurait rien
+        // de plus qu'une seconde tentative. Un double « transitoire » doit
+        // redevenir fiable une fois le backoff purge, sinon c'est une boucle
+        // d'echec que le test eprouve, pas un retry.
+        $this->calls++;
+
+        if ($this->calls === 1) {
+            throw new TransientOutboxException('provider indisponible (test)');
+        }
     }
 }
 

@@ -8,6 +8,8 @@ use App\Core\Auth\Domain\Contracts\InvitationActivationContract;
 use App\Core\Auth\Domain\Exceptions\RegistrationNotAvailableException;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\AuthService;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\TenantManager;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -42,6 +44,7 @@ final class InvitationActivationService implements InvitationActivationContract
     public function __construct(
         private readonly UserInvitationService $invitations,
         private readonly AuthService $auth,
+        private readonly TenantManager $tenantManager,
     ) {}
 
     /**
@@ -107,11 +110,33 @@ final class InvitationActivationService implements InvitationActivationContract
 
     /**
      * Garde du mode inscription : l'invitation doit exister, ne pas être
-     * consommée, ne pas être expirée et correspondre à l'e-mail soumis.
+     * consommée, ne pas être expirée, correspondre à l'e-mail soumis, ET viser
+     * un employé ACTIF.
      *
-     * Volontairement silencieuse sur la cause exacte (même exception pour les
-     * quatre cas) : `/auth/register` est public, distinguer « expirée » de
-     * « inconnue » donnerait un oracle sur les invitations en circulation.
+     * ## Décision produit du round 13 (#9096) — option B « refuser AVANT d'écrire »
+     *
+     * Avant ce correctif, `/auth/register` divergeait du mode lien sur un
+     * employé dont le statut avait changé après l'émission de l'invitation :
+     *
+     *  - employé **suspendu** → `accept()` ÉCRIVAIT (activation, invitation
+     *    consommée, mot de passe posé) puis `login()` levait 403
+     *    `EMPLOYEE_NOT_ACTIVE` : le client affichait un échec sur un compte
+     *    pourtant activé et un lien pourtant consommé — plus aucun réessai
+     *    possible, seul « mot de passe oublié » restait ;
+     *  - employé **archivé/parti** → 410 `INVITATION_REVOKED`, un code qui,
+     *    sur une route PUBLIQUE, distingue l'état exact de l'invitation et
+     *    permet d'énumérer les invitations en circulation.
+     *
+     * Le contrat public retenu est le 422 `REGISTRATION_NOT_AVAILABLE`,
+     * **indifférencié** : il ne révèle pas la cause (inconnue / expirée /
+     * consommée / statut de l'employé), et il est levé **avant toute
+     * écriture** — l'invitation reste ouverte et le lien reste réutilisable
+     * une fois l'employé réactivé.
+     *
+     * Le mode lien (`/onboarding/invitation/{token}/activate`) garde son
+     * contrat propre (410 explicite, 201 avec dégradation `token: null`) : ces
+     * deux surfaces ne portent pas le même public et n'ont pas à partager la
+     * même granularité d'erreur.
      */
     private function assertRegistrationInvitationIsUsable(string $plainToken, ?string $email): void
     {
@@ -127,6 +152,28 @@ final class InvitationActivationService implements InvitationActivationContract
             ->first();
 
         if ($invitation === null) {
+            throw new RegistrationNotAvailableException;
+        }
+
+        // Le statut de l'employé est vérifié ICI, avant l'écriture : c'est tout
+        // l'objet de l'option B. `accept()` porte déjà ce contrôle en mode lien
+        // (410 explicite) ; en mode inscription, on refuse plus tôt et sans
+        // distinguer la cause.
+        $company = Company::query()->find($invitation->company_id);
+
+        if (! $company instanceof Company) {
+            throw new RegistrationNotAvailableException;
+        }
+
+        $this->tenantManager->setTenant($company);
+
+        try {
+            $employee = Employee::query()->find($invitation->employee_id);
+        } finally {
+            $this->tenantManager->resetToPrevious();
+        }
+
+        if (! $employee instanceof Employee || $employee->status !== 'active') {
             throw new RegistrationNotAvailableException;
         }
     }

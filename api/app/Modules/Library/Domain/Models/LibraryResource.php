@@ -11,6 +11,7 @@ use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -150,6 +151,16 @@ class LibraryResource extends Model
     public function collection(): BelongsTo
     {
         return $this->belongsTo(LibraryCollection::class, 'collection_id');
+    }
+
+    /**
+     * Progression de lecture des employés sur cette ressource.
+     *
+     * @return HasMany<LibraryReadingProgress, $this>
+     */
+    public function readingProgress(): HasMany
+    {
+        return $this->hasMany(LibraryReadingProgress::class, 'resource_id');
     }
 
     /**

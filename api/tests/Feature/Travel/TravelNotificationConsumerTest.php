@@ -13,6 +13,7 @@ use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
 use App\Modules\TravelAgency\Domain\Exceptions\PermanentOutboxException;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCustomerContact;
+use App\Modules\TravelAgency\Domain\Models\TravelNotificationConsent;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelNotificationConsumer;
 use Illuminate\Support\Facades\Mail;
 use Tests\RefreshTenantDatabase;
@@ -93,6 +94,20 @@ class TravelNotificationConsumerTest extends TestCase
     public function test_email_sent_when_consent_given(): void
     {
         $contact = app(TenantManager::class)->withinTenant($this->company, fn (): TravelCustomerContact => TravelCustomerContact::factory()->withEmailConsent()->create());
+
+        // #9098 — la source de verite du consentement (TRAVEL-415) est le
+        // registre `travel_notification_consents`, par (contact, canal), et
+        // revocable ; le drapeau `email_consent_given` du contact ne suffit
+        // pas. Le consommateur lisait deja le registre : ce test constatait
+        // donc un `skipped / no_email_consent` legitime, pas une regression.
+        app(TenantManager::class)->withinTenant($this->company, fn (): TravelNotificationConsent => TravelNotificationConsent::query()->create([
+            'company_id' => $this->company->id,
+            'contact_identifier' => $contact->email,
+            'channel' => TravelNotificationConsent::CHANNEL_MAIL,
+            'source' => 'booking',
+            'granted_at' => now(),
+        ]));
+
         $booking = $this->makeBooking(['customer_contact_id' => $contact->id]);
 
         $this->consumer->handle('travel.booking.confirmed.v1', ['booking_reference' => $booking->reference]);

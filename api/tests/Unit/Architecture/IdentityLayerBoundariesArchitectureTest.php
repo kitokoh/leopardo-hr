@@ -95,6 +95,13 @@ final class IdentityLayerBoundariesArchitectureTest extends TestCase
         'App\Core\Auth\Domain\Models\User',
         'App\Core\Auth\Domain\Policies\Concerns\ChecksResourceScopedAccess',
         'App\Core\Auth\Infrastructure\Services\AuthService',
+        // #9096 (IAM-L6) — garde du DERNIER PRINCIPAL de tenant. Invariant
+        // d'identite, pas de module : il doit rester vrai quel que soit le
+        // chemin qui ecrit `manager_role`/`status` (PATCH /employees/{id},
+        // archive, RoleAssignmentController). Une seule source Core evite de
+        // dupliquer la regle dans chaque appelant ; `EmployeeService` (Modules)
+        // l'injecte comme il injecte deja `TenantCacheService`.
+        'App\Core\Auth\Infrastructure\Services\LastAdministratorGuard',
         'App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger',
         'App\Core\Auth\Infrastructure\Services\SensitiveDataEncryptor',
         'App\Core\Auth\Interfaces\Api\V1\Requests\UpdateProfileRequest',

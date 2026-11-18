@@ -2839,5 +2839,10 @@
              les payloads avec ces secrets de test. -->
         <env name="STRIPE_WEBHOOK_SECRET" value="whsec_test_stripe_0123456789"/>
         <env name="CHARGILY_WEBHOOK_SECRET" value="whsec_test_chargily_0123456789"/>
+        <!-- IAM-L6 (#9096) : la MFA plateforme est IMPOSEE en production. Le
+             harness la desactive par defaut pour ne pas reecrire les ~40
+             scenarios existants qui se connectent en super-admin sans second
+             facteur ; les tests dedies la reactivent et prouvent le refus. -->
+        <env name="PLATFORM_MFA_REQUIRED" value="false"/>
     </php>
 </phpunit>

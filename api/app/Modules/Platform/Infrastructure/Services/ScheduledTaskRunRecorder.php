@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\Platform\Infrastructure\Services;
 
 use App\Modules\Platform\Domain\Models\ScheduledTaskRun;
+use App\Support\SearchPathGuard;
 use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskStarting;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -122,12 +122,13 @@ class ScheduledTaskRunRecorder
                 return;
             }
 
-            DB::statement('SET search_path TO public');
-
-            ScheduledTaskRun::query()->updateOrCreate(
-                ['name' => $name],
-                $values,
-            );
+            // Issue #9115 : restauration garantie du search_path.
+            SearchPathGuard::run('public', static function () use ($name, $values): void {
+                ScheduledTaskRun::query()->updateOrCreate(
+                    ['name' => $name],
+                    $values,
+                );
+            });
         } catch (Throwable $e) {
             Log::warning('ScheduledTaskRunRecorder: failed to persist run', [
                 'task' => $name,

@@ -131,6 +131,12 @@ final class TenantDeletionService
         'vtc_marketplace_operators',
         'public_conversation_index',
         'public_activity_index',
+        // #7573 — `edge_nodes` porte `company_id` sans FK ni cascade. La garde
+        // d'exhaustivité la signalait : en mode `purge`, la suppression de la
+        // société laissait donc les nœuds Edge du tenant intacts — un appareil
+        // physique restait rattaché à une société supprimée, et pouvait encore
+        // pousser des synchronisations. C'est une donnée DU tenant : purgée.
+        'edge_nodes',
     ];
 
     /**
@@ -328,8 +334,10 @@ final class TenantDeletionService
      */
     public function history(string $companyId, int $limit = 20): array
     {
-        DB::statement('SET search_path TO public');
-
+        // Issue #9115 : plus de `SET search_path` ici — la table est deja
+        // qualifiee `public.tenant_deletion_audits`, donc le search_path de la
+        // session n'a aucune influence. Le poser sans le restaurer laissait la
+        // connexion sur `public` pour le reste du cycle.
         /** @var list<array<string, mixed>> $rows */
         $rows = DB::table('public.tenant_deletion_audits')
             ->where('company_id', $companyId)
@@ -375,8 +383,7 @@ final class TenantDeletionService
      */
     public function platformHistory(?string $companyId = null, ?string $slug = null, int $limit = 20): array
     {
-        DB::statement('SET search_path TO public');
-
+        // Issue #9115 : table qualifiee `public.` — aucun SET necessaire.
         $query = DB::table('public.tenant_deletion_audits')
             ->orderByDesc('created_at')
             ->orderByDesc('id')
@@ -649,8 +656,7 @@ final class TenantDeletionService
         ?string $failureReason,
         ?string $reason = null,
     ): int {
-        DB::statement('SET search_path TO public');
-
+        // Issue #9115 : table qualifiee `public.` — aucun SET necessaire.
         return (int) DB::table('public.tenant_deletion_audits')->insertGetId([
             'company_id' => $company->id,
             'company_name' => (string) ($inventory['company_name'] ?? $company->name),

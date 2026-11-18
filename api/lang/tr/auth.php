@@ -35,4 +35,6 @@ return [
     'public_phone_otp_expired' => 'Bu kodun süresi doldu. Yeni bir kod isteyin.',
     'public_phone_otp_too_many_attempts' => 'Çok fazla deneme. Yeni kod istemeden önce bekleyin.',
     'public_account_deletion_confirmation_required' => 'Hesabınızı silmek için onay kelimesini girin.',
+    'audit_access_principal_only' => 'Erişim yalnızca asıl yöneticiye açıktır',
+    'audit_actor_system' => 'Sistem',
 ];

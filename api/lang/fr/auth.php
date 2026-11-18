@@ -35,4 +35,6 @@ return [
     'public_phone_otp_expired' => 'Ce code a expiré. Demandez un nouveau code.',
     'public_phone_otp_too_many_attempts' => 'Trop de tentatives. Patientez avant de demander un nouveau code.',
     'public_account_deletion_confirmation_required' => 'Saisissez le mot de confirmation pour supprimer votre compte.',
+    'audit_access_principal_only' => 'Accès réservé au principal',
+    'audit_actor_system' => 'Système',
 ];

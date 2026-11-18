@@ -94,6 +94,7 @@ return [
     ],
 
     'errors' => [
+        'fixed_asset_has_depreciations' => 'Bu duran varlığın kaydedilmiş amortisman kayıtları var; silinemez. Bunun yerine elden çıkarma (durum "disposed") kullanın.',
         'gateway_checkout_failed' => 'Ödeme sağlayıcısı geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.',
         'fiscal_year_invalid' => 'Geçersiz mali yıl.',
         'payment_amount_positive' => 'Ödeme tutarı kesinlikle pozitif olmalıdır.',
@@ -160,4 +161,5 @@ return [
     'lettering_unbalanced' => 'Mutabakat dengeli olmalıdır: toplam borçlar toplam alacaklara eşit olmalıdır.',
     'lettering_invalid' => 'Geçersiz mutabakat: kayıtlar aynı hesabı hedeflemelidir.',
     'lettering_already_used' => 'Bir veya daha fazla kayıt başka bir kodla mutabık kılınmış.',
+    'depreciation_declining_unsupported' => 'Azalan amortisman yöntemi bu ülkede uygulanmıyor.',
 ];

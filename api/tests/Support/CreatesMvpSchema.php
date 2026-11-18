@@ -1352,10 +1352,17 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS public.commissions CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.partner_payout_requests CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.partners CASCADE');
+        // Les 4 tables Edge vivent désormais dans `shared_tenants` (voir plus
+        // haut) ; les DROP `public` restent pour nettoyer les bases de test
+        // construites avant ce correctif.
         DB::statement('DROP TABLE IF EXISTS public.edge_licenses CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.sync_queue CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.sync_logs CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.edge_nodes CASCADE');
+        DB::statement('DROP TABLE IF EXISTS shared_tenants.edge_licenses CASCADE');
+        DB::statement('DROP TABLE IF EXISTS shared_tenants.sync_queue CASCADE');
+        DB::statement('DROP TABLE IF EXISTS shared_tenants.sync_logs CASCADE');
+        DB::statement('DROP TABLE IF EXISTS shared_tenants.edge_nodes CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.companies CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.user_employee_links CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.feature_flag_audits CASCADE');
@@ -2504,6 +2511,30 @@ trait CreatesMvpSchema
 
                 $table->unique(['company_id', 'name'], 'role_assignments_company_name_unique');
                 $table->index(['company_id', 'revoked_at'], 'role_assignments_company_active_idx');
+            });
+        }
+
+        // Issue #9095 (IAM-L5) — ATTRIBUTION d'un rôle personnalisé à un
+        // collaborateur. Miroir de la migration 2026_11_17_000600_9095 : ce qui
+        // rend `holder_count` réel (écran #9518).
+        if (! Schema::hasTable($this->moduleTable('employee_role_assignments'))) {
+            Schema::create($this->moduleTable('employee_role_assignments'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id');
+                $table->unsignedBigInteger('role_assignment_id');
+                $table->timestamp('revoked_at')->nullable();
+                $table->unsignedInteger('assigned_by_employee_id')->nullable();
+                $table->timestamps();
+
+                $table->index(
+                    ['company_id', 'employee_id', 'revoked_at'],
+                    'employee_role_assignments_employee_active_idx'
+                );
+                $table->index(
+                    ['role_assignment_id', 'revoked_at'],
+                    'employee_role_assignments_role_active_idx'
+                );
             });
         }
 
@@ -3963,8 +3994,14 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable('edge_nodes')) {
-            Schema::create('edge_nodes', function (Blueprint $table): void {
+        // #7573 / PlatformAdminDashboardController : le pilotage plateforme lit
+        // `shared_tenants.edge_nodes` en dur (TENANT_SCHEMA). La fixture créait
+        // ces 4 tables dans `public` : le contrôleur échouait en 42P01
+        // (`relation "shared_tenants.edge_nodes" does not exist`) et rendait 503.
+        // Elles sont désormais créées dans le schéma module, comme les autres
+        // tables tenant de cette fixture.
+        if (! Schema::hasTable($this->moduleTable('edge_nodes'))) {
+            Schema::create($this->moduleTable('edge_nodes'), function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('company_id')->index();
                 $table->string('name');
@@ -3985,8 +4022,8 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable('sync_logs')) {
-            Schema::create('sync_logs', function (Blueprint $table): void {
+        if (! Schema::hasTable($this->moduleTable('sync_logs'))) {
+            Schema::create($this->moduleTable('sync_logs'), function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('edge_node_id')->index();
                 $table->string('direction');
@@ -4002,13 +4039,13 @@ trait CreatesMvpSchema
                 $table->timestamps();
 
                 $table->foreign('edge_node_id')
-                    ->references('id')->on('edge_nodes')
+                    ->references('id')->on($this->moduleTable('edge_nodes'))
                     ->cascadeOnDelete();
             });
         }
 
-        if (! Schema::hasTable('sync_queue')) {
-            Schema::create('sync_queue', function (Blueprint $table): void {
+        if (! Schema::hasTable($this->moduleTable('sync_queue'))) {
+            Schema::create($this->moduleTable('sync_queue'), function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('edge_node_id')->index();
                 $table->string('entity_type');
@@ -4036,13 +4073,13 @@ trait CreatesMvpSchema
                 $table->unique(['edge_node_id', 'dedup_key'], 'sync_queue_dedup_unique');
                 $table->index(['edge_node_id', 'idempotency_key'], 'sync_queue_idempotency_index');
                 $table->foreign('edge_node_id')
-                    ->references('id')->on('edge_nodes')
+                    ->references('id')->on($this->moduleTable('edge_nodes'))
                     ->cascadeOnDelete();
             });
         }
 
-        if (! Schema::hasTable('edge_licenses')) {
-            Schema::create('edge_licenses', function (Blueprint $table): void {
+        if (! Schema::hasTable($this->moduleTable('edge_licenses'))) {
+            Schema::create($this->moduleTable('edge_licenses'), function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('company_id')->index();
                 $table->uuid('edge_node_id')->unique();
@@ -4057,7 +4094,7 @@ trait CreatesMvpSchema
                 $table->timestamps();
 
                 $table->foreign('edge_node_id')
-                    ->references('id')->on('edge_nodes')
+                    ->references('id')->on($this->moduleTable('edge_nodes'))
                     ->cascadeOnDelete();
             });
         }
@@ -5364,6 +5401,36 @@ trait CreatesMvpSchema
 
                 $table->unique(['fixed_asset_id', 'period'], 'accounting_depreciations_asset_period_unique');
                 $table->index(['company_id', 'period']);
+            });
+        }
+
+        // BC-41 (#9578) — enseigne d'un tenant, multi-instances.
+        // La garde #5443 exige toute migration tenant recente ici : sans cette
+        // table, les tests qui passent par CreatesMvpSchema echouent en
+        // `relation "brands" does not exist` (42P01). Schema identique a
+        // 2026_11_17_000100_9578_create_brands_table (index partiels et CHECK
+        // exerces par la migration reelle, pas reproduits ici).
+        if (! Schema::hasTable($this->moduleTable('brands'))) {
+            Schema::create($this->moduleTable('brands'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id');
+                $table->string('slug', 160);
+                $table->string('name', 120);
+                $table->string('vertical', 40)->default('generic');
+                $table->string('status', 20)->default('draft');
+                $table->timestampTz('published_at')->nullable();
+                $table->boolean('is_default')->default(false);
+                $table->jsonb('palette')->nullable();
+                $table->jsonb('identity')->nullable();
+                $table->jsonb('surface')->nullable();
+                $table->string('host', 190)->nullable();
+                $table->timestampTz('suspended_at')->nullable();
+                $table->string('suspension_reason', 40)->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'slug'], 'brands_company_slug_unique');
+                $table->index('company_id', 'brands_company_index');
+                $table->index(['status', 'vertical'], 'brands_status_vertical_index');
             });
         }
 

@@ -95,6 +95,7 @@ return [
 
     // Erreurs métier (issue #5227)
     'errors' => [
+        'fixed_asset_has_depreciations' => 'Cette immobilisation a des dotations comptabilisées : elle ne peut pas être supprimée. Utilisez la sortie (statut « cédée »).',
         'gateway_checkout_failed' => 'La passerelle de paiement est temporairement indisponible. Réessayez plus tard.',
         'fiscal_year_invalid' => 'Exercice comptable invalide.',
         'payment_amount_positive' => 'Le montant du paiement doit être strictement positif.',
@@ -161,4 +162,5 @@ return [
     'lettering_unbalanced' => 'Le lettrage doit être équilibré : la somme des débits doit égaler la somme des crédits.',
     'lettering_invalid' => 'Lettrage invalide : les écritures doivent porter sur le même compte.',
     'lettering_already_used' => 'Une ou plusieurs écritures sont déjà lettrées avec une autre lettre.',
+    'depreciation_declining_unsupported' => 'Méthode dégressif non implémentée pour ce pays.',
 ];

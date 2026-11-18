@@ -85,11 +85,15 @@ class TravelEngagementApiTest extends TestCase
         $this->postJson("/api/v1/travel/community/articles/{$articleId}/rate", ['stars' => 4])->assertOk();
         $this->postJson("/api/v1/travel/community/articles/{$articleId}/rate", ['stars' => 5])->assertOk();
 
-        // Une seule note (mise à jour), moyenne = 5.
+        // Une seule note (mise à jour), moyenne = 5.0.
+        // #9098 — le contrat annonce un DECIMAL : le serveur encode les
+        // agregats avec `JSON_PRESERVE_ZERO_FRACTION` (#9544), donc `5.0` et
+        // non `5`. Attendre l'entier ferait passer le test sur une reponse
+        // qui casse les clients types (Dart `.as double`, TypeScript strict).
         $this->getJson("/api/v1/travel/community/articles/{$articleId}/engagement")
             ->assertOk()
             ->assertJsonPath('data.ratings_count', 1)
-            ->assertJsonPath('data.rating_avg', 5);
+            ->assertJsonPath('data.rating_avg', 5.0);
     }
 
     public function test_share_is_traced(): void

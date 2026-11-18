@@ -165,7 +165,22 @@ class PlatformAuthController extends Controller
 
         /** @var string|null $deviceName */
         $deviceName = $validated['device_name'] ?? null;
-        $token = $superAdmin->createToken($deviceName ?? 'platform-api')->plainTextToken;
+
+        // IAM-L6 (#9096) — la MFA est IMPOSÉE aux comptes de plateforme.
+        //
+        // Un compte SANS second facteur n'obtient PAS un jeton plein (qui
+        // ouvrirait une session omnisciente avec un seul mot de passe) : il
+        // reçoit un jeton RESTREINT à l'enrôlement, que
+        // `EnsurePlatformMfaEnrolled` n'autorise que sur les routes
+        // d'enrôlement. Le compte AVEC un second facteur a déjà vérifié son
+        // code plus haut et garde le jeton plein.
+        $mfaRequired = (bool) config('platform.mfa_required', true);
+        $mfaEnrolled = is_string($superAdmin->two_fa_secret) && $superAdmin->two_fa_secret !== '';
+        $enrollmentPending = $mfaRequired && ! $mfaEnrolled;
+
+        $token = $enrollmentPending
+            ? $superAdmin->createToken($deviceName ?? 'platform-api-enrollment', ['platform:mfa-enrollment'])->plainTextToken
+            : $superAdmin->createToken($deviceName ?? 'platform-api')->plainTextToken;
 
         return new JsonResponse([
             'data' => [
@@ -173,6 +188,9 @@ class PlatformAuthController extends Controller
                 'name' => $superAdmin->name,
                 'email' => $superAdmin->email,
                 'role' => 'super_admin',
+                // IAM-L6 (#9096) — le client lit ce drapeau pour router vers
+                // l'écran d'enrôlement MFA au lieu du tableau de bord.
+                'mfa_enrollment_required' => $enrollmentPending,
                 // #7553 — délégation interne : le SPA admin filtre ses écrans
                 // sur `permissions`. `role` reste exposé tel quel pour ne pas
                 // casser la garde existante du dashboard (`role !== 'super_admin'`).
@@ -393,10 +411,19 @@ class PlatformAuthController extends Controller
             ], 401);
         }
 
+        // IAM-L6 (#9096) — la MFA étant IMPOSÉE, la désactiver est une
+        // opération de RÉCUPÉRATION : elle doit repasser par le mot de passe
+        // (déjà vérifié ci-dessus) et ne jamais laisser un jeton plein en vie
+        // sur un compte désormais sans second facteur. On révoque les jetons
+        // pleins ; la session courante repart en mode enrôlement.
         $superAdmin->two_fa_secret = null;
         $superAdmin->save();
+        $superAdmin->tokens()->delete();
 
-        return new JsonResponse(['status' => 'ok']);
+        return new JsonResponse([
+            'status' => 'ok',
+            'mfa_enrollment_required' => (bool) config('platform.mfa_required', true),
+        ]);
     }
 
     private function pendingTwoFaSecretCacheKey(SuperAdmin $superAdmin): string
