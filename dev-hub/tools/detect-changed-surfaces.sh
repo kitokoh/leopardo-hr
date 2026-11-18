@@ -66,6 +66,7 @@ SURFACES=(
   $'trade\t/entreprises'
   $'travel\t/billets'
   $'pharmacy\t/pharmacies'
+  $'vtc\t/operateurs'
 )
 
 if [[ "${FROM_STDIN}" -eq 1 ]]; then

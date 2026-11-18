@@ -42,6 +42,8 @@ const PROTECTED_PREFIXES = [
   '/health',
   // BC-32 HOSPITALITY (#7943) — verticale HospitalityManager (zone dashboard).
   '/hospitality',
+  // BC-33 PHARMACY (#9621) — visibilité publique de lofficine (zone dashboard).
+  '/pharmacy',
   '/fuel',
   // #8447 — « Mon Logiciel » (hub des apps du tenant, zone dashboard).
   '/mon-logiciel',

@@ -64,6 +64,11 @@ export const TENANT_INVITATIONS: Readonly<Record<SurfaceVertical, TenantInvitati
   trade: { pack: 'trade', sector: 'commerce' },
   travel: { pack: 'agence-de-voyage', sector: 'travel' },
   pharmacy: { pack: 'pharmacy', sector: 'pharmacy' },
+  // #9622 — l'exploitant VTC est un prestataire de mobilité : `mobility` est
+  // un secteur dédié (allowlist serveur `SetupInterviewPlanner::QUESTIONS`),
+  // et il active la verticale `vtc` via `SECTOR_SOLUTIONS`. Le pack `vtc`
+  // provisionne le même code : les deux chemins mènent au bon espace.
+  vtc: { pack: 'vtc', sector: 'mobility' },
 };
 
 /** Chemin de l'espace professionnel existant — jamais dupliqué, jamais déplacé. */

@@ -10849,5 +10849,38 @@
   "teamRoleDept": "مدير القسم",
   "teamRoleComptable": "مدير المحاسبة",
   "teamRoleSuperviseur": "مدير الإشراف",
-  "teamRoleMarketing": "مدير التسويق"
+  "teamRoleMarketing": "مدير التسويق",
+  "pharmacy": {
+    "publication": {
+      "title": "الظهور العام لصيدليتك",
+      "subtitle": "انشر صيدليتك في دليل الصيدليات العام",
+      "loading": "جارٍ التحميل…",
+      "loadError": "تعذّر تحميل الملف العام للصيدلية.",
+      "saveError": "تعذّر حفظ الملف العام.",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ…",
+      "saved": "تم حفظ الملف العام.",
+      "profileTitle": "الملف العام",
+      "enabled": "ظاهر في الدليل العام",
+      "enabledHint": "تظهر صيدليتك على /pharmacies وصفحتها متاحة للجمهور.",
+      "slug": "العنوان العام",
+      "slugHint": "مثال: pharmacie-du-centre",
+      "publicUrl": "الرابط العام:",
+      "name": "اسم الصيدلية المعروض",
+      "nameHint": "الاسم الذي سيراه الزوار.",
+      "city": "المدينة",
+      "phone": "الهاتف",
+      "description": "نبذة",
+      "descriptionHint": "بضعة أسطر عن صيدليتك وساعات العمل والخدمات.",
+      "onDuty": "في المناوبة",
+      "onDutyHint": "يعرض شارة «في المناوبة» على صفحتك العامة.",
+      "services": "الخدمات المقدمة",
+      "servicesHint": "افصل بفواصل (مثال: تطعيم، تقويم عظام).",
+      "requiredForPublication": "املأ العنوان العام والاسم المعروض قبل تفعيل الظهور.",
+      "notPublished": "صيدليتك غير ظاهرة للجمهور بعد.",
+      "publishedAt": "ظاهرة على هذا العنوان:",
+      "viewPublicPage": "عرض صفحتي العامة",
+      "solutionInactive": "حل PharmaManager غير مفعّل في مساحتك."
+    }
+  }
 }

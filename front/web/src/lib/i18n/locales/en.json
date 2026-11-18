@@ -9016,5 +9016,38 @@
   "stockMobileLocation": "Location",
   "stockMobileAllLocations": "All locations",
   "stockMobileCostSourceAverage": "Average cost",
-  "stockMobileCostSourceCatalog": "Catalog cost"
+  "stockMobileCostSourceCatalog": "Catalog cost",
+  "pharmacy": {
+    "publication": {
+      "title": "Public visibility of your pharmacy",
+      "subtitle": "Publish your pharmacy in the public pharmacy directory",
+      "loading": "Loading…",
+      "loadError": "Could not load the public pharmacy profile.",
+      "saveError": "Could not save the public profile.",
+      "save": "Save",
+      "saving": "Saving…",
+      "saved": "Public profile saved.",
+      "profileTitle": "Public profile",
+      "enabled": "Visible in the public directory",
+      "enabledHint": "Your pharmacy appears on /pharmacies and its page is open to the public.",
+      "slug": "Public address",
+      "slugHint": "e.g. central-pharmacy",
+      "publicUrl": "Public URL:",
+      "name": "Displayed pharmacy name",
+      "nameHint": "The name visitors will see.",
+      "city": "City",
+      "phone": "Phone",
+      "description": "About",
+      "descriptionHint": "A few lines about your pharmacy, opening hours and services.",
+      "onDuty": "On duty",
+      "onDutyHint": "Shows an “on duty” badge on your public page.",
+      "services": "Services offered",
+      "servicesHint": "Comma separated (e.g. vaccination, orthopaedics).",
+      "requiredForPublication": "Fill in the public address and displayed name before enabling visibility.",
+      "notPublished": "Your pharmacy is not visible to the public yet.",
+      "publishedAt": "Visible at this address:",
+      "viewPublicPage": "View my public page",
+      "solutionInactive": "The PharmaManager solution is not active on your workspace."
+    }
+  }
 }

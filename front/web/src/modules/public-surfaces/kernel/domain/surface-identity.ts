@@ -33,6 +33,13 @@ export const SURFACE_VERTICALS = [
   'trade',
   'travel',
   'pharmacy',
+  // #9622 — verticale Mobilité (VTC / taxi). `VtcDiscoverableProvider` sert
+  // `vtc_operator` depuis P1-02 (#8773), `POST /public/vtc/marketplace/rides`
+  // accepte les courses invitées — mais aucune vitrine ne portait la verticale :
+  // son annuaire `/operateurs` rendait encore le gabarit `buildDirectoryPage`.
+  // Une verticale découvrable sans vitrine n'a ni identité ni composition
+  // propres, et son parcours grand public s'arrête à une liste sommaire.
+  'vtc',
 ] as const;
 
 export type SurfaceVertical = (typeof SURFACE_VERTICALS)[number];

@@ -79,6 +79,9 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/trade-os',
   // BC-32 HOSPITALITY (#7943) — verticale HospitalityManager (données tenant).
   '/hospitality',
+  // BC-33 PHARMACY (#9621) — visibilité publique de l'officine : coordonnées et
+  // activation de l'annuaire public (données de configuration du tenant).
+  '/pharmacy',
   '/fuel',
   // #8447 — « Mon Logiciel » (hub des apps du tenant) : zone dashboard.
   '/mon-logiciel',
@@ -267,6 +270,7 @@ export const config = {
     '/assistant/:path*', // BOS-035 (#8224) assistant Leo IA — gate session
     '/vtc/:path*', // BC-35 VTC (#8349, VTC-07/#8363) console dispatch — gate session
     '/trade-os/:path*', // BC-36 TRADE (TRADE-009/#8484) espace International Trade OS — gate session
+    '/pharmacy/:path*', // BC-33 PHARMACY (#9621) visibilité publique de l'officine — gate session
     '/chat/:path*', // BOS-CHAT (#8751) messagerie horizontale — gate session
     '/demandes-publiques/:path*', // BOS-CHAT (#8760) boîte de réception publique — gate session
     '/library-admin/:path*', // BC-40 LIBRARY (#9224) back-office bibliothèque — gate session

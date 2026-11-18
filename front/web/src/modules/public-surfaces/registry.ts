@@ -13,6 +13,7 @@ import { RESTAURANT_SURFACE } from './restaurants';
 import { RETAIL_SURFACE } from './retail';
 import { TRADE_SURFACE } from './trade';
 import { TRAVEL_SURFACE } from './travel';
+import { MOBILITY_SURFACE } from './vtc';
 
 export const surfaceRegistry = createSurfaceRegistry([
   RESTAURANT_SURFACE,
@@ -21,4 +22,5 @@ export const surfaceRegistry = createSurfaceRegistry([
   TRADE_SURFACE,
   TRAVEL_SURFACE,
   PHARMACY_SURFACE,
+  MOBILITY_SURFACE,
 ]);

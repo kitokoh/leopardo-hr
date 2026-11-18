@@ -34,3 +34,4 @@ export * from './hospitality';
 export * from './trade';
 export * from './travel';
 export * from './pharmacy';
+export * from './vtc';

@@ -156,7 +156,7 @@ describe('domaine canonique', () => {
 });
 
 describe('vocabulaire', () => {
-  it('couvre les six verticales du périmètre', () => {
+  it('couvre les sept verticales du périmètre', () => {
     expect([...SURFACE_VERTICALS]).toEqual([
       'restaurant',
       'retail',
@@ -164,6 +164,7 @@ describe('vocabulaire', () => {
       'trade',
       'travel',
       'pharmacy',
+      'vtc',
     ]);
   });
 });
