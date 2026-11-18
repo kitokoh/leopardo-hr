@@ -5404,6 +5404,36 @@ trait CreatesMvpSchema
             });
         }
 
+        // BC-41 (#9578) — enseigne d'un tenant, multi-instances.
+        // La garde #5443 exige toute migration tenant recente ici : sans cette
+        // table, les tests qui passent par CreatesMvpSchema echouent en
+        // `relation "brands" does not exist` (42P01). Schema identique a
+        // 2026_11_17_000100_9578_create_brands_table (index partiels et CHECK
+        // exerces par la migration reelle, pas reproduits ici).
+        if (! Schema::hasTable($this->moduleTable('brands'))) {
+            Schema::create($this->moduleTable('brands'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id');
+                $table->string('slug', 160);
+                $table->string('name', 120);
+                $table->string('vertical', 40)->default('generic');
+                $table->string('status', 20)->default('draft');
+                $table->timestampTz('published_at')->nullable();
+                $table->boolean('is_default')->default(false);
+                $table->jsonb('palette')->nullable();
+                $table->jsonb('identity')->nullable();
+                $table->jsonb('surface')->nullable();
+                $table->string('host', 190)->nullable();
+                $table->timestampTz('suspended_at')->nullable();
+                $table->string('suspension_reason', 40)->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'slug'], 'brands_company_slug_unique');
+                $table->index('company_id', 'brands_company_index');
+                $table->index(['status', 'vertical'], 'brands_status_vertical_index');
+            });
+        }
+
     }
 
     private function createVerticalParityTables(): void
