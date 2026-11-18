@@ -10849,5 +10849,38 @@
   "teamRoleDept": "Departman yoneticisi",
   "teamRoleComptable": "Muhasebe yoneticisi",
   "teamRoleSuperviseur": "Denetim yoneticisi",
-  "teamRoleMarketing": "Pazarlama yoneticisi"
+  "teamRoleMarketing": "Pazarlama yoneticisi",
+  "pharmacy": {
+    "publication": {
+      "title": "Eczanenizin herkese açık görünürlüğü",
+      "subtitle": "Eczanenizi herkese açık eczane dizininde yayınlayın",
+      "loading": "Yükleniyor…",
+      "loadError": "Herkese açık eczane profili yüklenemedi.",
+      "saveError": "Herkese açık profil kaydedilemedi.",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor…",
+      "saved": "Herkese açık profil kaydedildi.",
+      "profileTitle": "Herkese açık profil",
+      "enabled": "Herkese açık dizinde görünür",
+      "enabledHint": "Eczaneniz /pharmacies adresinde görünür ve sayfası herkese açıktır.",
+      "slug": "Herkese açık adres",
+      "slugHint": "örn. merkez-eczanesi",
+      "publicUrl": "Herkese açık URL:",
+      "name": "Görünen eczane adı",
+      "nameHint": "Ziyaretçilerin göreceği ad.",
+      "city": "Şehir",
+      "phone": "Telefon",
+      "description": "Tanıtım",
+      "descriptionHint": "Eczaneniz, çalışma saatleriniz ve hizmetleriniz hakkında birkaç satır.",
+      "onDuty": "Nöbetçi",
+      "onDutyHint": "Herkese açık sayfanızda “nöbetçi” rozeti gösterir.",
+      "services": "Sunulan hizmetler",
+      "servicesHint": "Virgülle ayırın (örn. aşı, ortopedi).",
+      "requiredForPublication": "Görünürlüğü açmadan önce herkese açık adresi ve görünen adı doldurun.",
+      "notPublished": "Eczaneniz henüz herkese açık değil.",
+      "publishedAt": "Bu adreste görünür:",
+      "viewPublicPage": "Herkese açık sayfamı gör",
+      "solutionInactive": "PharmaManager çözümü çalışma alanınızda etkin değil."
+    }
+  }
 }

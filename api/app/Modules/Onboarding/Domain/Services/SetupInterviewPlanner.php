@@ -44,7 +44,7 @@ final class SetupInterviewPlanner
         // l'inscription avec `?sector=`, et un secteur absent de cette liste
         // serait silencieusement ignoré (l'entretien reposerait la question
         // et la verticale ne serait jamais activée).
-        'sector' => ['restaurant', 'fuel_station', 'education', 'commerce', 'services', 'travel', 'association', 'hospitality', 'pharmacy', 'other'],
+        'sector' => ['restaurant', 'fuel_station', 'education', 'commerce', 'services', 'travel', 'association', 'hospitality', 'pharmacy', 'mobility', 'other'],
         'premises' => ['single', 'multiple', 'mobile', 'none'],
         'priorities' => ['attendance', 'payroll', 'accounting', 'crm', 'cameras', 'showcase'],
         'scheduled_hours' => ['yes', 'no'],
@@ -85,6 +85,11 @@ final class SetupInterviewPlanner
         // active la verticale correspondante, comme `commerce` → `retail`.
         'hospitality' => 'hospitality',
         'pharmacy' => 'pharmacy',
+        // #9622 — secteur Mobilité (VTC / taxi) : active la verticale `vtc`,
+        // comme `hospitality` → `hospitality`. Sans cette entrée le secteur
+        // serait accepté mais n'activerait RIEN, et le professionnel
+        // arriverait dans un espace sans sa verticale.
+        'mobility' => 'vtc',
     ];
 
     /**

@@ -37,6 +37,18 @@ export interface VerticalCopy {
   readonly eyebrow: string;
   /** Libellé du lien d'exploration. */
   readonly exploreCta: string;
+  /**
+   * Libellé du CTA principal du bandeau, quand la verticale en porte un.
+   *
+   * Optionnel : six vitrines n'en ont pas besoin (leur action est l'annuaire
+   * lui-même). La mobilité en a un — « Demander un trajet » — et son libellé
+   * doit rester dans le catalogue, jamais en dur dans le composant.
+   */
+  readonly actionCta?: string;
+  /** Destination du CTA principal (chemin public existant, jamais inventé). */
+  readonly actionHref?: string;
+  /** Libellé de disponibilité propre à la verticale (badge de carte). */
+  readonly bookableLabel?: string;
 }
 
 /** Libellés transverses aux vitrines. */
@@ -167,6 +179,15 @@ const FR: SurfaceCopy = {
       eyebrow: 'Officines',
       exploreCta: 'Explorer toutes les adresses',
     },
+    vtc: {
+      displayName: 'Leopardo Mobilité',
+      tagline: 'Un chauffeur dans votre ville, maintenant — comparez les opérateurs et demandez votre course.',
+      eyebrow: 'Mobilité',
+      exploreCta: 'Tous les opérateurs',
+      actionCta: 'Demander un trajet',
+      actionHref: '/decouvrir',
+      bookableLabel: 'Course possible',
+    },
   },
 };
 
@@ -247,6 +268,15 @@ const EN: SurfaceCopy = {
       tagline: 'Find a pharmacy, its opening hours and its on-duty schedule.',
       eyebrow: 'Pharmacies',
       exploreCta: 'Browse all addresses',
+    },
+    vtc: {
+      displayName: 'Leopardo Mobility',
+      tagline: 'A driver in your city, right now — compare operators and request your ride.',
+      eyebrow: 'Mobility',
+      exploreCta: 'All operators',
+      actionCta: 'Request a ride',
+      actionHref: '/decouvrir',
+      bookableLabel: 'Ride available',
     },
   },
 };
@@ -329,6 +359,15 @@ const TR: SurfaceCopy = {
       eyebrow: 'Eczaneler',
       exploreCta: 'Tüm adresleri keşfet',
     },
+    vtc: {
+      displayName: 'Leopardo Ulaşım',
+      tagline: 'Şehrinizde şimdi bir sürücü — operatörleri karşılaştırın ve yolculuğunuzu isteyin.',
+      eyebrow: 'Ulaşım',
+      exploreCta: 'Tüm operatörler',
+      actionCta: 'Yolculuk iste',
+      actionHref: '/decouvrir',
+      bookableLabel: 'Yolculuk mümkün',
+    },
   },
 };
 
@@ -410,6 +449,15 @@ const AR: SurfaceCopy = {
       eyebrow: 'صيدليات',
       exploreCta: 'استكشف كل العناوين',
     },
+    vtc: {
+      displayName: 'تنقل ليوباردو',
+      tagline: 'سائق في مدينتك الآن — قارن المشغلين واطلب رحلتك.',
+      eyebrow: 'تنقل',
+      exploreCta: 'كل المشغلين',
+      actionCta: 'اطلب رحلة',
+      actionHref: '/decouvrir',
+      bookableLabel: 'الرحلة متاحة',
+    },
   },
 };
 
@@ -448,6 +496,7 @@ export const TENANT_INVITATION_COPY: Readonly<Record<SurfaceCopyLocale, TenantIn
       trade: 'Vous faites de l’import-export ?',
       travel: 'Vous vendez des billets ?',
       pharmacy: 'Vous êtes pharmacien ?',
+      vtc: 'Vous exploitez des VTC ?',
     },
   },
   en: {
@@ -462,6 +511,7 @@ export const TENANT_INVITATION_COPY: Readonly<Record<SurfaceCopyLocale, TenantIn
       trade: 'Do you import or export?',
       travel: 'Do you sell tickets?',
       pharmacy: 'Are you a pharmacist?',
+      vtc: 'Do you run a taxi or ride-hailing fleet?',
     },
   },
   tr: {
@@ -476,6 +526,7 @@ export const TENANT_INVITATION_COPY: Readonly<Record<SurfaceCopyLocale, TenantIn
       trade: 'İthalat veya ihracat mı yapıyorsunuz?',
       travel: 'Bilet mi satıyorsunuz?',
       pharmacy: 'Eczacı mısınız?',
+      vtc: 'Taksi veya VTC filonuz mu var?',
     },
   },
   ar: {
@@ -490,6 +541,7 @@ export const TENANT_INVITATION_COPY: Readonly<Record<SurfaceCopyLocale, TenantIn
       trade: 'هل تستورد أو تصدّر؟',
       travel: 'هل تبيع التذاكر؟',
       pharmacy: 'هل أنت صيدلي؟',
+      vtc: 'هل تدير أسطول سيارات أجرة أو نقل؟',
     },
   },
 };

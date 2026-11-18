@@ -79,6 +79,7 @@ on:
           - trade
           - travel
           - pharmacy
+          - vtc
         default: all
       environment:
         description: "Environnement cible"

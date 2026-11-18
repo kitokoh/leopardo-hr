@@ -58,6 +58,8 @@ REGISTRY=(
   $'entreprises.leopardo.app\ttarget'
   $'billets.leopardo.app\ttarget'
   $'pharmacies.leopardo.app\ttarget'
+  # #9622 — vitrine Mobilité (VTC / taxi), 7e surface grand public.
+  $'mobilite.leopardo.app\ttarget'
 )
 
 errors=0

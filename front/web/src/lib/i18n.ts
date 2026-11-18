@@ -144,6 +144,8 @@ export type CopyTree = {
       trade: string;
       /** BC-32 HOSPITALITY (HOSP-007/#7949) — verticale hôtels, résidences & locatif */
       hospitality: string;
+      /** BC-33 PHARMACY (#9621) — verticale officine (visibilité publique) */
+      pharmacy: string;
     };
     /** #7225 — « Entreprise » (bandeau horizontal transverse) */
     sectionEnterprise: string;
@@ -857,6 +859,7 @@ const copy: Record<AppLocale, CopyTree> = {
         vtc: 'VTC & taxi',
         trade: 'Commerce international',
         hospitality: 'Hospitality',
+        pharmacy: 'Pharmacie',
       },
       sectionEnterprise: 'Entreprise',
       sectionModules: 'Modules & plan',
@@ -1595,6 +1598,7 @@ const copy: Record<AppLocale, CopyTree> = {
         vtc: 'النقل الخاص والتاكسي',
         trade: 'التجارة الدولية',
         hospitality: 'الضيافة',
+        pharmacy: 'صيدلية',
       },
       sectionEnterprise: 'الشركة',
       sectionModules: 'الوحدات والخطة',
@@ -2329,6 +2333,7 @@ const copy: Record<AppLocale, CopyTree> = {
         vtc: 'VTC ve taksi',
         trade: 'Uluslararası ticaret',
         hospitality: 'Konaklama',
+        pharmacy: 'Eczane',
       },
       sectionEnterprise: 'Şirket',
       sectionModules: 'Modüller ve plan',
@@ -3063,6 +3068,7 @@ const copy: Record<AppLocale, CopyTree> = {
         vtc: 'Ride-hailing & taxi',
         trade: 'International trade',
         hospitality: 'Hospitality',
+        pharmacy: 'Pharmacy',
       },
       sectionEnterprise: 'Company',
       sectionModules: 'Modules & plan',

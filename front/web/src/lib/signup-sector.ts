@@ -29,6 +29,11 @@ export const SIGNUP_SECTORS = [
   // l'entretien reposerait la question du métier.
   'hospitality',
   'pharmacy',
+  // #9622 — secteur Mobilité (VTC / taxi). Sans cette valeur, le `?sector=`
+  // envoyé par la vitrine Mobilité serait rejeté ici (fail-closed) et
+  // l'entretien reposerait la question du métier au visiteur qui vient de le
+  // déclarer.
+  'mobility',
   'other',
 ] as const;
 

@@ -9016,5 +9016,38 @@
   "stockMobileLocation": "Emplacement",
   "stockMobileAllLocations": "Tous les emplacements",
   "stockMobileCostSourceAverage": "Coût moyen",
-  "stockMobileCostSourceCatalog": "Coût catalogue"
+  "stockMobileCostSourceCatalog": "Coût catalogue",
+  "pharmacy": {
+    "publication": {
+      "title": "Visibilité publique de l'officine",
+      "subtitle": "Publiez votre officine dans l'annuaire grand public des pharmacies",
+      "loading": "Chargement…",
+      "loadError": "Impossible de charger le profil public de l'officine.",
+      "saveError": "Erreur lors de l'enregistrement du profil public.",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…",
+      "saved": "Profil public enregistré.",
+      "profileTitle": "Profil public",
+      "enabled": "Visible dans l'annuaire public",
+      "enabledHint": "Votre officine apparaît sur /pharmacies et sa fiche est accessible au grand public.",
+      "slug": "Adresse publique",
+      "slugHint": "ex. pharmacie-du-centre",
+      "publicUrl": "URL publique :",
+      "name": "Nom affiché de l'officine",
+      "nameHint": "Le nom que verront les visiteurs.",
+      "city": "Ville",
+      "phone": "Téléphone",
+      "description": "Présentation",
+      "descriptionHint": "Quelques lignes sur votre officine, vos horaires, vos services.",
+      "onDuty": "Assure la garde",
+      "onDutyHint": "Affiche un badge « de garde » sur votre fiche publique.",
+      "services": "Services proposés",
+      "servicesHint": "Séparez par des virgules (ex. vaccination, orthopédie).",
+      "requiredForPublication": "Renseignez l'adresse publique et le nom affiché avant d'activer la visibilité.",
+      "notPublished": "Votre officine n'est pas encore visible du grand public.",
+      "publishedAt": "Visible à cette adresse :",
+      "viewPublicPage": "Voir ma fiche publique",
+      "solutionInactive": "La solution PharmaManager n'est pas active sur votre espace."
+    }
+  }
 }

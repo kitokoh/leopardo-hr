@@ -17,6 +17,7 @@ export const SURFACE_DOMAIN_ENV: Readonly<Record<SurfaceVertical, string>> = {
   trade: 'NEXT_PUBLIC_SURFACE_DOMAIN_TRADE',
   travel: 'NEXT_PUBLIC_SURFACE_DOMAIN_TRAVEL',
   pharmacy: 'NEXT_PUBLIC_SURFACE_DOMAIN_PHARMACY',
+  vtc: 'NEXT_PUBLIC_SURFACE_DOMAIN_VTC',
 };
 
 type EnvLike = Readonly<Record<string, string | undefined>>;

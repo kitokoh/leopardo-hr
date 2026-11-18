@@ -120,6 +120,7 @@ en ligne de chaque vitrine, selon la règle 4 ci-dessus.
 | `entreprises.leopardo.app` | target | B2B | `NEXT_PUBLIC_SURFACE_DOMAIN_TRADE` |
 | `billets.leopardo.app` | target | Billets | `NEXT_PUBLIC_SURFACE_DOMAIN_TRAVEL` |
 | `pharmacies.leopardo.app` | target | Pharmacie | `NEXT_PUBLIC_SURFACE_DOMAIN_PHARMACY` |
+| `mobilite.leopardo.app` | target | Mobilité (VTC / taxi) | `NEXT_PUBLIC_SURFACE_DOMAIN_VTC` |
 
 La surcharge est **nommée par verticale** : aucune variable globale ne peut faire
 pointer toutes les vitrines vers le même hôte par accident. Une surcharge

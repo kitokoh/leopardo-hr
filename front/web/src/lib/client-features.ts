@@ -82,7 +82,12 @@ export type ClientModuleKey =
   // BC-36 TRADE (TRADE-009/#8484) — verticale International Trade OS.
   | 'trade'
   // BC-32 HOSPITALITY (HOSP-007/#7949) — verticale hôtels, résidences & locatif.
-  | 'hospitality';
+  | 'hospitality'
+  // BC-33 PHARMACY (PHARMA-001/#7798) — verticale officine. Le module existait
+  // côté backend (produits, stock, ordonnances) mais n'avait AUCUNE entrée de
+  // navigation : un pharmacien qui activait la solution arrivait sur un espace
+  // sans porte d'entrée. #9621 ouvre la première : la visibilité publique.
+  | 'pharmacy';
 export type FeatureState = 'available' | 'trial' | 'locked';
 
 /**
@@ -663,6 +668,26 @@ export const CLIENT_MODULES: ClientModule[] = [
     scope: 'business',
     vertical: 'hospitality',
   },
+  // BC-33 PHARMACY (#9621) — première porte d'entrée de la verticale officine
+  // dans l'espace professionnel : la visibilité publique. Le backend exposait
+  // déjà `GET/PUT /pharmacy/public-profile` (#9617) et le provider public
+  // lisait `pharmacy_public_profiles.enabled`, mais AUCUN écran n'écrivait
+  // cette ligne : `enabled` restait `false` pour toujours et `/pharmacies`
+  // affichait « bientôt disponible » en permanence. Feature flag tenant
+  // `pharmacy` ; gate serveur fail-closed sur /api/v1/pharmacy/*.
+  {
+    key: 'pharmacy',
+    href: '/pharmacy/publication',
+    label: 'Pharmacie',
+    group: 'general',
+    icon: Store,
+    capabilityKeys: ['pharmacy', 'can_view_pharmacy'],
+    featureKeys: ['pharmacy'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'PharmaManager — visibilité publique de l’officine',
+    scope: 'business',
+    vertical: 'health',
+  },
   // BC-16 EDU — EduManager (EDU-011/012/013, #5827/#5828/#5829). Navigation
   // rôle-aware, portée par la feature flag `edumanager` (activation tenant
   // #5817). #7724 — c'est une VERTICALE métier (`vertical: 'education'`),
@@ -1001,6 +1026,12 @@ const MANAGER_MODULE_ROLES: Partial<Record<ClientModuleKey, 'any' | string[]>> =
   trade: 'any',
   // BC-32 HOSPITALITY — routes tenant derrière le seul flag `hospitality`.
   hospitality: 'any',
+  // BC-33 PHARMACY (#9621) — `PharmacyPublicProfilePolicy` exige `isManager()`
+  // (create/update) sans filtrer par `manager_role` : un manager `dept` est un
+  // manager, il publie donc son officine. Le flag tenant `pharmacy` reste la
+  // seconde barrière. Sans cette entrée, le refus par défaut (#7762) aurait
+  // caché la seule porte d'entrée de la verticale au pharmacien qui l'exploite.
+  pharmacy: 'any',
   // Campagnes de collecte : `api.manager:principal,rh` — l'édition est
   // réservée au responsable, et c'est bien cette liste qui fait foi.
   fundraising: ['principal', 'rh'],
