@@ -2789,6 +2789,27 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 **Couverture exécutée** — `pint --test` PASS sur les 2 fichiers du lot (contrôleur + routes) après correction de 2 défauts de style (`no_trailing_whitespace`, `unary_operator_spaces`, `braces_position`, `not_operator_with_successor_space`, `single_line_empty_body` sur le contrôleur ; `no_whitespace_in_blank_line` sur les routes).
 
 **Non couvert** — aucun test PHPUnit exécuté pour ce lot : la suite Feature dépasse la RAM du sandbox (2 Go, OOM signal 9). Les scénarios ci-dessus sont donc **à écrire**, pas encore écrits ; la CI `Tests - Leopardo` reste le seul verdict d'exécution.
+## 2026-11-17 — BC-05 FLEET : statistiques consolidees de flotte (#9542, PR #9561)
+
+**Surface** : `GET /v1/fleet/stats` (`FleetController::stats`), declaree dans `routes/modules/tracking.php` sous le groupe `fleet`, documentee dans `api/openapi.yaml`. Aucune migration.
+
+**Pourquoi ce sont des scenarios de test** : l'endpoint agrege **quatre** sources (vehicules, trajets, maintenances, alertes) en memoire et calcule **quatre** ratios. Les defauts typiques sont silencieux : un ratio sur un denominateur nul, un filtre de periode qui exclut le dernier jour, ou un agregat qui franchit la frontiere du tenant.
+
+| Scenario | Ce qui serait casse sans lui |
+|---|---|
+| un non-manager recoit **403** | `abort_unless($user->isManager(), 403)` est la seule garde : sans test, tout collaborateur lirait les couts de maintenance de l'entreprise |
+| les vehicules d'une **autre entreprise** ne sont jamais comptes | les **quatre** requetes portent `where('company_id', $user->company_id)` separement : oublier ce filtre sur une seule (ex. `VehicleAlert`) fuite des donnees sans erreur |
+| flotte vide -> tous les compteurs a 0, aucun `DivisionByZeroError` | `$totalKm / $totalVehicles` et `$totalMaintenanceCost / $totalKm` sont gardes par des ternaires : les deux gardes doivent etre prouvees, pas supposees |
+| `cost_per_km` vaut 0 quand `total_km = 0` (et non `null` ni une exception) | c'est le cas d'une flotte a l'arret : le dashboard doit afficher 0, pas planter |
+| `from`/`to` par defaut = mois courant, **bornes incluses** | `whereBetween('start_time', [$from.' 00:00:00', $to.' 23:59:59'])` : un trajet commencant le dernier jour a 23:30 doit compter ; `performed_at` est compare a des **dates nues**, donc un entretien du dernier jour a 10:00 doit aussi compter |
+| `from`/`to` mal formes -> **422** | `date_format:Y-m-d` est la seule validation ; un format libre ferait passer une date invalide a la concatenation `$from.' 00:00:00'` |
+| `vehicle_id` inexistant -> **422**, pas une flotte vide | `exists:vehicles,id` distingue « filtre invalide » de « aucun vehicule » |
+| `vehicle_id` restreint **les quatre** agregats, pas seulement les vehicules | le filtre est repete sur `VehicleTrip`, `VehicleMaintenance` et `VehicleAlert` : un oubli sur une requete rendrait des couts globaux sous un filtre par vehicule |
+| `avg_km_per_vehicle` et `avg_cost_per_vehicle` divisent par le **total** de vehicules, pas par les actifs | le choix est deliberé (une flotte immobilisee compte dans la moyenne) : un test le fige, sinon une refonte le changerait sans bruit |
+| les alertes actives sont comptees sur la periode demandee | la requete d'alertes ne porte pas de `whereBetween` : le comportement attendu (alertes **courantes**, independantes de la periode) doit etre fige explicitement |
+
+**Couverture executee** — `pint --test` PASS sur les 2 fichiers du lot apres correction d'un defaut `blank_line_before_statement` dans `FleetController.php`.
+
 
 ## 2026-11-17 — BC-06 NOTIFICATION : purge des notifications anciennes (#9540, PR #9560)
 

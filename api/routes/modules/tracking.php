@@ -64,4 +64,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/fleet/reports/fuel', [FleetController::class, 'fuelReport']);
     Route::get('/fleet/reports/mileage', [FleetController::class, 'mileageReport']);
     Route::get('/fleet/reports/maintenance-due', [FleetController::class, 'maintenanceDue']);
+    // #9542 : statistiques consolidées de flotte
+    Route::get('/fleet/stats', [FleetController::class, 'stats']);
 });
