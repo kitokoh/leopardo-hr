@@ -236,6 +236,11 @@ Ces valeurs vivent dans le `identity/` de chaque verticale et sont injectées en
 | Pharmacie | Fond | `#F7FBF8` | `PHARMACY_SURFACE.palette.surface` |
 | Pharmacie | Texte | `#0A1F16` | `PHARMACY_SURFACE.palette.onSurface` |
 | Pharmacie | Texte secondaire | `#5B7A6B` | `PHARMACY_SURFACE.palette.muted` |
+| Mobilité | Action principale | `#1F2937` | `MOBILITY_SURFACE.palette.primary` |
+| Mobilité | Accent | `#F59E0B` | `MOBILITY_SURFACE.palette.accent` |
+| Mobilité | Fond | `#FBFAF8` | `MOBILITY_SURFACE.palette.surface` |
+| Mobilité | Texte | `#111827` | `MOBILITY_SURFACE.palette.onSurface` |
+| Mobilité | Texte secondaire | `#6B7280` | `MOBILITY_SURFACE.palette.muted` |
 
 ### Règle d'usage
 
