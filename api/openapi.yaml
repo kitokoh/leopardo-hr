@@ -39640,6 +39640,68 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           description: Note introuvable (isolation tenant)
+  /expense/stats:
+    get:
+      operationId: api_get_expense_stats
+      tags:
+      - Expense
+      summary: Statistiques de notes de frais pour le dashboard Finance
+      description: |
+        Agrege les notes de frais sur une periode : volumes, montants par statut
+        et par categorie, delais de traitement. Isolation tenant automatique.
+      parameters:
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Statistiques de notes de frais
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      period:
+                        type: object
+                        properties:
+                          from:
+                            type: string
+                            nullable: true
+                          to:
+                            type: string
+                            nullable: true
+                      claims:
+                        type: object
+                        properties:
+                          total:
+                            type: integer
+                          by_status:
+                            type: object
+                      amounts:
+                        type: object
+                        properties:
+                          total:
+                            type: number
+                          currency:
+                            type: string
+                          by_status:
+                            type: object
+                          by_category:
+                            type: object
+                      processing:
+                        type: object
+        '401':
+          $ref: '#/components/responses/Error401'
   /expense-claims/{expenseClaim}/accounting-entries/regenerate:
     post:
       operationId: api_post_expense_claims_by_expenseClaim_accounting_entries_regenerate
