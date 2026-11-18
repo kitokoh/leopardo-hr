@@ -68,7 +68,7 @@ function backendDiscoveryTypes(): Set<string> {
 
       const source = readFileSync(full, 'utf8');
       // `public function type(): string { return 'restaurant'; }`
-      const match = source.match(/function\s+type\s*\(\s*\)\s*:\s*string\s*\{[^}]*return\s+'([a-z_]+)'/s);
+      const match = source.match(/function\s+type\s*\(\s*\)\s*:\s*string\s*\{[^}]*return\s+'([a-z_]+)'/);
       if (match) types.add(match[1]);
     }
   };
