@@ -217,6 +217,7 @@ use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Pharmacy\Domain\Models\PharmacyPrescriber;
 use App\Modules\Pharmacy\Domain\Models\PharmacyPrescription;
 use App\Modules\Pharmacy\Domain\Models\PharmacyProduct;
+use App\Modules\Pharmacy\Domain\Models\PharmacyPublicProfile;
 use App\Modules\Pharmacy\Domain\Models\PharmacyPurchaseOrder;
 use App\Modules\Pharmacy\Domain\Models\PharmacySale;
 use App\Modules\Pharmacy\Domain\Models\PharmacyStockMovement;
@@ -224,6 +225,7 @@ use App\Modules\Pharmacy\Domain\Models\PharmacySupplier;
 use App\Modules\Pharmacy\Domain\Policies\PharmacyPrescriberPolicy;
 use App\Modules\Pharmacy\Domain\Policies\PharmacyPrescriptionPolicy;
 use App\Modules\Pharmacy\Domain\Policies\PharmacyProductPolicy;
+use App\Modules\Pharmacy\Domain\Policies\PharmacyPublicProfilePolicy;
 use App\Modules\Pharmacy\Domain\Policies\PharmacyPurchaseOrderPolicy;
 use App\Modules\Pharmacy\Domain\Policies\PharmacySalePolicy;
 use App\Modules\Pharmacy\Domain\Policies\PharmacyStockPolicy;
@@ -305,6 +307,8 @@ use App\Modules\Retail\Domain\Policies\RetailProductPolicy;
 use App\Modules\Retail\Domain\Policies\RetailStockLevelPolicy;
 use App\Modules\Showcase\Domain\Models\CompanyShowcase;
 use App\Modules\Showcase\Domain\Policies\CompanyShowcasePolicy;
+use App\Modules\Trade\Domain\Models\TradeCompanyProfile;
+use App\Modules\Trade\Domain\Policies\TradeCompanyProfilePolicy;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCancellationPolicy;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
@@ -683,6 +687,18 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(PharmacySale::class, PharmacySalePolicy::class);
         Gate::policy(PharmacyPrescriber::class, PharmacyPrescriberPolicy::class);
         Gate::policy(PharmacyPrescription::class, PharmacyPrescriptionPolicy::class);
+        // #9616 — profil public d'officine : publier dans l'annuaire grand
+        // public est un acte de configuration de tenant, pas une opération
+        // de comptoir. Sans cette policy, l'autorisation reposerait sur le
+        // seul middleware `tenant` et une régression de scope deviendrait
+        // silencieuse.
+        Gate::policy(PharmacyPublicProfile::class, PharmacyPublicProfilePolicy::class);
+
+        // — Trade (BC-36) — issue #9617
+        // Le profil commercial porte l'opt-in de l'annuaire public B2B. Sans
+        // policy, l'autorisation reposerait sur le seul middleware `tenant` :
+        // n'importe quel employé du tenant pourrait publier l'entreprise.
+        Gate::policy(TradeCompanyProfile::class, TradeCompanyProfilePolicy::class);
 
         // — Paiements (BC-38) — issue #8711 (ecart P-1 de l'audit readiness).
         // Avant cette date, le BC-38 n'avait AUCUNE policy : l'autorisation

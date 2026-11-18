@@ -640,6 +640,263 @@ paths:
             `trade` inactive (404 uniforme, jamais 403)
         '429':
           $ref: '#/components/responses/Error429'
+  /v1/pharmacy/public-profile:
+    get:
+      operationId: api_get_pharmacy_public_profile
+      tags:
+      - Pharmacy
+      summary: Profil public d'officine du tenant courant (#9616)
+      description: >-
+        Lecture du profil public d'officine (BC-41 PHARMACY). Retourne `null`
+        tant que le pharmacien n'a rien configure.
+
+        Avant #9616, `pharmacy_public_profiles` existait et
+        `PharmacyDiscoverableProvider` la lisait, mais AUCUNE route ne
+        l'ecrivait : `enabled` restait a FAUX pour tout le monde, la vitrine
+        `/pharmacies` affichait « bientot disponible » en permanence, et le
+        parcours « le pharmacien publie -> le public trouve » etait casse au
+        milieu.
+
+        Lecture ouverte a tout membre du tenant (le comptoir doit pouvoir
+        verifier ce qui est publie), toujours bornee au `company_id` de
+        l'acteur.
+      responses:
+        '200':
+          description: >-
+            Profil courant, ou `null` si jamais configure. Champs : enabled,
+            public_slug, public_name, public_city, public_description,
+            public_phone, on_duty, services, version, public_url, updated_at.
+            `public_url` vaut `null` quand l'officine n'est pas publiee.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Solution `pharmacy` inactive (PHARMACY_SOLUTION_INACTIVE)
+        '429':
+          $ref: '#/components/responses/Error429'
+    put:
+      operationId: api_put_pharmacy_public_profile
+      tags:
+      - Pharmacy
+      summary: Creer ou mettre a jour le profil public d'officine (#9616)
+      description: >-
+        Create-or-update (une ligne par tenant, `company_id` UNIQUE). Opt-in
+        explicite et FAIL-CLOSED : activer sans `public_slug` ni `public_name`
+        renvoie 422 et n'ecrit AUCUNE ligne, plutot que d'enregistrer un profil
+        que `isPubliclyVisible()` refuserait ensuite de publier (le pharmacien
+        croirait avoir publie).
+
+        `public_slug` est unique par tenant et doit respecter
+        `^[a-z0-9][a-z0-9\-]*$` (3 a 80 caracteres). `version` est incrementee
+        a chaque ecriture (verrou optimiste).
+
+        Aucun champ reglemente n'est expose : ni stock, ni lot, ni ordonnance,
+        ni prix. La vitrine presente l'officine ; elle ne vend pas de
+        medicament.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+                public_slug:
+                  type: string
+                  pattern: '^[a-z0-9][a-z0-9\-]*$'
+                  minLength: 3
+                  maxLength: 80
+                public_name:
+                  type: string
+                  maxLength: 160
+                public_city:
+                  type: string
+                  maxLength: 120
+                public_description:
+                  type: string
+                  maxLength: 2000
+                public_phone:
+                  type: string
+                  maxLength: 40
+                on_duty:
+                  type: boolean
+                services:
+                  type: array
+                  maxItems: 20
+                  items:
+                    type: string
+                    maxLength: 60
+      responses:
+        '200':
+          description: Profil enregistre (meme forme que le GET)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: >-
+            Solution `pharmacy` inactive, ou acteur sans role manager
+            (PharmacyPublicProfilePolicy, deny-by-default)
+        '422':
+          description: >-
+            Validation : slug malforme, activation sans slug ou sans nom, slug
+            deja utilise par une autre officine
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/profile:
+    get:
+      operationId: api_get_trade_company_profile
+      tags:
+      - Trade
+      summary: Profil commercial du tenant courant (#9617)
+      description: >-
+        Lecture du profil commercial (BC-36 TRADE). Retourne `null` tant que
+        l'entreprise n'a pas complete son profil.
+
+        Avant #9617, `trade_company_profiles` portait `is_public` depuis #8802
+        et `TradeDiscoverableProvider` le lisait, mais `routes/modules/trade.php`
+        n'exposait AUCUNE route de profil : `is_public` restait a FAUX et aucun
+        moyen ne permettait de le passer a VRAI. `/entreprises` ne pouvait donc
+        jamais rien afficher.
+      responses:
+        '200':
+          description: >-
+            Profil courant, ou `null`. Champs : import_enabled, export_enabled,
+            domestic_scope, hq_country, markets_served, product_categories,
+            default_currency, default_incoterm, notes,
+            onboarding_completed_at, is_public, public_slug, public_name,
+            public_description, public_city, public_published_at, public_url.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive (FEATURE_NOT_ENABLED)
+        '429':
+          $ref: '#/components/responses/Error429'
+    put:
+      operationId: api_put_trade_company_profile
+      tags:
+      - Trade
+      summary: Creer ou mettre a jour le profil commercial (#9617)
+      description: >-
+        Create-or-update du profil commercial. Au moins une direction
+        (`import_enabled`, `export_enabled`, `domestic_scope`) est requise : un
+        profil sans direction n'est pas une entreprise commerciale et
+        n'apparaitrait dans aucun filtre de la vitrine.
+
+        `default_incoterm` est une liste fermee (Incoterms 2020) : une valeur
+        libre produirait des documents douaniers invalides.
+
+        Cette route ne publie PAS l'entreprise : `is_public` a sa propre route
+        (`PUT /v1/trade/profile/publication`). Les champs de publication
+        envoyes ici sont ignores — c'est l'invariant qui empeche une
+        publication par inadvertance a chaque enregistrement.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                import_enabled:
+                  type: boolean
+                export_enabled:
+                  type: boolean
+                domestic_scope:
+                  type: boolean
+                hq_country:
+                  type: string
+                  pattern: '^[A-Z]{2}$'
+                markets_served:
+                  type: array
+                  maxItems: 50
+                  items:
+                    type: string
+                product_categories:
+                  type: array
+                  maxItems: 50
+                  items:
+                    type: string
+                default_currency:
+                  type: string
+                  pattern: '^[A-Z]{3}$'
+                default_incoterm:
+                  type: string
+                  enum: [EXW, FCA, FAS, FOB, CFR, CIF, CPT, CIP, DAP, DPU, DDP]
+                notes:
+                  type: string
+                  maxLength: 2000
+      responses:
+        '200':
+          description: Profil enregistre (meme forme que le GET)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: >-
+            Feature `trade` inactive, ou acteur sans role admin
+            (TradeCompanyProfilePolicy via TradeRoleResolver)
+        '422':
+          description: Aucune direction declaree, Incoterm inconnu, code pays ou devise malforme
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/profile/publication:
+    put:
+      operationId: api_put_trade_company_profile_publication
+      tags:
+      - Trade
+      summary: Publier ou depublier le profil commercial dans l'annuaire public (#9617)
+      description: >-
+        Opt-in explicite dans `/entreprises` et `/entreprises/{slug}`. Acte
+        DELIBERE, separe de la description du profil : enregistrer un champ
+        commercial ne doit pas publier l'entreprise.
+
+        FAIL-CLOSED : publier sans `public_slug` ni `public_name` renvoie 422.
+        Un profil active mais incomplet serait filtre par
+        `isPubliclyVisible()` et l'utilisateur croirait avoir publie.
+
+        `public_slug` est unique GLOBAL (cross-tenant) : `TradeProfileResolver`
+        resout un slug vers un tenant sans connaitre l'appelant, donc deux
+        entreprises ne peuvent pas partager une adresse publique.
+
+        `public_published_at` est la date de PREMIERE publication : elle n'est
+        pas ecrasee a chaque republication, sinon la vitrine perdrait
+        l'anciennete du profil.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [is_public]
+              properties:
+                is_public:
+                  type: boolean
+                public_slug:
+                  type: string
+                  pattern: '^[a-z0-9][a-z0-9\-]*$'
+                  minLength: 3
+                  maxLength: 80
+                public_name:
+                  type: string
+                  maxLength: 160
+                public_description:
+                  type: string
+                  maxLength: 2000
+                public_city:
+                  type: string
+                  maxLength: 120
+      responses:
+        '200':
+          description: >-
+            Profil mis a jour. `public_url` vaut `/entreprises/{slug}` quand
+            publie, `null` sinon.
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role admin
+        '422':
+          description: >-
+            Profil commercial inexistant, publication sans slug ou sans nom,
+            slug deja utilise par une autre entreprise
+        '429':
+          $ref: '#/components/responses/Error429'
   /public/vtc/marketplace/estimate:
     post:
       operationId: api_post_public_vtc_marketplace_estimate

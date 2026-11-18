@@ -2791,3 +2791,28 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 **Couverture executee** — `pint --test` PASS sur les 2 fichiers du lot (aucun defaut de style).
 
 **Non couvert** — aucun test PHPUnit execute : la suite Feature depasse la RAM du sandbox (2 Go, OOM signal 9). Les scenarios ci-dessus sont **a ecrire**.
+
+## 2026-11-18 — BC-41 PHARMACY / BC-36 TRADE : publication dans les vitrines grand public (#9616, #9617)
+
+**Surfaces** : `GET|PUT /v1/pharmacy/public-profile` (`PharmacyPublicProfileController`), `GET|PUT /v1/trade/profile` et `PUT /v1/trade/profile/publication` (`TradeCompanyProfileController`), declarees dans `routes/modules/pharmacy.php` et `routes/modules/trade.php`, documentees dans `api/openapi.yaml`. Aucune migration : les tables `pharmacy_public_profiles` (#9592) et `trade_company_profiles` (#8802) existaient deja.
+
+**Pourquoi ce sont des scenarios de test** : avant ce lot, les deux tables d'opt-in existaient, les providers les lisaient, les vitrines les affichaient — mais **aucune route ne les ecrivait**. `enabled` et `is_public` restaient donc a `false` pour tout le monde, et `/pharmacies` comme `/entreprises` ne pouvaient jamais rien afficher. Le defaut etait invisible : tout compilait, tous les tests passaient.
+
+| Scenario | Ce qui serait casse sans lui |
+|---|---|
+| activer sans `public_slug` ni `public_name` -> **422** et **aucune ligne ecrite** | fail-closed : enregistrer un profil active mais incomplet donnerait au professionnel l'illusion d'avoir publie, alors que `isPubliclyVisible()` le filtrerait |
+| un employe non manager peut **lire** mais pas **ecrire** -> **403** | `PharmacyPublicProfilePolicy` deny-by-default : publier est un acte de configuration de tenant, pas de comptoir |
+| le tenant B ne voit pas le profil du tenant A (`data: null`) | la lecture est bornee au `company_id` de l'acteur ; sans test, une refonte du scope exposerait les profils d'autrui |
+| slug pharmacie unique **par tenant** (deux tenants peuvent le meme) | l'index est `company_id` + slug ; une unicite globale casserait des officines homonymes dans deux pays |
+| slug Trade unique **global** (deux tenants ne peuvent pas le meme) -> **422** | `TradeProfileResolver` resout un slug vers un tenant sans connaitre l'appelant : deux entreprises sur la meme adresse publique seraient indistinguables |
+| enregistrer un champ commercial **ne publie pas** l'entreprise | `is_public` a sa propre route ; sans test, un formulaire de profil publierait par inadvertance |
+| publier sans profil existant -> **422** | on ne publie pas une entreprise qui n'a pas declare d'activite |
+| au moins une direction (`import`/`export`/`domestic`) requise -> **422** | un profil sans direction n'apparait dans aucun filtre de la vitrine |
+| Incoterm hors Incoterms 2020 -> **422** | une valeur libre produirait des documents douaniers invalides |
+| depublier remet `public_url` a **null** | l'espace professionnel affiche « visible a cette adresse » ; une URL perimee enverrait le public vers un 404 |
+| `public_published_at` n'est pas ecrase a la republication | c'est la date de **premiere** publication ; l'ecraser ferait perdre l'anciennete du profil dans la vitrine |
+| slug malforme (`Pharmacie Centrale!`) -> **422** | le format est impose par la validation **et** par l'index : un slug invalide produirait une URL publique cassee |
+
+**Couverture executee** — `php -l` PASS sur les 9 fichiers PHP du lot ; `check-i18n-catalog-parity.sh` PASS (4 langues) ; `check-bounded-context-dependencies.sh` PASS (153 aretes, 0 import hors contrat) ; `check-openapi-route-coverage.py` : 0 nouvelle route non couverte ; Redocly valide.
+
+**Non couvert** — aucun test PHPUnit execute : le depot exige PHP >= 8.4, indisponible dans le sandbox (8.2). Les scenarios ci-dessus sont ecrits dans `tests/Feature/Pharmacy/PharmacyPublicProfileTest.php` et `tests/Feature/Trade/TradeCompanyProfileTest.php` ; leur execution releve de la CI.

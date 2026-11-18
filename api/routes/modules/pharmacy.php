@@ -18,6 +18,7 @@ use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyDashboardControll
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyPrescriberController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyPrescriptionController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyProductController;
+use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyPublicProfileController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyPurchaseOrderController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacySaleController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyStockController;
@@ -73,4 +74,15 @@ ModuleRoutes::tenantModule('pharmacy', function (): void {
 
     // ── Tableau de bord fondateur (PHARMA-007, #7804) ─────────────────
     Route::get('/dashboard', [PharmacyDashboardController::class, 'index']);
+
+    // ── Profil public / vitrine grand public (#9616) ──────────────────────
+    // Sans ces deux routes, `pharmacy_public_profiles.enabled` restait à
+    // `false` pour tout le monde : la vitrine `/pharmacies` affichait
+    // « bientôt disponible » en permanence, et le parcours « le pharmacien
+    // publie → le public trouve » était cassé au milieu.
+    //
+    // Lecture : tout membre du tenant (le comptoir vérifie ce qui est publié).
+    // Écriture : manager uniquement (PharmacyPublicProfilePolicy, deny-by-default).
+    Route::get('/public-profile', [PharmacyPublicProfileController::class, 'show']);
+    Route::put('/public-profile', [PharmacyPublicProfileController::class, 'update']);
 });

@@ -25,4 +25,6 @@ return [
     'empty_receipt' => 'No line to receive.',
     'empty_sale' => 'A sale must contain at least one line.',
     'over_receipt' => 'Over-receipt refused on line #:line: :ordered ordered, :received already received, :proposed proposed.',
+    'public_profile_slug_required' => 'A public slug and name are required to publish the pharmacy.',
+    'public_profile_slug_taken' => 'This public slug is already used by another pharmacy.',
 ];

@@ -26,4 +26,6 @@ return [
     'empty_receipt' => 'Aucune ligne à réceptionner.',
     'empty_sale' => 'Une vente doit contenir au moins une ligne.',
     'over_receipt' => 'Sur-réception refusée sur la ligne #:line : :ordered commandé, :received déjà reçu, :proposed proposé.',
+    'public_profile_slug_required' => 'Un slug et un nom publics sont requis pour publier l\'officine.',
+    'public_profile_slug_taken' => 'Ce slug public est deja utilise par une autre officine.',
 ];

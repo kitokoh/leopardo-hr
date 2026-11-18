@@ -8,6 +8,7 @@ import { SITE_URL } from '@/lib/site-url';
 import { JsonLd } from '@/components/JsonLd';
 import { getPublicShop, type PublicShopProfile } from '@/lib/retail-public-api';
 import PublicContactCta from '@/app/decouvrir/public-contact-cta';
+import { RETAIL_SURFACE } from '@/modules/public-surfaces';
 
 /**
  * P1-02 — page publique SEO d'une boutique Leopardo Marché (`/boutiques/{slug}`).
@@ -104,7 +105,9 @@ export default async function ShopPage({ params, searchParams }: ShopPageProps) 
   return (
     <div
       dir={dir}
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/40 to-teal-50/40 px-4 py-10"
+      data-surface={RETAIL_SURFACE.vertical}
+      className="min-h-screen px-4 py-10"
+      style={{ backgroundColor: RETAIL_SURFACE.palette.surface }}
     >
       <JsonLd data={shopJsonLd(shop)} />
       <div className="mx-auto max-w-5xl space-y-8">

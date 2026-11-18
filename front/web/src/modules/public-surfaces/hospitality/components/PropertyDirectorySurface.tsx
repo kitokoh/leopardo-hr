@@ -1,0 +1,94 @@
+import Link from 'next/link';
+
+import {
+  SurfaceCard,
+  SurfaceCta,
+  SurfaceGrid,
+  SurfaceHero,
+  SurfaceMeta,
+  SurfaceNotice,
+  SurfaceShell,
+  SurfaceTenantInvitation,
+  type SurfaceIdentity,
+} from '../../kernel';
+import { getSurfaceCopy } from '../../copy/surfaces-copy';
+import type { PropertyDirectoryResult } from '../application/load-property-directory-view';
+
+/**
+ * Annuaire de la vitrine Hôtellerie (#9618).
+ *
+ * ## Composition propre à la verticale
+ *
+ * Le séjour est un usage de **comparaison lente** : on regarde peu d'options,
+ * on lit, on hésite. D'où :
+ *
+ *  1. **Grille large** (`min 20rem`) — peu d'hébergements par écran, de la
+ *     respiration. L'inverse exact du retail dense.
+ *  2. **Le type d'hébergement en tête**, en métadonnée structurée : c'est ce
+ *     qui cadre l'attente (« hôtel » et « maison d'hôtes » ne se comparent pas).
+ *  3. **Aucun prix dans l'annuaire** : l'agrégateur public ne le publie pas au
+ *     niveau liste. L'inventer serait pire que de l'omettre — le prix d'appel
+ *     n'apparaît que sur la fiche, où il est réellement connu.
+ *
+ * Composant pur : aucun fetch, aucun état.
+ */
+export function PropertyDirectorySurface({
+  identity,
+  result,
+  locale,
+}: {
+  identity: SurfaceIdentity;
+  result: PropertyDirectoryResult;
+  locale?: string;
+}) {
+  const copy = getSurfaceCopy(locale);
+  const shared = copy.shared;
+
+  return (
+    <SurfaceShell identity={identity}>
+      <SurfaceHero
+        identity={identity}
+        eyebrow={copy.verticals.hospitality.eyebrow}
+        action={
+          <SurfaceCta identity={identity} href="/decouvrir">
+            {shared.allStays}
+          </SurfaceCta>
+        }
+      />
+
+      <main style={{ maxWidth: '72rem', margin: '0 auto', padding: '2rem 1.25rem 4rem' }}>
+        {result.state === 'unavailable' ? (
+          <SurfaceNotice identity={identity} alert>
+            {shared.unavailable}
+          </SurfaceNotice>
+        ) : null}
+
+        {result.state === 'empty' ? (
+          <SurfaceNotice identity={identity}>{shared.comingSoon}</SurfaceNotice>
+        ) : null}
+
+        {result.state === 'ready' ? (
+          <SurfaceGrid min="20rem">
+            {result.cards.map(({ entry, meta }) => (
+              <SurfaceCard key={entry.slug} as="li" interactive identity={identity}>
+                <Link href={`${identity.basePath}/${entry.slug}`} data-surface-card-link="">
+                  <strong style={{ fontSize: '1.1rem', lineHeight: 1.25 }}>{entry.name}</strong>
+
+                  <SurfaceMeta identity={identity}>{meta ?? shared.property}</SurfaceMeta>
+
+                  {entry.description ? (
+                    <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: 1.5 }}>
+                      {entry.description}
+                    </p>
+                  ) : null}
+                </Link>
+              </SurfaceCard>
+            ))}
+          </SurfaceGrid>
+        ) : null}
+
+        <SurfaceTenantInvitation identity={identity} locale={locale} />
+      </main>
+    </SurfaceShell>
+  );
+}

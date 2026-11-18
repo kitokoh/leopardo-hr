@@ -32,6 +32,7 @@
  * Référence : docs/specifications/VERTICAL_TRADE_OS.md.
  */
 
+use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeCompanyProfileController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeCostEstimateController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeHealthController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeMetaController;
@@ -89,4 +90,17 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             // Checklist documentaire — toujours accompagnée du disclaimer.
             Route::get('/customs/checklist', [TradeCostEstimateController::class, 'customs']);
         });
+
+        // ── Profil commercial & publication vitrine (#9617) ────────────────
+        // Sans ces routes, `trade_company_profiles.is_public` restait à `false`
+        // pour tout le monde : `/entreprises` et `/entreprises/{slug}` ne
+        // pouvaient jamais rien afficher, et le CTA « Devenir tenant » de la
+        // vitrine B2B menait à un espace où l'on ne pouvait pas se publier.
+        //
+        // Lecture : membres du tenant. Écriture : rôle `admin` de la verticale
+        // (TradeCompanyProfilePolicy, deny-by-default via TradeRoleResolver).
+        Route::get('/profile', [TradeCompanyProfileController::class, 'show']);
+        Route::put('/profile', [TradeCompanyProfileController::class, 'update']);
+        // Acte distinct : publier n'est pas enregistrer un champ commercial.
+        Route::put('/profile/publication', [TradeCompanyProfileController::class, 'publish']);
     });

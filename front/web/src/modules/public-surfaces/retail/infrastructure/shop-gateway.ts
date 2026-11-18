@@ -6,8 +6,51 @@
  */
 
 import { getPublicShop, type PublicShopProfile } from '@/lib/retail-public-api';
+import { searchPublicDiscovery } from '@/lib/public-discovery-api';
 
 import type { Shop } from '../domain/shop';
+import type { ShopDirectoryEntry } from '../domain/shop-directory';
+
+/** Résultat d'un chargement d'annuaire : disponibilité explicite + entrées. */
+export interface ShopDirectoryLoadResult {
+  /** `false` si l'API n'a pas répondu (panne), distinct d'un annuaire vide. */
+  readonly available: boolean;
+  readonly entries: readonly ShopDirectoryEntry[];
+}
+
+/**
+ * Charge l'annuaire des boutiques publiées (#9618).
+ *
+ * Passe par l'agrégateur public (`?type=retail_shop`) : même contrat que les
+ * fiches, donc aucune divergence entre la liste et le détail.
+ */
+export async function loadShopDirectory(params: {
+  q?: string;
+  city?: string;
+  page?: number;
+}): Promise<ShopDirectoryLoadResult> {
+  const result = await searchPublicDiscovery({
+    q: params.q,
+    city: params.city,
+    type: 'retail_shop',
+    page: params.page,
+  });
+
+  if (result === null) {
+    return { available: false, entries: [] };
+  }
+
+  return {
+    available: true,
+    entries: result.items.map((item) => ({
+      slug: item.slug,
+      name: item.name,
+      city: item.city ?? null,
+      description: item.description ?? null,
+      category: item.category ?? null,
+    })),
+  };
+}
 
 /** Traduit la fiche publique d'une boutique vers le modèle de la vitrine. */
 export function toShop(profile: PublicShopProfile): Shop {
