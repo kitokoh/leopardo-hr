@@ -22306,6 +22306,100 @@ paths:
           $ref: '#/components/responses/Error401'
         '422':
           $ref: '#/components/responses/Validation422'
+  /absences/stats:
+    get:
+      operationId: api_get_absences_stats
+      tags:
+      - Absences
+      summary: Statistiques d'absences pour le dashboard manager
+      description: |
+        Agrege les absences sur une periode (mois courant par defaut) : totaux,
+        repartition par statut et par type, top 10 employes par jours d'absence
+        et taux d'absenteisme global. RBAC : principal, rh et manager.
+        Isolation tenant automatique sur `company_id`.
+      parameters:
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+        description: "Debut de periode (Y-m-d). Defaut : premier jour du mois courant."
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date
+        description: "Fin de periode (Y-m-d). Defaut : dernier jour du mois courant."
+      - name: employee_id
+        in: query
+        schema:
+          type: integer
+        description: Restreint les statistiques a un employe.
+      responses:
+        '200':
+          description: Statistiques d'absences agregees
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      period:
+                        type: object
+                        properties:
+                          from:
+                            type: string
+                            format: date
+                          to:
+                            type: string
+                            format: date
+                      total_absences:
+                        type: integer
+                      total_days:
+                        type: number
+                      by_status:
+                        type: object
+                        properties:
+                          pending:
+                            type: integer
+                          approved:
+                            type: integer
+                          rejected:
+                            type: integer
+                      by_type:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                            code:
+                              type: string
+                            count:
+                              type: integer
+                            days:
+                              type: number
+                      top_employees:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            employee_id:
+                              type: integer
+                            name:
+                              type: string
+                            count:
+                              type: integer
+                            days:
+                              type: number
+                      absenteeism_rate:
+                        type: number
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /absences/{absence}:
     put:
       operationId: api_put_absences_by_absence

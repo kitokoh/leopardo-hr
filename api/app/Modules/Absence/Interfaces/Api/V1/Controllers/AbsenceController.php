@@ -237,4 +237,103 @@ class AbsenceController extends Controller
 
         return $disk->response($absence->proof_path);
     }
+
+    /**
+     * feat(absence): API statistiques d'absences pour dashboard manager (#9538).
+     *
+     * Agrège les données d'absences sur une période donnée :
+     * - Total absences et jours
+     * - Répartition par statut et par type
+     * - Top employés
+     * - Taux d'absentéisme
+     *
+     * RBAC : managers uniquement (principal/rh/manager).
+     */
+    public function stats(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        abort_unless($actor->isManager(), 403);
+
+        $validated = $request->validate([
+            'from' => ['nullable', 'date_format:Y-m-d'],
+            'to' => ['nullable', 'date_format:Y-m-d'],
+            'employee_id' => ['nullable', 'integer', 'exists:employees,id'],
+        ]);
+
+        $from = $validated['from'] ?? Carbon::now()->startOfMonth()->toDateString();
+        $to = $validated['to'] ?? Carbon::now()->endOfMonth()->toDateString();
+
+        $query = Absence::query()
+            ->where('company_id', $actor->company_id)
+            ->whereBetween('start_date', [$from, $to]);
+
+        if (isset($validated['employee_id'])) {
+            $query->where('employee_id', $validated['employee_id']);
+        }
+
+        $absences = $query->with(['absenceType:id,name,code,deducts_leave', 'employee:id,first_name,last_name'])->get();
+
+        $totalAbsences = $absences->count();
+        $totalDays = $absences->sum('days_count');
+
+        $byStatus = [
+            'pending' => $absences->where('status', 'pending')->count(),
+            'approved' => $absences->where('status', 'approved')->count(),
+            'rejected' => $absences->where('status', 'rejected')->count(),
+        ];
+
+        $byType = $absences->groupBy('absence_type_id')->map(function ($group) {
+            $first = $group->first();
+
+            return [
+                'type' => $first?->absenceType->name ?? 'Unknown',
+                'code' => $first?->absenceType->code ?? 'unknown',
+                'count' => $group->count(),
+                'days' => round($group->sum('days_count'), 1),
+            ];
+        })->values()->toArray();
+
+        $topEmployees = $absences->groupBy('employee_id')->map(function ($group) {
+            $first = $group->first();
+            $employee = $first?->employee;
+
+            return [
+                'employee_id' => $first?->employee_id,
+                'name' => $employee
+                    ? $employee->first_name.' '.$employee->last_name
+                    : 'Unknown',
+                'count' => $group->count(),
+                'days' => round($group->sum('days_count'), 1),
+            ];
+        })->sortByDesc('days')->take(10)->values()->toArray();
+
+        // Calcul du taux d'absentéisme (simplifié : jours d'absence / jours ouvrés de la période × nombre d'employés actifs)
+        $periodDays = Carbon::parse($from)->diffInDays(Carbon::parse($to)) + 1;
+        $workingDays = $periodDays * 5 / 7; // Approximation : 5 jours ouvrés par semaine
+        $activeEmployees = Employee::query()
+            ->where('company_id', $actor->company_id)
+            ->whereNull('termination_date')
+            ->count();
+
+        $absenteeismRate = $activeEmployees > 0 && $workingDays > 0
+            ? round(($totalDays / ($workingDays * $activeEmployees)) * 100, 2)
+            : 0;
+
+        return new JsonResponse([
+            'data' => [
+                'period' => [
+                    'from' => $from,
+                    'to' => $to,
+                ],
+                'total_absences' => $totalAbsences,
+                'total_days' => round($totalDays, 1),
+                'by_status' => $byStatus,
+                'by_type' => $byType,
+                'top_employees' => $topEmployees,
+                'absenteeism_rate' => $absenteeismRate,
+            ],
+        ]);
+    }
 }
