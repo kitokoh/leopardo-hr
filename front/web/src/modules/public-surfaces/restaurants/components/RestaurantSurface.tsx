@@ -82,7 +82,7 @@ export function RestaurantSurface({
                     <SurfaceCard key={restaurant.slug} as="li" interactive identity={identity}>
                       <Link
                         href={`${identity.basePath}/${restaurant.slug}`}
-                        style={{ color: 'inherit', textDecoration: 'none' }}
+                        data-surface-card-link=""
                       >
                         <div
                           style={{

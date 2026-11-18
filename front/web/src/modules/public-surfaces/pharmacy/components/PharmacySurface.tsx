@@ -72,7 +72,7 @@ export function PharmacySurface({
               <SurfaceCard key={pharmacy.slug} as="li" interactive identity={identity}>
                 <Link
                   href={`${identity.basePath}/${pharmacy.slug}`}
-                  style={{ color: 'inherit', textDecoration: 'none' }}
+                  data-surface-card-link=""
                 >
                   {/* La garde passe AVANT le nom : c'est le critère de choix. */}
                   {pharmacy.onDuty ? (

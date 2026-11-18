@@ -2,6 +2,10 @@ import type { CSSProperties, ReactNode } from 'react';
 
 import type { SurfaceIdentity } from '../domain/surface-identity';
 
+// États (:hover, :focus-visible, prefers-reduced-motion) — non exprimables en
+// style inline. La composition reste dans les composants.
+import './surface-interactions.css';
+
 /**
  * Primitives de rendu partagées par les vitrines verticales (#9594).
  *
@@ -53,7 +57,7 @@ export function SurfaceCard({
   };
 
   return (
-    <Tag style={style} data-surface-card="">
+    <Tag style={style} data-surface-card="" data-surface-interactive={interactive ? 'true' : undefined}>
       {children}
     </Tag>
   );
@@ -200,6 +204,7 @@ export function SurfaceCta({
   return (
     <a
       href={href}
+      data-surface-cta=""
       style={{
         display: 'inline-block',
         padding: '0.7rem 1.2rem',
