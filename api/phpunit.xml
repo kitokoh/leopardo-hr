@@ -1473,18 +1473,15 @@
           `RefreshTenantDatabase` fait `DROP SCHEMA shared_tenants CASCADE`
           et detruit le marqueur `__mvp_fixture_ready`.
 
-          FeatureMvpFixture : 234 fichiers.
-          FeatureRest       : 1068 fichiers.
+          FeatureMvpFixture : 235 fichiers.
+          FeatureRest       : 1075 fichiers.
         -->
         <testsuite name="FeatureMvpFixture">
-            <file>tests/Feature/Accounting/FacturXGeneratorTest.php</file>
-            <file>tests/Feature/Accounting/SyscohadaLiasseServiceTest.php</file>
-            <file>tests/Feature/Accounting/UblTrInvoiceGeneratorTest.php</file>
+            <file>tests/Feature/AI/AIToolContractGuardTest.php</file>
+            <file>tests/Feature/AI/AIToolExecutionAuditTest.php</file>
             <file>tests/Feature/AI/AbsenceDecisionToolTest.php</file>
             <file>tests/Feature/AI/AgentCommandLoopTest.php</file>
             <file>tests/Feature/AI/AiGoldenJourneyTest.php</file>
-            <file>tests/Feature/AI/AIToolContractGuardTest.php</file>
-            <file>tests/Feature/AI/AIToolExecutionAuditTest.php</file>
             <file>tests/Feature/AI/ConversationExportTest.php</file>
             <file>tests/Feature/AI/EmployeeLeaveBalanceToolTest.php</file>
             <file>tests/Feature/AI/HrReadToolContractTest.php</file>
@@ -1505,6 +1502,9 @@
             <file>tests/Feature/AIGatewayAndAnalyticsTest.php</file>
             <file>tests/Feature/AIWorkflowTest.php</file>
             <file>tests/Feature/AIWriteActionConfirmationTest.php</file>
+            <file>tests/Feature/Accounting/FacturXGeneratorTest.php</file>
+            <file>tests/Feature/Accounting/SyscohadaLiasseServiceTest.php</file>
+            <file>tests/Feature/Accounting/UblTrInvoiceGeneratorTest.php</file>
             <file>tests/Feature/AnnouncementControllerTest.php</file>
             <file>tests/Feature/ApiErrorContractTest.php</file>
             <file>tests/Feature/Audit/AuditLogGlobalTest.php</file>
@@ -1514,6 +1514,7 @@
             <file>tests/Feature/Audit/TenantAmbiguityProofTest.php</file>
             <file>tests/Feature/AuditLogExportTest.php</file>
             <file>tests/Feature/Auth/AccountLockoutNotificationTest.php</file>
+            <file>tests/Feature/Auth/CustomRoleBackendContractTest.php</file>
             <file>tests/Feature/Auth/CustomRoleDelegationTest.php</file>
             <file>tests/Feature/Auth/GoogleIdentityMultiTenantTest.php</file>
             <file>tests/Feature/Auth/LockoutValidCredentialsTest.php</file>
@@ -1540,8 +1541,8 @@
             <file>tests/Feature/CalendarSyncServiceTest.php</file>
             <file>tests/Feature/Cameras/CameraAccessTokensTest.php</file>
             <file>tests/Feature/Cameras/CameraRtspSecurityTest.php</file>
-            <file>tests/Feature/Cameras/CamerasCrudTest.php</file>
             <file>tests/Feature/Cameras/CameraStreamTokenVerifyTest.php</file>
+            <file>tests/Feature/Cameras/CamerasCrudTest.php</file>
             <file>tests/Feature/ClientEventControllerTest.php</file>
             <file>tests/Feature/CommunicationAnalyticsControllerTest.php</file>
             <file>tests/Feature/CommunicationServiceTest.php</file>
@@ -1666,6 +1667,8 @@
             <file>tests/Feature/RecruitmentControllerTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantManagerModuleRegistryTest.php</file>
             <file>tests/Feature/RoleAssignmentAuditTest.php</file>
+            <file>tests/Feature/SSOControllerTest.php</file>
+            <file>tests/Feature/SSOOidcFlowTest.php</file>
             <file>tests/Feature/ScheduleControllerTest.php</file>
             <file>tests/Feature/Security/ApiVersionAndPlanRateLimitTest.php</file>
             <file>tests/Feature/Security/AuthenticatedGuardrailsTest.php</file>
@@ -1691,8 +1694,6 @@
             <file>tests/Feature/Security/WebhookThreatModelTest.php</file>
             <file>tests/Feature/Security/WebhookThrottleTenantIsolationTest.php</file>
             <file>tests/Feature/SensitiveWriteEndpointValidationTest.php</file>
-            <file>tests/Feature/SSOControllerTest.php</file>
-            <file>tests/Feature/SSOOidcFlowTest.php</file>
             <file>tests/Feature/SupportTicketEmailNotificationTest.php</file>
             <file>tests/Feature/TaskControllerTest.php</file>
             <file>tests/Feature/Training/TrainingControllerTest.php</file>
@@ -1704,15 +1705,18 @@
             <file>tests/Feature/VehicleControllerTest.php</file>
             <file>tests/Feature/WebAuthPagesTest.php</file>
             <file>tests/Feature/WebEmployeeAuthSecurityTest.php</file>
+            <file>tests/Feature/WebManagerPagesTest.php</file>
             <file>tests/Feature/WebhookDeadLetterTest.php</file>
             <file>tests/Feature/WebhookDispatchRetryTest.php</file>
             <file>tests/Feature/WebhookEnvelopeContractTest.php</file>
             <file>tests/Feature/WebhookRetryAndDeactivationTest.php</file>
             <file>tests/Feature/WebhookTestEndpointTest.php</file>
             <file>tests/Feature/WebhookThrottleIsolationTest.php</file>
-            <file>tests/Feature/WebManagerPagesTest.php</file>
         </testsuite>
         <testsuite name="FeatureRest">
+            <file>tests/Feature/AI/AICostRatesConfigTest.php</file>
+            <file>tests/Feature/AI/PurgeAiAuditLogsTest.php</file>
+            <file>tests/Feature/AI/ResilientLLMClientTest.php</file>
             <file>tests/Feature/Absences/AbsenceApproveTest.php</file>
             <file>tests/Feature/Absences/AbsenceCancelTest.php</file>
             <file>tests/Feature/Absences/AbsenceIndexTest.php</file>
@@ -1778,9 +1782,6 @@
             <file>tests/Feature/Accounting/ShareAccessAuditTest.php</file>
             <file>tests/Feature/Accounting/VatDeclarationTest.php</file>
             <file>tests/Feature/AdminImpersonationEndpointsTest.php</file>
-            <file>tests/Feature/AI/AICostRatesConfigTest.php</file>
-            <file>tests/Feature/AI/PurgeAiAuditLogsTest.php</file>
-            <file>tests/Feature/AI/ResilientLLMClientTest.php</file>
             <file>tests/Feature/ApiFrLiteralsCatalogedTest.php</file>
             <file>tests/Feature/ApprovalControllerTest.php</file>
             <file>tests/Feature/Attendance/AttendanceAnomaliesTest.php</file>
@@ -1806,11 +1807,11 @@
             <file>tests/Feature/Attendance/GeoAttendanceFlowTest.php</file>
             <file>tests/Feature/Attendance/GeoAttendanceModeConfigTest.php</file>
             <file>tests/Feature/Attendance/GeoEntryExitTest.php</file>
-            <file>tests/Feature/Attendance/GeofenceZoneServiceTest.php</file>
             <file>tests/Feature/Attendance/GeoManagerValidationTest.php</file>
             <file>tests/Feature/Attendance/GeoMultiTenantIsolationTest.php</file>
             <file>tests/Feature/Attendance/GeoRoutesMigrationTest.php</file>
             <file>tests/Feature/Attendance/GeoSessionDashboardTest.php</file>
+            <file>tests/Feature/Attendance/GeofenceZoneServiceTest.php</file>
             <file>tests/Feature/Attendance/KioskDeviceLifecycleTest.php</file>
             <file>tests/Feature/Attendance/KioskEnrollmentApiTest.php</file>
             <file>tests/Feature/Attendance/KioskFaceVerificationTest.php</file>
@@ -1830,6 +1831,7 @@
             <file>tests/Feature/Auth/AuthLoginDefensiveTest.php</file>
             <file>tests/Feature/Auth/ForgotPasswordNoEnumerationTest.php</file>
             <file>tests/Feature/Auth/GoogleIdentityBindingTest.php</file>
+            <file>tests/Feature/Auth/LastAdministratorAndPlatformMfaTest.php</file>
             <file>tests/Feature/Auth/LoginCodeSmsChannelTest.php</file>
             <file>tests/Feature/Auth/ManagerRoleLocalizationTest.php</file>
             <file>tests/Feature/Auth/PasswordPolicyTest.php</file>
@@ -1869,11 +1871,43 @@
             <file>tests/Feature/Billing/TrialTravelSolutionActivationTest.php</file>
             <file>tests/Feature/BiometricPurgeExpiredTest.php</file>
             <file>tests/Feature/BiometricWorkflowTest.php</file>
+            <file>tests/Feature/Branding/PublicBrandPresenterTest.php</file>
             <file>tests/Feature/BulkPaymentControllerTest.php</file>
             <file>tests/Feature/BusinessOs/MarketIntentProvisioningTest.php</file>
             <file>tests/Feature/BusinessOs/SiteApiContractTest.php</file>
             <file>tests/Feature/BusinessOs/SitesFirstClassTest.php</file>
             <file>tests/Feature/BusinessOs/TrialSignupIdempotencyTest.php</file>
+            <file>tests/Feature/CRM/CrmActivitiesTasksTest.php</file>
+            <file>tests/Feature/CRM/CrmAutomationTest.php</file>
+            <file>tests/Feature/CRM/CrmCampaignSendProcessingTest.php</file>
+            <file>tests/Feature/CRM/CrmCampaignTest.php</file>
+            <file>tests/Feature/CRM/CrmChannelAdapterTest.php</file>
+            <file>tests/Feature/CRM/CrmChannelCrudTest.php</file>
+            <file>tests/Feature/CRM/CrmChannelSendTest.php</file>
+            <file>tests/Feature/CRM/CrmConsentTest.php</file>
+            <file>tests/Feature/CRM/CrmCrossTenantHarnessTest.php</file>
+            <file>tests/Feature/CRM/CrmDashboardTest.php</file>
+            <file>tests/Feature/CRM/CrmDeduplicationTest.php</file>
+            <file>tests/Feature/CRM/CrmDirectoryListTest.php</file>
+            <file>tests/Feature/CRM/CrmEmailTest.php</file>
+            <file>tests/Feature/CRM/CrmExportTest.php</file>
+            <file>tests/Feature/CRM/CrmHardeningNegativeTest.php</file>
+            <file>tests/Feature/CRM/CrmImportFlowTest.php</file>
+            <file>tests/Feature/CRM/CrmLeadConversionTest.php</file>
+            <file>tests/Feature/CRM/CrmMigrationsInvariantsTest.php</file>
+            <file>tests/Feature/CRM/CrmModelsTenantScopingTest.php</file>
+            <file>tests/Feature/CRM/CrmOutboxLeaseTest.php</file>
+            <file>tests/Feature/CRM/CrmOutboxRuntimeTest.php</file>
+            <file>tests/Feature/CRM/CrmOutboxTest.php</file>
+            <file>tests/Feature/CRM/CrmPilotSeederTest.php</file>
+            <file>tests/Feature/CRM/CrmPlatformIsolationTest.php</file>
+            <file>tests/Feature/CRM/CrmSearchTest.php</file>
+            <file>tests/Feature/CRM/CrmSegmentTest.php</file>
+            <file>tests/Feature/CRM/CrmSoftDeletesTest.php</file>
+            <file>tests/Feature/CRM/CrmTaskTimelineTest.php</file>
+            <file>tests/Feature/CRM/CrmWhatsAppWebhookTest.php</file>
+            <file>tests/Feature/CRM/ResendEmailProviderTest.php</file>
+            <file>tests/Feature/CRM/Rgpd/CrmRgpdLifecycleTest.php</file>
             <file>tests/Feature/Cabinet/CabinetDocumentAuditTest.php</file>
             <file>tests/Feature/Cabinet/CabinetDocumentControllerTest.php</file>
             <file>tests/Feature/Cabinet/CabinetShareAccessByTokenTest.php</file>
@@ -1920,46 +1954,15 @@
             <file>tests/Feature/Core/Auth/PiiHmacLookupServiceTest.php</file>
             <file>tests/Feature/CotisationSimulationControllerTest.php</file>
             <file>tests/Feature/CotisationSimulationTest.php</file>
-            <file>tests/Feature/CRM/CrmActivitiesTasksTest.php</file>
-            <file>tests/Feature/CRM/CrmAutomationTest.php</file>
-            <file>tests/Feature/CRM/CrmCampaignSendProcessingTest.php</file>
-            <file>tests/Feature/CRM/CrmCampaignTest.php</file>
-            <file>tests/Feature/CRM/CrmChannelAdapterTest.php</file>
-            <file>tests/Feature/CRM/CrmChannelCrudTest.php</file>
-            <file>tests/Feature/CRM/CrmChannelSendTest.php</file>
-            <file>tests/Feature/CRM/CrmConsentTest.php</file>
-            <file>tests/Feature/CRM/CrmCrossTenantHarnessTest.php</file>
-            <file>tests/Feature/CRM/CrmDashboardTest.php</file>
-            <file>tests/Feature/CRM/CrmDeduplicationTest.php</file>
-            <file>tests/Feature/CRM/CrmDirectoryListTest.php</file>
-            <file>tests/Feature/CRM/CrmEmailTest.php</file>
-            <file>tests/Feature/CRM/CrmExportTest.php</file>
-            <file>tests/Feature/CRM/CrmHardeningNegativeTest.php</file>
-            <file>tests/Feature/CRM/CrmImportFlowTest.php</file>
-            <file>tests/Feature/CRM/CrmLeadConversionTest.php</file>
-            <file>tests/Feature/CRM/CrmMigrationsInvariantsTest.php</file>
-            <file>tests/Feature/CRM/CrmModelsTenantScopingTest.php</file>
-            <file>tests/Feature/CRM/CrmOutboxLeaseTest.php</file>
-            <file>tests/Feature/CRM/CrmOutboxRuntimeTest.php</file>
-            <file>tests/Feature/CRM/CrmOutboxTest.php</file>
-            <file>tests/Feature/CRM/CrmPilotSeederTest.php</file>
-            <file>tests/Feature/CRM/CrmPlatformIsolationTest.php</file>
-            <file>tests/Feature/CRM/CrmSearchTest.php</file>
-            <file>tests/Feature/CRM/CrmSegmentTest.php</file>
-            <file>tests/Feature/CRM/CrmSoftDeletesTest.php</file>
-            <file>tests/Feature/CRM/CrmTaskTimelineTest.php</file>
-            <file>tests/Feature/CRM/CrmWhatsAppWebhookTest.php</file>
-            <file>tests/Feature/CRM/ResendEmailProviderTest.php</file>
-            <file>tests/Feature/CRM/Rgpd/CrmRgpdLifecycleTest.php</file>
             <file>tests/Feature/CrmMigrationsTest.php</file>
             <file>tests/Feature/CrossTenantIndexIsolationTest.php</file>
+            <file>tests/Feature/DataModel/CompositeTenantIndexesTest.php</file>
+            <file>tests/Feature/DataModel/EnsureCompaniesFeaturesMetadataColumnsTest.php</file>
+            <file>tests/Feature/DataModel/PerfAuditIndexesTest.php</file>
             <file>tests/Feature/Database/LeopardoMigrateFreshGuardTest.php</file>
             <file>tests/Feature/Database/LeopardoMigrateRunnerTest.php</file>
             <file>tests/Feature/Database/MigrationSchemaPlacementTest.php</file>
             <file>tests/Feature/Database/NotificationPreferencesUniqueMigrationTest.php</file>
-            <file>tests/Feature/DataModel/CompositeTenantIndexesTest.php</file>
-            <file>tests/Feature/DataModel/EnsureCompaniesFeaturesMetadataColumnsTest.php</file>
-            <file>tests/Feature/DataModel/PerfAuditIndexesTest.php</file>
             <file>tests/Feature/Delivery/DeliveryApiTest.php</file>
             <file>tests/Feature/Delivery/DeliveryAsyncExportApiTest.php</file>
             <file>tests/Feature/Delivery/DeliveryAsyncTest.php</file>
@@ -2095,9 +2098,9 @@
             <file>tests/Feature/Fundraising/PlatformFundraisingSettingsApiTest.php</file>
             <file>tests/Feature/GdprAnonymizeEmployeeTest.php</file>
             <file>tests/Feature/GenerateBankExportJobTest.php</file>
+            <file>tests/Feature/GeneratePaySlipPdfJobNotifyTest.php</file>
             <file>tests/Feature/GeneratePaymentDocumentJobNotificationTest.php</file>
             <file>tests/Feature/GeneratePaymentDocumentJobTest.php</file>
-            <file>tests/Feature/GeneratePaySlipPdfJobNotifyTest.php</file>
             <file>tests/Feature/Geo/GeoCapabilitiesApiTest.php</file>
             <file>tests/Feature/Geo/GeoDistanceApiTest.php</file>
             <file>tests/Feature/Geo/GeoFeatureFlagTest.php</file>
@@ -2112,6 +2115,35 @@
             <file>tests/Feature/Governance/RouteOwnerGuardTest.php</file>
             <file>tests/Feature/Governance/TenantManagerContractTest.php</file>
             <file>tests/Feature/GrowthPartnerTenantIsolationTest.php</file>
+            <file>tests/Feature/HR/AbsenceTypesTenantUniqueRegressionTest.php</file>
+            <file>tests/Feature/HR/ApiTokenControllerTest.php</file>
+            <file>tests/Feature/HR/CandidateHiringTest.php</file>
+            <file>tests/Feature/HR/CareerEventTest.php</file>
+            <file>tests/Feature/HR/ContractByCountryTest.php</file>
+            <file>tests/Feature/HR/ContractCountryTemplatesTest.php</file>
+            <file>tests/Feature/HR/DepartureNoticeTest.php</file>
+            <file>tests/Feature/HR/EmployeeCreatePersistsPasswordHashTest.php</file>
+            <file>tests/Feature/HR/EmployeeDepartureTest.php</file>
+            <file>tests/Feature/HR/EmployeeDocumentTest.php</file>
+            <file>tests/Feature/HR/EmployeeDtoContractTest.php</file>
+            <file>tests/Feature/HR/EmployeeExtraDataMaskingTest.php</file>
+            <file>tests/Feature/HR/EmployeeImportRaceTest.php</file>
+            <file>tests/Feature/HR/EmployeeMailResilienceTest.php</file>
+            <file>tests/Feature/HR/EmployeeNumericCastTest.php</file>
+            <file>tests/Feature/HR/EmployeePasswordProvisioningTest.php</file>
+            <file>tests/Feature/HR/EmployeeSensitiveFillableTest.php</file>
+            <file>tests/Feature/HR/EmployeeServiceCreateFillableTest.php</file>
+            <file>tests/Feature/HR/EmployeeTenantIsolationTest.php</file>
+            <file>tests/Feature/HR/ExportHistoryTest.php</file>
+            <file>tests/Feature/HR/HrControllerTest.php</file>
+            <file>tests/Feature/HR/InvitationActivationLinkExposureTest.php</file>
+            <file>tests/Feature/HR/OrgReferentialCrudTest.php</file>
+            <file>tests/Feature/HR/OrganigrammeTest.php</file>
+            <file>tests/Feature/HR/RbacMatrixTest.php</file>
+            <file>tests/Feature/HR/ReproUpdateEmployeeContractTypeTest.php</file>
+            <file>tests/Feature/HR/SelfServiceCareerHistoryTest.php</file>
+            <file>tests/Feature/HR/UserEmployeeLinkCrossTenantTest.php</file>
+            <file>tests/Feature/HR/UserEmployeeLinkTenantScopeExceptionTest.php</file>
             <file>tests/Feature/HealthEndpointTest.php</file>
             <file>tests/Feature/HealthLiveReadyTest.php</file>
             <file>tests/Feature/HealthMailerMuetTest.php</file>
@@ -2135,35 +2167,6 @@
             <file>tests/Feature/Hospitality/HospitalityReservationsTest.php</file>
             <file>tests/Feature/Hospitality/HospitalityStaffAssignmentActionsTest.php</file>
             <file>tests/Feature/Hospitality/PublicStaySurfaceTest.php</file>
-            <file>tests/Feature/HR/AbsenceTypesTenantUniqueRegressionTest.php</file>
-            <file>tests/Feature/HR/ApiTokenControllerTest.php</file>
-            <file>tests/Feature/HR/CandidateHiringTest.php</file>
-            <file>tests/Feature/HR/CareerEventTest.php</file>
-            <file>tests/Feature/HR/ContractByCountryTest.php</file>
-            <file>tests/Feature/HR/ContractCountryTemplatesTest.php</file>
-            <file>tests/Feature/HR/DepartureNoticeTest.php</file>
-            <file>tests/Feature/HR/EmployeeCreatePersistsPasswordHashTest.php</file>
-            <file>tests/Feature/HR/EmployeeDepartureTest.php</file>
-            <file>tests/Feature/HR/EmployeeDocumentTest.php</file>
-            <file>tests/Feature/HR/EmployeeDtoContractTest.php</file>
-            <file>tests/Feature/HR/EmployeeExtraDataMaskingTest.php</file>
-            <file>tests/Feature/HR/EmployeeImportRaceTest.php</file>
-            <file>tests/Feature/HR/EmployeeMailResilienceTest.php</file>
-            <file>tests/Feature/HR/EmployeeNumericCastTest.php</file>
-            <file>tests/Feature/HR/EmployeePasswordProvisioningTest.php</file>
-            <file>tests/Feature/HR/EmployeeSensitiveFillableTest.php</file>
-            <file>tests/Feature/HR/EmployeeServiceCreateFillableTest.php</file>
-            <file>tests/Feature/HR/EmployeeTenantIsolationTest.php</file>
-            <file>tests/Feature/HR/ExportHistoryTest.php</file>
-            <file>tests/Feature/HR/HrControllerTest.php</file>
-            <file>tests/Feature/HR/InvitationActivationLinkExposureTest.php</file>
-            <file>tests/Feature/HR/OrganigrammeTest.php</file>
-            <file>tests/Feature/HR/OrgReferentialCrudTest.php</file>
-            <file>tests/Feature/HR/RbacMatrixTest.php</file>
-            <file>tests/Feature/HR/ReproUpdateEmployeeContractTypeTest.php</file>
-            <file>tests/Feature/HR/SelfServiceCareerHistoryTest.php</file>
-            <file>tests/Feature/HR/UserEmployeeLinkCrossTenantTest.php</file>
-            <file>tests/Feature/HR/UserEmployeeLinkTenantScopeExceptionTest.php</file>
             <file>tests/Feature/KioskMultiEventPunchTest.php</file>
             <file>tests/Feature/KioskRosterExtractionTest.php</file>
             <file>tests/Feature/KioskSyncSkippedEventsTest.php</file>
@@ -2254,11 +2257,14 @@
             <file>tests/Feature/Onboarding/OnboardingControllerTest.php</file>
             <file>tests/Feature/Onboarding/OnboardingInvitationManagementCoverageTest.php</file>
             <file>tests/Feature/Onboarding/OnboardingLifecycleEdgeCasesTest.php</file>
+            <file>tests/Feature/Onboarding/OnboardingPopulationCoverageGapsTest.php</file>
+            <file>tests/Feature/Onboarding/OnboardingPreAssignedResourceGuardTest.php</file>
             <file>tests/Feature/Onboarding/OnboardingPrincipalLifecycleTest.php</file>
             <file>tests/Feature/Onboarding/OnboardingProgressAlignmentTest.php</file>
             <file>tests/Feature/Onboarding/OnboardingResumeTest.php</file>
             <file>tests/Feature/Onboarding/OnboardingSeedStepsTest.php</file>
             <file>tests/Feature/Onboarding/OnboardingStepWriteGuardTest.php</file>
+            <file>tests/Feature/Onboarding/OnboardingWebInvitationManagementTest.php</file>
             <file>tests/Feature/Onboarding/SeedDefaultStepsTest.php</file>
             <file>tests/Feature/Onboarding/SetupInterviewActivationFailureTest.php</file>
             <file>tests/Feature/Onboarding/SetupInterviewControllerTest.php</file>
@@ -2287,6 +2293,8 @@
             <file>tests/Feature/Paiements/PaymentWebhookContractTest.php</file>
             <file>tests/Feature/Paiements/PayrollPaymentLedgerBridgeTest.php</file>
             <file>tests/Feature/PasswordResetTest.php</file>
+            <file>tests/Feature/PaySlipControllerTest.php</file>
+            <file>tests/Feature/PaySlipPdfLocaleTest.php</file>
             <file>tests/Feature/PaymentBatchControllerTest.php</file>
             <file>tests/Feature/PaymentDocumentControllerTest.php</file>
             <file>tests/Feature/PaymentWebhookControllerTest.php</file>
@@ -2347,6 +2355,10 @@
             <file>tests/Feature/Payroll/IslamicCalendarControllerTest.php</file>
             <file>tests/Feature/Payroll/IslamicCalendarServiceTest.php</file>
             <file>tests/Feature/Payroll/NoticePeriodWorkingDaysTest.php</file>
+            <file>tests/Feature/Payroll/PaySlipBilingualRenderTest.php</file>
+            <file>tests/Feature/Payroll/PaySlipCabinetArchiveTest.php</file>
+            <file>tests/Feature/Payroll/PaySlipDzMentionsTest.php</file>
+            <file>tests/Feature/Payroll/PaySlipLegalMentionsByCountryTest.php</file>
             <file>tests/Feature/Payroll/PayrollAccountingEntriesFlowTest.php</file>
             <file>tests/Feature/Payroll/PayrollAccountingExportJournalTest.php</file>
             <file>tests/Feature/Payroll/PayrollAnomalyServiceTest.php</file>
@@ -2380,10 +2392,6 @@
             <file>tests/Feature/Payroll/PayrollValidationRbacTest.php</file>
             <file>tests/Feature/Payroll/PayrollWorkInputsTest.php</file>
             <file>tests/Feature/Payroll/PayrollZeroSlipsGuardTest.php</file>
-            <file>tests/Feature/Payroll/PaySlipBilingualRenderTest.php</file>
-            <file>tests/Feature/Payroll/PaySlipCabinetArchiveTest.php</file>
-            <file>tests/Feature/Payroll/PaySlipDzMentionsTest.php</file>
-            <file>tests/Feature/Payroll/PaySlipLegalMentionsByCountryTest.php</file>
             <file>tests/Feature/Payroll/PrecalculatePayrollRunsCommandTest.php</file>
             <file>tests/Feature/Payroll/ProcessPayrollBatchJobTest.php</file>
             <file>tests/Feature/Payroll/PublicHolidayControllerTest.php</file>
@@ -2402,23 +2410,22 @@
             <file>tests/Feature/PayrollCycleSettingsTest.php</file>
             <file>tests/Feature/PayrollRunControllerTest.php</file>
             <file>tests/Feature/PayrollRunPlaceholderWarningTest.php</file>
-            <file>tests/Feature/PaySlipControllerTest.php</file>
-            <file>tests/Feature/PaySlipPdfLocaleTest.php</file>
             <file>tests/Feature/PdfBrandingTest.php</file>
             <file>tests/Feature/Pharmacy/PharmacyActionsTest.php</file>
             <file>tests/Feature/Pharmacy/PharmacyDashboardTest.php</file>
             <file>tests/Feature/Pharmacy/PharmacyPrescriptionTest.php</file>
             <file>tests/Feature/Pharmacy/PharmacyProductTest.php</file>
+            <file>tests/Feature/Pharmacy/PharmacyPublicProfileTest.php</file>
             <file>tests/Feature/Pharmacy/PharmacyPurchaseOrderTest.php</file>
             <file>tests/Feature/Pharmacy/PharmacySaleTest.php</file>
             <file>tests/Feature/Pharmacy/PharmacyStockTest.php</file>
             <file>tests/Feature/PilotSeedsTest.php</file>
+            <file>tests/Feature/PlanSeederTrialDaysAlignmentTest.php</file>
             <file>tests/Feature/Planning/AbsenceLifecycleTest.php</file>
             <file>tests/Feature/Planning/ExpenseClaimLifecycleTest.php</file>
             <file>tests/Feature/Planning/LeaveBalanceGoldenTest.php</file>
             <file>tests/Feature/Planning/ManagerScopeTest.php</file>
             <file>tests/Feature/Planning/PayrollLeaveInteractionTest.php</file>
-            <file>tests/Feature/PlanSeederTrialDaysAlignmentTest.php</file>
             <file>tests/Feature/Platform/CorsPreviewOriginTest.php</file>
             <file>tests/Feature/Platform/EstablishmentsHubTest.php</file>
             <file>tests/Feature/Platform/FeatureFlagKillSwitchTest.php</file>
@@ -2517,8 +2524,8 @@
             <file>tests/Feature/Restaurant/RestaurantResourceScopedRbacTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantReviewTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantSchemaTest.php</file>
-            <file>tests/Feature/Restaurant/RestaurantStockAlertsCogsTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantStockAlertTest.php</file>
+            <file>tests/Feature/Restaurant/RestaurantStockAlertsCogsTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantStockCrudTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantStockDecrementTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantStockMovementTest.php</file>
@@ -2622,6 +2629,7 @@
             <file>tests/Feature/Tracking/TraccarServiceTest.php</file>
             <file>tests/Feature/Tracking/TrackingSyncTripsDateRangeTest.php</file>
             <file>tests/Feature/Trade/TradeActivationTest.php</file>
+            <file>tests/Feature/Trade/TradeCompanyProfileTest.php</file>
             <file>tests/Feature/Trade/TradeCostEstimateApiTest.php</file>
             <file>tests/Feature/Trade/TradeFeatureFlagTest.php</file>
             <file>tests/Feature/Trade/TradeQuoteApiTest.php</file>
@@ -2654,8 +2662,8 @@
             <file>tests/Feature/Travel/TravelContactAdminApiTest.php</file>
             <file>tests/Feature/Travel/TravelContactApiTest.php</file>
             <file>tests/Feature/Travel/TravelContactFormTest.php</file>
-            <file>tests/Feature/Travel/TravelContactsIndexTest.php</file>
             <file>tests/Feature/Travel/TravelContactTest.php</file>
+            <file>tests/Feature/Travel/TravelContactsIndexTest.php</file>
             <file>tests/Feature/Travel/TravelContentTest.php</file>
             <file>tests/Feature/Travel/TravelCorporateApiTest.php</file>
             <file>tests/Feature/Travel/TravelCurrencyApiTest.php</file>
@@ -2774,10 +2782,10 @@
             <file>tests/Feature/Vtc/VtcSchemaTest.php</file>
             <file>tests/Feature/Vtc/VtcTenantJourneyTest.php</file>
             <file>tests/Feature/Web/AttendanceCorrectionAdminPagesTest.php</file>
+            <file>tests/Feature/WebKioskSessionGateTest.php</file>
             <file>tests/Feature/WebhookRouteDedupTest.php</file>
             <file>tests/Feature/WebhookRoutesUniquenessTest.php</file>
             <file>tests/Feature/Webhooks/EmailBounceWebhookTest.php</file>
-            <file>tests/Feature/WebKioskSessionGateTest.php</file>
             <file>tests/Feature/WeeklyManagerDigestTest.php</file>
             <file>tests/Feature/ZktecoControllerTest.php</file>
             <file>tests/Feature/ZktecoSyncMethodEnforcementTest.php</file>
