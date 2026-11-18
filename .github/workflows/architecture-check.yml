@@ -487,6 +487,14 @@ jobs:
           # systématique. Historique complet requis.
           fetch-depth: 0
 
+      - name: Garde search_path (issue #9115)
+        # Ce check est REQUIS : le garde tourne donc aussi quand aucune route
+        # n'a changé, sinon une nouvelle occurrence de `SET search_path`
+        # littéral sans restauration pourrait entrer via une PR qui ne touche
+        # que des services. Ratchet : le stock existant est figé dans
+        # dev-hub/tools/search-path-guard-baseline.txt.
+        run: python3 dev-hub/tools/check-search-path-guard.py
+
       - name: Check module structure
         if: needs.detect-changes.outputs.api_changed == 'true'
         run: |

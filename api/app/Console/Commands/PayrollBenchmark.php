@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
+use App\Support\SearchPathGuard;
 use Database\Seeders\PayrollBenchmarkSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -67,8 +68,15 @@ class PayrollBenchmark extends Command
 
             $start = microtime(true);
             $peakBefore = memory_get_peak_usage(true);
-            DB::statement('SET search_path TO public,shared_tenants');
-            $run = $calculator->calculateRun($run);
+            // Issue #9115 : le search_path est restaure a son etat d'entree a la
+            // fin de calculateRun. Sans restauration, la commande laissait la
+            // connexion sur `public,shared_tenants` pour tout le reste du
+            // processus — un worker qui enchaine aurait alors cible le mauvais
+            // schema (42P01 puis 25P02 en cascade).
+            $run = SearchPathGuard::run(
+                'public,shared_tenants',
+                fn () => $calculator->calculateRun($run),
+            );
             $duration = microtime(true) - $start;
 
             // Le listener ne doit être actif que pendant calculate : le retirer
