@@ -94,6 +94,7 @@ return [
     ],
 
     'errors' => [
+        'fixed_asset_has_depreciations' => 'This fixed asset has posted depreciation entries and cannot be deleted. Use disposal (status "disposed") instead.',
         'gateway_checkout_failed' => 'The payment gateway is temporarily unavailable. Please try again later.',
         'fiscal_year_invalid' => 'Invalid fiscal year.',
         'payment_amount_positive' => 'The payment amount must be strictly positive.',
@@ -160,4 +161,5 @@ return [
     'lettering_unbalanced' => 'Lettering must be balanced: total debits must equal total credits.',
     'lettering_invalid' => 'Invalid lettering: entries must target the same account.',
     'lettering_already_used' => 'One or more entries are already lettered with another code.',
+    'depreciation_declining_unsupported' => 'Declining depreciation is not implemented for this country.',
 ];
