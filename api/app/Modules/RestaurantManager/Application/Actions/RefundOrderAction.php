@@ -50,10 +50,12 @@ final class RefundOrderAction
             throw new RuntimeException('Order does not belong to tenant.');
         }
 
-        if ($order->status !== OrderStatus::PAID) {
-            abort(409, sprintf('Only a paid order can be refunded (current status "%s").', $order->status->value));
-        }
-
+        // L'idempotence se vérifie AVANT la garde d'état : un remboursement
+        // intégral fait passer la commande `paid → refunded`, donc au rejeu
+        // `status !== PAID` renvoyait 409 au lieu du MÊME remboursement — le
+        // rejeu est pourtant le cas nominal du contrat (client qui retente
+        // après un timeout). La garde d'état ne s'applique qu'à une demande
+        // nouvelle.
         if (isset($data['idempotency_key'])) {
             $existing = RestaurantRefund::query()
                 ->where('company_id', $order->company_id)
@@ -63,6 +65,20 @@ final class RefundOrderAction
             if ($existing instanceof RestaurantRefund) {
                 return $existing;
             }
+        }
+
+        if ($order->status !== OrderStatus::PAID) {
+            // Une commande DÉJÀ entièrement remboursée n'est pas « non
+            // remboursable » : c'est une demande au-delà du montant remboursable
+            // restant (0), que le contrat traduit en 422 — c'est l'invariant
+            // « double remboursement impossible : montant > restant → 422 ».
+            // Le 409 reste réservé aux états qui n'ont jamais été payés
+            // (pending, open, cancelled…).
+            if ($order->status === OrderStatus::REFUNDED) {
+                abort(422, 'Refund amount must be between 1 and 0 (remaining refundable).');
+            }
+
+            abort(409, sprintf('Only a paid order can be refunded (current status "%s").', $order->status->value));
         }
 
         $payment = null;

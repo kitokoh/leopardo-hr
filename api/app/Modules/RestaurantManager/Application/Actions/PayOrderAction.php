@@ -77,10 +77,13 @@ final class PayOrderAction
             throw new RuntimeException('Order does not belong to tenant.');
         }
 
-        if (! $this->stateMachine->isPayable($order->status)) {
-            abort(409, sprintf('Order cannot be paid from status "%s".', $order->status->value));
-        }
-
+        // L'idempotence se vérifie AVANT la garde d'état. Après un paiement
+        // réussi, la commande passe en `paid` : au rejeu, `isPayable()` était
+        // faux et la requête sortait en 409 « Order cannot be paid from status
+        // paid » — alors que le rejeu d'une même `idempotency_key` doit rendre
+        // le MÊME paiement (contrat du doc-block, et condition d'un client qui
+        // retente après un timeout réseau). La garde d'état ne s'applique donc
+        // qu'à une demande nouvelle.
         if (isset($data['idempotency_key'])) {
             $existing = RestaurantOrderPayment::query()
                 ->where('company_id', $order->company_id)
@@ -90,6 +93,10 @@ final class PayOrderAction
             if ($existing instanceof RestaurantOrderPayment) {
                 return $existing;
             }
+        }
+
+        if (! $this->stateMachine->isPayable($order->status)) {
+            abort(409, sprintf('Order cannot be paid from status "%s".', $order->status->value));
         }
 
         $remaining = $this->remainingDue($order);

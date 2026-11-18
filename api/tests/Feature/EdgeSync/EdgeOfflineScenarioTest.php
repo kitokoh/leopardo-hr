@@ -386,13 +386,21 @@ class EdgeOfflineScenarioTest extends TestCase
      */
     public function scenario_7_retry_logic_after_failure(): void
     {
-        // Créer un record avec attempt_count = 4 (prochain = 5 = max)
+        // Créer un record avec attempt_count = 4 (prochain = 5 = max).
+        //
+        // #7840 : un `entity_type` hors allowlist (`nonexistent_table`) n'atteint
+        // JAMAIS la base — il est rejeté en `conflict` avant toute requête, par
+        // conception (le nom de table n'est jamais dérivé d'une entrée non
+        // allowlistée). Ce scénario doit donc provoquer un échec **réel** sur une
+        // entité synchronisable : `attendance_logs` sans `employee_id` viole une
+        // contrainte NOT NULL et lève une QueryException, ce qui est exactement
+        // le chemin « retry puis failed » que le test veut couvrir.
         $item = SyncQueue::create([
             'edge_node_id' => $this->node->id,
-            'entity_type' => 'nonexistent_table', // va provoquer une erreur DB
+            'entity_type' => 'attendance_logs',
             'entity_id' => 'retry-test-001',
             'operation' => 'create',
-            'payload' => ['invalid' => 'data'],
+            'payload' => ['date' => '2026-11-17', 'status' => 'ontime'],
             'status' => 'pending',
             'attempt_count' => 4, // déjà à 4 tentatives
         ]);
