@@ -368,4 +368,10 @@ return [
 
     // BC-10 (#9217) — CV antivirus taraması tarafından reddedildi.
     'RESUME_REJECTED' => 'Ekli dosya güvenlik taraması tarafından reddedildi.',
+    'BRAND_PUBLISH_MISSING_DISPLAY_NAME' => 'Bir Markanın yayınlanmadan önce genel bir adı (identity.display_name) olmalıdır.',
+    'BRAND_PUBLISH_SUSPENDED' => 'Askıya alınmış bir Marka yayınlanamaz. Önce askıyı kaldırın (taslağa dönün), sonra yeniden yayınlayın.',
+    'BRAND_SLUG_INVALID' => '"%s" kullanılabilir bir slug üretmiyor (beklenen: 1..160 karakter [a-z0-9-], başta veya sonda tire yok).',
+    'BRAND_SLUG_RESERVED' => '"%s" platform rotası tarafından ayrılmış.',
+    'SURFACE_PROFILE_DUPLICATE' => '"%s" dikeyi başka bir sağlayıcı tarafından zaten sunuluyor. Aynı dikey için iki profil render\'ı belirsiz hale getirir.',
+    'COMPANY_PROFILE_RESERVED_FIELDS' => 'Platforma ayrılmış alanlar: %s',
 ];

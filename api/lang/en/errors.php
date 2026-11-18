@@ -376,4 +376,10 @@ return [
 
     // BC-10 (#9217) — resume rejected by the antivirus scan.
     'RESUME_REJECTED' => 'The attached file was rejected by the security scan.',
+    'BRAND_PUBLISH_MISSING_DISPLAY_NAME' => 'A Brand must have a public name (identity.display_name) before it can be published.',
+    'BRAND_PUBLISH_SUSPENDED' => 'A suspended Brand cannot be published. Lift the suspension (back to draft) first, then publish again.',
+    'BRAND_SLUG_INVALID' => '"%s" does not produce a usable slug (expected: 1..160 characters [a-z0-9-], no leading or trailing hyphen).',
+    'BRAND_SLUG_RESERVED' => '"%s" is reserved by a platform route.',
+    'SURFACE_PROFILE_DUPLICATE' => 'The "%s" vertical is already provided by another provider. Two profiles for the same vertical would make rendering non-deterministic.',
+    'COMPANY_PROFILE_RESERVED_FIELDS' => 'Fields reserved for the platform: %s',
 ];

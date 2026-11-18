@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Branding;
 
-use App\Modules\Branding\Domain\Enums\BrandStatus;
-use App\Modules\Branding\Domain\Exceptions\BrandPublishException;
 use App\Modules\Branding\Domain\Exceptions\BrandSlugException;
 use App\Modules\Branding\Domain\Models\Brand;
 use PHPUnit\Framework\Attributes\DataProvider;

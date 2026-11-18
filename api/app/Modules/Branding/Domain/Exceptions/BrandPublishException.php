@@ -18,16 +18,14 @@ final class BrandPublishException extends DomainException
     public static function missingDisplayName(): self
     {
         return new self(
-            'BRAND_PUBLISH_MISSING_DISPLAY_NAME: une Brand doit avoir un nom public '
-            .'(identity.display_name) avant d\'être publiée.'
+            'BRAND_PUBLISH_MISSING_DISPLAY_NAME: '.__('errors.BRAND_PUBLISH_MISSING_DISPLAY_NAME')
         );
     }
 
     public static function suspended(): self
     {
         return new self(
-            'BRAND_PUBLISH_SUSPENDED: une Brand suspendue ne peut pas être publiée. '
-            .'Levez d\'abord la suspension (retour en brouillon), puis republiez.'
+            'BRAND_PUBLISH_SUSPENDED: '.__('errors.BRAND_PUBLISH_SUSPENDED')
         );
     }
 }

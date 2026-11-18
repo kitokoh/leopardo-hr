@@ -19,8 +19,7 @@ final class DuplicateSurfaceProfileException extends DomainException
     public static function forVertical(string $vertical): self
     {
         return new self(sprintf(
-            'SURFACE_PROFILE_DUPLICATE: la verticale « %s » est déjà fournie par un autre provider. '
-            .'Deux profils pour une même verticale rendraient le rendu non déterministe.',
+            'SURFACE_PROFILE_DUPLICATE: '.__('errors.SURFACE_PROFILE_DUPLICATE'),
             $vertical,
         ));
     }

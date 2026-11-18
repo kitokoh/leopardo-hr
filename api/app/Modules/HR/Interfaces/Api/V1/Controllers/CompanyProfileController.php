@@ -64,7 +64,7 @@ class CompanyProfileController extends Controller
             ['slug', 'schema_name', 'tenancy_type', 'status', 'plan_id', 'features', 'metadata']
         );
         if ($forbidden !== []) {
-            abort(422, 'Champs réservés à la plateforme : '.implode(', ', $forbidden));
+            abort(422, __('errors.COMPANY_PROFILE_RESERVED_FIELDS', ['fields' => implode(', ', $forbidden)]));
         }
 
         if ($validated === []) {

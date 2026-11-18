@@ -17,8 +17,7 @@ final class BrandSlugException extends DomainException
     public static function invalid(string $raw): self
     {
         return new self(sprintf(
-            'BRAND_SLUG_INVALID: « %s » ne produit pas un slug exploitable '
-            .'(attendu : 1..160 caractères [a-z0-9-], sans tiret en bord).',
+            'BRAND_SLUG_INVALID: '.__('errors.BRAND_SLUG_INVALID'),
             $raw,
         ));
     }
@@ -26,7 +25,7 @@ final class BrandSlugException extends DomainException
     public static function reserved(string $slug): self
     {
         return new self(sprintf(
-            'BRAND_SLUG_RESERVED: « %s » est réservé par une route de la plateforme.',
+            'BRAND_SLUG_RESERVED: '.__('errors.BRAND_SLUG_RESERVED'),
             $slug,
         ));
     }

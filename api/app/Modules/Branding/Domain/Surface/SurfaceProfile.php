@@ -60,7 +60,7 @@ final class SurfaceProfile
         // saura pas la rendre, et un bouton qui ne mène nulle part est pire
         // qu'un bouton absent. On refuse au boot plutôt qu'à l'écran.
         foreach ($capabilities as $capability) {
-            if (!in_array($capability, SurfaceCapability::values(), true)) {
+            if (! in_array($capability, SurfaceCapability::values(), true)) {
                 throw new \InvalidArgumentException(sprintf(
                     'SURFACE_PROFILE_UNKNOWN_CAPABILITY: « %s » (verticale %s).',
                     $capability,
