@@ -60,6 +60,9 @@ class PublicDiscoverableProviderContractTest extends TestCase
         // posteriori. La page `front/web/src/app/entreprises/[slug]/page.tsx`
         // doit exister ET ne pas être sous un préfixe dashboard.
         'trade_company' => 'entreprises',
+        // #9592 — vitrine publique Pharmacie. La page
+        // `front/web/src/app/pharmacies/[slug]/page.tsx` doit exister.
+        'pharmacy' => 'pharmacies',
     ];
 
     /**

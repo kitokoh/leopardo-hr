@@ -1,19 +1,36 @@
 import Link from 'next/link';
 
-import { SurfaceHero, SurfaceShell, type SurfaceIdentity } from '../../kernel';
+import {
+  SurfaceBadge,
+  SurfaceCard,
+  SurfaceCta,
+  SurfaceGrid,
+  SurfaceHero,
+  SurfaceMeta,
+  SurfaceNotice,
+  SurfaceShell,
+  type SurfaceIdentity,
+} from '../../kernel';
 import { getSurfaceCopy } from '../../copy/surfaces-copy';
 import type { RestaurantCard } from '../application/load-restaurant-surface';
 import { formatDistance } from '../domain/restaurant';
 
 /**
- * Rendu de la vitrine Restaurant.
+ * Rendu de la vitrine Restaurant (#9594).
  *
- * Composant **pur** : il reçoit des cartes déjà chargées et triées. Aucun fetch,
- * aucun état, aucune règle métier — c'est ce qui le rend testable sans réseau et
- * réutilisable côté serveur comme côté client.
+ * ## Composition propre à la verticale
  *
- * Toute chaîne visible vient du catalogue de copie (`copy/surfaces-copy`), jamais
- * d'un littéral : la vitrine est servie en 4 langues.
+ * Le restaurant se choisit **sur la note et la proximité**. D'où :
+ *
+ *  1. **Grille moyenne** (`min 17rem`) : assez dense pour comparer, assez large
+ *     pour que le nom respire.
+ *  2. **La note est un badge accent** en tête de carte, la distance en
+ *     métadonnée : ce sont les deux critères de tri réels du public.
+ *  3. **Sans avis, aucun badge de note** — jamais « ★ 0 » : une adresse pas
+ *     encore évaluée n'est pas une mauvaise adresse.
+ *
+ * Composant pur : il reçoit des cartes déjà chargées et triées. Aucun fetch,
+ * aucun état, aucune règle métier — testable sans réseau.
  */
 export function RestaurantSurface({
   identity,
@@ -36,85 +53,73 @@ export function RestaurantSurface({
       <SurfaceHero
         identity={identity}
         eyebrow={copy.verticals.restaurant.eyebrow}
-        action={
-          <Link
-            href="/decouvrir"
-            style={{
-              display: 'inline-block',
-              padding: '0.7rem 1.2rem',
-              borderRadius: '0.6rem',
-              background: identity.palette.primary,
-              color: identity.palette.onPrimary,
-              fontWeight: 600,
-              textDecoration: 'none',
-            }}
-          >
-            {shared.allAddresses}
-          </Link>
-        }
+        action={<SurfaceCta identity={identity} href="/decouvrir">{shared.allAddresses}</SurfaceCta>}
       />
 
       <main style={{ maxWidth: '72rem', margin: '0 auto', padding: '2rem 1.25rem 4rem' }}>
         {failed ? (
-          <p role="alert" style={{ color: identity.palette.muted }}>
+          <SurfaceNotice identity={identity} alert>
             {shared.unavailable}
-          </p>
+          </SurfaceNotice>
         ) : null}
 
         {!failed && cards.length === 0 ? (
-          <p style={{ color: identity.palette.muted }}>{shared.empty}</p>
+          <SurfaceNotice identity={identity}>{shared.empty}</SurfaceNotice>
         ) : null}
 
         {!failed && cards.length > 0 ? (
           <>
-            <p style={{ color: identity.palette.muted, marginTop: 0 }}>
+            <SurfaceMeta identity={identity}>
               {total} {total > 1 ? shared.products : shared.product}
-            </p>
+            </SurfaceMeta>
 
-            <ul
-              style={{
-                listStyle: 'none',
-                margin: 0,
-                padding: 0,
-                display: 'grid',
-                gap: '1rem',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(17rem, 1fr))',
-              }}
-            >
-              {cards.map(({ restaurant, rating }) => {
-                const distance = formatDistance(restaurant.distanceKm);
+            <div style={{ marginTop: '1rem' }}>
+              <SurfaceGrid min="17rem">
+                {cards.map(({ restaurant, rating }) => {
+                  const distance = formatDistance(restaurant.distanceKm);
 
-                return (
-                  <li
-                    key={restaurant.slug}
-                    style={{
-                      border: `1px solid ${identity.palette.muted}33`,
-                      borderRadius: '0.75rem',
-                      padding: '1rem',
-                      background: '#FFFFFF',
-                    }}
-                  >
-                    <Link
-                      href={`${identity.basePath}/${restaurant.slug}`}
-                      style={{ color: 'inherit', textDecoration: 'none' }}
-                    >
-                      <h2 style={{ margin: 0, fontSize: '1.05rem' }}>{restaurant.name}</h2>
+                  return (
+                    <SurfaceCard key={restaurant.slug} as="li" interactive identity={identity}>
+                      <Link
+                        href={`${identity.basePath}/${restaurant.slug}`}
+                        data-surface-card-link=""
+                      >
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'baseline',
+                            justifyContent: 'space-between',
+                            gap: '0.5rem',
+                          }}
+                        >
+                          <h2 style={{ margin: 0, fontSize: '1.05rem', lineHeight: 1.25 }}>
+                            {restaurant.name}
+                          </h2>
 
-                      <p style={{ margin: '0.35rem 0 0', color: identity.palette.muted, fontSize: '0.875rem' }}>
-                        {[restaurant.kind, restaurant.city].filter(Boolean).join(' · ') || shared.address}
-                      </p>
+                          {rating !== null ? (
+                            <SurfaceBadge identity={identity} tone="accent">
+                              ★ {rating}
+                            </SurfaceBadge>
+                          ) : null}
+                        </div>
 
-                      <p style={{ margin: '0.5rem 0 0', fontSize: '0.875rem' }}>
-                        {rating !== null
-                          ? `★ ${rating} (${restaurant.reviewsCount})`
-                          : shared.noReviews}
-                        {distance !== null ? ` · ${distance}` : ''}
-                      </p>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
+                        <SurfaceMeta identity={identity}>
+                          {[restaurant.kind, restaurant.city].filter(Boolean).join(' · ') ||
+                            shared.address}
+                        </SurfaceMeta>
+
+                        <SurfaceMeta identity={identity}>
+                          {rating !== null
+                            ? `${restaurant.reviewsCount} ${shared.reviews}`
+                            : shared.noReviews}
+                          {distance !== null ? ` · ${distance}` : ''}
+                        </SurfaceMeta>
+                      </Link>
+                    </SurfaceCard>
+                  );
+                })}
+              </SurfaceGrid>
+            </div>
           </>
         ) : null}
       </main>

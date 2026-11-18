@@ -41,3 +41,12 @@ export {
 
 export { SurfaceHero } from './components/SurfaceHero';
 export { SurfaceShell } from './components/SurfaceShell';
+export {
+  SurfaceBadge,
+  SurfaceCard,
+  SurfaceCta,
+  SurfaceGrid,
+  SurfaceMeta,
+  SurfaceNotice,
+  SurfaceSectionTitle,
+} from './components/SurfacePrimitives';

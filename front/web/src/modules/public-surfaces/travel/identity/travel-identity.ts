@@ -15,7 +15,7 @@ export const TRAVEL_SURFACE: SurfaceIdentity = {
   displayName: copy.displayName,
   tagline: copy.tagline,
   canonicalDomain: 'billets.leopardo.app',
-  basePath: '/travel',
+  basePath: '/billets',
   discoveryType: 'travel',
   palette: buildPalette({
     primary: '#6D28D9',

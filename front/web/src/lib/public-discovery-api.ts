@@ -194,6 +194,9 @@ const VERTICAL_PATHS: Record<string, string> = {
   vtc_operator: '/operateurs',
   trade_company: '/entreprises',
   hospitality_property: '/stay',
+  // #9592 — vitrine publique Pharmacie : le provider `pharmacy` existe
+  // désormais côté API, ses fiches `/pharmacies/{slug}` sont donc indexables.
+  pharmacy: '/pharmacies',
 };
 
 /**

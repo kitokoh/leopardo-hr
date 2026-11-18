@@ -1,0 +1,78 @@
+/**
+ * Interactions des vitrines publiques (#9594).
+ *
+ * ## Pourquoi un fichier CSS et pas des styles inline
+ *
+ * Les primitives du noyau sont rendues en `style={{...}}` : c'est ce qui les
+ * rend pures et testables sans feuille de style. Mais trois choses ne
+ * s'expriment PAS en inline :
+ *
+ *   - `:hover` / `:focus-visible` — aucun sélecteur d'état en inline ;
+ *   - `@media (prefers-reduced-motion)` — pas de media query en inline ;
+ *   - `@media (prefers-contrast: more)` — idem.
+ *
+ * D'où ce fichier, volontairement minuscule : il ne porte QUE les états. La
+ * composition (grilles, tailles, palettes) reste dans les composants.
+ *
+ * ## Accessibilité
+ *
+ * Le focus est visible sur TOUT élément interactif d'une vitrine. Sans lui, un
+ * visiteur au clavier ne peut pas parcourir un annuaire — c'est un défaut
+ * bloquant, pas un raffinement. L'anneau utilise `--surface-primary`, donc il
+ * reste lisible sur les six palettes.
+ */
+
+/* Carte cliquable : élévation au survol, jamais de déplacement (le texte
+   ne doit pas bouger sous le curseur pendant la lecture). */
+[data-surface-card][data-surface-interactive='true'] {
+  transition:
+    box-shadow 140ms ease,
+    border-color 140ms ease;
+}
+
+[data-surface-card][data-surface-interactive='true']:hover {
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
+  border-color: var(--surface-primary);
+}
+
+/* Le lien qui enveloppe une carte occupe toute la surface : la cible de clic
+   est la carte entière, pas seulement le texte du titre. */
+[data-surface-card] > a[data-surface-card-link] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Focus visible — sur les liens de carte ET les CTA. */
+[data-surface] a:focus-visible,
+[data-surface] button:focus-visible {
+  outline: 3px solid var(--surface-primary);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+/* CTA : assombrissement au survol, sans changer la couleur de texte (le
+   contraste `onPrimary` a été calculé pour la couleur de base). */
+[data-surface] a[data-surface-cta]:hover {
+  filter: brightness(0.92);
+}
+
+/* Respect de la préférence système : aucune transition si l'utilisateur
+   demande moins de mouvement. */
+@media (prefers-reduced-motion: reduce) {
+  [data-surface-card],
+  [data-surface] a {
+    transition: none !important;
+  }
+}
+
+/* Contraste renforcé : les bordures décoratives deviennent des séparateurs
+   lisibles pour qui a demandé plus de contraste. */
+@media (prefers-contrast: more) {
+  [data-surface-card] {
+    border-color: var(--surface-fg) !important;
+  }
+}

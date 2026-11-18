@@ -1,0 +1,345 @@
+name: Deploy Public Surfaces - Vercel
+
+# Issue #9591 — déploiement conditionnel PAR VITRINE verticale grand public.
+#
+# ## Le principe (déjà en place ailleurs dans le dépôt)
+#
+# La Vitrine, l'API et les apps mobiles ne se redéploient que si du code qui les
+# concerne a changé. Les vitrines verticales n'avaient rien : `front/web` partait
+# en bloc, donc un correctif dans `modules/public-surfaces/pharmacy/**`
+# reconstruisait les six surfaces.
+#
+# ## Comment la sélection est décidée
+#
+# `dev-hub/tools/detect-changed-surfaces.sh` lit le diff et rend la liste des
+# verticales touchées :
+#   - bounded context  : `modules/public-surfaces/<v>/**`
+#   - route publique   : `app/<basePath>/**`
+#   - noyau partagé    : `kernel/**`, `copy/**`, `registry.ts`, `index.ts`
+#     → TOUTES les vitrines (le noyau porte le contraste et le rendu communs).
+#
+# Le job `detect` produit une matrice ; `deploy` ne déploie QUE ces verticales.
+# Aucune verticale touchée ⇒ aucun déploiement (pas de rebuild inutile).
+#
+# ## Pourquoi un projet Vercel par vitrine
+#
+# Chaque vitrine a son domaine canonique (`restaurants.leopardo.app`,
+# `pharmacies.leopardo.app`…) et son identité. Un seul projet Vercel partagé
+# servirait six domaines depuis un même build : impossible de déployer la
+# pharmacie sans republier le restaurant, et impossible d'avoir un cache ou un
+# rollback indépendant. Un projet par vitrine est la seule topologie qui rende
+# le déploiement conditionnel réellement utile.
+#
+# ## Secrets (action PROPRIÉTAIRE, une fois par vitrine)
+#
+#   VERCEL_SURFACE_<VERTICAL>_TOKEN / _ORG_ID / _PROJECT_ID
+#
+# Absents ⇒ skip EXPLICITE (::warning:: + step summary), jamais un skip
+# silencieux (règle AGENTS.md). Sur `push main`, l'absence est BLOQUANTE : un
+# push qui touche une vitrine sans déploiement possible doit être visible
+# (#7994 §4). Runbook : docs/ops/PUBLIC_SURFACES_DEPLOY.md.
+
+on:
+  pull_request:
+    paths:
+      - 'front/web/src/modules/public-surfaces/**'
+      - 'front/web/src/app/restaurants/**'
+      - 'front/web/src/app/boutiques/**'
+      - 'front/web/src/app/stay/**'
+      - 'front/web/src/app/entreprises/**'
+      - 'front/web/src/app/billets/**'
+      - 'front/web/src/app/pharmacies/**'
+      - 'dev-hub/tools/detect-changed-surfaces.sh'
+      - 'dev-hub/tools/check-public-surfaces-deploy-parity.sh'
+      - '.github/workflows/public-surfaces-deploy.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'front/web/src/modules/public-surfaces/**'
+      - 'front/web/src/app/restaurants/**'
+      - 'front/web/src/app/boutiques/**'
+      - 'front/web/src/app/stay/**'
+      - 'front/web/src/app/entreprises/**'
+      - 'front/web/src/app/billets/**'
+      - 'front/web/src/app/pharmacies/**'
+      - 'dev-hub/tools/detect-changed-surfaces.sh'
+      - 'dev-hub/tools/check-public-surfaces-deploy-parity.sh'
+      - '.github/workflows/public-surfaces-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      vertical:
+        description: "Vitrine à déployer (all = les six)"
+        required: true
+        type: choice
+        options:
+          - all
+          - restaurant
+          - retail
+          - hospitality
+          - trade
+          - travel
+          - pharmacy
+        default: all
+      environment:
+        description: "Environnement cible"
+        required: true
+        type: choice
+        options:
+          - preview
+          - production
+        default: preview
+
+permissions:
+  contents: read
+  # Enregistrement du GitHub Deployment après un déploiement prod réussi
+  # (#7994 §5 — traçabilité pour la garde anti-dérive des fronts Vercel).
+  deployments: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: public-surfaces-deploy-${{ github.ref }}
+  # Annulation PR-only : un déploiement sur main ne doit jamais être coupé à
+  # mi-chemin (#9035).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # ───────────────────────────────────────────────────────────────────────────
+  # DÉTECTION — quelles vitrines le diff touche-t-il réellement ?
+  # ───────────────────────────────────────────────────────────────────────────
+  detect:
+    name: Détecter les vitrines modifiées
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      matrix: ${{ steps.detect.outputs.matrix }}
+      count: ${{ steps.detect.outputs.count }}
+      shared: ${{ steps.detect.outputs.shared }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+          # Le diff a besoin de l'historique : `fetch-depth: 1` rendrait
+          # `git diff base...head` impossible et le détecteur échouerait.
+          fetch-depth: 0
+
+      - name: Garde de parité vitrines ↔ déploiement (#9591)
+        shell: bash
+        run: bash dev-hub/tools/check-public-surfaces-deploy-parity.sh
+
+      - name: Détecter les vitrines touchées
+        id: detect
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          DISPATCH_VERTICAL: ${{ inputs.vertical }}
+        run: |
+          set -euo pipefail
+
+          if [[ "${EVENT_NAME}" == "workflow_dispatch" ]]; then
+            if [[ "${DISPATCH_VERTICAL}" == "all" ]]; then
+              RESULT='{"surfaces":["restaurant","retail","hospitality","trade","travel","pharmacy"],"shared":true,"all":true}'
+            else
+              RESULT="{\"surfaces\":[\"${DISPATCH_VERTICAL}\"],\"shared\":false,\"all\":false}"
+            fi
+          elif [[ "${EVENT_NAME}" == "pull_request" ]]; then
+            git fetch --no-tags --quiet origin "${BASE_REF}"
+            RESULT="$(bash dev-hub/tools/detect-changed-surfaces.sh --base "origin/${BASE_REF}" --head HEAD)"
+          else
+            # push sur main : le diff utile est celui du commit poussé.
+            RESULT="$(bash dev-hub/tools/detect-changed-surfaces.sh --base HEAD~1 --head HEAD)"
+          fi
+
+          echo "Détection : ${RESULT}"
+
+          SURFACES="$(python3 -c 'import json,sys; print(json.dumps(json.loads(sys.argv[1])["surfaces"]))' "${RESULT}")"
+          SHARED="$(python3 -c 'import json,sys; print(str(json.loads(sys.argv[1])["shared"]).lower())' "${RESULT}")"
+          COUNT="$(python3 -c 'import json,sys; print(len(json.loads(sys.argv[1])["surfaces"]))' "${RESULT}")"
+
+          {
+            echo "matrix={\"surface\":${SURFACES}}"
+            echo "count=${COUNT}"
+            echo "shared=${SHARED}"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            echo "## Vitrines publiques — détection (#9591)"
+            echo ""
+            echo "- Verticales touchées : \`${SURFACES}\`"
+            echo "- Noyau partagé modifié : \`${SHARED}\`"
+            echo "- Déploiements à lancer : **${COUNT}**"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # DÉPLOIEMENT — une instance par vitrine touchée, jamais les autres.
+  # ───────────────────────────────────────────────────────────────────────────
+  deploy:
+    name: Déployer ${{ matrix.surface }}
+    needs: detect
+    if: needs.detect.outputs.count != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.detect.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+          fetch-depth: 1
+
+      # Les secrets ne sont pas lisibles dans un `if:` — pattern env-detour
+      # éprouvé du dépôt (deploy-admin-dashboard.yml, travel-web-deploy.yml).
+      - name: Résoudre les secrets de la vitrine
+        id: secrets
+        shell: bash
+        env:
+          VERTICAL: ${{ matrix.surface }}
+          TOKEN: ${{ secrets[format('VERCEL_SURFACE_{0}_TOKEN', matrix.surface)] }}
+          ORG_ID: ${{ secrets[format('VERCEL_SURFACE_{0}_ORG_ID', matrix.surface)] }}
+          PROJECT_ID: ${{ secrets[format('VERCEL_SURFACE_{0}_PROJECT_ID', matrix.surface)] }}
+        run: |
+          set -euo pipefail
+          if [[ -n "${TOKEN}" && -n "${ORG_ID}" && -n "${PROJECT_ID}" ]]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Node.js
+        if: steps.secrets.outputs.configured == 'true'
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: 'front/web/package-lock.json'
+
+      - name: Install Vercel CLI (pinned)
+        if: steps.secrets.outputs.configured == 'true'
+        run: npm install --global vercel@59.11.2
+
+      # Le projet Vercel de la vitrine porte `rootDirectory: front/web` : les
+      # commandes partent de la RACINE du dépôt, sans `--cwd` (sinon le chemin
+      # serait doublé — fix #6810).
+      - name: Pull Vercel environment
+        if: steps.secrets.outputs.configured == 'true'
+        shell: bash
+        env:
+          VERCEL_TOKEN: ${{ secrets[format('VERCEL_SURFACE_{0}_TOKEN', matrix.surface)] }}
+          VERCEL_ORG_ID: ${{ secrets[format('VERCEL_SURFACE_{0}_ORG_ID', matrix.surface)] }}
+          VERCEL_PROJECT_ID: ${{ secrets[format('VERCEL_SURFACE_{0}_PROJECT_ID', matrix.surface)] }}
+          TARGET_ENV: ${{ github.event_name == 'push' && 'production' || inputs.environment || 'preview' }}
+        run: vercel pull --yes --environment="${TARGET_ENV}"
+
+      - name: Build
+        if: steps.secrets.outputs.configured == 'true'
+        shell: bash
+        env:
+          VERCEL_TOKEN: ${{ secrets[format('VERCEL_SURFACE_{0}_TOKEN', matrix.surface)] }}
+          VERCEL_ORG_ID: ${{ secrets[format('VERCEL_SURFACE_{0}_ORG_ID', matrix.surface)] }}
+          VERCEL_PROJECT_ID: ${{ secrets[format('VERCEL_SURFACE_{0}_PROJECT_ID', matrix.surface)] }}
+          TARGET_ENV: ${{ github.event_name == 'push' && 'production' || inputs.environment || 'preview' }}
+        run: |
+          set -euo pipefail
+          if [[ "${TARGET_ENV}" == "production" ]]; then
+            vercel build --prod
+          else
+            vercel build
+          fi
+
+      - name: Deploy
+        id: deploy
+        if: steps.secrets.outputs.configured == 'true'
+        shell: bash
+        env:
+          VERCEL_TOKEN: ${{ secrets[format('VERCEL_SURFACE_{0}_TOKEN', matrix.surface)] }}
+          VERCEL_ORG_ID: ${{ secrets[format('VERCEL_SURFACE_{0}_ORG_ID', matrix.surface)] }}
+          VERCEL_PROJECT_ID: ${{ secrets[format('VERCEL_SURFACE_{0}_PROJECT_ID', matrix.surface)] }}
+          TARGET_ENV: ${{ github.event_name == 'push' && 'production' || inputs.environment || 'preview' }}
+          VERTICAL: ${{ matrix.surface }}
+        run: |
+          set -euo pipefail
+          if [[ "${TARGET_ENV}" == "production" ]]; then
+            URL="$(vercel deploy --prebuilt --prod | tail -n 1)"
+          else
+            URL="$(vercel deploy --prebuilt | tail -n 1)"
+          fi
+          echo "::notice::Vercel ${TARGET_ENV} deploy (${VERTICAL}) : ${URL}"
+          echo "url=${URL}" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Vitrine ${VERTICAL} — ${TARGET_ENV}"
+            echo ""
+            echo "- Déploiement : ${URL}"
+            echo "- Déclenché par : ${GITHUB_EVENT_NAME} (${GITHUB_SHA})"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Healthcheck sur l'URL UNIQUE de l'instance que CE run vient de déployer
+      # (règle AGENTS.md : prouver qu'une NOUVELLE instance répond, jamais un
+      # alias partagé). 401/403/302→SSO = déploiement vivant mais protégé par
+      # Vercel Authentication — accepté comme sain (#8423).
+      - name: Healthcheck
+        if: steps.secrets.outputs.configured == 'true'
+        shell: bash
+        env:
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
+          VERTICAL: ${{ matrix.surface }}
+        run: |
+          set -euo pipefail
+          URL="${DEPLOY_URL%/}/"
+          echo "Attente de la vitrine ${VERTICAL} sur ${URL}…"
+          for _attempt in {1..12}; do
+            OUT="$(curl --silent --output /dev/null --max-time 15 --write-out '%{http_code} %{redirect_url}' "${URL}" || echo '000 ')"
+            CODE="${OUT%% *}"
+            LOCATION="${OUT#* }"
+            case "${CODE}" in
+              2*) echo "Vitrine ${VERTICAL} répond (HTTP ${CODE})."; exit 0 ;;
+              401|403) echo "Vitrine ${VERTICAL} déployée et protégée par Vercel Authentication (HTTP ${CODE}) — sain."; exit 0 ;;
+              302)
+                case "${LOCATION}" in
+                  https://vercel.com/sso-api*|https://vercel.com/login*)
+                    echo "Vitrine ${VERTICAL} déployée et protégée par Vercel SSO (HTTP 302) — sain."; exit 0 ;;
+                esac
+                echo "HTTP 302 inattendu (→ ${LOCATION}) — retry" ;;
+              *) echo "HTTP ${CODE} — retry" ;;
+            esac
+            sleep 10
+          done
+          echo "::error::vitrine ${VERTICAL} ne répond pas — build en échec ou env manquante côté Vercel."
+          exit 1
+
+      - name: Enregistrer le GitHub Deployment (traçabilité drift)
+        if: success() && steps.secrets.outputs.configured == 'true' && (github.event_name == 'push' || inputs.environment == 'production')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERTICAL: ${{ matrix.surface }}
+        run: |
+          set -euo pipefail
+          bash dev-hub/tools/register-github-deployment.sh \
+            --environment "Production – surface-${VERTICAL}" \
+            --sha "${GITHUB_SHA}" \
+            --url "${{ steps.deploy.outputs.url }}" \
+            --description "Vitrine ${VERTICAL} déployée par public-surfaces-deploy.yml"
+
+      - name: Skip — secrets Vercel absents
+        if: steps.secrets.outputs.configured != 'true'
+        shell: bash
+        env:
+          VERTICAL: ${{ matrix.surface }}
+        run: |
+          {
+            echo "## Vitrine ${VERTICAL} — SKIP"
+            echo ""
+            echo "Secrets \`VERCEL_SURFACE_${VERTICAL^^}_*\` absents (SHA ${GITHUB_SHA})."
+            echo "Voir docs/ops/PUBLIC_SURFACES_DEPLOY.md."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [[ "${GITHUB_EVENT_NAME}" == "push" ]]; then
+            echo "::error::secrets VERCEL_SURFACE_${VERTICAL^^}_* absents — push main touchant la vitrine ${VERTICAL} SANS déploiement possible (#7994 §4 : le retard doit être visible)."
+            exit 1
+          fi
+          echo "::warning::secrets VERCEL_SURFACE_${VERTICAL^^}_* absents — déploiement ${VERTICAL} sauté (PR/dispatch)."

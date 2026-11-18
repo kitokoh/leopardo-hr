@@ -1,15 +1,36 @@
 import Link from 'next/link';
 
-import { SurfaceHero, SurfaceShell, type SurfaceIdentity } from '../../kernel';
+import {
+  SurfaceBadge,
+  SurfaceCard,
+  SurfaceCta,
+  SurfaceHero,
+  SurfaceMeta,
+  SurfaceNotice,
+  SurfaceShell,
+  type SurfaceIdentity,
+} from '../../kernel';
 import { getSurfaceCopy } from '../../copy/surfaces-copy';
 import type { TripCard } from '../application/load-travel-surface';
 import { hasRoute, tripRoute } from '../domain/trip';
 
 /**
- * Rendu de la vitrine Billets.
+ * Rendu de la vitrine Billets (#9594).
  *
- * Composant pur : reçoit des trajets déjà chargés. Aucun fetch, aucun état.
- * Toute chaîne visible vient du catalogue de copie.
+ * ## Composition propre à la verticale
+ *
+ * Un billet se choisit **sur l'itinéraire et l'horaire**, pas sur une vignette.
+ * D'où :
+ *
+ *  1. **Liste en lignes, pas en grille** : l'œil balaie verticalement des
+ *     itinéraires — c'est le seul format qui rende les départs comparables.
+ *  2. **L'itinéraire est le titre**, l'horaire la métadonnée, le prix et la
+ *     disponibilité alignés à droite : lecture en trois colonnes mentales.
+ *  3. **La disponibilité est un badge** (`Réservable` / `Complet`), et un
+ *     trajet sans places connues n'est jamais déclaré complet — règle portée
+ *     par `isBookable()` dans le domaine.
+ *
+ * Composant pur : aucun fetch, aucun état.
  */
 export function TravelSurface({
   identity,
@@ -31,32 +52,21 @@ export function TravelSurface({
         identity={identity}
         eyebrow={copy.verticals.travel.eyebrow}
         action={
-          <Link
-            href="/decouvrir"
-            style={{
-              display: 'inline-block',
-              padding: '0.7rem 1.2rem',
-              borderRadius: '0.6rem',
-              background: identity.palette.primary,
-              color: identity.palette.onPrimary,
-              fontWeight: 600,
-              textDecoration: 'none',
-            }}
-          >
+          <SurfaceCta identity={identity} href="/decouvrir">
             {shared.allDestinations}
-          </Link>
+          </SurfaceCta>
         }
       />
 
-      <main style={{ maxWidth: '72rem', margin: '0 auto', padding: '2rem 1.25rem 4rem' }}>
+      <main style={{ maxWidth: '64rem', margin: '0 auto', padding: '2rem 1.25rem 4rem' }}>
         {failed ? (
-          <p role="alert" style={{ color: identity.palette.muted }}>
+          <SurfaceNotice identity={identity} alert>
             {shared.unavailable}
-          </p>
+          </SurfaceNotice>
         ) : null}
 
         {!failed && cards.length === 0 ? (
-          <p style={{ color: identity.palette.muted }}>{shared.empty}</p>
+          <SurfaceNotice identity={identity}>{shared.empty}</SurfaceNotice>
         ) : null}
 
         {!failed && cards.length > 0 ? (
@@ -70,39 +80,44 @@ export function TravelSurface({
             }}
           >
             {cards.map(({ trip, priceLabel, seats, bookable }) => (
-              <li
-                key={trip.reference}
-                style={{
-                  border: `1px solid ${identity.palette.muted}33`,
-                  borderRadius: '0.75rem',
-                  padding: '1rem',
-                  background: '#FFFFFF',
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '0.75rem',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <div>
-                  <strong style={{ display: 'block' }}>
-                    {hasRoute(trip) ? tripRoute(trip) : shared.trip}
-                  </strong>
-                  <span style={{ color: identity.palette.muted, fontSize: '0.875rem' }}>
-                    {[trip.departureAt, seats].filter(Boolean).join(' · ') ||
-                      shared.scheduleTbc}
-                  </span>
-                </div>
+              <SurfaceCard key={trip.reference} as="li" identity={identity}>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '0.75rem',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <div style={{ minWidth: '12rem' }}>
+                    <strong style={{ display: 'block', fontSize: '1rem' }}>
+                      {hasRoute(trip) ? tripRoute(trip) : shared.trip}
+                    </strong>
+                    <SurfaceMeta identity={identity}>
+                      {[trip.departureAt, seats].filter(Boolean).join(' · ') ||
+                        shared.scheduleTbc}
+                    </SurfaceMeta>
+                  </div>
 
-                <div style={{ textAlign: 'right' }}>
-                  <strong style={{ display: 'block' }}>
-                    {priceLabel ?? shared.priceOnRequest}
-                  </strong>
-                  <span style={{ color: identity.palette.muted, fontSize: '0.8rem' }}>
-                    {bookable ? shared.bookable : shared.soldOut}
-                  </span>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.75rem',
+                      marginLeft: 'auto',
+                    }}
+                  >
+                    <strong style={{ fontSize: '1.05rem' }}>
+                      {priceLabel ?? shared.priceOnRequest}
+                    </strong>
+
+                    <SurfaceBadge identity={identity} tone={bookable ? 'accent' : 'neutral'}>
+                      {bookable ? shared.bookable : shared.soldOut}
+                    </SurfaceBadge>
+                  </div>
                 </div>
-              </li>
+              </SurfaceCard>
             ))}
           </ul>
         ) : null}

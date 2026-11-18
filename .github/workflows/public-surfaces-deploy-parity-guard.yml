@@ -1,0 +1,93 @@
+name: Public Surfaces Deploy Parity Guard
+
+# Issue #9591 — garde de parité vitrines ↔ déploiement conditionnel.
+#
+# Le déploiement par vitrine repose sur un miroir : `SURFACE_VERTICALS` (code),
+# la table `SURFACES` du détecteur (CI) et les identités `basePath` (routes).
+# Un miroir qui dérive est pire qu'aucun miroir : une verticale ajoutée sans
+# ligne dans le détecteur ne se déploierait JAMAIS — silencieusement, et
+# seulement en production.
+#
+# Cette garde est REQUISE au merge : elle est rapide (lecture de fichiers, aucun
+# réseau) et son échec est toujours actionnable.
+
+on:
+  pull_request:
+    paths:
+      - 'front/web/src/modules/public-surfaces/**'
+      - 'front/web/src/app/restaurants/**'
+      - 'front/web/src/app/boutiques/**'
+      - 'front/web/src/app/stay/**'
+      - 'front/web/src/app/entreprises/**'
+      - 'front/web/src/app/billets/**'
+      - 'front/web/src/app/pharmacies/**'
+      - 'dev-hub/tools/detect-changed-surfaces.sh'
+      - 'dev-hub/tools/check-public-surfaces-deploy-parity.sh'
+      - 'docs/ops/DOMAINS.md'
+      - '.github/workflows/public-surfaces-deploy.yml'
+      - '.github/workflows/public-surfaces-deploy-parity-guard.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'front/web/src/modules/public-surfaces/**'
+      - 'dev-hub/tools/detect-changed-surfaces.sh'
+      - 'dev-hub/tools/check-public-surfaces-deploy-parity.sh'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: public-surfaces-parity-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  parity:
+    name: Parité vitrines ↔ déploiement (#9591)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Garde de parité
+        shell: bash
+        run: bash dev-hub/tools/check-public-surfaces-deploy-parity.sh
+
+      # Le détecteur est du bash exécuté en CI : on prouve qu'il classe
+      # correctement trois cas canoniques plutôt que de le croire sur parole.
+      - name: Tests du détecteur
+        shell: bash
+        run: |
+          set -euo pipefail
+          DETECT="dev-hub/tools/detect-changed-surfaces.sh"
+
+          assert_eq() {
+            local label="$1" expected="$2" actual="$3"
+            if [[ "${expected}" != "${actual}" ]]; then
+              echo "::error::${label} : attendu '${expected}', obtenu '${actual}'"
+              exit 1
+            fi
+            echo "OK — ${label}"
+          }
+
+          # 1. Noyau partagé ⇒ toutes les vitrines.
+          out="$(echo 'front/web/src/modules/public-surfaces/kernel/domain/contrast.ts' | bash "${DETECT}" --stdin)"
+          assert_eq "noyau → all" 'true' "$(python3 -c 'import json,sys;print(str(json.loads(sys.argv[1])["all"]).lower())' "${out}")"
+
+          # 2. Une verticale seule ⇒ elle seule.
+          out="$(echo 'front/web/src/modules/public-surfaces/pharmacy/domain/pharmacy.ts' | bash "${DETECT}" --stdin)"
+          assert_eq "pharmacie seule" '["pharmacy"]' "$(python3 -c 'import json,sys;print(json.dumps(json.loads(sys.argv[1])["surfaces"]))' "${out}")"
+
+          # 3. Hors périmètre ⇒ aucune vitrine.
+          out="$(echo 'api/app/Modules/HR/Foo.php' | bash "${DETECT}" --stdin)"
+          assert_eq "hors périmètre" '[]' "$(python3 -c 'import json,sys;print(json.dumps(json.loads(sys.argv[1])["surfaces"]))' "${out}")"
+
+          # 4. Route publique seule ⇒ la verticale correspondante.
+          out="$(echo 'front/web/src/app/stay/page.tsx' | bash "${DETECT}" --stdin)"
+          assert_eq "route /stay" '["hospitality"]' "$(python3 -c 'import json,sys;print(json.dumps(json.loads(sys.argv[1])["surfaces"]))' "${out}")"

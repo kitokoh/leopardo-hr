@@ -421,6 +421,31 @@ for motif in 'no-store, max-age=0' 'public, max-age=60'; do
 done
 expect_flagged 'Bonjour, le monde' "contre-contrôle : énumération à virgule non-HTTP reste flaggée (#8700)"
 
+# ── Cas 2c : valeurs de style CSS inline (#9594) ─────────────────────────────
+# Les primitives de rendu des vitrines publiques posent des ombres et des
+# transitions en style inline :
+#   boxShadow: '0 1px 2px rgba(15, 23, 42, 0.04)'
+#   transition: 'box-shadow 120ms ease, transform 120ms ease'
+# Ce sont des valeurs de style, jamais du texte utilisateur. Le contre-contrôle
+# vérifie que l'exception ne s'ouvre pas à une phrase quelconque.
+mkdir -p "$REPO_TEXT/front/web/src/modules/public-surfaces/kernel/components"
+cat > "$REPO_TEXT/front/web/src/modules/public-surfaces/kernel/components/SurfacePrimitives.tsx" <<'TSX'
+export function SurfaceCard() {
+  const shadow = '0 1px 2px rgba(15, 23, 42, 0.04)'
+  const transition = 'box-shadow 120ms ease, transform 120ms ease'
+  // Contre-contrôle : une vraie phrase utilisateur reste détectée.
+  const label = 'Réserver maintenant votre séjour'
+  return { shadow, transition, label }
+}
+TSX
+git -C "$REPO_TEXT" add -A
+git -C "$REPO_TEXT" commit -q -m "valeurs de style CSS inline (#9594)"
+run_guard "$REPO_TEXT"
+for motif in '0 1px 2px rgba(15, 23, 42, 0.04)' 'box-shadow 120ms ease, transform 120ms ease'; do
+  expect_clean "$motif" "valeur de style CSS « $motif » (#9594)"
+done
+expect_flagged 'Réserver maintenant votre séjour' "contre-contrôle : phrase utilisateur reste flaggée (#9594)"
+
 # ── Cas 3 : le message d'erreur dit quoi faire (critère 3) ───────────────────
 if ! printf '%s\n' "$OUT" | grep -qF 'catalogue i18n'; then
   printf '%s\n' "$OUT" >&2
