@@ -120,3 +120,14 @@
 # Library) : catalogue, modeles d'acces, workflow editorial, droits d'auteur,
 # lecteur numerique, surface publique isolee + surface tenant.
 /api/app/Modules/Library/ @kitokoh
+
+# BC-41 BRANDING (#9577+) — enseigne (Brand) d'un tenant, multi-instances, et
+# surfaces publiques specialisees par verticale. Port SurfaceProfileProvider :
+# chaque verticale declare son profil (capacites, blocs, theme) sans que
+# Branding n'importe son code. Hors perimetre : Vitrine (BC-27), super admin,
+# ZK, offline.
+/api/app/Modules/Branding/ @kitokoh
+/api/routes/modules/branding.php @kitokoh
+/api/routes/modules/branding_public.php @kitokoh
+/front/web/src/modules/public-surface/ @kitokoh
+/front/mobile_apps/leopardo_public/lib/features/brand/ @kitokoh

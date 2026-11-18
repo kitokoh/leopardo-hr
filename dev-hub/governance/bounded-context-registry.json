@@ -1235,6 +1235,42 @@
         "BC-02",
         "BC-03"
       ]
+    },
+    {
+      "code": "BC-41",
+      "name": "BRANDING",
+      "context": "Branding",
+      "responsibility": "Enseigne (Brand) d'un tenant et surfaces publiques specialisees par verticale. Un tenant possede 1..n Brands, chacune avec son slug public, son identite (nom public, baseline, logo, favicon, OG), sa palette a contraste WCAG calcule serveur, son domaine personnalise et sa verticale metier. Le port SurfaceProfileProvider permet a chaque verticale (restaurant, retail, pharmacie, travel, VTC, fuel, hotellerie, sante, B2B, billetterie) de declarer SON profil de surface publique (capacites, blocs attendus, theme) sans que Branding n'importe son code. Brand qualifie une Page (BC PAGES) sans la remplacer : une Page sans Brand explicite herite de la Brand par defaut du tenant. Hors perimetre : Vitrine (BC-27), super admin, ZK, offline.",
+      "owner": "Agent BC-BRANDING",
+      "priority": "P0",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Branding",
+          "status": "active"
+        },
+        {
+          "path": "front/web/src/modules/public-surface",
+          "status": "active"
+        },
+        {
+          "path": "front/mobile_apps/leopardo_public/lib/features/brand",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/branding.php",
+        "api/routes/modules/branding_public.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [],
+      "dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-27"
+      ]
     }
   ]
 }

@@ -924,6 +924,12 @@
       "to": "BC-03",
       "baseline": false,
       "note": "PAGES → IDENTITY — les policies (PagePolicy, PageVerificationPolicy) s'appuient sur l'Employé comme acteur RBAC et PageVerificationService écrit l'AuditLog immuable de chaque décision de vérification/suspension (#8725). Arête identique à BC-27 → BC-03, et nécessaire pour que la modération soit traçable."
+    },
+    {
+      "from": "BC-41",
+      "to": "BC-02",
+      "baseline": false,
+      "note": "BRANDING → TENANT — une Brand appartient à un tenant (company_id) : c'est l'invariant d'isolation. BrandResolver lit Company uniquement pour vérifier l'appartenance et le statut du tenant avant de servir une surface publique ; BrandBackfillService énumère les tenants pour créer leur Brand par défaut. Aucune donnée métier du tenant n'est exposée : le presenter public ne publie que l'identité de marque."
     }
   ]
 }

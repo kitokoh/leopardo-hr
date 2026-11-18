@@ -296,6 +296,11 @@ Route::prefix('v1')->group(function (): void {
     // contrôleur, fail-closed 404.
     require __DIR__.'/modules/pages_public.php';
 
+    // #9578 (BC-41 BRANDING) — contrat public d'une Brand (multi-brand).
+    // Groupe ISOLÉ : aucun middleware auth/tenant, throttling `shop-public`.
+    // Résolution par slug ou par `Host`, fail-closed 404 uniforme.
+    require __DIR__.'/modules/branding_public.php';
+
     Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {
         // TRAVEL-409 (#6061) — callback provider paiements TravelAgency
         // (signé HMAC, idempotent — public, vérifié dans le contrôleur).
@@ -611,6 +616,9 @@ Route::prefix('v1')->group(function (): void {
     // BC PAGES (#8728) — surface tenant : CRUD établissements/Pages, blocs,
     // publication et aperçu privé. La surface publique est #8730.
     require __DIR__.'/modules/pages.php';
+    // #9578 (BC-41 BRANDING) — surface tenant : CRUD des enseignes (Brand),
+    // palette à contraste calculé, publication et modération.
+    require __DIR__.'/modules/branding.php';
 
     // BC-17 RETAIL #7672 — module vendeur générique (produits & catégories)
     require __DIR__.'/modules/retail.php';
