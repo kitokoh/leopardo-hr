@@ -23,6 +23,7 @@ use App\Modules\EdgeSync\Interfaces\Api\V1\Controllers\EdgeNodeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBankingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBrandingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyModuleController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyProfileController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PrivacyController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\AcquisitionFunnelEventController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadController;
@@ -471,6 +472,12 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/company-requests', [CompanyRequestController::class, 'store']);
         Route::get('/company/branding', [CompanyBrandingController::class, 'show']);
         Route::patch('/company/branding', [CompanyBrandingController::class, 'update']);
+        // #9332 — profil structurant du tenant (raison sociale, fuseau, devise,
+        // langue, coordonnées). Allowlist stricte côté contrôleur ; les champs
+        // plateforme (slug, schema_name, plan_id, features…) restent hors périmètre
+        // (ADR-0028). RBAC principal appliqué dans le contrôleur.
+        Route::get('/company/profile', [CompanyProfileController::class, 'show']);
+        Route::patch('/company/profile', [CompanyProfileController::class, 'update']);
         // Issue #5613 — Coordonnées bancaires SEPA (IBAN/BIC entreprise).
         Route::get('/company/banking', [CompanyBankingController::class, 'show']);
         Route::patch('/company/banking', [CompanyBankingController::class, 'update']);
