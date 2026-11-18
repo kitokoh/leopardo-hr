@@ -73,6 +73,14 @@ export interface SharedCopy {
   readonly onDuty: string;
   readonly regularHours: string;
   readonly reviews: string;
+  /**
+   * Libellés des types d'hébergement (#9618).
+   *
+   * Le code vient de l'API (`hotel`, `guesthouse`…) : on ne l'affiche jamais
+   * brut. Un code absent de cette table retombe sur `null` côté domaine, et la
+   * carte affiche la ville seule plutôt qu'un `apartment_building` à l'écran.
+   */
+  readonly propertyKinds: Readonly<Record<string, string>>;
 }
 
 /** Catalogue complet d'une locale. */
@@ -115,6 +123,12 @@ const FR: SurfaceCopy = {
     onDuty: 'De garde',
     regularHours: 'Horaires habituels',
     reviews: 'avis',
+    propertyKinds: {
+      hotel: 'Hôtel',
+      residence: 'Résidence',
+      apartment_building: 'Résidence hôtelière',
+      guesthouse: 'Maison d’hôtes',
+    },
   },
   verticals: {
     restaurant: {
@@ -190,6 +204,12 @@ const EN: SurfaceCopy = {
     onDuty: 'On duty',
     regularHours: 'Regular hours',
     reviews: 'reviews',
+    propertyKinds: {
+      hotel: 'Hotel',
+      residence: 'Residence',
+      apartment_building: 'Serviced residence',
+      guesthouse: 'Guesthouse',
+    },
   },
   verticals: {
     restaurant: {
@@ -265,6 +285,12 @@ const TR: SurfaceCopy = {
     onDuty: 'Nöbetçi',
     regularHours: 'Normal saatler',
     reviews: 'değerlendirme',
+    propertyKinds: {
+      hotel: 'Otel',
+      residence: 'Rezidans',
+      apartment_building: 'Apart otel',
+      guesthouse: 'Konuk evi',
+    },
   },
   verticals: {
     restaurant: {
@@ -340,6 +366,12 @@ const AR: SurfaceCopy = {
     onDuty: 'صيدلية مناوبة',
     regularHours: 'ساعات العمل العادية',
     reviews: 'تقييم',
+    propertyKinds: {
+      hotel: 'فندق',
+      residence: 'إقامة',
+      apartment_building: 'شقق فندقية',
+      guesthouse: 'بيت ضيافة',
+    },
   },
   verticals: {
     restaurant: {

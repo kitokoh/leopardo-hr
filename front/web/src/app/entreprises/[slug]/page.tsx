@@ -8,6 +8,7 @@ import { SITE_URL } from '@/lib/site-url';
 import { JsonLd } from '@/components/JsonLd';
 import { getPublicTradeCompany, type PublicTradeCompanyProfile } from '@/lib/trade-public-api';
 import PublicContactCta from '@/app/decouvrir/public-contact-cta';
+import { TRADE_SURFACE } from '@/modules/public-surfaces';
 
 /**
  * P2-01 (#8802) — page publique SEO d'une entreprise de commerce international
@@ -112,7 +113,9 @@ export default async function CompanyPage({ params, searchParams }: CompanyPageP
   return (
     <div
       dir={dir}
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-sky-50/40 to-indigo-50/40 px-4 py-10"
+      data-surface={TRADE_SURFACE.vertical}
+      className="min-h-screen px-4 py-10"
+      style={{ backgroundColor: TRADE_SURFACE.palette.surface }}
     >
       <JsonLd data={companyJsonLd(company)} />
       <div className="mx-auto max-w-5xl space-y-8">

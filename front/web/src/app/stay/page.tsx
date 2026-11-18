@@ -1,18 +1,60 @@
+import type { Metadata } from 'next';
+
+import { normalizeLocale } from '@/lib/i18n';
+import { SITE_URL } from '@/lib/site-url';
 import {
-  buildDirectoryMetadata,
-  buildDirectoryPage,
-} from '@/modules/public-portal/components/buildDirectoryPage';
+  HOSPITALITY_SURFACE,
+  PropertyDirectorySurface,
+  loadPropertyDirectoryView,
+} from '@/modules/public-surfaces';
 
 /**
- * Annuaire public des hébergements HospitalityManager (`/stay`).
+ * Vitrine publique Hôtellerie — annuaire (`/stay`), #9618.
  *
- * HOSP-008 avait livré la fiche `/stay/{slug}` mais AUCUN index : la verticale
- * Hospitality n'était donc pas parcourable et ses fiches restaient orphelines
- * pour le crawl. Cette page est le point d'entrée manquant — SSR indexable,
- * alimentée par `GET /api/v1/public/discover?type=hospitality_property`.
+ * ## Ce qui a changé
+ *
+ * Cette page était un appel de 19 lignes à `buildDirectoryPage({ type, basePath })`
+ * — la même fabrique que `/boutiques` et `/entreprises`. `PropertyDirectorySurface`
+ * existait sans être monté.
+ *
+ * Elle rend désormais sa propre composition (grille large, type d'hébergement en
+ * tête, aucun prix inventé) et charge via son cas d'usage.
+ *
+ * SSR indexable, alimentée par `GET /api/v1/public/discover?type=hospitality_property`.
  */
 
-const config = { type: 'hospitality_property', basePath: '/stay' } as const;
+interface StayPageProps {
+  searchParams: Promise<{ q?: string; city?: string; page?: string; lang?: string }>;
+}
 
-export const generateMetadata = buildDirectoryMetadata(config);
-export default buildDirectoryPage(config);
+export async function generateMetadata({ searchParams }: StayPageProps): Promise<Metadata> {
+  const { lang } = await searchParams;
+  const locale = normalizeLocale(lang ?? '');
+
+  return {
+    title: HOSPITALITY_SURFACE.displayName,
+    description: HOSPITALITY_SURFACE.tagline,
+    alternates: { canonical: `${SITE_URL}${HOSPITALITY_SURFACE.basePath}` },
+    robots: { index: true, follow: true },
+    openGraph: {
+      title: HOSPITALITY_SURFACE.displayName,
+      description: HOSPITALITY_SURFACE.tagline,
+      type: 'website',
+      locale,
+    },
+  };
+}
+
+export default async function StayPage({ searchParams }: StayPageProps) {
+  const params = await searchParams;
+  const locale = normalizeLocale(params.lang ?? '');
+
+  const result = await loadPropertyDirectoryView({
+    q: (params.q ?? '').slice(0, 120) || undefined,
+    city: (params.city ?? '').slice(0, 120) || undefined,
+    page: Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1),
+    locale,
+  });
+
+  return <PropertyDirectorySurface identity={HOSPITALITY_SURFACE} result={result} locale={locale} />;
+}

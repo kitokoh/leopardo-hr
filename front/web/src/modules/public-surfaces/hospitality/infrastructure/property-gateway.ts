@@ -8,8 +8,50 @@ import {
   getPublicStayProperty,
   type PublicStayProperty,
 } from '@/lib/hospitality-public-api';
+import { searchPublicDiscovery } from '@/lib/public-discovery-api';
 
 import type { Property } from '../domain/property';
+import type { PropertyDirectoryEntry } from '../domain/property-directory';
+
+/** Résultat d'un chargement d'annuaire : disponibilité explicite + entrées. */
+export interface PropertyDirectoryLoadResult {
+  readonly available: boolean;
+  readonly entries: readonly PropertyDirectoryEntry[];
+}
+
+/**
+ * Charge l'annuaire des hébergements publiés (#9618).
+ *
+ * `?type=hospitality_property` — même contrat public que les fiches.
+ */
+export async function loadPropertyDirectory(params: {
+  q?: string;
+  city?: string;
+  page?: number;
+}): Promise<PropertyDirectoryLoadResult> {
+  const result = await searchPublicDiscovery({
+    q: params.q,
+    city: params.city,
+    type: 'hospitality_property',
+    page: params.page,
+  });
+
+  if (result === null) {
+    return { available: false, entries: [] };
+  }
+
+  return {
+    available: true,
+    entries: result.items.map((item) => ({
+      slug: item.slug,
+      name: item.name,
+      // L'agrégateur publie le type d'hébergement dans `category`.
+      kind: item.category ?? null,
+      city: item.city ?? null,
+      description: item.description ?? null,
+    })),
+  };
+}
 
 /** Traduit la fiche publique d'un hébergement vers le modèle de la vitrine. */
 export function toProperty(profile: PublicStayProperty): Property {

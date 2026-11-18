@@ -11,6 +11,7 @@ import {
 } from '@/lib/hospitality-public-api';
 import { formatStayMoney, stayPropertyTypeLabel } from './format';
 import StayBookingPanel from './stay-booking-panel';
+import { HOSPITALITY_SURFACE } from '@/modules/public-surfaces';
 
 /**
  * HOSP-008 (#7950) — page publique SEO d'un établissement HospitalityManager
@@ -123,7 +124,12 @@ export default async function StayPage({ params, searchParams }: StayPageProps) 
   }
 
   return (
-    <div dir={dir} className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6">
+    <div
+      dir={dir}
+      data-surface={HOSPITALITY_SURFACE.vertical}
+      className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6"
+      style={{ backgroundColor: HOSPITALITY_SURFACE.palette.surface }}
+    >
       <JsonLd data={stayJsonLd(property)} />
 
       <header className="border-b border-slate-200 pb-6">
