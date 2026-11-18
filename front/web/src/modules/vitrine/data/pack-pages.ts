@@ -840,6 +840,28 @@ const PACK_EXTRA_SHORT_NAMES: Record<string, Record<AppLocale, string>> = {
     tr: 'Trade — uluslararası ticaret',
     ar: 'Trade — التجارة الدولية',
   },
+  // #9614 — packs adressés par les vitrines publiques Retail, Hôtellerie et
+  // Pharmacie. Sans nom court, `packDisplayName` renvoie `null` et le bandeau
+  // « pack présélectionné » du formulaire d'inscription ne s'affiche pas : le
+  // visiteur ne voit aucune confirmation de son métier.
+  retail: {
+    fr: 'Retail — commerce de détail',
+    en: 'Retail — shop management',
+    tr: 'Retail — perakende yönetimi',
+    ar: 'Retail — إدارة التجزئة',
+  },
+  hospitality: {
+    fr: 'Hôtellerie',
+    en: 'Hospitality',
+    tr: 'Konaklama',
+    ar: 'الضيافة',
+  },
+  pharmacy: {
+    fr: 'Pharmacie',
+    en: 'Pharmacy',
+    tr: 'Eczane',
+    ar: 'صيدلية',
+  },
 };
 
 /** #8462 — nom court localisé d'un pack (bandeau « pack pré-sélectionné » du

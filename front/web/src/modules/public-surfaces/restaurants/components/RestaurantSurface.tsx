@@ -9,6 +9,7 @@ import {
   SurfaceMeta,
   SurfaceNotice,
   SurfaceShell,
+  SurfaceTenantInvitation,
   type SurfaceIdentity,
 } from '../../kernel';
 import { getSurfaceCopy } from '../../copy/surfaces-copy';
@@ -122,6 +123,7 @@ export function RestaurantSurface({
             </div>
           </>
         ) : null}
+        <SurfaceTenantInvitation identity={identity} locale={locale} />
       </main>
     </SurfaceShell>
   );

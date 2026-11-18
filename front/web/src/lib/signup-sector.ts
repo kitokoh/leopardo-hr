@@ -24,6 +24,11 @@ export const SIGNUP_SECTORS = [
   'services',
   'travel',
   'association',
+  // #9614 — vitrines publiques Hôtellerie et Pharmacie : sans ces deux
+  // valeurs, le `?sector=` envoyé par ces vitrines serait rejeté ici et
+  // l'entretien reposerait la question du métier.
+  'hospitality',
+  'pharmacy',
   'other',
 ] as const;
 

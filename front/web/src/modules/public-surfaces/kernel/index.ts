@@ -31,6 +31,13 @@ export {
   type SurfaceRegistry,
 } from './domain/surface-registry';
 
+export {
+  TENANT_INVITATIONS,
+  TENANT_SIGNUP_PATH,
+  tenantSignupHref,
+  type TenantInvitation,
+} from './domain/tenant-invitation';
+
 export { requireSurface, resolveSurface } from './application/resolve-surface';
 
 export {
@@ -41,6 +48,7 @@ export {
 
 export { SurfaceHero } from './components/SurfaceHero';
 export { SurfaceShell } from './components/SurfaceShell';
+export { SurfaceTenantInvitation } from './components/SurfaceTenantInvitation';
 export {
   SurfaceBadge,
   SurfaceCard,

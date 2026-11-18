@@ -39,7 +39,12 @@ final class SetupInterviewPlanner
         'company_name' => [],
         'company_type' => ['solo', 'team'],
         'team_size' => ['1-10', '11-50', '51-200', '201-500', '500+'],
-        'sector' => ['restaurant', 'fuel_station', 'education', 'commerce', 'services', 'travel', 'association', 'other'],
+        // #9614 — `hospitality` et `pharmacy` rejoignent l'allowlist : les
+        // vitrines publiques de ces verticales envoient leur visiteur vers
+        // l'inscription avec `?sector=`, et un secteur absent de cette liste
+        // serait silencieusement ignoré (l'entretien reposerait la question
+        // et la verticale ne serait jamais activée).
+        'sector' => ['restaurant', 'fuel_station', 'education', 'commerce', 'services', 'travel', 'association', 'hospitality', 'pharmacy', 'other'],
         'premises' => ['single', 'multiple', 'mobile', 'none'],
         'priorities' => ['attendance', 'payroll', 'accounting', 'crm', 'cameras', 'showcase'],
         'scheduled_hours' => ['yes', 'no'],
@@ -76,6 +81,10 @@ final class SetupInterviewPlanner
         // FUND-080 (#8400) : association / ONG / mutuelle → verticale
         // « Cagnottes solidaires » (collecte de fonds par lien public).
         'association' => 'fundraising',
+        // #9614 — vitrines publiques Hôtellerie et Pharmacie : le secteur
+        // active la verticale correspondante, comme `commerce` → `retail`.
+        'hospitality' => 'hospitality',
+        'pharmacy' => 'pharmacy',
     ];
 
     /**

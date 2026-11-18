@@ -381,6 +381,96 @@ const AR: SurfaceCopy = {
   },
 };
 
+/**
+ * Copie de l'invitation professionnelle d'une vitrine (#9614).
+ *
+ * Le bandeau s'adresse au PROFESSIONNEL qui visite une vitrine grand public :
+ * il nomme son métier et l'envoie vers l'espace existant. Le titre est décliné
+ * par verticale — « Devenir pharmacien » n'a rien à voir avec « Devenir
+ * hôtelier », et un libellé générique ferait perdre le visiteur.
+ */
+export interface TenantInvitationCopy {
+  /** Sur-titre du bandeau. */
+  readonly eyebrow: string;
+  /** Corps : ce que le professionnel obtient. */
+  readonly body: string;
+  /** Libellé du bouton. */
+  readonly cta: string;
+  /** Précision rassurante (gratuit, sans engagement). */
+  readonly note: string;
+  /** Titre par verticale — nomme le métier du visiteur. */
+  readonly titles: Readonly<Record<SurfaceVertical, string>>;
+}
+
+/** Invitation professionnelle, 4 locales. */
+export const TENANT_INVITATION_COPY: Readonly<Record<SurfaceCopyLocale, TenantInvitationCopy>> = {
+  fr: {
+    eyebrow: 'Professionnels',
+    body: 'Vous exercez ce métier ? Créez votre espace en quelques minutes — votre offre devient visible ici même.',
+    cta: 'Créer mon espace',
+    note: 'Gratuit, sans engagement.',
+    titles: {
+      restaurant: 'Vous êtes restaurateur ?',
+      retail: 'Vous tenez une boutique ?',
+      hospitality: 'Vous gérez un hébergement ?',
+      trade: 'Vous faites de l’import-export ?',
+      travel: 'Vous vendez des billets ?',
+      pharmacy: 'Vous êtes pharmacien ?',
+    },
+  },
+  en: {
+    eyebrow: 'For professionals',
+    body: 'Do you run this business? Create your workspace in minutes — your offer becomes visible right here.',
+    cta: 'Create my workspace',
+    note: 'Free, no commitment.',
+    titles: {
+      restaurant: 'Are you a restaurateur?',
+      retail: 'Do you run a shop?',
+      hospitality: 'Do you manage a property?',
+      trade: 'Do you import or export?',
+      travel: 'Do you sell tickets?',
+      pharmacy: 'Are you a pharmacist?',
+    },
+  },
+  tr: {
+    eyebrow: 'Profesyoneller için',
+    body: 'Bu işi mi yapıyorsunuz? Alanınızı dakikalar içinde oluşturun — teklifiniz tam burada görünür olsun.',
+    cta: 'Alanımı oluştur',
+    note: 'Ücretsiz, taahhütsüz.',
+    titles: {
+      restaurant: 'Restoran işletiyor musunuz?',
+      retail: 'Dükkân mı işletiyorsunuz?',
+      hospitality: 'Konaklama mı yönetiyorsunuz?',
+      trade: 'İthalat veya ihracat mı yapıyorsunuz?',
+      travel: 'Bilet mi satıyorsunuz?',
+      pharmacy: 'Eczacı mısınız?',
+    },
+  },
+  ar: {
+    eyebrow: 'للمهنيين',
+    body: 'هل تمارس هذه المهنة؟ أنشئ مساحتك في دقائق — ليصبح عرضك ظاهرًا هنا.',
+    cta: 'أنشئ مساحتي',
+    note: 'مجانًا وبدون التزام.',
+    titles: {
+      restaurant: 'هل أنت صاحب مطعم؟',
+      retail: 'هل تدير متجرًا؟',
+      hospitality: 'هل تدير مكان إقامة؟',
+      trade: 'هل تستورد أو تصدّر؟',
+      travel: 'هل تبيع التذاكر؟',
+      pharmacy: 'هل أنت صيدلي؟',
+    },
+  },
+};
+
+/** Invitation professionnelle d'une locale, avec repli sur le français. */
+export function getTenantInvitationCopy(locale: string | null | undefined): TenantInvitationCopy {
+  if (locale && (SURFACE_COPY_LOCALES as readonly string[]).includes(locale)) {
+    return TENANT_INVITATION_COPY[locale as SurfaceCopyLocale];
+  }
+
+  return TENANT_INVITATION_COPY.fr;
+}
+
 const CATALOGS: Readonly<Record<SurfaceCopyLocale, SurfaceCopy>> = {
   fr: FR,
   en: EN,

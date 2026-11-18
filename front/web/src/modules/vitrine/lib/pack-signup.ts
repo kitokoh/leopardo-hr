@@ -24,6 +24,12 @@ export const PACK_SIGNUP_SLUGS = [
   // BC-36 TRADE (TRADE-009) — la verticale commerce international & B2B
   // domestique rejoint l'offre d'entrée de la vitrine (`/business/packs/trade`).
   'trade',
+  // #9614 — vitrines publiques Retail, Hôtellerie et Pharmacie : leur CTA
+  // « Devenir tenant » doit provisionner la bonne verticale. Sans ces slugs,
+  // `packSolutionCode` renvoie `null` et l'espace serait créé sans métier.
+  'retail',
+  'hospitality',
+  'pharmacy',
 ] as const;
 
 export type PackSignupSlug = (typeof PACK_SIGNUP_SLUGS)[number];
@@ -42,6 +48,13 @@ const PACK_SOLUTION_CODES: Record<PackSignupSlug, string> = {
   vtc: 'vtc',
   // Doit correspondre EXACTEMENT au code du TradeManifest (`code(): 'trade'`).
   trade: 'trade',
+  // #9614 — codes canoniques des manifests Retail, HospitalityManager et
+  // Pharmacy (`RetailManifest::CODE`, `HospitalityManagerManifest::code()`,
+  // `PharmacyManifest::code()`). Un écart ici ferait échouer l'inscription en
+  // 422 (allowlist `SolutionCatalogue`, fail-closed).
+  retail: 'retail',
+  hospitality: 'hospitality',
+  pharmacy: 'pharmacy',
 };
 
 export function isPackSignupSlug(value: string | null | undefined): value is PackSignupSlug {
