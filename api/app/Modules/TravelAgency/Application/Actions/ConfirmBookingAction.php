@@ -77,6 +77,15 @@ final class ConfirmBookingAction
             'trip_id' => $booking->trip_id,
             'confirmed_by' => $actor->id,
             'confirmed_at' => now()->toIso8601String(),
+            // #9098 — contrat de notification (spec §8.5) : l'evenement porte
+            // l'INTENTION de notification et le consentement du voyageur, comme
+            // `travel.payment.refunded` / `travel.booking.cancelled`
+            // (`RefundBookingAction`). Sans l'intention, un pont legacy devait
+            // redeviner le template depuis le type d'evenement — ce que le
+            // contrat interdit, et ce que `TravelLegacyNotificationsTest`
+            // constatait (`notification_intent` a `null`).
+            'notification_intent' => 'travel.booking.confirmed',
+            'consent' => (bool) $booking->notify_consent,
         ]);
 
         return $booking->refresh()->load('passengers');

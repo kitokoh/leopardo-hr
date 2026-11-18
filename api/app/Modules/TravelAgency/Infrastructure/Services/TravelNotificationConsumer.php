@@ -15,6 +15,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelCustomerContact;
 use App\Modules\TravelAgency\Domain\Models\TravelNotificationConsent;
 use App\Modules\TravelAgency\Domain\Models\TravelNotificationLog;
 use App\Shared\Contracts\Notification\EmployeeNotifier;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
@@ -139,6 +140,7 @@ final class TravelNotificationConsumer implements TravelOutboxConsumer
         string $status,
         ?string $reason,
         string $eventType,
+        string $companyId,
         ?int $eventId,
         array $payload = [],
     ): void {
@@ -151,8 +153,17 @@ final class TravelNotificationConsumer implements TravelOutboxConsumer
             ? $contactIdentifier
             : 'unknown';
 
+        // #9098 — `company_id` est NOT NULL et n'etait JAMAIS fourni : le
+        // trait `BelongsToCompany` ne l'alimente que s'il existe une company
+        // courante, ce qui n'est pas le cas hors requete HTTP (job, console,
+        // test). L'insertion echouait en 23502 — et le `catch` ci-dessous ne
+        // protegeait RIEN : sous PostgreSQL une erreur avorte la transaction
+        // englobante, donc toutes les requetes suivantes du consommateur
+        // tombaient en 25P02 (`current transaction is aborted`). Le savepoint
+        // rend l'ecriture reellement best-effort (ADR-0033, R3).
         try {
-            TravelNotificationLog::query()->create([
+            DB::transaction(fn () => TravelNotificationLog::query()->create([
+                'company_id' => $companyId,
                 'event_id' => $eventId,
                 'event_type' => $eventType,
                 'contact_identifier' => $identifier,
@@ -160,7 +171,7 @@ final class TravelNotificationConsumer implements TravelOutboxConsumer
                 'status' => $status,
                 'reason' => $reason,
                 'payload_redacted' => $payload,
-            ]);
+            ]), 1);
         } catch (Throwable $e) {
             Log::channel('structured')->warning('travel.notification.log-failed', [
                 'error' => $e->getMessage(),
@@ -231,6 +242,7 @@ final class TravelNotificationConsumer implements TravelOutboxConsumer
                 TravelNotificationLog::STATUS_SKIPPED,
                 $reason,
                 $eventType,
+                (string) $booking->company_id,
                 $eventId,
                 ['reason' => $reason],
             );
@@ -257,6 +269,7 @@ final class TravelNotificationConsumer implements TravelOutboxConsumer
                 TravelNotificationLog::STATUS_SKIPPED,
                 'channel_not_configured',
                 $eventType,
+                (string) $booking->company_id,
                 $eventId,
                 ['reason' => 'channel_not_configured'],
             );
@@ -304,6 +317,7 @@ final class TravelNotificationConsumer implements TravelOutboxConsumer
                     TravelNotificationLog::STATUS_SKIPPED,
                     'channel_send_not_implemented',
                     $eventType,
+                    (string) $booking->company_id,
                     $eventId,
                     ['reason' => 'channel_send_not_implemented'],
                 );
@@ -317,6 +331,7 @@ final class TravelNotificationConsumer implements TravelOutboxConsumer
                 TravelNotificationLog::STATUS_SKIPPED,
                 'channel_not_configured',
                 $eventType,
+                (string) $booking->company_id,
                 $eventId,
                 ['reason' => 'channel_not_configured'],
             );
@@ -370,6 +385,7 @@ final class TravelNotificationConsumer implements TravelOutboxConsumer
                 TravelNotificationLog::STATUS_SENT,
                 null,
                 $eventType,
+                (string) $booking->company_id,
                 $eventId,
                 ['template' => $template],
             );
@@ -386,6 +402,7 @@ final class TravelNotificationConsumer implements TravelOutboxConsumer
                 TravelNotificationLog::STATUS_FAILED,
                 $e->getMessage(),
                 $eventType,
+                (string) $booking->company_id,
                 $eventId,
             );
 
