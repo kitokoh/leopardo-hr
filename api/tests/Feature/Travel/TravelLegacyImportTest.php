@@ -7,6 +7,7 @@ namespace Tests\Feature\Travel;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
+use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
 use App\Modules\TravelAgency\Domain\Models\TravelCity;
@@ -110,7 +111,10 @@ class TravelLegacyImportTest extends TestCase
             self::assertSame(1, TravelRoute::query()->where('code', 'DLA-YDE')->count());
             self::assertSame(1, TravelTrip::query()->where('code', 'T-001')->count());
             self::assertSame(1, TravelTripPrice::query()->count());
-            self::assertSame('confirmed', TravelBooking::query()->where('reference', 'GV-LEGACY001')->firstOrFail()->status);
+            // #9098 — `TravelBooking::$casts` mappe `status` sur l'enum
+            // `BookingStatus` : comparer a la chaine 'confirmed' compare une
+            // enum a une string (toujours faux). Le contrat est l'enum.
+            self::assertSame(BookingStatus::CONFIRMED, TravelBooking::query()->where('reference', 'GV-LEGACY001')->firstOrFail()->status);
             self::assertSame(2, TravelPassenger::query()->count());
         });
     }
@@ -184,7 +188,7 @@ class TravelLegacyImportTest extends TestCase
         });
 
         $booking = TravelBooking::query()->where('reference', 'GV-LEGACY001')->firstOrFail();
-        self::assertSame('confirmed', $booking->status, 'statut importé figé');
+        self::assertSame(BookingStatus::CONFIRMED, $booking->status, 'statut importé figé');
     }
 
     private function principal(Company $company): Employee
