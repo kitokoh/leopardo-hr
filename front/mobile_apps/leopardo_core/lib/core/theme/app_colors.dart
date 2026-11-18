@@ -496,4 +496,19 @@ class AppColors {
 
   /// Pharmacie — texte secondaire.
   static const Color surfacePharmacyMuted = Color(0xFF5B7A6B);
+
+  /// Mobilité — action principale (ardoise profonde).
+  static const Color surfaceMobilityPrimary = Color(0xFF1F2937);
+
+  /// Mobilité — accent (ambre, signal de disponibilité).
+  static const Color surfaceMobilityAccent = Color(0xFFF59E0B);
+
+  /// Mobilité — fond de page.
+  static const Color surfaceMobilitySurface = Color(0xFFFBFAF8);
+
+  /// Mobilité — texte principal.
+  static const Color surfaceMobilityOnSurface = Color(0xFF111827);
+
+  /// Mobilité — texte secondaire.
+  static const Color surfaceMobilityMuted = Color(0xFF6B7280);
 }
