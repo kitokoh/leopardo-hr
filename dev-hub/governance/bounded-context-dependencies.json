@@ -9,6 +9,12 @@
   },
   "edges": [
     {
+      "from": "BC-36",
+      "to": "BC-03",
+      "baseline": false,
+      "note": "TRADE → IDENTITY — TradeCompanyProfilePolicy s'appuie sur l'Employé comme acteur RBAC (via TradeRoleResolver) pour autoriser la publication du profil commercial dans l'annuaire public B2B. Aucune donnée d'identité n'est exposée : la policy ne lit que le rôle. Arête identique à BC-40 → BC-03 et BC-39 → BC-03."
+    },
+    {
       "from": "BC-40",
       "to": "BC-03",
       "baseline": false,

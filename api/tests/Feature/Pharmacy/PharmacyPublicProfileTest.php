@@ -34,8 +34,6 @@ class PharmacyPublicProfileTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private Company $companyA;
-
     private Employee $managerA;
 
     private Employee $lambdaA;
@@ -57,8 +55,6 @@ class PharmacyPublicProfileTest extends TestCase
             'currency' => 'DZD',
             'features' => ['pharmacy' => true],
         ]);
-        $this->companyA = $companyA;
-
         /** @var Company $companyB */
         $companyB = Company::factory()->create([
             'country' => 'MA',
