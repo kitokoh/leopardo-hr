@@ -13,7 +13,7 @@ import { packDisplayName } from '../../data/pack-pages';
  * l'inscription en 422 côté catalogue).
  */
 describe('pack-signup (#8462)', () => {
-  it('expose les 7 packs portés par la vitrine (7e : Trade — BC-36 TRADE)', () => {
+  it('expose les packs portés par la vitrine (dont Trade — BC-36, et les 3 vitrines publiques #9614)', () => {
     expect(PACK_SIGNUP_SLUGS).toEqual([
       'restaurant',
       'station-service',
@@ -22,6 +22,12 @@ describe('pack-signup (#8462)', () => {
       'cagnottes',
       'vtc',
       'trade',
+      // #9614 — packs adressés par les vitrines publiques Retail, Hôtellerie
+      // et Pharmacie : leur CTA « Devenir tenant » doit provisionner la
+      // verticale, pas créer un espace générique.
+      'retail',
+      'hospitality',
+      'pharmacy',
     ]);
   });
 
@@ -46,6 +52,11 @@ describe('pack-signup (#8462)', () => {
     expect(packSolutionCode('vtc')).toBe('vtc');
     // Doit correspondre au `code()` du TradeManifest (BC-36 TRADE).
     expect(packSolutionCode('trade')).toBe('trade');
+    // #9614 — codes canoniques des manifests Retail, HospitalityManager et
+    // Pharmacy. Un écart ferait échouer l'inscription en 422.
+    expect(packSolutionCode('retail')).toBe('retail');
+    expect(packSolutionCode('hospitality')).toBe('hospitality');
+    expect(packSolutionCode('pharmacy')).toBe('pharmacy');
   });
 
   it('renvoie null pour un slug inconnu (fail-closed)', () => {

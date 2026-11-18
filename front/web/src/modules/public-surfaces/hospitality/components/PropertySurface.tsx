@@ -9,6 +9,7 @@ import {
   SurfaceMeta,
   SurfaceSectionTitle,
   SurfaceShell,
+  SurfaceTenantInvitation,
   type SurfaceIdentity,
 } from '../../kernel';
 import { getSurfaceCopy } from '../../copy/surfaces-copy';
@@ -106,6 +107,7 @@ export function PropertySurface({
             </SurfaceGrid>
           </section>
         ) : null}
+        <SurfaceTenantInvitation identity={identity} locale={locale} />
       </main>
     </SurfaceShell>
   );

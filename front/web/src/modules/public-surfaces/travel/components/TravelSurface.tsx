@@ -8,6 +8,7 @@ import {
   SurfaceMeta,
   SurfaceNotice,
   SurfaceShell,
+  SurfaceTenantInvitation,
   type SurfaceIdentity,
 } from '../../kernel';
 import { getSurfaceCopy } from '../../copy/surfaces-copy';
@@ -121,6 +122,7 @@ export function TravelSurface({
             ))}
           </ul>
         ) : null}
+        <SurfaceTenantInvitation identity={identity} locale={locale} />
       </main>
     </SurfaceShell>
   );

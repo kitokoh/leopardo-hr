@@ -176,4 +176,33 @@ class SetupInterviewPlannerTest extends TestCase
         $this->assertSame(['sector' => 'association'], $result['answers']);
         $this->assertSame([], $result['rejected']);
     }
+
+    /**
+     * #9614 — les vitrines publiques Hôtellerie et Pharmacie envoient leur
+     * visiteur vers l'inscription avec `?sector=hospitality|pharmacy`. Sans
+     * entrée dans l'allowlist, `sanitize()` rejetterait la valeur en silence et
+     * l'entretien reposerait la question du métier : la verticale ne serait
+     * jamais activée alors que le visiteur vient de la déclarer.
+     */
+    public function test_secteurs_des_vitrines_publiques_activent_leur_verticale(): void
+    {
+        foreach (['hospitality' => 'hospitality', 'pharmacy' => 'pharmacy'] as $sector => $solution) {
+            $plan = $this->planner->plan([
+                'company_type' => 'team',
+                'sector' => $sector,
+            ]);
+
+            $this->assertSame([$solution], $plan['solutions'], "secteur {$sector}");
+        }
+    }
+
+    public function test_secteurs_des_vitrines_publiques_sont_acceptes_par_sanitize(): void
+    {
+        foreach (['hospitality', 'pharmacy'] as $sector) {
+            $result = $this->planner->sanitize(['sector' => $sector]);
+
+            $this->assertSame(['sector' => $sector], $result['answers'], "secteur {$sector}");
+            $this->assertSame([], $result['rejected'], "secteur {$sector}");
+        }
+    }
 }

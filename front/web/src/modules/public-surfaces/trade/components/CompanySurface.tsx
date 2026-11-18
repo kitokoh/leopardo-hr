@@ -9,6 +9,7 @@ import {
   SurfaceNotice,
   SurfaceSectionTitle,
   SurfaceShell,
+  SurfaceTenantInvitation,
   type SurfaceIdentity,
 } from '../../kernel';
 import { getSurfaceCopy } from '../../copy/surfaces-copy';
@@ -110,6 +111,7 @@ export function CompanySurface({
         {company.currency ? (
           <SurfaceMeta identity={identity}>{company.currency}</SurfaceMeta>
         ) : null}
+        <SurfaceTenantInvitation identity={identity} locale={locale} />
       </main>
     </SurfaceShell>
   );
