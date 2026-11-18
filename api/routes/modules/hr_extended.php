@@ -111,6 +111,8 @@ ModuleRoutes::tenantModule('', function (): void {
         Route::patch('/employee-documents/{employeeDocument}', [EmployeeDocumentController::class, 'update'])->whereNumber('employeeDocument');
         Route::delete('/employee-documents/{employeeDocument}', [EmployeeDocumentController::class, 'destroy'])->whereNumber('employeeDocument');
         // ── Recruitment / ATS ────────────────────────────────────────────
+        // Issue #9546 : KPIs de recrutement pour dashboard RH
+        Route::get('/recruitment/stats', [RecruitmentController::class, 'stats']);
         Route::get('/recruitment/jobs', [RecruitmentController::class, 'indexJobs']);
         Route::post('/recruitment/jobs', [RecruitmentController::class, 'storeJob']);
         Route::get('/recruitment/jobs/{jobPosting}', [RecruitmentController::class, 'showJob']);

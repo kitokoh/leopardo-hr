@@ -19,12 +19,145 @@ use App\Modules\Recruitment\Domain\Exceptions\ApplicantAlreadyAppliedException;
 use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Modules\Recruitment\Domain\Models\Interview;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class RecruitmentController extends Controller
 {
+    // ── Statistics ──────────────────────────────────────────────────────────
+
+    /**
+     * GET /recruitment/stats — KPIs de recrutement pour dashboard RH (#9546).
+     *
+     * Agrège : nombre d'offres actives, candidatures par étape, taux de
+     * conversion funnel, durée moyenne de recrutement, top sources.
+     *
+     * Permission : `recruitment.view` (Gate), scope tenant `company_id`.
+     */
+    public function stats(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('recruitment.view')) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'from' => 'nullable|date',
+            'to' => 'nullable|date',
+        ]);
+
+        $from = isset($validated['from']) ? Carbon::parse($validated['from'])->startOfDay() : null;
+        $to = isset($validated['to']) ? Carbon::parse($validated['to'])->endOfDay() : null;
+        $companyId = (string) $actor->company_id;
+
+        // Job postings stats
+        $jobPostingsQuery = JobPosting::query()->where('company_id', $companyId);
+        if ($from) {
+            $jobPostingsQuery->where('created_at', '>=', $from);
+        }
+        if ($to) {
+            $jobPostingsQuery->where('created_at', '<=', $to);
+        }
+
+        $jobStats = $jobPostingsQuery->selectRaw('
+            COUNT(*) as total,
+            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as active,
+            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as filled,
+            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as closed
+        ', ['published', 'closed', 'archived'])->first();
+
+        // Applications stats
+        $applicationsQuery = Applicant::query()->where('company_id', $companyId);
+        if ($from) {
+            $applicationsQuery->where('applied_at', '>=', $from);
+        }
+        if ($to) {
+            $applicationsQuery->where('applied_at', '<=', $to);
+        }
+
+        $appStats = $applicationsQuery->selectRaw('
+            COUNT(*) as total,
+            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as new,
+            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as screening,
+            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as interview,
+            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as offer,
+            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as hired,
+            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as rejected
+        ', ['new', 'screening', 'interview', 'offer', 'hired', 'rejected'])->first();
+
+        // Funnel conversion rates
+        $total = $appStats->total ?? 0;
+        $screening = $appStats->screening ?? 0;
+        $interview = $appStats->interview ?? 0;
+        $offer = $appStats->offer ?? 0;
+        $hired = $appStats->hired ?? 0;
+
+        $screeningRate = $total > 0 ? round($screening / $total, 4) : 0;
+        $interviewRate = $screening > 0 ? round($interview / $screening, 4) : 0;
+        $offerRate = $interview > 0 ? round($offer / $interview, 4) : 0;
+        $conversionRate = $total > 0 ? round($hired / $total, 4) : 0;
+
+        // Average time to hire (in days)
+        $avgTimeToHire = Applicant::query()
+            ->where('company_id', $companyId)
+            ->where('status', 'hired')
+            ->whereNotNull('hired_at')
+            ->selectRaw('AVG(EXTRACT(EPOCH FROM (hired_at - applied_at)) / 86400) as avg_days')
+            ->value('avg_days');
+
+        // Top sources
+        $topSources = Applicant::query()
+            ->where('company_id', $companyId)
+            ->when($from, fn ($q) => $q->where('applied_at', '>=', $from))
+            ->when($to, fn ($q) => $q->where('applied_at', '<=', $to))
+            ->whereNotNull('source')
+            ->select('source', DB::raw('COUNT(*) as count'))
+            ->groupBy('source')
+            ->orderByDesc('count')
+            ->limit(5)
+            ->get();
+
+        return new JsonResponse([
+            'data' => [
+                'period' => [
+                    'from' => $from?->toDateString(),
+                    'to' => $to?->toDateString(),
+                ],
+                'job_postings' => [
+                    'total' => (int) ($jobStats->total ?? 0),
+                    'active' => (int) ($jobStats->active ?? 0),
+                    'filled' => (int) ($jobStats->filled ?? 0),
+                    'closed' => (int) ($jobStats->closed ?? 0),
+                ],
+                'applications' => [
+                    'total' => (int) ($appStats->total ?? 0),
+                    'new' => (int) ($appStats->new ?? 0),
+                    'screening' => (int) ($appStats->screening ?? 0),
+                    'interview' => (int) ($appStats->interview ?? 0),
+                    'offer' => (int) ($appStats->offer ?? 0),
+                    'hired' => (int) ($appStats->hired ?? 0),
+                    'rejected' => (int) ($appStats->rejected ?? 0),
+                ],
+                'funnel' => [
+                    'screening_rate' => $screeningRate,
+                    'interview_rate' => $interviewRate,
+                    'offer_rate' => $offerRate,
+                    'conversion_rate' => $conversionRate,
+                ],
+                'avg_time_to_hire_days' => $avgTimeToHire ? round((float) $avgTimeToHire, 1) : null,
+                'top_sources' => $topSources->map(fn ($row) => [
+                    'source' => $row->getAttribute('source'),
+                    'count' => (int) $row->getAttribute('count'),
+                ])->toArray(),
+            ],
+        ]);
+    }
+
     // ── Job Postings ────────────────────────────────────────────────────────
 
     public function indexJobs(Request $request): JsonResponse

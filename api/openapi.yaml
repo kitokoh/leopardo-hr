@@ -29388,6 +29388,40 @@ paths:
                 format: binary
         '401':
           $ref: '#/components/responses/Error401'
+  /recruitment/stats:
+    get:
+      operationId: api_get_recruitment_stats
+      tags:
+      - Recruitment
+      summary: Statistiques de recrutement pour le dashboard RH
+      description: |
+        Agrege offres et candidatures sur une periode. RBAC : permission
+        `recruitment.view`. Isolation tenant automatique.
+      parameters:
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Statistiques de recrutement
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /recruitment/jobs:
     get:
       operationId: api_get_recruitment_jobs
