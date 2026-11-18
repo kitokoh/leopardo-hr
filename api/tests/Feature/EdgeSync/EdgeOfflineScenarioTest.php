@@ -400,7 +400,7 @@ class EdgeOfflineScenarioTest extends TestCase
             'entity_type' => 'attendance_logs',
             'entity_id' => 'retry-test-001',
             'operation' => 'create',
-            'payload' => ['date' => '2026-11-17', 'status' => 'ontime'],
+            'payload' => ['date' => now()->toDateString(), 'status' => 'ontime'],
             'status' => 'pending',
             'attempt_count' => 4, // déjà à 4 tentatives
         ]);

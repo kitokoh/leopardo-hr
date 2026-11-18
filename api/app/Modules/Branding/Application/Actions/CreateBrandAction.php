@@ -35,17 +35,6 @@ final class CreateBrandAction
 
     /**
      * @param  array{
-     *   slug: string,
-     *   name: string,
-     *   vertical?: string,
-     *   palette?: array{primary?: string, accent?: string, surface?: string},
-     *   identity?: array<string, mixed>,
-     *   surface?: array<string, mixed>,
-     *   host?: string|null
-     * }  $input
-     */
-    /**
-     * @param  array{
      *     slug: string,
      *     name: string,
      *     vertical?: string,
@@ -69,7 +58,7 @@ final class CreateBrandAction
             surface: is_string($paletteInput['surface'] ?? null) ? $paletteInput['surface'] : '#F8FAFC',
         );
 
-        $host = isset($input['host']) && is_string($input['host'])
+        $host = is_string($input['host'] ?? null)
             ? \App\Modules\Branding\Domain\Services\BrandResolver::normalizeHost($input['host'])
             : null;
 

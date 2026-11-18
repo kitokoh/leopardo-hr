@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Branding\Providers;
 
+use App\Modules\Branding\Domain\Contracts\BrandCacheInterface;
 use App\Modules\Branding\Domain\PublicSurface\PublicBrandPresenter;
 use App\Modules\Branding\Domain\Services\BrandResolver;
 use App\Modules\Branding\Domain\Surface\SurfaceProfileProvider;
 use App\Modules\Branding\Domain\Surface\SurfaceProfileRegistry;
+use App\Modules\Branding\Infrastructure\Services\BrandCache;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -58,9 +60,12 @@ final class BrandingServiceProvider extends ServiceProvider
             return new PublicBrandPresenter($registry);
         });
 
+        $this->app->singleton(BrandCacheInterface::class, BrandCache::class);
+
         $this->app->singleton(BrandResolver::class, function ($app): BrandResolver {
             return new BrandResolver(
                 $app->make(\App\Shared\Services\PublicCommerce\PublicTenantResolver::class),
+                $app->make(BrandCacheInterface::class),
             );
         });
     }

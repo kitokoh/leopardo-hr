@@ -10,8 +10,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * RESTO-501 (#6200) — Ressource API d'un niveau de stock.
- */
-/**
+ *
  * @mixin RestaurantStockLevel
  */
 class RestaurantStockLevelResource extends JsonResource
@@ -33,7 +32,11 @@ class RestaurantStockLevelResource extends JsonResource
             // comparaison de chaînes est fausse (`"10.000" < "9.000"`).
             // `is_below_threshold` castait déjà en float en interne — la
             // ressource est désormais cohérente avec elle-même.
-            'quantity' => $this->quantity === null ? null : (float) $this->quantity,
+            // `quantity` est `decimal(12,3) NOT NULL DEFAULT 0` : le cast
+            // `decimal:3` en fait toujours une chaîne numérique, jamais `null`.
+            // La garde `=== null` qui figurait ici était donc morte — PHPStan
+            // la signalait à juste titre (identical.alwaysFalse).
+            'quantity' => (float) $this->quantity,
             'avg_cost_minor' => $this->avg_cost_minor,
             'reorder_level' => $this->reorder_level === null ? null : (float) $this->reorder_level,
             'alert_threshold' => $this->alert_threshold === null ? null : (float) $this->alert_threshold,

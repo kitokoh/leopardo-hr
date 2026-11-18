@@ -161,7 +161,7 @@ final class InvitationActivationService implements InvitationActivationContract
         // distinguer la cause.
         $company = Company::query()->find($invitation->company_id);
 
-        if ($company === null) {
+        if (! $company instanceof Company) {
             throw new RegistrationNotAvailableException;
         }
 
@@ -173,7 +173,7 @@ final class InvitationActivationService implements InvitationActivationContract
             $this->tenantManager->resetToPrevious();
         }
 
-        if ($employee === null || $employee->status !== 'active') {
+        if (! $employee instanceof Employee || $employee->status !== 'active') {
             throw new RegistrationNotAvailableException;
         }
     }

@@ -60,7 +60,10 @@ final class BrandController extends Controller
 
     public function store(StoreBrandRequest $request): JsonResponse
     {
-        $brand = $this->creator->execute($request->validated());
+        /** @var array{slug: string, name: string, vertical?: string, palette?: array{primary?: string, accent?: string, surface?: string}, identity?: array<string, mixed>, surface?: array<string, mixed>, host?: string|null} $input */
+        $input = $request->validated();
+
+        $brand = $this->creator->execute($input);
 
         return (new BrandResource($brand))
             ->response()

@@ -182,7 +182,8 @@ class SyncEngineService
                 // mémoire antérieure au claim : sinon un item à sa 5e tentative
                 // repart en `pending` et la file ne converge jamais vers
                 // `failed`.
-                $newStatus = $item->fresh()->attempt_count >= 5 ? 'failed' : 'pending';
+                $fresh = $item->fresh();
+                $newStatus = $fresh !== null && $fresh->attempt_count >= 5 ? 'failed' : 'pending';
 
                 // #8629 — la cause de l'échec est désormais conservée sur la
                 // ligne elle-même : sans elle, « pending » et « failed »

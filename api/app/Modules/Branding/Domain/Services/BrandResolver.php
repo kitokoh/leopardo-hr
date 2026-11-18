@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Branding\Domain\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Branding\Domain\Contracts\BrandCacheInterface;
 use App\Modules\Branding\Domain\Models\Brand;
 use App\Shared\Services\PublicCommerce\PublicTenantResolver;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * Résolution d'une Brand publique par slug ou par host (BC-41, #9578).
@@ -40,14 +40,12 @@ use Illuminate\Support\Facades\Cache;
  */
 final class BrandResolver
 {
-    /** Durée du cache positif, en secondes. */
-    private const CACHE_TTL = 60;
-
     /** Borne du parcours de tenants (évite un 404 à plusieurs secondes). */
     private const MAX_TENANTS = 500;
 
     public function __construct(
         private readonly PublicTenantResolver $tenantResolver,
+        private readonly BrandCacheInterface $cache,
     ) {}
 
     /**
@@ -63,12 +61,9 @@ final class BrandResolver
             return null;
         }
 
-        $cacheKey = 'brand:public:slug:'.$slug;
+        $cached = $this->cache->getBySlug($slug);
 
-        /** @var array{brand: Brand, company: Company}|null $cached */
-        $cached = Cache::get($cacheKey);
-
-        if (is_array($cached)) {
+        if ($cached !== null) {
             return $cached;
         }
 
@@ -86,7 +81,7 @@ final class BrandResolver
 
             if ($brand instanceof Brand) {
                 $resolved = ['brand' => $brand, 'company' => $company];
-                Cache::put($cacheKey, $resolved, self::CACHE_TTL);
+                $this->cache->putBySlug($slug, $resolved);
 
                 return $resolved;
             }
@@ -108,12 +103,9 @@ final class BrandResolver
             return null;
         }
 
-        $cacheKey = 'brand:public:host:'.$host;
+        $cached = $this->cache->getByHost($host);
 
-        /** @var array{brand: Brand, company: Company}|null $cached */
-        $cached = Cache::get($cacheKey);
-
-        if (is_array($cached)) {
+        if ($cached !== null) {
             return $cached;
         }
 
@@ -131,7 +123,7 @@ final class BrandResolver
 
             if ($brand instanceof Brand) {
                 $resolved = ['brand' => $brand, 'company' => $company];
-                Cache::put($cacheKey, $resolved, self::CACHE_TTL);
+                $this->cache->putByHost($host, $resolved);
 
                 return $resolved;
             }

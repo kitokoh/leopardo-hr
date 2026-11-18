@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Branding\Application\Actions;
 
+use App\Modules\Branding\Domain\Contracts\BrandCacheInterface;
 use App\Modules\Branding\Domain\Models\Brand;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * Publie une Brand (BC-41, #9578).
@@ -26,6 +26,10 @@ use Illuminate\Support\Facades\Cache;
  */
 final class PublishBrandAction
 {
+    public function __construct(
+        private readonly BrandCacheInterface $cache,
+    ) {}
+
     public function execute(Brand $brand): Brand
     {
         $brand->publish();
@@ -41,10 +45,6 @@ final class PublishBrandAction
      */
     public function forget(Brand $brand): void
     {
-        Cache::forget('brand:public:slug:'.$brand->slug);
-
-        if (is_string($brand->host) && $brand->host !== '') {
-            Cache::forget('brand:public:host:'.$brand->host);
-        }
+        $this->cache->forget($brand->slug, $brand->host);
     }
 }
