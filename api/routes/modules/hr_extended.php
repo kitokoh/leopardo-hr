@@ -229,7 +229,7 @@ ModuleRoutes::tenantModule('', function (): void {
         // ── Audit Trail
         Route::get('/audit-logs', [AuditLogController::class, 'index']);
         Route::get('/audit-logs/export-csv', [AuditLogController::class, 'exportCsv']);
-        Route::get('/audit-logs/{auditLog}', [AuditLogController::class, 'show']);
+        Route::get('/audit-logs/{id}', [AuditLogController::class, 'show']);
 
         // ── IA Predictions
         Route::prefix('predictions')->group(function (): void {

@@ -35,4 +35,6 @@ return [
     'public_phone_otp_expired' => 'انتهت صلاحية هذا الرمز. اطلب رمزًا جديدًا.',
     'public_phone_otp_too_many_attempts' => 'محاولات كثيرة جدًا. انتظر قبل طلب رمز جديد.',
     'public_account_deletion_confirmation_required' => 'أدخل كلمة التأكيد لحذف حسابك.',
+    'audit_access_principal_only' => 'الوصول مقصور على المسؤول الرئيسي',
+    'audit_actor_system' => 'النظام',
 ];

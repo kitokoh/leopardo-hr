@@ -744,5 +744,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('retail.stock', [RetailPermissions::class, 'canOperateStock']);
         Gate::define('retail.settings', [RetailPermissions::class, 'canManageSettings']);
         Gate::define('retail.reports', [RetailPermissions::class, 'canViewReports']);
+
+        // #9333 — capacité `viewTenantAudit` : consultation de la piste d'audit
+        // tenant (obligation RGPD). Réservé au principal.
+        Gate::define('viewTenantAudit', [\App\Core\Auth\Policies\AuditLogPolicy::class, 'viewTenantAudit']);
     }
 }
