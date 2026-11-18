@@ -2816,3 +2816,26 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 **Couverture executee** — `php -l` PASS sur les 9 fichiers PHP du lot ; `check-i18n-catalog-parity.sh` PASS (4 langues) ; `check-bounded-context-dependencies.sh` PASS (153 aretes, 0 import hors contrat) ; `check-openapi-route-coverage.py` : 0 nouvelle route non couverte ; Redocly valide.
 
 **Non couvert** — aucun test PHPUnit execute : le depot exige PHP >= 8.4, indisponible dans le sandbox (8.2). Les scenarios ci-dessus sont ecrits dans `tests/Feature/Pharmacy/PharmacyPublicProfileTest.php` et `tests/Feature/Trade/TradeCompanyProfileTest.php` ; leur execution releve de la CI.
+
+## 2026-11-18 — Vitrines grand public : écran de publication pharmacie + vitrine Mobilité (#9621, #9622)
+
+**Surfaces** : page `front/web/src/app/(dashboard)/pharmacy/publication/page.tsx` (espace professionnel, consomme `GET|PUT /v1/pharmacy/public-profile`), bounded context `front/web/src/modules/public-surfaces/vtc/**` (vitrine Mobilité, consomme `GET /v1/public/discover?type=vtc_operator` et `POST /v1/public/vtc/marketplace/rides`), registre `public-surfaces/registry.ts`, détecteur `dev-hub/tools/detect-changed-surfaces.sh`, workflow `.github/workflows/public-surfaces-deploy.yml`.
+
+**Pourquoi ce sont des scenarios de test** : la route pharmacie existait depuis #9617 mais **aucun ecran ne l'appelait** — `enabled` restait `false` pour tout le monde et `/pharmacies` affichait « bientot disponible » en permanence, sans erreur ni log. Et la verticale Mobilité etait la seule verticale decouvrable du backend sans vitrine : `/operateurs` rendait encore `buildDirectoryPage`.
+
+| Scenario | Ce qui serait casse sans lui |
+|---|---|
+| cocher « visible » sans slug ni nom -> case **desactivee** et message d'aide | sans ce garde-fou client, le pharmacien recoit un 422 apres avoir coche, sans comprendre pourquoi |
+| 403 (solution PharmaManager inactive) -> etat d'information, **pas** une erreur rouge | une solution non activee n'est pas une panne : l'afficher en erreur ferait ouvrir un ticket |
+| l'URL publique affichee vient de `public_url` serveur, jamais reconstruite | un slug renomme produirait un lien mort cote espace professionnel |
+| `MANAGER_MODULE_ROLES.pharmacy = 'any'` | `PharmacyPublicProfilePolicy` exige `isManager()` sans filtrer `manager_role` : le refus par defaut (#7762) cacherait la seule porte d'entree de la verticale au manager `dept` |
+| `/pharmacy` present dans le matcher proxy **et** `DASHBOARD_PREFIXES` **et** `public/sw.js` | garde #3377/#7663 : une seule des trois declarations laisse la page accessible sans session ou absente du cache |
+| `/operateurs` -> detecteur = `vtc` **seul** | un changement de la vitrine Mobilité ne doit pas redeployer les six autres |
+| noyau `kernel/**` -> detecteur = **les 7** verticales | le noyau porte le contraste et le rendu communs : le restreindre laisserait des vitrines sur un noyau perime |
+| `mobility` present dans les **deux** allowlists de secteur (front + `SetupInterviewPlanner`) | le `?sector=` envoye par la vitrine serait rejete en silence, l'entretien reposerait la question du metier et la verticale ne serait jamais activee |
+| la vitrine Mobilité n'affiche **ni prix ni note** | le provider ne publie ni l'un ni l'autre : afficher « 0,0 » serait un mensonge |
+| palette Mobilité declaree dans `COULEURS.md` **et** `app_colors.dart` **et** l'identite web | regle L.07 : une palette produit doit exister dans les trois, sinon le guard de tokens echoue |
+
+**Couverture executee** — Jest `front/web` 287 suites / 2639 tests PASS (2 shards) ; `tsc --noEmit` PASS ; eslint PASS ; `check-public-surfaces-deploy-parity.sh` PASS (7 verticales) ; `check-canonical-domains.sh` PASS ; `check-web-design-tokens.sh` PASS ; `check-design-token-sync.sh` PASS ; parite i18n 4 locales PASS ; `php -l` PASS.
+
+**Non couvert** — aucun test PHPUnit execute (PHP >= 8.4 indisponible dans le sandbox) ; aucun rendu visuel capture (pas de serveur Next lance) ; parcours tenant -> publication -> vitrine non clique de bout en bout.
