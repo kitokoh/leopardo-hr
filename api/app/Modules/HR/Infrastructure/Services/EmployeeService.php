@@ -6,6 +6,7 @@ namespace App\Modules\HR\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
+use App\Core\Auth\Infrastructure\Services\LastAdministratorGuard;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
 use App\Events\EmployeeArchived;
@@ -36,6 +37,7 @@ class EmployeeService
     public function __construct(
         private readonly UserInvitationService $userInvitationService,
         private readonly TenantCacheService $tenantCache,
+        private readonly LastAdministratorGuard $lastAdministratorGuard,
     ) {}
 
     public function create(CreateEmployeeDTO $dto, Employee|User|SuperAdmin|null $actor = null): Employee
@@ -194,6 +196,26 @@ class EmployeeService
             $payload['manager_role'] = null;
         }
 
+        // IAM-L6 (#9096) — garde du DERNIER PRINCIPAL sur le chemin GÉNÉRIQUE.
+        //
+        // `RoleAssignmentController::assign` portait déjà cette garde (#9093),
+        // mais `manager_role` et `status` s'écrivent AUSSI ici (PATCH
+        // /employees/{id}, y compris depuis l'app mobile). Sans ce contrôle, un
+        // principal pouvait se rétrograder ou se suspendre par ce chemin et
+        // laisser le tenant sans personne capable de nommer un successeur.
+        //
+        // Fail-closed : on refuse AVANT toute écriture, jamais après.
+        $requestedManagerRole = array_key_exists('manager_role', $payload)
+            ? (is_string($payload['manager_role']) ? $payload['manager_role'] : null)
+            : null;
+        $requestedStatus = array_key_exists('status', $payload)
+            ? (is_string($payload['status']) ? $payload['status'] : null)
+            : null;
+
+        if ($this->lastAdministratorGuard->wouldRemoveLastPrincipal($employee, $requestedManagerRole, $requestedStatus)) {
+            throw new LastAdministratorRequiredException;
+        }
+
         if (array_key_exists('extra_data', $payload)) {
             $payload['extra_data'] = $this->normalizeExtraData($this->arrayValue($payload, 'extra_data'));
         }
@@ -234,6 +256,13 @@ class EmployeeService
 
     public function archive(Employee $employee): Employee
     {
+        // IAM-L6 (#9096) — archiver le dernier principal actif est un
+        // auto-verrouillage : le compte ne peut plus rouvrir la porte, et
+        // personne ne peut nommer de successeur. Refusé AVANT écriture.
+        if ($this->lastAdministratorGuard->wouldRemoveLastPrincipal($employee, null, 'archived')) {
+            throw new LastAdministratorRequiredException;
+        }
+
         $employee->status = 'archived';
         $employee->save();
         $employee->tokens()->delete();

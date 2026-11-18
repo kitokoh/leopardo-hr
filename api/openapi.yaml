@@ -25250,7 +25250,7 @@ paths:
       tags:
       - Company
       summary: Lister les roles personnalises actifs du tenant
-      description: 'Issue #9095 (IAM-L5) — roles personnalises de tenant. Un role = un nom + un jeu de permissions borne par le registre ferme DelegablePermission. Les roles revoques ne sont pas listes. Le catalogue des permissions delegables est renvoye avec la liste.'
+      description: 'Issue #9095 (IAM-L5) — roles personnalises de tenant. Un role = un nom + un jeu de permissions borne par le registre ferme DelegablePermission. Les roles revoques ne sont pas listes. La reponse porte `data.roles` (chaque role avec son `holder_count`), `data.catalog` (catalogue BORNE par le plafond de l''acteur, tel que l''ecran #9518 le lit) et l''alias historique `catalogue` (liste des cles du registre complet).'
       responses:
         '200':
           description: Roles personnalises actifs
@@ -25260,11 +25260,27 @@ paths:
                 type: object
                 properties:
                   data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/CustomRole'
+                    type: object
+                    properties:
+                      roles:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CustomRole'
+                      catalog:
+                        type: array
+                        description: Catalogue borne par le plafond de l'acteur.
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            label:
+                              type: string
+                            category:
+                              type: string
                   catalogue:
                     type: array
+                    description: Alias historique — cles du registre complet.
                     items:
                       type: string
         '401':
@@ -25373,6 +25389,66 @@ paths:
       responses:
         '200':
           description: Role revoque
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /company/roles/{role}/assign:
+    post:
+      operationId: api_post_company_roles_role_assign
+      tags:
+      - Company
+      summary: Attribuer un role personnalise a un collaborateur
+      description: 'Issue #9095 (IAM-L5) — l''attribution rend le role utile et alimente `holder_count`. Le role doit etre ACTIF et du tenant de l''acteur ; la cible doit appartenir au MEME tenant (sinon 404, jamais d''attribution croisee). L''appel est idempotent : reattribuer un role deja porte ne cree pas de seconde ligne.'
+      parameters:
+      - name: role
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - employee_id
+              properties:
+                employee_id:
+                  type: integer
+      responses:
+        '200':
+          description: Role attribue
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /company/roles/{role}/assign/{employee}:
+    delete:
+      operationId: api_delete_company_roles_role_assign_employee
+      tags:
+      - Company
+      summary: Retirer un role personnalise a un collaborateur
+      description: 'Issue #9095 (IAM-L5) — revocation de la ligne d''attribution (jamais de suppression : le geste reste auditable).'
+      parameters:
+      - name: role
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: employee
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Role retire
         '401':
           $ref: '#/components/responses/Error401'
         '403':

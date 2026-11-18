@@ -332,6 +332,7 @@ return [
     'PLATFORM_PERMISSION_REQUIRED' => 'دورك في المنصة لا يسمح بهذا الإجراء (الأذونات المطلوبة: :permissions).',
     'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'لا يمكنك تغيير دورك في المنصة.',
     'LAST_SUPER_ADMIN_REQUIRED' => 'تم رفض الإجراء: يجب أن يبقى مسؤول أعلى نشط واحد على الأقل.',
+    'PLATFORM_MFA_REQUIRED' => 'المصادقة الثنائية مطلوبة: يجب تفعيل عامل ثانٍ لحساب المنصة قبل المتابعة.',
     'LAST_PRINCIPAL_REQUIRED' => 'تم رفض الإجراء: يجب أن يبقى مدير رئيسي نشط واحد على الأقل في الشركة.',
 
     // Issue #9095 (IAM-L5) - roles personnalises de tenant.
