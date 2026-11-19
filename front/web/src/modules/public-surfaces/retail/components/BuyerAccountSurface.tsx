@@ -14,6 +14,7 @@
 import Link from 'next/link';
 import { useEffect, useState, type FormEvent } from 'react';
 
+import { RETAIL_ACCOUNT_COPY as C } from '../../copy/retail-copy';
 import { SurfaceCard, SurfaceNotice } from '../../kernel/components/SurfacePrimitives';
 import type { SurfaceIdentity } from '../../kernel/domain/surface-identity';
 import { forgetSession, persistSession, restoreSession } from '../application/load-buyer-session';
@@ -95,15 +96,15 @@ export function BuyerAccountSurface({ identity }: { identity: SurfaceIdentity })
       setSession(persistSession(next.buyer));
     } catch (caught) {
       if (caught instanceof AccountApiError && caught.status === 401) {
-        setError('E-mail ou mot de passe incorrect.');
+        setError(C.errorInvalidCredentials);
       } else if (caught instanceof AccountApiError && caught.status === 422) {
         setError(
           mode === 'register'
-            ? 'Vérifiez les champs : e-mail déjà utilisé ou mot de passe trop court (8 caractères minimum).'
-            : 'Vérifiez les champs saisis.',
+            ? C.errorRegisterFields
+            : C.errorFields,
         );
       } else {
-        setError(caught instanceof Error ? caught.message : 'Une erreur est survenue.');
+        setError(caught instanceof Error ? caught.message : C.errorGeneric);
       }
     } finally {
       setPending(false);
@@ -123,7 +124,7 @@ export function BuyerAccountSurface({ identity }: { identity: SurfaceIdentity })
   };
 
   if (!ready) {
-    return <SurfaceNotice identity={identity}>Chargement de votre compte…</SurfaceNotice>;
+    return <SurfaceNotice identity={identity}>{C.loading}</SurfaceNotice>;
   }
 
   if (session !== null) {
@@ -131,7 +132,7 @@ export function BuyerAccountSurface({ identity }: { identity: SurfaceIdentity })
       <div style={{ display: 'grid', gap: '1rem' }}>
         <SurfaceCard identity={identity}>
           <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800 }}>
-            Bonjour, {session.buyer.name}
+            {C.greeting(session.buyer.name)}
           </h2>
           <p style={{ margin: 0, fontSize: '0.85rem', color: '#78716C' }}>{session.buyer.email}</p>
         </SurfaceCard>
@@ -150,10 +151,10 @@ export function BuyerAccountSurface({ identity }: { identity: SurfaceIdentity })
             }}
           >
             <span style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700 }}>
-              Mes commandes
+              {C.ordersTitle}
             </span>
             <span style={{ fontSize: '0.78rem', color: '#78716C' }}>
-              Historique, suivi et avis après livraison
+              {C.ordersHint}
             </span>
           </Link>
 
@@ -170,10 +171,10 @@ export function BuyerAccountSurface({ identity }: { identity: SurfaceIdentity })
             }}
           >
             <span style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700 }}>
-              Mes favoris
+              {C.favoritesTitle}
             </span>
             <span style={{ fontSize: '0.78rem', color: '#78716C' }}>
-              Vos produits mis de côté
+              {C.favoritesHint}
             </span>
           </Link>
         </div>
@@ -192,7 +193,7 @@ export function BuyerAccountSurface({ identity }: { identity: SurfaceIdentity })
             cursor: 'pointer',
           }}
         >
-          Se déconnecter
+          {C.signOut}
         </button>
       </div>
     );
@@ -202,18 +203,18 @@ export function BuyerAccountSurface({ identity }: { identity: SurfaceIdentity })
     <div style={{ display: 'grid', gap: '1rem', maxWidth: '28rem' }}>
       <div>
         <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800 }}>
-          {mode === 'login' ? 'Connexion' : 'Créer un compte'}
+          {mode === 'login' ? C.loginTitle : C.registerTitle}
         </h2>
         <p style={{ margin: '0.2rem 0 0', fontSize: '0.85rem', color: '#78716C' }}>
           {mode === 'login'
-            ? 'Retrouvez vos commandes, favoris et avis.'
-            : 'Inscription rapide : nom, e-mail et mot de passe suffisent.'}
+            ? C.loginHint
+            : C.registerHint}
         </p>
       </div>
 
       <div
         role="tablist"
-        aria-label="Connexion ou inscription"
+        aria-label={C.tablistLabel}
         style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
@@ -225,8 +226,8 @@ export function BuyerAccountSurface({ identity }: { identity: SurfaceIdentity })
       >
         {(
           [
-            ['login', 'Se connecter'],
-            ['register', "S'inscrire"],
+            ['login', C.tabLogin],
+            ['register', C.tabRegister],
           ] as [Mode, string][]
         ).map(([value, label]) => (
           <button
@@ -257,7 +258,7 @@ export function BuyerAccountSurface({ identity }: { identity: SurfaceIdentity })
       <form onSubmit={(event) => void submit(event)} style={{ display: 'grid', gap: '0.75rem' }}>
         {mode === 'register' ? (
           <label style={LABEL_STYLE}>
-            Nom complet
+            {C.fieldName}
             <input
               type="text"
               value={name}
@@ -271,7 +272,7 @@ export function BuyerAccountSurface({ identity }: { identity: SurfaceIdentity })
         ) : null}
 
         <label style={LABEL_STYLE}>
-          Adresse e-mail
+          {C.fieldEmail}
           <input
             type="email"
             value={email}
@@ -285,7 +286,7 @@ export function BuyerAccountSurface({ identity }: { identity: SurfaceIdentity })
 
         {mode === 'register' ? (
           <label style={LABEL_STYLE}>
-            Téléphone (optionnel)
+            {C.fieldPhone}
             <input
               type="tel"
               value={phone}
@@ -298,7 +299,7 @@ export function BuyerAccountSurface({ identity }: { identity: SurfaceIdentity })
         ) : null}
 
         <label style={LABEL_STYLE}>
-          Mot de passe
+          {C.fieldPassword}
           <input
             type="password"
             value={password}
@@ -342,13 +343,12 @@ export function BuyerAccountSurface({ identity }: { identity: SurfaceIdentity })
             opacity: pending ? 0.6 : 1,
           }}
         >
-          {mode === 'login' ? 'Se connecter' : 'Créer mon compte'}
+          {mode === 'login' ? C.submitLogin : C.submitRegister}
         </button>
       </form>
 
       <p style={{ margin: 0, fontSize: '0.75rem', color: '#A8A29E' }}>
-        Vos données restent minimales (RGPD) : elles servent uniquement à suivre vos commandes,
-        favoris et avis.
+        {C.privacy}
       </p>
     </div>
   );

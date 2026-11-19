@@ -11,6 +11,7 @@
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 
+import { RETAIL_CHECKOUT_COPY as C } from '../../copy/retail-copy';
 import { SurfaceBadge, SurfaceCard, SurfaceNotice } from '../../kernel/components/SurfacePrimitives';
 import type { SurfaceIdentity } from '../../kernel/domain/surface-identity';
 import { buildCartView, type CartView } from '../application/load-cart';
@@ -69,7 +70,7 @@ export function CheckoutSurface({
     }
 
     if (missingFields(customer).length > 0) {
-      setFailures([{ sellerName: 'Formulaire', message: 'Renseignez les champs obligatoires.' }]);
+      setFailures([{ sellerName: 'Formulaire', message: C.errorRequired }]);
 
       return;
     }
@@ -120,8 +121,8 @@ export function CheckoutSurface({
     return (
       <SurfaceNotice identity={identity}>
         {createdCount > 0
-          ? 'Vos commandes ont été enregistrées. Retrouvez-les sur la page de confirmation.'
-          : 'Votre panier est vide — ajoutez des articles avant de commander.'}
+          ? C.successRecorded
+          : C.emptyCart}
       </SurfaceNotice>
     );
   }
@@ -226,8 +227,8 @@ export function CheckoutSurface({
 
         {(
           [
-            ['cash', 'Paiement à la livraison', 'Vous réglez en espèces, directement au livreur.'],
-            ['online', 'Paiement en ligne', 'Carte ou mobile money, sur une page sécurisée.'],
+            ['cash', C.paymentOnDelivery, C.paymentOnDeliveryHint],
+            ['online', C.paymentOnline, C.paymentOnlineHint],
           ] as [PaymentMethod, string, string][]
         ).map(([value, label, hint]) => (
           <label
@@ -315,11 +316,11 @@ export function CheckoutSurface({
           }}
         >
           {submitting
-            ? 'Envoi en cours…'
+            ? C.submitting
             : `Confirmer ${cart.groups.length > 1 ? `les ${cart.groups.length} commandes` : 'la commande'}`}
         </button>
         <SurfaceBadge identity={identity}>
-          {paymentMethod === 'cash' ? 'Paiement à la livraison' : 'Paiement en ligne'}
+          {paymentMethod === 'cash' ? C.paymentOnDelivery : C.paymentOnline}
         </SurfaceBadge>
       </div>
     </form>

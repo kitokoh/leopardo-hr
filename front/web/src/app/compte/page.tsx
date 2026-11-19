@@ -5,8 +5,8 @@ import { BuyerAccountSurface, RETAIL_SURFACE } from '@/modules/public-surfaces';
 import { SurfaceShell } from '@/modules/public-surfaces/kernel/components/SurfaceShell';
 
 export const metadata: Metadata = {
-  title: 'Mon compte — Marché',
-  description: 'Connexion, commandes et favoris.',
+  title: RETAIL_SURFACE.displayName,
+  description: RETAIL_SURFACE.tagline,
 };
 
 export default async function AccountPage({

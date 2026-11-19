@@ -5,8 +5,8 @@ import { OrderConfirmationSurface, RETAIL_SURFACE } from '@/modules/public-surfa
 import { SurfaceShell } from '@/modules/public-surfaces/kernel/components/SurfaceShell';
 
 export const metadata: Metadata = {
-  title: 'Commande confirmée — Marché',
-  description: 'Vos commandes enregistrées et leurs références de suivi.',
+  title: RETAIL_SURFACE.displayName,
+  description: RETAIL_SURFACE.tagline,
 };
 
 export default async function ConfirmationPage({

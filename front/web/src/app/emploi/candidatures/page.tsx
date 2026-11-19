@@ -4,8 +4,8 @@ import { CAREERS_SURFACE, TrackApplicationsForm } from '@/modules/public-surface
 import { SurfaceShell } from '@/modules/public-surfaces/kernel/components/SurfaceShell';
 
 export const metadata: Metadata = {
-  title: 'Suivre mes candidatures — Emploi',
-  description: 'Retrouvez vos candidatures avec l’adresse e-mail utilisée pour postuler.',
+  title: CAREERS_SURFACE.displayName,
+  description: CAREERS_SURFACE.tagline,
 };
 
 /**

@@ -5,8 +5,8 @@ import { CheckoutSurface, RETAIL_SURFACE, buildCartView } from '@/modules/public
 import { SurfaceShell } from '@/modules/public-surfaces/kernel/components/SurfaceShell';
 
 export const metadata: Metadata = {
-  title: 'Commander — Marché',
-  description: 'Finalisez votre commande auprès des boutiques du marché.',
+  title: RETAIL_SURFACE.displayName,
+  description: RETAIL_SURFACE.tagline,
 };
 
 export default async function CheckoutPage({

@@ -67,6 +67,8 @@ SURFACES=(
   $'travel\t/billets'
   $'pharmacy\t/pharmacies'
   $'vtc\t/operateurs'
+  # #9629 — verticale Emploi. Sa vitrine publique vit sous `/emploi`.
+  $'careers\t/emploi'
 )
 
 if [[ "${FROM_STDIN}" -eq 1 ]]; then

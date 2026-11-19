@@ -18,6 +18,7 @@ import {
 } from '../domain/checkout';
 import { createOrder } from '../infrastructure/market-gateway';
 import { idempotencyKeyFor, releaseIdempotencyKey, saveOrders } from '../infrastructure/order-storage';
+import { RETAIL_CHECKOUT_COPY } from '../../copy/retail-copy';
 
 /**
  * Forme minimale d'un groupe de panier attendue par le checkout.
@@ -86,7 +87,7 @@ export async function submitCheckout(params: {
     } catch (error) {
       failed.push({
         sellerName: group.seller.name,
-        message: error instanceof Error ? error.message : 'Une erreur est survenue.',
+        message: error instanceof Error ? error.message : RETAIL_CHECKOUT_COPY.errorGeneric,
       });
     }
   }

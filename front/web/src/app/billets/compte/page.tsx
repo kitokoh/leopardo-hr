@@ -4,8 +4,8 @@ import { TRAVEL_SURFACE, TravelerAccountSurface } from '@/modules/public-surface
 import { SurfaceShell } from '@/modules/public-surfaces/kernel/components/SurfaceShell';
 
 export const metadata: Metadata = {
-  title: 'Mon compte — Billets',
-  description: 'Vos réservations, toutes agences confondues.',
+  title: TRAVEL_SURFACE.displayName,
+  description: TRAVEL_SURFACE.tagline,
 };
 
 export default function TravelerAccountPage() {

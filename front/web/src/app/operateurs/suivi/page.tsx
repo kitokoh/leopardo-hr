@@ -5,8 +5,8 @@ import { RideTrackingSurface, MOBILITY_SURFACE } from '@/modules/public-surfaces
 import { SurfaceShell } from '@/modules/public-surfaces/kernel/components/SurfaceShell';
 
 export const metadata: Metadata = {
-  title: 'Suivre ma course — Mobilité',
-  description: 'Suivez votre course avec sa référence et son code.',
+  title: MOBILITY_SURFACE.displayName,
+  description: MOBILITY_SURFACE.tagline,
 };
 
 export default async function RideTrackingPage({

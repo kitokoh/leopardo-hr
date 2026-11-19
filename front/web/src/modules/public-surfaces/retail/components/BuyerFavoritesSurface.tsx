@@ -11,6 +11,7 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 
+import { RETAIL_LISTS_COPY as C } from '../../copy/retail-copy';
 import { SurfaceCard, SurfaceNotice } from '../../kernel/components/SurfacePrimitives';
 import type { SurfaceIdentity } from '../../kernel/domain/surface-identity';
 import { restoreSession } from '../application/load-buyer-session';
@@ -31,7 +32,7 @@ export function BuyerFavoritesSurface({ identity }: { identity: SurfaceIdentity 
     const result = await fetchFavorites();
 
     if (result === null) {
-      setError('Impossible de charger vos favoris pour le moment.');
+      setError(C.favoritesLoadFailed);
 
       return;
     }
@@ -73,7 +74,7 @@ export function BuyerFavoritesSurface({ identity }: { identity: SurfaceIdentity 
         current === null ? current : current.filter((product) => product.id !== productId),
       );
     } catch {
-      setError('Le retrait a échoué — réessayez.');
+      setError(C.favoriteRemoveFailed);
     } finally {
       setRemoving(null);
     }

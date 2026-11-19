@@ -11,6 +11,7 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 
+import { RETAIL_LISTS_COPY as C } from '../../copy/retail-copy';
 import { SurfaceBadge, SurfaceCard, SurfaceNotice } from '../../kernel/components/SurfacePrimitives';
 import type { SurfaceIdentity } from '../../kernel/domain/surface-identity';
 import { restoreSession } from '../application/load-buyer-session';
@@ -30,7 +31,7 @@ export function BuyerOrdersSurface({ identity }: { identity: SurfaceIdentity }) 
     const result = await fetchBuyerOrders();
 
     if (result === null) {
-      setError('Impossible de charger vos commandes pour le moment.');
+      setError(C.ordersLoadFailed);
 
       return;
     }

@@ -5,8 +5,8 @@ import { BookingTrackingSurface, TRAVEL_SURFACE } from '@/modules/public-surface
 import { SurfaceShell } from '@/modules/public-surfaces/kernel/components/SurfaceShell';
 
 export const metadata: Metadata = {
-  title: 'Suivre ma réservation — Billets',
-  description: 'Suivez votre réservation avec sa référence et son code.',
+  title: TRAVEL_SURFACE.displayName,
+  description: TRAVEL_SURFACE.tagline,
 };
 
 export default async function BookingTrackingPage({

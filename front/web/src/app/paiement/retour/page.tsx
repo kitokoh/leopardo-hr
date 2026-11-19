@@ -4,8 +4,8 @@ import { PaymentReturnSurface, RETAIL_SURFACE } from '@/modules/public-surfaces'
 import { SurfaceShell } from '@/modules/public-surfaces/kernel/components/SurfaceShell';
 
 export const metadata: Metadata = {
-  title: 'Retour de paiement — Marché',
-  description: 'Vérification de votre paiement.',
+  title: RETAIL_SURFACE.displayName,
+  description: RETAIL_SURFACE.tagline,
 };
 
 export default async function PaymentReturnPage({

@@ -241,6 +241,11 @@ Ces valeurs vivent dans le `identity/` de chaque verticale et sont injectées en
 | Mobilité | Fond | `#FBFAF8` | `MOBILITY_SURFACE.palette.surface` |
 | Mobilité | Texte | `#111827` | `MOBILITY_SURFACE.palette.onSurface` |
 | Mobilité | Texte secondaire | `#6B7280` | `MOBILITY_SURFACE.palette.muted` |
+| Emploi | Action principale | `#166534` | `CAREERS_SURFACE.palette.primary` |
+| Emploi | Accent | `#F59E0B` | `CAREERS_SURFACE.palette.accent` |
+| Emploi | Fond | `#F7FDF9` | `CAREERS_SURFACE.palette.surface` |
+| Emploi | Texte | `#052E1B` | `CAREERS_SURFACE.palette.onSurface` |
+| Emploi | Texte secondaire | `#5B6B62` | `CAREERS_SURFACE.palette.muted` |
 
 ### Règle d'usage
 

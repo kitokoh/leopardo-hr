@@ -131,7 +131,7 @@ export interface CreatedOrder {
  * Le jeton de suivi y figure : c'est ce qui permet à `/suivi` de fonctionner
  * sans compte. Il ne quitte jamais le navigateur (jamais transmis au PSP).
  */
-export interface SavedOrder extends CreatedOrder {}
+export type SavedOrder = CreatedOrder;
 
 /**
  * Résultat d'une soumission multi-boutiques.

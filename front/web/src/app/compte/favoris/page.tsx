@@ -5,8 +5,8 @@ import { BuyerFavoritesSurface, RETAIL_SURFACE } from '@/modules/public-surfaces
 import { SurfaceShell } from '@/modules/public-surfaces/kernel/components/SurfaceShell';
 
 export const metadata: Metadata = {
-  title: 'Mes favoris — Marché',
-  description: 'Les produits que vous avez mis de côté.',
+  title: RETAIL_SURFACE.displayName,
+  description: RETAIL_SURFACE.tagline,
 };
 
 export default async function AccountFavoritesPage({
