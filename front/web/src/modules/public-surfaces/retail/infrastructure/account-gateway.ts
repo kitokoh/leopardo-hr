@@ -16,7 +16,7 @@
  * « aucun favori » et « favoris indisponibles » ne doivent pas se ressembler.
  */
 
-import { resolveBackendBaseUrl } from '@/lib/backend-url';
+import { resolveSurfaceApiBaseUrl } from '../../kernel/infrastructure/api-base';
 
 import type {
   AccountOrder,
@@ -50,7 +50,7 @@ export class AccountApiError extends Error {
 }
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const response = await fetch(`${resolveBackendBaseUrl()}/${path}`, {
+  const response = await fetch(`${resolveSurfaceApiBaseUrl()}/${path}`, {
     ...init,
     headers: {
       Accept: 'application/json',

@@ -11,7 +11,7 @@
  * prix ni la validation de disponibilité, qui sont des règles serveur.
  */
 
-import { resolveBackendBaseUrl } from '@/lib/backend-url';
+import { resolveSurfaceApiBaseUrl } from '../../kernel/infrastructure/api-base';
 
 import type { BookingPayload, CreatedBooking } from '../domain/booking';
 
@@ -37,7 +37,7 @@ export class TravelApiError extends Error {
 }
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const response = await fetch(`${resolveBackendBaseUrl()}/${path}`, {
+  const response = await fetch(`${resolveSurfaceApiBaseUrl()}/${path}`, {
     ...init,
     headers: {
       Accept: 'application/json',

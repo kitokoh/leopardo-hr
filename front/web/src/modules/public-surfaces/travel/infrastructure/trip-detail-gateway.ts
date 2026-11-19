@@ -12,7 +12,7 @@
  * fiche vide qui laisserait croire que le trajet n'existe pas.
  */
 
-import { resolveBackendBaseUrl } from '@/lib/backend-url';
+import { resolveSurfaceApiBaseUrl } from '../../kernel/infrastructure/api-base';
 
 import type { SeatInput, SeatLayoutConfig, SeatStatusValue } from '../domain/seat-layout';
 
@@ -124,7 +124,7 @@ export function toTripDetail(raw: RawTripDetail): TripDetail {
 export async function loadTripDetail(id: string | number): Promise<TripDetail | null> {
   try {
     const response = await fetch(
-      `${resolveBackendBaseUrl()}/public/travel/marketplace/trips/${encodeURIComponent(String(id))}`,
+      `${resolveSurfaceApiBaseUrl()}/public/travel/marketplace/trips/${encodeURIComponent(String(id))}`,
       { headers: { Accept: 'application/json' }, next: { revalidate: 30 } },
     );
 

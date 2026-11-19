@@ -10,7 +10,7 @@
  * vitrine ne filtre rien elle-même, elle affiche ce que l'API rend.
  */
 
-import { resolveBackendBaseUrl } from '@/lib/backend-url';
+import { resolveSurfaceApiBaseUrl } from '../../kernel/infrastructure/api-base';
 
 const ACCOUNT = 'public/travel/marketplace/account';
 
@@ -51,7 +51,7 @@ export interface CustomerBooking {
  */
 export async function fetchMyBookings(): Promise<CustomerBooking[] | null> {
   try {
-    const response = await fetch(`${resolveBackendBaseUrl()}/${ACCOUNT}/bookings`, {
+    const response = await fetch(`${resolveSurfaceApiBaseUrl()}/${ACCOUNT}/bookings`, {
       headers: { Accept: 'application/json' },
       // Session par cookie HttpOnly : sans `include`, l'API répond 401.
       credentials: 'include',

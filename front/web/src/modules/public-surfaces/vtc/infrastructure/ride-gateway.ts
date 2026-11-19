@@ -10,7 +10,7 @@
  * de session marchande n'a rien à faire sur une demande de course.
  */
 
-import { resolveBackendBaseUrl } from '@/lib/backend-url';
+import { resolveSurfaceApiBaseUrl } from '../../kernel/infrastructure/api-base';
 
 import type { CreatedGuestRide, GeoPoint, GuestRide, RideEstimate, RideStatus } from '../domain/ride';
 import { isRideStatus } from '../domain/ride';
@@ -41,7 +41,7 @@ export class VtcApiError extends Error {
 }
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const response = await fetch(`${resolveBackendBaseUrl()}/${path}`, {
+  const response = await fetch(`${resolveSurfaceApiBaseUrl()}/${path}`, {
     ...init,
     headers: {
       Accept: 'application/json',

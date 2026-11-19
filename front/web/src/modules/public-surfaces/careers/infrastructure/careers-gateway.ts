@@ -18,7 +18,7 @@
  * offre publiée) et se distingue par `[]`.
  */
 
-import { resolveBackendBaseUrl } from '@/lib/backend-url';
+import { resolveSurfaceApiBaseUrl } from '../../kernel/infrastructure/api-base';
 
 import {
   isContractType,
@@ -127,7 +127,7 @@ export async function loadCompanyJobs(
 
   try {
     const response = await fetch(
-      `${resolveBackendBaseUrl()}/public/careers/${encodeURIComponent(companySlug)}${qs ? `?${qs}` : ''}`,
+      `${resolveSurfaceApiBaseUrl()}/public/careers/${encodeURIComponent(companySlug)}${qs ? `?${qs}` : ''}`,
       { headers: { Accept: 'application/json' }, next: { revalidate: 300 } },
     );
 
@@ -171,7 +171,7 @@ export async function loadJobOffer(
 ): Promise<JobOffer | null> {
   try {
     const response = await fetch(
-      `${resolveBackendBaseUrl()}/public/careers/${encodeURIComponent(companySlug)}/jobs/${encodeURIComponent(String(jobId))}`,
+      `${resolveSurfaceApiBaseUrl()}/public/careers/${encodeURIComponent(companySlug)}/jobs/${encodeURIComponent(String(jobId))}`,
       { headers: { Accept: 'application/json' }, next: { revalidate: 300 } },
     );
 
@@ -205,7 +205,7 @@ export async function loadJobOffer(
  */
 export async function loadHiringCompanies(): Promise<readonly HiringCompany[] | null> {
   try {
-    const response = await fetch(`${resolveBackendBaseUrl()}/public/careers`, {
+    const response = await fetch(`${resolveSurfaceApiBaseUrl()}/public/careers`, {
       headers: { Accept: 'application/json' },
       next: { revalidate: 600 },
     });
@@ -259,7 +259,7 @@ export async function trackApplications(
 ): Promise<TrackingResult | null> {
   try {
     const response = await fetch(
-      `${resolveBackendBaseUrl()}/public/careers/${encodeURIComponent(companySlug)}/applications/track`,
+      `${resolveSurfaceApiBaseUrl()}/public/careers/${encodeURIComponent(companySlug)}/applications/track`,
       {
         method: 'POST',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
@@ -356,7 +356,7 @@ export async function submitApplication(
 
   try {
     const response = await fetch(
-      `${resolveBackendBaseUrl()}/public/careers/${encodeURIComponent(companySlug)}/jobs/${encodeURIComponent(String(jobId))}/apply`,
+      `${resolveSurfaceApiBaseUrl()}/public/careers/${encodeURIComponent(companySlug)}/jobs/${encodeURIComponent(String(jobId))}/apply`,
       { method: 'POST', headers: { Accept: 'application/json' }, body, cache: 'no-store' },
     );
 

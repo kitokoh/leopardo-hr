@@ -8,7 +8,7 @@
  * ## Différence assumée avec l'app d'origine
  *
  * `front/marketplace` exigeait `NEXT_PUBLIC_MARKET_API_BASE` et construisait sa
- * propre base. Ici on réutilise `resolveBackendBaseUrl()` — la source de vérité
+ * propre base. Ici on réutilise `resolveSurfaceApiBaseUrl()` — la source de vérité
  * unique du front `web` (fail-fast en production, repli local en dev). Une
  * seconde convention d'URL dans le même dépôt était précisément la dérive que
  * la garde de parité combat.
@@ -19,7 +19,7 @@
  * une vitrine en panne ne doit pas ressembler à un catalogue vide.
  */
 
-import { resolveBackendBaseUrl } from '@/lib/backend-url';
+import { resolveSurfaceApiBaseUrl } from '../../kernel/infrastructure/api-base';
 
 import type { Product } from '../domain/product';
 import type { OrderTracking, TrackedItem } from '../domain/order';
@@ -123,7 +123,7 @@ export async function searchProducts(params: {
 
   try {
     const response = await fetch(
-      `${resolveBackendBaseUrl()}/public/market/products${qs ? `?${qs}` : ''}`,
+      `${resolveSurfaceApiBaseUrl()}/public/market/products${qs ? `?${qs}` : ''}`,
       { headers: { Accept: 'application/json' }, next: { revalidate: 60 } },
     );
 
@@ -151,7 +151,7 @@ export async function searchProducts(params: {
 export async function loadProduct(id: string | number): Promise<Product | null> {
   try {
     const response = await fetch(
-      `${resolveBackendBaseUrl()}/public/market/products/${encodeURIComponent(String(id))}`,
+      `${resolveSurfaceApiBaseUrl()}/public/market/products/${encodeURIComponent(String(id))}`,
       { headers: { Accept: 'application/json' }, next: { revalidate: 60 } },
     );
 
@@ -199,7 +199,7 @@ export async function createOrder(payload: {
   currency: string;
   checkoutUrl: string | null;
 }> {
-  const response = await fetch(`${resolveBackendBaseUrl()}/public/market/orders`, {
+  const response = await fetch(`${resolveSurfaceApiBaseUrl()}/public/market/orders`, {
     method: 'POST',
     headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -249,7 +249,7 @@ export async function loadOrderTracking(
 ): Promise<OrderTracking | null> {
   try {
     const response = await fetch(
-      `${resolveBackendBaseUrl()}/public/market/orders/${encodeURIComponent(reference)}?token=${encodeURIComponent(token)}`,
+      `${resolveSurfaceApiBaseUrl()}/public/market/orders/${encodeURIComponent(reference)}?token=${encodeURIComponent(token)}`,
       { headers: { Accept: 'application/json' }, cache: 'no-store' },
     );
 
