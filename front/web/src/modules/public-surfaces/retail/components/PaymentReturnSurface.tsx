@@ -21,6 +21,7 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 
+import { RETAIL_PAYMENT_COPY as C } from '../../copy/retail-copy';
 import { SurfaceCard, SurfaceNotice } from '../../kernel/components/SurfacePrimitives';
 import type { SurfaceIdentity } from '../../kernel/domain/surface-identity';
 import { formatPrice } from '../../kernel/domain/money';
@@ -97,7 +98,7 @@ export function PaymentReturnSurface({
         }
 
         if (result.status === 'error') {
-          setErrorMessage('Vérification impossible pour le moment.');
+          setErrorMessage(C.verifyFailed);
           setState('error');
 
           return;
@@ -127,7 +128,7 @@ export function PaymentReturnSurface({
         timer = setTimeout(() => void run(), PAYMENT_POLL_INTERVAL_MS);
       } catch {
         if (!cancelled) {
-          setErrorMessage('Vérification impossible pour le moment.');
+          setErrorMessage(C.verifyFailed);
           setState('error');
         }
       }
@@ -169,22 +170,22 @@ export function PaymentReturnSurface({
 
   const messages: Record<Exclude<PaymentState, 'loading' | 'unknown-order'>, [string, string]> = {
     paid: [
-      'Paiement confirmé',
-      'Merci ! Votre paiement a bien été reçu. La boutique prépare votre commande.',
+      C.paidTitle,
+      C.paidBody,
     ],
     pending: [
-      'Confirmation en cours…',
-      'Votre paiement est en cours de confirmation par le prestataire. Cette page se met à jour automatiquement.',
+      C.pendingTitle,
+      C.pendingBody,
     ],
     timeout: [
-      'Confirmation toujours en attente',
-      'Nous n’avons pas encore reçu la confirmation du prestataire. Si votre paiement a abouti, il sera pris en compte automatiquement.',
+      C.stillPendingTitle,
+      C.stillPendingBody,
     ],
     refunded: [
-      'Paiement remboursé',
-      'Cette commande a été remboursée par la boutique. Le délai dépend de votre moyen de paiement.',
+      C.refundedTitle,
+      C.refundedBody,
     ],
-    error: ['Vérification impossible', errorMessage ?? 'Une erreur est survenue.'],
+    error: [C.errorTitle, errorMessage ?? C.errorBody],
   };
 
   const [title, body] = messages[state];

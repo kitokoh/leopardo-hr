@@ -78,3 +78,52 @@ export const RETAIL_LISTS_COPY = {
   favoritesLoadFailed: 'Impossible de charger vos favoris pour le moment.',
   favoriteRemoveFailed: 'Le retrait a échoué — réessayez.',
 } as const;
+
+/** Copie du retour de paiement (verticale Retail). */
+export const RETAIL_PAYMENT_COPY = {
+  verifyFailed: 'Vérification impossible pour le moment.',
+  paidTitle: 'Paiement confirmé',
+  paidBody:
+    'Merci ! Votre paiement a bien été reçu. La boutique prépare votre commande.',
+  pendingTitle: 'Confirmation en cours…',
+  pendingBody:
+    'Votre paiement est en cours de confirmation par le prestataire. Cette page se met à jour automatiquement.',
+  stillPendingTitle: 'Confirmation toujours en attente',
+  stillPendingBody:
+    'Nous n’avons pas encore reçu la confirmation du prestataire. Si votre paiement a abouti, il sera pris en compte automatiquement.',
+  refundedTitle: 'Paiement remboursé',
+  refundedBody:
+    'Cette commande a été remboursée par la boutique. Le délai dépend de votre moyen de paiement.',
+  errorTitle: 'Vérification impossible',
+  errorBody: 'Une erreur est survenue.',
+} as const;
+
+/** Copie des avis produits (verticale Retail). */
+export const RETAIL_REVIEWS_COPY = {
+  invalidRating: 'Choisissez une note entre 1 et 5.',
+  submitFailed: "L'avis n'a pas pu être envoyé.",
+  submit: 'Publier mon avis',
+} as const;
+
+/** Copie de la confirmation de commande (verticale Retail). */
+export const RETAIL_CONFIRMATION_COPY = {
+  paymentOnline: 'Paiement en ligne',
+  paymentOnDelivery: 'À la livraison',
+  orderLabel: 'la commande',
+} as const;
+
+/** Copie de la réservation (verticale Billets). */
+export const TRAVEL_BOOKING_COPY = {
+  searching: 'Recherche…',
+  booking: 'Réservation en cours…',
+  book: 'Réserver',
+  track: 'Suivre ma réservation',
+  bookingFailed: 'La réservation a échoué.',
+  loadFailed: 'Impossible de charger vos réservations pour le moment.',
+  passengerNamesRequired: 'Renseignez le nom de chaque passager.',
+  contactRequired: 'Indiquez un e-mail ou un téléphone pour être prévenu.',
+  seatTaken:
+    'Un siège que vous aviez choisi vient d’être pris. Il a été retiré de votre sélection.',
+  autoAssignHint: '— sinon, attribution automatique',
+  submitting: 'Envoi…',
+} as const;

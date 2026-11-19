@@ -18,6 +18,7 @@ import { SurfaceBadge, SurfaceCard, SurfaceNotice } from '../../kernel/component
 import type { SurfaceIdentity } from '../../kernel/domain/surface-identity';
 import { formatPrice } from '../../kernel/domain/money';
 import { trackBooking, type TrackedBooking } from '../infrastructure/booking-gateway';
+import { TRAVEL_BOOKING_COPY as C } from '../../copy/retail-copy';
 
 const INPUT_STYLE = {
   height: '2.5rem',
@@ -98,7 +99,7 @@ export function BookingTrackingSurface({ identity }: { identity: SurfaceIdentity
             opacity: pending ? 0.6 : 1,
           }}
         >
-          {pending ? 'Recherche…' : 'Suivre ma réservation'}
+          {pending ? C.searching : C.track}
         </button>
       </form>
 

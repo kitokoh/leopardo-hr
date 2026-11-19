@@ -14,6 +14,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import { RETAIL_CONFIRMATION_COPY as C } from '../../copy/retail-copy';
 import { SurfaceBadge, SurfaceCard, SurfaceNotice } from '../../kernel/components/SurfacePrimitives';
 import type { SurfaceIdentity } from '../../kernel/domain/surface-identity';
 import type { SavedOrder } from '../domain/checkout';
@@ -58,7 +59,7 @@ export function OrderConfirmationSurface({ identity }: { identity: SurfaceIdenti
                 </p>
               </div>
               <SurfaceBadge identity={identity} tone="accent">
-                {order.paymentMethod === 'online' ? 'Paiement en ligne' : 'À la livraison'}
+                {order.paymentMethod === 'online' ? C.paymentOnline : C.paymentOnDelivery}
               </SurfaceBadge>
             </div>
 

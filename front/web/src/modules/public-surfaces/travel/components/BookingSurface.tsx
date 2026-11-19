@@ -42,6 +42,7 @@ import {
 } from '../domain/seat-layout';
 import { reconcileSeatSelection } from '../domain/seat-selection';
 import { createBooking } from '../infrastructure/booking-gateway';
+import { TRAVEL_BOOKING_COPY as C } from '../../copy/retail-copy';
 
 /** Intervalle de rafraîchissement de l'inventaire (ms). */
 export const SEAT_REFRESH_INTERVAL_MS = 30_000;
@@ -56,8 +57,8 @@ const INPUT_STYLE = {
 } as const;
 
 const ERROR_MESSAGES: Record<string, string> = {
-  'missing-name': 'Renseignez le nom de chaque passager.',
-  'missing-contact': 'Indiquez un e-mail ou un téléphone pour être prévenu.',
+  'missing-name': C.passengerNamesRequired,
+  'missing-contact': C.contactRequired,
 };
 
 export function BookingSurface({
@@ -133,7 +134,7 @@ export function BookingSurface({
         }
 
         setSeatNotice(
-          'Un siège que vous aviez choisi vient d’être pris. Il a été retiré de votre sélection.',
+          C.seatTaken,
         );
 
         return current.map((passenger, index) => ({
@@ -218,7 +219,7 @@ export function BookingSurface({
 
       setCreated(booking);
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'La réservation a échoué.');
+      setError(caught instanceof Error ? caught.message : C.bookingFailed);
       setSubmitting(false);
     }
   };
@@ -254,7 +255,7 @@ export function BookingSurface({
         <p style={{ margin: '0.2rem 0 0.6rem', fontSize: '0.8rem', color: '#78716C' }}>
           {selectedSeats.length} siège{selectedSeats.length > 1 ? 's' : ''} sélectionné
           {selectedSeats.length > 1 ? 's' : ''}
-          {selectedSeats.length === 0 ? ' — sinon, attribution automatique' : ''}
+          {selectedSeats.length === 0 ? C.autoAssignHint : ''}
         </p>
 
         <div style={{ display: 'grid', gap: '0.35rem' }}>
@@ -511,7 +512,7 @@ export function BookingSurface({
             opacity: submitting ? 0.6 : 1,
           }}
         >
-          {submitting ? 'Réservation en cours…' : 'Réserver'}
+          {submitting ? C.booking : C.book}
         </button>
         <SurfaceBadge identity={identity} tone="accent">
           Total {formatPrice(totalMinor, currency)}

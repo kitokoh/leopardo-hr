@@ -27,6 +27,7 @@ import { restoreSession, persistSession, forgetSession } from '../../retail/appl
 import type { BuyerSession } from '../../retail/domain/buyer';
 import { loginBuyer, logoutBuyer, registerBuyer, AccountApiError } from '../../retail/infrastructure/account-gateway';
 import { fetchMyBookings, type CustomerBooking } from '../infrastructure/account-gateway';
+import { TRAVEL_BOOKING_COPY as C } from '../../copy/retail-copy';
 
 type Mode = 'login' | 'register';
 
@@ -57,7 +58,7 @@ export function TravelerAccountSurface({ identity }: { identity: SurfaceIdentity
     const result = await fetchMyBookings();
 
     if (result === null) {
-      setLoadError('Impossible de charger vos réservations pour le moment.');
+      setLoadError(C.loadFailed);
 
       return;
     }

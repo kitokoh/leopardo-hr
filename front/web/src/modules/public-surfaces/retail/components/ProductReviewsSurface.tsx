@@ -11,6 +11,7 @@
 
 import { useEffect, useState, type FormEvent } from 'react';
 
+import { RETAIL_REVIEWS_COPY as C } from '../../copy/retail-copy';
 import { SurfaceCard, SurfaceNotice } from '../../kernel/components/SurfacePrimitives';
 import type { SurfaceIdentity } from '../../kernel/domain/surface-identity';
 import { isValidRating, type ProductReviews } from '../domain/buyer';
@@ -55,7 +56,7 @@ export function ProductReviewsSurface({
     }
 
     if (!isValidRating(rating)) {
-      setError('Choisissez une note entre 1 et 5.');
+      setError(C.invalidRating);
 
       return;
     }
@@ -69,7 +70,7 @@ export function ProductReviewsSurface({
       setComment('');
       setReviews(await fetchProductReviews(productId));
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "L'avis n'a pas pu être envoyé.");
+      setError(caught instanceof Error ? caught.message : C.submitFailed);
     } finally {
       setPending(false);
     }
@@ -183,7 +184,7 @@ export function ProductReviewsSurface({
                   opacity: pending ? 0.6 : 1,
                 }}
               >
-                {pending ? 'Envoi…' : 'Publier mon avis'}
+                {pending ? 'Envoi…' : C.submit}
               </button>
             </form>
           )}

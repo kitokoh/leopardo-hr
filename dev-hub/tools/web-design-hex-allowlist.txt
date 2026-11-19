@@ -109,3 +109,8 @@
 # Micro-gemme de la marque Leopardo (#9179) — yellow-200, effet décoratif SVG
 # sur le brand mark (LeopardoBrandMark.tsx) ; pas un token d'UI.
 #fef08a
+# #a3e635 — lime-400, couleur de FIXTURE dans les tests du module
+# `public-surface` (front/web/src/modules/public-surface/__tests__/*) : elle
+# sert à vérifier que la palette d'un tenant est bien propagée en variables CSS.
+# Ce n'est pas une couleur de marque, et elle n'est jamais rendue en production.
+#a3e635

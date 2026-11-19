@@ -11,7 +11,7 @@
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 
-import { RETAIL_CHECKOUT_COPY as C } from '../../copy/retail-copy';
+import { RETAIL_CHECKOUT_COPY as C, RETAIL_CONFIRMATION_COPY } from '../../copy/retail-copy';
 import { SurfaceBadge, SurfaceCard, SurfaceNotice } from '../../kernel/components/SurfacePrimitives';
 import type { SurfaceIdentity } from '../../kernel/domain/surface-identity';
 import { buildCartView, type CartView } from '../application/load-cart';
@@ -317,7 +317,7 @@ export function CheckoutSurface({
         >
           {submitting
             ? C.submitting
-            : `Confirmer ${cart.groups.length > 1 ? `les ${cart.groups.length} commandes` : 'la commande'}`}
+            : `Confirmer ${cart.groups.length > 1 ? `les ${cart.groups.length} commandes` : RETAIL_CONFIRMATION_COPY.orderLabel}`}
         </button>
         <SurfaceBadge identity={identity}>
           {paymentMethod === 'cash' ? C.paymentOnDelivery : C.paymentOnline}
