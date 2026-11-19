@@ -63,8 +63,9 @@ final class CreateBrandAction
         // « pas de domaine ». Le tenant croyait avoir posé son domaine alors que
         // la Brand restait injoignable par host — sans aucune erreur.
         $host = null;
-        if (isset($input['host']) && is_string($input['host']) && trim($input['host']) !== '') {
-            $host = Brand::assertValidHost($input['host']);
+        $rawHost = $input['host'] ?? null;
+        if ($rawHost !== null && trim($rawHost) !== '') {
+            $host = Brand::assertValidHost($rawHost);
         }
 
         return $this->transactions->run(function () use ($slug, $vertical, $palette, $input, $host): Brand {

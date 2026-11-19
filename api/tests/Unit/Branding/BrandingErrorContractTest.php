@@ -61,6 +61,9 @@ final class BrandingErrorContractTest extends TestCase
         $this->assertStringContainsString('admin', $exception->getMessage());
     }
 
+    /**
+     * @param  non-empty-string  $expectedCode
+     */
     private function assertContract(DomainException $exception, string $expectedCode): void
     {
         // La classe de base décide du rendu : hors de cet héritage, la réponse
