@@ -4,7 +4,7 @@ import { ArrowRight, Building2, Car, Hotel, Store, UtensilsCrossed } from 'lucid
 import { normalizeLocale } from '@/lib/i18n';
 import { SITE_URL } from '@/lib/site-url';
 import { searchPublicDiscovery } from '@/lib/public-discovery-api';
-import { getPublicPortalCopy } from '@/modules/public-portal/data/copy';
+import { getPublicPortalCopy } from '@/modules/public-surfaces/portal/data/copy';
 import DiscoveryExplorer from './discovery-explorer';
 
 /**

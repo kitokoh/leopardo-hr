@@ -28,6 +28,7 @@
 
 export * from './kernel';
 export { surfaceRegistry } from './registry';
+export * from './portal';
 export * from './restaurants';
 export * from './retail';
 export * from './hospitality';

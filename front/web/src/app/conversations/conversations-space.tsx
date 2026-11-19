@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { t } from '@/lib/i18n/locale-catalog';
 import type { AppLocale } from '@/lib/i18n';
-import LeaSection from '@/modules/public-portal/components/LeaSection';
-import { getPublicLeaCopy } from '@/modules/public-portal/data/lea-copy';
+import LeaSection from '@/modules/public-surfaces/portal/components/LeaSection';
+import { getPublicLeaCopy } from '@/modules/public-surfaces/portal/data/lea-copy';
 import {
   CONVERSATION_MESSAGE_MAX,
   fetchConversation,

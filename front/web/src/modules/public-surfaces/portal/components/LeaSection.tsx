@@ -30,7 +30,7 @@
  * qu'on branchera — la séparation visuelle est déjà en place.
  */
 
-import { getPublicLeaCopy } from '@/modules/public-portal/data/lea-copy';
+import { getPublicLeaCopy } from '@/modules/public-surfaces/portal/data/lea-copy';
 
 interface LeaSectionProps {
   locale: string;

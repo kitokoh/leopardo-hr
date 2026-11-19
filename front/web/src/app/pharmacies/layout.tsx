@@ -1,4 +1,4 @@
-import PublicPortalLayout from '@/modules/public-portal/components/PublicPortalLayout';
+import PublicPortalLayout from '@/modules/public-surfaces/portal/components/PublicPortalLayout';
 
 /**
  * Chrome du portail public pour la vitrine `/pharmacies` (#9592).
