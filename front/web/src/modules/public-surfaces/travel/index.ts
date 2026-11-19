@@ -58,3 +58,27 @@ export {
   type TripDetail,
 } from './infrastructure/trip-detail-gateway';
 export { TripDetailSurface } from './components/TripDetailSurface';
+
+// #9628 — réservation et suivi (repris de front/travel-web).
+export {
+  MAX_PASSENGERS,
+  bookingTotal,
+  buildBookingPayload,
+  newIdempotencyKey,
+  priceFor,
+  validateBooking,
+  type AgeCategory,
+  type BookingPayload,
+  type CreatedBooking,
+  type PassengerDraft,
+  type TripPrice,
+} from './domain/booking';
+export {
+  TravelApiError,
+  cancelBooking,
+  createBooking,
+  trackBooking,
+  type TrackedBooking,
+} from './infrastructure/booking-gateway';
+export { BookingSurface, SEAT_REFRESH_INTERVAL_MS } from './components/BookingSurface';
+export { BookingTrackingSurface } from './components/BookingTrackingSurface';

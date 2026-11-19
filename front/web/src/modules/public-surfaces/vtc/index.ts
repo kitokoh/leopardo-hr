@@ -28,4 +28,30 @@ export {
 } from './domain/operator';
 export { MOBILITY_SURFACE } from './identity/mobility-identity';
 export { MobilitySurface } from './components/MobilitySurface';
+
+// #9628 — courses invitées (repris de front/travel-web).
+export {
+  RIDE_SEQUENCE,
+  RIDE_STATUSES,
+  isPriced,
+  isRideStatus,
+  isRideTerminal,
+  isValidGeoPoint,
+  reachedRideSteps,
+  validateRideRequest,
+  type CreatedGuestRide,
+  type GeoPoint,
+  type GuestRide,
+  type RideEstimate,
+  type RideStatus,
+} from './domain/ride';
+export {
+  VtcApiError,
+  createRide,
+  estimateRide,
+  rideStatusLabel,
+  trackRide,
+} from './infrastructure/ride-gateway';
+export { RideRequestSurface } from './components/RideRequestSurface';
+export { RideTrackingSurface } from './components/RideTrackingSurface';
 export { loadOperators, type MobilityLoadResult } from './infrastructure/operator-gateway';

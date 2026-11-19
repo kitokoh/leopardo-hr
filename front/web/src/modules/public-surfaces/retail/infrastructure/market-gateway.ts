@@ -167,6 +167,79 @@ export async function loadProduct(id: string | number): Promise<Product | null> 
   }
 }
 
+/** Réponse brute de création d'une commande. */
+interface RawCreatedOrder {
+  reference?: string;
+  tracking_token?: string;
+  total_minor?: number;
+  currency?: string;
+  payment?: { checkout_url?: string | null };
+}
+
+/**
+ * Crée une commande pour **une** boutique.
+ *
+ * Lève sur échec : l'appelant (le cas d'usage de checkout) doit distinguer une
+ * boutique servie d'une boutique en échec, et un `null` silencieux ferait
+ * passer une commande perdue pour un succès.
+ */
+export async function createOrder(payload: {
+  seller: string;
+  items: readonly { product_id: number; quantity: number }[];
+  customer: { name: string; phone: string; email?: string };
+  delivery: { address: string; city: string; notes?: string };
+  payment_method: string;
+  idempotency_key: string;
+}): Promise<{
+  reference: string;
+  trackingToken: string;
+  totalMinor: number;
+  currency: string;
+  checkoutUrl: string | null;
+}> {
+  const response = await fetch(`${resolveBackendBaseUrl()}/public/market/orders`, {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+    // Session acheteur optionnelle : si le cookie est présent, la commande est
+    // rattachée au compte (historique + avis vérifiés) ; sinon checkout invité.
+    credentials: 'include',
+    cache: 'no-store',
+  });
+
+  const text = await response.text();
+  let parsed: unknown = null;
+
+  if (text) {
+    try {
+      parsed = JSON.parse(text) as unknown;
+    } catch {
+      parsed = null;
+    }
+  }
+
+  if (!response.ok) {
+    const message =
+      isRecord(parsed) && typeof parsed.message === 'string'
+        ? parsed.message
+        : `HTTP ${response.status}`;
+
+    throw new Error(message);
+  }
+
+  const record = isRecord(parsed) ? parsed : {};
+  const raw = (isRecord(record.data) ? record.data : record) as RawCreatedOrder;
+
+  return {
+    reference: typeof raw.reference === 'string' ? raw.reference : '',
+    trackingToken: typeof raw.tracking_token === 'string' ? raw.tracking_token : '',
+    totalMinor: toNumber(raw.total_minor, 0),
+    currency: typeof raw.currency === 'string' ? raw.currency : 'EUR',
+    checkoutUrl:
+      typeof raw.payment?.checkout_url === 'string' ? raw.payment.checkout_url : null,
+  };
+}
+
 /** Charge le suivi d'une commande par référence + jeton. */
 export async function loadOrderTracking(
   reference: string,
