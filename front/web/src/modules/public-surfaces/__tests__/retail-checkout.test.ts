@@ -34,11 +34,12 @@ const GROUP: CartGroup = {
       priceMinor: 12000,
       currency: 'DZD',
       quantity: 2,
-      sellerSlug: 'boulangerie-didouche',
-      sellerName: 'Boulangerie Didouche',
       imageUrl: null,
+      seller: { slug: 'boulangerie-didouche', name: 'Boulangerie Didouche', city: 'Alger' },
     },
   ],
+  subtotalMinor: 24000,
+  currency: 'DZD',
 };
 
 describe('checkout — validation', () => {

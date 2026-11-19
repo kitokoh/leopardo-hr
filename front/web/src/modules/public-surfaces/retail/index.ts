@@ -172,3 +172,4 @@ export { BuyerFavoritesSurface } from './components/BuyerFavoritesSurface';
 export { BuyerOrdersSurface } from './components/BuyerOrdersSurface';
 export { OrderConfirmationSurface } from './components/OrderConfirmationSurface';
 export { ProductReviewsSurface } from './components/ProductReviewsSurface';
+export { PaymentReturnSurface, PAYMENT_MAX_POLLS, PAYMENT_POLL_INTERVAL_MS } from './components/PaymentReturnSurface';

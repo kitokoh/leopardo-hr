@@ -43,6 +43,8 @@ interface RawProduct {
 interface RawOrder {
   reference?: string;
   status?: string;
+  /** Statut du paiement — distinct du fulfillment (cf. `OrderTracking`). */
+  payment_status?: string;
   total_minor?: number;
   currency?: string;
   items?: unknown;
@@ -278,6 +280,7 @@ export async function loadOrderTracking(
     return {
       reference: typeof raw.reference === 'string' ? raw.reference : reference,
       status: (typeof raw.status === 'string' ? raw.status : 'pending') as OrderTracking['status'],
+      paymentStatus: typeof raw.payment_status === 'string' ? raw.payment_status : 'pending',
       totalMinor: toNumber(raw.total_minor, 0),
       currency: typeof raw.currency === 'string' ? raw.currency : 'EUR',
       items,

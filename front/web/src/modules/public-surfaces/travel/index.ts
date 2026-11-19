@@ -82,3 +82,5 @@ export {
 } from './infrastructure/booking-gateway';
 export { BookingSurface, SEAT_REFRESH_INTERVAL_MS } from './components/BookingSurface';
 export { BookingTrackingSurface } from './components/BookingTrackingSurface';
+export { TravelerAccountSurface } from './components/TravelerAccountSurface';
+export { fetchMyBookings, type CustomerBooking } from './infrastructure/account-gateway';

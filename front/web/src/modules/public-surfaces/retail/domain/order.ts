@@ -29,6 +29,14 @@ export interface TimelineEntry {
 export interface OrderTracking {
   readonly reference: string;
   readonly status: FulfillmentStatus;
+  /**
+   * Statut du paiement (`pending` | `paid` | `refunded` | `failed`).
+   *
+   * Distinct du statut de fulfillment : une commande peut être payée et pas
+   * encore expédiée, ou livrée et remboursée. La page de retour de paiement
+   * (#7812) ne peut pas se contenter du fulfillment.
+   */
+  readonly paymentStatus: string;
   readonly totalMinor: number;
   readonly currency: string;
   readonly items: readonly TrackedItem[];
