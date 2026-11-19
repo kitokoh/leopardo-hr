@@ -49,10 +49,12 @@ import signal
 import socket
 import subprocess
 import sys
+import threading
 import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
@@ -210,9 +212,17 @@ FRONTS: dict[str, Front] = {
             ("comptabilite", "/accounting"),
             ("modules", "/modules"),
         ],
+        # Surface grand public : chaque page de la vitrine est capturée en
+        # desktop ET en mobile (390x844), c'est là que se joue la lisibilité
+        # réelle des parcours d'acquisition.
         mobile_routes=[
             ("accueil-mobile", "/"),
             ("tarifs-mobile", "/business/pricing"),
+            ("fonctionnalites-mobile", "/business/employes"),
+            ("faq-mobile", "/business/faq"),
+            ("blog-mobile", "/business/blog"),
+            ("decouvrir-mobile", "/decouvrir"),
+            ("emploi-mobile", "/emploi"),
         ],
         anonymous_routes=[("connexion", "/auth/login")],
     ),
@@ -489,8 +499,107 @@ def _mock_api_admin(page) -> None:
     )
 
 
+# Types canoniques de l'annuaire public (`?type=`). `meta.types` est la SEULE
+# source des catégories affichées par `/decouvrir` : sans lui, `knownTypes`
+# vaut `[]` et la barre de filtres reste vide.
+DISCOVERY_TYPES = ["restaurant", "pharmacy", "hotel", "travel_agency", "shop"]
+
+DISCOVERY_ITEMS = [
+    {
+        "type": "restaurant",
+        "slug": "le-cedre",
+        "name": "Restaurant Le Cedre",
+        "category": "Cuisine libanaise",
+        "city": "Alger",
+        "description": "Table familiale au coeur de la capitale, terrasse ombragee.",
+        "url": "/restaurateur/le-cedre",
+    },
+    {
+        "type": "pharmacy",
+        "slug": "pharma-el-amel",
+        "name": "Pharmacie El Amel",
+        "category": "Parapharmacie",
+        "city": "Oran",
+        "description": "Officine de garde, conseil et orthopedie.",
+        "url": "/pharmacie/pharma-el-amel",
+    },
+    {
+        "type": "hotel",
+        "slug": "hotel-es-salam",
+        "name": "Hotel Es Salam",
+        "category": "3 etoiles",
+        "city": "Constantine",
+        "description": "Vue sur les gorges, petit-dejeuner inclus.",
+        "url": "/stay/hotel-es-salam",
+    },
+    {
+        "type": "travel_agency",
+        "slug": "voyages-sahara",
+        "name": "Voyages Sahara",
+        "category": "Circuits",
+        "city": "Ghardaia",
+        "description": "Sejours et circuits dans le grand Sud algerien.",
+        "url": "/operateurs/voyages-sahara",
+    },
+    {
+        "type": "shop",
+        "slug": "boulangerie-el-baraka",
+        "name": "Boulangerie El Baraka",
+        "category": "Artisanat",
+        "city": "Blida",
+        "description": "Pain traditionnel cuit au four a bois.",
+        "url": "/boutiques/boulangerie-el-baraka",
+    },
+]
+
+DISCOVERY_META = {
+    "total": len(DISCOVERY_ITEMS),
+    "per_page": 20,
+    "page": 1,
+    "last_page": 1,
+    "types": DISCOVERY_TYPES,
+    "radius_km": None,
+    "actions": {},
+    "action_urls": {},
+}
+
+# Annuaire cross-tenant des entreprises qui recrutent (`GET /public/careers`).
+# Consommé par `/emploi`, qui est rendu en SSR : ce payload doit donc être servi
+# par un VRAI backend joignable (cf. `MockBackend`), pas par `page.route`.
+HIRING_COMPANIES = [
+    {
+        "slug": "techcorp-algerie",
+        "name": "TechCorp Algerie SARL",
+        "country": "DZ",
+        "last_published_at": "2026-11-18T10:00:00+01:00",
+    },
+    {
+        "slug": "restaurant-le-cedre",
+        "name": "Restaurant Le Cedre",
+        "country": "DZ",
+        "last_published_at": "2026-11-16T09:30:00+01:00",
+    },
+    {
+        "slug": "pharma-el-amel",
+        "name": "Pharmacie El Amel",
+        "country": "DZ",
+        "last_published_at": "2026-11-12T15:45:00+01:00",
+    },
+    {
+        "slug": "voyages-sahara",
+        "name": "Voyages Sahara",
+        "country": "DZ",
+        "last_published_at": "2026-11-08T11:20:00+01:00",
+    },
+]
+
+
 def _mock_api_web(page) -> None:
-    """Mocks front web : `/auth/me` renvoie le profil tenant complet."""
+    """Mocks front web : `/auth/me` renvoie le profil tenant complet.
+
+    ⚠️ Playwright évalue les routes dans l'ordre INVERSE de leur enregistrement :
+    le catch-all est déclaré EN PREMIER, sinon il masque les mocks spécifiques.
+    """
     page.route(
         "**/api/**",
         lambda route: route.fulfill(
@@ -505,6 +614,22 @@ def _mock_api_web(page) -> None:
             status=200,
             content_type="application/json",
             body=json.dumps({"data": WEB_USER}),
+        ),
+    )
+    page.route(
+        "**/api/v1/public/discover**",
+        lambda route: route.fulfill(
+            status=200,
+            content_type="application/json",
+            body=json.dumps({"data": DISCOVERY_ITEMS, "meta": DISCOVERY_META}),
+        ),
+    )
+    page.route(
+        "**/api/v1/public/careers**",
+        lambda route: route.fulfill(
+            status=200,
+            content_type="application/json",
+            body=json.dumps({"data": HIRING_COMPANIES}),
         ),
     )
 
@@ -650,6 +775,29 @@ def capture_route(page, front: Front, name: str, route: str, out_dir: Path) -> P
         with contextlib.suppress(Exception):
             page.wait_for_load_state("networkidle", timeout=20_000)
         page.wait_for_timeout(1_500)
+
+        # Reveal au défilement : la vitrine anime ses blocs avec GSAP
+        # (`useScrollReveal`, `.gsap-reveal` / `.gsap-stagger`) et framer-motion.
+        # Sans défilement, tout ce qui est sous la ligne de flottaison reste à
+        # `opacity: 0` et la capture pleine page montre des trous blancs (FAQ,
+        # blog). On parcourt la page par paliers pour déclencher chaque trigger,
+        # puis on remonte avant l'objet.
+        with contextlib.suppress(Exception):
+            page.evaluate(
+                """async () => {
+                    const step = Math.max(200, Math.floor(window.innerHeight * 0.8));
+                    const height = document.body.scrollHeight;
+                    for (let y = 0; y < height; y += step) {
+                        window.scrollTo(0, y);
+                        await new Promise((r) => setTimeout(r, 120));
+                    }
+                    window.scrollTo(0, document.body.scrollHeight);
+                    await new Promise((r) => setTimeout(r, 400));
+                    window.scrollTo(0, 0);
+                    await new Promise((r) => setTimeout(r, 300));
+                }"""
+            )
+        page.wait_for_timeout(1_200)
         page.screenshot(path=str(target), full_page=front.full_page)
         size = target.stat().st_size
         if size < 5_000:
@@ -734,6 +882,67 @@ def capture_front(browser, front: Front) -> list[Path]:
 # --------------------------------------------------------------------------- #
 # Entrée
 # --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- #
+# Backend mock (SSR)
+# --------------------------------------------------------------------------- #
+class MockBackend:
+    """Backend JSON minimal pour les pages rendues côté serveur.
+
+    `/emploi` appelle `GET /public/careers` depuis le serveur Next
+    (`loadHiringDirectory` -> `resolveBackendBaseUrl()`), donc AVANT que le
+    navigateur n'existe : `page.route` ne peut pas l'intercepter. Sans backend
+    joignable, la page affiche son état « service momentanément indisponible ».
+
+    Le serveur écoute sur le port du repli dev de `backend-url.ts`
+    (`http://localhost:8000/api/v1`) et ne sert que les routes publiques
+    nécessaires à la capture.
+    """
+
+    PORT = 8000
+
+    def __init__(self) -> None:
+        self._server: ThreadingHTTPServer | None = None
+        self._thread: threading.Thread | None = None
+
+    def start(self) -> None:
+        if _port_open(self.PORT):
+            print(f"  · backend mock: port {self.PORT} déjà occupé — réutilisation")
+            return
+
+        routes = {
+            "/api/v1/public/careers": {"data": HIRING_COMPANIES},
+            "/api/v1/public/discover": {"data": DISCOVERY_ITEMS, "meta": DISCOVERY_META},
+        }
+
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self) -> None:  # noqa: N802 — contrat de la stdlib
+                path = self.path.split("?", 1)[0].rstrip("/") or "/"
+                payload = routes.get(path)
+                if payload is None:
+                    body = json.dumps({"data": {}, "meta": {"total": 0}}).encode()
+                else:
+                    body = json.dumps(payload).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            def log_message(self, *args) -> None:  # silence les logs d'accès
+                return
+
+        self._server = ThreadingHTTPServer(("127.0.0.1", self.PORT), Handler)
+        self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
+        self._thread.start()
+        print(f"  · backend mock: http://127.0.0.1:{self.PORT}/api/v1")
+
+    def stop(self) -> None:
+        if self._server is not None:
+            self._server.shutdown()
+            self._server.server_close()
+            self._server = None
+
+
 def main() -> int:
     global OUTPUT_ROOT
 
@@ -765,7 +974,14 @@ def main() -> int:
     produced: list[Path] = []
     for front in selected:
         process: subprocess.Popen | None = None
+        backend: MockBackend | None = None
         try:
+            # Le front web rend `/emploi` en SSR : il lui faut un backend
+            # joignable AVANT le démarrage du serveur Next.
+            if front.key == "web":
+                backend = MockBackend()
+                backend.start()
+
             if args.serve:
                 print(f"\n{front.key} — démarrage…")
                 process = start_server(front)
@@ -796,8 +1012,15 @@ def main() -> int:
                 stop_server(process)
                 # Laisse le port se libérer avant le front suivant.
                 time.sleep(2)
+            if backend is not None:
+                backend.stop()
 
-    print(f"\n{len(produced)} capture(s) écrite(s) sous {OUTPUT_ROOT.relative_to(REPO_ROOT)}/")
+    # `--out` peut pointer hors du dépôt : `relative_to` lèverait alors une
+    # ValueError en fin de capture, après que tous les fichiers ont été écrits.
+    with contextlib.suppress(ValueError):
+        print(f"\n{len(produced)} capture(s) écrite(s) sous {OUTPUT_ROOT.relative_to(REPO_ROOT)}/")
+    if not OUTPUT_ROOT.is_relative_to(REPO_ROOT):
+        print(f"\n{len(produced)} capture(s) écrite(s) sous {OUTPUT_ROOT}/")
     return 0 if produced else 1
 
 
