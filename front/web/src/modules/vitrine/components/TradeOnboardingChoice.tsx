@@ -30,7 +30,7 @@ import {
   type TradeAction,
   type TradeMode,
   type TradeProfile,
-} from '@/modules/vitrine/lib/trade-intent';
+} from '@/modules/vitrine/domain/trade-intent';
 
 type ModeCard = {
   mode: TradeMode;

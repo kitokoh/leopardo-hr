@@ -28,7 +28,7 @@ import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowRight, Check, Sparkles, X } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
-import { withLocaleHref } from '../../lib/locale-href';
+import { withLocaleHref } from '../../domain/locale-href';
 import { SOLUTION_CARD_COPY, getSolutionDetail, type SolutionId } from '../../data/solution-catalog';
 
 const FOCUSABLE =

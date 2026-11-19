@@ -2,13 +2,10 @@ import {
   CONSENT_COOKIE,
   CONSENT_VERSION,
   acceptAllConsent,
-  clearConsent,
   deniedConsent,
-  readConsent,
   toConsentMode,
-  trackingAllowed,
-  writeConsent,
-} from '../consent'
+} from '../../domain/consent'
+import { clearConsent, readConsent, trackingAllowed, writeConsent } from '../consent-storage'
 
 // #7593 — le consentement doit être explicite, mémorisé, et son absence vaut refus.
 describe('consentement — état et stockage', () => {

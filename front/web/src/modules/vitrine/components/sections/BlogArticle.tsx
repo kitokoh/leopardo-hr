@@ -7,7 +7,7 @@ import { SocialShare } from '@/components/SocialShare';
 import { SITE_URL } from '@/lib/site-url';
 import Image from 'next/image'
 
-import { localImageProps } from '@/modules/vitrine/lib/image-props';
+import { localImageProps } from '@/modules/vitrine/domain/image-props';
 import Link from 'next/link';
 import { BlogPost } from '@/modules/vitrine/data/blog';
 

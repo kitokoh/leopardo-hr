@@ -6,9 +6,8 @@ import {
   CONSENT_CHANGED_EVENT,
   type ConsentPayload,
   type ConsentState,
-  readConsent,
-  writeConsent,
-} from '@/modules/vitrine/lib/consent';
+} from '@/modules/vitrine/domain/consent';
+import { readConsent, writeConsent } from '@/modules/vitrine/infrastructure/consent-storage';
 
 /**
  * État de consentement partagé (issue #7593).

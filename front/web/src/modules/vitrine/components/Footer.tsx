@@ -16,7 +16,7 @@ import { CookieSettingsButton } from '@/modules/vitrine/components/CookieSetting
 import { NewsletterForm } from './NewsletterForm'
 import { LeopardoBrandMark } from './LeopardoBrandMark'
 import { getEnvConfig } from '../lib/env'
-import { withLocaleHref } from '../lib/locale-href'
+import { withLocaleHref } from '../domain/locale-href'
 
 export function getFooterHref(sectionIndex: number, linkIndex: number): string | null {
   const key = `${sectionIndex}-${linkIndex}`

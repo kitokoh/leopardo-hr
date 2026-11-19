@@ -8,7 +8,7 @@ import {
   MOBILE_APPS_COUNT,
   PAYROLL_COUNTRIES_COUNT,
   SUPPORTED_LANGUAGES_COUNT,
-} from '../data/vitrine-numbers'
+} from '../domain/vitrine-numbers'
 import {
   type AppLocale,
   applyDocumentLocale,

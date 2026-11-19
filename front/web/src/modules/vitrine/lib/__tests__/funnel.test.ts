@@ -14,11 +14,11 @@ jest.mock('../analytics', () => ({
 
 // #7496 — le module respecte le consentement (#7593) : les tests d'émission
 // tournent avec la mesure d'audience accordée ; un cas dédié couvre le refus.
-jest.mock('../consent', () => ({
+jest.mock('../../infrastructure/consent-storage', () => ({
   trackingAllowed: jest.fn(() => true),
 }));
 
-const mockedTrackingAllowed = require('../consent').trackingAllowed as jest.Mock;
+const mockedTrackingAllowed = require('../../infrastructure/consent-storage').trackingAllowed as jest.Mock;
 
 const mockedGetAnalytics = getAnalytics as jest.Mock;
 

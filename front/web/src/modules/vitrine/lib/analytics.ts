@@ -1,5 +1,5 @@
 
-import { trackingAllowed } from "@/modules/vitrine/lib/consent";
+import { trackingAllowed } from "@/modules/vitrine/infrastructure/consent-storage";
 
 const safeLog = (..._args: unknown[]) => {};
 /**

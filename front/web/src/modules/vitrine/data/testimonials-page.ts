@@ -2,7 +2,7 @@ import type { AppLocale } from '@/lib/i18n'
 import {
   FREE_TRIAL_DAYS,
   PAYROLL_COUNTRIES_COUNT,
-} from './vitrine-numbers'
+} from '../domain/vitrine-numbers'
 
 // Contenu de la page /testimonials par locale (issues #3334 + honnêteté #2726).
 // Les témoignages eux-mêmes viennent de data/testimonials.ts (marqués DÉMO).

@@ -3,7 +3,7 @@
 import Script from 'next/script';
 
 import { useConsent } from '@/modules/vitrine/components/ConsentProvider';
-import { toConsentMode } from '@/modules/vitrine/lib/consent';
+import { toConsentMode } from '@/modules/vitrine/domain/consent';
 
 /**
  * Injection des traceurs **conditionnée au consentement** (issue #7593).

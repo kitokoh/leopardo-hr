@@ -35,22 +35,23 @@ export const SUPPORTED_COUNTRIES_FALLBACK: SupportedCountryOption[] = [
 ]
 
 /**
- * Récupère les pays supportés (disponibles) via le proxy same-origin.
- * En cas d'échec (hors ligne, cold-start Render), retombe sur le registre
- * statique ci-dessus — le funnel ne doit jamais être bloqué par le réseau.
+ * Normalise la charge utile de `GET /api/v1/supported-countries` en options de
+ * sélecteur.
+ *
+ * **Pure** : elle ne fait aucun appel réseau, elle décide seulement ce qu'une
+ * réponse signifie. C'est ce qui permet de la tester sans serveur ni mock de
+ * `fetch` — et c'est la partie qui porte réellement une règle (filtrer les pays
+ * indisponibles, ignorer un code qui n'est pas un ISO-3166 alpha-2, retomber sur
+ * le registre statique plutôt que de rendre une liste vide).
+ *
+ * Extraite de `fetchSupportedCountries` en #9658 : le `fetch` est parti en
+ * `infrastructure/supported-countries-client.ts`, la règle est restée ici.
  */
-export async function fetchSupportedCountries(): Promise<SupportedCountryOption[]> {
-  try {
-    const res = await fetch('/api/v1/supported-countries', {
-      headers: { Accept: 'application/json' },
-    })
-    if (!res.ok) return SUPPORTED_COUNTRIES_FALLBACK
-    const payload = (await res.json()) as { data?: Array<{ country: string; label: string; available?: boolean }> }
-    const list = (payload.data ?? [])
-      .filter((c) => c.available !== false && typeof c.country === 'string' && c.country.length === 2)
-      .map((c) => ({ code: c.country.toUpperCase(), label: c.label || c.country }))
-    return list.length > 0 ? list : SUPPORTED_COUNTRIES_FALLBACK
-  } catch {
-    return SUPPORTED_COUNTRIES_FALLBACK
-  }
+export function normalizeSupportedCountries(
+  payload: { data?: Array<{ country: string; label: string; available?: boolean }> } | null | undefined,
+): SupportedCountryOption[] {
+  const list = (payload?.data ?? [])
+    .filter((c) => c.available !== false && typeof c.country === 'string' && c.country.length === 2)
+    .map((c) => ({ code: c.country.toUpperCase(), label: c.label || c.country }))
+  return list.length > 0 ? list : SUPPORTED_COUNTRIES_FALLBACK
 }

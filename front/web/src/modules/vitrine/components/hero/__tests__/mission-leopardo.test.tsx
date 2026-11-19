@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { GeoBackdrop } from '../GeoBackdrop';
 import { HeroSolutionsCTA } from '../HeroSolutionsCTA';
 import { SolutionCard } from '../SolutionCard';
-import { MAP_OUTLINES } from '../../../data/geo/map-paths';
+import { MAP_OUTLINES } from '../../../domain/map-paths';
 import {
   SOLUTIONS,
   SOLUTION_CARD_COPY,

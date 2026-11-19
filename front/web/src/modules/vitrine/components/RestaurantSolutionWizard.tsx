@@ -34,7 +34,7 @@ import QRCode from 'qrcode';
 import { Input, Button } from '@/modules/vitrine/components/common';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { mobileDownloadTarget, type MobileAppSlug } from '@/modules/vitrine/lib/mobile-download';
-import { packSignupHref } from '@/modules/vitrine/lib/pack-signup';
+import { packSignupHref } from '@/modules/vitrine/domain/pack-signup';
 import { EDGE_INSTALL_CMD, LEAD_COPY, WIZARD_COPY } from '@/modules/vitrine/data/restaurant-wizard';
 import {
   buildDefaultAnswers,

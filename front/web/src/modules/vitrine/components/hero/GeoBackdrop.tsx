@@ -49,7 +49,7 @@
  */
 
 import { useEffect, useRef } from 'react';
-import { MAP_OUTLINES, type MapKey } from '../../data/geo/map-paths';
+import { MAP_OUTLINES, type MapKey } from '../../domain/map-paths';
 
 /**
  * Ordre de défilement : les continents d'abord, puis les pays.
