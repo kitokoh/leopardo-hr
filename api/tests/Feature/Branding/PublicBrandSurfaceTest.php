@@ -68,6 +68,9 @@ final class PublicBrandSurfaceTest extends TestCase
     private function publish(Brand $brand): Brand
     {
         $brand->publish();
+        // `publish()` ne fait que poser les attributs : sans `save()`, la ligne
+        // reste `draft` en base et la surface publique la refuse.
+        $brand->save();
 
         return $brand;
     }
