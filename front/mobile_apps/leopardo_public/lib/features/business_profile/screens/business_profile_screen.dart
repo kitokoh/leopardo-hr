@@ -13,6 +13,7 @@ import '../../discovery/data/public_discovery_repository.dart';
 import '../../discovery/models/discovery_item.dart';
 import '../../discovery/providers/discovery_providers.dart';
 import '../../surface/domain/surface_identity.dart';
+import '../../surface/infrastructure/surface_palette_tokens.dart';
 import '../../surface/infrastructure/surface_theme.dart';
 import '../data/business_profile_repository.dart';
 import '../models/business_profile.dart';
