@@ -73,7 +73,7 @@ final class BrandResolver
             // rejeu), ou le tenant est devenu inaccessible (société suspendue
             // ou expirée). Le TTL de 60 s ne doit pas prolonger une décision de
             // modération : on jette l'entrée et on re-résout.
-            $this->cache->forget($slug, $cached['brand']->host ?? null);
+            $this->cache->forget($slug, $cached['brand']->host);
         }
 
         foreach ($this->candidateCompanies() as $company) {
@@ -161,7 +161,13 @@ final class BrandResolver
      * Les deux contrôles sont en mémoire (statut de la Brand, statut de la
      * société) : ils ne coûtent aucune requête dans le cas nominal.
      *
-     * @param  array{brand: Brand, company: Company}  $resolved
+     * Le paramètre est typé `array<string, mixed>` et non avec la forme exacte :
+     * une entrée de cache vient d'un sérialiseur et d'un driver interchangeable,
+     * donc sa forme n'est pas garantie par le type statique. La valider est le
+     * travail de cette méthode (`instanceof` + clés absentes), pas une
+     * redondance que PHPStan pourrait supprimer.
+     *
+     * @param  array<string, mixed>  $resolved
      */
     private function isServable(array $resolved): bool
     {
