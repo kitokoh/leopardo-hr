@@ -142,9 +142,9 @@ jobs:
 
           if [[ "${EVENT_NAME}" == "workflow_dispatch" ]]; then
             if [[ "${DISPATCH_VERTICAL}" == "all" ]]; then
-              RESULT='{"surfaces":["restaurant","retail","hospitality","trade","travel","pharmacy"],"shared":true,"all":true}'
+              RESULT='{"surfaces":["restaurant","retail","hospitality","trade","travel","pharmacy"],"deployable":["restaurant","retail","hospitality","trade","travel","pharmacy"],"shared":true,"all":true}'
             else
-              RESULT="{\"surfaces\":[\"${DISPATCH_VERTICAL}\"],\"shared\":false,\"all\":false}"
+              RESULT="{\"surfaces\":[\"${DISPATCH_VERTICAL}\"],\"deployable\":[\"${DISPATCH_VERTICAL}\"],\"shared\":false,\"all\":false}"
             fi
           elif [[ "${EVENT_NAME}" == "pull_request" ]]; then
             git fetch --no-tags --quiet origin "${BASE_REF}"
@@ -156,12 +156,17 @@ jobs:
 
           echo "Détection : ${RESULT}"
 
+          # `surfaces` = toutes les verticales touchées (information).
+          # `deployable` = celles qui ont un projet Vercel à déployer (#9638) :
+          # une verticale servie par `front/web` (Emploi) n'a pas de secrets
+          # `VERCEL_SURFACE_<V>_*` et ne doit pas faire échouer `push main`.
           SURFACES="$(python3 -c 'import json,sys; print(json.dumps(json.loads(sys.argv[1])["surfaces"]))' "${RESULT}")"
+          DEPLOYABLE="$(python3 -c 'import json,sys; print(json.dumps(json.loads(sys.argv[1]).get("deployable", json.loads(sys.argv[1])["surfaces"])))' "${RESULT}")"
           SHARED="$(python3 -c 'import json,sys; print(str(json.loads(sys.argv[1])["shared"]).lower())' "${RESULT}")"
-          COUNT="$(python3 -c 'import json,sys; print(len(json.loads(sys.argv[1])["surfaces"]))' "${RESULT}")"
+          COUNT="$(python3 -c 'import json,sys; print(len(json.loads(sys.argv[1]).get("deployable", json.loads(sys.argv[1])["surfaces"])))' "${RESULT}")"
 
           {
-            echo "matrix={\"surface\":${SURFACES}}"
+            echo "matrix={\"surface\":${DEPLOYABLE}}"
             echo "count=${COUNT}"
             echo "shared=${SHARED}"
           } >> "$GITHUB_OUTPUT"
@@ -170,6 +175,7 @@ jobs:
             echo "## Vitrines publiques — détection (#9591)"
             echo ""
             echo "- Verticales touchées : \`${SURFACES}\`"
+            echo "- Verticales à déployer : \`${DEPLOYABLE}\`"
             echo "- Noyau partagé modifié : \`${SHARED}\`"
             echo "- Déploiements à lancer : **${COUNT}**"
           } >> "$GITHUB_STEP_SUMMARY"

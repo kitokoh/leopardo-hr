@@ -3213,6 +3213,32 @@ paths:
       responses:
         '200':
           description: Liste paginee des immobilisations
+    post:
+      operationId: api_post_accounting_fixed_assets
+      tags:
+      - Accounting
+      summary: Creer une immobilisation
+      description: 'Enregistre l''immobilisation dans le registre (#9378). RBAC comptable/principal. Issue #9377.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountingFixedAssetInput'
+      responses:
+        '201':
+          description: Immobilisation creee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AccountingFixedAsset'
+        '422':
+          $ref: '#/components/responses/Error422'
   /company/profile:
     get:
       operationId: api_get_company_profile
@@ -3225,24 +3251,12 @@ paths:
       responses:
         '200':
           description: Profil du tenant
-
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/AccountingFixedAsset'
-        '401':
-          $ref: '#/components/responses/Error401'
-    post:
-      operationId: api_post_accounting_fixed_assets
-      tags:
-      - Accounting
-      summary: Creer une immobilisation
-      description: 'Enregistre l''immobilisation dans le registre (#9378). RBAC comptable/principal. Issue #9377.'
                     $ref: '#/components/schemas/CompanyProfile'
         '401':
           $ref: '#/components/responses/Error401'
@@ -3252,7 +3266,6 @@ paths:
       - Company
       summary: Modifier le profil du tenant
       description: 'Mise a jour partielle, reservee au role principal. Les champs plateforme (slug, schema_name, tenancy_type, status, plan_id, features, metadata) sont refuses en 422. Les changements de timezone et currency sont journalises dans audit_logs (RGPD). Issue #9332.'
-
       security:
       - BearerAuth: []
       requestBody:
@@ -3260,22 +3273,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AccountingFixedAssetInput'
-      responses:
-        '201':
-          description: Immobilisation creee
               $ref: '#/components/schemas/CompanyProfileInput'
       responses:
         '200':
           description: Profil mis a jour
-
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/AccountingFixedAsset'
+                    $ref: '#/components/schemas/CompanyProfile'
         '422':
           $ref: '#/components/responses/Error422'
   /accounting/fixed-assets/{id}:
@@ -3404,7 +3412,6 @@ paths:
                           format: double
         '404':
           $ref: '#/components/responses/Error404'
-                    $ref: '#/components/schemas/CompanyProfile'
         '403':
           $ref: '#/components/responses/Error403'
         '422':
