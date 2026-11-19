@@ -176,6 +176,13 @@ const formattedValue = computed(() => {
     return props.value
   }
 
+  // #9651 — une valeur absente (réponse API partielle) ne doit pas lever
+  // `Cannot read properties of undefined (reading 'toLocaleString')` et
+  // emporter tout le cockpit : on affiche un tiret.
+  if (typeof props.value !== 'number' || !Number.isFinite(props.value)) {
+    return '—'
+  }
+
   // Format numbers with locale
   if (props.value >= 1000000) {
     return (props.value / 1000000).toFixed(1) + 'M'
