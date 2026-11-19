@@ -1,0 +1,76 @@
+name: Web Layer Guard
+
+# Garde « couche web saine » (#9652) — étend ADR-0035 au front web.
+#
+# ## Pourquoi un workflow séparé
+#
+# `dev-hub/tools/check-layer-purity.sh` ne couvre que le PHP. Le seul test de
+# couche du front web, `modules/public-surface/__tests__/layer-guard.test.ts`,
+# ne couvre que le module SINGULIER `public-surface` (13 fichiers) et ne
+# s'exécute que si Jest tourne sur ce module.
+#
+# `modules/public-surfaces` (173 fichiers, 8 verticales) et `modules/vitrine`
+# (188 fichiers) n'avaient aucune garde. Ce workflow-ci a ses propres `paths`,
+# volontairement larges sur `front/web/src/modules/**`, et n'installe **ni
+# Node ni SDK** : le script est du bash pur, il tourne en secondes.
+#
+# ## Ce que la garde refuse
+#
+# Dans tout `<module>/**/domain/` déclaré `layered` : un import de framework UI
+# (`react`, `react-dom`, `next`), un import d'une couche supérieure
+# (`application/`, `infrastructure/`, `components/`, `copy/`, `data/`,
+# `hooks/`, `types/`), un import hors du module (`../../../`), un alias de
+# chemin (`@/`), et tout accès réseau ou navigateur (`fetch(`, `localStorage`,
+# `sessionStorage`, `document.cookie`, `window.`).
+#
+# Et, via `dev-hub/tools/web-layer-registry.txt` :
+#   - module sur disque absent du registre    → échec
+#   - module du registre absent du disque     → échec
+#   - `layered` sans aucun `domain/`          → échec
+#   - `flat` avec un `domain/`                → échec
+#
+# Le registre est ce qui rend la garde honnête : sans lui, un module créé sans
+# `domain/` passerait au vert sans que personne n'ait décidé qu'il serait plat.
+# La dette est déclarée, visible, et ne peut pas grossir en silence.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'front/web/src/modules/**'
+      - 'dev-hub/tools/check-web-layer-guard.sh'
+      - 'dev-hub/tools/web-layer-registry.txt'
+      - '.github/workflows/web-layer-guard.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'front/web/src/modules/**'
+      - 'dev-hub/tools/check-web-layer-guard.sh'
+      - 'dev-hub/tools/web-layer-registry.txt'
+      - '.github/workflows/web-layer-guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: web-layer-guard-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  layer-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    name: Couche web (domain/ pur, registre fail-closed)
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Run web layer guard
+        shell: bash
+        run: bash dev-hub/tools/check-web-layer-guard.sh --verbose

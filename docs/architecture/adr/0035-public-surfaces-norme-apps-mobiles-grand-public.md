@@ -11,6 +11,8 @@
 
 **Révision 2026-11-19 (#9648)** : le périmètre de la **règle de couche** est élargi à toutes les apps de `front/mobile_apps`. La **doctrine de surface** reste grand public. Voir « Révision — élargissement de la règle de couche ».
 
+**Révision 2026-11-19 (#9652-#9654)** : la règle de couche s'étend au **front web** (`front/web/src/modules`), avec `copy/` traité comme une couche dont le domaine ne dépend jamais. Voir « Révision — élargissement au front web ».
+
 ---
 
 ## Contexte
@@ -192,6 +194,76 @@ Ces cas sont documentés ici plutôt que corrigés : les « corriger » reviendr
 
 ---
 
+## Révision — élargissement au front web (#9652-#9654)
+
+### Le constat
+
+ADR-0034 fait de `front/web/src/modules/public-surfaces` la norme du front grand public, mais la règle de couche n'était **opposable nulle part** :
+
+| Garde existante | Périmètre réel | Ce qu'elle ne couvre pas |
+|---|---|---|
+| `dev-hub/tools/check-layer-purity.sh` | `api/app/Modules`, `api/app/Core` (PHP) | tout le front web |
+| `modules/public-surface/__tests__/layer-guard.test.ts` | module **singulier** `public-surface` (13 fichiers) | le pluriel `public-surfaces` (173 fichiers, 8 verticales) |
+| — | — | `modules/vitrine` (188 fichiers) |
+
+Une règle qui n'a pas de garde est une intention de revue. Elle ne survit pas à trois mois de pression produit.
+
+### Décision 1 — la règle de couche s'applique à tout `front/web/src/modules`
+
+`dev-hub/tools/check-web-layer-guard.sh` vérifie chaque `**/domain/` d'un module déclaré `layered`. Il refuse :
+
+- un import de framework UI (`react`, `react-dom`, `next`) ;
+- un import d'une couche supérieure (`application/`, `infrastructure/`, `components/`, `copy/`, `data/`, `hooks/`, `types/`) ;
+- un import qui remonte hors du module (`../../../`) ;
+- un alias de chemin (`@/`, `~/`) — il peut désigner n'importe quelle couche ;
+- un accès réseau ou navigateur (`fetch(`, `localStorage`, `sessionStorage`, `document.cookie`, `window.`) hors commentaire.
+
+### Décision 2 — `copy/` est une couche, et le domaine ne la connaît pas
+
+C'est la distinction que cette révision ajoute, et elle n'est pas cosmétique. `copy/` est le **catalogue de localisation** du module : c'est le seul endroit où une chaîne visible par un visiteur peut vivre (`check-i18n-diff.js` exempte `/public-surfaces/copy/`). Un composant **doit** l'importer. Un `domain/` **ne doit pas** : sinon une correction éditoriale change un comportement du domaine, et le domaine n'est plus testable sans charger la copie.
+
+Le pont est explicite : `copy/seat-labels.ts` assemble les libellés de `retail-copy.ts` en un `SeatLabels` typé, que le domaine reçoit en paramètre. Le domaine ne produit plus aucun texte visible.
+
+### Décision 3 — le registre web est fail-closed
+
+`dev-hub/tools/web-layer-registry.txt` déclare l'état des 8 modules. Échouent :
+
+- un module **présent sur disque** et **absent du registre** ;
+- un module du registre **absent du disque** ;
+- un module déclaré `layered` **sans** `domain/` ;
+- un module déclaré `flat` **avec** un `domain/`.
+
+État au 2026-11-19 :
+
+| Module | État | Note |
+|---|---|---|
+| `public-surfaces` | `layered` | 8 verticales + `kernel`, 26 fichiers de domaine |
+| `public-surface` | `layered` | module singulier BRANDING (BC-41), `domain/` brand + theme |
+| `vitrine` | `flat` | front vitrine professionnel — **hors périmètre de refonte**, état déclaré |
+| `toolbox` | `flat` | outils horizontaux (102 fichiers) |
+| `library` | `flat` | bibliothèque de contenus (36 fichiers) |
+| `onboarding` | `flat` | parcours d'inscription (12 fichiers) |
+| `marketing` | `flat` | pages marketing (10 fichiers) |
+| `assistant` | `flat` | assistant conversationnel (9 fichiers) |
+
+`vitrine` est déclaré `flat` et **n'est pas refondu** : c'est le front commercial destiné aux professionnels et à leurs entreprises, explicitement hors périmètre. Le registre le rend visible sans imposer un chantier qui n'a pas été décidé.
+
+### Décision 4 — deux violations réelles, dont une que l'audit par imports n'avait pas vue
+
+**1. `travel/domain/seat-layout.ts` importait `copy/retail-copy`.** Trouvée par l'audit des imports. Corrigée : le domaine reçoit un `SeatLabels` ; `SeatLabels.statuses` est typé **total** sur `SeatStatusValue | 'aisle' | 'absent'`, donc ajouter un état sans libellé ne compile plus — la garantie d'exhaustivité qu'apportait le cast `as` est conservée et devient vérifiée par le compilateur.
+
+**2. `retail/domain/buyer.ts` lisait et écrivait `window.localStorage`.** Trouvée par **la garde elle-même**, pas par l'audit : elle ne se voit pas dans les imports, seulement dans le corps des fonctions. Le domaine faisait de l'E/S navigateur, donc n'était pas testable sans DOM. L'E/S part dans `retail/infrastructure/buyer-session-storage.ts` ; le domaine garde la forme du profil, sa validation et la règle d'avis vérifié. L'API publique de `retail/index.ts` est inchangée.
+
+C'est l'argument le plus fort pour une garde exécutable plutôt qu'une revue : la seconde violation était invisible à la lecture des imports.
+
+### Ce que cette révision ne change pas
+
+- `modules/vitrine` et `/business/*` ne sont **pas** refondus : seul leur état est déclaré.
+- Le front Super admin et les consoles du dashboard tenant restent hors périmètre.
+- Aucun module `flat` n'est converti : la dette est déclarée, pas résorbée.
+
+---
+
 ## Alternatives écartées
 
 **Étendre ADR-0034 par un paragraphe.** Écartée : ADR-0034 est une décision sur le **web** (elle remplace ADR-0030 et son périmètre est `front/web`). Y ajouter le mobile rendrait son périmètre flou et sa portée difficile à citer. Une ADR qui **étend** explicitement est plus lisible qu'une ADR qui grossit.
@@ -212,5 +284,9 @@ Ces cas sont documentés ici plutôt que corrigés : les « corriger » reviendr
 - `front/web/src/modules/public-surfaces/__tests__/layer-guard.test.ts` (équivalent web)
 - `dev-hub/tools/check-mobile-layer-guard.sh` (garde partagée, sans Flutter)
 - `dev-hub/tools/mobile-layer-registry.txt` (état déclaré de chaque app)
+- `dev-hub/tools/check-web-layer-guard.sh` (garde web, sans Node)
+- `dev-hub/tools/web-layer-registry.txt` (état déclaré de chaque module web)
+- `.github/workflows/web-layer-guard.yml` (exécution CI web)
+- `front/web/src/modules/public-surfaces/copy/seat-labels.ts` (pont copie ↔ domaine)
 - `.github/workflows/mobile-layer-guard.yml` (exécution CI)
 - ADR-0034, ADR-0026
