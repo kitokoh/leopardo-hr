@@ -51,8 +51,7 @@ void main() {
         expect(
           vertical.apiTypeCodes.first,
           vertical.code,
-          reason:
-              'le premier code API de ${vertical.code} doit être son code '
+          reason: 'le premier code API de ${vertical.code} doit être son code '
               'canonique',
         );
       }
@@ -99,10 +98,8 @@ void main() {
     });
 
     test('donne à chaque verticale un domaine distinct', () {
-      final domains = surfaceRegistry
-          .all()
-          .map((i) => i.canonicalDomain)
-          .toList();
+      final domains =
+          surfaceRegistry.all().map((i) => i.canonicalDomain).toList();
 
       expect(domains.toSet().length, domains.length);
     });
@@ -114,10 +111,8 @@ void main() {
     });
 
     test('donne à chaque verticale une couleur d’action distincte', () {
-      final primaries = surfaceRegistry
-          .all()
-          .map((i) => i.palette.primary)
-          .toList();
+      final primaries =
+          surfaceRegistry.all().map((i) => i.palette.primary).toList();
 
       expect(primaries.toSet().length, primaries.length);
     });
@@ -135,19 +130,19 @@ void main() {
 
   group('validation à la construction', () {
     SurfaceIdentity valid() => SurfaceIdentity(
-      vertical: SurfaceVertical.restaurant,
-      displayName: 'Test',
-      tagline: 'Accroche',
-      canonicalDomain: 'restaurants.leopardo.app',
-      palette: const SurfacePalette(
-        primary: '#C2410C',
-        onPrimary: '#FFFFFF',
-        accent: '#F59E0B',
-        surface: '#FFFBF5',
-        onSurface: '#1C1917',
-        muted: '#78716C',
-      ),
-    );
+          vertical: SurfaceVertical.restaurant,
+          displayName: 'Test',
+          tagline: 'Accroche',
+          canonicalDomain: 'restaurants.leopardo.app',
+          palette: const SurfacePalette(
+            primary: '#C2410C',
+            onPrimary: '#FFFFFF',
+            accent: '#F59E0B',
+            surface: '#FFFBF5',
+            onSurface: '#1C1917',
+            muted: '#78716C',
+          ),
+        );
 
     test('accepte une identité valide', () {
       expect(() => createSurfaceRegistry([valid()]), returnsNormally);

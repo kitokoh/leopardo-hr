@@ -19,17 +19,16 @@ import '../domain/surface_identity.dart';
 ThemeData surfaceTheme(SurfaceIdentity identity) {
   final palette = identity.palette;
 
-  final colorScheme =
-      ColorScheme.fromSeed(
-        seedColor: colorOf(palette.primary),
-        brightness: Brightness.light,
-      ).copyWith(
-        primary: colorOf(palette.primary),
-        onPrimary: colorOf(palette.onPrimary),
-        secondary: colorOf(palette.accent),
-        surface: colorOf(palette.surface),
-        onSurface: colorOf(palette.onSurface),
-      );
+  final colorScheme = ColorScheme.fromSeed(
+    seedColor: colorOf(palette.primary),
+    brightness: Brightness.light,
+  ).copyWith(
+    primary: colorOf(palette.primary),
+    onPrimary: colorOf(palette.onPrimary),
+    secondary: colorOf(palette.accent),
+    surface: colorOf(palette.surface),
+    onSurface: colorOf(palette.onSurface),
+  );
 
   return ThemeData(
     useMaterial3: true,
@@ -41,9 +40,9 @@ ThemeData surfaceTheme(SurfaceIdentity identity) {
       elevation: 0,
     ),
     textTheme: Typography.material2021().black.apply(
-      bodyColor: colorOf(palette.onSurface),
-      displayColor: colorOf(palette.onSurface),
-    ),
+          bodyColor: colorOf(palette.onSurface),
+          displayColor: colorOf(palette.onSurface),
+        ),
   );
 }
 

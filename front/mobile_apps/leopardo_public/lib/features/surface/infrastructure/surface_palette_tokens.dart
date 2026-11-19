@@ -107,8 +107,7 @@ final List<SurfaceIdentity> declaredSurfaceIdentities = [
   SurfaceIdentity(
     vertical: SurfaceVertical.trade,
     displayName: 'Leopardo Entreprises',
-    tagline:
-        'Fournisseurs et négociants vérifiés — import, export et marché '
+    tagline: 'Fournisseurs et négociants vérifiés — import, export et marché '
         'domestique.',
     canonicalDomain: 'entreprises.leopardo.app',
     palette: paletteFrom(
@@ -163,8 +162,7 @@ final List<SurfaceIdentity> declaredSurfaceIdentities = [
   SurfaceIdentity(
     vertical: SurfaceVertical.careers,
     displayName: 'Leopardo Emploi',
-    tagline:
-        'Les offres des entreprises près de chez vous, et comment '
+    tagline: 'Les offres des entreprises près de chez vous, et comment '
         'postuler.',
     canonicalDomain: 'emploi.leopardo.app',
     palette: paletteFrom(

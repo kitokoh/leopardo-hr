@@ -39,10 +39,9 @@ void main() {
         .whereType<File>()
         .where((f) => f.path.endsWith('.dart'))
         .where((f) {
-          final normalized = f.path.replaceAll(r'\', '/');
-          return normalized.contains('/domain/');
-        })
-        .toList()
+      final normalized = f.path.replaceAll(r'\', '/');
+      return normalized.contains('/domain/');
+    }).toList()
       ..sort((a, b) => a.path.compareTo(b.path));
   }
 
@@ -80,8 +79,7 @@ void main() {
       expect(
         domainFiles(),
         isNotEmpty,
-        reason:
-            'aucun fichier trouvé sous lib/features/**/domain/ — la garde '
+        reason: 'aucun fichier trouvé sous lib/features/**/domain/ — la garde '
             'ne vérifierait rien',
       );
     });
