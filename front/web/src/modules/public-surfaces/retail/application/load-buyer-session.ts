@@ -8,14 +8,13 @@
  * sont ici (testables), la troisième reste au composant qui sait où rediriger.
  */
 
+import type { BuyerProfile, BuyerSession } from '../domain/buyer';
 import {
   clearBuyerSession,
   readBuyerSession,
   takeLegacyBuyerToken,
   writeBuyerSession,
-  type BuyerProfile,
-  type BuyerSession,
-} from '../domain/buyer';
+} from '../infrastructure/buyer-session-storage';
 import { fetchBuyerProfile, restoreBuyerSession } from '../infrastructure/account-gateway';
 
 /**

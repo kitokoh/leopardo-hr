@@ -122,19 +122,22 @@ export {
   BUYER_EVENT,
   BUYER_STORAGE_KEY,
   canReview,
-  clearBuyerSession,
   isValidBuyer,
   isValidRating,
   normalizeBuyer,
-  readBuyerSession,
-  takeLegacyBuyerToken,
-  writeBuyerSession,
   type AccountOrder,
   type BuyerProfile,
   type BuyerSession,
   type ProductReview,
   type ProductReviews,
 } from './domain/buyer';
+// #9652 — l'E/S navigateur vit en infrastructure, plus dans le domaine.
+export {
+  clearBuyerSession,
+  readBuyerSession,
+  takeLegacyBuyerToken,
+  writeBuyerSession,
+} from './infrastructure/buyer-session-storage';
 export { submitCheckout, type CheckoutGroup } from './application/submit-checkout';
 export {
   forgetSession,
