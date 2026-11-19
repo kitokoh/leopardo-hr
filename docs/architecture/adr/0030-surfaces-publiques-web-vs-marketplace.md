@@ -2,7 +2,16 @@
 
 ## Statut
 
-Proposée — **validation owner requise**
+**Remplacée par [ADR-0034](0034-public-surfaces-norme-front-public.md)** (2026-11-19)
+
+> Cette ADR n'est plus en vigueur. Sa prémisse — deux applications publiques
+> coexistent (`front/web` mono-tenant et `front/marketplace` cross-tenant) — est
+> devenue fausse : les deux apps ont été retirées (#9627, #9628) et leur contenu
+> repris dans `front/web/src/modules/public-surfaces`. La question qu'elle
+> laissait ouverte — la structure interne du code public — est tranchée par
+> ADR-0034. Le texte ci-dessous est conservé pour l'historique.
+
+**Statut d'origine** : Proposée — validation owner requise
 
 **Date** : 2026-09-28
 **Décideurs** : owner (validation finale) — proposition rédigée par l'agent Zentor
