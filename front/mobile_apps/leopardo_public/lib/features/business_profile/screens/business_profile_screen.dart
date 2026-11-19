@@ -12,6 +12,9 @@ import '../../../core/widgets/state_widgets.dart';
 import '../../discovery/data/public_discovery_repository.dart';
 import '../../discovery/models/discovery_item.dart';
 import '../../discovery/providers/discovery_providers.dart';
+import '../../surface/domain/surface_identity.dart';
+import '../../surface/infrastructure/surface_palette_tokens.dart';
+import '../../surface/infrastructure/surface_theme.dart';
 import '../data/business_profile_repository.dart';
 import '../models/business_profile.dart';
 import '../widgets/action_buttons.dart';
@@ -83,33 +86,47 @@ class BusinessProfileScreen extends ConsumerWidget {
 
     final profileAsync = ref.watch(businessProfileProvider(args));
 
+    // Identité de la verticale, résolue par le registre (fail-closed : une
+    // verticale inconnue rend `null`, et l'écran garde le thème public neutre
+    // plutôt que d'inventer une identité). C'est le point où le registre
+    // d'ADR-0035 devient visible pour le visiteur : la fiche d'un restaurant et
+    // celle d'une pharmacie ne portent pas la même couleur d'action.
+    final identity = surfaceIdentityFor(SurfaceVertical.fromCode(type));
+
     return Directionality(
       textDirection: strings.isRtl ? TextDirection.rtl : TextDirection.ltr,
-      child: Scaffold(
-        body: SafeArea(
-          child: profileAsync.when(
-            loading: () => Column(
-              children: [
-                _HeaderBar(
-                  strings: strings,
-                  title: previewItem?.name ?? '',
-                  onBack: () => context.pop(),
-                ),
-                Expanded(
-                  child: LoadingSkeleton(strings: strings, itemCount: 3),
-                ),
-              ],
-            ),
-            error: (error, _) => _ErrorView(
-              strings: strings,
-              error: error,
-              onRetry: () => ref.invalidate(businessProfileProvider(args)),
-              onBack: () => context.pop(),
-            ),
-            data: (profile) => _Content(
-              strings: strings,
-              profile: profile,
-              fallbackName: previewItem?.name ?? '',
+      child: Theme(
+        data: identity == null
+            ? Theme.of(context)
+            : surfaceTheme(identity).copyWith(
+                textTheme: Theme.of(context).textTheme,
+              ),
+        child: Scaffold(
+          body: SafeArea(
+            child: profileAsync.when(
+              loading: () => Column(
+                children: [
+                  _HeaderBar(
+                    strings: strings,
+                    title: previewItem?.name ?? '',
+                    onBack: () => context.pop(),
+                  ),
+                  Expanded(
+                    child: LoadingSkeleton(strings: strings, itemCount: 3),
+                  ),
+                ],
+              ),
+              error: (error, _) => _ErrorView(
+                strings: strings,
+                error: error,
+                onRetry: () => ref.invalidate(businessProfileProvider(args)),
+                onBack: () => context.pop(),
+              ),
+              data: (profile) => _Content(
+                strings: strings,
+                profile: profile,
+                fallbackName: previewItem?.name ?? '',
+              ),
             ),
           ),
         ),
