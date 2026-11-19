@@ -6,14 +6,6 @@ api/app/Core/Auth/Interfaces/Api/V1/Controllers/PasswordResetController.php:293
 api/app/Core/Tenant/TenantManager.php:200
 api/app/Core/Tenant/TenantManager.php:57
 api/app/Core/Tenant/TenantManager.php:73
-api/app/Http/Controllers/Web/BiometricAdminController.php:127
-api/app/Http/Controllers/Web/BiometricAdminController.php:133
-api/app/Http/Controllers/Web/BiometricAdminController.php:138
-api/app/Http/Controllers/Web/KioskController.php:114
-api/app/Http/Controllers/Web/KioskController.php:120
-api/app/Http/Controllers/Web/KioskController.php:125
-api/app/Http/Controllers/Web/KioskController.php:26
-api/app/Http/Controllers/Web/KioskController.php:64
 api/app/Http/Controllers/Web/PlatformCompanyController.php:107
 api/app/Http/Controllers/Web/PlatformCompanyController.php:237
 api/app/Http/Controllers/Web/PlatformCompanyController.php:258
