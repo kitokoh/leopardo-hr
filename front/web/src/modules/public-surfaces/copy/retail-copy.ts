@@ -127,3 +127,51 @@ export const TRAVEL_BOOKING_COPY = {
   autoAssignHint: '— sinon, attribution automatique',
   submitting: 'Envoi…',
 } as const;
+
+/** Copie du compte voyageur (verticale Billets). */
+export const TRAVEL_ACCOUNT_COPY = {
+  invalidCredentials: 'E-mail ou mot de passe incorrect.',
+  errorGeneric: 'Une erreur est survenue.',
+  tablistLabel: 'Connexion ou inscription',
+  tabLogin: 'Se connecter',
+  tabRegister: "S'inscrire",
+  submitLogin: 'Se connecter',
+  submitRegister: 'Créer mon compte',
+} as const;
+
+/** Copie de la demande de course (verticale Mobilité). */
+export const MOBILITY_RIDE_COPY = {
+  invalidPickup: 'Le point de départ est invalide.',
+  invalidDropoff: 'La destination est invalide.',
+  missingName: 'Indiquez le nom du passager.',
+  missingPhone: 'Indiquez un téléphone joignable.',
+  invalidCoordinates: 'Saisissez les coordonnées au format « latitude, longitude ».',
+  quoteFailed: 'Le devis a échoué.',
+  requestFailed: 'La demande de course a échoué.',
+} as const;
+
+/** Copie de l'envoi d'avis (verticale Retail). */
+export const RETAIL_REVIEW_SUBMIT_COPY = {
+  submitting: 'Envoi…',
+} as const;
+
+/**
+ * Libellés des états de siège (verticale Billets).
+ *
+ * Ils vivent ici et non dans `travel/domain/seat-layout.ts` : ce sont des
+ * chaînes visibles par un visiteur, donc du ressort du catalogue de copie.
+ * Le domaine garde la logique (ordre de légende, symbole, repli) et reçoit la
+ * table — il n'a plus de texte en dur.
+ */
+export const SEAT_STATUS_LABELS: Readonly<Record<string, string>> = {
+  free: 'Libre',
+  selected: 'Sélectionné',
+  held: 'Réservation en cours',
+  reserved: 'Réservé',
+  pending_payment: 'Paiement en attente',
+  sold: 'Vendu',
+  blocked: 'Bloqué',
+  unavailable: 'Indisponible',
+  aisle: 'Couloir',
+  absent: 'Siège absent',
+};

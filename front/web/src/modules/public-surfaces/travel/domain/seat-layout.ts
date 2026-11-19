@@ -15,6 +15,8 @@
  * Aucune E/S, aucun import de framework.
  */
 
+import { SEAT_STATUS_LABELS } from '../../copy/retail-copy';
+
 /** États de siège portés par l'inventaire et la vue (cf. SeatStatus PHP). */
 export type SeatStatusValue =
   | 'free'
@@ -81,19 +83,8 @@ const STATUS_SYMBOL: Record<SeatStatusValue | 'aisle' | 'absent', string> = {
 };
 
 /** Libellés texte (FR) par état — source unique pour la légende et l'aria. */
-const STATUS_LABEL: Record<SeatStatusValue | 'aisle' | 'absent', string> = {
-  free: 'Libre',
-  selected: 'Sélectionné',
-  held: 'Réservation en cours',
-  reserved: 'Réservé',
-  pending_payment: 'Paiement en attente',
-  sold: 'Vendu',
-  blocked: 'Bloqué',
-  unavailable: 'Indisponible',
-  aisle: 'Couloir',
-  absent: 'Siège absent',
-};
-
+const STATUS_LABEL: Record<SeatStatusValue | 'aisle' | 'absent', string> =
+  SEAT_STATUS_LABELS as Record<SeatStatusValue | 'aisle' | 'absent', string>;
 /** Ordre d'affichage de la légende. */
 export const LEGEND_ORDER: readonly SeatStatusValue[] = [
   'free',

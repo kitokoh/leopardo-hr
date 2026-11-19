@@ -27,6 +27,7 @@ import {
   type RideEstimate,
 } from '../domain/ride';
 import { createRide, estimateRide } from '../infrastructure/ride-gateway';
+import { MOBILITY_RIDE_COPY as C } from '../../copy/retail-copy';
 
 const INPUT_STYLE = {
   height: '2.5rem',
@@ -38,10 +39,10 @@ const INPUT_STYLE = {
 } as const;
 
 const ERROR_MESSAGES: Record<string, string> = {
-  'invalid-pickup': 'Le point de départ est invalide.',
-  'invalid-dropoff': 'La destination est invalide.',
-  'missing-name': 'Indiquez le nom du passager.',
-  'missing-phone': 'Indiquez un téléphone joignable.',
+  'invalid-pickup': C.invalidPickup,
+  'invalid-dropoff': C.invalidDropoff,
+  'missing-name': C.missingName,
+  'missing-phone': C.missingPhone,
 };
 
 /** Parse une saisie « lat,lng » ; `null` si le format est inattendu. */
@@ -90,7 +91,7 @@ export function RideRequestSurface({
     const { pickup, dropoff } = points();
 
     if (pickup === null || dropoff === null) {
-      setError('Saisissez les coordonnées au format « latitude, longitude ».');
+      setError(C.invalidCoordinates);
 
       return;
     }
@@ -101,7 +102,7 @@ export function RideRequestSurface({
     try {
       setEstimate(await estimateRide({ operator: operatorSlug, pickup, dropoff }));
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Le devis a échoué.');
+      setError(caught instanceof Error ? caught.message : C.quoteFailed);
     } finally {
       setPending(false);
     }
@@ -113,7 +114,7 @@ export function RideRequestSurface({
     const { pickup, dropoff } = points();
 
     if (pickup === null || dropoff === null) {
-      setError('Saisissez les coordonnées au format « latitude, longitude ».');
+      setError(C.invalidCoordinates);
 
       return;
     }
@@ -141,7 +142,7 @@ export function RideRequestSurface({
         }),
       );
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'La demande de course a échoué.');
+      setError(caught instanceof Error ? caught.message : C.requestFailed);
     } finally {
       setPending(false);
     }

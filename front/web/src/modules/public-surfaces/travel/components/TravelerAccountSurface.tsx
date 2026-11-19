@@ -27,7 +27,7 @@ import { restoreSession, persistSession, forgetSession } from '../../retail/appl
 import type { BuyerSession } from '../../retail/domain/buyer';
 import { loginBuyer, logoutBuyer, registerBuyer, AccountApiError } from '../../retail/infrastructure/account-gateway';
 import { fetchMyBookings, type CustomerBooking } from '../infrastructure/account-gateway';
-import { TRAVEL_BOOKING_COPY as C } from '../../copy/retail-copy';
+import { TRAVEL_ACCOUNT_COPY as C, TRAVEL_BOOKING_COPY } from '../../copy/retail-copy';
 
 type Mode = 'login' | 'register';
 
@@ -58,7 +58,7 @@ export function TravelerAccountSurface({ identity }: { identity: SurfaceIdentity
     const result = await fetchMyBookings();
 
     if (result === null) {
-      setLoadError(C.loadFailed);
+      setLoadError(TRAVEL_BOOKING_COPY.loadFailed);
 
       return;
     }
@@ -107,9 +107,9 @@ export function TravelerAccountSurface({ identity }: { identity: SurfaceIdentity
       void loadBookings();
     } catch (caught) {
       if (caught instanceof AccountApiError && caught.status === 401) {
-        setError('E-mail ou mot de passe incorrect.');
+        setError(C.invalidCredentials);
       } else {
-        setError(caught instanceof Error ? caught.message : 'Une erreur est survenue.');
+        setError(caught instanceof Error ? caught.message : C.errorGeneric);
       }
     } finally {
       setPending(false);
@@ -137,7 +137,7 @@ export function TravelerAccountSurface({ identity }: { identity: SurfaceIdentity
       <div style={{ display: 'grid', gap: '0.75rem', maxWidth: '26rem' }}>
         <div
           role="tablist"
-          aria-label="Connexion ou inscription"
+          aria-label={C.tablistLabel}
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
@@ -149,8 +149,8 @@ export function TravelerAccountSurface({ identity }: { identity: SurfaceIdentity
         >
           {(
             [
-              ['login', 'Se connecter'],
-              ['register', "S'inscrire"],
+              ['login', C.tabLogin],
+              ['register', C.tabRegister],
             ] as [Mode, string][]
           ).map(([value, label]) => (
             <button
@@ -234,7 +234,7 @@ export function TravelerAccountSurface({ identity }: { identity: SurfaceIdentity
               opacity: pending ? 0.6 : 1,
             }}
           >
-            {mode === 'login' ? 'Se connecter' : 'Créer mon compte'}
+            {mode === 'login' ? C.submitLogin : C.submitRegister}
           </button>
         </form>
 

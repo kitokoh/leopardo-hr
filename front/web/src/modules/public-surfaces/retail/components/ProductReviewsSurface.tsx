@@ -11,7 +11,7 @@
 
 import { useEffect, useState, type FormEvent } from 'react';
 
-import { RETAIL_REVIEWS_COPY as C } from '../../copy/retail-copy';
+import { RETAIL_REVIEWS_COPY as C, RETAIL_REVIEW_SUBMIT_COPY } from '../../copy/retail-copy';
 import { SurfaceCard, SurfaceNotice } from '../../kernel/components/SurfacePrimitives';
 import type { SurfaceIdentity } from '../../kernel/domain/surface-identity';
 import { isValidRating, type ProductReviews } from '../domain/buyer';
@@ -184,7 +184,7 @@ export function ProductReviewsSurface({
                   opacity: pending ? 0.6 : 1,
                 }}
               >
-                {pending ? 'Envoi…' : C.submit}
+                {pending ? RETAIL_REVIEW_SUBMIT_COPY.submitting : C.submit}
               </button>
             </form>
           )}
