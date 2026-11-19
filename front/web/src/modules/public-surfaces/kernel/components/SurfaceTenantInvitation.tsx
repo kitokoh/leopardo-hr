@@ -38,6 +38,14 @@ export function SurfaceTenantInvitation({
 }) {
   const copy = getTenantInvitationCopy(locale);
   const { palette } = identity;
+  const href = tenantSignupHref(identity.vertical, locale);
+
+  // Fail-closed (#9629) : une verticale sans pack d'inscription (Emploi) n'a
+  // pas de bandeau. Rendre un lien vers `/business/signup` enverrait un
+  // candidat créer un espace qui n'a rien à voir avec sa recherche.
+  if (href === null) {
+    return null;
+  }
 
   const style: CSSProperties = {
     marginTop: '3rem',
@@ -86,7 +94,7 @@ export function SurfaceTenantInvitation({
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
         <a
-          href={tenantSignupHref(identity.vertical, locale)}
+          href={href}
           data-surface-tenant-cta=""
           style={{
             display: 'inline-block',

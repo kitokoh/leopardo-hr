@@ -7,6 +7,7 @@
  */
 
 import { createSurfaceRegistry } from './kernel';
+import { CAREERS_SURFACE } from './careers';
 import { HOSPITALITY_SURFACE } from './hospitality';
 import { PHARMACY_SURFACE } from './pharmacy';
 import { RESTAURANT_SURFACE } from './restaurants';
@@ -23,4 +24,5 @@ export const surfaceRegistry = createSurfaceRegistry([
   TRAVEL_SURFACE,
   PHARMACY_SURFACE,
   MOBILITY_SURFACE,
+  CAREERS_SURFACE,
 ]);

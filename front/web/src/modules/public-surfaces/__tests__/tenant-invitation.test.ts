@@ -17,15 +17,40 @@ import { isSignupSector } from '@/lib/signup-sector';
  * cas le visiteur arriverait sur un formulaire générique, sans que rien ne
  * signale l'erreur. D'où la vérification croisée contre les deux allowlists
  * réelles, pas contre une copie.
+ *
+ * ## #9629 — la verticale Emploi n'a volontairement pas d'invitation
+ *
+ * Le recrutement n'est pas une verticale qu'on provisionne : c'est un module du
+ * dashboard tenant (`/recruitment`). Il n'existe pas de pack d'inscription
+ * « recrutement », donc `TENANT_INVITATIONS` est un `Partial` et l'absence
+ * d'entrée est le comportement fail-closed attendu (pas de bandeau, plutôt
+ * qu'un lien vers un espace sans rapport).
  */
+
+/** Verticales qui portent réellement une invitation professionnelle. */
+const INVITED_VERTICALS = SURFACE_VERTICALS.filter(
+  (vertical) => TENANT_INVITATIONS[vertical] !== undefined,
+);
+
 describe('invitation professionnelle par verticale (#9614)', () => {
-  it('couvre exactement les verticales déclarées', () => {
-    expect(Object.keys(TENANT_INVITATIONS).sort()).toEqual([...SURFACE_VERTICALS].sort());
+  it('couvre toutes les verticales sauf celles explicitement exclues', () => {
+    // Emploi est la seule verticale sans pack d'inscription : on l'affirme
+    // explicitement pour qu'une future verticale oubliée fasse échouer ce test
+    // au lieu de passer inaperçue.
+    const missing = SURFACE_VERTICALS.filter(
+      (vertical) => TENANT_INVITATIONS[vertical] === undefined,
+    );
+
+    expect(missing).toEqual(['careers']);
   });
 
   it('chaque pack est un slug accepté par le formulaire d’inscription', () => {
-    for (const vertical of SURFACE_VERTICALS) {
-      const { pack } = TENANT_INVITATIONS[vertical];
+    for (const vertical of INVITED_VERTICALS) {
+      const invitation = TENANT_INVITATIONS[vertical];
+
+      expect(invitation).toBeDefined();
+
+      const { pack } = invitation as { pack: string };
 
       expect(isPackSignupSlug(pack)).toBe(true);
       // Le slug doit résoudre vers un code du catalogue serveur : sinon
@@ -36,14 +61,20 @@ describe('invitation professionnelle par verticale (#9614)', () => {
   });
 
   it('chaque secteur est accepté par l’allowlist de l’entretien', () => {
-    for (const vertical of SURFACE_VERTICALS) {
-      expect(isSignupSector(TENANT_INVITATIONS[vertical].sector)).toBe(true);
+    for (const vertical of INVITED_VERTICALS) {
+      const invitation = TENANT_INVITATIONS[vertical];
+
+      expect(invitation).toBeDefined();
+      expect(isSignupSector((invitation as { sector: string }).sector)).toBe(true);
     }
   });
 
   it('le lien porte le pack ET le secteur, vers l’espace existant', () => {
     const href = tenantSignupHref('pharmacy');
-    const url = new URL(href, 'https://example.test');
+
+    expect(href).not.toBeNull();
+
+    const url = new URL(href as string, 'https://example.test');
 
     expect(url.pathname).toBe(TENANT_SIGNUP_PATH);
     expect(url.searchParams.get('pack')).toBe('pharmacy');
@@ -51,7 +82,11 @@ describe('invitation professionnelle par verticale (#9614)', () => {
   });
 
   it('propage la locale sans écraser les paramètres métier', () => {
-    const url = new URL(tenantSignupHref('restaurant', 'tr'), 'https://example.test');
+    const href = tenantSignupHref('restaurant', 'tr');
+
+    expect(href).not.toBeNull();
+
+    const url = new URL(href as string, 'https://example.test');
 
     expect(url.searchParams.get('lang')).toBe('tr');
     expect(url.searchParams.get('pack')).toBe('restaurant');
@@ -59,14 +94,25 @@ describe('invitation professionnelle par verticale (#9614)', () => {
   });
 
   it('n’ajoute pas de `lang` quand la locale est absente', () => {
-    const url = new URL(tenantSignupHref('retail', null), 'https://example.test');
+    const href = tenantSignupHref('retail', null);
+
+    expect(href).not.toBeNull();
+
+    const url = new URL(href as string, 'https://example.test');
 
     expect(url.searchParams.has('lang')).toBe(false);
   });
 
   it('deux verticales ne partagent jamais le même pack', () => {
-    const packs = SURFACE_VERTICALS.map((vertical) => TENANT_INVITATIONS[vertical].pack);
+    const packs = INVITED_VERTICALS.map(
+      (vertical) => (TENANT_INVITATIONS[vertical] as { pack: string }).pack,
+    );
 
     expect(new Set(packs).size).toBe(packs.length);
+  });
+
+  it('une verticale sans pack d’inscription ne produit aucun lien (#9629)', () => {
+    // Fail-closed : pas de bandeau « Devenir tenant » sur la vitrine Emploi.
+    expect(tenantSignupHref('careers')).toBeNull();
   });
 });

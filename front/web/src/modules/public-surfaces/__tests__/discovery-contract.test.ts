@@ -41,6 +41,11 @@ const DEDICATED_CONTRACT: Record<string, string> = {
     'Recherche de trajets via GET /public/travel/marketplace/trips — un trajet ' +
     "n'est pas une entité découvrable (pas de slug, pas de fiche) : c'est une " +
     'offre datée. La découverte générique ne peut pas la représenter.',
+  careers:
+    'Annuaire et offres via GET /public/careers et GET /public/careers/{companySlug} ' +
+    "(#9629) — une offre d'emploi n'est pas une entité découvrable au sens de " +
+    '`/public/discover` : elle est scopée par entreprise et datée. Le contrat ' +
+    'dédié existe déjà côté API et sert aussi le flux XML Google Jobs.',
 };
 
 const API_MODULES = join(__dirname, '../../../../../../api/app/Modules');
