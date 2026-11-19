@@ -138,7 +138,7 @@ void main() {
       vertical: SurfaceVertical.restaurant,
       displayName: 'Test',
       tagline: 'Accroche',
-      canonicalDomain: 'test.leopardo.app',
+      canonicalDomain: 'restaurants.leopardo.app',
       palette: const SurfacePalette(
         primary: '#C2410C',
         onPrimary: '#FFFFFF',
@@ -158,7 +158,7 @@ void main() {
         vertical: SurfaceVertical.restaurant,
         displayName: '   ',
         tagline: 'Accroche',
-        canonicalDomain: 'test.leopardo.app',
+        canonicalDomain: 'restaurants.leopardo.app',
         palette: valid().palette,
       );
 
@@ -170,7 +170,7 @@ void main() {
         vertical: SurfaceVertical.restaurant,
         displayName: 'Test',
         tagline: 'Accroche',
-        canonicalDomain: 'https://test.leopardo.app',
+        canonicalDomain: 'https://restaurants.leopardo.app',
         palette: valid().palette,
       );
 
@@ -182,7 +182,7 @@ void main() {
         vertical: SurfaceVertical.restaurant,
         displayName: 'Test',
         tagline: 'Accroche',
-        canonicalDomain: 'test.leopardo.app',
+        canonicalDomain: 'restaurants.leopardo.app',
         palette: const SurfacePalette(
           primary: 'rouge',
           onPrimary: '#FFFFFF',
@@ -201,7 +201,7 @@ void main() {
         vertical: SurfaceVertical.restaurant,
         displayName: 'Test',
         tagline: 'Accroche',
-        canonicalDomain: 'test.leopardo.app',
+        canonicalDomain: 'restaurants.leopardo.app',
         palette: const SurfacePalette(
           primary: '#FFFFFF',
           onPrimary: '#FFFFFF',
@@ -227,7 +227,7 @@ void main() {
         vertical: SurfaceVertical.retail,
         displayName: 'Autre',
         tagline: 'Accroche',
-        canonicalDomain: 'test.leopardo.app',
+        canonicalDomain: 'restaurants.leopardo.app',
         palette: valid().palette,
       );
 

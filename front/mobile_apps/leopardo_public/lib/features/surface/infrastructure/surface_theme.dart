@@ -57,7 +57,7 @@ ThemeData surfaceTheme(SurfaceIdentity identity) {
 Color colorOf(String hex) {
   final rgb = parseHexColor(hex);
   if (rgb == null) {
-    return const Color(0x00000000);
+    return Colors.transparent;
   }
 
   return Color.fromARGB(0xFF, rgb[0], rgb[1], rgb[2]);
