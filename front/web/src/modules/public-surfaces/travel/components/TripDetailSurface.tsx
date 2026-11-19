@@ -12,6 +12,7 @@ import {
 import { getSurfaceCopy } from '../../copy/surfaces-copy';
 import type { TripDetailView } from '../application/load-trip-detail';
 import { LEGEND_ORDER, seatStatusLabel, seatStatusSymbol } from '../domain/seat-layout';
+import { SEAT_LABELS } from '../../copy/seat-labels';
 
 /**
  * Fiche trajet de la vitrine Billets (#9628).
@@ -195,7 +196,7 @@ export function TripDetailSurface({
               {LEGEND_ORDER.map((status) => (
                 <li key={status} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                   <span aria-hidden>{seatStatusSymbol(status) || '·'}</span>
-                  {seatStatusLabel(status)}
+                  {seatStatusLabel(status, SEAT_LABELS)}
                 </li>
               ))}
             </ul>

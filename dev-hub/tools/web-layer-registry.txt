@@ -1,0 +1,31 @@
+# Registre des modules du front web — etat de decoupage en couches (#9652).
+#
+# Chaque module de `front/web/src/modules` DOIT figurer ici. Un module present
+# sur disque et absent de ce fichier fait echouer `check-web-layer-guard.sh` :
+# un nouveau module doit etre classe explicitement, jamais heriter d'un defaut
+# par oubli.
+#
+# Etats :
+#   layered  le module a au moins un `**/domain/` ; la garde verifie
+#            STRICTEMENT chacun de ces domaines (aucun framework UI, aucune
+#            couche superieure, aucun import hors module, aucun acces reseau
+#            ni navigateur). Un `layered` sans `domain/` = echec.
+#   flat     le module n'a pas encore de `domain/` ; la garde ne verifie rien
+#            dedans, mais l'etat est DECLARE et visible. Un `flat` qui gagne
+#            un `domain/` = echec : il faut le reclasser en `layered`.
+#
+# Doctrine (ADR-0034, elargie a tout le front web par ADR-0035) : la dette est
+# gelee et visible, elle ne peut que decroitre, et elle ne peut pas grossir en
+# silence. Meme principe que `mobile-layer-registry.txt` (#9645-#9647).
+#
+# Format : <module> <etat> <note libre jusqu'a la fin de ligne>
+# Les lignes vides et celles commencant par `#` sont ignorees.
+
+public-surfaces                 layered   8 verticales + kernel, chacune avec un domain/ (ADR-0034)
+public-surface                  layered   module singulier BRANDING (BC-41), domain/ brand + theme
+vitrine                         flat      front vitrine professionnel : components/data/hooks/lib/types, pas de domain/
+toolbox                         flat      outils horizontaux (102 fichiers), pas de domain/
+library                         flat      bibliotheque de contenus (36 fichiers), pas de domain/
+onboarding                      flat      parcours d'inscription (12 fichiers), pas de domain/
+marketing                       flat      pages marketing (10 fichiers), pas de domain/
+assistant                       flat      assistant conversationnel (9 fichiers), pas de domain/

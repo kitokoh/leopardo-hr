@@ -35,6 +35,7 @@ export {
   type ResolvedSeatLayout,
   type SeatCell,
   type SeatInput,
+  type SeatLabels,
   type SeatLayoutConfig,
   type SeatMapLayout,
   type SeatRowLayout,

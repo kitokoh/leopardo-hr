@@ -12,10 +12,12 @@
  *  - une géométrie serveur incohérente retombe sur un gabarit déduit, signalé
  *    comme tel — on ne présente jamais une déduction comme une donnée lue.
  *
- * Aucune E/S, aucun import de framework.
+ * Aucune E/S, aucun import de framework, et surtout aucun import du catalogue
+ * de copie : le domaine ne produit AUCUN texte visible. Les libellés lui sont
+ * toujours passés en paramètre (cf. `SeatLabels`). Importer `copy/` depuis
+ * `domain/` inverserait la dépendance et rendrait le domaine dépendant d'une
+ * correction éditoriale (garde : `dev-hub/tools/check-web-layer-guard.sh`).
  */
-
-import { SEAT_STATUS_LABELS } from '../../copy/retail-copy';
 
 /** États de siège portés par l'inventaire et la vue (cf. SeatStatus PHP). */
 export type SeatStatusValue =
@@ -82,9 +84,21 @@ const STATUS_SYMBOL: Record<SeatStatusValue | 'aisle' | 'absent', string> = {
   absent: '\u25A2',
 };
 
-/** Libellés texte (FR) par état — source unique pour la légende et l'aria. */
-const STATUS_LABEL: Record<SeatStatusValue | 'aisle' | 'absent', string> =
-  SEAT_STATUS_LABELS as Record<SeatStatusValue | 'aisle' | 'absent', string>;
+/**
+ * Libellés visibles, fournis par l'appelant (`copy/seat-labels.ts`).
+ *
+ * `statuses` est typé TOTAL sur `SeatStatusValue | 'aisle' | 'absent'` : ajouter
+ * un état au domaine sans lui donner de libellé ne compile pas. C'est ce qui
+ * remplace l'ancien import direct de `copy/retail-copy` sans perdre la garantie
+ * d'exhaustivité.
+ */
+export interface SeatLabels {
+  /** Libellé texte par état — source unique pour la légende et l'aria. */
+  readonly statuses: Readonly<Record<SeatStatusValue | 'aisle' | 'absent', string>>;
+  /** Gabarit d'accessibilité ; `{seat}` et `{status}` y sont substitués. */
+  readonly ariaTemplate: string;
+}
+
 /** Ordre d'affichage de la légende. */
 export const LEGEND_ORDER: readonly SeatStatusValue[] = [
   'free',
@@ -97,8 +111,11 @@ export const LEGEND_ORDER: readonly SeatStatusValue[] = [
   'unavailable',
 ];
 
-export function seatStatusLabel(status: SeatStatusValue | 'aisle' | 'absent'): string {
-  return STATUS_LABEL[status] ?? String(status);
+export function seatStatusLabel(
+  status: SeatStatusValue | 'aisle' | 'absent',
+  labels: SeatLabels,
+): string {
+  return labels.statuses[status];
 }
 
 export function seatStatusSymbol(status: SeatStatusValue | 'aisle' | 'absent'): string {
@@ -111,8 +128,14 @@ export function seatStatusSymbol(status: SeatStatusValue | 'aisle' | 'absent'): 
  * Combine numéro + état en TEXTE : l'information n'est jamais portée par la
  * seule couleur.
  */
-export function seatAriaLabel(seatNumber: number, status: SeatStatusValue): string {
-  return `Siège ${seatNumber}, ${seatStatusLabel(status)}`;
+export function seatAriaLabel(
+  seatNumber: number,
+  status: SeatStatusValue | 'aisle' | 'absent',
+  labels: SeatLabels,
+): string {
+  return labels.ariaTemplate
+    .replace('{seat}', String(seatNumber))
+    .replace('{status}', seatStatusLabel(status, labels));
 }
 
 /** Un siège est-il sélectionnable (donc cliquable) ? */
@@ -129,6 +152,7 @@ export function isSeatSelectable(status: SeatStatusValue): boolean {
  */
 export function buildSeatMapLayout(
   seats: readonly SeatInput[],
+  labels: SeatLabels,
   options: LayoutOptions = {},
 ): SeatMapLayout {
   const seatsPerRow = Math.max(1, Math.trunc(options.seatsPerRow ?? 4));
@@ -185,7 +209,7 @@ export function buildSeatMapLayout(
         seatNumber: seat.seat_number,
         status,
         symbol: seatStatusSymbol(status),
-        label: seatStatusLabel(status),
+        label: seatStatusLabel(status, labels),
         bookingReference: isAbsent ? null : (seat.booking_reference ?? null),
       });
 
@@ -194,7 +218,7 @@ export function buildSeatMapLayout(
           seatNumber: null,
           status: 'aisle',
           symbol: STATUS_SYMBOL.aisle,
-          label: STATUS_LABEL.aisle,
+          label: labels.statuses.aisle,
         });
       }
     });
