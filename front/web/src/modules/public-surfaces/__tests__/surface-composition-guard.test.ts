@@ -39,6 +39,7 @@ const SURFACE_PAGES: ReadonlyArray<{
   { vertical: 'travel', page: 'billets/page.tsx', component: 'TravelSurface' },
   { vertical: 'pharmacy', page: 'pharmacies/page.tsx', component: 'PharmacySurface' },
   { vertical: 'vtc', page: 'operateurs/page.tsx', component: 'MobilitySurface' },
+  { vertical: 'careers', page: 'emploi/page.tsx', component: 'CareersDirectorySurface' },
 ];
 
 function readPage(relativePath: string): string {

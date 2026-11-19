@@ -213,6 +213,20 @@ const bareUtilityWords = new Set([
 ]);
 const cssDeclarationPattern = /^([a-z-]+\s*:\s*[^;]+;\s*)+$/i;
 
+// Valeur CSS en forme abrégée, sans nom de propriété ni point-virgule :
+// `1px solid #D6D3D1`, `0 1px 2px rgba(15,23,42,0.06)`, `999px`.
+//
+// Constat #9627/#9628 : les composants repris de `front/marketplace` et
+// `front/travel-web` portent leurs styles en objets inline, donc la valeur
+// arrive seule dans une chaîne. `cssDeclarationPattern` exige `propriété: valeur;`
+// et ne les couvrait pas — 18 valeurs de bordure et d'ombre étaient signalées
+// comme du texte utilisateur. Ce sont des valeurs de style, jamais rendues.
+const cssShorthandValuePattern =
+  /^(?:\d+(?:\.\d+)?(?:px|rem|em|%|vh|vw)\s+)*(?:solid|dashed|dotted|none)\s+#[0-9a-f]{3,8}$/i;
+const cssLengthValuePattern = /^\d+(?:\.\d+)?(?:px|rem|em|%|vh|vw)$/i;
+const cssShadowValuePattern =
+  /^(?:-?\d+(?:\.\d+)?(?:px|rem|em)\s+){2,4}(?:rgba?\([^)]*\)|#[0-9a-f]{3,8})$/i;
+
 function isCssClassList(value) {
   const trimmed = value.trim();
   if (!trimmed) return false;
@@ -532,6 +546,9 @@ function classifyLiteral(rawValue) {
   if (!/[\p{Letter}]/u.test(value)) return null;
   if (isCssClassList(value)) return null;
   if (cssDeclarationPattern.test(value)) return null;
+  if (cssShorthandValuePattern.test(value)) return null;
+  if (cssLengthValuePattern.test(value)) return null;
+  if (cssShadowValuePattern.test(value)) return null;
   if (isFontFamilyStack(value)) return null;
   if (isTechnicalToken(value)) return null;
   if (isCodeExpression(value)) return null;

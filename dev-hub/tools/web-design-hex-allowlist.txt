@@ -28,6 +28,24 @@
 # Palette « branding » (page démo branding) et dark mode provisoire — à migrer
 # vers les tokens tenant quand le module branding sera tokenisé (P05).
 #db2777 — pink-600, démo branding (front/web/src/app/(landing)/branding/page.tsx)
+
+# #9627/#9628 — reprise de front/marketplace et front/travel-web dans
+# `modules/public-surfaces`. Ces composants portaient leurs couleurs en dur
+# (échelle stone/rose/amber de Tailwind) : la reprise les a conservées telles
+# quelles pour ne pas changer le rendu au passage. Ce sont des neutres et des
+# états d'erreur, pas des couleurs de marque — les tokeniser est un travail de
+# design distinct, pas une conséquence de la migration.
+#44403c — stone-700, texte (retail/components/BuyerAccountSurface.tsx)
+#57534e — stone-600, texte secondaire (retail, travel, vtc components)
+#a8a29e — stone-400, texte désactivé (retail, travel components)
+#d6d3d1 — stone-300, bordure (retail, travel, vtc components)
+#e7e5e4 — stone-200, séparateur (retail/components/BuyerAccountSurface.tsx, CheckoutSurface.tsx)
+#f5f5f4 — stone-100, fond de bloc (retail, travel components)
+#9f1239 — rose-800, erreur (retail, travel components)
+#e11d48 — rose-600, erreur (retail/components/BuyerFavoritesSurface.tsx)
+#fff1f2 — rose-50, fond d'erreur (retail/components/BuyerAccountSurface.tsx)
+#fffbeb — amber-50, avertissement (travel/components/BookingSurface.tsx)
+#b42318 — rouge d'erreur de formulaire (careers/components/ApplyForm.tsx, TrackApplicationsForm.tsx)
 #06b6d4 — cyan-500, vars dark provisoires (front/web/src/components/DarkModeProvider.tsx)
 #475569 — slate-600, vars dark provisoires (DarkModeProvider.tsx)
 #cbd5e1 — slate-300, vars claires (front/admin-dashboard/src/App.vue)
@@ -91,3 +109,8 @@
 # Micro-gemme de la marque Leopardo (#9179) — yellow-200, effet décoratif SVG
 # sur le brand mark (LeopardoBrandMark.tsx) ; pas un token d'UI.
 #fef08a
+# #a3e635 — lime-400, couleur de FIXTURE dans les tests du module
+# `public-surface` (front/web/src/modules/public-surface/__tests__/*) : elle
+# sert à vérifier que la palette d'un tenant est bien propagée en variables CSS.
+# Ce n'est pas une couleur de marque, et elle n'est jamais rendue en production.
+#a3e635

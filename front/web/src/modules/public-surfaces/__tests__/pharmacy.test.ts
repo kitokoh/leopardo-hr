@@ -47,8 +47,9 @@ describe('identité pharmacie', () => {
 });
 
 describe('registre complet', () => {
-  it('déclare les sept verticales du périmètre', () => {
+  it('déclare les huit verticales du périmètre', () => {
     expect([...surfaceRegistry.verticals()].sort()).toEqual([
+      'careers',
       'hospitality',
       'pharmacy',
       'restaurant',

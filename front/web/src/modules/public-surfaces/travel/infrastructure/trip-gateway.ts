@@ -7,7 +7,7 @@
  * vitrine présente, les parcours existants vendent.
  */
 
-import { resolveBackendBaseUrl } from '@/lib/backend-url';
+import { resolveSurfaceApiBaseUrl } from '../../kernel/infrastructure/api-base';
 
 import type { Trip } from '../domain/trip';
 
@@ -70,7 +70,7 @@ export async function searchTrips(params: {
 
   try {
     const response = await fetch(
-      `${resolveBackendBaseUrl()}/public/travel/marketplace/trips${qs ? `?${qs}` : ''}`,
+      `${resolveSurfaceApiBaseUrl()}/public/travel/marketplace/trips${qs ? `?${qs}` : ''}`,
       {
         headers: { Accept: 'application/json' },
         next: { revalidate: 60 },

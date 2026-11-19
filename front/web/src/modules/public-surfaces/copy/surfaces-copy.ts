@@ -188,6 +188,12 @@ const FR: SurfaceCopy = {
       actionHref: '/decouvrir',
       bookableLabel: 'Course possible',
     },
+    careers: {
+      displayName: 'Leopardo Emploi',
+      tagline: 'Trouvez les offres des entreprises qui recrutent, postulez en quelques minutes.',
+      eyebrow: 'Emploi',
+      exploreCta: 'Toutes les entreprises',
+    },
   },
 };
 
@@ -277,6 +283,12 @@ const EN: SurfaceCopy = {
       actionCta: 'Request a ride',
       actionHref: '/decouvrir',
       bookableLabel: 'Ride available',
+    },
+    careers: {
+      displayName: 'Leopardo Jobs',
+      tagline: 'Find openings from companies that are hiring, apply in minutes.',
+      eyebrow: 'Jobs',
+      exploreCta: 'All companies',
     },
   },
 };
@@ -368,6 +380,12 @@ const TR: SurfaceCopy = {
       actionHref: '/decouvrir',
       bookableLabel: 'Yolculuk mümkün',
     },
+    careers: {
+      displayName: 'Leopardo İş',
+      tagline: 'İşe alan şirketlerin ilanlarını bulun, dakikalar içinde başvurun.',
+      eyebrow: 'İş ilanları',
+      exploreCta: 'Tüm şirketler',
+    },
   },
 };
 
@@ -458,6 +476,12 @@ const AR: SurfaceCopy = {
       actionHref: '/decouvrir',
       bookableLabel: 'الرحلة متاحة',
     },
+    careers: {
+      displayName: 'وظائف ليوباردو',
+      tagline: 'اعثر على الوظائف لدى الشركات التي توظّف، وقدّم في دقائق.',
+      eyebrow: 'وظائف',
+      exploreCta: 'كل الشركات',
+    },
   },
 };
 
@@ -479,7 +503,7 @@ export interface TenantInvitationCopy {
   /** Précision rassurante (gratuit, sans engagement). */
   readonly note: string;
   /** Titre par verticale — nomme le métier du visiteur. */
-  readonly titles: Readonly<Record<SurfaceVertical, string>>;
+  readonly titles: Readonly<Partial<Record<SurfaceVertical, string>>>;
 }
 
 /** Invitation professionnelle, 4 locales. */
