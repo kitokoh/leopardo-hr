@@ -14,6 +14,7 @@ import { resolveSurfaceApiBaseUrl } from '../../kernel/infrastructure/api-base';
 
 import type { CreatedGuestRide, GeoPoint, GuestRide, RideEstimate, RideStatus } from '../domain/ride';
 import { isRideStatus } from '../domain/ride';
+import { MOBILITY_TRACKING_COPY } from '../../copy/retail-copy';
 
 const VTC = 'public/vtc/marketplace';
 
@@ -185,16 +186,6 @@ export async function trackRide(reference: string, code: string): Promise<GuestR
 
 /** Statut lisible d'une course — libellé français, jamais le code brut. */
 export function rideStatusLabel(status: RideStatus): string {
-  const labels: Record<RideStatus, string> = {
-    requested: 'Demande envoyée',
-    dispatching: 'Recherche d’un chauffeur',
-    accepted: 'Chauffeur en route',
-    arrived: 'Chauffeur sur place',
-    in_progress: 'Course en cours',
-    completed: 'Course terminée',
-    expired: 'Demande expirée',
-    cancelled: 'Course annulée',
-  };
-
+  const labels = MOBILITY_TRACKING_COPY.statuses as Record<RideStatus, string>;
   return labels[status];
 }

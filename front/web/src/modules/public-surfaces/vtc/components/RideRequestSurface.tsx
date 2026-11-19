@@ -27,7 +27,7 @@ import {
   type RideEstimate,
 } from '../domain/ride';
 import { createRide, estimateRide } from '../infrastructure/ride-gateway';
-import { MOBILITY_RIDE_COPY as C } from '../../copy/retail-copy';
+import { MOBILITY_RIDE_COPY as C, MOBILITY_TRACKING_COPY } from '../../copy/retail-copy';
 
 const INPUT_STYLE = {
   height: '2.5rem',
@@ -260,7 +260,7 @@ export function RideRequestSurface({
             <SurfaceBadge identity={identity} tone={isPriced(estimate) ? 'accent' : 'neutral'}>
               {isPriced(estimate)
                 ? formatPrice(estimate.priceMinor as number, estimate.currency ?? 'EUR')
-                : 'Prix à confirmer'}
+                : MOBILITY_TRACKING_COPY.priceTbc}
             </SurfaceBadge>
           ) : null}
         </div>
@@ -294,7 +294,7 @@ export function RideRequestSurface({
           opacity: pending ? 0.6 : 1,
         }}
       >
-        {pending ? 'Envoi…' : 'Demander la course'}
+        {pending ? MOBILITY_TRACKING_COPY.submitting : MOBILITY_TRACKING_COPY.request}
       </button>
     </form>
   );

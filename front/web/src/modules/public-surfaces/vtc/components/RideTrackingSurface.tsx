@@ -14,6 +14,7 @@ import type { SurfaceIdentity } from '../../kernel/domain/surface-identity';
 import { formatPrice } from '../../kernel/domain/money';
 import { reachedRideSteps, type GuestRide } from '../domain/ride';
 import { rideStatusLabel, trackRide } from '../infrastructure/ride-gateway';
+import { MOBILITY_TRACKING_COPY as C } from '../../copy/retail-copy';
 
 const INPUT_STYLE = {
   height: '2.5rem',
@@ -95,7 +96,7 @@ export function RideTrackingSurface({ identity }: { identity: SurfaceIdentity })
             opacity: pending ? 0.6 : 1,
           }}
         >
-          {pending ? 'Recherche…' : 'Suivre ma course'}
+          {pending ? C.searching : C.track}
         </button>
       </form>
 
@@ -116,7 +117,7 @@ export function RideTrackingSurface({ identity }: { identity: SurfaceIdentity })
 
           {ride.pickupAddress !== null || ride.dropoffAddress !== null ? (
             <p style={{ margin: '0.4rem 0 0', fontSize: '0.82rem', color: '#57534E' }}>
-              {ride.pickupAddress ?? 'Départ'} → {ride.dropoffAddress ?? 'Destination'}
+              {ride.pickupAddress ?? C.pickup} → {ride.dropoffAddress ?? 'Destination'}
             </p>
           ) : null}
 

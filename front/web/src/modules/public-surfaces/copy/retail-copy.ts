@@ -175,3 +175,24 @@ export const SEAT_STATUS_LABELS: Readonly<Record<string, string>> = {
   aisle: 'Couloir',
   absent: 'Siège absent',
 };
+
+/** Copie du suivi de course (verticale Mobilité). */
+export const MOBILITY_TRACKING_COPY = {
+  searching: 'Recherche…',
+  track: 'Suivre ma course',
+  pickup: 'Départ',
+  priceTbc: 'Prix à confirmer',
+  submitting: 'Envoi…',
+  request: 'Demander la course',
+  /** Libellés des états de course renvoyés par l'API. */
+  statuses: {
+    requested: 'Demande envoyée',
+    dispatching: 'Recherche d’un chauffeur',
+    accepted: 'Chauffeur en route',
+    arrived: 'Chauffeur sur place',
+    in_progress: 'Course en cours',
+    completed: 'Course terminée',
+    expired: 'Demande expirée',
+    cancelled: 'Course annulée',
+  } as Readonly<Record<string, string>>,
+} as const;
