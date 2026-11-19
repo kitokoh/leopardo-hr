@@ -346,7 +346,9 @@ class PosController extends Notifier<PosState> {
   /// lignes distinctes** : un « Poulet saignant + frites » et un
   /// « Poulet bien cuit + riz » ne peuvent pas fusionner.
   void addProductWithOptions(
-      PosProduct product, List<PosOptionSelection> selections) {
+      PosProduct product,
+      List<PosOptionSelection> selections,
+  ) {
     if (selections.isEmpty) {
       addProduct(product);
 
@@ -502,7 +504,8 @@ class PosController extends Notifier<PosState> {
   bool parkCurrentTicket(String label) {
     if (state.cart.isEmpty) {
       state = state.copyWith(
-          error: 'Le panier est vide : rien a mettre en attente.');
+          error: 'Le panier est vide : rien a mettre en attente.',
+        );
 
       return false;
     }
@@ -574,7 +577,8 @@ class PosController extends Notifier<PosState> {
 
     if (sessionId == null || branchId == null) {
       state = state.copyWith(
-          error: 'La caisse doit être ouverte avant d\'encaisser.');
+          error: 'La caisse doit être ouverte avant d\'encaisser.',
+        );
 
       return false;
     }
