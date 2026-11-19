@@ -8,6 +8,12 @@
 # une seule copie ne se propage pas aux autres (dérive déjà constatée sur
 # les proxies auth dans l'audit 2026-09-20).
 #
+# #9630 — `front/travel-web` et `front/marketplace` ont été retirés : leur
+# contenu vit dans `front/web/src/modules/public-surfaces`. `front/web` est
+# désormais le seul front Next.js du dépôt, donc la liste de paires est vide.
+# La garde est conservée (et non supprimée) : elle reste le point d'ancrage
+# si un second front Next.js réapparaît, et son en-tête documente la règle.
+#
 # Pourquoi pas un package npm partagé (demande initiale de l'issue) :
 # chaque front est volontairement AUTONOME (lockfile propre, `turbopack.root`
 # épinglé, build Vercel par sous-dossier — décision #7305, rappelée dans
@@ -31,8 +37,14 @@ cd "$(git rev-parse --show-toplevel)"
 # Paires canoniques : source de vérité déclarée en première position (le
 # message d'erreur la désigne comme référence de resynchronisation).
 PAIRS=(
-  "front/web/src/lib/backend-url.ts|front/travel-web/src/lib/backend-url.ts"
-  "front/travel-web/src/middleware.ts|front/marketplace/src/middleware.ts"
+  # #9630 — `front/travel-web` et `front/marketplace` ont été retirés : leur
+  # contenu vit dans `front/web/src/modules/public-surfaces`. Les deux paires
+  # qui les impliquaient sont donc supprimées plutôt que laissées « dormantes » :
+  # une paire dont les deux membres ont disparu ne protège plus rien, et la
+  # garde doit refléter l'arborescence réelle.
+  #
+  # Il ne reste aucune copie dupliquée entre fronts Next.js : `front/web` est
+  # le seul front Next.js du dépôt.
 )
 
 status=0
