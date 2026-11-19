@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { ArrowRight, Play, Sparkles } from 'lucide-react';
 import { useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { withLocaleHref } from '../../lib/locale-href';
+import { withLocaleHref } from '../../domain/locale-href';
 import { GeoBackdrop } from '../hero/GeoBackdrop';
 import { HeroRotatingTagline } from '../hero/HeroRotatingTagline';
 import { HeroScene3D } from '../hero/HeroScene3D';

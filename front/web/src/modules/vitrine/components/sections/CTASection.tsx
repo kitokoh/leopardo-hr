@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { withLocaleHref } from '../../lib/locale-href';
+import { withLocaleHref } from '../../domain/locale-href';
 
 export interface CTASectionProps {
   headline?: string;

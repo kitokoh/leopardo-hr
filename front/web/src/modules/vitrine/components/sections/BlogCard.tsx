@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Calendar, User } from 'lucide-react';
 import Image from 'next/image'
 
-import { localImageProps } from '@/modules/vitrine/lib/image-props';
+import { localImageProps } from '@/modules/vitrine/domain/image-props';
 
 export interface BlogCardProps {
   slug: string;

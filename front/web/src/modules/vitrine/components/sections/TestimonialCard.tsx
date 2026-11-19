@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
 import Image from 'next/image'
 
-import { localImageProps } from '@/modules/vitrine/lib/image-props';
+import { localImageProps } from '@/modules/vitrine/domain/image-props';
 import { TESTIMONIALS_ARE_DEMO } from '@/modules/vitrine/data/testimonials';
 import {
   useVitrineLocale,

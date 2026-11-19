@@ -1,5 +1,6 @@
 import { getAnalytics } from '../analytics'
-import { acceptAllConsent, clearConsent, writeConsent } from '../consent'
+import { acceptAllConsent } from '../../domain/consent'
+import { clearConsent, writeConsent } from '../../infrastructure/consent-storage'
 
 // #7593 — deuxième barrière : même si `gtag`/`mixpanel` sont présents (extension
 // de navigateur, autre script), aucun envoi ne doit partir sans autorisation.

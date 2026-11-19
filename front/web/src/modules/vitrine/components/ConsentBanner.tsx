@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { useConsent } from '@/modules/vitrine/components/ConsentProvider';
-import { acceptAllConsent, deniedConsent, type ConsentPayload } from '@/modules/vitrine/lib/consent';
+import { acceptAllConsent, deniedConsent, type ConsentPayload } from '@/modules/vitrine/domain/consent';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { t } from '@/lib/i18n/locale-catalog';
 

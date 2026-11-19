@@ -12,7 +12,7 @@ import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
 // #7307 — le nombre de moteurs de paie vient de la source unique, pas d'un
 // litteral qui peut diverger d'une page (ou d'une locale) a l'autre.
-import { PAYROLL_RULE_ENGINES_COUNT } from '@/modules/vitrine/data/vitrine-numbers';
+import { PAYROLL_RULE_ENGINES_COUNT } from '@/modules/vitrine/domain/vitrine-numbers';
 import { motion } from 'framer-motion';
 import { Calendar, Building2, Users, CheckCircle } from 'lucide-react';
 import { FormDataNotice } from '@/modules/vitrine/components/FormDataNotice';

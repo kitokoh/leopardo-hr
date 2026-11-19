@@ -41,7 +41,7 @@ describe('currency (PA2-MKT-003)', () => {
   });
 });
 
-import { showsCurrency } from '../pricing'
+import { showsCurrency } from '../../data/pricing'
 
 describe('showsCurrency (#4404)', () => {
   it.each([

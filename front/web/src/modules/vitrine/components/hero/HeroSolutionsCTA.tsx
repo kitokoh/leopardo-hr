@@ -21,7 +21,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
-import { withLocaleHref } from '../../lib/locale-href';
+import { withLocaleHref } from '../../domain/locale-href';
 import { useVitrineLocale } from '../../lib/vitrine-locale';
 import { SOLUTION_CARD_COPY } from '../../data/solution-catalog';
 

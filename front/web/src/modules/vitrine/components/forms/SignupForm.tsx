@@ -44,13 +44,14 @@ import { useAnalyticsForm } from '@/modules/vitrine/hooks/useAnalytics';
 import { trackFunnelStep, FUNNEL_EVENTS } from '@/modules/vitrine/lib/funnel';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
-import { fetchSupportedCountries, type SupportedCountryOption } from '@/modules/vitrine/data/supported-countries';
-import { isPackSignupSlug, packSolutionCode } from '@/modules/vitrine/lib/pack-signup';
+import type { SupportedCountryOption } from '@/modules/vitrine/domain/supported-countries';
+import { fetchSupportedCountries } from '@/modules/vitrine/infrastructure/supported-countries-client';
+import { isPackSignupSlug, packSolutionCode } from '@/modules/vitrine/domain/pack-signup';
 import {
   normalizeTradeIntent,
   type TradeMode,
   type TradeProfile,
-} from '@/modules/vitrine/lib/trade-intent';
+} from '@/modules/vitrine/domain/trade-intent';
 import { packDisplayName } from '@/modules/vitrine/data/pack-pages';
 import { t } from '@/lib/i18n/locale-catalog';
 import { persistSignupSector, readSignupSectorFromUrl } from '@/lib/signup-sector';

@@ -1,4 +1,4 @@
-import { HONEYPOT_FIELD } from '@/modules/vitrine/lib/antispam-fields';
+import { HONEYPOT_FIELD } from '@/modules/vitrine/domain/antispam-fields';
 
 /**
  * #7594 — champ leurre anti-robot.

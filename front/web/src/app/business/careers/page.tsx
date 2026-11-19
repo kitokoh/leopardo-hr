@@ -3,7 +3,7 @@
 import { Navbar, Footer, HeroSection, CTASection, useScrollReveal } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { getCareersContent } from '@/modules/vitrine/data/careers';
-import { withLocaleHref } from '@/modules/vitrine/lib/locale-href';
+import { withLocaleHref } from '@/modules/vitrine/domain/locale-href';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Briefcase, MapPin, Clock, ArrowRight, Heart, Zap, Globe, Users } from 'lucide-react';

@@ -1,4 +1,4 @@
-import { FORM_RENDERED_AT_FIELD, HONEYPOT_FIELD } from './antispam-fields';
+import { FORM_RENDERED_AT_FIELD, HONEYPOT_FIELD } from '../domain/antispam-fields';
 
 /**
  * #7594 — champs anti-bot à joindre aux soumissions publiques.

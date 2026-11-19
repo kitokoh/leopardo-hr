@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { withLocaleHref } from '../lib/locale-href'
+import { withLocaleHref } from '../domain/locale-href'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowRight,

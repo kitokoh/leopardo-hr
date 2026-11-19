@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import type { AppLocale } from '@/lib/i18n'
 import { SUPPORTED_COUNTRIES_FALLBACK } from '../supported-countries'
-import { getTestimonialsPageContent } from '../testimonials-page'
+import { getTestimonialsPageContent } from '../../data/testimonials-page'
 import {
   FREE_TRIAL_DAYS,
   MOBILE_APPS_COUNT,

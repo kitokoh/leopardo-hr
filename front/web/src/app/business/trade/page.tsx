@@ -22,9 +22,9 @@ import { Navbar, Footer } from '@/modules/vitrine';
 import { HeroScene3D } from '@/modules/vitrine/components/hero/HeroScene3D';
 import { TradeOnboardingChoice } from '@/modules/vitrine/components/TradeOnboardingChoice';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
-import { withLocaleHref } from '@/modules/vitrine/lib/locale-href';
+import { withLocaleHref } from '@/modules/vitrine/domain/locale-href';
 import { t } from '@/lib/i18n/locale-catalog';
-import { normalizeTradeIntent } from '@/modules/vitrine/lib/trade-intent';
+import { normalizeTradeIntent } from '@/modules/vitrine/domain/trade-intent';
 
 export default function TradePage() {
   const { direction, locale } = useVitrineLocale();

@@ -12,7 +12,7 @@ import { getAboutContent } from '@/modules/vitrine/data/about';
 import { motion } from 'framer-motion';
 import { Users, Heart, Shield, Zap, ArrowRight, Info } from 'lucide-react';
 import Image from 'next/image';
-import { localImageProps } from '@/modules/vitrine/lib/image-props';
+import { localImageProps } from '@/modules/vitrine/domain/image-props';
 
 const valueIcons = [Zap, Heart, Users, Shield];
 

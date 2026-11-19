@@ -1,7 +1,7 @@
 'use client';
 
 import { getAnalytics } from './analytics';
-import { trackingAllowed } from './consent';
+import { trackingAllowed } from '../infrastructure/consent-storage';
 
 /**
  * #7542 — tranche 1 de #7496 : plan de tracking du tunnel d'inscription.

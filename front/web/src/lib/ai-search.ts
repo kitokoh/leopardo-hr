@@ -28,7 +28,7 @@ import {
 } from '@/modules/vitrine/lib/seo';
 import { getBlogPosts } from '@/modules/vitrine/data/blog';
 import { getFaqPageContent } from '@/modules/vitrine/data/faq-page';
-import { PRICING_CURRENCY } from '@/modules/vitrine/data/currency';
+import { PRICING_CURRENCY } from '@/modules/vitrine/domain/currency';
 import { getPricingPlans, showsCurrency } from '@/modules/vitrine/data/pricing';
 
 /**
