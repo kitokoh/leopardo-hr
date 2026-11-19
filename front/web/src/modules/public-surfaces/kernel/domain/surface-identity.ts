@@ -40,6 +40,12 @@ export const SURFACE_VERTICALS = [
   // Une verticale découvrable sans vitrine n'a ni identité ni composition
   // propres, et son parcours grand public s'arrête à une liste sommaire.
   'vtc',
+  // #9629 — verticale Emploi (Careers). Le socle API existait déjà
+  // (`/public/careers*`, `POST .../apply`, `POST .../applications/track`) et
+  // l'espace pro de publication aussi (`/recruitment` du dashboard tenant),
+  // mais **aucune surface publique cross-tenant** ne l'exposait : un candidat
+  // devait connaître le slug de l'entreprise pour voir ses offres.
+  'careers',
 ] as const;
 
 export type SurfaceVertical = (typeof SURFACE_VERTICALS)[number];

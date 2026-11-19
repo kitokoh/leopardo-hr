@@ -13,19 +13,18 @@ on:
   pull_request:
     branches: [main]
     paths:
+      # #9630 — `front/travel-web` et `front/marketplace` ont été retirés :
+      # leur contenu vit dans `front/web/src/modules/public-surfaces`. Les
+      # chemins correspondants sont supprimés des déclencheurs — un filtre sur
+      # un chemin inexistant ne déclencherait plus jamais rien.
       - "front/web/src/lib/backend-url.ts"
-      - "front/travel-web/src/lib/backend-url.ts"
-      - "front/travel-web/src/middleware.ts"
-      - "front/marketplace/src/middleware.ts"
       - "dev-hub/tools/check-front-shared-parity.sh"
       - ".github/workflows/front-shared-parity-guard.yml"
   push:
     branches: [main]
     paths:
       - "front/web/src/lib/backend-url.ts"
-      - "front/travel-web/src/lib/backend-url.ts"
-      - "front/travel-web/src/middleware.ts"
-      - "front/marketplace/src/middleware.ts"
+      - "dev-hub/tools/check-front-shared-parity.sh"
 
 permissions:
   contents: read

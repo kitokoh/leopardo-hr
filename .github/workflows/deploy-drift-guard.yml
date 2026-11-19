@@ -304,12 +304,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - label: travel-web
-            path: front/travel-web
-            environment: "Production – leopardo-travel-prod"
-          - label: marketplace
-            path: front/marketplace
-            environment: "Production – leopardo-marche"
+          # #9630 — `front/travel-web` et `front/marketplace` ont été retirés :
+          # leur contenu vit désormais dans `front/web/src/modules/public-surfaces`
+          # (verticales Billets, Mobilité, Retail). Il n'y a plus de déploiement
+          # Vercel séparé à surveiller pour ces deux fronts — les garder ici
+          # produirait une dérive permanente sur un chemin inexistant.
+          - label: web
+            path: front/web
+            environment: "Production – leopardo-web"
     steps:
       # Le script vit dans le dépôt : sans checkout, le job échouait en
       # exit 127 (« No such file or directory ») à chaque run planifié
@@ -334,7 +336,7 @@ jobs:
         if: failure()
         shell: bash
         run: |
-          echo "::notice::Drift front Vercel — déclencher le workflow de déploiement du front en production (travel-web-deploy.yml / marketplace-deploy.yml, workflow_dispatch) ; si les secrets VERCEL_* manquent, action propriétaire requise (#7994 §1 — jamais de token voué à révocation)."
+          echo "::notice::Drift front Vercel — déclencher le workflow de déploiement du front en production (web-deploy.yml, workflow_dispatch) ; si les secrets VERCEL_* manquent, action propriétaire requise (#7994 §1 — jamais de token voué à révocation)."
 
   # ────────────────────────────────────────────────────────────────────────
   # #8147 — Alerte « prod derrière main > 1 h ».

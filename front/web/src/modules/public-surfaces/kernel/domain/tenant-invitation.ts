@@ -57,7 +57,7 @@ export interface TenantInvitation {
  *    professionnel des billets est un opérateur de voyage, et c'est le pack qui
  *    provisionne `travelagency`.
  */
-export const TENANT_INVITATIONS: Readonly<Record<SurfaceVertical, TenantInvitation>> = {
+export const TENANT_INVITATIONS: Readonly<Partial<Record<SurfaceVertical, TenantInvitation>>> = {
   restaurant: { pack: 'restaurant', sector: 'restaurant' },
   retail: { pack: 'retail', sector: 'commerce' },
   hospitality: { pack: 'hospitality', sector: 'hospitality' },
@@ -69,6 +69,17 @@ export const TENANT_INVITATIONS: Readonly<Record<SurfaceVertical, TenantInvitati
   // et il active la verticale `vtc` via `SECTOR_SOLUTIONS`. Le pack `vtc`
   // provisionne le même code : les deux chemins mènent au bon espace.
   vtc: { pack: 'vtc', sector: 'mobility' },
+  // #9629 — la verticale Emploi n'a **volontairement** pas d'entrée.
+  //
+  // Le CTA « Devenir tenant » d'une vitrine adresse un pack d'inscription
+  // (`/business/signup?pack=`) qui provisionne une verticale métier. Il
+  // n'existe pas de pack « recrutement » : le recrutement est un module du
+  // dashboard tenant (`/recruitment`), pas une verticale qu'on provisionne.
+  //
+  // Envoyer un candidat ou un recruteur vers `/business/signup` créerait un
+  // espace sans rapport avec ce qu'il cherche. Le type est donc `Partial` et
+  // l'absence d'entrée est le comportement fail-closed documenté : pas de
+  // bandeau, plutôt qu'un lien qui mène au mauvais endroit.
 };
 
 /** Chemin de l'espace professionnel existant — jamais dupliqué, jamais déplacé. */
@@ -85,8 +96,13 @@ export const TENANT_SIGNUP_PATH = '/business/signup';
  * `locale` est propagée quand elle est fournie : la vitrine est servie en 4
  * langues et le tunnel d'inscription ne doit pas basculer en français au clic.
  */
-export function tenantSignupHref(vertical: SurfaceVertical, locale?: string | null): string {
+export function tenantSignupHref(vertical: SurfaceVertical, locale?: string | null): string | null {
   const invitation = TENANT_INVITATIONS[vertical];
+
+  // Fail-closed : une verticale sans pack d'inscription n'obtient pas de lien.
+  if (!invitation) {
+    return null;
+  }
 
   const params = new URLSearchParams();
   params.set('pack', invitation.pack);
