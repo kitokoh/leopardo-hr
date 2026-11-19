@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Branding\Application\Actions;
 
+use App\Modules\Branding\Domain\Contracts\BrandCacheInterface;
 use App\Modules\Branding\Domain\Enums\BrandVertical;
 use App\Modules\Branding\Domain\Models\Brand;
 use App\Modules\Branding\Domain\Palette\BrandPalette;
-use App\Modules\Branding\Domain\Services\BrandResolver;
 
 /**
  * Met à jour une Brand existante (BC-41, #9578).
@@ -22,14 +22,35 @@ use App\Modules\Branding\Domain\Services\BrandResolver;
  *   domaine, donc le contraste est recalculé. Une valeur fournie est ignorée.
  * - **Publier implicitement.** Mettre à jour une Brand ne la publie pas : la
  *   publication est une transition explicite (`PublishBrandAction`).
+ * - **Effacer un domaine sur une saisie invalide.** Voir `Brand::assertValidHost()`.
+ *
+ * ## Pourquoi elle purge le cache de résolution publique
+ *
+ * `BrandResolver` mémorise une résolution réussie pendant 60 s, indexée par slug
+ * ET par host. Une mise à jour change ce que la surface publique sert (identité,
+ * palette, locale par défaut) et peut changer le host. Sans purge, le visiteur
+ * continuait de recevoir l'ancien DTO jusqu'à une minute après l'enregistrement ;
+ * et si le host changeait, l'ANCIEN domaine restait servi alors que le tenant
+ * venait de le déplacer — exactement ce qu'une action de modération doit couper
+ * immédiatement. Les transitions (`publish`, `suspend`) purgeaient déjà ; la
+ * mise à jour était le trou.
  */
 final class UpdateBrandAction
 {
+    public function __construct(
+        private readonly BrandCacheInterface $cache,
+    ) {}
+
     /**
      * @param  array<string, mixed>  $input
      */
     public function execute(Brand $brand, array $input): Brand
     {
+        // Host précédent conservé : après un changement, la clé de cache de
+        // l'ancien domaine doit être purgée elle aussi, sinon l'ancienne adresse
+        // continue de résoudre vers la Brand.
+        $previousHost = $brand->host;
+
         if (array_key_exists('name', $input) && is_string($input['name']) && trim($input['name']) !== '') {
             $brand->name = $input['name'];
         }
@@ -75,12 +96,18 @@ final class UpdateBrandAction
         }
 
         if (array_key_exists('host', $input)) {
-            $brand->host = is_string($input['host']) && $input['host'] !== ''
-                ? BrandResolver::normalizeHost($input['host'])
+            // `null` ou chaîne vide = retirer le domaine (intention explicite).
+            // Toute autre valeur est validée : une faute de frappe ne doit pas
+            // effacer le domaine existant en silence.
+            $brand->host = is_string($input['host']) && trim($input['host']) !== ''
+                ? Brand::assertValidHost($input['host'])
                 : null;
         }
 
         $brand->save();
+
+        $this->cache->forget($brand->slug, $previousHost);
+        $this->cache->forget($brand->slug, $brand->host);
 
         return $brand;
     }

@@ -376,8 +376,9 @@ return [
     'RESUME_REJECTED' => 'Le fichier joint a été refusé par l\'analyse de sécurité.',
     'BRAND_PUBLISH_MISSING_DISPLAY_NAME' => 'Une Brand doit avoir un nom public (identity.display_name) avant d\'être publiée.',
     'BRAND_PUBLISH_SUSPENDED' => 'Une Brand suspendue ne peut pas être publiée. Levez d\'abord la suspension (retour en brouillon), puis republiez.',
-    'BRAND_SLUG_INVALID' => '« %s » ne produit pas un slug exploitable (attendu : 1..160 caractères [a-z0-9-], sans tiret en bord).',
-    'BRAND_SLUG_RESERVED' => '« %s » est réservé par une route de la plateforme.',
+    'BRAND_SLUG_INVALID' => 'Le slug demandé ne produit pas une adresse exploitable (attendu : 1 à 160 caractères [a-z0-9-], sans tiret en bord).',
+    'BRAND_SLUG_RESERVED' => 'Ce slug est réservé par une route de la plateforme.',
+    'BRAND_HOST_INVALID' => 'Le domaine personnalisé est inexploitable (attendu : minuscules, chiffres, tirets et points, 1 à 253 caractères).',
     'SURFACE_PROFILE_DUPLICATE' => 'La verticale « %s » est déjà fournie par un autre provider. Deux profils pour une même verticale rendraient le rendu non déterministe.',
     'COMPANY_PROFILE_RESERVED_FIELDS' => 'Champs réservés à la plateforme : %s',
 ];
