@@ -1,0 +1,74 @@
+name: Mobile Layer Guard
+
+# Garde « couche mobile saine » (#9645, #9646, #9647) — étend ADR-0035.
+#
+# ## Pourquoi un workflow séparé
+#
+# `leopardo_public/test/architecture/layer_guard_test.dart` vérifie la règle
+# au plus près du code, mais il ne tourne que si `flutter test` tourne sur
+# cette app, et il ne peut pas couvrir les 11 autres apps sans être dupliqué.
+#
+# `mobile-apps-ci.yml` porte déjà les validateurs structurels, mais son
+# déclenchement `pull_request` est filtré par `paths` : une PR qui ne touche
+# pas la chaîne mobile ne l'exécute pas. Ce workflow-ci a ses propres `paths`,
+# volontairement larges sur `front/mobile_apps/**`, et n'installe **aucun**
+# SDK Flutter : le script est du bash pur, il tourne en secondes.
+#
+# ## Ce que la garde refuse
+#
+# Dans tout `lib/features/**/domain/` : un import `package:` (framework, état,
+# réseau, UI partagée) ou un import d'une couche supérieure (`application/`,
+# `infrastructure/`, `components/`, `screens/`, `widgets/`, `data/`, `models/`,
+# `providers/`, `services/`).
+#
+# Et, via `dev-hub/tools/mobile-layer-registry.txt` :
+#   - app sur disque absente du registre        → échec
+#   - app du registre absente du disque         → échec
+#   - `layered` sans aucun `domain/`            → échec
+#   - `flat` avec un `domain/`                  → échec
+#
+# Le registre est ce qui rend la garde honnête : sans lui, une app créée sans
+# `domain/` passerait au vert sans que personne n'ait décidé qu'elle serait
+# plate. La dette est déclarée, visible, et ne peut pas grossir en silence.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'front/mobile_apps/**'
+      - 'dev-hub/tools/check-mobile-layer-guard.sh'
+      - 'dev-hub/tools/mobile-layer-registry.txt'
+      - '.github/workflows/mobile-layer-guard.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'front/mobile_apps/**'
+      - 'dev-hub/tools/check-mobile-layer-guard.sh'
+      - 'dev-hub/tools/mobile-layer-registry.txt'
+      - '.github/workflows/mobile-layer-guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: mobile-layer-guard-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  layer-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    name: Couche mobile (domain/ pur, registre fail-closed)
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Run mobile layer guard
+        shell: bash
+        run: bash dev-hub/tools/check-mobile-layer-guard.sh --verbose

@@ -7,7 +7,9 @@
 **Étend** : ADR-0034 (`public-surfaces` est la norme du front grand public), qui ne couvrait que le web.
 
 **Décideurs** : owner (validation) — rédigée par l'agent Dev
-**Liens** : #9640 (cette décision) · #9641 (garde de couche) · #9642 (registre fail-closed) · ADR-0034 (doctrine web) · ADR-0026 (ModuleRegistry, même principe de registre versionné)
+**Liens** : #9640 (cette décision) · #9641 (garde de couche) · #9642 (registre fail-closed) · #9645-#9648 (élargissement aux apps professionnelles) · ADR-0034 (doctrine web) · ADR-0026 (ModuleRegistry, même principe de registre versionné)
+
+**Révision 2026-11-19 (#9648)** : le périmètre de la **règle de couche** est élargi à toutes les apps de `front/mobile_apps`. La **doctrine de surface** reste grand public. Voir « Révision — élargissement de la règle de couche ».
 
 ---
 
@@ -108,9 +110,85 @@ Une identité qui n'est consommée par aucun écran ne satisfait pas cette ADR. 
 
 ### Ce que cette ADR ne décide pas
 
-- Elle ne dit rien des apps professionnelles, qui continuent d'utiliser `TenantTheme`.
+- Elle ne dit rien de l'**identité de surface** des apps professionnelles, qui continuent d'utiliser `TenantTheme` (voir la révision ci-dessous : la règle de couche, elle, s'y applique).
 - Elle ne tranche pas la migration des features non découpées (voir ci-dessus).
 - Elle ne crée pas d'espace candidat côté mobile : le contrat API n'en a pas.
+
+---
+
+## Révision — élargissement de la règle de couche (#9645-#9648)
+
+### Le constat qui a motivé la révision
+
+La version initiale de cette ADR arrêtait la garde de couche à `leopardo_public`. C'était une erreur de raisonnement : la garde de couche est une règle **structurelle**, pas une règle de thème. Un `domain/` qui importe `material_ui` est un défaut dans n'importe quelle app, grand public ou professionnelle.
+
+### L'état réel des 12 apps (audit 2026-11-19, `main` @ `93ff87300`)
+
+| App | `domain/` | Fichiers Dart | État déclaré |
+|---|---|---|---|
+| `leopardo_public` | **2** (`surface/`, `brand/`) | 36 | `layered` |
+| `leopardo_core` | 0 | 180 | `flat` |
+| `leopardo_employee` | 0 | 55 | `flat` |
+| `leopardo_manager` | 0 | 40 | `flat` |
+| `leopardo_travel_agent` | 0 | 18 | `flat` |
+| `leopardo_cameras` | 0 | 16 | `flat` |
+| `leopardo_pos_retail` | 0 | 15 | `flat` |
+| `leopardo_platform_admin` | 0 | 15 | `flat` |
+| `leopardo_accounting` | 0 | 14 | `flat` |
+| `leopardo_pos_restaurant` | 0 | 12 | `flat` |
+| `leopardo_hr` | 0 | 10 | `flat` |
+| `leopardo_marketing` | 0 | 10 | `flat` |
+
+**Aucune app professionnelle n'a de `domain/`.** Étendre naïvement la garde de `leopardo_public` aurait donc produit une garde **vide** : elle serait passée au vert en ne vérifiant rien — exactement le défaut que l'assertion « trouve au moins un fichier de domaine » corrige côté public.
+
+### Décision 1 — la règle de couche s'étend, la doctrine de surface non
+
+Deux choses distinctes, désormais séparées explicitement :
+
+| | Doctrine de surface | Règle de couche |
+|---|---|---|
+| Contenu | identité par verticale, registre fail-closed, palette WCAG, `surfaceTheme` | `domain/` pur, pas d'inversion de dépendance |
+| Périmètre | **grand public uniquement** (`leopardo_public`) | **toutes les apps** de `front/mobile_apps` |
+| Pourquoi | une app professionnelle porte la marque de son tenant (`TenantTheme`), pas une identité de surface | un `domain/` impur est un défaut partout |
+
+### Décision 2 — un registre déclare l'état de chaque app
+
+`dev-hub/tools/mobile-layer-registry.txt` porte une ligne par app : `layered` ou `flat`, avec une note. La garde échoue si :
+
+- une app **présente sur disque** est **absente du registre** — une nouvelle app doit être classée explicitement, jamais hériter d'un défaut par oubli ;
+- une app du registre est **absente du disque** — app supprimée sans mise à jour ;
+- une app déclarée `layered` n'a **aucun** `domain/` — renommage silencieux ;
+- une app déclarée `flat` **a** un `domain/` — le registre ment, il faut la reclasser.
+
+C'est la même doctrine que `mobile-feature-duplication-baseline.txt` (#7652) : la dette est **gelée et visible**, elle ne peut que décroître, et elle ne peut pas grossir en silence.
+
+### Décision 3 — la garde est un script, pas seulement un test Dart
+
+`dev-hub/tools/check-mobile-layer-guard.sh` exécute la même règle **sans Flutter**, en secondes, sur toutes les apps. Il est branché dans `.github/workflows/mobile-layer-guard.yml`.
+
+Le test Dart de `leopardo_public` **reste en place** : il vérifie la règle au plus près du code, avec son auto-test. Les deux ne se remplacent pas — le script couvre l'ensemble, le test couvre le détail.
+
+Le script porte lui aussi un **auto-test** : il soumet une source fautive à son propre analyseur et échoue si elle n'est pas signalée. Sans cela, une regex cassée passerait au vert pour toujours.
+
+### Décision 4 — aucune violation réelle à corriger, et c'est documenté
+
+L'audit a cherché les inversions de couche dans les 11 apps professionnelles. **Aucune n'a été trouvée.** Les cas examinés, et pourquoi ils sont légitimes :
+
+| Cas | Verdict |
+|---|---|
+| `core/providers/core_providers.dart` importe `features/*/data/*_repository.dart` (9 apps) | **Composition root.** C'est le seul endroit où les dépendances sont câblées ; l'interdire obligerait à disperser les providers dans chaque feature. |
+| `core/navigation/app_shell.dart` importe `features/*/screens/*` (`leopardo_public`) | **Composition root.** Le shell est le point d'assemblage de la navigation. |
+| `leopardo_pos_retail/lib/core/api/retail_pos_stock_data_source.dart` importe `leopardo_core/features/stock/data/stock_repository.dart` | **Adaptateur.** La classe `implements StockDataSource` au-dessus du Dio propre au POS (file offline Hive, base URL injectée). Ce n'est pas une inversion : c'est une implémentation d'interface, et elle évite de dupliquer `StockScreen`. |
+| `features/*/data/` ou `models/` important `screens/`, `widgets/`, `providers/` | **Aucun cas.** Vérifié sur les 11 apps. |
+| `features/*/models/` important `dio`/`http` | **Aucun cas.** Vérifié sur les 11 apps. |
+
+Ces cas sont documentés ici plutôt que corrigés : les « corriger » reviendrait à casser des composition roots, c'est-à-dire à dégrader le code pour satisfaire une règle mal formulée. La règle de couche porte sur `domain/`, pas sur `core/`.
+
+### Ce que la révision ne change pas
+
+- `leopardo_public` reste la seule app `layered` ; les 11 autres restent `flat`, dette déclarée.
+- Aucune app professionnelle ne reçoit d'identité de surface ni de `surfaceTheme`.
+- Aucun code applicatif n'est modifié par cette révision : elle ajoute une garde, un registre et un workflow.
 
 ---
 
@@ -132,4 +210,7 @@ Une identité qui n'est consommée par aucun écran ne satisfait pas cette ADR. 
 - `front/mobile_apps/leopardo_public/test/architecture/layer_guard_test.dart`
 - `front/mobile_apps/leopardo_public/test/surface_identity_test.dart`
 - `front/web/src/modules/public-surfaces/__tests__/layer-guard.test.ts` (équivalent web)
+- `dev-hub/tools/check-mobile-layer-guard.sh` (garde partagée, sans Flutter)
+- `dev-hub/tools/mobile-layer-registry.txt` (état déclaré de chaque app)
+- `.github/workflows/mobile-layer-guard.yml` (exécution CI)
 - ADR-0034, ADR-0026
