@@ -1,0 +1,34 @@
+# Registre des apps mobiles — etat de decoupage en couches (#9645, #9647).
+#
+# Chaque app de `front/mobile_apps` DOIT figurer ici. Une app presente sur
+# disque et absente de ce fichier fait echouer `check-mobile-layer-guard.sh` :
+# une nouvelle app doit etre classee explicitement, jamais heriter d'un defaut
+# par oubli.
+#
+# Etats :
+#   layered  l'app a au moins un `lib/features/**/domain/` ; la garde verifie
+#            STRICTEMENT chacun de ces domaines (aucun `package:`, aucune
+#            couche superieure). Un `layered` sans `domain/` = echec.
+#   flat     l'app n'a pas encore de `domain/` ; la garde ne verifie rien
+#            dedans, mais l'etat est DECLARE et visible. Un `flat` qui gagne
+#            un `domain/` = echec : il faut le reclasser en `layered`.
+#
+# Doctrine (ADR-0035, elargie par #9648) : la dette est gelee et visible,
+# elle ne peut que decroitre, et elle ne peut pas grossir en silence. Meme
+# principe que `mobile-feature-duplication-baseline.txt` (#7652).
+#
+# Format : <app> <etat> <note libre jusqu'a la fin de ligne>
+# Les lignes vides et celles commencant par `#` sont ignorees.
+
+leopardo_public                layered   surface/ et brand/ portent un domain/ (ADR-0035)
+leopardo_core                  flat      package partage : core/ + features/ plates, pas de domain/
+leopardo_employee              flat      features/ plates (data/providers/screens)
+leopardo_manager               flat      features/ plates (data/providers/screens/widgets)
+leopardo_hr                    flat      features/ plates
+leopardo_accounting            flat      features/ plates (data/models/providers/screens)
+leopardo_marketing             flat      features/ plates
+leopardo_platform_admin        flat      src/features/ plates
+leopardo_travel_agent          flat      features/ plates
+leopardo_cameras               flat      features/ plates
+leopardo_pos_retail            flat      features/pos/ plate
+leopardo_pos_restaurant        flat      features/pos/ plate
