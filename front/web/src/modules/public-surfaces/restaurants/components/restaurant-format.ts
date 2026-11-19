@@ -8,7 +8,7 @@ import { t } from '@/lib/i18n/locale-catalog';
  */
 
 /** Montant mineur → devise localisée (même convention que /shop). */
-export function formatMoney(minor: number, currency: string, locale: string): string {
+export function formatRestaurantMoney(minor: number, currency: string, locale: string): string {
   try {
     return new Intl.NumberFormat(locale, {
       style: 'currency',

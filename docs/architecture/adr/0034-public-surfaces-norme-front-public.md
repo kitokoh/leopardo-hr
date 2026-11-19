@@ -50,7 +50,7 @@ Et une huitième verticale a été ajoutée : `careers` (#9629), qui expose enfi
 
 Est « front grand public » tout ce qu'un visiteur non authentifié peut atteindre sans compte : annuaires, fiches, parcours transactionnels invités, suivi par référence, recherche d'emploi, candidature.
 
-**Sont dans le périmètre** et doivent passer par `public-surfaces` : les 8 verticales (`restaurants`, `retail`, `hospitality`, `trade`, `travel`, `pharmacy`, `vtc`, `careers`) et le noyau.
+**Sont dans le périmètre** et doivent passer par `public-surfaces` : les 8 verticales (`restaurants`, `retail`, `hospitality`, `trade`, `travel`, `pharmacy`, `vtc`, `careers`), le noyau, et le bounded context `portal` (chrome commun, accueil, annuaire générique) qui n'est pas une verticale mais partage la même structure.
 
 **Sont hors périmètre**, et cette ADR ne les touche pas :
 
@@ -106,7 +106,20 @@ Tout le reste d'ADR-0030 — la répartition mono-tenant / cross-tenant entre de
 
 **Limites assumées**
 
-- **La migration est partielle.** `modules/vitrine` (landings marketing, dont `/business/careers`), `modules/public-portal` (accueil, profil, activités) et les pages `shop`, `order`, `stay`, `restaurants` restent **hors** de `public-surfaces`. Cette ADR fixe la norme pour les surfaces nouvelles et pour les verticales existantes ; elle n'ordonne pas la reprise de l'existant. Une reprise opportuniste — toute retouche substantielle d'une surface la fait entrer dans sa verticale — est la voie retenue, comme ADR-0030 le faisait pour la convergence.
+- **La migration est désormais quasi complète** (#9633, #9634). Ce qui est entré dans `public-surfaces` :
+  - `modules/public-portal` → `public-surfaces/portal` (bounded context du chrome commun : en-tête, pied de page, navigation basse, thème, accueil, annuaire générique, copie i18n). Ce n'est **pas** une verticale : il n'a pas d'identité de surface et ne figure pas dans le registre.
+  - `app/shop` → `restaurants/components/ShopOrderSurface` (commande à jeton boutique).
+  - `app/order` → `restaurants/components/RestaurantOrderTrackingSurface` (suivi par référence).
+  - `app/restaurants` (explorateur, helpers de formatage) → `restaurants/components/`.
+  - `app/restaurants/[slug]` (panneau de commande) → `restaurants/components/RestaurantOrderPanel`.
+  - `app/stay/[slug]` (panneau de réservation, helpers) → `hospitality/components/`.
+
+  Les pages `app/**` correspondantes ne sont plus que des **adaptateurs Next** de 10 à 15 lignes. Aucun parcours n'a été perdu : panier, commande idempotente, suivi par référence, séjour, menu restaurant, avis.
+
+- **Ce qui reste hors de `public-surfaces`, et pourquoi** :
+  - `modules/vitrine` (landings marketing, dont `/business/careers`) — **hors périmètre par décision** : c'est le front commercial destiné aux professionnels et à leurs entreprises, explicitement exclu du périmètre de cette ADR (§ « Sont hors périmètre »). Il n'a pas vocation à entrer.
+  - `/[companySlug]/careers` — conservée à côté de `/emploi/[companySlug]` (voir ci-dessous).
+  - Les consoles du dashboard tenant et le front Super admin — hors périmètre (authentifiés, pas publics).
 - **`/[companySlug]/careers` reste en place** à côté de `/emploi/[companySlug]`. Les deux servent les mêmes offres ; l'ancienne route est conservée pour les liens publics en circulation. Sa suppression est une décision produit distincte (SEO, liens sortants), pas une conséquence de cette ADR.
 - **Pas d'espace candidat.** Le contrat API n'a pas de compte candidat : le suivi se fait par e-mail. La verticale `careers` expose le parcours réel, elle ne simule pas un espace qui n'existe pas.
 - **`careers` n'a pas de bandeau « Devenir tenant ».** Il n'existe pas de pack d'inscription recrutement ; `TENANT_INVITATIONS` est devenu `Partial` et l'absence d'entrée est le comportement fail-closed — pas de bandeau plutôt qu'un lien vers le mauvais endroit.

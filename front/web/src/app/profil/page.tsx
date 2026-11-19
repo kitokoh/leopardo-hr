@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { normalizeLocale } from '@/lib/i18n';
-import { getPublicAccountCopy } from '@/modules/public-portal/data/account-copy';
+import { getPublicAccountCopy } from '@/modules/public-surfaces/portal/data/account-copy';
 import ProfileView from './profile-view';
 
 /**

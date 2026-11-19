@@ -511,4 +511,19 @@ class AppColors {
 
   /// Mobilité — texte secondaire.
   static const Color surfaceMobilityMuted = Color(0xFF6B7280);
+
+  /// Emploi — action principale (vert forêt, registre « recrutement »).
+  static const Color surfaceCareersPrimary = Color(0xFF166534);
+
+  /// Emploi — accent (ambre, signal d'offre ouverte).
+  static const Color surfaceCareersAccent = Color(0xFFF59E0B);
+
+  /// Emploi — fond de page.
+  static const Color surfaceCareersSurface = Color(0xFFF7FDF9);
+
+  /// Emploi — texte principal.
+  static const Color surfaceCareersOnSurface = Color(0xFF052E1B);
+
+  /// Emploi — texte secondaire.
+  static const Color surfaceCareersMuted = Color(0xFF5B6B62);
 }

@@ -58,6 +58,28 @@ Comportement en l'absence de secrets :
 - **push sur `main`** : **échec explicite**. Un push qui touche une vitrine sans
   déploiement possible doit être visible, pas silencieux (#7994 §4).
 
+## Verticales sans projet Vercel dédié (#9638)
+
+Toutes les verticales n'ont pas leur propre projet Vercel. Une verticale peut
+être **servie par `front/web` lui-même** : même build, même projet, même
+déploiement. C'est le cas d'**Emploi** (`careers`) : `/emploi` est une route de
+`front/web`, pas un déploiement séparé.
+
+Ces verticales sont déclarées dans `NO_VERCEL_SURFACES` de
+`dev-hub/tools/detect-changed-surfaces.sh`. Elles restent dans `SURFACES` — la
+garde de parité et la détection les connaissent, un diff qui les touche est bien
+signalé — mais elles sont retirées de `deployable`, la liste que le workflow
+transforme en matrice.
+
+Conséquence : un push sur `main` qui ne touche que `careers` ne lance **aucun**
+job de déploiement et n'échoue pas faute de secrets. Un push qui touche le noyau
+partagé déploie les sept verticales qui ont un projet Vercel, et ignore
+`careers`.
+
+Ajouter une verticale à cette liste est un acte explicite : une verticale
+oubliée ferait échouer `push main` faute de secrets, ce qui est visible — c'est
+le comportement voulu par #7994 §4.
+
 ## Ajouter une septième vitrine
 
 1. Créer `front/web/src/modules/public-surfaces/<vertical>/` (domain,

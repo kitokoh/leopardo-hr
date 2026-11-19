@@ -13,16 +13,16 @@ import {
 } from 'lucide-react';
 import { normalizeLocale } from '@/lib/i18n';
 import { SITE_URL } from '@/lib/site-url';
-import { getPublicPortalCopy } from '@/modules/public-portal/data/copy';
-import { getPublicHomeCopy } from '@/modules/public-portal/data/home-copy';
+import { getPublicPortalCopy } from '@/modules/public-surfaces/portal/data/copy';
+import { getPublicHomeCopy } from '@/modules/public-surfaces/portal/data/home-copy';
 import {
   getPublicDiscoveryCategories,
   selectDisplayableCategories,
-} from '@/modules/public-portal/data/discovery-categories';
-import { HomeSearch } from '@/modules/public-portal/components/HomeSearch';
-import { PublicResumeSearch } from '@/modules/public-portal/components/PublicResumeSearch';
-import { PublicNearbyDiscover } from '@/modules/public-portal/components/PublicNearbyDiscover';
-import { PublicBottomNav } from '@/modules/public-portal/components/PublicBottomNav';
+} from '@/modules/public-surfaces/portal/data/discovery-categories';
+import { HomeSearch } from '@/modules/public-surfaces/portal/components/HomeSearch';
+import { PublicResumeSearch } from '@/modules/public-surfaces/portal/components/PublicResumeSearch';
+import { PublicNearbyDiscover } from '@/modules/public-surfaces/portal/components/PublicNearbyDiscover';
+import { PublicBottomNav } from '@/modules/public-surfaces/portal/components/PublicBottomNav';
 
 /**
  * Page d'accueil du PORTAIL GRAND PUBLIC (#9357).

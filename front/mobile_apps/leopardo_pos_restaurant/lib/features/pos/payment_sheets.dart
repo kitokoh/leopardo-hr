@@ -237,7 +237,9 @@ class _SplitPaymentSheetState extends State<SplitPaymentSheet> {
                   ? () => setState(() {
                         _split = _split.add(
                           PaymentSplit(
-                              method: _method, amountMinor: _remaining),
+                            method: _method,
+                            amountMinor: _remaining,
+                          ),
                         );
                       })
                   : null,

@@ -12,7 +12,7 @@ import {
   type PublicListMeta,
   type PublicRestaurantSummary,
 } from '@/lib/restaurants-public-api';
-import { establishmentTypeLabel, formatRating } from './format';
+import { establishmentTypeLabel, formatRating } from './restaurant-format';
 
 /**
  * RESTO-903 (#7748) — explorateur client de l'annuaire public.
@@ -46,7 +46,7 @@ function directoryHref(query: {
   return qs ? `/restaurants?${qs}` : '/restaurants';
 }
 
-export default function RestaurantsExplorer({
+export default function RestaurantExplorer({
   locale,
   initialItems,
   initialMeta,

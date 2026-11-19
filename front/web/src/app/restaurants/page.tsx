@@ -3,8 +3,11 @@ import { normalizeLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
 import { SITE_URL } from '@/lib/site-url';
 import { searchPublicRestaurants } from '@/lib/restaurants-public-api';
-import { RESTAURANT_SURFACE, loadRestaurantSurface } from '@/modules/public-surfaces';
-import RestaurantsExplorer from './restaurants-explorer';
+import {
+  RESTAURANT_SURFACE,
+  RestaurantExplorer,
+  loadRestaurantSurface,
+} from '@/modules/public-surfaces';
 
 /**
  * RESTO-903 (#7748) — annuaire public des restaurants (`/restaurants`).
@@ -108,7 +111,7 @@ export default async function RestaurantsPage({ searchParams }: RestaurantsPageP
           </p>
         </header>
 
-        <RestaurantsExplorer
+        <RestaurantExplorer
           locale={locale}
           initialItems={result?.items ?? []}
           initialMeta={result?.meta ?? null}

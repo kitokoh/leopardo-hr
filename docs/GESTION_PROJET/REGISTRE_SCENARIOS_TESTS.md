@@ -1,3 +1,15 @@
+## 2026-11-19 — Palette Emploi : parité COULEURS.md ↔ Flutter ↔ Tailwind (issue #9636, PR #9639)
+
+Surface : `front/mobile_apps/leopardo_core/lib/core/theme/app_colors.dart` (5 constantes ajoutées), `docs/REFERENTIEL_PRODUIT/COULEURS.md` (section Emploi, #9629). Aucune route, aucun contrôleur, aucune migration.
+
+**Pourquoi c'est un scénario de test et pas une simple retouche de thème** : la palette Emploi a été ajoutée au référentiel par #9629 sans être propagée au thème Flutter. `check-sync` est passé au rouge sur `main` — la garde a fait son travail, mais elle ne l'a fait qu'après le merge. Le scénario verrouille le fait qu'une palette de verticale ne peut plus exister dans le référentiel sans exister côté mobile.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| une palette de verticale ajoutée à `COULEURS.md` sans entrée dans `app_colors.dart` → `check-sync` **rouge** | c'est exactement la dérive de #9629 : le référentiel annonçait une identité que le mobile ne pouvait pas rendre |
+| les 5 hex Emploi (`#166534`, `#F7FDF9`, `#052E1B`, `#5B6B62`, `#F59E0B`) sont identiques dans le référentiel et dans `app_colors.dart` | une valeur recopiée « à peu près » produit une identité visuelle qui dérive d'une verticale à l'autre sans qu'aucun test ne le voie |
+| une verticale ajoutée au registre `public-surfaces` sans palette dans le référentiel → revue bloquée | la verticale se déploierait avec les couleurs d'une autre, faute de définition |
+
 ## 2026-11-12 — BC-02 TENANT : parité web / mobile des sous-rôles manager (issue #9334, PR #9428)
 
 Surface : écran Équipe mobile (`leopardo_core/lib/features/team/`), formulaire collaborateur du web, validation `manager_role` de l'API.

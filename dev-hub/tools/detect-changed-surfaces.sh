@@ -71,6 +71,22 @@ SURFACES=(
   $'careers\t/emploi'
 )
 
+# --- Verticales SANS projet Vercel dédié -------------------------------------
+# #9638. Une verticale peut être servie par `front/web` lui-même (même build,
+# même projet Vercel) au lieu d'avoir son propre projet. C'est le cas d'Emploi :
+# `/emploi` est une route de `front/web`, pas un déploiement séparé.
+#
+# Ces verticales restent dans `SURFACES` (la garde de parité et la détection les
+# connaissent, et un diff qui les touche est bien signalé), mais elles sont
+# retirées de `deployable` : le workflow ne peut pas exiger des secrets
+# `VERCEL_SURFACE_<V>_*` qui n'existent pas et n'ont pas à exister.
+#
+# Les ajouter ici est un acte explicite : une verticale oubliée dans cette liste
+# ferait échouer `push main` faute de secrets (#7994 §4), ce qui est visible.
+NO_VERCEL_SURFACES=(
+  $'careers'
+)
+
 if [[ "${FROM_STDIN}" -eq 1 ]]; then
   CHANGED="$(cat)"
 else
@@ -129,11 +145,26 @@ if [[ "${SHARED}" -eq 1 ]]; then
 fi
 
 # --- Sortie JSON (triée : la matrice CI doit être stable d'un run à l'autre) --
+# `surfaces` = toutes les verticales touchées (information, step summary).
+# `deployable` = celles qui ont réellement un projet Vercel à déployer (#9638).
 LIST=""
+DEPLOYABLE=""
 for entry in "${SURFACES[@]}"; do
   vertical="${entry%%$'\t'*}"
   if [[ -n "${HIT[${vertical}]:-}" ]]; then
     LIST="${LIST:+${LIST},}\"${vertical}\""
+
+    skip=0
+    for no_vercel in "${NO_VERCEL_SURFACES[@]}"; do
+      if [[ "${no_vercel}" == "${vertical}" ]]; then
+        skip=1
+        break
+      fi
+    done
+
+    if [[ "${skip}" -eq 0 ]]; then
+      DEPLOYABLE="${DEPLOYABLE:+${DEPLOYABLE},}\"${vertical}\""
+    fi
   fi
 done
 
@@ -142,5 +173,6 @@ if [[ "${SHARED}" -eq 1 ]]; then
   ALL="true"
 fi
 
-printf '{"surfaces":[%s],"shared":%s,"all":%s}\n' "${LIST}" \
+printf '{"surfaces":[%s],"deployable":[%s],"shared":%s,"all":%s}\n' "${LIST}" \
+  "${DEPLOYABLE}" \
   "$([[ "${SHARED}" -eq 1 ]] && echo true || echo false)" "${ALL}"

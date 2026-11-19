@@ -37,6 +37,7 @@ final class BrandCache implements BrandCacheInterface
         // tenant-cache:shared — index de résolution public slug → tenant, le
         // tenant est le RÉSULTAT de la résolution, pas son entrée (#8058).
         /** @var array{brand: Brand, company: Company}|null $cached */
+        // tenant-cache:shared — marqueur au contact de l'appel (#8058).
         $cached = Cache::get('brand:public:slug:'.$slug);
 
         return is_array($cached) ? $cached : null;

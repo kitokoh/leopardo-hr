@@ -17,7 +17,7 @@ import { PUBLIC_PORTAL_LOCALES, getPublicPortalCopy } from '../data/copy';
  */
 
 const moduleRoot = path.resolve(__dirname, '..');
-const appRoot = path.resolve(__dirname, '../../../app');
+const appRoot = path.resolve(__dirname, '../../../../app');
 
 /** Vrai si une route servie correspond au chemin (page.tsx, groupe ou non). */
 function routeExists(href: string): boolean {

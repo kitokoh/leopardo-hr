@@ -32,7 +32,7 @@ const SURFACE_PAGES: ReadonlyArray<{
   page: string;
   component: string;
 }> = [
-  { vertical: 'restaurant', page: 'restaurants/page.tsx', component: 'RestaurantsExplorer' },
+  { vertical: 'restaurant', page: 'restaurants/page.tsx', component: 'RestaurantExplorer' },
   { vertical: 'retail', page: 'boutiques/page.tsx', component: 'ShopDirectorySurface' },
   { vertical: 'hospitality', page: 'stay/page.tsx', component: 'PropertyDirectorySurface' },
   { vertical: 'trade', page: 'entreprises/page.tsx', component: 'CompanyDirectorySurface' },

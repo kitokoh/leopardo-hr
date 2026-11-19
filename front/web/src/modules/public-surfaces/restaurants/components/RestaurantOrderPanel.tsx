@@ -11,7 +11,7 @@ import type {
   PublicMenuProduct,
   PublicReview,
 } from '@/lib/restaurants-public-api';
-import { formatMoney } from '../format';
+import { formatRestaurantMoney as formatMoney } from './restaurant-format';
 
 /**
  * RESTO-903 (#7748) — parcours transactionnel de la page publique

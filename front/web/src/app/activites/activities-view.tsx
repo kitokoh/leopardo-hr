@@ -38,7 +38,7 @@ import {
 import {
   activityStatusLabel,
   getPublicAccountCopy,
-} from '@/modules/public-portal/data/account-copy';
+} from '@/modules/public-surfaces/portal/data/account-copy';
 
 type LoadState = 'loading' | 'unauthenticated' | 'error' | 'ok';
 

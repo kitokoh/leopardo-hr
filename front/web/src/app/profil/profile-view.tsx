@@ -33,7 +33,7 @@ import {
   type PublicAccountIdentity,
   type PublicProfileSettings,
 } from '@/lib/public-account-api';
-import { getPublicAccountCopy } from '@/modules/public-portal/data/account-copy';
+import { getPublicAccountCopy } from '@/modules/public-surfaces/portal/data/account-copy';
 
 type LoadState = 'loading' | 'unauthenticated' | 'error' | 'ok';
 

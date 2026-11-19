@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import PublicPortalLayout from '@/modules/public-portal/components/PublicPortalLayout';
+import PublicPortalLayout from '@/modules/public-surfaces/portal/components/PublicPortalLayout';
 
 /**
  * Layout de la surface publique `/decouvrir` (couloir 16, #9103).

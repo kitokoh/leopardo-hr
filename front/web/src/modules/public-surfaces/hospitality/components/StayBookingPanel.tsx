@@ -11,7 +11,7 @@ import type {
   PublicStayReservationTrack,
   PublicStayRoomType,
 } from '@/lib/hospitality-public-api';
-import { formatStayMoney } from './format';
+import { formatStayMoney } from './stay-format';
 
 /**
  * HOSP-008 (#7950) — parcours transactionnel de la page publique

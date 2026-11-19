@@ -4,6 +4,7 @@ import 'package:leopardo_core/core/pos/pos_search.dart';
 import 'package:leopardo_core/core/pos/pos_ticket.dart';
 
 import '../../core/api/pos_api_client.dart';
+
 import 'package:leopardo_core/core/pos/pos_options.dart';
 
 import '../../core/models/pos_models.dart';
@@ -105,8 +106,9 @@ class PosState {
       pool = pool.where((product) => affinity.isFavourite(product.id)).toList();
     }
 
-    final ordered = affinity
-        .order([for (final product in pool) PosSearchableProduct(product)]);
+    final ordered = affinity.order([
+      for (final product in pool) PosSearchableProduct(product),
+    ]);
     final ranked = rankPosItems(items: ordered, query: searchQuery);
 
     return [for (final item in ranked) item.product];
@@ -346,7 +348,9 @@ class PosController extends Notifier<PosState> {
   /// lignes distinctes** : un « Poulet saignant + frites » et un
   /// « Poulet bien cuit + riz » ne peuvent pas fusionner.
   void addProductWithOptions(
-      PosProduct product, List<PosOptionSelection> selections) {
+    PosProduct product,
+    List<PosOptionSelection> selections,
+  ) {
     if (selections.isEmpty) {
       addProduct(product);
 
@@ -422,8 +426,9 @@ class PosController extends Notifier<PosState> {
   /// La validite (remise <= sous-total) est verifiee par `Cart.isValid` : on
   /// ne bloque pas la saisie, on empeche seulement l'encaissement.
   void setDiscount(int discountMinor) {
-    final cart = state.cart
-        .copyWith(discountMinor: discountMinor < 0 ? 0 : discountMinor);
+    final cart = state.cart.copyWith(
+      discountMinor: discountMinor < 0 ? 0 : discountMinor,
+    );
 
     state = state.copyWith(cart: cart);
     _persistCart(cart);
@@ -457,8 +462,9 @@ class PosController extends Notifier<PosState> {
     required PosVoidReason reason,
     String? comment,
   }) {
-    final index =
-        state.cart.lines.indexWhere((line) => line.product.id == productId);
+    final index = state.cart.lines.indexWhere(
+      (line) => line.product.id == productId,
+    );
 
     if (index == -1) {
       state = state.copyWith(error: 'Cette ligne n\'est plus dans le panier.');
@@ -502,7 +508,8 @@ class PosController extends Notifier<PosState> {
   bool parkCurrentTicket(String label) {
     if (state.cart.isEmpty) {
       state = state.copyWith(
-          error: 'Le panier est vide : rien a mettre en attente.');
+        error: 'Le panier est vide : rien a mettre en attente.',
+      );
 
       return false;
     }
@@ -574,7 +581,8 @@ class PosController extends Notifier<PosState> {
 
     if (sessionId == null || branchId == null) {
       state = state.copyWith(
-          error: 'La caisse doit être ouverte avant d\'encaisser.');
+        error: 'La caisse doit être ouverte avant d\'encaisser.',
+      );
 
       return false;
     }
@@ -673,8 +681,11 @@ class PosController extends Notifier<PosState> {
     final progress = await _api.flushQueueWithProgress(
       onProgress: (synced, total) {
         state = state.copyWith(
-          sync:
-              state.sync.copyWith(total: total, synced: synced, running: true),
+          sync: state.sync.copyWith(
+            total: total,
+            synced: synced,
+            running: true,
+          ),
         );
       },
     );
@@ -694,5 +705,6 @@ class PosController extends Notifier<PosState> {
   }
 }
 
-final posControllerProvider =
-    NotifierProvider<PosController, PosState>(PosController.new);
+final posControllerProvider = NotifierProvider<PosController, PosState>(
+  PosController.new,
+);

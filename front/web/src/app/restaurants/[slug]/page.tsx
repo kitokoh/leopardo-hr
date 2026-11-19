@@ -10,8 +10,12 @@ import {
   getPublicRestaurantReviews,
   type PublicRestaurantProfile,
 } from '@/lib/restaurants-public-api';
-import { dayOfWeekName, establishmentTypeLabel, formatRating } from '../format';
-import RestaurantOrderPanel from './restaurant-order-panel';
+import {
+  RestaurantOrderPanel,
+  dayOfWeekName,
+  establishmentTypeLabel,
+  formatRating,
+} from '@/modules/public-surfaces';
 
 /**
  * RESTO-903 (#7748) — page publique SEO d'un restaurant (`/restaurants/{slug}`).

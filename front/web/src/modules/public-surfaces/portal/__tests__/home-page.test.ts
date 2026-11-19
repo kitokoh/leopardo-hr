@@ -23,7 +23,7 @@ import { getPublicHomeCopy } from '../data/home-copy';
  */
 
 const moduleRoot = path.resolve(__dirname, '..');
-const appRoot = path.resolve(__dirname, '../../../app');
+const appRoot = path.resolve(__dirname, '../../../../app');
 
 /**
  * Retire les commentaires avant toute assertion structurelle : un `<main>`
