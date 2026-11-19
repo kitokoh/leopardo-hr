@@ -1,6 +1,3 @@
-import 'dart:math' as math;
-
-import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../domain/surface_identity.dart';
@@ -10,8 +7,9 @@ import '../domain/surface_identity.dart';
 /// ## Rôle
 ///
 /// Traduit l'identité d'une surface en `ThemeData` : c'est la seule couture
-/// entre le domaine (identité) et le rendu Flutter. Aucune couleur n'est
-/// définie ici — tout vient de `AppColors` via l'identité.
+/// entre le domaine (identité, en hex) et le rendu Flutter. Aucune couleur
+/// n'est définie ici — tout vient de l'identité, donc de `AppColors` via
+/// `surface_palette_tokens.dart`.
 ///
 /// ## Pourquoi un thème par verticale plutôt qu'un thème global
 ///
@@ -21,31 +19,48 @@ import '../domain/surface_identity.dart';
 ThemeData surfaceTheme(SurfaceIdentity identity) {
   final palette = identity.palette;
 
-  final colorScheme = ColorScheme.fromSeed(
-    seedColor: palette.primary,
-    brightness: Brightness.light,
-  ).copyWith(
-    primary: palette.primary,
-    onPrimary: palette.onPrimary,
-    secondary: palette.accent,
-    surface: palette.surface,
-    onSurface: palette.onSurface,
-  );
+  final colorScheme =
+      ColorScheme.fromSeed(
+        seedColor: colorOf(palette.primary),
+        brightness: Brightness.light,
+      ).copyWith(
+        primary: colorOf(palette.primary),
+        onPrimary: colorOf(palette.onPrimary),
+        secondary: colorOf(palette.accent),
+        surface: colorOf(palette.surface),
+        onSurface: colorOf(palette.onSurface),
+      );
 
   return ThemeData(
     useMaterial3: true,
     colorScheme: colorScheme,
-    scaffoldBackgroundColor: palette.surface,
+    scaffoldBackgroundColor: colorOf(palette.surface),
     appBarTheme: AppBarTheme(
-      backgroundColor: palette.surface,
-      foregroundColor: palette.onSurface,
+      backgroundColor: colorOf(palette.surface),
+      foregroundColor: colorOf(palette.onSurface),
       elevation: 0,
     ),
     textTheme: Typography.material2021().black.apply(
-          bodyColor: palette.onSurface,
-          displayColor: palette.onSurface,
-        ),
+      bodyColor: colorOf(palette.onSurface),
+      displayColor: colorOf(palette.onSurface),
+    ),
   );
+}
+
+/// Convertit un hex `#RRGGBB` du domaine en `Color`.
+///
+/// Le domaine ne manipule que des chaînes ; c'est ici, et seulement ici, que la
+/// conversion a lieu. Un hex malformé retombe sur du noir transparent plutôt
+/// que de lever : le registre a déjà validé toutes les palettes à la
+/// construction, donc ce cas ne peut survenir que sur une identité fabriquée à
+/// la main dans un test.
+Color colorOf(String hex) {
+  final rgb = parseHexColor(hex);
+  if (rgb == null) {
+    return const Color(0x00000000);
+  }
+
+  return Color.fromARGB(0xFF, rgb[0], rgb[1], rgb[2]);
 }
 
 /// Couleur de texte lisible sur un fond donné.
@@ -53,32 +68,8 @@ ThemeData surfaceTheme(SurfaceIdentity identity) {
 /// Même règle que côté web : le texte posé sur l'accent est **calculé**, jamais
 /// supposé. On compare le contraste des deux candidats et on garde le meilleur.
 Color readableOn(Color background) {
-  const onDark = AppColors.surfaceOnPrimary;
-  final onLight = AppColors.surfaceRestaurantOnSurface;
+  final hex =
+      '#${(background.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
 
-  return _contrast(background, onDark) >= _contrast(background, onLight)
-      ? onDark
-      : onLight;
-}
-
-/// Luminance relative (WCAG 2.1).
-double _luminance(Color color) {
-  double channel(double value) {
-    return value <= 0.03928
-        ? value / 12.92
-        : math.pow((value + 0.055) / 1.055, 2.4).toDouble();
-  }
-
-  return 0.2126 * channel(color.r) +
-      0.7152 * channel(color.g) +
-      0.0722 * channel(color.b);
-}
-
-double _contrast(Color a, Color b) {
-  final la = _luminance(a);
-  final lb = _luminance(b);
-  final lighter = la > lb ? la : lb;
-  final darker = la > lb ? lb : la;
-
-  return (lighter + 0.05) / (darker + 0.05);
+  return colorOf(pickReadableOn(hex));
 }
