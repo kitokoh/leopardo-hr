@@ -37,8 +37,8 @@ import {
   type PackBenefitIcon,
 } from '@/modules/vitrine/data/pack-pages';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
-import { withLocaleHref } from '@/modules/vitrine/lib/locale-href';
-import { packSignupHref } from '@/modules/vitrine/lib/pack-signup';
+import { withLocaleHref } from '@/modules/vitrine/domain/locale-href';
+import { packSignupHref } from '@/modules/vitrine/domain/pack-signup';
 
 const ICONS: Record<PackBenefitIcon, typeof Clock> = {
   clock: Clock,

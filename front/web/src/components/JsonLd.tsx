@@ -1,5 +1,5 @@
 import { getPricingPlans } from '@/modules/vitrine/data/pricing';
-import { PRICING_CURRENCY } from '@/modules/vitrine/data/currency';
+import { PRICING_CURRENCY } from '@/modules/vitrine/domain/currency';
 
 interface JsonLdProps {
   data: Record<string, unknown>;

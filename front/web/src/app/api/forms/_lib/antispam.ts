@@ -3,7 +3,7 @@ import {
   FORM_RENDERED_AT_FIELD,
   HONEYPOT_FIELD,
   MIN_FILL_DURATION_MS,
-} from '@/modules/vitrine/lib/antispam-fields';
+} from '@/modules/vitrine/domain/antispam-fields';
 
 export { FORM_RENDERED_AT_FIELD, HONEYPOT_FIELD, MIN_FILL_DURATION_MS };
 

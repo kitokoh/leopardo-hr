@@ -4,7 +4,7 @@ import {
   tenantSignupHref,
 } from '../kernel/domain/tenant-invitation';
 import { SURFACE_VERTICALS } from '../kernel/domain/surface-identity';
-import { isPackSignupSlug, packSolutionCode } from '@/modules/vitrine/lib/pack-signup';
+import { isPackSignupSlug, packSolutionCode } from '@/modules/vitrine/domain/pack-signup';
 import { isSignupSector } from '@/lib/signup-sector';
 
 /**

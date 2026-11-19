@@ -17,7 +17,7 @@ import { HeroScene3D } from '@/modules/vitrine/components/hero/HeroScene3D';
 import { PACKS_HUB_COPY, packsHubCardHref } from '@/modules/vitrine/data/pack-pages';
 import { getSolutionDetail } from '@/modules/vitrine/data/solution-catalog';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
-import { withLocaleHref } from '@/modules/vitrine/lib/locale-href';
+import { withLocaleHref } from '@/modules/vitrine/domain/locale-href';
 
 const CARD_ICONS = [UtensilsCrossed, Fuel, GraduationCap, Plane];
 

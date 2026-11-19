@@ -11,7 +11,7 @@ import {
   RoiCalculator,
 } from '@/modules/vitrine';
 import { getPricingPlans, showsCurrency } from '@/modules/vitrine/data/pricing';
-import { CURRENCY_OPTIONS, DEFAULT_CURRENCY_OPTION, convertEurPrice, type CurrencyOption } from '@/modules/vitrine/data/currency';
+import { CURRENCY_OPTIONS, DEFAULT_CURRENCY_OPTION, convertEurPrice, type CurrencyOption } from '@/modules/vitrine/domain/currency';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { HeroScene3D } from '@/modules/vitrine/components/hero/HeroScene3D';
 import { PRICING_PACK_BANNER } from '@/modules/vitrine/data/pack-pages';
