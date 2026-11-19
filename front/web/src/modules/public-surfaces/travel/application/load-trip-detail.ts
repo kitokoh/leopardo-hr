@@ -5,6 +5,7 @@
  * l'affichage. Ne lève jamais.
  */
 
+import { SEAT_LABELS } from '../../copy/seat-labels';
 import { getSurfaceCopy } from '../../copy/surfaces-copy';
 import { formatTripPrice, isBookable, seatsLabel, tripRoute } from '../domain/trip';
 import {
@@ -39,7 +40,7 @@ export function buildTripDetailView(trip: TripDetail, locale?: string): TripDeta
     priceLabel: formatTripPrice(trip.priceMinor, trip.currency),
     seats: seatsLabel(trip.seatsAvailable, shared),
     bookable: isBookable(trip),
-    seatMap: buildSeatMapLayout(trip.seats, {
+    seatMap: buildSeatMapLayout(trip.seats, SEAT_LABELS, {
       seatsPerRow: layout.seatsPerRow,
       aisleAfter: layout.aisleAfter,
       absentSeats: layout.absentSeats,

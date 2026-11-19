@@ -10,6 +10,7 @@ import {
   selectableSeatNumbers,
   type SeatInput,
 } from '../travel/domain/seat-layout';
+import type { SeatLabels } from '../travel/domain/seat-layout';
 import {
   reconcileSeatSelection,
   submittableSeatNumbers,
@@ -25,16 +26,48 @@ import {
  * ne doit jamais partir dans la commande.
  */
 
+/**
+ * Libellés de test — repris tels quels du catalogue de production.
+ *
+ * Le domaine n'importe plus `copy/` (#9653) : c'est au test de nommer ce qu'il
+ * vérifie. Les valeurs sont celles du catalogue, pour que l'assertion porte sur
+ * le libellé réellement affiché au client.
+ */
+const LABELS: SeatLabels = {
+  statuses: {
+    free: 'Libre',
+    selected: 'Sélectionné',
+    held: 'Réservation en cours',
+    reserved: 'Réservé',
+    pending_payment: 'Paiement en attente',
+    sold: 'Vendu',
+    blocked: 'Bloqué',
+    unavailable: 'Indisponible',
+    aisle: 'Couloir',
+    absent: 'Siège absent',
+  },
+  ariaTemplate: 'Siège {seat}, {status}',
+};
+
 function seats(spec: Array<[number, SeatInput['status']]>): SeatInput[] {
   return spec.map(([seat_number, status]) => ({ seat_number, status }));
 }
 
 describe('plan de sièges (#9628)', () => {
   it('découpe en rangées et insère un couloir', () => {
-    const layout = buildSeatMapLayout(seats([[1, 'free'], [2, 'free'], [3, 'free'], [4, 'free']]), {
-      seatsPerRow: 4,
-      aisleAfter: 2,
-    });
+    const layout = buildSeatMapLayout(
+      seats([
+        [1, 'free'],
+        [2, 'free'],
+        [3, 'free'],
+        [4, 'free'],
+      ]),
+      LABELS,
+      {
+        seatsPerRow: 4,
+        aisleAfter: 2,
+      },
+    );
 
     expect(layout.rows).toHaveLength(1);
     expect(layout.columns).toBe(5);
@@ -48,11 +81,18 @@ describe('plan de sièges (#9628)', () => {
   });
 
   it('un siège absent occupe sa place réelle et n’est pas sélectionnable', () => {
-    const layout = buildSeatMapLayout(seats([[1, 'free'], [3, 'free']]), {
-      seatsPerRow: 3,
-      aisleAfter: null,
-      absentSeats: [2],
-    });
+    const layout = buildSeatMapLayout(
+      seats([
+        [1, 'free'],
+        [3, 'free'],
+      ]),
+      LABELS,
+      {
+        seatsPerRow: 3,
+        aisleAfter: null,
+        absentSeats: [2],
+      },
+    );
 
     const cells = layout.rows[0].cells;
 
@@ -63,8 +103,8 @@ describe('plan de sièges (#9628)', () => {
 
   it('porte un symbole ET un libellé : l’état n’est jamais la couleur seule', () => {
     expect(seatStatusSymbol('sold')).not.toBe('');
-    expect(seatStatusLabel('sold')).toBe('Vendu');
-    expect(seatAriaLabel(12, 'reserved')).toBe('Siège 12, Réservé');
+    expect(seatStatusLabel('sold', LABELS)).toBe('Vendu');
+    expect(seatAriaLabel(12, 'reserved', LABELS)).toBe('Siège 12, Réservé');
   });
 
   it('ne rend sélectionnables que les sièges explicitement libres', () => {

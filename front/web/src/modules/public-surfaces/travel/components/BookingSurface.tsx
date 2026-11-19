@@ -43,6 +43,7 @@ import {
 import { reconcileSeatSelection } from '../domain/seat-selection';
 import { createBooking } from '../infrastructure/booking-gateway';
 import { TRAVEL_BOOKING_COPY as C } from '../../copy/retail-copy';
+import { SEAT_LABELS } from '../../copy/seat-labels';
 
 /** Intervalle de rafraîchissement de l'inventaire (ms). */
 export const SEAT_REFRESH_INTERVAL_MS = 30_000;
@@ -243,7 +244,7 @@ export function BookingSurface({
     );
   }
 
-  const layout = buildSeatMapLayout(liveSeats, {
+  const layout = buildSeatMapLayout(liveSeats, SEAT_LABELS, {
     seatsPerRow: seatLayout?.seatsPerRow ?? 4,
     aisleAfter: seatLayout?.aisleAfter ?? null,
   });
@@ -290,7 +291,11 @@ export function BookingSurface({
                     type="button"
                     disabled={!isFree}
                     onClick={() => toggleSeat(cell.seatNumber as number)}
-                    aria-label={seatAriaLabel(cell.seatNumber, cell.status as SeatStatusValue)}
+                    aria-label={seatAriaLabel(
+                      cell.seatNumber,
+                      cell.status as SeatStatusValue,
+                      SEAT_LABELS,
+                    )}
                     aria-pressed={isSelected}
                     title={cell.label}
                     style={{
