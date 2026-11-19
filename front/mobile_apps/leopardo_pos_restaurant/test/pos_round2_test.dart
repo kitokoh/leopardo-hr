@@ -46,10 +46,8 @@ void main() {
     });
 
     test('ne touche pas les autres lignes', () {
-      final cart = const Cart()
-          .addProduct(bissap)
-          .addProduct(the)
-          .setQuantity(1, 4);
+      final cart =
+          const Cart().addProduct(bissap).addProduct(the).setQuantity(1, 4);
 
       expect(cart.lines.first.quantity, 4);
       expect(cart.lines.last.quantity, 1);

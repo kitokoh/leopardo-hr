@@ -157,25 +157,25 @@ class PosState {
   /// Le total est calcule par le noyau partage : c'est exactement celui qui
   /// sera encaisse, pas un recalcul approximatif de l'ecran.
   PosReceipt get receipt => PosReceipt(
-    lines: [
-      for (final line in cart.lines)
-        PosReceiptLine(
-          name: line.product.name,
-          quantity: line.quantity,
-          // Prix unitaire options comprises : c'est ce que le client a
-          // accepte, et ce que l'apercu et l'imprimante doivent montrer.
-          unitPriceMinor: line.unitPriceMinor,
-          options: line.optionLabels,
-        ),
-    ],
-    discountMinor: cart.discountMinor,
-    tipMinor: cart.tipMinor,
-    voidedLines: voidedLines,
-    tableLabel: selectedTable?.label,
-    covers: cart.covers,
-    orderTypeLabel: cart.orderType.label,
-    note: cart.note,
-  );
+        lines: [
+          for (final line in cart.lines)
+            PosReceiptLine(
+              name: line.product.name,
+              quantity: line.quantity,
+              // Prix unitaire options comprises : c'est ce que le client a
+              // accepte, et ce que l'apercu et l'imprimante doivent montrer.
+              unitPriceMinor: line.unitPriceMinor,
+              options: line.optionLabels,
+            ),
+        ],
+        discountMinor: cart.discountMinor,
+        tipMinor: cart.tipMinor,
+        voidedLines: voidedLines,
+        tableLabel: selectedTable?.label,
+        covers: cart.covers,
+        orderTypeLabel: cart.orderType.label,
+        note: cart.note,
+      );
 
   PosState copyWith({
     List<PosCategory>? categories,
@@ -196,25 +196,26 @@ class PosState {
     PosSyncProgress? sync,
     bool? showFavouritesOnly,
     PosSalesHistory? history,
-  }) => PosState(
-    categories: categories ?? this.categories,
-    products: products ?? this.products,
-    tables: tables ?? this.tables,
-    cart: cart ?? this.cart,
-    sessionId: sessionId ?? this.sessionId,
-    branchId: branchId ?? this.branchId,
-    offline: offline ?? this.offline,
-    pendingOperations: pendingOperations ?? this.pendingOperations,
-    loading: loading ?? this.loading,
-    error: clearError ? null : (error ?? this.error),
-    searchQuery: searchQuery ?? this.searchQuery,
-    affinity: affinity ?? this.affinity,
-    parked: parked ?? this.parked,
-    voidedLines: voidedLines ?? this.voidedLines,
-    sync: sync ?? this.sync,
-    showFavouritesOnly: showFavouritesOnly ?? this.showFavouritesOnly,
-    history: history ?? this.history,
-  );
+  }) =>
+      PosState(
+        categories: categories ?? this.categories,
+        products: products ?? this.products,
+        tables: tables ?? this.tables,
+        cart: cart ?? this.cart,
+        sessionId: sessionId ?? this.sessionId,
+        branchId: branchId ?? this.branchId,
+        offline: offline ?? this.offline,
+        pendingOperations: pendingOperations ?? this.pendingOperations,
+        loading: loading ?? this.loading,
+        error: clearError ? null : (error ?? this.error),
+        searchQuery: searchQuery ?? this.searchQuery,
+        affinity: affinity ?? this.affinity,
+        parked: parked ?? this.parked,
+        voidedLines: voidedLines ?? this.voidedLines,
+        sync: sync ?? this.sync,
+        showFavouritesOnly: showFavouritesOnly ?? this.showFavouritesOnly,
+        history: history ?? this.history,
+      );
 }
 
 /// Contrôleur de la caisse : charge le catalogue, gère le panier, encaisse.
@@ -515,8 +516,7 @@ class PosController extends Notifier<PosState> {
 
     if (state.parked.isFull) {
       state = state.copyWith(
-        error:
-            'Trop de commandes en attente (${PosParkedTickets.maxTickets}). '
+        error: 'Trop de commandes en attente (${PosParkedTickets.maxTickets}). '
             'Rappelez-en une avant d\'en mettre une autre de cote.',
       );
 
