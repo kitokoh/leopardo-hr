@@ -13,11 +13,11 @@ void main() {
     barcode: '6001234567890',
   );
   const the = PosProduct(
-      id: 2,
-      name: 'The a la menthe',
-      priceMinor: 700,
-      categoryId: 3,
-    );
+    id: 2,
+    name: 'The a la menthe',
+    priceMinor: 700,
+    categoryId: 3,
+  );
 
   group('Cart.setQuantity', () {
     test('fixe la quantite d une ligne existante', () {
@@ -46,8 +46,10 @@ void main() {
     });
 
     test('ne touche pas les autres lignes', () {
-      final cart =
-          const Cart().addProduct(bissap).addProduct(the).setQuantity(1, 4);
+      final cart = const Cart()
+          .addProduct(bissap)
+          .addProduct(the)
+          .setQuantity(1, 4);
 
       expect(cart.lines.first.quantity, 4);
       expect(cart.lines.last.quantity, 1);
@@ -89,12 +91,7 @@ void main() {
     });
 
     test('supporte le statut occupé', () {
-      const table = PosTable(
-        id: 2,
-        label: 'Table 2',
-        seats: 2,
-        occupied: true,
-      );
+      const table = PosTable(id: 2, label: 'Table 2', seats: 2, occupied: true);
 
       expect(table.occupied, isTrue);
     });

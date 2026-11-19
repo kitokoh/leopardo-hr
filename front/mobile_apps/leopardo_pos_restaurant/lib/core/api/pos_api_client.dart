@@ -41,10 +41,10 @@ class PosApiClient {
       await store.saveCatalog(categories: categories, products: products);
 
       return CatalogResult(
-          categories: categories,
-          products: products,
-          fromCache: false,
-        );
+        categories: categories,
+        products: products,
+        fromCache: false,
+      );
     } on DioException {
       return CatalogResult(
         categories: store.readCategories(),
@@ -156,9 +156,9 @@ class PosApiClient {
           .toInt();
     } on DioException catch (error) {
       throw PosOfflineException(
-          'Création de commande impossible hors ligne.',
-          error,
-        );
+        'Création de commande impossible hors ligne.',
+        error,
+      );
     }
   }
 
@@ -244,9 +244,10 @@ class PosApiClient {
       }
 
       try {
-        await dio.post<Map<String, dynamic>>(operation.endpoint,
-            data: operation.payload,
-          );
+        await dio.post<Map<String, dynamic>>(
+          operation.endpoint,
+          data: operation.payload,
+        );
         await queue.remove(operation.idempotencyKey);
         synced++;
         operations.add(
@@ -324,9 +325,10 @@ final posOfflineQueueProvider = Provider<PosOfflineQueue>((ref) {
 final posApiClientProvider = Provider<PosApiClient>((ref) {
   final dio = Dio(
     BaseOptions(
-      baseUrl: const String.fromEnvironment('API_BASE_URL',
-          defaultValue: 'https://api.leopardo.app/api/v1',
-        ),
+      baseUrl: const String.fromEnvironment(
+        'API_BASE_URL',
+        defaultValue: 'https://api.leopardo.app/api/v1',
+      ),
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 20),
     ),

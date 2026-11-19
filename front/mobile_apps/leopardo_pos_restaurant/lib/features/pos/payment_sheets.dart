@@ -67,8 +67,9 @@ class _AmountEntrySheetState extends State<AmountEntrySheet> {
           InputDecorator(
             decoration: InputDecoration(
               labelText: widget.label,
-              errorText:
-                  _exceeds ? 'Le montant depasse le maximum autorise.' : null,
+              errorText: _exceeds
+                  ? 'Le montant depasse le maximum autorise.'
+                  : null,
             ),
             child: Text(
               _input.isEmpty ? '0' : _input,
@@ -91,8 +92,9 @@ class _AmountEntrySheetState extends State<AmountEntrySheet> {
           ),
           const SizedBox(height: 12),
           FilledButton(
-            onPressed:
-                _exceeds ? null : () => Navigator.of(context).pop(_value),
+            onPressed: _exceeds
+                ? null
+                : () => Navigator.of(context).pop(_value),
             child: const Text('Valider'),
           ),
         ],
@@ -165,8 +167,8 @@ class _SplitPaymentSheetState extends State<SplitPaymentSheet> {
                     _split.splits[index].method == PosPaymentMethod.cash
                         ? Icons.payments
                         : (_split.splits[index].method == PosPaymentMethod.card
-                            ? Icons.credit_card
-                            : Icons.phone_android),
+                              ? Icons.credit_card
+                              : Icons.phone_android),
                   ),
                   title: Text(_split.splits[index].method.label),
                   trailing: Row(
@@ -235,13 +237,10 @@ class _SplitPaymentSheetState extends State<SplitPaymentSheet> {
             OutlinedButton.icon(
               onPressed: _remaining > 0
                   ? () => setState(() {
-                        _split = _split.add(
-                          PaymentSplit(
-                              method: _method,
-                              amountMinor: _remaining,
-                            ),
-                        );
-                      })
+                      _split = _split.add(
+                        PaymentSplit(method: _method, amountMinor: _remaining),
+                      );
+                    })
                   : null,
               icon: const Icon(Icons.done_all),
               label: Text('Solder le reste (${_formatMinor(_remaining)})'),
@@ -256,8 +255,9 @@ class _SplitPaymentSheetState extends State<SplitPaymentSheet> {
                 ),
               ),
             FilledButton(
-              onPressed:
-                  covers ? () => Navigator.of(context).pop(_split) : null,
+              onPressed: covers
+                  ? () => Navigator.of(context).pop(_split)
+                  : null,
               child: const Text('Encaisser les parts'),
             ),
           ],
