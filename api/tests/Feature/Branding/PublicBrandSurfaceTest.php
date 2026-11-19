@@ -155,14 +155,16 @@ final class PublicBrandSurfaceTest extends TestCase
 
         $this->getJson('/api/v1/public/brands/chez-lea')->assertOk();
 
-        /** @var array{brand: Brand, company: Company} $cached */
         $cached = Cache::get('brand:public:slug:chez-lea');
         self::assertIsArray($cached);
 
+        $stale = $cached['brand'] ?? null;
+        self::assertInstanceOf(Brand::class, $stale);
+
         // Simule la décision prise ailleurs : l'objet caché devient suspendu
         // sans que personne n'ait purgé la clé.
-        $cached['brand']->suspended_at = now();
-        $cached['brand']->status = BrandStatus::Draft;
+        $stale->suspended_at = now();
+        $stale->status = BrandStatus::Draft;
         // Réécriture explicite : le test ne doit pas dépendre du fait que le
         // store de test garde les objets par référence.
         Cache::put('brand:public:slug:chez-lea', $cached, 60);
