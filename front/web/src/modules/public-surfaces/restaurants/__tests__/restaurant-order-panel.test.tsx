@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { apiFetch } from '@/lib/api-client';
-import RestaurantOrderPanel from '../[slug]/restaurant-order-panel';
+import RestaurantOrderPanel from '../components/RestaurantOrderPanel';
 import type { PublicMenuCategory, PublicReview } from '@/lib/restaurants-public-api';
 
 /**

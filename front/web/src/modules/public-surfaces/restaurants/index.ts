@@ -22,3 +22,13 @@ export {
 } from './domain/restaurant';
 export { RESTAURANT_SURFACE } from './identity/restaurant-identity';
 export { RestaurantSurface } from './components/RestaurantSurface';
+export { default as RestaurantExplorer } from './components/RestaurantExplorer';
+export { default as RestaurantOrderPanel } from './components/RestaurantOrderPanel';
+export { default as ShopOrderSurface } from './components/ShopOrderSurface';
+export { default as RestaurantOrderTrackingSurface } from './components/RestaurantOrderTrackingSurface';
+export {
+  dayOfWeekName,
+  establishmentTypeLabel,
+  formatRestaurantMoney,
+  formatRating,
+} from './components/restaurant-format';

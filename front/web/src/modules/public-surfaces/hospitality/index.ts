@@ -26,3 +26,5 @@ export {
 export { HOSPITALITY_SURFACE } from './identity/hospitality-identity';
 export { PropertySurface } from './components/PropertySurface';
 export { PropertyDirectorySurface } from './components/PropertyDirectorySurface';
+export { default as StayBookingPanel } from './components/StayBookingPanel';
+export { formatStayMoney, stayPropertyTypeLabel } from './components/stay-format';

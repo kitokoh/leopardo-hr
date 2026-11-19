@@ -1,7 +1,7 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { apiFetch } from '@/lib/api-client';
-import RestaurantsExplorer from '../restaurants-explorer';
+import RestaurantExplorer from '../components/RestaurantExplorer';
 import type { PublicRestaurantSummary } from '@/lib/restaurants-public-api';
 
 /**
@@ -59,7 +59,7 @@ describe('RestaurantsExplorer (RESTO-903 #7748)', () => {
 
   it('rend les cartes SSR initiales (nom, type, ville, note ★ + volume)', () => {
     render(
-      <RestaurantsExplorer
+      <RestaurantExplorer
         locale="fr"
         initialItems={items}
         initialMeta={meta}
@@ -89,7 +89,7 @@ describe('RestaurantsExplorer (RESTO-903 #7748)', () => {
     });
 
     render(
-      <RestaurantsExplorer
+      <RestaurantExplorer
         locale="fr"
         initialItems={items}
         initialMeta={meta}
@@ -125,7 +125,7 @@ describe('RestaurantsExplorer (RESTO-903 #7748)', () => {
     });
 
     render(
-      <RestaurantsExplorer
+      <RestaurantExplorer
         locale="fr"
         initialItems={items}
         initialMeta={meta}
@@ -144,7 +144,7 @@ describe('RestaurantsExplorer (RESTO-903 #7748)', () => {
 
   it('affiche un état vide propre sans résultats', () => {
     render(
-      <RestaurantsExplorer
+      <RestaurantExplorer
         locale="fr"
         initialItems={[]}
         initialMeta={{ ...meta, total: 0 }}
@@ -158,7 +158,7 @@ describe('RestaurantsExplorer (RESTO-903 #7748)', () => {
 
   it('affiche une erreur avec bouton réessayer quand le SSR a échoué', () => {
     render(
-      <RestaurantsExplorer
+      <RestaurantExplorer
         locale="fr"
         initialItems={[]}
         initialMeta={null}

@@ -9,9 +9,12 @@ import {
   getPublicStayProperty,
   type PublicStayProperty,
 } from '@/lib/hospitality-public-api';
-import { formatStayMoney, stayPropertyTypeLabel } from './format';
-import StayBookingPanel from './stay-booking-panel';
-import { HOSPITALITY_SURFACE } from '@/modules/public-surfaces';
+import {
+  HOSPITALITY_SURFACE,
+  StayBookingPanel,
+  formatStayMoney,
+  stayPropertyTypeLabel,
+} from '@/modules/public-surfaces';
 
 /**
  * HOSP-008 (#7950) — page publique SEO d'un établissement HospitalityManager
