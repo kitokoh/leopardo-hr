@@ -23,7 +23,7 @@
 
 public-surfaces                 layered   8 verticales + kernel, chacune avec un domain/ (ADR-0034)
 public-surface                  layered   module singulier BRANDING (BC-41), domain/ brand + theme
-vitrine                         flat      front vitrine professionnel : components/data/hooks/lib/types, pas de domain/
+vitrine                         layered   front vitrine professionnel : domain/ pur (regles, types, invariants) + infrastructure/ (E/S, fetch) depuis #9657
 toolbox                         flat      outils horizontaux (102 fichiers), pas de domain/
 library                         flat      bibliotheque de contenus (36 fichiers), pas de domain/
 onboarding                      flat      parcours d'inscription (12 fichiers), pas de domain/

@@ -13,6 +13,8 @@
 
 **Révision 2026-11-19 (#9652-#9654)** : la règle de couche s'étend au **front web** (`front/web/src/modules`), avec `copy/` traité comme une couche dont le domaine ne dépend jamais. Voir « Révision — élargissement au front web ».
 
+**Révision 2026-11-19 (#9657-#9659)** : `modules/vitrine` passe de `flat` à **`layered`**. La révision précédente l'avait explicitement laissé hors périmètre ; cette exclusion est levée. Voir « Révision — `vitrine` passe en `layered` ».
+
 ---
 
 ## Contexte
@@ -239,14 +241,14 @@ Le pont est explicite : `copy/seat-labels.ts` assemble les libellés de `retail-
 |---|---|---|
 | `public-surfaces` | `layered` | 8 verticales + `kernel`, 26 fichiers de domaine |
 | `public-surface` | `layered` | module singulier BRANDING (BC-41), `domain/` brand + theme |
-| `vitrine` | `flat` | front vitrine professionnel — **hors périmètre de refonte**, état déclaré |
+| `vitrine` | `layered` | front vitrine professionnel — `domain/` pur + `infrastructure/` depuis #9657 |
 | `toolbox` | `flat` | outils horizontaux (102 fichiers) |
 | `library` | `flat` | bibliothèque de contenus (36 fichiers) |
 | `onboarding` | `flat` | parcours d'inscription (12 fichiers) |
 | `marketing` | `flat` | pages marketing (10 fichiers) |
 | `assistant` | `flat` | assistant conversationnel (9 fichiers) |
 
-`vitrine` est déclaré `flat` et **n'est pas refondu** : c'est le front commercial destiné aux professionnels et à leurs entreprises, explicitement hors périmètre. Le registre le rend visible sans imposer un chantier qui n'a pas été décidé.
+`vitrine` est passé `layered` en #9657 : la révision précédente l'avait laissé `flat` en le déclarant hors périmètre, cette exclusion est levée (voir la révision suivante).
 
 ### Décision 4 — deux violations réelles, dont une que l'audit par imports n'avait pas vue
 
@@ -261,6 +263,67 @@ C'est l'argument le plus fort pour une garde exécutable plutôt qu'une revue : 
 - `modules/vitrine` et `/business/*` ne sont **pas** refondus : seul leur état est déclaré.
 - Le front Super admin et les consoles du dashboard tenant restent hors périmètre.
 - Aucun module `flat` n'est converti : la dette est déclarée, pas résorbée.
+
+---
+
+## Révision — `vitrine` passe en `layered` (#9657-#9659)
+
+### Ce que la révision précédente disait
+
+`modules/vitrine` était déclaré `flat` et explicitement **hors périmètre de refonte** : « c'est le front commercial destiné aux professionnels et à leurs entreprises ». Le registre le rendait visible sans imposer un chantier non décidé.
+
+Cette exclusion est **levée**. Le module est découpé et reclassé `layered`.
+
+### Constat mesuré (main @ 05187853a)
+
+Le module (192 fichiers) n'avait **aucun** `domain/`. Sa logique métier pure était dispersée dans `lib/` et `data/`, mêlée à des fichiers qui font de l'E/S :
+
+| Fichier d'origine | Nature réelle | Destination |
+|---|---|---|
+| `lib/trade-intent.ts` | pur — allowlists, normalisation fail-closed, clé d'idempotence | `domain/` |
+| `lib/pack-signup.ts` | pur — slugs de packs, mapping slug → code catalogue | `domain/` |
+| `lib/locale-href.ts` | pur — préservation de `?lang=` dans les hrefs | `domain/` |
+| `lib/antispam-fields.ts` | pur — constantes anti-bot partagées serveur/client | `domain/` |
+| `lib/image-props.ts` | pur — décision `unoptimized` pour les SVG locaux | `domain/` |
+| `data/currency.ts` | pur — devises, taux, conversion, formatage | `domain/` |
+| `data/vitrine-numbers.ts` | pur — chiffres canoniques dérivés | `domain/` |
+| `data/geo/map-paths.ts` | pur — tracés SVG générés | `domain/` |
+| `data/supported-countries.ts` | **mixte** — registre pur + `fetch()` | scindé |
+| `lib/consent.ts` | **E/S** — `document.cookie`, `localStorage`, `window.dispatchEvent` | scindé |
+
+### Décision 1 — le domaine est extrait, l'E/S part en infrastructure
+
+Deux fichiers portaient les deux responsabilités à la fois. Ils sont scindés, pas déplacés :
+
+**`consent`** — le domaine garde la forme du consentement (`ConsentState`, `ConsentPayload`), sa validation de version (`parseConsent` rend `null` sur une version périmée, donc re-sollicitation), les fabriques pures (`deniedConsent`, `acceptAllConsent`, `buildConsentState`) et la traduction en Consent Mode v2 (`toConsentMode`). L'E/S — lecture du cookie, `localStorage`, émission du `CustomEvent` — part dans `infrastructure/consent-storage.ts`.
+
+**`supported-countries`** — le registre canonique `SUPPORTED_COUNTRIES_FALLBACK` et la **règle** de normalisation d'une réponse (`normalizeSupportedCountries` : filtrer les pays indisponibles, ignorer un code qui n'est pas un ISO-3166 alpha-2, retomber sur le registre statique plutôt que rendre une liste vide) restent dans le domaine. Le `fetch` part dans `infrastructure/supported-countries-client.ts`.
+
+La règle de normalisation était auparavant **inaccessible au test** : elle vivait dans le corps d'une fonction `async` qui appelait `fetch`, donc la tester exigeait un mock de `fetch` — on testait le mock, pas la règle. Elle est maintenant une fonction pure.
+
+### Décision 2 — l'API publique du module est inchangée
+
+Aucun composant ne change de comportement. Les imports sont redirigés, pas réécrits : `@/modules/vitrine/lib/consent` → `@/modules/vitrine/infrastructure/consent-storage` pour l'E/S, `@/modules/vitrine/domain/consent` pour les constantes et types purs. `SignupForm` importe le type depuis le domaine et la fonction depuis l'infrastructure.
+
+### Décision 3 — la garde couvre désormais `vitrine`
+
+`vitrine` passe `layered` dans `dev-hub/tools/web-layer-registry.txt`. La garde vérifie ses **10 fichiers de domaine** (38 au total sur les 3 modules `layered`).
+
+Quatre cas négatifs ont été vérifiés en exécution réelle, chacun échoue :
+
+| Cas injecté | Résultat |
+|---|---|
+| `import React from 'react'` dans `domain/currency.ts` | `package react interdit dans domain/` |
+| `window.localStorage.getItem(...)` dans `domain/currency.ts` | `acces interdit dans domain/ : localStorage`, `window.` |
+| `import { Foo } from '../components/Foo'` | `couche /components/ importee depuis domain/` |
+| `vitrine` reclassé `flat` alors qu'il a 10 fichiers de domaine | `declare 'flat' mais 10 fichier(s) sous **/domain/ — reclasser en 'layered'` |
+
+### Ce que cette révision ne change pas
+
+- **Aucune règle métier n'est modifiée.** Le découpage déplace du code, il ne le réécrit pas : les 69 tests du domaine et de l'infrastructure passent sans qu'aucune assertion soit touchée, et les 252 tests de composants passent sans modification de comportement.
+- `/business/*` (les pages) n'est pas refondu : seuls les fichiers de logique du module sont déplacés.
+- Le front Super admin et les consoles du dashboard tenant restent hors périmètre.
+- `toolbox`, `library`, `onboarding`, `marketing`, `assistant` restent `flat` : dette déclarée, pas résorbée.
 
 ---
 
