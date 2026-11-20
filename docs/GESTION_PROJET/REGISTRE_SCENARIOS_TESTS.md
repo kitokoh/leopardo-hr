@@ -1,3 +1,21 @@
+## 2026-11-20 — Colonnes/tables inexistantes et route statique masquée (issues #9676-#9680, PR #9681)
+
+Surface : `api/routes/modules/travelagency.php`, `api/app/Modules/Recruitment/Interfaces/Api/V1/Controllers/RecruitmentController.php`, `api/app/Modules/FarmOs/Interfaces/Api/V1/Controllers/FarmDashboardController.php`, `api/app/Modules/CRM/Infrastructure/Services/CrmConsentGuard.php`, `api/app/Policies/RecruitmentPolicy.php`, `api/app/Providers/AppServiceProvider.php`. Aucune migration, aucun contrat externe modifié.
+
+**Pourquoi c'est un scénario de test** : cinq défauts de la même famille que #9669 (`termination_date`) — une requête qui référence une colonne ou une table qui n'existe pas dans le schéma réel. Le code **paraît** correct, aucun test ne l'appelait, et le défaut ne se manifeste qu'à l'exécution réelle. Méthode : schéma réel extrait de PostgreSQL (619 tables, 2 228 colonnes), scan statique de `app/` (4 405 fichiers PHP), triage des alias SQL et des `Collection::where`, puis **balayage HTTP réel des 918 routes GET** avec un jeton manager valide.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `GET /travel/tourist-sites/search` atteint bien `search()` et non `show()` avec `travelTouristSite = "search"` | la route statique était déclarée **après** `{travelTouristSite}` : Laravel la capturait et passait la chaîne `search` au route-model-binding comme un `id` bigint → **500** `SQLSTATE[22P02] invalid input syntax for type bigint: "search"` |
+| `GET /recruitment/stats` répond 200 pour un manager `rh` et calcule un délai d'embauche non nul | la Gate `recruitment.view` n'était **jamais définie** : `cannot()` renvoie toujours vrai pour une ability inconnue, donc l'endpoint répondait **403 à tout le monde** |
+| `RecruitmentController::stats()` ne référence plus `applicants.hired_at` | colonne inexistante → `SQLSTATE[42703]` dès qu'un candidat a le statut `hired` |
+| `FarmDashboardController::inputQuantity()` agrège `farm_input_lots.quantity` | `farm_inputs.quantity_on_hand` n'existe pas → `SQLSTATE[42703] column "quantity_on_hand" does not exist` sur le dashboard FarmOS |
+| `CrmConsentGuard` lit `crm_consents` (`status = 'granted' AND revoked_at IS NULL`) | la table `crm_contact_consents` et la colonne `opted_in` n'existent pas ; la garde `consentsTableExists()` testait cette même table fantôme, donc le garde retombait **toujours** sur le repli `deny` et aucun opt-in réel n'était jamais lu |
+
+**Couverture exécutée** — `CI=true php artisan test` sur `tests/Feature/Travel/TravelTouristSiteApiTest.php`, `tests/Feature/Travel/TravelTouristSiteTest.php`, `tests/Feature/RecruitmentControllerTest.php`, `tests/Feature/CRM/CrmConsentTest.php`, `tests/Feature/Modules/FarmOs/` : **138 passed, 1 failed** (360 assertions). L'unique échec (`TravelTouristSiteApiTest::test_site_can_be_created_and_searched_by_city`, alias `community/tourist-sites`) est **préexistant** : reproduit à l'identique sur `main` en stashant les changements. Chaque test de non-régression a été **vérifié en régression** : réintroduire le défaut fait passer le test au rouge avec l'erreur d'origine, puis au vert après restauration. PHPStan Strict sur les 5 fichiers modifiés : 0 erreur.
+
+**Non couvert** — suite Feature complète (1 496 fichiers, plusieurs heures en CI) : la mesure est le run CI. Les 6 autres 500 du balayage provenaient de paramètres factices (`00000000-…`), pas du code.
+
 ## 2026-11-19 — search_path : restauration garantie des actions biométrie et kiosk (issue #9574, PR #9663)
 
 Surface : `api/app/Http/Controllers/Web/BiometricAdminController.php`, `api/app/Http/Controllers/Web/KioskController.php`, `dev-hub/tools/search-path-guard-baseline.txt`. Aucune route, aucune migration, aucun contrat externe modifié.
