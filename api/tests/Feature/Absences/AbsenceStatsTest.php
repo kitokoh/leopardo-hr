@@ -7,6 +7,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Modules\Planning\Domain\Models\Schedule;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -23,10 +24,32 @@ use Tests\TestCase;
  *
  * Aucun test ne couvrait cet endpoint : les 287 tests Absences/Attendance
  * etaient verts alors que l'API repondait 500.
+ *
+ * Horloge maitrisee (`travelTo`) : toutes les dates du fichier sont relatives
+ * a l'instant fige, donc le test ne devient pas une bombe a retardement
+ * (garde #8396).
  */
 class AbsenceStatsTest extends TestCase
 {
     use RefreshTenantDatabase;
+
+    /** Instant de reference : 15 avril 2026, 10h00 UTC. */
+    private const NOW = '2026-04-15 10:00:00';
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Carbon::setTestNow(Carbon::parse(self::NOW));
+        $this->travelTo(Carbon::parse(self::NOW));
+    }
+
+    protected function tearDown(): void
+    {
+        Carbon::setTestNow();
+
+        parent::tearDown();
+    }
 
     private function makeCompany(string $slug, string $email): Company
     {
@@ -41,8 +64,8 @@ class AbsenceStatsTest extends TestCase
             'tenancy_type' => 'shared',
             'status' => 'active',
             'plan_id' => 1,
-            'subscription_start' => '2026-01-01',
-            'subscription_end' => '2027-01-01',
+            'subscription_start' => Carbon::now()->subMonths(3)->toDateString(),
+            'subscription_end' => Carbon::now()->addMonths(9)->toDateString(),
             'language' => 'fr',
             'timezone' => 'UTC',
             'currency' => 'DZD',
@@ -150,11 +173,23 @@ class AbsenceStatsTest extends TestCase
         // Employe sorti : ne doit PAS entrer dans le denominateur du taux.
         $this->makeEmployee($company, $schedule, 'departed@a.test', 'employee', 'departed');
 
-        $this->makeAbsence($company, $active1, $type, '2026-04-10', '2026-04-12', 3, 'approved', $manager);
+        $this->makeAbsence(
+            $company,
+            $active1,
+            $type,
+            Carbon::now()->startOfMonth()->toDateString(),
+            Carbon::now()->startOfMonth()->addDays(2)->toDateString(),
+            3,
+            'approved',
+            $manager
+        );
 
         Sanctum::actingAs($manager);
 
-        $response = $this->getJson('/api/v1/absences/stats?from=2026-04-01&to=2026-04-30');
+        $from = Carbon::now()->startOfMonth()->toDateString();
+        $to = Carbon::now()->endOfMonth()->toDateString();
+
+        $response = $this->getJson("/api/v1/absences/stats?from={$from}&to={$to}");
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -169,8 +204,8 @@ class AbsenceStatsTest extends TestCase
             ],
         ]);
 
-        $response->assertJsonPath('data.period.from', '2026-04-01');
-        $response->assertJsonPath('data.period.to', '2026-04-30');
+        $response->assertJsonPath('data.period.from', $from);
+        $response->assertJsonPath('data.period.to', $to);
         $response->assertJsonPath('data.total_absences', 1);
         $response->assertJsonPath('data.total_days', 3);
         $response->assertJsonPath('data.by_status.approved', 1);
@@ -202,12 +237,18 @@ class AbsenceStatsTest extends TestCase
         $employeeA = $this->makeEmployee($companyA, $scheduleA, 'employee@a.test');
         $employeeB = $this->makeEmployee($companyB, $scheduleB, 'employee@b.test');
 
-        $this->makeAbsence($companyA, $employeeA, $typeA, '2026-04-10', '2026-04-12', 3);
-        $this->makeAbsence($companyB, $employeeB, $typeB, '2026-04-10', '2026-04-12', 5);
+        $start = Carbon::now()->startOfMonth()->toDateString();
+        $end = Carbon::now()->startOfMonth()->addDays(2)->toDateString();
+
+        $this->makeAbsence($companyA, $employeeA, $typeA, $start, $end, 3);
+        $this->makeAbsence($companyB, $employeeB, $typeB, $start, $end, 5);
 
         Sanctum::actingAs($managerA);
 
-        $response = $this->getJson('/api/v1/absences/stats?from=2026-04-01&to=2026-04-30');
+        $from = Carbon::now()->startOfMonth()->toDateString();
+        $to = Carbon::now()->endOfMonth()->toDateString();
+
+        $response = $this->getJson("/api/v1/absences/stats?from={$from}&to={$to}");
 
         $response->assertStatus(200);
         // Seule l'absence du tenant A est comptee (3 jours, pas 8).
@@ -224,20 +265,40 @@ class AbsenceStatsTest extends TestCase
         $manager = $this->makeEmployee($company, $schedule, 'manager@a.test', 'manager');
         $employee = $this->makeEmployee($company, $schedule, 'employee@a.test');
 
-        $this->makeAbsence($company, $employee, $type, '2026-04-10', '2026-04-12', 3);
-        $this->makeAbsence($company, $employee, $type, '2026-05-15', '2026-05-17', 3);
+        // Une absence dans le mois courant, une dans le mois precedent.
+        $this->makeAbsence(
+            $company,
+            $employee,
+            $type,
+            Carbon::now()->startOfMonth()->toDateString(),
+            Carbon::now()->startOfMonth()->addDays(2)->toDateString(),
+            3
+        );
+        $this->makeAbsence(
+            $company,
+            $employee,
+            $type,
+            Carbon::now()->subMonthNoOverflow()->startOfMonth()->toDateString(),
+            Carbon::now()->subMonthNoOverflow()->startOfMonth()->addDays(2)->toDateString(),
+            3
+        );
 
         Sanctum::actingAs($manager);
 
-        $april = $this->getJson('/api/v1/absences/stats?from=2026-04-01&to=2026-04-30');
-        $april->assertStatus(200);
-        $april->assertJsonPath('data.total_absences', 1);
-        $april->assertJsonPath('data.period.from', '2026-04-01');
+        $currentFrom = Carbon::now()->startOfMonth()->toDateString();
+        $currentTo = Carbon::now()->endOfMonth()->toDateString();
+        $previousFrom = Carbon::now()->subMonthNoOverflow()->startOfMonth()->toDateString();
+        $previousTo = Carbon::now()->subMonthNoOverflow()->endOfMonth()->toDateString();
 
-        $may = $this->getJson('/api/v1/absences/stats?from=2026-05-01&to=2026-05-31');
-        $may->assertStatus(200);
-        $may->assertJsonPath('data.total_absences', 1);
-        $may->assertJsonPath('data.period.to', '2026-05-31');
+        $current = $this->getJson("/api/v1/absences/stats?from={$currentFrom}&to={$currentTo}");
+        $current->assertStatus(200);
+        $current->assertJsonPath('data.total_absences', 1);
+        $current->assertJsonPath('data.period.from', $currentFrom);
+
+        $previous = $this->getJson("/api/v1/absences/stats?from={$previousFrom}&to={$previousTo}");
+        $previous->assertStatus(200);
+        $previous->assertJsonPath('data.total_absences', 1);
+        $previous->assertJsonPath('data.period.to', $previousTo);
     }
 
     public function test_stats_filter_by_employee_id(): void
@@ -250,12 +311,29 @@ class AbsenceStatsTest extends TestCase
         $employee1 = $this->makeEmployee($company, $schedule, 'employee1@a.test');
         $employee2 = $this->makeEmployee($company, $schedule, 'employee2@a.test');
 
-        $this->makeAbsence($company, $employee1, $type, '2026-04-10', '2026-04-12', 3);
-        $this->makeAbsence($company, $employee2, $type, '2026-04-15', '2026-04-17', 2);
+        $this->makeAbsence(
+            $company,
+            $employee1,
+            $type,
+            Carbon::now()->startOfMonth()->toDateString(),
+            Carbon::now()->startOfMonth()->addDays(2)->toDateString(),
+            3
+        );
+        $this->makeAbsence(
+            $company,
+            $employee2,
+            $type,
+            Carbon::now()->startOfMonth()->addDays(5)->toDateString(),
+            Carbon::now()->startOfMonth()->addDays(6)->toDateString(),
+            2
+        );
 
         Sanctum::actingAs($manager);
 
-        $response = $this->getJson('/api/v1/absences/stats?from=2026-04-01&to=2026-04-30&employee_id='.$employee1->id);
+        $from = Carbon::now()->startOfMonth()->toDateString();
+        $to = Carbon::now()->endOfMonth()->toDateString();
+
+        $response = $this->getJson("/api/v1/absences/stats?from={$from}&to={$to}&employee_id={$employee1->id}");
 
         $response->assertStatus(200);
         $response->assertJsonPath('data.total_absences', 1);
