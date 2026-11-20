@@ -3043,3 +3043,21 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 
 **Non couvert** — aucun test Feature des immobilisations n'a été exécuté dans le sandbox (pas de `vendor/` ni de base peuplée) : les scénarios ci-dessus sont **à vérifier**, pas déclarés tenus. `DepreciationService` et `DepreciationTest` restent à valider par la CI.
 
+
+## 2026-11-20 — Cockpit admin : réponse API partielle + captures des 4 fronts (#9650, #9651)
+
+**Pourquoi** — le cockpit admin lisait la réponse d'agrégats comme si elle était toujours complète : une charge partielle (module désactivé, agrégat indisponible) faisait lever le rendu et vidait l'écran entier, alors que seules les tuiles concernées étaient concernées. Et `scripts/capture_screenshots.py` visait des routes et des ports morts, donc les captures publiées ne correspondaient plus à aucun écran réel.
+
+**Ce qui est ajouté**
+
+- `front/admin-dashboard/src/views/DashboardView.vue` — normalisation de la charge : chaque agrégat absent retombe sur une valeur vide sûre, le cockpit rend les tuiles disponibles.
+- `front/admin-dashboard/src/components/dashboard/StatsCard.vue` — la carte accepte une valeur absente sans lever (`—` plutôt qu'un `undefined` rendu).
+- `scripts/capture_screenshots.py` — ports et routes réels, patterns d'authentification e2e, mocks API, contexte anonyme pour les écrans de connexion, sortie `front/web/public/screenshots/`.
+- 32 captures PNG (web, admin, web-offline, kiosk).
+
+**Scénarios à vérifier**
+
+- **Agrégats complets** — le cockpit affiche toutes les tuiles quand l'API répond la charge nominale.
+- **Agrégat partiel** — une clé absente n'empêche pas le rendu des autres tuiles et n'affiche pas `undefined`.
+- **Réponse vide** — un `{}` rend un cockpit vide mais stable (aucune exception de rendu).
+- **Captures** — chaque PNG produit correspond à une route servie par le front visé.
