@@ -136,12 +136,10 @@ class BiometricAdminController extends Controller
      */
     private static function tenantSearchPath(?Company $company): string
     {
-        if ($company instanceof Company
-            && $company->tenancy_type === 'schema'
-            && $company->schema_name) {
-            return $company->getSafeSearchPath();
-        }
-
-        return 'shared_tenants,public';
+        // ADR-0028 : le mode « un schema par tenant » est mort. `getSafeSearchPath()`
+        // valide deja le schema declare et rend `"shared_tenants",public` sinon.
+        return $company instanceof Company
+            ? $company->getSafeSearchPath()
+            : 'shared_tenants,public';
     }
 }
