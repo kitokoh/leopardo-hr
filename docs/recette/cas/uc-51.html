@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UC-51 — Restauration — KDS et cycle de commande — Portail de recette Leopardo</title>
+<link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body data-notes-url="../notes-humaines.json">
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">L</span>
+      <span class="brand-text">Portail de recette <small>leopardo-hr</small></span>
+    </a>
+    <nav class="mainnav">
+      <a href="../index.html">Accueil</a>
+      <a href="../profils/index.html">Profils</a>
+      <a href="../modules/index.html">Modules</a>
+      <a href="../recap.html">Récapitulatif</a>
+      <a href="../tests-ia-leopardo-hr.md">Markdown</a>
+      <a href="../prompt-agent-testeur.md">Prompt IA</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <h1 class="page-title">UC-51 — Restauration — KDS et cycle de commande</h1>
+  <p class="page-sub">Fiche de résultats du cas d&#x27;usage.</p>
+  
+<nav class="breadcrumb"><a href="../index.html">Portail</a> <span class="sep">›</span> <a href="../profils/index.html">Profils</a> <span class="sep">›</span> <a href="../profils/restaurateur.html">Restaurant</a> <span class="sep">›</span> <span aria-current="page">UC-51</span></nav>
+<div class="uc-head">
+  <div class="uc-id">UC-51</div>
+  <div class="uc-head-main">
+    <h2 class="uc-title">Restauration — KDS et cycle de commande</h2>
+    <div class="chips">
+      <span class="badge" style="background:#b453091a;color:#b45309;border-color:#b4530933">Résilience</span>
+      <span class="badge badge-todo">◻ à exécuter</span>
+      <span class="chip">Profil : <a href="../profils/restaurateur.html">Restaurant</a></span>
+      <span class="chip">Module : <a href="../modules/restaurant.html">Restauration &amp; POS</a></span>
+      <span class="chip hist-count" data-hist-count="UC-51">0 modifications</span>
+    </div>
+  </div>
+</div>
+
+<div class="uc-grid">
+  <section class="panel">
+    <h3>Description / préconditions</h3>
+    <p>Vérifier l&#x27;affichage des commandes au KDS et le passage hors-ligne sans perte.</p>
+    <p class="muted"><strong>Prérequis :</strong> KDS accessible ; POS connecté ; coupure réseau simulable.</p>
+  </section>
+  <section class="panel">
+    <h3>Résultat attendu</h3>
+    <p>Le KDS reflète l&#x27;état réel, la commande hors-ligne est mise en file puis synchronisée une seule fois.</p>
+  </section>
+</div>
+
+<section class="panel">
+  <h3>Étapes de test</h3>
+  <ol class="steps"><li>Envoyer une commande depuis le POS.</li><li>Vérifier son apparition au KDS avec son heure.</li><li>Marquer un plat comme prêt puis la commande comme servie.</li><li>Couper le réseau et envoyer une commande : vérifier la mise en file.</li><li>Rétablir le réseau et vérifier la synchronisation sans doublon.</li></ol>
+</section>
+
+<section class="panel">
+  <h3>Fiche de résultats</h3>
+  <div class="table-wrap">
+    <table class="result-table">
+      <thead>
+        <tr>
+          <th class="col-note">Note IA (/5)</th>
+          <th>Observation IA</th>
+          <th class="col-note">Note humaine (/5)</th>
+          <th>Observation humaine</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="center"><span class="note note-empty">—</span></td>
+          <td class="obs"><span class="muted">Non exécuté — à réaliser par le testeur IA.</span></td>
+          <td class="center human-cell" data-human-note="UC-51"><span class="muted">—</span></td>
+          <td class="human-cell" data-human-obs="UC-51"><span class="muted">Non renseignée — éditable ci-dessous.</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel hist-panel" data-hist-panel="UC-51">
+  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="UC-51">0</span></h3>
+  <p class="muted small">Toutes les saisies de notation humaine de ce cas, de la plus récente à la plus ancienne.
+  Chaque enregistrement depuis le portail ajoute une entrée horodatée (UTC).</p>
+  <div class="hist-body" data-hist-body="UC-51">
+    <p class="hist-empty muted">Aucune modification enregistrée pour ce cas.
+    La première note saisie ci-dessous créera la première entrée d'historique.</p>
+  </div>
+</section>
+
+<section class="panel eval-panel" data-uc="UC-51"
+         data-repo="Kitokoh/leopardo-hr" data-branch="main"
+         data-path="docs/recette/notes-humaines.json" data-notes-url="../notes-humaines.json">
+  <h3>Votre évaluation humaine</h3>
+  <p class="muted">Les notes saisies ici sont <strong>enregistrées dans le dépôt</strong>
+  (<code>docs/recette/notes-humaines.json</code>) via l'API GitHub : elles sont donc versionnées et visibles par tous.
+  Un jeton personnel GitHub est requis ; il reste stocké <strong>uniquement dans votre navigateur</strong>.</p>
+
+  <details class="token-box">
+    <summary>Configurer mon jeton GitHub</summary>
+    <div class="token-body">
+      <p class="muted small">Créez un token sur
+        <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">github.com/settings/tokens</a>
+        avec le scope <code>repo</code> (token classique) ou la permission
+        <code>Contents: Read and write</code> (token fin). Il n'est envoyé qu'à
+        <code>api.github.com</code> et n'est jamais écrit dans le dépôt.</p>
+      <label>Jeton GitHub
+        <input type="password" class="gh-token" autocomplete="off" spellcheck="false"
+               placeholder="ghp_… ou github_pat_…">
+      </label>
+      <label>Votre nom (affiché comme auteur)
+        <input type="text" class="gh-author" autocomplete="off" placeholder="ex. Amina T.">
+      </label>
+      <div class="eval-actions">
+        <button class="btn btn-primary token-save" type="button">Enregistrer le jeton</button>
+        <button class="btn btn-ghost token-clear" type="button">Effacer le jeton</button>
+        <span class="token-status muted"></span>
+      </div>
+    </div>
+  </details>
+
+  <div class="eval-form">
+    <label>Note humaine (/5)
+      <select class="eval-note">
+        <option value="">—</option>
+        <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+      </select>
+    </label>
+    <label class="eval-obs-label">Observation humaine
+      <textarea class="eval-obs" rows="3" placeholder="Décrivez factuellement ce que vous avez observé…"></textarea>
+    </label>
+    <div class="eval-actions">
+      <button class="btn btn-primary eval-save" type="button">Enregistrer dans le dépôt</button>
+      <a class="btn btn-ghost" href="https://github.com/Kitokoh/leopardo-hr/edit/main/docs/recette/notes-humaines.json" target="_blank" rel="noopener">Éditer sur GitHub</a>
+      <span class="eval-status muted"></span>
+    </div>
+    <p class="eval-meta muted small"></p>
+  </div>
+</section>
+
+<p class="uc-nav">
+  <a class="btn-back" href="../index.html">← Portail</a>
+  <a class="btn-back" href="../profils/restaurateur.html">← Profil Restaurant</a>
+  <a class="btn-back" href="../modules/restaurant.html">← Module Restauration &amp; POS</a>
+</p>
+
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <p>Portail de recette <strong>leopardo-hr</strong> — dépôt
+      <a href="https://github.com/Kitokoh/leopardo-hr" target="_blank" rel="noopener">Kitokoh/leopardo-hr</a>.
+      Colonnes « Note IA » / « Observation IA » remplies par le testeur IA ;
+      colonnes « Note humaine » / « Observation humaine » réservées à l'évaluation humaine.</p>
+  </div>
+</footer>
+<script src="../assets/portal.js"></script>
+</body>
+</html>

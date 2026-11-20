@@ -275,7 +275,7 @@ USE_CASES = [
          note_ia="4",
          obs_ia="Environnement local : `GET /health` → **200** (`status:\"ok\"`) ; `/health/live` → **200** ; `/health/ready` → **200** avec matrice `checks` (database ok, redis ok/skipped, queue ok/sync, mail ok/array, `failed_checks:[]`). `GET /demo-users` → **404** (mode démo désactivé par défaut, conforme au durcissement documenté). La documentation `/docs` (Scramble) et la comparaison de version avec le commit attendu n'ont pas été vérifiées localement."),
     dict(id="UC-14", title="Solution verticale « Agence de voyage » (boutique publique)",
-         profiles=["manager-principal"], modules=["travel"], type="Sécurité", status="exécuté",
+         profiles=["manager-principal", "agence-voyage"], modules=["travel"], type="Sécurité", status="exécuté",
          desc="Vérifier l'activation d'un pack sectoriel et son parcours public de réservation.",
          pre="Tenant avec la solution TravelAgency activée ; endpoints `/api/v1/public/travel/shop/*`.",
          steps=["Appeler `GET /api/v1/public/travel/shop/trips` et vérifier la liste.",
@@ -421,6 +421,33 @@ USE_CASES = [
          expected="La bibliothèque s'affiche correctement, la navigation est fluide, le cache public fonctionne, aucune donnée interne n'est exposée.",
          note_ia="", obs_ia=""),
 ]
+
+# ---------------------------------------------------------------------------
+# EXTENSION — couverture de TOUS les projets du monorepo
+# ---------------------------------------------------------------------------
+# `taxonomy_extension.py` ajoute les profils, modules et cas d'usage des projets
+# qui ne relevaient pas du socle RH & paie (comptabilité, recrutement, verticales
+# sectorielles, applications mobiles, surfaces publiques, API, Edge…).
+# La fusion est purement additive : aucun cas historique n'est modifié, ce qui
+# permet de rejouer la recette existante sans régression.
+
+try:  # le module vit à côté du script ; l'import reste optionnel
+    from taxonomy_extension import (  # type: ignore
+        MODULES_EXT, PROFILES_EXT, USE_CASES_EXT,
+    )
+except ImportError:  # pragma: no cover - repli si l'extension est absente
+    PROFILES_EXT, MODULES_EXT, USE_CASES_EXT = [], [], []
+
+
+def _merge(base: list, extra: list, key: str) -> list:
+    """Fusionne deux taxonomies en conservant l'ordre et sans doublon d'identifiant."""
+    seen = {item[key] for item in base}
+    return base + [item for item in extra if item[key] not in seen]
+
+
+PROFILES = _merge(PROFILES, PROFILES_EXT, "slug")
+MODULES = _merge(MODULES, MODULES_EXT, "slug")
+USE_CASES = _merge(USE_CASES, USE_CASES_EXT, "id")
 
 # ---------------------------------------------------------------------------
 # HELPERS
@@ -938,7 +965,7 @@ def page_uc(uc: dict) -> str:
     <p class="hist-empty muted">Aucune modification enregistrée pour ce cas.
     La première note saisie ci-dessous créera la première entrée d'historique.</p>"""
     body = f"""
-{breadcrumb(1, [("Profils", "profils/index.html"), (profs[0]['name'], f"../profils/{profs[0]['slug']}.html"), (uc['id'], None)])}
+{breadcrumb(1, [("Profils", "../profils/index.html"), (profs[0]['name'], f"../profils/{profs[0]['slug']}.html"), (uc['id'], None)])}
 <div class="uc-head">
   <div class="uc-id">{esc(uc['id'])}</div>
   <div class="uc-head-main">
