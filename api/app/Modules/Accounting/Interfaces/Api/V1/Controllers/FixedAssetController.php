@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Accounting\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Accounting\Domain\Models\AccountingDepreciation;
 use App\Modules\Accounting\Domain\Models\AccountingFixedAsset;
@@ -54,6 +55,9 @@ class FixedAssetController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        /** @var Employee|null $actor */
+        $actor = $request->user();
+
         $validated = $request->validate([
             // #9668 : la contrainte reelle est `unique(company_id, code)`. Sans
             // regle de validation, un doublon levait un SQLSTATE 23505, donc un
@@ -63,7 +67,7 @@ class FixedAssetController extends Controller
                 'string',
                 'max:40',
                 Rule::unique('accounting_fixed_assets', 'code')
-                    ->where('company_id', $request->user()?->company_id),
+                    ->where('company_id', $actor?->company_id),
             ],
             'label' => ['required', 'string', 'max:180'],
             'in_service_date' => ['required', 'date'],

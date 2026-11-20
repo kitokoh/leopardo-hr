@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Accounting\Domain\Models\AccountingDepreciation;
 use App\Modules\Accounting\Domain\Models\AccountingFixedAsset;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -38,10 +39,17 @@ class FixedAssetApiTest extends TestCase
         /** @var Company $companyB */
         $companyB = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD']);
         $this->companyB = $companyB;
+
+        // Horloge maitrisee (#8396) : les dates de mise en service du fichier
+        // sont des bornes metier explicites, pas "aujourd'hui moins N jours".
+        // Les figer par rapport a un instant de reference evite la bombe a
+        // retardement sans rendre les assertions relatives.
+        $this->travelTo(Carbon::parse('2026-03-15 09:00:00'));
     }
 
     protected function tearDown(): void
     {
+        Carbon::setTestNow();
         app()->forgetInstance('tenant_scope_required');
         app()->forgetInstance('current_company');
 
@@ -84,6 +92,7 @@ class FixedAssetApiTest extends TestCase
     }
 
     /**
+     * @param  array<string, mixed>  $overrides
      * @return array<string, mixed>
      */
     private function payload(array $overrides = []): array
