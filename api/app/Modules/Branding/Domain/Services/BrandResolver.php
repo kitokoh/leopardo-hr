@@ -153,10 +153,18 @@ final class BrandResolver
      * Une entrée de cache est-elle encore servable ?
      *
      * Le cache mémorise une résolution RÉUSSIE, donc un couple (Brand, tenant)
-     * dont l'un comme l'autre peut avoir changé depuis : la Brand peut avoir été
-     * suspendue, la société peut avoir été suspendue ou expirée. Une résolution
-     * mise en cache n'est pas une autorisation ; elle doit être revalidée à
-     * chaque lecture.
+     * dont l'un comme l'autre a pu n'être pas servable au moment où l'entrée a
+     * été écrite (copie prise avant publication, worker concurrent, rejeu). Une
+     * résolution mise en cache n'est pas une autorisation : on revalide
+     * l'INSTANTANÉ à chaque lecture et on jette l'entrée qui ne passe pas.
+     *
+     * ## Ce que cette revalidation ne peut pas voir
+     *
+     * Elle ne lit pas la base : elle contrôle l'instantané déjà en cache. Une
+     * modification faite *uniquement* en base (suspension SQL, modération hors
+     * application, écriture d'un autre worker) reste donc invisible ici. La
+     * fraîcheur n'est bornée que par la purge explicite (`publish`, `suspend`,
+     * `update`) ou par le TTL de `BrandCache` (60 s).
      *
      * Les deux contrôles sont en mémoire (statut de la Brand, statut de la
      * société) : ils ne coûtent aucune requête dans le cas nominal.
