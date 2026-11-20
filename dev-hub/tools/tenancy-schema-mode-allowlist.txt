@@ -11,8 +11,6 @@
 api/app/Core/Tenant/Domain/Models/Company.php:            if ($company->tenancy_type === 'schema') {
 api/app/Core/Tenant/Domain/Models/Company.php:            if ((string) $this->tenancy_type === 'schema') {
 api/app/Core/Tenant/Domain/Models/Company.php:     *   - `tenancy_type = 'schema'` sans `schema_name` -> exception (etat
-api/app/Http/Controllers/Web/BiometricAdminController.php:        if ($company->tenancy_type === 'schema' && $company->schema_name) {
-api/app/Http/Controllers/Web/KioskController.php:        if ($company->tenancy_type === 'schema' && $company->schema_name) {
 api/app/Modules/Attendance/Interfaces/Api/V1/Controllers/KioskController.php:            && $company->tenancy_type === 'schema'
 api/app/Modules/HR/Interfaces/Api/V1/Requests/StoreEmployeeRequest.php:        if ($company->tenancy_type === 'schema' && $schemaName !== '') {
 api/app/Modules/HR/Interfaces/Api/V1/Requests/UpdateEmployeeRequest.php:        if ($company->tenancy_type === 'schema' && $schemaName !== '') {

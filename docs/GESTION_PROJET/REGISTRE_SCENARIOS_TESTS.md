@@ -1,3 +1,20 @@
+## 2026-11-19 — search_path : restauration garantie des actions biométrie et kiosk (issue #9574, PR #9663)
+
+Surface : `api/app/Http/Controllers/Web/BiometricAdminController.php`, `api/app/Http/Controllers/Web/KioskController.php`, `dev-hub/tools/search-path-guard-baseline.txt`. Aucune route, aucune migration, aucun contrat externe modifié.
+
+**Pourquoi c'est un scénario de test** : les deux contrôleurs posaient `SET search_path TO …` sans jamais restaurer l'état d'entrée de la connexion. Le défaut est invisible en test isolé — chaque requête a l'air correcte — et ne se manifeste que sur une connexion **réutilisée** (PHP-FPM, worker de file, suite qui enchaîne les classes) : la session reste sur le schéma du tenant, la requête suivante cherche une table dans le mauvais schéma (`42P01`) et toute instruction suivante de la transaction échoue en `25P02`.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| deux actions biométrie enchaînées sur la même connexion (index puis approve) → les deux lisent le schéma attendu | la seconde peut hériter du `search_path` de la première ; en production l'ordre des requêtes n'est pas choisi |
+| la page kiosk puis le pointage (`show` → `punch`) laissent la session sur `shared_tenants,public` après la réponse | un punch ultérieur sur la même connexion cherche `attendance_kiosks` dans le mauvais schéma : `42P01`, puis `25P02` en cascade |
+| une exception ou un `abort(403)` au milieu de l'action (session kiosk absente) restaure quand même le `search_path` | sans `finally`, le chemin d'erreur — le plus fréquent en test — laissait la connexion polluée |
+| une nouvelle occurrence de `DB::statement('SET search_path …')` nue fait échouer `check-search-path-guard.py` | c'est le mécanisme de régression : la dette est un ratchet (26 → 18), jamais un ajout |
+
+**Couverture exécutée** — `python dev-hub/tools/check-search-path-guard.py` PASS (dette figée à 18), `php -l` PASS sur les deux contrôleurs, `phpstan`/`pint` PASS en CI.
+
+**Non couvert** — aucun test Feature exécuté en local (pas de PostgreSQL) : les scénarios ci-dessus sont mesurés par les suites kiosk/biométrie existantes dans le job Backend.
+
 ## 2026-11-19 — Palette Emploi : parité COULEURS.md ↔ Flutter ↔ Tailwind (issue #9636, PR #9639)
 
 Surface : `front/mobile_apps/leopardo_core/lib/core/theme/app_colors.dart` (5 constantes ajoutées), `docs/REFERENTIEL_PRODUIT/COULEURS.md` (section Emploi, #9629). Aucune route, aucun contrôleur, aucune migration.
