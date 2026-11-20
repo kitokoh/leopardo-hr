@@ -55,7 +55,16 @@ class FixedAssetController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'code' => ['required', 'string', 'max:40'],
+            // #9668 : la contrainte reelle est `unique(company_id, code)`. Sans
+            // regle de validation, un doublon levait un SQLSTATE 23505, donc un
+            // 500, au lieu d'un 422 explicite.
+            'code' => [
+                'required',
+                'string',
+                'max:40',
+                Rule::unique('accounting_fixed_assets', 'code')
+                    ->where('company_id', $request->user()?->company_id),
+            ],
             'label' => ['required', 'string', 'max:180'],
             'in_service_date' => ['required', 'date'],
             'acquisition_cost' => ['required', 'numeric', 'min:0'],
