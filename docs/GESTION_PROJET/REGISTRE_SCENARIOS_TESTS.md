@@ -2836,6 +2836,8 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 **Couverture exécutée** — `pint --test` PASS sur les 2 fichiers du lot (contrôleur + routes) après correction de 2 défauts de style (`no_trailing_whitespace`, `unary_operator_spaces`, `braces_position`, `not_operator_with_successor_space`, `single_line_empty_body` sur le contrôleur ; `no_whitespace_in_blank_line` sur les routes).
 
 **Non couvert** — aucun test PHPUnit exécuté pour ce lot : la suite Feature dépasse la RAM du sandbox (2 Go, OOM signal 9). Les scénarios ci-dessus sont donc **à écrire**, pas encore écrits ; la CI `Tests - Leopardo` reste le seul verdict d'exécution.
+
+**Mise à jour 2026-11-20** — les scénarios sont désormais écrits dans `api/tests/Feature/Absences/AbsenceStatsTest` : agrégat de la période (total, jours, `by_status`, `by_type`, `top_employees`, `period`), absences hors période ignorées, filtre employé restreint, non-manager 403, appel non authentifié 401. Le scénario « `employee_id` inexistant → 422 » a révélé un écart réel : la validation utilisait `exists:employees,id` **sans borne**, donc l'identifiant d'un employé d'un autre tenant répondait 200 avec des statistiques vides — un oracle d'énumération. La règle borne maintenant sur `company_id` de l'acteur, comme `AbsenceIndexRequest`, et le test mesure les deux refus (autre tenant et identifiant inconnu) en 422.
 ## 2026-11-17 — BC-05 FLEET : statistiques consolidees de flotte (#9542, PR #9561)
 
 **Surface** : `GET /v1/fleet/stats` (`FleetController::stats`), declaree dans `routes/modules/tracking.php` sous le groupe `fleet`, documentee dans `api/openapi.yaml`. Aucune migration.

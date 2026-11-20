@@ -21,6 +21,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AbsenceController extends Controller
@@ -256,10 +257,20 @@ class AbsenceController extends Controller
 
         abort_unless($actor->isManager(), 403);
 
+        // #9538 : `exists:employees,id` sans borne acceptait l'identifiant d'un
+        // employe d'un AUTRE tenant (200 + statistiques vides) et distinguait
+        // donc cet identifiant d'un identifiant inexistant (422) — un oracle
+        // d'enumeration. La borne est celle de `AbsenceIndexRequest` :
+        // l'employe doit appartenir a la societe de l'acteur.
         $validated = $request->validate([
             'from' => ['nullable', 'date_format:Y-m-d'],
             'to' => ['nullable', 'date_format:Y-m-d'],
-            'employee_id' => ['nullable', 'integer', 'exists:employees,id'],
+            'employee_id' => [
+                'nullable',
+                'integer',
+                'min:1',
+                Rule::exists('employees', 'id')->where('company_id', $actor->company_id),
+            ],
         ]);
 
         $from = $validated['from'] ?? Carbon::now()->startOfMonth()->toDateString();
