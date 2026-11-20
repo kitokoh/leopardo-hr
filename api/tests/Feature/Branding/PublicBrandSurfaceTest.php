@@ -96,8 +96,9 @@ final class PublicBrandSurfaceTest extends TestCase
         $company = $this->company();
         $this->publish($this->brand($company));
 
-        $response = $this->withServerVariables(['HTTP_HOST' => 'chez-lea.sn'])
-            ->getJson('/api/v1/public/brands/by-host');
+        // URL absolue : c'est elle qui porte l'en-tête `Host` lu par le
+        // contrôleur (`$request->getHost()`), pas un en-tête HTTP arbitraire.
+        $response = $this->getJson('http://chez-lea.sn/api/v1/public/brands/by-host');
 
         $response->assertOk();
         $response->assertJsonPath('data.slug', 'chez-lea');
@@ -110,8 +111,7 @@ final class PublicBrandSurfaceTest extends TestCase
 
     public function test_an_unknown_host_is_a_404(): void
     {
-        $this->withServerVariables(['HTTP_HOST' => 'inconnu.example'])
-            ->getJson('/api/v1/public/brands/by-host')
+        $this->getJson('http://inconnu.example/api/v1/public/brands/by-host')
             ->assertNotFound();
     }
 
@@ -158,19 +158,20 @@ final class PublicBrandSurfaceTest extends TestCase
 
         $this->getJson('/api/v1/public/brands/chez-lea')->assertOk();
 
-        $cached = Cache::get('brand:public:slug:chez-lea');
-        self::assertIsArray($cached);
+        self::assertIsArray(Cache::get('brand:public:slug:chez-lea'));
 
-        $stale = $cached['brand'] ?? null;
-        self::assertInstanceOf(Brand::class, $stale);
-
-        // Simule la décision prise ailleurs : l'objet caché devient suspendu
-        // sans que personne n'ait purgé la clé.
-        $stale->suspended_at = now();
-        $stale->status = BrandStatus::Draft;
-        // Réécriture explicite : le test ne doit pas dépendre du fait que le
-        // store de test garde les objets par référence.
-        Cache::put('brand:public:slug:chez-lea', $cached, 60);
+        // Modération directe en base : elle ne passe par aucune action, donc
+        // par aucune purge de cache. C'est exactement le cas que la
+        // revalidation doit couvrir — sans elle, la décision attendrait
+        // l'expiration du TTL et la Brand resterait servie.
+        app(TenantManager::class)->withinTenant($company, function (): void {
+            Brand::query()->where('slug', 'chez-lea')->update([
+                'status' => BrandStatus::Draft->value,
+                'published_at' => null,
+                'suspended_at' => now(),
+                'suspension_reason' => 'fraud',
+            ]);
+        });
 
         $this->getJson('/api/v1/public/brands/chez-lea')->assertNotFound();
 
