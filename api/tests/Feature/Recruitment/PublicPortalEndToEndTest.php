@@ -188,9 +188,17 @@ class PublicPortalEndToEndTest extends TestCase
         $this->postJson("/api/v1/recruitment/jobs/{$job->id}/close")->assertOk();
 
         // L'offre disparaît du portail public…
-        $this->getJson("/api/v1/public/careers/{$company->slug}")
-            ->assertOk()
-            ->assertJsonCount(0, 'data');
+        //
+        // `data` mélange les offres du tenant et le **catalogue plateforme** du
+        // pays (`externalOffers`) : un `assertJsonCount(0)` global dépendait du
+        // contenu laissé par les autres tests, donc la classe passait ou
+        // échouait selon l'ordre d'exécution. Ce qui doit être vrai est plus
+        // précis : plus aucune offre du tenant n'est publiée, et cette offre-là
+        // n'apparaît plus dans la charge.
+        $listing = $this->getJson("/api/v1/public/careers/{$company->slug}");
+        $listing->assertOk();
+        $listing->assertJsonPath('meta.counts.company', 0);
+        $listing->assertJsonMissing(['id' => $job->id]);
 
         // …mais la candidature reste consultable par le recruteur.
         $this->getJson("/api/v1/recruitment/jobs/{$job->id}/applicants")
