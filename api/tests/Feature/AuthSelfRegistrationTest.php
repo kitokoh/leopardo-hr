@@ -14,6 +14,17 @@ class AuthSelfRegistrationTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    /**
+     * Mot de passe conforme a `PasswordPolicy::required()` (min 12 + chiffres)
+     * ET absent de la blocklist `NotCommonPassword` (#9672).
+     *
+     * L'ancienne valeur `password123456` etait rejetee : la regle retire le
+     * suffixe numerique et retrouve la racine `password`, presente dans la
+     * blocklist. Les tests passaient donc pour la mauvaise raison (ou pas du
+     * tout).
+     */
+    private const VALID_PASSWORD = 'Tr0ub4dor&3xq';
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -84,8 +95,8 @@ class AuthSelfRegistrationTest extends TestCase
             'first_name' => 'John',
             'last_name' => 'Doe',
             'email' => 'john.doe@example.com',
-            'password' => 'password123456',
-            'password_confirmation' => 'password123456',
+            'password' => self::VALID_PASSWORD,
+            'password_confirmation' => self::VALID_PASSWORD,
             'invitation_token' => 'missing-token',
         ])->assertStatus(422)
             ->assertJsonPath('error', 'REGISTRATION_NOT_AVAILABLE');
@@ -101,8 +112,8 @@ class AuthSelfRegistrationTest extends TestCase
             'first_name' => 'John',
             'last_name' => 'Doe',
             'email' => 'john.doe@example.com',
-            'password' => 'password123456',
-            'password_confirmation' => 'password123456',
+            'password' => self::VALID_PASSWORD,
+            'password_confirmation' => self::VALID_PASSWORD,
             'invitation_token' => $token,
         ]);
 
