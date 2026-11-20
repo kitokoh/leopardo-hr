@@ -105,6 +105,38 @@ if (! function_exists('schemaHasColumn')) {
     }
 }
 
+if (! function_exists('createIndexIfNotExists')) {
+    /**
+     * Création d'index idempotente et compatible tests (issue #9671).
+     *
+     * `CREATE INDEX CONCURRENTLY` ne peut pas s'exécuter dans une transaction.
+     * Sous `RefreshDatabase` (et plus généralement en environnement de test),
+     * Laravel enveloppe les migrations dans une transaction : l'index
+     * concurrent reste alors bloqué sur un verrou `virtualxid` et le run de
+     * tests pend indéfiniment. En test on retombe donc sur un `CREATE INDEX`
+     * classique ; en production on conserve `CONCURRENTLY` pour ne pas verrouiller
+     * la table pendant la construction de l'index.
+     *
+     * @param  string  $name     Nom de l'index (identifiant SQL, non échappé)
+     * @param  string  $table    Table cible (identifiant SQL, non échappé)
+     * @param  string  $columns  Définition des colonnes, ex. "(company_id, status)"
+     */
+    function createIndexIfNotExists(string $name, string $table, string $columns): void
+    {
+        if (schemaHasIndex($table, $name)) {
+            return;
+        }
+
+        $concurrently = app()->runningUnitTests() || app()->environment('testing')
+            ? ''
+            : 'CONCURRENTLY ';
+
+        \Illuminate\Support\Facades\DB::statement(
+            "CREATE INDEX {$concurrently}IF NOT EXISTS {$name} ON {$table} {$columns}"
+        );
+    }
+}
+
 if (! function_exists('schemaHasIndex')) {
     /**
      * Garde d'existence d'un index (résolue via le search_path, même convention

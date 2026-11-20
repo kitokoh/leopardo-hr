@@ -8,6 +8,12 @@ Guide pour les nouveaux contributeurs. Pour les regles agent/CI, voir `AGENTS.md
 - **Node.js** >= 20 (pour le dashboard admin et la vitrine Next.js)
 - **PHP** >= 8.4.1 + Composer >= 2.6 (pour le backend Laravel — le lock Composer contient des composants Symfony 8.x qui exigent PHP 8.4.1+, cf. issue #3819)
 - **Flutter** >= 3.22 (pour l'application mobile)
+- **PostGIS** (obligatoire pour le backend) — la migration `enable_postgis_extension`
+  active l'extension `postgis` : colonnes `geography(Point, 4326)`, index GIST et
+  fonctions `ST_*` du core geospatial. Une image `postgres:16` nue **ne la fournit
+  pas** et la migration echoue. Utilisez l'image `postgis/postgis:16-3.5-alpine`
+  (celle de `docker-compose.yml`) ou, sur un PostgreSQL hote Debian/Ubuntu :
+  `sudo apt install postgresql-15-postgis-3`.
 
 ### Session d'agent sans root (image sans PHP) — issue #7585
 

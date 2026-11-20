@@ -312,9 +312,13 @@ class AbsenceController extends Controller
         // Calcul du taux d'absentéisme (simplifié : jours d'absence / jours ouvrés de la période × nombre d'employés actifs)
         $periodDays = Carbon::parse($from)->diffInDays(Carbon::parse($to)) + 1;
         $workingDays = $periodDays * 5 / 7; // Approximation : 5 jours ouvrés par semaine
+        // La table `employees` n'a PAS de colonne `termination_date` (le statut de
+        // sortie vit dans `status`, valeurs autorisées : active / suspended /
+        // archived / departed — cf. contrainte employees_status_check). Le filtre
+        // d'origine provoquait un 500 SQLSTATE[42703] sur CHAQUE appel.
         $activeEmployees = Employee::query()
             ->where('company_id', $actor->company_id)
-            ->whereNull('termination_date')
+            ->where('status', 'active')
             ->count();
 
         $absenteeismRate = $activeEmployees > 0 && $workingDays > 0

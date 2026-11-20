@@ -27,14 +27,10 @@ return new class extends Migration
                 continue;
             }
 
-            $exists = DB::selectOne(
-                'SELECT 1 FROM pg_indexes WHERE tablename = ? AND indexname = ?',
-                [$table, $name]
-            );
-
-            if (! $exists) {
-                DB::statement("CREATE INDEX CONCURRENTLY IF NOT EXISTS {$name} ON {$table} {$columns}");
-            }
+            // #9671 : CONCURRENTLY est impossible dans une transaction ; le
+            // helper retombe sur un CREATE INDEX classique en environnement de
+            // test (sinon RefreshDatabase se bloque sur un verrou virtualxid).
+            createIndexIfNotExists($name, $table, $columns);
         }
     }
 
