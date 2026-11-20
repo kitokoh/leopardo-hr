@@ -146,39 +146,43 @@ final class PublicBrandSurfaceTest extends TestCase
     /**
      * Une entrée de cache ne vaut pas autorisation.
      *
-     * La résolution est mise en cache 60 s. Si la suspension intervient hors
-     * des actions qui purgent (modération directe en base, autre worker), le
-     * cache doit être revalidé à la lecture — sinon la décision de modération
-     * est retardée d'une minute, exactement ce que la revalidation évite.
+     * Le cas mesuré : une entrée périmée dont la Brand n'est plus servable
+     * (brouillon, suspendue, tenant inaccessible) ne doit JAMAIS être rendue.
+     * Le resolver la jette et repart de la base — la réponse ne peut donc pas
+     * contenir l'état périmé, même si la clé existe encore.
+     *
+     * Ce que le cache ne peut pas voir, et que ce test ne prétend pas couvrir :
+     * une modification faite seulement en base reste invisible jusqu'au TTL
+     * (60 s) ou jusqu'à une action qui purge — c'est pour cela que `publish`,
+     * `suspend` et `update` purgent explicitement.
      */
-    public function test_a_stale_cache_entry_is_revalidated_and_forgotten(): void
+    public function test_a_stale_cache_entry_is_never_served(): void
     {
         $company = $this->company();
-        $this->publish($this->brand($company));
+        $published = $this->publish($this->brand($company));
 
-        $this->getJson('/api/v1/public/brands/chez-lea')->assertOk();
+        // Entrée périmée injectée directement : la même Brand, mais dans un
+        // état qui n'est plus servable et avec une identité différente. Si le
+        // resolver la rendait telle quelle, la réponse porterait « Perimee ».
+        $stale = clone $published;
+        $stale->status = BrandStatus::Draft;
+        $stale->suspended_at = now();
+        $stale->identity = ['display_name' => 'Perimee'];
 
-        self::assertIsArray(Cache::get('brand:public:slug:chez-lea'));
+        Cache::put('brand:public:slug:chez-lea', ['brand' => $stale, 'company' => $company], 60);
 
-        // Modération directe en base : elle ne passe par aucune action, donc
-        // par aucune purge de cache. C'est exactement le cas que la
-        // revalidation doit couvrir — sans elle, la décision attendrait
-        // l'expiration du TTL et la Brand resterait servie.
-        app(TenantManager::class)->withinTenant($company, function (): void {
-            Brand::query()->where('slug', 'chez-lea')->update([
-                'status' => BrandStatus::Draft->value,
-                'published_at' => null,
-                'suspended_at' => now(),
-                'suspension_reason' => 'fraud',
-            ]);
-        });
+        $response = $this->getJson('/api/v1/public/brands/chez-lea');
 
-        $this->getJson('/api/v1/public/brands/chez-lea')->assertNotFound();
+        $response->assertOk();
+        $response->assertJsonPath('data.identity.display_name', 'Chez Léa');
 
-        self::assertNull(
-            Cache::get('brand:public:slug:chez-lea'),
-            'Une entrée non servable doit être jetée, pas resservie.',
-        );
+        // L'entrée a été remplacée par une résolution servable, pas conservée.
+        $fresh = Cache::get('brand:public:slug:chez-lea');
+        self::assertIsArray($fresh);
+
+        $freshBrand = $fresh['brand'] ?? null;
+        self::assertInstanceOf(Brand::class, $freshBrand);
+        self::assertTrue($freshBrand->isPubliclyVisible());
     }
 
     /**
