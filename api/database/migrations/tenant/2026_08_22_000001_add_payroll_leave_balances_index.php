@@ -18,17 +18,12 @@ return new class extends Migration
             return;
         }
 
-        $exists = DB::selectOne(
-            'SELECT 1 FROM pg_indexes WHERE tablename = ? AND indexname = ?',
-            ['leave_balances', self::INDEX_NAME]
+        // #9671 : pas de CONCURRENTLY en environnement de test (transaction).
+        createIndexIfNotExists(
+            self::INDEX_NAME,
+            'leave_balances',
+            '(company_id, employee_id, year, absence_type_id)'
         );
-
-        if ($exists === null) {
-            DB::statement(sprintf(
-                'CREATE INDEX CONCURRENTLY IF NOT EXISTS %s ON leave_balances (company_id, employee_id, year, absence_type_id)',
-                self::INDEX_NAME
-            ));
-        }
     }
 
     public function down(): void
@@ -37,6 +32,12 @@ return new class extends Migration
             return;
         }
 
-        DB::statement('DROP INDEX CONCURRENTLY IF EXISTS '.self::INDEX_NAME);
+        // #9671 : DROP INDEX CONCURRENTLY est lui aussi interdit dans une
+        // transaction — on l'évite en test pour ne pas bloquer le rollback.
+        $concurrently = app()->runningUnitTests() || app()->environment('testing')
+            ? ''
+            : 'CONCURRENTLY ';
+
+        DB::statement('DROP INDEX '.$concurrently.'IF EXISTS '.self::INDEX_NAME);
     }
 };

@@ -30,7 +30,35 @@ return new class extends Migration
             return;
         }
 
+        // #9670 : PostGIS est un prérequis d'infrastructure, pas une dépendance
+        // Composer. Sur une base `postgres:16` nue, `CREATE EXTENSION postgis`
+        // échoue avec un « could not open extension control file » opaque qui
+        // casse l'onboarding documenté. On vérifie donc la disponibilité de
+        // l'extension et on échoue avec un message actionnable.
+        if (! $this->postgisAvailable()) {
+            throw new RuntimeException(
+                'PostGIS est requis mais indisponible sur cette base PostgreSQL. '
+                .'Installez l\'extension (Debian/Ubuntu : `apt install postgresql-15-postgis-3`) '
+                .'ou utilisez l\'image Docker `postgis/postgis:16-3.5-alpine`. '
+                .'Voir DEVELOPMENT.md § Prérequis.'
+            );
+        }
+
         DB::statement('CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public');
+    }
+
+    /**
+     * L'extension est-elle installable sur ce serveur ? `pg_available_extensions`
+     * liste les extensions dont le fichier de contrôle est présent sur le disque
+     * — c'est exactement ce qui manque sur une image PostgreSQL nue.
+     */
+    private function postgisAvailable(): bool
+    {
+        $row = DB::selectOne(
+            "SELECT 1 FROM pg_available_extensions WHERE name = 'postgis'"
+        );
+
+        return $row !== null;
     }
 
     public function down(): void

@@ -33,14 +33,8 @@ return new class extends Migration
                 continue;
             }
 
-            $exists = DB::selectOne(
-                'SELECT 1 FROM pg_indexes WHERE tablename = ? AND indexname = ?',
-                [$table, $name]
-            );
-
-            if (! $exists) {
-                DB::statement("CREATE INDEX CONCURRENTLY IF NOT EXISTS {$name} ON {$table} {$columns}");
-            }
+            // #9671 : voir createIndexIfNotExists() — pas de CONCURRENTLY en test.
+            createIndexIfNotExists($name, $table, $columns);
         }
     }
 

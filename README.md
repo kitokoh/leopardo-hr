@@ -280,6 +280,13 @@ Queue and cache behavior is described in [deployment documentation](docs/deploym
 
 Install Git, Docker Compose, PHP 8.4, Composer, Node.js and Flutter if you intend to work on the corresponding surfaces. The backend and database are the primary starting point.
 
+> **PostGIS is required.** The backend enables the `postgis` extension during
+> migration (geospatial core, `geography(Point, 4326)` columns and `ST_*`
+> functions). A plain `postgres:16` image does **not** ship it and the migration
+> will fail. Use the `postgis/postgis:16-3.5-alpine` image (as `docker-compose.yml`
+> does) or install `postgresql-15-postgis-3` on a host PostgreSQL. See
+> [DEVELOPMENT.md](DEVELOPMENT.md#prerequisites).
+
 ### Run locally
 
 ```bash

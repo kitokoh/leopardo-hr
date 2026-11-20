@@ -87,5 +87,9 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "suggest": {
+        "ext-pdo_pgsql": "Requis : le backend ne supporte que PostgreSQL (pgsql).",
+        "postgis/postgis": "Requis : extension PostgreSQL PostGIS (geography(Point,4326), index GIST, fonctions ST_*). Image Docker postgis/postgis:16-3.5-alpine ou paquet postgresql-15-postgis-3. Voir DEVELOPMENT.md § Prerequisites."
+    }
 }
