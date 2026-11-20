@@ -43,15 +43,28 @@ class CompanyRequestController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        // Les bornes de validation doivent refléter le schéma réel, sinon une
+        // valeur acceptée ici explose en 500 au moment de l'INSERT :
+        //   company_requests.company_name  -> varchar(100)
+        //   company_requests.country       -> char(2)  (code ISO-3166 alpha-2)
+        //   company_requests.phone         -> varchar(255)
+        // `country` était validé en `max:100` : "Algeria" (7 car.) passait la
+        // validation puis déclenchait SQLSTATE[22001] value too long for
+        // type character(2). Le contrôleur d'intégration, lui, tronque déjà
+        // à 2 caractères — c'est bien `store()` qui divergeait.
         $validated = $request->validate([
-            'company_name' => ['required', 'string', 'max:200'],
+            'company_name' => ['required', 'string', 'max:100'],
             'sector' => ['nullable', 'string', 'max:100'],
-            'country' => ['nullable', 'string', 'max:100'],
+            'country' => ['nullable', 'string', 'size:2'],
             'city' => ['nullable', 'string', 'max:100'],
-            'email' => ['required', 'email'],
-            'phone' => ['nullable', 'string', 'max:20'],
+            'email' => ['required', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:30'],
             'description' => ['nullable', 'string', 'max:2000'],
         ]);
+
+        if (! empty($validated['country'])) {
+            $validated['country'] = strtoupper($validated['country']);
+        }
 
         $user = $this->resolveRequestUser($request);
 
