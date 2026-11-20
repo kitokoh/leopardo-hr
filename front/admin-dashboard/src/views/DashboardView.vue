@@ -376,11 +376,39 @@ async function loadDashboard() {
       api.get('/platform/company-requests', { params: { status: 'pending' } }),
     ])
 
-    summary.value = portfolioResponse.data?.data?.summary || summary.value
-    platformMetrics.value = metricsResponse.data?.data || platformMetrics.value
-    portfolioItems.value = portfolioResponse.data?.data?.items || []
-    pendingCompanyRequests.value = requestsResponse.data?.data || []
-    pendingRequests.value = requestsResponse.data?.meta?.total || pendingCompanyRequests.value.length
+    // #9651 — durcissement : une réponse `data` NON conforme (objet au lieu
+    // d'un tableau, `summary` partiel, `meta.total` absent) faisait planter
+    // TOUT le cockpit. `pendingCompanyRequests` recevait `{}`, donc
+    // `.length` valait `undefined`, `pendingRequests` devenait `undefined`,
+    // et `StatsCard` levait `Cannot read properties of undefined (reading
+    // 'toLocaleString')` — l'écran restait vide alors que l'API répondait
+    // 200. On ne fait plus confiance à la forme de la réponse : chaque champ
+    // est validé, et un champ invalide retombe sur sa valeur par défaut au
+    // lieu de casser le rendu.
+    const portfolio = portfolioResponse.data?.data
+    const metrics = metricsResponse.data?.data
+    const requests = requestsResponse.data?.data
+
+    if (portfolio?.summary && typeof portfolio.summary === 'object') {
+      summary.value = {
+        ...summary.value,
+        ...portfolio.summary,
+        risk: { ...summary.value.risk, ...(portfolio.summary.risk || {}) },
+      }
+    }
+
+    if (metrics && typeof metrics === 'object') {
+      platformMetrics.value = metrics
+    }
+
+    portfolioItems.value = Array.isArray(portfolio?.items) ? portfolio.items : []
+
+    pendingCompanyRequests.value = Array.isArray(requests) ? requests : []
+
+    const metaTotal = Number(requestsResponse.data?.meta?.total)
+    pendingRequests.value = Number.isFinite(metaTotal)
+      ? metaTotal
+      : pendingCompanyRequests.value.length
   } catch (error) {
     console.error('Failed to load platform dashboard:', error)
     errorMessage.value = t('dashboard.loadError')
