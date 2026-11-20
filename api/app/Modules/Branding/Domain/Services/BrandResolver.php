@@ -64,7 +64,16 @@ final class BrandResolver
         $cached = $this->cache->getBySlug($slug);
 
         if ($cached !== null) {
-            return $cached;
+            if ($this->isServable($cached)) {
+                return $cached;
+            }
+
+            // Entrée périmée : la Brand a été suspendue ou dépubliée hors des
+            // actions qui purgent (modération directe en base, autre worker,
+            // rejeu), ou le tenant est devenu inaccessible (société suspendue
+            // ou expirée). Le TTL de 60 s ne doit pas prolonger une décision de
+            // modération : on jette l'entrée et on re-résout.
+            $this->cache->forget($slug, $cached['brand']->host);
         }
 
         foreach ($this->candidateCompanies() as $company) {
@@ -72,12 +81,7 @@ final class BrandResolver
                 continue;
             }
 
-            $brand = $this->tenantResolver->withinTenant($company, function () use ($slug): ?Brand {
-                /** @var Brand|null $brand */
-                $brand = Brand::query()->where('slug', $slug)->first();
-
-                return $brand instanceof Brand && $brand->isPubliclyVisible() ? $brand : null;
-            });
+            $brand = $this->brandInTenant($company, 'slug', $slug);
 
             if ($brand instanceof Brand) {
                 $resolved = ['brand' => $brand, 'company' => $company];
@@ -106,7 +110,13 @@ final class BrandResolver
         $cached = $this->cache->getByHost($host);
 
         if ($cached !== null) {
-            return $cached;
+            if ($this->isServable($cached)) {
+                return $cached;
+            }
+
+            // Voir bySlug() : une entrée de cache ne vaut pas décision de
+            // modération (suspension) ni changement de statut du tenant.
+            $this->cache->forget($cached['brand']->slug, $host);
         }
 
         foreach ($this->candidateCompanies() as $company) {
@@ -114,12 +124,7 @@ final class BrandResolver
                 continue;
             }
 
-            $brand = $this->tenantResolver->withinTenant($company, function () use ($host): ?Brand {
-                /** @var Brand|null $brand */
-                $brand = Brand::query()->where('host', $host)->first();
-
-                return $brand instanceof Brand && $brand->isPubliclyVisible() ? $brand : null;
-            });
+            $brand = $this->brandInTenant($company, 'host', $host);
 
             if ($brand instanceof Brand) {
                 $resolved = ['brand' => $brand, 'company' => $company];
@@ -135,21 +140,78 @@ final class BrandResolver
     /**
      * Normalise un hostname.
      *
-     * Minuscules, sans port, sans point final. `Chez-Lea.SN:443` et
-     * `chez-lea.sn` désignent le même domaine, et un `Host` forgé avec un port
-     * ne doit pas contourner la résolution.
+     * Délègue à l'agrégat : le format d'un host est un attribut de la Brand,
+     * exactement comme le slug (`Brand::normalizeSlug`). La méthode est
+     * conservée ici pour ne pas casser les appelants existants.
      */
     public static function normalizeHost(string $host): ?string
     {
-        $host = strtolower(trim($host));
-        $host = (string) preg_replace('/:\d+$/', '', $host);
-        $host = rtrim($host, '.');
+        return Brand::normalizeHost($host);
+    }
 
-        if ($host === '' || ! preg_match('/^[a-z0-9](?:[a-z0-9\-\.]{0,251}[a-z0-9])?$/', $host)) {
+    /**
+     * Une entrée de cache est-elle encore servable ?
+     *
+     * Le cache mémorise une résolution RÉUSSIE, donc un couple (Brand, tenant)
+     * dont l'un comme l'autre a pu n'être pas servable au moment où l'entrée a
+     * été écrite (copie prise avant publication, worker concurrent, rejeu). Une
+     * résolution mise en cache n'est pas une autorisation : on revalide
+     * l'INSTANTANÉ à chaque lecture et on jette l'entrée qui ne passe pas.
+     *
+     * ## Ce que cette revalidation ne peut pas voir
+     *
+     * Elle ne lit pas la base : elle contrôle l'instantané déjà en cache. Une
+     * modification faite *uniquement* en base (suspension SQL, modération hors
+     * application, écriture d'un autre worker) reste donc invisible ici. La
+     * fraîcheur n'est bornée que par la purge explicite (`publish`, `suspend`,
+     * `update`) ou par le TTL de `BrandCache` (60 s).
+     *
+     * Les deux contrôles sont en mémoire (statut de la Brand, statut de la
+     * société) : ils ne coûtent aucune requête dans le cas nominal.
+     *
+     * Le paramètre est typé `array<string, mixed>` et non avec la forme exacte :
+     * une entrée de cache vient d'un sérialiseur et d'un driver interchangeable,
+     * donc sa forme n'est pas garantie par le type statique. La valider est le
+     * travail de cette méthode (`instanceof` + clés absentes), pas une
+     * redondance que PHPStan pourrait supprimer.
+     *
+     * @param  array<string, mixed>  $resolved
+     */
+    private function isServable(array $resolved): bool
+    {
+        $brand = $resolved['brand'] ?? null;
+        $company = $resolved['company'] ?? null;
+
+        return $brand instanceof Brand
+            && $company instanceof Company
+            && $brand->isPubliclyVisible()
+            && $this->tenantIsAccessible($company);
+    }
+
+    /**
+     * Cherche la Brand visible d'un tenant, sans jamais faire tomber la surface.
+     *
+     * L'échec est isolé PAR TENANT : un schéma qui ne porte pas encore la table
+     * `brands` (migration non jouée), une connexion qui refuse, un JSON illisible
+     * ne doivent pas transformer une surface publique en 500 — et, comme la
+     * boucle s'arrête au premier match, un seul tenant en retard placé avant les
+     * autres rendait leurs Brands injoignables. On passe au suivant.
+     *
+     * Le repli reste muet côté client : l'appelant traduit `null` en 404
+     * uniforme, jamais en détail d'échec (anti-énumération).
+     */
+    private function brandInTenant(Company $company, string $column, string $value): ?Brand
+    {
+        try {
+            return $this->tenantResolver->withinTenant($company, function () use ($column, $value): ?Brand {
+                /** @var Brand|null $brand */
+                $brand = Brand::query()->where($column, $value)->first();
+
+                return $brand instanceof Brand && $brand->isPubliclyVisible() ? $brand : null;
+            });
+        } catch (\Throwable) {
             return null;
         }
-
-        return $host;
     }
 
     /**

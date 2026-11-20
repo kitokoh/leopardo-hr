@@ -6,6 +6,7 @@ namespace App\Modules\Branding\Domain\Models;
 
 use App\Modules\Branding\Domain\Enums\BrandStatus;
 use App\Modules\Branding\Domain\Enums\BrandVertical;
+use App\Modules\Branding\Domain\Exceptions\BrandHostException;
 use App\Modules\Branding\Domain\Exceptions\BrandPublishException;
 use App\Modules\Branding\Domain\Exceptions\BrandSlugException;
 use App\Modules\Branding\Domain\Palette\BrandPalette;
@@ -431,5 +432,53 @@ class Brand extends Model
         }
 
         return $slug;
+    }
+
+    // ── Host ─────────────────────────────────────────────────────────────────
+
+    /**
+     * Normalise un hostname public.
+     *
+     * Minuscules, sans port, sans point final. `Chez-Lea.SN:443` et
+     * `chez-lea.sn` désignent le même domaine, et un `Host` forgé avec un port
+     * ne doit pas contourner la résolution (voir `BrandResolver`).
+     *
+     * La règle vit ici, sur l'agrégat, et pas dans le resolver : le host est un
+     * attribut de la Brand, au même titre que le slug. Un format de donnée ne
+     * se valide pas à l'endroit où on la lit.
+     */
+    public static function normalizeHost(string $host): ?string
+    {
+        $host = strtolower(trim($host));
+        $host = (string) preg_replace('/:\d+$/', '', $host);
+        $host = rtrim($host, '.');
+
+        if ($host === '' || ! preg_match('/^[a-z0-9](?:[a-z0-9\-\.]{0,251}[a-z0-9])?$/', $host)) {
+            return null;
+        }
+
+        return $host;
+    }
+
+    /**
+     * Valide et normalise un hostname, ou lève.
+     *
+     * Un hostname inexploitable n'est PAS « pas de domaine » : c'est une
+     * saisie refusée. Les actions l'appelaient via `normalizeHost()` et
+     * enregistraient `null`, ce qui créait une Brand sans surface par host —
+     * ou, à la mise à jour, **effaçait** le domaine existant sur une faute de
+     * frappe (voir `BrandHostException`).
+     *
+     * @throws BrandHostException
+     */
+    public static function assertValidHost(string $raw): string
+    {
+        $host = self::normalizeHost($raw);
+
+        if ($host === null) {
+            throw BrandHostException::invalid($raw);
+        }
+
+        return $host;
     }
 }

@@ -58,9 +58,15 @@ final class CreateBrandAction
             surface: is_string($paletteInput['surface'] ?? null) ? $paletteInput['surface'] : '#F8FAFC',
         );
 
-        $host = is_string($input['host'] ?? null)
-            ? \App\Modules\Branding\Domain\Services\BrandResolver::normalizeHost($input['host'])
-            : null;
+        // Un hostname non vide est VALIDÉ : `normalizeHost()` rend `null` pour
+        // une saisie inexploitable, et l'ancien code enregistrait ce `null` comme
+        // « pas de domaine ». Le tenant croyait avoir posé son domaine alors que
+        // la Brand restait injoignable par host — sans aucune erreur.
+        $host = null;
+        $rawHost = $input['host'] ?? null;
+        if ($rawHost !== null && trim($rawHost) !== '') {
+            $host = Brand::assertValidHost($rawHost);
+        }
 
         return $this->transactions->run(function () use ($slug, $vertical, $palette, $input, $host): Brand {
             $isFirst = Brand::query()->count() === 0;
