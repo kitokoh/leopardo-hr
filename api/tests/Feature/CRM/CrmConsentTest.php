@@ -129,8 +129,8 @@ class CrmConsentTest extends TestCase
         try {
             $guard->assertConsent('42', 'email', 'marketing');
             $this->fail('Un envoi sans consentement aurait dû être refusé.');
-        } catch (CrmConsentRequiredException) {
-            $this->assertTrue(true);
+        } catch (CrmConsentRequiredException $e) {
+            $this->assertSame('CRM_CONSENT_REQUIRED', $e->errorCode());
         }
 
         // Consentement accordé dans la VRAIE table : l'envoi doit passer.
@@ -143,7 +143,17 @@ class CrmConsentTest extends TestCase
         );
 
         $guard->assertConsent('42', 'email', 'marketing');
-        $this->assertTrue(true);
+
+        $this->assertTrue(
+            CrmConsent::query()
+                ->where('company_id', $this->companyA->id)
+                ->where('contact_id', 42)
+                ->where('channel', ConsentChannel::Email->value)
+                ->where('purpose', ConsentPurpose::Marketing->value)
+                ->where('status', 'granted')
+                ->exists(),
+            'Le consentement doit être lu depuis crm_consents.',
+        );
     }
 
     public function test_no_consent_means_no_send(): void
