@@ -357,6 +357,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/quizzes/{travelQuiz}/participations', [TravelQuizController::class, 'participations']);
         Route::get('/tourist-sites', [TravelTouristSiteController::class, 'index']);
         Route::post('/tourist-sites', [TravelTouristSiteController::class, 'store']);
+        // #9676 — la route statique `search` DOIT être déclarée avant la route
+        // paramétrée `{travelTouristSite}` : sinon Laravel la capture et passe la
+        // chaîne "search" au route-model-binding comme un id bigint (500).
+        Route::get('/tourist-sites/search', [TravelTouristSiteController::class, 'search']);
         Route::get('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'show']);
         Route::put('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'update']);
         Route::delete('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'destroy']);
@@ -471,7 +475,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/quizzes/{travelQuiz}/publish', [TravelQuizController::class, 'publish']);
         Route::delete('/quiz-questions/{travelQuizQuestion}', [TravelQuizController::class, 'destroyQuestion']);
         Route::get('/quizzes/{travelQuiz}/results', [TravelQuizController::class, 'results']);
-        Route::get('/tourist-sites/search', [TravelTouristSiteController::class, 'search']);
         Route::put('/tourist-sites/{site}', [TravelTouristSiteController::class, 'update']);
         Route::delete('/tourist-sites/{site}', [TravelTouristSiteController::class, 'destroy']);
 

@@ -13,8 +13,10 @@ use App\Modules\CRM\Domain\Enums\ConsentPurpose;
 use App\Modules\CRM\Domain\Enums\ConsentSource;
 use App\Modules\CRM\Domain\Enums\ConsentStatus;
 use App\Modules\CRM\Domain\Events\CrmConsentRevoked;
+use App\Modules\CRM\Domain\Exceptions\CrmConsentRequiredException;
 use App\Modules\CRM\Domain\Models\CrmConsent;
 use App\Modules\CRM\Infrastructure\Services\CampaignConsentRevocationHandler;
+use App\Modules\CRM\Infrastructure\Services\CrmConsentGuard;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -108,6 +110,50 @@ class CrmConsentTest extends TestCase
         $this->assertTrue($this->service()->allows(42, ConsentChannel::Email, ConsentPurpose::Marketing));
         $this->assertTrue($this->service()->allowsMarketing(42, ConsentChannel::Email));
         $this->assertTrue($this->service()->hasAnyMarketingConsent(42));
+    }
+
+    /**
+     * #9679 — `CrmConsentGuard` interrogeait la table inexistante
+     * `crm_contact_consents` avec une colonne inexistante `opted_in`, et sa
+     * garde `consentsTableExists()` testait cette même table fantôme : le
+     * garde retombait donc TOUJOURS sur le fallback `deny`, et aucun opt-in
+     * réel n'était jamais lu. Il doit désormais lire `crm_consents`.
+     */
+    public function test_guard_reads_the_real_crm_consents_table(): void
+    {
+        app()->instance('current_company', $this->companyA);
+
+        $guard = $this->app->make(CrmConsentGuard::class);
+
+        // Sans consentement : refus (fail-closed).
+        try {
+            $guard->assertConsent('42', 'email', 'marketing');
+            $this->fail('Un envoi sans consentement aurait dû être refusé.');
+        } catch (CrmConsentRequiredException $e) {
+            $this->assertSame('CRM_CONSENT_REQUIRED', $e->errorCode());
+        }
+
+        // Consentement accordé dans la VRAIE table : l'envoi doit passer.
+        $this->service()->grant(
+            42,
+            ConsentChannel::Email,
+            ConsentPurpose::Marketing,
+            ConsentSource::Form,
+            'lead-capture-homepage',
+        );
+
+        $guard->assertConsent('42', 'email', 'marketing');
+
+        $this->assertTrue(
+            CrmConsent::query()
+                ->where('company_id', $this->companyA->id)
+                ->where('contact_id', 42)
+                ->where('channel', ConsentChannel::Email->value)
+                ->where('purpose', ConsentPurpose::Marketing->value)
+                ->where('status', 'granted')
+                ->exists(),
+            'Le consentement doit être lu depuis crm_consents.',
+        );
     }
 
     public function test_no_consent_means_no_send(): void

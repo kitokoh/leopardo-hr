@@ -142,15 +142,17 @@ final class FarmDashboardController
 
     private function inputQuantity(Company $company, int $inputId): string
     {
+        // #9678 — `farm_inputs` ne porte pas de colonne `quantity_on_hand` :
+        // le stock réel est la somme des quantités des lots de cet intrant.
         $connection = (new FarmInput)->getConnection();
-        $table = (new FarmInput)->getTable();
 
-        $value = $connection->table($table)
+        $value = $connection->table('farm_input_lots')
             ->where('company_id', $company->id)
-            ->where('id', $inputId)
-            ->value('quantity_on_hand');
+            ->where('farm_input_id', $inputId)
+            ->sum('quantity');
 
-        return is_numeric($value) ? number_format((float) $value, 3, '.', '') : '0.000';
+        // `sum()` renvoie toujours un numérique (0 quand aucun lot n'existe).
+        return number_format((float) $value, 3, '.', '');
     }
 
     /**

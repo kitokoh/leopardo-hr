@@ -171,6 +171,36 @@ class TravelTouristSiteApiTest extends TestCase
             ->assertJsonPath('data.0.name', 'Chutes de la Lobé');
     }
 
+    /**
+     * #9676 — la route canonique `/travel/tourist-sites/search` doit être
+     * résolue par le contrôleur `search`, et non capturée par la route
+     * paramétrée `/travel/tourist-sites/{travelTouristSite}` (qui passait la
+     * chaîne "search" au route-model-binding comme un id bigint → 500).
+     */
+    public function test_canonical_search_route_is_not_shadowed_by_the_show_route(): void
+    {
+        $this->actingManager();
+
+        $city = $this->tenants->withinTenant($this->company, fn (): TravelCity => TravelCity::factory()->create());
+
+        $this->postJson('/api/v1/travel/tourist-sites', [
+            'name' => 'Chutes de la Lobé',
+            'description' => 'Cascades au sud du Cameroun',
+            'city_id' => $city->id,
+            'status' => 'active',
+        ])->assertStatus(201);
+
+        // Route canonique (celle qui renvoyait 500 avant le correctif).
+        $this->getJson("/api/v1/travel/tourist-sites/search?city_id={$city->id}")
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.name', 'Chutes de la Lobé');
+
+        // La route paramétrée reste fonctionnelle pour un id réel.
+        $site = TravelTouristSite::query()->firstOrFail();
+        $this->getJson('/api/v1/travel/tourist-sites/'.$site->id)->assertOk();
+    }
+
     public function test_site_of_another_tenant_returns_404(): void
     {
         /** @var Company $companyA */

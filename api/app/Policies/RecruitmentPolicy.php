@@ -10,6 +10,17 @@ use App\Modules\Recruitment\Domain\Models\JobPosting;
 
 class RecruitmentPolicy
 {
+    /**
+     * #9680 — lecture des KPIs de recrutement (`GET /recruitment/stats`).
+     *
+     * La Gate `recruitment.view` n'était pas définie : `cannot()` renvoyait
+     * toujours vrai et l'endpoint répondait 403 à tout le monde.
+     */
+    public function view(Employee $actor): bool
+    {
+        return $actor->isManager();
+    }
+
     public function viewJobs(Employee $actor): bool
     {
         return $actor->isManager();
