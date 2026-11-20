@@ -4,7 +4,8 @@
     "schema_version": 2,
     "repo": "Kitokoh/leopardo-hr",
     "path": "docs/recette/notes-humaines.json",
-    "updated_at": ""
+    "updated_at": "",
+    "couverture": "UC-01 → UC-84 (socle RH & paie + tous les projets du monorepo)"
   },
   "notes": {
     "UC-01": {
@@ -183,6 +184,412 @@
       "historique": []
     },
     "UC-26": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-27": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-28": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-29": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-30": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-31": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-32": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-33": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-34": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-35": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-36": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-37": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-38": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-39": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-40": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-41": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-42": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-43": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-44": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-45": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-46": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-47": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-48": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-49": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-50": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-51": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-52": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-53": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-54": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-55": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-56": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-57": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-58": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-59": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-60": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-61": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-62": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-63": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-64": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-65": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-66": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-67": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-68": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-69": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-70": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-71": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-72": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-73": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-74": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-75": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-76": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-77": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-78": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-79": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-80": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-81": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-82": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-83": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-84": {
       "note_humaine": null,
       "observation_humaine": "",
       "auteur": "",
