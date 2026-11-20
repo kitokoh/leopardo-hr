@@ -2839,6 +2839,8 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 
 **Couverture executee** — `pint --test` PASS sur les 2 fichiers du lot apres correction d'un defaut `blank_line_before_statement` dans `FleetController.php`.
 
+**Mise a jour 2026-11-20 — l'endpoint repondait 500.** Les scenarios ci-dessus ont ete ecrits dans `api/tests/Feature/Fleet/FleetStatsTest`, et l'ecriture a revele cinq defauts, dont deux fatals : la requete des alertes filtrait `is_resolved` (colonne inexistante, l'acquittement se lit sur `acknowledged`) et celle de la maintenance `performed_at` (la date d'intervention est `service_date`) — deux `SQLSTATE 42703`, donc un 500 sur l'endpoint entier, pas une statistique vide. Le top des vehicules lisait `registration_number` au lieu de `plate_number` et rendait `Unknown` sans echouer ; `fleet_overview.out_of_service` comptait un statut que le CHECK interdit (toujours 0) et devient `decommissioned` ; `vehicle_id` n'etait pas borne au tenant (200 sur un identifiant d'une autre societe contre 422 sur un identifiant inconnu). Le test mesure desormais l'agrege, l'exclusion des alertes acquittees, la maintenance hors periode, le filtre vehicule, les deux refus 422, le 403 et le 401.
+
 ## 2026-11-17 — BC-07 RECRUITMENT : KPIs de recrutement pour le dashboard RH (#9546, PR #9562)
 
 **Surface** : `GET /v1/recruitment/stats` (`RecruitmentController::stats`), declaree dans `routes/modules/hr_extended.php`, documentee dans `api/openapi.yaml`. Aucune migration.
