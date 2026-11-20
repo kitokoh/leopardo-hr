@@ -20989,7 +20989,7 @@ paths:
                             type: integer
                           in_maintenance:
                             type: integer
-                          out_of_service:
+                          decommissioned:
                             type: integer
                       mileage:
                         type: object

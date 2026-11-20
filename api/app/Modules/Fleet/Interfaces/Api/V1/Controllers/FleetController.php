@@ -13,6 +13,7 @@ use App\Modules\Fleet\Application\Actions\ReportVehicleFuelConsumptionAction;
 use App\Modules\Fleet\Application\Actions\ReportVehicleMileageAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class FleetController extends Controller
 {
@@ -101,10 +102,19 @@ class FleetController extends Controller
 
         abort_unless($user->isManager(), 403);
 
+        // #9542 : `exists:vehicles,id` sans borne acceptait l'identifiant d'un
+        // vehicule d'une AUTRE societe (200 + statistiques vides) et repondait
+        // donc autrement qu'a un identifiant inexistant (422) — un oracle
+        // d'enumeration du parc client.
         $validated = $request->validate([
             'from' => ['nullable', 'date_format:Y-m-d'],
             'to' => ['nullable', 'date_format:Y-m-d'],
-            'vehicle_id' => ['nullable', 'integer', 'exists:vehicles,id'],
+            'vehicle_id' => [
+                'nullable',
+                'integer',
+                'min:1',
+                Rule::exists('vehicles', 'id')->where('company_id', $user->company_id),
+            ],
         ]);
 
         $from = $validated['from'] ?? now()->startOfMonth()->toDateString();
@@ -121,7 +131,10 @@ class FleetController extends Controller
         $totalVehicles = $vehicles->count();
         $activeVehicles = $vehicles->where('status', 'active')->count();
         $inMaintenance = $vehicles->where('status', 'maintenance')->count();
-        $outOfService = $vehicles->where('status', 'out_of_service')->count();
+        // Le statut `out_of_service` n'existe pas dans le CHECK de la table
+        // (`active | maintenance | decommissioned`) : le compteur valait
+        // toujours 0 et la cle annoncait un etat impossible.
+        $decommissioned = $vehicles->where('status', 'decommissioned')->count();
 
         // Kilométrage sur la période
         $tripsQuery = \App\Modules\Fleet\Domain\Models\VehicleTrip::query()
@@ -137,9 +150,12 @@ class FleetController extends Controller
         $avgKmPerVehicle = $totalVehicles > 0 ? round($totalKm / $totalVehicles, 1) : 0;
 
         // Coûts de maintenance sur la période
+        // `performed_at` n'existe pas : la colonne de date d'intervention est
+        // `service_date` (migration `create_tracking_tables`). L'ancienne
+        // requete levait `42703` et faisait repondre 500 a l'endpoint entier.
         $maintenanceQuery = \App\Modules\Fleet\Domain\Models\VehicleMaintenance::query()
             ->where('company_id', $user->company_id)
-            ->whereBetween('performed_at', [$from, $to]);
+            ->whereBetween('service_date', [$from, $to]);
 
         if (isset($validated['vehicle_id'])) {
             $maintenanceQuery->where('vehicle_id', $validated['vehicle_id']);
@@ -152,9 +168,12 @@ class FleetController extends Controller
         $costPerKm = $totalKm > 0 ? round($totalMaintenanceCost / $totalKm, 2) : 0;
 
         // Alertes actives
+        // `is_resolved` n'existe pas : l'acquittement se lit sur `acknowledged`
+        // (migration `create_tracking_tables`). Meme consequence que ci-dessus,
+        // `42703` puis 500.
         $alertsQuery = \App\Modules\Fleet\Domain\Models\VehicleAlert::query()
             ->where('company_id', $user->company_id)
-            ->where('is_resolved', false);
+            ->where('acknowledged', false);
 
         if (isset($validated['vehicle_id'])) {
             $alertsQuery->where('vehicle_id', $validated['vehicle_id']);
@@ -172,7 +191,7 @@ class FleetController extends Controller
 
                 return [
                     'vehicle_id' => $vehicleId,
-                    'registration' => $vehicle->registration_number ?? 'Unknown',
+                    'registration' => $vehicle->plate_number ?? 'Unknown',
                     'total_km' => round($group->sum('distance_km'), 1),
                     'trips_count' => $group->count(),
                 ];
@@ -192,7 +211,7 @@ class FleetController extends Controller
                     'total_vehicles' => $totalVehicles,
                     'active' => $activeVehicles,
                     'in_maintenance' => $inMaintenance,
-                    'out_of_service' => $outOfService,
+                    'decommissioned' => $decommissioned,
                 ],
                 'mileage' => [
                     'total_km' => round($totalKm, 1),
