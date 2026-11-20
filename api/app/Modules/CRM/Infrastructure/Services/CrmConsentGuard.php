@@ -12,14 +12,16 @@ use Illuminate\Support\Facades\Schema;
  * Garde de consentement de communication CRM (issue #5722 interop).
  *
  * Ordre de résolution :
- *  1. Si la table tenant `crm_contact_consents` existe (livrée par #5722),
+ *  1. Si la table tenant `crm_consents` existe (livrée par #5722),
  *     un opt-in explicite (contact_id, channel, purpose) est exigé.
  *  2. Sinon (V0/V1 en cours de merge), fallback configurable
  *     `crm.channels.consent_fallback` : `deny` (défaut, fail-closed) ou
  *     `allow` (environnements de test uniquement).
  *
- * Contrat documenté avec #5722 : colonnes attendues
- * (company_id, contact_id, channel, purpose, opted_in, updated_at).
+ * Contrat réel (#9679) : table `crm_consents`, colonnes
+ * (company_id, contact_id, channel, purpose, status, granted_at, revoked_at).
+ * L'opt-in est porté par `status = 'granted'` ET `revoked_at IS NULL` —
+ * il n'existe pas de colonne booléenne `opted_in`.
  */
 final class CrmConsentGuard
 {
@@ -38,12 +40,13 @@ final class CrmConsentGuard
             throw new CrmConsentRequiredException;
         }
 
-        $optIn = DB::table('crm_contact_consents')
+        $optIn = DB::table('crm_consents')
             ->where('company_id', currentCompany()->id)
             ->where('contact_id', $contactId)
             ->where('channel', $channel)
             ->where('purpose', $purpose)
-            ->where('opted_in', true)
+            ->where('status', 'granted')
+            ->whereNull('revoked_at')
             ->exists();
 
         if (! $optIn) {
@@ -53,6 +56,6 @@ final class CrmConsentGuard
 
     private function consentsTableExists(): bool
     {
-        return Schema::hasTable('crm_contact_consents');
+        return Schema::hasTable('crm_consents');
     }
 }

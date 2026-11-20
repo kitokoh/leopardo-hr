@@ -103,11 +103,14 @@ class RecruitmentController extends Controller
         $conversionRate = $total > 0 ? round($hired / $total, 4) : 0;
 
         // Average time to hire (in days)
+        // #9677 — `applicants` n'a pas de colonne `hired_at` : le délai est
+        // mesuré depuis `applied_at` jusqu'à la dernière mise à jour de la
+        // candidature, qui correspond au passage au statut `hired`.
         $avgTimeToHire = Applicant::query()
             ->where('company_id', $companyId)
             ->where('status', 'hired')
-            ->whereNotNull('hired_at')
-            ->selectRaw('AVG(EXTRACT(EPOCH FROM (hired_at - applied_at)) / 86400) as avg_days')
+            ->whereNotNull('applied_at')
+            ->selectRaw('AVG(EXTRACT(EPOCH FROM (updated_at - applied_at)) / 86400) as avg_days')
             ->value('avg_days');
 
         // Top sources
