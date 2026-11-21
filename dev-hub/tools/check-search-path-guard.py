@@ -33,6 +33,15 @@ REPO = Path(__file__).resolve().parents[2]
 BASELINE = REPO / "dev-hub" / "tools" / "search-path-guard-baseline.txt"
 SCAN_ROOT = "api/app/"
 
+# Fichiers propriétaires désignés : ils portent des bascules de tenant
+# *appariées* (pose dans une méthode, restauration dans une autre) qui ne
+# peuvent pas être encapsulées dans un `finally` unique — la restauration est
+# portée par un appel distinct (`setTenant()` / `resetToPrevious()`). Leur
+# correction est couverte par les tests de TenantManager, pas par ce ratchet.
+OWNED_FILES = {
+    "api/app/Core/Tenant/TenantManager.php",
+}
+
 SET_LITERAL = re.compile(r"statement\(\s*(['\"])(SET\s+search_path[^'\"]*)\1", re.IGNORECASE)
 # Une restauration lit une variable (l'etat sauvegarde), jamais un litteral.
 RESTORE_VAR = re.compile(
@@ -95,6 +104,8 @@ def find_unsafe() -> list[tuple[str, int]]:
             continue
         text = path.read_text(encoding="utf-8", errors="replace")
         if "SearchPathGuard" in text:
+            continue
+        if rel in OWNED_FILES:
             continue
         for match in SET_LITERAL.finditer(text):
             argument = match.group(2)
