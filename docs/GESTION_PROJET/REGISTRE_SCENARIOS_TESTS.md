@@ -1,3 +1,19 @@
+## 2026-11-21 — Portail public : publication d'une offre indépendante du catalogue plateforme (issue #9689)
+
+Surface : `api/tests/Feature/Recruitment/PublicPortalEndToEndTest.php`. Aucun code applicatif, aucune route, aucune migration, aucun contrat modifié.
+
+**Pourquoi c'est un scénario de test** : `GET /api/v1/public/careers/{slug}` et `feed.xml` ne servent pas seulement les offres du tenant — `PublicCareerController` y concatène le catalogue plateforme du pays (`PublicJobCatalog::externalOffers`, `public.external_job_offers`). Un test qui compte les entrées de `data` ou de `<job>` mesure donc **deux** sources à la fois, et dépend de ce que les autres classes du worker ont laissé en base sur le pays tiré au hasard par `CompanyFactory` : il passe isolément et échoue dans la suite complète. #9685 l'avait corrigé pour la fermeture d'offre ; l'assertion de publication était restée sur le même défaut.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| après publication, `meta.counts.company === 1` et l'offre créée figure dans `data` avec son titre | `assertJsonCount(1, 'data')` compte les offres du tenant **plus** les offres agrégées : il échoue dès qu'une autre classe a créé une `external_job_offers` visible sur le même pays, hors de tout diff Recruitment |
+| `feed.xml` contient le `referencenumber` de l'offre du tenant exactement une fois | `assertCount(1, $xml->job)` compte les mêmes deux familles ; le flux Google Jobs/Indeed n'a pas vocation à être globalement à une entrée |
+| un brouillon reste invisible : `meta.counts.company === 0` avant publication | c'est l'intention d'origine, conservée telle quelle |
+
+**Couverture exécutée** — `php -l` PASS sur le fichier de test ; aucun test exécuté localement.
+
+**Non couvert** — suite Feature exécutée par le job Backend en CI (pas de PostgreSQL local) : la mesure est le run CI, `PublicPortalEndToEndTest` verte y compris en présence d'offres agrégées en base.
+
 ## 2026-11-20 — Colonnes/tables inexistantes et route statique masquée (issues #9676-#9680, PR #9681)
 
 Surface : `api/routes/modules/travelagency.php`, `api/app/Modules/Recruitment/Interfaces/Api/V1/Controllers/RecruitmentController.php`, `api/app/Modules/FarmOs/Interfaces/Api/V1/Controllers/FarmDashboardController.php`, `api/app/Modules/CRM/Infrastructure/Services/CrmConsentGuard.php`, `api/app/Policies/RecruitmentPolicy.php`, `api/app/Providers/AppServiceProvider.php`. Aucune migration, aucun contrat externe modifié.
