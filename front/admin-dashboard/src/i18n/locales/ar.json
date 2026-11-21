@@ -5383,7 +5383,22 @@
       "reviewsEmpty": "لا توجد تقييمات قيد الانتظار.",
       "reviewPublish": "نشر",
       "reviewReject": "رفض",
-      "reviewActionError": "تعذر تنفيذ الإجراء على هذا التقييم."
+      "reviewActionError": "تعذر تنفيذ الإجراء على هذا التقييم.",
+      "reviewsFilterLabel": "تصفية التقييمات",
+      "reviewsFilter_pending": "قيد الانتظار",
+      "reviewsFilter_published": "منشورة",
+      "reviewsFilter_rejected": "مرفوضة",
+      "reviewsFilter_all": "الكل",
+      "reviewStatus_pending": "قيد الانتظار",
+      "reviewStatus_published": "منشور",
+      "reviewStatus_rejected": "مرفوض",
+      "reviewUnpublish": "إلغاء النشر",
+      "reviewReplyLabel": "ردّك",
+      "reviewReplyPlaceholder": "الرد علنًا على هذا العميل…",
+      "reviewReplySend": "نشر الرد",
+      "reviewReplyEdit": "تعديل",
+      "reviewReplyDelete": "حذف",
+      "reviewReplyError": "تعذّر حفظ الرد."
     },
     "public": {
       "directoryTitle": "مطاعم بالقرب منك",
