@@ -30,6 +30,14 @@ use Illuminate\Support\Facades\DB;
  *
  * Accès global en lecture (helpers.php) :
  *   currentCompany() → app('current_company')
+ *
+ * Issue #9115 — `App\Support\SearchPathGuard` couvre les bascules *ponctuelles*
+ * (pose + restauration dans un `finally` unique). Cette classe reste le
+ * propriétaire désigné des bascules de tenant *appariées* (`setTenant()` /
+ * `resetToPrevious()`, et le reset délibéré de `clearTenant()`) : elles ne
+ * peuvent pas être encapsulées dans un `finally` unique, la restauration étant
+ * portée par un appel distinct. Le garde `check-search-path-guard.py` reconnaît
+ * ce fichier comme propriétaire légitime.
  */
 final class TenantManager
 {
