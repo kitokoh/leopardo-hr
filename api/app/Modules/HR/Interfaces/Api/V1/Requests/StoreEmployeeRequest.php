@@ -223,7 +223,9 @@ class StoreEmployeeRequest extends FormRequest
             return null;
         }
 
-        if ($company->tenancy_type === 'schema' && (string) $company->schema_name !== '') {
+        $schemaName = $company->schema_name;
+
+        if ($company->tenancy_type === 'schema' && $schemaName !== '') {
             return $company->getSafeSearchPath();
         }
 
