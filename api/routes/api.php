@@ -961,40 +961,49 @@ Route::prefix('v1')->group(function (): void {
         // (rôle plateforme `marketing` inclus) ; écriture et confirmation de
         // mise en ligne = `marketing_os.manage`.
         // ─────────────────────────────────────────────────────────────────
-        $marketingOs = \App\Modules\Marketing\Interfaces\Api\V1\Controllers\PlatformMarketingOsController::class;
+        // Le controleur unique de 1 022 lignes a ete decoupe par ressource
+        // (campagnes/idees, mediatheque, publications, visibilite) : chaque
+        // surface porte un agregat HTTP, et les garanties transverses
+        // (pagination bornee, echappement LIKE, gardes de rattachement tenant)
+        // vivent dans le trait ResolvesMarketingTenant. Les chemins, methodes
+        // et permissions sont INCHANGES — seul le controleur cible change.
+        $marketingCampaigns = \App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingCampaignsController::class;
+        $marketingAssets = \App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingAssetsController::class;
+        $marketingPublications = \App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingPublicationsController::class;
+        $marketingVisibility = \App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingVisibilityController::class;
 
-        Route::get('/companies/{company}/marketing-os/overview', [$marketingOs, 'overview'])->middleware('platform.permission:marketing_os.view');
-        Route::get('/companies/{company}/marketing-os/campaigns', [$marketingOs, 'indexCampaigns'])->middleware('platform.permission:marketing_os.view');
-        Route::post('/companies/{company}/marketing-os/campaigns', [$marketingOs, 'storeCampaign'])->middleware('platform.permission:marketing_os.manage');
-        Route::get('/companies/{company}/marketing-os/ideas', [$marketingOs, 'indexIdeas'])->middleware('platform.permission:marketing_os.view');
-        Route::post('/companies/{company}/marketing-os/ideas', [$marketingOs, 'storeIdea'])->middleware('platform.permission:marketing_os.manage');
-        Route::patch('/companies/{company}/marketing-os/ideas/{idea}', [$marketingOs, 'updateIdea'])->whereNumber('idea')->middleware('platform.permission:marketing_os.manage');
-        Route::post('/companies/{company}/marketing-os/ideas/{idea}/promote', [$marketingOs, 'promoteIdea'])->whereNumber('idea')->middleware('platform.permission:marketing_os.manage');
-        Route::get('/companies/{company}/marketing-os/assets', [$marketingOs, 'indexAssets'])->middleware('platform.permission:marketing_os.view');
-        Route::post('/companies/{company}/marketing-os/assets', [$marketingOs, 'storeAsset'])->middleware('platform.permission:marketing_os.manage');
-        Route::get('/companies/{company}/marketing-os/assets/{asset}/publications', [$marketingOs, 'assetPublications'])->whereNumber('asset')->middleware('platform.permission:marketing_os.view');
+        Route::get('/companies/{company}/marketing-os/overview', [$marketingVisibility, 'overview'])->middleware('platform.permission:marketing_os.view');
+        Route::get('/companies/{company}/marketing-os/campaigns', [$marketingCampaigns, 'indexCampaigns'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/companies/{company}/marketing-os/campaigns', [$marketingCampaigns, 'storeCampaign'])->middleware('platform.permission:marketing_os.manage');
+        Route::get('/companies/{company}/marketing-os/ideas', [$marketingCampaigns, 'indexIdeas'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/companies/{company}/marketing-os/ideas', [$marketingCampaigns, 'storeIdea'])->middleware('platform.permission:marketing_os.manage');
+        Route::patch('/companies/{company}/marketing-os/ideas/{idea}', [$marketingCampaigns, 'updateIdea'])->whereNumber('idea')->middleware('platform.permission:marketing_os.manage');
+        Route::post('/companies/{company}/marketing-os/ideas/{idea}/promote', [$marketingCampaigns, 'promoteIdea'])->whereNumber('idea')->middleware('platform.permission:marketing_os.manage');
+        Route::get('/companies/{company}/marketing-os/assets', [$marketingAssets, 'indexAssets'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/companies/{company}/marketing-os/assets', [$marketingAssets, 'storeAsset'])->middleware('platform.permission:marketing_os.manage');
+        Route::get('/companies/{company}/marketing-os/assets/{asset}/publications', [$marketingAssets, 'assetPublications'])->whereNumber('asset')->middleware('platform.permission:marketing_os.view');
         // #8675 — la mediatheque etait en ECRITURE SEULE : le binaire etait
         // stocke sur le disk prive mais aucune route ne le relisait. Le detail
         // et le telechargement sont donc ajoutes AVANT la route de detail
         // generique, et `{asset}` est contraint au numerique pour qu'aucun
         // segment texte (« download ») ne puisse etre pris pour un identifiant.
-        Route::get('/companies/{company}/marketing-os/assets/{asset}/download', [$marketingOs, 'downloadAsset'])->whereNumber('asset')->middleware('platform.permission:marketing_os.view');
-        Route::get('/companies/{company}/marketing-os/assets/{asset}', [$marketingOs, 'showAsset'])->whereNumber('asset')->middleware('platform.permission:marketing_os.view');
-        Route::get('/companies/{company}/marketing-os/publications', [$marketingOs, 'indexPublications'])->middleware('platform.permission:marketing_os.view');
-        Route::post('/companies/{company}/marketing-os/publications', [$marketingOs, 'storePublication'])->middleware('platform.permission:marketing_os.manage');
-        Route::patch('/companies/{company}/marketing-os/publications/{publication}/status', [$marketingOs, 'updatePublicationStatus'])->whereNumber('publication')->middleware('platform.permission:marketing_os.manage');
+        Route::get('/companies/{company}/marketing-os/assets/{asset}/download', [$marketingAssets, 'downloadAsset'])->whereNumber('asset')->middleware('platform.permission:marketing_os.view');
+        Route::get('/companies/{company}/marketing-os/assets/{asset}', [$marketingAssets, 'showAsset'])->whereNumber('asset')->middleware('platform.permission:marketing_os.view');
+        Route::get('/companies/{company}/marketing-os/publications', [$marketingPublications, 'indexPublications'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/companies/{company}/marketing-os/publications', [$marketingPublications, 'storePublication'])->middleware('platform.permission:marketing_os.manage');
+        Route::patch('/companies/{company}/marketing-os/publications/{publication}/status', [$marketingPublications, 'updatePublicationStatus'])->whereNumber('publication')->middleware('platform.permission:marketing_os.manage');
         // #8530 — remontee des statistiques REELLES de la plateforme (aucune
         // valeur inventee : « indisponible » est un etat explicite).
-        Route::post('/companies/{company}/marketing-os/publications/{publication}/stats/refresh', [$marketingOs, 'refreshPublicationStats'])->whereNumber('publication')->middleware('platform.permission:marketing_os.manage');
+        Route::post('/companies/{company}/marketing-os/publications/{publication}/stats/refresh', [$marketingPublications, 'refreshPublicationStats'])->whereNumber('publication')->middleware('platform.permission:marketing_os.manage');
 
         // #8531 — objectifs de visibilite SEO/SEA/AEO/GEO rattaches aux contenus.
-        Route::get('/companies/{company}/marketing-os/visibility-objectives', [$marketingOs, 'indexVisibilityObjectives'])->middleware('platform.permission:marketing_os.view');
-        Route::post('/companies/{company}/marketing-os/visibility-objectives', [$marketingOs, 'storeVisibilityObjective'])->middleware('platform.permission:marketing_os.manage');
+        Route::get('/companies/{company}/marketing-os/visibility-objectives', [$marketingVisibility, 'indexVisibilityObjectives'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/companies/{company}/marketing-os/visibility-objectives', [$marketingVisibility, 'storeVisibilityObjective'])->middleware('platform.permission:marketing_os.manage');
 
         // #8532 — matrice des capacites REELLES de publication par plateforme
         // (quelles plateformes autorisent le direct, et pourquoi les autres
         // restent en mode assiste).
-        Route::get('/companies/{company}/marketing-os/publishing-capabilities', [$marketingOs, 'publishingCapabilities'])->middleware('platform.permission:marketing_os.view');
+        Route::get('/companies/{company}/marketing-os/publishing-capabilities', [$marketingVisibility, 'publishingCapabilities'])->middleware('platform.permission:marketing_os.view');
 
         // #8708 — Gestion et rédaction du Blog Vitrine depuis le Super Admin
         $blogController = \App\Modules\Marketing\Interfaces\Api\V1\Controllers\PlatformBlogController::class;

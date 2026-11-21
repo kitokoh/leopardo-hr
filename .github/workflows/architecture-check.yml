@@ -180,6 +180,22 @@ jobs:
       - name: Canonical domains guard (issue #3706)
         run: bash dev-hub/tools/check-canonical-domains.sh
 
+      # #9738 (EPIC #9739) — le serveur MCP externe (dev-hub/mcp-server) sert
+      # le contrat d'outil A3 depuis un manifeste versionné. Un BC qui ajoute,
+      # retire ou modifie une AIToolDefinition sans régénérer le manifeste
+      # ferait servir un contrat périmé, silencieusement : la garde rend la
+      # divergence bloquante. `composer install` est déjà fait plus haut.
+      - name: MCP manifest drift guard (issue #9738)
+        run: bash dev-hub/tools/check-mcp-manifest-drift.sh .
+
+      - name: MCP OpenAPI tools drift guard (issue #9746)
+        # Le manifeste généré depuis api/openapi.yaml doit rester synchrone avec
+        # la spec : une route ajoutée sans régénération servirait un contrat
+        # périmé au client MCP, silencieusement.
+        run: |
+          python3 -m pip install --user --break-system-packages pyyaml
+          bash dev-hub/tools/check-mcp-openapi-tools-drift.sh .
+
       - name: Public docs — no PII guard (issue #7982)
         run: bash dev-hub/tools/check-public-docs-no-pii.sh origin/main
 
@@ -494,6 +510,16 @@ jobs:
         # que des services. Ratchet : le stock existant est figé dans
         # dev-hub/tools/search-path-guard-baseline.txt.
         run: python3 dev-hub/tools/check-search-path-guard.py
+
+      - name: Garde validation (FormRequest partout)
+        # Decision du depot : toute validation NOUVELLE passe par un FormRequest
+        # dedie (regles dans `rules()`, permission dans `authorize()`). Les 437
+        # validations en ligne existantes sont figees dans
+        # dev-hub/tools/form-request-guard-baseline.txt : la dette ne peut que
+        # decroitre. Ce check est REQUIS et tourne sans condition, comme la
+        # garde search_path : une validation en ligne peut entrer via une PR
+        # qui ne touche aucune route.
+        run: python3 dev-hub/tools/check-form-request-guard.py
 
       - name: Check module structure
         if: needs.detect-changes.outputs.api_changed == 'true'

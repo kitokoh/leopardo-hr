@@ -5,7 +5,7 @@
     "repo": "Kitokoh/leopardo-hr",
     "path": "docs/recette/notes-humaines.json",
     "updated_at": "",
-    "couverture": "UC-01 → UC-84 (socle RH & paie + tous les projets du monorepo)"
+    "couverture": "UC-01 → UC-88 (socle RH & paie + tous les projets du monorepo, dont Marketing OS et Négoce)"
   },
   "notes": {
     "UC-01": {
@@ -590,6 +590,34 @@
       "historique": []
     },
     "UC-84": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-85": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-86": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-87": {
+      "note_humaine": null,
+      "observation_humaine": "",
+      "auteur": "",
+      "date_modification": "",
+      "historique": []
+    },
+    "UC-88": {
       "note_humaine": null,
       "observation_humaine": "",
       "auteur": "",

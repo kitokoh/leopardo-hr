@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Platform;
 
-use App\Modules\Platform\Interfaces\Api\V1\Controllers\HealthController;
+use App\Modules\Platform\Infrastructure\Services\HealthProbeService;
 use Tests\TestCase;
 
 /**
@@ -12,12 +12,17 @@ use Tests\TestCase;
  * client Predis : `ping()` retourne un objet `Predis\Response\Status` dont
  * `__toString()` vaut « PONG », mais les comparaisons strictes du
  * HealthController échouaient toujours (faux négatif → sonde rouge).
+ *
+ * La normalisation a suivi la sonde dans `HealthProbeService` (extraction des
+ * huit vérifications hors de la couche HTTP) : le test cible donc son
+ * emplacement réel plutôt que de figer une méthode qui n'a plus de raison
+ * d'être dans le contrôleur.
  */
 class HealthRedisPredisTest extends TestCase
 {
     public function test_pong_response_variants_are_all_healthy(): void
     {
-        $method = new \ReflectionMethod(HealthController::class, 'isPongResponse');
+        $method = new \ReflectionMethod(HealthProbeService::class, 'isPongResponse');
 
         // PhpRedis : true / 'PONG' / '+PONG'
         self::assertTrue($method->invoke(null, true));

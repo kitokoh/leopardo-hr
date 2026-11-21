@@ -113,6 +113,8 @@ Le programme est donc **stratifié par intention d'achat**, pas par fonctionnali
 
 **Point de vente clé à ne pas rater :** le plan 64–84 s. C'est le moment où le spectateur comprend que **la donnée ne se ressaisit jamais**. Le montage doit le rendre évident (même ligne, même identifiant, qui se déplace d'un écran à l'autre).
 
+> 📄 **Storyboard détaillé :** [`STORYBOARD_B1_JOURNEE_LEOPARDO.md`](STORYBOARD_B1_JOURNEE_LEOPARDO.md) — découpage plan par plan (24 plans), voix off complète avec timecodes, shot list de captation, notes de montage, déclinaisons et checklist de diffusion.
+
 ---
 
 ### B2. « Le tour complet » — 4 min, pour webinaire et page produit
