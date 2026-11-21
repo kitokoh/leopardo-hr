@@ -2,6 +2,7 @@
 
 > **Issue :** #9725 — kit de recette terrain du pilote RestaurantManager (gate `recette`, MAT-018).
 > **Complète :** [`RECETTE_UAT_RESTAURANTMANAGER.md`](./RECETTE_UAT_RESTAURANTMANAGER.md) (cahier de recette).
+> **Feuille de campagne :** [`RECETTE_UAT_RESTAURANTMANAGER_FEUILLE_SIGNATURE.md`](./RECETTE_UAT_RESTAURANTMANAGER_FEUILLE_SIGNATURE.md) — à imprimer et remplir en séance (§5 signature).
 > **Ce que ce kit apporte :** le cahier décrivait *quoi* tester ; ce kit fournit *avec quoi* et *comment relever*.
 > **Ce que ce kit ne fait pas :** il n'exécute pas la recette et ne la signe pas. L'exécution et la signature restent humaines.
 
