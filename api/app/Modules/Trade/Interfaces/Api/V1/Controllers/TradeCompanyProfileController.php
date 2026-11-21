@@ -192,7 +192,7 @@ class TradeCompanyProfileController extends Controller
         // doublon inter-tenant n'était jamais détecté et partait en 500 sur
         // violation de contrainte au lieu du 422 métier.
         $taken = TradeCompanyProfile::query()
-            ->crossTenantForSystemTask('unicité globale du slug public : la contrainte est globale, la vérification doit l\'être aussi (#9741)')
+            ->crossTenantForSystemTask('global uniqueness of the public slug: the constraint is global, so the check must be too (#9741)')
             ->where('public_slug', $slug)
             ->where('id', '!=', $current->id)
             ->exists();
