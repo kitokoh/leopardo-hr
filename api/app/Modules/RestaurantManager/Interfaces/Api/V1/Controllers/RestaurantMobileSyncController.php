@@ -26,13 +26,25 @@ class RestaurantMobileSyncController extends Controller
         $actor = $request->user();
 
         $data = $request->validate([
-            'operations' => ['required', 'array', 'min:1', 'max:50'],
+            'operations' => ['required', 'array', 'min:1'],
             'operations.*.type' => ['required', 'string', 'max:40'],
             'operations.*.idempotency_key' => ['required', 'string', 'max:255'],
-            'operations.*.payload' => ['required', 'array'],
+            // `present` et non `required` : un tableau VIDE est « empty » pour
+            // Laravel, donc `required` rejetait en 422 toute la requête dès
+            // qu'une opération avait un payload vide — alors que le contrat
+            // est de répondre opération par opération (`error`), sans effet
+            // de bord sur les autres. Une opération inconnue ne doit jamais
+            // faire échouer le lot entier.
+            'operations.*.payload' => ['present', 'array'],
         ]);
 
-        $results = $service->sync($actor, $data['operations']);
+        // Borne à 50 opérations par appel : on TRONQUE le surplus au lieu de
+        // rejeter la requête. Un client qui a mis 60 opérations en file hors
+        // ligne doit voir les 50 premières traitées et repousser le reste,
+        // pas perdre tout son lot en 422.
+        $operations = array_slice($data['operations'], 0, 50);
+
+        $results = $service->sync($actor, $operations);
 
         return response()->json(['data' => $results]);
     }

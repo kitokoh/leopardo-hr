@@ -47,6 +47,11 @@ class RestaurantCogsController extends Controller
             abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
-        return response()->json($this->cogs->calculateForPosSession($restaurantPosSession));
+        // Enveloppe `data` : convention de TOUTES les ressources du module
+        // (`(new Resource)->response()`). Le service renvoie un tableau plat ;
+        // sans enveloppe, le client lisait `data.cogs_minor` = null.
+        return response()->json([
+            'data' => $this->cogs->calculateForPosSession($restaurantPosSession),
+        ]);
     }
 }

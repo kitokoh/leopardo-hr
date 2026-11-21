@@ -52,7 +52,11 @@ final class StockDecrementer
                     ingredientId: $composition->ingredient_id,
                     quantityDelta: $delta,
                     reason: StockMovementReason::SALE,
-                    referenceType: RestaurantOrder::class,
+                    // Convention du module : `reference_type` porte un SLUG court
+                    // ('order', 'purchase_order', 'receiving', 'inventory_count'),
+                    // jamais un FQCN. Le journal reste lisible et filtrable, et
+                    // le test RESTO-411 verrouille 'order'.
+                    referenceType: 'order',
                     referenceId: $order->id,
                     allowNegative: ! $this->blockOnInsufficient,
                 );

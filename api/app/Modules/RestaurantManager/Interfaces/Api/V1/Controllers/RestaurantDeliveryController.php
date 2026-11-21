@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Domain\Enums\DeliveryStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantDelivery;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryRider;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryZone;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDeliveryService;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantDeliveryRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantDeliveryResource;
@@ -54,12 +55,37 @@ class RestaurantDeliveryController extends Controller
             abort(403);
         }
 
+        // La commande vient de la route imbriquée : c'est la seule source
+        // fiable. Le corps ne peut pas la contredire. Le paramètre n'est pas
+        // implicitement lié (pas de type-hint modèle) : c'est l'ID brut.
+        $routeOrder = $request->route('restaurantOrder');
+        $orderId = (int) (is_object($routeOrder) ? $routeOrder->id : ($routeOrder ?? $request->validated('order_id')));
+
+        $zoneId = $request->validated('zone_id');
+
+        // Frais : tarif de la zone, jamais la valeur du client. Sans zone,
+        // on retombe sur `fee_minor` fourni (livraison hors zone).
+        $feeMinor = (int) $request->validated('fee_minor', 0);
+
+        if ($zoneId !== null) {
+            /** @var RestaurantDeliveryZone|null $zone */
+            $zone = RestaurantDeliveryZone::query()
+                ->where('company_id', $actor->company_id)
+                ->find($zoneId);
+
+            if ($zone === null) {
+                return response()->json(['message' => 'Zone de livraison introuvable.'], 404);
+            }
+
+            $feeMinor = (int) $zone->fee_minor;
+        }
+
         try {
             $result = $this->deliveries->create(
                 $actor,
-                (int) $request->validated('order_id'),
-                $request->validated('zone_id'),
-                (int) $request->validated('fee_minor'),
+                $orderId,
+                $zoneId,
+                $feeMinor,
             );
         } catch (RuntimeException $exception) {
             return response()->json(['message' => $exception->getMessage()], 422);
@@ -140,7 +166,11 @@ class RestaurantDeliveryController extends Controller
         try {
             $delivery = $this->deliveries->deliver($restaurantDelivery, $request->input('delivered_to_contact'));
         } catch (RuntimeException $exception) {
-            return response()->json(['message' => $exception->getMessage()], 422);
+            // Transition d'état invalide = CONFLIT (409), pas une erreur de
+            // validation (422) : la requête est bien formée, c'est l'état de
+            // la ressource qui s'y oppose. Le client mobile doit pouvoir
+            // distinguer « corrige ton payload » de « rafraîchis et réessaie ».
+            return response()->json(['message' => $exception->getMessage()], 409);
         }
 
         return (new RestaurantDeliveryResource($delivery))->response();
@@ -184,7 +214,8 @@ class RestaurantDeliveryController extends Controller
         try {
             $updated = $this->deliveries->{$method}($delivery);
         } catch (RuntimeException $exception) {
-            return response()->json(['message' => $exception->getMessage()], 422);
+            // Idem `deliver()` : transition invalide → 409 CONFLICT.
+            return response()->json(['message' => $exception->getMessage()], 409);
         }
 
         return (new RestaurantDeliveryResource($updated))->response();

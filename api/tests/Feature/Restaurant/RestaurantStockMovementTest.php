@@ -151,8 +151,10 @@ class RestaurantStockMovementTest extends TestCase
             'reorder_level' => 3,
             'alert_threshold' => 2,
         ])->assertStatus(200)
-            ->assertJsonPath('data.reorder_level', 3.0)
-            ->assertJsonPath('data.alert_threshold', 2.0);
+            // JSON ne distingue pas 3.0 de 3 : la ressource emet des NOMBRES
+            // (contrat), donc l'assertion porte sur l'entier decode.
+            ->assertJsonPath('data.reorder_level', 3)
+            ->assertJsonPath('data.alert_threshold', 2);
     }
 
     public function test_invalid_reason_is_rejected(): void

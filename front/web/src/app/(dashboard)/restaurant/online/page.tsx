@@ -12,9 +12,8 @@
  * /restaurant/products/{product}/publication`, optimiste + rollback).
  *
  * Modération des avis (RESTO-902) : les endpoints `/restaurant/reviews*`
- * n'existent pas encore côté backend — la section est rendue derrière une
- * garde d'erreur réseau (état « module à venir ») et s'activera toute seule
- * quand le lot RESTO-902 sera livré.
+ * sont LIVRÉS côté backend (RestaurantReviewModerationController) — la
+ * section charge la file d'attente et permet publier/rejeter.
  */
 import { useCallback, useEffect, useState } from 'react';
 import { Globe, MapPin } from 'lucide-react';
@@ -104,14 +103,9 @@ export default function RestaurantOnlinePage() {
   const [products, setProducts] = useState<OnlineProduct[]>([]);
   const [productsError, setProductsError] = useState('');
   const [publishError, setPublishError] = useState('');
-  // RESTO-902 pas encore livré : les endpoints `/restaurant/reviews*`
-  // n'existent pas côté backend. On ne tente PLUS l'appel réseau (il
-  // produisait un 404 systématique dans la console et un état ambigu) : la
-  // section est marquée « bientôt disponible » de façon statique et
-  // s'activera quand le lot RESTO-902 sera livré.
-  const reviewsAvailable = false;
-  const reviews: PendingReview[] = [];
-  const reviewError = '';
+  const [reviews, setReviews] = useState<PendingReview[]>([]);
+  const [reviewsAvailable, setReviewsAvailable] = useState(true);
+  const [reviewError, setReviewError] = useState('');
 
   useEffect(() => {
     if (branchId === null && branches.length > 0) {
@@ -155,6 +149,40 @@ export default function RestaurantOnlinePage() {
     void loadProfile();
     void loadProducts();
   }, [loadProfile, loadProducts]);
+
+  // File de modération des avis (RESTO-902) : avis en attente de la branche.
+  const loadReviews = useCallback(async () => {
+    if (branchId === null) return;
+    setReviewError('');
+    try {
+      const res = await apiFetch(`/restaurant/reviews?status=pending&branch_id=${branchId}&per_page=50`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const payload = (await res.json()) as { data?: PendingReview[] };
+      setReviews(Array.isArray(payload?.data) ? payload.data : []);
+      setReviewsAvailable(true);
+    } catch {
+      // Le module peut être absent sur un déploiement plus ancien : on
+      // dégrade proprement au lieu de casser la page.
+      setReviewsAvailable(false);
+      setReviews([]);
+    }
+  }, [branchId]);
+
+  useEffect(() => {
+    void loadReviews();
+  }, [loadReviews]);
+
+  const moderateReview = async (review: PendingReview, action: 'publish' | 'reject') => {
+    setReviewError('');
+    try {
+      const res = await apiFetch(`/restaurant/reviews/${review.id}/${action}`, { method: 'POST' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      // L'avis quitte la file « en attente ».
+      setReviews((prev) => prev.filter((r) => r.id !== review.id));
+    } catch {
+      setReviewError(t(locale, 'restaurant.online.reviewActionError'));
+    }
+  };
 
   const update = (patch: Partial<ProfileForm>) => {
     setSaved(false);
@@ -445,11 +473,60 @@ export default function RestaurantOnlinePage() {
           </section>
 
           <section
-            data-testid="restaurant-reviews-coming-soon"
-            className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5"
+            data-testid="restaurant-reviews"
+            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
           >
             <h3 className="font-bold text-slate-900">{t(locale, 'restaurant.online.reviewsTitle')}</h3>
-            <p className="mt-3 text-sm text-slate-500">{t(locale, 'restaurant.online.reviewsComingSoon')}</p>
+            {reviewError ? (
+              <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{reviewError}</p>
+            ) : null}
+            {!reviewsAvailable ? (
+              <p className="mt-3 text-sm text-slate-500">{t(locale, 'restaurant.online.reviewsComingSoon')}</p>
+            ) : reviews.length === 0 ? (
+              <p className="mt-3 text-sm text-slate-500">{t(locale, 'restaurant.online.reviewsEmpty')}</p>
+            ) : (
+              <ul className="mt-4 space-y-3">
+                {reviews.map((review) => (
+                  <li
+                    key={review.id}
+                    className="rounded-xl border border-slate-200 p-4"
+                    data-testid={`restaurant-review-${review.id}`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-slate-800">
+                          {review.author_name ?? '—'}
+                          {typeof review.rating === 'number' ? (
+                            <span className="ml-2 text-amber-600" aria-label={`${review.rating}/5`}>
+                              {'★'.repeat(Math.max(0, Math.min(5, review.rating)))}
+                            </span>
+                          ) : null}
+                        </p>
+                        {review.comment ? (
+                          <p className="mt-1 text-sm text-slate-600">{review.comment}</p>
+                        ) : null}
+                      </div>
+                      <div className="flex shrink-0 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => void moderateReview(review, 'publish')}
+                          className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-bold text-white"
+                        >
+                          {t(locale, 'restaurant.online.reviewPublish')}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => void moderateReview(review, 'reject')}
+                          className="rounded-lg bg-slate-200 px-3 py-1 text-xs font-bold text-slate-700"
+                        >
+                          {t(locale, 'restaurant.online.reviewReject')}
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         </>
       )}

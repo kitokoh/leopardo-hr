@@ -52,7 +52,7 @@ function mockRoutes(overrides: Record<string, (init?: RequestInit) => Response |
     if (endpoint.startsWith('/restaurant/branches?')) return Promise.resolve(jsonResponse(branches));
     if (endpoint.includes('/public-profile')) return Promise.resolve(jsonResponse(profile));
     if (endpoint.startsWith('/restaurant/products?')) return Promise.resolve(jsonResponse(products));
-    if (endpoint.startsWith('/restaurant/reviews')) return Promise.reject(new Error('network'));
+    if (endpoint.startsWith('/restaurant/reviews')) return Promise.resolve(jsonResponse({ data: [] }));
     return Promise.resolve(jsonResponse({ data: [] }));
   });
 }
@@ -85,8 +85,36 @@ it('affiche le profil public de la première branche et ses plats', async () => 
   expect(screen.getByText('Salade maison')).toBeInTheDocument();
   expect(screen.queryByText('Pizza Nord')).not.toBeInTheDocument();
 
-  // Avis : endpoints RESTO-902 absents → état « module à venir »
-  expect(screen.getByText(/RESTO-902/)).toBeInTheDocument();
+  // Avis : la file de modération est chargée (RESTO-902 livré).
+  expect(screen.getByTestId('restaurant-reviews')).toBeInTheDocument();
+  expect(screen.getByText('Aucun avis en attente.')).toBeInTheDocument();
+});
+
+it('publie un avis en attente (POST) et le retire de la file', async () => {
+  const calls: string[] = [];
+  mockRoutes({
+    '/restaurant/reviews?': () =>
+      jsonResponse({
+        data: [{ id: 7, author_name: 'Awa', rating: 5, comment: 'Excellent !', created_at: '2026-11-20T10:00:00Z' }],
+      }),
+    '/restaurant/reviews/7/publish': () => {
+      calls.push('publish');
+      return jsonResponse({ data: { id: 7, status: 'published' } });
+    },
+  });
+
+  render(<RestaurantOnlinePage />);
+
+  await waitFor(() => {
+    expect(screen.getByText('Awa')).toBeInTheDocument();
+  });
+
+  await userEvent.click(screen.getByRole('button', { name: 'Publier' }));
+
+  await waitFor(() => {
+    expect(calls).toEqual(['publish']);
+    expect(screen.queryByText('Awa')).not.toBeInTheDocument();
+  });
 });
 
 it('bascule la publication d\'un plat (PATCH) avec état optimiste', async () => {

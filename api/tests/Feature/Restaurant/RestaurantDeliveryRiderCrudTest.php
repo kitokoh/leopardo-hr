@@ -82,8 +82,14 @@ class RestaurantDeliveryRiderCrudTest extends TestCase
         $company = $this->company();
         $this->ordinaryEmployee($company);
 
+        // Une succursale RÉELLE : avec `branch_id => 1` la validation
+        // `exists` répondait 422 avant même d'atteindre la policy, et le test
+        // ne vérifiait donc pas le RBAC mais la validation.
+        /** @var RestaurantBranch $branch */
+        $branch = RestaurantBranch::factory()->create(['company_id' => $company->id]);
+
         $this->postJson('/api/v1/restaurant/delivery-riders', [
-            'branch_id' => 1,
+            'branch_id' => $branch->id,
             'name' => 'Nope',
         ])->assertStatus(403);
     }
@@ -91,7 +97,12 @@ class RestaurantDeliveryRiderCrudTest extends TestCase
     public function test_manager_can_update_and_delete_rider(): void
     {
         $company = $this->company();
-        $this->manager($company, 'manager');
+        // `manager_role` n'accepte que principal|rh|dept|comptable|superviseur
+        // (enum SQL). 'manager' n'existe pas : le test passait un rôle
+        // inexistant, donc `hasManagerRole()` répondait toujours false et
+        // l'écriture était refusée en 403. Le cas visé est « un gérant
+        // habilité écrit » → 'rh'.
+        $this->manager($company, 'rh');
 
         /** @var RestaurantBranch $branch */
         $branch = RestaurantBranch::factory()->create(['company_id' => $company->id]);

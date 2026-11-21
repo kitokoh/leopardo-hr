@@ -94,7 +94,10 @@ class RestaurantDeliveryTest extends TestCase
                 ->assertJsonPath('data.status', DeliveryStatus::DELIVERED->value);
 
             $this->assertNotNull($delivery->refresh()->delivered_at);
-            $this->assertSame('closed', $order->refresh()->status->value);
+            // Cycle documenté : … → ready → served → paid → closed.
+            // Une livraison terminée rend la commande `served` (facturable),
+            // pas `closed` (recette UAT R3).
+            $this->assertSame('served', $order->refresh()->status->value);
 
             return ['delivery' => $delivery->id];
         });
