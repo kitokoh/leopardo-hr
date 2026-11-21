@@ -188,6 +188,14 @@ jobs:
       - name: MCP manifest drift guard (issue #9738)
         run: bash dev-hub/tools/check-mcp-manifest-drift.sh .
 
+      - name: MCP OpenAPI tools drift guard (issue #9746)
+        # Le manifeste généré depuis api/openapi.yaml doit rester synchrone avec
+        # la spec : une route ajoutée sans régénération servirait un contrat
+        # périmé au client MCP, silencieusement.
+        run: |
+          python3 -m pip install --user --break-system-packages pyyaml
+          bash dev-hub/tools/check-mcp-openapi-tools-drift.sh .
+
       - name: Public docs — no PII guard (issue #7982)
         run: bash dev-hub/tools/check-public-docs-no-pii.sh origin/main
 
