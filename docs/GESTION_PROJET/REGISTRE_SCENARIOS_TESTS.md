@@ -1,3 +1,21 @@
+## 2026-11-21 — Fixture de promotion déterministe : la factory n'impose plus aucune contrainte métier (issue #9744)
+
+Surface : `api/database/factories/RestaurantPromotionFactory.php`, `api/tests/Feature/Restaurant/RestaurantPromotionTest.php`. Aucune route, aucune migration, aucun contrat d'API modifié.
+
+**Pourquoi c'est un scénario de test** : l'instabilité était dans la **fixture**, pas dans le produit — et elle frappait un test qui n'avait jamais fixé le seuil qu'il subissait.
+
+1. `RestaurantPromotionCrudTest::test_valid_promotion_applies_and_increments_usage` échouait sur `main` en **422 au lieu de 200** (run `44897018984`, `c02e29f96`) et passait sur un autre commit voisin (run `44915609227`, `94add907c`).
+2. Cause : `RestaurantPromotionFactory` tirait `min_order_minor` avec `optional()->numberBetween(500, 20000)` ; la commande du test vaut 10 000 → `BillCalculator::resolvePromotion()` refuse en 422 « Order does not reach the promotion minimum. » dans ~24 % des exécutions.
+3. #9714 avait corrigé le cas `RestaurantOrderBillTest` **dans le test**, laissant la factory tirer les quatre contraintes métier au hasard : la dette restait armée pour tout nouveau test.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| une promotion créée par la factory est applicable sans contrainte (seuil, plafond, fenêtre à `null`) | la moitié des fixtures héritent d'un seuil tiré entre 500 et 20 000 : tout test qui ne le fixe pas échoue en 422 de façon intermittente (~1 fois sur 4), et un rouge de fixture se lit comme une régression produit |
+| elle est **active** par défaut | même famille pour `is_active` : la factory tirait `boolean(80)` avant #8660, ~1 échec sur 5, sans qu'aucun code n'ait changé |
+| un test qui veut un seuil, un plafond ou une fenêtre le déclare explicitement | un test de refus (expirée, épuisée, sous le minimum) qui s'appuierait sur un tirage aléatoire ne testerait pas le cas qu'il annonce |
+
+**Couverture exécutée** — `php -l` sur les fichiers touchés. **Non couvert** — exécution locale de PHPUnit (pas de PostgreSQL dans l'espace de travail, `api/vendor` symlinké) : la mesure est le run CI.
+
 ## 2026-11-21 — RestaurantManager : observabilité, modération des avis, kit de recette R2–R11 (PR #9727)
 
 Surface : `api/routes/modules/restaurantmanager.php` (4 routes), `api/app/Modules/RestaurantManager/` (contrôleurs métriques + modération, modèle `RestaurantReview`), `api/database/migrations/tenant/2026_11_21_000100_9713_add_reply_to_restaurant_reviews.php`, `api/database/seeders/RestaurantUatSeeder.php`, `front/web/src/app/(dashboard)/restaurant/online/page.tsx`, `front/admin-dashboard/src/i18n/locales/`, `front/mobile_apps/leopardo_core/lib/l10n/`, `shared/i18n/locales/`.
