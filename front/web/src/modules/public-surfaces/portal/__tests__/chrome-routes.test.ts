@@ -47,18 +47,45 @@ function collectSourceFiles(dir: string): string[] {
   });
 }
 
-/** Extrait les `href` littéraux (`href="/x"`), ignore les `href={…}` dynamiques. */
+/**
+ * Extrait les `href` littéraux, sous les deux formes utilisées dans le module :
+ *
+ *  - JSX : `href="/x"` ;
+ *  - objet de navigation : `{ href: '/x', label: … }`.
+ *
+ * ## Pourquoi la seconde forme compte (#9657)
+ *
+ * L'extracteur ne lisait que la forme JSX. Or `PublicPortalNav` déclare ses
+ * entrées dans un tableau d'objets `{ href: '/billets', … }` : les liens de
+ * navigation étaient donc **invisibles** pour cette garde. C'est précisément
+ * pourquoi trois verticales ont pu manquer à l'en-tête sans qu'aucun test ne
+ * bronche — la garde vérifiait les liens qu'elle savait voir, pas ceux qui
+ * existaient.
+ */
 function extractHrefs(source: string): string[] {
   const hrefs = new Set<string>();
-  const pattern = /href=["'](\/[^"']*)["']/g;
-  let match: RegExpExecArray | null;
-  while ((match = pattern.exec(source)) !== null) {
-    hrefs.add(match[1]);
+  const patterns = [/href=["'](\/[^"']*)["']/g, /href:\s*["'](\/[^"']*)["']/g];
+  for (const pattern of patterns) {
+    let match: RegExpExecArray | null;
+    while ((match = pattern.exec(source)) !== null) {
+      hrefs.add(match[1]);
+    }
   }
   return [...hrefs];
 }
 
-/** Surfaces du portail : accueil + 5 annuaires de verticale. */
+/**
+ * Surfaces du portail : accueil + les annuaires de verticale.
+ *
+ * ## Pourquoi cette liste a grandi (#9657)
+ *
+ * Elle était figée sur 6 entrées alors que le registre en déclare 8. Trois
+ * verticales livrées après sa création — `/billets` (#9593), `/pharmacies`
+ * (#9592) et `/emploi` (#9629) — n'avaient **jamais** été ajoutées à la
+ * navigation du portail : elles existaient, elles étaient indexées, et elles
+ * restaient inatteignables depuis l'en-tête. Une garde qui recopie une liste
+ * au lieu de la lire ne signale pas l'oubli : elle le valide.
+ */
 const PORTAL_SURFACES = [
   '/decouvrir',
   '/restaurants',
@@ -66,6 +93,9 @@ const PORTAL_SURFACES = [
   '/operateurs',
   '/entreprises',
   '/stay',
+  '/billets',
+  '/pharmacies',
+  '/emploi',
 ] as const;
 
 describe('public-portal — cohérence chrome ↔ routes', () => {
@@ -83,14 +113,24 @@ describe('public-portal — cohérence chrome ↔ routes', () => {
     expect(dead).toEqual([]);
   });
 
-  it('relie les 6 surfaces du portail (accueil + 5 annuaires)', () => {
+  it('relie toutes les surfaces du portail', () => {
     for (const href of PORTAL_SURFACES) {
       expect(hrefs).toContain(href);
     }
   });
 
   it('déclare un libellé de navigation non vide pour chaque surface, dans les 4 langues', () => {
-    const keys = ['discover', 'restaurants', 'shops', 'operators', 'companies', 'stays'] as const;
+    const keys = [
+      'discover',
+      'restaurants',
+      'shops',
+      'operators',
+      'companies',
+      'stays',
+      'tickets',
+      'pharmacies',
+      'jobs',
+    ] as const;
     for (const locale of PUBLIC_PORTAL_LOCALES) {
       const chrome = getPublicPortalCopy(locale).chrome;
       for (const key of keys) {
