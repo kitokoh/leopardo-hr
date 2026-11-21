@@ -26,10 +26,10 @@ Mot de passe commun : `recette123` (mot de passe de démonstration, jamais un se
 
 | Rôle | Identifiant | Ce qu'il peut faire | Ce qu'il ne peut pas |
 |---|---|---|---|
-| Directrice (principal) | `principal@resto.recette.leopardo.test` | tout, y compris métriques et rapports | — |
-| Gérant de succursale | `gerant@resto.recette.leopardo.test` | modération des avis, opérations de la succursale publique | métriques techniques, succursale privée |
-| Serveur | `serveur@resto.recette.leopardo.test` | caisse, commandes, tables | modération, rapports, métriques |
-| Livreur | `livreur@resto.recette.leopardo.test` | ses livraisons | tout le reste |
+| Directrice (principal) | `principal@example.com` | tout, y compris métriques et rapports | — |
+| Gérant de succursale | `gerant@example.com` | modération des avis, opérations de la succursale publique | métriques techniques, succursale privée |
+| Serveur | `serveur@example.com` | caisse, commandes, tables | modération, rapports, métriques |
+| Livreur | `livreur@example.com` | ses livraisons | tout le reste |
 
 ### 1.3 Surfaces à ouvrir
 
