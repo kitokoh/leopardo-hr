@@ -72,10 +72,10 @@ Le pilote `restaurantmanager` est enregistré dans `dev-hub/tools/pilot-gates.js
 
 | État | Gates |
 |---|---|
-| ✅ `validated` (6) | manifest, core_flow, api_security, runbook, security_review, golden_journey |
-| ⏳ `pending` (3) | performance, observability, recette |
+| ✅ `validated` (7) | manifest, core_flow, api_security, runbook, security_review, performance, golden_journey |
+| ⏳ `pending` (2) | observability, recette |
 
-`go_decision: pending` — le GO pilote exige la validation des 3 gates restants.
+`go_decision: pending` — le GO pilote exige la validation des 2 gates restants.
 
 ## 5. Dette identifiée (2026-10-09)
 
