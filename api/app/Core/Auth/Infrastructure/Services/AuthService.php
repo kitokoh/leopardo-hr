@@ -11,6 +11,7 @@ use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
 use App\Exceptions\EmployeeNotActiveException;
 use App\Exceptions\InvalidCredentialsException;
+use App\Support\SearchPathGuard;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -283,14 +284,18 @@ readonly class AuthService
             $lookupSchema = is_string($lookup->schema_name ?? null) ? $lookup->schema_name : null;
 
             if ($lookupSchema && $this->isSafeSchemaName($lookupSchema) && $this->tenantEmployeesTableExists($lookupSchema)) {
-                $this->setTenantSearchPath($lookupSchema);
-
+                // Issue #9115 — la bascule tenant n'était jamais rendue : la
+                // session restait sur le schéma de l'employé pour le reste de
+                // la requête (42P01 / 25P02 en cascade).
                 /** @var Employee|null $employee */
-                $employee = Employee::withoutGlobalScopes()
-                    ->with('company')
-                    ->where('company_id', $lookup->company_id)
-                    ->where('id', $lookup->employee_id)
-                    ->first();
+                $employee = SearchPathGuard::run(
+                    $this->formatSearchPath([$lookupSchema, 'public']),
+                    fn (): ?Employee => Employee::withoutGlobalScopes()
+                        ->with('company')
+                        ->where('company_id', $lookup->company_id)
+                        ->where('id', $lookup->employee_id)
+                        ->first(),
+                );
 
                 if ($employee instanceof Employee) {
                     return $employee;
@@ -695,7 +700,11 @@ readonly class AuthService
 
     private function setTenantSearchPath(string $schema): void
     {
-        DB::statement('SET search_path TO '.$this->formatSearchPath([$schema, 'public']));
+        // Issue #9115 — SQL centralisé dans le garde (point d'audit unique).
+        // La restauration reste portée par le `finally` de l'appelant :
+        // `login()`, `loginViaEmail()`, `resolveEmployeeByEmail()` et
+        // `findEmployeeInTenantSchemas()` en ont tous un.
+        SearchPathGuard::set($this->formatSearchPath([$schema, 'public']));
     }
 
     /**

@@ -7,6 +7,7 @@ namespace App\Core\Auth\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Mail\PasswordResetMail;
 use App\Shared\Rules\PasswordPolicy;
+use App\Support\SearchPathGuard;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -290,6 +291,9 @@ class PasswordResetController
 
     private function setTenantSearchPath(string $schema): void
     {
-        DB::statement('SET search_path TO '.$schema.',public');
+        // Issue #9115 — SQL centralisé dans le garde (point d'audit unique).
+        // La restauration reste portée par le `finally` de l'appelant
+        // (`reset()` et `resolveEmployeeAnywhere()` en ont un).
+        SearchPathGuard::set($schema.',public');
     }
 }

@@ -40,6 +40,9 @@ SCAN_ROOT = "api/app/"
 # correction est couverte par les tests de TenantManager, pas par ce ratchet.
 OWNED_FILES = {
     "api/app/Core/Tenant/TenantManager.php",
+    # Le garde lui-meme : `set()` / `restore()` sont l'implementation unique du
+    # SQL brut, et `run()` porte le `finally`. C'est le point d'audit.
+    "api/app/Support/SearchPathGuard.php",
 }
 
 SET_LITERAL = re.compile(r"statement\(\s*(['\"])(SET\s+search_path[^'\"]*)\1", re.IGNORECASE)
@@ -103,8 +106,6 @@ def find_unsafe() -> list[tuple[str, int]]:
         if not path.is_file():
             continue
         text = path.read_text(encoding="utf-8", errors="replace")
-        if "SearchPathGuard" in text:
-            continue
         if rel in OWNED_FILES:
             continue
         for match in SET_LITERAL.finditer(text):

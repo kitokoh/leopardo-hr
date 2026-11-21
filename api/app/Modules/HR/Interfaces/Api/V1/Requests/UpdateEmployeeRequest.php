@@ -9,6 +9,7 @@ use App\Modules\HR\Infrastructure\Services\RoleInvitationService;
 use App\Rules\GlobalEmailUnique;
 use App\Rules\ValidIban;
 use App\Shared\Rules\PasswordPolicy;
+use App\Support\SearchPathGuard;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -172,25 +173,51 @@ class UpdateEmployeeRequest extends FormRequest
             }
         }
 
-        if (DB::getDriverName() !== 'pgsql') {
+    }
+
+    /**
+     * Issue #9115 — même correctif que `StoreEmployeeRequest` : le
+     * `search_path` tenant reste posé pendant la validation (les règles
+     * `Rule::unique` / `Rule::exists` lisent les tables du tenant) et est rendu
+     * à son état d'entrée par le `finally` de `SearchPathGuard::run()`,
+     * y compris sur `ValidationException`.
+     */
+    public function validateResolved(): void
+    {
+        $searchPath = $this->tenantSearchPath();
+
+        if ($searchPath === null) {
+            parent::validateResolved();
+
             return;
+        }
+
+        SearchPathGuard::run($searchPath, function (): void {
+            parent::validateResolved();
+        });
+    }
+
+    /**
+     * `search_path` du tenant courant, ou null si aucune bascule n'a lieu
+     * (driver non PostgreSQL, tenant non résolu).
+     */
+    private function tenantSearchPath(): ?string
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return null;
         }
 
         $company = $this->user()?->company
             ?? (app()->bound('current_company') ? currentCompany() : null);
 
         if (! $company instanceof Company) {
-            return;
+            return null;
         }
 
-        $schemaName = $company->schema_name;
-
-        if ($company->tenancy_type === 'schema' && $schemaName !== '') {
-            DB::statement('SET search_path TO '.$company->getSafeSearchPath());
-
-            return;
+        if ($company->tenancy_type === 'schema' && (string) $company->schema_name !== '') {
+            return $company->getSafeSearchPath();
         }
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        return 'shared_tenants,public';
     }
 }
