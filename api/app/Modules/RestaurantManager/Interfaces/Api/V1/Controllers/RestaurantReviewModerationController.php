@@ -144,9 +144,15 @@ class RestaurantReviewModerationController extends Controller
             'reply' => ['required', 'string', 'min:1', 'max:2000'],
         ]);
 
+        // `replied_by` est une colonne `unsignedBigInteger` castée `integer` :
+        // l'annotation porte l'invariant `int<0, max>` jusqu'au modèle, comme
+        // `deposit_minor` dans RestaurantReservationController.
+        /** @var int<0, max> $repliedBy */
+        $repliedBy = (int) $actor->getKey();
+
         $review->reply = trim($validated['reply']);
         $review->replied_at = now();
-        $review->replied_by = (int) $actor->getKey();
+        $review->replied_by = $repliedBy;
         $review->save();
 
         /** @var RestaurantBranch|null $branch */
