@@ -93,10 +93,18 @@ class PublicPortalEndToEndTest extends TestCase
             ->assertJsonPath('data.status', 'published');
 
         // 4. L'offre est désormais publique, avec son titre.
+        //
+        // Comme au point 2, on n'assert pas un comptage global de `data` : la
+        // charge concatène les offres du tenant et le catalogue plateforme du
+        // pays (`PublicJobCatalog::externalOffers`), donc `assertJsonCount(1)`
+        // ne tient que si aucun autre test du worker n'a laissé d'offre agrégée
+        // sur le pays tiré au hasard par `CompanyFactory`. Ce qui est vrai est
+        // plus précis : une seule offre DU TENANT est publiée, et c'est celle
+        // qu'on vient de créer.
         $listing = $this->getJson("/api/v1/public/careers/{$company->slug}");
         $listing->assertOk();
-        $listing->assertJsonCount(1, 'data');
-        $listing->assertJsonPath('data.0.title', 'Ingénieur DevOps');
+        $listing->assertJsonPath('meta.counts.company', 1);
+        $listing->assertJsonFragment(['id' => $jobId, 'title' => 'Ingénieur DevOps']);
 
         // Le détail est accessible sans authentification.
         $this->getJson("/api/v1/public/careers/{$company->slug}/jobs/{$jobId}")
@@ -128,7 +136,21 @@ class PublicPortalEndToEndTest extends TestCase
 
         $xml = simplexml_load_string($body);
         $this->assertNotFalse($xml, 'Le flux doit être un XML valide.');
-        $this->assertCount(1, $xml->job);
+
+        // `buildXmlFeed()` ajoute lui aussi le catalogue plateforme : le flux
+        // n'a donc pas une seule entrée. On vérifie que l'offre du tenant y
+        // figure exactement une fois — les offres agrégées portent le préfixe
+        // `ext-`, donc leur `referencenumber` ne peut pas collisionner.
+        $references = [];
+        foreach ($xml->job as $entry) {
+            $references[] = (string) $entry->referencenumber;
+        }
+
+        $this->assertSame(
+            1,
+            count(array_keys($references, (string) $jobId, true)),
+            'Le flux doit contenir l\'offre du tenant une seule fois.'
+        );
     }
 
     /**
