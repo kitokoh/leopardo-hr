@@ -389,15 +389,27 @@ class IdentityAccessControlAuditTest extends TestCase
     }
 
     /**
-     * Constat de session mobile — le TTL est bien de 30 jours sur le chemin
-     * de login principal (`AuthService::login()`), conformément à ADR-0025.
+     * Le TTL par défaut est de 12 h (720 min) — #9344.
+     *
+     * ADR-0025 prévoyait 30 jours ; l'audit sécurité du 2026-11-10 a ramené
+     * la fenêtre d'exposition d'un jeton VOLÉ à 12 h sur une application qui
+     * porte la paie, les bulletins, les IBAN et les données biométriques.
+     * La session longue reste servie aux appareils ENRÔLÉS via
+     * `sanctum.device_expiration` (30 j) et aux utilisateurs ACTIFS via
+     * `TokenAutoRefreshMiddleware` — jamais par le TTL par défaut.
      */
-    public function test_sanctum_default_expiration_is_thirty_days(): void
+    public function test_sanctum_default_expiration_is_twelve_hours(): void
     {
         $this->assertSame(
-            43200,
+            720,
             (int) config('sanctum.expiration'),
-            'TTL Sanctum par défaut = 43 200 min (30 jours), ADR-0025.',
+            'TTL Sanctum par défaut = 720 min (12 h), #9344.',
+        );
+
+        $this->assertSame(
+            43200,
+            (int) config('sanctum.device_expiration'),
+            'Les appareils enrôlés conservent 30 jours (43 200 min).',
         );
     }
 

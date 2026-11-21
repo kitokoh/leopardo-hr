@@ -143,7 +143,7 @@ class RestaurantMetricsController extends Controller
 
         foreach ($rules as $key => $rule) {
             $value = (int) ($counters[$key] ?? 0);
-            $threshold = (int) ($rule['threshold'] ?? 0);
+            $threshold = (int) $rule['threshold'];
 
             // Un seuil à 0 désactive la règle (utile pour un tenant qui ne
             // veut pas être alerté sur un compteur donné).
@@ -153,10 +153,10 @@ class RestaurantMetricsController extends Controller
 
             $alerts[] = [
                 'key' => $key,
-                'severity' => (string) ($rule['severity'] ?? 'warning'),
+                'severity' => (string) $rule['severity'],
                 'value' => $value,
                 'threshold' => $threshold,
-                'message' => (string) ($rule['message'] ?? $key),
+                'message' => (string) $rule['message'],
             ];
         }
 

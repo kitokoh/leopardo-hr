@@ -58,7 +58,7 @@ class TravelPartnerAuthMiddleware
             // La lecture est donc explicitement non scopée, et le hash
             // SHA-256 (unique) reste le seul critère de sélection.
             $apiKey = TravelCarrierApiKey::query()
-                ->withoutGlobalScopes()
+                ->crossTenantForSystemTask('authentification transporteur : la clé API résout le tenant, elle ne peut pas être lue dans un tenant (#9741)')
                 ->where('api_key_hash', hash('sha256', $token))
                 ->first();
 
@@ -77,7 +77,7 @@ class TravelPartnerAuthMiddleware
             // #9741 — même raison : le transporteur est résolu APRÈS la clé,
             // donc avant que le contexte tenant ne soit posé.
             $carrier = TravelCarrier::query()
-                ->withoutGlobalScopes()
+                ->crossTenantForSystemTask('authentification transporteur : le transporteur est résolu après la clé, avant que le contexte tenant ne soit posé (#9741)')
                 ->whereKey($apiKey->carrier_id)
                 ->first();
 

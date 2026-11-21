@@ -11,6 +11,7 @@ use App\Core\Feature\Infrastructure\Services\ModuleRegistryGateway;
 use App\Core\Solutions\SolutionActivator;
 use App\Events\SolutionActivated;
 use App\Http\Controllers\Controller;
+use App\Modules\Platform\Interfaces\Api\V1\Requests\UpdateCompanyFeaturesRequest;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -38,14 +39,11 @@ class PlatformCompanyFeatureController extends Controller
         ]);
     }
 
-    public function update(Request $request, string $companyId): JsonResponse
+    public function update(UpdateCompanyFeaturesRequest $request, string $companyId): JsonResponse
     {
         $company = PlatformCompanyLookup::findOrFail($companyId);
 
-        $validated = $request->validate([
-            'features' => ['required', 'array'],
-            'features.*' => ['boolean'],
-        ]);
+        $validated = $request->validated();
 
         $before = $company->features ?? [];
 
