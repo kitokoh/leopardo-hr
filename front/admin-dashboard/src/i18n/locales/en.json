@@ -1938,7 +1938,11 @@
     "accountingConfig": "Setting",
     "fuelStationHub": "Gas station hub",
     "fuelStationOps": "Operations",
-    "discoverySettings": "Public discovery"
+    "discoverySettings": "Public discovery",
+    "forbidden": "Access denied",
+    "forbiddenTitle": "You don’t have access to this screen",
+    "forbiddenText": "Your account lacks the required permission. Ask an administrator for access, or go back to the dashboard.",
+    "forbiddenBack": "Back to dashboard"
   },
   "webhooks": {
     "confirm_delete": "Delete this webhook?",

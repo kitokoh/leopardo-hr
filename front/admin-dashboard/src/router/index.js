@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useLocaleStore } from '@/stores/locale'
 import { translate } from '@/i18n/index.js'
+import { createAuthGuard } from './guards'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import FuelManagerView from '@/views/fuel/FuelManagerView.vue'
@@ -30,6 +31,20 @@ const routes = [
     meta: {
       requiresAuth: true,
       title: 'navigation.logout'
+    }
+  },
+  {
+    // Cible du guard quand `meta.permission` n'est pas satisfaite.
+    //
+    // Une page dédiée plutôt qu'une redirection silencieuse vers `/` : un
+    // admin qui suit un favori vers un écran interdit doit comprendre qu'il
+    // n'a pas le droit, pas croire que son lien est cassé.
+    path: '/forbidden',
+    name: 'forbidden',
+    component: () => import('@/views/auth/ForbiddenView.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'navigation.forbidden'
     }
   },
   {
@@ -824,36 +839,21 @@ const router = createRouter({
 // #7305 — Vue Router 5 déprécie la fonction `next()` (avertissement
 // VUE_ROUTER_R0025) : un guard retourne désormais la route cible (redirection)
 // ou `true` pour laisser passer.
-router.beforeEach(async (to) => {
-  NProgress.start()
-
-  const authStore = useAuthStore()
-
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    if (authStore.token) {
-      const isValid = await authStore.checkAuth()
-      if (!isValid) {
-        return '/login'
-      }
-    } else {
-      return '/login'
-    }
-  }
-
-  // Rediriger vers dashboard si déjà connecté et tentative d'accès au login
-  if (to.name === 'login' && authStore.isAuthenticated) {
-    return '/'
-  }
-
-  // Mettre à jour le titre de la page dans la locale active.
-  if (to.meta.title) {
-    const localeStore = useLocaleStore()
-    const title = translate(localeStore.current, to.meta.title, to.meta.title)
-    document.title = `${title} - Leopardo Admin`
-  }
-
-  return true
-})
+//
+// Le guard vit dans `./guards.js` pour être testable sans monter un router :
+// c'est lui qui décide qui voit quoi, il ne peut pas rester hors de portée des
+// tests unitaires. Voir le commentaire du module pour le manquement `meta.permission`.
+router.beforeEach(
+  createAuthGuard({
+    useAuthStore,
+    useLocaleStore,
+    translate,
+    nprogress: NProgress,
+    setTitle: (title) => {
+      document.title = title
+    },
+  }),
+)
 
 router.afterEach(() => {
   NProgress.done()

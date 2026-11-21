@@ -6,12 +6,19 @@ import {
   SurfaceCta,
   SurfaceMeta,
   SurfaceNotice,
+  SurfacePagination,
+  SurfaceSearchBar,
   SurfaceSectionTitle,
   SurfaceShell,
+  filterByQuery,
+  paginateList,
   type SurfaceIdentity,
 } from '../../kernel';
 import { getSurfaceCopy } from '../../copy/surfaces-copy';
 import { splitOffers, type JobsResult } from '../application/load-jobs';
+
+/** Offres affichées par page sur la fiche d'une entreprise. */
+const OFFERS_PER_PAGE = 15;
 
 /**
  * Liste des offres d'une entreprise (#9629).
@@ -33,15 +40,35 @@ export function CompanyJobsSurface({
   result,
   companySlug,
   locale,
+  searchParams,
 }: {
   identity: SurfaceIdentity;
   result: JobsResult;
   companySlug: string;
   locale?: string;
+  /**
+   * Filtres actifs de la fiche (`?q=`, `?page=`), relus depuis l'URL.
+   *
+   * La page lisait déjà `q`/`contract_type`/`remote_policy` depuis l'URL, mais
+   * n'affichait aucun champ : le filtre n'était atteignable qu'en éditant
+   * l'URL à la main. Et une entreprise qui publie 60 offres les rendait toutes
+   * d'un coup, sans contrôle de pagination.
+   */
+  searchParams?: { q?: string; page?: number };
 }) {
   const copy = getSurfaceCopy(locale);
   const shared = copy.shared;
-  const { company, external } = splitOffers(result.cards);
+  const basePath = `${identity.basePath}/${companySlug}`;
+
+  const filtered = filterByQuery(result.cards, searchParams?.q, (card) => [
+    card.offer.title,
+    card.offer.location,
+    card.offer.companyName,
+    card.contractLabel,
+    card.remoteLabel,
+  ]);
+  const page = paginateList(filtered, searchParams?.page, OFFERS_PER_PAGE);
+  const { company, external } = splitOffers(page.items);
 
   return (
     <SurfaceShell identity={identity}>
@@ -63,8 +90,22 @@ export function CompanyJobsSurface({
           {result.companyName}
         </h1>
         <SurfaceMeta identity={identity}>
-          {result.cards.length} {shared.product}
+          {page.total} {shared.product}
         </SurfaceMeta>
+
+        <div style={{ marginTop: '1.25rem' }}>
+          <SurfaceSearchBar
+            identity={identity}
+            basePath={basePath}
+            defaultQuery={searchParams?.q}
+            labels={{
+              searchLabel: shared.searchLabel,
+              searchPlaceholder: shared.searchPlaceholder,
+              searchSubmit: shared.searchSubmit,
+              searchReset: shared.searchReset,
+            }}
+          />
+        </div>
 
         {result.failed ? (
           <div style={{ marginTop: '1.25rem' }}>
@@ -75,6 +116,12 @@ export function CompanyJobsSurface({
         ) : null}
 
         {!result.failed && result.cards.length === 0 ? (
+          <div style={{ marginTop: '1.25rem' }}>
+            <SurfaceNotice identity={identity}>{shared.empty}</SurfaceNotice>
+          </div>
+        ) : null}
+
+        {!result.failed && result.cards.length > 0 && page.items.length === 0 ? (
           <div style={{ marginTop: '1.25rem' }}>
             <SurfaceNotice identity={identity}>{shared.empty}</SurfaceNotice>
           </div>
@@ -164,6 +211,21 @@ export function CompanyJobsSurface({
             </ul>
           </section>
         ) : null}
+
+        <div style={{ marginTop: '1.75rem' }}>
+          <SurfacePagination
+            identity={identity}
+            basePath={basePath}
+            page={page.page}
+            lastPage={page.lastPage}
+            searchParams={{ q: searchParams?.q }}
+            labels={{
+              previous: shared.previousPage,
+              next: shared.nextPage,
+              pageOf: shared.pageOf,
+            }}
+          />
+        </div>
 
         <div style={{ marginTop: '1.75rem' }}>
           <SurfaceCta identity={identity} href={`/emploi/${companySlug}/suivi`}>

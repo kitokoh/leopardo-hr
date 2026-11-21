@@ -62,6 +62,10 @@ REGISTRY=(
   $'mobilite.leopardo.app\ttarget'
   # #9629 — vitrine Emploi (Careers), 8e surface grand public.
   $'emploi.leopardo.app\ttarget'
+  # #9704 — hôte du front web (proxy API same-origin). Référencé par les tests
+  # de `front/admin-dashboard` (`VITE_API_PROXY_BASE_URL`) : le proxy stable
+  # gagne toujours sur l'URL directe (#8707).
+  $'web.leopardo.app\ttarget'
 )
 
 errors=0

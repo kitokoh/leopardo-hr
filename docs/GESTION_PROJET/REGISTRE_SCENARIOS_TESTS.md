@@ -1,3 +1,30 @@
+## 2026-11-21 — Fiches détail des 8 verticales : pagination + recherche, et guards RBAC du router admin (PR #9716)
+
+Surface : `front/web/src/modules/public-surfaces/` (noyau `kernel/domain/list-filter.ts`, 6 fiches détail, 3 composants de verticale), `front/admin-dashboard/src/router/` (`guards.js`, `index.js`), `front/admin-dashboard/src/views/auth/ForbiddenView.vue`. Aucune route backend, aucune migration, aucun contrat d'API modifié.
+
+**Pourquoi c'est un scénario de test** : deux défauts de la même famille — un contrôle qui existe mais n'est monté nulle part, et une garde qui existe mais n'est jamais lue.
+
+1. **Fiches détail sans contrôle.** Les annuaires ont reçu recherche et pagination en #9657/#9697 ; les fiches détail sont restées sans champ. Les adaptateurs acceptaient `q`/`page` et les pages les lisaient depuis l'URL, mais **aucun contrôle à l'écran** : le filtre n'était atteignable qu'en éditant l'URL à la main, et une liste de 60 lignes s'affichait d'un bloc.
+2. **Guard RBAC qui ignore `meta.permission`.** Les routes déclarent `meta.permission` (`recruitment.view`, `search_intel.view`…) depuis #7553 et `stores/auth.js` expose `hasPermission()`, mais le `router.beforeEach` ne lisait que `requiresAuth`. Un compte connecté sans la permission atteignait l'écran par URL directe et ne se fermait qu'au premier 403 de l'API — après montage du composant, avec un écran vide plutôt qu'un refus clair. Le filtrage du menu masquait le lien : le défaut ne se voyait qu'en tapant l'URL ou en suivant un favori.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `filterByQuery` trouve « Crèmerie » sur la requête « cremerie » | la comparaison sans normalisation NFD échoue sur tout accent : un visiteur qui tape sans accent — le cas le plus fréquent sur mobile — obtient zéro résultat |
+| `filterByQuery` renvoie la liste **telle quelle** sur une requête vide | un annuaire vierge serait filtré par accident et paraîtrait vide |
+| `paginateList` ramène `?page=9` sur une liste de 3 pages à la page 3 | un lien périmé afficherait un écran blanc au lieu de la dernière page |
+| `paginateList` rend `lastPage = 1` sur une liste vide, jamais 0 | `SurfacePagination` ne s'affiche que si `lastPage > 1` : un 0 ferait disparaître le contrôle ou produirait « Page 1 sur 0 » |
+| les 6 fiches à liste montent `SurfaceSearchBar` **et** `SurfacePagination` | c'est le défaut d'origine : les primitives existaient et étaient testées, mais 4 verticales ne les montaient pas — un test de rendu sur les composants aurait passé sans jamais voir les pages qui ne les utilisent pas |
+| les 6 fiches calculent leur découpage avec `paginateList` (côté serveur) | une pagination calculée dans le navigateur laisserait la page 2 invisible pour un crawler et cassée sans JavaScript |
+| `travel` et `vtc` ne montent **aucun** contrôle de filtre | ces fiches n'ont pas de collection (`/billets/{id}` est un itinéraire avec un plan de sièges, `/operateurs/{slug}` expose 4 champs scalaires) : un champ y serait un contrôle qui ne filtre rien. La garde échoue si une liste y apparaît un jour, forçant à câbler les primitives au lieu de les oublier |
+| le guard redirige vers `/login` un anonyme sur une route protégée | sans `checkAuth` sur un token présent mais une session non établie, l'admin resterait sur un écran vide |
+| le guard redirige vers `/forbidden` un connecté **sans** `meta.permission` | c'est le manquement corrigé : l'écran se montait, appelait l'API, et n'échouait qu'au 403 |
+| le guard renvoie un anonyme vers `/login` et **pas** `/forbidden` sur une route à permission | une route publique déclarant une permission par erreur enverrait un visiteur non connecté vers un écran « accès refusé » : il n'est pas refusé, il n'est pas connecté |
+| le guard ne consulte pas `hasPermission` sur une route sans `meta.permission` | un appel superflu ferait dépendre d'une permission l'accès à un écran qui n'en déclare aucune |
+
+**Couverture exécutée** — `tsc --noEmit` PASS ; `eslint --max-warnings 0` PASS (web + admin-dashboard) ; `jest src/modules/public-surfaces` **396 passed** (dont 35 nouveaux : `list-filter.test.ts` 29, `detail-surface-wiring.test.ts` 6) ; `vitest run` admin-dashboard **100 passed** (dont 15 nouveaux : `router/__tests__/guards.test.js`) ; `check-mojibake` PASS ; `check-i18n-diff` PASS ; `shared/i18n/validators/validate.js` PASS (4 locales).
+
+**Non couvert** — e2e Playwright (backend Laravel + base requis) : la mesure est le run CI. Le job `Backend Coverage` reste rouge sur `main` depuis `b79e89873` — préexistant, hors checks requis, suivi par #9715.
+
 ## 2026-11-21 — Portail public : flux XML et listing indépendants du catalogue plateforme (issue #9696)
 
 Surface : `api/tests/Feature/PublicCareerControllerTest.php`. Aucun code applicatif, aucune route, aucune migration, aucun contrat modifié.

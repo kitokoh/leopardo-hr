@@ -1938,7 +1938,11 @@
     "accountingConfig": "Paramétrage",
     "fuelStationHub": "Hub stations-service",
     "fuelStationOps": "Opérations",
-    "discoverySettings": "Découverte publique"
+    "discoverySettings": "Découverte publique",
+    "forbidden": "Accès refusé",
+    "forbiddenTitle": "Vous n’avez pas accès à cet écran",
+    "forbiddenText": "Votre compte ne dispose pas de la permission requise. Demandez l’accès à un administrateur, ou revenez au tableau de bord.",
+    "forbiddenBack": "Retour au tableau de bord"
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?",

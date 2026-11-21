@@ -7,13 +7,21 @@ import {
   SurfaceGrid,
   SurfaceHero,
   SurfaceMeta,
+  SurfaceNotice,
+  SurfacePagination,
+  SurfaceSearchBar,
   SurfaceSectionTitle,
   SurfaceShell,
   SurfaceTenantInvitation,
+  filterByQuery,
+  paginateList,
   type SurfaceIdentity,
 } from '../../kernel';
 import { getSurfaceCopy } from '../../copy/surfaces-copy';
 import type { ShopView } from '../application/load-shop-view';
+
+/** Catégories affichées par page sur la fiche d'une boutique. */
+const CATEGORIES_PER_PAGE = 12;
 
 /**
  * Rendu de la vitrine Retail (#9594).
@@ -36,14 +44,31 @@ export function ShopSurface({
   identity,
   view,
   locale,
+  searchParams,
 }: {
   identity: SurfaceIdentity;
   view: ShopView;
   locale?: string;
+  /**
+   * Filtres actifs de la fiche (`?q=`, `?page=`), relus depuis l'URL.
+   *
+   * Une boutique peut publier des dizaines de catégories : sans champ, un
+   * visiteur qui cherche « boulangerie » dans une épicerie de 80 rayons doit
+   * faire défiler la page entière. Le filtre est rendu côté serveur pour rester
+   * partageable et crawlable.
+   */
+  searchParams?: { q?: string; page?: number };
 }) {
   const { shop, rating, catalogLabel } = view;
   const copy = getSurfaceCopy(locale);
   const shared = copy.shared;
+  const basePath = `${identity.basePath}/${shop.slug}`;
+
+  const categories = paginateList(
+    filterByQuery(shop.categories, searchParams?.q, (category) => [category.name]),
+    searchParams?.page,
+    CATEGORIES_PER_PAGE,
+  );
 
   return (
     <SurfaceShell identity={identity}>
@@ -78,17 +103,46 @@ export function ShopSurface({
               {copy.verticals.retail.exploreCta}
             </SurfaceSectionTitle>
 
-            <SurfaceGrid min="14rem">
-              {shop.categories.map((category) => (
-                <SurfaceCard key={category.name} as="li" identity={identity}>
-                  <strong style={{ fontSize: '0.95rem' }}>{category.name}</strong>
-                  <SurfaceMeta identity={identity}>
-                    {category.productsCount}{' '}
-                    {category.productsCount > 1 ? shared.products : shared.product}
-                  </SurfaceMeta>
-                </SurfaceCard>
-              ))}
-            </SurfaceGrid>
+            <SurfaceSearchBar
+              identity={identity}
+              basePath={basePath}
+              defaultQuery={searchParams?.q}
+              labels={{
+                searchLabel: shared.searchLabel,
+                searchPlaceholder: shared.searchPlaceholder,
+                searchSubmit: shared.searchSubmit,
+                searchReset: shared.searchReset,
+              }}
+            />
+
+            {categories.items.length === 0 ? (
+              <SurfaceNotice identity={identity}>{shared.empty}</SurfaceNotice>
+            ) : (
+              <SurfaceGrid min="14rem">
+                {categories.items.map((category) => (
+                  <SurfaceCard key={category.name} as="li" identity={identity}>
+                    <strong style={{ fontSize: '0.95rem' }}>{category.name}</strong>
+                    <SurfaceMeta identity={identity}>
+                      {category.productsCount}{' '}
+                      {category.productsCount > 1 ? shared.products : shared.product}
+                    </SurfaceMeta>
+                  </SurfaceCard>
+                ))}
+              </SurfaceGrid>
+            )}
+
+            <SurfacePagination
+              identity={identity}
+              basePath={basePath}
+              page={categories.page}
+              lastPage={categories.lastPage}
+              searchParams={{ q: searchParams?.q }}
+              labels={{
+                previous: shared.previousPage,
+                next: shared.nextPage,
+                pageOf: shared.pageOf,
+              }}
+            />
           </section>
         ) : null}
         <SurfaceTenantInvitation identity={identity} locale={locale} />

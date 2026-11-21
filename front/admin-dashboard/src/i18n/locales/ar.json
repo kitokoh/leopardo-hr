@@ -1938,7 +1938,11 @@
     "accountingConfig": "جلسة",
     "fuelStationHub": "محور محطة الوقود",
     "fuelStationOps": "العمليات",
-    "discoverySettings": "الاكتشاف العام"
+    "discoverySettings": "الاكتشاف العام",
+    "forbidden": "تم رفض الوصول",
+    "forbiddenTitle": "ليس لديك صلاحية الوصول إلى هذه الشاشة",
+    "forbiddenText": "لا يملك حسابك الصلاحية المطلوبة. اطلب الوصول من أحد المسؤولين أو عد إلى لوحة التحكم.",
+    "forbiddenBack": "العودة إلى لوحة التحكم"
   },
   "webhooks": {
     "confirm_delete": "حذف خطاف الويب هذا؟",
