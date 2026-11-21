@@ -66,5 +66,12 @@ export default async function OperateursPage({ searchParams }: OperateursPagePro
     page: page ? Number.parseInt(page, 10) || undefined : undefined,
   });
 
-  return <MobilitySurface identity={MOBILITY_SURFACE} result={result} locale={locale} />;
+  return (
+    <MobilitySurface
+      identity={MOBILITY_SURFACE}
+      result={result}
+      locale={locale}
+      searchParams={{ q, city }}
+    />
+  );
 }

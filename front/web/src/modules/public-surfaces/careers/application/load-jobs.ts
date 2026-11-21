@@ -120,6 +120,10 @@ export interface HiringDirectoryResult {
     lastPublishedAt: string | null;
   }[];
   readonly failed: boolean;
+  /** Page courante (1-indexée) — nécessaire au rendu de la pagination. */
+  readonly page: number;
+  /** Dernière page connue de l'API. */
+  readonly lastPage: number;
 }
 
 /**
@@ -127,13 +131,19 @@ export interface HiringDirectoryResult {
  *
  * C'est ce qui rend le site utilisable sans connaître de slug : le candidat
  * part de la liste des entreprises, pas d'une URL devinée.
+ *
+ * #9697 — `q` et `page` sont transmis à l'API, qui les accepte désormais.
  */
-export async function loadHiringDirectory(): Promise<HiringDirectoryResult> {
-  const companies = await loadHiringCompanies();
+export async function loadHiringDirectory(filters: {
+  q?: string;
+  page?: number;
+} = {}): Promise<HiringDirectoryResult> {
+  const page = Math.max(1, filters.page ?? 1);
+  const result = await loadHiringCompanies({ q: filters.q, page });
 
-  if (companies === null) {
-    return { companies: [], failed: true };
+  if (result === null) {
+    return { companies: [], failed: true, page, lastPage: 1 };
   }
 
-  return { companies, failed: false };
+  return { companies: result.companies, failed: false, page, lastPage: result.lastPage };
 }

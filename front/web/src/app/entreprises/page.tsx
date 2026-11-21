@@ -57,5 +57,12 @@ export default async function EntreprisesPage({ searchParams }: EntreprisesPageP
     locale,
   });
 
-  return <CompanyDirectorySurface identity={TRADE_SURFACE} result={result} locale={locale} />;
+  return (
+    <CompanyDirectorySurface
+      identity={TRADE_SURFACE}
+      result={result}
+      locale={locale}
+      searchParams={{ q: params.q, city: params.city }}
+    />
+  );
 }

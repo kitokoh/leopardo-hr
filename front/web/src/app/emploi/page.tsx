@@ -35,14 +35,24 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 interface CareersPageProps {
-  searchParams: Promise<{ lang?: string }>;
+  searchParams: Promise<{ q?: string; page?: string; lang?: string }>;
 }
 
 export default async function CareersPage({ searchParams }: CareersPageProps) {
   const params = await searchParams;
   const locale = normalizeLocale(params.lang ?? '');
 
-  const result = await loadHiringDirectory();
+  const result = await loadHiringDirectory({
+    q: (params.q ?? '').slice(0, 120) || undefined,
+    page: Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1),
+  });
 
-  return <CareersDirectorySurface identity={CAREERS_SURFACE} result={result} locale={locale} />;
+  return (
+    <CareersDirectorySurface
+      identity={CAREERS_SURFACE}
+      result={result}
+      locale={locale}
+      searchParams={{ q: params.q }}
+    />
+  );
 }

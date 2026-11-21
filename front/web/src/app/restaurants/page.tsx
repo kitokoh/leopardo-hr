@@ -6,8 +6,12 @@ import { searchPublicRestaurants } from '@/lib/restaurants-public-api';
 import {
   RESTAURANT_SURFACE,
   RestaurantExplorer,
+  SurfaceCta,
+  SurfaceHero,
+  SurfaceShell,
   loadRestaurantSurface,
 } from '@/modules/public-surfaces';
+import { getSurfaceCopy } from '@/modules/public-surfaces/copy/surfaces-copy';
 
 /**
  * RESTO-903 (#7748) — annuaire public des restaurants (`/restaurants`).
@@ -18,11 +22,24 @@ import {
  * strict, sans auth). La géolocalisation (« Autour de moi ») raffine ensuite
  * côté client uniquement (la position n'est jamais dans l'URL SSR).
  *
- * #9577 / #9584 — la page est désormais la **vitrine publique de la verticale
+ * #9577 / #9584 — la page est la **vitrine publique de la verticale
  * Restaurant** : l'identité (nom, accroche, palette, domaine canonique) vient
  * de `modules/public-surfaces/restaurants`, et le chargement passe par le cas
- * d'usage `loadRestaurantSurface` (domaine pur + adaptateur). L'explorateur
- * client existant est conservé tel quel : aucune régression de parcours.
+ * d'usage `loadRestaurantSurface` (domaine pur + adaptateur).
+ *
+ * ## #9696 — alignement sur `SurfaceShell`
+ *
+ * Cette page était la SEULE des huit verticales à ne pas monter le noyau de
+ * rendu : elle posait `data-surface` et une couleur de fond à la main, avec un
+ * `<header>` et un `<h1>` ad hoc. Résultat : sept vitrines partageaient une
+ * composition (palette en variables CSS, hero, CTA, invitation tenant) et la
+ * huitième en avait une copie approximative — même contenu, mais pas les mêmes
+ * variables CSS, donc pas les mêmes composants enfants, et un titre qui ne
+ * venait pas de l'identité.
+ *
+ * Elle monte désormais `SurfaceShell` + `SurfaceHero` comme les sept autres.
+ * L'explorateur client est conservé tel quel : aucune régression de parcours
+ * (recherche, filtres, « Autour de moi », pagination SSR crawlable).
  */
 
 interface RestaurantsPageProps {
@@ -89,28 +106,21 @@ export default async function RestaurantsPage({ searchParams }: RestaurantsPageP
         page: query.page,
       });
 
-  return (
-    <div
-      data-surface={RESTAURANT_SURFACE.vertical}
-      className="min-h-screen px-4 py-10"
-      style={{ backgroundColor: RESTAURANT_SURFACE.palette.surface }}
-    >
-      <div className="mx-auto max-w-5xl">
-        <header className="mb-8">
-          <p
-            className="text-xs uppercase tracking-[0.14em]"
-            style={{ color: RESTAURANT_SURFACE.palette.muted }}
-          >
-            {RESTAURANT_SURFACE.displayName}
-          </p>
-          <h1 className="mt-1 text-3xl font-black tracking-tight text-slate-950">
-            {t(locale, 'restaurant.public.directoryTitle')}
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            {t(locale, 'restaurant.public.directoryDescription')}
-          </p>
-        </header>
+  const copy = getSurfaceCopy(locale);
 
+  return (
+    <SurfaceShell identity={RESTAURANT_SURFACE}>
+      <SurfaceHero
+        identity={RESTAURANT_SURFACE}
+        eyebrow={copy.verticals.restaurant.eyebrow}
+        action={
+          <SurfaceCta identity={RESTAURANT_SURFACE} href="/decouvrir">
+            {copy.shared.allAddresses}
+          </SurfaceCta>
+        }
+      />
+
+      <main style={{ maxWidth: '72rem', margin: '0 auto', padding: '2rem 1.25rem 4rem' }}>
         <RestaurantExplorer
           locale={locale}
           initialItems={result?.items ?? []}
@@ -118,7 +128,7 @@ export default async function RestaurantsPage({ searchParams }: RestaurantsPageP
           initialError={result === null}
           initialQuery={query}
         />
-      </div>
-    </div>
+      </main>
+    </SurfaceShell>
   );
 }

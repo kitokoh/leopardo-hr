@@ -55,6 +55,28 @@ export default [
     },
   },
   {
+    // Tests unitaires Vitest (src/**/__tests__) + la config de test.
+    //
+    // Les globales de test ne figurent pas dans `globals.browser` : sans cette
+    // déclaration, `no-undef` (#2481) ferait échouer le lint sur chaque
+    // `describe`/`it`/`expect` — et la suite de tests serait inutilisable en CI.
+    files: ['src/**/*.{test,spec}.js', 'vitest.config.js'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        vi: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+      },
+    },
+  },
+  {
     files: ['e2e/**/*.js', 'playwright.config.js'],
     languageOptions: {
       globals: {

@@ -8,6 +8,8 @@ import {
   SurfaceHero,
   SurfaceMeta,
   SurfaceNotice,
+  SurfacePagination,
+  SurfaceSearchBar,
   SurfaceShell,
   SurfaceTenantInvitation,
   type SurfaceIdentity,
@@ -40,10 +42,13 @@ export function PharmacySurface({
   identity,
   result,
   locale,
+  searchParams,
 }: {
   identity: SurfaceIdentity;
   result: PharmacySurfaceResult;
   locale?: string;
+  /** Filtres actifs, relus depuis l'URL pour pré-remplir la barre de recherche. */
+  searchParams?: { q?: string; city?: string };
 }) {
   const copy = getSurfaceCopy(locale);
   const shared = copy.shared;
@@ -57,6 +62,23 @@ export function PharmacySurface({
       />
 
       <main style={{ maxWidth: '72rem', margin: '0 auto', padding: '2rem 1.25rem 4rem' }}>
+        {/* #9697 — la recherche est le geste premier d'une pharmacie de
+            proximité : on cherche une ville, pas un catalogue. */}
+        <SurfaceSearchBar
+          identity={identity}
+          basePath={identity.basePath}
+          defaultQuery={searchParams?.q}
+          defaultCity={searchParams?.city}
+          labels={{
+            searchLabel: shared.searchLabel,
+            searchPlaceholder: shared.searchPlaceholder,
+            cityLabel: shared.cityLabel,
+            cityPlaceholder: shared.cityPlaceholder,
+            searchSubmit: shared.searchSubmit,
+            searchReset: shared.searchReset,
+          }}
+        />
+
         {result.state === 'unavailable' ? (
           <SurfaceNotice identity={identity} alert>
             {shared.unavailable}
@@ -101,6 +123,22 @@ export function PharmacySurface({
             ))}
           </SurfaceGrid>
         ) : null}
+
+        {result.state === 'ready' ? (
+          <SurfacePagination
+            identity={identity}
+            basePath={identity.basePath}
+            page={result.page}
+            lastPage={result.lastPage}
+            searchParams={searchParams}
+            labels={{
+              previous: shared.previousPage,
+              next: shared.nextPage,
+              pageOf: shared.pageOf,
+            }}
+          />
+        ) : null}
+
         <SurfaceTenantInvitation identity={identity} locale={locale} />
       </main>
     </SurfaceShell>
