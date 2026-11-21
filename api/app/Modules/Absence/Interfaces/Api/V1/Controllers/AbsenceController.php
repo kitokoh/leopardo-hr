@@ -16,6 +16,7 @@ use App\Modules\Planning\Application\Actions\CreateAbsence;
 use App\Modules\Planning\Application\Actions\RejectAbsence;
 use App\Modules\Planning\Application\Actions\UpdateAbsence;
 use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Planning\Infrastructure\Services\AbsenceStatsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -32,6 +33,7 @@ class AbsenceController extends Controller
         private readonly ApproveAbsence $approveAbsence,
         private readonly RejectAbsence $rejectAbsence,
         private readonly CancelAbsence $cancelAbsence,
+        private readonly AbsenceStatsService $statsService,
     ) {}
 
     public function index(AbsenceIndexRequest $request): AnonymousResourceCollection
@@ -275,66 +277,7 @@ class AbsenceController extends Controller
 
         $from = $validated['from'] ?? Carbon::now()->startOfMonth()->toDateString();
         $to = $validated['to'] ?? Carbon::now()->endOfMonth()->toDateString();
-
-        $query = Absence::query()
-            ->where('company_id', $actor->company_id)
-            ->whereBetween('start_date', [$from, $to]);
-
-        if (isset($validated['employee_id'])) {
-            $query->where('employee_id', $validated['employee_id']);
-        }
-
-        $absences = $query->with(['absenceType:id,name,code,deducts_leave', 'employee:id,first_name,last_name'])->get();
-
-        $totalAbsences = $absences->count();
-        $totalDays = $absences->sum('days_count');
-
-        $byStatus = [
-            'pending' => $absences->where('status', 'pending')->count(),
-            'approved' => $absences->where('status', 'approved')->count(),
-            'rejected' => $absences->where('status', 'rejected')->count(),
-        ];
-
-        $byType = $absences->groupBy('absence_type_id')->map(function ($group) {
-            $first = $group->first();
-
-            return [
-                'type' => $first?->absenceType->name ?? 'Unknown',
-                'code' => $first?->absenceType->code ?? 'unknown',
-                'count' => $group->count(),
-                'days' => round($group->sum('days_count'), 1),
-            ];
-        })->values()->toArray();
-
-        $topEmployees = $absences->groupBy('employee_id')->map(function ($group) {
-            $first = $group->first();
-            $employee = $first?->employee;
-
-            return [
-                'employee_id' => $first?->employee_id,
-                'name' => $employee
-                    ? $employee->first_name.' '.$employee->last_name
-                    : 'Unknown',
-                'count' => $group->count(),
-                'days' => round($group->sum('days_count'), 1),
-            ];
-        })->sortByDesc('days')->take(10)->values()->toArray();
-
-        // Calcul du taux d'absentéisme (simplifié : jours d'absence / jours ouvrés de la période × nombre d'employés actifs)
-        $periodDays = Carbon::parse($from)->diffInDays(Carbon::parse($to)) + 1;
-        $workingDays = $periodDays * 5 / 7; // Approximation : 5 jours ouvrés par semaine
-        // La table `employees` n'a PAS de colonne `termination_date` (le statut de
-        // sortie vit dans `status`, valeurs autorisées : active / suspended /
-        // archived / departed — cf. contrainte employees_status_check). Le filtre
-        // d'origine provoquait un 500 SQLSTATE[42703] sur CHAQUE appel.
-        $activeEmployees = Employee::query()
-            ->where('company_id', $actor->company_id)
-            ->where('status', 'active')
-            ->count();
-
-        $absenteeismRate = $activeEmployees > 0 && $workingDays > 0
-            ? round(($totalDays / ($workingDays * $activeEmployees)) * 100, 2)
-            : 0;
+        $employeeId = isset($validated['employee_id']) ? (int) $validated['employee_id'] : null;
 
         return new JsonResponse([
             'data' => [
@@ -342,12 +285,7 @@ class AbsenceController extends Controller
                     'from' => $from,
                     'to' => $to,
                 ],
-                'total_absences' => $totalAbsences,
-                'total_days' => round($totalDays, 1),
-                'by_status' => $byStatus,
-                'by_type' => $byType,
-                'top_employees' => $topEmployees,
-                'absenteeism_rate' => $absenteeismRate,
+                ...$this->statsService->forPeriod((string) $actor->company_id, $from, $to, $employeeId),
             ],
         ]);
     }
