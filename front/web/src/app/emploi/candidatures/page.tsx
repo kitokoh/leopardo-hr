@@ -6,6 +6,8 @@ import { SurfaceShell } from '@/modules/public-surfaces/kernel/components/Surfac
 export const metadata: Metadata = {
   title: CAREERS_SURFACE.displayName,
   description: CAREERS_SURFACE.tagline,
+  // Suivi de candidature par e-mail : page de consultation privée.
+  robots: { index: false, follow: false },
 };
 
 /**
