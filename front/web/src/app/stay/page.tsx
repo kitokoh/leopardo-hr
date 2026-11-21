@@ -56,5 +56,12 @@ export default async function StayPage({ searchParams }: StayPageProps) {
     locale,
   });
 
-  return <PropertyDirectorySurface identity={HOSPITALITY_SURFACE} result={result} locale={locale} />;
+  return (
+    <PropertyDirectorySurface
+      identity={HOSPITALITY_SURFACE}
+      result={result}
+      locale={locale}
+      searchParams={{ q: params.q, city: params.city }}
+    />
+  );
 }

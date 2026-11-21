@@ -47,6 +47,8 @@ export {
 } from './application/resolve-surface-domain';
 
 export { SurfaceHero } from './components/SurfaceHero';
+export { SurfacePagination } from './components/SurfacePagination';
+export { SurfaceSearchBar } from './components/SurfaceSearchBar';
 export { SurfaceShell } from './components/SurfaceShell';
 export { SurfaceTenantInvitation } from './components/SurfaceTenantInvitation';
 export {

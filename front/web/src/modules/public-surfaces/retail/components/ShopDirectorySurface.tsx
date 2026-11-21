@@ -8,6 +8,8 @@ import {
   SurfaceHero,
   SurfaceMeta,
   SurfaceNotice,
+  SurfacePagination,
+  SurfaceSearchBar,
   SurfaceShell,
   SurfaceTenantInvitation,
   type SurfaceIdentity,
@@ -37,10 +39,13 @@ export function ShopDirectorySurface({
   identity,
   result,
   locale,
+  searchParams,
 }: {
   identity: SurfaceIdentity;
   result: ShopDirectoryResult;
   locale?: string;
+  /** Filtres courants, conservés par les liens de pagination. */
+  searchParams?: Readonly<Record<string, string | undefined>>;
 }) {
   const copy = getSurfaceCopy(locale);
   const shared = copy.shared;
@@ -58,6 +63,21 @@ export function ShopDirectorySurface({
       />
 
       <main style={{ maxWidth: '72rem', margin: '0 auto', padding: '2rem 1.25rem 4rem' }}>
+        <SurfaceSearchBar
+          identity={identity}
+          basePath={identity.basePath}
+          defaultQuery={searchParams?.q}
+          defaultCity={searchParams?.city}
+          labels={{
+            searchLabel: shared.searchLabel,
+            searchPlaceholder: shared.searchPlaceholder,
+            cityLabel: shared.cityLabel,
+            cityPlaceholder: shared.cityPlaceholder,
+            searchSubmit: shared.searchSubmit,
+            searchReset: shared.searchReset,
+          }}
+        />
+
         {result.state === 'unavailable' ? (
           <SurfaceNotice identity={identity} alert>
             {shared.unavailable}
@@ -107,6 +127,21 @@ export function ShopDirectorySurface({
               </SurfaceCard>
             ))}
           </SurfaceGrid>
+        ) : null}
+
+        {result.state === 'ready' ? (
+          <SurfacePagination
+            identity={identity}
+            basePath={identity.basePath}
+            page={result.page}
+            lastPage={result.lastPage}
+            searchParams={searchParams}
+            labels={{
+              previous: shared.previousPage,
+              next: shared.nextPage,
+              pageOf: shared.pageOf,
+            }}
+          />
         ) : null}
 
         <SurfaceTenantInvitation identity={identity} locale={locale} />

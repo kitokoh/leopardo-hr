@@ -23,6 +23,10 @@ export type PropertyDirectoryState = 'ready' | 'empty' | 'unavailable';
 export interface PropertyDirectoryResult {
   readonly state: PropertyDirectoryState;
   readonly cards: readonly PropertyDirectoryCard[];
+  /** Page courante (1-indexée) — nécessaire au rendu de la pagination. */
+  readonly page: number;
+  /** Dernière page connue de l'API. */
+  readonly lastPage: number;
 }
 
 /** Charge l'annuaire ; ne lève jamais. */
@@ -33,13 +37,14 @@ export async function loadPropertyDirectoryView(params: {
   locale?: string;
 }): Promise<PropertyDirectoryResult> {
   const result = await loadPropertyDirectory(params);
+  const page = Math.max(1, params.page ?? 1);
 
   if (!result.available) {
-    return { state: 'unavailable', cards: [] };
+    return { state: 'unavailable', cards: [], page, lastPage: 1 };
   }
 
   if (result.entries.length === 0) {
-    return { state: 'empty', cards: [] };
+    return { state: 'empty', cards: [], page, lastPage: 1 };
   }
 
   const kindLabels = getSurfaceCopy(params.locale).shared.propertyKinds;
@@ -51,5 +56,7 @@ export async function loadPropertyDirectoryView(params: {
 
       return { entry, meta: propertyDirectoryMeta(entry, kindLabel) };
     }),
+    page,
+    lastPage: result.lastPage,
   };
 }

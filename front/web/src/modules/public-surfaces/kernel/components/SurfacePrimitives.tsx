@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { CSSProperties, ReactNode } from 'react';
 
 import type { SurfaceIdentity } from '../domain/surface-identity';
@@ -202,7 +203,7 @@ export function SurfaceCta({
   children: ReactNode;
 }) {
   return (
-    <a
+    <Link
       href={href}
       data-surface-cta=""
       style={{
@@ -216,6 +217,6 @@ export function SurfaceCta({
       }}
     >
       {children}
-    </a>
+    </Link>
   );
 }

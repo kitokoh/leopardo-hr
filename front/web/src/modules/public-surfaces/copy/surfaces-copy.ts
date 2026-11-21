@@ -86,6 +86,30 @@ export interface SharedCopy {
   readonly regularHours: string;
   readonly reviews: string;
   /**
+   * Pagination des annuaires (#9657).
+   *
+   * Les adaptateurs acceptaient déjà `page` et l'API publique renvoie
+   * `last_page`, mais aucune vitrine n'exposait de contrôle : au-delà de la
+   * première page, les résultats étaient **inatteignables** pour un visiteur.
+   */
+  readonly previousPage: string;
+  readonly nextPage: string;
+  /** Gabarit du compteur, `{page}` et `{last}` remplacés à l'affichage. */
+  readonly pageOf: string;
+  /**
+   * Recherche d'annuaire (#9657).
+   *
+   * Les adaptateurs acceptaient déjà `q` et `city`, et les pages les lisaient
+   * depuis l'URL — mais **aucun annuaire n'affichait de champ**. Le filtre
+   * n'était donc atteignable qu'en éditant l'URL à la main.
+   */
+  readonly searchLabel: string;
+  readonly searchPlaceholder: string;
+  readonly cityLabel: string;
+  readonly cityPlaceholder: string;
+  readonly searchSubmit: string;
+  readonly searchReset: string;
+  /**
    * Libellés des types d'hébergement (#9618).
    *
    * Le code vient de l'API (`hotel`, `guesthouse`…) : on ne l'affiche jamais
@@ -135,6 +159,15 @@ const FR: SurfaceCopy = {
     onDuty: 'De garde',
     regularHours: 'Horaires habituels',
     reviews: 'avis',
+    previousPage: 'Page précédente',
+    nextPage: 'Page suivante',
+    pageOf: 'Page {page} sur {last}',
+    searchLabel: 'Rechercher',
+    searchPlaceholder: 'Nom, spécialité…',
+    cityLabel: 'Ville',
+    cityPlaceholder: 'Toutes les villes',
+    searchSubmit: 'Rechercher',
+    searchReset: 'Réinitialiser',
     propertyKinds: {
       hotel: 'Hôtel',
       residence: 'Résidence',
@@ -231,6 +264,15 @@ const EN: SurfaceCopy = {
     onDuty: 'On duty',
     regularHours: 'Regular hours',
     reviews: 'reviews',
+    previousPage: 'Previous page',
+    nextPage: 'Next page',
+    pageOf: 'Page {page} of {last}',
+    searchLabel: 'Search',
+    searchPlaceholder: 'Name, specialty…',
+    cityLabel: 'City',
+    cityPlaceholder: 'All cities',
+    searchSubmit: 'Search',
+    searchReset: 'Reset',
     propertyKinds: {
       hotel: 'Hotel',
       residence: 'Residence',
@@ -327,6 +369,15 @@ const TR: SurfaceCopy = {
     onDuty: 'Nöbetçi',
     regularHours: 'Normal saatler',
     reviews: 'değerlendirme',
+    previousPage: 'Önceki sayfa',
+    nextPage: 'Sonraki sayfa',
+    pageOf: 'Sayfa {page} / {last}',
+    searchLabel: 'Ara',
+    searchPlaceholder: 'Ad, uzmanlık…',
+    cityLabel: 'Şehir',
+    cityPlaceholder: 'Tüm şehirler',
+    searchSubmit: 'Ara',
+    searchReset: 'Sıfırla',
     propertyKinds: {
       hotel: 'Otel',
       residence: 'Rezidans',
@@ -423,6 +474,15 @@ const AR: SurfaceCopy = {
     onDuty: 'صيدلية مناوبة',
     regularHours: 'ساعات العمل العادية',
     reviews: 'تقييم',
+    previousPage: 'الصفحة السابقة',
+    nextPage: 'الصفحة التالية',
+    pageOf: 'الصفحة {page} من {last}',
+    searchLabel: 'بحث',
+    searchPlaceholder: 'الاسم، التخصص…',
+    cityLabel: 'المدينة',
+    cityPlaceholder: 'كل المدن',
+    searchSubmit: 'بحث',
+    searchReset: 'إعادة تعيين',
     propertyKinds: {
       hotel: 'فندق',
       residence: 'إقامة',
