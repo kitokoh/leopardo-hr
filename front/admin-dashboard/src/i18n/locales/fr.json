@@ -5383,7 +5383,22 @@
       "reviewsEmpty": "Aucun avis en attente.",
       "reviewPublish": "Publier",
       "reviewReject": "Rejeter",
-      "reviewActionError": "Action impossible sur l'avis."
+      "reviewActionError": "Action impossible sur l'avis.",
+      "reviewsFilterLabel": "Filtrer les avis",
+      "reviewsFilter_pending": "En attente",
+      "reviewsFilter_published": "Publiés",
+      "reviewsFilter_rejected": "Rejetés",
+      "reviewsFilter_all": "Tous",
+      "reviewStatus_pending": "En attente",
+      "reviewStatus_published": "Publié",
+      "reviewStatus_rejected": "Rejeté",
+      "reviewUnpublish": "Retirer",
+      "reviewReplyLabel": "Votre réponse",
+      "reviewReplyPlaceholder": "Répondre publiquement à ce client…",
+      "reviewReplySend": "Publier la réponse",
+      "reviewReplyEdit": "Modifier",
+      "reviewReplyDelete": "Supprimer",
+      "reviewReplyError": "Impossible d'enregistrer la réponse."
     },
     "public": {
       "directoryTitle": "Restaurants près de chez vous",

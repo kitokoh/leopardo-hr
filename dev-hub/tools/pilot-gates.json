@@ -287,10 +287,10 @@
         {
           "id": "observability",
           "label": "Outbox + jobs surveillés (logs, dead-letter)",
-          "status": "pending",
+          "status": "validated",
           "owner": "ops",
-          "updated_at": "2026-10-26",
-          "evidence": "outbox + jobs surveilles : FuelObservabilityApiTest -> vert"
+          "updated_at": "2026-11-21",
+          "evidence": "api: CI=true php artisan test tests/Feature/Restaurant/RestaurantObservabilityApiTest.php -> 4 passed. La verticale Restaurant expose desormais GET /api/v1/restaurant/health/metrics (RestaurantMetricsController) : snapshot tenant-scoped sans PII - outbox pending/failed/dead-letter, jobs en echec, avis en attente de moderation, commandes en cuisine, commandes bloquees (seuils 45 min cuisine / 30 min payee non servie), commandes payees non servies, seuils exposes. RBAC restaurant.reports (403 pour un operateur de salle), isolation cross-tenant verifiee. La preuve empruntee a FuelStation (FuelObservabilityApiTest) est remplacee par une preuve propre a la verticale. LIMITE : les alertes (seuils -> notification) restent a cabler cote exploitation ; l'endpoint fournit la mesure, pas le routage d'alerte."
         },
         {
           "id": "golden_journey",
@@ -305,7 +305,8 @@
           "label": "Recette UAT signée par le chef de projet",
           "status": "pending",
           "owner": "product",
-          "updated_at": "2026-10-26"
+          "updated_at": "2026-11-21",
+          "evidence": "Kit de recette terrain livre (#9725) : docs/ops/RECETTE_UAT_RESTAURANTMANAGER_KIT.md (jeu de donnees, comptes, checklist R2-R11 avec criteres de succes observables) + RECETTE_UAT_RESTAURANTMANAGER_GRILLE.csv (grille de releve). Jeu de donnees verifie par execution : php artisan pilot:seed resto -> tenant resto-pilot-001 cree (2 succursales, 8 tables, 6 produits, 7 commandes tous stades, 3 avis dans 3 statuts, 1 ingredient sous seuil, 1 outbox en echec). GATE TOUJOURS PENDING : le kit rend la recette executable, il ne l'execute pas. R2-R11 restent a executer sur l'environnement de recette et la signature (chef de projet + restaurateur pilote) est une action humaine."
         }
       ]
     },
