@@ -97,6 +97,19 @@ export interface SharedCopy {
   /** Gabarit du compteur, `{page}` et `{last}` remplacés à l'affichage. */
   readonly pageOf: string;
   /**
+   * Recherche d'annuaire (#9657).
+   *
+   * Les adaptateurs acceptaient déjà `q` et `city`, et les pages les lisaient
+   * depuis l'URL — mais **aucun annuaire n'affichait de champ**. Le filtre
+   * n'était donc atteignable qu'en éditant l'URL à la main.
+   */
+  readonly searchLabel: string;
+  readonly searchPlaceholder: string;
+  readonly cityLabel: string;
+  readonly cityPlaceholder: string;
+  readonly searchSubmit: string;
+  readonly searchReset: string;
+  /**
    * Libellés des types d'hébergement (#9618).
    *
    * Le code vient de l'API (`hotel`, `guesthouse`…) : on ne l'affiche jamais
@@ -149,6 +162,12 @@ const FR: SurfaceCopy = {
     previousPage: 'Page précédente',
     nextPage: 'Page suivante',
     pageOf: 'Page {page} sur {last}',
+    searchLabel: 'Rechercher',
+    searchPlaceholder: 'Nom, spécialité…',
+    cityLabel: 'Ville',
+    cityPlaceholder: 'Toutes les villes',
+    searchSubmit: 'Rechercher',
+    searchReset: 'Réinitialiser',
     propertyKinds: {
       hotel: 'Hôtel',
       residence: 'Résidence',
@@ -248,6 +267,12 @@ const EN: SurfaceCopy = {
     previousPage: 'Previous page',
     nextPage: 'Next page',
     pageOf: 'Page {page} of {last}',
+    searchLabel: 'Search',
+    searchPlaceholder: 'Name, specialty…',
+    cityLabel: 'City',
+    cityPlaceholder: 'All cities',
+    searchSubmit: 'Search',
+    searchReset: 'Reset',
     propertyKinds: {
       hotel: 'Hotel',
       residence: 'Residence',
@@ -347,6 +372,12 @@ const TR: SurfaceCopy = {
     previousPage: 'Önceki sayfa',
     nextPage: 'Sonraki sayfa',
     pageOf: 'Sayfa {page} / {last}',
+    searchLabel: 'Ara',
+    searchPlaceholder: 'Ad, uzmanlık…',
+    cityLabel: 'Şehir',
+    cityPlaceholder: 'Tüm şehirler',
+    searchSubmit: 'Ara',
+    searchReset: 'Sıfırla',
     propertyKinds: {
       hotel: 'Otel',
       residence: 'Rezidans',
@@ -446,6 +477,12 @@ const AR: SurfaceCopy = {
     previousPage: 'الصفحة السابقة',
     nextPage: 'الصفحة التالية',
     pageOf: 'الصفحة {page} من {last}',
+    searchLabel: 'بحث',
+    searchPlaceholder: 'الاسم، التخصص…',
+    cityLabel: 'المدينة',
+    cityPlaceholder: 'كل المدن',
+    searchSubmit: 'بحث',
+    searchReset: 'إعادة تعيين',
     propertyKinds: {
       hotel: 'فندق',
       residence: 'إقامة',
