@@ -112,6 +112,13 @@ export function RestaurantSolutionWizard() {
       if (cancelled || !data) {
         return;
       }
+      // Le questionnaire est la source de vérité backend : une charge utile
+      // sans `questions` exploitable laisse le wizard sur son état initial
+      // plutôt que de le faire tomber (`buildDefaultAnswers` tolère déjà
+      // l'absence, mais `setQuestions` doit rester un tableau).
+      if (!Array.isArray(data.questions)) {
+        return;
+      }
       setQuestions(data.questions);
       setAnswers((prev) => ({ ...buildDefaultAnswers(data.questions), ...prev }));
     });

@@ -54,6 +54,7 @@ import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
+from urllib.parse import parse_qs, urlparse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -223,8 +224,54 @@ FRONTS: dict[str, Front] = {
             ("blog-mobile", "/business/blog"),
             ("decouvrir-mobile", "/decouvrir"),
             ("emploi-mobile", "/emploi"),
+            # Vitrines grand public par verticale (ADR-0034) en mobile :
+            # c'est la que se joue la lisibilite reelle des annuaires.
+            ("public-restaurants-mobile", "/restaurants"),
+            ("public-retail-mobile", "/boutiques"),
+            ("public-hospitality-mobile", "/stay"),
+            ("public-trade-mobile", "/entreprises"),
+            ("public-travel-mobile", "/billets"),
+            ("public-pharmacy-mobile", "/pharmacies"),
+            ("public-vtc-mobile", "/operateurs"),
+            ("public-careers-mobile", "/emploi"),
+            # Sites professionnels dedies par domaine (ADR-0034 : le front
+            # commercial `modules/vitrine` + `/business/*` est hors du perimetre
+            # grand public). Captures en mobile pour verifier la lisibilite des
+            # parcours d'inscription metier sur telephone.
+            ("business-restaurateur-mobile", "/business/restaurateur"),
+            ("business-trade-mobile", "/business/trade"),
+            ("business-station-service-mobile", "/business/packs/station-service"),
+            ("business-ecole-mobile", "/business/packs/ecole"),
+            ("business-agence-de-voyage-mobile", "/business/packs/agence-de-voyage"),
+            ("business-cagnottes-mobile", "/business/packs/cagnottes"),
+            ("business-vtc-mobile", "/business/packs/vtc"),
         ],
-        anonymous_routes=[("connexion", "/auth/login")],
+        # Sites professionnels dedies par domaine : pages marketing publiques,
+        # aucune session requise. Capturees dans un contexte anonyme pour ne pas
+        # dependre d'un cookie de session valide.
+        anonymous_routes=[
+            ("connexion", "/auth/login"),
+            # --- Vitrines grand public par verticale (ADR-0034) -------------
+            # `front/web/src/modules/public-surfaces/<verticale>` : huit
+            # surfaces autonomes, chacune avec son identite propre (nom,
+            # palette, domaine canonique) et sa route d'annuaire.
+            ("public-restaurants", "/restaurants"),
+            ("public-retail", "/boutiques"),
+            ("public-hospitality", "/stay"),
+            ("public-trade", "/entreprises"),
+            ("public-travel", "/billets"),
+            ("public-pharmacy", "/pharmacies"),
+            ("public-vtc", "/operateurs"),
+            ("public-careers", "/emploi"),
+            # --- Sites professionnels dedies par domaine --------------------
+            ("business-restaurateur", "/business/restaurateur"),
+            ("business-trade", "/business/trade"),
+            ("business-station-service", "/business/packs/station-service"),
+            ("business-ecole", "/business/packs/ecole"),
+            ("business-agence-de-voyage", "/business/packs/agence-de-voyage"),
+            ("business-cagnottes", "/business/packs/cagnottes"),
+            ("business-vtc", "/business/packs/vtc"),
+        ],
     ),
     "admin": Front(
         key="admin",
@@ -563,6 +610,287 @@ DISCOVERY_META = {
     "action_urls": {},
 }
 
+# --------------------------------------------------------------------------- #
+# Vitrines grand public par verticale (ADR-0034)
+# --------------------------------------------------------------------------- #
+# `front/web/src/modules/public-surfaces/<verticale>` est la norme du front
+# grand public : huit verticales, chacune avec son identite (nom, palette,
+# domaine canonique) et sa route d'annuaire.
+#
+#   restaurants  -> /restaurants   (GET /public/restaurants)
+#   retail       -> /boutiques     (GET /public/discover?type=retail_shop)
+#   hospitality  -> /stay          (GET /public/discover?type=hospitality_property)
+#   trade        -> /entreprises   (GET /public/discover?type=trade_company)
+#   travel       -> /billets       (GET /public/travel/marketplace/trips)
+#   pharmacy     -> /pharmacies    (GET /public/discover?type=pharmacy)
+#   vtc          -> /operateurs    (GET /public/discover?type=vtc_operator)
+#   careers      -> /emploi        (GET /public/careers)
+#
+# Le mock DOIT filtrer par `type` : servir tous les items ferait afficher des
+# pharmacies dans l'annuaire des boutiques, ce qui rendrait la capture trompeuse
+# sur la composition propre de chaque verticale.
+PUBLIC_SURFACE_ITEMS: dict[str, list[dict]] = {
+    "retail_shop": [
+        {
+            "type": "retail_shop",
+            "slug": "boulangerie-el-baraka",
+            "name": "Boulangerie El Baraka",
+            "category": "Artisanat",
+            "city": "Blida",
+            "description": "Pain traditionnel cuit au four a bois, pâtisseries du jour.",
+            "url": "/boutiques/boulangerie-el-baraka",
+        },
+        {
+            "type": "retail_shop",
+            "slug": "epicerie-du-coin",
+            "name": "Épicerie du Coin",
+            "category": "Alimentation",
+            "city": "Alger",
+            "description": "Produits frais, fruits et légumes de saison livrés le matin.",
+            "url": "/boutiques/epicerie-du-coin",
+        },
+        {
+            "type": "retail_shop",
+            "slug": "atelier-tissus-oran",
+            "name": "Atelier Tissus Oran",
+            "category": "Textile",
+            "city": "Oran",
+            "description": "Tissus au mètre, coupes sur mesure et retouches rapides.",
+            "url": "/boutiques/atelier-tissus-oran",
+        },
+        {
+            "type": "retail_shop",
+            "slug": "librairie-el-feth",
+            "name": "Librairie El Feth",
+            "category": "Culture",
+            "city": "Constantine",
+            "description": "Livres scolaires, romans et papeterie pour toute la famille.",
+            "url": "/boutiques/librairie-el-feth",
+        },
+    ],
+    "hospitality_property": [
+        {
+            "type": "hospitality_property",
+            "slug": "hotel-es-salam",
+            "name": "Hôtel Es Salam",
+            "category": "Hôtel 3 étoiles",
+            "city": "Constantine",
+            "description": "Vue sur les gorges, petit-déjeuner inclus, parking privé.",
+            "url": "/stay/hotel-es-salam",
+        },
+        {
+            "type": "hospitality_property",
+            "slug": "riad-des-oliviers",
+            "name": "Riad des Oliviers",
+            "category": "Maison d'hôtes",
+            "city": "Tlemcen",
+            "description": "Patio ombragé, cinq chambres, cuisine maison le soir.",
+            "url": "/stay/riad-des-oliviers",
+        },
+        {
+            "type": "hospitality_property",
+            "slug": "residence-les-pins",
+            "name": "Résidence Les Pins",
+            "category": "Résidence",
+            "city": "Annaba",
+            "description": "Appartements équipés à deux pas de la corniche.",
+            "url": "/stay/residence-les-pins",
+        },
+    ],
+    "trade_company": [
+        {
+            "type": "trade_company",
+            "slug": "sahel-import-export",
+            "name": "Sahel Import Export",
+            "category": "Agroalimentaire",
+            "city": "Alger",
+            "description": "Négoce de denrées sèches, import et distribution domestique.",
+            "url": "/entreprises/sahel-import-export",
+        },
+        {
+            "type": "trade_company",
+            "slug": "metal-dz",
+            "name": "Metal DZ",
+            "category": "Métallurgie",
+            "city": "Oran",
+            "description": "Profilés acier et aluminium, livraison sur chantier.",
+            "url": "/entreprises/metal-dz",
+        },
+        {
+            "type": "trade_company",
+            "slug": "textile-sud",
+            "name": "Textile Sud",
+            "category": "Textile",
+            "city": "Ghardaïa",
+            "description": "Grossiste en tissus et confection, export vers le Sahel.",
+            "url": "/entreprises/textile-sud",
+        },
+    ],
+    "pharmacy": [
+        {
+            "type": "pharmacy",
+            "slug": "pharma-el-amel",
+            "name": "Pharmacie El Amel",
+            "category": "on_duty",
+            "city": "Oran",
+            "description": "Officine de garde, conseil et orthopédie.",
+            "url": "/pharmacies/pharma-el-amel",
+        },
+        {
+            "type": "pharmacy",
+            "slug": "pharmacie-centrale-alger",
+            "name": "Pharmacie Centrale",
+            "category": None,
+            "city": "Alger",
+            "description": "Parapharmacie, homéopathie et matériel médical.",
+            "url": "/pharmacies/pharmacie-centrale-alger",
+        },
+        {
+            "type": "pharmacy",
+            "slug": "pharmacie-ennour",
+            "name": "Pharmacie Ennour",
+            "category": "on_duty",
+            "city": "Constantine",
+            "description": "Garde de nuit, prise de tension et vaccinations.",
+            "url": "/pharmacies/pharmacie-ennour",
+        },
+    ],
+    "vtc_operator": [
+        {
+            "type": "vtc_operator",
+            "slug": "alger-ride",
+            "name": "Alger Ride",
+            "category": "VTC",
+            "city": "Alger",
+            "description": "Flotte de berlines climatisées, réservation à la minute.",
+            "url": "/operateurs/alger-ride",
+        },
+        {
+            "type": "vtc_operator",
+            "slug": "taxi-oran-express",
+            "name": "Taxi Oran Express",
+            "category": "Taxi",
+            "city": "Oran",
+            "description": "Courses urbaines et transferts aéroport 24h/24.",
+            "url": "/operateurs/taxi-oran-express",
+        },
+        {
+            "type": "vtc_operator",
+            "slug": "constantine-mobilite",
+            "name": "Constantine Mobilité",
+            "category": "VTC",
+            "city": "Constantine",
+            "description": "Chauffeurs partenaires, tarif fixe annoncé avant la course.",
+            "url": "/operateurs/constantine-mobilite",
+        },
+    ],
+}
+
+# Annuaire public des restaurants (`GET /public/restaurants`), contrat
+# `RestaurantPublicBranchResource` — distinct de l'agrégateur `discover`.
+PUBLIC_RESTAURANTS = [
+    {
+        "slug": "le-cedre",
+        "name": "Restaurant Le Cèdre",
+        "establishment_type": "restaurant",
+        "cuisine_types": ["Libanaise", "Méditerranéenne"],
+        "city": "Alger",
+        "description": "Table familiale au cœur de la capitale, terrasse ombragée.",
+        "cover_image_url": None,
+        "latitude": 36.7538,
+        "longitude": 3.0588,
+        "rating_avg": 4.6,
+        "reviews_count": 128,
+    },
+    {
+        "slug": "la-toscane",
+        "name": "La Toscane",
+        "establishment_type": "pizzeria",
+        "cuisine_types": ["Italienne"],
+        "city": "Oran",
+        "description": "Pizzas au feu de bois et pâtes fraîches faites maison.",
+        "cover_image_url": None,
+        "latitude": 35.6971,
+        "longitude": -0.6308,
+        "rating_avg": 4.3,
+        "reviews_count": 74,
+    },
+    {
+        "slug": "cafe-des-arcades",
+        "name": "Café des Arcades",
+        "establishment_type": "cafe",
+        "cuisine_types": ["Café", "Pâtisserie"],
+        "city": "Constantine",
+        "description": "Café de spécialité et pâtisseries orientales, wifi et calme.",
+        "cover_image_url": None,
+        "latitude": 36.365,
+        "longitude": 6.6147,
+        "rating_avg": None,
+        "reviews_count": 0,
+    },
+    {
+        "slug": "brasserie-du-port",
+        "name": "Brasserie du Port",
+        "establishment_type": "brasserie",
+        "cuisine_types": ["Française", "Poissons"],
+        "city": "Annaba",
+        "description": "Poisson du jour et vue sur le port, service continu.",
+        "cover_image_url": None,
+        "latitude": 36.9,
+        "longitude": 7.7667,
+        "rating_avg": 4.1,
+        "reviews_count": 39,
+    },
+]
+
+# Trajets publics (`GET /public/travel/marketplace/trips`).
+PUBLIC_TRIPS = [
+    {
+        "reference": "TRP-2026-0041",
+        "id": 41,
+        "origin": "Alger",
+        "destination": "Oran",
+        "departure_at": "2026-11-22T07:30:00+01:00",
+        "arrival_at": "2026-11-22T12:10:00+01:00",
+        "price_minor": 320000,
+        "currency": "DZD",
+        "seats_available": 18,
+    },
+    {
+        "reference": "TRP-2026-0042",
+        "id": 42,
+        "origin": "Alger",
+        "destination": "Constantine",
+        "departure_at": "2026-11-22T09:00:00+01:00",
+        "arrival_at": "2026-11-22T14:45:00+01:00",
+        "price_minor": 280000,
+        "currency": "DZD",
+        "seats_available": 4,
+    },
+    {
+        "reference": "TRP-2026-0043",
+        "id": 43,
+        "origin": "Oran",
+        "destination": "Tlemcen",
+        "departure_at": "2026-11-23T06:15:00+01:00",
+        "arrival_at": "2026-11-23T08:40:00+01:00",
+        "price_minor": 150000,
+        "currency": "DZD",
+        "seats_available": 0,
+    },
+    {
+        "reference": "TRP-2026-0044",
+        "id": 44,
+        "origin": "Constantine",
+        "destination": "Annaba",
+        "departure_at": "2026-11-23T15:20:00+01:00",
+        "arrival_at": "2026-11-23T18:05:00+01:00",
+        "price_minor": 190000,
+        "currency": "DZD",
+        "seats_available": 22,
+    },
+]
+
 # Annuaire cross-tenant des entreprises qui recrutent (`GET /public/careers`).
 # Consommé par `/emploi`, qui est rendu en SSR : ce payload doit donc être servi
 # par un VRAI backend joignable (cf. `MockBackend`), pas par `page.route`.
@@ -594,6 +922,31 @@ HIRING_COMPANIES = [
 ]
 
 
+def _discover_payload(url: str) -> dict:
+    """Réponse de `GET /public/discover` filtrée par `?type=`.
+
+    L'agrégateur public ne renvoie que les items du type demandé : servir la
+    liste complète ferait apparaître des pharmacies dans l'annuaire des
+    boutiques et rendrait la capture mensongère sur la composition de chaque
+    verticale.
+    """
+    query = parse_qs(urlparse(url).query)
+    requested = (query.get("type") or [""])[0]
+
+    if requested and requested in PUBLIC_SURFACE_ITEMS:
+        items = PUBLIC_SURFACE_ITEMS[requested]
+    elif requested:
+        items = []
+    else:
+        items = DISCOVERY_ITEMS
+
+    meta = dict(DISCOVERY_META)
+    meta["total"] = len(items)
+    meta["types"] = DISCOVERY_TYPES + sorted(PUBLIC_SURFACE_ITEMS)
+
+    return {"data": items, "meta": meta}
+
+
 def _mock_api_web(page) -> None:
     """Mocks front web : `/auth/me` renvoie le profil tenant complet.
 
@@ -621,7 +974,33 @@ def _mock_api_web(page) -> None:
         lambda route: route.fulfill(
             status=200,
             content_type="application/json",
-            body=json.dumps({"data": DISCOVERY_ITEMS, "meta": DISCOVERY_META}),
+            body=json.dumps(_discover_payload(route.request.url)),
+        ),
+    )
+    page.route(
+        "**/api/v1/public/restaurants**",
+        lambda route: route.fulfill(
+            status=200,
+            content_type="application/json",
+            body=json.dumps(
+                {
+                    "data": PUBLIC_RESTAURANTS,
+                    "meta": {
+                        "current_page": 1,
+                        "last_page": 1,
+                        "per_page": len(PUBLIC_RESTAURANTS),
+                        "total": len(PUBLIC_RESTAURANTS),
+                    },
+                }
+            ),
+        ),
+    )
+    page.route(
+        "**/api/v1/public/travel/marketplace/trips**",
+        lambda route: route.fulfill(
+            status=200,
+            content_type="application/json",
+            body=json.dumps({"data": PUBLIC_TRIPS}),
         ),
     )
     page.route(
@@ -776,7 +1155,7 @@ def capture_route(page, front: Front, name: str, route: str, out_dir: Path) -> P
             page.wait_for_load_state("networkidle", timeout=20_000)
         page.wait_for_timeout(1_500)
 
-        # Reveal au défilement : la vitrine anime ses blocs avec GSAP
+        # Reveal au defilement : la vitrine anime ses blocs avec GSAP
         # (`useScrollReveal`, `.gsap-reveal` / `.gsap-stagger`) et framer-motion.
         # Sans défilement, tout ce qui est sous la ligne de flottaison reste à
         # `opacity: 0` et la capture pleine page montre des trous blancs (FAQ,
@@ -798,6 +1177,17 @@ def capture_route(page, front: Front, name: str, route: str, out_dir: Path) -> P
                 }"""
             )
         page.wait_for_timeout(1_200)
+
+        # L'indicateur de developpement de Next.js (`nextjs-portal`, badge
+        # « N Issue ») est un artefact de `next dev` : il n'existe pas en
+        # production et n'a rien a faire sur une capture destinee a la revue.
+        with contextlib.suppress(Exception):
+            page.add_style_tag(
+                content="nextjs-portal,[data-nextjs-toast],[data-nextjs-dev-tools-button]"
+                "{display:none !important;}"
+            )
+        page.wait_for_timeout(300)
+
         page.screenshot(path=str(target), full_page=front.full_page)
         size = target.stat().st_size
         if size < 5_000:
@@ -912,12 +1302,27 @@ class MockBackend:
         routes = {
             "/api/v1/public/careers": {"data": HIRING_COMPANIES},
             "/api/v1/public/discover": {"data": DISCOVERY_ITEMS, "meta": DISCOVERY_META},
+            "/api/v1/public/restaurants": {
+                "data": PUBLIC_RESTAURANTS,
+                "meta": {
+                    "current_page": 1,
+                    "last_page": 1,
+                    "per_page": len(PUBLIC_RESTAURANTS),
+                    "total": len(PUBLIC_RESTAURANTS),
+                },
+            },
+            "/api/v1/public/travel/marketplace/trips": {"data": PUBLIC_TRIPS},
         }
 
         class Handler(BaseHTTPRequestHandler):
             def do_GET(self) -> None:  # noqa: N802 — contrat de la stdlib
                 path = self.path.split("?", 1)[0].rstrip("/") or "/"
-                payload = routes.get(path)
+                if path == "/api/v1/public/discover":
+                    # `?type=` doit être respecté : c'est ce qui distingue les
+                    # huit annuaires verticaux les uns des autres.
+                    payload = _discover_payload(self.path)
+                else:
+                    payload = routes.get(path)
                 if payload is None:
                     body = json.dumps({"data": {}, "meta": {"total": 0}}).encode()
                 else:
@@ -953,6 +1358,11 @@ def main() -> int:
     parser.add_argument("--all", action="store_true", help="Capturer tous les fronts")
     parser.add_argument("--serve", action="store_true", help="Démarrer/arrêter les serveurs de dev")
     parser.add_argument("--out", type=Path, default=OUTPUT_ROOT, help="Répertoire de sortie")
+    parser.add_argument(
+        "--only",
+        default=None,
+        help="Ne capturer que les écrans dont le nom commence par ce préfixe (ex. public-)",
+    )
     args = parser.parse_args()
 
     if not args.all and not args.front:
@@ -961,6 +1371,16 @@ def main() -> int:
     OUTPUT_ROOT = args.out
 
     selected = list(FRONTS.values()) if args.all else [FRONTS[args.front]]
+
+    if args.only:
+        # Filtre de commodité : recapturer une famille d'écrans sans relancer
+        # les 52 captures du front web (chaque page coûte ~10 s de rendu).
+        for front in selected:
+            front.routes = [r for r in front.routes if r[0].startswith(args.only)]
+            front.anonymous_routes = [
+                r for r in front.anonymous_routes if r[0].startswith(args.only)
+            ]
+            front.mobile_routes = [r for r in front.mobile_routes if r[0].startswith(args.only)]
 
     if shutil.which("npm") is None and any(
         f.serve_cmd and f.serve_cmd[0] == "npm" for f in selected

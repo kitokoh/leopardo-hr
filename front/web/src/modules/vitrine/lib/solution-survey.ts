@@ -88,10 +88,21 @@ export async function suggestPack(
   return payload.data ?? null;
 }
 
-/** Construit les réponses par défaut depuis les `default` des questions. */
+/**
+ * Construit les réponses par défaut depuis les `default` des questions.
+ *
+ * Tolère une charge utile absente ou malformée : le questionnaire vient du
+ * backend, et une réponse partielle (ou une version d'API qui omet `questions`)
+ * ne doit pas faire tomber la page entière sur un `TypeError` de rendu —
+ * `undefined.filter` levait une erreur non rattrapée qui remplaçait tout le
+ * wizard par l'écran « Erreur inattendue ».
+ */
 export function buildDefaultAnswers(
-  questions: SolutionSurveyQuestion[],
+  questions: SolutionSurveyQuestion[] | null | undefined,
 ): Record<string, SurveyAnswerValue> {
+  if (!Array.isArray(questions)) {
+    return {};
+  }
   return Object.fromEntries(
     questions
       .filter((q) => q.default !== undefined)
