@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Core\Auth\Infrastructure\Services\SuperAdminService;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -87,14 +85,27 @@ class PlatformWebAuthValidationContractTest extends TestCase
 
     public function test_validation_failure_does_not_log_an_unexpected_error(): void
     {
-        Log::spy();
+        // Le garde #6974 loggue sur le canal 'structured' quand il absorbe une
+        // exception. Une saisie invalide ne doit PAS produire cette trace : on
+        // lit le fichier de log du canal et on verifie qu'aucune nouvelle
+        // entree n'est apparue pendant l'appel.
+        $logPath = storage_path('logs/structured-'.now()->format('Y-m-d').'.log');
+        $before = is_file($logPath) ? (int) filesize($logPath) : 0;
 
         $this->post('/platform/login', array_merge($this->csrf(), [
             'email' => '',
             'password' => '',
         ]));
 
-        Log::shouldNotHaveReceived('channel', ['structured']);
+        clearstatcache(true, $logPath);
+        $after = is_file($logPath) ? (int) filesize($logPath) : 0;
+
+        $this->assertSame(
+            $before,
+            $after,
+            'Une saisie invalide a produit une entree dans le canal structured : '
+            .'la ValidationException est de nouveau absorbee par le catch (Throwable).',
+        );
     }
 
     public function test_wrong_credentials_still_show_invalid_credentials(): void
