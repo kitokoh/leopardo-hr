@@ -17,6 +17,7 @@
     "Tasks",
     "Travel"
   ],
+  "include_actions": true,
   "tools": [
     {
       "name": "api_delete_announcements_by_announcement",
@@ -1152,6 +1153,36 @@
       }
     },
     {
+      "name": "api_get_bank_exports_by_bankexport_download",
+      "description": "Telecharger un export bancaire — GET /api/v1/bank-exports/{bankExport}/download. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "bankExport": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "bankExport"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/bank-exports/{bankExport}/download",
+        "pathParams": [
+          "bankExport"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
       "name": "api_get_communication_analytics",
       "description": "Analytics communication tenant — GET /api/v1/communication/analytics. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -1440,6 +1471,36 @@
         ],
         "queryParams": [],
         "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_employees_by_employee_departure",
+      "description": "Lire le depart d'un employe (manager : entreprise ; employe : le sien) — GET /api/v1/employees/{employee}/departure. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "employee": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "employee"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/employees/{employee}/departure",
+        "pathParams": [
+          "employee"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
       }
     },
     {
@@ -1875,6 +1936,36 @@
       }
     },
     {
+      "name": "api_get_me_payment_documents_by_paymentdocument_download",
+      "description": "Telecharger un document de paiement — GET /api/v1/me/payment-documents/{paymentDocument}/download. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "paymentDocument": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "paymentDocument"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/me/payment-documents/{paymentDocument}/download",
+        "pathParams": [
+          "paymentDocument"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
       "name": "api_get_me_qr_profile",
       "description": "Generer le QR profil employe — GET /api/v1/me/qr-profile. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -2305,6 +2396,50 @@
       }
     },
     {
+      "name": "api_get_payroll_cycles_preview",
+      "description": "Previsualiser un cycle de paie candidat — GET /api/v1/payroll/cycles/preview. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "pay_cycle": {
+            "type": "string",
+            "enum": [
+              "daily",
+              "weekly",
+              "monthly"
+            ]
+          },
+          "pay_day": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 31
+          },
+          "week_start": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 7
+          }
+        }
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/payroll/cycles/preview",
+        "pathParams": [],
+        "queryParams": [
+          "pay_cycle",
+          "pay_day",
+          "week_start"
+        ],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
       "name": "api_get_payroll_mobile_summary",
       "description": "Resume mobile des soldes paie equipe — GET /api/v1/payroll/mobile-summary. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -2504,6 +2639,36 @@
         ],
         "queryParams": [],
         "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_payroll_runs_by_payrollrun_export",
+      "description": "Export comptable du run (CSV/Excel streamé) — GET /api/v1/payroll-runs/{payrollRun}/export. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "payrollRun": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "payrollRun"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/payroll-runs/{payrollRun}/export",
+        "pathParams": [
+          "payrollRun"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
       }
     },
     {
@@ -2812,6 +2977,36 @@
           "branch_id"
         ],
         "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_restaurant_printing_bridge_jobs_by_restaurantp_15b8093f",
+      "description": "Previsualisation TEXTE d'un ticket (bridge local, REST-OS-3) — GET /api/v1/restaurant/printing/bridge/jobs/{restaurantPrintJob}/preview. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "restaurantPrintJob": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "restaurantPrintJob"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/printing/bridge/jobs/{restaurantPrintJob}/preview",
+        "pathParams": [
+          "restaurantPrintJob"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
       }
     },
     {
@@ -4683,6 +4878,66 @@
       }
     },
     {
+      "name": "api_post_announcements_by_announcement_cancel",
+      "description": "Annuler une annonce programmee ou publiee (moderation PA2-COMM-011) — POST /api/v1/announcements/{announcement}/cancel. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "announcement": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "announcement"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/announcements/{announcement}/cancel",
+        "pathParams": [
+          "announcement"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
+      "name": "api_post_announcements_by_announcement_publish",
+      "description": "Publier immediatement une annonce (moderation PA2-COMM-011) — POST /api/v1/announcements/{announcement}/publish. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "announcement": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "announcement"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/announcements/{announcement}/publish",
+        "pathParams": [
+          "announcement"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
       "name": "api_post_attendance_check_in",
       "description": "Check-in — POST /api/v1/attendance/check-in. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -4857,6 +5112,66 @@
       }
     },
     {
+      "name": "api_post_attendance_corrections_by_correction_approve",
+      "description": "Appliquer une demande de correction de pointage — POST /api/v1/attendance/corrections/{correction}/approve. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "correction": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "correction"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/attendance/corrections/{correction}/approve",
+        "pathParams": [
+          "correction"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
+      "name": "api_post_attendance_corrections_by_correction_reject",
+      "description": "Refuser une demande de correction de pointage — POST /api/v1/attendance/corrections/{correction}/reject. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "correction": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "correction"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/attendance/corrections/{correction}/reject",
+        "pathParams": [
+          "correction"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
       "name": "api_post_attendance_day_closures",
       "description": "Verrouiller la journée d'un employé (manager/RH/principal) — POST /api/v1/attendance/day-closures. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -4900,6 +5215,45 @@
         "pathParams": [],
         "queryParams": [],
         "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_attendance_day_closures_by_id_validate",
+      "description": "Valider une journée verrouillée (manager/RH/principal) — POST /api/v1/attendance/day-closures/{id}/validate. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "note": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          },
+          "id": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/attendance/day-closures/{id}/validate",
+        "pathParams": [
+          "id"
+        ],
+        "queryParams": [],
+        "hasBody": true,
+        "action": true
       }
     },
     {
@@ -4957,6 +5311,66 @@
       }
     },
     {
+      "name": "api_post_attendance_geo_sessions_by_id_approve",
+      "description": "Approuver une session GPS (manager/RH) — POST /api/v1/attendance/geo-sessions/{id}/approve. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/attendance/geo-sessions/{id}/approve",
+        "pathParams": [
+          "id"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
+      "name": "api_post_attendance_geo_sessions_by_id_reject",
+      "description": "Rejeter une session GPS (manager/RH) — POST /api/v1/attendance/geo-sessions/{id}/reject. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/attendance/geo-sessions/{id}/reject",
+        "pathParams": [
+          "id"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
       "name": "api_post_bank_exports",
       "description": "Creer un export bancaire pour un run valide/paye (asynchrone) — POST /api/v1/bank-exports. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -5003,6 +5417,136 @@
         "pathParams": [],
         "queryParams": [],
         "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_company_modules_by_module_activate",
+      "description": "Activer un module horizontal de l'entreprise (#7322) — POST /api/v1/company/modules/{module}/activate. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "module": {
+            "type": "string",
+            "pattern": "^[a-z_]{1,40}$",
+            "description": "Cle du module horizontal a activer (ex. accounting, crm, company_showcase)."
+          }
+        },
+        "required": [
+          "module"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/company/modules/{module}/activate",
+        "pathParams": [
+          "module"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
+      "name": "api_post_company_qr_onboarding_create_employee",
+      "description": "Creer un employe depuis QR — POST /api/v1/company/qr-onboarding/create-employee. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "contract_start": {
+                "type": "string",
+                "format": "date"
+              },
+              "email": {
+                "type": "string",
+                "format": "email"
+              },
+              "hourly_rate": {
+                "type": "number"
+              },
+              "qr_token": {
+                "type": "string"
+              },
+              "salary_base": {
+                "type": "number"
+              },
+              "salary_type": {
+                "type": "string",
+                "enum": [
+                  "fixed",
+                  "hourly",
+                  "daily"
+                ]
+              },
+              "schedule_id": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "email",
+              "qr_token"
+            ]
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/company/qr-onboarding/create-employee",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true,
+        "action": true
+      }
+    },
+    {
+      "name": "api_post_company_qr_onboarding_scan_employee",
+      "description": "Lire un QR employe pour pre-remplir l'ajout manager — POST /api/v1/company/qr-onboarding/scan-employee. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "qr_token": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "qr_token"
+            ]
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/company/qr-onboarding/scan-employee",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true,
+        "action": true
       }
     },
     {
@@ -5339,6 +5883,36 @@
       }
     },
     {
+      "name": "api_post_employees_by_employee_archive",
+      "description": "Archiver un employe — POST /api/v1/employees/{employee}/archive. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "employee": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "employee"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/employees/{employee}/archive",
+        "pathParams": [
+          "employee"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
       "name": "api_post_employees_by_employee_assign_role",
       "description": "Assigner un role manager a un employe (principal) — POST /api/v1/employees/{employee}/assign-role. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -5382,6 +5956,117 @@
         ],
         "queryParams": [],
         "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_employees_by_employee_departure",
+      "description": "Enregistrer le depart d'un employe (offboarding, issue #5324) — POST /api/v1/employees/{employee}/departure. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "departed_at": {
+                "type": "string",
+                "format": "date",
+                "nullable": true
+              },
+              "departure_type": {
+                "type": "string",
+                "enum": [
+                  "resignation",
+                  "termination",
+                  "end_of_contract",
+                  "retirement"
+                ]
+              },
+              "last_work_day": {
+                "type": "string",
+                "format": "date"
+              },
+              "notice_days_served": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 365,
+                "nullable": true
+              },
+              "notice_served": {
+                "type": "boolean",
+                "default": false
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 500,
+                "nullable": true
+              }
+            },
+            "required": [
+              "departure_type",
+              "last_work_day"
+            ],
+            "description": "Schéma StoreDepartureRequest (api/openapi.yaml)."
+          },
+          "employee": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "body",
+          "employee"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/employees/{employee}/departure",
+        "pathParams": [
+          "employee"
+        ],
+        "queryParams": [],
+        "hasBody": true,
+        "action": true
+      }
+    },
+    {
+      "name": "api_post_employees_import",
+      "description": "Importer des employes par CSV — POST /api/v1/employees/import. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "file": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "required": [
+              "file"
+            ]
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/employees/import",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true,
+        "action": true
       }
     },
     {
@@ -5606,6 +6291,80 @@
       }
     },
     {
+      "name": "api_post_payment_batches_by_paymentbatch_mark_paid",
+      "description": "Declarer un lot de paiement comme envoye — POST /api/v1/payment-batches/{paymentBatch}/mark-paid. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "paymentBatch": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "paymentBatch"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/payment-batches/{paymentBatch}/mark-paid",
+        "pathParams": [
+          "paymentBatch"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
+      "name": "api_post_payment_confirmations_by_paymentitem_confirm",
+      "description": "Confirmer la reception d'un paiement — POST /api/v1/payment-confirmations/{paymentItem}/confirm. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "device_signature": {
+                "type": "string"
+              },
+              "document_version": {
+                "type": "string"
+              },
+              "metadata": {
+                "type": "object"
+              }
+            }
+          },
+          "paymentItem": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "paymentItem"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/payment-confirmations/{paymentItem}/confirm",
+        "pathParams": [
+          "paymentItem"
+        ],
+        "queryParams": [],
+        "hasBody": true,
+        "action": true
+      }
+    },
+    {
       "name": "api_post_payment_orders_by_paymentorder_execute",
       "description": "Executer un ordre de virement prepare (comptable) — POST /api/v1/payment-orders/{paymentOrder}/execute. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -5723,6 +6482,36 @@
         "pathParams": [],
         "queryParams": [],
         "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_payroll_runs_by_payrollrun_accounting_entries_63d9e41f",
+      "description": "Regenerer les ecritures comptables d'un run (comptable, idempotent) — POST /api/v1/payroll-runs/{payrollRun}/accounting-entries/regenerate. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "payrollRun": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "payrollRun"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/payroll-runs/{payrollRun}/accounting-entries/regenerate",
+        "pathParams": [
+          "payrollRun"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
       }
     },
     {
@@ -5844,6 +6633,66 @@
       }
     },
     {
+      "name": "api_post_payroll_runs_by_payrollrun_cancel",
+      "description": "Annuler une session de paie — POST /api/v1/payroll-runs/{payrollRun}/cancel. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "payrollRun": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "payrollRun"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/payroll-runs/{payrollRun}/cancel",
+        "pathParams": [
+          "payrollRun"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
+      "name": "api_post_payroll_runs_by_payrollrun_lock",
+      "description": "Verrouiller la session de paie (cloture comptable, F-11) — POST /api/v1/payroll-runs/{payrollRun}/lock. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "payrollRun": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "payrollRun"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/payroll-runs/{payrollRun}/lock",
+        "pathParams": [
+          "payrollRun"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
       "name": "api_post_payroll_runs_by_payrollrun_payment_order",
       "description": "Preparer un ordre de virement pour un run valide (comptable) — POST /api/v1/payroll-runs/{payrollRun}/payment-order. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -5918,6 +6767,89 @@
         ],
         "queryParams": [],
         "hasBody": false
+      }
+    },
+    {
+      "name": "api_post_payroll_runs_by_payrollrun_unlock",
+      "description": "Deverrouiller une session cloturee (raison obligatoire, F-11) — POST /api/v1/payroll-runs/{payrollRun}/unlock. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "reason": {
+                "type": "string",
+                "maxLength": 1000,
+                "description": "Raison du deverrouillage (audit trail)"
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          },
+          "payrollRun": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "body",
+          "payrollRun"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/payroll-runs/{payrollRun}/unlock",
+        "pathParams": [
+          "payrollRun"
+        ],
+        "queryParams": [],
+        "hasBody": true,
+        "action": true
+      }
+    },
+    {
+      "name": "api_post_payroll_runs_by_payrollrun_validate",
+      "description": "Valider la session de paie — POST /api/v1/payroll-runs/{payrollRun}/validate. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "confirm_placeholder": {
+                "type": "boolean",
+                "description": "Confirmation explicite pour valider une paie dont les baremes pays sont 'placeholder' (indicatifs)"
+              }
+            }
+          },
+          "payrollRun": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "payrollRun"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/payroll-runs/{payrollRun}/validate",
+        "pathParams": [
+          "payrollRun"
+        ],
+        "queryParams": [],
+        "hasBody": true,
+        "action": true
       }
     },
     {
@@ -6006,6 +6938,52 @@
         "pathParams": [],
         "queryParams": [],
         "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_push_notifications_send",
+      "description": "Envoyer une notification push de test a un employe — POST /api/v1/push-notifications/send. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "body": {
+                "type": "string",
+                "maxLength": 500
+              },
+              "employee_id": {
+                "type": "integer"
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 200
+              }
+            },
+            "required": [
+              "body",
+              "employee_id",
+              "title"
+            ]
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/push-notifications/send",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true,
+        "action": true
       }
     },
     {
@@ -6165,6 +7143,36 @@
       }
     },
     {
+      "name": "api_post_restaurant_printing_bridge_jobs_by_restaurant_843e7aa8",
+      "description": "Signaler un echec d'impression (bridge local, REST-OS-3) — POST /api/v1/restaurant/printing/bridge/jobs/{restaurantPrintJob}/fail. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "restaurantPrintJob": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "restaurantPrintJob"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/printing/bridge/jobs/{restaurantPrintJob}/fail",
+        "pathParams": [
+          "restaurantPrintJob"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
       "name": "api_post_restaurant_printing_bridge_jobs_by_restaurant_8e59172f",
       "description": "Reclamer ATOMIQUEMENT un travail (bridge local, REST-OS-3/5) — POST /api/v1/restaurant/printing/bridge/jobs/{restaurantPrintJob}/claim. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -6220,6 +7228,66 @@
         ],
         "queryParams": [],
         "hasBody": false
+      }
+    },
+    {
+      "name": "api_post_restaurant_reviews_by_review_publish",
+      "description": "Publier un avis client (moderation gerant) — POST /api/v1/restaurant/reviews/{review}/publish. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "review": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "review"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/reviews/{review}/publish",
+        "pathParams": [
+          "review"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_reviews_by_review_reject",
+      "description": "Rejeter un avis client (moderation gerant) — POST /api/v1/restaurant/reviews/{review}/reject. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "review": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "review"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/reviews/{review}/reject",
+        "pathParams": [
+          "review"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
       }
     },
     {
@@ -6491,6 +7559,51 @@
         "pathParams": [],
         "queryParams": [],
         "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_schedules_by_schedule_assign_employees",
+      "description": "Affecter un horaire/regle entreprise a des employes — POST /api/v1/schedules/{schedule}/assign-employees. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "employee_ids": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              }
+            },
+            "required": [
+              "employee_ids"
+            ]
+          },
+          "schedule": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "body",
+          "schedule"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/schedules/{schedule}/assign-employees",
+        "pathParams": [
+          "schedule"
+        ],
+        "queryParams": [],
+        "hasBody": true,
+        "action": true
       }
     },
     {
@@ -6818,6 +7931,37 @@
       }
     },
     {
+      "name": "api_post_travel_community_articles_by_article_publish",
+      "description": "Publier un article — POST /api/v1/travel/community/articles/{travelArticle}/publish. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "travelArticle": {
+            "type": "integer",
+            "description": "Identifiant de l'article (resolution tenant-scoped)."
+          }
+        },
+        "required": [
+          "travelArticle"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/travel/community/articles/{travelArticle}/publish",
+        "pathParams": [
+          "travelArticle"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
       "name": "api_post_travel_community_articles_by_article_rate",
       "description": "Noter un article — POST /api/v1/travel/community/articles/{travelArticle}/rate. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -6980,6 +8124,68 @@
       }
     },
     {
+      "name": "api_post_travel_community_comments_by_comment_approve",
+      "description": "Approuver un commentaire — POST /api/v1/travel/community/comments/{travelComment}/approve. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "travelComment": {
+            "type": "integer",
+            "description": "Identifiant du commentaire."
+          }
+        },
+        "required": [
+          "travelComment"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/travel/community/comments/{travelComment}/approve",
+        "pathParams": [
+          "travelComment"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
+      "name": "api_post_travel_community_comments_by_comment_reject",
+      "description": "Rejeter un commentaire — POST /api/v1/travel/community/comments/{travelComment}/reject. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "travelComment": {
+            "type": "integer",
+            "description": "Identifiant du commentaire."
+          }
+        },
+        "required": [
+          "travelComment"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/travel/community/comments/{travelComment}/reject",
+        "pathParams": [
+          "travelComment"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
       "name": "api_post_travel_community_comments_by_comment_report",
       "description": "Signaler un commentaire — POST /api/v1/travel/community/comments/{travelComment}/report. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -7037,6 +8243,37 @@
         ],
         "queryParams": [],
         "hasBody": false
+      }
+    },
+    {
+      "name": "api_post_travel_community_quizzes_by_quiz_publish",
+      "description": "Publier un quiz — POST /api/v1/travel/community/quizzes/{travelQuiz}/publish. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "travelQuiz": {
+            "type": "integer",
+            "description": "Identifiant du quiz."
+          }
+        },
+        "required": [
+          "travelQuiz"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/travel/community/quizzes/{travelQuiz}/publish",
+        "pathParams": [
+          "travelQuiz"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
       }
     },
     {
@@ -7205,6 +8442,66 @@
       }
     },
     {
+      "name": "api_post_travel_distributor_keys_by_traveldistributorkey_revoke",
+      "description": "Revoquer une cle distributeur — POST /api/v1/travel/distributor-keys/{travelDistributorKey}/revoke. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "travelDistributorKey": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "travelDistributorKey"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/travel/distributor-keys/{travelDistributorKey}/revoke",
+        "pathParams": [
+          "travelDistributorKey"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
+      "name": "api_post_travel_distributor_keys_by_traveldistributorkey_rotate",
+      "description": "Rotation d'une cle distributeur — POST /api/v1/travel/distributor-keys/{travelDistributorKey}/rotate. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "travelDistributorKey": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "travelDistributorKey"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/travel/distributor-keys/{travelDistributorKey}/rotate",
+        "pathParams": [
+          "travelDistributorKey"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
       "name": "api_post_travel_staff_assignments",
       "description": "Affecter un employe RH a un role metier travel — POST /api/v1/travel/staff-assignments. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -7255,6 +8552,36 @@
         "pathParams": [],
         "queryParams": [],
         "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_travel_staff_assignments_by_travelstaffassign_fbe1a991",
+      "description": "Revoquer une affectation d'equipage — POST /api/v1/travel/staff-assignments/{travelStaffAssignment}/revoke. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "travelStaffAssignment": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "travelStaffAssignment"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/travel/staff-assignments/{travelStaffAssignment}/revoke",
+        "pathParams": [
+          "travelStaffAssignment"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
       }
     },
     {
@@ -7794,6 +9121,66 @@
         ],
         "queryParams": [],
         "hasBody": true
+      }
+    },
+    {
+      "name": "api_put_evaluations_by_evaluation_acknowledge",
+      "description": "Accuser reception d'une evaluation — PUT /api/v1/evaluations/{evaluation}/acknowledge. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "evaluation": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "evaluation"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "PUT",
+        "path": "/api/v1/evaluations/{evaluation}/acknowledge",
+        "pathParams": [
+          "evaluation"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
+      "name": "api_put_evaluations_by_evaluation_submit",
+      "description": "Soumettre une evaluation — PUT /api/v1/evaluations/{evaluation}/submit. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "evaluation": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "evaluation"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "PUT",
+        "path": "/api/v1/evaluations/{evaluation}/submit",
+        "pathParams": [
+          "evaluation"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
       }
     },
     {

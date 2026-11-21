@@ -306,6 +306,10 @@ return [
     'STT_UNAVAILABLE' => 'التحويل الصوتي إلى نص غير متاح مؤقتًا (الخدمة غير مكوّنة).',
     'TTS_UNAVAILABLE' => 'تحويل النص إلى صوت غير متاح مؤقتًا (الخدمة غير مكوّنة).',
     'AI_ACTION_REJECTED' => 'تم رفض الإجراء من قبل المستخدم.',
+    // Issue #9753 — proposition d'action depuis un client MCP externe.
+    'AI_TOOL_UNKNOWN' => 'أداة غير معروفة.',
+    'AI_ACTION_NOT_SENSITIVE' => 'هذه الأداة للقراءة فقط: لا حاجة إلى تأكيد.',
+    'AI_ACTION_NOT_CONFIRMABLE' => 'لا يمكن اقتراح هذه الأداة: لا يوجد معالج تأكيد.',
     // #7268 — Onboarding: رسائل خطوات مُترجمة (لا نصوص ثابتة)
     'ONBOARDING_STEP_REQUIRED' => 'هذه الخطوة إلزامية ولا يمكن تخطيها.',
     'ONBOARDING_STEP_NOT_DONE' => 'لا يمكن تعليم هذه الخطوة كمكتملة: لم يتم تسجيل أي إجراء مطابق.',

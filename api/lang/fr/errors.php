@@ -309,6 +309,10 @@ return [
     'STT_UNAVAILABLE' => 'La transcription vocale est momentanément indisponible (service non configuré).',
     'TTS_UNAVAILABLE' => 'La synthèse vocale est momentanément indisponible (service non configuré).',
     'AI_ACTION_REJECTED' => 'Action rejetée par l\'utilisateur',
+    // Issue #9753 — proposition d'action depuis un client MCP externe.
+    'AI_TOOL_UNKNOWN' => 'Outil inconnu.',
+    'AI_ACTION_NOT_SENSITIVE' => 'Cet outil est en lecture : aucune confirmation n\'est requise.',
+    'AI_ACTION_NOT_CONFIRMABLE' => 'Cet outil ne peut pas être proposé : aucun handler de confirmation.',
     // #7268 — Onboarding : messages d'étape localisés (fin des littéraux en dur)
     'ONBOARDING_STEP_REQUIRED' => 'Cette étape est obligatoire et ne peut pas être ignorée.',
     'ONBOARDING_STEP_NOT_DONE' => 'Cette étape ne peut pas être marquée terminée : aucune action correspondante constatée.',
