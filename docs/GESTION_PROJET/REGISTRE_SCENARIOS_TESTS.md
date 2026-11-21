@@ -26,6 +26,27 @@ Surface : `api/routes/modules/hr_extended.php` (redéclarations `GET /audit-logs
 
 **Non couvert** — suite Feature complète (dépasse la mémoire du sandbox) ; la mesure de référence est le run CI. Restent en échec, hors périmètre de cette passe : `HealthEndpointTest` (APP_KEY retirée en cours de test), `HealthReadyCriticalDepsTest`, `AuthGoogleSignInTest`, `SSOOidcFlowTest` (RS384), `WebhookRetryAndDeactivationTest` (DNS), `ProvisionDemoTenantJobTest`, `ApiFrLiteralsCatalogedTest`, `CrmMigrationsTest`, `MigrationSchemaPlacementTest`.
 
+## 2026-11-21 — MCP : verticales Travel/Restaurant, test stdio, outils d'action avec confirmation (PR #9754, #9751–#9753)
+
+Surface : `dev-hub/tools/generate-mcp-openapi-tools.py`, `dev-hub/mcp-server/manifest/openapi-tools.json`, `dev-hub/mcp-server/src/` (`manifest.ts`, `tools/execute.ts`, tests), `api/routes/ai.php` (1 route), `api/app/AI/Interfaces/Api/V1/Controllers/AIActionProposalController.php`, `api/app/AI/Interfaces/Api/V1/Requests/ProposeAIActionRequest.php`, `api/app/Modules/Payroll/Domain/Support/PayrollReadToolCatalog.php`, `api/openapi.yaml`.
+
+**Pourquoi c'est un scénario de test** : trois propriétés de sécurité du pont MCP ne sont visibles dans aucun test de contrat REST — elles portent sur ce que le serveur MCP *refuse* de faire.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `tools/call` sur un outil d'action appelle `/ai/actions/propose` et **jamais** l'endpoint métier | un agent déclencherait une approbation de congé sans confirmation humaine |
+| une proposition refusée par le RBAC ne crée **aucun** pending | un pending fantôme serait confirmable plus tard, hors du contrôle de rôle |
+| proposer un outil de lecture renvoie 422 | la proposition n'a de sens que pour write/send ; un 201 sur une lecture trompe l'appelant |
+| proposer un outil sans handler de confirmation renvoie 422 | l'utilisateur confirmerait une action qui ne peut pas s'exécuter |
+| un pending créé est invisible depuis un autre tenant | fuite inter-tenant à la confirmation |
+| `tools/list` expose des schémas JSON valides pour **tous** les outils | `payroll_current_status` déclarait `"properties": []` : un client MCP strict rejetait l'intégralité de `tools/list` |
+| le transport stdio répond à un vrai client SDK (handshake, tools/list, resources/read) | le transport des IDE n'était couvert par aucun test d'intégration |
+| la génération OpenAPI est déterministe et la garde CI compare avec `--include-actions` | une dérive permanente rendrait la garde inutile |
+
+**Couverture exécutée** — `tsc --noEmit` 0 erreur ; **55 tests vitest verts** (dont 10 d'intégration stdio sur le vrai binaire compilé et 5 sur les outils d'action) ; génération déterministe (md5 identique sur deux runs) ; garde `check-mcp-openapi-tools-drift.sh` verte (278 outils) ; test stdio **vu mordant** (transport non connecté → 10 échecs) ; `php -l` sur les 7 fichiers PHP ; `check-form-request-guard.py` OK (dette figée 437).
+
+**Non couvert** — tests Feature PHP (pas de `vendor/` dans le sandbox) ; transport contre une API Laravel réelle (serveur HTTP local de test).
+
 ## 2026-11-21 — Marketing découpé par ressource, sondes Health extraites, garde FormRequest (PR #9731, #9732)
 
 Surface : `api/routes/api.php` (routes marketing réenregistrées vers 4 contrôleurs dédiés, chemins et méthodes inchangés), `api/app/Modules/Marketing/Interfaces/Api/V1/Controllers/` (`MarketingCampaignsController`, `MarketingAssetsController`, `MarketingPublicationsController`, `MarketingVisibilityController`, trait `ResolvesMarketingTenant`), `api/app/Modules/Platform/Infrastructure/Services/HealthProbeService.php`, `api/app/Modules/Platform/Interfaces/Api/V1/Controllers/HealthController.php`, `dev-hub/tools/check-form-request-guard.py` + `form-request-guard-baseline.txt`.

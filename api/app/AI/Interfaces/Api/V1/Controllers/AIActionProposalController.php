@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AI\Interfaces\Api\V1\Controllers;
 
 use App\AI\AIAuditLogger;
+use App\AI\Interfaces\Api\V1\Requests\ProposeAIActionRequest;
 use App\AI\PendingActionStore;
 use App\AI\Support\AIToolDefinition;
 use App\AI\Support\AIToolDefinitionRegistry;
@@ -14,7 +15,6 @@ use App\AI\WriteToolPolicy;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 /**
  * Proposition d'action sensible depuis un client MCP externe (issue #9753).
@@ -41,13 +41,10 @@ class AIActionProposalController extends Controller
         private readonly AIAuditLogger $auditLogger,
     ) {}
 
-    public function propose(Request $request): JsonResponse
+    public function propose(ProposeAIActionRequest $request): JsonResponse
     {
         /** @var array{tool: string, arguments?: array<string, mixed>} $validated */
-        $validated = $request->validate([
-            'tool' => 'required|string|max:64',
-            'arguments' => 'nullable|array',
-        ]);
+        $validated = $request->validated();
 
         $toolName = $validated['tool'];
         /** @var array<string, mixed> $arguments */

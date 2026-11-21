@@ -33590,6 +33590,94 @@ paths:
           description: Requête invalide
         '200':
           description: Liste des paiements partenaires
+  /ai/actions/propose:
+    post:
+      operationId: api_post_ai_actions_propose
+      tags:
+      - AI
+      summary: Proposer une action IA sensible (client MCP externe)
+      description: >-
+        Crée une action en attente (`PendingAction`) sans l'exécuter. Endpoint
+        destiné aux clients MCP externes, qui n'ont aucun accès base : c'est ce
+        qui garantit que Laravel reste le seul point d'autorisation.
+
+        Applique le RBAC (`ToolPermissionPolicy`), refuse un outil de lecture
+        (une lecture s'exécute directement), refuse un outil sans handler de
+        confirmation, puis délègue à `PendingActionStore`. Aucun effet métier
+        tant qu'un humain n'a pas appelé `/ai/actions/{pendingActionId}/confirm`.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - tool
+              properties:
+                tool:
+                  type: string
+                  maxLength: 64
+                  example: absence_decision
+                arguments:
+                  type: object
+                  description: Arguments de l'outil, transmis tels quels (revalidés à la confirmation)
+      responses:
+        '201':
+          description: Proposition créée — confirmation humaine requise
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - status
+                    - pending_action_id
+                    - tool
+                    - sensitivity
+                    properties:
+                      status:
+                        type: string
+                        enum:
+                        - confirmation_required
+                      pending_action_id:
+                        type: string
+                        format: uuid
+                      tool:
+                        type: string
+                      sensitivity:
+                        type: string
+                        enum:
+                        - write
+                        - send
+                      arguments:
+                        type: object
+                      confirm_endpoint:
+                        type: string
+                      reject_endpoint:
+                        type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Rôle non habilité pour cet outil (`AI_TOOL_PERMISSION_DENIED`) ou feature IA non active
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: >-
+            Outil inconnu (`AI_TOOL_UNKNOWN`), outil de lecture
+            (`AI_ACTION_NOT_SENSITIVE`), outil sans handler de confirmation
+            (`AI_ACTION_NOT_CONFIRMABLE`) ou paramètres invalides
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /ai/actions/{pendingActionId}/confirm:
     post:
       operationId: api_post_ai_actions_by_pendingActionId_confirm
