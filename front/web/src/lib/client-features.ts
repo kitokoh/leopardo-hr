@@ -1237,9 +1237,21 @@ export function getModuleAccessForPath(pathname: string, user?: StoredAuthUser |
   // Try exact match first
   let moduleKey: ClientModuleKey | undefined = ROUTE_TO_MODULE[pathname];
   // Fall back to prefix match for nested routes (e.g. /attendance/geo/sessions)
+  //
+  // #9719 — le repli doit prendre le préfixe le PLUS SPÉCIFIQUE, pas le premier
+  // trouvé. `ROUTE_TO_MODULE` est construit dans l'ordre de déclaration du
+  // catalogue, où un parent précède toujours ses sous-écrans (`/health` avant
+  // `/health/patients`, `/travel` avant `/travel/portal`). Un `.find()` sur
+  // l'ordre d'insertion renvoyait donc le PARENT : `/health/patients` était
+  // résolu vers le module `health`, et le panneau « verrouillé » affichait le
+  // libellé du parent au lieu de celui de l'écran réellement demandé. Le tri
+  // par longueur décroissante rend le résultat indépendant de l'ordre de
+  // déclaration du catalogue.
   if (!moduleKey) {
-    const matched = Object.entries(ROUTE_TO_MODULE).find(([route]) => pathname.startsWith(route + '/'));
-    moduleKey = matched?.[1];
+    const matched = Object.keys(ROUTE_TO_MODULE)
+      .filter((route) => pathname.startsWith(route + '/'))
+      .sort((a, b) => b.length - a.length)[0];
+    moduleKey = matched ? ROUTE_TO_MODULE[matched] : undefined;
   }
   if (!moduleKey) {
     return null;
