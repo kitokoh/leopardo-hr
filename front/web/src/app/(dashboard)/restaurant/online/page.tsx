@@ -63,8 +63,14 @@ type PendingReview = {
   author_name?: string | null;
   rating?: number | null;
   comment?: string | null;
+  status?: 'pending' | 'published' | 'rejected' | null;
+  reply?: string | null;
+  replied_at?: string | null;
   created_at?: string | null;
 };
+
+/** Filtre de la file de modération (#9713). */
+type ReviewFilter = 'pending' | 'published' | 'rejected' | 'all';
 
 const EMPTY_FORM: ProfileForm = {
   is_public: false,
@@ -106,6 +112,10 @@ export default function RestaurantOnlinePage() {
   const [reviews, setReviews] = useState<PendingReview[]>([]);
   const [reviewsAvailable, setReviewsAvailable] = useState(true);
   const [reviewError, setReviewError] = useState('');
+  // #9713 — filtre de la file + réponse en cours de rédaction par avis.
+  const [reviewFilter, setReviewFilter] = useState<ReviewFilter>('pending');
+  const [replyDraft, setReplyDraft] = useState<Record<number, string>>({});
+  const [replyBusy, setReplyBusy] = useState<number | null>(null);
 
   useEffect(() => {
     if (branchId === null && branches.length > 0) {
@@ -155,7 +165,8 @@ export default function RestaurantOnlinePage() {
     if (branchId === null) return;
     setReviewError('');
     try {
-      const res = await apiFetch(`/restaurant/reviews?status=pending&branch_id=${branchId}&per_page=50`);
+      const statusQuery = reviewFilter === 'all' ? '' : `status=${reviewFilter}&`;
+      const res = await apiFetch(`/restaurant/reviews?${statusQuery}branch_id=${branchId}&per_page=50`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const payload = (await res.json()) as { data?: PendingReview[] };
       setReviews(Array.isArray(payload?.data) ? payload.data : []);
@@ -166,21 +177,62 @@ export default function RestaurantOnlinePage() {
       setReviewsAvailable(false);
       setReviews([]);
     }
-  }, [branchId]);
+  }, [branchId, reviewFilter]);
 
   useEffect(() => {
     void loadReviews();
   }, [loadReviews]);
 
-  const moderateReview = async (review: PendingReview, action: 'publish' | 'reject') => {
+  const moderateReview = async (review: PendingReview, action: 'publish' | 'reject' | 'unpublish') => {
     setReviewError('');
     try {
       const res = await apiFetch(`/restaurant/reviews/${review.id}/${action}`, { method: 'POST' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      // L'avis quitte la file « en attente ».
-      setReviews((prev) => prev.filter((r) => r.id !== review.id));
+      // L'avis quitte la file courante : on recharge pour rester cohérent
+      // avec le filtre actif (un avis publié sort de la file « en attente »).
+      await loadReviews();
     } catch {
       setReviewError(t(locale, 'restaurant.online.reviewActionError'));
+    }
+  };
+
+  // #9713 — réponse publique du restaurateur à un avis.
+  const submitReply = async (review: PendingReview) => {
+    const draft = (replyDraft[review.id] ?? '').trim();
+    if (draft === '') return;
+    setReviewError('');
+    setReplyBusy(review.id);
+    try {
+      const res = await apiFetch(`/restaurant/reviews/${review.id}/reply`, {
+        method: 'PUT',
+        body: JSON.stringify({ reply: draft }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const payload = (await res.json()) as { data?: PendingReview };
+      if (payload.data) {
+        setReviews((prev) => prev.map((r) => (r.id === review.id ? { ...r, ...payload.data } : r)));
+      }
+      setReplyDraft((prev) => ({ ...prev, [review.id]: '' }));
+    } catch {
+      setReviewError(t(locale, 'restaurant.online.reviewReplyError'));
+    } finally {
+      setReplyBusy(null);
+    }
+  };
+
+  const deleteReply = async (review: PendingReview) => {
+    setReviewError('');
+    setReplyBusy(review.id);
+    try {
+      const res = await apiFetch(`/restaurant/reviews/${review.id}/reply`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setReviews((prev) =>
+        prev.map((r) => (r.id === review.id ? { ...r, reply: null, replied_at: null } : r)),
+      );
+    } catch {
+      setReviewError(t(locale, 'restaurant.online.reviewReplyError'));
+    } finally {
+      setReplyBusy(null);
     }
   };
 
@@ -480,6 +532,25 @@ export default function RestaurantOnlinePage() {
             {reviewError ? (
               <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{reviewError}</p>
             ) : null}
+            {reviewsAvailable ? (
+              <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={t(locale, 'restaurant.online.reviewsFilterLabel')}>
+                {(['pending', 'published', 'rejected', 'all'] as ReviewFilter[]).map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setReviewFilter(value)}
+                    aria-pressed={reviewFilter === value}
+                    className={`rounded-lg px-3 py-1 text-xs font-bold ${
+                      reviewFilter === value
+                        ? 'bg-slate-900 text-white'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    {t(locale, `restaurant.online.reviewsFilter_${value}`)}
+                  </button>
+                ))}
+              </div>
+            ) : null}
             {!reviewsAvailable ? (
               <p className="mt-3 text-sm text-slate-500">{t(locale, 'restaurant.online.reviewsComingSoon')}</p>
             ) : reviews.length === 0 ? (
@@ -501,27 +572,96 @@ export default function RestaurantOnlinePage() {
                               {'★'.repeat(Math.max(0, Math.min(5, review.rating)))}
                             </span>
                           ) : null}
+                          {review.status ? (
+                            <span className="ml-2 rounded bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase text-slate-600">
+                              {t(locale, `restaurant.online.reviewStatus_${review.status}`)}
+                            </span>
+                          ) : null}
                         </p>
                         {review.comment ? (
                           <p className="mt-1 text-sm text-slate-600">{review.comment}</p>
                         ) : null}
                       </div>
                       <div className="flex shrink-0 gap-2">
-                        <button
-                          type="button"
-                          onClick={() => void moderateReview(review, 'publish')}
-                          className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-bold text-white"
-                        >
-                          {t(locale, 'restaurant.online.reviewPublish')}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => void moderateReview(review, 'reject')}
-                          className="rounded-lg bg-slate-200 px-3 py-1 text-xs font-bold text-slate-700"
-                        >
-                          {t(locale, 'restaurant.online.reviewReject')}
-                        </button>
+                        {review.status !== 'published' ? (
+                          <button
+                            type="button"
+                            onClick={() => void moderateReview(review, 'publish')}
+                            className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-bold text-white"
+                          >
+                            {t(locale, 'restaurant.online.reviewPublish')}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => void moderateReview(review, 'unpublish')}
+                            className="rounded-lg bg-amber-500 px-3 py-1 text-xs font-bold text-white"
+                          >
+                            {t(locale, 'restaurant.online.reviewUnpublish')}
+                          </button>
+                        )}
+                        {review.status !== 'rejected' ? (
+                          <button
+                            type="button"
+                            onClick={() => void moderateReview(review, 'reject')}
+                            className="rounded-lg bg-slate-200 px-3 py-1 text-xs font-bold text-slate-700"
+                          >
+                            {t(locale, 'restaurant.online.reviewReject')}
+                          </button>
+                        ) : null}
                       </div>
+                    </div>
+
+                    {/* #9713 — réponse publique du restaurateur. */}
+                    <div className="mt-3 border-t border-slate-100 pt-3">
+                      {review.reply ? (
+                        <div className="rounded-lg bg-slate-50 p-3">
+                          <p className="text-xs font-bold uppercase text-slate-500">
+                            {t(locale, 'restaurant.online.reviewReplyLabel')}
+                          </p>
+                          <p className="mt-1 text-sm text-slate-700">{review.reply}</p>
+                          <div className="mt-2 flex gap-2">
+                            <button
+                              type="button"
+                              disabled={replyBusy === review.id}
+                              onClick={() => setReplyDraft((prev) => ({ ...prev, [review.id]: review.reply ?? '' }))}
+                              className="rounded-lg bg-slate-200 px-3 py-1 text-xs font-bold text-slate-700 disabled:opacity-50"
+                            >
+                              {t(locale, 'restaurant.online.reviewReplyEdit')}
+                            </button>
+                            <button
+                              type="button"
+                              disabled={replyBusy === review.id}
+                              onClick={() => void deleteReply(review)}
+                              className="rounded-lg bg-red-50 px-3 py-1 text-xs font-bold text-red-700 disabled:opacity-50"
+                            >
+                              {t(locale, 'restaurant.online.reviewReplyDelete')}
+                            </button>
+                          </div>
+                        </div>
+                      ) : null}
+
+                      {!review.reply || replyDraft[review.id] !== undefined ? (
+                        <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                          <textarea
+                            value={replyDraft[review.id] ?? ''}
+                            onChange={(e) => setReplyDraft((prev) => ({ ...prev, [review.id]: e.target.value }))}
+                            rows={2}
+                            maxLength={2000}
+                            placeholder={t(locale, 'restaurant.online.reviewReplyPlaceholder')}
+                            aria-label={t(locale, 'restaurant.online.reviewReplyLabel')}
+                            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                          />
+                          <button
+                            type="button"
+                            disabled={replyBusy === review.id || (replyDraft[review.id] ?? '').trim() === ''}
+                            onClick={() => void submitReply(review)}
+                            className="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-xs font-bold text-white disabled:opacity-50"
+                          >
+                            {t(locale, 'restaurant.online.reviewReplySend')}
+                          </button>
+                        </div>
+                      ) : null}
                     </div>
                   </li>
                 ))}
