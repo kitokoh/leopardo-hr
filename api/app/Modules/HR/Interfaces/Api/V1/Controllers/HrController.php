@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
 use App\Modules\HR\Infrastructure\Services\EmployeeService;
+use App\Modules\HR\Infrastructure\Services\HrDashboardStatsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -42,42 +43,13 @@ class HrController extends Controller
      * GET /api/v1/hr/dashboard
      * HR-specific dashboard with team stats.
      */
-    public function dashboard(Request $request): JsonResponse
+    public function dashboard(Request $request, HrDashboardStatsService $statsService): JsonResponse
     {
         /** @var Employee $employee */
         $employee = $request->user();
 
-        $company_id = $employee->company_id;
-
-        $stats = [
-            'total_active_employees' => Employee::where('company_id', $company_id)
-                ->where('status', 'active')
-                ->whereNot('role', 'manager')
-                ->count(),
-
-            'total_employees' => Employee::where('company_id', $company_id)
-                ->whereNotIn('status', ['archived', 'departed'])
-                ->count(),
-
-            'pending_invitations' => Employee::where('company_id', $company_id)
-                ->where('status', 'invited')
-                ->count(),
-
-            'new_this_month' => Employee::where('company_id', $company_id)
-                ->where('status', 'active')
-                ->whereMonth('created_at', now()->month)
-                ->whereYear('created_at', now()->year)
-                ->count(),
-
-            'by_contract_type' => Employee::where('company_id', $company_id)
-                ->whereNotIn('status', ['archived', 'departed'])
-                ->selectRaw('contract_type, COUNT(*) as count')
-                ->groupBy('contract_type')
-                ->pluck('count', 'contract_type'),
-        ];
-
         return response()->json([
-            'data' => $stats,
+            'data' => $statsService->hrDashboard((string) $employee->company_id),
             'meta' => [
                 'app' => 'rh',
                 'role' => $employee->manager_role,

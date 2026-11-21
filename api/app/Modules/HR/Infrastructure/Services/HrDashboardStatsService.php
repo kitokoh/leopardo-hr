@@ -68,6 +68,56 @@ class HrDashboardStatsService
     }
 
     /**
+     * Compteurs du tableau de bord de l'app RH mobile (`GET /api/v1/hr/dashboard`).
+     *
+     * Extrait de `HrController::dashboard()` : cinq requêtes d'agrégation
+     * vivaient dans la couche HTTP, ce qui rendait toute évolution du
+     * périmètre (ex. exclure les managers du décompte « actifs ») impossible à
+     * tester sans monter une requête HTTP complète.
+     *
+     * @return array{
+     *     total_active_employees: int,
+     *     total_employees: int,
+     *     pending_invitations: int,
+     *     new_this_month: int,
+     *     by_contract_type: array<string, int>
+     * }
+     */
+    public function hrDashboard(string $companyId): array
+    {
+        $byContractType = Employee::where('company_id', $companyId)
+            ->whereNotIn('status', ['archived', 'departed'])
+            ->selectRaw('contract_type, COUNT(*) as count')
+            ->groupBy('contract_type')
+            ->pluck('count', 'contract_type');
+
+        /** @var array<string, int> $contractCounts */
+        $contractCounts = [];
+        foreach ($byContractType as $type => $count) {
+            $contractCounts[(string) $type] = is_numeric($count) ? (int) $count : 0;
+        }
+
+        return [
+            'total_active_employees' => Employee::where('company_id', $companyId)
+                ->where('status', 'active')
+                ->whereNot('role', 'manager')
+                ->count(),
+            'total_employees' => Employee::where('company_id', $companyId)
+                ->whereNotIn('status', ['archived', 'departed'])
+                ->count(),
+            'pending_invitations' => Employee::where('company_id', $companyId)
+                ->where('status', 'invited')
+                ->count(),
+            'new_this_month' => Employee::where('company_id', $companyId)
+                ->where('status', 'active')
+                ->whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->count(),
+            'by_contract_type' => $contractCounts,
+        ];
+    }
+
+    /**
      * Digest du manager, mis en cache par (société, manager, jour).
      *
      * @return array<string, mixed>

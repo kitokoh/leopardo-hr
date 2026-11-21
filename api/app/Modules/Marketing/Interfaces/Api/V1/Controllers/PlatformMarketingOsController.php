@@ -25,6 +25,7 @@ use App\Modules\Marketing\Domain\Models\MarketingVisibilityObjective;
 use App\Modules\Marketing\Infrastructure\Services\MarketingAssetStorage;
 use App\Modules\Marketing\Infrastructure\Services\MarketingOsAudit;
 use App\Modules\Marketing\Infrastructure\Services\MarketingOsDashboardService;
+use App\Modules\Marketing\Infrastructure\Services\MarketingOsPresenter;
 use App\Modules\Marketing\Infrastructure\Services\MarketingPublicationModeResolver;
 use App\Modules\Marketing\Infrastructure\Services\MarketingPublicationStatsService;
 use App\Modules\Marketing\Infrastructure\Services\PlatformPublishingCapability;
@@ -90,6 +91,7 @@ final class PlatformMarketingOsController extends Controller
         private readonly PlatformPublishingCapability $capabilities,
         private readonly PromoteContentIdeaToProduction $promote,
         private readonly MarketingOsAudit $audit,
+        private readonly MarketingOsPresenter $presenter,
     ) {}
 
     // ─────────────────────────────────────────────────────────────────────
@@ -158,7 +160,7 @@ final class PlatformMarketingOsController extends Controller
             $page = $query->paginate((int) ($validated['per_page'] ?? self::DEFAULT_PER_PAGE));
 
             return new JsonResponse([
-                'data' => $page->getCollection()->map(fn (MarketingCampaign $c): array => $this->presentCampaign($c))->all(),
+                'data' => $page->getCollection()->map(fn (MarketingCampaign $c): array => $this->presenter->presentCampaign($c))->all(),
                 'meta' => [
                     'current_page' => $page->currentPage(),
                     'last_page' => $page->lastPage(),
@@ -181,7 +183,7 @@ final class PlatformMarketingOsController extends Controller
             $campaign->company_id = (string) $target->id;
             $campaign->save();
 
-            return new JsonResponse(['data' => $this->presentCampaign($campaign->refresh())], Response::HTTP_CREATED);
+            return new JsonResponse(['data' => $this->presenter->presentCampaign($campaign->refresh())], Response::HTTP_CREATED);
         });
     }
 
@@ -238,7 +240,7 @@ final class PlatformMarketingOsController extends Controller
             $page = $query->paginate((int) ($validated['per_page'] ?? self::DEFAULT_PER_PAGE));
 
             return new JsonResponse([
-                'data' => $page->getCollection()->map(fn (ContentIdea $i): array => $this->presentIdea($i))->all(),
+                'data' => $page->getCollection()->map(fn (ContentIdea $i): array => $this->presenter->presentIdea($i))->all(),
                 'meta' => [
                     'current_page' => $page->currentPage(),
                     'last_page' => $page->lastPage(),
@@ -263,7 +265,7 @@ final class PlatformMarketingOsController extends Controller
             $idea->company_id = (string) $target->id;
             $idea->save();
 
-            return new JsonResponse(['data' => $this->presentIdea($idea->refresh())], Response::HTTP_CREATED);
+            return new JsonResponse(['data' => $this->presenter->presentIdea($idea->refresh())], Response::HTTP_CREATED);
         });
     }
 
@@ -280,7 +282,7 @@ final class PlatformMarketingOsController extends Controller
             $model->fill($payload);
             $model->save();
 
-            return new JsonResponse(['data' => $this->presentIdea($model->refresh())]);
+            return new JsonResponse(['data' => $this->presenter->presentIdea($model->refresh())]);
         });
     }
 
@@ -304,7 +306,7 @@ final class PlatformMarketingOsController extends Controller
             }
 
             return new JsonResponse([
-                'data' => $this->presentIdea($promoted->refresh()),
+                'data' => $this->presenter->presentIdea($promoted->refresh()),
                 'meta' => [
                     // Un échec de création de tâche n'est pas silencieux : il est
                     // exposé, et l'idée reste promue côté marketing.
@@ -382,7 +384,7 @@ final class PlatformMarketingOsController extends Controller
             $page = $query->paginate((int) ($validated['per_page'] ?? self::DEFAULT_PER_PAGE));
 
             return new JsonResponse([
-                'data' => $page->getCollection()->map(fn (MarketingAsset $a): array => $this->presentAsset($a))->all(),
+                'data' => $page->getCollection()->map(fn (MarketingAsset $a): array => $this->presenter->presentAsset($a))->all(),
                 'meta' => [
                     'current_page' => $page->currentPage(),
                     'last_page' => $page->lastPage(),
@@ -459,7 +461,7 @@ final class PlatformMarketingOsController extends Controller
             ]);
 
             return new JsonResponse([
-                'data' => $this->presentAsset($asset->refresh()),
+                'data' => $this->presenter->presentAsset($asset->refresh()),
                 'meta' => [
                     // Une ressource texte (script, prompt, légende) vit sans
                     // binaire : on l'expose pour que l'UI n'attende pas de média.
@@ -486,7 +488,7 @@ final class PlatformMarketingOsController extends Controller
             $model = MarketingAsset::query()->findOrFail($asset);
 
             return new JsonResponse([
-                'data' => $this->presentAsset($model),
+                'data' => $this->presenter->presentAsset($model),
                 'meta' => [
                     'downloadable' => $model->hasFile(),
                     'text_only' => $model->hasFile() === false,
@@ -572,8 +574,8 @@ final class PlatformMarketingOsController extends Controller
 
             return new JsonResponse([
                 'data' => [
-                    'asset' => $this->presentAsset($model),
-                    'publications' => $publications->map(fn (MarketingPublication $p): array => $this->presentPublication($p))->all(),
+                    'asset' => $this->presenter->presentAsset($model),
+                    'publications' => $publications->map(fn (MarketingPublication $p): array => $this->presenter->presentPublication($p))->all(),
                     'published_count' => $publications->filter(fn (MarketingPublication $p): bool => $p->isPublished())->count(),
                     'platforms' => $publications->pluck('platform')->unique()->values()->all(),
                     // « Peut-on la réutiliser ? » ne peut pas être une constante :
@@ -627,7 +629,7 @@ final class PlatformMarketingOsController extends Controller
             $page = $query->paginate((int) ($validated['per_page'] ?? self::DEFAULT_PER_PAGE));
 
             return new JsonResponse([
-                'data' => $page->getCollection()->map(fn (MarketingPublication $p): array => $this->presentPublication($p))->all(),
+                'data' => $page->getCollection()->map(fn (MarketingPublication $p): array => $this->presenter->presentPublication($p))->all(),
                 'meta' => [
                     'current_page' => $page->currentPage(),
                     'last_page' => $page->lastPage(),
@@ -674,7 +676,7 @@ final class PlatformMarketingOsController extends Controller
             $publication->save();
 
             return new JsonResponse([
-                'data' => $this->presentPublication($publication->refresh()),
+                'data' => $this->presenter->presentPublication($publication->refresh()),
                 'meta' => [
                     'direct_available' => $directAvailable,
                     'mode_explanation' => $directAvailable
@@ -708,7 +710,7 @@ final class PlatformMarketingOsController extends Controller
             // true`, sans écrire en base ni dans le journal d'audit.
             if ($this->isIdempotentReplay($model, $action, $validated)) {
                 return new JsonResponse([
-                    'data' => $this->presentPublication($model),
+                    'data' => $this->presenter->presentPublication($model),
                     'meta' => [
                         'mode' => $model->mode->value,
                         'idempotent' => true,
@@ -757,7 +759,7 @@ final class PlatformMarketingOsController extends Controller
             );
 
             return new JsonResponse([
-                'data' => $this->presentPublication($model),
+                'data' => $this->presenter->presentPublication($model),
                 'meta' => [
                     'mode' => $model->mode->value,
                     'idempotent' => false,
@@ -827,7 +829,7 @@ final class PlatformMarketingOsController extends Controller
             $refreshed = $this->stats->refresh($model);
 
             return new JsonResponse([
-                'data' => $this->presentPublication($refreshed->refresh()),
+                'data' => $this->presenter->presentPublication($refreshed->refresh()),
                 'meta' => [
                     'measured' => $refreshed->hasMeasuredStats(),
                     'stats_source' => $refreshed->stats_source,
@@ -871,7 +873,7 @@ final class PlatformMarketingOsController extends Controller
             $page = $query->paginate((int) ($request->query('per_page') ?? self::DEFAULT_PER_PAGE));
 
             return new JsonResponse([
-                'data' => $page->getCollection()->map(fn (MarketingVisibilityObjective $o): array => $this->presentVisibilityObjective($o))->all(),
+                'data' => $page->getCollection()->map(fn (MarketingVisibilityObjective $o): array => $this->presenter->presentVisibilityObjective($o))->all(),
                 'meta' => [
                     'current_page' => $page->currentPage(),
                     'last_page' => $page->lastPage(),
@@ -911,7 +913,7 @@ final class PlatformMarketingOsController extends Controller
             $objective->save();
 
             return new JsonResponse([
-                'data' => $this->presentVisibilityObjective($objective->refresh()),
+                'data' => $this->presenter->presentVisibilityObjective($objective->refresh()),
             ], Response::HTTP_CREATED);
         });
     }
@@ -1016,175 +1018,5 @@ final class PlatformMarketingOsController extends Controller
         }
 
         abort_unless(MarketingAsset::query()->whereKey($assetId)->exists(), 422, __('marketing.os.asset_not_found'));
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function presentCampaign(MarketingCampaign $campaign): array
-    {
-        return [
-            'id' => $campaign->id,
-            'name' => $campaign->name,
-            'description' => $campaign->description,
-            'objective' => $campaign->objective->value,
-            'audience' => $campaign->audience,
-            'sector' => $campaign->sector,
-            'product' => $campaign->product,
-            'key_message' => $campaign->key_message,
-            'channel' => $campaign->channel,
-            'locale' => $campaign->locale,
-            'starts_at' => $campaign->starts_at?->toIso8601String(),
-            'ends_at' => $campaign->ends_at?->toIso8601String(),
-            'owner_id' => $campaign->owner_id,
-            'budget_amount' => $campaign->budget_amount,
-            'budget_currency' => $campaign->budget_currency,
-            'status' => $campaign->status->value,
-            'created_at' => $campaign->created_at?->toIso8601String(),
-            'updated_at' => $campaign->updated_at?->toIso8601String(),
-        ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function presentIdea(ContentIdea $idea): array
-    {
-        return [
-            'id' => $idea->id,
-            'campaign_id' => $idea->campaign_id,
-            'title' => $idea->title,
-            'description' => $idea->description,
-            'objective' => $idea->objective,
-            'format' => $idea->format->value,
-            'channel' => $idea->channel,
-            'locale' => $idea->locale,
-            'audience' => $idea->audience,
-            'product' => $idea->product,
-            'sector' => $idea->sector,
-            'key_message' => $idea->key_message,
-            'production_due_at' => $idea->production_due_at?->toIso8601String(),
-            'publish_due_at' => $idea->publish_due_at?->toIso8601String(),
-            'owner_id' => $idea->owner_id,
-            'budget_amount' => $idea->budget_amount,
-            'budget_currency' => $idea->budget_currency,
-            'status' => $idea->status->value,
-            'next_action' => $idea->next_action,
-            'brief' => $idea->brief,
-            'production_task_id' => $idea->production_task_id,
-            'is_production_late' => $idea->isProductionLate(),
-            'created_at' => $idea->created_at?->toIso8601String(),
-            'updated_at' => $idea->updated_at?->toIso8601String(),
-        ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function presentAsset(MarketingAsset $asset): array
-    {
-        return [
-            'id' => $asset->id,
-            'campaign_id' => $asset->campaign_id,
-            'content_idea_id' => $asset->content_idea_id,
-            'name' => $asset->name,
-            'description' => $asset->description,
-            'kind' => $asset->kind->value,
-            'mime_type' => $asset->mime_type,
-            'extension' => $asset->extension,
-            'size' => $asset->size,
-            // #8675 — nom lisible propose au telechargement (nom d'origine
-            // sanitise, sinon reconstruit depuis le titre). Le `path` de
-            // stockage n'est JAMAIS expose : il est aleatoire et interne.
-            'original_name' => $asset->original_name,
-            'download_name' => $asset->hasFile() ? $asset->downloadName() : null,
-            // Jamais d'URL publique fabriquée ici : le binaire vit hors webroot.
-            'has_file' => $asset->hasFile(),
-            'locale' => $asset->locale,
-            'product' => $asset->product,
-            'objective' => $asset->objective,
-            'sector' => $asset->sector,
-            'platforms' => $asset->platforms,
-            'tags' => $asset->tags,
-            'version' => $asset->version,
-            'validation_status' => $asset->validation_status->value,
-            'author_id' => $asset->author_id,
-            'rights' => $asset->rights,
-            'rights_expires_at' => $asset->rights_expires_at?->toIso8601String(),
-            'created_at' => $asset->created_at?->toIso8601String(),
-            'updated_at' => $asset->updated_at?->toIso8601String(),
-        ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function presentVisibilityObjective(MarketingVisibilityObjective $objective): array
-    {
-        return [
-            'id' => $objective->id,
-            'channel' => $objective->channel->value,
-            'channel_label' => $objective->channel->label(),
-            'keyword' => $objective->keyword,
-            'search_intent' => $objective->search_intent,
-            'destination_url' => $objective->destination_url,
-            'ad_campaign_ref' => $objective->ad_campaign_ref,
-            'locale' => $objective->locale,
-            'sector' => $objective->sector,
-            'campaign_id' => $objective->campaign_id,
-            'content_idea_id' => $objective->content_idea_id,
-            'marketing_asset_id' => $objective->marketing_asset_id,
-            'marketing_publication_id' => $objective->marketing_publication_id,
-            'questions_answered' => $objective->questions_answered,
-            'metrics' => $objective->metrics,
-            'metrics_source' => $objective->metrics_source->value,
-            'metrics_source_label' => $objective->metrics_source->label(),
-            'metrics_note' => $objective->metrics_note,
-            // Un indicateur est soit MESURE, soit declare estimation ou
-            // indisponible : jamais presente comme un fait sans provenance.
-            'has_measured_metrics' => $objective->hasMeasuredMetrics(),
-            'has_linked_content' => $objective->hasLinkedContent(),
-            'notes' => $objective->notes,
-            'created_at' => $objective->created_at?->toIso8601String(),
-            'updated_at' => $objective->updated_at?->toIso8601String(),
-        ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function presentPublication(MarketingPublication $publication): array
-    {
-        return [
-            'id' => $publication->id,
-            'content_idea_id' => $publication->content_idea_id,
-            'marketing_asset_id' => $publication->marketing_asset_id,
-            'platform' => $publication->platform,
-            'mode' => $publication->mode->value,
-            'status' => $publication->status->value,
-            'title' => $publication->title,
-            'body' => $publication->body,
-            'hashtags' => $publication->hashtags,
-            'call_to_action' => $publication->call_to_action,
-            'destination_url' => $publication->destination_url,
-            'scheduled_at' => $publication->scheduled_at?->toIso8601String(),
-            'published_at' => $publication->published_at?->toIso8601String(),
-            'published_url' => $publication->published_url,
-            'platform_account' => $publication->platform_account,
-            'stats' => $publication->stats,
-            'stats_source' => $publication->stats_source,
-            'external_post_id' => $publication->external_post_id,
-            'stats_fetched_at' => $publication->stats_fetched_at?->toIso8601String(),
-            'stats_error' => $publication->stats_error,
-            // Un indicateur est soit MESURE, soit declare indisponible :
-            // l'interface ne doit jamais afficher un chiffre invente.
-            'has_measured_stats' => $publication->hasMeasuredStats(),
-            'error_message' => $publication->error_message,
-            'attempts' => $publication->attempts,
-            'attempt_history' => $publication->attempt_history,
-            'is_published' => $publication->isPublished(),
-            'created_at' => $publication->created_at?->toIso8601String(),
-            'updated_at' => $publication->updated_at?->toIso8601String(),
-        ];
     }
 }
