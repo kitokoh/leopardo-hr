@@ -37,6 +37,7 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantLoyalt
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMarketplaceWebhookController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMenuController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMenuItemController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMetricsController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMobileManagerController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMobileRiderController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMobileServerController;
@@ -84,6 +85,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     ->group(function (): void {
         // Smoke test de la verticale (RESTO-101/#6158) — lecture pure.
         Route::get('/ping', [RestaurantHealthController::class, 'ping']);
+
+        // ── Métriques d'observabilité (MAT-009/#9724) ───────────────────────
+        // Snapshot tenant-scoped sans PII : outbox, dead-letter, jobs en
+        // échec, avis en attente, commandes bloquées. Permission
+        // `restaurant.reports` (direction / gestion de succursale).
+        Route::get('/health/metrics', [RestaurantMetricsController::class, 'metrics'])
+            ->middleware('throttle:metrics');
 
         // Référentiel — établissements, plan de salle (RESTO-301/#6182).
         Route::get('/branches', [RestaurantBranchController::class, 'index']);
