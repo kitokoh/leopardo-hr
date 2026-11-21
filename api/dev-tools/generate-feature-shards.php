@@ -153,7 +153,13 @@ foreach ($subdirs as $dir) {
     );
     foreach ($iterator as $entry) {
         if ($entry->isFile() && str_ends_with($entry->getFilename(), 'Test.php')) {
-            $found[] = 'tests/Feature/'.$name.'/'.substr($entry->getPathname(), strlen($dir) + 1);
+            // Issue #9707 : normaliser en `/`. `getPathname()` conserve le
+            // separateur natif de la plateforme ; regenere sous Windows, il
+            // produisait `Golden\GoldenBfPayrollTest.php`, que PHPUnit traite
+            // comme un NOM DE FICHIER (antislash litteral) et non comme un
+            // separateur : 60 fichiers n'etaient plus jamais charges.
+            $relative = substr($entry->getPathname(), strlen($dir) + 1);
+            $found[] = 'tests/Feature/'.$name.'/'.str_replace(DIRECTORY_SEPARATOR, '/', $relative);
         }
     }
     if ($found === []) {

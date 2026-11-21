@@ -1,0 +1,83 @@
+name: PHPUnit File Paths Guard
+
+# Garde #9707 — chaque `<file>` de `api/phpunit.xml` doit designer un fichier reel.
+#
+# ## Pourquoi
+#
+# `api/phpunit.xml` listait 60 entrees `<file>` avec un antislash au lieu d'un
+# separateur de repertoire :
+#
+#     <file>tests/Feature/Payroll/Golden\GoldenBfPayrollTest.php</file>
+#
+# PHPUnit traite l'antislash comme un caractere de nom de fichier, pas comme un
+# separateur. Mesure sur `main` :
+#
+#     $ vendor/bin/phpunit --testsuite=Core --list-tests
+#     Test file ".../tests/Feature/Core/Auth\PiiHmacLookupServiceTest.php" not found
+#
+# Ces 60 fichiers n'etaient donc JAMAIS charges : absents de la couverture et de
+# toute execution ciblee par shard. Le defaut est silencieux — PHPUnit sort en 0
+# et affiche seulement « not found ».
+#
+# Cause racine : `api/dev-tools/generate-feature-shards.php` conservait le
+# separateur natif de la plateforme (`getPathname()`), et le fichier a ete
+# regenere sous Windows puis commite tel quel.
+#
+# ## Ce qu'elle refuse
+#
+#   - un antislash dans un chemin ;
+#   - un chemin qui ne correspond a aucun fichier reel (entree morte : fichier
+#     renomme ou supprime sans regeneration des shards) ;
+#   - un chemin absolu.
+#
+# ## Cout
+#
+# Python pur, aucune dependance, aucun `composer install` : quelques secondes.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'api/phpunit.xml'
+      - 'api/dev-tools/generate-feature-shards.php'
+      - 'api/tests/**'
+      - 'dev-hub/tools/check-phpunit-file-paths.py'
+      - '.github/workflows/phpunit-file-paths-guard.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'api/phpunit.xml'
+      - 'api/dev-tools/generate-feature-shards.php'
+      - 'api/tests/**'
+      - 'dev-hub/tools/check-phpunit-file-paths.py'
+      - '.github/workflows/phpunit-file-paths-guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: phpunit-file-paths-guard-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  phpunit-file-paths-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    name: Chaque <file> de phpunit.xml designe un fichier reel
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Autotest de la garde
+        shell: bash
+        run: python3 dev-hub/tools/check-phpunit-file-paths.py --self-test
+
+      - name: Run phpunit file paths guard
+        shell: bash
+        run: python3 dev-hub/tools/check-phpunit-file-paths.py --verbose
