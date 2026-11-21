@@ -6,6 +6,7 @@ Point d'entrée de la production vidéo Leopardo. Deux documents, deux usages.
 |---|---|---|
 | **[`SCRIPTS_VIDEOS_SUITE.md`](SCRIPTS_VIDEOS_SUITE.md)** | Programme complet : présenter, vendre et promouvoir la suite sur **tous** les projets (marque, démo, vente, verticales, confiance, activation, partenaires) | Production, tournage, brief agence |
 | **[`SCRIPTS_VIDEOS_COURTES.md`](SCRIPTS_VIDEOS_COURTES.md)** | 8 formats sociaux de 5 s (9:16) pour TikTok / Reels / Shorts | Publication sociale |
+| **[`STORYBOARD_B1_JOURNEE_LEOPARDO.md`](STORYBOARD_B1_JOURNEE_LEOPARDO.md)** | Storyboard détaillé plan par plan de la vidéo B1 « Une journée avec Leopardo » (2 min 30) : séquences, voix off, shot list, montage, déclinaisons | Tournage de B1 |
 
 ---
 
