@@ -76,10 +76,31 @@ LEOPARDO_API_URL=https://api.example.com LEOPARDO_API_TOKEN=... \
 
 ## Surface exposée
 
-- **Outils** (`tools/list`) : exactement les `AIToolDefinition` du manifeste.
+- **Outils** (`tools/list`) : les `AIToolDefinition` du manifeste A3 **et** les
+  outils CRUD générés depuis `api/openapi.yaml` (issue #9746) — 170 outils au
+  total aujourd'hui (9 A3 + 161 générés).
 - **Ressources** (`resources/list`) :
   - `leopardo://tools/catalog` — le manifeste complet ;
   - `leopardo://tools/{name}/schema` — schémas d'entrée/sortie d'un outil.
+
+### Les deux sources d'outils
+
+| Source | Fichier | Produit par |
+|---|---|---|
+| Contrat A3 | `manifest/tools.json` | `php artisan ai:tools:manifest` |
+| Surface CRUD | `manifest/openapi-tools.json` | `python3 dev-hub/tools/generate-mcp-openapi-tools.py` |
+
+**Le contrat A3 gagne toujours** en cas de collision de nom : un outil déclaré
+par un BC propriétaire porte une sémantique métier que le générateur ne peut pas
+déduire d'un verbe HTTP.
+
+Le générateur n'expose pas les ~1 950 opérations de la spec : il filtre par
+allowlist de tags RH, par verbe CRUD (les endpoints d'action — `/approve`,
+`/lock`, `/confirm`… — restent sur `PendingAction`) et exclut `/public/*` et
+`/webhooks/*`.
+
+> 📘 Guide complet (configuration, branchement IDE, dépannage) :
+> [`docs/GUIDES/GUIDE_SERVEUR_MCP.md`](../../docs/GUIDES/GUIDE_SERVEUR_MCP.md).
 
 ## Sécurité — règle de sensibilité
 
@@ -103,8 +124,15 @@ cd api
 php artisan ai:tools:manifest --output=../dev-hub/mcp-server/manifest/tools.json
 ```
 
-La garde CI `dev-hub/tools/check-mcp-manifest-drift.sh` (job *Hygiene Guards*)
-échoue si le manifeste versionné diverge du registre.
+Après toute modification de `api/openapi.yaml` :
+
+```bash
+python3 dev-hub/tools/generate-mcp-openapi-tools.py
+```
+
+Les gardes CI `dev-hub/tools/check-mcp-manifest-drift.sh` et
+`dev-hub/tools/check-mcp-openapi-tools-drift.sh` (job *Hygiene Guards*) échouent
+si un manifeste versionné diverge de sa source.
 
 ## Tests
 
@@ -112,3 +140,7 @@ La garde CI `dev-hub/tools/check-mcp-manifest-drift.sh` (job *Hygiene Guards*)
 npm run typecheck
 npm test
 ```
+
+La suite inclut un test d'**intégration** du transport Streamable HTTP
+(`src/transports/http.integration.test.ts`, issue #9747) : vrai serveur sur port
+éphémère, handshake, `tools/list`, `tools/call`, `/healthz`, 404.
