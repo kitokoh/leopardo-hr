@@ -1,3 +1,19 @@
+## 2026-11-21 — Portail public : flux XML et listing indépendants du catalogue plateforme (issue #9696)
+
+Surface : `api/tests/Feature/PublicCareerControllerTest.php`. Aucun code applicatif, aucune route, aucune migration, aucun contrat modifié.
+
+**Pourquoi c'est un scénario de test** : troisième reste de la dette des comptages globaux (#9685, #9689), dans l'autre classe qui mesure les mêmes deux surfaces. `PublicCareerController::index()` concatène dans `data` les offres du tenant **et** le catalogue plateforme du pays, et `buildXmlFeed()` fait de même dans `feed.xml`. Un test qui compte les entrées mesure donc deux sources et dépend de ce que les autres classes du worker ont laissé en base sur le pays tiré au hasard par `CompanyFactory`. Mesure : `main` `44847706518` (SHA `d1eb10e`) — `Failed asserting that actual size 2 matches expected size 1`, `PublicCareerControllerTest.php:189`.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `feed.xml` contient le `referencenumber` de l'offre du tenant **exactement une fois** | `assertCount(1, $xml->job)` compte les offres du tenant **plus** les offres agrégées préfixées `ext-` : il échoue dès qu'une autre classe a laissé une `external_job_offers` visible sur le même pays, hors de tout diff Recruitment |
+| le listing d'une société expose `meta.counts.company === 1` et l'offre créée (`id` + titre) | `assertJsonCount(1, 'data')` et `data.0.title` supposaient que le catalogue plateforme était vide pour ce pays — même non-déterminisme, même classe |
+| une société sans offre n'expose aucune offre d'une autre société : `meta.counts.company === 0` et le titre étranger absent | `assertJsonCount(0, 'data')` échouait dès qu'une offre agrégée du pays était présente, alors que l'isolation tenant, elle, était correcte |
+
+**Couverture exécutée** — `php -l` PASS sur le fichier de test ; aucun test exécuté localement.
+
+**Non couvert** — suite Feature exécutée par le job Backend en CI (pas de PostgreSQL local) : la mesure est le run CI, `PublicCareerControllerTest` verte y compris en présence d'offres agrégées en base.
+
 ## 2026-11-21 — Portail public : publication d'une offre indépendante du catalogue plateforme (issue #9689)
 
 Surface : `api/tests/Feature/Recruitment/PublicPortalEndToEndTest.php`. Aucun code applicatif, aucune route, aucune migration, aucun contrat modifié.
