@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { CSSProperties } from 'react';
 
 import { getTenantInvitationCopy } from '../../copy/surfaces-copy';
@@ -93,7 +94,7 @@ export function SurfaceTenantInvitation({
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-        <a
+        <Link
           href={href}
           data-surface-tenant-cta=""
           style={{
@@ -108,7 +109,7 @@ export function SurfaceTenantInvitation({
           }}
         >
           {copy.cta}
-        </a>
+        </Link>
 
         <span style={{ fontSize: '0.75rem', color: palette.muted, textAlign: 'center' }}>
           {copy.note}
