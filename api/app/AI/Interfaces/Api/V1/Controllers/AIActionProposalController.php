@@ -60,22 +60,14 @@ class AIActionProposalController extends Controller
         //    fantôme (fail-closed).
         $definition = AIToolDefinitionRegistry::all()[$toolName] ?? null;
         if (! $definition instanceof AIToolDefinition) {
-            return $this->refuse(
-                'AI_TOOL_UNKNOWN',
-                sprintf("Outil inconnu : '%s'.", $toolName),
-                422,
-            );
+            return $this->refuse('AI_TOOL_UNKNOWN', ['tool' => $toolName], 422);
         }
 
         // 2. Proposer une LECTURE n'a aucun sens : la lecture s'exécute
         //    directement via `tools/call`. Seules les sensibilités write/send
         //    passent par une confirmation humaine.
         if ($definition->sensitivity === AIToolSensitivity::Read) {
-            return $this->refuse(
-                'AI_ACTION_NOT_SENSITIVE',
-                sprintf("L'outil '%s' est en lecture : exécution directe, aucune confirmation requise.", $toolName),
-                422,
-            );
+            return $this->refuse('AI_ACTION_NOT_SENSITIVE', ['tool' => $toolName], 422);
         }
 
         // 3. L'outil doit avoir un HANDLER de confirmation. Sans handler,
@@ -83,22 +75,14 @@ class AIActionProposalController extends Controller
         //    confirmation : créer un pending serait une promesse fantôme
         //    (l'utilisateur confirmerait une action qui ne peut pas s'exécuter).
         if (! $this->writeToolPolicy->requiresConfirmation($toolName)) {
-            return $this->refuse(
-                'AI_ACTION_NOT_CONFIRMABLE',
-                sprintf("L'outil '%s' n'a pas de handler de confirmation : proposition impossible.", $toolName),
-                422,
-            );
+            return $this->refuse('AI_ACTION_NOT_CONFIRMABLE', ['tool' => $toolName], 422);
         }
 
         // 4. RBAC — même matrice que l'exécution (BC-23-D05). Refus AVANT tout
         //    stockage : aucun pending n'est créé pour un utilisateur non habilité.
         $role = $this->toolPermissionPolicy->resolveRole($userId, $companyId);
         if (! $this->toolPermissionPolicy->canUse($toolName, $role)) {
-            return $this->refuse(
-                'AI_TOOL_PERMISSION_DENIED',
-                sprintf("Rôle '%s' non habilité pour l'outil '%s'.", $role, $toolName),
-                403,
-            );
+            return $this->refuse('AI_TOOL_PERMISSION_DENIED', ['tool' => $toolName, 'role' => $role], 403);
         }
 
         // 5. Stockage : délégation intégrale au store existant (TTL, isolation
@@ -138,12 +122,18 @@ class AIActionProposalController extends Controller
         ], 201);
     }
 
-    private function refuse(string $code, string $detail, int $status): JsonResponse
+    /**
+     * Refus fail-closed. Le message vient du catalogue i18n (api/lang/<locale>/errors.php)
+     * — PA2-I18N-007 interdit un littéral accentué en dur dans un contrôleur.
+     *
+     * @param  array<string, string>  $context
+     */
+    private function refuse(string $code, array $context, int $status): JsonResponse
     {
         return response()->json([
             'error' => $code,
-            'message' => $code,
-            'detail' => $detail,
+            'message' => __("errors.{$code}"),
+            'context' => $context,
         ], $status);
     }
 }
