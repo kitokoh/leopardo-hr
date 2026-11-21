@@ -61,5 +61,12 @@ export default async function PharmaciesPage({ searchParams }: PharmaciesPagePro
     locale,
   });
 
-  return <PharmacySurface identity={PHARMACY_SURFACE} result={result} locale={locale} />;
+  return (
+    <PharmacySurface
+      identity={PHARMACY_SURFACE}
+      result={result}
+      locale={locale}
+      searchParams={{ q: params.q, city: params.city }}
+    />
+  );
 }

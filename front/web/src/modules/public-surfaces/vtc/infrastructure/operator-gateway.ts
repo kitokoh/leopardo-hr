@@ -28,6 +28,8 @@ export interface MobilityLoadResult {
   /** `false` si l'API n'a pas répondu (panne), distinct d'un annuaire vide. */
   readonly available: boolean;
   readonly operators: readonly MobilityOperator[];
+  /** Dernière page connue de l'API (#9697). */
+  readonly lastPage: number;
 }
 
 /**
@@ -49,7 +51,7 @@ export async function loadOperators(params: {
   });
 
   if (result === null) {
-    return { available: false, operators: [] };
+    return { available: false, operators: [], lastPage: 1 };
   }
 
   return {
@@ -63,5 +65,6 @@ export async function loadOperators(params: {
       country: null,
       currency: null,
     })),
+    lastPage: Math.max(1, result.meta.last_page ?? 1),
   };
 }

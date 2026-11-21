@@ -29,6 +29,8 @@ export interface PharmacyLoadResult {
   /** `false` si l'API n'a pas répondu (panne), distinct d'un catalogue vide. */
   readonly available: boolean;
   readonly pharmacies: readonly Pharmacy[];
+  /** Dernière page connue de l'API (#9697). */
+  readonly lastPage: number;
 }
 
 /**
@@ -50,7 +52,7 @@ export async function loadPharmacies(params: {
   });
 
   if (result === null) {
-    return { available: false, pharmacies: [] };
+    return { available: false, pharmacies: [], lastPage: 1 };
   }
 
   return {
@@ -65,6 +67,7 @@ export async function loadPharmacies(params: {
       onDuty: item.category === 'on_duty',
       services: [],
     })),
+    lastPage: Math.max(1, result.meta.last_page ?? 1),
   };
 }
 

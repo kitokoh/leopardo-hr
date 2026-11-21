@@ -7,6 +7,8 @@ import {
   SurfaceHero,
   SurfaceMeta,
   SurfaceNotice,
+  SurfacePagination,
+  SurfaceSearchBar,
   SurfaceShell,
   SurfaceTenantInvitation,
   type SurfaceIdentity,
@@ -36,10 +38,13 @@ export function CompanyDirectorySurface({
   identity,
   result,
   locale,
+  searchParams,
 }: {
   identity: SurfaceIdentity;
   result: CompanyDirectoryResult;
   locale?: string;
+  /** Filtres actifs, relus depuis l'URL pour pré-remplir la barre de recherche. */
+  searchParams?: { q?: string; city?: string };
 }) {
   const copy = getSurfaceCopy(locale);
   const shared = copy.shared;
@@ -57,6 +62,24 @@ export function CompanyDirectorySurface({
       />
 
       <main style={{ maxWidth: '56rem', margin: '0 auto', padding: '2rem 1.25rem 4rem' }}>
+        {/* #9697 — recherche et pagination câblées comme sur retail/hospitality.
+            Formulaire GET natif : l'URL reste partageable et le filtre
+            fonctionne sans JavaScript. */}
+        <SurfaceSearchBar
+          identity={identity}
+          basePath={identity.basePath}
+          defaultQuery={searchParams?.q}
+          defaultCity={searchParams?.city}
+          labels={{
+            searchLabel: shared.searchLabel,
+            searchPlaceholder: shared.searchPlaceholder,
+            cityLabel: shared.cityLabel,
+            cityPlaceholder: shared.cityPlaceholder,
+            searchSubmit: shared.searchSubmit,
+            searchReset: shared.searchReset,
+          }}
+        />
+
         {result.state === 'unavailable' ? (
           <SurfaceNotice identity={identity} alert>
             {shared.unavailable}
@@ -115,6 +138,21 @@ export function CompanyDirectorySurface({
               </SurfaceCard>
             ))}
           </ul>
+        ) : null}
+
+        {result.state === 'ready' ? (
+          <SurfacePagination
+            identity={identity}
+            basePath={identity.basePath}
+            page={result.page}
+            lastPage={result.lastPage}
+            searchParams={searchParams}
+            labels={{
+              previous: shared.previousPage,
+              next: shared.nextPage,
+              pageOf: shared.pageOf,
+            }}
+          />
         ) : null}
 
         <SurfaceTenantInvitation identity={identity} locale={locale} />

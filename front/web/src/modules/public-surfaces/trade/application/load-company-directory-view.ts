@@ -24,6 +24,10 @@ export type CompanyDirectoryState = 'ready' | 'empty' | 'unavailable';
 export interface CompanyDirectoryResult {
   readonly state: CompanyDirectoryState;
   readonly cards: readonly CompanyDirectoryCard[];
+  /** Page courante (1-indexée) — nécessaire au rendu de la pagination. */
+  readonly page: number;
+  /** Dernière page connue de l'API. */
+  readonly lastPage: number;
 }
 
 /** Charge l'annuaire ; ne lève jamais. */
@@ -34,13 +38,14 @@ export async function loadCompanyDirectoryView(params: {
   locale?: string;
 }): Promise<CompanyDirectoryResult> {
   const result = await loadCompanyDirectory(params);
+  const page = Math.max(1, params.page ?? 1);
 
   if (!result.available) {
-    return { state: 'unavailable', cards: [] };
+    return { state: 'unavailable', cards: [], page, lastPage: 1 };
   }
 
   if (result.entries.length === 0) {
-    return { state: 'empty', cards: [] };
+    return { state: 'empty', cards: [], page, lastPage: 1 };
   }
 
   const shared = getSurfaceCopy(params.locale).shared;
@@ -52,5 +57,7 @@ export async function loadCompanyDirectoryView(params: {
       directions: directoryDirections(entry, shared),
       categories: visibleCategories(entry),
     })),
+    page,
+    lastPage: result.lastPage,
   };
 }

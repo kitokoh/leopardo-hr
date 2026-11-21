@@ -17,6 +17,14 @@ import type { CompanyDirectoryEntry } from '../domain/company-directory';
 export interface CompanyDirectoryLoadResult {
   readonly available: boolean;
   readonly entries: readonly CompanyDirectoryEntry[];
+  /**
+   * Dernière page connue de l'API (#9697).
+   *
+   * L'agrégateur public renvoie déjà `meta.last_page` ; sans le propager, la
+   * vitrine ne pouvait pas savoir qu'il existait d'autres pages et n'affichait
+   * aucun contrôle de pagination.
+   */
+  readonly lastPage: number;
 }
 
 /**
@@ -45,7 +53,7 @@ export async function loadCompanyDirectory(params: {
   });
 
   if (result === null) {
-    return { available: false, entries: [] };
+    return { available: false, entries: [], lastPage: 1 };
   }
 
   return {
@@ -60,6 +68,7 @@ export async function loadCompanyDirectory(params: {
       exports: false,
       domestic: false,
     })),
+    lastPage: Math.max(1, result.meta.last_page ?? 1),
   };
 }
 

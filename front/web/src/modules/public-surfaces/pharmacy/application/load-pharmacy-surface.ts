@@ -22,6 +22,10 @@ export type PharmacySurfaceState = 'ready' | 'empty' | 'unavailable';
 export interface PharmacySurfaceResult {
   readonly state: PharmacySurfaceState;
   readonly cards: readonly PharmacyCard[];
+  /** Page courante (1-indexée) — nécessaire au rendu de la pagination. */
+  readonly page: number;
+  /** Dernière page connue de l'API. */
+  readonly lastPage: number;
 }
 
 /** Charge la vitrine pharmacie ; ne lève jamais. */
@@ -32,13 +36,14 @@ export async function loadPharmacySurface(params: {
   locale?: string;
 }): Promise<PharmacySurfaceResult> {
   const result = await loadPharmacies(params);
+  const page = Math.max(1, params.page ?? 1);
 
   if (!result.available) {
-    return { state: 'unavailable', cards: [] };
+    return { state: 'unavailable', cards: [], page, lastPage: 1 };
   }
 
   if (result.pharmacies.length === 0) {
-    return { state: 'empty', cards: [] };
+    return { state: 'empty', cards: [], page, lastPage: 1 };
   }
 
   const shared = getSurfaceCopy(params.locale).shared;
@@ -49,5 +54,7 @@ export async function loadPharmacySurface(params: {
       pharmacy,
       duty: dutyLabel(pharmacy.onDuty, shared),
     })),
+    page,
+    lastPage: result.lastPage,
   };
 }

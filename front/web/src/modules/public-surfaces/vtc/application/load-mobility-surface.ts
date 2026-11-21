@@ -32,6 +32,10 @@ export type MobilitySurfaceState = 'ready' | 'empty' | 'unavailable';
 export interface MobilitySurfaceResult {
   readonly state: MobilitySurfaceState;
   readonly cards: readonly MobilityCard[];
+  /** Page courante (1-indexée) — nécessaire au rendu de la pagination. */
+  readonly page: number;
+  /** Dernière page connue de l'API. */
+  readonly lastPage: number;
 }
 
 /** Charge la vitrine mobilité ; ne lève jamais. */
@@ -41,13 +45,14 @@ export async function loadMobilitySurface(params: {
   page?: number;
 }): Promise<MobilitySurfaceResult> {
   const result = await loadOperators(params);
+  const page = Math.max(1, params.page ?? 1);
 
   if (!result.available) {
-    return { state: 'unavailable', cards: [] };
+    return { state: 'unavailable', cards: [], page, lastPage: 1 };
   }
 
   if (result.operators.length === 0) {
-    return { state: 'empty', cards: [] };
+    return { state: 'empty', cards: [], page, lastPage: 1 };
   }
 
   return {
@@ -57,5 +62,7 @@ export async function loadMobilitySurface(params: {
       meta: operatorMeta(operator),
       currency: currencyLabel(operator),
     })),
+    page,
+    lastPage: result.lastPage,
   };
 }

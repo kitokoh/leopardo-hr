@@ -41,13 +41,20 @@ export function SurfaceSearchBar({
   labels: {
     searchLabel: string;
     searchPlaceholder: string;
-    cityLabel: string;
-    cityPlaceholder: string;
+    /**
+     * Libellés du champ ville. **Optionnels** : toutes les verticales n'ont pas
+     * de filtre géographique. `/emploi` cherche une entreprise par son nom, pas
+     * une ville — lui imposer un champ ville inerte serait un contrôle qui ne
+     * filtre rien. Quand ces libellés sont absents, le champ n'est pas rendu.
+     */
+    cityLabel?: string;
+    cityPlaceholder?: string;
     searchSubmit: string;
     searchReset: string;
   };
 }) {
   const { palette } = identity;
+  const showCity = Boolean(labels.cityLabel && labels.cityPlaceholder);
 
   const fieldStyle = {
     padding: '0.6rem 0.8rem',
@@ -88,18 +95,20 @@ export function SurfaceSearchBar({
         />
       </label>
 
-      <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: '1 1 10rem' }}>
-        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: palette.muted }}>
-          {labels.cityLabel}
-        </span>
-        <input
-          type="search"
-          name="city"
-          defaultValue={defaultCity ?? ''}
-          placeholder={labels.cityPlaceholder}
-          style={fieldStyle}
-        />
-      </label>
+      {showCity ? (
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: '1 1 10rem' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: palette.muted }}>
+            {labels.cityLabel}
+          </span>
+          <input
+            type="search"
+            name="city"
+            defaultValue={defaultCity ?? ''}
+            placeholder={labels.cityPlaceholder}
+            style={fieldStyle}
+          />
+        </label>
+      ) : null}
 
       <button
         type="submit"

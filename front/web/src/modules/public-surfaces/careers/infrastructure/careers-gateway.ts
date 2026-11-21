@@ -107,6 +107,12 @@ export interface CompanyJobsResult {
   readonly offers: readonly JobOffer[];
 }
 
+/** Page d'annuaire : entreprises + dernière page connue (#9697). */
+export interface HiringDirectoryPage {
+  readonly companies: readonly HiringCompany[];
+  readonly lastPage: number;
+}
+
 /**
  * Charge les offres publiées d'une entreprise.
  *
@@ -202,13 +208,29 @@ export async function loadJobOffer(
  * C'est **le** point qui manquait : sans lui, un candidat devait connaître le
  * slug d'une entreprise pour voir ses offres. L'endpoint existait déjà mais
  * n'alimentait que le sitemap.
+ *
+ * #9697 — `q` et `page` sont désormais transmis : l'endpoint les accepte depuis
+ * que `/emploi` est un annuaire grand public et non plus un index de crawl.
  */
-export async function loadHiringCompanies(): Promise<readonly HiringCompany[] | null> {
+export async function loadHiringCompanies(filters: {
+  q?: string;
+  page?: number;
+} = {}): Promise<HiringDirectoryPage | null> {
+  const query = new URLSearchParams();
+
+  if (filters.q) query.set('q', filters.q);
+  if (filters.page && filters.page > 1) query.set('page', String(filters.page));
+
+  const qs = query.toString();
+
   try {
-    const response = await fetch(`${resolveSurfaceApiBaseUrl()}/public/careers`, {
-      headers: { Accept: 'application/json' },
-      next: { revalidate: 600 },
-    });
+    const response = await fetch(
+      `${resolveSurfaceApiBaseUrl()}/public/careers${qs ? `?${qs}` : ''}`,
+      {
+        headers: { Accept: 'application/json' },
+        next: { revalidate: 600 },
+      },
+    );
 
     if (!response.ok) {
       return null;
@@ -217,22 +239,26 @@ export async function loadHiringCompanies(): Promise<readonly HiringCompany[] | 
     const payload: unknown = await response.json();
     const record = isRecord(payload) ? payload : {};
     const data = Array.isArray(record.data) ? record.data : [];
+    const meta = isRecord(record.meta) ? record.meta : {};
 
-    return data.flatMap((entry) => {
-      if (!isRecord(entry) || typeof entry.slug !== 'string' || entry.slug === '') {
-        return [];
-      }
+    return {
+      companies: data.flatMap((entry) => {
+        if (!isRecord(entry) || typeof entry.slug !== 'string' || entry.slug === '') {
+          return [];
+        }
 
-      return [
-        {
-          slug: entry.slug,
-          name: typeof entry.name === 'string' ? entry.name : entry.slug,
-          country: typeof entry.country === 'string' ? entry.country : null,
-          lastPublishedAt:
-            typeof entry.last_published_at === 'string' ? entry.last_published_at : null,
-        },
-      ];
-    });
+        return [
+          {
+            slug: entry.slug,
+            name: typeof entry.name === 'string' ? entry.name : entry.slug,
+            country: typeof entry.country === 'string' ? entry.country : null,
+            lastPublishedAt:
+              typeof entry.last_published_at === 'string' ? entry.last_published_at : null,
+          },
+        ];
+      }),
+      lastPage: typeof meta.last_page === 'number' ? Math.max(1, meta.last_page) : 1,
+    };
   } catch {
     return null;
   }

@@ -9,6 +9,7 @@ use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Throwable;
 
 /**
@@ -44,9 +45,28 @@ class PublicCareersDirectoryController extends Controller
 
     /**
      * GET /api/v1/public/careers
+     *
+     * ## #9697 — recherche et pagination
+     *
+     * L'endpoint ne servait qu'au sitemap : il rendait TOUTES les entreprises
+     * d'un coup, sans filtre. Depuis que `/emploi` est un annuaire grand public
+     * (et non plus un simple index de crawl), il doit se comporter comme les
+     * autres annuaires de la plateforme : `q` filtre sur le nom, `page`/
+     * `per_page` bornent la réponse.
+     *
+     * Rétrocompatibilité : `meta.count` reste le nombre TOTAL d'entreprises
+     * éligibles (pas la taille de la page courante) — le sitemap s'en sert pour
+     * décider s'il déclare quelque chose, et une valeur qui changerait de sens
+     * selon la page demandée serait un piège.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
+        $filters = $request->validate([
+            'q' => ['sometimes', 'string', 'max:120'],
+            'page' => ['sometimes', 'integer', 'min:1'],
+            'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
+        ]);
+
         $companies = Company::query()
             ->whereNotIn('status', ['suspended', 'expired'])
             ->orderBy('slug')
@@ -70,9 +90,37 @@ class PublicCareersDirectoryController extends Controller
             ];
         }
 
+        // Filtre `q` appliqué APRÈS le filtre de publication : on ne cherche que
+        // parmi les entreprises réellement visibles, et le total annoncé reste
+        // celui des résultats de la recherche.
+        $needle = mb_strtolower(trim((string) ($filters['q'] ?? '')));
+
+        if ($needle !== '') {
+            $entries = array_values(array_filter(
+                $entries,
+                static fn (array $entry): bool => str_contains(
+                    mb_strtolower((string) $entry['name']),
+                    $needle,
+                ) || str_contains(mb_strtolower((string) $entry['slug']), $needle),
+            ));
+        }
+
+        $total = count($entries);
+        $perPage = (int) ($filters['per_page'] ?? 24);
+        $page = (int) ($filters['page'] ?? 1);
+        $lastPage = max(1, (int) ceil($total / $perPage));
+        $page = min($page, $lastPage);
+
+        $entries = array_slice($entries, ($page - 1) * $perPage, $perPage);
+
         return new JsonResponse([
             'data' => $entries,
-            'meta' => ['count' => count($entries)],
+            'meta' => [
+                'count' => $total,
+                'current_page' => $page,
+                'last_page' => $lastPage,
+                'per_page' => $perPage,
+            ],
         ]);
     }
 
