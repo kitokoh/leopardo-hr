@@ -49,7 +49,16 @@ class TravelPartnerAuthMiddleware
             }
 
             /** @var TravelCarrierApiKey|null $apiKey */
+            // #9741 — la clé est le SECRET d'authentification : on ne peut pas
+            // la chercher « dans le tenant » puisque le tenant est justement ce
+            // qu'elle sert à résoudre. `TravelCarrierApiKey` porte
+            // `BelongsToCompany`, donc le global scope exigeait un contexte
+            // déjà posé et levait `TenantContextMissingException` → 401
+            // PARTNER_AUTH_FAILED sur TOUTE synchronisation transporteur.
+            // La lecture est donc explicitement non scopée, et le hash
+            // SHA-256 (unique) reste le seul critère de sélection.
             $apiKey = TravelCarrierApiKey::query()
+                ->withoutGlobalScopes()
                 ->where('api_key_hash', hash('sha256', $token))
                 ->first();
 
@@ -65,7 +74,12 @@ class TravelPartnerAuthMiddleware
             }
 
             /** @var TravelCarrier|null $carrier */
-            $carrier = TravelCarrier::query()->whereKey($apiKey->carrier_id)->first();
+            // #9741 — même raison : le transporteur est résolu APRÈS la clé,
+            // donc avant que le contexte tenant ne soit posé.
+            $carrier = TravelCarrier::query()
+                ->withoutGlobalScopes()
+                ->whereKey($apiKey->carrier_id)
+                ->first();
 
             if (! $carrier instanceof TravelCarrier) {
                 return $this->unauthorized('PARTNER_CARRIER_NOT_FOUND');
@@ -94,6 +108,21 @@ class TravelPartnerAuthMiddleware
 
             return $this->unauthorized('PARTNER_AUTH_FAILED');
         } finally {
+            // #9741 — `tenant_scope_required` et `current_company` sont des
+            // singletons du conteneur : les laisser posés après la requête
+            // faisait fuir le marqueur « surface tenant » dans la requête
+            // SUIVANTE du même process (worker, ou test suivant). Toute
+            // lecture non scopée y levait alors `TenantContextMissingException`
+            // — c'est ce qui faisait échouer le rejeu de synchronisation en
+            // 401 alors que la clé était valide.
+            if (app()->bound('tenant_scope_required')) {
+                app()->forgetInstance('tenant_scope_required');
+            }
+
+            if (app()->bound('current_company')) {
+                app()->forgetInstance('current_company');
+            }
+
             try {
                 DB::statement('SET search_path TO '.$previousPath);
             } catch (\Throwable) {
