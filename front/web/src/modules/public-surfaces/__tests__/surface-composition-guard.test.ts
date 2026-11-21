@@ -26,24 +26,71 @@ import { join } from 'node:path';
 
 const APP_DIR = join(__dirname, '..', '..', '..', 'app');
 
-/** Verticale → (chemin de page, composant de surface attendu). */
+/** Verticale → (chemin de page, composant de surface attendu, fichier du composant). */
 const SURFACE_PAGES: ReadonlyArray<{
   vertical: string;
   page: string;
   component: string;
+  /** Fichier du composant de surface, relatif à `modules/public-surfaces/`. */
+  componentFile: string;
 }> = [
-  { vertical: 'restaurant', page: 'restaurants/page.tsx', component: 'RestaurantExplorer' },
-  { vertical: 'retail', page: 'boutiques/page.tsx', component: 'ShopDirectorySurface' },
-  { vertical: 'hospitality', page: 'stay/page.tsx', component: 'PropertyDirectorySurface' },
-  { vertical: 'trade', page: 'entreprises/page.tsx', component: 'CompanyDirectorySurface' },
-  { vertical: 'travel', page: 'billets/page.tsx', component: 'TravelSurface' },
-  { vertical: 'pharmacy', page: 'pharmacies/page.tsx', component: 'PharmacySurface' },
-  { vertical: 'vtc', page: 'operateurs/page.tsx', component: 'MobilitySurface' },
-  { vertical: 'careers', page: 'emploi/page.tsx', component: 'CareersDirectorySurface' },
+  {
+    vertical: 'restaurant',
+    page: 'restaurants/page.tsx',
+    component: 'RestaurantExplorer',
+    componentFile: 'restaurants/components/RestaurantSurface.tsx',
+  },
+  {
+    vertical: 'retail',
+    page: 'boutiques/page.tsx',
+    component: 'ShopDirectorySurface',
+    componentFile: 'retail/components/ShopDirectorySurface.tsx',
+  },
+  {
+    vertical: 'hospitality',
+    page: 'stay/page.tsx',
+    component: 'PropertyDirectorySurface',
+    componentFile: 'hospitality/components/PropertyDirectorySurface.tsx',
+  },
+  {
+    vertical: 'trade',
+    page: 'entreprises/page.tsx',
+    component: 'CompanyDirectorySurface',
+    componentFile: 'trade/components/CompanyDirectorySurface.tsx',
+  },
+  {
+    vertical: 'travel',
+    page: 'billets/page.tsx',
+    component: 'TravelSurface',
+    componentFile: 'travel/components/TravelSurface.tsx',
+  },
+  {
+    vertical: 'pharmacy',
+    page: 'pharmacies/page.tsx',
+    component: 'PharmacySurface',
+    componentFile: 'pharmacy/components/PharmacySurface.tsx',
+  },
+  {
+    vertical: 'vtc',
+    page: 'operateurs/page.tsx',
+    component: 'MobilitySurface',
+    componentFile: 'vtc/components/MobilitySurface.tsx',
+  },
+  {
+    vertical: 'careers',
+    page: 'emploi/page.tsx',
+    component: 'CareersDirectorySurface',
+    componentFile: 'careers/components/CareersDirectorySurface.tsx',
+  },
 ];
 
 function readPage(relativePath: string): string {
   return readFileSync(join(APP_DIR, relativePath), 'utf8');
+}
+
+/** Lit un fichier du module `public-surfaces`. */
+function readSurfaceFile(relativePath: string): string {
+  return readFileSync(join(__dirname, '..', relativePath), 'utf8');
 }
 
 /**
@@ -79,6 +126,32 @@ describe('garde — chaque vitrine a sa propre composition', () => {
 
       expect(source).not.toMatch(/import[^;]*buildDirectoryPage/);
       expect(source).not.toMatch(/buildDirectoryPage\s*\(/);
+    },
+  );
+
+  /**
+   * #9696 — toutes les pages d'annuaire montent le noyau de rendu.
+   *
+   * `/restaurants` était la seule des huit à ne pas monter `SurfaceShell` : elle
+   * posait `data-surface` et une couleur de fond à la main, avec un `<header>`
+   * et un `<h1>` ad hoc. Sept vitrines partageaient donc une composition
+   * (palette en variables CSS, hero, CTA, invitation tenant) et la huitième en
+   * avait une copie approximative — même contenu, mais pas les mêmes variables
+   * CSS, donc pas les mêmes composants enfants.
+   *
+   * Rien ne le signalait : la page compilait, passait les tests et s'affichait.
+   * Cette garde rend la divergence visible.
+   */
+  it.each(SURFACE_PAGES)(
+    '$vertical : le composant de surface monte SurfaceShell (noyau de rendu partagé)',
+    ({ componentFile }) => {
+      const source = stripComments(readSurfaceFile(componentFile));
+
+      // On vérifie le COMPOSANT, pas la page : sept pages délèguent le rendu à
+      // leur composant de surface, qui monte le noyau. C'est le composant qui
+      // doit porter la composition partagée — une page qui monterait
+      // `SurfaceShell` sans que son composant le fasse resterait divergente.
+      expect(source).toMatch(/SurfaceShell/);
     },
   );
 
