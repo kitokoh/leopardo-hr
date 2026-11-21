@@ -1,0 +1,74 @@
+name: Validation Catch Guard
+
+# Garde #9699 — un `catch (\Throwable)` ne doit pas absorber une
+# `ValidationException`.
+#
+# ## Pourquoi
+#
+# Le meme defaut a ete livre deux fois : #9687 (API) puis #9698 (web). Un
+# `catch (\Throwable)` (garde #6974, tracage des 500 inexpliques) enveloppait un
+# appel qui finissait par executer `$request->validate()`. Or
+# `Illuminate\Validation\ValidationException` herite de `Throwable` : la
+# validation etait absorbee, convertie en 500 / INTERNAL_ERROR, et le handler
+# global qui la traduit en 422 / redirection avec `errors` n'etait jamais
+# atteint.
+#
+# C'est une classe de bug, pas un accident. Cette garde la rend non livrable.
+#
+# ## Ce qu'elle refuse
+#
+# Un `try` contenant un `validate()` — directement, ou indirectement via une
+# methode de la meme classe (`$this->attemptLogin($request)`) — suivi d'un
+# `catch (\Throwable)` / `catch (\Exception)` qui ne relance pas
+# `ValidationException`.
+#
+# Le cas indirect est le vrai apport : c'est la forme exacte des deux bugs
+# livres, et un scan naif du corps du `try` ne les aurait jamais trouves.
+#
+# ## Cout
+#
+# Python pur, aucune dependance, aucun `composer install` : quelques secondes.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'api/app/**/*.php'
+      - 'dev-hub/tools/check-validation-catch-guard.py'
+      - '.github/workflows/validation-catch-guard.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'api/app/**/*.php'
+      - 'dev-hub/tools/check-validation-catch-guard.py'
+      - '.github/workflows/validation-catch-guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: validation-catch-guard-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  validation-catch-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    name: Aucune ValidationException absorbee par un catch large
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Autotest de la garde
+        shell: bash
+        run: python3 dev-hub/tools/check-validation-catch-guard.py --self-test
+
+      - name: Run validation catch guard
+        shell: bash
+        run: python3 dev-hub/tools/check-validation-catch-guard.py --verbose
