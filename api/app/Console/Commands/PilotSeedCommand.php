@@ -10,6 +10,7 @@ use Database\Seeders\Concerns\GuardsPilotSeeding;
 use Database\Seeders\CrmPilotSeeder;
 use Database\Seeders\EduManagerPilotSeeder;
 use Database\Seeders\FuelStationPilotSeeder;
+use Database\Seeders\RestaurantUatSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -37,8 +38,8 @@ class PilotSeedCommand extends Command
     use GuardsPilotSeeding;
 
     protected $signature = 'pilot:seed
-        {vertical? : verticale pilote à semer (crm|fuel|edu)}
-        {--solution= : alias de {vertical} (fuel|edu|crm) — compatibilité MAT-012}
+        {vertical? : verticale pilote à semer (crm|fuel|edu|resto)}
+        {--solution= : alias de {vertical} (fuel|edu|crm|resto) — compatibilité MAT-012}
         {--clean : supprime le tenant pilote au lieu de le créer}
         {--force : autorise l\'exécution hors environnement pilote/demo}';
 
@@ -68,6 +69,27 @@ class PilotSeedCommand extends Command
             'slugs' => [EduManagerPilotSeeder::SLUG],
             'tenant_tables' => [
                 'edu_student_guardians', 'edu_students', 'edu_guardians', 'edu_campuses',
+            ],
+        ],
+        // #9725 — jeu de données de recette terrain RestaurantManager.
+        'resto' => [
+            'seeder' => RestaurantUatSeeder::class,
+            'slugs' => [RestaurantUatSeeder::SLUG],
+            'tenant_tables' => [
+                'restaurant_outbox_events', 'restaurant_pos_sessions',
+                'restaurant_receivings', 'restaurant_purchase_order_items',
+                'restaurant_purchase_orders', 'restaurant_inventory_movements',
+                'restaurant_reviews', 'restaurant_reservations',
+                'restaurant_order_items', 'restaurant_orders',
+                'restaurant_promotions', 'restaurant_loyalty_customers',
+                'restaurant_loyalty_programs', 'restaurant_delivery_riders',
+                'restaurant_delivery_zones', 'restaurant_menu_items',
+                'restaurant_menus', 'restaurant_products',
+                'restaurant_stock_levels', 'restaurant_ingredients',
+                'restaurant_tables', 'restaurant_zones',
+                'restaurant_categories', 'restaurant_tax_rates',
+                'restaurant_units', 'restaurant_suppliers',
+                'restaurant_branches', 'employee_resource_assignments',
             ],
         ],
     ];
