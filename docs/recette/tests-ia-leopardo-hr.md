@@ -2213,6 +2213,118 @@ _Aucune modification humaine enregistrée pour ce cas._
 
 ---
 
+## UC-85 — Marketing OS — campagne, idée et promotion en production
+
+**Profil(s) :** Marketing, Administrateur plateforme · **Module(s) :** Vitrine & acquisition · **Type :** Fonctionnel · **Statut :** à exécuter
+
+**Description / préconditions**  
+Vérifier la chaîne stratégie → idée → tâche de production du Marketing OS, y compris l'idempotence de la promotion et l'isolation par tenant.  
+Prérequis : Compte plateforme avec `marketing_os.manage` ; deux entreprises cibles distinctes ; endpoints `/api/v1/admin/companies/{company}/marketing-os/*`.
+
+**Étapes de test**
+1. Sélectionner explicitement une entreprise cible (aucun panneau ne doit charger avant ce choix).
+2. Créer une campagne (objectif, secteur, audience, produit, budget, dates).
+3. Créer une idée rattachée à cette campagne (objectif, format, canal, langue, dates de production et de publication, message clé).
+4. Promouvoir l'idée en production et vérifier que la tâche créée reprend objectif, format, langue, produit, public, message et date souhaitée.
+5. Rejouer la promotion une seconde fois et vérifier qu'aucun doublon n'est créé.
+6. Basculer sur la seconde entreprise et vérifier que ni la campagne ni l'idée n'y sont visibles.
+7. Vérifier qu'un rôle sans `marketing_os.manage` reçoit un 403 sur la promotion.
+
+**Résultat attendu**  
+La campagne et l'idée sont créées dans le seul tenant ciblé, la promotion produit une tâche de production sans perte de saisie, un second appel ne crée pas de doublon, et l'écriture est refusée en 403 sans la permission `marketing_os.manage`.
+
+| Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
+| :---: | :--- | :---: | :--- |
+|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
+
+---
+
+## UC-86 — Marketing — publication sociale, mode assisté et vitrine publique
+
+**Profil(s) :** Marketing · **Module(s) :** Vitrine & acquisition, Surfaces publiques · **Type :** Fonctionnel · **Statut :** à exécuter
+
+**Description / préconditions**  
+Vérifier la publication d'un post (direct via agrégateur ou assisté), la remontée des statistiques réelles et l'arrivée des leads depuis la vitrine publique.  
+Prérequis : Compte manager marketing ; endpoints `/api/v1/marketing/*` ; un compte social connecté pour le mode direct, aucun pour le mode assisté.
+
+**Étapes de test**
+1. Créer un post avec texte et visuel, puis le programmer à une heure future.
+2. Vérifier la publication effective à l'heure prévue et la présence de l'URL réelle de mise en ligne.
+3. Consulter les statistiques du post et vérifier qu'aucune valeur n'est affichée comme un fait lorsqu'aucune plateforme n'a remonté de mesure (« indisponible » explicite).
+4. Déconnecter le compte social et vérifier que le mode bascule en assisté avec une explication du pourquoi.
+5. Tenter de confirmer une publication assistée sans URL réelle et vérifier le refus (422).
+6. Soumettre le formulaire de contact de la vitrine publique et vérifier la création du lead côté marketing.
+7. Qualifier le lead et vérifier sa conversion en contact comptable.
+
+**Résultat attendu**  
+Le post est publié à l'heure prévue avec son URL réelle, les statistiques absentes sont annoncées comme indisponibles et non estimées, le mode assisté est explicite et refuse une confirmation sans URL, et le lead de la vitrine est capté puis qualifié sans ressaisie.
+
+| Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
+| :---: | :--- | :---: | :--- |
+|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
+
+---
+
+## UC-87 — Négoce — parcours RFQ, devis et acceptation (acheteur / vendeur)
+
+**Profil(s) :** Manager Principal, Marketing · **Module(s) :** Négoce & import-export · **Type :** Fonctionnel · **Statut :** à exécuter
+
+**Description / préconditions**  
+Vérifier le cycle commercial partagé de la verticale Trade : émission d'une RFQ, diffusion aux contreparties, réponse par devis, comparaison et acceptation, avec la séparation des rôles acheteur et vendeur.  
+Prérequis : Tenant avec la verticale Trade activée ; deux comptes de rôles différents (`purchase` et `sales`) ; endpoints `/api/v1/trade/*`.
+
+**Étapes de test**
+1. Créer une RFQ avec au moins deux lignes (produit, quantité, unité, prix cible) et vérifier son statut initial.
+2. Diffuser la RFQ et vérifier que les liens de réponse ne sont retournés qu'une seule fois.
+3. Répondre en tant que vendeur par un devis et vérifier que les totaux sont recalculés côté serveur, jamais acceptés du client.
+4. Tenter d'émettre un devis avec le rôle `purchase` et vérifier le refus.
+5. Comparer les devis reçus et vérifier qu'un devis dont la devise, l'Incoterm ou le périmètre de coût diffère est marqué « non comparable » au lieu d'être comparé silencieusement.
+6. Accepter un devis en tant qu'acheteur et vérifier la transition de statut ainsi que la trace dans la timeline du dossier.
+7. Tenter une transition d'état illégale et vérifier le refus en 422 `INVALID_STATE_TRANSITION`.
+
+**Résultat attendu**  
+La RFQ est émise et diffusée, le devis est produit par le seul rôle vendeur avec des totaux figés côté serveur, la comparaison signale explicitement les périmètres non comparables, l'acceptation est réservée à l'acheteur, et toute transition illégale est refusée et tracée.
+
+| Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
+| :---: | :--- | :---: | :--- |
+|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
+
+---
+
+## UC-88 — Négoce — coût total rendu, checklist douanière et profil vitrine
+
+**Profil(s) :** Manager Principal, Administrateur plateforme · **Module(s) :** Négoce & import-export, Surfaces publiques · **Type :** Fonctionnel · **Statut :** à exécuter
+
+**Description / préconditions**  
+Vérifier le moteur de coût total rendu, l'aide à la préparation douanière avec son avertissement légal, et la publication du profil commercial sur la vitrine B2B.  
+Prérequis : Tenant Trade ; rôle `logistics` pour les coûts et la douane, rôle `admin` pour la publication du profil ; endpoints `/api/v1/trade/cost-estimates`, `/api/v1/trade/customs/checklist`, `/api/v1/trade/profile`.
+
+**Étapes de test**
+1. Créer une estimation de coût avec des lignes de types différents (marchandise, fret international, assurance, droits, frais portuaires).
+2. Vérifier le total par devise d'affichage et la couverture (part des postes confirmés, estimés, saisis, indisponibles).
+3. Ajouter une ligne indisponible et vérifier qu'elle est exclue du total mais bien listée.
+4. Consulter la checklist douanière et vérifier la présence systématique de l'avertissement (estimation indicative, ni déclaration ni garantie de conformité).
+5. Vérifier que les champs manquants sont listés automatiquement et que le statut reste « incomplet ».
+6. Renseigner le profil commercial puis publier la vitrine, et vérifier l'apparition de l'entreprise sur la surface publique.
+7. Dépublier et vérifier que la fiche disparaît de la vitrine sans casser les données internes.
+
+**Résultat attendu**  
+Le coût total rendu est exact en arithmétique entière, les postes indisponibles sont exclus du total mais visibles, la checklist douanière porte toujours son avertissement légal et signale les informations manquantes, et la publication du profil est un acte distinct qui rend la fiche visible puis invisible sur la vitrine.
+
+| Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
+| :---: | :--- | :---: | :--- |
+|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
+
+---
+
 ## Tableau récapitulatif
 
 | ID | Cas d'utilisation | Type | Statut | Note IA (/5) | Note humaine (/5) |
@@ -2301,6 +2413,10 @@ _Aucune modification humaine enregistrée pour ce cas._
 | UC-82 | Ops — nœuds Edge et kill switch | Résilience | à exécuter |  |  |
 | UC-83 | Marketing OS — publication sociale et statistiques | Fonctionnel | à exécuter |  |  |
 | UC-84 | RH — onboarding d'un nouvel employé | Fonctionnel | à exécuter |  |  |
+| UC-85 | Marketing OS — campagne, idée et promotion en production | Fonctionnel | à exécuter |  |  |
+| UC-86 | Marketing — publication sociale, mode assisté et vitrine publique | Fonctionnel | à exécuter |  |  |
+| UC-87 | Négoce — parcours RFQ, devis et acceptation (acheteur / vendeur) | Fonctionnel | à exécuter |  |  |
+| UC-88 | Négoce — coût total rendu, checklist douanière et profil vitrine | Fonctionnel | à exécuter |  |  |
 
 **Cas notés (IA) :** 14 · **Total des notes IA :** 60 · **Moyenne IA :** 4.29 / 5 · **Cas bloquants (≤2) :** 1
 
