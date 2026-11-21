@@ -57,5 +57,12 @@ export default async function BoutiquesPage({ searchParams }: BoutiquesPageProps
     page: Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1),
   });
 
-  return <ShopDirectorySurface identity={RETAIL_SURFACE} result={result} locale={locale} />;
+  return (
+    <ShopDirectorySurface
+      identity={RETAIL_SURFACE}
+      result={result}
+      locale={locale}
+      searchParams={{ q: params.q, city: params.city }}
+    />
+  );
 }

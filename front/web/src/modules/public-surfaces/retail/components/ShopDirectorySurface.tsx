@@ -8,6 +8,7 @@ import {
   SurfaceHero,
   SurfaceMeta,
   SurfaceNotice,
+  SurfacePagination,
   SurfaceShell,
   SurfaceTenantInvitation,
   type SurfaceIdentity,
@@ -37,10 +38,13 @@ export function ShopDirectorySurface({
   identity,
   result,
   locale,
+  searchParams,
 }: {
   identity: SurfaceIdentity;
   result: ShopDirectoryResult;
   locale?: string;
+  /** Filtres courants, conservés par les liens de pagination. */
+  searchParams?: Readonly<Record<string, string | undefined>>;
 }) {
   const copy = getSurfaceCopy(locale);
   const shared = copy.shared;
@@ -107,6 +111,21 @@ export function ShopDirectorySurface({
               </SurfaceCard>
             ))}
           </SurfaceGrid>
+        ) : null}
+
+        {result.state === 'ready' ? (
+          <SurfacePagination
+            identity={identity}
+            basePath={identity.basePath}
+            page={result.page}
+            lastPage={result.lastPage}
+            searchParams={searchParams}
+            labels={{
+              previous: shared.previousPage,
+              next: shared.nextPage,
+              pageOf: shared.pageOf,
+            }}
+          />
         ) : null}
 
         <SurfaceTenantInvitation identity={identity} locale={locale} />

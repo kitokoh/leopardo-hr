@@ -17,6 +17,8 @@ import type { PropertyDirectoryEntry } from '../domain/property-directory';
 export interface PropertyDirectoryLoadResult {
   readonly available: boolean;
   readonly entries: readonly PropertyDirectoryEntry[];
+  /** Dernière page connue de l'API (#9657). */
+  readonly lastPage: number;
 }
 
 /**
@@ -37,7 +39,7 @@ export async function loadPropertyDirectory(params: {
   });
 
   if (result === null) {
-    return { available: false, entries: [] };
+    return { available: false, entries: [], lastPage: 1 };
   }
 
   return {
@@ -50,6 +52,7 @@ export async function loadPropertyDirectory(params: {
       city: item.city ?? null,
       description: item.description ?? null,
     })),
+    lastPage: Math.max(1, result.meta.last_page ?? 1),
   };
 }
 

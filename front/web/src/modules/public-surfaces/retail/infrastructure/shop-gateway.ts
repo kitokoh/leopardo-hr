@@ -16,6 +16,14 @@ export interface ShopDirectoryLoadResult {
   /** `false` si l'API n'a pas répondu (panne), distinct d'un annuaire vide. */
   readonly available: boolean;
   readonly entries: readonly ShopDirectoryEntry[];
+  /**
+   * Dernière page connue de l'API (#9657).
+   *
+   * L'agrégateur public renvoie déjà `meta.last_page` ; sans le propager, la
+   * vitrine ne pouvait pas savoir qu'il existait d'autres pages et n'affichait
+   * aucun contrôle de pagination.
+   */
+  readonly lastPage: number;
 }
 
 /**
@@ -37,7 +45,7 @@ export async function loadShopDirectory(params: {
   });
 
   if (result === null) {
-    return { available: false, entries: [] };
+    return { available: false, entries: [], lastPage: 1 };
   }
 
   return {
@@ -49,6 +57,7 @@ export async function loadShopDirectory(params: {
       description: item.description ?? null,
       category: item.category ?? null,
     })),
+    lastPage: Math.max(1, result.meta.last_page ?? 1),
   };
 }
 
