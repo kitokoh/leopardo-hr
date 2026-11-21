@@ -77,8 +77,9 @@ LEOPARDO_API_URL=https://api.example.com LEOPARDO_API_TOKEN=... \
 ## Surface exposée
 
 - **Outils** (`tools/list`) : les `AIToolDefinition` du manifeste A3 **et** les
-  outils CRUD générés depuis `api/openapi.yaml` (issue #9746) — 170 outils au
-  total aujourd'hui (9 A3 + 161 générés).
+  outils CRUD générés depuis `api/openapi.yaml` (issue #9746) — 247 outils au
+  total aujourd'hui (9 A3 + 238 générés, dont les verticales Travel et
+  Restaurant depuis l'issue #9751).
 - **Ressources** (`resources/list`) :
   - `leopardo://tools/catalog` — le manifeste complet ;
   - `leopardo://tools/{name}/schema` — schémas d'entrée/sortie d'un outil.
@@ -95,7 +96,8 @@ par un BC propriétaire porte une sémantique métier que le générateur ne peu
 déduire d'un verbe HTTP.
 
 Le générateur n'expose pas les ~1 950 opérations de la spec : il filtre par
-allowlist de tags RH, par verbe CRUD (les endpoints d'action — `/approve`,
+allowlist de tags (RH/plateforme + verticales Travel et Restaurant), par verbe
+CRUD (les endpoints d'action — `/approve`,
 `/lock`, `/confirm`… — restent sur `PendingAction`) et exclut `/public/*` et
 `/webhooks/*`.
 

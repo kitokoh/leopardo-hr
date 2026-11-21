@@ -62,6 +62,14 @@ API_PREFIX = "/api/v1"
 
 # Tags exposés. Volontairement restreint : la surface MCP est un sous-ensemble
 # stable et relisible, pas un miroir des 1 950 opérations.
+#
+# Issue #9751 — ajout des verticales Travel et Restaurant. Ce n'est pas un
+# élargissement « pour être complet » : ce sont deux verticales métier réelles
+# (agence de voyage, restaurateur pilote) qui portent des cas d'usage concrets
+# pour un client MCP externe. Les autres verticales (FuelStation, Retail,
+# HealthManager, Pharmacy…) restent hors périmètre tant qu'aucun consommateur
+# externe ne les demande — exposer 1 950 opérations rendrait `tools/list`
+# illisible pour un agent et saturerait son contexte.
 ALLOWED_TAGS = {
     "Employees",
     "Tasks",
@@ -73,6 +81,9 @@ ALLOWED_TAGS = {
     "Me",
     "Notifications",
     "HR Referentials",
+    # Issue #9751 — verticales Travel et Restaurant.
+    "Travel",
+    "Restaurant",
 }
 
 # Dernier segment d'un chemin qui dénote une ACTION métier (et non du CRUD).

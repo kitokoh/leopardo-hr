@@ -145,7 +145,7 @@ sans affinité de session.
 
 ```bash
 curl -s http://127.0.0.1:8787/healthz
-# {"status":"ok","tools":170}
+# {"status":"ok","tools":247}
 ```
 
 ## 7. Les deux sources d'outils
@@ -167,13 +167,20 @@ trois filtres :
 
 1. **allowlist de tags** — `Employees`, `Tasks`, `Projects`, `Schedules`,
    `Attendance`, `Evaluations`, `Payroll`, `Me`, `Notifications`,
-   `HR Referentials` ;
+   `HR Referentials`, et depuis l'issue #9751 les verticales `Travel` et
+   `Restaurant` ;
 2. **verbes CRUD uniquement** — les endpoints d'action (`/approve`, `/lock`,
    `/confirm`, `/publish`…) sont exclus : ils passent par `PendingAction` ;
 3. **exclusion de `/public/*` et `/webhooks/*`** — pas d'authentification
    tenant, donc hors du modèle d'autorisation.
 
-Résultat actuel : **161 outils** (94 `read`, 67 `write`).
+Résultat actuel : **238 outils** (129 `read`, 109 `write`), dont 52 Travel et
+25 Restaurant (issue #9751).
+
+> L'allowlist est un **choix produit**, pas un miroir de la spec. Les autres
+> verticales (`FuelStation`, `Retail`, `HealthManager`, `Pharmacy`…) restent
+> hors périmètre tant qu'aucun consommateur externe ne les demande : exposer
+> ~1 950 opérations rendrait `tools/list` illisible pour un agent.
 
 ## 8. Régénérer les manifestes
 
