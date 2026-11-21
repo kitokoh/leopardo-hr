@@ -9,6 +9,7 @@ import {
   SurfaceMeta,
   SurfaceNotice,
   SurfacePagination,
+  SurfaceSearchBar,
   SurfaceShell,
   SurfaceTenantInvitation,
   type SurfaceIdentity,
@@ -62,6 +63,21 @@ export function ShopDirectorySurface({
       />
 
       <main style={{ maxWidth: '72rem', margin: '0 auto', padding: '2rem 1.25rem 4rem' }}>
+        <SurfaceSearchBar
+          identity={identity}
+          basePath={identity.basePath}
+          defaultQuery={searchParams?.q}
+          defaultCity={searchParams?.city}
+          labels={{
+            searchLabel: shared.searchLabel,
+            searchPlaceholder: shared.searchPlaceholder,
+            cityLabel: shared.cityLabel,
+            cityPlaceholder: shared.cityPlaceholder,
+            searchSubmit: shared.searchSubmit,
+            searchReset: shared.searchReset,
+          }}
+        />
+
         {result.state === 'unavailable' ? (
           <SurfaceNotice identity={identity} alert>
             {shared.unavailable}
