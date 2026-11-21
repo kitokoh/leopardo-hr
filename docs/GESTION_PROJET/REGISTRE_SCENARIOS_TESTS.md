@@ -1,3 +1,23 @@
+## 2026-11-21 — Marketing découpé par ressource, sondes Health extraites, garde FormRequest (PR #9731, #9732)
+
+Surface : `api/routes/api.php` (routes marketing réenregistrées vers 4 contrôleurs dédiés, chemins et méthodes inchangés), `api/app/Modules/Marketing/Interfaces/Api/V1/Controllers/` (`MarketingCampaignsController`, `MarketingAssetsController`, `MarketingPublicationsController`, `MarketingVisibilityController`, trait `ResolvesMarketingTenant`), `api/app/Modules/Platform/Infrastructure/Services/HealthProbeService.php`, `api/app/Modules/Platform/Interfaces/Api/V1/Controllers/HealthController.php`, `dev-hub/tools/check-form-request-guard.py` + `form-request-guard-baseline.txt`.
+
+**Pourquoi c'est un scénario de test** : un découpage de contrôleur peut casser silencieusement une garde transverse (pagination, échappement `LIKE`, rattachement tenant) sans changer aucune signature de route — donc sans qu'aucun test de contrat ne s'en aperçoive.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `GET /marketing/campaigns?per_page=100000` est borné | sans plafond, une seule requête chargeait toute la table |
+| une recherche `q=100%` ne ramène pas tout le catalogue | un `%` saisi était un joker `LIKE` non échappé |
+| une idée ne peut pas pointer la campagne d'un autre tenant | la garde de rattachement vivait dans le contrôleur monolithique ; un découpage naïf la duplique ou la perd |
+| les 4 contrôleurs exposent les mêmes chemins et méthodes qu'avant | un découpage qui renomme une route casse tous les clients |
+| `GET /health` garde la même politique (quel check est critique, quelle surface est publique) | les sondes sont sorties dans `HealthProbeService` ; la politique doit rester dans le contrôleur |
+| `HealthRedisPredisTest` cible `isPongResponse()` à son emplacement réel | le test visait le contrôleur par réflexion : après extraction il ne testait plus rien |
+| une nouvelle validation `$request->validate()` en ligne fait échouer `Module Structure Validator` | c'est le cliquet : sans lui, la dette remonte lot après lot |
+
+**Couverture exécutée** — `php -l` sur tous les fichiers ; **PHPStan level 8 → 0 erreur** ; `pint --test` PASS (16 fichiers) ; `actionlint` exit 0 ; 6 gardes d'architecture exit 0 (`search_path` dette 0, `form-request` 437 figées, `validation-catch`, `unrouted-controllers`, `tenancy-schema-mode`, `canonical-domains`) ; cliquet PHPStan 2651 → 2651 ; `tests/Arch` 5 passed ; **27 tests Marketing verts (159 assertions)** ; **7 tests Health verts**.
+
+**Non couvert** — suite PHPUnit complète (dépasse la mémoire du sandbox) ; endpoints marketing non exercés de bout en bout. Deux échecs **préexistants** vérifiés par `git stash` sur `main` : `MarketingOsPlatformTest` (validation MIME d'un fichier factice) et `HealthMailerMuetTest::test_health_matrix_also_exposes_mail` (erreur SQL).
+
 ## 2026-11-21 — RestaurantManager : observabilité, modération des avis, kit de recette R2–R11 (PR #9727)
 
 Surface : `api/routes/modules/restaurantmanager.php` (4 routes), `api/app/Modules/RestaurantManager/` (contrôleurs métriques + modération, modèle `RestaurantReview`), `api/database/migrations/tenant/2026_11_21_000100_9713_add_reply_to_restaurant_reviews.php`, `api/database/seeders/RestaurantUatSeeder.php`, `front/web/src/app/(dashboard)/restaurant/online/page.tsx`, `front/admin-dashboard/src/i18n/locales/`, `front/mobile_apps/leopardo_core/lib/l10n/`, `shared/i18n/locales/`.
