@@ -51,6 +51,17 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
+    // #9741 — `Application::configure()` active la DÉCOUVERTE d'événements par
+    // défaut (Laravel 11). Ce dépôt enregistre tous ses listeners
+    // explicitement dans `App\Providers\EventServiceProvider::$listen`, donc
+    // chaque listener déclaré là était enregistré DEUX fois (forme nue
+    // `Class` par `$listen`, forme `Class@handle` par la découverte) et
+    // s'exécutait deux fois : deux reçus de paiement par facture payée, deux
+    // commissions, deux leads CRM pour une demande de contact publique.
+    // `withEvents(discover: false)` coupe la découverte à la source ; le seul
+    // listener qui en dépendait (`NotifyCrmTaskOverdue`) est désormais
+    // enregistré explicitement.
+    ->withEvents(discover: false)
     // BOS-006A (#8139) — le bloc `withSchedule()` a été SUPPRIMÉ : toutes les
     // entrées planifiées vivent désormais dans `routes/console.php` (source
     // UNIQUE de planification). Les définir ici ET là faisait tourner 8

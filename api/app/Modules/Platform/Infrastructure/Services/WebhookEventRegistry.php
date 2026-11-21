@@ -150,7 +150,18 @@ final class WebhookEventRegistry
 
         $decoded = json_decode($storedBody, true);
 
-        return is_array($decoded) ? $decoded : $fallback;
+        if (! is_array($decoded)) {
+            return $fallback;
+        }
+
+        // #9741 — le corps mémorisé est la réponse d'ORIGINE (`{"received":true}`).
+        // Le renvoyer tel quel faisait disparaître les clés de contexte du
+        // rejeu (`replayed`, `skipped`…) : le fournisseur ne pouvait pas
+        // distinguer un premier traitement d'un rejeu, et les tests
+        // d'idempotence lisaient `null`. Le fallback porte ces clés ; il
+        // complète le corps mémorisé sans jamais l'écraser (la réponse
+        // d'origine reste la source de vérité pour ses propres champs).
+        return [...$decoded, ...$fallback];
     }
 
     /**

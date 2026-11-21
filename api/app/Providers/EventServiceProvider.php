@@ -12,6 +12,7 @@ use App\Events\AttendanceCheckedOut;
 use App\Events\CatalogInquiryErased;
 use App\Events\CatalogInquiryReceived;
 use App\Events\CompanyCreated;
+use App\Events\CrmTaskOverdue;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
 use App\Events\EmployeeRoleAssigned;
@@ -31,6 +32,7 @@ use App\Listeners\CreateCrmLeadFromPublicContact;
 use App\Listeners\EraseCrmLeadsOnCatalogInquiryErased;
 use App\Listeners\FuelStationAlertListener;
 use App\Listeners\LinkPartnerToNewCompany;
+use App\Listeners\NotifyCrmTaskOverdue;
 use App\Listeners\NotifyTaxRateValidation;
 use App\Listeners\ProcessCommissionOnPayment;
 use App\Listeners\SendInvoicePaymentReceipt;
@@ -58,6 +60,13 @@ class EventServiceProvider extends ServiceProvider
         // la transition unique Invoice::transitionTo(Paid), Stripe et Chargily
         // confondus (PDF joint, i18n via EmailTemplateResolver).
         InvoicePaid::class => [SendInvoicePaymentReceipt::class],
+
+        // #9741 — `NotifyCrmTaskOverdue` n'était enregistré NULLE PART : il ne
+        // fonctionnait que grâce à la découverte automatique d'événements de
+        // Laravel 11. La découverte est désormais désactivée (voir
+        // `shouldDiscoverEvents()`), donc l'enregistrement doit être explicite
+        // — sinon la relance des tâches CRM en retard cesserait silencieusement.
+        CrmTaskOverdue::class => [NotifyCrmTaskOverdue::class],
 
         // Issue #1813/#1923 — workflow de validation des taux légaux : le
         // listener n'était enregistré nulle part (mort) alors que le
@@ -89,4 +98,28 @@ class EventServiceProvider extends ServiceProvider
         // fois — deux leads CRM et deux notifications pour une seule demande.
         PublicContactRequestReceived::class => [CreateCrmLeadFromPublicContact::class.'@handle'],
     ];
+
+    /**
+     * #9741 — la découverte automatique d'événements est DÉSACTIVÉE.
+     *
+     * Laravel 11 l'active par défaut. Ce dépôt enregistre pourtant tous ses
+     * listeners explicitement dans `$listen` (convention documentée plus
+     * haut). Résultat : chaque listener déclaré ici était enregistré DEUX
+     * fois — une fois par `$listen` (forme nue `Class`), une fois par la
+     * découverte (forme `Class@handle`) — et s'exécutait donc deux fois.
+     *
+     * Conséquences constatées : deux reçus de paiement par facture payée
+     * (`InvoicePaid`), deux commissions (`SubscriptionPaid`), deux leads CRM
+     * et deux notifications pour une demande de contact publique, deux
+     * notifications de taux légal. Le symptôme était masqué sur les listeners
+     * idempotents et corrigé au cas par cas par la forme `Class@handle`
+     * ailleurs — un pansement, pas la cause.
+     *
+     * Le seul listener qui dépendait de la découverte (`NotifyCrmTaskOverdue`)
+     * est désormais enregistré explicitement ci-dessus.
+     */
+    public function shouldDiscoverEvents(): bool
+    {
+        return false;
+    }
 }
