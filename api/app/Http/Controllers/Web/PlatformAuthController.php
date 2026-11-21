@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class PlatformAuthController extends Controller
 {
@@ -33,6 +35,15 @@ class PlatformAuthController extends Controller
     {
         try {
             return $this->attemptLogin($request);
+        } catch (ValidationException|HttpExceptionInterface $exception) {
+            // #9698 : `ValidationException` (et toute exception HTTP portee par
+            // Symfony) DOIT remonter au handler global, qui la convertit en
+            // redirection avec `errors` (ou en 4xx). Sans ce `rethrow`, le
+            // `catch (\Throwable)` ci-dessous l'absorbait et affichait
+            // INTERNAL_ERROR : l'utilisateur ne savait pas quel champ corriger
+            // et chaque saisie invalide polluait les alertes 500.
+            // Meme correctif que #9687 cote API.
+            throw $exception;
         } catch (\Throwable $exception) {
             // #6974 : diagnostic — ne jamais exposer de stack au client, mais
             // logguer classe + message pour identifier le 500 DEV persistant.
