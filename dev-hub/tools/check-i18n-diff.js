@@ -169,8 +169,8 @@ const ignorePathFragments = [
   // couverte par les tests du module.
   '/public-surfaces/copy/',
   // Catalogue i18n du module autonome Leopardo Public Portal (mission portail
-  // grand public) : `front/web/src/modules/public-portal/data/copy.ts` EST le
-  // mécanisme de localisation du module (catalogue inline ×4 fr/en/tr/ar,
+  // grand public) : `front/web/src/modules/public-surfaces/portal/data/copy.ts`
+  // EST le mécanisme de localisation du module (catalogue inline ×4 fr/en/tr/ar,
   // typé, accédé via getPublicPortalCopy(locale)) — exactement le même cas que
   // /toolbox/data/ et /library/data/ ci-dessus. Le portail est une surface
   // PUBLIQUE de la vitrine : il suit la convention vitrine (catalogue inline
@@ -180,7 +180,14 @@ const ignorePathFragments = [
   // reste signalé (contre-contrôle dans check-i18n-diff-test.sh). La
   // complétude des 4 langues reste couverte par les tests du module
   // (data/copy.test.ts).
-  '/public-portal/data/',
+  //
+  // #9695 — le chemin était resté `/public-portal/data/` après le renommage
+  // `modules/public-portal` → `modules/public-surfaces/portal` (#9633). Depuis,
+  // l'exemption ne matchait plus rien : toute modification du catalogue du
+  // portail était signalée comme « chaîne en dur » et bloquait la CI sur des
+  // traductions légitimes. Une exemption qui ne matche plus est pire qu'aucune
+  // exemption — elle donne l'illusion d'une couverture.
+  '/public-surfaces/portal/data/',
   // Route de téléchargement de la Library : message opérationnel français
   // (stockage objet non configuré → 501), même pattern que les routes forms
   // pré-existantes (contact/signup/newsletter/demo, PA2-MKT-007) — la
