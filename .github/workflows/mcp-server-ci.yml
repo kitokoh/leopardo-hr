@@ -1,0 +1,54 @@
+name: MCP Server CI
+
+# CI du serveur MCP externe (MCP-2/3/4, EPIC #9739).
+# Ne se déclenche que si dev-hub/mcp-server/ change — les autres workflows
+# (architecture-check, backend) restent inchangés.
+
+on:
+  pull_request:
+    paths:
+      - 'dev-hub/mcp-server/**'
+      - '.github/workflows/mcp-server-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'dev-hub/mcp-server/**'
+      - '.github/workflows/mcp-server-ci.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mcp-server-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mcp-server:
+    name: MCP Server (typecheck + tests)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: dev-hub/mcp-server
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: dev-hub/mcp-server/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm test
+
+      - name: Build
+        run: npm run build

@@ -180,6 +180,14 @@ jobs:
       - name: Canonical domains guard (issue #3706)
         run: bash dev-hub/tools/check-canonical-domains.sh
 
+      # #9738 (EPIC #9739) — le serveur MCP externe (dev-hub/mcp-server) sert
+      # le contrat d'outil A3 depuis un manifeste versionné. Un BC qui ajoute,
+      # retire ou modifie une AIToolDefinition sans régénérer le manifeste
+      # ferait servir un contrat périmé, silencieusement : la garde rend la
+      # divergence bloquante. `composer install` est déjà fait plus haut.
+      - name: MCP manifest drift guard (issue #9738)
+        run: bash dev-hub/tools/check-mcp-manifest-drift.sh .
+
       - name: Public docs — no PII guard (issue #7982)
         run: bash dev-hub/tools/check-public-docs-no-pii.sh origin/main
 

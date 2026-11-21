@@ -30,7 +30,7 @@ leopardo-hr/
 ├── shared/
 │   ├── i18n/               # Traductions partagées (fr, en, ar, tr)
 │   └── mediaForMarketing/  # Assets marketing bruts
-├── dev-hub/                # Outils/SDK/scripts pour développeurs et intégrateurs externes (inclut dev-hub/openapi/v1.yaml, miroir généré depuis api/openapi.yaml — source canonique — par dev-hub/tools/generate-openapi-sdk.mjs, vérifié en CI par openapi-ci.yml)
+├── dev-hub/                # Outils/SDK/scripts pour développeurs et intégrateurs externes (inclut dev-hub/openapi/v1.yaml, miroir généré depuis api/openapi.yaml — source canonique — par dev-hub/tools/generate-openapi-sdk.mjs, vérifié en CI par openapi-ci.yml ; et dev-hub/mcp-server, serveur MCP externe — pont hybride sur le contrat d'outil A3, ADR-0019 option 3, EPIC #9739)
 ├── docs/                   # Documentation technique et stratégique
 ├── scripts/                # Scripts utilitaires racine (bootstrap, capture screenshots, cleanup)
 ├── postman/                # Collection Postman de l'API
