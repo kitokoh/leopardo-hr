@@ -38,6 +38,21 @@ final class RestaurantDeliveryService
             throw new RuntimeException('La commande n\'est pas de type livraison.');
         }
 
+        // Idempotence : une commande n'a qu'UNE livraison. Un rejeu (double
+        // tap sur « envoyer en livraison », retry réseau, file offline
+        // RESTO-804) doit renvoyer la livraison existante, pas en créer une
+        // seconde — sinon le livreur voit deux courses pour la même commande
+        // et les frais sont facturés deux fois.
+        /** @var RestaurantDelivery|null $existing */
+        $existing = RestaurantDelivery::query()
+            ->where('company_id', $actor->company_id)
+            ->where('order_id', $order->id)
+            ->first();
+
+        if ($existing !== null) {
+            return ['delivery' => $existing, 'order' => $order];
+        }
+
         /** @var RestaurantDelivery $delivery */
         $delivery = RestaurantDelivery::query()->create([
             'company_id' => $actor->company_id,
@@ -90,10 +105,15 @@ final class RestaurantDeliveryService
         $delivery->delivered_to_contact = $deliveredToContact;
         $delivery->save();
 
-        // La commande livrée est clôturée (cycle complet tracé).
+        // La commande livrée passe à `served` — PAS `closed`.
+        // Cycle documenté (§98, §421 de SOLUTION_RESTAURANT_MANAGER) :
+        //   draft → open → in_preparation → ready → served → paid → closed
+        // et critère de recette UAT R3 : « Commande `served` après livraison ».
+        // Sauter à `closed` court-circuitait l'encaissement : la commande
+        // n'était plus facturable et sortait des rapports de CA.
         $order = $delivery->order;
         if ($order !== null && in_array($order->status->value, ['ready', 'paid'], true)) {
-            $order->status = OrderStatus::CLOSED;
+            $order->status = OrderStatus::SERVED;
             $order->save();
         }
 

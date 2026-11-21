@@ -29,9 +29,17 @@ class StoreRestaurantDeliveryRequest extends FormRequest
         $actor = $this->user();
 
         return [
-            'order_id' => ['required', 'integer', Rule::exists('restaurant_orders', 'id')->where(fn (Builder $q) => $q->where('company_id', $actor->company_id))],
+            // Deux points d'entrée coexistent :
+            //  - POST /orders/{restaurantOrder}/delivery → l'ID vient de la route ;
+            //  - POST /deliveries → l'ID vient du corps (obligatoire).
+            // `required_unless` couvre les deux sans dupliquer la règle.
+            'order_id' => ['required_unless:restaurantOrder,null', 'nullable', 'integer', Rule::exists('restaurant_orders', 'id')->where(fn (Builder $q) => $q->where('company_id', $actor->company_id))],
             'zone_id' => ['nullable', 'integer', Rule::exists('restaurant_delivery_zones', 'id')->where(fn (Builder $q) => $q->where('company_id', $actor->company_id))],
-            'fee_minor' => ['required', 'integer', 'min:0'],
+            // Les frais sont TARIFÉS PAR LA ZONE côté serveur. Les accepter du
+            // client laissait un restaurateur (ou un client malveillant)
+            // fixer 0 XAF de livraison. `fee_minor` n'est plus qu'un secours
+            // quand aucune zone n'est fournie.
+            'fee_minor' => ['sometimes', 'integer', 'min:0'],
         ];
     }
 }

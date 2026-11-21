@@ -14,6 +14,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCount;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCountItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPurchaseOrder;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantReceiving;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantSupplier;
 use Laravel\Sanctum\Sanctum;
@@ -91,9 +92,18 @@ class RestaurantPurchaseReceivingInventoryTest extends TestCase
             ])->assertOk()
                 ->assertJsonPath('data.status', PurchaseOrderStatus::RECEIVED->value);
 
+            // Les mouvements d'une réception référencent la RÉCEPTION
+            // (`reference_type = 'receiving'`), pas le bon de commande : c'est
+            // le document qui porte les quantités et les prix réellement
+            // reçus. Le lien vers le bon passe par
+            // `restaurant_receivings.purchase_order_id`.
+            $receiving = RestaurantReceiving::query()
+                ->where('purchase_order_id', $order->id)
+                ->firstOrFail();
+
             $this->assertSame(2, RestaurantInventoryMovement::query()
-                ->where('reference_type', 'purchase_order')
-                ->where('reference_id', $order->id)
+                ->where('reference_type', 'receiving')
+                ->where('reference_id', $receiving->id)
                 ->count());
 
             $this->assertSame('15.000', (string) RestaurantStockLevel::query()

@@ -28,7 +28,7 @@ class UpdateRestaurantInventoryCountItemRequest extends FormRequest
     {
         return [
             'counted_qty' => ['required', 'numeric', 'min:0', 'max:999999'],
-            'reason_code' => ['nullable', 'string', Rule::in(['damage', 'loss', 'theft', 'miscount', 'expiry', 'other'])],
+            'reason_code' => ['nullable', 'string', Rule::in(['damage', 'loss', 'theft', 'miscount', 'expiry', 'spoilage', 'other'])],
         ];
     }
 }

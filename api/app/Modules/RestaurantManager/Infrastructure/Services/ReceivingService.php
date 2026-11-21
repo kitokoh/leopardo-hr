@@ -58,7 +58,12 @@ final class ReceivingService
                     ingredientId: (int) $line['ingredient_id'],
                     quantityDelta: $quantity,
                     reason: StockMovementReason::RECEIVING,
-                    referenceType: RestaurantReceiving::class,
+                    // Slug court, comme partout dans le module ('order',
+                    // 'purchase_order', 'inventory_count'). Le FQCN
+                    // `RestaurantReceiving::class` fuyait un détail
+                    // d'implémentation dans le journal et cassait tout filtre
+                    // par `reference_type`.
+                    referenceType: 'receiving',
                     referenceId: $receiving->id,
                     note: $note,
                     userId: $userId,

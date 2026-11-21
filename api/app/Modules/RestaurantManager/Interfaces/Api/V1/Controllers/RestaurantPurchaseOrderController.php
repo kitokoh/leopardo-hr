@@ -13,6 +13,7 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\Concerns\ScopesR
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantPurchaseOrderRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\UpdateRestaurantPurchaseOrderRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantPurchaseOrderResource;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantPurchaseOrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -29,7 +30,10 @@ class RestaurantPurchaseOrderController extends Controller
 {
     use ScopesRestaurantBranchListings;
 
-    public function __construct(private readonly PurchaseOrderAction $poAction) {}
+    public function __construct(
+        private readonly PurchaseOrderAction $poAction,
+        private readonly RestaurantPurchaseOrderService $purchaseOrders,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -70,6 +74,19 @@ class RestaurantPurchaseOrderController extends Controller
             ...$request->safe()->except(['items']),
             'status' => PurchaseOrderStatus::DRAFT,
         ]);
+
+        // Les lignes du bon étaient SILENCIEUSEMENT jetées : `items` était
+        // exclu du `create()` et jamais persisté. Conséquence : un bon créé
+        // avec 2 lignes revenait avec `total_minor: null` et zéro ligne —
+        // le restaurateur croyait avoir commandé, le fournisseur recevait un
+        // bon vide. `syncItems()` crée les lignes ET recalcule le total
+        // serveur (jamais accepté du client).
+        $items = $request->validated()['items'] ?? [];
+
+        if ($items !== []) {
+            $this->purchaseOrders->syncItems($order, $items);
+            $order->refresh()->load('items');
+        }
 
         return (new RestaurantPurchaseOrderResource($order))->response()->setStatusCode(201);
     }
