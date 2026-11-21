@@ -29,7 +29,7 @@ class PublicCareerControllerTest extends TestCase
     {
         $company = Company::factory()->create();
 
-        JobPosting::create([
+        $published = JobPosting::create([
             'company_id' => $company->id,
             'title' => 'Published Job',
             'status' => 'published',
@@ -49,8 +49,13 @@ class PublicCareerControllerTest extends TestCase
         $response = $this->getJson("/api/v1/public/careers/{$company->slug}");
 
         $response->assertOk();
-        $response->assertJsonCount(1, 'data');
-        $response->assertJsonPath('data.0.title', 'Published Job');
+        // #9696 — `data` concatene les offres du tenant ET le catalogue
+        // plateforme du pays (`PublicJobCatalog::externalOffers`). Un comptage
+        // global depend donc de ce que les autres classes du worker ont laisse
+        // en base sur le pays tire au hasard par `CompanyFactory`. On mesure
+        // l'intention : une seule offre du tenant, et c'est bien celle-la.
+        $response->assertJsonPath('meta.counts.company', 1);
+        $response->assertJsonFragment(['id' => $published->id, 'title' => 'Published Job']);
     }
 
     public function test_it_exposes_company_branding_meta_on_the_listing(): void
@@ -123,7 +128,11 @@ class PublicCareerControllerTest extends TestCase
         $response = $this->getJson("/api/v1/public/careers/{$company->slug}");
 
         $response->assertOk();
-        $response->assertJsonCount(0, 'data');
+        // #9696 — meme raison que ci-dessus : le catalogue plateforme du pays
+        // peut ajouter des entrees a `data`. Ce qui doit etre vrai, c'est
+        // qu'aucune offre du tenant ne fuite.
+        $response->assertJsonPath('meta.counts.company', 0);
+        $response->assertJsonMissing(['title' => 'Other Company Job']);
     }
 
     public function test_unknown_company_slug_returns_404(): void
@@ -163,7 +172,7 @@ class PublicCareerControllerTest extends TestCase
     public function test_it_serves_an_xml_feed_of_published_jobs(): void
     {
         $company = Company::factory()->create();
-        JobPosting::create([
+        $job = JobPosting::create([
             'company_id' => $company->id,
             'title' => 'Feed Job',
             'location' => 'Algiers',
@@ -186,7 +195,23 @@ class PublicCareerControllerTest extends TestCase
 
         $xml = simplexml_load_string($response->getContent());
         $this->assertNotFalse($xml);
-        $this->assertCount(1, $xml->job);
+
+        // #9696 — `buildXmlFeed()` ajoute au flux les offres agregees du pays
+        // (`referencenumber` prefixe `ext-`). `assertCount(1, $xml->job)`
+        // comptait donc les deux familles et echouait des qu'une autre classe
+        // avait laisse une `external_job_offers` visible sur le meme pays.
+        // L'intention : l'offre du tenant figure dans le flux, exactement une
+        // fois (aucune collision possible avec le prefixe `ext-`).
+        $references = [];
+        foreach ($xml->job as $entry) {
+            $references[] = (string) $entry->referencenumber;
+        }
+
+        $this->assertSame(
+            1,
+            count(array_keys($references, (string) $job->id, true)),
+            'Le referencenumber de l offre du tenant doit apparaitre exactement une fois dans le flux.'
+        );
     }
 
     public function test_it_can_submit_a_candidate_application(): void
