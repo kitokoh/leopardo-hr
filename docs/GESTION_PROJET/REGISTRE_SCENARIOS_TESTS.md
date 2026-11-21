@@ -142,6 +142,29 @@ Surface : `dev-hub/tools/generate-mcp-openapi-tools.py`, `dev-hub/mcp-server/man
 **Couverture exécutée** — `tsc --noEmit` 0 erreur ; **55 tests vitest verts** (dont 10 d'intégration stdio sur le vrai binaire compilé et 5 sur les outils d'action) ; génération déterministe (md5 identique sur deux runs) ; garde `check-mcp-openapi-tools-drift.sh` verte (278 outils) ; test stdio **vu mordant** (transport non connecté → 10 échecs) ; `php -l` sur les 7 fichiers PHP ; `check-form-request-guard.py` OK (dette figée 437).
 
 **Non couvert** — tests Feature PHP (pas de `vendor/` dans le sandbox) ; transport contre une API Laravel réelle (serveur HTTP local de test).
+## 2026-11-21 — Parcours d'essai découpé par cas d'usage, 5 contrôleurs en FormRequest (PR #9734)
+
+Surface : `api/app/Modules/Billing/Interfaces/Api/V1/Controllers/SelfServiceTrialController.php` (955 → 350 lignes), `api/app/Modules/Billing/Application/Actions/` (`SignupTrial`, `ProvisionTrialSandbox`, `ActivateTrialInRequest`, `GetTrialStatus`, `VerifyTrialAndProvision`), `api/app/Modules/Billing/Application/Services/TrialEmailHash.php`, `api/app/Modules/Billing/Interfaces/Api/V1/Requests/` (`SignupTrialRequest`, `VerifyTrialRequest`, `SetTrialPasswordRequest`), `api/app/Modules/FarmOs/Interfaces/Api/V1/Requests/` (15 classes), `api/app/Modules/Recruitment/Interfaces/Api/V1/Requests/` (7), `api/app/Core/Auth/Interfaces/Api/V1/Requests/` (7), `api/app/Modules/HR/Interfaces/Api/V1/Requests/` (6), `dev-hub/tools/form-request-guard-baseline.txt` (434 → 399). Chemins, méthodes HTTP et permissions inchangés.
+
+**Pourquoi c'est un scénario de test** : un découpage de contrôleur et une conversion de validation peuvent changer un comportement métier sans changer aucune signature de route — donc sans qu'aucun test de contrat ne s'en aperçoive.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| un e-mail déjà manager reçoit la même réponse uniforme, sans second provisioning | l'anti-énumération (#3945) : la réponse révélerait l'existence du compte |
+| un double POST réutilise la ligne `pending` existante | l'idempotence (#3951) : deux tenants créés pour une intention |
+| une course sur l'insert (`23505`) rejoue la ligne gagnante, jamais un 500 | le retry réseau concurrent produirait une erreur serveur |
+| mailer KO → activation directe synchrone, espace réellement créé | #9305/#9323 : le prospect restait provisionné sans aucun moyen d'entrer |
+| `provisioned_at` (string) n'est jamais passé à `->toIso8601String()` | #2903 : 500 sur `/trial/status` |
+| `activation_url` exposé tant que `password_set` est faux | #9306 : espace provisionné mais inaccessible |
+| un échec d'auto-connexion n'empêche pas la réponse 201 | le compte EST créé ; absorber l'erreur évite de perdre le provisioning |
+| `POST /trial/signup` avec `Idempotency-Key` rejoue la première réponse 2xx | un double clic créait deux demandes et deux OTP |
+| `exists('employees','id')` est scopé `company_id` | on pouvait désigner comme formateur l'employé d'un autre tenant |
+| `statuses` accepte `[]` (règle `present`, pas `required`) | #5540 : impossible de retirer tous ses statuts personnels |
+| la cohérence marché↔profil est vérifiée après les règles de forme | #8625 : une intention absurde (« grossiste » sur un marché international) passait |
+
+**Couverture exécutée** — `php -l` sur tous les fichiers ; **PHPStan level 8 → 0 erreur** sur `Billing`, `FarmOs`, `Recruitment`, `HR`, `Core/Auth/Interfaces` ; `pint --test` PASS (426 fichiers) ; 7 gardes d'architecture exit 0 (`layer-purity`, `module-isolation`, `search_path` dette 0, `form-request` 399 figées, `unrouted-controllers`, `tenancy-schema-mode`, `canonical-domains`).
+
+**Non couvert** — suite PHPUnit complète (OOM sandbox) ; PHPStan sur l'arbre entier (OOM) ; endpoints non exercés de bout en bout. Une erreur `trait.unused` sur `ChecksResourceScopedAccess` apparaît quand on inclut `Core/Auth/Domain` : trait **non touché par ce diff**, préexistant.
 
 ## 2026-11-21 — Marketing découpé par ressource, sondes Health extraites, garde FormRequest (PR #9731, #9732)
 
