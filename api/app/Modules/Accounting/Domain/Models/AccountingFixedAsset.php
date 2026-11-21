@@ -54,6 +54,21 @@ class AccountingFixedAsset extends Model
         'notes',
     ];
 
+    /**
+     * Valeurs par defaut du schema, hydratées en mémoire.
+     *
+     * #9668 : Eloquent ne lit jamais les `default()` SQL. Sans ces attributs,
+     * un actif cree par l'API renvoyait `status` et `residual_value` a `null`
+     * dans la reponse 201 alors que la base portait bien `active` et `0`.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'residual_value' => 0,
+        'method' => self::METHOD_LINEAR,
+        'status' => self::STATUS_ACTIVE,
+    ];
+
     /** @return array<string, string> */
     protected function casts(): array
     {

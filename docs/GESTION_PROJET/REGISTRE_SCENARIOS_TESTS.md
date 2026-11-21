@@ -3083,3 +3083,32 @@ existants (`ConversationMessagesTest`, `ConversationModerationTest`).
 - **Agrégat partiel** — une clé absente n'empêche pas le rendu des autres tuiles et n'affiche pas `undefined`.
 - **Réponse vide** — un `{}` rend un cockpit vide mais stable (aucune exception de rendu).
 - **Captures** — chaque PNG produit correspond à une route servie par le front visé.
+
+
+## 2026-11-20 — Immobilisations : couche HTTP du CRUD et de l'échéancier (#9668, surface #9377)
+
+**Surface** : `GET|POST /v1/accounting/fixed-assets`, `GET|PUT|DELETE /v1/accounting/fixed-assets/{id}` (`whereNumber`), `GET /v1/accounting/fixed-assets/{id}/schedule`. RBAC `api.manager:principal,comptable,module:accounting`. Aucune migration.
+
+**Pourquoi** — `DepreciationTest` mesurait le service d'amortissement ; aucune assertion ne touchait les routes. Un `whereNumber`, un RBAC ou une borne tenant non vérifiés ne sont pas des garanties, seulement des intentions.
+
+**Scénarios couverts** (`api/tests/Feature/Accounting/FixedAssetApiTest.php`, 14 tests)
+
+- Création comptable : 201, payload relu, ligne en base avec `company_id` du tenant.
+- Liste paginée (`data` + `total`) et filtre `status` ; l'actif d'un autre tenant n'y figure pas.
+- Référence déjà utilisée dans la société : 422 (`errors.code`), pas 500.
+- Même référence dans une **autre** société : 201 (la contrainte est le couple société/code).
+- Isolation tenant : `show`, `schedule`, `PUT` et `DELETE` d'un actif d'un autre tenant rendent tous 404, et le libellé en base reste intact.
+- Détail : les dotations sont exposées sous `data.depreciations`.
+- Mise à jour : `label`/`notes` changent ; `acquisition_cost` et `useful_life_months` envoyés dans le corps sont ignorés (l'historique des dotations ne se réécrit pas).
+- Échéancier : 12 lignes pour 12 000 sur 12 mois, première dotation 1 000, cumul final 12 000, valeur nette 0.
+- Suppression : 204 sans dotation ; 409 avec dotation, message traduit et sans placeholder `%s`.
+- Validation : `method=declining` (non implémenté) en 422, `useful_life_months=0` et `acquisition_cost<0` en 422, champs requis manquants en 422.
+- Routage : `fixed-assets/abc` et `fixed-assets/1.5` n'atteignent jamais le contrôleur (404).
+- RBAC : employé ordinaire 403 ; sans jeton 401.
+
+**Défauts révélés par l'écriture du test**
+
+- `store()` ne validait pas l'unicité `(company_id, code)` : la violation de contrainte remontait en `SQLSTATE 23505`, donc en 500. La règle est désormais posée, bornée au tenant de l'acteur.
+- Le modèle ne déclarait aucun `$attributes` : Eloquent ne lit jamais les `default()` SQL, donc la réponse 201 renvoyait `status` et `residual_value` à `null` alors que la base portait `active` et `0`.
+
+**Non couvert** — PHPUnit/PHPStan non exécutés localement (pas de PostgreSQL) : la mesure est le run CI, et le fichier doit apparaître dans les deux zones générées de `api/phpunit.xml` (testsuite `Accounting` + shard MVP) pour être réellement exécuté.
