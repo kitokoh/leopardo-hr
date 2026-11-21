@@ -98,6 +98,18 @@ All checks run on GitHub Actions:
 | `GET /api/v1/health` | None | Full health check (DB, Redis, storage) |
 | `GET /api/v1/health/live` | None | Liveness probe (always 200) |
 | `GET /api/v1/health/ready` | None | Readiness probe (DB check) |
+## MCP Server (external clients)
+The MCP server in [`mcp-server/`](mcp-server/README.md) exposes the Leopardo tools to
+MCP clients (IDE, CLI, agents) over stdio or Streamable HTTP. It never touches the
+database: it relays the caller's Bearer token to `/api/v1` and lets Laravel decide.
+
+```bash
+cd dev-hub/mcp-server && npm ci && npm run build
+LEOPARDO_API_URL=https://api.example.com LEOPARDO_API_TOKEN=... node dist/index.js
+```
+
+Full configuration, client wiring, tool sources and troubleshooting:
+[`docs/GUIDES/GUIDE_SERVEUR_MCP.md`](../docs/GUIDES/GUIDE_SERVEUR_MCP.md).
 ## Useful Commands
 php artisan make:module {Name}     # Scaffold a DDD module
 php artisan leopardo:migrate        # Run migrations (public + tenant schemas)

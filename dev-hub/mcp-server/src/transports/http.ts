@@ -16,11 +16,18 @@ export interface HttpOptions {
   host: string;
 }
 
+export interface HttpHandle {
+  /** Port réellement lié — utile quand `options.port` vaut 0 (port éphémère). */
+  port: number;
+  url: string;
+  close: () => Promise<void>;
+}
+
 export async function startHttp(
   tools: ToolDefinition[],
   api: ApiClient,
   options: HttpOptions,
-): Promise<{ close: () => Promise<void> }> {
+): Promise<HttpHandle> {
   const httpServer = createServer((req: IncomingMessage, res: ServerResponse) => {
     void handle(req, res, tools, api);
   });
@@ -29,7 +36,12 @@ export async function startHttp(
     httpServer.listen(options.port, options.host, resolve);
   });
 
+  const address = httpServer.address();
+  const boundPort = typeof address === "object" && address !== null ? address.port : options.port;
+
   return {
+    port: boundPort,
+    url: `http://${options.host}:${boundPort}`,
     close: () =>
       new Promise<void>((resolve, reject) => {
         httpServer.close((err) => (err ? reject(err) : resolve()));

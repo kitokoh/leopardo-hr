@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { parseArgs } from "node:util";
-import { loadManifest } from "./manifest.js";
+import { loadAllTools } from "./manifest.js";
 import { ApiClient } from "./api-client.js";
 import { startStdio } from "./transports/stdio.js";
 import { startHttp } from "./transports/http.js";
@@ -38,14 +38,16 @@ if (apiUrl === undefined || token === undefined) {
   process.exit(2);
 }
 
-const manifest = loadManifest(values.manifest);
+// `--manifest` ne surcharge que le manifeste A3 ; le manifeste généré depuis
+// OpenAPI (#9746) est toujours lu à côté de lui.
+const tools = loadAllTools(values.manifest);
 const api = new ApiClient({ baseUrl: apiUrl, token });
 
 if (values.transport === "http") {
   const port = Number.parseInt(values.port, 10);
-  await startHttp(manifest.tools, api, { port, host: values.host });
+  await startHttp(tools, api, { port, host: values.host });
   process.stderr.write(`leopardo-mcp (http) à l'écoute sur http://${values.host}:${port}/mcp\n`);
 } else {
-  await startStdio(manifest.tools, api);
-  process.stderr.write(`leopardo-mcp (stdio) prêt — ${manifest.tools.length} outils.\n`);
+  await startStdio(tools, api);
+  process.stderr.write(`leopardo-mcp (stdio) prêt — ${tools.length} outils.\n`);
 }

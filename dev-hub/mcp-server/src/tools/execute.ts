@@ -1,5 +1,5 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import type { ToolDefinition } from "../manifest.js";
+import type { ToolDefinition, ToolRouteDefinition } from "../manifest.js";
 import type { ApiClient } from "../api-client.js";
 import { ApiError } from "../api-client.js";
 
@@ -86,7 +86,9 @@ export async function executeTool(
   args: Record<string, unknown>,
   api: ApiClient,
 ): Promise<CallToolResult> {
-  const route = TOOL_ROUTES[tool.name];
+  // Outil GÉNÉRÉ depuis api/openapi.yaml (issue #9746) : sa route est portée par
+  // le manifeste, il n'a pas d'entrée dans TOOL_ROUTES.
+  const route = tool.route === undefined ? TOOL_ROUTES[tool.name] : routeFromManifest(tool.route);
 
   if (route === undefined) {
     return errorResult(
@@ -116,6 +118,48 @@ export async function executeTool(
     }
     return errorResult(`Erreur d'exécution : ${(error as Error).message}`);
   }
+}
+
+/**
+ * Traduit une route déclarative du manifeste en `ToolRoute` exécutable.
+ *
+ * Les paramètres de chemin sont substitués depuis les arguments ; les
+ * paramètres de requête sont transmis tels quels ; le corps est l'argument
+ * `body` (déjà un objet JSON, tel que décrit par `inputSchema`).
+ *
+ * Un paramètre de chemin manquant est une ERREUR, pas un `undefined` silencieux :
+ * un `/api/v1/tasks/undefined` renverrait un 404 trompeur côté API.
+ */
+export function routeFromManifest(route: ToolRouteDefinition): ToolRoute {
+  return {
+    method: route.method,
+    path: (args) => {
+      let resolved = route.path;
+      for (const param of route.pathParams) {
+        const value = args[param];
+        if (value === undefined || value === null || value === "") {
+          throw new Error(`Paramètre de chemin manquant : '${param}' (${route.method} ${route.path}).`);
+        }
+        resolved = resolved.replace(`{${param}}`, encodeURIComponent(String(value)));
+      }
+      return resolved;
+    },
+    ...(route.queryParams.length === 0
+      ? {}
+      : {
+          query: (args) => {
+            const query: Record<string, string | number | boolean | undefined> = {};
+            for (const param of route.queryParams) {
+              const value = args[param];
+              if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+                query[param] = value;
+              }
+            }
+            return query;
+          },
+        }),
+    ...(route.hasBody ? { body: (args) => args.body ?? {} } : {}),
+  };
 }
 
 function errorResult(message: string): CallToolResult {
