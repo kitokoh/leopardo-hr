@@ -56,7 +56,16 @@ class RestaurantUatSeeder extends Seeder
 
     private const SHARED_SCHEMA = 'shared_tenants';
 
-    private const DOMAIN = 'resto.recette.leopardo.test';
+    /**
+     * Domaine des comptes de démonstration.
+     *
+     * `example.com` est le domaine réservé par la RFC 2606 : il ne peut
+     * appartenir à personne, donc aucun courriel réel n'est publié — et il
+     * correspond exactement à ce qu'annonce le kit de recette
+     * (docs/ops/RECETTE_UAT_RESTAURANTMANAGER_KIT.md). Un domaine inventé
+     * ferait échouer la connexion de l'opérateur qui suit la doc.
+     */
+    private const DOMAIN = 'example.com';
 
     public function run(): void
     {
