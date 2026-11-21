@@ -8,7 +8,17 @@ import { SITE_URL } from '@/lib/site-url';
 import { JsonLd } from '@/components/JsonLd';
 import { getPublicShop, type PublicShopProfile } from '@/lib/retail-public-api';
 import PublicContactCta from '@/app/decouvrir/public-contact-cta';
-import { RETAIL_SURFACE } from '@/modules/public-surfaces';
+import {
+  RETAIL_SURFACE,
+  SurfaceNotice,
+  SurfacePagination,
+  SurfaceSearchBar,
+  filterByQuery,
+  paginateList,
+} from '@/modules/public-surfaces';
+
+/** Catégories affichées par page sur la fiche d'une boutique. */
+const CATEGORIES_PER_PAGE = 12;
 
 /**
  * P1-02 — page publique SEO d'une boutique Leopardo Marché (`/boutiques/{slug}`).
@@ -32,7 +42,7 @@ import { RETAIL_SURFACE } from '@/modules/public-surfaces';
 
 interface ShopPageProps {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ lang?: string }>;
+  searchParams: Promise<{ lang?: string; q?: string; page?: string }>;
 }
 
 export async function generateMetadata({ params, searchParams }: ShopPageProps): Promise<Metadata> {
@@ -92,8 +102,8 @@ function shopJsonLd(shop: PublicShopProfile): Record<string, unknown> {
 
 export default async function ShopPage({ params, searchParams }: ShopPageProps) {
   const { slug } = await params;
-  const { lang } = await searchParams;
-  const locale = normalizeLocale(lang ?? '');
+  const search = await searchParams;
+  const locale = normalizeLocale(search.lang ?? '');
   const dir = catalogDirection(locale);
 
   const shop = await getPublicShop(slug);
@@ -101,6 +111,14 @@ export default async function ShopPage({ params, searchParams }: ShopPageProps) 
   if (!shop) {
     notFound();
   }
+
+  const query = (search.q ?? '').slice(0, 120) || undefined;
+  const pageNumber = Number.parseInt(search.page ?? '', 10);
+  const categories = paginateList(
+    filterByQuery(shop.categories, query, (category) => [category.name]),
+    Number.isFinite(pageNumber) ? pageNumber : undefined,
+    CATEGORIES_PER_PAGE,
+  );
 
   return (
     <div
@@ -166,17 +184,49 @@ export default async function ShopPage({ params, searchParams }: ShopPageProps) 
             <h2 className="mb-3 text-lg font-black tracking-tight text-slate-950">
               {t(locale, 'discovery.shopCategoriesTitle')}
             </h2>
-            <ul className="flex flex-wrap gap-2">
-              {shop.categories.map((category) => (
-                <li
-                  key={category.id}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700"
-                >
-                  {category.name}
-                  <span className="ml-2 text-xs text-slate-500">{category.products_count}</span>
-                </li>
-              ))}
-            </ul>
+
+            <SurfaceSearchBar
+              identity={RETAIL_SURFACE}
+              basePath={`/boutiques/${shop.slug}`}
+              defaultQuery={query}
+              labels={{
+                searchLabel: t(locale, 'discovery.searchLabel'),
+                searchPlaceholder: t(locale, 'discovery.searchPlaceholder'),
+                searchSubmit: t(locale, 'discovery.search'),
+                searchReset: t(locale, 'discovery.clearNear'),
+              }}
+            />
+
+            {categories.items.length === 0 ? (
+              <SurfaceNotice identity={RETAIL_SURFACE}>
+                {t(locale, 'discovery.noResults')}
+              </SurfaceNotice>
+            ) : (
+              <ul className="flex flex-wrap gap-2">
+                {categories.items.map((category) => (
+                  <li
+                    key={category.id}
+                    className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700"
+                  >
+                    {category.name}
+                    <span className="ml-2 text-xs text-slate-500">{category.products_count}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <SurfacePagination
+              identity={RETAIL_SURFACE}
+              basePath={`/boutiques/${shop.slug}`}
+              page={categories.page}
+              lastPage={categories.lastPage}
+              searchParams={{ q: query }}
+              labels={{
+                previous: t(locale, 'discovery.previous'),
+                next: t(locale, 'discovery.next'),
+                pageOf: `${t(locale, 'discovery.pageLabel')} {page} / {last}`,
+              }}
+            />
           </section>
         ) : null}
       </div>

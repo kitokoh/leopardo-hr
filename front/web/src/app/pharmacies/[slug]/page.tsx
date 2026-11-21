@@ -9,10 +9,18 @@ import { catalogDirection, t } from '@/lib/i18n/locale-catalog';
 import { SITE_URL } from '@/lib/site-url';
 import {
   PHARMACY_SURFACE,
+  SurfaceNotice,
+  SurfacePagination,
+  SurfaceSearchBar,
+  filterByQuery,
   hasServices,
   loadPharmacy,
+  paginateList,
   type Pharmacy,
 } from '@/modules/public-surfaces';
+
+/** Services affichés par page sur la fiche d'une officine. */
+const SERVICES_PER_PAGE = 12;
 
 /**
  * Fiche publique d'une officine (`/pharmacies/{slug}`), #9592.
@@ -30,7 +38,7 @@ import {
 
 interface PharmacyPageProps {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ lang?: string }>;
+  searchParams: Promise<{ lang?: string; q?: string; page?: string }>;
 }
 
 export async function generateMetadata({
@@ -87,8 +95,8 @@ function pharmacyJsonLd(pharmacy: Pharmacy): Record<string, unknown> {
 
 export default async function PharmacyPage({ params, searchParams }: PharmacyPageProps) {
   const { slug } = await params;
-  const { lang } = await searchParams;
-  const locale = normalizeLocale(lang ?? '');
+  const search = await searchParams;
+  const locale = normalizeLocale(search.lang ?? '');
   const dir = catalogDirection(locale);
   const palette = PHARMACY_SURFACE.palette;
 
@@ -97,6 +105,15 @@ export default async function PharmacyPage({ params, searchParams }: PharmacyPag
   if (!pharmacy) {
     notFound();
   }
+
+  const query = (search.q ?? '').slice(0, 120) || undefined;
+  const pageNumber = Number.parseInt(search.page ?? '', 10);
+  const services = paginateList(
+    filterByQuery(pharmacy.services, query, (service) => [service]),
+    Number.isFinite(pageNumber) ? pageNumber : undefined,
+    SERVICES_PER_PAGE,
+  );
+  const basePath = `/pharmacies/${pharmacy.slug}`;
 
   return (
     <div dir={dir} className="min-h-screen px-4 py-10" style={{ backgroundColor: palette.surface }}>
@@ -155,17 +172,49 @@ export default async function PharmacyPage({ params, searchParams }: PharmacyPag
             <h2 className="mb-3 text-lg font-black tracking-tight" style={{ color: palette.onSurface }}>
               {t(locale, 'discovery.shopCategoriesTitle')}
             </h2>
-            <ul className="flex flex-wrap gap-2">
-              {pharmacy.services.map((service: string) => (
-                <li
-                  key={service}
-                  className="rounded-xl border px-3 py-1.5 text-sm"
-                  style={{ borderColor: `${palette.muted}33`, color: palette.onSurface }}
-                >
-                  {service}
-                </li>
-              ))}
-            </ul>
+
+            <SurfaceSearchBar
+              identity={PHARMACY_SURFACE}
+              basePath={basePath}
+              defaultQuery={query}
+              labels={{
+                searchLabel: t(locale, 'discovery.searchLabel'),
+                searchPlaceholder: t(locale, 'discovery.searchPlaceholder'),
+                searchSubmit: t(locale, 'discovery.search'),
+                searchReset: t(locale, 'discovery.clearNear'),
+              }}
+            />
+
+            {services.items.length === 0 ? (
+              <SurfaceNotice identity={PHARMACY_SURFACE}>
+                {t(locale, 'discovery.noResults')}
+              </SurfaceNotice>
+            ) : (
+              <ul className="flex flex-wrap gap-2">
+                {services.items.map((service: string) => (
+                  <li
+                    key={service}
+                    className="rounded-xl border px-3 py-1.5 text-sm"
+                    style={{ borderColor: `${palette.muted}33`, color: palette.onSurface }}
+                  >
+                    {service}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <SurfacePagination
+              identity={PHARMACY_SURFACE}
+              basePath={basePath}
+              page={services.page}
+              lastPage={services.lastPage}
+              searchParams={{ q: query }}
+              labels={{
+                previous: t(locale, 'discovery.previous'),
+                next: t(locale, 'discovery.next'),
+                pageOf: `${t(locale, 'discovery.pageLabel')} {page} / {last}`,
+              }}
+            />
           </section>
         ) : null}
 

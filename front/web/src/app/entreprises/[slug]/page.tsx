@@ -8,7 +8,17 @@ import { SITE_URL } from '@/lib/site-url';
 import { JsonLd } from '@/components/JsonLd';
 import { getPublicTradeCompany, type PublicTradeCompanyProfile } from '@/lib/trade-public-api';
 import PublicContactCta from '@/app/decouvrir/public-contact-cta';
-import { TRADE_SURFACE } from '@/modules/public-surfaces';
+import {
+  TRADE_SURFACE,
+  SurfaceNotice,
+  SurfacePagination,
+  SurfaceSearchBar,
+  filterByQuery,
+  paginateList,
+} from '@/modules/public-surfaces';
+
+/** Catégories de produits affichées par page sur la fiche d'une entreprise. */
+const CATEGORIES_PER_PAGE = 24;
 
 /**
  * P2-01 (#8802) — page publique SEO d'une entreprise de commerce international
@@ -35,7 +45,7 @@ import { TRADE_SURFACE } from '@/modules/public-surfaces';
 
 interface CompanyPageProps {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ lang?: string }>;
+  searchParams: Promise<{ lang?: string; q?: string; page?: string }>;
 }
 
 export async function generateMetadata({ params, searchParams }: CompanyPageProps): Promise<Metadata> {
@@ -89,8 +99,8 @@ function companyJsonLd(company: PublicTradeCompanyProfile): Record<string, unkno
 
 export default async function CompanyPage({ params, searchParams }: CompanyPageProps) {
   const { slug } = await params;
-  const { lang } = await searchParams;
-  const locale = normalizeLocale(lang ?? '');
+  const search = await searchParams;
+  const locale = normalizeLocale(search.lang ?? '');
   const dir = catalogDirection(locale);
 
   const company = await getPublicTradeCompany(slug);
@@ -98,6 +108,14 @@ export default async function CompanyPage({ params, searchParams }: CompanyPageP
   if (!company) {
     notFound();
   }
+
+  const query = (search.q ?? '').slice(0, 120) || undefined;
+  const pageNumber = Number.parseInt(search.page ?? '', 10);
+  const categories = paginateList(
+    filterByQuery(company.product_categories, query, (category) => [category]),
+    Number.isFinite(pageNumber) ? pageNumber : undefined,
+    CATEGORIES_PER_PAGE,
+  );
 
   const directions: string[] = [];
   if (company.import_enabled) {
@@ -172,16 +190,48 @@ export default async function CompanyPage({ params, searchParams }: CompanyPageP
             <h2 className="mb-3 text-lg font-black tracking-tight text-slate-950">
               {t(locale, 'discovery.shopCategoriesTitle')}
             </h2>
-            <ul className="flex flex-wrap gap-2">
-              {company.product_categories.map((category) => (
-                <li
-                  key={category}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700"
-                >
-                  {category}
-                </li>
-              ))}
-            </ul>
+
+            <SurfaceSearchBar
+              identity={TRADE_SURFACE}
+              basePath={`/entreprises/${company.slug}`}
+              defaultQuery={query}
+              labels={{
+                searchLabel: t(locale, 'discovery.searchLabel'),
+                searchPlaceholder: t(locale, 'discovery.searchPlaceholder'),
+                searchSubmit: t(locale, 'discovery.search'),
+                searchReset: t(locale, 'discovery.clearNear'),
+              }}
+            />
+
+            {categories.items.length === 0 ? (
+              <SurfaceNotice identity={TRADE_SURFACE}>
+                {t(locale, 'discovery.noResults')}
+              </SurfaceNotice>
+            ) : (
+              <ul className="flex flex-wrap gap-2">
+                {categories.items.map((category) => (
+                  <li
+                    key={category}
+                    className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700"
+                  >
+                    {category}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <SurfacePagination
+              identity={TRADE_SURFACE}
+              basePath={`/entreprises/${company.slug}`}
+              page={categories.page}
+              lastPage={categories.lastPage}
+              searchParams={{ q: query }}
+              labels={{
+                previous: t(locale, 'discovery.previous'),
+                next: t(locale, 'discovery.next'),
+                pageOf: `${t(locale, 'discovery.pageLabel')} {page} / {last}`,
+              }}
+            />
           </section>
         ) : null}
       </div>

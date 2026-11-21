@@ -12,9 +12,17 @@ import {
 import {
   HOSPITALITY_SURFACE,
   StayBookingPanel,
+  SurfaceNotice,
+  SurfacePagination,
+  SurfaceSearchBar,
+  filterByQuery,
   formatStayMoney,
+  paginateList,
   stayPropertyTypeLabel,
 } from '@/modules/public-surfaces';
+
+/** Types de chambre affichés par page sur la fiche d'un hébergement. */
+const ROOM_TYPES_PER_PAGE = 12;
 
 /**
  * HOSP-008 (#7950) — page publique SEO d'un établissement HospitalityManager
@@ -34,7 +42,7 @@ import {
 
 interface StayPageProps {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ lang?: string }>;
+  searchParams: Promise<{ lang?: string; q?: string; page?: string }>;
 }
 
 export async function generateMetadata({ params, searchParams }: StayPageProps): Promise<Metadata> {
@@ -117,14 +125,22 @@ function stayJsonLd(property: PublicStayProperty): Record<string, unknown> {
 
 export default async function StayPage({ params, searchParams }: StayPageProps) {
   const { slug } = await params;
-  const { lang } = await searchParams;
-  const locale = normalizeLocale(lang ?? '');
+  const search = await searchParams;
+  const locale = normalizeLocale(search.lang ?? '');
   const dir = catalogDirection(locale);
   const property = await getPublicStayProperty(slug);
 
   if (!property) {
     notFound();
   }
+
+  const query = (search.q ?? '').slice(0, 120) || undefined;
+  const pageNumber = Number.parseInt(search.page ?? '', 10);
+  const roomTypes = paginateList(
+    filterByQuery(property.room_types, query, (roomType) => [roomType.name, roomType.description]),
+    Number.isFinite(pageNumber) ? pageNumber : undefined,
+    ROOM_TYPES_PER_PAGE,
+  );
 
   return (
     <div
@@ -182,22 +198,59 @@ export default async function StayPage({ params, searchParams }: StayPageProps) 
         {property.room_types.length === 0 ? (
           <p className="mt-3 text-sm text-slate-600">{t(locale, 'stay.public.noRoomTypes')}</p>
         ) : (
-          <ul className="mt-4 grid gap-4 sm:grid-cols-2">
-            {property.room_types.map((roomType) => (
-              <li key={roomType.code} className="rounded-lg border border-slate-200 p-4">
-                <p className="font-semibold text-slate-900">{roomType.name}</p>
-                {roomType.description ? (
-                  <p className="mt-1 text-sm text-slate-600">{roomType.description}</p>
-                ) : null}
-                <p className="mt-2 text-sm font-medium text-emerald-700">
-                  {t(locale, 'stay.public.pricePerNight').replace(
-                    '{price}',
-                    formatStayMoney(roomType.base_price_minor, roomType.currency, locale),
-                  )}
-                </p>
-              </li>
-            ))}
-          </ul>
+          <>
+            <div className="mt-4">
+              <SurfaceSearchBar
+                identity={HOSPITALITY_SURFACE}
+                basePath={`/stay/${property.slug}`}
+                defaultQuery={query}
+                labels={{
+                  searchLabel: t(locale, 'discovery.searchLabel'),
+                  searchPlaceholder: t(locale, 'discovery.searchPlaceholder'),
+                  searchSubmit: t(locale, 'discovery.search'),
+                  searchReset: t(locale, 'discovery.clearNear'),
+                }}
+              />
+            </div>
+
+            {roomTypes.items.length === 0 ? (
+              <div className="mt-4">
+                <SurfaceNotice identity={HOSPITALITY_SURFACE}>
+                  {t(locale, 'discovery.noResults')}
+                </SurfaceNotice>
+              </div>
+            ) : (
+              <ul className="mt-4 grid gap-4 sm:grid-cols-2">
+                {roomTypes.items.map((roomType) => (
+                  <li key={roomType.code} className="rounded-lg border border-slate-200 p-4">
+                    <p className="font-semibold text-slate-900">{roomType.name}</p>
+                    {roomType.description ? (
+                      <p className="mt-1 text-sm text-slate-600">{roomType.description}</p>
+                    ) : null}
+                    <p className="mt-2 text-sm font-medium text-emerald-700">
+                      {t(locale, 'stay.public.pricePerNight').replace(
+                        '{price}',
+                        formatStayMoney(roomType.base_price_minor, roomType.currency, locale),
+                      )}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <SurfacePagination
+              identity={HOSPITALITY_SURFACE}
+              basePath={`/stay/${property.slug}`}
+              page={roomTypes.page}
+              lastPage={roomTypes.lastPage}
+              searchParams={{ q: query }}
+              labels={{
+                previous: t(locale, 'discovery.previous'),
+                next: t(locale, 'discovery.next'),
+                pageOf: `${t(locale, 'discovery.pageLabel')} {page} / {last}`,
+              }}
+            />
+          </>
         )}
       </section>
 

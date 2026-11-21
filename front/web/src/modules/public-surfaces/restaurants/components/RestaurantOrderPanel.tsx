@@ -12,6 +12,7 @@ import type {
   PublicReview,
 } from '@/lib/restaurants-public-api';
 import { formatRestaurantMoney as formatMoney } from './restaurant-format';
+import { matchesQuery, normalizeQuery } from '../../kernel/domain/list-filter';
 
 /**
  * RESTO-903 (#7748) — parcours transactionnel de la page publique
@@ -82,6 +83,7 @@ export default function RestaurantOrderPanel({
   const base = `/public/restaurants/${encodeURIComponent(slug)}`;
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [menuQuery, setMenuQuery] = useState('');
   const [cart, setCart] = useState<Record<string, CartLine>>({});
 
   const [customerName, setCustomerName] = useState('');
@@ -117,10 +119,30 @@ export default function RestaurantOrderPanel({
     return map;
   }, [menu]);
 
-  const visibleCategories = useMemo(
-    () => (activeCategory === null ? menu : menu.filter((category) => category.name === activeCategory)),
-    [activeCategory, menu],
-  );
+  const visibleCategories = useMemo(() => {
+    const byCategory =
+      activeCategory === null ? menu : menu.filter((category) => category.name === activeCategory);
+
+    // Recherche dans le menu : un restaurant publie couramment 60 à 120
+    // produits. Sans champ, retrouver « tiramisu » dans une carte de 8
+    // catégories demande de faire défiler toute la page. Le filtre porte sur le
+    // nom du produit ET de sa catégorie, et vide une catégorie dont aucun
+    // produit ne correspond — sinon la page affiche des titres sans contenu.
+    const needle = normalizeQuery(menuQuery);
+    if (needle === '') {
+      return byCategory;
+    }
+
+    return byCategory
+      .map((category) => ({
+        ...category,
+        products: category.products.filter(
+          (product) =>
+            matchesQuery(product.name, needle) || matchesQuery(category.name, needle),
+        ),
+      }))
+      .filter((category) => category.products.length > 0);
+  }, [activeCategory, menu, menuQuery]);
 
   const cartLines = useMemo(
     () =>
@@ -318,6 +340,20 @@ export default function RestaurantOrderPanel({
           </p>
         ) : (
           <>
+            <div className="mb-4">
+              <label htmlFor="restaurant-menu-search" className="sr-only">
+                {t(locale, 'restaurant.public.searchLabel')}
+              </label>
+              <input
+                id="restaurant-menu-search"
+                type="search"
+                value={menuQuery}
+                onChange={(event) => setMenuQuery(event.target.value)}
+                placeholder={t(locale, 'restaurant.public.searchPlaceholder')}
+                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
+              />
+            </div>
+
             <div className="mb-4 flex flex-wrap gap-2">
               <button
                 type="button"
@@ -346,6 +382,11 @@ export default function RestaurantOrderPanel({
               ))}
             </div>
             <div className="space-y-6">
+              {visibleCategories.length === 0 ? (
+                <p className="rounded-2xl border border-dashed border-slate-300 bg-white/50 p-10 text-center text-sm font-medium text-slate-500">
+                  {t(locale, 'restaurant.public.emptyMenu')}
+                </p>
+              ) : null}
               {visibleCategories.map((category) => (
                 <div key={category.name}>
                   <h3 className="mb-2 text-sm font-black uppercase tracking-widest text-amber-700">

@@ -25,6 +25,7 @@ interface CompanyJobsPageProps {
   params: Promise<{ companySlug: string }>;
   searchParams: Promise<{
     q?: string;
+    page?: string;
     contract_type?: string;
     remote_policy?: string;
     lang?: string;
@@ -69,12 +70,18 @@ export default async function CompanyJobsPage({ params, searchParams }: CompanyJ
     locale,
   );
 
+  const pageNumber = Number.parseInt(search.page ?? '', 10);
+
   return (
     <CompanyJobsSurface
       identity={CAREERS_SURFACE}
       result={result}
       companySlug={companySlug}
       locale={locale}
+      searchParams={{
+        q: (search.q ?? '').slice(0, 120) || undefined,
+        page: Number.isFinite(pageNumber) ? pageNumber : undefined,
+      }}
     />
   );
 }

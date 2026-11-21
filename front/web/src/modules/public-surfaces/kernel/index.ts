@@ -38,6 +38,14 @@ export {
   type TenantInvitation,
 } from './domain/tenant-invitation';
 
+export {
+  filterByQuery,
+  matchesQuery,
+  normalizeQuery,
+  paginateList,
+  type ListPage,
+} from './domain/list-filter';
+
 export { requireSurface, resolveSurface } from './application/resolve-surface';
 
 export {
