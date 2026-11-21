@@ -50,6 +50,21 @@ class TravelStaffAssignment extends Model
         'revoked_by_user_id',
     ];
 
+    /**
+     * #9741 — le défaut `active` est posé par la migration, donc en base
+     * seulement : `create()` sans `status` renvoyait une instance dont
+     * l'attribut valait `null` jusqu'au prochain rechargement. La réponse
+     * 201 de `POST /travel/staff-assignments` annonçait donc
+     * `"status": null` alors que la ligne était bien active — un client qui
+     * affiche la réponse (ou enchaîne sur elle) croyait l'affectation
+     * inactive. On aligne le défaut côté modèle.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'status' => 'active',
+    ];
+
     protected $casts = [
         'employee_id' => 'integer',
         'role' => TravelStaffRole::class,
