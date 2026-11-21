@@ -51,6 +51,7 @@ reste une responsabilité d'infrastructure distincte (#3452).
 | `demo.leopardo-rh.com` | Environnement démo cible (`dev-hub/demo`) | `target` | NXDOMAIN — #3452. |
 | `api-staging.leopardo-rh.com` | API staging cible (`dev-hub/load`) | `target` | NXDOMAIN — #3452. |
 | `demo.leopardo.app` | App démo Edge (test SignupForm) | `target` | NXDOMAIN — #3452. |
+| `web.leopardo.app` | Base proxy API de l'admin dashboard (`VITE_API_PROXY_BASE_URL`) | `target` | Référencé par `api-base-url.test.js` ; NXDOMAIN — #3452. |
 | `client-a.leopardo-rh.com` | Exemple illustratif tenant (docs MULTITENANCY) | `target` | Usage documentaire uniquement. |
 | `mail.leopardo-rh.com` | Domaine d'expédition Mailgun PROD (garde livraison #6919) | `target` | NXDOMAIN — DNS #3452 ; référence config prod, pas de build. |
 
