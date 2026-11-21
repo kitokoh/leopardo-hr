@@ -22,10 +22,17 @@ use App\Modules\FarmOs\Domain\Models\FarmEquipmentUsageLog;
 use App\Modules\FarmOs\Domain\Services\FarmCapabilityGate;
 use App\Modules\FarmOs\Domain\Services\FarmEquipmentService;
 use App\Modules\FarmOs\Infrastructure\Context\FarmCompanyContext;
+use App\Modules\FarmOs\Interfaces\Api\V1\Requests\CompleteFarmMaintenanceRequest;
+use App\Modules\FarmOs\Interfaces\Api\V1\Requests\RecordFarmEquipmentUsageRequest;
+use App\Modules\FarmOs\Interfaces\Api\V1\Requests\ResetFarmEquipmentMeterRequest;
+use App\Modules\FarmOs\Interfaces\Api\V1\Requests\ResolveFarmBreakdownRequest;
+use App\Modules\FarmOs\Interfaces\Api\V1\Requests\StoreFarmBreakdownRequest;
+use App\Modules\FarmOs\Interfaces\Api\V1\Requests\StoreFarmEquipmentDocumentRequest;
+use App\Modules\FarmOs\Interfaces\Api\V1\Requests\StoreFarmEquipmentRequest;
+use App\Modules\FarmOs\Interfaces\Api\V1\Requests\StoreFarmMaintenanceRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Validation\Rule;
 
 /**
  * Farm OS — T2.2 Materiel agricole.
@@ -80,30 +87,12 @@ final class FarmEquipmentController
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreFarmEquipmentRequest $request): JsonResponse
     {
         $this->gate->assertAllows($this->company(), FarmCapability::Equipment);
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:160'],
-            'reference' => ['nullable', 'string', 'max:60'],
-            'kind' => ['required', 'string', Rule::in(FarmEquipmentKind::values())],
-            'brand' => ['nullable', 'string', 'max:80'],
-            'model' => ['nullable', 'string', 'max:80'],
-            'serial_number' => ['nullable', 'string', 'max:80'],
-            'plate_number' => ['nullable', 'string', 'max:32'],
-            'farm_site_id' => ['nullable', 'integer'],
-            'acquired_on' => ['nullable', 'date'],
-            'acquisition_cost' => ['nullable', 'numeric', 'min:0'],
-            'currency' => ['nullable', 'string', 'size:3'],
-            'meter_type' => ['nullable', 'string', Rule::in(FarmEquipmentMeterType::values())],
-            'meter_value' => ['nullable', 'numeric', 'min:0'],
-            'status' => ['nullable', 'string', Rule::in(FarmEquipmentStatus::values())],
-            'assigned_team_id' => ['nullable', 'integer'],
-            'assigned_employee_id' => ['nullable', 'integer'],
-            'notes' => ['nullable', 'string', 'max:2000'],
-            'client_equipment_id' => ['nullable', 'string', 'max:80'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $kind = FarmEquipmentKind::from($validated['kind']);
         // Type de compteur par defaut PROPOSE selon le type de materiel, mais
@@ -154,20 +143,12 @@ final class FarmEquipmentController
      * Releve de compteur (saisie manuelle ou import) — jamais une lecture
      * automatique.
      */
-    public function recordUsage(FarmEquipment $equipment, Request $request): JsonResponse
+    public function recordUsage(FarmEquipment $equipment, RecordFarmEquipmentUsageRequest $request): JsonResponse
     {
         $this->gate->assertAllows($this->company(), FarmCapability::Equipment);
 
-        $validated = $request->validate([
-            'meter_value' => ['required', 'numeric', 'min:0'],
-            'meter_source' => ['nullable', 'string', Rule::in(FarmMeterSource::values())],
-            'farm_operation_id' => ['nullable', 'integer'],
-            'parcel_id' => ['nullable', 'integer'],
-            'operator_id' => ['nullable', 'integer'],
-            'reason' => ['nullable', 'string', 'max:200'],
-            'client_usage_id' => ['nullable', 'string', 'max:80'],
-            'occurred_at' => ['nullable', 'date'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         return $this->run(fn (): FarmEquipmentUsageLog => $this->equipment->recordUsage(
             $this->company(),
@@ -187,15 +168,12 @@ final class FarmEquipmentController
     /**
      * Remplacement explicite du compteur (changement de compteur, correction).
      */
-    public function resetMeter(FarmEquipment $equipment, Request $request): JsonResponse
+    public function resetMeter(FarmEquipment $equipment, ResetFarmEquipmentMeterRequest $request): JsonResponse
     {
         $this->gate->assertAllows($this->company(), FarmCapability::Equipment);
 
-        $validated = $request->validate([
-            'meter_value' => ['required', 'numeric', 'min:0'],
-            'reason' => ['required', 'string', 'max:200'],
-            'client_usage_id' => ['nullable', 'string', 'max:80'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         return $this->run(fn (): FarmEquipmentUsageLog => $this->equipment->resetMeter(
             $this->company(),
@@ -210,23 +188,12 @@ final class FarmEquipmentController
     /**
      * Planification d'un entretien.
      */
-    public function storeMaintenance(FarmEquipment $equipment, Request $request): JsonResponse
+    public function storeMaintenance(FarmEquipment $equipment, StoreFarmMaintenanceRequest $request): JsonResponse
     {
         $this->gate->assertAllows($this->company(), FarmCapability::Equipment);
 
-        $validated = $request->validate([
-            'maintenance_type' => ['required', 'string', Rule::in(FarmMaintenanceType::values())],
-            'title' => ['required', 'string', 'max:160'],
-            'description' => ['nullable', 'string', 'max:2000'],
-            'planned_at' => ['nullable', 'date'],
-            'meter_value_at' => ['nullable', 'numeric', 'min:0'],
-            'cost_amount' => ['nullable', 'numeric', 'min:0'],
-            'currency' => ['nullable', 'string', 'size:3'],
-            'supplier_id' => ['nullable', 'integer'],
-            'breakdown_id' => ['nullable', 'integer'],
-            'notes' => ['nullable', 'string', 'max:2000'],
-            'client_maintenance_id' => ['nullable', 'string', 'max:80'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $maintenance = new FarmEquipmentMaintenance($validated);
         $maintenance->farm_equipment_id = $equipment->id;
@@ -241,16 +208,12 @@ final class FarmEquipmentController
     /**
      * Cloture d'un entretien (il devient `done`, non rouvrable).
      */
-    public function completeMaintenance(FarmEquipmentMaintenance $maintenance, Request $request): JsonResponse
+    public function completeMaintenance(FarmEquipmentMaintenance $maintenance, CompleteFarmMaintenanceRequest $request): JsonResponse
     {
         $this->gate->assertAllows($this->company(), FarmCapability::Equipment);
 
-        $validated = $request->validate([
-            'cost_amount' => ['nullable', 'numeric', 'min:0'],
-            'currency' => ['nullable', 'string', 'size:3'],
-            'performed_at' => ['nullable', 'date'],
-            'meter_value_at' => ['nullable', 'numeric', 'min:0'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         return $this->run(fn (): FarmEquipmentMaintenance => $this->equipment->completeMaintenance(
             $this->company(),
@@ -265,21 +228,12 @@ final class FarmEquipmentController
     /**
      * Declaration d'une panne (gravite DECLAREE, aucun diagnostic automatise).
      */
-    public function storeBreakdown(FarmEquipment $equipment, Request $request): JsonResponse
+    public function storeBreakdown(FarmEquipment $equipment, StoreFarmBreakdownRequest $request): JsonResponse
     {
         $this->gate->assertAllows($this->company(), FarmCapability::Equipment);
 
-        $validated = $request->validate([
-            'severity' => ['required', 'string', Rule::in(FarmBreakdownSeverity::values())],
-            'title' => ['required', 'string', 'max:160'],
-            'description' => ['nullable', 'string', 'max:2000'],
-            'occurred_at' => ['required', 'date'],
-            'downtime_hours' => ['nullable', 'numeric', 'min:0'],
-            'cost_amount' => ['nullable', 'numeric', 'min:0'],
-            'currency' => ['nullable', 'string', 'size:3'],
-            'notes' => ['nullable', 'string', 'max:2000'],
-            'client_breakdown_id' => ['nullable', 'string', 'max:80'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $breakdown = new FarmEquipmentBreakdown($validated);
         $breakdown->farm_equipment_id = $equipment->id;
@@ -294,16 +248,12 @@ final class FarmEquipmentController
      * Resolution d'une panne (idempotent : une panne deja resolue est renvoyee
      * telle quelle, sa date de resolution n'est jamais reecrite).
      */
-    public function resolveBreakdown(FarmEquipmentBreakdown $breakdown, Request $request): JsonResponse
+    public function resolveBreakdown(FarmEquipmentBreakdown $breakdown, ResolveFarmBreakdownRequest $request): JsonResponse
     {
         $this->gate->assertAllows($this->company(), FarmCapability::Equipment);
 
-        $validated = $request->validate([
-            'cost_amount' => ['nullable', 'numeric', 'min:0'],
-            'currency' => ['nullable', 'string', 'size:3'],
-            'downtime_hours' => ['nullable', 'numeric', 'min:0'],
-            'resolved_at' => ['nullable', 'date'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         return $this->run(fn (): FarmEquipmentBreakdown => $this->equipment->resolveBreakdown(
             $this->company(),
@@ -319,19 +269,12 @@ final class FarmEquipmentController
      * Document associe (reference au service de fichiers existant, ou lien
      * fourni par l'exploitant — jamais un lien fabrique par Farm OS).
      */
-    public function storeDocument(FarmEquipment $equipment, Request $request): JsonResponse
+    public function storeDocument(FarmEquipment $equipment, StoreFarmEquipmentDocumentRequest $request): JsonResponse
     {
         $this->gate->assertAllows($this->company(), FarmCapability::Equipment);
 
-        $validated = $request->validate([
-            'document_type' => ['required', 'string', Rule::in(FarmEquipmentDocument::TYPES)],
-            'title' => ['required', 'string', 'max:160'],
-            'file_id' => ['nullable', 'integer'],
-            'external_url' => ['nullable', 'url', 'max:500'],
-            'issued_on' => ['nullable', 'date'],
-            'expires_on' => ['nullable', 'date'],
-            'notes' => ['nullable', 'string', 'max:2000'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $document = new FarmEquipmentDocument($validated);
         $document->farm_equipment_id = $equipment->id;

@@ -24,10 +24,16 @@ use App\Modules\FarmOs\Domain\Models\FarmReproductionEvent;
 use App\Modules\FarmOs\Domain\Services\FarmCapabilityGate;
 use App\Modules\FarmOs\Domain\Services\FarmLivestockService;
 use App\Modules\FarmOs\Infrastructure\Context\FarmCompanyContext;
+use App\Modules\FarmOs\Interfaces\Api\V1\Requests\RecordFarmLivestockEventRequest;
+use App\Modules\FarmOs\Interfaces\Api\V1\Requests\StoreFarmAnimalRequest;
+use App\Modules\FarmOs\Interfaces\Api\V1\Requests\StoreFarmFeedRequest;
+use App\Modules\FarmOs\Interfaces\Api\V1\Requests\StoreFarmHealthEventRequest;
+use App\Modules\FarmOs\Interfaces\Api\V1\Requests\StoreFarmLivestockBatchRequest;
+use App\Modules\FarmOs\Interfaces\Api\V1\Requests\StoreFarmProductionRequest;
+use App\Modules\FarmOs\Interfaces\Api\V1\Requests\StoreFarmReproductionEventRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Validation\Rule;
 
 /**
  * Farm OS — T3.1 Elevage.
@@ -82,22 +88,12 @@ final class FarmLivestockController
         ]);
     }
 
-    public function storeBatch(Request $request): JsonResponse
+    public function storeBatch(StoreFarmLivestockBatchRequest $request): JsonResponse
     {
         $this->gate->assertAllows($this->company(), FarmCapability::Livestock);
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:160'],
-            'reference' => ['nullable', 'string', 'max:60'],
-            'species' => ['required', 'string', Rule::in(FarmSpecies::values())],
-            'breed' => ['nullable', 'string', 'max:80'],
-            'sex' => ['nullable', 'string', Rule::in(FarmAnimalSex::values())],
-            'farm_site_id' => ['nullable', 'integer'],
-            'location' => ['nullable', 'string', 'max:160'],
-            'started_on' => ['nullable', 'date'],
-            'notes' => ['nullable', 'string', 'max:2000'],
-            'client_batch_id' => ['nullable', 'string', 'max:80'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $batch = new FarmLivestockBatch($validated);
         // L'effectif de depart est TOUJOURS zero : il ne s'acquiert que par un
@@ -132,20 +128,12 @@ final class FarmLivestockController
     /**
      * Mouvement d'effectif (naissance, achat, vente, transfert, mortalite).
      */
-    public function recordEvent(FarmLivestockBatch $batch, Request $request): JsonResponse
+    public function recordEvent(FarmLivestockBatch $batch, RecordFarmLivestockEventRequest $request): JsonResponse
     {
         $this->gate->assertAllows($this->company(), FarmCapability::Livestock);
 
-        $validated = $request->validate([
-            'event_type' => ['required', 'string', Rule::in(FarmLivestockEventType::values())],
-            'quantity' => ['required', 'integer', 'min:1'],
-            'counterparty_id' => ['nullable', 'integer'],
-            'unit_price' => ['nullable', 'numeric', 'min:0'],
-            'currency' => ['nullable', 'string', 'size:3'],
-            'reason' => ['nullable', 'string', 'max:200'],
-            'client_event_id' => ['nullable', 'string', 'max:80'],
-            'occurred_at' => ['nullable', 'date'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         return $this->run(fn (): FarmLivestockEvent => $this->livestock->recordEvent(
             $this->company(),
@@ -187,24 +175,12 @@ final class FarmLivestockController
         ]);
     }
 
-    public function storeAnimal(Request $request): JsonResponse
+    public function storeAnimal(StoreFarmAnimalRequest $request): JsonResponse
     {
         $this->gate->assertAllows($this->company(), FarmCapability::Livestock);
 
-        $validated = $request->validate([
-            'tag_number' => ['required', 'string', 'max:80'],
-            'name' => ['nullable', 'string', 'max:120'],
-            'species' => ['required', 'string', Rule::in(FarmSpecies::values())],
-            'breed' => ['nullable', 'string', 'max:80'],
-            'sex' => ['nullable', 'string', Rule::in(FarmAnimalSex::values())],
-            'birth_date' => ['nullable', 'date'],
-            'origin' => ['nullable', 'string', Rule::in(FarmAnimal::ORIGINS)],
-            'farm_livestock_batch_id' => ['nullable', 'integer'],
-            'farm_site_id' => ['nullable', 'integer'],
-            'location' => ['nullable', 'string', 'max:160'],
-            'notes' => ['nullable', 'string', 'max:2000'],
-            'client_animal_id' => ['nullable', 'string', 'max:80'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $animal = new FarmAnimal($validated);
         $animal->status = FarmAnimalStatus::Active->value;
@@ -219,24 +195,12 @@ final class FarmLivestockController
      * Evenement sanitaire (vaccination, traitement, rappel). Aucun diagnostic,
      * aucun dosage calcule, aucun delai d'attente deduit.
      */
-    public function storeHealthEvent(FarmLivestockBatch $batch, Request $request): JsonResponse
+    public function storeHealthEvent(FarmLivestockBatch $batch, StoreFarmHealthEventRequest $request): JsonResponse
     {
         $this->gate->assertAllows($this->company(), FarmCapability::Livestock);
 
-        $validated = $request->validate([
-            'event_type' => ['required', 'string', Rule::in(FarmHealthEventType::values())],
-            'title' => ['required', 'string', 'max:160'],
-            'product_name' => ['nullable', 'string', 'max:160'],
-            'dosage' => ['nullable', 'string', 'max:80'],
-            'administered_at' => ['required', 'date'],
-            'next_due_at' => ['nullable', 'date'],
-            'withdrawal_until' => ['nullable', 'date'],
-            'veterinarian_id' => ['nullable', 'integer'],
-            'cost_amount' => ['nullable', 'numeric', 'min:0'],
-            'currency' => ['nullable', 'string', 'size:3'],
-            'notes' => ['nullable', 'string', 'max:2000'],
-            'client_health_id' => ['nullable', 'string', 'max:80'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $event = new FarmAnimalHealthEvent($validated);
         $event->farm_livestock_batch_id = $batch->id;
@@ -251,21 +215,12 @@ final class FarmLivestockController
      * Evenement de reproduction. `expected_due_at` n'est calculee que depuis une
      * duree de gestation SAISIE — sinon elle reste `null`.
      */
-    public function storeReproductionEvent(FarmLivestockBatch $batch, Request $request): JsonResponse
+    public function storeReproductionEvent(FarmLivestockBatch $batch, StoreFarmReproductionEventRequest $request): JsonResponse
     {
         $this->gate->assertAllows($this->company(), FarmCapability::Livestock);
 
-        $validated = $request->validate([
-            'event_type' => ['required', 'string', Rule::in(FarmReproductionEventType::values())],
-            'occurred_at' => ['required', 'date'],
-            'gestation_days' => ['nullable', 'integer', 'min:1', 'max:1000'],
-            'expected_due_at' => ['nullable', 'date'],
-            'offspring_count' => ['nullable', 'integer', 'min:0'],
-            'sire_animal_id' => ['nullable', 'integer'],
-            'method' => ['nullable', 'string', 'max:40'],
-            'notes' => ['nullable', 'string', 'max:2000'],
-            'client_reproduction_id' => ['nullable', 'string', 'max:80'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $occurredAt = Carbon::parse($validated['occurred_at']);
 
@@ -287,19 +242,12 @@ final class FarmLivestockController
     /**
      * Production animale DECLAREE (lait, oeufs, laine, miel...).
      */
-    public function storeProduction(FarmLivestockBatch $batch, Request $request): JsonResponse
+    public function storeProduction(FarmLivestockBatch $batch, StoreFarmProductionRequest $request): JsonResponse
     {
         $this->gate->assertAllows($this->company(), FarmCapability::Livestock);
 
-        $validated = $request->validate([
-            'production_type' => ['required', 'string', Rule::in(FarmProductionType::values())],
-            'quantity' => ['required', 'numeric', 'min:0'],
-            'unit' => ['nullable', 'string', 'max:24'],
-            'quality_grade' => ['nullable', 'string', 'max:40'],
-            'produced_at' => ['required', 'date'],
-            'notes' => ['nullable', 'string', 'max:2000'],
-            'client_production_id' => ['nullable', 'string', 'max:80'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $type = FarmProductionType::from($validated['production_type']);
 
@@ -317,21 +265,12 @@ final class FarmLivestockController
     /**
      * Alimentation / ration (consommation et cout).
      */
-    public function storeFeed(FarmLivestockBatch $batch, Request $request): JsonResponse
+    public function storeFeed(FarmLivestockBatch $batch, StoreFarmFeedRequest $request): JsonResponse
     {
         $this->gate->assertAllows($this->company(), FarmCapability::Livestock);
 
-        $validated = $request->validate([
-            'feed_name' => ['required', 'string', 'max:160'],
-            'farm_input_id' => ['nullable', 'integer'],
-            'quantity' => ['required', 'numeric', 'min:0'],
-            'unit' => ['required', 'string', 'max:24'],
-            'cost_amount' => ['nullable', 'numeric', 'min:0'],
-            'currency' => ['nullable', 'string', 'size:3'],
-            'fed_at' => ['required', 'date'],
-            'notes' => ['nullable', 'string', 'max:2000'],
-            'client_feed_id' => ['nullable', 'string', 'max:80'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $feed = new FarmFeedRecord($validated);
         $feed->farm_livestock_batch_id = $batch->id;
