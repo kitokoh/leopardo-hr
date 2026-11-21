@@ -35,48 +35,55 @@ class AiToolsManifestCommandTest extends TestCase
 
     public function test_manifest_is_valid_json_with_declared_tools(): void
     {
-        $this->artisan('ai:tools:manifest')
-            ->assertSuccessful();
-
-        $definitions = AIToolDefinitionRegistry::all();
-        $this->assertNotEmpty($definitions, 'les providers doivent enregistrer leurs définitions au boot');
-
-        $output = $this->artisan('ai:tools:manifest');
-        $output->assertSuccessful();
-    }
-
-    public function test_manifest_written_to_file_matches_registry(): void
-    {
         $path = $this->tmpDir.'/tools.json';
 
+        // @phpstan-ignore-next-line method.nonObject (artisan() retourne PendingCommand|int)
         $this->artisan('ai:tools:manifest', ['--output' => $path])->assertSuccessful();
 
         $this->assertFileExists($path);
-        /** @var array<string, mixed> $decoded */
+
+        /** @var mixed $decoded */
         $decoded = json_decode((string) File::get($path), true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($decoded);
+        $this->assertSame(1, $decoded['schema_version'] ?? null);
 
-        $this->assertSame(1, $decoded['schema_version']);
-        $this->assertIsArray($decoded['tools']);
+        /** @var mixed $tools */
+        $tools = $decoded['tools'] ?? null;
+        $this->assertIsArray($tools);
+        $this->assertNotEmpty($tools, 'le registre doit contenir les outils déclarés par les BC');
 
-        $names = array_column($decoded['tools'], 'name');
+        /** @var list<string> $names */
+        $names = array_column($tools, 'name');
         $this->assertSame(
             array_keys(AIToolDefinitionRegistry::all()),
             array_values(array_intersect($names, array_keys(AIToolDefinitionRegistry::all()))),
             'le manifeste doit contenir exactement les outils du registre'
         );
 
-        foreach ($decoded['tools'] as $tool) {
+        foreach ($tools as $tool) {
+            $this->assertIsArray($tool);
             $this->assertArrayHasKey('inputSchema', $tool);
             $this->assertArrayHasKey('sensitivity', $tool);
-            $this->assertContains($tool['sensitivity'], ['read', 'write', 'send']);
-            $this->assertNotSame('', (string) $tool['permission']);
+            $this->assertContains($tool['sensitivity'] ?? null, ['read', 'write', 'send']);
+            $this->assertNotSame('', (string) ($tool['permission'] ?? ''));
         }
+    }
+
+    public function test_manifest_is_deterministic(): void
+    {
+        $first = $this->tmpDir.'/a.json';
+        $second = $this->tmpDir.'/b.json';
+
+        // @phpstan-ignore-next-line method.nonObject (artisan() retourne PendingCommand|int)
+        $this->artisan('ai:tools:manifest', ['--output' => $first])->assertSuccessful();
+        // @phpstan-ignore-next-line method.nonObject (artisan() retourne PendingCommand|int)
+        $this->artisan('ai:tools:manifest', ['--output' => $second])->assertSuccessful();
+
+        $this->assertSame(File::get($first), File::get($second), 'deux générations doivent être identiques');
     }
 
     public function test_check_fails_when_manifest_is_missing(): void
     {
-        // Le manifeste versionné n'existe pas dans l'arbre de test isolé :
-        // on force un chemin absent en déplaçant temporairement le fichier réel.
         $real = base_path('..'.DIRECTORY_SEPARATOR.AiToolsManifestCommand::DEFAULT_OUTPUT);
         $backup = $real.'.bak-test';
 
@@ -86,6 +93,7 @@ class AiToolsManifestCommandTest extends TestCase
         }
 
         try {
+            // @phpstan-ignore-next-line method.nonObject (artisan() retourne PendingCommand|int)
             $this->artisan('ai:tools:manifest', ['--check' => true])->assertFailed();
         } finally {
             if ($existed) {
@@ -105,7 +113,9 @@ class AiToolsManifestCommandTest extends TestCase
         }
 
         try {
+            // @phpstan-ignore-next-line method.nonObject (artisan() retourne PendingCommand|int)
             $this->artisan('ai:tools:manifest', ['--output' => $real])->assertSuccessful();
+            // @phpstan-ignore-next-line method.nonObject (artisan() retourne PendingCommand|int)
             $this->artisan('ai:tools:manifest', ['--check' => true])->assertSuccessful();
         } finally {
             File::delete($real);
