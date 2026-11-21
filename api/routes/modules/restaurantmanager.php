@@ -298,6 +298,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/reviews', [RestaurantReviewModerationController::class, 'index']);
         Route::post('/reviews/{review}/publish', [RestaurantReviewModerationController::class, 'publish']);
         Route::post('/reviews/{review}/reject', [RestaurantReviewModerationController::class, 'reject']);
+        // #9713 — retrait d'un avis publié + réponse publique du restaurateur.
+        Route::post('/reviews/{review}/unpublish', [RestaurantReviewModerationController::class, 'unpublish']);
+        Route::put('/reviews/{review}/reply', [RestaurantReviewModerationController::class, 'reply']);
+        Route::delete('/reviews/{review}/reply', [RestaurantReviewModerationController::class, 'deleteReply']);
 
         // ── Mobile (RESTO-801..804/#6222..#6225) — surfaces des apps ───────
         Route::prefix('mobile')->group(function (): void {

@@ -20,9 +20,12 @@ use Illuminate\Validation\Rule;
  *
  * Routes privées (pile tenant complète, préfixe `/restaurant`) — chemins
  * EXACTS attendus par le front (lot 904) :
- *   GET  /restaurant/reviews?status=          → file de modération
+ *   GET  /restaurant/reviews?status=&rating=  → file de modération
  *   POST /restaurant/reviews/{review}/publish → publication
  *   POST /restaurant/reviews/{review}/reject  → rejet
+ *   POST /restaurant/reviews/{review}/unpublish → retrait (published → pending)
+ *   PUT  /restaurant/reviews/{review}/reply   → réponse publique du restaurateur
+ *   DELETE /restaurant/reviews/{review}/reply → suppression de la réponse
  *
  * Autorisation : `RestaurantReviewPolicy` (pattern gérant — publication et
  * rejet = geste `manage` de la succursale de l'avis, #7599) ; le listing est
@@ -53,6 +56,7 @@ class RestaurantReviewModerationController extends Controller
         /** @var array<string, mixed> $filters */
         $filters = $request->validate([
             'status' => ['sometimes', 'string', Rule::in(RestaurantReviewStatus::values())],
+            'rating' => ['sometimes', 'integer', 'min:1', 'max:5'],
             'branch_id' => ['sometimes', 'integer'],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
             'page' => ['sometimes', 'integer', 'min:1'],
@@ -62,6 +66,10 @@ class RestaurantReviewModerationController extends Controller
 
         if (isset($filters['status']) && is_string($filters['status'])) {
             $query->where('status', $filters['status']);
+        }
+
+        if (isset($filters['rating']) && is_numeric($filters['rating'])) {
+            $query->where('rating', (int) $filters['rating']);
         }
 
         if (isset($filters['branch_id']) && is_numeric($filters['branch_id'])) {
@@ -97,6 +105,81 @@ class RestaurantReviewModerationController extends Controller
     public function reject(Request $request, RestaurantReview $review): JsonResponse
     {
         return $this->transition($request, $review, RestaurantReviewStatus::REJECTED);
+    }
+
+    /**
+     * Retrait d'un avis publié : retour en file de modération (`pending`).
+     *
+     * Un avis publié par erreur (insulte déguisée, erreur de branche) doit
+     * pouvoir être retiré sans être définitivement rejeté : il redevient
+     * invisible publiquement et réapparaît dans la file.
+     */
+    public function unpublish(Request $request, RestaurantReview $review): JsonResponse
+    {
+        return $this->transition($request, $review, RestaurantReviewStatus::PENDING);
+    }
+
+    /**
+     * Réponse publique du restaurateur à un avis (#9713).
+     *
+     * Geste de gestion de la succursale (même règle que la modération). La
+     * réponse est stockée sur l'avis et n'est exposée publiquement que si
+     * l'avis est `published`.
+     */
+    public function reply(Request $request, RestaurantReview $review): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $review->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('moderate', $review)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
+        }
+
+        /** @var array{reply: string} $validated */
+        $validated = $request->validate([
+            'reply' => ['required', 'string', 'min:1', 'max:2000'],
+        ]);
+
+        $review->reply = trim($validated['reply']);
+        $review->replied_at = now();
+        $review->replied_by = (int) $actor->getKey();
+        $review->save();
+
+        /** @var RestaurantBranch|null $branch */
+        $branch = RestaurantBranch::query()->find($review->branch_id);
+        $this->publicCache->forget($branch?->public_slug);
+
+        return response()->json(['data' => $this->moderationPayload($review)]);
+    }
+
+    /** Suppression de la réponse du restaurateur. */
+    public function deleteReply(Request $request, RestaurantReview $review): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $review->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('moderate', $review)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
+        }
+
+        $review->reply = null;
+        $review->replied_at = null;
+        $review->replied_by = null;
+        $review->save();
+
+        /** @var RestaurantBranch|null $branch */
+        $branch = RestaurantBranch::query()->find($review->branch_id);
+        $this->publicCache->forget($branch?->public_slug);
+
+        return response()->json(['data' => $this->moderationPayload($review)]);
     }
 
     private function transition(Request $request, RestaurantReview $review, RestaurantReviewStatus $status): JsonResponse
@@ -140,6 +223,8 @@ class RestaurantReviewModerationController extends Controller
             'comment' => $review->comment,
             'author_name' => $review->author_name,
             'status' => $review->status->value,
+            'reply' => $review->reply,
+            'replied_at' => $review->replied_at?->toIso8601String(),
             'created_at' => $review->created_at?->toIso8601String(),
         ];
     }

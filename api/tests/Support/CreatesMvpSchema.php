@@ -5931,6 +5931,10 @@ trait CreatesMvpSchema
                 $table->text('comment')->nullable();
                 $table->string('author_name', 120);
                 $table->string('status', 20)->default('pending');
+                // #9713 — réponse publique du restaurateur.
+                $table->text('reply')->nullable();
+                $table->timestamp('replied_at')->nullable();
+                $table->unsignedBigInteger('replied_by')->nullable();
                 $table->timestamps();
 
                 $table->unique(['company_id', 'order_reference']);

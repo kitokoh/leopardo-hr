@@ -68,6 +68,10 @@ class RestaurantPublicReviewController extends Controller
                         'author_name' => $review->author_name,
                         'rating' => (int) $review->rating,
                         'comment' => $review->comment,
+                        // #9713 — réponse publique du restaurateur (jamais
+                        // l'identité de l'employé qui l'a rédigée).
+                        'reply' => $review->reply,
+                        'replied_at' => $review->replied_at?->toDateString(),
                         'date' => $review->created_at?->toDateString(),
                     ])
                     ->values()
