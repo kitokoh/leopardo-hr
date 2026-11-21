@@ -495,6 +495,16 @@ jobs:
         # dev-hub/tools/search-path-guard-baseline.txt.
         run: python3 dev-hub/tools/check-search-path-guard.py
 
+      - name: Garde validation (FormRequest partout)
+        # Decision du depot : toute validation NOUVELLE passe par un FormRequest
+        # dedie (regles dans `rules()`, permission dans `authorize()`). Les 437
+        # validations en ligne existantes sont figees dans
+        # dev-hub/tools/form-request-guard-baseline.txt : la dette ne peut que
+        # decroitre. Ce check est REQUIS et tourne sans condition, comme la
+        # garde search_path : une validation en ligne peut entrer via une PR
+        # qui ne touche aucune route.
+        run: python3 dev-hub/tools/check-form-request-guard.py
+
       - name: Check module structure
         if: needs.detect-changes.outputs.api_changed == 'true'
         run: |
