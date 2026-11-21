@@ -1,0 +1,11 @@
+scenario,libelle,operateur,debut,fin,resultat,ecart_observe,preuve_fichier,commentaire
+R2,Commande a emporter,,,,,,,
+R3,Livraison complete,,,,,,,
+R4,Livraison annulee,,,,,,,
+R5,Reservation + conflit de creneau,,,,,,,
+R6,No-show et rappel,,,,,,,
+R7,Stock et COGS,,,,,,,
+R8,Fidelite,,,,,,,
+R9,Promotions,,,,,,,
+R10,Rapports et export,,,,,,,
+R11,Securite et isolation,,,,,,,
