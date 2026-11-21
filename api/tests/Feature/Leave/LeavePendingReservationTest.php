@@ -137,6 +137,16 @@ class LeavePendingReservationTest extends TestCase
     {
         [$company, $employee, $type] = $this->context();
 
+        // #9741 — le solde doit porter l'ANNÉE de la demande, pas l'année
+        // courante : `now()->addMonths(2)` bascule en janvier quand on est en
+        // novembre, et `AbsenceService` cherche le snapshot sur
+        // `start_date->format('Y')`. Le test échouait donc en fin d'année
+        // (solde introuvable → 0 disponible → 422 sur la PREMIÈRE demande),
+        // ce qui n'a rien à voir avec la réservation des jours pending qu'il
+        // prétend vérifier.
+        $firstDate = now()->addMonths(2)->nextWeekday();
+        $secondDate = $firstDate->copy()->addWeekday();
+
         LeaveBalance::query()->create([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
@@ -144,13 +154,10 @@ class LeavePendingReservationTest extends TestCase
             'balance' => 1,
             'used' => 0,
             'pending' => 0,
-            'year' => now()->year,
+            'year' => (int) $firstDate->format('Y'),
         ]);
 
         Sanctum::actingAs($employee);
-
-        $firstDate = now()->addMonths(2)->nextWeekday();
-        $secondDate = $firstDate->copy()->addWeekday();
 
         // Première demande : 1 jour ouvré → pending = 1.
         $this->postJson('/api/v1/absences', [

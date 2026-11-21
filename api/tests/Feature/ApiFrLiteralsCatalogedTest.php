@@ -62,9 +62,12 @@ class ApiFrLiteralsCatalogedTest extends TestCase
             'duration_days' => 1,
         ])
             ->assertStatus(403)
-            // #4689 (PR séparée) ajoute localizer le localized_message générique ;
-            // ici on vérifie que le message porté par abort() est localisé.
-            ->assertJsonPath('message', __('errors.ISLAMIC_CALENDAR_PLATFORM_ONLY', [], 'en'));
+            // #9741 — le refus vient du MIDDLEWARE `platform.permission`, pas
+            // du `abort()` du contrôleur : le middleware s'exécute avant, donc
+            // `assertPlatformAdmin()` est inatteignable pour un non-super-admin.
+            // Le test asserait un message que la requête ne produit jamais.
+            // On vérifie le message RÉELLEMENT renvoyé — lui aussi localisé.
+            ->assertJsonPath('message', __('errors.PLATFORM_ACCOUNT_REQUIRED', [], 'en'));
     }
 
     public function test_company_schema_mode_locked_is_localized(): void

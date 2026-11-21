@@ -6,10 +6,12 @@ namespace App\Modules\TravelAgency\Infrastructure\Services;
 
 use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
 use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;
+use App\Modules\TravelAgency\Domain\Enums\SeatStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelOffice;
 use App\Modules\TravelAgency\Domain\Models\TravelPayment;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
+use App\Modules\TravelAgency\Domain\Models\TravelTripSeat;
 use Carbon\CarbonInterface;
 
 /**
@@ -143,11 +145,32 @@ final class TravelReportService
         $rows = [];
 
         foreach ($trips as $trip) {
-            $sold = (int) TravelBooking::query()
+            // #9741 — l'occupation se mesure sur les SIÈGES vendus, pas sur la
+            // somme des `passenger_count` des réservations. Les deux divergent
+            // dès qu'un siège est vendu au guichet (sans réservation) ou
+            // bloqué : le rapport affichait alors 0 % sur un car plein, et le
+            // transporteur pilotait ses départs sur un chiffre faux.
+            //
+            // Repli : un trajet SANS plan de sièges (aucune ligne
+            // `travel_trip_seats`) n'a pas de source siège — on retombe alors
+            // sur les réservations nettes, sinon tout trajet créé avant
+            // l'introduction du plan de sièges afficherait 0 %.
+            $hasSeatPlan = TravelTripSeat::query()
                 ->where('company_id', $companyId)
                 ->where('trip_id', $trip->id)
-                ->whereNotIn('status', [BookingStatus::CANCELLED->value, BookingStatus::REFUNDED->value])
-                ->sum('passenger_count');
+                ->exists();
+
+            $sold = $hasSeatPlan
+                ? (int) TravelTripSeat::query()
+                    ->where('company_id', $companyId)
+                    ->where('trip_id', $trip->id)
+                    ->where('status', SeatStatus::SOLD->value)
+                    ->count()
+                : (int) TravelBooking::query()
+                    ->where('company_id', $companyId)
+                    ->where('trip_id', $trip->id)
+                    ->whereNotIn('status', [BookingStatus::CANCELLED->value, BookingStatus::REFUNDED->value])
+                    ->sum('passenger_count');
 
             $total = max(1, (int) $trip->total_seats);
 

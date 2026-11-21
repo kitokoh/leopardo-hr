@@ -95,13 +95,14 @@ class IdentityShapesProbeTest extends TestCase
         $this->assertIsString($raw);
 
         $minutes = (int) abs(Carbon::parse($raw)->diffInMinutes(now()));
-        fwrite(STDERR, sprintf("[PROBE] expires_in_minutes=%d (attendu 43200)\n", $minutes));
+        fwrite(STDERR, sprintf("[PROBE] expires_in_minutes=%d (attendu 720)\n", $minutes));
 
+        // #9344 — le TTL par défaut est de 12 h (720 min), pas 30 jours.
         $this->assertEqualsWithDelta(
-            43200,
+            720,
             $minutes,
             5,
-            "L'expiration réelle s'écarte de 30 jours.",
+            "L'expiration réelle s'écarte de 12 h (#9344).",
         );
 
         $this->assertNotSame(

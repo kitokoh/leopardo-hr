@@ -43,15 +43,15 @@ class IdentityAccessControlGapsTest extends TestCase
     }
 
     /**
-     * ÉCART 1 — Aucun endpoint de SÉLECTION DE CONTEXTE.
+     * ÉCART 1 — RÉSOLU : un endpoint de SÉLECTION DE CONTEXTE existe.
      *
-     * Une personne membre de deux entreprises ne peut pas choisir dans
-     * laquelle elle travaille : `AuthService::findEmployeeInTenantSchemas()`
-     * retourne le PREMIER schéma qui contient son e-mail, dans l'ordre de
-     * `public.companies`. Le contexte est donc arbitraire du point de vue de
-     * l'utilisateur.
+     * Une personne membre de deux entreprises peut désormais choisir dans
+     * laquelle elle travaille (`GET /api/v1/auth/contexts` pour lister,
+     * `POST /api/v1/auth/context` pour sélectionner). Ce test était un
+     * CONSTAT d'absence ; il vérifie maintenant que la capacité est bien
+     * exposée — sinon la régression passerait inaperçue.
      */
-    public function test_there_is_no_endpoint_to_select_a_tenant_context(): void
+    public function test_a_tenant_context_selection_endpoint_exists(): void
     {
         $candidates = [
             'api/v1/auth/contexts',
@@ -84,11 +84,11 @@ class IdentityAccessControlGapsTest extends TestCase
                 && str_contains($uri, 'auth'),
         ));
 
-        $this->assertSame(
+        $this->assertNotSame(
             [],
             array_merge($found, $authContextRoutes),
-            'CONSTAT : aucun endpoint de sélection de contexte tenant n\'existe. '
-            .'Pour une personne présente dans 2 entreprises, le contexte de login est '
+            'RÉGRESSION : aucun endpoint de sélection de contexte tenant n\'est exposé. '
+            .'Une personne présente dans 2 entreprises retomberait sur un contexte '
             .'choisi arbitrairement par AuthService::findEmployeeInTenantSchemas().',
         );
     }

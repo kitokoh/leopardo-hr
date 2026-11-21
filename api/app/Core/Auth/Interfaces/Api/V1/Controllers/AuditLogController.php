@@ -6,6 +6,8 @@ namespace App\Core\Auth\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Interfaces\Api\V1\Requests\AuditLogExportRequest;
+use App\Core\Auth\Interfaces\Api\V1\Requests\AuditLogIndexRequest;
 use App\Core\Tenant\Domain\Models\CompanySetting;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
@@ -28,7 +30,7 @@ class AuditLogController extends Controller
      * GET /api/v1/audit-logs
      * Liste paginée avec filtres combinables.
      */
-    public function index(Request $request): JsonResponse
+    public function index(AuditLogIndexRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -40,16 +42,7 @@ class AuditLogController extends Controller
             __('auth.audit_access_principal_only')
         );
 
-        $validated = $request->validate([
-            'page' => ['sometimes', 'integer', 'min:1'],
-            'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
-            'actor' => ['sometimes', 'integer', 'exists:employees,id'],
-            'action' => ['sometimes', 'string', 'max:200'],
-            'resource_type' => ['sometimes', 'string', 'max:200'],
-            'resource_id' => ['sometimes', 'integer'],
-            'date_from' => ['sometimes', 'date'],
-            'date_to' => ['sometimes', 'date', 'after_or_equal:date_from'],
-        ]);
+        $validated = $request->validated();
 
         $query = AuditLog::query()
             ->with('user:id,first_name,last_name,email')
@@ -59,6 +52,10 @@ class AuditLogController extends Controller
 
         if (isset($validated['actor'])) {
             $query->where('user_id', $validated['actor']);
+        }
+
+        if (isset($validated['module'])) {
+            $query->where('module', $validated['module']);
         }
 
         if (isset($validated['action'])) {
@@ -126,7 +123,7 @@ class AuditLogController extends Controller
      * GET /api/v1/audit-logs/export
      * Export CSV limité et audité.
      */
-    public function export(Request $request): JsonResponse
+    public function export(AuditLogExportRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -137,11 +134,7 @@ class AuditLogController extends Controller
             __('auth.audit_access_principal_only')
         );
 
-        $validated = $request->validate([
-            'date_from' => ['required', 'date'],
-            'date_to' => ['required', 'date', 'after_or_equal:date_from'],
-            'action' => ['sometimes', 'string', 'max:200'],
-        ]);
+        $validated = $request->validated();
 
         // Limiter l'export à 10 000 lignes pour éviter les timeouts
         $query = AuditLog::query()

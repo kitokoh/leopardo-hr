@@ -12,8 +12,6 @@ api/app/AI/Interfaces/Api/V1/Controllers/ConversationExportController.php:25
 api/app/AI/Interfaces/Api/V1/Controllers/VoiceController.php:27
 api/app/AI/Interfaces/Api/V1/Controllers/VoiceController.php:63
 api/app/AI/Interfaces/Api/V1/Controllers/VoiceController.php:99
-api/app/Core/Auth/Interfaces/Api/V1/Controllers/AuditLogController.php:140
-api/app/Core/Auth/Interfaces/Api/V1/Controllers/AuditLogController.php:43
 api/app/Core/Auth/Interfaces/Api/V1/Controllers/AuthController.php:172
 api/app/Core/Auth/Interfaces/Api/V1/Controllers/AuthController.php:484
 api/app/Core/Auth/Interfaces/Api/V1/Controllers/LoginCodeController.php:149
@@ -322,7 +320,6 @@ api/app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformAiSettingsControl
 api/app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformAnnouncementController.php:52
 api/app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformCompanyDeletionController.php:68
 api/app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformCompanyDeletionController.php:91
-api/app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformCompanyFeatureController.php:44
 api/app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformCompanyRequestController.php:116
 api/app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformCompanyRequestController.php:27
 api/app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformDiscoverySettingsController.php:78

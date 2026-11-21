@@ -89,15 +89,25 @@ class TravelLegacyNotificationContractTest extends TestCase
         $consumer = app(TravelOutboxConsumerRegistry::class)->consumersFor('travel.booking.confirmed.v1');
         $this->assertNotEmpty($consumer);
 
-        foreach ($consumer as $c) {
-            // Contrat TravelOutboxConsumer (#6066) : handle(string $eventType, array $payload).
-            $c->handle('travel.booking.confirmed.v1', [
-                'company_id' => $company->id,
-                'event_id' => 999,
-                'event_type' => 'travel.booking.confirmed.v1',
-                'booking_reference' => $booking->reference,
-            ]);
-        }
+        // #9741 — les consommateurs d'outbox sont exécutés par le worker
+        // DANS le contexte du tenant de l'événement (c'est ce que fait
+        // `TravelOutboxProcessor` : il résout le tenant depuis le payload
+        // avant d'appeler `handle()`). Les invoquer hors contexte faisait
+        // lever `PermanentTravelOutboxException` au consommateur de
+        // publication — fail-closed correct, mais le test ne reproduisait
+        // pas le runtime réel. On se place donc dans le tenant, comme le
+        // worker.
+        app(TenantManager::class)->withinTenant($company, function () use ($consumer, $company, $booking): void {
+            foreach ($consumer as $c) {
+                // Contrat TravelOutboxConsumer (#6066) : handle(string $eventType, array $payload).
+                $c->handle('travel.booking.confirmed.v1', [
+                    'company_id' => $company->id,
+                    'event_id' => 999,
+                    'event_type' => 'travel.booking.confirmed.v1',
+                    'booking_reference' => $booking->reference,
+                ]);
+            }
+        });
 
         Mail::assertSent(CommunicationMail::class, fn ($mail) => $mail->hasTo('legacy-client@example.com'));
     }

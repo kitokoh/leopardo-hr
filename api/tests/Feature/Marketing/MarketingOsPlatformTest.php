@@ -86,6 +86,22 @@ class MarketingOsPlatformTest extends TestCase
         return "/api/v1/admin/companies/{$company->id}/marketing-os{$path}";
     }
 
+    /**
+     * #9741 — faux fichier dont le CONTENU est réellement un MP4.
+     *
+     * `UploadedFile::fake()->create()` écrit un fichier vide : finfo le
+     * détecte `application/x-empty`, que la garde MIME (#9347) refuse pour
+     * une extension `.mp4`. Un test qui veut exercer le dépôt d'une vidéo
+     * doit donc fournir un en-tête `ftyp` valide.
+     */
+    private function fakeMp4(string $name): UploadedFile
+    {
+        $path = tempnam(sys_get_temp_dir(), 'mp4');
+        file_put_contents($path, "\x00\x00\x00\x18ftypmp42\x00\x00\x00\x00mp42isom".str_repeat("\x00", 256));
+
+        return new UploadedFile($path, $name, 'video/mp4', null, true);
+    }
+
     /** Gestionnaire de tenants (même convention que les tests multi-tenant). */
     private function tenants(): TenantManager
     {
@@ -656,10 +672,15 @@ class MarketingOsPlatformTest extends TestCase
             ->assertCreated()
             ->json('data.id');
 
+        // #9741 — `UploadedFile::fake()->create()` produit un fichier VIDE :
+        // finfo le détecte `application/x-empty`, que la garde MIME (#9347)
+        // refuse pour une extension `.mp4` — à raison. Le test doit donc
+        // téléverser un contenu qui EST un MP4 (en-tête `ftyp`), sinon il
+        // vérifie le rejet MIME au lieu de la réutilisabilité des droits.
         $freeId = $this->call('POST', $this->url($company, '/assets'), [
             'name' => 'Création interne',
             'kind' => 'video',
-        ], [], ['file' => UploadedFile::fake()->create('interne.mp4', 10, 'video/mp4')], ['Accept' => 'application/json'])
+        ], [], ['file' => $this->fakeMp4('interne.mp4')], ['Accept' => 'application/json'])
             ->assertCreated()
             ->json('data.id');
 

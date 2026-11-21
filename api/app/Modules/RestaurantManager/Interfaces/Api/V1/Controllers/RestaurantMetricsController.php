@@ -100,16 +100,24 @@ class RestaurantMetricsController extends Controller
             ->where('updated_at', '<', now()->subMinutes(self::PAID_UNSERVED_MINUTES))
             ->count();
 
+        $counters = [
+            'outbox_pending' => $outboxPending,
+            'outbox_failed' => $outboxFailed,
+            'outbox_dead_letter' => $outboxDeadLetter,
+            'jobs_failed' => $this->failedJobsCount(),
+            'reviews_pending' => $reviewsPending,
+            'orders_in_kitchen' => $ordersInKitchen,
+            'orders_stuck_kitchen' => $ordersStuckKitchen,
+            'orders_paid_unserved' => $ordersPaidUnserved,
+        ];
+
         return response()->json([
-            'data' => [
-                'outbox_pending' => $outboxPending,
-                'outbox_failed' => $outboxFailed,
-                'outbox_dead_letter' => $outboxDeadLetter,
-                'jobs_failed' => $this->failedJobsCount(),
-                'reviews_pending' => $reviewsPending,
-                'orders_in_kitchen' => $ordersInKitchen,
-                'orders_stuck_kitchen' => $ordersStuckKitchen,
-                'orders_paid_unserved' => $ordersPaidUnserved,
+            'data' => $counters + [
+                // #9742 — un compteur ne prévient personne. `alerts` porte les
+                // seuils franchis, avec leur gravité, pour qu'un superviseur
+                // (ou un cron qui interroge cet endpoint) sache QUOI traiter
+                // sans connaître les seuils par cœur. Vide = tout va bien.
+                'alerts' => $this->alertsFor($counters),
                 'thresholds' => [
                     'kitchen_stuck_minutes' => self::KITCHEN_STUCK_MINUTES,
                     'paid_unserved_minutes' => self::PAID_UNSERVED_MINUTES,
@@ -118,6 +126,45 @@ class RestaurantMetricsController extends Controller
                 'generated_at' => now()->toIso8601String(),
             ],
         ]);
+    }
+
+    /**
+     * Seuils franchis, dérivés de `config/restaurant_observability.php`.
+     *
+     * @param  array<string, int>  $counters
+     * @return list<array{key: string, severity: string, value: int, threshold: int, message: string}>
+     */
+    private function alertsFor(array $counters): array
+    {
+        $alerts = [];
+
+        /** @var array<string, array{threshold: int, severity: string, message: string}> $rules */
+        $rules = (array) config('restaurant_observability.alerts', []);
+
+        foreach ($rules as $key => $rule) {
+            $value = (int) ($counters[$key] ?? 0);
+            $threshold = (int) $rule['threshold'];
+
+            // Un seuil à 0 désactive la règle (utile pour un tenant qui ne
+            // veut pas être alerté sur un compteur donné).
+            if ($threshold <= 0 || $value < $threshold) {
+                continue;
+            }
+
+            $alerts[] = [
+                'key' => $key,
+                'severity' => (string) $rule['severity'],
+                'value' => $value,
+                'threshold' => $threshold,
+                'message' => (string) $rule['message'],
+            ];
+        }
+
+        // Les critiques d'abord : un superviseur qui ne lit qu'une ligne lit
+        // celle qui coûte de l'argent.
+        usort($alerts, static fn (array $a, array $b): int => ($a['severity'] === 'critical' ? 0 : 1) <=> ($b['severity'] === 'critical' ? 0 : 1));
+
+        return $alerts;
     }
 
     /**
