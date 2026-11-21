@@ -54,6 +54,9 @@ export function PublicPortalNav({ locale, copy }: PublicPortalNavProps) {
     { href: '/operateurs', label: copy.operators },
     { href: '/entreprises', label: copy.companies },
     { href: '/stay', label: copy.stays },
+    { href: '/billets', label: copy.tickets },
+    { href: '/pharmacies', label: copy.pharmacies },
+    { href: '/emploi', label: copy.jobs },
   ];
 
   /** Conserve les filtres courants et remplace seulement `lang`. */

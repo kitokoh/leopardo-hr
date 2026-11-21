@@ -25,6 +25,16 @@ export interface PublicPortalCopy {
     operators: string;
     companies: string;
     stays: string;
+    /**
+     * Trois verticales livrées après la création de ce bloc (#9592, #9593,
+     * #9629) n'avaient jamais été ajoutées à la navigation du portail :
+     * `/billets`, `/pharmacies` et `/emploi` existaient, étaient indexées, et
+     * restaient inatteignables depuis l'en-tête — donc invisibles pour un
+     * visiteur qui ne connaissait pas l'URL.
+     */
+    tickets: string;
+    pharmacies: string;
+    jobs: string;
     library: string;
     toolbox: string;
     menu: string;
@@ -140,6 +150,9 @@ const fr: PublicPortalCopy = {
     operators: 'VTC & taxis',
     companies: 'Entreprises',
     stays: 'Hébergements',
+    tickets: 'Billets',
+    pharmacies: 'Pharmacies',
+    jobs: 'Emploi',
     library: 'Bibliothèque',
     toolbox: 'Boîte à outils',
     menu: 'Menu',
@@ -260,6 +273,9 @@ const en: PublicPortalCopy = {
     operators: 'Ride-hailing & taxis',
     companies: 'Companies',
     stays: 'Stays',
+    tickets: 'Tickets',
+    pharmacies: 'Pharmacies',
+    jobs: 'Jobs',
     library: 'Library',
     toolbox: 'Toolbox',
     menu: 'Menu',
@@ -378,6 +394,9 @@ const tr: PublicPortalCopy = {
     operators: 'Taksi ve transfer',
     companies: 'Şirketler',
     stays: 'Konaklama',
+    tickets: 'Biletler',
+    pharmacies: 'Eczaneler',
+    jobs: 'İş ilanları',
     library: 'Kütüphane',
     toolbox: 'Araç kutusu',
     menu: 'Menü',
@@ -496,6 +515,9 @@ const ar: PublicPortalCopy = {
     operators: 'سيارات الأجرة والنقل',
     companies: 'الشركات',
     stays: 'الإقامة',
+    tickets: 'التذاكر',
+    pharmacies: 'الصيدليات',
+    jobs: 'الوظائف',
     library: 'المكتبة',
     toolbox: 'صندوق الأدوات',
     menu: 'القائمة',
