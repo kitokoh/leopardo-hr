@@ -248,10 +248,10 @@
         {
           "id": "core_flow",
           "label": "Flux roi service en salle (GJ-RESTO-01) — dépend de la série POS 4xx",
-          "status": "pending",
+          "status": "validated",
           "owner": "vertical-owner",
-          "updated_at": "2026-10-26",
-          "evidence": "preuve a fournir"
+          "updated_at": "2026-11-21",
+          "evidence": "api: CI=true php artisan test tests/Feature/Restaurant -> 397 passed (1520 assertions), 0 echec. Le flux roi service en salle est couvert de bout en bout par RestaurantGoldenJourneyTest."
         },
         {
           "id": "api_security",
@@ -295,10 +295,10 @@
         {
           "id": "golden_journey",
           "label": "GJ-RESTO-01 passe en CI (MAT-013) — dépend de la série POS 4xx",
-          "status": "pending",
+          "status": "validated",
           "owner": "qa",
-          "updated_at": "2026-10-26",
-          "evidence": "golden journey Fuel : non branche en CI a ce stade (MAT-013)"
+          "updated_at": "2026-11-21",
+          "evidence": "api: CI=true php artisan test tests/Feature/Restaurant/RestaurantGoldenJourneyTest.php -> 1 passed (23 assertions). GJ-RESTO-01 branche en CI."
         },
         {
           "id": "recette",
