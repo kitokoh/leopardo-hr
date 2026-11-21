@@ -160,6 +160,16 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
 
             $this->endpoint->increment('failure_count');
 
+            // #9741 — le seuil de désactivation n'était appliqué QUE sur le
+            // chemin « réponse non-2xx » (plus bas). Un endpoint qui échoue
+            // toujours au niveau RÉSEAU (DNS, connexion refusée, TLS) voyait
+            // donc son compteur monter sans jamais être désactivé : il restait
+            // en file à chaque événement, indéfiniment. Le seuil est le même
+            // que sur l'autre chemin (10 échecs consécutifs).
+            if ((int) $this->endpoint->failure_count >= 10) {
+                $this->endpoint->update(['active' => false]);
+            }
+
             Log::warning('Webhook delivery failed', [
                 'endpoint_id' => $this->endpoint->id,
                 'event' => $this->event,
