@@ -20,9 +20,11 @@
 # Exemptions documentées (consommateurs legacy, migration planifiée) :
 #   - Attendance geofence (ADR-0016) : GeoSessionManager, GeofenceZoneService
 #     — migration vers `geo` avec la refonte geofence (hors scope v1, spec §11) ;
-#   - RestaurantPublicDirectoryController : HAVERSINE_SQL conservé UNIQUEMENT
-#     comme repli quand le flag `geo` est off (GEO-06 #8355) — supprimé à la
-#     généralisation du flag ;
+#   - RestaurantPublicDirectoryQueryService : HAVERSINE_SQL conservé
+#     UNIQUEMENT comme repli quand le flag `geo` est off (GEO-06 #8355) —
+#     supprimé à la généralisation du flag. L'exemption a suivi le code lors
+#     de l'extraction hors du contrôleur (#9728) : elle porte sur le repli
+#     legacy, pas sur un fichier ;
 #   - Shared\Contracts\Geo\GeoServiceContract : contrat PARTAGÉ du core
 #     (mentions de documentation, pas une implémentation).
 set -euo pipefail
@@ -34,7 +36,7 @@ STRICT="${GEO_SINGLE_USAGE_STRICT:-0}"
 ALLOWED=(
   "api/app/Modules/Attendance/Infrastructure/Services/GeoSessionManager.php"
   "api/app/Modules/Attendance/Infrastructure/Services/GeofenceZoneService.php"
-  "api/app/Modules/RestaurantManager/Interfaces/Api/V1/Controllers/RestaurantPublicDirectoryController.php"
+  "api/app/Modules/RestaurantManager/Infrastructure/Services/RestaurantPublicDirectoryQueryService.php"
   "api/app/Shared/Contracts/Geo/GeoServiceContract.php"
 )
 
