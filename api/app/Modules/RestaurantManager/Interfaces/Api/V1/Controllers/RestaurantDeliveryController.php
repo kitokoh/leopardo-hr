@@ -10,6 +10,7 @@ use App\Modules\RestaurantManager\Domain\Enums\DeliveryStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantDelivery;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryRider;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryZone;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDeliveryService;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantDeliveryRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantDeliveryResource;
@@ -59,7 +60,9 @@ class RestaurantDeliveryController extends Controller
         // fiable. Le corps ne peut pas la contredire. Le paramètre n'est pas
         // implicitement lié (pas de type-hint modèle) : c'est l'ID brut.
         $routeOrder = $request->route('restaurantOrder');
-        $orderId = (int) (is_object($routeOrder) ? $routeOrder->id : ($routeOrder ?? $request->validated('order_id')));
+        $orderId = $routeOrder instanceof RestaurantOrder
+            ? (int) $routeOrder->getKey()
+            : (int) $request->validated('order_id');
 
         $zoneId = $request->validated('zone_id');
 

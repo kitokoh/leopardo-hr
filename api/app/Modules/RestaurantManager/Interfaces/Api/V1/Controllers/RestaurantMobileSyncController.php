@@ -42,7 +42,8 @@ class RestaurantMobileSyncController extends Controller
         // rejeter la requête. Un client qui a mis 60 opérations en file hors
         // ligne doit voir les 50 premières traitées et repousser le reste,
         // pas perdre tout son lot en 422.
-        $operations = array_slice($data['operations'], 0, 50);
+        /** @var list<array{type: string, payload: array<string, mixed>, idempotency_key: string}> $operations */
+        $operations = array_values(array_slice($data['operations'], 0, 50));
 
         $results = $service->sync($actor, $operations);
 
