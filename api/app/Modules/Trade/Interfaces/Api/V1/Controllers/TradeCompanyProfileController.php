@@ -108,11 +108,16 @@ class TradeCompanyProfileController extends Controller
         } else {
             $this->authorize('create', TradeCompanyProfile::class);
 
+            // #9741 — l'ordre du spread compte : `...$attributes` placé APRÈS
+            // les valeurs de repli les écrasait avec `null` (le champ est
+            // facultatif dans le payload), et `hq_country` étant NOT NULL en
+            // base, toute création de profil sans pays explicite partait en
+            // 500. Les replis viennent donc en dernier.
             $profile = TradeCompanyProfile::query()->create([
                 'company_id' => $actor->company_id,
+                ...$attributes,
                 'hq_country' => $attributes['hq_country'] ?? 'DZ',
                 'default_currency' => $attributes['default_currency'] ?? 'DZD',
-                ...$attributes,
             ]);
         }
 
@@ -178,7 +183,16 @@ class TradeCompanyProfileController extends Controller
      */
     private function assertSlugAvailable(string $slug, TradeCompanyProfile $current): void
     {
+        // #9741 — l'unicité du slug public est GLOBALE (contrainte
+        // `trade_company_profiles_public_slug_unique`), pas par tenant :
+        // `TradeProfileResolver` résout un slug vers un tenant sans connaître
+        // l'appelant, donc deux entreprises ne peuvent pas partager une
+        // adresse publique. La requête passait par le global scope
+        // `BelongsToCompany` et ne voyait donc que le tenant courant : le
+        // doublon inter-tenant n'était jamais détecté et partait en 500 sur
+        // violation de contrainte au lieu du 422 métier.
         $taken = TradeCompanyProfile::query()
+            ->crossTenantForSystemTask('unicité globale du slug public : la contrainte est globale, la vérification doit l\'être aussi (#9741)')
             ->where('public_slug', $slug)
             ->where('id', '!=', $current->id)
             ->exists();
