@@ -7,6 +7,8 @@ import { SurfaceShell } from '@/modules/public-surfaces/kernel/components/Surfac
 export const metadata: Metadata = {
   title: MOBILITY_SURFACE.displayName,
   description: MOBILITY_SURFACE.tagline,
+  // Suivi de course par référence : page de consultation privée.
+  robots: { index: false, follow: false },
 };
 
 export default async function RideTrackingPage({

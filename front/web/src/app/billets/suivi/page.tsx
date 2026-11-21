@@ -7,6 +7,8 @@ import { SurfaceShell } from '@/modules/public-surfaces/kernel/components/Surfac
 export const metadata: Metadata = {
   title: TRAVEL_SURFACE.displayName,
   description: TRAVEL_SURFACE.tagline,
+  // Suivi de réservation par référence : page de consultation privée.
+  robots: { index: false, follow: false },
 };
 
 export default async function BookingTrackingPage({

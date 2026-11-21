@@ -107,6 +107,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     page('/operateurs', 'daily', 0.7),
     page('/entreprises', 'daily', 0.7),
     page('/stay', 'daily', 0.7),
+    // #9657 — trois verticales livrées après ce bloc n'y avaient jamais été
+    // ajoutées : `/billets` (#9593), `/pharmacies` (#9592) et `/emploi`
+    // (#9629) sont des annuaires SSR indexables, mais aucun crawler ne les
+    // découvrait autrement que par un lien entrant. Leurs fiches étaient
+    // déclarées, leurs annuaires non — l'inverse du problème résolu ci-dessus.
+    page('/billets', 'daily', 0.7),
+    page('/pharmacies', 'daily', 0.7),
+    page('/emploi', 'daily', 0.7),
     page('/privacy', 'yearly', 0.4, false),
     page('/terms', 'yearly', 0.4, false),
     // #7593 — mentions légales (page FR, comme privacy/terms).
