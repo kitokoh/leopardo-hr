@@ -179,6 +179,7 @@ class RestaurantUatSeeder extends Seeder
         ]);
 
         // ── Zones et tables ────────────────────────────────────────────────
+        /** @var array<string, int> $zoneIds */
         $zoneIds = [];
         foreach ([['Salle', '#0ea5e9', 1], ['Terrasse', '#22c55e', 2], ['Étage', '#f59e0b', 3]] as [$name, $color, $order]) {
             $zoneIds[$name] = $this->insert('restaurant_zones', [
@@ -193,6 +194,7 @@ class RestaurantUatSeeder extends Seeder
             ]);
         }
 
+        /** @var array<string, int> $tableIds */
         $tableIds = [];
         $tableSpecs = [
             ['T1', 'Salle', 2, true],
@@ -226,6 +228,7 @@ class RestaurantUatSeeder extends Seeder
             ['ING-HUILE', 'Huile de palme', 150000, 8.0, 15.0], // sous le seuil → alerte
             ['ING-EPICE', 'Épices maison', 400000, 5.0, 2.0],
         ];
+        /** @var array<string, int> $ingredientIds */
         $ingredientIds = [];
         foreach ($ingredientSpecs as [$code, $name, $cost, $qty, $threshold]) {
             $ingredientIds[$code] = $this->insert('restaurant_ingredients', [
@@ -262,6 +265,7 @@ class RestaurantUatSeeder extends Seeder
             ['PLAT-ENTREE', 'Salade maison', 300000, 90000, true],
             ['PLAT-RUPTURE', 'Plat en rupture (recette)', 450000, 150000, false],
         ];
+        /** @var array<string, int> $productIds */
         $productIds = [];
         foreach ($productSpecs as [$code, $name, $price, $cost, $available]) {
             $productIds[$code] = $this->insert('restaurant_products', [
@@ -393,6 +397,7 @@ class RestaurantUatSeeder extends Seeder
             ['RST-UAT-STUCK', 'in_preparation', 'dine_in', 'T5', 120],
         ];
 
+        /** @var array<string, int> $orderIds */
         $orderIds = [];
         foreach ($orderSpecs as [$reference, $status, $type, $table, $minutesAgo]) {
             $createdAt = $now->copy()->subMinutes($minutesAgo);
