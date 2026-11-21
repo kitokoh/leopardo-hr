@@ -5,54 +5,33 @@ declare(strict_types=1);
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
 use App\Http\Controllers\Controller;
-use Illuminate\Database\Query\Builder;
+use App\Modules\HR\Infrastructure\Services\HrDashboardStatsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
+/**
+ * Tableau de bord RH.
+ *
+ * Ce contrôleur ne porte plus que le contrat HTTP : lecture de l'acteur
+ * authentifié, parsing/validation des entrées, forme de la réponse. Les
+ * agrégations vivent dans `HrDashboardStatsService` (couche Infrastructure),
+ * où elles sont testables sans monter une requête HTTP.
+ */
 class DashboardController extends Controller
 {
     public function __construct(
-        private readonly TenantCacheService $tenantCache,
+        private readonly HrDashboardStatsService $stats,
     ) {}
 
     public function summary(Request $request): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
-        $companyId = $user->company_id;
-
-        $employees = DB::table('employees')
-            ->where('company_id', $companyId)
-            ->selectRaw("count(*) as total, count(case when status = 'active' then 1 end) as active")
-            ->first();
-
-        $departments = DB::table('departments')
-            ->where('company_id', $companyId)
-            ->count();
-
-        $todayAttendance = DB::table('attendance_logs')
-            ->where('company_id', $companyId)
-            ->whereDate('check_in', now()->toDateString())
-            ->count();
-
-        $pendingAbsences = DB::table('absences')
-            ->where('company_id', $companyId)
-            ->where('status', 'pending')
-            ->count();
 
         return response()->json([
-            'data' => [
-                'employees_total' => $employees->total ?? 0,
-                'employees_active' => $employees->active ?? 0,
-                'departments' => $departments,
-                'today_attendance' => $todayAttendance,
-                'pending_absences' => $pendingAbsences,
-            ],
+            'data' => $this->stats->summary((string) $user->company_id),
         ]);
     }
 
@@ -60,96 +39,36 @@ class DashboardController extends Controller
     {
         /** @var Employee $user */
         $user = $request->user();
-        $companyId = (string) $user->company_id;
-        $today = now()->toDateString();
 
-        $data = $this->tenantCache->rememberManagerDigest(
-            $companyId,
-            $user->id,
-            $today,
-            function () use ($user, $companyId, $today): array {
-                $employeeIds = $this->scopedEmployeeIds($user);
-
-                $teamSize = count($employeeIds);
-                $present = $this->countTodayPresent($companyId, $today, $employeeIds);
-                $late = $this->countTodayLate($companyId, $today, $employeeIds);
-                $openSessions = $this->countOpenSessions($companyId, $today, $employeeIds);
-                $pendingAbsences = $this->countPendingByTable('absences', $companyId, $employeeIds);
-                $pendingAdvances = $this->countPendingByTable('salary_advances', $companyId, $employeeIds);
-                $pendingCorrections = $this->countPendingByTable('attendance_correction_requests', $companyId, $employeeIds);
-                $pendingActions = $pendingAbsences + $pendingAdvances + $pendingCorrections;
-
-                return [
-                    'date' => $today,
-                    'team_scope' => $this->managerTeamScope($user),
-                    'team_size' => $teamSize,
-                    'present' => $present,
-                    'late' => $late,
-                    'open_sessions' => $openSessions,
-                    'pending_actions' => $pendingActions,
-                    'pending_absences' => $pendingAbsences,
-                    'pending_salary_advances' => $pendingAdvances,
-                    'pending_corrections' => $pendingCorrections,
-                    'items' => [
-                        [
-                            'kind' => 'attendance',
-                            'label' => 'Presences enregistrees',
-                            'count' => $present,
-                            'severity' => 'success',
-                            'route' => '/manager/attendance',
-                        ],
-                        [
-                            'kind' => 'late',
-                            'label' => 'Retards a surveiller',
-                            'count' => $late,
-                            'severity' => $late > 0 ? 'warning' : 'success',
-                            'route' => '/manager/anomalies',
-                        ],
-                        [
-                            'kind' => 'actions',
-                            'label' => 'Actions RH en attente',
-                            'count' => $pendingActions,
-                            'severity' => $pendingActions > 0 ? 'info' : 'success',
-                            'route' => '/approvals',
-                        ],
-                    ],
-                ];
-            }
-        );
-
-        return response()->json(['data' => $data]);
+        return response()->json([
+            'data' => $this->stats->managerDigest($user, now()->toDateString()),
+        ]);
     }
 
     public function recentActivity(Request $request): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
-        $companyId = $user->company_id;
 
         // #4499 : limit borné (1..100) — une valeur négative = « illimité » en
         // PostgreSQL, une valeur énorme vidait tout audit_logs en une requête.
         $limit = max(1, min(100, $request->integer('limit', 20)));
 
-        $activities = DB::table('audit_logs')
-            ->where('company_id', $companyId)
-            ->orderByDesc('created_at')
-            ->limit($limit)
-            ->get(['id', 'user_id', 'action', 'auditable_type', 'auditable_id', 'created_at']);
-
-        return response()->json(['data' => $activities]);
+        return response()->json([
+            'data' => $this->stats->recentActivity((string) $user->company_id, $limit),
+        ]);
     }
 
     public function kpi(Request $request): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
-        $companyId = $user->company_id;
         $monthInput = $request->input('month');
         $month = is_string($monthInput) ? $monthInput : now()->format('Y-m');
         $periodStart = now();
 
         try {
-            // Carbon normalise silencieusement `2026-13` vers `2027-01`;
+            // Carbon normalise silencieusement `2026-13` vers `2027-01` ;
             // valider explicitement le mois avant le parsing pour respecter
             // le contrat de fallback sur le mois courant.
             if (preg_match('/^\d{4}-(0[1-9]|1[0-2])$/D', $month) === 1) {
@@ -159,43 +78,17 @@ class DashboardController extends Controller
                 }
             }
         } catch (\Throwable) {
-            // A client-controlled month must never turn an invalid date into a
-            // 500. Keep the KPI window on the current month instead.
+            // Un mois contrôlé par le client ne doit jamais produire un 500 :
+            // on garde la fenêtre KPI sur le mois courant.
         }
 
         $periodStart = $periodStart->startOfMonth();
-        $month = $periodStart->format('Y-m');
         $periodEnd = $periodStart->copy()->endOfMonth();
-
-        $turnover = DB::table('employees')
-            ->where('company_id', $companyId)
-            ->where('status', 'archived')
-            ->whereBetween('updated_at', [$periodStart, $periodEnd])
-            ->count();
-
-        $hires = DB::table('employees')
-            ->where('company_id', $companyId)
-            ->whereBetween('created_at', [$periodStart, $periodEnd])
-            ->count();
-
-        $absenceRate = 0.0;
-        $totalEmployees = DB::table('employees')->where('company_id', $companyId)->where('status', 'active')->count();
-        if ($totalEmployees > 0) {
-            $absences = DB::table('absences')
-                ->where('company_id', $companyId)
-                ->where('status', 'approved')
-                ->whereBetween('start_date', [$periodStart->toDateString(), $periodEnd->toDateString()])
-                ->count();
-            $absenceRate = round(($absences / $totalEmployees) * 100, 1);
-        }
 
         return response()->json([
             'data' => [
-                'month' => $month,
-                'turnover' => $turnover,
-                'new_hires' => $hires,
-                'absence_rate' => $absenceRate,
-                'total_active_employees' => $totalEmployees,
+                'month' => $periodStart->format('Y-m'),
+                ...$this->stats->kpi((string) $user->company_id, $periodStart, $periodEnd),
             ],
         ]);
     }
@@ -207,24 +100,12 @@ class DashboardController extends Controller
     {
         /** @var Employee $employee */
         $employee = $request->user();
-        $summary = $this->summary($request);
-        $summaryContent = $summary->getContent();
-        /** @var array{data: array<string, mixed>}|null $summaryData */
-        $summaryData = is_string($summaryContent) ? json_decode($summaryContent, true) : null;
-        if (! is_array($summaryData)) {
-            $summaryData = ['data' => []];
-        }
+        $companyId = (string) $employee->company_id;
 
-        // Enrich with role counts
-        $roleCounts = Employee::where('company_id', $employee->company_id)
-            ->whereNotIn('status', ['archived', 'departed'])
-            ->selectRaw('role, manager_role, COUNT(*) as count')
-            ->groupBy('role', 'manager_role')
-            ->get();
+        $data = $this->stats->summary($companyId);
+        $data['role_counts'] = $this->stats->roleCounts($companyId);
 
-        $summaryData['data']['role_counts'] = $roleCounts;
-
-        return response()->json($summaryData);
+        return response()->json(['data' => $data]);
     }
 
     /**
@@ -249,112 +130,5 @@ class DashboardController extends Controller
     public function marketingSummary(Request $request): JsonResponse
     {
         return $this->summary($request);
-    }
-
-    /**
-     * @return list<int>
-     */
-    private function scopedEmployeeIds(Employee $manager): array
-    {
-        $query = DB::table('employees')
-            ->where('company_id', $manager->company_id)
-            ->where('status', 'active');
-
-        if (! in_array($manager->manager_role, ['principal', 'rh'], true)) {
-            $query->where(function (Builder $scope) use ($manager): void {
-                $scope->where('manager_id', $manager->id)
-                    ->orWhere('id', $manager->id);
-            });
-        }
-
-        /** @var list<int> $ids */
-        $ids = $query->pluck('id')
-            ->map(function (mixed $id): int {
-                return is_numeric($id) ? (int) $id : 0;
-            })
-            ->values()
-            ->all();
-
-        return $ids;
-    }
-
-    private function managerTeamScope(Employee $manager): string
-    {
-        return in_array($manager->manager_role, ['principal', 'rh'], true)
-            ? 'company'
-            : 'managed_team';
-    }
-
-    /**
-     * @param  list<int>  $employeeIds
-     */
-    private function countTodayPresent(string $companyId, string $today, array $employeeIds): int
-    {
-        if ($employeeIds === [] || ! Schema::hasTable('attendance_logs')) {
-            return 0;
-        }
-
-        return DB::table('attendance_logs')
-            ->where('company_id', $companyId)
-            ->whereIn('employee_id', $employeeIds)
-            ->where('date', $today)
-            ->whereNotNull('check_in')
-            ->distinct('employee_id')
-            ->count('employee_id');
-    }
-
-    /**
-     * @param  list<int>  $employeeIds
-     */
-    private function countTodayLate(string $companyId, string $today, array $employeeIds): int
-    {
-        if ($employeeIds === [] || ! Schema::hasTable('attendance_logs')) {
-            return 0;
-        }
-
-        return DB::table('attendance_logs')
-            ->where('company_id', $companyId)
-            ->whereIn('employee_id', $employeeIds)
-            ->where('date', $today)
-            ->where(function (Builder $query): void {
-                $query->where('late_minutes', '>', 0)
-                    ->orWhere('status', 'late');
-            })
-            ->distinct('employee_id')
-            ->count('employee_id');
-    }
-
-    /**
-     * @param  list<int>  $employeeIds
-     */
-    private function countOpenSessions(string $companyId, string $today, array $employeeIds): int
-    {
-        if ($employeeIds === [] || ! Schema::hasTable('attendance_logs')) {
-            return 0;
-        }
-
-        return DB::table('attendance_logs')
-            ->where('company_id', $companyId)
-            ->whereIn('employee_id', $employeeIds)
-            ->where('date', $today)
-            ->whereNotNull('check_in')
-            ->whereNull('check_out')
-            ->count();
-    }
-
-    /**
-     * @param  list<int>  $employeeIds
-     */
-    private function countPendingByTable(string $table, string $companyId, array $employeeIds): int
-    {
-        if ($employeeIds === [] || ! Schema::hasTable($table)) {
-            return 0;
-        }
-
-        return DB::table($table)
-            ->where('company_id', $companyId)
-            ->whereIn('employee_id', $employeeIds)
-            ->where('status', 'pending')
-            ->count();
     }
 }
