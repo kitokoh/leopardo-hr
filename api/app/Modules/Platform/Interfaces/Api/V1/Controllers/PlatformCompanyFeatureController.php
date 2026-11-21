@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Core\Feature\Infrastructure\Services\FeatureFlagAuditRecorder;
 use App\Core\Feature\Infrastructure\Services\ModuleRegistryGateway;
@@ -97,6 +98,26 @@ class PlatformCompanyFeatureController extends Controller
                     source: 'platform_controller',
                     actorUserId: $actorUserId,
                 );
+
+                // #9741 — `feature_flag_audits` est la piste DÉDIÉE aux flags
+                // (une ligne par bascule, lisible par le module Feature). Elle
+                // ne remplace pas le journal d'audit GLOBAL : une bascule de
+                // module est un acte d'exploitation qui doit apparaître dans
+                // `audit_logs` au même titre qu'une activation de solution,
+                // sinon la piste RGPD « qui a ouvert ce module à ce client ? »
+                // reste muette. Les deux écritures sont volontairement
+                // conservées : la première est structurée, la seconde est
+                // l'historique unifié consultable par le principal.
+                AuditLog::create([
+                    'company_id' => $company->id,
+                    'user_id' => $actorUserId,
+                    'action' => $module.'.feature.'.($value ? 'enabled' : 'disabled'),
+                    'module' => 'platform',
+                    'auditable_type' => $company->getMorphClass(),
+                    'auditable_id' => null,
+                    'old_values' => ['enabled' => $previous],
+                    'new_values' => ['enabled' => $value],
+                ]);
             }
         }
 

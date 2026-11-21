@@ -233,7 +233,16 @@ class CompanyProvisioningService
             $code = (string) $solutionCode;
 
             try {
-                $result = $this->solutionActivator->activate($company, $code);
+                // #9741 — au provisioning, le tenant vient d'être créé : il n'a
+                // que `rh` d'actif. `activate()` est fail-closed strict (pour
+                // l'activation manuelle d'un tenant déjà en vie) et refusait
+                // donc TOUTE solution sectorielle demandée au signup
+                // (`refused_missing_dependencies`), alors que les modules
+                // transversaux du pack font partie de ce que le prospect a
+                // demandé. `activateWithDependencies()` active d'abord ces
+                // modules puis la solution — c'est le plan d'activation prévu
+                // par BC-25 / #6693.
+                $result = $this->solutionActivator->activateWithDependencies($company, $code);
                 $solutionsStatus[] = $result;
             } catch (SolutionMissingDependencyException $exception) {
                 Log::warning('company.provisioning.solution_refused', [
