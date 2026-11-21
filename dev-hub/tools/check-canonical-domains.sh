@@ -47,6 +47,9 @@ REGISTRY=(
   $'demo.leopardo-rh.com\ttarget'
   $'api-staging.leopardo-rh.com\ttarget'
   $'demo.leopardo.app\ttarget'
+  # #9721 — base proxy API de l'admin dashboard (VITE_API_PROXY_BASE_URL),
+  # référencée par front/admin-dashboard/src/services/__tests__/api-base-url.test.js.
+  $'web.leopardo.app\ttarget'
   $'client-a.leopardo-rh.com\ttarget'
   $'mail.leopardo-rh.com\ttarget'
   # Vitrines publiques verticales (#9577) — domaines canoniques déclarés par

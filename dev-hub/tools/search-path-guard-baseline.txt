@@ -1,9 +1,4 @@
 # Issue #9115 — occurrences de `SET search_path` litteral sans
 # restauration garantie. Dette figee : elle ne doit que DECROITRE.
 # Retirer une ligne quand le fichier passe a SearchPathGuard::run().
-api/app/Core/Auth/Infrastructure/Services/AuthService.php:698
-api/app/Core/Auth/Interfaces/Api/V1/Controllers/PasswordResetController.php:293
-api/app/Modules/HR/Interfaces/Api/V1/Requests/StoreEmployeeRequest.php:193
-api/app/Modules/HR/Interfaces/Api/V1/Requests/StoreEmployeeRequest.php:198
-api/app/Modules/HR/Interfaces/Api/V1/Requests/UpdateEmployeeRequest.php:189
-api/app/Modules/HR/Interfaces/Api/V1/Requests/UpdateEmployeeRequest.php:194
+

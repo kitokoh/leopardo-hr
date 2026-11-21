@@ -34,14 +34,36 @@ final class SearchPathGuard
     {
         $previous = self::current();
 
-        DB::statement('SET search_path TO '.$searchPath);
+        self::set($searchPath);
 
         try {
             return $callback();
         } finally {
-            if ($previous !== null) {
-                DB::statement('SET search_path TO '.$previous);
-            }
+            self::restore($previous);
+        }
+    }
+
+    /**
+     * Pose le `search_path` **sans** restauration.
+     *
+     * Réservé aux helpers dont l'appelant porte lui-même le `finally`
+     * (`AuthService::setTenantSearchPath()`, `PasswordResetController::
+     * setTenantSearchPath()`). Passer par ici plutôt que par un
+     * `DB::statement()` brut garde un seul point d'audit du SQL exécuté.
+     */
+    public static function set(string $searchPath): void
+    {
+        DB::statement('SET search_path TO '.$searchPath);
+    }
+
+    /**
+     * Rend la session à l'état capturé par `current()`. No-op si l'état est
+     * inconnu (driver non PostgreSQL, `SHOW search_path` indisponible).
+     */
+    public static function restore(?string $previous): void
+    {
+        if ($previous !== null && $previous !== '') {
+            DB::statement('SET search_path TO '.$previous);
         }
     }
 
