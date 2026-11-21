@@ -1602,6 +1602,8 @@ trait CreatesMvpSchema
             return;
         }
 
+        $created = [];
+
         if (! Schema::hasTable('public.failed_jobs')) {
             Schema::create('public.failed_jobs', function (Blueprint $table): void {
                 $table->id();
@@ -1718,6 +1720,33 @@ trait CreatesMvpSchema
 
                 $table->unique(['company_id', 'branch_id', 'name'], 'restaurant_categories_company_branch_name_unique');
             });
+        }
+
+        // #9741 — une table créée APRÈS `markMvpFixtureReady()` n'est pas dans
+        // `__mvp_fixture_ready`, donc `resetMvpFixtureTables()` ne la tronque
+        // jamais : les lignes d'un test fuient dans le suivant (un ticket de
+        // support créé par un test faisait répondre 404 au suivant, qui
+        // tombait sur le ticket d'une AUTRE société). On enregistre donc les
+        // tables de cette garde dans le marqueur, comme le fait la
+        // construction initiale.
+        if (Schema::hasTable('shared_tenants.__mvp_fixture_ready')) {
+            foreach ([
+                'public.failed_jobs',
+                'public.platform_support_tickets',
+                'public.platform_support_messages',
+                $this->moduleTable('restaurant_branches'),
+                $this->moduleTable('restaurant_units'),
+                $this->moduleTable('restaurant_tax_rates'),
+                $this->moduleTable('restaurant_categories'),
+            ] as $qualified) {
+                if (! Schema::hasTable($qualified)) {
+                    continue;
+                }
+
+                DB::table('shared_tenants.__mvp_fixture_ready')->insertOrIgnore([
+                    'table_name' => $qualified,
+                ]);
+            }
         }
     }
 
