@@ -122,6 +122,7 @@ en ligne de chaque vitrine, selon la règle 4 ci-dessus.
 | `pharmacies.leopardo.app` | target | Pharmacie | `NEXT_PUBLIC_SURFACE_DOMAIN_PHARMACY` |
 | `mobilite.leopardo.app` | target | Mobilité (VTC / taxi) | `NEXT_PUBLIC_SURFACE_DOMAIN_VTC` |
 | `emploi.leopardo.app` | target | Emploi (Careers) | `NEXT_PUBLIC_SURFACE_DOMAIN_CAREERS` |
+| `web.leopardo.app` | target | Front web (hôte du proxy API same-origin) | `VITE_API_PROXY_BASE_URL` |
 
 La surcharge est **nommée par verticale** : aucune variable globale ne peut faire
 pointer toutes les vitrines vers le même hôte par accident. Une surcharge
