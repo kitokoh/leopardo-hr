@@ -4850,7 +4850,22 @@
       "reviewsEmpty": "No pending review.",
       "reviewPublish": "Publish",
       "reviewReject": "Reject",
-      "reviewActionError": "Action failed on this review."
+      "reviewActionError": "Action failed on this review.",
+      "reviewsFilterLabel": "Filter reviews",
+      "reviewsFilter_pending": "Pending",
+      "reviewsFilter_published": "Published",
+      "reviewsFilter_rejected": "Rejected",
+      "reviewsFilter_all": "All",
+      "reviewStatus_pending": "Pending",
+      "reviewStatus_published": "Published",
+      "reviewStatus_rejected": "Rejected",
+      "reviewUnpublish": "Unpublish",
+      "reviewReplyLabel": "Your reply",
+      "reviewReplyPlaceholder": "Reply publicly to this customer…",
+      "reviewReplySend": "Publish reply",
+      "reviewReplyEdit": "Edit",
+      "reviewReplyDelete": "Delete",
+      "reviewReplyError": "Could not save the reply."
     },
     "public": {
       "directoryTitle": "Restaurants near you",

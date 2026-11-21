@@ -1,3 +1,35 @@
+## 2026-11-21 — RestaurantManager : observabilité, modération des avis, kit de recette R2–R11 (PR #9727)
+
+Surface : `api/routes/modules/restaurantmanager.php` (4 routes), `api/app/Modules/RestaurantManager/` (contrôleurs métriques + modération, modèle `RestaurantReview`), `api/database/migrations/tenant/2026_11_21_000100_9713_add_reply_to_restaurant_reviews.php`, `api/database/seeders/RestaurantUatSeeder.php`, `front/web/src/app/(dashboard)/restaurant/online/page.tsx`, `front/admin-dashboard/src/i18n/locales/`, `front/mobile_apps/leopardo_core/lib/l10n/`, `shared/i18n/locales/`.
+
+**Pourquoi c'est un scénario de test** : trois manquements du pilote, dont deux où la documentation affirmait une couverture qui n'existait pas, et un bug bloquant que la suite complète a révélé.
+
+1. **Gate `observability` adossé à une preuve d'une autre verticale.** Le registre `pilot-gates.json` citait `FuelObservabilityApiTest` pour RestaurantManager, qui n'exposait **aucun** endpoint de métriques. Un gate « validé » sur une preuve empruntée ne mesure rien.
+2. **Modération des avis absente côté gestion.** Le parcours client (dépôt, publication, note moyenne) existait et était testé ; le restaurateur ne pouvait ni retirer un avis publié par erreur, ni y répondre.
+3. **Création de livraison cassée.** `POST /restaurant/orders/{restaurantOrder}/delivery` renvoyait 422 sur **toute** création : le paramètre de route n'est pas implicitement lié, donc Laravel le livre en chaîne, et le contrôleur ne testait que le cas modèle avant de retomber sur `order_id`, absent du corps.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `GET /restaurant/health/metrics` renvoie 401 sans authentification | l'endpoint exposerait la santé technique du tenant à un anonyme |
+| un opérateur de salle reçoit 403 sur les métriques | la file outbox, les jobs en échec et les commandes bloquées sont des données d'exploitation : un serveur n'a pas à les lire |
+| le gérant du tenant B voit `reviews_pending = 0` alors que A en a 1 | sans le filtre `company_id`, les métriques d'un restaurant fuiteraient chez son voisin |
+| `outbox_dead_letter` compte les échecs ayant épuisé `MAX_ATTEMPTS`, pas tous les échecs | un échec transitoire (2 tentatives) serait signalé comme perdu et déclencherait une alerte inutile |
+| `orders_stuck_kitchen` ne compte que les commandes en cuisine depuis plus de 45 min | une commande de 5 minutes serait signalée bloquée : l'alerte perdrait tout sens |
+| `unpublish` ramène un avis publié à `pending` et le retire du canal public | c'est le manquement d'origine : un avis publié par erreur ne pouvait plus être retiré sans être définitivement rejeté |
+| la réponse du restaurateur apparaît sur `/public/restaurants/{slug}/reviews` | une réponse écrite mais jamais publiée ne sert à rien |
+| la réponse publique n'expose **pas** `replied_by` | l'identité de l'employé qui a rédigé la réponse fuiterait sur une page publique |
+| un avis `rejected` ne publie jamais sa réponse | rejeter un avis laisserait sa réponse visible : le rejet serait contourné |
+| `PUT .../reply` avec une réponse vide renvoie 422 | une réponse vide s'afficherait comme une réponse |
+| le gérant d'un autre tenant reçoit 404 (et non 403) sur `reply` | un 403 révélerait l'existence de l'avis d'un autre restaurant |
+| `POST /restaurant/orders/{id}/delivery` crée la livraison (201) | c'est le bug bloquant : la livraison était inutilisable, aucune commande ne pouvait y entrer |
+| le corps ne peut pas contredire la commande de la route | accepter `order_id` du corps permettrait de créer une livraison sur la commande d'un autre |
+| `pilot:seed resto` est idempotent (2 exécutions → même état) | une recette rejouée sur un état modifié ne serait plus reproductible |
+| le jeu de recette contient une commande bloquée, un produit en rupture et un avis dans chaque statut | les scénarios R2–R11 n'auraient pas de point de départ garanti et dépendraient de la saisie manuelle de l'opérateur |
+
+**Couverture exécutée** — `CI=true php artisan test tests/Feature/Restaurant` **407 passed (1 572 assertions), 0 échec** (contre 7 échecs avant) ; `RestaurantObservabilityApiTest` 4 tests ; `RestaurantReviewModerationTest` 6 tests ; PHPStan Strict sur `app/Modules/RestaurantManager` 0 erreur ; Pint PASS sur les fichiers modifiés ; `check-pilot-gates.sh` exit 0 ; `check-openapi-route-coverage.py` drift 0 ; `tsc --noEmit` 0 erreur ; `jest --maxWorkers=1` **299 suites / 2 813 tests, 0 échec** ; `shared/i18n/validators/validate.js` PASS (4 locales).
+
+**Non couvert** — p95 sur volumes réels (environnement de recette) ; compilation Flutter (pas de SDK dans l'espace de travail) ; signature de la recette R2–R11 (action humaine). Le gate `recette` reste `pending` : le kit rend la recette exécutable, il ne l'exécute pas.
+
 ## 2026-11-21 — Fiches détail des 8 verticales : pagination + recherche, et guards RBAC du router admin (PR #9716)
 
 Surface : `front/web/src/modules/public-surfaces/` (noyau `kernel/domain/list-filter.ts`, 6 fiches détail, 3 composants de verticale), `front/admin-dashboard/src/router/` (`guards.js`, `index.js`), `front/admin-dashboard/src/views/auth/ForbiddenView.vue`. Aucune route backend, aucune migration, aucun contrat d'API modifié.

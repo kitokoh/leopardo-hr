@@ -58,11 +58,16 @@ class RestaurantDeliveryController extends Controller
 
         // La commande vient de la route imbriquée : c'est la seule source
         // fiable. Le corps ne peut pas la contredire. Le paramètre n'est pas
-        // implicitement lié (pas de type-hint modèle) : c'est l'ID brut.
+        // implicitement lié (pas de type-hint modèle) : c'est l'ID brut, et
+        // Laravel le livre en CHAÎNE — pas en modèle. Ne traiter que le cas
+        // modèle laissait tomber sur `order_id` (absent du corps) → 0, donc
+        // un 422 « No query results for model ... 0 » sur toute création.
         $routeOrder = $request->route('restaurantOrder');
-        $orderId = $routeOrder instanceof RestaurantOrder
-            ? (int) $routeOrder->getKey()
-            : (int) $request->validated('order_id');
+        $orderId = match (true) {
+            $routeOrder instanceof RestaurantOrder => (int) $routeOrder->getKey(),
+            is_numeric($routeOrder) => (int) $routeOrder,
+            default => (int) $request->validated('order_id'),
+        };
 
         $zoneId = $request->validated('zone_id');
 

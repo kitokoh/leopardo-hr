@@ -2,6 +2,12 @@
 
 > **Issue :** RESTO-903 (#6232) — recette UAT du pilote RestaurantManager (gate `recette`, MAT-018).
 > **Mode d'emploi :** exécuter chaque scénario sur l'environnement de recette (tenant pilote activé), reporter le résultat (✅/❌ + preuve), puis faire signer le cahier par le chef de projet.
+>
+> **Kit d'exécution (#9725) :** [`RECETTE_UAT_RESTAURANTMANAGER_KIT.md`](./RECETTE_UAT_RESTAURANTMANAGER_KIT.md) —
+> jeu de données (`php artisan pilot:seed resto`), comptes de recette, checklist opérateur R2–R11
+> (prérequis → étapes → attendu → critère de succès) et grille de relevé
+> ([`RECETTE_UAT_RESTAURANTMANAGER_GRILLE.csv`](./RECETTE_UAT_RESTAURANTMANAGER_GRILLE.csv)).
+> Ce cahier dit *quoi* tester ; le kit dit *avec quoi* et *comment relever*.
 
 ## Cahier de recette
 

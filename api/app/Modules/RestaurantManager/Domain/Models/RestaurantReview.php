@@ -18,6 +18,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Modération : `pending` (défaut) → `published` | `rejected` par un gérant
  * de la branche. Seuls les avis `published` sont exposés publiquement et
  * comptent dans la note moyenne.
+ *
+ * #9713 — le restaurateur peut répondre publiquement à un avis (`reply`,
+ * `replied_at`, `replied_by`). La réponse n'est exposée que si l'avis est
+ * `published` : un avis rejeté ne publie jamais sa réponse.
  */
 class RestaurantReview extends Model
 {
@@ -31,11 +35,16 @@ class RestaurantReview extends Model
         'comment',
         'author_name',
         'status',
+        'reply',
+        'replied_at',
+        'replied_by',
     ];
 
     protected $casts = [
         'rating' => 'integer',
         'status' => RestaurantReviewStatus::class,
+        'replied_at' => 'datetime',
+        'replied_by' => 'integer',
     ];
 
     /**

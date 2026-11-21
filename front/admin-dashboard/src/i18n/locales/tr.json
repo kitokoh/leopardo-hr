@@ -5383,7 +5383,22 @@
       "reviewsEmpty": "Bekleyen yorum yok.",
       "reviewPublish": "Yayınla",
       "reviewReject": "Reddet",
-      "reviewActionError": "Bu yorum üzerinde işlem yapılamadı."
+      "reviewActionError": "Bu yorum üzerinde işlem yapılamadı.",
+      "reviewsFilterLabel": "Yorumları filtrele",
+      "reviewsFilter_pending": "Beklemede",
+      "reviewsFilter_published": "Yayında",
+      "reviewsFilter_rejected": "Reddedildi",
+      "reviewsFilter_all": "Tümü",
+      "reviewStatus_pending": "Beklemede",
+      "reviewStatus_published": "Yayında",
+      "reviewStatus_rejected": "Reddedildi",
+      "reviewUnpublish": "Yayından kaldır",
+      "reviewReplyLabel": "Yanıtınız",
+      "reviewReplyPlaceholder": "Bu müşteriye herkese açık yanıt verin…",
+      "reviewReplySend": "Yanıtı yayınla",
+      "reviewReplyEdit": "Düzenle",
+      "reviewReplyDelete": "Sil",
+      "reviewReplyError": "Yanıt kaydedilemedi."
     },
     "public": {
       "directoryTitle": "Yakınınızdaki restoranlar",

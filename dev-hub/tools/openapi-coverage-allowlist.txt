@@ -891,3 +891,11 @@ GET /v1/admin/blog/posts/{param}
 POST /v1/admin/blog/posts
 PUT /v1/admin/blog/posts/{param}
 DELETE /v1/admin/blog/posts/{param}
+
+# RestaurantManager — #9724 / #9713 : observabilite et moderation des avis.
+# Contrat OpenAPI canonique de la verticale non encore publie (meme statut que
+# les 199 routes restaurant ci-dessus) ; suivi par #9713/#9724.
+GET /v1/restaurant/health/metrics
+POST /v1/restaurant/reviews/{param}/unpublish
+PUT /v1/restaurant/reviews/{param}/reply
+DELETE /v1/restaurant/reviews/{param}/reply

@@ -92,13 +92,19 @@ it('affiche le profil public de la première branche et ses plats', async () => 
 
 it('publie un avis en attente (POST) et le retire de la file', async () => {
   const calls: string[] = [];
+  let published = false;
   mockRoutes({
+    // #9713 — après une transition, la page recharge la file : le mock
+    // renvoie la liste vide une fois l'avis publié (il a quitté « en attente »).
     '/restaurant/reviews?': () =>
       jsonResponse({
-        data: [{ id: 7, author_name: 'Awa', rating: 5, comment: 'Excellent !', created_at: '2026-11-20T10:00:00Z' }],
+        data: published
+          ? []
+          : [{ id: 7, author_name: 'Awa', rating: 5, comment: 'Excellent !', status: 'pending', created_at: '2026-11-20T10:00:00Z' }],
       }),
     '/restaurant/reviews/7/publish': () => {
       calls.push('publish');
+      published = true;
       return jsonResponse({ data: { id: 7, status: 'published' } });
     },
   });

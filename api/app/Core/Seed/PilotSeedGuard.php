@@ -33,6 +33,8 @@ final class PilotSeedGuard
         // même commande `pilot:seed --clean` sans contourner l'allowlist.
         'fuel-pilot-001',
         'edu-pilot-001',
+        // #9725 — tenant de recette terrain RestaurantManager (R2–R11).
+        'resto-pilot-001',
         'techcorp-algerie',
         'pharmaplus-casablanca',
         'digitalflow-tunis',
