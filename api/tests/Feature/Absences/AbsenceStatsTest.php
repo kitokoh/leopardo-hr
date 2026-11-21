@@ -341,6 +341,41 @@ class AbsenceStatsTest extends TestCase
         $response->assertJsonPath('data.top_employees.0.employee_id', $employee1->id);
     }
 
+    /**
+     * #9538 : la borne tenant du filtre employe.
+     *
+     * Avec `exists:employees,id` sans borne, l'identifiant d'un employe d'un
+     * AUTRE societe repondait 200 avec des statistiques vides, alors qu'un
+     * identifiant inexistant repondait 422 : le couple des deux reponses
+     * confirme l'existence de la ligne et permet d'enumerer le parc client.
+     */
+    public function test_stats_rejects_employee_id_from_another_tenant(): void
+    {
+        $companyA = $this->makeCompany('company-a', 'a@company.test');
+        $companyB = $this->makeCompany('company-b', 'b@company.test');
+
+        $scheduleA = $this->makeSchedule($companyA);
+        $scheduleB = $this->makeSchedule($companyB);
+
+        $managerA = $this->makeEmployee($companyA, $scheduleA, 'manager@a.test', 'manager');
+        $employeeB = $this->makeEmployee($companyB, $scheduleB, 'employee@b.test');
+
+        Sanctum::actingAs($managerA);
+
+        $from = Carbon::now()->startOfMonth()->toDateString();
+        $to = Carbon::now()->endOfMonth()->toDateString();
+
+        $this->getJson("/api/v1/absences/stats?from={$from}&to={$to}&employee_id={$employeeB->id}")
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['employee_id']);
+
+        // Un identifiant inexistant repond exactement comme celui d'un autre
+        // tenant : aucune des deux reponses ne trahit l'existence d'une ligne.
+        $this->getJson("/api/v1/absences/stats?from={$from}&to={$to}&employee_id=999999999")
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['employee_id']);
+    }
+
     public function test_stats_rejects_invalid_period_format(): void
     {
         $company = $this->makeCompany('company-a', 'a@company.test');
