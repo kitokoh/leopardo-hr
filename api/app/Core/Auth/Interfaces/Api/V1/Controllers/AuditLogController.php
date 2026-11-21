@@ -44,6 +44,7 @@ class AuditLogController extends Controller
             'page' => ['sometimes', 'integer', 'min:1'],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
             'actor' => ['sometimes', 'integer', 'exists:employees,id'],
+            'module' => ['sometimes', 'string', 'max:100'],
             'action' => ['sometimes', 'string', 'max:200'],
             'resource_type' => ['sometimes', 'string', 'max:200'],
             'resource_id' => ['sometimes', 'integer'],
@@ -59,6 +60,10 @@ class AuditLogController extends Controller
 
         if (isset($validated['actor'])) {
             $query->where('user_id', $validated['actor']);
+        }
+
+        if (isset($validated['module'])) {
+            $query->where('module', $validated['module']);
         }
 
         if (isset($validated['action'])) {

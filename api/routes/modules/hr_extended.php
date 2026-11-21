@@ -227,9 +227,14 @@ ModuleRoutes::tenantModule('', function (): void {
         Route::post('/webhooks/{webhookEndpoint}/dead-letters/{delivery}/replay', [WebhookController::class, 'replayDeadLetter']);
 
         // ── Audit Trail
-        Route::get('/audit-logs', [AuditLogController::class, 'index']);
+        // #9732 — `GET /audit-logs` et `GET /audit-logs/{id}` sont déclarés
+        // canoniquement dans routes/api.php (App\Core\Auth\...\AuditLogController,
+        // gate `viewTenantAudit`). Les redéclarer ici écrasait silencieusement
+        // l'implémentation Core (Laravel indexe la collection par
+        // (méthodes, uri) : la dernière gagne) — d'où le 404 sur
+        // `GET /audit-logs/{id}` et l'absence de `meta.retention_months`.
+        // Seul l'export CSV streamé reste propre à ce module.
         Route::get('/audit-logs/export-csv', [AuditLogController::class, 'exportCsv']);
-        Route::get('/audit-logs/{id}', [AuditLogController::class, 'show']);
 
         // ── IA Predictions
         Route::prefix('predictions')->group(function (): void {
