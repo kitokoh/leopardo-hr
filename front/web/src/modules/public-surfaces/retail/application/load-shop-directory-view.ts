@@ -21,6 +21,10 @@ export type ShopDirectoryState = 'ready' | 'empty' | 'unavailable';
 export interface ShopDirectoryResult {
   readonly state: ShopDirectoryState;
   readonly cards: readonly ShopDirectoryCard[];
+  /** Page courante (1-indexée) — nécessaire au rendu de la pagination. */
+  readonly page: number;
+  /** Dernière page connue de l'API. */
+  readonly lastPage: number;
 }
 
 /** Charge l'annuaire ; ne lève jamais. */
@@ -30,13 +34,14 @@ export async function loadShopDirectoryView(params: {
   page?: number;
 }): Promise<ShopDirectoryResult> {
   const result = await loadShopDirectory(params);
+  const page = Math.max(1, params.page ?? 1);
 
   if (!result.available) {
-    return { state: 'unavailable', cards: [] };
+    return { state: 'unavailable', cards: [], page, lastPage: 1 };
   }
 
   if (result.entries.length === 0) {
-    return { state: 'empty', cards: [] };
+    return { state: 'empty', cards: [], page, lastPage: 1 };
   }
 
   return {
@@ -45,5 +50,7 @@ export async function loadShopDirectoryView(params: {
       entry,
       meta: shopDirectoryMeta(entry),
     })),
+    page,
+    lastPage: result.lastPage,
   };
 }
